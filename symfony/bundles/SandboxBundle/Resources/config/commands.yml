@@ -1,0 +1,8 @@
+services:
+
+  sandbox.dummy_fixtures.command:
+    class: 'Bundles\SandboxBundle\Command\DummyFixturesCommand'
+    calls:
+    - [setContainer, ["@service_container"]]
+    tags:
+    - { name: console.command }

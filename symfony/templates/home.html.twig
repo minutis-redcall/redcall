@@ -1,0 +1,20 @@
+{% extends 'base.html.twig' %}
+
+{% block menu %}{% endblock %}
+
+{% block body %}
+
+    <br/>
+    <div class="jumbotron text-center">
+
+        <a href="{{ path('create_campaign') }}"
+           class="text-lg-center large-button btn btn-secondary">{{ 'campaign.titles.create_full'|trans }}</a>
+
+        <br/><br/><br/>
+
+        <a href="{{ path('list_campaigns') }}"
+           class="text-lg-center large-button btn btn-secondary">{{ 'campaign.titles.list_full'|trans }}</a>
+
+    </div>
+
+{% endblock %}

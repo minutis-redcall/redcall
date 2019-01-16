@@ -1,0 +1,131 @@
+{% block answer_row %}
+
+    <div class="row" style="margin-bottom: 5px;">
+
+        <div class="col-10">
+            {{ form_errors(form) }}
+            {{ form_widget(form, {
+                attr: form.vars.attr|merge({
+                    placeholder: 'form.communication.fields.answer'|trans,
+                    class: form.vars.attr.class|default('') ~ ' answer-input',
+                })
+            }) }}
+        </div>
+
+        <div class="col-2 text-right">
+            <a href="#" class="collection-remove btn btn-danger">{{ 'form.communication.fields.remove'|trans }}</a>
+        </div>
+
+    </div>
+
+{% endblock %}
+
+{% block checkbox_widget %}
+    <div>
+        <label class="switch">
+            <input type="checkbox" {{ block('widget_attributes') }}{% if value is defined %} value="{{ value }}"{% endif %}{% if checked %} checked="checked"{% endif %} />
+            <span class="slider"></span>
+        </label>
+        <label>{{ form.vars.label|trans }}</label>
+    </div>
+{% endblock %}
+
+{% block volunteers_row %}
+
+    {% set vId = form.volunteers.vars.id %}
+
+    <div class="h4">{{ 'form.communication.fields.volunteers'|trans }}</div>
+    <br/>
+
+    <div class="row checkbox-list">
+        {% for child in form.tags.children %}
+            <div class="col-lg-3 col-md-4 col-6 col-12">
+                {{ form_widget(child, {
+                    attr: {
+                        class: 'form-check volunteer-tag'
+                    }
+                }) }}
+            </div>
+        {% endfor %}
+    </div>
+
+    {{ form_errors(form.volunteers) }}
+    {{ form_widget(form.volunteers) }}
+
+    {# JavaScript used to filter volunteers and tag them #}
+    <script type="text/javascript">
+        var volunteers_{{ vId }} = {{ form.vars.volunteers|json_encode|raw }};
+
+        function initVolunteers() {
+            $('#{{ vId }}').flexdatalist({
+                data: volunteers_{{ vId }},
+                minLength: 1,
+                focusFirstResult: true,
+                selectionRequired: true,
+                multiple: true,
+                searchIn: ['firstName', 'lastName'],
+                textProperty: '{firstName} {lastName} {tagLabels}',
+                valueProperty: 'id',
+                visibleProperties: ['firstName', 'lastName', 'tagLabels'],
+                noResultsText: '{{ 'base.search.no_results'|trans|e('js') }}'
+            });
+        }
+
+        {# Hack used to disable auto-focus at the end of the list after removal #}
+        $('#{{ vId }}').on('after:flexdatalist.remove', function () {
+            $('#{{ vId }}-flexdatalist').prop('disabled', 'disabled');
+            setTimeout(function () {
+                $('#{{ vId }}-flexdatalist').prop('disabled', false);
+            }, 0);
+        });
+
+        initVolunteers();
+
+        // When ticking on a job, I add every people doing that job,
+        // except the ones that are already selected.
+        $('body').on('click', '.volunteer-tag', function () {
+            var that = $(this);
+            var selection = $('#{{ vId }}').val().split(',');
+            var tagId = parseInt(that.val(), 10);
+
+            $.each(volunteers_{{ vId }}, function (index, volunteer) {
+                if (that.is(':checked')
+                    && $.inArray(tagId, volunteer.tagIds) !== -1
+                    && $.inArray(volunteer.id, selection) === -1) {
+                    selection.push(volunteer.id);
+                } else if ($.inArray(tagId, volunteer.tagIds) !== -1
+                    && $.inArray(volunteer.id, selection) !== -1) {
+                    selection.splice($.inArray(volunteer.id, selection), 1);
+                }
+            });
+
+            $('#{{ vId }}').val(selection.join(','));
+        });
+
+    </script>
+
+    <br/>
+
+{% endblock %}
+
+{% block types_row %}
+
+    <div class="form-group">
+        {{ form_label(form) }}
+        <div style="padding-left:15px;padding-right:15px;">
+            {% for child in form.children %}
+                {% set color = constant('App\\Entity\\Campaign::COLORS')[child.vars.value] %}
+                <div style="font-weight:bold;color:{{ color|e('html_attr') }};">
+
+                    {{ form_widget(child, {
+                        attr: form.vars.attr|merge({
+                            class: child.vars.attr.class|default('') ~ ' answer-color',
+                        })
+                    }) }}
+
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+{% endblock %}

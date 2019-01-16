@@ -1,0 +1,107 @@
+{% extends 'base.html.twig' %}
+
+{% import 'macros.html.twig' as macros %}
+
+{% block body %}
+
+    <h1>
+        {{ 'manage_volunteers.title'|trans }}
+    </h1>
+
+    <div class="text-center skip-line">
+        <a href="{{ path('admin_volunteers_import') }}"
+           class="text-lg-center large-button btn btn-secondary">{{ 'import_volunteers.menu'|trans }}</a>
+    </div>
+
+    <nav>
+        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+            <a class="nav-item nav-link active" id="nav-enabled-tab" data-toggle="tab"
+               href="#nav-enabled" role="tab"
+               aria-controls="nav-enabled" aria-selected="true">{{ 'manage_volunteers.tabs.enabled'|trans }}</a>
+            <a class="nav-item nav-link" id="nav-disabled-tab"
+               data-toggle="tab"
+               href="#nav-disabled" role="tab"
+               aria-controls="nav-disabled" aria-selected="false">{{ 'manage_volunteers.tabs.disabled'|trans }}</a>
+        </div>
+    </nav>
+
+    <div class="tab-content" id="nav-content">
+        {% for type, table in data %}
+
+            <div class="tab-pane {% if type == 'enabled' %}show active{% endif %}"
+                 id="nav-{{ type }}"
+                 role="tabpanel" aria-labelledby="nav-{{ type }}-tab">
+
+                {{ macros.orderBy(table.orderBy, {
+                    'nivol': 'manage_volunteers.order.nivol'|trans,
+                    'firstName': 'manage_volunteers.order.firstname'|trans,
+                    'lastName': 'manage_volunteers.order.lastname'|trans,
+                    'postalCode': 'manage_volunteers.order.postal_code'|trans,
+                    'locked': 'manage_volunteers.order.locked'|trans,
+                }, 'nav-' ~ type) }}
+
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>{{ 'manage_volunteers.table.nivol'|trans }}</th>
+                        <th>{{ 'manage_volunteers.table.fullname'|trans }}</th>
+                        <th>{{ 'manage_volunteers.table.postal_code'|trans }}</th>
+                        <th>{{ 'manage_volunteers.table.phone'|trans }}</th>
+                        <th>{{ 'manage_volunteers.table.email'|trans }}</th>
+                        <th>{{ 'manage_volunteers.table.tags'|trans }}</th>
+                        <th>{{ 'manage_volunteers.table.actions'|trans }}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for volunteer in table.rows %}
+                        <tr>
+                            <td>{{ volunteer.nivol }}</td>
+                            <td>{{ volunteer.firstname|default('?') ~ ' ' ~ volunteer.lastname|default('?') }}</td>
+                            <td>{{ volunteer.postalCode }}</td>
+                            <td>{{ volunteer.phoneNumber }}</td>
+                            <td>{{ volunteer.email }}</td>
+                            <td>
+                                {% for tag in constant('App\\Entity\\Tag::TAGS') %}
+                                    <div>{{ ('tag.' ~ tag)|trans }}: {{ volunteer.hasTag(tag) ? '✅' : '❌' }}</div>
+                                {% endfor %}
+                            </td>
+                            <td>
+                                {# Lock volunteer #}
+                                {% if volunteer.locked %}
+                                    <a href="{{ path('admin_volunteers_unlock', app.request.query.all|merge({volunteerId: volunteer.id, csrf: csrf_token('manage_volunteers')})) }}"
+                                       class="btn btn-warning">
+                                        {{ 'manage_volunteers.action.unlock'|trans }}
+                                    </a>
+                                {% else %}
+                                    <a href="{{ path('admin_volunteers_lock', app.request.query.all|merge({volunteerId: volunteer.id, csrf: csrf_token('manage_volunteers')})) }}"
+                                       class="btn btn-danger">
+                                        {{ 'manage_volunteers.action.lock'|trans }}
+                                    </a>
+                                {% endif %}
+
+                                {# Disable volunteer #}
+                                {% if not volunteer.locked %}
+                                    {% if volunteer.enabled %}
+                                        <a href="{{ path('admin_volunteers_disable', app.request.query.all|merge({volunteerId: volunteer.id, csrf: csrf_token('manage_volunteers')})) }}"
+                                           class="btn btn-danger">
+                                            {{ 'manage_volunteers.action.disable'|trans }}
+                                        </a>
+                                    {% else %}
+                                        <a href="{{ path('admin_volunteers_enable', app.request.query.all|merge({volunteerId: volunteer.id, csrf: csrf_token('manage_volunteers')})) }}"
+                                           class="btn btn-success">
+                                            {{ 'manage_volunteers.action.enable'|trans }}
+                                        </a>
+                                    {% endif %}
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+
+            </div>
+
+        {% endfor %}
+    </div>
+
+{% endblock %}

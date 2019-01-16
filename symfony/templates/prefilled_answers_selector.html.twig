@@ -1,0 +1,38 @@
+{% for color, form in forms %}
+
+    <div id="pfa-selector-{{ color }}" class="pfa-selector {% if color != current_color %}d-none{% endif %}">
+        {{ form_widget(form) }}
+    </div>
+
+{% endfor %}
+
+<script type="text/javascript">
+
+    var answerSets = {{ answers|json_encode|raw }};
+
+    {# When clicking on a color, changing the answers selector #}
+    $('.answer-color').change(function () {
+        var color = $(this).val();
+        $('.pfa-selector').addClass('d-none');
+        $('#pfa-selector-' + color).removeClass('d-none');
+    });
+
+    {# When choosing an answer group in an answers selector, update answers #}
+    $('.pfa-selector select').change(function () {
+        var answerSet = answerSets[$(this).val()];
+
+        {# Clearing up the collection #}
+        $('.collection').find('.collection-remove').click();
+
+        {# Creating the fields #}
+        for (var i = 0; i < answerSet.length; i++) {
+            $('.collection .add-answer').click();
+        }
+
+        {# Filling the fields #}
+        $('.collection .answer-input').each(function (key) {
+            $(this).val(answerSet[key]);
+        });
+    });
+
+</script>

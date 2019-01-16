@@ -1,0 +1,12 @@
+form:
+  campaign:
+    errors:
+      type:
+        empty: 'Sélectionner un type de déclenchement'
+      volunteers:
+        min: 'Sélectionner au moins un bénévole'
+      message:
+        empty: 'Veuillez renseigner un message'
+  communication:
+    errors:
+      web_message: "Un message requiérant des actions sur le Web ont besoin d'au moins 1 réponse."

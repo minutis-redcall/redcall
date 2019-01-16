@@ -1,0 +1,8 @@
+parameters:
+  communication.processor: 'App\Communication\Processor\SimpleProcessor'
+
+services:
+  App\SMS\SMSProvider:
+    class: 'Bundles\SandboxBundle\SMS\Fake'
+    arguments: ['@doctrine']
+    public: true

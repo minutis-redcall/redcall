@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    <br/>
+
+    <div class="jumbotron text-center">
+
+        <h1>{{ status_code }}</h1>
+        <h2>{{ status_text }}</h2>
+
+        <br/><br/>
+
+        <a href="{{ path('home') }}"
+           class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+    </div>
+
+{% endblock %}

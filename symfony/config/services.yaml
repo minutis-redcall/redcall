@@ -1,0 +1,81 @@
+# Put parameters here that don't need to change on each machine where the app is deployed
+# https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
+parameters:
+  locale: 'fr'
+  locale_list: ['fr', 'en']
+  locale_matcher: 'fr|en'
+  google_recaptcha_site_key: '%env(GOOGLE_RECAPTCHA_SITE_KEY)%'
+  communication.processor: 'App\Communication\Processor\ExecProcessor'
+
+services:
+  # default configuration for services in *this* file
+  _defaults:
+    autowire: true      # Automatically injects dependencies in your services.
+    autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+    public: false       # Allows optimizing the container by removing unused services; this also means
+    # fetching services directly from the container via $container->get() won't work.
+    # The best practice is to be explicit about your dependencies anyway.
+
+  # makes classes in src/ available to be used as services
+  # this creates a service per class whose id is the fully-qualified class name
+  App\:
+    resource: '../src/*'
+    exclude: '../src/{Entity,Migrations,Tests,Kernel.php}'
+
+  # controllers are imported separately to make sure services can be injected
+  # as action arguments even if you don't extend any base controller class
+  App\Controller\:
+    resource: '../src/Controller'
+    tags: ['controller.service_arguments']
+
+  App\SMS\SMSProvider:
+    class: App\SMS\Nexmo
+    public: true
+
+  App\Issue\IssueLogger:
+    class: App\Issue\SentryIssueLogger
+    public: true
+    arguments:
+    - "@monolog.logger.issue"
+    - "@sentry.client"
+
+  App\Communication\Formatter:
+    public: true
+
+  App\Communication\Sender:
+    public: true
+
+  App\Communication\Processor\ProcessorInterface:
+    class: '%communication.processor%'
+
+  App\Form\Type\CommunicationType:
+    tags: ['form.type']
+
+  App\Form\Type\VolunteersType:
+    tags: ['form.type']
+
+  App\Repository\MessageRepository:
+    arguments: ['@doctrine', '@translator', '@security.token_storage']
+
+  App\Twig\Extension\AppExtension:
+    tags: ['twig.extension']
+
+  App\Twig\Extension\CampaignExtension:
+    tags: ['twig.extension']
+
+  pagerfanta.view:
+    class: App\Pagerfanta\View\LightView
+    arguments: ['@pagerfanta.template']
+    tags:
+    - { name: pagerfanta.view, alias: light }
+
+  pagerfanta.template:
+    class: App\Pagerfanta\Template\LightTemplate
+    arguments: ['@translator']
+
+  password_login.mail.service:
+    autowire: false
+    autoconfigure: false
+    public: true
+    class: App\Services\Mail
+    parent: password_login.base.service

@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'password_login.profile.title'|trans }}{% endblock %}
+{% block header %}{% endblock %}
+{% block footer %}{% endblock %}
+
+{% block body %}
+
+    <br/>
+
+    <div class="row">
+
+        <div class="col-md-12 jumbotron">
+
+            <h3>{{ block('title') }}</h3>
+
+            {% form_theme profile '@EWZRecaptcha/Form/ewz_recaptcha_widget.html.twig' %}
+
+            {{ form_start(profile) }}
+
+            {{ form_row(profile.current_password) }}
+            <hr/>
+
+            {{ form_end(profile) }}
+
+            <div class="text-right">
+                <a href="{{ path('home') }}">
+                    {{ 'password_login.profile.home'|trans }}
+                </a>
+            </div>
+
+        </div>
+
+    </div>
+
+    {{ block('locales') }}
+
+{% endblock %}

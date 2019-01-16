@@ -1,0 +1,81 @@
+{% import 'macros.html.twig' as macros %}
+
+<h1>
+    {{ 'campaign.titles.list_full'|trans }}
+</h1>
+
+{% set renderTabs = data['ongoing'].pager.nbResults > 0 and data['finished'].pager.nbResults > 0 %}
+{% set ongoingActive = data['ongoing'].pager.nbResults > 0 %}
+
+{% if renderTabs and ongoingActive %}
+    <nav>
+        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+            <a class="nav-item nav-link {% if ongoingActive %}active{% endif %}" id="nav-ongoing-tab" data-toggle="tab"
+               href="#nav-ongoing" role="tab"
+               aria-controls="nav-ongoing" aria-selected="true">{{ 'campaign.statuses.ongoing'|trans }}</a>
+            <a class="nav-item nav-link {% if not ongoingActive %}active{% endif %}" id="nav-finished-tab"
+               data-toggle="tab"
+               href="#nav-finished" role="tab"
+               aria-controls="nav-finished" aria-selected="false">{{ 'campaign.statuses.finished'|trans }}</a>
+        </div>
+    </nav>
+{% endif %}
+
+<div class="tab-content" id="nav-content">
+    {% for type, table in data %}
+
+        <div class="tab-pane {% if (type == 'ongoing' and ongoingActive) or (type == 'finished' and not ongoingActive) %}show active{% endif %}"
+             id="nav-{{ type }}"
+             role="tabpanel" aria-labelledby="nav-{{ type }}-tab">
+
+            {{ macros.orderBy(table.orderBy, {
+                'type': 'campaign.order.type'|trans,
+                'createdAt': 'campaign.order.created_at'|trans,
+                'label': 'campaign.order.label'|trans,
+            }, 'nav-' ~ type) }}
+
+            {% for campaign in table.pager.currentPageResults %}
+                <div class="row separated">
+                    <div class="col-3">
+                        {{ macros.typeBadge(campaign.type) }}
+                    </div>
+                    <div class="col-9">
+                        <a href="{{ path('communication_index', {campaignId: campaign.id}) }}">
+                            {% if not campaign.active %}
+                                <strike>{{ campaign.label }}</strike>
+                            {% else %}
+                                {{ campaign.label }}
+                            {% endif %}
+                        </a>
+                        <em>
+                            <span class="text-sm-left color-grey">
+                                ({{ campaign.createdAt|date("d/m/y H:i") }})
+                            </span>
+                        </em>
+                    </div>
+                </div>
+            {% endfor %}
+
+            <br/>
+
+            {{ macros.pager(table.pager, type, {type: type}) }}
+
+        </div>
+
+    {% endfor %}
+</div>
+
+<script type="text/javascript">
+
+    var anchor;
+    if (location.hash) {
+        anchor = location.hash;
+    } else if (qs('type')) {
+        anchor = '#nav-' + qs('type');
+    } else {
+        anchor = $("a[data-toggle='tab']").first().attr("href");
+    }
+
+    $("a[href='" + anchor + "']").tab("show");
+
+</script>

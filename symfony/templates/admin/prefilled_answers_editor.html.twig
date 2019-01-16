@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% import 'macros.html.twig' as macros %}
+
+{% block body %}
+
+    <h1>
+        {% if prefilled_answer.id|default(false) %}
+            {{ 'base.crud.update_title'|trans({'%entity%': prefilled_answer.label}) }}
+        {% else %}
+            {{ 'base.crud.create_title'|trans }}
+        {% endif %}
+    </h1>
+
+    {{ form(form) }}
+
+    <br/><br/>
+
+    <div class="skip-line">
+        <a href="{{ path('admin_prefilled_answers_list') }}"
+           class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+    </div>
+
+{% endblock %}
+
+{% block javascripts %}
+
+    <script type="text/javascript" src="{{ asset('js/jquery.collection.js') }}"></script>
+    <script type="text/javascript">
+
+        {# Answer's collection #}
+        $('.collection').collection({
+            allow_up: false,
+            allow_down: false,
+            add_at_the_end: true,
+            init_with_n_elements: 2,
+            max: 10,
+            add: '<a href="#" class="btn btn-light" style="width:100%;">{{ 'form.communication.fields.add_answer'|trans|e('js') }}</a>',
+        });
+
+    </script>
+{% endblock %}

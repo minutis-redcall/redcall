@@ -1,0 +1,139 @@
+h1 {
+    color: #054752;
+    margin-top: 50px;
+    margin-bottom: 50px;
+}
+
+h5.modal-title {
+    color: #054752;
+}
+
+.modal-body {
+    margin-right: 40px;
+    margin-left: 40px;
+}
+
+p {
+    color: #708C91;
+    margin: 0;
+}
+
+.dark-blue {
+    color: #054752;
+}
+
+.lt-blue {
+    color: #00AFF5;
+}
+
+.answers {
+    min-height: 25px;
+}
+
+.input-wrapper .icon {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+    cursor: pointer;
+}
+
+.input-wrapper {
+    padding-right: 30px;
+}
+
+.input-wrapper,
+.textarea-wrapper {
+    height: 48px;
+    width: 100%;
+    border-radius: 8px;
+    background-color: #eee;
+    border: none;
+    font-size: 16px;
+    line-height: 24px;
+    padding-left: 15px;
+    outline: none;
+}
+
+.input-wrapper input,
+.textarea-wrapper textarea {
+    border: none;
+    outline: none;
+    height: 100%;
+    width: 100%;
+    font-size: inherit;
+    background-color: transparent;
+    resize: none;
+}
+
+.textarea-wrapper,
+.textarea-wrapper textarea {
+    height: 300px;
+}
+
+button:focus {
+    outline: 0;
+}
+
+button,
+button.modal-button:focus,
+button.modal-button {
+    cursor: pointer;
+    border: none;
+    box-shadow: none !important;
+    margin: 0;
+    padding: 0;
+    outline: 0;
+    width: auto;
+    overflow: visible;
+
+    background: transparent;
+
+    /* inherit font & color from ancestor */
+    color: #00AFF5;
+    font: inherit;
+
+    /* Normalize `line-height`. Cannot be changed from `normal` in Firefox 4+. */
+    line-height: normal;
+
+    /* Corrects font smoothing for webkit */
+    -webkit-font-smoothing: inherit;
+    -moz-osx-font-smoothing: inherit;
+
+    /* Corrects inability to style clickable `input` types in iOS */
+    -webkit-appearance: none;
+}
+
+.btn-primary:active,
+.btn-primary:focus,
+.btn-primary:hover,
+.btn-primary {
+    background-color: #00AFF5;
+    border-color: #00AFF5;
+}
+
+.btn-secondary:active,
+.btn-secondary:focus,
+.btn-secondary:hover,
+.btn-secondary {
+    border: 1px solid #00AFF5 !important;
+    background-color: #FFFFFF !important;
+    color: #00AFF5 !important;
+    box-shadow: none !important;
+}
+
+.badge {
+    padding: 10px;
+}
+
+.badge-primary {
+    cursor: pointer;
+}
+
+.accordion {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.collapse {
+    border-bottom: 1px solid rgba(0, 0, 0, .125)
+}

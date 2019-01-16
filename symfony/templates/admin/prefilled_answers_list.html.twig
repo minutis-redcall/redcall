@@ -1,0 +1,71 @@
+{% extends 'base.html.twig' %}
+
+{% import 'macros.html.twig' as macros %}
+
+{% block body %}
+
+    <h1>{{ 'prefilled_answers.title'|trans }}</h1>
+
+    {% for prefilledAnswer in pager.currentPageResults %}
+
+        <div class="row">
+
+            <div class="col-12">
+                <div class="h3">{{ prefilledAnswer.label }}</div>
+
+                {% for color in prefilledAnswer.colors %}
+                    {{ macros.typeBadge(color) }}
+                {% endfor %}
+
+                <ul class="list-group list-group-flush">
+                    {% for answer in prefilledAnswer.answers %}
+                        <li class="list-group-item">{{ answer }}</li>
+                    {% endfor %}
+                </ul>
+
+                <br/>
+
+                <a href="{{ path('admin_prefilled_answers_editor', {pfaId: prefilledAnswer.id}) }}"
+                   class="btn btn-primary">
+                    {{ 'base.button.update'|trans }}
+                </a>
+
+                &nbsp;&nbsp;&nbsp;
+
+                <a href="{{ path('admin_prefilled_answers_delete', {pfaId: prefilledAnswer.id, csrf: csrf_token('prefilled_answers')}) }}"
+                   class="btn btn-secondary"
+                   onclick="return confirm('{{ 'base.crud.confirm_delete'|trans({'%entity%': prefilledAnswer.label})|e('js') }}');">
+                    {{ 'base.button.delete'|trans }}
+                </a>
+
+            </div>
+
+        </div>
+
+        {% if not loop.last %}
+            <hr/>
+        {% endif %}
+
+    {% endfor %}
+
+    {{ macros.pager(pager) }}
+
+    <br/><br/>
+
+    <div>
+
+        <a href="{{ path('admin_prefilled_answers_editor') }}"
+           class="btn btn-secondary">
+            {{ 'base.button.create'|trans }}
+        </a>
+
+    </div>
+
+    <br/><br/>
+
+    <div class="skip-line">
+        <a href="{{ path('admin_home') }}"
+           class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+    </div>
+
+{% endblock %}

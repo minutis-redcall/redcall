@@ -1,0 +1,7 @@
+web_profiler:
+  toolbar: true
+  intercept_redirects: false
+  excluded_ajax_paths: '^/(declenchement|geo)/[0-9a-zA-Z]+/(poll|sse)'
+
+framework:
+  profiler: { only_exceptions: false }

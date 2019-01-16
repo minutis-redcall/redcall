@@ -1,0 +1,249 @@
+admin:
+  home:
+    link: Administration
+
+tag:
+  emergency_assistance: Urg. Sec.
+  social_assistance: Ass. Soc.
+  psc_1: PSC 1
+  pse_1_i: PSE 1 Init.
+  pse_1_r: PSE 1 Recy.
+  pse_2_i: PSE 2 Init.
+  pse_2_r: PSE 2 Recy.
+  drvr_vl: Chauf. VL
+  drvr_vpsp: Chauf. VPSP
+  ci_i: Chef Int. Init.
+  ci_r: Chef Int. Recy.
+  shortcuts:
+    emergency_assistance: US
+    social_assistance: AS
+    psc_1: PSC1
+    pse_1_i: PSE1
+    pse_1_r: PSE1
+    pse_2_i: PSE2
+    pse_2_r: PSE2
+    drvr_vl: VL
+    drvr_vpsp: VPSP
+    ci_i: CI
+    ci_r: CI
+
+base:
+  pager:
+    prev: '←'
+    current: '-'
+    next: '→'
+    result: '[0,1] résultat | ]1,Inf[ résultats'
+    per_page: 'Résultats par page'
+    go_to: 'Aller à la page'
+    go: 'Go'
+  order_by:
+    order_by: 'Trier les résultats par :'
+    asc: 'Croissant'
+    desc: 'Décroissant'
+  modal:
+    close: Fermer
+  form:
+    change: Changer
+  button:
+    back: Retour
+    delete: Effacer
+    update: Editer
+    create: Ajouter une nouvelle entréee
+    save: Sauvegarder
+  crud:
+    create_title: 'Ajouter une entrée'
+    update_title: 'Editer "%entity%"'
+    delete_confirm: 'Souhaitez-vous vraiment supprimer "%entity%" ?'
+  yes: Oui
+  no: Non
+  search:
+    no_results: 'Aucun résultat trouvé pour "{keyword}".'
+
+campaign:
+  titles:
+    campaign: 'Déclenchement :'
+    create: 'Créer'
+    list: 'Liste'
+    create_full: 'Créer un déclenchement'
+    list_full: 'Liste des déclenchements'
+  types:
+    1_green: 'Vert'
+    2_light_orange: 'Orange 1'
+    3_dark_orange: 'Orange 2'
+    4_red: 'Rouge'
+  statuses:
+    ongoing: 'En cours'
+    finished: 'Terminé'
+  actions:
+    continue: 'Continuer'
+    classify: 'Classifier'
+    close: 'Fermer le déclenchement'
+    open: 'Réouvrir le déclenchement'
+  errors:
+    inactive: 'Ce déclenchement est terminé, merci pour votre participation.'
+  order:
+    label: Intitulé
+    type: Couleur
+    created_at: Date de création
+
+modal:
+  change_color: Changer de couleur...
+  change_campaign_label: Changer de nom...
+  answers: Réponses
+
+campaign_status:
+  communication_tabs: Communications
+  communication_short_title: '%date% à %time%'
+  communication_title: 'Communication du %date% à %time%'
+  message: 'Votre message :'
+  filter:
+    title: Filtrer
+    by_response: par réponse
+    by_skill: par compétence
+    or: ou/et
+  table:
+    other: Autre réponse
+  selection:
+    new_message: Ecrire un nouveau message
+    download_csv: Téléchager en CSV
+    download_pdf: Téléchager en PDF
+  answer_no: 'Réponse %choice%'
+  answers:
+    change: 'Changer les réponses'
+    added_by: '- ajouté par %username%'
+    changed_by: '- supprimé par %username%'
+    history: 'Historique'
+    label: '(réponse "%label%")'
+  legend:
+    sms_sent: '"SMS envoyé" indique si le message a bien été envoyé au volonaire. Si cette colonne reste vide, il y a probablement un problème technique.'
+    sms_received: '"SMS reçu" indique si le message a bien été délivré au volontaire. Elle peut rester blanche si le volontaire a éteint son téléphone.'
+  progress: 'Envoi: %sent% / %total% (%progress%%)'
+  finish: 'Envoi terminé.'
+
+new_communication:
+  title: Ecrire un nouveau message
+  subtitle: 'Dans le cadre du déclenchement "%label%"'
+
+message:
+  announcement: CROIX-ROUGE:
+  how_to_answer_alert: Pour répondre, saisir le n° de votre choix.
+  how_to_answer_web: Connectez-vous à %url% afin de poursuivre.
+  geo_location: 'Géolocalisation de votre équipe: %url%'
+
+button:
+  submit: 'Valider'
+
+form:
+  communication:
+    fields:
+      response_title: "Réponses"
+      type_alert: 'Le volontaire pourra répondre par SMS'
+      type_web: 'Le volontaire pourra répondre via un lien'
+      geo_location: 'Les destinataires de ce message pourront se géo-localiser entre eux'
+      volunteers: Audience
+      message: Message
+      answers: Réponses possibles
+      answer: 'Saisir une réponse'
+      add: +
+      add_answer: Ajouter une réponse
+      remove: X
+      submit: Envoyer
+      back: Retour
+      other_options: Autres options
+  campaign:
+    fields:
+      label: 'Nom du déclenchement'
+      submit: Envoyer
+
+prefilled_answers:
+  title: Gestion des réponses pré-remplies
+  editor:
+    label: 'Nom du groupe de réponses'
+    colors: 'Couleurs du déclenchement où ce groupe est sélectionnable'
+    answers: 'Réponses à créer'
+
+manage_volunteers:
+  title: 'Gestion des volontaires'
+  tabs:
+    enabled: 'Volontaires déclenchables'
+    disabled: 'Volontaires non déclenchables'
+  order:
+    nivol: 'Nivol'
+    firstname: 'Prénom'
+    lastname: 'Nom'
+    postal_code: 'Code postal'
+    locked: 'Gelé'
+  table:
+    nivol: 'Nivol'
+    fullname: 'Nom complet'
+    phone: 'Téléphone'
+    postal_code: 'Code postal'
+    email: 'Email'
+    tags: 'Compétences'
+    actions: 'Actions'
+  action:
+    lock: 'Geler'
+    unlock: 'Dégeler'
+    enable: 'Activer'
+    disable: 'Desactiver'
+
+import_volunteers:
+  menu: "Ouvrir le rapport d'importation"
+  title: "Erreurs lors du derner import de volontaires"
+  open_spreadsheet: 'Ouvrir le document afin de corriger les erreurs :'
+  back: 'Retour à la liste de volontaires'
+  import_again: 'Relancer un nouvel import maintenant'
+  columns:
+    line: 'Ligne #'
+    errors: Erreurs
+    nivol: Nivol
+    firstname: Prénom
+    lastname: Nom
+    phone: Téléphone
+    postal_code: Code postal
+    email: Email
+    minor: Mineur
+    callable: Déclenchable
+    importable: Importé
+    tags: Compétences
+
+csv_export:
+  nivol: Nivol
+  firstname: Prénom
+  lastname: Nom
+  phone_number: Numéro de téléphone
+  email: Email
+  tags: Compétences
+  choice: 'Choix "%choice%"'
+  other: Autre réponses
+  sent: Message envoyé
+  received: Message reçu
+
+pdf_export:
+  title: URGENCE
+  confidential: DOCUMENT INTERNE / UNITÉ LOCALE PARIS 1ER-2IEME
+  campaign: 'Déclenchement %label%'
+  staff: EFFECTIFS
+  communication: 'Communication du %date% à %time%'
+  response: 'Réponse "%choice%"'
+  staff_table:
+    name: NOM
+    phone: Téléphone
+    skills: Compétences
+
+geolocation:
+  title: Géolocalisation d'équipage
+  subtitle: Géolocalisation
+  share: Partager ma position
+  share_explains: Cela va permettre aux autres membres de l'équipe de vous localiser.
+  not_supported: La géolocalisation n'est pas supportée par votre navigateur.
+  last_update: Dernière mise à jour:
+  waiting: En attente...
+  error: Une erreur est survenue.
+  error_permission: Vous avez refusé (ou un paramètre de votre appareil) de partager votre position.
+  error_unavailable: Aucune information de localisation disponible.
+  error_timeout: Le délai d'attente de votre localisation a été dépassé.
+  started: Géolocalisation activée
+  stop: Arrêter la géolocalisation
+  na: Indispo.
+  last_data: 'Position reçue à %time% (à %accuracy% près)'

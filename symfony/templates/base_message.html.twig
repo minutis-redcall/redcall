@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block locales %}{% endblock %}
+
+{% block body %}
+
+    <br/>
+
+    <div class="text-right h4">
+        <span class="badge-pill badge-dark">
+            {{ message.volunteer.firstName }}
+            {{ message.volunteer.lastName[:1] }}.
+        </span>
+    </div>
+
+    {% if message.communication.campaign.active %}
+        {# ------------------------------------------------------ #}
+        {# Campaign is active: render geo location data #}
+        {# ------------------------------------------------------ #}
+
+        {% block content %}{% endblock %}
+
+    {% else %}
+        {# ------------------------------------------------------ #}
+        {# Campaign is inactive: display an error message         #}
+        {# ------------------------------------------------------ #}
+
+        <div class="h3">{{ 'campaign.errors.inactive'|trans }}</div>
+
+        <hr/><br/>
+
+    {% endif %}
+
+{% endblock %}

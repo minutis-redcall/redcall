@@ -1,0 +1,12 @@
+form:
+  campaign:
+    errors:
+      type:
+        empty: 'Please select a campaign type'
+      volunteers:
+        min: 'At least one volunteer should be targeted'
+      message:
+        empty: 'Please enter a message'
+  communication:
+    errors:
+      web_message: "A message requiring actions on the web requires at least 1 answer."

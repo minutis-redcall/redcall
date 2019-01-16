@@ -1,0 +1,33 @@
+{% if app.user|default(false) %}
+
+    <div class="text-center">
+
+        {{ 'password_login.connect.who_am_i'|trans({'%username%': app.user.username}) }}
+
+        <br/><br/>
+
+        {% if is_granted('ROLE_ADMIN') %}
+
+            {% if display_manage_users is not defined or display_manage_users %}
+                <a href="{{ path('password_login_admin_list') }}" class="btn btn-secondary">{{ 'password_login.user_list.button'|trans }}</a>
+
+                <br/><br/>
+            {% endif %}
+
+        {% endif %}
+
+        {% if display_profile is not defined or display_profile %}
+            <a href="{{ path('password_login_profile') }}" class="btn btn-secondary">{{ 'password_login.profile.button'|trans }}</a>
+        {% endif %}
+
+        {% if (display_profile is not defined or display_profile) and (display_logout is not defined or display_logout) %}
+            &nbsp;&nbsp;
+        {% endif %}
+
+        {% if display_logout is not defined or display_logout %}
+            <a href="{{ logout_url('main') }}" class="btn btn-secondary">{{ 'password_login.logout.button'|trans }}</a>
+        {% endif %}
+
+    </div>
+
+{% endif %}

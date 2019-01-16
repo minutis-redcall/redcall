@@ -1,0 +1,25 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="row justify-content-md-center">
+        <div class="col-md-12">
+            <h1>
+                {{ 'campaign.titles.create_full'|trans }}
+            </h1>
+
+            {{ form_start(form) }}
+            {{ form_errors(form) }}
+
+            {{ form_row(form.label) }}
+
+            {{ form_row(form.type) }}
+
+            <hr/>
+
+            {{ include('new_communication_form.html.twig', _context|merge({form: form.communication})) }}
+
+            {{ form_end(form) }}
+
+        </div>
+    </div>
+{% endblock %}

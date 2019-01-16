@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link rel="stylesheet" href="{{ asset('cdn/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('cdn/jquery.flexdatalist.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/main.css') }}">
+
+    <script src="{{ asset('cdn/jquery.min.js') }}"></script>
+    <script src="{{ asset('cdn/popper.min.js') }}"></script>
+    <script src="{{ asset('cdn/bootstrap.min.js') }}"></script>
+    <script src="{{ asset('cdn/jquery.flexdatalist.min.js') }}"></script>
+    <script src="{{ asset('js/main.js') }}"></script>
+
+    <title>{% block title %}redcall.io{% endblock %}</title>
+    {% block stylesheets %}{% endblock %}
+</head>
+<body>
+
+<div class="container mt-2">
+
+    {% block flashes %}
+        {% if translation_domain is not defined %}
+            {% set translation_domain = null %}
+        {% endif %}
+        {% if close is not defined %}
+            {% set close = false %}
+        {% endif %}
+
+        {% for flashMessage in app.session.flashbag.get('alert') %}
+            <div class="alert alert-warning">
+                {% if close %}
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>{% endif %}
+                {{ flashMessage|trans({}, translation_domain) }}
+            </div>
+        {% endfor %}
+
+        {% for flashMessage in app.session.flashbag.get('danger') %}
+            <div class="alert alert-danger">
+                {% if close %}
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>{% endif %}
+                {{ flashMessage|trans({}, translation_domain) }}
+            </div>
+        {% endfor %}
+
+        {% for flashMessage in app.session.flashbag.get('info') %}
+            <div class="alert alert-info">
+                {% if close %}
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>{% endif %}
+                {{ flashMessage|trans({}, translation_domain) }}
+            </div>
+        {% endfor %}
+
+        {% for flashMessage in app.session.flashbag.get('success') %}
+            <div class="alert alert-success">
+                {% if close %}
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>{% endif %}
+                {{ flashMessage|trans({}, translation_domain) }}
+            </div>
+        {% endfor %}
+    {% endblock %}
+
+    {% block header %}
+        <div class="card-header">
+
+            {% block menu %}
+
+                {% if app.user|default(false) %}
+
+                    {% if app.user.trusted %}
+
+                        <strong>{{ 'campaign.titles.campaign'|trans }}</strong>
+
+                        <a href="{{ path('create_campaign') }}"
+                           class="btn btn-secondary text-sm-center">{{ 'campaign.titles.create'|trans }}</a>
+
+                        <a href="{{ path('list_campaigns') }}"
+                           class="btn btn-secondary text-sm-center">{{ 'campaign.titles.list'|trans }}</a>
+
+                    {% endif %}
+
+                {% endif %}
+
+            {% endblock %}
+        </div>
+    {% endblock %}
+
+    {% block modals %}{% endblock %}
+    {% block body %}{% endblock %}
+
+    {% block footer %}
+        <div class="text-center card-footer">
+
+            {% block security %}
+
+                {{ include('@PasswordLogin/menu.html.twig', {
+                    display_manage_users: false,
+                }) }}
+
+            {% endblock %}
+
+            <br/>
+
+            {% if app.environment == 'dev' %}
+
+                <a href="{{ path('sandbox_home') }}" class="btn btn-secondary">{{ 'sandbox.home.link'|trans }}</a>
+
+                &nbsp;&nbsp;
+
+            {% endif %}
+
+            {% if app.user|default(false) and is_granted('ROLE_ADMIN') %}
+
+                <a href="{{ path('admin_home') }}" class="btn btn-secondary">{{ 'admin.home.link'|trans }}</a>
+
+            {% endif %}
+
+            {% block locales %}
+                <div class="text-center">
+                    <br/>
+                    {% if app.request.locale != 'en' %}
+                        <a href="{{ path('locale', {locale: 'en'}) }}"> 🇬🇧 English</a>
+                    {% endif %}
+                    {% if app.request.locale != 'fr' %}
+                        <a href="{{ path('locale', {locale: 'fr'}) }}"> 🇫🇷 Français</a>
+                    {% endif %}
+                </div>
+            {% endblock %}
+
+        </div>
+    {% endblock %}
+
+</div>
+
+{% block javascripts %}{% endblock %}
+</body>
+</html>

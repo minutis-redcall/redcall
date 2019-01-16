@@ -1,0 +1,34 @@
+{% extends '@PasswordLogin/base.html.twig' %}
+
+{% block title %}{{ 'password_login.connect.title'|trans }}{% endblock %}
+
+{% block body %}
+
+    <br/>
+
+    <div class="row">
+
+        <div class="col-md-12 jumbotron">
+
+            <h3>{{ block('title') }}</h3>
+
+            {% form_theme connect '@EWZRecaptcha/Form/ewz_recaptcha_widget.html.twig' %}
+            {{ form(connect) }}
+
+            <div class="text-right">
+                {% spaceless %}
+                    <a href="{{ path('password_login_forgot_password') }}">
+                        {{ 'password_login.connect.forgot_password'|trans }}</a>
+                    <br/>
+                    <a href="{{ path('password_login_register') }}">
+                        {{ 'password_login.connect.no_account_yet'|trans }}
+                    </a>
+                {% endspaceless %}
+            </div>
+
+        </div>
+
+    </div>
+
+{% endblock %}
+

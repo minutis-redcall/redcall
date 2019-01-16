@@ -1,0 +1,6 @@
+/logs/*
+!/logs/.gitkeep
+/var/*
+!/var/.gitkeep
+/ops/*
+!/ops/.gitkeep

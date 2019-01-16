@@ -1,0 +1,12 @@
+sandbox:
+
+  home:
+    link: 'Sandbox'
+
+  fake_sms:
+    button: 'SMS Simulator'
+    title: 'SMS Simulator - List of recipients'
+    thread: '+%phoneNumber% inbox (%name%)'
+    your_message: 'Your message'
+    send: 'Send'
+    clear: 'Remove all messages'

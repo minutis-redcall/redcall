@@ -1,0 +1,48 @@
+security:
+
+  encoders:
+    Bundles\PasswordLoginBundle\Entity\User:
+      algorithm: bcrypt
+
+  providers:
+    user_provider:
+      entity:
+        class: Bundles\PasswordLoginBundle\Entity\User
+        property: username
+
+  firewalls:
+    dev:
+      pattern: ^/(_(profiler|wdt)|css|images|js)/
+      security: false
+
+    main:
+      pattern: '^/'
+      provider: user_provider
+      anonymous: ~
+      logout:
+        path:   /logout
+        target: /
+        csrf_token_generator: security.csrf.token_manager
+      guard:
+        authenticators:
+        - password_login.authenticator.form_login
+
+  access_control:
+  - { path: '^/connect', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
+  - { path: '^/register', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
+  - { path: '^/forgot-password', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
+  - { path: '^/change-password', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
+  - { path: '^/verify-email', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
+  - { path: '^/locale', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
+  - { path: '^/webhooks', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
+  - { path: '^/msg', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
+  - { path: '^/geo', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
+
+  - { path: '^/logout', role: 'ROLE_USER' }
+  - { path: '^/profile', role: 'ROLE_USER' }
+  - { path: '^/guest', role: 'ROLE_USER' }
+  - { path: '^/$', roles: ['ROLE_USER'] }
+
+  - { path: '^/admin', roles: ['ROLE_ADMIN'] }
+
+  - { path: '^/', roles: ['ROLE_TRUSTED'] }

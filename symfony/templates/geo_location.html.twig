@@ -1,0 +1,7 @@
+{% extends 'base_message.html.twig' %}
+
+{% block title %}{{ 'geolocation.title'|trans }}{% endblock %}
+
+{% block content %}
+    {{ render(controller('App\\Controller\\GeoLocationController::content', {code: code})) }}
+{% endblock %}

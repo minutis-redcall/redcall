@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'sandbox.fake_sms.title'|trans }}{% endblock %}
+
+{% block body %}
+
+    <h1>{{ block('title') }}</h1>
+
+    <table class="table">
+        {% for row in phoneNumbers %}
+            <tr>
+                <td>
+                    {{ row.volunteer.firstName }} {{ row.volunteer.lastName }}
+                    <a href="{{ path('sandbox_fake_sms_thread', {phoneNumber: row.phoneNumber}) }}">+{{ row.phoneNumber }}</a>
+                    <span class="badge badge-primary">{{ row.countMsg }}</span>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+
+    <div class="text-center">
+        <a href="{{ path('sandbox_fake_sms_clear', {csrf: csrf_token('fake_sms')}) }}"
+           class="btn btn-danger">{{ 'sandbox.fake_sms.clear'|trans }}</a>
+
+        &nbsp;&nbsp;&nbsp;&nbsp;
+
+        <a href="{{ path('sandbox_home') }}"
+           class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+    </div>
+
+    <br/>
+
+{% endblock %}

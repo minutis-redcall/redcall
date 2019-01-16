@@ -1,0 +1,77 @@
+{% macro pager(pager, prefix = '', queryParams = {}) %}
+    {% if pager.nbResults > pager.maxPerPage %}
+
+        <div class="row">
+            <div class="col-md-12 text-center">
+                {{ pager.nbResults }} {{ 'base.pager.result' | transchoice(pager.nbResults) }}
+            </div>
+            <div class="col-md-12 d-flex">
+
+                {{ pagerfanta(pager, 'light', {
+                    'pageParameter': '[' ~ prefix ~ 'page]',
+                    'routeName': master_request().get('_route'),
+                    'routeParams': master_request().query.all|merge(queryParams),
+                    'proximity': 2,
+                }) }}
+
+            </div>
+        </div>
+    {% endif %}
+{% endmacro %}
+
+{% macro orderBy(order, columnsAndLabels, hash = '') %}
+    <br/>
+
+    <div>
+        <div>{{ 'base.order_by.order_by'|trans }}</div>
+        <div>
+            <select class="form-control" id="order-by-{{ hash }}" onchange="document.location = $(this).find(':selected').data('href');">
+                {% for column, label in columnsAndLabels %}
+
+                    {% for orderDirection in ['asc', 'desc'] %}
+                        <option
+                                value="{{ column }}"
+                                data-href="?{{ http_build_query(app.request.query.all|merge({(order.prefix ~ 'order-by'): column, (order.prefix ~ 'order-by-direction'): orderDirection})) ~ (hash ? '#' ~ hash : '') }}"
+                                class="order-by-trigger"
+                                {% if order.column|lower == column|lower and order.direction|lower == orderDirection|lower %}selected{% endif %}>
+                            {{ label }}, {{ ('base.order_by.' ~ orderDirection)|trans|lower }}
+                        </option>
+                    {% endfor %}
+                {% endfor %}
+            </select>
+        </div>
+    </div>
+
+    <br/>
+
+{% endmacro %}
+
+{% macro typeBadge(color) %}
+    {% set hexColor = constant('App\\Entity\\Campaign::COLORS')[color] %}
+    <span class="badge text-white" style="background-color:{{ hexColor }};">
+        {{ ('campaign.types.' ~ color)|trans|title }}
+    </span>
+{% endmacro %}
+
+{% macro modal(id, title, body, buttons = '') %}
+    <div class="modal fade" id="{{ id }}" tabindex="-1" role="dialog" aria-labelledby="{{ title }}" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{{ title }}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>{{ body }}</p>
+                </div>
+                <div class="modal-footer">
+                    {{ buttons }}
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ 'base.modal.close'|trans }}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endmacro %}

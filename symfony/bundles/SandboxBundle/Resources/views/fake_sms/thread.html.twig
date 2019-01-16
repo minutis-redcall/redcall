@@ -1,0 +1,162 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    {{ 'sandbox.fake_sms.thread'|trans({
+        '%phoneNumber%': phoneNumber,
+        '%name%': volunteer.firstName ~ ' ' ~ volunteer.lastName,
+    }) }}
+{% endblock %}
+
+{% block body %}
+
+    <h1>{{ block('title') }}</h1>
+
+    <div class="iphone">
+        <div class="border">
+            <div class="responsive-html5-chat">
+            </div>
+        </div>
+    </div>
+
+    <link rel="stylesheet" href="{{ asset('bundles/sandbox/iphone/iphone.css') }}"/>
+
+    <br/><br/>
+
+    <div class="text-center">
+        <a href="{{ path('sandbox_fake_sms_list') }}"
+           class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+    </div>
+
+    <br/><br/>
+
+    <script type="text/javascript">
+
+        {#
+
+        --- Credits ---
+
+        Name    : Responsive HTML5 Chat
+
+        Responsive HTML5 Chat helps you to create useful chatbox on your website easly.
+        You can change skin and sizes. You can read the installation and support documentation
+        before you begin. If you do not find the answer, do not hesitate to send a message to me.
+
+        Owner   : Vatanay Ozbeyli
+        Web     : www.vatanay.com
+        Support : hi@vatanay.com
+
+
+        --- End of Credits ---
+
+        Please take care, this version has been updated for the redcall.io purposes.
+
+        #}
+
+        function showLatestMessage(element) {
+            $(element).find('.messages').scrollTop(0xFFFFFF);
+        }
+
+        function responsiveChat(element) {
+            $(element).html('<form class="chat"><span></span><div class="messages"></div><input type="text" placeholder="{{ 'sandbox.fake_sms.your_message'|trans|e('js') }}"><input type="submit" value="{{ 'sandbox.fake_sms.send'|trans|e('js') }}"></form>');
+
+            showLatestMessage(element);
+
+            $(element + ' input[type="text"]').keypress(function (event) {
+                if (event.which == 13) {
+                    event.preventDefault();
+                    $(element + ' input[type="submit"]').click();
+                }
+            });
+            $(element + ' input[type="submit"]').click(function (event) {
+                event.preventDefault();
+                var message = $(element + ' input[type="text"]').val();
+                $(element + ' input[type="text"]').val("");
+
+                $.post('{{ path('sandbox_fake_sms_send', {phoneNumber: phoneNumber, csrf: csrf_token('fake_sms')}) }}', {
+                    message: message,
+                });
+            });
+        }
+
+        function responsiveChatPush(element, sender, origin, date, message) {
+            var originClass;
+            if (origin == 'me') {
+                originClass = 'myMessage';
+            } else {
+                originClass = 'fromThem';
+            }
+            $(element + ' .messages').append('<div class="message"><div class="' + originClass + '"><p>' + message + '</p><date><b>' + sender + '</b> ' + date + '</date></div></div>');
+        }
+
+        responsiveChat('.responsive-html5-chat');
+
+        {# -------------------------------------------------------------------------------- #}
+        {# Rendering all messages #}
+        {# -------------------------------------------------------------------------------- #}
+
+        {% for message in messages %}
+
+        responsiveChatPush(
+            '.chat',
+            '{{ message.name|e('js') }}',
+            '{{ message.direction|e('js') }}',
+            '{{ message.createdAt|date('d/m/Y H:i') }}',
+            nl2br('{{ message.content|e('js') }}')
+        );
+
+        {% endfor %}
+
+        showLatestMessage('.chat');
+
+        {# -------------------------------------------------------------------------------- #}
+        {# Rendering incoming messages (quick & dirty poll) #}
+        {# -------------------------------------------------------------------------------- #}
+
+        var lastMessageId = {{ lastMessageId }};
+        var addNewMessages = function (data) {
+            if (typeof data === 'undefined') {
+                return;
+            }
+
+            $.each(data, function () {
+                var msg = this;
+
+                if (typeof msg.id === "undefined") {
+                    return false;
+                }
+
+                if (msg.id <= lastMessageId) {
+                    return true;
+                }
+
+                lastMessageId = msg.id;
+
+                responsiveChatPush('.chat', msg.name, msg.direction, msg.createdAt, nl2br(msg.content));
+                showLatestMessage('.chat');
+
+                var audio;
+                if (msg.direction === '{{ constant('Bundles\\SandboxBundle\\Entity\\FakeSms::DIRECTION_SENT') }}') {
+                    audio = new Audio('{{ asset('bundles/sandbox/iphone/sent.mp3') }}');
+                } else {
+                    audio = new Audio('{{ asset('bundles/sandbox/iphone/received.mp3') }}');
+                }
+
+                audio.play();
+            });
+        }
+
+        setInterval(function () {
+            $.ajax('{{ path('sandbox_fake_sms_poll', {phoneNumber: phoneNumber}) }}', {
+                type: 'POST',
+                data: {
+                    lastMessageId: lastMessageId
+                },
+                statusCode: {
+                    200: addNewMessages
+                }
+            });
+        }, 1000);
+
+    </script>
+
+{% endblock %}

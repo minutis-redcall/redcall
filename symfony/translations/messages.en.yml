@@ -1,0 +1,250 @@
+admin:
+  home:
+    link: Administration
+
+tag:
+  emergency_assistance: Emergency Help
+  social_assistance: Social Assistance
+  psc_1: PSC 1
+  pse_1_i: PSE 1 Init.
+  pse_1_r: PSE 1 Recy.
+  pse_2_i: PSE 1 Init.
+  pse_2_r: PSE 1 Recy.
+  drvr_vl: LV driver
+  drvr_vpsp: VPSP driver
+  ci_i: Inter. chief Init.
+  ci_r: Inter. chief Recy.
+  shortcuts:
+    emergency_assistance: US
+    social_assistance: AS
+    psc_1: PSC1
+    pse_1_i: PSE1
+    pse_1_r: PSE1
+    pse_2_i: PSE2
+    pse_2_r: PSE2
+    drvr_vl: VL
+    drvr_vpsp: VPSP
+    ci_i: CI
+    ci_r: CI
+
+base:
+  pager:
+    prev: '←'
+    current: '-'
+    next: '→'
+    result: '{0} results | {1} result | ]1,Inf[ results'
+    per_page: 'Results per page'
+    go_to: 'Go to page'
+    go: 'Go'
+  order_by:
+    order_by: 'Order results by:'
+    order: 'Order'
+    asc: 'Ascendant'
+    desc: 'Descendant'
+  modal:
+    close: Close
+  form:
+    change: Change
+  button:
+    back: Back
+    delete: Delete
+    update: Edit
+    create: Create new entry
+    save: Save
+  crud:
+    create_title: 'Add a new entry'
+    update_title: 'Update "%entity%"'
+    delete_confirm: 'Are you sure you wish to remove "%entity%"?'
+  yes: Yes
+  no: No
+  search:
+    no_results: 'No results found for "{keyword}".'
+
+modal:
+  change_color: Change color...
+  change_campaign_label: Change name...
+  answers: Answers
+
+campaign:
+  titles:
+    campaign: 'Campaign:'
+    create: 'Create'
+    list: 'List'
+    create_full: 'Create a campaign'
+    list_full: 'List campaigns'
+  types:
+    1_green: 'Green'
+    2_light_orange: 'Orange 1'
+    3_dark_orange: 'Orange 2'
+    4_red: 'Red'
+  statuses:
+    ongoing: 'Ongoing'
+    finished: 'Finished'
+  actions:
+    continue: 'Continue'
+    classify: 'Classify'
+    close: 'Close the campaign'
+    open: 'Reopen the campaign'
+  errors:
+    inactive: 'This campaign has ended, thank you for your participation.'
+  order:
+    label: Label
+    type: Color
+    created_at: Creation date
+
+campaign_status:
+  communication_tabs: Communications
+  communication_short_title: '%date% at %time%'
+  communication_title: 'Communication from %date% at %time%'
+  message: 'Your message:'
+  filter:
+    title: Filter
+    by_response: by response
+    by_skill: by skill
+    or: or/and
+  table:
+    other: Other response
+  selection:
+    new_message: Write new message
+    download_csv: Download CSV
+    download_pdf: Download PDF
+  answer_no: 'Answer %choice%'
+  answers:
+    change: 'Change answers'
+    added_by: '- added by %username%'
+    changed_by: '- deleted by %username%'
+    history: 'History'
+    label: '(response "%label%")'
+  legend:
+    sms_sent: '"SMS sent" indicates whether message has been sent to the volunteer. May be blank if there is a technical issue.'
+    sms_received: '"SMS received" indicates wether message has been received by the volunteer. If blank, volunteer may have turned off his phone number.'
+  progress: 'Sending: %sent% / %total% (%progress%%)'
+  finish: 'Sent all messages.'
+
+new_communication:
+  title: Write a new message
+  subtitle: 'As part of campaign "%label%"'
+
+message:
+  announcement: RED-CROSS:
+  how_to_answer_alert: Reply by giving your choice number.
+  how_to_answer_web: To continue, proceed to %url%
+  geo_location: 'Geolocation of your crew: %url%'
+
+button:
+  submit: 'Submit'
+
+form:
+  communication:
+    fields:
+      response_title: "Responses"
+      type_alert: Volunteer will be able to answer by responding to the SMS
+      type_web: Volunteer will receive a link to proceed answering
+      geo_location: Message recipients will be able to geo locate each others
+      volunteers: Audience
+      message: Message
+      answers: Possible responses
+      answer: Enter response
+      add: Add
+      add_answer: Add an answer
+      remove: Delete
+      submit: Send
+      back: Back
+      other_options: Other options
+  campaign:
+    fields:
+      label: 'Campaign name'
+      submit: Send
+
+prefilled_answers:
+  title: Manage pre-filled answers
+  editor:
+    label: 'Name of the responses group'
+    colors: 'Campaign colors for which this group is selectable'
+    answers: 'Responses to crate'
+
+manage_volunteers:
+  title: 'Manage volunteers'
+  tabs:
+    enabled: 'Enabled volunteers'
+    disabled: 'Disabled volunteers'
+  order:
+    nivol: 'Nivol'
+    firstname: 'First name'
+    lastname: 'Last name'
+    postal_code: 'Postal code'
+    locked: 'Locked'
+  table:
+    nivol: 'Nivol'
+    fullname: 'First name'
+    phone: 'Phone number'
+    postal_code: 'Postal code'
+    email: 'Email'
+    tags: 'Skills'
+    actions: 'Actions'
+  action:
+    lock: 'Lock'
+    unlock: 'Unlock'
+    enable: 'Enable'
+    disable: 'Disable'
+
+import_volunteers:
+  menu: "Open import errors report"
+  title: 'Last volunteers import errors'
+  open_spreadsheet: 'Open spreadsheet in order to fix issues:'
+  back: 'Back to the list of volunteers'
+  import_again: 'Run a new import now'
+  columns:
+    line: 'Line #'
+    errors: Errors
+    nivol: Nivol
+    firstname: First name
+    lastname: Last name
+    phone: Phone
+    postal_code: Postal code
+    email: Email
+    minor: Minor
+    callable: Callable
+    importable: Imported
+    tags: Skills
+
+csv_export:
+  nivol: Nivol
+  firstname: Firstname
+  lastname: Lastname
+  phone_number: Phone number
+  email: Email
+  tags: Skills
+  choice: 'Choice "%choice%"'
+  other: Other responses
+  sent: Message sent
+  received: Message received
+
+pdf_export:
+  title: EMERGENCY
+  confidential: CONFIDENTIAL DOCUMENT / LOCAL UNIT PARIS 1-2
+  campaign: 'Campaign %label%'
+  staff: STAFF
+  communication: 'Communication on %date% at %time%'
+  response: 'Response "%choice%"'
+  staff_table:
+    name: NAME
+    phone: Phone number
+    skills: Skills
+
+geolocation:
+  title: Crew geolocalization
+  subtitle: Geolocation
+  share: Share my location
+  share_explains: This will let other members of the crew locate you.
+  not_supported: Your browser does not support geo localization.
+  last_update: Last update:
+  waiting: Waiting...
+  error: An error occured.
+  error_permission: You (or a setting in your device) refused to share your location.
+  error_unavailable: Location information are not available.
+  error_timeout: Location information request has timed out.
+  started: Geolocation enabled
+  stop: Stop geolocalization
+  na: N/A
+  last_data: 'Position received at %time% (precision: %accuracy%)'

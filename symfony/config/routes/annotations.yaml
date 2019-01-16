@@ -1,0 +1,7 @@
+controllers:
+    resource: ../../src/Controller/
+    type: annotation
+
+password_login:
+    resource: ../../bundles/PasswordLoginBundle/Controller/
+    type: annotation

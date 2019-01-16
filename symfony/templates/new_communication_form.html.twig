@@ -1,0 +1,58 @@
+{{ form_row(form.volunteers) }}
+
+{% set max_length = constant('App\\Entity\\Message::MAX_LENGTH') %}
+
+<div id="message-container">
+    <div class="h4">{{ 'form.communication.fields.message'|trans }}</div>
+    {{ form_errors(form.message) }}
+    <div class="textarea-wrapper">
+        {{ form_widget(form.message) }}
+    </div>
+    <div class="float-right"><span id="message-size">0</span> / {{ max_length }}</div>
+</div>
+
+<div class="clearfix"></div>
+
+<div class="h4">{{ 'form.communication.fields.response_title'|trans }}</div>
+
+{{ form_row(form.type) }}
+
+{{ form_label(form.answers) }}
+
+{{ render(controller('\\App\\Controller\\PrefilledAnswersController::renderSelect', {campaignId: campaign.id|default(null)})) }}
+
+{{ form_row(form.answers, {label: false}) }}
+
+<div class="h4">{{ 'form.communication.fields.other_options'|trans }}</div>
+
+<script type="text/javascript" src="{{ asset('js/jquery.collection.js') }}"></script>
+<script type="text/javascript">
+
+    {# Answer's collection #}
+    $('.collection').collection({
+        allow_up: false,
+        allow_down: false,
+        add_at_the_end: true,
+        init_with_n_elements: 2,
+        fade_in: false,
+        fade_out: false,
+        max: 10,
+        add: '<a href="#" class="btn btn-light add-answer" style="width:100%;">{{ 'form.communication.fields.add_answer'|trans|e('js') }}</a>',
+    });
+
+    {# Update message size automatically #}
+    function updateMessageSize() {
+        var textArea = $('#{{ form.message.vars.id }}');
+        var length = textArea.val().length;
+        if (length >= {{ max_length }}) {
+            textArea.val(
+                textArea.val().substr(0, {{ max_length }} -1)
+            );
+        }
+        $('#message-size').html(length);
+    }
+
+    updateMessageSize();
+    $('#{{ form.message.vars.id }}').keyup(updateMessageSize);
+
+</script>

@@ -1,0 +1,35 @@
+version: '3'
+services:
+  php:
+    build: build/php
+    expose:
+      - "9000"
+    depends_on:
+      - mysql
+    volumes:
+      - ./symfony:/var/www/symfony:cached
+      - ./logs:/var/log
+
+  nginx:
+    build: build/nginx
+    restart: always
+    ports:
+      - "81:80"
+    depends_on:
+      - php
+      - mysql
+    volumes:
+      - ./symfony:/var/www/symfony:cached
+      - ./logs:/var/log/nginx
+
+  mysql:
+    image: mysql/mysql-server:5.7
+    environment:
+      - MYSQL_ALLOW_EMPTY_PASSWORD=yes
+      - MYSQL_ROOT_HOST=%
+    expose:
+      - "3306"
+    ports:
+      - "3307:3306"
+    volumes:
+      - /var/lib/mysql
