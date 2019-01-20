@@ -176,9 +176,6 @@ class CommunicationController extends BaseController
     public function addCommunicationAction(Request $request, int $campaignId)
     {
         $selection = json_decode($request->request->get('volunteers', '[]'), true);
-        if (!$selection) {
-            throw $this->createNotFoundException();
-        }
 
         foreach ($selection as $volunteerId) {
             $volunteer = $this->get('doctrine')->getRepository('App:Volunteer')->find($volunteerId);
