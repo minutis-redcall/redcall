@@ -244,10 +244,8 @@
                                                 </span>
                                             {% endif %}
 
-                                            {% if app.environment == 'dev' %}
-                                                <a class="btn btn-default"
-                                                   href="{{ path('sandbox_fake_sms_thread', {phoneNumber: message.volunteer.phoneNumber}) }}">☎️</a>
-                                            {% endif %}
+                                            <a class="btn btn-default"
+                                               href="{{ path('sandbox_fake_sms_thread', {phoneNumber: message.volunteer.phoneNumber}) }}">☎️</a>
 
                                             {% if campaign.active %}
                                                 <span id="open-message-{{ suffix }}"
