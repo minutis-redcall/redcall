@@ -58,6 +58,7 @@ base:
   no: Non
   search:
     no_results: 'Aucun résultat trouvé pour "{keyword}".'
+  clear_selection: 'Effacer la sélection'
 
 campaign:
   titles:

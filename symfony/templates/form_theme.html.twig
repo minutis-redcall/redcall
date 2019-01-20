@@ -37,7 +37,7 @@
     <div class="h4">{{ 'form.communication.fields.volunteers'|trans }}</div>
     <br/>
 
-    <div class="row checkbox-list">
+    <div class="row checkbox-list" id="checkbox-list-{{ vId }}">
         {% for child in form.tags.children %}
             <div class="col-lg-3 col-md-4 col-6 col-12">
                 {{ form_widget(child, {
@@ -51,6 +51,9 @@
 
     {{ form_errors(form.volunteers) }}
     {{ form_widget(form.volunteers) }}
+    <div class="text-right">
+        <a href="#" id="clear-selection-{{ vId }}">{{ 'base.clear_selection'|trans }}</a>
+    </div>
 
     {# JavaScript used to filter volunteers and tag them #}
     <script type="text/javascript">
@@ -100,6 +103,12 @@
             });
 
             $('#{{ vId }}').val(selection.join(','));
+        });
+
+        $('#clear-selection-{{ vId }}').click(function(e) {
+            $('#checkbox-list-{{ vId }}').find('input').prop('checked', false);
+            $('#{{ form.volunteers.vars.id }}').val('');
+            e.preventDefault();
         });
 
     </script>

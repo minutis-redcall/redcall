@@ -59,6 +59,7 @@ base:
   no: No
   search:
     no_results: 'No results found for "{keyword}".'
+  clear_selection: 'Clear selection'
 
 modal:
   change_color: Change color...
