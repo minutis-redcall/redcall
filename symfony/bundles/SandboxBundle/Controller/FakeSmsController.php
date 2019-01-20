@@ -42,7 +42,9 @@ class FakeSmsController extends BaseController
     {
         $this->validateCsrfOrThrowNotFoundException('fake_sms', $csrf);
 
-        $this->getManager(FakeSms::class)->truncate();
+        $this->addFlash('alert', 'Sorry, this is disabled for the FIC!');
+
+        //$this->getManager(FakeSms::class)->truncate();
 
         return $this->redirectToRoute('sandbox_fake_sms_list');
     }
@@ -61,9 +63,9 @@ class FakeSmsController extends BaseController
         }
 
         return [
-            'phoneNumber'   => $phoneNumber,
-            'volunteer'     => $this->getManager(Volunteer::class)->findOneByPhoneNumber($phoneNumber),
-            'messages'      => $messages,
+            'phoneNumber' => $phoneNumber,
+            'volunteer' => $this->getManager(Volunteer::class)->findOneByPhoneNumber($phoneNumber),
+            'messages' => $messages,
             'lastMessageId' => $lastMessageId,
         ];
     }
@@ -105,7 +107,7 @@ class FakeSmsController extends BaseController
     public function pollAction(Request $request, string $phoneNumber)
     {
         $lastMessageId = $request->request->get('lastMessageId');
-        $manager       = $this->getManager(FakeSms::class);
+        $manager = $this->getManager(FakeSms::class);
 
         $messages = array_map(function (array $entry) {
             $entry['createdAt'] = $entry['createdAt']->format('d/m/Y H:i');

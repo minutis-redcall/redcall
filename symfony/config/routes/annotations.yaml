@@ -5,3 +5,9 @@ controllers:
 password_login:
     resource: ../../bundles/PasswordLoginBundle/Controller/
     type: annotation
+
+sandbox:
+    resource: ../../bundles/SandboxBundle/Controller/
+    type: annotation
+    prefix: /sandbox
+    name_prefix: sandbox_
