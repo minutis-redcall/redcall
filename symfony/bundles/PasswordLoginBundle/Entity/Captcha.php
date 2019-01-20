@@ -118,7 +118,18 @@ class Captcha
      */
     public function setWhitelisted(bool $whitelisted): void
     {
-        $this->whitelisted = $whitelisted;
+        // To let people using the same connection (like over the same red cross
+        // office) connect without issues, no captcha appear anymore for his ip once
+        // a trusted user connects.
+        //
+        // This is a security trade off because there are very few chances that a
+        // hacker will end up sharing the same public wifi as a redcall trusted user;
+        // and having to fill up an image captcha on emergency situations is really
+        // not a good idea.
+        //
+        // Whitelisting is disabled for the FIC because it would generate lots of noise
+        // about bruteforcing.
+        $this->whitelisted = false;
     }
 
     /**

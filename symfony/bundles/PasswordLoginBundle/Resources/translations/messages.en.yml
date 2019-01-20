@@ -1,4 +1,5 @@
 password_login:
+  fake_recaptcha: 'Here is normally a Google Recaptcha but to ease your tests, it is disabled for the FIC!'
   register:
     title: 'Registration'
     already_have_account: 'Already have an account?'

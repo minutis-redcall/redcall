@@ -5,8 +5,6 @@ namespace Bundles\PasswordLoginBundle\Form\Type;
 use Bundles\PasswordLoginBundle\Base\BaseType;
 use Bundles\PasswordLoginBundle\Entity\Captcha;
 use Bundles\PasswordLoginBundle\Entity\User;
-use EWZ\Bundle\RecaptchaBundle\Form\Type\EWZRecaptchaType;
-use EWZ\Bundle\RecaptchaBundle\Validator\Constraints\IsTrue as RecaptchaTrue;
 use Symfony\Component\Form\Extension\Core\Type;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Security\Core\Encoder\BCryptPasswordEncoder;
@@ -75,12 +73,20 @@ class ProfileType extends BaseType
 
         $ip = $this->get('request_stack')->getMasterRequest()->getClientIp();
         if (!$this->getManager(Captcha::class)->isGracePeriod($ip)) {
-            $builder->add('recaptcha', EWZRecaptchaType::class, [
-                'label'       => 'password_login.profile.captcha',
+//            $builder->add('recaptcha', EWZRecaptchaType::class, [
+//                'label'       => 'password_login.profile.captcha',
+//                'constraints' => [
+//                    new RecaptchaTrue(),
+//                ],
+//                'mapped'      => false,
+//            ]);
+            $builder->add('fake_recaptcha', Type\CheckboxType::class, [
+                'label' => "password_login.fake_recaptcha",
                 'constraints' => [
-                    new RecaptchaTrue(),
+                    new Constraints\IsTrue()
                 ],
-                'mapped'      => false,
+                'required' => false,
+                'mapped'   => false,
             ]);
         }
 
