@@ -1,5 +1,12 @@
 # The Red Call
 
+
+This project concerns volunteers that do social activities (roams, emergency night shelters...) and those who do first aid. As volunteers can be located anywhere in Paris (or elsewhere), tools are required to synchronize people when criticial situations occur.
+
+RedCall.io is a messaging tool for head of emergencies. They use it to ask for volunteer's availability, gather volunteer's answers, and fill up ambulances or assistance units with the required people and skills.
+
+This project was initially developed by the BlaBlaCar team as part of a Coding Night event, check out more details on [that medium blog post](https://medium.com/blablacar-tech/extending-our-principles-outside-blablacar-the-redalert-project-cf50110f0848).
+
 ## Installation procedure
 
 You will need a running Docker environment to install this app locally.
