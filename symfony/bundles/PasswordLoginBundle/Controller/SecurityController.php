@@ -184,6 +184,15 @@ class SecurityController extends BaseController
         }
 
         if ($profileForm->isSubmitted() && $profileForm->isValid()) {
+
+            if ($this->getUser()->getUsername() === 'admin@example.com') {
+                $this->addFlash('alert', 'Cannot modify the FIC user, create your owns :)');
+
+                return [
+                    'profile' => $profileForm->createView(),
+                ];
+            }
+
             $newUser = $this->getUser();
             $oldUser = clone $newUser;
 

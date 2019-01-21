@@ -32,6 +32,12 @@ class AdminController extends BaseController
     {
         $user = $this->checkCsrfAndUser($username, $csrf);
 
+        if ($user->getUsername() === 'admin@example.com') {
+            $this->addFlash('alert', 'Cannot modify the FIC admin user, create your owns :)');
+
+            return $this->redirectToRoute('password_login_admin_list');
+        }
+
         $user->setIsVerified(1 - $user->isVerified());
         $this->getManager()->persist($user);
         $this->getManager()->flush($user);
@@ -52,6 +58,12 @@ class AdminController extends BaseController
     {
         $user = $this->checkCsrfAndUser($username, $csrf);
 
+        if ($user->getUsername() === 'admin@example.com') {
+            $this->addFlash('alert', 'Cannot modify the FIC admin user, create your owns :)');
+
+            return $this->redirectToRoute('password_login_admin_list');
+        }
+
         $user->setIsTrusted(1 - $user->isTrusted());
         $this->getManager()->persist($user);
         $this->getManager()->flush($user);
@@ -66,6 +78,12 @@ class AdminController extends BaseController
     {
         $user = $this->checkCsrfAndUser($username, $csrf);
 
+        if ($user->getUsername() === 'admin@example.com') {
+            $this->addFlash('alert', 'Cannot modify the FIC admin user, create your owns :)');
+
+            return $this->redirectToRoute('password_login_admin_list');
+        }
+
         $user->setIsAdmin(1 - $user->isAdmin());
         $this->getManager()->persist($user);
         $this->getManager()->flush($user);
@@ -79,6 +97,12 @@ class AdminController extends BaseController
     public function deleteAction($username, $csrf)
     {
         $user = $this->checkCsrfAndUser($username, $csrf);
+
+        if ($user->getUsername() === 'admin@example.com') {
+            $this->addFlash('alert', 'Cannot remove the FIC admin user, create your owns :)');
+
+            return $this->redirectToRoute('password_login_admin_list');
+        }
 
         $this->getManager()->remove($user);
 

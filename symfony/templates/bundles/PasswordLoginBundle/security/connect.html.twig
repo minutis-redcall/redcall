@@ -17,6 +17,12 @@
             {% form_theme connect '@EWZRecaptcha/Form/ewz_recaptcha_widget.html.twig' %}
             {{ form(connect) }}
 
+            <div class="text-center">
+                <strong>FIC</strong><br/>
+                admin creds are admin@example.com / admin@example.com<br/>
+                enjoy!
+            </div>
+
             <div class="text-right">
                 {% spaceless %}
                     <a href="{{ path('password_login_forgot_password') }}">
