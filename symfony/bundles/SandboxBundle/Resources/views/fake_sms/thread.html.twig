@@ -98,10 +98,10 @@
 
         responsiveChatPush(
             '.chat',
-            '{{ message.name|e('js') }}',
-            '{{ message.direction|e('js') }}',
-            '{{ message.createdAt|date('d/m/Y H:i') }}',
-            nl2br('{{ message.content|e('js') }}')
+            '{{ message.name|e('html')|e('js') }}',
+            '{{ message.direction|e('html')|e('js') }}',
+            '{{ message.createdAt|e('html')|date('d/m/Y H:i') }}',
+            nl2br('{{ message.content|e('html')|e('js') }}')
         );
 
         {% endfor %}
