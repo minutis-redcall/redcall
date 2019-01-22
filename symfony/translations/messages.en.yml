@@ -222,8 +222,8 @@ csv_export:
   received: Message received
 
 pdf_export:
-  title: EMERGENCY
-  confidential: CONFIDENTIAL DOCUMENT / LOCAL UNIT PARIS 1-2
+  generated: 'Generated on %date% at %time%'
+  confidential: CONFIDENTIAL DOCUMENT
   campaign: 'Campaign %label%'
   staff: STAFF
   communication: 'Communication on %date% at %time%'

@@ -221,8 +221,8 @@ csv_export:
   received: Message reçu
 
 pdf_export:
-  title: URGENCE
-  confidential: DOCUMENT INTERNE / UNITÉ LOCALE PARIS 1ER-2IEME
+  generated: 'Généré le %date% à %time%'
+  confidential: DOCUMENT INTERNE
   campaign: 'Déclenchement %label%'
   staff: EFFECTIFS
   communication: 'Communication du %date% à %time%'

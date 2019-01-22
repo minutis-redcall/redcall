@@ -144,6 +144,7 @@ class ExportController extends BaseController
         }
 
         $context = [
+            'current_date'  => new \DateTime(),
             'campaign'      => $campaign,
             'communication' => $communication,
             'tables'        => $tables,
