@@ -95,10 +95,15 @@ class MessageRepository extends ServiceEntityRepository
     public function changeAnswer(Message $message, Choice $choice)
     {
         $lastAnswer = $message->getLastAnswer();
-        $lastId = $lastAnswer ? $lastAnswer->getChoice()->getId() : null;
+
+        // Last answer already removed previously
+        if ($lastAnswer && $lastAnswer->getChoice() === null) {
+            $lastAnswer = null;
+        }
 
         // Deletes the last answer
-        if ($lastAnswer) {
+        $lastId = $lastAnswer ? $lastAnswer->getChoice()->getId() : null;
+        if ($lastId) {
             $lastAnswer->setChoice(null);
 
             $body = $this->translator->trans('campaign_status.answers.changed_by', [
@@ -108,9 +113,9 @@ class MessageRepository extends ServiceEntityRepository
             $lastAnswer->setRaw($lastAnswer->getRaw() . ' ' . $body);
         }
 
-        // If choice is different that last answer, add it (otherwise we would
+        // If choice is different from last answer, add it (otherwise we would
         // add the answer we just removed)
-        if ($lastId && $choice->getId() !== $lastId) {
+        if (!$lastId || $lastId && $choice->getId() !== $lastId) {
             $body = $choice->getCode() . ' ' . $this->translator->trans('campaign_status.answers.added_by', [
                     '%username%' => $this->tokenStorage->getToken()->getUsername(),
                 ]);
