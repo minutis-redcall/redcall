@@ -352,10 +352,23 @@ class Message
      */
     public function getAnswerByChoice(Choice $choice): ?Answer
     {
-        foreach ($this->answers ?? [] as $answer) {
-            if ($answer->isChoice($choice)) {
-                return $answer;
-            }
+        $answer = $this->getLastAnswer();
+        if ($answer && $answer->isChoice($choice)) {
+            return $answer;
+        }
+
+        return null;
+    }
+
+    /**
+     * @return Answer|null
+     */
+    public function getLastAnswer(): ?Answer
+    {
+        if ($this->answers) {
+            $answers = $this->answers->toArray();
+
+            return reset($answers) ?: null;
         }
 
         return null;
