@@ -92,23 +92,25 @@ class MessageRepository extends ServiceEntityRepository
      * @param Message $message
      * @param Choice  $choice
      */
-    public function toggleAnswer(Message $message, Choice $choice)
+    public function changeAnswer(Message $message, Choice $choice)
     {
-        $hasAnswer = false;
-        foreach ($message->getAnswers() as $answer) {
-            if ($answer->getChoice() && $answer->getChoice()->getId() == $choice->getId()) {
-                $hasAnswer = true;
-                $answer->setChoice(null);
+        $lastAnswer = $message->getLastAnswer();
+        $lastId = $lastAnswer ? $lastAnswer->getChoice()->getId() : null;
 
-                $body = $this->translator->trans('campaign_status.answers.changed_by', [
-                    '%username%' => $this->tokenStorage->getToken()->getUsername(),
-                ]);
+        // Deletes the last answer
+        if ($lastAnswer) {
+            $lastAnswer->setChoice(null);
 
-                $answer->setRaw($answer->getRaw() . ' ' . $body);
-            }
+            $body = $this->translator->trans('campaign_status.answers.changed_by', [
+                '%username%' => $this->tokenStorage->getToken()->getUsername(),
+            ]);
+
+            $lastAnswer->setRaw($lastAnswer->getRaw() . ' ' . $body);
         }
 
-        if (!$hasAnswer) {
+        // If choice is different that last answer, add it (otherwise we would
+        // add the answer we just removed)
+        if ($lastId && $choice->getId() !== $lastId) {
             $body = $choice->getCode() . ' ' . $this->translator->trans('campaign_status.answers.added_by', [
                     '%username%' => $this->tokenStorage->getToken()->getUsername(),
                 ]);
