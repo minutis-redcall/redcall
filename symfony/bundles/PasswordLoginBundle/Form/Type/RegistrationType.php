@@ -22,6 +22,8 @@ class RegistrationType extends BaseType
                 'label'       => 'password_login.register.email',
                 'required'    => true,
                 'constraints' => [
+                    new Constraints\Email(),
+                    new Constraints\Regex('/^[a-zA-Z0-9\_\-\.\@]+$/'),
                     new Constraints\Length(['min' => 8]),
                     new Constraints\Callback([
                         'callback' => function ($object, ExecutionContextInterface $context, $payload) {
