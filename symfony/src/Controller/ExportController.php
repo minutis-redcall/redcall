@@ -127,8 +127,17 @@ class ExportController extends BaseController
                         continue;
                     }
 
-                    if ($message->getAnswerByChoice($choice)) {
-                        $tables[$label][] = $message->getVolunteer();
+                    /* @var \App\Entity\Answer|null $answer */
+                    $answer = null;
+                    if ($answers = $message->getAnswers()->toArray()) {
+                        $answer = reset($answers);
+                    }
+
+                    if ($answer && $answer->getChoice()->getId() == $choice->getId()) {
+                        $tables[$label][] = [
+                            'volunteer' => $message->getVolunteer(),
+                            'answer' => $answer,
+                        ];
                     }
                 }
             }
@@ -139,7 +148,9 @@ class ExportController extends BaseController
                     return false;
                 }
 
-                return $message->getVolunteer();
+                return [
+                    'volunteer' => $message->getVolunteer(),
+                ];
             }, $communication->getMessages()->toArray()));
         }
 

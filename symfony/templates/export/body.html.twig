@@ -41,13 +41,8 @@
     <br/>
     <table width="100%" style="margin-left:45px;margin-right:60px;font-family:Arial Black;color:white;font-weight:bold;">
         <tr>
-            <td width="75%" style="font-size:24px;">
+            <td style="font-size:24px;">
                 {{ 'pdf_export.campaign'|trans({'%label%': campaign.label}) }}
-            </td>
-            <td width="25%" style="text-align:right;">
-                {{ campaign.createdAt|date('d/m/Y') }}
-                <br/><br/>
-                {{ campaign.createdAt|date('H:i') }}
             </td>
         </tr>
     </table>
@@ -80,7 +75,7 @@
         <table width="100%" cellspacing="0">
             {% if communication.choices|length %}
                 <tr>
-                    <td style="background-color:{{ lightgrey }};text-align:center;padding:10px;border: 1px solid black;" colspan="3">
+                    <td style="background-color:{{ lightgrey }};text-align:center;padding:10px;border: 1px solid black;" colspan="4">
                         <span style="color:white;font-size:18px;">{{ 'pdf_export.response'|trans({'%choice%': label}) }}</span>
                     </td>
                 </tr>
@@ -93,6 +88,9 @@
                     </td>
                     <td style="padding:10px;text-align:center;color:black;background-color:{{ offwhite }};border: 1px solid black;">
                         <strong>{{ 'pdf_export.staff_table.skills'|trans }}</strong>
+                    </td>
+                    <td style="padding:10px;text-align:center;color:black;background-color:{{ offwhite }};border: 1px solid black;">
+                        <strong>{{ 'pdf_export.staff_table.time'|trans }}</strong>
                     </td>
                 </tr>
             {% else %}
@@ -109,7 +107,9 @@
                 </tr>
             {% endif %}
 
-            {% for volunteer in table %}
+            {% for data in table %}
+                {% set volunteer = data.volunteer %}
+                {% set answer = data.answer|default(null) %}
                 <tr>
                     <td style="padding:10px;color:black;background-color:{{ offwhite }};border: 1px solid black;">
                         {{ volunteer.firstName }} {{ volunteer.lastName }}
@@ -123,6 +123,11 @@
                             {{ ('tag.shortcuts.' ~ tag)|trans }}
                         {% endfor %}
                     </td>
+                    {% if communication.choices|length %}
+                        <td style="padding:10px;color:black;background-color:{{ offwhite }};border: 1px solid black;">
+                            {{ answer ? answer.receivedAt|date('H:i') : '&nbsp;' }}
+                        </td>
+                    {% endif %}
                 </tr>
             {% endfor %}
 

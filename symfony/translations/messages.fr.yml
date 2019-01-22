@@ -231,6 +231,7 @@ pdf_export:
     name: NOM
     phone: Téléphone
     skills: Compétences
+    time: "Heure rép."
 
 geolocation:
   title: Géolocalisation d'équipage
