@@ -101,3 +101,7 @@ password_login:
       6: 'Email: %email%'
       7: 'Bonne journée,'
       8: 'L''équipe redcall.'
+  error:
+    invalid_csrf:
+      title: 'Token CSRF invalide'
+      body: 'Votre session a expirée, merci de réessayer.'

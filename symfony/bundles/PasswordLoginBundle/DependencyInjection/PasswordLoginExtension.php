@@ -17,8 +17,9 @@ class PasswordLoginExtension extends Extension
         $container->setParameter('password_login.config', $config);
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
-        $loader->load('services.yml');
-        $loader->load('forms.yml');
         $loader->load('commands.yml');
+        $loader->load('forms.yml');
+        $loader->load('listeners.yml');
+        $loader->load('services.yml');
     }
 }
