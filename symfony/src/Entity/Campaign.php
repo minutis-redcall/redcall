@@ -238,7 +238,11 @@ class Campaign
 
                 $choices = [];
                 foreach ($communication->getChoices() as $choice) {
-                    $choices[$choice->getId()] = $message->getAnswerByChoice($choice);
+                    $answer =  $message->getAnswerByChoice($choice);
+                    $choices[$choice->getId()] = null;
+                    if ($answer) {
+                        $choices[$choice->getId()] = $answer->getReceivedAt()->format('H:i');
+                    }
                 }
 
                 $data[$communication->getId()]['msg'][$message->getId()] = [

@@ -79,7 +79,7 @@ class ExportController extends BaseController
                 } else {
                     $row[$this->trans('csv_export.choice', [
                         '%choice%' => $choice->getLabel(),
-                    ])] = sprintf('%s (%s)', $this->trans('base.yes'), $answer->getReceivedAt()->format('d/m/Y H:i:s'));
+                    ])] = sprintf('%s (%s)', $this->trans('base.yes'), $answer->getReceivedAt()->format('d/m/Y H:i'));
                 }
             }
 

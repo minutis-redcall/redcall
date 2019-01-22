@@ -209,10 +209,20 @@
 
                                             {# Answer codes when volunteer answered them #}
                                             {% for choice in communication.choices %}
-                                                <span class="{{ message.getAnswerByChoice(choice) ? '' : 'd-none' }} badge badge-dark message-is-choice-{{ choice.id }}-{{ communication.id }}"
-                                                      data-value="{{ message.getAnswerByChoice(choice) ? 1 : 0 }}"
+                                                {% set answer = message.getAnswerByChoice(choice) %}
+                                                <span class="{{ answer ? '' : 'd-none' }} badge badge-dark message-is-choice-{{ choice.id }}-{{ communication.id }}"
+                                                      style="font-size:16px;"
+                                                      data-value="{{ answer ? 1 : 0 }}"
                                                       id="message-is-choice-{{ choice.id }}-{{ suffix|e('html_attr') }}">
                                                     {{ choice.code }}
+                                                    <span style="font-size:10px;">
+                                                        <br/>
+                                                        <span id="message-is-choice-time-{{ choice.id }}-{{ suffix|e('html_attr') }}">
+                                                            {% if answer %}
+                                                                {{ answer.receivedAt|date('H:i') }}
+                                                            {% endif %}
+                                                        </span>
+                                                    </span>
                                                 </span>
                                             {% endfor %}
 
@@ -501,6 +511,7 @@
                     $.each(messageStatus.choices, function (choiceId, isChoice) {
                         if (isChoice) {
                             $('#message-is-choice-' + choiceId + '-' + suffix).removeClass('d-none');
+                            $('#message-is-choice-time-' + choiceId + '-' + suffix).html(isChoice);
                         } else {
                             $('#message-is-choice-' + choiceId + '-' + suffix).addClass('d-none');
                         }
