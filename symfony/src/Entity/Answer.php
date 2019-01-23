@@ -145,7 +145,7 @@ class Answer
     /**
      * @return \DateTime
      */
-    public function getUpdatedAt(): \DateTime
+    public function getUpdatedAt(): ?\DateTime
     {
         return $this->updatedAt;
     }
@@ -197,7 +197,9 @@ class Answer
      */
     public function onPrePersist()
     {
-        $this->setUpdatedAt(new \DateTime());
+        if (!$this->getUpdatedAt()) {
+            $this->setUpdatedAt(new \DateTime());
+        }
     }
 
     /**
@@ -205,6 +207,8 @@ class Answer
      */
     public function onPreUpdate()
     {
-        $this->setUpdatedAt(new \DateTime());
+        if (!$this->getUpdatedAt()) {
+            $this->setUpdatedAt(new \DateTime());
+        }
     }
 }
