@@ -127,8 +127,9 @@ class MessageRepository extends ServiceEntityRepository
             ]);
 
             $this->addAnswer($message, $body, $choice);
-            $this->_em->flush();
         }
+
+        $this->_em->flush();
     }
 
     /**
