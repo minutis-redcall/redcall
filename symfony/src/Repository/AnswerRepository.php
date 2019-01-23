@@ -47,7 +47,8 @@ class AnswerRepository extends ServiceEntityRepository
         if ($lastAnswer) {
             $this->_em->detach($lastAnswer);
 
-            return $lastAnswer->getReceivedAt()->getTimestamp();
+            /* @var \App\Entity\Answer $lastAnswer */
+            return $lastAnswer->getUpdatedAt()->getTimestamp();
         }
 
         return null;
