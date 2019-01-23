@@ -768,11 +768,13 @@
             var endpoint = that.data('endpoint');
             var choiceId = that.data('choice-id');
 
+            $('.answer-change').not(that).prop('checked', false);
+
             $.post(endpoint, {
                 choiceId: choiceId,
+            }, function() {
+                loadCommunicationAnswers(that);
             });
-
-            loadCommunicationAnswers(that);
         });
 
         {# -------------------------------------------------------------------------------- #}
