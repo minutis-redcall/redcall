@@ -251,7 +251,7 @@ class Campaign
                     'sent'               => $message->isSent(),
                     'choices'            => $choices,
                     'has-invalid-answer' => [
-                        'raw' => $invalidAnswer ? $invalidAnswer->getRaw() : null,
+                        'raw' => $invalidAnswer ? $invalidAnswer->getSafeRaw() : null,
                         'time' => $invalidAnswer ? $invalidAnswer->getReceivedAt()->format('H:i') : null,
                     ],
                 ];

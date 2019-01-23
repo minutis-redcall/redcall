@@ -111,6 +111,19 @@ class Answer
     }
 
     /**
+     * @return string
+     */
+    public function getSafeRaw(): string
+    {
+        $raw = substr($this->raw, 0, 45);
+        if (mb_strlen($this->raw) > 45) {
+            $raw = sprintf('%s...', $raw);
+        }
+
+        return htmlentities($raw);
+    }
+
+    /**
      * @param string $raw
      *
      * @return Answer
