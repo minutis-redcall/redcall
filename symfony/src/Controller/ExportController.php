@@ -83,8 +83,8 @@ class ExportController extends BaseController
                 }
             }
 
-            $row[$this->trans('csv_export.other')] = implode(', ', $message->getInvalidAnswers());
-            $rows[]                                = $row;
+            $row[$this->trans('csv_export.other')] = $message->getInvalidAnswer()->getRaw();
+            $rows[] = $row;
         }
 
         return new ArrayToCsvResponse($rows, sprintf('export-%s.csv', date('Y-m-d.H:i:s')));
@@ -128,12 +128,9 @@ class ExportController extends BaseController
                     }
 
                     /* @var \App\Entity\Answer|null $answer */
-                    $answer = null;
-                    if ($answers = $message->getAnswers()->toArray()) {
-                        $answer = reset($answers);
-                    }
-
-                    if ($answer && $answer->getChoice()->getId() == $choice->getId()) {
+                    $answer = $message->getLastAnswer();
+                    if ($answer && $answer->getChoice()
+                        && $answer->getChoice()->getId() == $choice->getId()) {
                         $tables[$label][] = [
                             'volunteer' => $message->getVolunteer(),
                             'answer' => $answer,

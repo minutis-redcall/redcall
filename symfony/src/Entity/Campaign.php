@@ -245,10 +245,15 @@ class Campaign
                     }
                 }
 
+                $invalidAnswer = $message->getInvalidAnswer();
+
                 $data[$communication->getId()]['msg'][$message->getId()] = [
                     'sent'               => $message->isSent(),
                     'choices'            => $choices,
-                    'has-invalid-answer' => implode(', ', $message->getInvalidAnswers()),
+                    'has-invalid-answer' => [
+                        'raw' => $invalidAnswer ? $invalidAnswer->getRaw() : null,
+                        'time' => $invalidAnswer ? $invalidAnswer->getReceivedAt()->format('H:i') : null,
+                    ],
                 ];
             }
 

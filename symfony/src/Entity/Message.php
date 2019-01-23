@@ -377,23 +377,16 @@ class Message
     /**
      * Returns invalid answers only if no valid answer has been ticked.
      *
-     * @return array
+     * @return null|Answer
      */
-    public function getInvalidAnswers(): array
+    public function getInvalidAnswer(): ?Answer
     {
-        if ($this->hasValidAnswer()) {
-            return [];
+        $lastAnswer = $this->getLastAnswer();
+        if ($lastAnswer && null === $lastAnswer->getChoice()) {
+            return $lastAnswer;
         }
 
-        $invalidAnswers = [];
-
-        foreach ($this->answers ?? [] as $answer) {
-            if (null === $answer->getChoice()) {
-                $invalidAnswers[] = $answer->getRaw();
-            }
-        }
-
-        return $invalidAnswers;
+        return null;
     }
 
     /**
@@ -401,12 +394,6 @@ class Message
      */
     public function hasValidAnswer(): bool
     {
-        foreach ($this->answers ?? [] as $answer) {
-            if ($answer->getChoice()) {
-                return true;
-            }
-        }
-
-        return false;
+        return $this->getLastAnswer() && $this->getLastAnswer()->getChoice();
     }
 }

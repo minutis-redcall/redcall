@@ -228,9 +228,20 @@
 
                                             {# Volunteer sent an invalid answer #}
                                             {% if answerCount %}
-                                                <span class="{{ message.invalidAnswers ? '' : 'd-none' }} badge badge-dark message-has-invalid-answer-{{ communication.id }}"
-                                                      data-value="{{ message.invalidAnswers ? 1 : 0 }}"
-                                                      id="message-has-invalid-answer-{{ suffix|e('html_attr') }}">?</span>
+                                                <span class="{{ message.invalidAnswer ? '' : 'd-none' }} badge badge-dark message-has-invalid-answer-{{ communication.id }}"
+                                                      style="font-size:16px;"
+                                                      data-value="{{ message.invalidAnswer ? 1 : 0 }}"
+                                                      id="message-has-invalid-answer-{{ suffix|e('html_attr') }}">
+                                                    ?
+                                                    <span style="font-size:10px;">
+                                                        <br/>
+                                                        <span id="message-has-invalid-answer-time-{{ suffix|e('html_attr') }}">
+                                                            {% if message.invalidAnswer %}
+                                                                {{ message.invalidAnswer.receivedAt|date('H:i') }}
+                                                            {% endif %}
+                                                        </span>
+                                                    </span>
+                                                </span>
                                             {% endif %}
 
                                             {% if app.environment == 'dev' %}
@@ -520,8 +531,9 @@
                     });
 
                     {# Message has invalid answer #}
-                    if (messageStatus['has-invalid-answer']) {
+                    if (messageStatus['has-invalid-answer']['raw']) {
                         $('#message-has-invalid-answer-' + suffix).removeClass('d-none');
+                        $('#message-has-invalid-answer-time-' + suffix).html(messageStatus['has-invalid-answer']['time']);
                     } else {
                         $('#message-has-invalid-answer-' + suffix).addClass('d-none');
                     }
