@@ -111,19 +111,24 @@ class MessageRepository extends ServiceEntityRepository
             ]);
 
             $lastAnswer->setRaw($lastAnswer->getRaw() . ' ' . $body);
+            $this->_em->flush();
         }
 
         // If choice is different from last answer, add it (otherwise we would
         // add the answer we just removed)
         if (!$lastId || $lastId && $choice->getId() !== $lastId) {
+
+            if ($lastId) {
+                sleep(1); // makes this answer more recent
+            }
+
             $body = $choice->getCode() . ' ' . $this->translator->trans('campaign_status.answers.added_by', [
                     '%username%' => $this->tokenStorage->getToken()->getUsername(),
                 ]);
 
             $this->addAnswer($message, $body, $choice);
+            $this->_em->flush();
         }
-
-        $this->_em->flush();
     }
 
     /**
