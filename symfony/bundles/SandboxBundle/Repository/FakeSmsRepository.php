@@ -66,11 +66,11 @@ class FakeSmsRepository extends EntityRepository
 
     /**
      * @param string   $phoneNumber
-     * @param int|null $lastMessageId
+     * @param string|null $lastMessageId
      *
      * @return array
      */
-    public function findMessagesHavingIdGreaterThan(string $phoneNumber, ?int $lastMessageId): array
+    public function findMessagesHavingIdGreaterThan(string $phoneNumber, ?string $lastMessageId): array
     {
         $builder = $this->createQueryBuilder('s')
             ->where('s.phoneNumber = :phoneNumber')

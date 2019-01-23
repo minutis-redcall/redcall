@@ -93,7 +93,7 @@ class BaseController extends Controller
 
     public function validateCsrfOrThrowNotFoundException(string $id, ?string $token): void
     {
-        if (!$token || !$this->isCsrfTokenValid($id, $token)) {
+        if (!$token || !is_scalar($token) || !$this->isCsrfTokenValid($id, $token)) {
             throw $this->createNotFoundException();
         }
     }
