@@ -232,6 +232,7 @@ pdf_export:
     name: NAME
     phone: Phone number
     skills: Skills
+    time: "Answer's time"
 
 geolocation:
   title: Crew geolocalization

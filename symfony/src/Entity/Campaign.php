@@ -238,13 +238,22 @@ class Campaign
 
                 $choices = [];
                 foreach ($communication->getChoices() as $choice) {
-                    $choices[$choice->getId()] = $message->getAnswerByChoice($choice);
+                    $answer =  $message->getAnswerByChoice($choice);
+                    $choices[$choice->getId()] = null;
+                    if ($answer) {
+                        $choices[$choice->getId()] = $answer->getReceivedAt()->format('H:i');
+                    }
                 }
+
+                $invalidAnswer = $message->getInvalidAnswer();
 
                 $data[$communication->getId()]['msg'][$message->getId()] = [
                     'sent'               => $message->isSent(),
                     'choices'            => $choices,
-                    'has-invalid-answer' => implode(', ', $message->getInvalidAnswers()),
+                    'has-invalid-answer' => [
+                        'raw' => $invalidAnswer ? $invalidAnswer->getRaw() : null,
+                        'time' => $invalidAnswer ? $invalidAnswer->getReceivedAt()->format('H:i') : null,
+                    ],
                 ];
             }
 

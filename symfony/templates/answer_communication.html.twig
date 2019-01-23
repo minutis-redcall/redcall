@@ -5,8 +5,8 @@
     <div class="form-check {% if key == 0 %}border-top{% endif %}">
         <label class="switch">
             <input type="checkbox"
-                   class="form-check-input answer-toggle"
-                   data-endpoint="{{ path('communication_toggle_answer', {messageId: message.id, csrf: csrf_token('communication')}) }}"
+                   class="form-check-input answer-change"
+                   data-endpoint="{{ path('communication_change_answer', {messageId: message.id, csrf: csrf_token('communication')}) }}"
                    data-message-id="{{ message.id }}"
                    data-choice-id="{{ choice.id }}"
                    {% if message.answerByChoice(choice) %}checked{% endif %}

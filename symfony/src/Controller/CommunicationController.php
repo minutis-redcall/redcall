@@ -296,7 +296,7 @@ class CommunicationController extends BaseController
 
     /**
      * @Route(
-     *     name="toggle_answer",
+     *     name="change_answer",
      *     path="declenchement/reponses/{messageId}/{csrf}",
      *     requirements={"messageId" = "\d+"}
      * )
@@ -307,7 +307,7 @@ class CommunicationController extends BaseController
      *
      * @return Response
      */
-    public function toggleAnswerAction(Request $request, int $messageId, string $csrf)
+    public function changeAnswerAction(Request $request, int $messageId, string $csrf)
     {
         $this->validateCsrfOrThrowNotFoundException('communication', $csrf);
 
@@ -327,7 +327,7 @@ class CommunicationController extends BaseController
             throw $this->createNotFoundException();
         }
 
-        $this->messageRepository->toggleAnswer($message, $choiceEntity);
+        $this->messageRepository->changeAnswer($message, $choiceEntity);
 
         return new Response();
     }

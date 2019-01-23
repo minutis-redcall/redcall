@@ -92,23 +92,30 @@ class MessageRepository extends ServiceEntityRepository
      * @param Message $message
      * @param Choice  $choice
      */
-    public function toggleAnswer(Message $message, Choice $choice)
+    public function changeAnswer(Message $message, Choice $choice)
     {
-        $hasAnswer = false;
-        foreach ($message->getAnswers() as $answer) {
-            if ($answer->getChoice() && $answer->getChoice()->getId() == $choice->getId()) {
-                $hasAnswer = true;
-                $answer->setChoice(null);
+        $lastAnswer = $message->getLastAnswer();
 
-                $body = $this->translator->trans('campaign_status.answers.changed_by', [
-                    '%username%' => $this->tokenStorage->getToken()->getUsername(),
-                ]);
-
-                $answer->setRaw($answer->getRaw() . ' ' . $body);
-            }
+        // Last answer already removed previously
+        if ($lastAnswer && $lastAnswer->getChoice() === null) {
+            $lastAnswer = null;
         }
 
-        if (!$hasAnswer) {
+        // Deletes the last answer
+        $lastId = $lastAnswer ? $lastAnswer->getChoice()->getId() : null;
+        if ($lastId) {
+            $lastAnswer->setChoice(null);
+
+            $body = $this->translator->trans('campaign_status.answers.changed_by', [
+                '%username%' => $this->tokenStorage->getToken()->getUsername(),
+            ]);
+
+            $lastAnswer->setRaw($lastAnswer->getRaw() . ' ' . $body);
+        }
+
+        // If choice is different from last answer, add it (otherwise we would
+        // add the answer we just removed)
+        if (!$lastId || $lastId && $choice->getId() !== $lastId) {
             $body = $choice->getCode() . ' ' . $this->translator->trans('campaign_status.answers.added_by', [
                     '%username%' => $this->tokenStorage->getToken()->getUsername(),
                 ]);
