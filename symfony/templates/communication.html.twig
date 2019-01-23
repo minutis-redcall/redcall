@@ -254,7 +254,6 @@
                                                       data-message-id="{{ message.id }}"
                                                       class="badge badge-light open-message">✏️</span>
                                             {% endif %}
-
                                         </div>
                                     {% endif %}
 
@@ -270,6 +269,16 @@
                                                 {{ ('tag.shortcuts.' ~ skill)|trans }}{% if not loop.last %},{% endif %}
                                             {% endfor %}
                                     </span>
+
+                                    <div id="invalid-answer-raw-{{ suffix }}" style="font-size:10px;">
+                                        {% if message.invalidAnswer %}
+                                            {% if message.invalidAnswer.raw|length > 45 %}
+                                                {{ message.invalidAnswer.raw|slice(0, 45) }}...
+                                            {% else %}
+                                                {{ message.invalidAnswer.raw|slice(0, 45) }}
+                                            {% endif %}
+                                        {% endif %}
+                                    </div>
                                 </td>
                             </tr>
                         {% endfor %}
@@ -534,8 +543,10 @@
                     if (messageStatus['has-invalid-answer']['raw']) {
                         $('#message-has-invalid-answer-' + suffix).removeClass('d-none');
                         $('#message-has-invalid-answer-time-' + suffix).html(messageStatus['has-invalid-answer']['time']);
+                        $('#invalid-answer-raw-' + suffix).html(messageStatus['has-invalid-answer']['raw']).removeClass('d-none');
                     } else {
                         $('#message-has-invalid-answer-' + suffix).addClass('d-none');
+                        $('#invalid-answer-raw-' + suffix).addClass('d-none');
                     }
                     $('#message-has-invalid-answer-' + suffix).data('value', messageStatus['has-invalid-answer'] ? 1 : 0);
                 });
