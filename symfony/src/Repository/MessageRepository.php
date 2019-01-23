@@ -111,7 +111,7 @@ class MessageRepository extends ServiceEntityRepository
             ]);
 
             $lastAnswer->setRaw($lastAnswer->getRaw() . ' ' . $body);
-            $this->_em->flush();
+            $lastAnswer->setUpdatedAt((new \DateTime())->sub(new \DateInterval('PT1S')));
         }
 
         // If choice is different from last answer, add it (otherwise we would
@@ -123,8 +123,8 @@ class MessageRepository extends ServiceEntityRepository
             }
 
             $body = $choice->getCode() . ' ' . $this->translator->trans('campaign_status.answers.added_by', [
-                    '%username%' => $this->tokenStorage->getToken()->getUsername(),
-                ]);
+                '%username%' => $this->tokenStorage->getToken()->getUsername(),
+            ]);
 
             $this->addAnswer($message, $body, $choice);
             $this->_em->flush();
