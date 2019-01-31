@@ -29,8 +29,7 @@ services:
     tags: ['controller.service_arguments']
 
   App\SMS\SMSProvider:
-    class: 'Bundles\SandboxBundle\SMS\Fake'
-    arguments: ['@doctrine']
+    class: App\SMS\Nexmo
     public: true
 
   App\Issue\IssueLogger:
