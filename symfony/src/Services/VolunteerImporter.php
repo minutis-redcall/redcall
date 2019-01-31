@@ -91,7 +91,8 @@ class VolunteerImporter
 
         $this->volunteerImportRepository->begin();
 
-        $tags = $this->tagRepoistory->findAll();
+        $tags     = $this->tagRepoistory->findAll();
+        $imported = 0;
         for ($i = 1; $i <= $nbRows; $i = $i + 500) {
             $data = $sheets
                 ->spreadsheets_values
@@ -124,9 +125,17 @@ class VolunteerImporter
                 $import = $this->volunteerImportRepository->sanitize($importArray);
 
                 $this->volunteerRepository->import($tags, $import);
+
+                if ($row[0]) {
+                    $imported++;
+                }
             }
         }
 
-        $this->volunteerRepository->disableNonImportedVolunteers();
+        if ($imported > 0) {
+            $this->volunteerRepository->disableNonImportedVolunteers();
+        } else {
+            throw new \RuntimeException('Volunteer spreadsheet is empty or not accessible.');
+        }
     }
 }
