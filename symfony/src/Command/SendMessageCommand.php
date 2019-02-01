@@ -27,6 +27,8 @@ class SendMessageCommand extends BaseCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        date_default_timezone_set('Europe/Paris');
+
         $messageId = $input->getArgument('message-id');
         $message   = $this->getManager(Message::class)->find($messageId);
 

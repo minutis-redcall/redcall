@@ -126,7 +126,7 @@ new_communication:
   subtitle: 'Dans le cadre du déclenchement "%label%"'
 
 message:
-  announcement: CROIX-ROUGE:
+  announcement: CROIX-ROUGE le %date% à %time%:
   how_to_answer_alert: Pour répondre, saisir le n° de votre choix.
   how_to_answer_web: Connectez-vous à %url% afin de poursuivre.
   geo_location: 'Géolocalisation de votre équipe: %url%'
