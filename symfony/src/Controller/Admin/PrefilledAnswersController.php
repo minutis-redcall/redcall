@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\Request;
 class PrefilledAnswersController extends BaseController
 {
     /**
-     * @Route(path="/", name="list")
+     * @Route(name="list")
      */
     public function listAction()
     {
