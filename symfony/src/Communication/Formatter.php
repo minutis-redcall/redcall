@@ -42,7 +42,10 @@ class Formatter
         $communication = $message->getCommunication();
         $body          = $communication->getBody();
 
-        $contentParts[] = $this->translator->trans('message.announcement');
+        $contentParts[] = $this->translator->trans('message.announcement', [
+            '%date%' => date('d/m/y'),
+            '%time%' => date('H:i'),
+        ]);
         $contentParts[] = $body;
 
         // Type "alert": volunteer can answer by SMS
