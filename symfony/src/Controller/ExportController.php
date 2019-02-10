@@ -83,8 +83,8 @@ class ExportController extends BaseController
                 }
             }
 
-            $row[$this->trans('csv_export.other')] = $message->getInvalidAnswer()->getRaw();
-            $rows[] = $row;
+            $row[$this->trans('csv_export.other')] = $message->getInvalidAnswer() ? $message->getInvalidAnswer()->getRaw() : null;
+            $rows[]                                = $row;
         }
 
         return new ArrayToCsvResponse($rows, sprintf('export-%s.csv', date('Y-m-d.H:i:s')));
@@ -133,7 +133,7 @@ class ExportController extends BaseController
                         && $answer->getChoice()->getId() == $choice->getId()) {
                         $tables[$label][] = [
                             'volunteer' => $message->getVolunteer(),
-                            'answer' => $answer,
+                            'answer'    => $answer,
                         ];
                     }
                 }
