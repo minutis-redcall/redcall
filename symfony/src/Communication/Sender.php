@@ -51,12 +51,13 @@ class Sender
         $volunteer = $message->getVolunteer();
 
         try {
-            $messageId = $this->SMSProvider->send(
+            $SMSSent = $this->SMSProvider->send(
                 $this->formatter->formatMessageContent($message),
                 $volunteer->getPhoneNumber()
             );
 
-            $message->setMessageId($messageId);
+            $message->setMessageId($SMSSent->getId());
+            $message->setCost($SMSSent->getCost());
             $message->setSent(true);
 
             $this->entityManager->merge($message);

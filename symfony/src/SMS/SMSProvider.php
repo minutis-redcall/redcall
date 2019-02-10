@@ -11,7 +11,7 @@ interface SMSProvider
      * @return string
      * @throws \Exception
      */
-    public function send(string $message, string $phoneNumber): string;
+    public function send(string $message, string $phoneNumber): SMSSent;
 
     /**
      * @return string

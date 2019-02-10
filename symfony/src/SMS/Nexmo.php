@@ -24,7 +24,7 @@ class Nexmo implements SMSProvider
     /**
      * {@inheritdoc}
      */
-    public function send(string $message, string $phoneNumber): string
+    public function send(string $message, string $phoneNumber): SMSSent
     {
         $message = $this->client->message()->send([
             'to'   => $phoneNumber,
@@ -33,7 +33,7 @@ class Nexmo implements SMSProvider
             'type' => 'unicode',
         ]);
 
-        return $message->getMessageId();
+        return new SMSSent($message->getMessageId(), $message->getPrice());
     }
 
     /**
