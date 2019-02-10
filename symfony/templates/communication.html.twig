@@ -85,11 +85,11 @@
                     {# -------------------------------------------------------------------------------- #}
                     {# Progression #}
                     {# -------------------------------------------------------------------------------- #}
-                    <div class="progress position-relative" style="background-color:darkgray;">
+                    <div class="progress position-relative" style="background-color:darkgray;height:18px;">
                         <div id="progress-bar-{{ communication.id }}"
                              class="progress-bar {% if progress[communication.id].percent == 100 %}bg-success{% endif %}"
                              role="progressbar"
-                             style="width: {{ progress[communication.id].percent }}%"
+                             style="width: {{ progress[communication.id].percent }}%;"
                              aria-valuenow="{{ progress[communication.id].percent }}"
                              aria-valuemin="0"
                              aria-valuemax="100"></div>
