@@ -548,7 +548,7 @@
                         $('#message-has-invalid-answer-' + suffix).addClass('d-none');
                         $('#invalid-answer-raw-' + suffix).addClass('d-none');
                     }
-                    $('#message-has-invalid-answer-' + suffix).data('value', messageStatus['has-invalid-answer'] ? 1 : 0);
+                    $('#message-has-invalid-answer-' + suffix).data('value', messageStatus['has-invalid-answer']['raw'] ? 1 : 0);
                 });
 
                 {# Refresh the SMS sending progress bar #}
@@ -783,7 +783,7 @@
 
             $.post(endpoint, {
                 choiceId: choiceId,
-            }, function() {
+            }, function () {
                 loadCommunicationAnswers(that);
             });
         });
