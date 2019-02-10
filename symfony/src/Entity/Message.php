@@ -46,6 +46,13 @@ class Message
     private $sent;
 
     /**
+     * @var float
+     *
+     * @ORM\Column(type="float")
+     */
+    private $cost = 0.0;
+
+    /**
      * @var bool
      *
      * @ORM\Column(type="boolean")
@@ -175,6 +182,26 @@ class Message
     public function setSent($sent): Message
     {
         $this->sent = $sent;
+
+        return $this;
+    }
+
+    /**
+     * @return float
+     */
+    public function getCost(): float
+    {
+        return $this->cost;
+    }
+
+    /**
+     * @param float $cost
+     *
+     * @return Message
+     */
+    public function setCost(float $cost): Message
+    {
+        $this->cost = $cost;
 
         return $this;
     }
