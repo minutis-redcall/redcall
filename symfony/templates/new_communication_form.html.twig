@@ -43,13 +43,12 @@
     {# Update message size automatically #}
     function updateMessageSize() {
         var textArea = $('#{{ form.message.vars.id }}');
-        var length = textArea.val().length;
-        if (length >= {{ max_length }}) {
+        if (textArea.val().length > {{ max_length }}) {
             textArea.val(
-                textArea.val().substr(0, {{ max_length }} -1)
+                textArea.val().substr(0, {{ max_length }})
             );
         }
-        $('#message-size').html(length);
+        $('#message-size').html(textArea.val().length);
     }
 
     updateMessageSize();
