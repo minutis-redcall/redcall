@@ -127,10 +127,11 @@ new_communication:
   subtitle: 'As part of campaign "%label%"'
 
 message:
-  announcement: RED-CROSS on %date% at %time%:
+  announcement: RED-CROSS:
   how_to_answer_alert: Reply by giving your choice number.
   how_to_answer_web: To continue, proceed to %url%
   geo_location: 'Geolocation of your crew: %url%'
+  hour: '(%hours%h%mins%)'
 
 button:
   submit: 'Submit'

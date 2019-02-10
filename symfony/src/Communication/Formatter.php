@@ -42,10 +42,7 @@ class Formatter
         $communication = $message->getCommunication();
         $body          = $communication->getBody();
 
-        $contentParts[] = $this->translator->trans('message.announcement', [
-            '%date%' => date('d/m/y'),
-            '%time%' => date('H:i'),
-        ]);
+        $contentParts[] = $this->translator->trans('message.announcement');
         $contentParts[] = $body;
 
         // Type "alert": volunteer can answer by SMS
@@ -74,6 +71,11 @@ class Formatter
                 '%url%' => trim(getenv('WEBSITE_URL'), '/').$this->router->generate('geo_open', ['code' => $message->getGeoCode()]),
             ]);
         }
+
+        $contentParts[] = $this->translator->trans('message.hour', [
+            '%hours%' => date('H'),
+            '%mins%'  => date('i'),
+        ]);
 
         return implode("\n", $contentParts);
     }
