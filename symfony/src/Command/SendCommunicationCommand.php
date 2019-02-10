@@ -12,7 +12,7 @@ use Symfony\Component\Process\Process;
 
 class SendCommunicationCommand extends BaseCommand
 {
-    const PAUSE = 100000; // 100 000 microseconds
+    const PAUSE = 500000; // 2 sms / second
 
     /**
      * {@inheritdoc}
