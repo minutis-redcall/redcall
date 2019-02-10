@@ -54,4 +54,11 @@
     updateMessageSize();
     $('#{{ form.message.vars.id }}').keyup(updateMessageSize);
 
+    {# Disables "enter" key on input fields #}
+    $('form').not('textarea, button').keypress(function (e) {
+        if (e.keyCode == 13) {
+            e.preventDefault();
+        }
+    });
+
 </script>
