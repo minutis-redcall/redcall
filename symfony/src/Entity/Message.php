@@ -6,7 +6,11 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Table(indexes={@ORM\Index(name="message_idx", columns={"message_id"})})
+ * @ORM\Table(indexes={
+ *     @ORM\Index(name="message_idx", columns={"message_id"}),
+ *     @ORM\Index(name="web_codex"  , columns={"web_code"}),
+ *     @ORM\Index(name="geo_codex"  , columns={"geo_code"})
+ * })
  * @ORM\Entity(repositoryClass="App\Repository\MessageRepository")
  */
 class Message
