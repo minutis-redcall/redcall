@@ -48,6 +48,12 @@
                 }) }}
             </div>
         {% endfor %}
+
+    </div>
+    <div class="text-right">
+        {{ 'form.communication.fields.selection'|trans }}
+        <span id="selected-volunteers-{{ vId }}">{{ form.vars.value.volunteers|split(',')|length }}</span>
+        {{ 'form.communication.fields.selection_count'|trans }}
     </div>
 
     {{ form_errors(form.volunteers) }}
@@ -73,6 +79,10 @@
                 visibleProperties: ['firstName', 'lastName', 'tagLabels'],
                 noResultsText: '{{ 'base.search.no_results'|trans|e('js') }}'
             });
+
+            $('#selected-volunteers-{{ vId }}').html(
+                $('#{{ vId }}').val().split(',').length
+            );
         }
 
         {# Hack used to disable auto-focus at the end of the list after removal #}
@@ -81,6 +91,13 @@
             setTimeout(function () {
                 $('#{{ vId }}-flexdatalist').prop('disabled', false);
             }, 0);
+        });
+
+        {# Used to refresh selection count #}
+        $('#{{ vId }}').on('change:flexdatalist', function () {
+            $('#selected-volunteers-{{ vId }}').html(
+                $('#{{ vId }}').val().split(',').length
+            );
         });
 
         initVolunteers();
@@ -106,11 +123,13 @@
             });
 
             $('#{{ vId }}').val(selection.join(','));
+            $('#selected-volunteers-{{ vId }}').html(selection.length);
         });
 
         $('#clear-selection-{{ vId }}').click(function (e) {
             $('#checkbox-list-{{ vId }}').find('input').prop('checked', false);
             $('#{{ form.volunteers.vars.id }}').val('');
+            $('#selected-volunteers-{{ vId }}').html('0');
             e.preventDefault();
         });
 

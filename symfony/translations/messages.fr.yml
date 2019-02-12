@@ -143,6 +143,8 @@ form:
       type_web: 'Le volontaire pourra répondre via un lien'
       geo_location: 'Les destinataires de ce message pourront se géo-localiser entre eux'
       volunteers: Audience
+      selection: Sélection:
+      selection_count: volontaires
       message: Message
       answers: Réponses possibles
       answer: 'Saisir une réponse'
