@@ -88,25 +88,27 @@
         // When ticking on a job, I add every people doing that job,
         // except the ones that are already selected.
         $('body').on('click', '.volunteer-tag', function () {
-            var that = $(this);
-            var selection = $('#{{ vId }}').val().split(',');
-            var tagId = parseInt(that.val(), 10);
+            var selection = [];
 
             $.each(volunteers_{{ vId }}, function (index, volunteer) {
-                if (that.is(':checked')
-                    && $.inArray(tagId, volunteer.tagIds) !== -1
-                    && $.inArray(volunteer.id, selection) === -1) {
-                    selection.push(volunteer.id);
-                } else if ($.inArray(tagId, volunteer.tagIds) !== -1
-                    && $.inArray(volunteer.id, selection) !== -1) {
-                    selection.splice($.inArray(volunteer.id, selection), 1);
-                }
+                $('.volunteer-tag').each(function () {
+                    var that = $(this);
+                    if (
+                        // Skill is checked
+                        that.is(':checked')
+                        // Volunteer has that skill
+                        && $.inArray(parseInt(that.val(), 10), volunteer.tagIds) !== -1
+                        // Selection does not contain volunteer
+                        && $.inArray(volunteer.id, selection) === -1) {
+                        selection.push(volunteer.id)
+                    }
+                });
             });
 
             $('#{{ vId }}').val(selection.join(','));
         });
 
-        $('#clear-selection-{{ vId }}').click(function(e) {
+        $('#clear-selection-{{ vId }}').click(function (e) {
             $('#checkbox-list-{{ vId }}').find('input').prop('checked', false);
             $('#{{ form.volunteers.vars.id }}').val('');
             e.preventDefault();
