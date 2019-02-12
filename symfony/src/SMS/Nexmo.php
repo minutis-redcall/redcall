@@ -3,6 +3,7 @@
 namespace App\SMS;
 
 use Nexmo\Client;
+use Nexmo\Message\Message;
 
 class Nexmo implements SMSProvider
 {
@@ -30,10 +31,17 @@ class Nexmo implements SMSProvider
             'to'   => $phoneNumber,
             'from' => $this->fromNumber,
             'text' => $message,
-            'type' => 'unicode',
         ]);
 
-        return new SMSSent($message->getMessageId(), $message->getPrice());
+        $messageId = $message->getMessageId();
+
+        $price = 0.0;
+        foreach ($message as $part) {
+            /* @var Message $part */
+            $price = $price + $part['message-price'];
+        }
+
+        return new SMSSent($messageId, $price);
     }
 
     /**

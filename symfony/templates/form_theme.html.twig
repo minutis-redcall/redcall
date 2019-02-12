@@ -48,6 +48,12 @@
                 }) }}
             </div>
         {% endfor %}
+
+    </div>
+    <div class="text-right">
+        {{ 'form.communication.fields.selection'|trans }}
+        <span id="selected-volunteers-{{ vId }}">{{ form.vars.value.volunteers|split(',')|length }}</span>
+        {{ 'form.communication.fields.selection_count'|trans }}
     </div>
 
     {{ form_errors(form.volunteers) }}
@@ -73,6 +79,10 @@
                 visibleProperties: ['firstName', 'lastName', 'tagLabels'],
                 noResultsText: '{{ 'base.search.no_results'|trans|e('js') }}'
             });
+
+            $('#selected-volunteers-{{ vId }}').html(
+                $('#{{ vId }}').val().split(',').length
+            );
         }
 
         {# Hack used to disable auto-focus at the end of the list after removal #}
@@ -83,32 +93,43 @@
             }, 0);
         });
 
+        {# Used to refresh selection count #}
+        $('#{{ vId }}').on('change:flexdatalist', function () {
+            $('#selected-volunteers-{{ vId }}').html(
+                $('#{{ vId }}').val().split(',').length
+            );
+        });
+
         initVolunteers();
 
         // When ticking on a job, I add every people doing that job,
         // except the ones that are already selected.
         $('body').on('click', '.volunteer-tag', function () {
-            var that = $(this);
-            var selection = $('#{{ vId }}').val().split(',');
-            var tagId = parseInt(that.val(), 10);
+            var selection = [];
 
             $.each(volunteers_{{ vId }}, function (index, volunteer) {
-                if (that.is(':checked')
-                    && $.inArray(tagId, volunteer.tagIds) !== -1
-                    && $.inArray(volunteer.id, selection) === -1) {
-                    selection.push(volunteer.id);
-                } else if ($.inArray(tagId, volunteer.tagIds) !== -1
-                    && $.inArray(volunteer.id, selection) !== -1) {
-                    selection.splice($.inArray(volunteer.id, selection), 1);
-                }
+                $('.volunteer-tag').each(function () {
+                    var that = $(this);
+                    if (
+                        // Skill is checked
+                        that.is(':checked')
+                        // Volunteer has that skill
+                        && $.inArray(parseInt(that.val(), 10), volunteer.tagIds) !== -1
+                        // Selection does not contain volunteer
+                        && $.inArray(volunteer.id, selection) === -1) {
+                        selection.push(volunteer.id)
+                    }
+                });
             });
 
             $('#{{ vId }}').val(selection.join(','));
+            $('#selected-volunteers-{{ vId }}').html(selection.length);
         });
 
-        $('#clear-selection-{{ vId }}').click(function(e) {
+        $('#clear-selection-{{ vId }}').click(function (e) {
             $('#checkbox-list-{{ vId }}').find('input').prop('checked', false);
             $('#{{ form.volunteers.vars.id }}').val('');
+            $('#selected-volunteers-{{ vId }}').html('0');
             e.preventDefault();
         });
 

@@ -127,7 +127,7 @@ new_communication:
 
 message:
   announcement: CROIX-ROUGE:
-  how_to_answer_alert: Pour répondre, saisir le n° de votre choix.
+  how_to_answer_alert: Pour répondre, saisir le numéro de votre choix.
   how_to_answer_web: Connectez-vous à %url% afin de poursuivre.
   geo_location: 'Géolocalisation de votre équipe: %url%'
   hour: '(%hours%h%mins%)'
@@ -143,6 +143,8 @@ form:
       type_web: 'Le volontaire pourra répondre via un lien'
       geo_location: 'Les destinataires de ce message pourront se géo-localiser entre eux'
       volunteers: Audience
+      selection: Sélection:
+      selection_count: volontaires
       message: Message
       answers: Réponses possibles
       answer: 'Saisir une réponse'

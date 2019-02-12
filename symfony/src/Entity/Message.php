@@ -57,13 +57,6 @@ class Message
     private $cost = 0.0;
 
     /**
-     * @var bool
-     *
-     * @ORM\Column(type="boolean")
-     */
-    private $received;
-
-    /**
      * @var Answer[]
      *
      * @ORM\OneToMany(targetEntity="App\Entity\Answer", mappedBy="message", cascade={"persist"})
@@ -106,8 +99,7 @@ class Message
      */
     public function __construct()
     {
-        $this->sent     = false;
-        $this->received = false;
+        $this->sent = false;
     }
 
     /**
@@ -206,26 +198,6 @@ class Message
     public function setCost(float $cost): Message
     {
         $this->cost = $cost;
-
-        return $this;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isReceived(): bool
-    {
-        return $this->received;
-    }
-
-    /**
-     * @param bool $received
-     *
-     * @return $this
-     */
-    public function setReceived($received): Message
-    {
-        $this->received = $received;
 
         return $this;
     }

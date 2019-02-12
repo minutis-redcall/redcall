@@ -144,6 +144,8 @@ form:
       type_web: Volunteer will receive a link to proceed answering
       geo_location: Message recipients will be able to geo locate each others
       volunteers: Audience
+      selection: Selection:
+      selection_count: volunteers
       message: Message
       answers: Possible responses
       answer: Enter response
