@@ -31,7 +31,6 @@ class Nexmo implements SMSProvider
             'to'   => $phoneNumber,
             'from' => $this->fromNumber,
             'text' => $message,
-            'type' => 'unicode',
         ]);
 
         $messageId = $message->getMessageId();
