@@ -77,6 +77,6 @@ class Formatter
             '%mins%'  => date('i'),
         ]);
 
-        return implode("\n", $contentParts);
+        return GSM::enforceGSMAlphabet(implode("\n", $contentParts));
     }
 }
