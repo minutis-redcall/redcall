@@ -7,7 +7,6 @@ use App\Form\Model\Communication as CommunicationModel;
 use App\Repository\VolunteerRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -39,13 +38,18 @@ class CommunicationType extends AbstractType
         parent::buildForm($builder, $options);
 
         $builder
-            ->add('type', ChoiceType::class, [
-                'label'    => false,
-                'choices'  => [
-                    'form.communication.fields.type_alert' => Communication::TYPE_ALERT,
-                    'form.communication.fields.type_web'   => Communication::TYPE_WEB,
-                ],
-                'expanded' => true,
+            // To be fixed in #20
+            //            ->add('type', ChoiceType::class, [
+            //                'label'    => false,
+            //                'choices'  => [
+            //                    'form.communication.fields.type_alert' => Communication::TYPE_ALERT,
+            //                    'form.communication.fields.type_web'   => Communication::TYPE_WEB,
+            //                ],
+            //                'expanded' => true,
+            //            ])
+            ->add('multipleAnswer', CheckboxType::class, [
+                'label'    => 'form.communication.fields.multiple_answer',
+                'required' => false,
             ])
             ->add('volunteers', VolunteersType::class, [
                 'error_mapping' => [

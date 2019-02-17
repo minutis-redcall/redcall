@@ -55,6 +55,11 @@ class MessageRepository extends ServiceEntityRepository
      */
     public function addAnswer(Message $message, string $body, ?Choice $forcedChoice = null): void
     {
+        $choice = $message->getCommunication()->getChoiceByLabelOrCode($body);
+        if ($choice && $message->getAnswerByChoice($choice)) {
+            return;
+        }
+
         $answer = new Answer();
 
         $answer->setMessage($message);
@@ -63,7 +68,7 @@ class MessageRepository extends ServiceEntityRepository
         $answer->setRaw($body);
         $answer->setReceivedAt(new \DateTime());
 
-        $answer->setChoice($message->getCommunication()->getChoiceByLabelOrCode($body));
+        $answer->setChoice($choice);
         if ($forcedChoice) {
             $answer->setChoice($forcedChoice);
         }
@@ -89,6 +94,8 @@ class MessageRepository extends ServiceEntityRepository
     }
 
     /**
+     * Method used when only 1 answer is allowed.
+     *
      * @param Message $message
      * @param Choice  $choice
      */
@@ -126,6 +133,37 @@ class MessageRepository extends ServiceEntityRepository
                     '%username%' => $this->tokenStorage->getToken()->getUsername(),
                 ]);
 
+            $this->addAnswer($message, $body, $choice);
+        }
+
+        $this->_em->flush();
+    }
+
+    /**
+     * Method used when multiple answers are allowed
+     *
+     * @param Message $message
+     * @param Choice  $choice
+     */
+    public function toggleAnswer(Message $message, Choice $choice)
+    {
+        $hasAnswer = false;
+
+        foreach ($message->getAnswers() as $answer) {
+            if ($answer->getChoice() && $answer->getChoice()->getId() == $choice->getId()) {
+                $hasAnswer = true;
+                $answer->setChoice(null);
+                $body = $this->translator->trans('campaign_status.answers.changed_by', [
+                    '%username%' => $this->tokenStorage->getToken()->getUsername(),
+                ]);
+                $answer->setRaw($answer->getRaw().' '.$body);
+            }
+        }
+
+        if (!$hasAnswer) {
+            $body = $choice->getCode().' '.$this->translator->trans('campaign_status.answers.added_by', [
+                    '%username%' => $this->tokenStorage->getToken()->getUsername(),
+                ]);
             $this->addAnswer($message, $body, $choice);
         }
 

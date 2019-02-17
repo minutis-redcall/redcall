@@ -325,9 +325,19 @@ class Message
      */
     public function getAnswerByChoice(Choice $choice): ?Answer
     {
-        $answer = $this->getLastAnswer();
-        if ($answer && $answer->isChoice($choice)) {
-            return $answer;
+        if (!$this->communication->isMultipleAnswer()) {
+            $answer = $this->getLastAnswer();
+            if ($answer && $answer->isChoice($choice)) {
+                return $answer;
+            }
+
+            return null;
+        }
+
+        foreach ($this->answers ?? [] as $answer) {
+            if ($answer->isChoice($choice)) {
+                return $answer;
+            }
         }
 
         return null;
@@ -354,6 +364,10 @@ class Message
      */
     public function getInvalidAnswer(): ?Answer
     {
+        if ($this->hasValidAnswer()) {
+            return null;
+        }
+
         $lastAnswer = $this->getLastAnswer();
         if ($lastAnswer && null === $lastAnswer->getChoice()) {
             return $lastAnswer;
@@ -367,6 +381,17 @@ class Message
      */
     public function hasValidAnswer(): bool
     {
-        return $this->getLastAnswer() && $this->getLastAnswer()->getChoice();
+        if (!$this->communication->isMultipleAnswer()) {
+            return $this->getLastAnswer() && $this->getLastAnswer()->getChoice();
+        }
+
+        foreach ($this->answers ?? [] as $answer) {
+            /* @var \App\Entity\Answer $answer */
+            if ($answer->getChoice()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

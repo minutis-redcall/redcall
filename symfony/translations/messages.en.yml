@@ -128,7 +128,8 @@ new_communication:
 
 message:
   announcement: 'RED-CROSS at %hours%h%mins%:'
-  how_to_answer_alert: Reply by giving your choice number.
+  how_to_answer_simple: Reply by giving your choice number.
+  how_to_answer_multiple: Reply by giving your choice(s) number(s), separated by a space.
   how_to_answer_web: To continue, proceed to %url%
   geo_location: 'Geolocation of your crew: %url%'
 
@@ -157,6 +158,7 @@ form:
       preview: Preview
       cost: 'Message cost multiplied by:'
       length: 'Message length:'
+      multiple_answer: 'Volunteers can choose several answers'
   campaign:
     fields:
       label: 'Campaign name'

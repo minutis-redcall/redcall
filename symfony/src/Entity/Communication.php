@@ -90,6 +90,13 @@ class Communication
     private $geoLocation = false;
 
     /**
+     * @var boolean
+     *
+     * @ORM\Column(type="boolean")
+     */
+    private $multipleAnswer = false;
+
+    /**
      * @return mixed
      */
     public function getId()
@@ -372,6 +379,26 @@ class Communication
     public function setGeoLocation(bool $geoLocation): Communication
     {
         $this->geoLocation = $geoLocation;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isMultipleAnswer(): bool
+    {
+        return $this->multipleAnswer;
+    }
+
+    /**
+     * @param bool $multipleAnswer
+     *
+     * @return Communication
+     */
+    public function setMultipleAnswer(bool $multipleAnswer): Communication
+    {
+        $this->multipleAnswer = $multipleAnswer;
 
         return $this;
     }

@@ -123,13 +123,24 @@ class ExportController extends BaseController
                     }
 
                     /* @var \App\Entity\Answer|null $answer */
-                    $answer = $message->getLastAnswer();
-                    if ($answer && $answer->getChoice()
-                        && $answer->getChoice()->getId() == $choice->getId()) {
-                        $tables[$label][] = [
-                            'volunteer' => $message->getVolunteer(),
-                            'answer'    => $answer,
-                        ];
+                    if (!$communication->isMultipleAnswer()) {
+                        $answer = $message->getLastAnswer();
+                        if ($answer && $answer->getChoice()
+                            && $answer->getChoice()->getId() == $choice->getId()) {
+                            $tables[$label][] = [
+                                'volunteer' => $message->getVolunteer(),
+                                'answer'    => $answer,
+                            ];
+                        }
+                    } elseif ($message->getAnswers()) {
+                        foreach ($message->getAnswers() as $answer) {
+                            if ($answer->getChoice() && $answer->getChoice()->getId() == $choice->getId()) {
+                                $tables[$label][] = [
+                                    'volunteer' => $message->getVolunteer(),
+                                    'answer'    => $answer,
+                                ];
+                            }
+                        }
                     }
                 }
             }

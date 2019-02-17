@@ -31,10 +31,16 @@ class CommunicationFactory
      * @param string[]   $choiceValues
      * @param bool       $geoLocation
      * @param string     $type
+     * @param bool       $multipleAnswer
      *
      * @return Communication
      */
-    public function create(string $message, $volunteers, array $choiceValues, bool $geoLocation, string $type)
+    public function create(string $message,
+        $volunteers,
+        array $choiceValues,
+        bool $geoLocation,
+        string $type,
+        bool $multipleAnswer)
     {
         $communication = new Communication();
         $communication
@@ -42,7 +48,8 @@ class CommunicationFactory
             ->setStatus(Communication::STATUS_PENDING)
             ->setBody($message)
             ->setGeoLocation($geoLocation)
-            ->setCreatedAt(new \DateTime());
+            ->setCreatedAt(new \DateTime())
+            ->setMultipleAnswer($multipleAnswer);
 
         foreach ($volunteers as $volunteer) {
             $message = new Message();
@@ -56,7 +63,7 @@ class CommunicationFactory
 
         // The first choice key is always "1"
         $choiceKey = 1;
-        foreach ($choiceValues as $choiceValue) {
+        foreach (array_unique($choiceValues) as $choiceValue) {
             $choice = new Choice();
             $choice
                 ->setCode($choiceKey)

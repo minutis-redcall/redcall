@@ -60,7 +60,11 @@ class Formatter
                 foreach ($choices as $choice) {
                     $contentParts[] = sprintf('%s: %s', $choice->getCode(), $choice->getLabel());
                 }
-                $contentParts[] = $this->translator->trans('message.how_to_answer_alert');
+                if (!$message->getCommunication()->isMultipleAnswer()) {
+                    $contentParts[] = $this->translator->trans('message.how_to_answer_simple');
+                } else {
+                    $contentParts[] = $this->translator->trans('message.how_to_answer_multiple');
+                }
             }
         }
 
