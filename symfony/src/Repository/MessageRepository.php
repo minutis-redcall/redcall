@@ -40,11 +40,11 @@ class MessageRepository extends ServiceEntityRepository
     public function getLastMessageSentToPhone($phoneNumber)
     {
         $stmt = $this->createQueryBuilder('m')
-            ->innerJoin('App:Volunteer', 'v', 'WITH', 'v = m.volunteer')
-            ->where('v.phoneNumber = :from')
-            ->orderBy('m.id', 'DESC')
-            ->setMaxResults(1)
-            ->setParameter('from', $phoneNumber);
+                     ->innerJoin('App:Volunteer', 'v', 'WITH', 'v = m.volunteer')
+                     ->where('v.phoneNumber = :from')
+                     ->orderBy('m.id', 'DESC')
+                     ->setMaxResults(1)
+                     ->setParameter('from', $phoneNumber);
 
         return $stmt->getQuery()->getOneOrNullResult();
     }
@@ -110,7 +110,7 @@ class MessageRepository extends ServiceEntityRepository
                 '%username%' => $this->tokenStorage->getToken()->getUsername(),
             ]);
 
-            $lastAnswer->setRaw($lastAnswer->getRaw() . ' ' . $body);
+            $lastAnswer->setRaw($lastAnswer->getRaw().' '.$body);
             $lastAnswer->setUpdatedAt((new \DateTime())->sub(new \DateInterval('PT1S')));
         }
 
@@ -122,9 +122,9 @@ class MessageRepository extends ServiceEntityRepository
                 sleep(1); // makes this answer more recent
             }
 
-            $body = $choice->getCode() . ' ' . $this->translator->trans('campaign_status.answers.added_by', [
-                '%username%' => $this->tokenStorage->getToken()->getUsername(),
-            ]);
+            $body = $choice->getCode().' '.$this->translator->trans('campaign_status.answers.added_by', [
+                    '%username%' => $this->tokenStorage->getToken()->getUsername(),
+                ]);
 
             $this->addAnswer($message, $body, $choice);
         }
@@ -140,11 +140,11 @@ class MessageRepository extends ServiceEntityRepository
     public function findOneByIdNoCache(int $messageId): ?Message
     {
         return $this->createQueryBuilder('m')
-            ->where('m.id = :id')
-            ->setParameter('id', $messageId)
-            ->getQuery()
-            ->useResultCache(false)
-            ->getOneOrNullResult();
+                    ->where('m.id = :id')
+                    ->setParameter('id', $messageId)
+                    ->getQuery()
+                    ->useResultCache(false)
+                    ->getOneOrNullResult();
     }
 
     /**
@@ -169,14 +169,6 @@ class MessageRepository extends ServiceEntityRepository
     }
 
     /**
-     * @return string
-     */
-    public function generateGeoCode(): string
-    {
-        return $this->generateCode('geoCode');
-    }
-
-    /**
      * @param Campaign $campaign
      *
      * @return int
@@ -184,15 +176,15 @@ class MessageRepository extends ServiceEntityRepository
     public function getNumberOfSentMessages(Campaign $campaign): int
     {
         return $this->createQueryBuilder('m')
-            ->select('COUNT(m.id)')
-            ->join('m.communication', 'co')
-            ->join('co.campaign', 'ca')
-            ->where('ca.id = :campaignId')
-            ->andWhere('m.messageId IS NOT NULL')
-            ->setParameter('campaignId', $campaign->getId())
-            ->getQuery()
-            ->useResultCache(false)
-            ->getSingleScalarResult();
+                    ->select('COUNT(m.id)')
+                    ->join('m.communication', 'co')
+                    ->join('co.campaign', 'ca')
+                    ->where('ca.id = :campaignId')
+                    ->andWhere('m.messageId IS NOT NULL')
+                    ->setParameter('campaignId', $campaign->getId())
+                    ->getQuery()
+                    ->useResultCache(false)
+                    ->getSingleScalarResult();
     }
 
     /**

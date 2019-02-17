@@ -47,17 +47,9 @@ class CommunicationFactory
         foreach ($volunteers as $volunteer) {
             $message = new Message();
 
-            if (Communication::TYPE_WEB === $type) {
-                $message->setWebCode(
-                    $this->messageRepository->generateWebCode()
-                );
-            }
-
-            if ($geoLocation) {
-                $message->setGeoCode(
-                    $this->messageRepository->generateGeoCode()
-                );
-            }
+            $message->setWebCode(
+                $this->messageRepository->generateWebCode()
+            );
 
             $communication->addMessage($message->setVolunteer($volunteer));
         }

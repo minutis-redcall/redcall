@@ -8,8 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Table(indexes={
  *     @ORM\Index(name="message_idx", columns={"message_id"}),
- *     @ORM\Index(name="web_codex"  , columns={"web_code"}),
- *     @ORM\Index(name="geo_codex"  , columns={"geo_code"})
+ *     @ORM\Index(name="web_codex"  , columns={"web_code"})
  * })
  * @ORM\Entity(repositoryClass="App\Repository\MessageRepository")
  */
@@ -79,15 +78,6 @@ class Message
      * @ORM\Column(type="binary", length=8, nullable=true)
      */
     private $webCode;
-
-    /**
-     * Keep this field binary to preserve case sensitiveness.
-     *
-     * @var string
-     *
-     * @ORM\Column(type="binary", length=8, nullable=true)
-     */
-    private $geoCode;
 
     /**
      * @ORM\OneToOne(targetEntity="App\Entity\GeoLocation", mappedBy="message", cascade={"persist", "remove"})
@@ -284,26 +274,6 @@ class Message
     public function setWebCode($webCode): void
     {
         $this->webCode = $webCode;
-    }
-
-    /**
-     * @return string
-     */
-    public function getGeoCode(): string
-    {
-        if (gettype($this->geoCode) === 'resource') {
-            return stream_get_contents($this->geoCode);
-        }
-
-        return $this->geoCode;
-    }
-
-    /**
-     * @param string|resource $geoCode
-     */
-    public function setGeoCode($geoCode): void
-    {
-        $this->geoCode = $geoCode;
     }
 
     /**

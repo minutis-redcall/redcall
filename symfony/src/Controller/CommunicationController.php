@@ -287,7 +287,6 @@ class CommunicationController extends BaseController
         $message = new Message();
         $message->setCommunication($communicationEntity);
         $message->setWebCode('xxxxxxxx');
-        $message->setGeoCode('xxxxxxxx');
 
         $content = $this->formatter->formatMessageContent($message);
         $parts   = GSM::getSMSParts($content);

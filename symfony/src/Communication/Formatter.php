@@ -77,7 +77,7 @@ class Formatter
         if ($message->getCommunication()->getType() !== Communication::TYPE_WEB
             && $message->getCommunication()->hasGeoLocation()) {
             $contentParts[] = $this->translator->trans('message.geo_location', [
-                '%url%' => trim(getenv('WEBSITE_URL'), '/').$this->router->generate('geo_open', ['code' => $message->getGeoCode()]),
+                '%url%' => trim(getenv('WEBSITE_URL'), '/').$this->router->generate('geo_open', ['code' => $message->getWebCode()]),
             ]);
         }
 
