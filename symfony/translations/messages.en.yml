@@ -154,6 +154,7 @@ form:
       submit: Send
       back: Back
       other_options: Other options
+      preview: Preview
   campaign:
     fields:
       label: 'Campaign name'

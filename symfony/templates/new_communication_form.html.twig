@@ -25,6 +25,14 @@
 
 <div class="h4">{{ 'form.communication.fields.other_options'|trans }}</div>
 
+{{ form_row(form.geoLocation) }}
+
+<div class="h4">{{ 'form.communication.fields.preview'|trans }}</div>
+
+<div id="preview" style="background-color:#eeeeee;padding:5px;margin-bottom:10px;">
+    &nbsp;
+</div>
+
 <script type="text/javascript" src="{{ asset('js/jquery.collection.js') }}"></script>
 <script type="text/javascript">
 
@@ -59,6 +67,21 @@
         if (e.keyCode == 13) {
             e.preventDefault();
         }
+    });
+
+    {# Refresh preview if form is changed #}
+    var previewTimeout = null;
+    $('body').on('change keyup', 'input, textarea', function () {
+        clearTimeout(previewTimeout);
+        previewTimeout = setTimeout(function () {
+            $.post('{{ path('communication_preview') }}', $('form').serialize(), function (data) {
+                if (data.success) {
+                    $('#preview').html(nl2br(data.message));
+                } else {
+                    $('#preview').html('&nbsp;');
+                }
+            });
+        }, 1000);
     });
 
 </script>

@@ -90,7 +90,31 @@ class CampaignManager
      * @return Campaign
      * @throws \LogicException
      */
-    public function createNewCommunication(Campaign $campaign, \App\Form\Model\Communication $communication)
+    public function createNewCommunication(Campaign $campaign, \App\Form\Model\Communication $communicationModel)
+    {
+        if (!$campaign->isActive()) {
+            throw new \LogicException('Cannot dispatch a new communication on a finished campaign');
+        }
+
+        // Create a new communication and attach it to the campaign
+        $communicationEntity = $this->createCommunicationEntity($communicationModel);
+        $campaign->addCommunication($communicationEntity);
+
+        $this->entityManager->persist($campaign);
+        $this->entityManager->flush();
+
+        // Dispatch the communication
+        $this->communicationDispatcher->dispatch($communicationEntity);
+
+        return $campaign;
+    }
+
+    /**
+     * @param \App\Form\Model\Communication $communication
+     *
+     * @return \App\Entity\Communication
+     */
+    public function createCommunicationEntity(\App\Form\Model\Communication $communication)
     {
         $volunteers   = $communication->volunteers;
         $message      = $communication->message;
@@ -98,21 +122,7 @@ class CampaignManager
         $geoLocation  = $communication->geoLocation;
         $type         = $communication->type;
 
-        if (!$campaign->isActive()) {
-            throw new \LogicException('Cannot dispatch a new communication on a finished campaign');
-        }
-
-        // Create a new communication and attach it to the campaign
-        $communication = $this->communicationFactory->create($message, $volunteers, $choiceValues, $geoLocation, $type);
-        $campaign->addCommunication($communication);
-
-        $this->entityManager->persist($campaign);
-        $this->entityManager->flush();
-
-        // Dispatch the communication
-        $this->communicationDispatcher->dispatch($communication);
-
-        return $campaign;
+        return $this->communicationFactory->create($message, $volunteers, $choiceValues, $geoLocation, $type);
     }
 
     /**

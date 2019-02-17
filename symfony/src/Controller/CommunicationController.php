@@ -4,10 +4,13 @@ namespace App\Controller;
 
 use App\Base\BaseController;
 use App\Campaign\CampaignManager;
+use App\Communication\Formatter;
 use App\Component\HttpFoundation\EventStreamResponse;
 use App\Entity\Campaign;
 use App\Entity\Communication;
+use App\Entity\Message;
 use App\Form\Model\Communication as CommunicationModel;
+use App\Form\Type\CampaignType;
 use App\Form\Type\CommunicationType;
 use App\Repository\AnswerRepository;
 use App\Repository\CommunicationRepository;
@@ -51,6 +54,13 @@ class CommunicationController extends BaseController
     private $communicationRepository;
 
     /**
+     * Message formatter, used for previsualization
+     *
+     * @var Formatter
+     */
+    private $formatter;
+
+    /**
      * CommunicationController constructor.
      *
      * @param CampaignManager         $campaignManager
@@ -63,13 +73,15 @@ class CommunicationController extends BaseController
         TagRepository $tagRepository,
         MessageRepository $messageRepository,
         AnswerRepository $answerRepository,
-        CommunicationRepository $communicationRepository)
+        CommunicationRepository $communicationRepository,
+        Formatter $formatter)
     {
         $this->campaignManager         = $campaignManager;
         $this->tagRepository           = $tagRepository;
         $this->messageRepository       = $messageRepository;
         $this->answerRepository        = $answerRepository;
         $this->communicationRepository = $communicationRepository;
+        $this->formatter               = $formatter;
     }
 
     /**
@@ -81,19 +93,13 @@ class CommunicationController extends BaseController
      */
     public function indexAction(int $campaignId)
     {
-        $campaign = $this->get('doctrine')->getRepository('App:Campaign')->findOneBy([
-            'id' => $campaignId,
-        ]);
-
-        if (!$campaign) {
-            throw $this->createNotFoundException();
-        }
+        $campaign = $this->getCampaignOrThrowNotFoundException($campaignId);
 
         return $this->render('communication.html.twig', [
-            'campaign'    => $campaign,
-            'skills'      => $this->tagRepository->findAll(),
+            'campaign'   => $campaign,
+            'skills'     => $this->tagRepository->findAll(),
             'statusHash' => $this->getStatusHash($campaign),
-            'progress'    => $campaign->getCampaignProgression(),
+            'progress'   => $campaign->getCampaignProgression(),
         ]);
     }
 
@@ -106,16 +112,7 @@ class CommunicationController extends BaseController
      */
     public function pollAction(int $campaignId)
     {
-        /**
-         * @var Campaign
-         */
-        $campaign = $this->get('doctrine')->getRepository('App:Campaign')->findOneBy([
-            'id' => $campaignId,
-        ]);
-
-        if (!$campaign) {
-            throw $this->createNotFoundException();
-        }
+        $campaign = $this->getCampaignOrThrowNotFoundException($campaignId);
 
         return new JsonResponse(
             $campaign->getCampaignStatus()
@@ -136,16 +133,7 @@ class CommunicationController extends BaseController
     {
         $this->get('session')->save();
 
-        /**
-         * @var Campaign
-         */
-        $campaign = $this->get('doctrine')->getRepository('App:Campaign')->findOneBy([
-            'id' => $campaignId,
-        ]);
-
-        if (!$campaign) {
-            throw $this->createNotFoundException();
-        }
+        $campaign = $this->getCampaignOrThrowNotFoundException($campaignId);
 
         $prevUpdate = $status;
         $response   = new EventStreamResponse(function () use ($campaign, &$prevUpdate) {
@@ -243,10 +231,8 @@ class CommunicationController extends BaseController
         $communication             = new \App\Form\Model\Communication();
         $communication->volunteers = $volunteers;
         $communication->answers    = ['', ''];
-        $campaign                  = $this->get('doctrine')->getRepository('App:Campaign')->find($campaignId);
-        if (!$campaign) {
-            throw $this->createNotFoundException();
-        }
+        $campaign                  = $this->getCampaignOrThrowNotFoundException($campaignId);
+
         $form = $this
             ->createForm(CommunicationType::class, $communication)
             ->handleRequest($request);
@@ -264,6 +250,47 @@ class CommunicationController extends BaseController
             'campaign'   => $campaign,
             'volunteers' => $volunteers,
             'form'       => $form->createView(),
+        ]);
+    }
+
+    /**
+     * @Route(path="declenchement/preview", name="preview")
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function previewCommunicationAction(Request $request)
+    {
+        if ($request->request->get('campaign')) {
+            // New campaign form
+            $campaignModel = new \App\Form\Model\Campaign();
+            $this
+                ->createForm(CampaignType::class, $campaignModel)
+                ->handleRequest($request);
+            $communicationModel = $campaignModel->communication;
+        } else {
+            // Add communication form
+            $communicationModel = new \App\Form\Model\Communication();
+            $this
+                ->createForm(CommunicationType::class, $communicationModel)
+                ->handleRequest($request);
+        }
+
+        if (!$communicationModel->message) {
+            return new JsonResponse(['success' => false]);
+        }
+
+        $communicationEntity = $this->campaignManager->createCommunicationEntity($communicationModel);
+
+        $message = new Message();
+        $message->setCommunication($communicationEntity);
+        $message->setWebCode('xxxxxxxx');
+        $message->setGeoCode('xxxxxxxx');
+
+        return new JsonResponse([
+            'success' => true,
+            'message' => $this->formatter->formatMessageContent($message),
         ]);
     }
 
@@ -360,6 +387,24 @@ class CommunicationController extends BaseController
         return $this->redirect($this->generateUrl('communication_index', [
             'campaignId' => $campaignId,
         ]));
+    }
+
+    /**
+     * @param int $campaignid
+     *
+     * @return Campaign
+     *
+     * @throws NotFoundHttpException
+     */
+    private function getCampaignOrThrowNotFoundException(int $campaignId): Campaign
+    {
+        $campaign = $this->getManager(Campaign::class)->find($campaignId);
+
+        if (is_null($campaign)) {
+            throw $this->createNotFoundException();
+        }
+
+        return $campaign;
     }
 
     /**

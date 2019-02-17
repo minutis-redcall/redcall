@@ -153,6 +153,7 @@ form:
       submit: Envoyer
       back: Retour
       other_options: Autres options
+      preview: Prévisualisation
   campaign:
     fields:
       label: 'Nom du déclenchement'
