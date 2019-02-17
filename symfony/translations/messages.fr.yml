@@ -233,7 +233,7 @@ pdf_export:
   campaign: 'Déclenchement %label%'
   staff: EFFECTIFS
   communication: 'Communication du %date% à %time%'
-  response: 'Réponse "%choice%"'
+  response: '%choice%'
   staff_table:
     name: NOM
     phone: Téléphone

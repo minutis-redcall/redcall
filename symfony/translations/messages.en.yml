@@ -234,7 +234,7 @@ pdf_export:
   campaign: 'Campaign %label%'
   staff: STAFF
   communication: 'Communication on %date% at %time%'
-  response: 'Response "%choice%"'
+  response: '%choice%'
   staff_table:
     name: NAME
     phone: Phone number
