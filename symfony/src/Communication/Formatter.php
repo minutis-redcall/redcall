@@ -42,13 +42,22 @@ class Formatter
         $communication = $message->getCommunication();
         $body          = $communication->getBody();
 
-        $contentParts[] = $this->translator->trans('message.announcement');
+        $contentParts[] = $this->translator->trans('message.announcement', [
+            '%hours%' => date('H'),
+            '%mins%'  => date('i'),
+        ]);
+
         $contentParts[] = $body;
 
         // Type "alert": volunteer can answer by SMS
         if ($message->getCommunication()->getType() === Communication::TYPE_ALERT) {
-            if ($communication->getChoices() && $communication->getChoices()->toArray()) {
-                foreach ($communication->getChoices() as $choice) {
+            $choices = $communication->getChoices();
+            if (is_object($choices)) {
+                $choices = $communication->getChoices()->toArray();
+            }
+
+            if ($choices) {
+                foreach ($choices as $choice) {
                     $contentParts[] = sprintf('%s: %s', $choice->getCode(), $choice->getLabel());
                 }
                 $contentParts[] = $this->translator->trans('message.how_to_answer_alert');
@@ -72,11 +81,6 @@ class Formatter
             ]);
         }
 
-        $contentParts[] = $this->translator->trans('message.hour', [
-            '%hours%' => date('H'),
-            '%mins%'  => date('i'),
-        ]);
-
-        return implode("\n", $contentParts);
+        return GSM::enforceGSMAlphabet(implode("\n", $contentParts));
     }
 }
