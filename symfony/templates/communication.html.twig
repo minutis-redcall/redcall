@@ -309,7 +309,7 @@
                         {# Download CSV #}
                         <div class="col-md-3 col-12 skip-line">
                             <a href="#"
-                               class="btn btn-primary download-csv-button requires-selection-{{ communication.id }} disabled"
+                               class="btn btn-primary download-csv-button"
                                data-communication-id="{{ communication.id }}" role="button">
                                 {{ 'campaign_status.selection.download_csv'|trans }}
                             </a>
@@ -325,7 +325,7 @@
                         {# Download PDF #}
                         <div class="col-md-3 col-12 skip-line">
                             <a href="#"
-                               class="btn btn-primary download-pdf-button requires-selection-{{ communication.id }} disabled"
+                               class="btn btn-primary download-pdf-button"
                                data-communication-id="{{ communication.id }}" role="button">
                                 {{ 'campaign_status.selection.download_pdf'|trans }}
                             </a>
@@ -678,7 +678,6 @@
                     } else {
                         row.fadeOut();
                         row.find('.volunteer-selection').prop('checked', false);
-                        refreshSelection(communicationId);
                     }
                 });
             });
@@ -709,32 +708,9 @@
                 }
             });
 
-            refreshSelection(communicationId);
-
             $(this).prop('checked', false);
         });
         $('.select-all, .volunteer-selection').prop('checked', false);
-
-
-        function refreshSelection(communicationId) {
-            $('.requires-selection-' + communicationId).addClass('disabled');
-
-            $('.volunteer-selection-' + communicationId).each(function () {
-                var tick = $(this);
-                if (tick.is(':checked')) {
-                    $('.requires-selection-' + communicationId).removeClass('disabled');
-                }
-            });
-        }
-
-        $('.volunteer-selection').click(function () {
-            var that = $(this);
-            var communicationId = that.data('communication-id');
-            refreshSelection(communicationId);
-        });
-        $('.volunteer-selection').each(function () {
-            refreshSelection($(this).data('communication-id'));
-        })
 
         function getSelectedVolunteers(communicationId) {
             var volunteerIds = [];
