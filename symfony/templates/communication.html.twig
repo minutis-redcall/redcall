@@ -204,10 +204,10 @@
                                     {{ message.volunteer.firstname|default('?') ~ ' ' ~ message.volunteer.lastname|default('?') }}
                                     </span>
 
-                                    {% if answerCount %}
-                                        <div class="float-right">
+                                    <div class="float-right">
 
-                                            {# Answer codes when volunteer answered them #}
+                                        {# Answer codes when volunteer answered them #}
+                                        {% if answerCount %}
                                             {% for choice in communication.choices %}
                                                 {% set answer = message.getAnswerByChoice(choice) %}
                                                 <span class="{{ answer ? '' : 'd-none' }} badge badge-dark message-is-choice-{{ choice.id }}-{{ communication.id }}"
@@ -225,37 +225,35 @@
                                                     </span>
                                                 </span>
                                             {% endfor %}
+                                        {% endif %}
 
-                                            {# Volunteer sent an invalid answer #}
-                                            {% if answerCount %}
-                                                <span class="{{ message.invalidAnswer ? '' : 'd-none' }} badge badge-dark message-has-invalid-answer-{{ communication.id }}"
-                                                      style="font-size:16px;"
-                                                      data-value="{{ message.invalidAnswer ? 1 : 0 }}"
-                                                      id="message-has-invalid-answer-{{ suffix|e('html_attr') }}">
-                                                    ?
-                                                    <span style="font-size:10px;">
-                                                        <br/>
-                                                        <span id="message-has-invalid-answer-time-{{ suffix|e('html_attr') }}">
-                                                            {% if message.invalidAnswer %}
-                                                                {{ message.invalidAnswer.receivedAt|date('H:i') }}
-                                                            {% endif %}
-                                                        </span>
-                                                    </span>
+                                        {# Volunteer sent an invalid answer #}
+                                        <span class="{{ message.invalidAnswer ? '' : 'd-none' }} badge badge-dark message-has-invalid-answer-{{ communication.id }}"
+                                              style="font-size:16px;"
+                                              data-value="{{ message.invalidAnswer ? 1 : 0 }}"
+                                              id="message-has-invalid-answer-{{ suffix|e('html_attr') }}">
+                                            ?
+                                            <span style="font-size:10px;">
+                                                <br/>
+                                                <span id="message-has-invalid-answer-time-{{ suffix|e('html_attr') }}">
+                                                    {% if message.invalidAnswer %}
+                                                        {{ message.invalidAnswer.receivedAt|date('H:i') }}
+                                                    {% endif %}
                                                 </span>
-                                            {% endif %}
+                                            </span>
+                                        </span>
 
-                                            {% if app.environment == 'dev' %}
-                                                <a class="btn btn-default"
-                                                   href="{{ path('sandbox_fake_sms_thread', {phoneNumber: message.volunteer.phoneNumber}) }}">☎️</a>
-                                            {% endif %}
+                                        {% if app.environment == 'dev' %}
+                                            <a class="btn btn-default"
+                                               href="{{ path('sandbox_fake_sms_thread', {phoneNumber: message.volunteer.phoneNumber}) }}">☎️</a>
+                                        {% endif %}
 
-                                            {% if campaign.active %}
-                                                <span id="open-message-{{ suffix }}"
-                                                      data-message-id="{{ message.id }}"
-                                                      class="badge badge-light open-message">✏️</span>
-                                            {% endif %}
-                                        </div>
-                                    {% endif %}
+                                        {% if answerCount and campaign.active %}
+                                            <span id="open-message-{{ suffix }}"
+                                                  data-message-id="{{ message.id }}"
+                                                  class="badge badge-light open-message">✏️</span>
+                                        {% endif %}
+                                    </div>
 
                                     <br/>
 
