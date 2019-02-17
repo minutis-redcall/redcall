@@ -53,6 +53,11 @@ class Communication
     public $geoLocation;
 
     /**
+     * @var boolean
+     */
+    public $multipleAnswer;
+
+    /**
      * @param ExecutionContextInterface $context
      * @param                           $payload
      *

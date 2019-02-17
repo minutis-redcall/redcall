@@ -59,19 +59,22 @@ class CampaignManager
      * @param string[]   $choiceValues
      * @param bool       $geoLocation
      * @param string     $type
+     * @param bool       $multipleAnswer
      *
      * @return Campaign
      */
-    public function launchNewCampaign(string $label,
+    public function launchNewCampaign(
+        string $label,
         string $color,
         $volunteers,
         string $message,
         array $choiceValues,
         bool $geoLocation,
-        string $type)
+        string $type,
+        bool $multipleAnswer)
     {
         // Create the campaign with an initial communication
-        $communication = $this->communicationFactory->create($message, $volunteers, $choiceValues, $geoLocation, $type);
+        $communication = $this->communicationFactory->create($message, $volunteers, $choiceValues, $geoLocation, $type, $multipleAnswer);
         $campaign      = $this->campaignFactory->create($label, $color, $communication);
 
         $this->entityManager->persist($campaign);
@@ -116,13 +119,14 @@ class CampaignManager
      */
     public function createCommunicationEntity(\App\Form\Model\Communication $communication)
     {
-        $volunteers   = $communication->volunteers;
-        $message      = $communication->message;
-        $choiceValues = $communication->answers;
-        $geoLocation  = $communication->geoLocation;
-        $type         = $communication->type;
+        $volunteers     = $communication->volunteers;
+        $message        = $communication->message;
+        $choiceValues   = $communication->answers;
+        $geoLocation    = $communication->geoLocation;
+        $type           = $communication->type;
+        $multipleAnswer = $communication->multipleAnswer;
 
-        return $this->communicationFactory->create($message, $volunteers, $choiceValues, $geoLocation, $type);
+        return $this->communicationFactory->create($message, $volunteers, $choiceValues, $geoLocation, $type, $multipleAnswer);
     }
 
     /**

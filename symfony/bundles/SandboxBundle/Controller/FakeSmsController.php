@@ -91,7 +91,13 @@ class FakeSmsController extends BaseController
         /* @var Message $message */
         $message = $this->getManager(Message::class)->getLastMessageSentToPhone($phoneNumber);
         if ($message && $message->getCommunication()->getCampaign()->isActive()) {
-            $this->getManager(Message::class)->addAnswer($message, $body);
+            if (!$message->getCommunication()->isMultipleAnswer()) {
+                $this->getManager(Message::class)->addAnswer($message, $body);
+            } else {
+                foreach (array_filter(explode(' ', $body)) as $split) {
+                    $this->getManager(Message::class)->addAnswer($message, $split);
+                }
+            }
         }
 
         $this->getManager(FakeSms::class)->save($volunteer, $body, FakeSms::DIRECTION_SENT);

@@ -287,7 +287,6 @@ class CommunicationController extends BaseController
         $message = new Message();
         $message->setCommunication($communicationEntity);
         $message->setWebCode('xxxxxxxx');
-        $message->setGeoCode('xxxxxxxx');
 
         $content = $this->formatter->formatMessageContent($message);
         $parts   = GSM::getSMSParts($content);
@@ -344,6 +343,7 @@ class CommunicationController extends BaseController
     {
         $this->validateCsrfOrThrowNotFoundException('communication', $csrf);
 
+        /* @var Message $message */
         $message = $this->messageRepository->find($messageId);
         if (!$message) {
             throw $this->createNotFoundException();
@@ -360,7 +360,11 @@ class CommunicationController extends BaseController
             throw $this->createNotFoundException();
         }
 
-        $this->messageRepository->changeAnswer($message, $choiceEntity);
+        if ($message->getCommunication()->isMultipleAnswer()) {
+            $this->messageRepository->toggleAnswer($message, $choiceEntity);
+        } else {
+            $this->messageRepository->changeAnswer($message, $choiceEntity);
+        }
 
         return new Response();
     }

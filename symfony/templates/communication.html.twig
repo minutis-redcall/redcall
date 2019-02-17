@@ -204,10 +204,10 @@
                                     {{ message.volunteer.firstname|default('?') ~ ' ' ~ message.volunteer.lastname|default('?') }}
                                     </span>
 
-                                    {% if answerCount %}
-                                        <div class="float-right">
+                                    <div class="float-right">
 
-                                            {# Answer codes when volunteer answered them #}
+                                        {# Answer codes when volunteer answered them #}
+                                        {% if answerCount %}
                                             {% for choice in communication.choices %}
                                                 {% set answer = message.getAnswerByChoice(choice) %}
                                                 <span class="{{ answer ? '' : 'd-none' }} badge badge-dark message-is-choice-{{ choice.id }}-{{ communication.id }}"
@@ -225,37 +225,35 @@
                                                     </span>
                                                 </span>
                                             {% endfor %}
+                                        {% endif %}
 
-                                            {# Volunteer sent an invalid answer #}
-                                            {% if answerCount %}
-                                                <span class="{{ message.invalidAnswer ? '' : 'd-none' }} badge badge-dark message-has-invalid-answer-{{ communication.id }}"
-                                                      style="font-size:16px;"
-                                                      data-value="{{ message.invalidAnswer ? 1 : 0 }}"
-                                                      id="message-has-invalid-answer-{{ suffix|e('html_attr') }}">
-                                                    ?
-                                                    <span style="font-size:10px;">
-                                                        <br/>
-                                                        <span id="message-has-invalid-answer-time-{{ suffix|e('html_attr') }}">
-                                                            {% if message.invalidAnswer %}
-                                                                {{ message.invalidAnswer.receivedAt|date('H:i') }}
-                                                            {% endif %}
-                                                        </span>
-                                                    </span>
+                                        {# Volunteer sent an invalid answer #}
+                                        <span class="{{ message.invalidAnswer ? '' : 'd-none' }} badge badge-dark message-has-invalid-answer-{{ communication.id }}"
+                                              style="font-size:16px;"
+                                              data-value="{{ message.invalidAnswer ? 1 : 0 }}"
+                                              id="message-has-invalid-answer-{{ suffix|e('html_attr') }}">
+                                            ?
+                                            <span style="font-size:10px;">
+                                                <br/>
+                                                <span id="message-has-invalid-answer-time-{{ suffix|e('html_attr') }}">
+                                                    {% if message.invalidAnswer %}
+                                                        {{ message.invalidAnswer.receivedAt|date('H:i') }}
+                                                    {% endif %}
                                                 </span>
-                                            {% endif %}
+                                            </span>
+                                        </span>
 
-                                            {% if app.environment == 'dev' %}
-                                                <a class="btn btn-default"
-                                                   href="{{ path('sandbox_fake_sms_thread', {phoneNumber: message.volunteer.phoneNumber}) }}">☎️</a>
-                                            {% endif %}
+                                        {% if app.environment == 'dev' %}
+                                            <a class="btn btn-default"
+                                               href="{{ path('sandbox_fake_sms_thread', {phoneNumber: message.volunteer.phoneNumber}) }}">☎️</a>
+                                        {% endif %}
 
-                                            {% if campaign.active %}
-                                                <span id="open-message-{{ suffix }}"
-                                                      data-message-id="{{ message.id }}"
-                                                      class="badge badge-light open-message">✏️</span>
-                                            {% endif %}
-                                        </div>
-                                    {% endif %}
+                                        {% if answerCount and campaign.active %}
+                                            <span id="open-message-{{ suffix }}"
+                                                  data-message-id="{{ message.id }}"
+                                                  class="badge badge-light open-message">✏️</span>
+                                        {% endif %}
+                                    </div>
 
                                     <br/>
 
@@ -311,7 +309,7 @@
                         {# Download CSV #}
                         <div class="col-md-3 col-12 skip-line">
                             <a href="#"
-                               class="btn btn-primary download-csv-button requires-selection-{{ communication.id }} disabled"
+                               class="btn btn-primary download-csv-button"
                                data-communication-id="{{ communication.id }}" role="button">
                                 {{ 'campaign_status.selection.download_csv'|trans }}
                             </a>
@@ -327,7 +325,7 @@
                         {# Download PDF #}
                         <div class="col-md-3 col-12 skip-line">
                             <a href="#"
-                               class="btn btn-primary download-pdf-button requires-selection-{{ communication.id }} disabled"
+                               class="btn btn-primary download-pdf-button"
                                data-communication-id="{{ communication.id }}" role="button">
                                 {{ 'campaign_status.selection.download_pdf'|trans }}
                             </a>
@@ -680,7 +678,6 @@
                     } else {
                         row.fadeOut();
                         row.find('.volunteer-selection').prop('checked', false);
-                        refreshSelection(communicationId);
                     }
                 });
             });
@@ -711,32 +708,9 @@
                 }
             });
 
-            refreshSelection(communicationId);
-
             $(this).prop('checked', false);
         });
         $('.select-all, .volunteer-selection').prop('checked', false);
-
-
-        function refreshSelection(communicationId) {
-            $('.requires-selection-' + communicationId).addClass('disabled');
-
-            $('.volunteer-selection-' + communicationId).each(function () {
-                var tick = $(this);
-                if (tick.is(':checked')) {
-                    $('.requires-selection-' + communicationId).removeClass('disabled');
-                }
-            });
-        }
-
-        $('.volunteer-selection').click(function () {
-            var that = $(this);
-            var communicationId = that.data('communication-id');
-            refreshSelection(communicationId);
-        });
-        $('.volunteer-selection').each(function () {
-            refreshSelection($(this).data('communication-id'));
-        })
 
         function getSelectedVolunteers(communicationId) {
             var volunteerIds = [];

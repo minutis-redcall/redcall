@@ -83,31 +83,18 @@ class Dispatcher
 
     /**
      * @param Message $message
-     *
-     * @throws \RuntimeException
-     */
-    public function acknowledgeMessage(Message $message)
-    {
-        if ($message->getCommunication()->getStatus() !== Communication::STATUS_DISPATCHED) {
-            throw new \RuntimeException(sprintf(
-                'Cannot acknowledge message %d because communication %d was never dispatched',
-                $message->getId(),
-                $message->getCommunication()->getId()
-            ));
-        }
-
-        $message->setReceived(true);
-        $this->entityManager->flush();
-    }
-
-    /**
-     * @param Message $message
      * @param string  $answer
      *
      * @throws \RuntimeException
      */
     public function processInboundAnswer(Message $message, string $answer)
     {
-        $this->messageRepository->addAnswer($message, $answer);
+        if (!$message->getCommunication()->isMultipleAnswer()) {
+            $this->messageRepository->addAnswer($message, $answer);
+        } else {
+            foreach (array_filter(explode(' ', $answer)) as $split) {
+                $this->messageRepository->addAnswer($message, $split);
+            }
+        }
     }
 }

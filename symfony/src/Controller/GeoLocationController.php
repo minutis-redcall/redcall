@@ -58,7 +58,7 @@ class GeoLocationController extends BaseController
     public function openAction(string $code)
     {
         /* @var Message $message */
-        $message = $this->getMessageByGeoCode($code);
+        $message = $this->getMessageByWebCode($code);
 
         return $this->render('geo_location.html.twig', [
             'code'    => $code,
@@ -69,7 +69,7 @@ class GeoLocationController extends BaseController
     public function content(string $code)
     {
         /* @var Message $message */
-        $message       = $this->getMessageByGeoCode($code);
+        $message       = $this->getMessageByWebCode($code);
         $communication = $message->getCommunication();
 
         return $this->render('geo_location_content.html.twig', [
@@ -93,7 +93,7 @@ class GeoLocationController extends BaseController
     public function updateAction(Request $request, string $code)
     {
         /* @var Message $message */
-        $message = $this->getMessageByGeoCode($code);
+        $message = $this->getMessageByWebCode($code);
 
         $geolocation = new GeoLocation();
 
@@ -133,7 +133,7 @@ class GeoLocationController extends BaseController
     public function pollAction(string $code)
     {
         /* @var Message $message */
-        $message = $this->getMessageByGeoCode($code);
+        $message = $this->getMessageByWebCode($code);
 
         return new JsonResponse(
             $this->getGeolocationInformation($message)
@@ -150,7 +150,7 @@ class GeoLocationController extends BaseController
     public function sseAction(string $code, ?int $status = null)
     {
         /* @var Message $message */
-        $message       = $this->getMessageByGeoCode($code);
+        $message       = $this->getMessageByWebCode($code);
         $communication = $message->getCommunication();
 
         $prevUpdate = $status;
@@ -202,10 +202,10 @@ class GeoLocationController extends BaseController
      *
      * @throws NotFoundHttpException
      */
-    private function getMessageByGeoCode(string $code): Message
+    private function getMessageByWebCode(string $code): Message
     {
         $message = $this->messageRepository->findOneBy([
-            'geoCode' => $code,
+            'webCode' => $code,
         ]);
 
         if (null === $message) {

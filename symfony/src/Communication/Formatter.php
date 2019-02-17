@@ -60,7 +60,11 @@ class Formatter
                 foreach ($choices as $choice) {
                     $contentParts[] = sprintf('%s: %s', $choice->getCode(), $choice->getLabel());
                 }
-                $contentParts[] = $this->translator->trans('message.how_to_answer_alert');
+                if (!$message->getCommunication()->isMultipleAnswer()) {
+                    $contentParts[] = $this->translator->trans('message.how_to_answer_simple');
+                } else {
+                    $contentParts[] = $this->translator->trans('message.how_to_answer_multiple');
+                }
             }
         }
 
@@ -77,7 +81,7 @@ class Formatter
         if ($message->getCommunication()->getType() !== Communication::TYPE_WEB
             && $message->getCommunication()->hasGeoLocation()) {
             $contentParts[] = $this->translator->trans('message.geo_location', [
-                '%url%' => trim(getenv('WEBSITE_URL'), '/').$this->router->generate('geo_open', ['code' => $message->getGeoCode()]),
+                '%url%' => trim(getenv('WEBSITE_URL'), '/').$this->router->generate('geo_open', ['code' => $message->getWebCode()]),
             ]);
         }
 

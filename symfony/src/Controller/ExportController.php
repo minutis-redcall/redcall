@@ -33,16 +33,13 @@ class ExportController extends BaseController
     {
         $this->validateCsrfOrThrowNotFoundException('communication', $request->request->get('csrf'));
 
+        $communication = $this->getCommunication($communicationId);
+
         $selection = json_decode($request->request->get('volunteers'), true);
-        if (!$selection) {
-            throw $this->createNotFoundException();
-        }
-
-        /* @var Communication $communication */
-        $communication = $this->getManager(Communication::class)->find($communicationId);
-
-        if (!$communication) {
-            throw $this->createNotFoundException();
+        if (!$selection && $communication->getMessages()) {
+            $selection = array_map(function (Message $message) {
+                return $message->getVolunteer()->getId();
+            }, $communication->getMessages()->toArray());
         }
 
         $rows = [];
@@ -66,7 +63,6 @@ class ExportController extends BaseController
                 $this->trans('csv_export.phone_number') => $volunteer->getFormattedPhoneNumber(),
                 $this->trans('csv_export.tags')         => $tags,
                 $this->trans('csv_export.sent')         => $this->trans($message->isSent() ? 'base.yes' : 'base.no'),
-                $this->trans('csv_export.received')     => $this->trans($message->isReceived() ? 'base.yes' : 'base.no'),
             ];
 
             /* @var Choice $choice */
@@ -103,18 +99,17 @@ class ExportController extends BaseController
     {
         $this->validateCsrfOrThrowNotFoundException('communication', $request->request->get('csrf'));
 
-        $selection = json_decode($request->request->get('volunteers'), true);
-        if (!$selection) {
-            throw $this->createNotFoundException();
-        }
-
         /* @var Communication $communication */
-        $communication = $this->getManager(Communication::class)->find($communicationId);
-        $campaign      = $communication->getCampaign();
+        $communication = $this->getCommunication($communicationId);
 
-        if (!$communication) {
-            throw $this->createNotFoundException();
+        $selection = json_decode($request->request->get('volunteers'), true);
+        if (!$selection && $communication->getMessages()) {
+            $selection = array_map(function (Message $message) {
+                return $message->getVolunteer()->getId();
+            }, $communication->getMessages()->toArray());
         }
+
+        $campaign = $communication->getCampaign();
 
         $tables = [];
         if ($communication->getChoices()->toArray()) {
@@ -128,13 +123,24 @@ class ExportController extends BaseController
                     }
 
                     /* @var \App\Entity\Answer|null $answer */
-                    $answer = $message->getLastAnswer();
-                    if ($answer && $answer->getChoice()
-                        && $answer->getChoice()->getId() == $choice->getId()) {
-                        $tables[$label][] = [
-                            'volunteer' => $message->getVolunteer(),
-                            'answer'    => $answer,
-                        ];
+                    if (!$communication->isMultipleAnswer()) {
+                        $answer = $message->getLastAnswer();
+                        if ($answer && $answer->getChoice()
+                            && $answer->getChoice()->getId() == $choice->getId()) {
+                            $tables[$label][] = [
+                                'volunteer' => $message->getVolunteer(),
+                                'answer'    => $answer,
+                            ];
+                        }
+                    } elseif ($message->getAnswers()) {
+                        foreach ($message->getAnswers() as $answer) {
+                            if ($answer->getChoice() && $answer->getChoice()->getId() == $choice->getId()) {
+                                $tables[$label][] = [
+                                    'volunteer' => $message->getVolunteer(),
+                                    'answer'    => $answer,
+                                ];
+                            }
+                        }
                     }
                 }
             }
@@ -172,5 +178,22 @@ class ExportController extends BaseController
             $mpdf,
             sprintf('export-%s.pdf', date('Y-m-d', $campaign->getCreatedAt()->getTimestamp()))
         );
+    }
+
+    /**
+     * @param $communicationId
+     *
+     * @return Communication
+     */
+    private function getCommunication($communicationId): Communication
+    {
+        /* @var Communication $communication */
+        $communication = $this->getManager(Communication::class)->find($communicationId);
+
+        if (!$communication) {
+            throw $this->createNotFoundException();
+        }
+
+        return $communication;
     }
 }

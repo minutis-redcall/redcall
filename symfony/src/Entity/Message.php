@@ -8,8 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Table(indexes={
  *     @ORM\Index(name="message_idx", columns={"message_id"}),
- *     @ORM\Index(name="web_codex"  , columns={"web_code"}),
- *     @ORM\Index(name="geo_codex"  , columns={"geo_code"})
+ *     @ORM\Index(name="web_codex"  , columns={"web_code"})
  * })
  * @ORM\Entity(repositoryClass="App\Repository\MessageRepository")
  */
@@ -79,15 +78,6 @@ class Message
      * @ORM\Column(type="binary", length=8, nullable=true)
      */
     private $webCode;
-
-    /**
-     * Keep this field binary to preserve case sensitiveness.
-     *
-     * @var string
-     *
-     * @ORM\Column(type="binary", length=8, nullable=true)
-     */
-    private $geoCode;
 
     /**
      * @ORM\OneToOne(targetEntity="App\Entity\GeoLocation", mappedBy="message", cascade={"persist", "remove"})
@@ -287,26 +277,6 @@ class Message
     }
 
     /**
-     * @return string
-     */
-    public function getGeoCode(): string
-    {
-        if (gettype($this->geoCode) === 'resource') {
-            return stream_get_contents($this->geoCode);
-        }
-
-        return $this->geoCode;
-    }
-
-    /**
-     * @param string|resource $geoCode
-     */
-    public function setGeoCode($geoCode): void
-    {
-        $this->geoCode = $geoCode;
-    }
-
-    /**
      * @return GeoLocation|null
      */
     public function getGeoLocation(): ?GeoLocation
@@ -355,9 +325,19 @@ class Message
      */
     public function getAnswerByChoice(Choice $choice): ?Answer
     {
-        $answer = $this->getLastAnswer();
-        if ($answer && $answer->isChoice($choice)) {
-            return $answer;
+        if (!$this->communication->isMultipleAnswer()) {
+            $answer = $this->getLastAnswer();
+            if ($answer && $answer->isChoice($choice)) {
+                return $answer;
+            }
+
+            return null;
+        }
+
+        foreach ($this->answers ?? [] as $answer) {
+            if ($answer->isChoice($choice)) {
+                return $answer;
+            }
         }
 
         return null;
@@ -384,6 +364,10 @@ class Message
      */
     public function getInvalidAnswer(): ?Answer
     {
+        if ($this->hasValidAnswer()) {
+            return null;
+        }
+
         $lastAnswer = $this->getLastAnswer();
         if ($lastAnswer && null === $lastAnswer->getChoice()) {
             return $lastAnswer;
@@ -397,6 +381,17 @@ class Message
      */
     public function hasValidAnswer(): bool
     {
-        return $this->getLastAnswer() && $this->getLastAnswer()->getChoice();
+        if (!$this->communication->isMultipleAnswer()) {
+            return $this->getLastAnswer() && $this->getLastAnswer()->getChoice();
+        }
+
+        foreach ($this->answers ?? [] as $answer) {
+            /* @var \App\Entity\Answer $answer */
+            if ($answer->getChoice()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
