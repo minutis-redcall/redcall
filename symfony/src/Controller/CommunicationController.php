@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Base\BaseController;
 use App\Campaign\CampaignManager;
 use App\Communication\Formatter;
+use App\Communication\GSM;
 use App\Component\HttpFoundation\EventStreamResponse;
 use App\Entity\Campaign;
 use App\Entity\Communication;
@@ -288,9 +289,14 @@ class CommunicationController extends BaseController
         $message->setWebCode('xxxxxxxx');
         $message->setGeoCode('xxxxxxxx');
 
+        $content = $this->formatter->formatMessageContent($message);
+        $parts   = GSM::getSMSParts($content);
+
         return new JsonResponse([
             'success' => true,
-            'message' => $this->formatter->formatMessageContent($message),
+            'message' => $content,
+            'cost'    => count($parts),
+            'length'  => array_sum(array_map('mb_strlen', $parts)),
         ]);
     }
 

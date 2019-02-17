@@ -154,6 +154,8 @@ form:
       back: Retour
       other_options: Autres options
       preview: Prévisualisation
+      cost: 'Coût du message multiplié par :'
+      length: 'Longueur du message :'
   campaign:
     fields:
       label: 'Nom du déclenchement'

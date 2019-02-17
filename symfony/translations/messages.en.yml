@@ -155,6 +155,8 @@ form:
       back: Back
       other_options: Other options
       preview: Preview
+      cost: 'Message cost multiplied by:'
+      length: 'Message length:'
   campaign:
     fields:
       label: 'Campaign name'

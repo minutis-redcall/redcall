@@ -29,8 +29,16 @@
 
 <div class="h4">{{ 'form.communication.fields.preview'|trans }}</div>
 
-<div id="preview" style="background-color:#eeeeee;padding:5px;margin-bottom:10px;">
+<div id="message-preview" style="background-color:#eeeeee;padding:5px;margin-bottom:10px;">
     &nbsp;
+</div>
+
+<div style="margin-bottom:10px;">
+    {{ 'form.communication.fields.length'|trans }}
+    <span id="message-length">--</span>
+    <br/>
+    {{ 'form.communication.fields.cost'|trans }}
+    <span id="message-cost">--</span>
 </div>
 
 <script type="text/javascript" src="{{ asset('js/jquery.collection.js') }}"></script>
@@ -76,9 +84,13 @@
         previewTimeout = setTimeout(function () {
             $.post('{{ path('communication_preview') }}', $('form').serialize(), function (data) {
                 if (data.success) {
-                    $('#preview').html(nl2br(data.message));
+                    $('#message-preview').html(nl2br(data.message));
+                    $('#message-cost').html(data.cost);
+                    $('#message-length').html(data.length);
                 } else {
-                    $('#preview').html('&nbsp;');
+                    $('#message-preview').html('&nbsp;');
+                    $('#message-cost').html('--');
+                    $('#message-length').html('--');
                 }
             });
         }, 1000);

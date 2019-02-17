@@ -301,4 +301,60 @@ class GSM
 
         return $sanitized;
     }
+
+    public static function getSMSParts(string $message)
+    {
+        $unicode = false;
+        if (!self::isGSMCompatible($message)) {
+            $unicode = true;
+        }
+
+        $length = 0;
+        foreach (preg_split('//u', $message, null, PREG_SPLIT_NO_EMPTY) as $letter) {
+            if (!$unicode && in_array($letter, self::ESCAPED)) {
+                $length += 1;
+            }
+
+            $length++;
+        }
+
+        $multipart = false;
+        if ((!$unicode && $length > 160) || ($unicode && $length > 70)) {
+            $multipart = true;
+        }
+
+        if (!$multipart) {
+            return [$message];
+        }
+
+        $parts  = [];
+        $part   = '';
+        $length = 0;
+        foreach (preg_split('//u', $message, null, PREG_SPLIT_NO_EMPTY) as $letter) {
+            if (!$unicode && in_array($letter, self::ESCAPED)) {
+                if ($length == 152) {
+                    $parts[] = $part;
+                    $part    = '';
+                    $length  = 0;
+                }
+                $part   .= '-'; // Escaping character
+                $length += 1;
+            }
+
+            if ((!$unicode && $length == 153) || ($unicode && $length == 67)) {
+                $parts[] = $part;
+                $part    = '';
+                $length  = 0;
+            }
+
+            $part   .= $letter;
+            $length += 1;
+        }
+
+        if ($part) {
+            $parts[] = $part;
+        }
+
+        return $parts;
+    }
 }
