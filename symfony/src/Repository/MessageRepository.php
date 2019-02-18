@@ -50,14 +50,29 @@ class MessageRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param Message $message
-     * @param string  $body
+     * @param Message     $message
+     * @param string      $body
+     * @param Choice|null $forcedChoice
+     *
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function addAnswer(Message $message, string $body, ?Choice $forcedChoice = null): void
     {
         $choice = $message->getCommunication()->getChoiceByLabelOrCode($body);
-        if ($choice && $message->getAnswerByChoice($choice)) {
-            return;
+
+        if (!$message->getCommunication()->isMultipleAnswer()) {
+            // If no multiple answers are allowed, clearing up all previous answers
+            foreach ($message->getAnswers() as $answer) {
+                $answer->setChoice(null);
+                $this->_em->persist($answer);
+            }
+        } else {
+            // If multiple answers allowed, we'll only keep the last duplicate
+            if ($choice && $answer = $message->getAnswerByChoice($choice)) {
+                $answer->setChoice(null);
+                $this->_em->persist($answer);
+            }
         }
 
         $answer = new Answer();
@@ -80,17 +95,22 @@ class MessageRepository extends ServiceEntityRepository
     /**
      * @param Message $message
      * @param Choice  $choice
+     *
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function cancelAnswerByChoice(Message $message, Choice $choice): void
     {
         foreach ($message->getAnswers() as $answer) {
+            /* @var Answer $answer */
             if ($answer->isChoice($choice)) {
-                $message->removeAnswer($answer);
+                $answer->setChoice(null);
 
-                $this->_em->remove($answer);
-                $this->_em->flush();
+                $this->_em->persist($answer);
             }
         }
+
+        $this->_em->flush();
     }
 
     /**

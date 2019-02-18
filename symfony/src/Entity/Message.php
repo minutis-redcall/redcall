@@ -309,7 +309,7 @@ class Message
     public function alreadyAnsweredChoiceCode(string $code): bool
     {
         foreach ($this->getAnswers() ?? [] as $answer) {
-            if ($code == $answer->getChoice()->getCode()) {
+            if ($answer->getChoice() && $code == $answer->getChoice()->getCode()) {
                 return true;
             }
         }
