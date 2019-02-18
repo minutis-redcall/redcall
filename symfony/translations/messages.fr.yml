@@ -139,8 +139,8 @@ form:
   communication:
     fields:
       response_title: "Réponses"
-      type_alert: 'Le volontaire pourra répondre par SMS'
-      type_web: 'Le volontaire pourra répondre via un lien'
+      type_sms: 'Message urgent envoyé par SMS'
+      type_email: 'Message envoyé par email'
       geo_location: 'Les destinataires de ce message pourront se géo-localiser entre eux'
       volunteers: Audience
       selection: Sélection:

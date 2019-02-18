@@ -9,8 +9,8 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Communication
 {
-    const TYPE_ALERT = 'alert'; // A question is sent to user by SMS and user can reply by SMS
-    const TYPE_WEB   = 'web';   // A question is sent to user by SMS and user can reply by website
+    const TYPE_SMS   = 'sms';
+    const TYPE_EMAIL = 'email';
 
     const STATUS_PENDING     = 'pending';     // The communication is waiting to be dispatched to volunteers.
     const STATUS_DISPATCHING = 'dispatching'; // The communication is being dispatched.

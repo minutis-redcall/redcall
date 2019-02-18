@@ -2,7 +2,6 @@
 
 namespace App\Communication;
 
-use App\Entity\Communication;
 use App\Entity\Message;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Translation\TranslatorInterface;
@@ -49,37 +48,25 @@ class Formatter
 
         $contentParts[] = $body;
 
-        // Type "alert": volunteer can answer by SMS
-        if ($message->getCommunication()->getType() === Communication::TYPE_ALERT) {
-            $choices = $communication->getChoices();
-            if (is_object($choices)) {
-                $choices = $communication->getChoices()->toArray();
-            }
-
-            if ($choices) {
-                foreach ($choices as $choice) {
-                    $contentParts[] = sprintf('%s: %s', $choice->getCode(), $choice->getLabel());
-                }
-                if (!$message->getCommunication()->isMultipleAnswer()) {
-                    $contentParts[] = $this->translator->trans('message.how_to_answer_simple');
-                } else {
-                    $contentParts[] = $this->translator->trans('message.how_to_answer_multiple');
-                }
-            }
+        // Possible responses
+        $choices = $communication->getChoices();
+        if (is_object($choices)) {
+            $choices = $communication->getChoices()->toArray();
         }
 
-        // Type "web": volunteer can click on a link to answer
-        if ($message->getCommunication()->getType() === Communication::TYPE_WEB) {
-            if ($communication->getChoices()) {
-                $contentParts[] = $this->translator->trans('message.how_to_answer_web', [
-                    '%url%' => trim(getenv('WEBSITE_URL'), '/').$this->router->generate('message_open', ['code' => $message->getWebCode()]),
-                ]);
+        if ($choices) {
+            foreach ($choices as $choice) {
+                $contentParts[] = sprintf('%s: %s', $choice->getCode(), $choice->getLabel());
+            }
+            if (!$message->getCommunication()->isMultipleAnswer()) {
+                $contentParts[] = $this->translator->trans('message.how_to_answer_simple');
+            } else {
+                $contentParts[] = $this->translator->trans('message.how_to_answer_multiple');
             }
         }
 
         // Enabled geo location
-        if ($message->getCommunication()->getType() !== Communication::TYPE_WEB
-            && $message->getCommunication()->hasGeoLocation()) {
+        if ($message->getCommunication()->hasGeoLocation()) {
             $contentParts[] = $this->translator->trans('message.geo_location', [
                 '%url%' => trim(getenv('WEBSITE_URL'), '/').$this->router->generate('geo_open', ['code' => $message->getWebCode()]),
             ]);

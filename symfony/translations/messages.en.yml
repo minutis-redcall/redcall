@@ -140,8 +140,8 @@ form:
   communication:
     fields:
       response_title: "Responses"
-      type_alert: Volunteer will be able to answer by responding to the SMS
-      type_web: Volunteer will receive a link to proceed answering
+      type_sms: Emergency message sent through SMS
+      type_email: Message sent by email
       geo_location: Message recipients will be able to geo locate each others
       volunteers: Audience
       selection: Selection:

@@ -1,23 +1,27 @@
 {{ form_row(form.volunteers) }}
 
-{% set max_length = constant('App\\Entity\\Message::MAX_LENGTH') %}
+{% set max_length_sms = constant('App\\Entity\\Message::MAX_LENGTH_SMS') %}
+{% set max_length_email = constant('App\\Entity\\Message::MAX_LENGTH_EMAIL') %}
 
 <div id="message-container">
     <div class="h4">{{ 'form.communication.fields.message'|trans }}</div>
+
+    {{ form_row(form.type) }}
+
     {{ form_errors(form.message) }}
     <div class="textarea-wrapper">
         {{ form_widget(form.message) }}
     </div>
-    <div class="float-right"><span id="message-size">0</span> / {{ max_length }}</div>
+    <div class="float-right">
+        <span id="message-size">0</span>
+        /
+        <span id="message-max">{{ max_length_sms }}</span>
+    </div>
 </div>
 
 <div class="clearfix"></div>
 
 <div class="h4">{{ 'form.communication.fields.response_title'|trans }}</div>
-
-{#
-{{ form_row(form.type) }}
-#}
 
 {{ form_label(form.answers) }}
 
@@ -37,7 +41,7 @@
     &nbsp;
 </div>
 
-<div style="margin-bottom:10px;">
+<div id="message-calc" style="margin-bottom:10px;">
     {{ 'form.communication.fields.length'|trans }}
     <span id="message-length">--</span>
     <br/>
@@ -63,15 +67,14 @@
     {# Update message size automatically #}
     function updateMessageSize() {
         var textArea = $('#{{ form.message.vars.id }}');
-        if (textArea.val().length > {{ max_length }}) {
+        if (textArea.val().length > $('#message-max').html()) {
             textArea.val(
-                textArea.val().substr(0, {{ max_length }})
+                textArea.val().substr(0, $('#message-max').html())
             );
         }
         $('#message-size').html(textArea.val().length);
     }
 
-    updateMessageSize();
     $('#{{ form.message.vars.id }}').keyup(updateMessageSize);
 
     {# Disables "enter" key on input fields #}
@@ -99,5 +102,23 @@
             });
         }, 1000);
     });
+
+    {# When switching from email or sms, change message length #}
+    function updateMaxMessageSize() {
+        if ($('#{{ form.type.vars.id }}').find('input:checked').val() === '{{ constant('App\\Entity\\Communication::TYPE_SMS') }}') {
+            $('#message-max').html({{ max_length_sms }});
+            $('#message-calc').removeClass('d-none');
+        } else {
+            $('#message-max').html({{ max_length_email }});
+            $('#message-calc').addClass('d-none');
+        }
+
+        updateMessageSize();
+    }
+
+    $('#{{ form.type.vars.id }}').change(function () {
+        updateMaxMessageSize();
+    });
+    updateMaxMessageSize();
 
 </script>

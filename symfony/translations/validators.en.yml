@@ -9,4 +9,6 @@ form:
         empty: 'Please enter a message'
   communication:
     errors:
-      web_message: "A message requiring actions on the web requires at least 1 answer."
+      email_geolocation: 'No possible geo location when message sent by email.'
+      too_large_email: 'This email is too long.'
+      too_large_sms: 'This SMS is too long.'

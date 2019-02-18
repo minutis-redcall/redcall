@@ -22,12 +22,12 @@
 
 {% block checkbox_widget %}
     <div>
+        {{ form_errors(form) }}
         <label class="switch">
             <input type="checkbox" {{ block('widget_attributes') }}{% if value is defined %} value="{{ value }}"{% endif %}{% if checked %} checked="checked"{% endif %} />
             <span class="slider"></span>
         </label>
         <label>{{ form.vars.label|trans }}</label>
-        {{ form_errors(form) }}
     </div>
 {% endblock %}
 
