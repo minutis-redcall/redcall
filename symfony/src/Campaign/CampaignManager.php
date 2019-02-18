@@ -60,6 +60,7 @@ class CampaignManager
      * @param bool       $geoLocation
      * @param string     $type
      * @param bool       $multipleAnswer
+     * @param string     $subject
      *
      * @return Campaign
      */
@@ -71,10 +72,11 @@ class CampaignManager
         array $choiceValues,
         bool $geoLocation,
         string $type,
-        bool $multipleAnswer)
+        bool $multipleAnswer,
+        string $subject)
     {
         // Create the campaign with an initial communication
-        $communication = $this->communicationFactory->create($message, $volunteers, $choiceValues, $geoLocation, $type, $multipleAnswer);
+        $communication = $this->communicationFactory->create($message, $volunteers, $choiceValues, $geoLocation, $type, $multipleAnswer, $subject);
         $campaign      = $this->campaignFactory->create($label, $color, $communication);
 
         $this->entityManager->persist($campaign);

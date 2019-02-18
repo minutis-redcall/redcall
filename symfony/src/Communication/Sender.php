@@ -2,6 +2,8 @@
 
 namespace App\Communication;
 
+use App\Email\SymfonyEmailProvider;
+use App\Entity\Communication;
 use App\Entity\Message;
 use App\Issue\IssueLogger;
 use App\SMS\SMSProvider;
@@ -10,17 +12,30 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 class Sender
 {
-    /** @var SMSProvider */
+    /**
+     * @var SMSProvider
+     */
     private $SMSProvider;
 
-    /** @var Formatter */
+    /**
+     * @var Formatter
+     */
     private $formatter;
 
-    /** @var EntityManagerInterface */
+    /**
+     * @var EntityManagerInterface
+     */
     private $entityManager;
 
-    /** @var IssueLogger */
+    /**
+     * @var IssueLogger
+     */
     private $issueLogger;
+
+    /**
+     * @var SymfonyEmailProvider
+     */
+    private $emailProvider;
 
     /**
      * Sender constructor.
@@ -29,24 +44,39 @@ class Sender
      * @param Formatter              $formatter
      * @param EntityManagerInterface $entityManager
      * @param IssueLogger            $issueLogger
-     * @param ParameterBagInterface  $parameterBag ;
+     * @param ParameterBagInterface  $parameterBag
+     * @param SymfonyEmailProvider   $emailProvider
      */
     public function __construct(
         SMSProvider $SMSProvider,
         Formatter $formatter,
         EntityManagerInterface $entityManager,
-        IssueLogger $issueLogger
+        IssueLogger $issueLogger,
+        SymfonyEmailProvider $emailProvider
     ) {
         $this->SMSProvider   = $SMSProvider;
         $this->formatter     = $formatter;
         $this->entityManager = $entityManager;
         $this->issueLogger   = $issueLogger;
+        $this->emailProvider = $emailProvider;
     }
 
     /**
      * @param Message $message
      */
     public function send(Message $message)
+    {
+        if ($message->getCommunication()->getType() === Communication::TYPE_SMS) {
+            $this->sendSms($message);
+        }
+
+        $this->sendEmail($message);
+    }
+
+    /**
+     * @param Message $message
+     */
+    public function sendSms(Message $message)
     {
         $volunteer = $message->getVolunteer();
 
@@ -66,6 +96,35 @@ class Sender
             $this->issueLogger->fileIssueFromException('Failed to send SMS to volunteer', $e, IssueLogger::SEVERITY_MAJOR, [
                 'volunteer_id'  => $volunteer->getId(),
                 'provider_code' => $this->SMSProvider->getProviderCode(),
+            ]);
+        }
+    }
+
+    /**
+     * @param Message $message
+     */
+    public function sendEmail(Message $message)
+    {
+        if (!$message->getVolunteer()->getEmail()) {
+            return;
+        }
+
+        try {
+            $this->emailProvider->send(
+                $message->getVolunteer()->getEmail(),
+                $message->getCommunication()->getSubject(),
+                $this->formatter->formatMessageContent($message)
+            );
+
+            $message->setMessageId(time());
+            $message->setCost(0);
+            $message->setSent(true);
+
+            $this->entityManager->merge($message);
+            $this->entityManager->flush();
+        } catch (\Exception $e) {
+            $this->issueLogger->fileIssueFromException('Failed to send SMS to volunteer', $e, IssueLogger::SEVERITY_MAJOR, [
+                'volunteer_id' => $message->getVolunteer()->getId(),
             ]);
         }
     }

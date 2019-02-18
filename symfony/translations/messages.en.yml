@@ -136,6 +136,7 @@ message:
     announcement: 'RED-CROSS on %year%-%month%-%day% at %hours%h%mins%:'
     how_to_answer_simple: 'To give your answer, please click on the following link:'
     how_to_answer_multiple: 'To give your answer(s), please click on the following link:'
+    possible_answers: 'Possible response(s):'
 
 button:
   submit: 'Submit'

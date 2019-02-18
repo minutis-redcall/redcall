@@ -115,7 +115,6 @@ class Formatter
         $contentParts[] = '';
 
         $contentParts[] = $communication->getBody();
-
         $contentParts[] = '';
 
         $choices = $communication->getChoices();
@@ -123,6 +122,13 @@ class Formatter
             $choices = $communication->getChoices()->toArray();
         }
         if ($choices) {
+
+            $contentParts[] = $this->translator->trans('message.email.possible_answers');
+            foreach ($choices as $choice) {
+                $contentParts[] = sprintf('%s: %s', $choice->getCode(), $choice->getLabel());
+            }
+            $contentParts[] = '';
+
             if (!$communication->isMultipleAnswer()) {
                 $contentParts[] = $this->translator->trans('message.email.how_to_answer_simple');
             } else {

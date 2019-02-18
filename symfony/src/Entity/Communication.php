@@ -12,11 +12,6 @@ class Communication
     const TYPE_SMS   = 'sms';
     const TYPE_EMAIL = 'email';
 
-    const STATUS_PENDING     = 'pending';     // The communication is waiting to be dispatched to volunteers.
-    const STATUS_DISPATCHING = 'dispatching'; // The communication is being dispatched.
-    const STATUS_DISPATCHED  = 'dispatched';  // The communication was successfully dispatched.
-    const STATUS_FAILED      = 'failed';      // The communication failed to be dispatched.
-
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -44,13 +39,6 @@ class Communication
      * @ORM\Column(type="string", length=20)
      */
     private $type;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(type="string", length=20)
-     */
-    private $status;
 
     /**
      * @var string
@@ -184,27 +172,7 @@ class Communication
     }
 
     /**
-     * @return string
-     */
-    public function getStatus(): string
-    {
-        return $this->status;
-    }
-
-    /**
-     * @param string $status
-     *
-     * @return $this
-     */
-    public function setStatus($status): self
-    {
-        $this->status = $status;
-
-        return $this;
-    }
-
-    /**
-     * @return string
+     * @return string|null
      */
     public function getSubject(): ?string
     {
@@ -212,11 +180,11 @@ class Communication
     }
 
     /**
-     * @param string $subject
+     * @param string|null $subject
      *
      * @return Communication
      */
-    public function setSubject(string $subject): Communication
+    public function setSubject(?string $subject): Communication
     {
         $this->subject = $subject;
 

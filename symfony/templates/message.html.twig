@@ -51,9 +51,5 @@
 
     {% endfor %}
 
-    {% if message.communication.hasGeoLocation %}
-        {{ render(controller('App\\Controller\\GeoLocationController::content', {code: message.webCode})) }}
-    {% endif %}
-
 {% endblock %}
 

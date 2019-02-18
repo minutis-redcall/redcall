@@ -46,7 +46,6 @@ class CommunicationFactory
         $communication = new Communication();
         $communication
             ->setType($type)
-            ->setStatus(Communication::STATUS_PENDING)
             ->setBody($message)
             ->setGeoLocation($geoLocation)
             ->setCreatedAt(new \DateTime())
