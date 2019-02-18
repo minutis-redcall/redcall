@@ -2,6 +2,7 @@
 
 namespace App\Communication;
 
+use App\Entity\Communication;
 use App\Entity\Message;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Translation\TranslatorInterface;
@@ -37,16 +38,29 @@ class Formatter
      */
     public function formatMessageContent(Message $message): string
     {
+        if ($message->getCommunication()->getType() === Communication::TYPE_SMS) {
+            return $this->formatSMSContent($message);
+        }
+
+        return $this->formatEmailContent($message);
+    }
+
+    /**
+     * @param Message $message
+     *
+     * @return string
+     */
+    public function formatSMSContent(Message $message): string
+    {
         $contentParts  = [];
         $communication = $message->getCommunication();
-        $body          = $communication->getBody();
 
-        $contentParts[] = $this->translator->trans('message.announcement', [
+        $contentParts[] = $this->translator->trans('message.sms.announcement', [
             '%hours%' => date('H'),
             '%mins%'  => date('i'),
         ]);
 
-        $contentParts[] = $body;
+        $contentParts[] = $communication->getBody();
 
         // Possible responses
         $choices = $communication->getChoices();
@@ -59,19 +73,65 @@ class Formatter
                 $contentParts[] = sprintf('%s: %s', $choice->getCode(), $choice->getLabel());
             }
             if (!$message->getCommunication()->isMultipleAnswer()) {
-                $contentParts[] = $this->translator->trans('message.how_to_answer_simple');
+                $contentParts[] = $this->translator->trans('message.sms.how_to_answer_simple');
             } else {
-                $contentParts[] = $this->translator->trans('message.how_to_answer_multiple');
+                $contentParts[] = $this->translator->trans('message.sms.how_to_answer_multiple');
             }
         }
 
         // Enabled geo location
         if ($message->getCommunication()->hasGeoLocation()) {
-            $contentParts[] = $this->translator->trans('message.geo_location', [
+            $contentParts[] = $this->translator->trans('message.sms.geo_location', [
                 '%url%' => trim(getenv('WEBSITE_URL'), '/').$this->router->generate('geo_open', ['code' => $message->getWebCode()]),
             ]);
         }
 
         return GSM::enforceGSMAlphabet(implode("\n", $contentParts));
+    }
+
+    /**
+     * @param Message $message
+     *
+     * @return string
+     */
+    public function formatEmailContent(Message $message): string
+    {
+        $contentParts  = [];
+        $communication = $message->getCommunication();
+
+        if ($communication->getSubject()) {
+            $contentParts[] = $communication->getSubject();
+            $contentParts[] = str_repeat('-', mb_strlen($communication->getSubject()));
+            $contentParts[] = '';
+        }
+
+        $contentParts[] = $this->translator->trans('message.email.announcement', [
+            '%day%'   => date('d'),
+            '%month%' => date('m'),
+            '%year%'  => date('Y'),
+            '%hours%' => date('H'),
+            '%mins%'  => date('i'),
+        ]);
+        $contentParts[] = '';
+
+        $contentParts[] = $communication->getBody();
+
+        $contentParts[] = '';
+
+        $choices = $communication->getChoices();
+        if (is_object($choices)) {
+            $choices = $communication->getChoices()->toArray();
+        }
+        if ($choices) {
+            if (!$communication->isMultipleAnswer()) {
+                $contentParts[] = $this->translator->trans('message.email.how_to_answer_simple');
+            } else {
+                $contentParts[] = $this->translator->trans('message.email.how_to_answer_multiple');
+            }
+            $contentParts[] = trim(getenv('WEBSITE_URL'), '/').$this->router->generate('message_open', ['code' => $message->getWebCode()]);
+            $contentParts[] = '';
+        }
+
+        return implode("\n", $contentParts);
     }
 }

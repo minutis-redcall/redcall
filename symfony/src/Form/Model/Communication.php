@@ -72,22 +72,26 @@ class Communication
      */
     public function validate(ExecutionContextInterface $context, $payload)
     {
-        if ($this->type === \App\Entity\Communication::TYPE_EMAIL && $this->geoLocation) {
-            $context->buildViolation('form.communication.errors.email_geolocation')
-                    ->atPath('geoLocation')
-                    ->addViolation();
+        if ($this->type === \App\Entity\Communication::TYPE_EMAIL) {
+            if ($this->geoLocation) {
+                $context->buildViolation('form.communication.errors.email_geolocation')
+                        ->atPath('geoLocation')
+                        ->addViolation();
+            }
+
+            if (mb_strlen($this->message) > Message::MAX_LENGTH_EMAIL) {
+                $context->buildViolation('form.communication.errors.too_large_email')
+                        ->atPath('message')
+                        ->addViolation();
+            }
         }
 
-        if ($this->type == \App\Entity\Communication::TYPE_EMAIL && mb_strlen($this->message) > Message::MAX_LENGTH_EMAIL) {
-            $context->buildViolation('form.communication.errors.too_large_email')
-                    ->atPath('message')
-                    ->addViolation();
-        }
-
-        if ($this->type == \App\Entity\Communication::TYPE_SMS && mb_strlen($this->message) > Message::MAX_LENGTH_SMS) {
-            $context->buildViolation('form.communication.errors.too_large_sms')
-                    ->atPath('message')
-                    ->addViolation();
+        if ($this->type == \App\Entity\Communication::TYPE_SMS) {
+            if (mb_strlen($this->message) > Message::MAX_LENGTH_SMS) {
+                $context->buildViolation('form.communication.errors.too_large_sms')
+                        ->atPath('message')
+                        ->addViolation();
+            }
         }
     }
 }

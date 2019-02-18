@@ -206,7 +206,7 @@ class Communication
     /**
      * @return string
      */
-    public function getSubject(): string
+    public function getSubject(): ?string
     {
         return $this->subject;
     }

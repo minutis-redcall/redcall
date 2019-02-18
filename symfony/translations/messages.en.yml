@@ -127,11 +127,15 @@ new_communication:
   subtitle: 'As part of campaign "%label%"'
 
 message:
-  announcement: 'RED-CROSS at %hours%h%mins%:'
-  how_to_answer_simple: Reply by giving your choice number.
-  how_to_answer_multiple: Reply by giving your choice(s) number(s), separated by a space.
-  how_to_answer_web: To continue, proceed to %url%
-  geo_location: 'Geolocation of your crew: %url%'
+  sms:
+    announcement: 'RED-CROSS at %hours%h%mins%:'
+    how_to_answer_simple: Reply by giving your choice number.
+    how_to_answer_multiple: Reply by giving your choice(s) number(s), separated by a space.
+    geo_location: 'Geolocation of your crew: %url%'
+  email:
+    announcement: 'RED-CROSS on %year%-%month%-%day% at %hours%h%mins%:'
+    how_to_answer_simple: 'To give your answer, please click on the following link:'
+    how_to_answer_multiple: 'To give your answer(s), please click on the following link:'
 
 button:
   submit: 'Submit'

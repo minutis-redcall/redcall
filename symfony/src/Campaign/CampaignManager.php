@@ -125,8 +125,9 @@ class CampaignManager
         $geoLocation    = $communication->geoLocation;
         $type           = $communication->type;
         $multipleAnswer = $communication->multipleAnswer;
+        $subject        = $communication->subject;
 
-        return $this->communicationFactory->create($message, $volunteers, $choiceValues, $geoLocation, $type, $multipleAnswer);
+        return $this->communicationFactory->create($message, $volunteers, $choiceValues, $geoLocation, $type, $multipleAnswer, $subject);
     }
 
     /**
