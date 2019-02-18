@@ -146,6 +146,8 @@ form:
       selection: Sélection:
       selection_count: volontaires
       message: Message
+      subject: Sujet
+      body: Contenu
       answers: Réponses possibles
       answer: 'Saisir une réponse'
       add: +

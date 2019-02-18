@@ -55,6 +55,13 @@ class Communication
     /**
      * @var string
      *
+     * @ORM\Column(type="string", length=80, nullable=true)
+     */
+    private $subject;
+
+    /**
+     * @var string
+     *
      * @ORM\Column(type="text")
      */
     private $body;
@@ -192,6 +199,26 @@ class Communication
     public function setStatus($status): self
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSubject(): string
+    {
+        return $this->subject;
+    }
+
+    /**
+     * @param string $subject
+     *
+     * @return Communication
+     */
+    public function setSubject(string $subject): Communication
+    {
+        $this->subject = $subject;
 
         return $this;
     }

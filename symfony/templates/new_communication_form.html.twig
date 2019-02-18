@@ -8,7 +8,12 @@
 
     {{ form_row(form.type) }}
 
+    <div id="message-subject" class="d-none">
+        {{ form_row(form.subject) }}
+    </div>
+
     {{ form_errors(form.message) }}
+    {{ form_label(form.message) }}
     <div class="textarea-wrapper">
         {{ form_widget(form.message) }}
     </div>
@@ -31,9 +36,11 @@
 
 {{ form_row(form.multipleAnswer) }}
 
-<div class="h4">{{ 'form.communication.fields.other_options'|trans }}</div>
+<div id="message-geo-location">
+    <div class="h4">{{ 'form.communication.fields.other_options'|trans }}</div>
 
-{{ form_row(form.geoLocation) }}
+    {{ form_row(form.geoLocation) }}
+</div>
 
 <div class="h4">{{ 'form.communication.fields.preview'|trans }}</div>
 
@@ -103,14 +110,18 @@
         }, 1000);
     });
 
-    {# When switching from email or sms, change message length #}
+    {# When switching from email or sms, apply few changes #}
     function updateMaxMessageSize() {
         if ($('#{{ form.type.vars.id }}').find('input:checked').val() === '{{ constant('App\\Entity\\Communication::TYPE_SMS') }}') {
             $('#message-max').html({{ max_length_sms }});
             $('#message-calc').removeClass('d-none');
+            $('#message-subject').addClass('d-none');
+            $('#message-geo-location').removeClass('d-none');
         } else {
             $('#message-max').html({{ max_length_email }});
             $('#message-calc').addClass('d-none');
+            $('#message-subject').removeClass('d-none');
+            $('#message-geo-location').addClass('d-none');
         }
 
         updateMessageSize();

@@ -11,6 +11,7 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -56,7 +57,13 @@ class CommunicationType extends AbstractType
                     '.' => 'volunteers',
                 ],
             ])
-            ->add('message', TextareaType::class)
+            ->add('subject', TextType::class, [
+                'label'    => 'form.communication.fields.subject',
+                'required' => false,
+            ])
+            ->add('message', TextareaType::class, [
+                'label' => 'form.communication.fields.body',
+            ])
             ->add('answers', CollectionType::class, [
                 'label'         => 'form.communication.fields.answers',
                 'entry_type'    => AnswerType::class,

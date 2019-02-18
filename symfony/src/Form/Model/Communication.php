@@ -36,6 +36,13 @@ class Communication
     /**
      * @var string
      *
+     * @Assert\Length(max=80)
+     */
+    public $subject;
+
+    /**
+     * @var string
+     *
      * @Assert\NotNull(message="form.campaign.errors.message.empty")
      * @Assert\Length(min=Message::MIN_LENGTH)
      */
