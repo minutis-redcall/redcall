@@ -15,7 +15,7 @@
 
             <div class="h3 text-center">
 
-                <a class="btn btn-primary"
+                <a class="respond btn btn-primary"
                    style="width: 100%;white-space: normal;"
                    href="{{ path('message_action', {code: code, action: choice.code }) }}">
                     <span class="h4">{{ choice.label }}</span>
@@ -37,7 +37,7 @@
                         </div>
                     </td>
                     <td style="width: 20%;" align="center" valign="middle">
-                        <a class="btn btn-light"
+                        <a class="respond btn btn-light"
                            style="width: 100%;"
                            href="{{ path('message_cancel', {code: code, action: choice.code }) }}">
                             <span class="h4">❌</span>
@@ -51,6 +51,15 @@
         <br/>
 
     {% endfor %}
+
+    <script type="text/javascript">
+
+        $('.respond').click(function () {
+            $('.respond').addClass('disabled');
+        });
+
+    </script>
+
 
 {% endblock %}
 
