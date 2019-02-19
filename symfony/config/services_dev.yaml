@@ -3,6 +3,11 @@ parameters:
 
 services:
   App\SMS\SMSProvider:
-    class: 'Bundles\SandboxBundle\SMS\Fake'
+    class: 'Bundles\SandboxBundle\Provider\FakeSmsProvider'
+    arguments: ['@doctrine']
+    public: true
+
+  App\Email\EmailProvider:
+    class: 'Bundles\SandboxBundle\Provider\FakeEmailProvider'
     arguments: ['@doctrine']
     public: true

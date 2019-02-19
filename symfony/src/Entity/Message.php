@@ -16,9 +16,8 @@ class Message
 {
     const MIN_LENGTH = 5;
 
-    // Don't put an exact modulo of 160 because possible answers
-    // are not counted along with the message length.
-    const MAX_LENGTH = 300;
+    const MAX_LENGTH_SMS   = 300;
+    const MAX_LENGTH_EMAIL = 1600;
 
     /**
      * @ORM\Id()
@@ -310,7 +309,7 @@ class Message
     public function alreadyAnsweredChoiceCode(string $code): bool
     {
         foreach ($this->getAnswers() ?? [] as $answer) {
-            if ($code == $answer->getChoice()->getCode()) {
+            if ($answer->getChoice() && $code == $answer->getChoice()->getCode()) {
                 return true;
             }
         }

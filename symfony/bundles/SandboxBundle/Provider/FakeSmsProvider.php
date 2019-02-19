@@ -1,6 +1,6 @@
 <?php
 
-namespace Bundles\SandboxBundle\SMS;
+namespace Bundles\SandboxBundle\Provider;
 
 use App\Entity\Volunteer;
 use App\Services\Random;
@@ -9,7 +9,7 @@ use App\SMS\SMSSent;
 use Bundles\SandboxBundle\Entity\FakeSms;
 use Doctrine\Bundle\DoctrineBundle\Registry;
 
-class Fake implements SMSProvider
+class FakeSmsProvider implements SMSProvider
 {
     private $volunteerRepository;
     private $fakeSmsRepository;

@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'sandbox.fake_email.title'|trans }}{% endblock %}
+
+{% block body %}
+
+    <h1>{{ block('title') }}</h1>
+
+    <table class="table">
+        {% for row in emails %}
+            <tr>
+                <td>
+                    {{ row.volunteer.firstName }} {{ row.volunteer.lastName }}
+                    <a href="{{ path('sandbox_fake_email_read', {email: row.email}) }}">{{ row.email }}</a>
+                    <span class="badge badge-primary">{{ row.countMsg }}</span>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+
+    <div class="text-center">
+        <a href="{{ path('sandbox_fake_email_clear', {csrf: csrf_token('fake_email')}) }}"
+           class="btn btn-danger">{{ 'sandbox.fake_email.clear'|trans }}</a>
+
+        &nbsp;&nbsp;&nbsp;&nbsp;
+
+        <a href="{{ path('sandbox_home') }}"
+           class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+    </div>
+
+    <br/>
+
+{% endblock %}

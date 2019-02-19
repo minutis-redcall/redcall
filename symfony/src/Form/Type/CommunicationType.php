@@ -7,9 +7,11 @@ use App\Form\Model\Communication as CommunicationModel;
 use App\Repository\VolunteerRepository;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -38,15 +40,14 @@ class CommunicationType extends AbstractType
         parent::buildForm($builder, $options);
 
         $builder
-            // To be fixed in #20
-            //            ->add('type', ChoiceType::class, [
-            //                'label'    => false,
-            //                'choices'  => [
-            //                    'form.communication.fields.type_alert' => Communication::TYPE_ALERT,
-            //                    'form.communication.fields.type_web'   => Communication::TYPE_WEB,
-            //                ],
-            //                'expanded' => true,
-            //            ])
+            ->add('type', ChoiceType::class, [
+                'label'    => false,
+                'choices'  => [
+                    'form.communication.fields.type_sms'   => Communication::TYPE_SMS,
+                    'form.communication.fields.type_email' => Communication::TYPE_EMAIL,
+                ],
+                'expanded' => true,
+            ])
             ->add('multipleAnswer', CheckboxType::class, [
                 'label'    => 'form.communication.fields.multiple_answer',
                 'required' => false,
@@ -56,7 +57,13 @@ class CommunicationType extends AbstractType
                     '.' => 'volunteers',
                 ],
             ])
-            ->add('message', TextareaType::class)
+            ->add('subject', TextType::class, [
+                'label'    => 'form.communication.fields.subject',
+                'required' => false,
+            ])
+            ->add('message', TextareaType::class, [
+                'label' => 'form.communication.fields.body',
+            ])
             ->add('answers', CollectionType::class, [
                 'label'         => 'form.communication.fields.answers',
                 'entry_type'    => AnswerType::class,
@@ -91,7 +98,7 @@ class CommunicationType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => CommunicationModel::class,
-            'type'       => Communication::TYPE_ALERT,
+            'type'       => Communication::TYPE_SMS,
             'submit'     => true,
         ]);
     }

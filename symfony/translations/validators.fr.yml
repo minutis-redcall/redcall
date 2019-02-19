@@ -9,4 +9,6 @@ form:
         empty: 'Veuillez renseigner un message'
   communication:
     errors:
-      web_message: "Un message requiérant des actions sur le Web ont besoin d'au moins 1 réponse."
+      email_geolocation: 'Pas de géolocalisation possible lors d''un envoi par email.'
+      too_large_email: 'Cet email est trop long.'
+      too_large_sms: 'Ce SMS est trop long.'

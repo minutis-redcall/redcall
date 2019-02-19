@@ -56,26 +56,14 @@ class Dispatcher
      */
     public function dispatch(Communication $communication)
     {
-        if (
-            $communication->getStatus() === Communication::STATUS_DISPATCHING
-            || $communication->getStatus() === Communication::STATUS_DISPATCHED
-        ) {
-            return;
-        }
-
-        $communication->setStatus(Communication::STATUS_DISPATCHING);
-
         try {
             $this->processor->process($communication);
-            $communication->setStatus(Communication::STATUS_DISPATCHED);
         } catch (\Throwable $e) {
             $this->eventLogger->fileIssueFromException('Failed to dispatch communication', $e, IssueLogger::SEVERITY_CRITICAL, [
                 'communication_id'    => $communication->getId(),
                 'communication_type'  => $communication->getType(),
                 'targeted_volunteers' => $communication->getMessages()->count(),
             ]);
-
-            $communication->setStatus(Communication::STATUS_FAILED);
         }
 
         $this->entityManager->flush();

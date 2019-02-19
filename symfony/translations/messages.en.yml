@@ -127,11 +127,16 @@ new_communication:
   subtitle: 'As part of campaign "%label%"'
 
 message:
-  announcement: 'RED-CROSS at %hours%h%mins%:'
-  how_to_answer_simple: Reply by giving your choice number.
-  how_to_answer_multiple: Reply by giving your choice(s) number(s), separated by a space.
-  how_to_answer_web: To continue, proceed to %url%
-  geo_location: 'Geolocation of your crew: %url%'
+  sms:
+    announcement: 'RED-CROSS at %hours%h%mins%:'
+    how_to_answer_simple: Reply by giving your choice number.
+    how_to_answer_multiple: Reply by giving your choice(s) number(s), separated by a space.
+    geo_location: 'Geolocation of your crew: %url%'
+  email:
+    announcement: 'RED-CROSS on %year%-%month%-%day% at %hours%h%mins%:'
+    how_to_answer_simple: 'To give your answer, please click on the following link:'
+    how_to_answer_multiple: 'To give your answer(s), please click on the following link:'
+    possible_answers: 'Possible response(s):'
 
 button:
   submit: 'Submit'
@@ -140,13 +145,15 @@ form:
   communication:
     fields:
       response_title: "Responses"
-      type_alert: Volunteer will be able to answer by responding to the SMS
-      type_web: Volunteer will receive a link to proceed answering
+      type_sms: Emergency message sent through SMS
+      type_email: Message sent by email
       geo_location: Message recipients will be able to geo locate each others
       volunteers: Audience
       selection: Selection:
       selection_count: volunteers
       message: Message
+      subject: Subject
+      body: Body
       answers: Possible responses
       answer: Enter response
       add: Add

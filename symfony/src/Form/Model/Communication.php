@@ -20,11 +20,11 @@ class Communication
      * @var string
      *
      * @Assert\Choice(choices = {
-     *     \App\Entity\Communication::TYPE_ALERT,
-     *     \App\Entity\Communication::TYPE_WEB
+     *     \App\Entity\Communication::TYPE_SMS,
+     *     \App\Entity\Communication::TYPE_EMAIL
      * })
      */
-    public $type = \App\Entity\Communication::TYPE_ALERT;
+    public $type = \App\Entity\Communication::TYPE_SMS;
 
     /**
      * @var Collection
@@ -36,8 +36,15 @@ class Communication
     /**
      * @var string
      *
+     * @Assert\Length(max=80)
+     */
+    public $subject;
+
+    /**
+     * @var string
+     *
      * @Assert\NotNull(message="form.campaign.errors.message.empty")
-     * @Assert\Length(min=Message::MIN_LENGTH, max=Message::MAX_LENGTH)
+     * @Assert\Length(min=Message::MIN_LENGTH)
      */
     public $message;
 
@@ -65,10 +72,26 @@ class Communication
      */
     public function validate(ExecutionContextInterface $context, $payload)
     {
-        if ($this->type === \App\Entity\Communication::TYPE_WEB && count($this->answers) == 0) {
-            $context->buildViolation('form.communication.errors.web_message')
-                    ->atPath('type')
-                    ->addViolation();
+        if ($this->type === \App\Entity\Communication::TYPE_EMAIL) {
+            if ($this->geoLocation) {
+                $context->buildViolation('form.communication.errors.email_geolocation')
+                        ->atPath('geoLocation')
+                        ->addViolation();
+            }
+
+            if (mb_strlen($this->message) > Message::MAX_LENGTH_EMAIL) {
+                $context->buildViolation('form.communication.errors.too_large_email')
+                        ->atPath('message')
+                        ->addViolation();
+            }
+        }
+
+        if ($this->type == \App\Entity\Communication::TYPE_SMS) {
+            if (mb_strlen($this->message) > Message::MAX_LENGTH_SMS) {
+                $context->buildViolation('form.communication.errors.too_large_sms')
+                        ->atPath('message')
+                        ->addViolation();
+            }
         }
     }
 }

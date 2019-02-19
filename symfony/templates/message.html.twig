@@ -8,7 +8,8 @@
 
     {% for choice in message.communication.choices %}
 
-        {% if not message.answerByChoice(choice) %}
+        {% if not message.communication.multipleAnswer and message.lastAnswer.choice|default(false) != choice
+            or message.communication.multipleAnswer and not message.answerByChoice(choice) %}
 
             {# Volunteer is able to answer #}
 
@@ -50,10 +51,6 @@
         <br/>
 
     {% endfor %}
-
-    {% if message.communication.hasGeoLocation %}
-        {{ render(controller('App\\Controller\\GeoLocationController::content', {code: message.webCode})) }}
-    {% endif %}
 
 {% endblock %}
 

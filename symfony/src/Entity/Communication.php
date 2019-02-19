@@ -9,13 +9,8 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Communication
 {
-    const TYPE_ALERT = 'alert'; // A question is sent to user by SMS and user can reply by SMS
-    const TYPE_WEB   = 'web';   // A question is sent to user by SMS and user can reply by website
-
-    const STATUS_PENDING     = 'pending';     // The communication is waiting to be dispatched to volunteers.
-    const STATUS_DISPATCHING = 'dispatching'; // The communication is being dispatched.
-    const STATUS_DISPATCHED  = 'dispatched';  // The communication was successfully dispatched.
-    const STATUS_FAILED      = 'failed';      // The communication failed to be dispatched.
+    const TYPE_SMS   = 'sms';
+    const TYPE_EMAIL = 'email';
 
     /**
      * @ORM\Id()
@@ -48,9 +43,9 @@ class Communication
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=20)
+     * @ORM\Column(type="string", length=80, nullable=true)
      */
-    private $status;
+    private $subject;
 
     /**
      * @var string
@@ -177,21 +172,21 @@ class Communication
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getStatus(): string
+    public function getSubject(): ?string
     {
-        return $this->status;
+        return $this->subject;
     }
 
     /**
-     * @param string $status
+     * @param string|null $subject
      *
-     * @return $this
+     * @return Communication
      */
-    public function setStatus($status): self
+    public function setSubject(?string $subject): Communication
     {
-        $this->status = $status;
+        $this->subject = $subject;
 
         return $this;
     }

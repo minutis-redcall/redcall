@@ -40,16 +40,17 @@ class CommunicationFactory
         array $choiceValues,
         bool $geoLocation,
         string $type,
-        bool $multipleAnswer)
+        bool $multipleAnswer,
+        ?string $subject)
     {
         $communication = new Communication();
         $communication
             ->setType($type)
-            ->setStatus(Communication::STATUS_PENDING)
             ->setBody($message)
             ->setGeoLocation($geoLocation)
             ->setCreatedAt(new \DateTime())
-            ->setMultipleAnswer($multipleAnswer);
+            ->setMultipleAnswer($multipleAnswer)
+            ->setSubject($subject);
 
         foreach ($volunteers as $volunteer) {
             $message = new Message();
