@@ -32,6 +32,10 @@ services:
     class: App\SMS\Nexmo
     public: true
 
+  App\Email\EmailProvider:
+    class: App\Email\SymfonyEmailProvider
+    public: true
+
   App\Issue\IssueLogger:
     class: App\Issue\SentryIssueLogger
     public: true

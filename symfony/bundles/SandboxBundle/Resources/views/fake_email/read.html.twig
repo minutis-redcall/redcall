@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    {{ 'sandbox.fake_email.read'|trans({
+        '%email%': email,
+        '%name%': volunteer.firstName ~ ' ' ~ volunteer.lastName,
+    }) }}
+{% endblock %}
+
+{% block body %}
+
+    <h1>{{ block('title') }}</h1>
+
+    <div id="messages">
+        {% for message in messages %}
+
+            <h3>{{ message.createdAt|date('d/m/Y H:i') }}</h3>
+            <div style="padding:10px;background-color: #eeeeee;">
+                <pre>{{ message.body }}</pre>
+            </div>
+
+            {% if not loop.last %}
+                <hr/>
+            {% endif %}
+
+        {% endfor %}
+    </div>
+
+{% endblock %}

@@ -73,7 +73,7 @@ class CampaignManager
         bool $geoLocation,
         string $type,
         bool $multipleAnswer,
-        string $subject)
+        ?string $subject)
     {
         // Create the campaign with an initial communication
         $communication = $this->communicationFactory->create($message, $volunteers, $choiceValues, $geoLocation, $type, $multipleAnswer, $subject);

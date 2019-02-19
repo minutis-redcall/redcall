@@ -2,7 +2,7 @@
 
 namespace App\Communication;
 
-use App\Email\SymfonyEmailProvider;
+use App\Email\EmailProvider;
 use App\Entity\Communication;
 use App\Entity\Message;
 use App\Issue\IssueLogger;
@@ -33,7 +33,7 @@ class Sender
     private $issueLogger;
 
     /**
-     * @var SymfonyEmailProvider
+     * @var EmailProvider
      */
     private $emailProvider;
 
@@ -45,14 +45,14 @@ class Sender
      * @param EntityManagerInterface $entityManager
      * @param IssueLogger            $issueLogger
      * @param ParameterBagInterface  $parameterBag
-     * @param SymfonyEmailProvider   $emailProvider
+     * @param EmailProvider          $emailProvider
      */
     public function __construct(
         SMSProvider $SMSProvider,
         Formatter $formatter,
         EntityManagerInterface $entityManager,
         IssueLogger $issueLogger,
-        SymfonyEmailProvider $emailProvider
+        EmailProvider $emailProvider
     ) {
         $this->SMSProvider   = $SMSProvider;
         $this->formatter     = $formatter;

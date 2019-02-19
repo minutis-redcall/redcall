@@ -10,3 +10,9 @@ sandbox:
     your_message: 'Your message'
     send: 'Send'
     clear: 'Remove all messages'
+
+  fake_email:
+    button: 'Email Simulator'
+    title: 'Email Simulator - List of recipients'
+    read: '%email% inbox (%name%)'
+    clear: 'Remove all messages'

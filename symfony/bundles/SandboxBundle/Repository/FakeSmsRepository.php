@@ -20,14 +20,14 @@ class FakeSmsRepository extends EntityRepository
     public function findAllPhones(): array
     {
         return $this->createQueryBuilder('s')
-            ->select('
+                    ->select('
                         s.phoneNumber, 
                         MAX(s.createdAt) as lastMsg, 
                         COUNT(s.phoneNumber) as countMsg
                     ')
-            ->groupBy('s.phoneNumber')
-            ->getQuery()
-            ->getArrayResult();
+                    ->groupBy('s.phoneNumber')
+                    ->getQuery()
+                    ->getArrayResult();
 
     }
 
@@ -36,14 +36,14 @@ class FakeSmsRepository extends EntityRepository
      *
      * @return array
      */
-    public function findMessages(string $phoneNumber): array
+    public function findMessagesForPhoneNumber(string $phoneNumber): array
     {
         return $this->createQueryBuilder('s')
-            ->where('s.phoneNumber = :phoneNumber')
-            ->setParameter('phoneNumber', $phoneNumber)
-            ->orderBy('s.id', 'ASC')
-            ->getQuery()
-            ->getResult();
+                    ->where('s.phoneNumber = :phoneNumber')
+                    ->setParameter('phoneNumber', $phoneNumber)
+                    ->orderBy('s.id', 'ASC')
+                    ->getQuery()
+                    ->getResult();
     }
 
     /**
@@ -65,7 +65,7 @@ class FakeSmsRepository extends EntityRepository
     }
 
     /**
-     * @param string   $phoneNumber
+     * @param string      $phoneNumber
      * @param string|null $lastMessageId
      *
      * @return array
@@ -73,13 +73,13 @@ class FakeSmsRepository extends EntityRepository
     public function findMessagesHavingIdGreaterThan(string $phoneNumber, ?string $lastMessageId): array
     {
         $builder = $this->createQueryBuilder('s')
-            ->where('s.phoneNumber = :phoneNumber')
-            ->setParameter('phoneNumber', $phoneNumber)
-            ->orderBy('s.createdAt');
+                        ->where('s.phoneNumber = :phoneNumber')
+                        ->setParameter('phoneNumber', $phoneNumber)
+                        ->orderBy('s.createdAt');
 
         if ($lastMessageId) {
             $builder->andWhere('s.id > :lastMessageId')
-                ->setParameter('lastMessageId', $lastMessageId);
+                    ->setParameter('lastMessageId', $lastMessageId);
         }
 
         return $builder->getQuery()->getArrayResult();

@@ -10,3 +10,9 @@ sandbox:
     your_message: 'Votre message'
     send: 'Envoyer'
     clear: 'Effacer tous les messages'
+
+  fake_email:
+    button: 'Simulateur d''emails'
+    title: 'Simulateur d''emails - Liste des destinataires'
+    read: 'Messagerie de %email% (%name%)'
+    clear: 'Effacer tous les messages'

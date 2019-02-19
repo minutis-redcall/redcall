@@ -53,7 +53,7 @@ class FakeSmsController extends BaseController
      */
     public function threadAction(string $phoneNumber)
     {
-        $messages = $this->getManager(FakeSms::class)->findMessages($phoneNumber);
+        $messages = $this->getManager(FakeSms::class)->findMessagesForPhoneNumber($phoneNumber);
 
         $lastMessageId = null;
         if ($messages) {
