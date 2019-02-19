@@ -65,27 +65,6 @@ class FakeEmailRepository extends EntityRepository
                     ->getResult();
     }
 
-    /**
-     * @param string      $email
-     * @param string|null $lastMessageId
-     *
-     * @return array
-     */
-    public function findMessagesHavingIdGreaterThan(string $email, ?string $lastMessageId): array
-    {
-        $builder = $this->createQueryBuilder('e')
-                        ->where('e.email = :email')
-                        ->setParameter('email', $email)
-                        ->orderBy('e.createdAt');
-
-        if ($lastMessageId) {
-            $builder->andWhere('e.id > :lastMessageId')
-                    ->setParameter('lastMessageId', $email);
-        }
-
-        return $builder->getQuery()->getArrayResult();
-    }
-
     public function truncate()
     {
         $this->createQueryBuilder('s')->delete()->getQuery()->execute();
