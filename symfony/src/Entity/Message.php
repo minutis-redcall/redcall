@@ -58,7 +58,7 @@ class Message
      * @var Answer[]
      *
      * @ORM\OneToMany(targetEntity="App\Entity\Answer", mappedBy="message", cascade={"persist"})
-     * @ORM\OrderBy({"receivedAt" = "DESC"})
+     * @ORM\OrderBy({"id" = "DESC"})
      */
     private $answers;
 
