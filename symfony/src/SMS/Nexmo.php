@@ -60,5 +60,7 @@ class Nexmo implements SMSProvider
         );
 
         $this->fromNumber = getenv('NEXMO_SEND_FROM');
+
+        return $this->client;
     }
 }
