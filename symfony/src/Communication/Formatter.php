@@ -129,12 +129,16 @@ class Formatter
             }
             $contentParts[] = '';
 
+            $url = trim(getenv('WEBSITE_URL'), '/').$this->router->generate('message_open', ['code' => $message->getWebCode()]);
             if (!$communication->isMultipleAnswer()) {
-                $contentParts[] = $this->translator->trans('message.email.how_to_answer_simple');
+                $contentParts[] = $this->translator->trans('message.email.how_to_answer_simple', [
+                    '%url%' => $url,
+                ]);
             } else {
-                $contentParts[] = $this->translator->trans('message.email.how_to_answer_multiple');
+                $contentParts[] = $this->translator->trans('message.email.how_to_answer_multiple', [
+                    '%url%' => $url,
+                ]);
             }
-            $contentParts[] = trim(getenv('WEBSITE_URL'), '/').$this->router->generate('message_open', ['code' => $message->getWebCode()]);
             $contentParts[] = '';
         }
 

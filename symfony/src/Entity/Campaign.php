@@ -238,7 +238,7 @@ class Campaign
 
                 $choices = [];
                 foreach ($communication->getChoices() as $choice) {
-                    $answer =  $message->getAnswerByChoice($choice);
+                    $answer                    = $message->getAnswerByChoice($choice);
                     $choices[$choice->getId()] = null;
                     if ($answer) {
                         $choices[$choice->getId()] = $answer->getReceivedAt()->format('H:i');
@@ -251,16 +251,17 @@ class Campaign
                     'sent'               => $message->isSent(),
                     'choices'            => $choices,
                     'has-invalid-answer' => [
-                        'raw' => $invalidAnswer ? $invalidAnswer->getSafeRaw() : null,
+                        'raw'  => $invalidAnswer ? $invalidAnswer->getSafeRaw() : null,
                         'time' => $invalidAnswer ? $invalidAnswer->getReceivedAt()->format('H:i') : null,
                     ],
                 ];
             }
 
+            $count                                     = count($communication->getMessages());
             $data[$communication->getId()]['progress'] = [
                 'sent'    => $msgsSent,
-                'total'   => $count = count($communication->getMessages()),
-                'percent' => round($msgsSent * 100 / $count, 2),
+                'total'   => $count,
+                'percent' => $count ? round($msgsSent * 100 / $count, 2) : 0,
             ];
         }
 
