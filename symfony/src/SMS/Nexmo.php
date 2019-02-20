@@ -13,21 +13,12 @@ class Nexmo implements SMSProvider
     /** @var string */
     private $fromNumber;
 
-    public function __construct()
-    {
-        $this->client = new Client(new Client\Credentials\Basic(
-                getenv('NEXMO_API_KEY'), getenv('NEXMO_API_SECRET'))
-        );
-
-        $this->fromNumber = getenv('NEXMO_SEND_FROM');
-    }
-
     /**
      * {@inheritdoc}
      */
     public function send(string $message, string $phoneNumber): SMSSent
     {
-        $message = $this->client->message()->send([
+        $message = $this->getClient()->message()->send([
             'to'   => $phoneNumber,
             'from' => $this->fromNumber,
             'text' => $message,
@@ -50,5 +41,24 @@ class Nexmo implements SMSProvider
     public function getProviderCode(): string
     {
         return 'nexmo';
+    }
+
+    /**
+     * @return Client
+     */
+    protected function getClient(): Client
+    {
+        if ($this->client) {
+            return $this->client;
+        }
+
+        $this->client = new Client(
+            new Client\Credentials\Basic(
+                getenv('NEXMO_API_KEY'),
+                getenv('NEXMO_API_SECRET')
+            )
+        );
+
+        $this->fromNumber = getenv('NEXMO_SEND_FROM');
     }
 }
