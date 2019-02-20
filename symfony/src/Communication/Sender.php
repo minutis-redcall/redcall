@@ -68,9 +68,9 @@ class Sender
     {
         if ($message->getCommunication()->getType() === Communication::TYPE_SMS) {
             $this->sendSms($message);
+        } else {
+            $this->sendEmail($message);
         }
-
-        $this->sendEmail($message);
     }
 
     /**

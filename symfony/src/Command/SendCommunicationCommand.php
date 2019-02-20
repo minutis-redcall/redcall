@@ -3,16 +3,16 @@
 namespace App\Command;
 
 use App\Base\BaseCommand;
+use App\Communication\Sender;
 use App\Entity\Communication;
+use App\Issue\IssueLogger;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Symfony\Component\Process\Exception\ProcessTimedOutException;
-use Symfony\Component\Process\Process;
 
 class SendCommunicationCommand extends BaseCommand
 {
-    const PAUSE = 500000; // 2 sms / second
+    const PAUSE = 100000; // 10 sms / second
 
     /**
      * {@inheritdoc}
@@ -41,29 +41,21 @@ class SendCommunicationCommand extends BaseCommand
             return 1;
         }
 
-        $console = sprintf('%s/../bin/console', $this->get('kernel')->getRootDir());
+        date_default_timezone_set('Europe/Paris');
 
-        $processes = [];
         foreach ($communication->getMessages() as $message) {
-            $process = Process::fromShellCommandline(sprintf('%s send:message %d', $console, $message->getId()));
-            $process->start();
-            $processes[$message->getId()] = $process;
-            usleep(self::PAUSE);
-        }
+            if (!$message->getMessageId()) {
+                try {
+                    $this->get(Sender::class)->send($message);
+                } catch (\Throwable $throwable) {
+                    $this->get(IssueLogger::class)->fileIssueFromException('Failed to send message', $throwable, IssueLogger::SEVERITY_CRITICAL, [
+                        'communication_id' => $communication->getId(),
+                        'message_id'       => $message->getId(),
+                    ]);
+                }
 
-        $timeouts = [];
-        foreach ($processes as $messageId => $process) {
-            /** @var Process $process */
-            try {
-                $process->wait();
-            } catch (ProcessTimedOutException $e) {
-                $output->writeln('<error>Timeout on %s</error>', $process->getCommandLine());
-                $timeouts[] = $messageId;
+                usleep(self::PAUSE);
             }
-        }
-
-        if ($timeouts) {
-            throw new \RuntimeException(sprintf('Process(es) timed out on message ids: %s', implode(', ', $timeouts)));
         }
     }
 }
