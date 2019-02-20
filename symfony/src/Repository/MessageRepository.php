@@ -105,6 +105,7 @@ class MessageRepository extends ServiceEntityRepository
             /* @var Answer $answer */
             if ($answer->isChoice($choice)) {
                 $answer->setChoice(null);
+                $answer->setUpdatedAt(new \DateTime());
 
                 $this->_em->persist($answer);
             }
