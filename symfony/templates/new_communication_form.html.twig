@@ -12,7 +12,6 @@
         {{ form_row(form.subject) }}
     </div>
 
-    {{ form_errors(form.message) }}
     {{ form_label(form.message) }}
     <div class="textarea-wrapper">
         {{ form_widget(form.message) }}
@@ -93,7 +92,7 @@
 
     {# Refresh preview if form is changed #}
     var previewTimeout = null;
-    $('body').on('change keyup', 'input, textarea', function () {
+    $('body').on('change keyup', 'input, textarea, select', function () {
         clearTimeout(previewTimeout);
         previewTimeout = setTimeout(function () {
             $.post('{{ path('communication_preview') }}', $('form').serialize(), function (data) {
