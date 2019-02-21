@@ -323,19 +323,19 @@
                             </form>
                         </div>
 
-                        {# Download PDF #}
+                        {# Download portrait PDF #}
                         <div class="col-md-3 col-12 skip-line">
                             <a href="#"
-                               class="btn btn-primary download-pdf-button"
+                               class="btn btn-primary download-portrait-pdf-button"
                                data-communication-id="{{ communication.id }}" role="button">
-                                {{ 'campaign_status.selection.download_pdf'|trans }}
+                                {{ 'campaign_status.selection.download_portrait_pdf'|trans }}
                             </a>
-                            <form id="selection-download-pdf-form-{{ communication.id }}"
-                                  action="{{ path('export_pdf', {communicationId: communication.id}) }}"
+                            <form id="selection-download-portrait-pdf-form-{{ communication.id }}"
+                                  action="{{ path('export_portrait_pdf', {communicationId: communication.id}) }}"
                                   method="post" class="d-none">
                                 <input type="hidden" name="csrf" value="{{ csrf_token('communication') }}"/>
                                 <input type="hidden" name="volunteers"
-                                       id="selection-download-pdf-field-{{ communication.id }}" value=""/>
+                                       id="selection-download-portrait-pdf-field-{{ communication.id }}" value=""/>
                             </form>
                         </div>
 
@@ -789,13 +789,13 @@
             $('#selection-download-csv-form-' + communicationId).submit();
         });
 
-        $('.download-pdf-button').click(function (e) {
+        $('.download-portrait-pdf-button').click(function (e) {
             e.preventDefault();
             var communicationId = $(this).data('communication-id');
-            $('#selection-download-pdf-field-' + communicationId).val(
+            $('#selection-download-portrait-pdf-field-' + communicationId).val(
                 JSON.stringify(getSelectedVolunteers(communicationId))
             );
-            $('#selection-download-pdf-form-' + communicationId).submit();
+            $('#selection-download-portrait-pdf-form-' + communicationId).submit();
         });
 
     </script>

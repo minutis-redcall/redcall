@@ -25,7 +25,7 @@ class ExportController extends BaseController
      * @Method("POST")
      *
      * @param Request $request
-     * @param int     $communicationId
+     * @param int $communicationId
      *
      * @return Response
      */
@@ -56,13 +56,13 @@ class ExportController extends BaseController
             }, $volunteer->getTags()->toArray()));
 
             $row = [
-                $this->trans('csv_export.nivol')        => $volunteer->getNivol(),
-                $this->trans('csv_export.firstname')    => $volunteer->getFirstName(),
-                $this->trans('csv_export.lastname')     => $volunteer->getLastName(),
-                $this->trans('csv_export.email')        => $volunteer->getEmail(),
+                $this->trans('csv_export.nivol') => $volunteer->getNivol(),
+                $this->trans('csv_export.firstname') => $volunteer->getFirstName(),
+                $this->trans('csv_export.lastname') => $volunteer->getLastName(),
+                $this->trans('csv_export.email') => $volunteer->getEmail(),
                 $this->trans('csv_export.phone_number') => $volunteer->getFormattedPhoneNumber(),
-                $this->trans('csv_export.tags')         => $tags,
-                $this->trans('csv_export.sent')         => $this->trans($message->isSent() ? 'base.yes' : 'base.no'),
+                $this->trans('csv_export.tags') => $tags,
+                $this->trans('csv_export.sent') => $this->trans($message->isSent() ? 'base.yes' : 'base.no'),
             ];
 
             /* @var Choice $choice */
@@ -80,42 +80,36 @@ class ExportController extends BaseController
             }
 
             $row[$this->trans('csv_export.other')] = $message->getInvalidAnswer() ? $message->getInvalidAnswer()->getRaw() : null;
-            $rows[]                                = $row;
+            $rows[] = $row;
         }
 
         return new ArrayToCsvResponse($rows, sprintf('export-%s.csv', date('Y-m-d.H:i:s')));
     }
 
     /**
-     * @Route(path="{communicationId}/pdf", name="pdf", requirements={"communicationId" = "\d+"})
+     * @Route(path="{communicationId}/portrait-pdf", name="portrait_pdf", requirements={"communicationId" = "\d+"})
      * @Method("POST")
      *
      * @param Request $request
-     * @param int     $communicationId
+     * @param int $communicationId
      *
-     * @return Response
+     * @return MpdfResponse
+     *
+     * @throws \Mpdf\MpdfException
      */
-    public function pdfAction(Request $request, int $communicationId)
+    public function portraitPdfAction(Request $request, int $communicationId)
     {
         $this->validateCsrfOrThrowNotFoundException('communication', $request->request->get('csrf'));
 
-        /* @var Communication $communication */
         $communication = $this->getCommunication($communicationId);
-
-        $selection = json_decode($request->request->get('volunteers'), true);
-        if (!$selection && $communication->getMessages()) {
-            $selection = array_map(function (Message $message) {
-                return $message->getVolunteer()->getId();
-            }, $communication->getMessages()->toArray());
-        }
-
+        $selection = $this->getSelection($request, $communication);
         $campaign = $communication->getCampaign();
 
         $tables = [];
         if ($communication->getChoices()->toArray()) {
             // Get one table per communication choice
             foreach ($communication->getChoices() as $choice) {
-                $label          = $choice->getLabel();
+                $label = $choice->getLabel();
                 $tables[$label] = [];
                 foreach ($communication->getMessages() as $message) {
                     if (!in_array($message->getVolunteer()->getId(), $selection)) {
@@ -129,7 +123,7 @@ class ExportController extends BaseController
                             && $answer->getChoice()->getId() == $choice->getId()) {
                             $tables[$label][] = [
                                 'volunteer' => $message->getVolunteer(),
-                                'answer'    => $answer,
+                                'answer' => $answer,
                             ];
                         }
                     } elseif ($message->getAnswers()) {
@@ -137,7 +131,7 @@ class ExportController extends BaseController
                             if ($answer->getChoice() && $answer->getChoice()->getId() == $choice->getId()) {
                                 $tables[$label][] = [
                                     'volunteer' => $message->getVolunteer(),
-                                    'answer'    => $answer,
+                                    'answer' => $answer,
                                 ];
                             }
                         }
@@ -158,25 +152,76 @@ class ExportController extends BaseController
         }
 
         $context = [
-            'current_date'  => new \DateTime(),
-            'campaign'      => $campaign,
+            'current_date' => new \DateTime(),
+            'campaign' => $campaign,
             'communication' => $communication,
-            'tables'        => $tables,
+            'tables' => $tables,
         ];
 
         $mpdf = new \Mpdf\Mpdf([
-            'margin_left'   => 0,
-            'margin_right'  => 0,
+            'margin_left' => 0,
+            'margin_right' => 0,
             'margin_bottom' => 25,
         ]);
 
-        $mpdf->SetHTMLHeader($this->renderView('export/header.html.twig', $context));
-        $mpdf->SetHTMLFooter($this->renderView('export/footer.html.twig', $context));
-        $mpdf->WriteHTML($this->renderView('export/body.html.twig', $context));
+        $mpdf->SetHTMLHeader($this->renderView('export/portrait_pdf/header.html.twig', $context));
+        $mpdf->SetHTMLFooter($this->renderView('export/portrait_pdf/footer.html.twig', $context));
+        $mpdf->WriteHTML($this->renderView('export/portrait_pdf/body.html.twig', $context));
 
         return new MpdfResponse(
             $mpdf,
-            sprintf('export-%s.pdf', date('Y-m-d', $campaign->getCreatedAt()->getTimestamp()))
+            sprintf('export-portrait-%s.pdf', date('Y-m-d'))
+        );
+    }
+
+    /**
+     * @Route(path="{communicationId}/landscape-pdf", name="landscape_pdf", requirements={"communicationId" = "\d+"})
+     * @Method("POST")
+     *
+     * @param Request $request
+     * @param int $communicationId
+     *
+     * @return Response
+     *
+     * @throws \Mpdf\MpdfException
+     */
+    public function landscapePdfAction(Request $request, int $communicationId)
+    {
+        $communication = $this->getCommunication($communicationId);
+        $selection = $this->getSelection($request, $communication);
+        $campaign = $communication->getCampaign();
+
+        $messages = [];
+        foreach ($communication->getMessages() as $message) {
+            if (!in_array($message->getVolunteer()->getId(), $selection)) {
+                continue ;
+            }
+
+            $messages[] = $message;
+        }
+
+        $mpdf = new \Mpdf\Mpdf([
+            'margin_left' => 0,
+            'margin_right' => 0,
+            'margin_bottom' => 25,
+            'format' => 'A4-L',
+            'orientation' => 'L'
+        ]);
+
+        $context = [
+            'current_date' => new \DateTime(),
+            'campaign' => $campaign,
+            'communication' => $communication,
+            'messages' => $messages,
+        ];
+
+        $mpdf->SetHTMLHeader($this->renderView('export/landscape_pdf/header.html.twig', $context));
+        $mpdf->SetHTMLFooter($this->renderView('export/landscape_pdf/footer.html.twig', $context));
+        $mpdf->WriteHTML($this->renderView('export/landscape_pdf/body.html.twig', $context));
+
+        return new MpdfResponse(
+            $mpdf,
+            sprintf('export-landscape-%s.pdf', date('Y-m-d'))
         );
     }
 
@@ -195,5 +240,23 @@ class ExportController extends BaseController
         }
 
         return $communication;
+    }
+
+    /**
+     * @param Request $request
+     * @param Communication $communication
+     *
+     * @return array
+     */
+    private function getSelection(Request $request, Communication $communication): array
+    {
+        $selection = json_decode($request->request->get('volunteers'), true);
+        if (!$selection && $communication->getMessages()) {
+            $selection = array_map(function (Message $message) {
+                return $message->getVolunteer()->getId();
+            }, $communication->getMessages()->toArray());
+        }
+
+        return $selection;
     }
 }

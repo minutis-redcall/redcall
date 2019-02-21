@@ -107,7 +107,8 @@ campaign_status:
   selection:
     new_message: Ecrire un nouveau message
     download_csv: Téléchager en CSV
-    download_pdf: Téléchager en PDF
+    download_portrait_pdf: Téléchager en PDF portrait
+    download_landscape_pdf: Téléchager en PDF paysage
   answer_no: 'Réponse %choice%'
   answers:
     change: 'Changer les réponses'
