@@ -200,6 +200,10 @@ class ExportController extends BaseController
             $messages[] = $message;
         }
 
+        usort($messages, function(Message $a, Message $b) {
+            return -1 * ($a->getVolunteer()->getTagPriority() <=> $b->getVolunteer()->getTagPriority());
+        });
+
         $mpdf = new \Mpdf\Mpdf([
             'margin_left' => 0,
             'margin_right' => 0,

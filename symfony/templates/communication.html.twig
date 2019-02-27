@@ -339,6 +339,22 @@
                             </form>
                         </div>
 
+                        {# Download landscape PDF #}
+                        <div class="col-md-3 col-12 skip-line">
+                            <a href="#"
+                               class="btn btn-primary download-landscape-pdf-button"
+                               data-communication-id="{{ communication.id }}" role="button">
+                                {{ 'campaign_status.selection.download_landscape_pdf'|trans }}
+                            </a>
+                            <form id="selection-download-landscape-pdf-form-{{ communication.id }}"
+                                  action="{{ path('export_landscape_pdf', {communicationId: communication.id}) }}"
+                                  method="post" class="d-none">
+                                <input type="hidden" name="csrf" value="{{ csrf_token('communication') }}"/>
+                                <input type="hidden" name="volunteers"
+                                       id="selection-download-landscape-pdf-field-{{ communication.id }}" value=""/>
+                            </form>
+                        </div> 
+                        
                         {# Open / Close campaign #}
                         <div class="col-md-3 col-12 skip-line">
                             {% if campaign.active %}
@@ -796,6 +812,15 @@
                 JSON.stringify(getSelectedVolunteers(communicationId))
             );
             $('#selection-download-portrait-pdf-form-' + communicationId).submit();
+        });
+
+        $('.download-landscape-pdf-button').click(function (e) {
+            e.preventDefault();
+            var communicationId = $(this).data('communication-id');
+            $('#selection-download-landscape-pdf-field-' + communicationId).val(
+                JSON.stringify(getSelectedVolunteers(communicationId))
+            );
+            $('#selection-download-landscape-pdf-form-' + communicationId).submit();
         });
 
     </script>

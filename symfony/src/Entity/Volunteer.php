@@ -338,4 +338,20 @@ class Volunteer
     {
         return chunk_split(sprintf('0%s', substr($this->getPhoneNumber(), 2)), 2, ' ');
     }
+
+    /**
+     * @return int
+     */
+    public function getTagPriority(): int
+    {
+        $highest = -1;
+        foreach ($this->getTags() as $tag) {
+            /* @var \App\Entity\Tag $tag */
+            if ($tag->getTagPriority() > $highest) {
+                $highest = $tag->getTagPriority();
+            }
+        }
+
+        return $highest;
+    }
 }

@@ -239,15 +239,18 @@ csv_export:
 pdf_export:
   generated: 'Generated on %date% at %time%'
   confidential: CONFIDENTIAL DOCUMENT
-  campaign: 'Campaign %label%'
   staff: STAFF
   communication: 'Communication on %date% at %time%'
   response: '%choice%'
   staff_table:
     name: NAME
+    firstname: First name
+    lastname: Last name
     phone: Phone number
     skills: Skills
     time: "Answer's time"
+    nivol: Nivol
+    email: Email
 
 geolocation:
   title: Crew geolocalization

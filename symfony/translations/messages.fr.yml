@@ -238,15 +238,18 @@ csv_export:
 pdf_export:
   generated: 'Généré le %date% à %time%'
   confidential: DOCUMENT INTERNE
-  campaign: 'Déclenchement %label%'
   staff: EFFECTIFS
   communication: 'Communication du %date% à %time%'
   response: '%choice%'
   staff_table:
     name: NOM
+    firstname: Prénoms
+    lastname: NOM
     phone: Téléphone
     skills: Compétences
     time: "Heure rép."
+    nivol: Nivol
+    email: Email
 
 geolocation:
   title: Géolocalisation d'équipage
