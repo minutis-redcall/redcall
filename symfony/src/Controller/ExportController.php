@@ -106,12 +106,13 @@ class ExportController extends BaseController
         $campaign = $communication->getCampaign();
 
         $tables = [];
+        $messages = $communication->getMessages()->toArray();
         if ($communication->getChoices()->toArray()) {
             // Get one table per communication choice
             foreach ($communication->getChoices() as $choice) {
                 $label = $choice->getLabel();
                 $tables[$label] = [];
-                foreach ($communication->getMessages() as $message) {
+                foreach ($messages as $message) {
                     if (!in_array($message->getVolunteer()->getId(), $selection)) {
                         continue;
                     }
@@ -148,7 +149,17 @@ class ExportController extends BaseController
                 return [
                     'volunteer' => $message->getVolunteer(),
                 ];
-            }, $communication->getMessages()->toArray()));
+            }, $messages));
+        }
+        foreach ($tables as $label => $table) {
+            usort($tables[$label], function(array $rowA, array $rowB) {
+                /* @var Volunteer $volunteerA */
+                $volunteerA = $rowA['volunteer'];
+                /* @var Volunteer $volunteerB */
+                $volunteerB = $rowB['volunteer'];
+
+                return -1 * ($volunteerA->getTagPriority() <=> $volunteerB->getTagPriority());
+            });
         }
 
         $context = [

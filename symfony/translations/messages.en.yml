@@ -108,8 +108,7 @@ campaign_status:
   selection:
     new_message: Write new message
     download_csv: Download CSV
-    download_portrait_pdf: Download portrait PDF
-    download_landscape_pdf: Download landscape PDF
+    download_portrait_pdf: Download PDF
   answer_no: 'Answer %choice%'
   answers:
     change: 'Change answers'

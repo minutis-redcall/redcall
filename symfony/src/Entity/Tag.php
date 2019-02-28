@@ -39,6 +39,20 @@ class Tag
         self::TAG_DRVR_VPSP,
     ];
 
+    const PRIORITY = [
+        self::TAG_SOCIAL_ASSISTANCE,
+        self::TAG_EMERGENCY_ASSISTANCE,
+        self::TAG_PSC_1,
+        self::TAG_PSE_1_I,
+        self::TAG_PSE_1_R,
+        self::TAG_PSE_2_I,
+        self::TAG_PSE_2_R,
+        self::TAG_DRVR_VL,
+        self::TAG_DRVR_VPSP,
+        self::TAG_CI_I,
+        self::TAG_CI_R,
+    ];
+
     const HIERARCHY = [
         self::TAG_CI_R    => [self::TAG_CI_I],
         self::TAG_CI_I    => [self::TAG_PSE_2_R],
@@ -168,7 +182,7 @@ class Tag
      */
     public function getTagPriority(): int
     {
-        $priority = array_search($this->label, self::TAGS);
+        $priority = array_search($this->label, self::PRIORITY);
 
         if (false === $priority) {
             return -1;
