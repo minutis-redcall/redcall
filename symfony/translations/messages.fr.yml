@@ -243,8 +243,6 @@ pdf_export:
   response: '%choice%'
   staff_table:
     name: NOM
-    firstname: Prénoms
-    lastname: NOM
     phone: Téléphone
     skills: Compétences
     time: "Heure rép."

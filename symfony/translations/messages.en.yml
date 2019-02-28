@@ -244,8 +244,6 @@ pdf_export:
   response: '%choice%'
   staff_table:
     name: NAME
-    firstname: First name
-    lastname: Last name
     phone: Phone number
     skills: Skills
     time: "Answer's time"

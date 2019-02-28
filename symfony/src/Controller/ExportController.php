@@ -175,61 +175,6 @@ class ExportController extends BaseController
     }
 
     /**
-     * @Route(path="{communicationId}/landscape-pdf", name="landscape_pdf", requirements={"communicationId" = "\d+"})
-     * @Method("POST")
-     *
-     * @param Request $request
-     * @param int $communicationId
-     *
-     * @return Response
-     *
-     * @throws \Mpdf\MpdfException
-     */
-    public function landscapePdfAction(Request $request, int $communicationId)
-    {
-        $communication = $this->getCommunication($communicationId);
-        $selection = $this->getSelection($request, $communication);
-        $campaign = $communication->getCampaign();
-
-        $messages = [];
-        foreach ($communication->getMessages() as $message) {
-            if (!in_array($message->getVolunteer()->getId(), $selection)) {
-                continue ;
-            }
-
-            $messages[] = $message;
-        }
-
-        usort($messages, function(Message $a, Message $b) {
-            return -1 * ($a->getVolunteer()->getTagPriority() <=> $b->getVolunteer()->getTagPriority());
-        });
-
-        $mpdf = new \Mpdf\Mpdf([
-            'margin_left' => 0,
-            'margin_right' => 0,
-            'margin_bottom' => 25,
-            'format' => 'A4-L',
-            'orientation' => 'L'
-        ]);
-
-        $context = [
-            'current_date' => new \DateTime(),
-            'campaign' => $campaign,
-            'communication' => $communication,
-            'messages' => $messages,
-        ];
-
-        $mpdf->SetHTMLHeader($this->renderView('export/landscape_pdf/header.html.twig', $context));
-        $mpdf->SetHTMLFooter($this->renderView('export/landscape_pdf/footer.html.twig', $context));
-        $mpdf->WriteHTML($this->renderView('export/landscape_pdf/body.html.twig', $context));
-
-        return new MpdfResponse(
-            $mpdf,
-            sprintf('export-landscape-%s.pdf', date('Y-m-d'))
-        );
-    }
-
-    /**
      * @param $communicationId
      *
      * @return Communication
