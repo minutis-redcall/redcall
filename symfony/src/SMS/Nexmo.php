@@ -28,7 +28,6 @@ class Nexmo implements SMSProvider
 
         $price = 0.0;
         foreach ($message as $part) {
-            /* @var Message $part */
             $price = $price + $part['message-price'];
         }
 

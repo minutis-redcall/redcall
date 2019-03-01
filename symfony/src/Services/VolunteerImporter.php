@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Entity\Tag;
+use App\Issue\IssueLogger;
 use App\Repository\TagRepository;
 use App\Repository\VolunteerImportRepository;
 use App\Repository\VolunteerRepository;
@@ -38,7 +39,7 @@ class VolunteerImporter
     /**
      * @var TagRepository
      */
-    private $tagRepoistory;
+    private $tagRepository;
 
     /**
      * @var ParameterBagInterface
@@ -46,22 +47,21 @@ class VolunteerImporter
     private $parameterBag;
 
     /**
-     * VolunteerImportCommand constructor.
-     *
-     * @param VolunteerRepository       $volunteerRepository
-     * @param VolunteerImportRepository $volunteerImportRepository
-     * @param TagRepository             $tagRepository
-     * @param ParameterBagInterface     $parameterBag
+     * @var IssueLogger
      */
+    private $logger;
+
     public function __construct(VolunteerRepository $volunteerRepository,
         VolunteerImportRepository $volunteerImportRepository,
         TagRepository $tagRepository,
-        ParameterBagInterface $parameterBag)
+        ParameterBagInterface $parameterBag,
+        IssueLogger $logger)
     {
         $this->volunteerRepository       = $volunteerRepository;
         $this->volunteerImportRepository = $volunteerImportRepository;
-        $this->tagRepoistory             = $tagRepository;
+        $this->tagRepository             = $tagRepository;
         $this->parameterBag              = $parameterBag;
+        $this->logger                    = $logger;
     }
 
     /**
@@ -91,7 +91,7 @@ class VolunteerImporter
 
         $this->volunteerImportRepository->begin();
 
-        $tags     = $this->tagRepoistory->findAll();
+        $tags     = $this->tagRepository->findAll();
         $imported = 0;
         for ($i = 1; $i <= $nbRows; $i = $i + 500) {
             $data = $sheets
@@ -135,7 +135,12 @@ class VolunteerImporter
         if ($imported > 0) {
             $this->volunteerRepository->disableNonImportedVolunteers();
         } else {
-            throw new \RuntimeException('Volunteer spreadsheet is empty or not accessible.');
+
+//            $this->logger->fileIssueFromException('Failed to send message', $throwable, IssueLogger::SEVERITY_CRITICAL, [
+//                'communication_id' => $communication->getId(),
+//                'message_id'       => $message->getId(),
+//            ]);
+
         }
     }
 }
