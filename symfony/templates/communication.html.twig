@@ -140,7 +140,9 @@
                                 {% for choice in communication.choices %}
                                     <td>
                                         <div id="choice-{{ choice.id }}">
-                                            {{ choice.label }}
+                                            <a href="#" class="filter-response" data-target="filter-is-choice-{{ choice.id }}-{{ communication.id }}">
+                                                {{ choice.label }}
+                                            </a>
                                             <span id="choice-count-{{ choice.id }}">({{ choice.count }})</span>
                                         </div>
                                     </td>
@@ -805,6 +807,11 @@
                 JSON.stringify(getSelectedVolunteers(communicationId))
             );
             $('#selection-download-portrait-pdf-form-' + communicationId).submit();
+        });
+
+        $('.filter-response').click(function(e) {
+           $('#' + $(this).data('target')).click();
+           e.preventDefault();
         });
 
     </script>
