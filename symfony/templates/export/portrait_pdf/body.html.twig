@@ -1,0 +1,143 @@
+{% extends 'export/base.html.twig' %}
+
+{% block content %}
+    {% spaceless %}
+
+    {# Header #}
+    <div style="margin-left:60px;margin-right:60px;border:1px solid {{ lightgrey }};">
+        <div style="text-align:left;position:relative;left:-30px;">
+            <img height="30" src="images/corner_topleft.png"/>
+        </div>
+        <div style="margin-left:50px;">
+            <b>
+            <span style="font-size:30px;font-family:Arial Black;color:{{ red }};">
+                PARIS 1ER-2IEME {# MVP #}
+            </span>
+                <br/>
+                <span style="font-size:20px;font-family:Arial Black;color:{{ red }};">
+                {{ 'pdf_export.generated'|trans({
+                    '%date%': current_date|date('d/m/Y'),
+                    '%time%': current_date|date('H:i'),
+                }) }}
+            </span>
+            </b>
+        </div>
+        <div style="text-align:right;">
+            <img height="30" src="images/corner_bottomright.png"/>
+        </div>
+    </div>
+
+    <br/><br/>
+
+    {# Campaign title and date/time #}
+    <div style="background-color:{{ lightgrey }};">
+        <br/>
+        <div style="background-color:{{ red }};padding-top:5px;padding-bottom:5px;padding-left:50px;">
+            <span style="font-size:12px;color:white;">
+                {{ 'pdf_export.confidential'|trans }}
+            </span>
+        </div>
+        <br/>
+        <table width="100%" style="margin-left:45px;margin-right:60px;font-family:Arial Black;color:white;font-weight:bold;">
+            <tr>
+                <td style="font-size:24px;">
+                    {{ campaign.label }}
+                </td>
+            </tr>
+        </table>
+        <br/>
+    </div>
+
+    <br/><br/>
+
+    <div style="margin-left:45px;margin-right:60px;font-family:Arial;">
+
+        <h2 style="color:{{ red }};">
+            {% if communication.label %}
+                {{ communication.label }}
+            {% else %}
+                {{ 'pdf_export.communication'|trans({
+                    '%date%': communication.createdAt|date('d/m/Y'),
+                    '%time%': communication.createdAt|date('H:i')
+                }) }}
+            {% endif %}
+            {% if communication.choices|length %}
+                <br/>
+                <span style="color:{{ red }};font-size:14px;">
+                    <em>"{{ communication.body }}"</em>
+                </span>
+            {% endif %}
+        </h2>
+
+        {# Tables by choices #}
+        {% for label, table in tables if table|length > 0 %}
+
+            <table width="100%" cellspacing="0">
+                {% if communication.choices|length %}
+                    <tr>
+                        <td style="background-color:{{ lightgrey }};text-align:center;padding:10px;border: 1px solid black;" colspan="4">
+                            <span style="color:white;font-size:18px;">{{ 'pdf_export.response'|trans({'%choice%': label}) }}</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding:10px;text-align:center;color:black;background-color:{{ offwhite }};border: 1px solid black;">
+                            <strong>{{ 'pdf_export.staff_table.name'|trans }}</strong>
+                        </td>
+                        <td style="padding:10px;text-align:center;color:white;background-color:{{ red }};border: 1px solid black;">
+                            <strong>{{ 'pdf_export.staff_table.phone'|trans }}</strong>
+                        </td>
+                        <td style="padding:10px;text-align:center;color:black;background-color:{{ offwhite }};border: 1px solid black;">
+                            <strong>{{ 'pdf_export.staff_table.skills'|trans }}</strong>
+                        </td>
+                        <td style="padding:10px;text-align:center;color:black;background-color:{{ offwhite }};border: 1px solid black;">
+                            <strong>{{ 'pdf_export.staff_table.time'|trans }}</strong>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td style="color:white;background-color:{{ lightgrey }};text-align:center;padding:10px;border: 1px solid black;">
+                            <strong>{{ 'pdf_export.staff_table.name'|trans }}</strong>
+                        </td>
+                        <td style="color:white;background-color:{{ lightgrey }};text-align:center;padding:10px;border: 1px solid black;">
+                            <strong>{{ 'pdf_export.staff_table.phone'|trans }}</strong>
+                        </td>
+                        <td style="color:white;background-color:{{ lightgrey }};text-align:center;padding:10px;border: 1px solid black;">
+                            <strong>{{ 'pdf_export.staff_table.skills'|trans }}</strong>
+                        </td>
+                    </tr>
+                {% endif %}
+
+                {% for data in table %}
+                    {% set volunteer = data.volunteer %}
+                    {% set answer = data.answer|default(null) %}
+                    <tr>
+                        <td style="padding:10px;color:black;background-color:{{ offwhite }};border: 1px solid black;">
+                            {{ volunteer.firstName }} {{ volunteer.lastName }}
+                        </td>
+                        <td style="padding:10px;color:white;background-color:{{ red }};border: 1px solid black;">
+                            {{ volunteer.formattedPhoneNumber }}
+                        </td>
+                        <td style="padding:10px;color:black;background-color:{{ offwhite }};border: 1px solid black;">
+                            {% for index, tag in volunteer.tagsView %}
+                                {% if index > 0 %} / {% endif %}
+                                {{ ('tag.shortcuts.' ~ tag)|trans }}
+                            {% endfor %}
+                        </td>
+                        {% if communication.choices|length %}
+                            <td style="padding:10px;color:black;background-color:{{ offwhite }};border: 1px solid black;">
+                                {{ answer ? answer.receivedAt|date('H:i') : '&nbsp;' }}
+                            </td>
+                        {% endif %}
+                    </tr>
+                {% endfor %}
+
+            </table>
+
+            <br/>
+
+        {% endfor %}
+
+    </div>
+
+    {% endspaceless %}
+{% endblock %}

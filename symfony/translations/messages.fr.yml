@@ -107,7 +107,7 @@ campaign_status:
   selection:
     new_message: Ecrire un nouveau message
     download_csv: Téléchager en CSV
-    download_pdf: Téléchager en PDF
+    download_portrait_pdf: Téléchager en PDF
   answer_no: 'Réponse %choice%'
   answers:
     change: 'Changer les réponses'
@@ -237,7 +237,6 @@ csv_export:
 pdf_export:
   generated: 'Généré le %date% à %time%'
   confidential: DOCUMENT INTERNE
-  campaign: 'Déclenchement %label%'
   staff: EFFECTIFS
   communication: 'Communication du %date% à %time%'
   response: '%choice%'
@@ -246,6 +245,8 @@ pdf_export:
     phone: Téléphone
     skills: Compétences
     time: "Heure rép."
+    nivol: Nivol
+    email: Email
 
 geolocation:
   title: Géolocalisation d'équipage

@@ -13,8 +13,8 @@ class Tag
     // - VolunteerImportCommand
     // - messages.xx.yml
     // - fixtures.sql
-    const TAG_EMERGENCY_ASSISTANCE = 'emergency_assistance';
     const TAG_SOCIAL_ASSISTANCE    = 'social_assistance';
+    const TAG_EMERGENCY_ASSISTANCE = 'emergency_assistance';
     const TAG_PSC_1                = 'psc_1';
     const TAG_PSE_1_I              = 'pse_1_i';
     const TAG_PSE_1_R              = 'pse_1_r';
@@ -26,8 +26,8 @@ class Tag
     const TAG_DRVR_VPSP            = 'drvr_vpsp';
 
     const TAGS = [
-        self::TAG_EMERGENCY_ASSISTANCE,
         self::TAG_SOCIAL_ASSISTANCE,
+        self::TAG_EMERGENCY_ASSISTANCE,
         self::TAG_PSC_1,
         self::TAG_PSE_1_I,
         self::TAG_PSE_1_R,
@@ -37,6 +37,20 @@ class Tag
         self::TAG_CI_R,
         self::TAG_DRVR_VL,
         self::TAG_DRVR_VPSP,
+    ];
+
+    const PRIORITY = [
+        self::TAG_SOCIAL_ASSISTANCE,
+        self::TAG_EMERGENCY_ASSISTANCE,
+        self::TAG_PSC_1,
+        self::TAG_PSE_1_I,
+        self::TAG_PSE_1_R,
+        self::TAG_PSE_2_I,
+        self::TAG_PSE_2_R,
+        self::TAG_DRVR_VL,
+        self::TAG_DRVR_VPSP,
+        self::TAG_CI_I,
+        self::TAG_CI_R,
     ];
 
     const HIERARCHY = [
@@ -161,6 +175,20 @@ class Tag
     public function getVolunteers()
     {
         return $this->volunteers;
+    }
+
+    /**
+     * @return int
+     */
+    public function getTagPriority(): int
+    {
+        $priority = array_search($this->label, self::PRIORITY);
+
+        if (false === $priority) {
+            return -1;
+        }
+
+        return $priority;
     }
 
     /**

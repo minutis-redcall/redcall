@@ -1,0 +1,19 @@
+{% extends 'export/base.html.twig' %}
+
+{% block content %}
+
+    <table width="100%" style="margin-left:60px;margin-right:60px;">
+        <tr>
+            <td width="33%" valign="bottom">
+                {{ campaign.label }}
+                <br/>
+                {{ current_date|date('d/m/Y H:i') }}
+            </td>
+            <td width="33%" align="center">{PAGENO}/{nbpg}</td>
+            <td width="33%" style="text-align: right;">
+                <img height="60" src="images/croix_rouge_2.png"/>
+            </td>
+        </tr>
+    </table>
+
+{% endblock %}
