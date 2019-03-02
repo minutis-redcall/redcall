@@ -117,8 +117,27 @@ class Choice
         return $this;
     }
 
-    public function hasAnswered($answers)
+    /**
+     * @param array $answers
+     *
+     * @return bool
+     */
+    public function hasAnswered(array $answers): bool
     {
         return in_array(strtolower($this->label), array_map('strtolower', array_map('trim', explode('|', $answers))));
+    }
+
+    /**
+     * @return int
+     */
+    public function getCount(): int
+    {
+        $count = 0;
+
+        foreach ($this->getCommunication()->getMessages() as $message) {
+            $count += boolval($message->getAnswerByChoice($this));
+        }
+
+        return $count;
     }
 }

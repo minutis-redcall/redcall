@@ -263,6 +263,10 @@ class Campaign
                 'total'   => $count,
                 'percent' => $count ? round($msgsSent * 100 / $count, 2) : 0,
             ];
+
+            foreach ($communication->getChoices() as $choice) {
+                $data[$communication->getId()]['choices'][$choice->getId()] = $choice->getCount();
+            }
         }
 
         return $data;

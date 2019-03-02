@@ -137,8 +137,13 @@
                             </thead>
                             <tbody>
                             <tr>
-                                {% for choice in communication.choicesAsString %}
-                                    <td>{{ choice }}</td>
+                                {% for choice in communication.choices %}
+                                    <td>
+                                        <div id="choice-{{ choice.id }}">
+                                            {{ choice.label }}
+                                            <span id="choice-count-{{ choice.id }}">({{ choice.count }})</span>
+                                        </div>
+                                    </td>
                                 {% endfor %}
                             </tr>
                             </tbody>
@@ -568,6 +573,10 @@
                             .replace('%progress%', communication.progress.percent)
                     );
                 }
+
+                $.each(communication.choices, function (choiceId, count) {
+                    $('#choice-count-' + choiceId).html('(' + count + ')');
+                });
             });
 
             refreshVisibility();
