@@ -291,4 +291,20 @@ class Campaign
 
         return $data;
     }
+
+    /**
+     * @return float
+     */
+    public function getCost(): float
+    {
+        $cost = 0.0;
+
+        foreach ($this->getCommunications() as $communication) {
+            foreach ($communication->getMessages() as $message) {
+                $cost += $message->getCost();
+            }
+        }
+
+        return $cost;
+    }
 }
