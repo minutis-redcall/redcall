@@ -36,7 +36,7 @@
 
             {% for campaign in table.pager.currentPageResults %}
                 <div class="row separated">
-                    <div class="col-3">
+                    <div class="col-{% if is_granted('ROLE_ADMIN') %}2{% else %}3{% endif %}">
                         {{ macros.typeBadge(campaign.type) }}
                     </div>
                     <div class="col-9">
@@ -53,6 +53,11 @@
                             </span>
                         </em>
                     </div>
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <div class="col-1">
+                            <span style="width: 100%;" class="badge badge-dark badge-pill">{{ campaign.cost }} &euro;</span>
+                        </div>
+                    {% endif %}
                 </div>
             {% endfor %}
 
