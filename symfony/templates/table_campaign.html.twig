@@ -34,8 +34,8 @@
                 'label': 'campaign.order.label'|trans,
             }, 'nav-' ~ type) }}
 
-            {% for campaign in table.pager.currentPageResults %}
-                <div class="row separated">
+            {% for index, campaign in table.pager.currentPageResults %}
+                <div class="row separated" style="background-color: {{ cycle(['#eeeeee', '#ffffff'], index) }};">
                     <div class="col-3">
                         {{ macros.typeBadge(campaign.type) }}
                     </div>
@@ -47,17 +47,22 @@
                                 {{ campaign.label }}
                             {% endif %}
                         </a>
+
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <div class="float-right">
+                            <span class="badge badge-dark badge-pill">
+                                {{ campaign.cost }}&euro;
+                            </span>
+                            </div>
+                        {% endif %}
+
+                        <br/>
+
                         <em>
                             <span class="text-sm-left color-grey">
                                 ({{ campaign.createdAt|date("d/m/y H:i") }})
                             </span>
                         </em>
-                        {% if is_granted('ROLE_ADMIN') %}
-                            &nbsp;
-                            <span class="badge badge-dark badge-pill">
-                                {{ campaign.cost }}&euro;
-                            </span>
-                        {% endif %}
                     </div>
                 </div>
             {% endfor %}
