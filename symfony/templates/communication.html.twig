@@ -97,12 +97,15 @@
                         <span id="progress-text-{{ communication.id }}"
                               class="justify-content-center d-flex position-absolute w-100 text-white">
                             {% if progress[communication.id].percent == 100 %}
-                                {{ 'campaign_status.finish'|trans }}
+                                {{ 'campaign_status.finish'|trans({
+                                    '%cost%': communication.cost
+                                }) }}
                             {% else %}
                                 {{ 'campaign_status.progress'|trans({
                                     '%sent%': progress[communication.id].sent,
                                     '%total%': progress[communication.id].total,
                                     '%progress%': progress[communication.id].percent,
+                                    '%cost%': communication.cost
                                 }) }}
                             {% endif %}
                         </span>
@@ -140,7 +143,10 @@
                                 {% for choice in communication.choices %}
                                     <td>
                                         <div id="choice-{{ choice.id }}">
-                                            <a href="#" class="filter-response" data-target="filter-is-choice-{{ choice.id }}-{{ communication.id }}">
+                                            <a href="#"
+                                               class="filter-response"
+                                               data-communication-id="{{ communication.id }}"
+                                               data-target="filter-is-choice-{{ choice.id }}-{{ communication.id }}">
                                                 {{ choice.label }}
                                             </a>
                                             <span id="choice-count-{{ choice.id }}">({{ choice.count }})</span>
@@ -345,7 +351,7 @@
                                        id="selection-download-portrait-pdf-field-{{ communication.id }}" value=""/>
                             </form>
                         </div>
-                        
+
                         {# Open / Close campaign #}
                         <div class="col-md-3 col-12 skip-line">
                             {% if campaign.active %}
@@ -447,7 +453,7 @@
                     <label class="switch">
                         <input type="checkbox"
                                data-toggle="toggle" data-onstyle="primary"
-                               class="form-check-input filter-action filter-action-{{ communication.id }}"
+                               class="form-check-input filter-action filter-response-{{ communication.id }} filter-action-{{ communication.id }}"
                                id="filter-is-choice-{{ choice.id }}-{{ communication.id }}"/>
                         <span class="slider"></span>
                     </label>
@@ -566,13 +572,17 @@
                 progressBar.css('width', communication.progress.percent + '%');
 
                 if (communication.progress.percent == 100) {
-                    $('#progress-text-' + communicationId).html('{{ 'campaign_status.finish'|trans|e('js') }}');
+                    $('#progress-text-' + communicationId).html(
+                        '{{ 'campaign_status.finish'|trans|e('js') }}'
+                            .replace('%cost%', communication.progress.cost)
+                    );
                 } else {
                     $('#progress-text-' + communicationId).html(
                         $('#progress-trans-key-' + communicationId).html()
                             .replace('%sent%', communication.progress.sent)
                             .replace('%total%', communication.progress.total)
                             .replace('%progress%', communication.progress.percent)
+                            .replace('%cost%', communication.progress.cost)
                     );
                 }
 
@@ -809,9 +819,29 @@
             $('#selection-download-portrait-pdf-form-' + communicationId).submit();
         });
 
-        $('.filter-response').click(function(e) {
-           $('#' + $(this).data('target')).click();
-           e.preventDefault();
+        {# -------------------------------------------------------------------------------- #}
+        {# Filter responses using the table #}
+        {# -------------------------------------------------------------------------------- #}
+
+        $('.filter-response').click(function (e) {
+            var that = $(this);
+
+            var currentlyTicked = $('#' + that.data('target')).is(':checked');
+
+            {# Untick all responses filters #}
+            $('.filter-response-' + that.data('communication-id')).each(function () {
+                var tick = $(this);
+                if (tick.is(':checked')) {
+                    tick.click();
+                }
+            });
+
+            {# Tick the corresponding response #}
+            if (!currentlyTicked) {
+                $('#' + that.data('target')).click();
+            }
+
+            e.preventDefault();
         });
 
     </script>

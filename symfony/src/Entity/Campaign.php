@@ -262,6 +262,7 @@ class Campaign
                 'sent'    => $msgsSent,
                 'total'   => $count,
                 'percent' => $count ? round($msgsSent * 100 / $count, 2) : 0,
+                'cost'    => $communication->getCost(),
             ];
 
             foreach ($communication->getChoices() as $choice) {
@@ -290,6 +291,7 @@ class Campaign
                 'sent'    => $msgsSent,
                 'total'   => $count = count($communication->getMessages()),
                 'percent' => round($msgsSent * 100 / $count, 2),
+                'cost'    => $communication->getCost(),
             ];
         }
 
@@ -304,9 +306,7 @@ class Campaign
         $cost = 0.0;
 
         foreach ($this->getCommunications() as $communication) {
-            foreach ($communication->getMessages() as $message) {
-                $cost += $message->getCost();
-            }
+            $cost += $communication->getCost();
         }
 
         return $cost;

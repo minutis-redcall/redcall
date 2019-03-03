@@ -397,4 +397,18 @@ class Communication
 
         return $this;
     }
+
+    /**
+     * @return float
+     */
+    public function getCost(): float
+    {
+        $cost = 0.0;
+
+        foreach ($this->getMessages() as $message) {
+            $cost += $message->getCost();
+        }
+
+        return $cost;
+    }
 }
