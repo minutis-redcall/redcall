@@ -36,7 +36,7 @@
 
             {% for index, campaign in table.pager.currentPageResults %}
                 <div class="row separated" style="background-color: {{ cycle(['#eeeeee', '#ffffff'], index) }};">
-                    <div class="col-3">
+                    <div class="col-3" style="display:flex;align-items:center;">
                         {{ macros.typeBadge(campaign.type) }}
                     </div>
                     <div class="col-9">
@@ -50,9 +50,9 @@
 
                         {% if is_granted('ROLE_ADMIN') %}
                             <div class="float-right">
-                            <span class="badge badge-dark badge-pill">
-                                {{ campaign.cost }}&euro;
-                            </span>
+                                <span class="badge badge-dark badge-pill">
+                                    {{ campaign.cost }}&euro;
+                                </span>
                             </div>
                         {% endif %}
 
