@@ -206,6 +206,9 @@
     "ramsey/uuid": {
         "version": "3.7.3"
     },
+    "redcall-io/password-login-bundle": {
+        "version": "0.9.0"
+    },
     "sensio/framework-extra-bundle": {
         "version": "4.0",
         "recipe": {
@@ -425,16 +428,7 @@
             "ref": "f8a63faa0d9521526499c0a8f403c9964ecb0527"
         }
     },
-    "symfony/security-core": {
-        "version": "v4.2.1"
-    },
     "symfony/security-csrf": {
-        "version": "v4.2.1"
-    },
-    "symfony/security-guard": {
-        "version": "v4.2.1"
-    },
-    "symfony/security-http": {
         "version": "v4.2.1"
     },
     "symfony/serializer": {
