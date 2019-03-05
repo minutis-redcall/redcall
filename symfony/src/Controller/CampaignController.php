@@ -31,15 +31,15 @@ class CampaignController extends BaseController
      * @Route(path="declenchement/liste", name="list_campaigns")
      * @return Response
      */
-    public function listCampaignsAction()
+    public function listCampaigns()
     {
-        return $this->render('list_campaigns.html.twig');
+        return $this->render('campaign/list.html.twig');
     }
 
     /**
      * @return Response
      */
-    public function renderCampaignsTableAction(Request $request): Response
+    public function renderCampaignsTable(Request $request): Response
     {
         $ongoing = $this
             ->get('doctrine')
@@ -55,7 +55,7 @@ class CampaignController extends BaseController
             ->createQueryBuilder('c')
             ->where('c.active = 0');
 
-        return $this->render('table_campaign.html.twig', [
+        return $this->render('campaign/table.html.twig', [
             'data' => [
                 'ongoing'  => [
                     'orderBy' => $this->orderBy($ongoing, Campaign::class, 'c.type DESC, c.createdAt', 'DESC', 'ongoing'),
@@ -77,7 +77,7 @@ class CampaignController extends BaseController
      * @return string
      * @throws \Exception
      */
-    public function createCampaignAction(Request $request)
+    public function createCampaign(Request $request)
     {
         $campaign = new CampaignModel();
         $form     = $this
@@ -102,7 +102,7 @@ class CampaignController extends BaseController
             ]));
         }
 
-        return $this->render('new_campaign.html.twig', [
+        return $this->render('campaign/new.html.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -115,7 +115,7 @@ class CampaignController extends BaseController
      *
      * @return Response
      */
-    public function closeCampaignAction(int $campaignId, string $csrf): Response
+    public function closeCampaign(int $campaignId, string $csrf): Response
     {
         $this->validateCsrfOrThrowNotFoundException('campaign', $csrf);
 
@@ -139,7 +139,7 @@ class CampaignController extends BaseController
      *
      * @return Response
      */
-    public function openCampaignAction(int $campaignId, string $csrf): Response
+    public function openCampaign(int $campaignId, string $csrf): Response
     {
         $this->validateCsrfOrThrowNotFoundException('campaign', $csrf);
 
