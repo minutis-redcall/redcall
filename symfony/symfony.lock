@@ -209,6 +209,9 @@
     "redcall-io/password-login-bundle": {
         "version": "0.9.0"
     },
+    "redcall-io/sandbox-bundle": {
+        "version": "dev-master"
+    },
     "sensio/framework-extra-bundle": {
         "version": "4.0",
         "recipe": {
