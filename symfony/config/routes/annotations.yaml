@@ -3,5 +3,5 @@ controllers:
     type: annotation
 
 password_login:
-    resource: ../../bundles/PasswordLoginBundle/Controller/
+    resource: '@PasswordLoginBundle/Controller/'
     type: annotation
