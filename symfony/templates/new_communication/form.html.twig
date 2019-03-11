@@ -1,3 +1,6 @@
+
+{% form_theme form 'new_communication/form_theme.html.twig' %}
+
 {{ form_row(form.volunteers) }}
 
 {% set max_length_sms = constant('App\\Entity\\Message::MAX_LENGTH_SMS') %}
@@ -29,7 +32,7 @@
 
 {{ form_label(form.answers) }}
 
-{{ render(controller('\\App\\Controller\\PrefilledAnswersController::renderSelect', {campaignId: campaign.id|default(null)})) }}
+{{ render(controller('\\App\\Controller\\PrefilledAnswersController::renderWidget', {campaignId: campaign.id|default(null)})) }}
 
 {{ form_row(form.answers, {label: false}) }}
 
