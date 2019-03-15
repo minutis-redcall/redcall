@@ -60,7 +60,7 @@ class GeoLocationController extends BaseController
         /* @var Message $message */
         $message = $this->getMessageByWebCode($code);
 
-        return $this->render('geo_location.html.twig', [
+        return $this->render('geo_location/index.html.twig', [
             'code'    => $code,
             'message' => $message,
         ]);
@@ -72,7 +72,7 @@ class GeoLocationController extends BaseController
         $message       = $this->getMessageByWebCode($code);
         $communication = $message->getCommunication();
 
-        return $this->render('geo_location_content.html.twig', [
+        return $this->render('geo_location/content.html.twig', [
             'code'          => $code,
             'communication' => $communication,
             'message'       => $message,

@@ -1,0 +1,35 @@
+<div class="text-center h4">{{ message.volunteer.firstName }} {{ message.volunteer.lastName }}</div>
+
+<p>{{ 'campaign_status.answers.change'|trans }}</p>
+{% for key, choice in message.communication.choices %}
+    <div class="form-check {% if key == 0 %}border-top{% endif %}">
+        <label class="switch">
+            <input type="checkbox"
+                   class="form-check-input answer-change"
+                   data-endpoint="{{ path('communication_change_answer', {messageId: message.id, csrf: csrf_token('communication')}) }}"
+                   data-message-id="{{ message.id }}"
+                   data-choice-id="{{ choice.id }}"
+                   {% if message.answerByChoice(choice) %}checked{% endif %}
+                   id="toggle-answer-{{ message.id }}-{{ choice.id }}"/>
+            <span class="slider"></span>
+        </label>
+        <label class="form-check-label"
+               for="toggle-answer-{{ message.id }}-{{ choice.id }}">{{ choice.label }}</label>
+    </div>
+{% endfor %}
+
+<p>{{ 'campaign_status.answers.history'|trans }}</p>
+<table class="table">
+    {% for answer in message.answers %}
+        <tr>
+            <td>
+                {{ answer.receivedAt|date('d/m/y H:i') }}:
+                {{ answer.raw }}
+                {% if answer.choice %}
+                    <br/>
+                    <em>{{ 'campaign_status.answers.label'|trans({'%label%': answer.choice.label}) }}</em>
+                {% endif %}
+            </td>
+        </tr>
+    {% endfor %}
+</table>
