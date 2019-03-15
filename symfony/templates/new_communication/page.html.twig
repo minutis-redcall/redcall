@@ -9,7 +9,7 @@
     </h1>
 
     {{ form_start(form, {attr: {'action': path('communication_new', {campaignId: campaign.id})}}) }}
-    {{ include('new_communication_form.html.twig') }}
+    {{ include('new_communication/form.html.twig') }}
     {{ form_end(form) }}
 
     <a href="{{ path('communication_index', {campaignId: campaign.id}) }}" class="btn btn-light">

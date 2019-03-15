@@ -22,7 +22,7 @@ class PrefilledAnswersController extends BaseController
             ->getManager(PrefilledAnswers::class)
             ->createQueryBuilder('p');
 
-        return $this->render('admin/prefilled_answers_list.html.twig', [
+        return $this->render('admin/prefilled_answers/list.html.twig', [
             'pager' => $this->getPager($pfas),
         ]);
     }
@@ -55,7 +55,7 @@ class PrefilledAnswersController extends BaseController
             return $this->redirectToRoute('admin_prefilled_answers_list');
         }
 
-        return $this->render('admin/prefilled_answers_editor.html.twig', [
+        return $this->render('admin/prefilled_answers/editor.html.twig', [
             'prefilled_answer' => $pfa,
             'form'             => $form->createView(),
         ]);

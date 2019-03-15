@@ -46,7 +46,7 @@ class VolunteersController extends BaseController
             ->createQueryBuilder('v')
             ->where('v.enabled = 0');
 
-        return $this->render('admin/volunteers_list.html.twig', [
+        return $this->render('admin/volunteers/list.html.twig', [
             'data' => [
                 'enabled'  => [
                     'orderBy' => $this->orderBy($enabled, Volunteer::class, 'v.lastName', 'ASC', 'enabled'),
@@ -146,7 +146,7 @@ class VolunteersController extends BaseController
             ->andWhere("v.status != ''")
             ->andWhere("v.status != '[]'");
 
-        return $this->render('admin/volunteers_import.html.twig', [
+        return $this->render('admin/volunteers/import.html.twig', [
             'link'    => sprintf('https://docs.google.com/spreadsheets/d/%s/', getenv('GOOGLE_SHEETS_VOLUNTEERS_ID')),
             'orderBy' => $this->orderBy($qb, VolunteerImport::class, 'v.id', 'ASC'),
             'rows'    => $qb->getQuery()->getResult(),

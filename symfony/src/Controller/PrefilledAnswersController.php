@@ -9,7 +9,7 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
 class PrefilledAnswersController extends BaseController
 {
-    public function renderSelect(?int $campaignId = null)
+    public function renderWidget(?int $campaignId = null)
     {
         $currentColor = Campaign::TYPE_GREEN;
 
@@ -50,7 +50,7 @@ class PrefilledAnswersController extends BaseController
             ])->getForm()->createView();
         }
 
-        return $this->render('prefilled_answers_selector.html.twig', [
+        return $this->render('prefilled_answers/widget.html.twig', [
             'current_color' => $currentColor,
             'forms'         => $forms,
             'answers'       => $answers,

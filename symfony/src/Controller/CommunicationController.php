@@ -10,6 +10,7 @@ use App\Component\HttpFoundation\EventStreamResponse;
 use App\Entity\Campaign;
 use App\Entity\Communication;
 use App\Entity\Message;
+use App\Entity\PrefilledAnswers;
 use App\Form\Model\Communication as CommunicationModel;
 use App\Form\Type\CampaignType;
 use App\Form\Type\CommunicationType;
@@ -23,6 +24,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
 /**
  * @Route(name="communication_")
@@ -96,7 +98,7 @@ class CommunicationController extends BaseController
     {
         $campaign = $this->getCampaignOrThrowNotFoundException($campaignId);
 
-        return $this->render('communication.html.twig', [
+        return $this->render('status_communication/index.html.twig', [
             'campaign'   => $campaign,
             'skills'     => $this->tagRepository->findAll(),
             'statusHash' => $this->getStatusHash($campaign),
@@ -247,7 +249,7 @@ class CommunicationController extends BaseController
             ]));
         }
 
-        return $this->render('new_communication.html.twig', [
+        return $this->render('new_communication/page.html.twig', [
             'campaign'   => $campaign,
             'volunteers' => $volunteers,
             'form'       => $form->createView(),
@@ -321,7 +323,7 @@ class CommunicationController extends BaseController
             throw $this->createNotFoundException();
         }
 
-        return $this->render('answer_communication.html.twig', [
+        return $this->render('status_communication/answers.html.twig', [
             'message' => $message,
         ]);
     }
