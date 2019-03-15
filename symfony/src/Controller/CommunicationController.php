@@ -98,7 +98,7 @@ class CommunicationController extends BaseController
     {
         $campaign = $this->getCampaignOrThrowNotFoundException($campaignId);
 
-        return $this->render('communication.html.twig', [
+        return $this->render('status_communication/index.html.twig', [
             'campaign'   => $campaign,
             'skills'     => $this->tagRepository->findAll(),
             'statusHash' => $this->getStatusHash($campaign),
@@ -323,7 +323,7 @@ class CommunicationController extends BaseController
             throw $this->createNotFoundException();
         }
 
-        return $this->render('answer_communication.html.twig', [
+        return $this->render('status_communication/answers.html.twig', [
             'message' => $message,
         ]);
     }
