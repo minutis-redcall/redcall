@@ -41,7 +41,7 @@ class MessageController extends BaseController
     {
         $message = $this->getMessageByWebCode($code);
 
-        return $this->render('message.html.twig', [
+        return $this->render('message/index.html.twig', [
             'code'    => $code,
             'message' => $message,
         ]);
