@@ -395,6 +395,9 @@
     "symfony/polyfill-intl-icu": {
         "version": "v1.8.0"
     },
+    "symfony/polyfill-intl-idn": {
+        "version": "v1.11.0"
+    },
     "symfony/polyfill-mbstring": {
         "version": "v1.8.0"
     },
@@ -430,9 +433,6 @@
             "version": "3.3",
             "ref": "f8a63faa0d9521526499c0a8f403c9964ecb0527"
         }
-    },
-    "symfony/security-csrf": {
-        "version": "v4.2.1"
     },
     "symfony/serializer": {
         "version": "v4.1.0"
