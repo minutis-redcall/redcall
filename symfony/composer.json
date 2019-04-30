@@ -35,7 +35,6 @@
     "symfony/twig-bundle": "^4.1",
     "symfony/validator": "^4.1",
     "symfony/web-link": "^4.1",
-    "symfony/webpack-encore-pack": "*",
     "symfony/yaml": "^4.1",
     "white-october/pagerfanta-bundle": "^1.2"
   },
