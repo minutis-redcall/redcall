@@ -24,3 +24,10 @@ jquery.collection.html.twig
 
 /config/keys/*
 !/config/keys/.gitkeep
+
+###> symfony/webpack-encore-bundle ###
+/node_modules/
+/public/build/
+npm-debug.log
+yarn-error.log
+###< symfony/webpack-encore-bundle ###
