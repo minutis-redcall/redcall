@@ -7,7 +7,7 @@ RedCall.io is a messaging tool for head of emergencies. They use it to ask for v
 
 This project was initially developed by the BlaBlaCar team as part of a Coding Night event, check out more details on [that medium blog post](https://medium.com/blablacar-tech/extending-our-principles-outside-blablacar-the-redalert-project-cf50110f0848).
 
-## Installation procedure
+## Installation procedure (development)
 
 You will need a running Docker environment to install this app locally.
 Set it up by following the guides available [here]([https://docs.docker.com/get-started/]).
@@ -28,6 +28,14 @@ Connect to 127.0.0.1:3307 in order to access the MySQL server.
 ### Accessing the application container
 
 If you detach from the application container, run `docker-compose exec php bash` to reconnect and have access to a shell.
+
+From here, you can run the following commands to fully set-up the environment:
+
+```
+composer install
+yarn install
+yarn encore dev
+```
 
 ### Rebuild Docker images
 

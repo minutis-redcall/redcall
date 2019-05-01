@@ -5,20 +5,28 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
+{#
     <link rel="stylesheet" href="{{ asset('cdn/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ asset('cdn/jquery.flexdatalist.min.css') }}">
     <link rel="stylesheet" href="{{ asset('styles/main.css') }}">
+#}
 
+{#
     <script src="{{ asset('cdn/jquery.min.js') }}"></script>
     <script src="{{ asset('cdn/popper.min.js') }}"></script>
     <script src="{{ asset('cdn/bootstrap.min.js') }}"></script>
     <script src="{{ asset('cdn/jquery.flexdatalist.min.js') }}"></script>
     <script src="{{ asset('js/main.js') }}"></script>
+#}
 
     <title>{% block title %}redcall.io{% endblock %}</title>
-    {% block stylesheets %}{% endblock %}
+    {% block stylesheets %}
+        {{ encore_entry_link_tags('app') }}
+    {% endblock %}
 </head>
 <body>
+
+{{ encore_entry_script_tags('app') }}
 
 <div class="container mt-2">
 

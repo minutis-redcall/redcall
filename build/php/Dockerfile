@@ -22,8 +22,8 @@ RUN apt-get update && apt-get install -my \
   php-redis \
   php-opcache \
   make \
-  nodejs \
-  npm
+  nodejs
+
 RUN mkdir /run/php
 
 # PHP-FPM

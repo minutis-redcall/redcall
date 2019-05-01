@@ -1,18 +1,9 @@
-
 ###> symfony/framework-bundle ###
 /.env
 /public/bundles/
 /var/
 /vendor/
 ###< symfony/framework-bundle ###
-
-###> symfony/webpack-encore-pack ###
-/node_modules/
-/public/build/
-npm-debug.log
-yarn-error.log
-###< symfony/webpack-encore-pack ###
-
 ###> symfony/web-server-bundle ###
 /.web-server-pid
 ###< symfony/web-server-bundle ###
@@ -22,14 +13,15 @@ yarn-error.log
 /phpunit.xml
 ###< symfony/phpunit-bridge ###
 
-.DS_Store
-.idea
-
-zenaton.err
-zenaton.out
-
 jquery.collection.js
 jquery.collection.html.twig
 
 /config/keys/*
 !/config/keys/.gitkeep
+
+###> symfony/webpack-encore-bundle ###
+/node_modules/
+/public/build/
+npm-debug.log
+yarn-error.log
+###< symfony/webpack-encore-bundle ###
