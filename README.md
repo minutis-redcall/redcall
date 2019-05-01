@@ -34,7 +34,7 @@ From here, you can run the following commands to fully set-up the environment:
 ```
 composer install
 yarn install
-yarn encore
+yarn encore dev
 ```
 
 ### Rebuild Docker images

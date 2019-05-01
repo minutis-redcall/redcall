@@ -1,3 +1,11 @@
+
+/*
+    Enables jQuery global variables
+ */
+import $ from 'jquery';
+window.jQuery = $;
+window.$ = $;
+
 /*
     Code taken from https://stackoverflow.com/a/7732379/731138
     Get an argument coming from the query string

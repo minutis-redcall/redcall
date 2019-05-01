@@ -1,14 +1,15 @@
-/*
- * Welcome to your app's main JavaScript file!
- *
- * We recommend including the built version of this JavaScript file
- * (and its CSS file) in your base layout (base.html.twig).
- */
 
-// any CSS you require will output into a single css file (app.css in this case)
-require('../css/app.css');
+// CSS
+require('../css/bootstrap.min.css');
+require('../css/jquery.flexdatalist.min.css');
+require('../css/leaflet.css');
+require('../css/main.css');
 
-// Need jQuery? Install it with "yarn add jquery", then uncomment to require it.
-// const $ = require('jquery');
-
-console.log('Hello Webpack Encore! Edit me in assets/js/app.js');
+// JS
+require('popper.js');
+require('../js/bootstrap.min.js');
+require('../js/jquery.flexdatalist.min.js')
+require('../js/jquery.collection.js');
+require('../js/compass.js');
+require('../js/leaflet.js');
+require('../js/main.js');
