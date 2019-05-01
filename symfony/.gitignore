@@ -13,12 +13,6 @@
 /phpunit.xml
 ###< symfony/phpunit-bridge ###
 
-.DS_Store
-.idea
-
-zenaton.err
-zenaton.out
-
 jquery.collection.js
 jquery.collection.html.twig
 
