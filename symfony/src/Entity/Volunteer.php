@@ -45,7 +45,7 @@ class Volunteer
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=20)
+     * @ORM\Column(type="string", length=20, nullable=true)
      */
     private $phoneNumber;
 
@@ -78,6 +78,11 @@ class Volunteer
     private $locked = false;
 
     /**
+     * @var bool
+     */
+    private $minor;
+
+    /**
      * @var array
      *
      * @ORM\ManyToMany(targetEntity="App\Entity\Tag", inversedBy="volunteers")
@@ -92,6 +97,14 @@ class Volunteer
      * @var array
      */
     private $tagsView;
+
+    /**
+     * @var Organization
+     *
+     * @ORM\ManyToOne(targetEntity="App\Entity\Organization", inversedBy="volunteers")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $organization;
 
     public function __construct()
     {
@@ -179,9 +192,9 @@ class Volunteer
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getPhoneNumber(): string
+    public function getPhoneNumber(): ?string
     {
         return $this->phoneNumber;
     }
@@ -279,6 +292,26 @@ class Volunteer
     }
 
     /**
+     * @return bool
+     */
+    public function isMinor(): bool
+    {
+        return $this->minor;
+    }
+
+    /**
+     * @param bool $minor
+     *
+     * @return Volunteer
+     */
+    public function setMinor(bool $minor): Volunteer
+    {
+        $this->minor = $minor;
+
+        return $this;
+    }
+
+    /**
      * @return ArrayCollection
      */
     public function getTags(): Collection
@@ -353,5 +386,25 @@ class Volunteer
         }
 
         return $highest;
+    }
+
+    /**
+     * @return Organization|null
+     */
+    public function getOrganization(): ?Organization
+    {
+        return $this->organization;
+    }
+
+    /**
+     * @param Organization|null $organization
+     *
+     * @return Volunteer
+     */
+    public function setOrganization(?Organization $organization): self
+    {
+        $this->organization = $organization;
+
+        return $this;
     }
 }
