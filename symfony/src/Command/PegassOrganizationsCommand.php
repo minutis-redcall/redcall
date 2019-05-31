@@ -34,7 +34,15 @@ class PegassOrganizationsCommand extends BaseCommand
         $table = new Table($output);
         $table->setHeaderTitle(sprintf('Organizations in department #%s', $department));
         $table->setHeaders(['ID', 'Type', 'Name']);
-        $table->addRows($organizations);
+
+        /* @var \App\Entity\Organization $organization */
+        foreach ($organizations as $organization) {
+            $table->addRow([
+                $organization->getCode(),
+                $organization->getType(),
+                $organization->getName(),
+            ]);
+        }
 
         $table->render();
     }

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Entity\Organization;
 use App\Entity\Volunteer;
 
 class Pegass
@@ -62,12 +63,13 @@ class Pegass
         $rows = $this->get(sprintf('https://pegass.croix-rouge.fr/crf/rest/zonegeo/departement/%s', $departmentId));
 
         $organizations = [];
-        foreach ($rows['structuresFilles'] as $organization) {
-            $organizations[] = [
-                'code' => $organization['id'],
-                'type' => $organization['typeStructure'],
-                'name' => $organization['libelle'],
-            ];
+        foreach ($rows['structuresFilles'] as $row) {
+            $organization = new Organization();
+            $organization->setCode($row['id']);
+            $organization->setType($row['typeStructure']);
+            $organization->setName($row['libelle']);
+
+            $organizations[] = $organization;
         }
 
         return $organizations;
@@ -87,6 +89,7 @@ class Pegass
                 $volunteer->setNivol($row['id']);
                 $volunteer->setEnabled($row['actif']);
                 $volunteer->setMinor($row['mineur']);
+
                 foreach ($row['coordonnees'] ?? [] as $contact) {
                     if (in_array($contact['moyenComId'], ['MAIL', 'MAILDOM'])
                         && preg_match('/^.+\@.+\..+$/', $contact['libelle'] ?? false)
@@ -101,6 +104,15 @@ class Pegass
                         }
                     }
                 }
+
+                foreach ($row['coordonnees'] ?? [] as $contact) {
+                    if (in_array($contact['moyenComId'], ['MAIL', 'MAILDOM'])
+                        && preg_match('/^.+\@.+\..+$/', $contact['libelle'] ?? false)
+                        && !$volunteer->getEmail()) {
+                        $volunteer->setEmail($contact['libelle']);
+                    }
+                }
+
                 $volunteers[] = $volunteer;
             }
 
@@ -128,7 +140,12 @@ class Pegass
         return json_decode($this->client->getResponse()->getContent(), true);
     }
 
-    private function parsePhone(string $phone)
+    /**
+     * @param string $phone
+     *
+     * @return null|string
+     */
+    private function parsePhone(string $phone) : ?string
     {
         $phone = ltrim(preg_replace('/[^0-9]/', '', $phone), 0);
         if (strlen($phone) == 9) {
