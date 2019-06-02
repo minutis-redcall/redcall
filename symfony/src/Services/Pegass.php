@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Entity\Organization;
+use App\Entity\Tag;
 use App\Entity\Volunteer;
 
 class Pegass
@@ -121,8 +122,64 @@ class Pegass
         return $volunteers;
     }
 
+    public function getVolunteerTags(string $volunteerId) : array
+    {
+        // US / AS ?
+        $skills = $this->getVolunteerActions($volunteerId);
+
+        // VL / VPSP ?
+        $skills = array_merge($skills, $this->getVolunteerVehicles($volunteerId));
+
+        // PSC1, PSE1/rec, PSE2/rec, CI
+        $skills = array_merge($skills, $this->getVolunteerSkills($volunteerId));
+
+        return $skills;
+    }
+
+    public function getVolunteerActions(string $volunteerId) : array
+    {
+        $actions = $this->get(sprintf('https://pegass.croix-rouge.fr/crf/rest/structureaction?utilisateur=%s', $volunteerId));
+        $skills = [];
+
+        foreach ($actions as $action) {
+            if (1 == $action['groupeAction']['id']) {
+                $skills[] = Tag::TAG_EMERGENCY_ASSISTANCE;
+            }
+
+            if (2 == $action['groupeAction']['id']) {
+                $skills[] = Tag::TAG_SOCIAL_ASSISTANCE;
+            }
+        }
+
+        return array_unique($skills);
+    }
+
+    public function getVolunteerVehicles(string $volunteerId) : array
+    {
+        $roles = $this->get(sprintf('https://pegass.croix-rouge.fr/crf/rest/competenceutilisateur/%s', $volunteerId));
+        $skills = [];
+
+        foreach ($roles as $role) {
+            if (9 == $role['id']) {
+                $skills[] = Tag::TAG_DRVR_VL;
+            }
+
+            if (10 == $role['id']) {
+                $skills[] = Tag::TAG_DRVR_VPSP;
+            }
+        }
+
+        return array_unique($skills);
+    }
+
     public function getVolunteerSkills(string $volunteerId) : array
     {
+        $skills = $this->get(sprintf('https://pegass.croix-rouge.fr/crf/rest/formationutilisateur?utilisateur=%s', $volunteerId));
+        $tags = [];
+
+        foreach ($skills as $skill) {
+
+        }
 
     }
 
