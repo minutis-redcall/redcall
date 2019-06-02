@@ -40,10 +40,10 @@ final class Version20190602172404 extends AbstractMigration
             INSERT IGNORE INTO volunteer_tag
             SELECT 10 as tag_id, volunteer_id
             FROM volunteer_tag
-            WHERE tag_id = 12
+            WHERE tag_id = 11
         ');
 
-        $this->addSql('DELETE FROM tag WHERE id IN (5, 7, 12)');
+        $this->addSql('DELETE FROM tag WHERE id IN (5, 7, 11)');
 
         $this->addSql('UPDATE tag SET label = "pse_1" WHERE id = 4');
         $this->addSql('UPDATE tag SET label = "pse_2" WHERE id = 6');
@@ -61,6 +61,6 @@ final class Version20190602172404 extends AbstractMigration
 
         $this->addSql('INSERT INTO tag (id, label) VALUES (5, "pse_1_r")');
         $this->addSql('INSERT INTO tag (id, label) VALUES (7, "pse_2_r")');
-        $this->addSql('INSERT INTO tag (id, label) VALUES (12, "ci_r")');
+        $this->addSql('INSERT INTO tag (id, label) VALUES (11, "ci_r")');
     }
 }
