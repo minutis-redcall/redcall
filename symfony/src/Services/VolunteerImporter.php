@@ -2,13 +2,11 @@
 
 namespace App\Services;
 
-use App\Entity\Tag;
 use App\Entity\Volunteer;
 use App\Repository\OrganizationRepository;
 use App\Repository\TagRepository;
 use App\Repository\VolunteerImportRepository;
 use App\Repository\VolunteerRepository;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 class VolunteerImporter
 {
@@ -17,6 +15,14 @@ class VolunteerImporter
     protected $tagRepository;
     protected $pegass;
 
+    /**
+     * VolunteerImporter constructor.
+     *
+     * @param OrganizationRepository $organizationRepository
+     * @param VolunteerRepository    $volunteerRepository
+     * @param TagRepository          $tagRepository
+     * @param Pegass                 $pegass
+     */
     public function __construct(
         OrganizationRepository $organizationRepository,
         VolunteerRepository $volunteerRepository,
@@ -66,10 +72,31 @@ class VolunteerImporter
             $volunteer->setOrganization($organization);
             $this->volunteerRepository->import($volunteer);
         }
+
+        $organization->setLastVolunteerImport(new \DateTime());
+
+        $this->organizationRepository->save($organization);
     }
 
-    public function importVolunteersSkills(string $volunteerCode)
+    public function importVolunteersSkills(int $sleepTime, int $limit)
     {
+        $volunteers = $this->volunteerRepository->findVolunteersToRefresh($limit);
 
+        foreach ($volunteers as $volunteer) {
+            /* @var \App\Entity\Volunteer $volunteer */
+            $skills = $this->pegass->getVolunteerTags($volunteer->getNivol());
+
+            foreach ($skills as $skill) {
+                if (!$volunteer->hasTag($skill)) {
+                    $volunteer->getTags()->add($this->tagRepoistory->findOneByLabel($skill));
+                }
+            }
+
+            $volunteer->setLastPegassUpdate(new \DateTime());
+
+            $this->volunteerRepository->save($volunteer);
+
+            sleep($sleepTime);
+        }
     }
 }

@@ -4,11 +4,11 @@ namespace App\Command;
 
 use App\Services\VolunteerImporter;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class VolunteerImportCommand extends Command
+class ImportSkillCommand  extends Command
 {
     /**
      * @var VolunteerImporter
@@ -31,9 +31,10 @@ class VolunteerImportCommand extends Command
     protected function configure()
     {
         $this
-            ->setName('volunteer:import')
-            ->setDescription('Import all volunteers from an organization')
-            ->addArgument('organization-code', InputArgument::REQUIRED, 'Organization code');
+            ->setName('import:skill')
+            ->setDescription('Import or update volunteer skills')
+            ->addOption('sleep', null, InputOption::VALUE_REQUIRED, 'Sleep time in second between 2 volunteers', 1)
+            ->addOption('limit', null, InputOption::VALUE_REQUIRED, 'Maximum number of volunteers to update', 15);
     }
 
     /**
@@ -41,6 +42,9 @@ class VolunteerImportCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->importer->importOrganizationVolunteers($input->getArgument('organization-code'));
+        $this->importer->importVolunteersSkills(
+            $input->getOption('sleep'),
+            $input->getOption('limit')
+        );
     }
 }

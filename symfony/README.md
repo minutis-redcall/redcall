@@ -1,4 +1,4 @@
-# _The Red Alert_, alerting system for the _Red Cross_
+# _The Red Call_, alerting system for the _Red Cross_
 
 ## Local installation
 
@@ -45,10 +45,11 @@ In order to clear up useless data in your database, you can add the following co
 0 0 * * * <path/to/the/project>/symfony/bin/console user:cron --env=prod
 ```
 
-Automatic import of the volunteers:
+Automatic import / update of volunteers and skills:
 
 ```
-0 1 * * * <path/to/the/project>/symfony/bin/console volunteer:import --env=prod
+0 1 * * * <path/to/the/project>/symfony/bin/console import:volunteer <organization id> --env=prod
+* * * * * <path/to/the/project>/symfony/bin/console import:skill --env=prod
 ```
 
 ## Wehbooks in development environment
