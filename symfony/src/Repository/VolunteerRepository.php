@@ -109,6 +109,7 @@ class VolunteerRepository extends ServiceEntityRepository
             }
             $volunteer->setMinor($import->isMinor());
             $volunteer->setReport([]);
+            $volunteer->setEnabled(true);
         }
 
         if ($volunteer && $volunteer->isLocked()) {

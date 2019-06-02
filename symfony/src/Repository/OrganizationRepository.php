@@ -22,6 +22,6 @@ class OrganizationRepository extends ServiceEntityRepository
     public function save(Organization $organization)
     {
         $this->_em->persist($organization);
-        $this->_em->save($organization);
+        $this->_em->flush($organization);
     }
 }

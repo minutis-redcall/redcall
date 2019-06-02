@@ -81,6 +81,13 @@
                                 {% endif %}
                             </td>
                             <td>
+                                {# Refresh volunteer #}
+                                <a href="{{ path('admin_volunteers_skills', app.request.query.all|merge({volunteerId: volunteer.id, csrf: csrf_token('manage_volunteers')})) }}"
+                                   class="btn btn-primary">
+                                    {{ 'manage_volunteers.action.refresh'|trans }}
+                                </a>
+                                <br/><br/>
+
                                 {# Lock volunteer #}
                                 {% if volunteer.locked %}
                                     <a href="{{ path('admin_volunteers_unlock', app.request.query.all|merge({volunteerId: volunteer.id, csrf: csrf_token('manage_volunteers')})) }}"

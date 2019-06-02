@@ -194,6 +194,7 @@ manage_volunteers:
     unlock: 'Unlock'
     enable: 'Enable'
     disable: 'Disable'
+    refresh: 'Update'
   columns:
     nivol: Nivol
     firstname: First name

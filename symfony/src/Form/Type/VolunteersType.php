@@ -119,9 +119,9 @@ class VolunteersType extends AbstractType
                 'tagIds'     => array_map(function (Tag $tag) {
                     return $tag->getId();
                 }, $volunteer->getTags()->toArray()),
-                'tagLabels'  => sprintf('(%s)', implode(', ', array_map(function (Tag $tag) {
+                'tagLabels'  => $volunteer->getTagsView() ? sprintf('(%s)', implode(', ', array_map(function (Tag $tag) {
                     return $this->translator->trans(sprintf('tag.shortcuts.%s', $tag->getLabel()));
-                }, $volunteer->getTagsView()))),
+                }, $volunteer->getTagsView()))) : '',
             ];
         }, $this->volunteerRepository->findAllEnabledVolunteers());
     }

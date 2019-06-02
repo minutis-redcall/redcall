@@ -133,13 +133,27 @@ class VolunteersController extends BaseController
     }
 
     /**
-     * @Route(path="/run/{csrf}", name="run")
+     * @Route(path="run/{csrf}", name="run")
      */
     public function runAction(Request $request, string $csrf)
     {
         $this->validateCsrfOrThrowNotFoundException('manage_volunteers', $csrf);
 
         $this->importer->importOrganizationVolunteers(889);
+
+        return $this->redirectToRoute('admin_volunteers_list', $request->query->all());
+    }
+
+    /**
+     * @Route(path="skills/{volunteerId}/{csrf}", name="skills")
+     */
+    public function skillsAction(Request $request, int $volunteerId, string $csrf)
+    {
+        $this->validateCsrfOrThrowNotFoundException('manage_volunteers', $csrf);
+
+        $volunteer = $this->getVolunteerOrThrowNotFound($volunteerId);
+
+        $this->importer->refreshVolunteerSkills($volunteer);
 
         return $this->redirectToRoute('admin_volunteers_list', $request->query->all());
     }

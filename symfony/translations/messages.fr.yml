@@ -193,6 +193,7 @@ manage_volunteers:
     unlock: 'Dégeler'
     enable: 'Activer'
     disable: 'Desactiver'
+    refresh: 'Mettre à jour'
   columns:
     nivol: Nivol
     firstname: Prénom

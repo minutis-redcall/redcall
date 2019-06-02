@@ -83,20 +83,24 @@ class VolunteerImporter
         $volunteers = $this->volunteerRepository->findVolunteersToRefresh($limit);
 
         foreach ($volunteers as $volunteer) {
-            /* @var \App\Entity\Volunteer $volunteer */
-            $skills = $this->pegass->getVolunteerTags($volunteer->getNivol());
-
-            foreach ($skills as $skill) {
-                if (!$volunteer->hasTag($skill)) {
-                    $volunteer->getTags()->add($this->tagRepoistory->findOneByLabel($skill));
-                }
-            }
-
-            $volunteer->setLastPegassUpdate(new \DateTime());
-
-            $this->volunteerRepository->save($volunteer);
-
+            $this->importVolunteersSkills($volunteer);
             sleep($sleepTime);
         }
+    }
+
+    public function refreshVolunteerSkills(Volunteer $volunteer)
+    {
+        /* @var \App\Entity\Volunteer $volunteer */
+        $skills = $this->pegass->getVolunteerTags($volunteer->getNivol());
+
+        foreach ($skills as $skill) {
+            if (!$volunteer->hasTag($skill)) {
+                $volunteer->getTags()->add($this->tagRepoistory->findOneByLabel($skill));
+            }
+        }
+
+        $volunteer->setLastPegassUpdate(new \DateTime());
+
+        $this->volunteerRepository->save($volunteer);
     }
 }
