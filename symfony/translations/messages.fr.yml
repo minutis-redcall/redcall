@@ -6,26 +6,20 @@ tag:
   emergency_assistance: Urg. Sec.
   social_assistance: Ass. Soc.
   psc_1: PSC 1
-  pse_1_i: PSE 1 Init.
-  pse_1_r: PSE 1 Recy.
-  pse_2_i: PSE 2 Init.
-  pse_2_r: PSE 2 Recy.
+  pse_1: PSE 1
+  pse_2: PSE 2
   drvr_vl: Chauf. VL
   drvr_vpsp: Chauf. VPSP
-  ci_i: Chef Int. Init.
-  ci_r: Chef Int. Recy.
+  ci: Chef Int.
   shortcuts:
     emergency_assistance: US
     social_assistance: AS
     psc_1: PSC1
-    pse_1_i: PSE1
-    pse_1_r: PSE1
-    pse_2_i: PSE2
-    pse_2_r: PSE2
+    pse_1: PSE1
+    pse_2: PSE2
     drvr_vl: VL
     drvr_vpsp: VPSP
-    ci_i: CI
-    ci_r: CI
+    ci: CI
 
 base:
   pager:

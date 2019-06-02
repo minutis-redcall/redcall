@@ -16,12 +16,9 @@ class Tag
     const TAG_SOCIAL_ASSISTANCE    = 'social_assistance';
     const TAG_EMERGENCY_ASSISTANCE = 'emergency_assistance';
     const TAG_PSC_1                = 'psc_1';
-    const TAG_PSE_1_I              = 'pse_1_i';
-    const TAG_PSE_1_R              = 'pse_1_r';
-    const TAG_PSE_2_I              = 'pse_2_i';
-    const TAG_PSE_2_R              = 'pse_2_r';
-    const TAG_CI_I                 = 'ci_i';
-    const TAG_CI_R                 = 'ci_r';
+    const TAG_PSE_1                = 'pse_1';
+    const TAG_PSE_2                = 'pse_2';
+    const TAG_CI                   = 'ci';
     const TAG_DRVR_VL              = 'drvr_vl';
     const TAG_DRVR_VPSP            = 'drvr_vpsp';
 
@@ -29,12 +26,9 @@ class Tag
         self::TAG_SOCIAL_ASSISTANCE,
         self::TAG_EMERGENCY_ASSISTANCE,
         self::TAG_PSC_1,
-        self::TAG_PSE_1_I,
-        self::TAG_PSE_1_R,
-        self::TAG_PSE_2_I,
-        self::TAG_PSE_2_R,
-        self::TAG_CI_I,
-        self::TAG_CI_R,
+        self::TAG_PSE_1,
+        self::TAG_PSE_2,
+        self::TAG_CI,
         self::TAG_DRVR_VL,
         self::TAG_DRVR_VPSP,
     ];
@@ -43,23 +37,17 @@ class Tag
         self::TAG_SOCIAL_ASSISTANCE,
         self::TAG_EMERGENCY_ASSISTANCE,
         self::TAG_PSC_1,
-        self::TAG_PSE_1_I,
-        self::TAG_PSE_1_R,
-        self::TAG_PSE_2_I,
-        self::TAG_PSE_2_R,
+        self::TAG_PSE_1,
+        self::TAG_PSE_2,
         self::TAG_DRVR_VL,
         self::TAG_DRVR_VPSP,
-        self::TAG_CI_I,
-        self::TAG_CI_R,
+        self::TAG_CI,
     ];
 
     const HIERARCHY = [
-        self::TAG_CI_R    => [self::TAG_CI_I],
-        self::TAG_CI_I    => [self::TAG_PSE_2_R],
-        self::TAG_PSE_2_R => [self::TAG_PSE_2_I],
-        self::TAG_PSE_2_I => [self::TAG_PSE_1_R],
-        self::TAG_PSE_1_R => [self::TAG_PSE_1_I],
-        self::TAG_PSE_1_I => [self::TAG_PSC_1],
+        self::TAG_CI    => [self::TAG_PSE_2],
+        self::TAG_PSE_2 => [self::TAG_PSE_1],
+        self::TAG_PSE_1 => [self::TAG_PSC_1],
 
         self::TAG_DRVR_VPSP => [self::TAG_DRVR_VL],
     ];
