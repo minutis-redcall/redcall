@@ -93,9 +93,17 @@ class VolunteerImporter
         /* @var \App\Entity\Volunteer $volunteer */
         $skills = $this->pegass->getVolunteerTags($volunteer->getNivol());
 
+        // Add tags that volunteer earned
         foreach ($skills as $skill) {
             if (!$volunteer->hasTag($skill)) {
                 $volunteer->getTags()->add($this->tagRepoistory->findOneByLabel($skill));
+            }
+        }
+
+        // Remove tags that volunteer has lost
+        foreach ($volunteer->getTags() as $tag) {
+            if (!in_array($tag->getLabel(), $skills)) {
+                $volunteer->getTags()->removeElement($tag);
             }
         }
 
