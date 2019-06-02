@@ -80,6 +80,10 @@ class Sender
     {
         $volunteer = $message->getVolunteer();
 
+        if (!$volunteer->getPhoneNumber()) {
+            return ;
+        }
+
         try {
             $SMSSent = $this->SMSProvider->send(
                 $this->formatter->formatMessageContent($message),

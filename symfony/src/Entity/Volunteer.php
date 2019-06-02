@@ -7,7 +7,10 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Table(indexes={@ORM\Index(name="nivolx", columns={"nivol"})})
+ * @ORM\Table(indexes={
+ *     @ORM\Index(name="nivolx", columns={"nivol"}),
+ *     @ORM\Index(name="lastpegassupdatex", columns={"last_pegass_update"})
+ * })
  * @ORM\Entity(repositoryClass="App\Repository\VolunteerRepository")
  */
 class Volunteer
@@ -45,16 +48,9 @@ class Volunteer
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=20)
-     */
-    private $phoneNumber;
-
-    /**
-     * @var string
-     *
      * @ORM\Column(type="string", length=20, nullable=true)
      */
-    private $postalCode;
+    private $phoneNumber;
 
     /**
      * @var string
@@ -78,6 +74,11 @@ class Volunteer
     private $locked = false;
 
     /**
+     * @var bool
+     */
+    private $minor = false;
+
+    /**
      * @var array
      *
      * @ORM\ManyToMany(targetEntity="App\Entity\Tag", inversedBy="volunteers")
@@ -92,6 +93,28 @@ class Volunteer
      * @var array
      */
     private $tagsView;
+
+    /**
+     * @var Organization
+     *
+     * @ORM\ManyToOne(targetEntity="App\Entity\Organization", inversedBy="volunteers")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $organization;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $lastPegassUpdate;
+
+    /**
+     * @var array
+     *
+     * @ORM\Column(type="json_array", nullable=true)
+     */
+    private $report;
 
     public function __construct()
     {
@@ -179,9 +202,9 @@ class Volunteer
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getPhoneNumber(): string
+    public function getPhoneNumber(): ?string
     {
         return $this->phoneNumber;
     }
@@ -194,26 +217,6 @@ class Volunteer
     public function setPhoneNumber(string $phoneNumber)
     {
         $this->phoneNumber = $phoneNumber;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getPostalCode(): ?string
-    {
-        return $this->postalCode;
-    }
-
-    /**
-     * @param string $postalCode
-     *
-     * @return Volunteer
-     */
-    public function setPostalCode(?string $postalCode): Volunteer
-    {
-        $this->postalCode = $postalCode;
 
         return $this;
     }
@@ -274,6 +277,26 @@ class Volunteer
     public function setLocked(bool $locked): Volunteer
     {
         $this->locked = $locked;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isMinor(): bool
+    {
+        return $this->minor;
+    }
+
+    /**
+     * @param bool $minor
+     *
+     * @return Volunteer
+     */
+    public function setMinor(bool $minor): Volunteer
+    {
+        $this->minor = $minor;
 
         return $this;
     }
@@ -353,5 +376,94 @@ class Volunteer
         }
 
         return $highest;
+    }
+
+    /**
+     * @return Organization|null
+     */
+    public function getOrganization(): ?Organization
+    {
+        return $this->organization;
+    }
+
+    /**
+     * @param Organization|null $organization
+     *
+     * @return Volunteer
+     */
+    public function setOrganization(?Organization $organization): self
+    {
+        $this->organization = $organization;
+
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getLastPegassUpdate(): ?\DateTime
+    {
+        return $this->lastPegassUpdate;
+    }
+
+    /**
+     * @param \DateTime $lastPegassUpdate
+     *
+     * @return Volunteer
+     */
+    public function setLastPegassUpdate(\DateTime $lastPegassUpdate): Volunteer
+    {
+        $this->lastPegassUpdate = $lastPegassUpdate;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getReport(): array
+    {
+        return $this->report;
+    }
+
+    /**
+     * @param array $report
+     *
+     * @return Volunteer
+     */
+    public function setReport(array $report): Volunteer
+    {
+        $this->report = $report;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isCallable() : bool
+    {
+        return $this->enabled && ($this->phoneNumber || $this->email);
+    }
+
+    /**
+     * @param string $message
+     */
+    public function addError(string $message)
+    {
+        $report             = $this->report ?? [];
+        $report[]           = sprintf('ERROR: %s', $message);
+        $this->report       = $report;
+        $this->isImportable = false;
+    }
+
+    /**
+     * @param string $message
+     */
+    public function addWarning(string $message)
+    {
+        $report       = $this->report ?? [];
+        $report[]     = sprintf('WARNING: %s', $message);
+        $this->report = $report;
     }
 }

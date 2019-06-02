@@ -67,6 +67,9 @@ services:
   App\Twig\Extension\CampaignExtension:
     tags: ['twig.extension']
 
+  App\Services\Pegass:
+    public: true
+
   pagerfanta.view:
     class: App\Pagerfanta\View\LightView
     arguments: ['@pagerfanta.template']

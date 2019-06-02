@@ -61,7 +61,7 @@ class VolunteersController extends BaseController
     }
 
     /**
-     * @Route(path="bloquer/{volunteerId}/{csrf}", name="lock")
+     * @Route(path="lock/{volunteerId}/{csrf}", name="lock")
      */
     public function lockAction(Request $request, int $volunteerId, string $csrf)
     {
@@ -79,7 +79,7 @@ class VolunteersController extends BaseController
     }
 
     /**
-     * @Route(path="debloquer/{volunteerId}/{csrf}", name="unlock")
+     * @Route(path="unlock/{volunteerId}/{csrf}", name="unlock")
      */
     public function unlockAction(Request $request, int $volunteerId, string $csrf)
     {
@@ -97,7 +97,7 @@ class VolunteersController extends BaseController
     }
 
     /**
-     * @Route(path="desactiver/{volunteerId}/{csrf}", name="disable")
+     * @Route(path="disable/{volunteerId}/{csrf}", name="disable")
      */
     public function disableAction(Request $request, int $volunteerId, string $csrf)
     {
@@ -115,7 +115,7 @@ class VolunteersController extends BaseController
     }
 
     /**
-     * @Route(path="activer/{volunteerId}/{csrf}", name="enable")
+     * @Route(path="enable/{volunteerId}/{csrf}", name="enable")
      */
     public function enableAction(Request $request, int $volunteerId, string $csrf)
     {
@@ -133,36 +133,29 @@ class VolunteersController extends BaseController
     }
 
     /**
-     * @Route(path="/import", name="import")
-     */
-    public function importAction()
-    {
-        $qb = $this
-            ->get('doctrine')
-            ->getManager()
-            ->getRepository(VolunteerImport::class)
-            ->createQueryBuilder('v')
-            ->where('v.status IS NOT NULL')
-            ->andWhere("v.status != ''")
-            ->andWhere("v.status != '[]'");
-
-        return $this->render('admin/volunteers/import.html.twig', [
-            'link'    => sprintf('https://docs.google.com/spreadsheets/d/%s/', getenv('GOOGLE_SHEETS_VOLUNTEERS_ID')),
-            'orderBy' => $this->orderBy($qb, VolunteerImport::class, 'v.id', 'ASC'),
-            'rows'    => $qb->getQuery()->getResult(),
-        ]);
-    }
-
-    /**
-     * @Route(path="/relancer/{csrf}", name="run")
+     * @Route(path="run/{csrf}", name="run")
      */
     public function runAction(Request $request, string $csrf)
     {
         $this->validateCsrfOrThrowNotFoundException('manage_volunteers', $csrf);
 
-        $this->importer->run();
+        $this->importer->importOrganizationVolunteers(889);
 
-        return $this->redirectToRoute('admin_volunteers_import', $request->query->all());
+        return $this->redirectToRoute('admin_volunteers_list', $request->query->all());
+    }
+
+    /**
+     * @Route(path="skills/{volunteerId}/{csrf}", name="skills")
+     */
+    public function skillsAction(Request $request, int $volunteerId, string $csrf)
+    {
+        $this->validateCsrfOrThrowNotFoundException('manage_volunteers', $csrf);
+
+        $volunteer = $this->getVolunteerOrThrowNotFound($volunteerId);
+
+        $this->importer->refreshVolunteerSkills($volunteer);
+
+        return $this->redirectToRoute('admin_volunteers_list', $request->query->all());
     }
 
     /**

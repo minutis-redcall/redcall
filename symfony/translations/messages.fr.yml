@@ -186,41 +186,27 @@ manage_volunteers:
     nivol: 'Nivol'
     firstname: 'Prénom'
     lastname: 'Nom'
-    postal_code: 'Code postal'
     locked: 'Gelé'
-  table:
-    nivol: 'Nivol'
-    fullname: 'Nom complet'
-    phone: 'Téléphone'
-    postal_code: 'Code postal'
-    email: 'Email'
-    tags: 'Compétences'
-    actions: 'Actions'
+    last_pegass_update: 'Dernière mise à jour Pegass'
   action:
     lock: 'Geler'
     unlock: 'Dégeler'
     enable: 'Activer'
     disable: 'Desactiver'
-
-import_volunteers:
-  menu: "Ouvrir le rapport d'importation"
-  title: "Erreurs lors du derner import de volontaires"
-  open_spreadsheet: 'Ouvrir le document afin de corriger les erreurs :'
-  back: 'Retour à la liste de volontaires'
-  import_again: 'Relancer un nouvel import maintenant'
+    refresh: 'Mettre à jour'
   columns:
-    line: 'Ligne #'
-    errors: Erreurs
     nivol: Nivol
     firstname: Prénom
     lastname: Nom
     phone: Téléphone
-    postal_code: Code postal
     email: Email
     minor: Mineur
     callable: Déclenchable
-    importable: Importé
     tags: Compétences
+    update: MàJ le %date%
+    never_updated: Compétences jamais importées
+  import_again: 'Relancer un nouvel import maintenant.'
+  import_again_help: "⚠️ Pour info, la mise à jour des compétences prendra plus de temps."
 
 csv_export:
   nivol: Nivol

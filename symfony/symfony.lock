@@ -80,6 +80,9 @@
     "excelwebzone/recaptcha-bundle": {
         "version": "v1.5.10"
     },
+    "fabpot/goutte": {
+        "version": "v3.2.3"
+    },
     "facebook/webdriver": {
         "version": "1.6.0"
     },

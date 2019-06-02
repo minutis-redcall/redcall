@@ -187,31 +187,15 @@ manage_volunteers:
     nivol: 'Nivol'
     firstname: 'First name'
     lastname: 'Last name'
-    postal_code: 'Postal code'
     locked: 'Locked'
-  table:
-    nivol: 'Nivol'
-    fullname: 'First name'
-    phone: 'Phone number'
-    postal_code: 'Postal code'
-    email: 'Email'
-    tags: 'Skills'
-    actions: 'Actions'
+    last_pegass_update: 'Last Pegass update'
   action:
     lock: 'Lock'
     unlock: 'Unlock'
     enable: 'Enable'
     disable: 'Disable'
-
-import_volunteers:
-  menu: "Open import errors report"
-  title: 'Last volunteers import errors'
-  open_spreadsheet: 'Open spreadsheet in order to fix issues:'
-  back: 'Back to the list of volunteers'
-  import_again: 'Run a new import now'
+    refresh: 'Update'
   columns:
-    line: 'Line #'
-    errors: Errors
     nivol: Nivol
     firstname: First name
     lastname: Last name
@@ -220,8 +204,10 @@ import_volunteers:
     email: Email
     minor: Minor
     callable: Callable
-    importable: Imported
     tags: Skills
+    update: Updated on %date%
+    never_updated: Skills never imported
+  import_again: 'Run a new import now'
 
 csv_export:
   nivol: Nivol
