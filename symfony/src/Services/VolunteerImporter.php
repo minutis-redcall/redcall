@@ -83,7 +83,7 @@ class VolunteerImporter
         $volunteers = $this->volunteerRepository->findVolunteersToRefresh($limit);
 
         foreach ($volunteers as $volunteer) {
-            $this->importVolunteersSkills($volunteer);
+            $this->refreshVolunteerSkills($volunteer);
             sleep($sleepTime);
         }
     }

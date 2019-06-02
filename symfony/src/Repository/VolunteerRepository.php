@@ -98,6 +98,12 @@ class VolunteerRepository extends ServiceEntityRepository
         $volunteer = $this->findOneByNivol($import->getNivol());
         if (!$volunteer) {
             $volunteer = $import;
+        } else if ($volunteer->isLocked()) {
+            $volunteer->setReport([]);
+            $volunteer->addWarning('Cannot update a locked volunteer.');
+            $this->save($volunteer);
+
+            return;
         } else {
             $volunteer->setFirstName($import->getFirstName());
             $volunteer->setLastName($import->getLastName());
@@ -110,10 +116,6 @@ class VolunteerRepository extends ServiceEntityRepository
             $volunteer->setMinor($import->isMinor());
             $volunteer->setReport([]);
             $volunteer->setEnabled(true);
-        }
-
-        if ($volunteer && $volunteer->isLocked()) {
-            $volunteer->addWarning('Cannot update a locked volunteer.');
         }
 
         if (!$volunteer->getPhoneNumber() && !$volunteer->getEmail()) {
@@ -134,8 +136,7 @@ class VolunteerRepository extends ServiceEntityRepository
             $volunteer->setLastPegassUpdate(new \DateTime('2000-01-01'));
         }
 
-        $this->_em->persist($volunteer);
-        $this->_em->flush($volunteer);
+        $this->save($volunteer);
     }
 
     /**
