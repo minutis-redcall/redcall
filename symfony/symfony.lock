@@ -107,6 +107,21 @@
     "google/auth": {
         "version": "v1.4.0"
     },
+    "google/cloud": {
+        "version": "v0.96.0"
+    },
+    "google/common-protos": {
+        "version": "0.1.0"
+    },
+    "google/gax": {
+        "version": "0.38.0"
+    },
+    "google/grpc-gcp": {
+        "version": "0.1.4"
+    },
+    "google/protobuf": {
+        "version": "v3.7.0"
+    },
     "google/recaptcha": {
         "version": "1.1",
         "recipe": {
@@ -115,6 +130,9 @@
             "version": "1.1",
             "ref": "ad1889cf16aa84af78e818710760546d2c45f69c"
         }
+    },
+    "grpc/grpc": {
+        "version": "1.19.0"
     },
     "guzzlehttp/guzzle": {
         "version": "6.3.3"
@@ -214,6 +232,9 @@
     },
     "redcall-io/sandbox-bundle": {
         "version": "dev-master"
+    },
+    "rize/uri-template": {
+        "version": "0.3.2"
     },
     "sensio/framework-extra-bundle": {
         "version": "4.0",
@@ -439,6 +460,9 @@
             "version": "4.0",
             "ref": "cda8b550123383d25827705d05a42acf6819fe4e"
         }
+    },
+    "symfony/security": {
+        "version": "v4.2.4"
     },
     "symfony/security-bundle": {
         "version": "3.3",

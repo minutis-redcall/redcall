@@ -1,34 +1,37 @@
-FROM ubuntu:17.10
+FROM ubuntu:18.10
 
 # Libraries
+ENV TZ=Europe/Paris
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
 RUN apt-get update && apt-get install -my \
-  sudo \
+  bsdmainutils \
   curl \
-  wget \
+  git \
+  gnupg2 \
+  make \
+  nodejs \
+  php-apcu \
+  php-cli \
   php-curl \
   php-fpm \
   php-gd \
-  php-xsl \
-  php-mysqlnd \
-  php-mcrypt \
-  php-cli \
+  php-iconv \
   php-intl \
-  php-bz2 \
-  php-zip \
+  php-json \
   php-mbstring \
-  git \
-  zip \
-  php-apcu \
-  php-redis \
+  php-mysqlnd \
   php-opcache \
-  make \
-  nodejs
+  php-xml \
+  php-zip \
+  sudo \
+  wget \
+  zip
 
 RUN mkdir /run/php
 
 # PHP-FPM
-ADD www.conf /etc/php/7.1/fpm/pool.d/www.conf
-ADD php-fpm.conf /etc/php/7.1/fpm/php-fpm.conf
+ADD www.conf /etc/php/7.2/fpm/pool.d/www.conf
+ADD php-fpm.conf /etc/php/7.2/fpm/php-fpm.conf
 
 # Composer
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
@@ -49,4 +52,5 @@ RUN chmod +x /usr/local/bin/startup.sh
 WORKDIR /var/www/symfony
 EXPOSE 9000
 
+#CMD tail -f /dev/null
 CMD ["/usr/local/bin/startup.sh"]

@@ -28,21 +28,33 @@ security:
         - password_login.authenticator.form_login
 
   access_control:
+
+  # Cron jobs
+  - { path: '^/cron', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
+
+  # Nexmo webhooks (sms response received)
+  - { path: '^/webhooks', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
+
+  # Unauthenticated identity management
   - { path: '^/connect', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
   - { path: '^/register', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
   - { path: '^/forgot-password', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
   - { path: '^/change-password', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
   - { path: '^/verify-email', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
   - { path: '^/locale', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
-  - { path: '^/webhooks', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
+
+  # Links contained in SMS should be publicly available
   - { path: '^/msg', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
   - { path: '^/geo', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
 
+  # We allow non activated users to reach a few pages
   - { path: '^/logout', role: 'ROLE_USER' }
   - { path: '^/profile', role: 'ROLE_USER' }
   - { path: '^/guest', role: 'ROLE_USER' }
   - { path: '^/$', roles: ['ROLE_USER'] }
 
+  # Website administration
   - { path: '^/admin', roles: ['ROLE_ADMIN'] }
 
+  # Requires an activated account for other pages
   - { path: '^/', roles: ['ROLE_TRUSTED'] }

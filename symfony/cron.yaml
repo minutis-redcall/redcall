@@ -1,0 +1,16 @@
+# Cron file for App Engine
+cron:
+  # 0 0 * * * <path/to/the/project>/symfony/bin/console user:cron --env=prod
+  - description: "Clears up non activated accounts and expired captcha whitelists"
+    url: /cron/user-cron
+    schedule: every 24 hours
+
+  # 0 1 * * * <path/to/the/project>/symfony/bin/console import:volunteer 889 --env=prod
+  - description: "Refresh volunteers database to add new ones and remove the ones that quit"
+    url: /cron/import-volunteer?organization-code=889
+    schedule: every 24 hours
+
+  # */5 * * * * <path/to/the/project>/symfony/bin/console import:volunteer 889 --env=prod
+  - description: "Refresh volunteers skills when they are too old"
+    url: /cron/import-skill
+    schedule: every 5 minutes

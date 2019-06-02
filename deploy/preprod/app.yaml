@@ -1,0 +1,29 @@
+
+runtime: php72
+
+readiness_check:
+  app_start_timeout_sec: 3600
+
+runtime_config:
+  document_root: public
+  front_controller_file: public/index.php
+  enable_stackdriver_integration: true
+
+env_variables:
+
+handlers:
+  - url: /build
+    static_dir: public/build
+  - url: /bundles
+    static_dir: public/bundles
+  - url: /(.*\.(ico|txt|gif|png|jpg))$
+    static_files: public/\1
+    upload: public/.*\.(ico|txt|gif|png|jpg)$
+
+manual_scaling:
+  instances: 1
+
+resources:
+  cpu: 1
+  memory_gb: 0.5
+  disk_size_gb: 10

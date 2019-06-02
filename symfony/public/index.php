@@ -17,6 +17,11 @@ if (!isset($_SERVER['APP_ENV'])) {
     (new Dotenv())->load(__DIR__.'/../.env');
 }
 
+putenv(sprintf(
+    'GOOGLE_APPLICATION_CREDENTIALS=%s',
+    __DIR__.'/../config/keys/google-service-account.json'
+));
+
 $env   = $_SERVER['APP_ENV'] ?? 'dev';
 $debug = (bool)($_SERVER['APP_DEBUG'] ?? ('prod' !== $env));
 

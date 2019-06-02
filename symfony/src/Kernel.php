@@ -17,11 +17,19 @@ class Kernel extends BaseKernel
 
     public function getCacheDir()
     {
+        if ($this->environment === 'prod') {
+            return sys_get_temp_dir().'/redcall/cache/';
+        }
+
         return $this->getProjectDir().'/var/cache/'.$this->environment;
     }
 
     public function getLogDir()
     {
+        if ($this->environment === 'prod') {
+            return sys_get_temp_dir().'/redcall/log/';
+        }
+
         return $this->getProjectDir().'/var/log';
     }
 

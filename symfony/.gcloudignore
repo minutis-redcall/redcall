@@ -1,0 +1,5 @@
+vendor
+var/log
+var/cache
+var/sessions
+node_modules

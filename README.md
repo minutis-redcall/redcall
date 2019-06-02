@@ -1,47 +1,50 @@
 # The Red Call
 
-
-This project concerns volunteers that do social activities (roams, emergency night shelters...) and those who do first aid. As volunteers can be located anywhere in Paris (or elsewhere), tools are required to synchronize people when criticial situations occur.
+This Red Cross project concerns volunteers that do social activities (roams, emergency night shelters...) and those who do first aid. As volunteers can be located anywhere in Paris (or elsewhere), tools are required to synchronize people as fast as possible when criticial situations occur.
 
 RedCall.io is a messaging tool for head of emergencies. They use it to ask for volunteer's availability, gather volunteer's answers, and fill up ambulances or assistance units with the required people and skills.
 
 This project was initially developed by the BlaBlaCar team as part of a Coding Night event, check out more details on [that medium blog post](https://medium.com/blablacar-tech/extending-our-principles-outside-blablacar-the-redalert-project-cf50110f0848).
 
-## Installation procedure (development)
+## Installation
 
-You will need a running Docker environment to install this app locally.
-Set it up by following the guides available [here]([https://docs.docker.com/get-started/]).
+This project runs in PHP >=7.1 with the Symfony4 framework.
+It requires a MySQL or MariaDB database and Yarn for assets management.
 
-* Build and run the application with `make run`. On first execution, this will build all Docker images needed to compose the network.
+### Development
 
-> Once all containers are up, you will be connected to the application container and have access to a shell inside the Symfony installation.
+This project runs on Docker for development purposes.
+Many tools have been developed to disable or mock external providers,
+so you can get ready to work in a few seconds.
 
-* Inside the application container, install the project dependencies with `make install` and reset the database by running `make reset`.
+Find set up instructions [here](docs/tech/00-development.md).
 
-> The application is now running and can be accessed at [http://localhost:81]().
+### Staging and production
 
-### Connecting to the MySQL server
+This project is built to be deployed in production on Google App Engine.
 
-The local port of the container running the MySQL server is bound to the host port number **3307**.
-Connect to 127.0.0.1:3307 in order to access the MySQL server.
+- [Setting up a new Google Cloud Platform project](docs/tech/01-google-cloud-platform.md)
+- [Setting up a Google App Engine instance](docs/tech/02-google-app-engine.md)
+- [Setting up a custom domain name to your instance](docs/tech/03-custom-domain-name.md)
 
-### Accessing the application container
+Configuration is located in [deploy/prod](deploy/prod) and [deploy/preprod](deploy/preprod) directories,
+for each environment you need, you should rename `dotenv.dist` into `dotenv` and fill up every variable
+by following the next sections.
 
-If you detach from the application container, run `docker-compose exec php bash` to reconnect and have access to a shell.
+- [Setting up a Google Service Account](docs/tech/04-google-service-account.md)
+- [Setting up Symfony](docs/tech/05-configure-symfony.md)
+- [Setting up Google reCaptcha](docs/tech/06-google-recaptcha.md)
+- [Setting up Google Cloud SQL](docs/tech/07-google-cloud-sql.md)
+- [Setting up Sentry](docs/tech/08-configure-sentry.md)
+- [Setting up Mapbox](docs/tech/09-configure-mapbox.md)
+- [Setting up Nexmo](docs/tech/10-configure-nexmo.md)
+- [Setting up Pegass](docs/tech/11-configure-pegass.md)
 
-From here, you can run the following commands to fully set-up the environment:
+To deploy, run the following commands:
 
 ```
-composer install
-yarn install
-yarn encore dev
+cd deploy
+sh ./deploy.sh <env>
 ```
 
-### Rebuild Docker images
-
-Docker images can be rebuilt with the `make build` command.
-
-### Shutting down all containers
-
-Docker containers can be stopped with the `make stop` command.
-
+To set-up your first account, [check that doc](docs/tech/12-enable-first-admin.md):
