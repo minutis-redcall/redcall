@@ -64,84 +64,76 @@ class VolunteerRepository extends ServiceEntityRepository
     }
 
     /**
-     * Receives a sanitized volunteer coming from the google
-     * spreadsheet containing volunteers, and insert or
-     * update it accordingly.
-     *
-     * @param array           $tags
-     * @param VolunteerImport $import
+     * @param array $nivolsToDisable
      *
      * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function import(array $tags, VolunteerImport $import): void
+    public function disableByNivols(array $nivolsToDisable)
     {
-        $volunteer = $this->findOneByNivol($import->getNivol());
+        foreach ($nivolsToDisable as $nivolToDisable) {
+            /* @var \App\Entity\Volunteer $volunteer */
+            $volunteer = $this->findOneByNivol($nivolToDisable);
 
-        if ($volunteer && $volunteer->isLocked()) {
-            $import->addError('Volunteer is locked');
-            $this->_em->persist($import);
-            $this->_em->flush($import);
-
-            return;
-        }
-
-        if (!$import->isImportable()) {
-            if ($volunteer) {
+            if ($volunteer && !$volunteer->isLocked() && $volunteer->isEnabled()) {
+                $volunteer->setReport([]);
+                $volunteer->addError('Volunteer is not on the organization anymore.');
                 $volunteer->setEnabled(false);
-                $this->_em->persist($volunteer);
-                $this->_em->flush($volunteer);
             }
 
-            return;
-        }
-
-        if (!$volunteer) {
-            $volunteer = new Volunteer();
-        }
-
-        $volunteer->setNivol($import->getNivol());
-        $volunteer->setFirstName($import->getFirstName());
-        $volunteer->setLastName($import->getLastName());
-        $volunteer->setPhoneNumber($import->getPhone());
-        $volunteer->setPostalCode($import->getPostalCode());
-        $volunteer->setEmail($import->getEmail());
-        $volunteer->setEnabled(true);
-
-        $volunteer->getTags()->clear();
-        foreach ($import->getTags() as $tagLabel => $isEnabled) {
-            if ($isEnabled && isset($tags[$tagLabel])) {
-                $volunteer->getTags()->add($tags[$tagLabel]);
-            }
-        }
-
-        // Cannot flush at the end of the batch because of potential
-        // duplicates on unique keys
-        $this->_em->persist($volunteer);
-        $this->_em->flush($volunteer);
-    }
-
-    /**
-     * This method is called at the end of an import.
-     *
-     * It compares the import table with the volunteers table in case a few
-     * volunteers have been removed from the google spreadhseet. They should
-     * be disabled in that case.
-     */
-    public function disableNonImportedVolunteers()
-    {
-        $miss = $this->createQueryBuilder('v')
-                     ->leftJoin(VolunteerImport::class, 'i', Join::WITH, 'v.nivol = i.nivol')
-                     ->where('v.enabled = true')
-                     ->andWhere('v.locked = false')
-                     ->andWhere('i.id IS NULL')
-                     ->getQuery()
-                     ->getResult();
-
-        foreach ($miss as $volunteer) {
-            $volunteer->setEnabled(false);
             $this->_em->persist($volunteer);
         }
 
         $this->_em->flush();
+    }
+
+    /**
+     * @param Volunteer $import
+     *
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function import(Volunteer $import)
+    {
+        $volunteer = $this->findOneByNivol($import->getNivol());
+        if (!$volunteer) {
+            $volunteer = $import;
+        } else {
+            $volunteer->setFirstName($import->getFirstName());
+            $volunteer->setLastName($import->getLastName());
+            if ($import->getPhoneNumber()) {
+                $volunteer->setPhoneNumber($import->getPhoneNumber());
+            }
+            if ($import->getEmail()) {
+                $volunteer->setEmail($import->getEmail());
+            }
+            $volunteer->setMinor($import->isMinor());
+            $volunteer->setReport([]);
+        }
+
+        if ($volunteer && $volunteer->isLocked()) {
+            $volunteer->addWarning('Cannot update a locked volunteer.');
+        }
+
+        if (!$volunteer->getPhoneNumber() && !$volunteer->getEmail()) {
+            $volunteer->addError('Volunteer has no phone and no email.');
+            $volunteer->setEnabled(false);
+        } else if (!$volunteer->getPhoneNumber()) {
+            $volunteer->addWarning('Volunteer has no phone number.');
+        } else if (!$volunteer->getEmail()) {
+            $volunteer->addWarning('Volunteer has no email.');
+        }
+
+        if ($volunteer->isMinor()) {
+            $volunteer->addError('Volunteer is minor.');
+            $volunteer->setEnabled(false);
+        }
+
+        if (!$volunteer->getLastPegassUpdate()) {
+            $volunteer->setLastPegassUpdate(new \DateTime('2000-01-01'));
+        }
+
+        $this->_em->persist($volunteer);
+        $this->_em->flush($volunteer);
     }
 }

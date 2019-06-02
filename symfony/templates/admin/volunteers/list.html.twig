@@ -9,8 +9,13 @@
     </h1>
 
     <div class="text-center skip-line">
-        <a href="{{ path('admin_volunteers_import') }}"
-           class="text-lg-center large-button btn btn-secondary">{{ 'import_volunteers.menu'|trans }}</a>
+        <a href="{{ path('admin_volunteers_run', app.request.query.all|merge({csrf: csrf_token('manage_volunteers')})) }}"
+           onclick="$(this).addClass('disabled');"
+           class="text-lg-center large-button btn btn-secondary">
+            {{ 'manage_volunteers.import_again'|trans }}
+            <br/>
+            {{ 'manage_volunteers.import_again_help'|trans }}
+        </a>
     </div>
 
     <nav>
@@ -36,34 +41,44 @@
                     'nivol': 'manage_volunteers.order.nivol'|trans,
                     'firstName': 'manage_volunteers.order.firstname'|trans,
                     'lastName': 'manage_volunteers.order.lastname'|trans,
-                    'postalCode': 'manage_volunteers.order.postal_code'|trans,
+                    'lastPegassUpdate': 'manage_volunteers.order.last_pegass_update'|trans,
                     'locked': 'manage_volunteers.order.locked'|trans,
                 }, 'nav-' ~ type) }}
 
                 <table class="table">
-                    <thead>
-                    <tr>
-                        <th>{{ 'manage_volunteers.table.nivol'|trans }}</th>
-                        <th>{{ 'manage_volunteers.table.fullname'|trans }}</th>
-                        <th>{{ 'manage_volunteers.table.postal_code'|trans }}</th>
-                        <th>{{ 'manage_volunteers.table.phone'|trans }}</th>
-                        <th>{{ 'manage_volunteers.table.email'|trans }}</th>
-                        <th>{{ 'manage_volunteers.table.tags'|trans }}</th>
-                        <th>{{ 'manage_volunteers.table.actions'|trans }}</th>
-                    </tr>
-                    </thead>
                     <tbody>
                     {% for volunteer in table.rows %}
+
                         <tr>
-                            <td>{{ volunteer.nivol }}</td>
-                            <td>{{ volunteer.firstname|default('?') ~ ' ' ~ volunteer.lastname|default('?') }}</td>
-                            <td>{{ volunteer.postalCode }}</td>
-                            <td>{{ volunteer.phoneNumber }}</td>
-                            <td>{{ volunteer.email }}</td>
+                            <td>
+                                <div>{{ 'manage_volunteers.columns.nivol'|trans }}: {{ volunteer.nivol }}</div>
+                                <div>{{ 'manage_volunteers.columns.firstname'|trans }}: {{ volunteer.firstname }}</div>
+                                <div>{{ 'manage_volunteers.columns.lastname'|trans }}: {{ volunteer.lastname }}</div>
+                                <div>{{ 'manage_volunteers.columns.phone'|trans }}: {{ volunteer.phoneNumber }}</div>
+                                <div>{{ 'manage_volunteers.columns.email'|trans }}: {{ volunteer.email }}</div>
+                                <div>{{ 'manage_volunteers.columns.minor'|trans }}: {{ volunteer.isMinor ? '🚩' : '❌' }}</div>
+                                <div>{{ 'manage_volunteers.columns.callable'|trans }}: {{ volunteer.isCallable ? '✅' : '❌' }}</div>
+                            </td>
                             <td>
                                 {% for tag in constant('App\\Entity\\Tag::TAGS') %}
                                     <div>{{ ('tag.' ~ tag)|trans }}: {{ volunteer.hasTag(tag) ? '✅' : '❌' }}</div>
                                 {% endfor %}
+                            </td>
+                            <td>
+                                {% if volunteer.report %}
+                                    {% for error in volunteer.report %}
+                                        <div><code>{{ error }}</code></div>
+                                    {% endfor %}
+                                {% else %}
+                                    &nbsp;
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if volunteer.lastPegassUpdate and volunteer.lastPegassUpdate|date('Y') != 2000 %}
+                                    {{ 'manage_volunteers.columns.update'|trans({'%date%': volunteer.lastPegassUpdate|date('d/m/Y')}) }}
+                                {% else %}
+                                    {{ 'manage_volunteers.columns.never_updated'|trans }}
+                                {% endif %}
                             </td>
                             <td>
                                 {# Lock volunteer #}

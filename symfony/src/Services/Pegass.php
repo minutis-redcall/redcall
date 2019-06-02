@@ -114,7 +114,7 @@ class Pegass
                     }
                 }
 
-                $volunteers[] = $volunteer;
+                $volunteers[$volunteer->getNivol()] = $volunteer;
             }
 
         } while (count($data['list']) && $data['page'] < $data['pages']);

@@ -18,7 +18,7 @@ class PegassSkillsCommand extends BaseCommand
     {
         $this
             ->setName('pegass:skills')
-            ->setDescription('List Pegass departments')
+            ->setDescription('List volunteers skills')
             ->addArgument('volunteer-id', InputArgument::REQUIRED, 'Volunteer ID (nivol) to check');
     }
 

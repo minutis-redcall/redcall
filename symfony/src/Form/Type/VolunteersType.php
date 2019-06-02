@@ -116,7 +116,6 @@ class VolunteersType extends AbstractType
                 'id'         => strval($volunteer->getId()),
                 'firstName'  => $volunteer->getFirstName(),
                 'lastName'   => $volunteer->getLastName(),
-                'postalCode' => $volunteer->getPostalCode() ? sprintf('/ %s', $volunteer->getPostalCode()) : '',
                 'tagIds'     => array_map(function (Tag $tag) {
                     return $tag->getId();
                 }, $volunteer->getTags()->toArray()),

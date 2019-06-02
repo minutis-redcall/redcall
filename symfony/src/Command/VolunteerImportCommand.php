@@ -4,6 +4,7 @@ namespace App\Command;
 
 use App\Services\VolunteerImporter;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -31,7 +32,8 @@ class VolunteerImportCommand extends Command
     {
         $this
             ->setName('volunteer:import')
-            ->setDescription('Import all volunteers from Google Sheets');
+            ->setDescription('Import all volunteers from an organization')
+            ->addArgument('organization-code', InputArgument::REQUIRED, 'Organization code');
     }
 
     /**
@@ -39,6 +41,6 @@ class VolunteerImportCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->importer->run();
+        $this->importer->importOrganizationVolunteers($input->getArgument('organization-code'));
     }
 }

@@ -55,13 +55,6 @@ class Volunteer
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=20, nullable=true)
-     */
-    private $postalCode;
-
-    /**
-     * @var string
-     *
      * @ORM\Column(type="string", length=80, nullable=true)
      */
     private $email;
@@ -83,7 +76,7 @@ class Volunteer
     /**
      * @var bool
      */
-    private $minor;
+    private $minor = false;
 
     /**
      * @var array
@@ -224,26 +217,6 @@ class Volunteer
     public function setPhoneNumber(string $phoneNumber)
     {
         $this->phoneNumber = $phoneNumber;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getPostalCode(): ?string
-    {
-        return $this->postalCode;
-    }
-
-    /**
-     * @param string $postalCode
-     *
-     * @return Volunteer
-     */
-    public function setPostalCode(?string $postalCode): Volunteer
-    {
-        $this->postalCode = $postalCode;
 
         return $this;
     }
@@ -428,7 +401,7 @@ class Volunteer
     /**
      * @return \DateTime
      */
-    public function getLastPegassUpdate(): \DateTime
+    public function getLastPegassUpdate(): ?\DateTime
     {
         return $this->lastPegassUpdate;
     }
@@ -463,5 +436,34 @@ class Volunteer
         $this->report = $report;
 
         return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isCallable() : bool
+    {
+        return $this->enabled && ($this->phoneNumber || $this->email);
+    }
+
+    /**
+     * @param string $message
+     */
+    public function addError(string $message)
+    {
+        $report             = $this->report ?? [];
+        $report[]           = sprintf('ERROR: %s', $message);
+        $this->report       = $report;
+        $this->isImportable = false;
+    }
+
+    /**
+     * @param string $message
+     */
+    public function addWarning(string $message)
+    {
+        $report       = $this->report ?? [];
+        $report[]     = sprintf('WARNING: %s', $message);
+        $this->report = $report;
     }
 }

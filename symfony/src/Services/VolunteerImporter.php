@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Entity\Tag;
+use App\Entity\Volunteer;
+use App\Repository\OrganizationRepository;
 use App\Repository\TagRepository;
 use App\Repository\VolunteerImportRepository;
 use App\Repository\VolunteerRepository;
@@ -10,132 +12,64 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 class VolunteerImporter
 {
-    // Tag keys and position in the google spreadsheet
-    const TAGS = [
-        Tag::TAG_EMERGENCY_ASSISTANCE => 8,
-        Tag::TAG_SOCIAL_ASSISTANCE    => 9,
-        Tag::TAG_PSC_1                => 12,
-        Tag::TAG_PSE_1_I              => 13,
-        Tag::TAG_PSE_1_R              => 14,
-        Tag::TAG_PSE_2_I              => 15,
-        Tag::TAG_PSE_2_R              => 16,
-        Tag::TAG_DRVR_VL              => 17,
-        Tag::TAG_DRVR_VPSP            => 18,
-        Tag::TAG_CI_I                 => 19,
-        Tag::TAG_CI_R                 => 20,
-    ];
+    protected $organizationRepository;
+    protected $volunteerRepository;
+    protected $tagRepository;
+    protected $pegass;
 
-    /**
-     * @var VolunteerRepository
-     */
-    private $volunteerRepository;
-
-    /**
-     * @var VolunteerImportRepository
-     */
-    private $volunteerImportRepository;
-
-    /**
-     * @var TagRepository
-     */
-    private $tagRepoistory;
-
-    /**
-     * @var ParameterBagInterface
-     */
-    private $parameterBag;
-
-    /**
-     * VolunteerImportCommand constructor.
-     *
-     * @param VolunteerRepository       $volunteerRepository
-     * @param VolunteerImportRepository $volunteerImportRepository
-     * @param TagRepository             $tagRepository
-     * @param ParameterBagInterface     $parameterBag
-     */
-    public function __construct(VolunteerRepository $volunteerRepository,
-        VolunteerImportRepository $volunteerImportRepository,
+    public function __construct(
+        OrganizationRepository $organizationRepository,
+        VolunteerRepository $volunteerRepository,
         TagRepository $tagRepository,
-        ParameterBagInterface $parameterBag)
+        Pegass $pegass)
     {
-        $this->volunteerRepository       = $volunteerRepository;
-        $this->volunteerImportRepository = $volunteerImportRepository;
-        $this->tagRepoistory             = $tagRepository;
-        $this->parameterBag              = $parameterBag;
+        $this->organizationRepository = $organizationRepository;
+        $this->volunteerRepository    = $volunteerRepository;
+        $this->tagRepoistory          = $tagRepository;
+        $this->pegass                 = $pegass;
     }
 
-    /**
-     * @throws \Doctrine\DBAL\DBALException
-     * @throws \Doctrine\ORM\ORMException
-     */
-    public function run()
+    public function importOrganizationVolunteers(string $organizationCode)
     {
-        // Mandatory so Google will find its certificate using the
-        // GOOGLE_APPLICATION_CREDENTIALS environment variable
-        chdir(sprintf('%s/../', $this->parameterBag->get('kernel.root_dir')));
+        /* @var \App\Entity\Organization $organization */
+        $organization = $this->organizationRepository->findOneByCode($organizationCode);
+        if (!$organization) {
+            throw new \LogicException(sprintf('Organization code not found: %s', $organizationCode));
+        }
 
-        $client = new \Google_Client();
-        $client->setScopes([
-            \Google_Service_Sheets::SPREADSHEETS_READONLY,
+        $current = $this->volunteerRepository->findBy([
+            'organization' => $organization->getId(),
+            'enabled' => true,
         ]);
-        $client->useApplicationDefaultCredentials();
+        $currentNivols = array_map(function(Volunteer $volunteer) {
+            return $volunteer->getNivol();
+        }, $current);
 
-        $sheets = new \Google_Service_Sheets($client);
-        $nbRows = $sheets
-                      ->spreadsheets
-                      ->get(getenv('GOOGLE_SHEETS_VOLUNTEERS_ID'))
-                      ->getSheets()[0]
-            ->getProperties()
-            ->getGridProperties()
-            ->getRowCount();
+        $imported = $this->pegass->listVolunteers($organizationCode);
+        $importedNivols = array_keys($imported);
 
-        $this->volunteerImportRepository->begin();
+        if (count($imported) == 0) {
+            throw new \RuntimeException(sprintf('Organization %s contain no volunteers', $organization->getName()));
+        }
 
-        $tags     = $this->tagRepoistory->findAll();
-        $imported = 0;
-        for ($i = 1; $i <= $nbRows; $i = $i + 500) {
-            $data = $sheets
-                ->spreadsheets_values
-                ->get(
-                    getenv('GOOGLE_SHEETS_VOLUNTEERS_ID'),
-                    sprintf('A%d:V%d', $i, min($i + 500, $nbRows)));
-
-            foreach ($data->getValues() ?? [] as $index => $row) {
-                if ($i == 1 && $index < 4 || count($row) < 22) {
-                    continue;
-                }
-
-                $importArray = [
-                    'id'          => $i,
-                    'nivol'       => trim($row[0]),
-                    'lastname'    => trim($row[1]),
-                    'firstname'   => trim($row[2]),
-                    'minor'       => trim($row[3]),
-                    'phone'       => trim($row[4]),
-                    'postal_code' => trim($row[5]),
-                    'email'       => trim($row[6]),
-                    'callable'    => trim($row[21]),
-                ];
-
-                $importArray['tags'] = [];
-                foreach (self::TAGS as $tagName => $cellNo) {
-                    $importArray['tags'][$tagName] = trim($row[$cellNo]);
-                }
-
-                $import = $this->volunteerImportRepository->sanitize($importArray);
-
-                $this->volunteerRepository->import($tags, $import);
-
-                if ($row[0]) {
-                    $imported++;
-                }
+        // Disable all volunteers that are not anymore in the organization
+        $nivolsToDisable = array_diff($currentNivols, $importedNivols);
+        $this->volunteerRepository->disableByNivols($nivolsToDisable);
+        foreach ($current as $index => $volunteer) {
+            if (in_array($volunteer->getNivol(), $nivolsToDisable)) {
+                unset($current[$index]);
             }
         }
 
-        if ($imported > 0) {
-            $this->volunteerRepository->disableNonImportedVolunteers();
-        } else {
-            throw new \RuntimeException('Volunteer spreadsheet is empty or not accessible.');
+        // Import or update all other volunteers
+        foreach ($imported as $volunteer) {
+            $volunteer->setOrganization($organization);
+            $this->volunteerRepository->import($volunteer);
         }
+    }
+
+    public function importVolunteersSkills(string $volunteerCode)
+    {
+
     }
 }
