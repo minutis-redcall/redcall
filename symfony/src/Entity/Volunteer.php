@@ -7,7 +7,10 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Table(indexes={@ORM\Index(name="nivolx", columns={"nivol"})})
+ * @ORM\Table(indexes={
+ *     @ORM\Index(name="nivolx", columns={"nivol"}),
+ *     @ORM\Index(name="lastpegassupdatex", columns={"last_pegass_update"})
+ * })
  * @ORM\Entity(repositoryClass="App\Repository\VolunteerRepository")
  */
 class Volunteer
@@ -105,6 +108,20 @@ class Volunteer
      * @ORM\JoinColumn(nullable=false)
      */
     private $organization;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $lastPegassUpdate;
+
+    /**
+     * @var array
+     *
+     * @ORM\Column(type="json_array", nullable=true)
+     */
+    private $report;
 
     public function __construct()
     {
@@ -404,6 +421,46 @@ class Volunteer
     public function setOrganization(?Organization $organization): self
     {
         $this->organization = $organization;
+
+        return $this;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getLastPegassUpdate(): \DateTime
+    {
+        return $this->lastPegassUpdate;
+    }
+
+    /**
+     * @param \DateTime $lastPegassUpdate
+     *
+     * @return Volunteer
+     */
+    public function setLastPegassUpdate(\DateTime $lastPegassUpdate): Volunteer
+    {
+        $this->lastPegassUpdate = $lastPegassUpdate;
+
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getReport(): array
+    {
+        return $this->report;
+    }
+
+    /**
+     * @param array $report
+     *
+     * @return Volunteer
+     */
+    public function setReport(array $report): Volunteer
+    {
+        $this->report = $report;
 
         return $this;
     }
