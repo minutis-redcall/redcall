@@ -30,11 +30,10 @@ class PegassSkillsCommand extends BaseCommand
         $volunteerId = $input->getArgument('volunteer-id');
 
         $skills = array_map(function($skill) {
-            return $this->get('translator')->trans(sprintf('tag.%s', $skill));
+            return [$this->get('translator')->trans(sprintf('tag.%s', $skill))];
         }, $this->get(Pegass::class)->getVolunteerTags($volunteerId));
 
         $table = new Table($output);
-        $table->setHeaderTitle(sprintf('Skills for #%s', $volunteerId));
         $table->setHeaders(['Skill']);
         $table->addRows($skills);
 

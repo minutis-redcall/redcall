@@ -24,6 +24,10 @@ final class Version20190531060443 extends AbstractMigration
 
         $this->addSql('CREATE TABLE organization (id INT AUTO_INCREMENT NOT NULL, code INT NOT NULL, type VARCHAR(16) NOT NULL, name VARCHAR(255) NOT NULL, last_volunteer_import DATETIME DEFAULT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ENGINE = InnoDB');
         $this->addSql('ALTER TABLE volunteer ADD organization_id INT NOT NULL, CHANGE phone_number phone_number VARCHAR(20) DEFAULT NULL');
+
+        $this->addSql('INSERT INTO organization (id, code, type, name) VALUES (1, "889", "UL", "UNITE LOCALE DE PARIS 1ER ET 2EME")');
+        $this->addSql('UPDATE volunteer SET organization_id = 1');
+
         $this->addSql('ALTER TABLE volunteer ADD CONSTRAINT FK_5140DEDB32C8A3DE FOREIGN KEY (organization_id) REFERENCES organization (id)');
         $this->addSql('CREATE INDEX IDX_5140DEDB32C8A3DE ON volunteer (organization_id)');
     }

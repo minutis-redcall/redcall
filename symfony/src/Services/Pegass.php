@@ -178,9 +178,36 @@ class Pegass
         $tags = [];
 
         foreach ($skills as $skill) {
+            if ('RECCI' == $skill['formation']['code']) {
+                $tags[] = Tag::TAG_CI_R;
+            }
 
+            if (in_array($skill['formation']['code'], ['CI', 'CIP3'])) {
+                $tags[] = Tag::TAG_CI_I;
+            }
+
+            if ('RECPSE2' == $skill['formation']['code']) {
+                $tags[] = Tag::TAG_PSE_2_R;
+            }
+
+            if ('PSE2' == $skill['formation']['code']) {
+                $tags[] = Tag::TAG_PSE_2_I;
+            }
+
+            if ('RECPSE1' == $skill['formation']['code']) {
+                $tags[] = Tag::TAG_PSE_1_R;
+            }
+
+            if ('PSE1' == $skill['formation']['code']) {
+                $tags[] = Tag::TAG_PSE_1_I;
+            }
+
+            if (in_array($skill['formation']['code'], ['RECPSC1', 'PSC1'])) {
+                $tags[] = Tag::TAG_PSC_1;
+            }
         }
 
+        return array_unique($tags);
     }
 
     /**
