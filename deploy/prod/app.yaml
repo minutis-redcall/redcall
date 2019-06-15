@@ -19,7 +19,6 @@ handlers:
   - url: /(.*\.(ico|txt|gif|png|jpg))$
     static_files: public/\1
     upload: public/.*\.(ico|txt|gif|png|jpg)$
-    secure: always
 
 manual_scaling:
   instances: 1
