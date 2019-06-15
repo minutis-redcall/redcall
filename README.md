@@ -47,4 +47,4 @@ cd deploy
 sh ./deploy.sh <env>
 ```
 
-To set-up your first account, [check that doc](docs/tech/12-enable-first-admin.md):
+To set-up your first account, [check that doc](docs/tech/12-enable-first-admin.md).
