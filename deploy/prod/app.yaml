@@ -19,11 +19,12 @@ handlers:
   - url: /(.*\.(ico|txt|gif|png|jpg))$
     static_files: public/\1
     upload: public/.*\.(ico|txt|gif|png|jpg)$
+    secure: always
 
 manual_scaling:
   instances: 1
 
 resources:
-  cpu: 1
-  memory_gb: 0.5
+  cpu: 2
+  memory_gb: 2
   disk_size_gb: 10
