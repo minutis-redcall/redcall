@@ -15,3 +15,20 @@ monolog:
             type:   console
             process_psr_3_messages: false
             channels: ["!event", "!doctrine"]
+
+        google_cloud:
+            type: service
+            id: monolog_psr_batch_logger
+
+services:
+
+    # Monolog wrapper
+    monolog_psr_batch_logger:
+        class: Monolog\Handler\PsrHandler
+        arguments: ['@google_cloud_stackdriver_psr_batch_logger']
+
+    # PsrBatchLogger
+    google_cloud_stackdriver_psr_batch_logger:
+        class: Google\Cloud\Logging\PsrLogger
+        factory: ['Google\Cloud\Logging\LoggingClient', 'psrBatchLogger']
+        arguments: ['app']

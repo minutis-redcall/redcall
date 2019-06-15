@@ -2,6 +2,10 @@
 !/logs/.gitkeep
 /var/*
 !/var/.gitkeep
-/ops/*
-!/ops/.gitkeep
 .web-server-pid
+/deploy/prod/dotenv
+/deploy/prod/google-service-account.json
+/deploy/preprod/dotenv
+/deploy/preprod/google-service-account.json
+/deploying
+/symfony/app.yaml

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "003dcb144fcfae38e4baff8d730f2f5e",
+    "content-hash": "24ca27450af4a6b4b2c2fbac5c87fe08",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -1613,6 +1613,396 @@
             "time": "2019-04-16T18:48:28+00:00"
         },
         {
+            "name": "google/cloud",
+            "version": "v0.102.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/googleapis/google-cloud-php.git",
+                "reference": "da356f004ff891e11a369fd634f55d6abade708f"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/googleapis/google-cloud-php/zipball/da356f004ff891e11a369fd634f55d6abade708f",
+                "reference": "da356f004ff891e11a369fd634f55d6abade708f",
+                "shasum": ""
+            },
+            "require": {
+                "google/auth": "^1.5.1",
+                "google/common-protos": "^1.0",
+                "google/gax": "^1.0",
+                "guzzlehttp/guzzle": "^5.3|^6.0",
+                "guzzlehttp/psr7": "^1.2",
+                "monolog/monolog": "~1",
+                "php": ">=5.5",
+                "psr/http-message": "1.0.*",
+                "ramsey/uuid": "~3",
+                "rize/uri-template": "~0.3"
+            },
+            "replace": {
+                "google/cloud-asset": "0.3.3",
+                "google/cloud-automl": "0.2.2",
+                "google/cloud-bigquery": "1.6.0",
+                "google/cloud-bigquerydatatransfer": "0.10.4",
+                "google/cloud-bigtable": "0.12.4",
+                "google/cloud-common-protos": "0.2.0",
+                "google/cloud-container": "0.10.3",
+                "google/cloud-core": "1.28.0",
+                "google/cloud-dataproc": "0.11.3",
+                "google/cloud-datastore": "1.9.3",
+                "google/cloud-debugger": "0.18.4",
+                "google/cloud-dialogflow": "0.8.3",
+                "google/cloud-dlp": "0.18.4",
+                "google/cloud-error-reporting": "0.14.4",
+                "google/cloud-firestore": "1.6.0",
+                "google/cloud-iot": "0.7.4",
+                "google/cloud-kms": "1.3.4",
+                "google/cloud-language": "0.19.3",
+                "google/cloud-logging": "1.16.4",
+                "google/cloud-monitoring": "0.16.4",
+                "google/cloud-oslogin": "0.9.4",
+                "google/cloud-pubsub": "1.12.1",
+                "google/cloud-redis": "0.8.3",
+                "google/cloud-scheduler": "1.0.1",
+                "google/cloud-security-center": "0.1.1",
+                "google/cloud-spanner": "1.15.3",
+                "google/cloud-speech": "0.24.0",
+                "google/cloud-storage": "1.12.1",
+                "google/cloud-talent": "0.4.0",
+                "google/cloud-tasks": "1.1.0",
+                "google/cloud-text-to-speech": "0.4.3",
+                "google/cloud-trace": "0.14.3",
+                "google/cloud-translate": "1.2.9",
+                "google/cloud-videointelligence": "1.5.3",
+                "google/cloud-vision": "0.22.3",
+                "google/cloud-web-risk": "0.1.1",
+                "google/cloud-web-security-scanner": "0.1.0"
+            },
+            "require-dev": {
+                "erusev/parsedown": "^1.6",
+                "google/cloud-tools": "^0.6",
+                "opis/closure": "^3.0",
+                "phpdocumentor/reflection": "^3.0",
+                "phpseclib/phpseclib": "^2",
+                "phpunit/phpunit": "^4.8|^5.0",
+                "squizlabs/php_codesniffer": "2.*",
+                "swaggest/json-schema": "^0.12.0",
+                "symfony/console": "^3.0",
+                "symfony/lock": "3.3.x-dev#1ba6ac9",
+                "vierbergenlars/php-semver": "^3.0"
+            },
+            "suggest": {
+                "opis/closure": "May be used to serialize closures to process jobs in the batch daemon. Please require version ^3.",
+                "phpseclib/phpseclib": "May be used in place of OpenSSL for creating signed Cloud Storage URLs. Please require version ^2."
+            },
+            "bin": [
+                "Core/bin/google-cloud-batch",
+                "Debugger/bin/google-cloud-debugger"
+            ],
+            "type": "library",
+            "extra": {
+                "component": {
+                    "id": "google-cloud",
+                    "target": "googleapis/google-cloud-php.git",
+                    "path": "src",
+                    "entry": [
+                        "Version.php",
+                        "ServiceBuilder.php"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Google\\Cloud\\": [
+                        "src",
+                        "CommonProtos/src"
+                    ],
+                    "Google\\Cloud\\Asset\\": "Asset/src",
+                    "Google\\Cloud\\AutoMl\\": "AutoMl/src",
+                    "Google\\Cloud\\BigQuery\\": "BigQuery/src",
+                    "Google\\Cloud\\BigQuery\\DataTransfer\\": "BigQueryDataTransfer/src",
+                    "Google\\Cloud\\Bigtable\\": "Bigtable/src",
+                    "Google\\Cloud\\Container\\": "Container/src",
+                    "Google\\Cloud\\Core\\": "Core/src",
+                    "Google\\Cloud\\Dataproc\\": "Dataproc/src",
+                    "Google\\Cloud\\Datastore\\": "Datastore/src",
+                    "Google\\Cloud\\Debugger\\": "Debugger/src",
+                    "Google\\Cloud\\Dialogflow\\": "Dialogflow/src",
+                    "Google\\Cloud\\Dlp\\": "Dlp/src",
+                    "Google\\Cloud\\ErrorReporting\\": "ErrorReporting/src",
+                    "Google\\Cloud\\Firestore\\": "Firestore/src",
+                    "Google\\Cloud\\Iot\\": "Iot/src",
+                    "Google\\Cloud\\Kms\\": "Kms/src",
+                    "Google\\Cloud\\Language\\": "Language/src",
+                    "Google\\Cloud\\Logging\\": "Logging/src",
+                    "Google\\Cloud\\Monitoring\\": "Monitoring/src",
+                    "Google\\Cloud\\OsLogin\\": "OsLogin/src",
+                    "Google\\Cloud\\PubSub\\": "PubSub/src",
+                    "Google\\Cloud\\Redis\\": "Redis/src",
+                    "Google\\Cloud\\Scheduler\\": "Scheduler/src",
+                    "Google\\Cloud\\SecurityCenter\\": "SecurityCenter/src",
+                    "Google\\Cloud\\Spanner\\": "Spanner/src",
+                    "Google\\Cloud\\Speech\\": "Speech/src",
+                    "Google\\Cloud\\Storage\\": "Storage/src",
+                    "Google\\Cloud\\Talent\\": "Talent/src",
+                    "Google\\Cloud\\Tasks\\": "Tasks/src",
+                    "Google\\Cloud\\TextToSpeech\\": "TextToSpeech/src",
+                    "Google\\Cloud\\Trace\\": "Trace/src",
+                    "Google\\Cloud\\Translate\\": "Translate/src",
+                    "Google\\Cloud\\VideoIntelligence\\": "VideoIntelligence/src",
+                    "Google\\Cloud\\Vision\\": "Vision/src",
+                    "Google\\Cloud\\WebRisk\\": "WebRisk/src",
+                    "Google\\Cloud\\WebSecurityScanner\\": "WebSecurityScanner/src",
+                    "GPBMetadata\\Google\\": "CommonProtos/metadata",
+                    "GPBMetadata\\Google\\Bigtable\\": "Bigtable/metadata",
+                    "GPBMetadata\\Google\\Container\\": "Container/metadata",
+                    "GPBMetadata\\Google\\Cloud\\Asset\\": "Asset/metadata",
+                    "GPBMetadata\\Google\\Cloud\\Automl\\": "AutoMl/metadata",
+                    "GPBMetadata\\Google\\Cloud\\Bigquery\\Datatransfer\\": "BigQueryDataTransfer/metadata",
+                    "GPBMetadata\\Google\\Cloud\\Dataproc\\": "Dataproc/metadata",
+                    "GPBMetadata\\Google\\Cloud\\Dialogflow\\": "Dialogflow/metadata",
+                    "GPBMetadata\\Google\\Cloud\\Iot\\": "Iot/metadata",
+                    "GPBMetadata\\Google\\Cloud\\Kms\\": "Kms/metadata",
+                    "GPBMetadata\\Google\\Cloud\\Language\\": "Language/metadata",
+                    "GPBMetadata\\Google\\Cloud\\Oslogin\\": "OsLogin/metadata",
+                    "GPBMetadata\\Google\\Cloud\\Redis\\": "Redis/metadata",
+                    "GPBMetadata\\Google\\Cloud\\Scheduler\\": "Scheduler/metadata",
+                    "GPBMetadata\\Google\\Cloud\\Securitycenter\\": "SecurityCenter/metadata",
+                    "GPBMetadata\\Google\\Cloud\\Speech\\": "Speech/metadata",
+                    "GPBMetadata\\Google\\Cloud\\Talent\\": "Talent/metadata",
+                    "GPBMetadata\\Google\\Cloud\\Tasks\\": "Tasks/metadata",
+                    "GPBMetadata\\Google\\Cloud\\Texttospeech\\": "TextToSpeech/metadata",
+                    "GPBMetadata\\Google\\Cloud\\Videointelligence\\": "VideoIntelligence/metadata",
+                    "GPBMetadata\\Google\\Cloud\\Vision\\": "Vision/metadata",
+                    "GPBMetadata\\Google\\Cloud\\Webrisk\\": "WebRisk/metadata",
+                    "GPBMetadata\\Google\\Cloud\\Websecurityscanner\\": "WebSecurityScanner/metadata",
+                    "GPBMetadata\\Google\\Datastore\\": "Datastore/metadata",
+                    "GPBMetadata\\Google\\Devtools\\Clouddebugger\\": "Debugger/metadata",
+                    "GPBMetadata\\Google\\Devtools\\Clouderrorreporting\\": "ErrorReporting/metadata",
+                    "GPBMetadata\\Google\\Devtools\\Cloudtrace\\": "Trace/metadata",
+                    "GPBMetadata\\Google\\Firestore\\": "Firestore/metadata",
+                    "GPBMetadata\\Google\\Logging\\": "Logging/metadata",
+                    "GPBMetadata\\Google\\Monitoring\\": "Monitoring/metadata",
+                    "GPBMetadata\\Google\\Privacy\\Dlp\\": "Dlp/metadata",
+                    "GPBMetadata\\Google\\Pubsub\\": "PubSub/metadata",
+                    "GPBMetadata\\Google\\Spanner\\": "Spanner/metadata"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "John Pedrie",
+                    "email": "john@pedrie.com"
+                },
+                {
+                    "name": "Dave Supplee",
+                    "email": "dwsupplee@gmail.com"
+                }
+            ],
+            "description": "Google Cloud Client Library",
+            "homepage": "http://github.com/googleapis/google-cloud-php",
+            "keywords": [
+                "Tasks",
+                "big query",
+                "bigquery",
+                "bigtable",
+                "cloud",
+                "datastore",
+                "gcs",
+                "google",
+                "google api",
+                "google api client",
+                "google apis",
+                "google apis client",
+                "google cloud",
+                "google cloud platform",
+                "kms",
+                "language",
+                "natural language",
+                "pub sub",
+                "pubsub",
+                "spanner",
+                "speech",
+                "stackdriver logging",
+                "storage",
+                "translate",
+                "translation",
+                "vision"
+            ],
+            "time": "2019-05-23T21:03:53+00:00"
+        },
+        {
+            "name": "google/common-protos",
+            "version": "1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/googleapis/common-protos-php.git",
+                "reference": "13daea6a4f257f3448fbf4450860e659462e0ad5"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/googleapis/common-protos-php/zipball/13daea6a4f257f3448fbf4450860e659462e0ad5",
+                "reference": "13daea6a4f257f3448fbf4450860e659462e0ad5",
+                "shasum": ""
+            },
+            "require": {
+                "google/protobuf": "^3.6.1"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^4.8.36",
+                "sami/sami": "*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Google\\": "src",
+                    "GPBMetadata\\Google\\": "metadata"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "description": "Google API Common Protos for PHP",
+            "homepage": "https://github.com/googleapis/common-protos-php",
+            "keywords": [
+                "google"
+            ],
+            "time": "2019-03-14T19:01:14+00:00"
+        },
+        {
+            "name": "google/gax",
+            "version": "1.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/googleapis/gax-php.git",
+                "reference": "48387fb818c6882296710a2302a0aa973b99afb2"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/googleapis/gax-php/zipball/48387fb818c6882296710a2302a0aa973b99afb2",
+                "reference": "48387fb818c6882296710a2302a0aa973b99afb2",
+                "shasum": ""
+            },
+            "require": {
+                "google/auth": "^1.2.0",
+                "google/common-protos": "^1.0",
+                "google/grpc-gcp": "^0.1.0",
+                "google/protobuf": "^3.7.1",
+                "grpc/grpc": "^1.4",
+                "guzzlehttp/promises": "^1.3",
+                "guzzlehttp/psr7": "^1.2",
+                "php": ">=5.5"
+            },
+            "conflict": {
+                "ext-protobuf": "<3.7.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "^4.8.36",
+                "sami/sami": "*",
+                "squizlabs/php_codesniffer": "3.*"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Google\\ApiCore\\": "src",
+                    "GPBMetadata\\Google\\": "metadata"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "description": "Google API Core for PHP",
+            "homepage": "https://github.com/googleapis/gax-php",
+            "keywords": [
+                "google"
+            ],
+            "time": "2019-04-23T22:57:39+00:00"
+        },
+        {
+            "name": "google/grpc-gcp",
+            "version": "0.1.4",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/GoogleCloudPlatform/grpc-gcp-php.git",
+                "reference": "e1ec44c0c39bd204868e2a2ed3cc87ed9006984e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/GoogleCloudPlatform/grpc-gcp-php/zipball/e1ec44c0c39bd204868e2a2ed3cc87ed9006984e",
+                "reference": "e1ec44c0c39bd204868e2a2ed3cc87ed9006984e",
+                "shasum": ""
+            },
+            "require": {
+                "google/auth": "^1.3",
+                "google/protobuf": "^v3.3.0",
+                "grpc/grpc": "^v1.13.0",
+                "php": ">=5.5.0",
+                "psr/cache": "^1.0.1"
+            },
+            "require-dev": {
+                "google/cloud-spanner": "^1.7",
+                "phpunit/phpunit": "4.8.36"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Grpc\\Gcp\\": "src/",
+                    "": "src/generated/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "description": "gRPC GCP library for channel management",
+            "time": "2019-02-14T02:21:15+00:00"
+        },
+        {
+            "name": "google/protobuf",
+            "version": "v3.8.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/protocolbuffers/protobuf-php.git",
+                "reference": "a257235dc1a0d45f8cfc641d0c2ad852f57396c4"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/protocolbuffers/protobuf-php/zipball/a257235dc1a0d45f8cfc641d0c2ad852f57396c4",
+                "reference": "a257235dc1a0d45f8cfc641d0c2ad852f57396c4",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.5.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": ">=4.8.0"
+            },
+            "suggest": {
+                "ext-bcmath": "Need to support JSON deserialization"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Google\\Protobuf\\": "src/Google/Protobuf",
+                    "GPBMetadata\\Google\\Protobuf\\": "src/GPBMetadata/Google/Protobuf"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "description": "proto library for PHP",
+            "homepage": "https://developers.google.com/protocol-buffers/",
+            "keywords": [
+                "proto"
+            ],
+            "time": "2019-05-29T00:06:29+00:00"
+        },
+        {
             "name": "google/recaptcha",
             "version": "1.2.2",
             "source": {
@@ -1658,6 +2048,47 @@
                 "spam"
             ],
             "time": "2019-05-24T12:44:03+00:00"
+        },
+        {
+            "name": "grpc/grpc",
+            "version": "1.19.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/grpc/grpc-php.git",
+                "reference": "0f1ffdde45bfb9257c5d9eab81695d0f042bea22"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/grpc/grpc-php/zipball/0f1ffdde45bfb9257c5d9eab81695d0f042bea22",
+                "reference": "0f1ffdde45bfb9257c5d9eab81695d0f042bea22",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.5.0"
+            },
+            "require-dev": {
+                "google/auth": "^v1.3.0"
+            },
+            "suggest": {
+                "ext-protobuf": "For better performance, install the protobuf C extension.",
+                "google/protobuf": "To get started using grpc quickly, install the native protobuf library."
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Grpc\\": "src/lib/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "description": "gRPC library for PHP",
+            "homepage": "https://grpc.io",
+            "keywords": [
+                "rpc"
+            ],
+            "time": "2019-02-27T04:47:56+00:00"
         },
         {
             "name": "guzzlehttp/guzzle",
@@ -2392,33 +2823,34 @@
         },
         {
             "name": "ocramius/proxy-manager",
-            "version": "2.1.1",
+            "version": "2.2.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Ocramius/ProxyManager.git",
-                "reference": "e18ac876b2e4819c76349de8f78ccc8ef1554cd7"
+                "reference": "14b137b06b0f911944132df9d51e445a35920ab1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Ocramius/ProxyManager/zipball/e18ac876b2e4819c76349de8f78ccc8ef1554cd7",
-                "reference": "e18ac876b2e4819c76349de8f78ccc8ef1554cd7",
+                "url": "https://api.github.com/repos/Ocramius/ProxyManager/zipball/14b137b06b0f911944132df9d51e445a35920ab1",
+                "reference": "14b137b06b0f911944132df9d51e445a35920ab1",
                 "shasum": ""
             },
             "require": {
-                "ocramius/package-versions": "^1.1.1",
-                "php": "^7.1.0",
-                "zendframework/zend-code": "^3.1.0"
+                "ocramius/package-versions": "^1.1.3",
+                "php": "^7.2.0",
+                "zendframework/zend-code": "^3.3.0"
             },
             "require-dev": {
-                "couscous/couscous": "^1.5.2",
+                "couscous/couscous": "^1.6.1",
                 "ext-phar": "*",
-                "humbug/humbug": "dev-master@DEV",
-                "nikic/php-parser": "^3.0.4",
+                "humbug/humbug": "1.0.0-RC.0@RC",
+                "nikic/php-parser": "^3.1.1",
+                "padraic/phpunit-accelerator": "dev-master@DEV",
                 "phpbench/phpbench": "^0.12.2",
-                "phpstan/phpstan": "^0.6.4",
-                "phpunit/phpunit": "^5.6.4",
-                "phpunit/phpunit-mock-objects": "^3.4.1",
-                "squizlabs/php_codesniffer": "^2.7.0"
+                "phpstan/phpstan": "dev-master#856eb10a81c1d27c701a83f167dc870fd8f4236a as 0.9.999",
+                "phpstan/phpstan-phpunit": "dev-master#5629c0a1f4a9c417cb1077cf6693ad9753895761",
+                "phpunit/phpunit": "^6.4.3",
+                "squizlabs/php_codesniffer": "^2.9.1"
             },
             "suggest": {
                 "ocramius/generated-hydrator": "To have very fast object to array to object conversion for ghost objects",
@@ -2457,7 +2889,7 @@
                 "proxy pattern",
                 "service proxies"
             ],
-            "time": "2017-05-04T11:12:50+00:00"
+            "time": "2018-09-27T13:45:01+00:00"
         },
         {
             "name": "pagerfanta/pagerfanta",
@@ -3452,6 +3884,50 @@
             ],
             "description": "A decent backoffice authentication layer for Symfony projects",
             "time": "2019-03-05T04:41:07+00:00"
+        },
+        {
+            "name": "rize/uri-template",
+            "version": "0.3.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/rize/UriTemplate.git",
+                "reference": "9e5fdd5c47147aa5adf7f760002ee591ed37b9ca"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/rize/UriTemplate/zipball/9e5fdd5c47147aa5adf7f760002ee591ed37b9ca",
+                "reference": "9e5fdd5c47147aa5adf7f760002ee591ed37b9ca",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.0.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "Rize\\UriTemplate": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Marut K",
+                    "homepage": "http://twitter.com/rezigned"
+                }
+            ],
+            "description": "PHP URI Template (RFC 6570) supports both expansion & extraction",
+            "keywords": [
+                "RFC 6570",
+                "template",
+                "uri"
+            ],
+            "time": "2017-06-14T03:57:53+00:00"
         },
         {
             "name": "sensio/framework-extra-bundle",
@@ -8658,12 +9134,10 @@
     "prefer-lowest": false,
     "platform": {
         "php": "^7.1.3",
+        "ext-gd": "*",
         "ext-iconv": "*",
         "ext-json": "*",
         "ext-mbstring": "*"
     },
-    "platform-dev": [],
-    "platform-overrides": {
-        "php": "7.1.23"
-    }
+    "platform-dev": []
 }

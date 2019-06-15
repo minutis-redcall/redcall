@@ -6,15 +6,15 @@ help:
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort \
 		| awk 'BEGIN {FS = ":.*?## "}; {printf "  \033[32m%s\033[0m___%s\n", $$1, $$2}' | column -ts___
 
-install: install-composer install-npm ## Installs all project dependencies
+install: install-composer install-yarn ## Installs all project dependencies
 
 install-composer: ## Installs all PHP dependencies
 	@echo "\033[1m\033[36m> Installing all Composer dependencies\033[0m\033[21m"
 	@composer install
 
-install-npm: ## Installs all Node dependencies
-	@echo "\033[1m\033[36m> Installing all NPM dependencies\033[0m\033[21m"
-	@npm install --cache-min 99999 --progress=false
+install-yarn: ## Installs all Node dependencies
+	@echo "\033[1m\033[36m> Installing all Yarn dependencies\033[0m\033[21m"
+	@yarn install --cache-min 99999 --progress=false
 
 reset: reset-db ## Resets the development environment
 

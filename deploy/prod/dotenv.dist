@@ -1,0 +1,40 @@
+###> symfony/framework-bundle ###
+APP_ENV=prod
+APP_SECRET='some secret'
+###< symfony/framework-bundle ###
+
+###> symfony/swiftmailer-bundle ###
+MAILER_FROM=contact@redcall.io
+MAILER_URL='smtp://auto@redcall.io:password@mail.provider.com:465?encryption=ssl'
+###< symfony/swiftmailer-bundle ###
+
+###> doctrine/doctrine-bundle ###
+DATABASE_URL=mysql://redcall_prod:password@localhost/redcall_prod?unix_socket=/path/to/socket
+
+###< doctrine/doctrine-bundle ###
+
+###> google/recaptcha ###
+GOOGLE_RECAPTCHA_SITE_KEY=key
+GOOGLE_RECAPTCHA_SECRET=secret
+###< google/recaptcha ###
+
+###> sentry/sentry-symfony ###
+SENTRY_DSN=https://password@sentry.io/account
+###< sentry/sentry-symfony ###
+
+###> google/apiclient ###
+GOOGLE_API_KEY=
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+###< google/apiclient ###
+
+WEBSITE_URL=https://prod.redcall.io
+
+NEXMO_API_KEY=key
+NEXMO_API_SECRET=secret
+NEXMO_SEND_FROM=phonenumber
+
+MAPBOX_API_KEY=some key
+
+PEGASS_LOGIN=yourlogin
+PEGASS_PASSWORD=yourpassword
