@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -73,7 +74,12 @@ class Tag
      *
      * @ORM\ManyToMany(targetEntity="App\Entity\Volunteer", mappedBy="tags")
      */
-    private $volunteers = [];
+    private $volunteers;
+
+    public function __construct()
+    {
+        $this->volunteers = new ArrayCollection();
+    }
 
     /**
      * This method builds a map of tags based on the tag hierarchy.
@@ -158,7 +164,7 @@ class Tag
     }
 
     /**
-     * @return Volunteers[]
+     * @return ArrayCollection
      */
     public function getVolunteers()
     {

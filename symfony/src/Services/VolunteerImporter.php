@@ -102,7 +102,7 @@ class VolunteerImporter
 
         // Remove tags that volunteer has lost
         foreach ($volunteer->getTags() as $tag) {
-            if ($tag && !in_array($tag->getLabel(), $skills)) {
+            if (!in_array($tag->getLabel(), $skills)) {
                 $volunteer->getTags()->removeElement($tag);
             }
         }

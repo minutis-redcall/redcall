@@ -124,16 +124,6 @@ INSERT INTO `prefilled_answers` VALUES (1,'Oui / Non','1_green,2_light_orange,3_
 UNLOCK TABLES;
 
 --
--- Dumping data for table `tag`
---
-
-LOCK TABLES `tag` WRITE;
-/*!40000 ALTER TABLE `tag` DISABLE KEYS */;
-INSERT INTO `tag` VALUES (1,'emergency_assistance'),(2,'social_assistance'),(3,'psc_1'),(4,'pse_1_i'),(5,'pse_1_r'),(6,'pse_2_i'),(7,'pse_2_r'),(8,'drvr_vl'),(9,'drvr_vpsp'),(10,'ci_i'),(11,'ci_r');
-/*!40000 ALTER TABLE `tag` ENABLE KEYS */;
-UNLOCK TABLES;
-
---
 -- Dumping data for table `user`
 --
 
