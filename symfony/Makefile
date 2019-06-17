@@ -15,6 +15,7 @@ install-composer: ## Installs all PHP dependencies
 install-yarn: ## Installs all Node dependencies
 	@echo "\033[1m\033[36m> Installing all Yarn dependencies\033[0m\033[21m"
 	@yarn install --cache-min 99999 --progress=false
+	@yarn encore dev
 
 reset: reset-db ## Resets the development environment
 

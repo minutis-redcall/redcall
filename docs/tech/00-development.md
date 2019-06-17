@@ -1,11 +1,4 @@
 
-
-
-
-TODO check if .env.dist can be used as is on dev env
-
-
-
 # Development environment
 
 You will need a running Docker environment to install this app locally.
@@ -17,20 +10,44 @@ In root and symfony directories, type `make help` to get available commands.
 
 * Build and run the application with `make run`. On first execution, this will build all Docker images needed to compose the network.
 
-> Once all containers are up, you will be connected to the application container and have access to a shell inside the Symfony installation.
+Once all containers are up, you will be connected to the application container and have access to a shell inside the Symfony installation.
 
 * Inside the application container, install the project dependencies with `make install` and reset the database by running `make reset`.
 
-> The application is now running and can be accessed at [http://localhost:81]().
+The application is now running and can be accessed at [http://localhost:81]().
+
+## Admin credentials
+
+Use the following credentials to activate your users:
+
+```
+Login: admin@example.com
+Password: admin@example.com
+```
+
+## Accessing the application container
+
+If you detach from the application container, you can reconnect by running:
+ 
+ 
+```bash
+docker-compose exec php bash
+```
+
+## Connecting to the database
+
+MySQL server is listening on 127.0.0.1 port 3307. To connect, use:
+
+```bash
+mysql -h 127.0.0.1 -P 3307 -u root redcall
+```
 
 *  Connecting to the local MySQL server
 
 > The local port of the container running the MySQL server is bound to the host port number **3307**.
-Connect to 127.0.0.1:3307 in order to access the MySQL server.
+Connect to 127.0.0.1:3307 in order to access the MySQL server (`mysql -P 3307 ...`).
 
-## Accessing the application container
 
-If you detach from the application container, run `docker-compose exec php bash` to reconnect and have access to a shell.
 
 From here, you can run the following commands to fully set-up the environment:
 
