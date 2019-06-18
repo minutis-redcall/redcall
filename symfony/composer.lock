@@ -8534,12 +8534,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/redcall-io/sandbox-bundle.git",
-                "reference": "a578a6369dd8823b26363bdaf2dffae133b1a3a2"
+                "reference": "0a9bfcd0ebd8c3a0582056d5a6b5bb6624930d78"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/redcall-io/sandbox-bundle/zipball/a578a6369dd8823b26363bdaf2dffae133b1a3a2",
-                "reference": "a578a6369dd8823b26363bdaf2dffae133b1a3a2",
+                "url": "https://api.github.com/repos/redcall-io/sandbox-bundle/zipball/0a9bfcd0ebd8c3a0582056d5a6b5bb6624930d78",
+                "reference": "0a9bfcd0ebd8c3a0582056d5a6b5bb6624930d78",
                 "shasum": ""
             },
             "require": {
@@ -8574,7 +8574,7 @@
                 }
             ],
             "description": "Development tools for the redcall.io project",
-            "time": "2019-06-02T17:19:43+00:00"
+            "time": "2019-06-18T23:47:45+00:00"
         },
         {
             "name": "symfony/debug-bundle",

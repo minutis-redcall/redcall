@@ -171,4 +171,16 @@ class VolunteerRepository extends ServiceEntityRepository
         $this->_em->persist($volunteer);
         $this->_em->flush($volunteer);
     }
+
+    /**
+     * @param Volunteer $volunteer
+     *
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function remove(Volunteer $volunteer)
+    {
+        $this->_em->remove($volunteer);
+        $this->_em->flush($volunteer);
+    }
 }

@@ -35,6 +35,17 @@ INSERT INTO `user_preference` VALUES ('admin@example.com','fr');
 /*!40000 ALTER TABLE `user_preference` ENABLE KEYS */;
 UNLOCK TABLES;
 
+--
+-- Dumping data for table `organization`
+--
+
+LOCK TABLES `organization` WRITE;
+/*!40000 ALTER TABLE `organization` DISABLE KEYS */;
+INSERT INTO `organization` VALUES (1, '889', 'UL', 'UNITE LOCALE DE PARIS 1ER 2EME', NULL);
+/*!40000 ALTER TABLE `organization` ENABLE KEYS */;
+UNLOCK TABLES;
+
+
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
