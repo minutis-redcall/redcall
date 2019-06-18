@@ -25,6 +25,14 @@ Login: admin@example.com
 Password: admin@example.com
 ```
 
+## Other fixtures
+
+In order to avoid sending real SMS or emails, or to have volunteers
+even without directory access, development environment includes a 
+"Sandbox" button (at the bottom of every page when signed in). 
+
+You can generate your first volunteers from here.
+
 ## Accessing the application container
 
 If you detach from the application container, you can reconnect by running:
