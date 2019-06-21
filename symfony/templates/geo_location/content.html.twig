@@ -311,20 +311,13 @@
         });
     }
 
-    if (typeof(EventSource) !== "undefined" && '{{ app.environment == 'dev' }}' !== '1') {
-        var source = new EventSource('{{ path('geo_sse', {code: code, status: status}) }}');
-        source.onmessage = function (e) {
-            refreshGeoData(JSON.parse(e.data));
-        }
-    } else {
-        setInterval(function () {
-            $.ajax('{{ path('geo_poll', {code: code}) }}', {
-                type: 'POST',
-                statusCode: {
-                    200: refreshGeoData
-                }
-            });
-        }, 5000);
-    }
+    setInterval(function () {
+        $.ajax('{{ path('geo_poll', {code: code}) }}', {
+            type: 'POST',
+            statusCode: {
+                200: refreshGeoData
+            }
+        });
+    }, 5000);
 
 </script>

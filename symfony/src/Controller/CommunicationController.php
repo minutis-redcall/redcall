@@ -123,37 +123,6 @@ class CommunicationController extends BaseController
     }
 
     /**
-     * @Route(path="declenchement/{campaignId}/sse/{status}",
-     *        name="sse",
-     *        requirements={"campaignId" = "\d+", "status" = "[0-9-]*"}
-     * )
-     *
-     * @param int $campaignId
-     *
-     * @return Response
-     */
-    public function sseAction(int $campaignId, ?string $status = null)
-    {
-        $this->get('session')->save();
-
-        $campaign = $this->getCampaignOrThrowNotFoundException($campaignId);
-
-        $prevUpdate = $status;
-        $response   = new EventStreamResponse(function () use ($campaign, &$prevUpdate) {
-            $newUpdate = $this->getStatusHash($campaign);
-
-            if ($newUpdate !== $prevUpdate) {
-                $prevUpdate = $newUpdate;
-                $campaign   = $this->campaignManager->refresh($campaign);
-
-                return json_encode($campaign->getCampaignStatus());
-            }
-        });
-
-        return $response;
-    }
-
-    /**
      * @Route(
      *     name="add",
      *     path="declenchement/{campaignId}/ajouter-une-communication",
@@ -163,6 +132,8 @@ class CommunicationController extends BaseController
      *
      * @param Request $request
      * @param int     $campaignId
+     *
+     * @return Response
      */
     public function addCommunicationAction(Request $request, int $campaignId)
     {

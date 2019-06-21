@@ -141,36 +141,6 @@ class GeoLocationController extends BaseController
     }
 
     /**
-     * @Route(path="{code}/sse/{status}", name="sse", requirements={"status" = "\d*"})
-     *
-     * @param string $code
-     *
-     * @return Response
-     */
-    public function sseAction(string $code, ?int $status = null)
-    {
-        $this->get('session')->save();
-
-        /* @var Message $message */
-        $message       = $this->getMessageByWebCode($code);
-        $communication = $message->getCommunication();
-
-        $prevUpdate = $status;
-        $response   = new EventStreamResponse(function () use ($communication, $message, &$prevUpdate) {
-            $newUpdate = $this->geoLocationRepository->getLastGeoLocationUpdateTimestamp($communication);
-
-            if ($newUpdate !== $prevUpdate) {
-                $prevUpdate = $newUpdate;
-                $message    = $this->messageRepository->refresh($message);
-
-                return json_encode($this->getGeolocationInformation($message));
-            }
-        });
-
-        return $response;
-    }
-
-    /**
      * @param Message $message
      *
      * @return array
