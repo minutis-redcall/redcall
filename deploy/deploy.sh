@@ -38,7 +38,7 @@ cp deploy/${ENV}/google-service-account.json symfony/config/keys
 
 # Deploying
 cd symfony
-yarn encore production
+#yarn encore production
 gcloud app deploy --verbosity debug
 cd ..
 

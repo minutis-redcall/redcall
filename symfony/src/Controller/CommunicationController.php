@@ -113,6 +113,8 @@ class CommunicationController extends BaseController
      */
     public function pollAction(int $campaignId)
     {
+        $this->get('session')->save();
+
         $campaign = $this->getCampaignOrThrowNotFoundException($campaignId);
 
         return new JsonResponse(

@@ -149,6 +149,8 @@ class GeoLocationController extends BaseController
      */
     public function sseAction(string $code, ?int $status = null)
     {
+        $this->get('session')->save();
+
         /* @var Message $message */
         $message       = $this->getMessageByWebCode($code);
         $communication = $message->getCommunication();
