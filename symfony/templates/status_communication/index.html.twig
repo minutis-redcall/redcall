@@ -228,7 +228,7 @@
                                                       style="font-size:16px;"
                                                       data-value="{{ answer ? 1 : 0 }}"
                                                       id="message-is-choice-{{ choice.id }}-{{ suffix|e('html_attr') }}">
-                                                    {{ choice.code }}
+                                                    {{ choice.code }}{% if message.isUnclear %}<span style="color:red;">*</span>{% endif %}
                                                     <span style="font-size:10px;">
                                                         <br/>
                                                         <span id="message-is-choice-time-{{ choice.id }}-{{ suffix|e('html_attr') }}">
@@ -246,7 +246,7 @@
                                               style="font-size:16px;"
                                               data-value="{{ message.invalidAnswer ? 1 : 0 }}"
                                               id="message-has-invalid-answer-{{ suffix|e('html_attr') }}">
-                                            ?
+                                            ?{% if message.isUnclear %}<span style="color:red;">*</span>{% endif %}
                                             <span style="font-size:10px;">
                                                 <br/>
                                                 <span id="message-has-invalid-answer-time-{{ suffix|e('html_attr') }}">

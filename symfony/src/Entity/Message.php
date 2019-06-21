@@ -393,4 +393,23 @@ class Message
 
         return false;
     }
+
+    /**
+     * An answer is unclear if, for the current communication, volunteer
+     * answered at least 1 message that is invalid.
+     *
+     * @return bool
+     */
+    public function isUnclear() : bool
+    {
+        foreach ($this->answers ?? [] as $answer) {
+            /* @var \App\Entity\Answer $answer */
+            if (!$answer->getChoice()) {
+                return true;
+            }
+        }
+
+        return false;
+
+    }
 }
