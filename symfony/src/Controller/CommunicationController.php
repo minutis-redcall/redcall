@@ -94,6 +94,8 @@ class CommunicationController extends BaseController
      */
     public function indexAction(int $campaignId)
     {
+        $this->get('session')->save();
+
         $campaign = $this->getCampaignOrThrowNotFoundException($campaignId);
 
         return $this->render('status_communication/index.html.twig', [
