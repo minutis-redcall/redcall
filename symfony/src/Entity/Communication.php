@@ -346,6 +346,24 @@ class Communication
     }
 
     /**
+     * @param string $raw
+     *
+     * @return array
+     *
+     * @throws \Exception
+     */
+    public function getAllChoicesInText(string $raw): array
+    {
+        $choices = [];
+
+        foreach (array_filter(explode(' ', $raw)) as $split) {
+            $choices[] = $this->getChoiceByLabelOrCode($split);
+        }
+
+        return array_filter($choices);
+    }
+
+    /**
      * @return array
      */
     public function getChoicesAsString()

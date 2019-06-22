@@ -59,37 +59,53 @@ class MessageRepository extends ServiceEntityRepository
      */
     public function addAnswer(Message $message, string $body, ?Choice $forcedChoice = null): void
     {
-        $choice = $message->getCommunication()->getChoiceByLabelOrCode($body);
+        // Get all valid choices in message
+        if ($multipleChoice = $message->getCommunication()->isMultipleAnswer()) {
+            $choices = $message->getCommunication()->getAllChoicesInText($body);
+        } else {
+            $choices = [$message->getCommunication()->getChoiceByLabelOrCode($body)];
+        }
 
-        if (!$message->getCommunication()->isMultipleAnswer()) {
+        // Answer ticked manually
+        if ($forcedChoice) {
+            $choices = [$forcedChoice];
+        }
+
+        // Invalid answer
+        if (!$choices) {
+            $choices[] = null;
+        }
+
+        if (!$multipleChoice) {
             // If no multiple answers are allowed, clearing up all previous answers
             foreach ($message->getAnswers() as $answer) {
                 $answer->setChoice(null);
                 $this->_em->persist($answer);
             }
-        } else {
-            // If multiple answers allowed, we'll only keep the last duplicate
-            if ($choice && $answer = $message->getAnswerByChoice($choice)) {
-                $answer->setChoice(null);
-                $this->_em->persist($answer);
+        }
+
+        foreach ($choices as $choice) {
+            if ($multipleChoice) {
+                // If multiple answers allowed, we'll only keep the last duplicate
+                if ($choice && $answer = $message->getAnswerByChoice($choice)) {
+                    $answer->setChoice(null);
+                    $this->_em->persist($answer);
+                }
             }
+
+            $answer = new Answer();
+
+            $answer->setMessage($message);
+            $message->addAnswser($answer);
+
+            $answer->setRaw($body);
+            $answer->setReceivedAt(new \DateTime());
+
+            $answer->setChoice($choice);
+
+            $this->_em->persist($answer);
+            $this->_em->flush();
         }
-
-        $answer = new Answer();
-
-        $answer->setMessage($message);
-        $message->addAnswser($answer);
-
-        $answer->setRaw($body);
-        $answer->setReceivedAt(new \DateTime());
-
-        $answer->setChoice($choice);
-        if ($forcedChoice) {
-            $answer->setChoice($forcedChoice);
-        }
-
-        $this->_em->persist($answer);
-        $this->_em->flush();
     }
 
     /**
