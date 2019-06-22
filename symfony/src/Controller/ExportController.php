@@ -163,6 +163,7 @@ class ExportController extends BaseController
         }
 
         $context = [
+            'tempDir' => sys_get_temp_dir(),
             'current_date' => new \DateTime(),
             'campaign' => $campaign,
             'communication' => $communication,
