@@ -224,4 +224,12 @@ class Answer
             $this->setUpdatedAt(new \DateTime());
         }
     }
+
+    /**
+     * @return bool
+     */
+    public function isUnclear(): bool
+    {
+        return $this->choice && !in_array($this->raw, [$this->choice->getCode(), $this->choice->getLabel()]);
+    }
 }

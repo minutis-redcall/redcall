@@ -237,11 +237,13 @@ class Campaign
                 }
 
                 $choices = [];
+                $isUnclear = 0;
                 foreach ($communication->getChoices() as $choice) {
                     $answer                    = $message->getAnswerByChoice($choice);
                     $choices[$choice->getId()] = null;
                     if ($answer) {
                         $choices[$choice->getId()] = $answer->getReceivedAt()->format('H:i');
+                        $isUnclear += intval($answer->isUnclear());
                     }
                 }
 
@@ -250,6 +252,7 @@ class Campaign
                 $data[$communication->getId()]['msg'][$message->getId()] = [
                     'sent'               => $message->isSent(),
                     'choices'            => $choices,
+                    'is-unclear'         => $isUnclear,
                     'has-invalid-answer' => [
                         'raw'  => $invalidAnswer ? $invalidAnswer->getSafeRaw() : null,
                         'time' => $invalidAnswer ? $invalidAnswer->getReceivedAt()->format('H:i') : null,

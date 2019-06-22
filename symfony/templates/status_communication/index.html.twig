@@ -228,7 +228,8 @@
                                                       style="font-size:16px;"
                                                       data-value="{{ answer ? 1 : 0 }}"
                                                       id="message-is-choice-{{ choice.id }}-{{ suffix|e('html_attr') }}">
-                                                    {{ choice.code }}{% if message.isUnclear %}<span style="color:red;">*</span>{% endif %}
+                                                    {{ choice.code }}<span style="color:red;"
+                                                                           class="message-is-unclear-{{ suffix|e('html_attr') }} {% if not message.isUnclear %}d-none{% endif %}">*</span>
                                                     <span style="font-size:10px;">
                                                         <br/>
                                                         <span id="message-is-choice-time-{{ choice.id }}-{{ suffix|e('html_attr') }}">
@@ -246,7 +247,7 @@
                                               style="font-size:16px;"
                                               data-value="{{ message.invalidAnswer ? 1 : 0 }}"
                                               id="message-has-invalid-answer-{{ suffix|e('html_attr') }}">
-                                            ?{% if message.isUnclear %}<span style="color:red;">*</span>{% endif %}
+                                            ?
                                             <span style="font-size:10px;">
                                                 <br/>
                                                 <span id="message-has-invalid-answer-time-{{ suffix|e('html_attr') }}">
@@ -569,6 +570,11 @@
                         $('#invalid-answer-raw-' + suffix).addClass('d-none');
                     }
                     $('#message-has-invalid-answer-' + suffix).data('value', messageStatus['has-invalid-answer']['raw'] ? 1 : 0);
+
+                    {# Message is unclear (we have a valid choice but also garbage) #}
+                    if (messageStatus['unclear']) {
+
+                    }
                 });
 
                 {# Refresh the SMS sending progress bar #}
