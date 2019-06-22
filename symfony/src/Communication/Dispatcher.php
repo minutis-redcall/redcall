@@ -77,12 +77,6 @@ class Dispatcher
      */
     public function processInboundAnswer(Message $message, string $answer)
     {
-        if (!$message->getCommunication()->isMultipleAnswer()) {
-            $this->messageRepository->addAnswer($message, $answer);
-        } else {
-            foreach (array_filter(explode(' ', $answer)) as $split) {
-                $this->messageRepository->addAnswer($message, $split);
-            }
-        }
+        $this->messageRepository->addAnswer($message, $answer);
     }
 }
