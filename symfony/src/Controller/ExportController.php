@@ -163,7 +163,6 @@ class ExportController extends BaseController
         }
 
         $context = [
-            'tempDir' => sys_get_temp_dir(),
             'current_date' => new \DateTime(),
             'campaign' => $campaign,
             'communication' => $communication,
@@ -171,6 +170,7 @@ class ExportController extends BaseController
         ];
 
         $mpdf = new \Mpdf\Mpdf([
+            'tempDir' => sys_get_temp_dir(),
             'margin_left' => 0,
             'margin_right' => 0,
             'margin_bottom' => 25,
