@@ -282,6 +282,14 @@
                                             {% endfor %}
                                     </span>
 
+                                    {# Warnings #}
+                                    {% if message.volunteer.phoneNumber %}
+                                        <div style="color:red;">{{ 'campaign_status.warning.no_phone'|trans }}</div>
+                                    {% endif %}
+                                    {% if not message.volunteer.email %}
+                                        <div style="color:red;">{{ 'campaign_status.warning.no_email'|trans }}</div>
+                                    {% endif %}
+
                                     <div id="invalid-answer-raw-{{ suffix }}" style="font-size:10px;">
                                         {% if message.invalidAnswer %}
                                             {% if message.invalidAnswer.raw|length > 45 %}

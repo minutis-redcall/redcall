@@ -114,6 +114,9 @@ campaign_status:
     sms_received: '"SMS reçu" indique si le message a bien été délivré au volontaire. Elle peut rester blanche si le volontaire a éteint son téléphone.'
   progress: 'Envoi: %sent% / %total% (%progress%%). Coût actuel de la communication: %cost%€.'
   finish: 'Envoi terminé. Coût: %cost%€.'
+  warning:
+    no_phone: 'Pas de numéro de téléphone'
+    no_email: "Pas d'email"
 
 new_communication:
   title: Ecrire un nouveau message
