@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -54,13 +56,22 @@ class Answer
     private $updatedAt;
 
     /**
-     * A Choice if answer is a valid choice from the communication
-     *
-     * @var Choice|null
-     *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Choice")
+     * @ORM\Column(type="boolean")
      */
-    private $choice;
+    private $unclear;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\Choice")
+     */
+    private $choices;
+
+    /**
+     * Answer constructor.
+     */
+    public function __construct()
+    {
+        $this->choices = new ArrayCollection();
+    }
 
     /**
      * @return int
@@ -176,21 +187,92 @@ class Answer
     }
 
     /**
-     * @return Choice|null
+     * @param Choice $choice
+     *
+     * @return bool
      */
-    public function getChoice(): ?Choice
+    public function hasChoice(Choice $choice): bool
     {
-        return $this->choice;
+        return $this->choices->contains($choice);
     }
 
     /**
-     * @param Choice|null $choice
+     * @param string $code
+     *
+     * @return bool
+     */
+    public function hasChoiceByCode(string $code) : bool
+    {
+        foreach ($this->choices as $choice) {
+            if ($code === $choice->getCode()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @return array
+     */
+    public function getChoiceLabels() : array
+    {
+        $labels = [];
+
+        foreach ($this->choices as $choice) {
+            /* @var Choice $choice */
+            $labels[] = $choice->getLabel();
+        }
+
+        return $labels;
+    }
+
+    /**
+     * @return bool|null
+     */
+    public function isUnclear(): ?bool
+    {
+        return $this->unclear;
+    }
+
+    /**
+     * @param bool $unclear
      *
      * @return Answer
      */
-    public function setChoice(?Choice $choice): Answer
+    public function setUnclear(bool $unclear): self
     {
-        $this->choice = $choice;
+        $this->unclear = $unclear;
+
+        return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isValid()
+    {
+        return $this->choices->count() > 0;
+    }
+
+    /**
+     * @return Collection|Choice[]
+     */
+    public function getChoices(): Collection
+    {
+        return $this->choices;
+    }
+
+    /**
+     * @param Choice $choice
+     *
+     * @return Answer
+     */
+    public function addChoice(Choice $choice): self
+    {
+        if (!$this->choices->contains($choice)) {
+            $this->choices[] = $choice;
+        }
 
         return $this;
     }
@@ -198,11 +280,15 @@ class Answer
     /**
      * @param Choice $choice
      *
-     * @return bool
+     * @return Answer
      */
-    public function isChoice(Choice $choice): bool
+    public function removeChoice(Choice $choice): self
     {
-        return $this->choice && $choice->getId() === $this->choice->getId();
+        if ($this->choices->contains($choice)) {
+            $this->choices->removeElement($choice);
+        }
+
+        return $this;
     }
 
     /**

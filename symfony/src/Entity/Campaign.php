@@ -238,6 +238,7 @@ class Campaign
 
                 $choices = [];
                 foreach ($communication->getChoices() as $choice) {
+                    $choices[$choice->getId()] = null;
                     $answer                    = $message->getAnswerByChoice($choice);
                     $choices[$choice->getId()] = null;
                     if ($answer) {
@@ -250,6 +251,7 @@ class Campaign
                 $data[$communication->getId()]['msg'][$message->getId()] = [
                     'sent'               => $message->isSent(),
                     'choices'            => $choices,
+                    'is-unclear'         => !$invalidAnswer && $message->isUnclear(),
                     'has-invalid-answer' => [
                         'raw'  => $invalidAnswer ? $invalidAnswer->getSafeRaw() : null,
                         'time' => $invalidAnswer ? $invalidAnswer->getReceivedAt()->format('H:i') : null,

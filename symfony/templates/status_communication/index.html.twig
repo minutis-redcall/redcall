@@ -131,9 +131,9 @@
                                 </th>
                             </tr>
                             <tr>
-                                {% for index, choice in communication.choicesAsString %}
+                                {% for choice in communication.choices %}
                                     <th width="{{ (100/answerCount) }}%">
-                                        {{ 'campaign_status.answer_no'|trans({'%choice%': (index+1)}) }}
+                                        {{ 'campaign_status.answer_no'|trans({'%choice%': choice.code}) }}
                                     </th>
                                 {% endfor %}
                             </tr>
@@ -222,13 +222,17 @@
 
                                         {# Answer codes when volunteer answered them #}
                                         {% if answerCount %}
+                                            <div id="message-is-unclear-{{ suffix }}" class="{{ message.isUnclear ? '' : 'd-none' }}" style="color:red;">
+                                                ⚠️ {{ 'campaign_status.answers.unclear'|trans }}
+                                            </div>
+
                                             {% for choice in communication.choices %}
                                                 {% set answer = message.getAnswerByChoice(choice) %}
                                                 <span class="{{ answer ? '' : 'd-none' }} badge badge-dark message-is-choice-{{ choice.id }}-{{ communication.id }}"
                                                       style="font-size:16px;"
                                                       data-value="{{ answer ? 1 : 0 }}"
                                                       id="message-is-choice-{{ choice.id }}-{{ suffix|e('html_attr') }}">
-                                                    {{ choice.code }}{% if message.isUnclear %}<span style="color:red;">*</span>{% endif %}
+                                                    {{ choice.code }}
                                                     <span style="font-size:10px;">
                                                         <br/>
                                                         <span id="message-is-choice-time-{{ choice.id }}-{{ suffix|e('html_attr') }}">
@@ -246,7 +250,7 @@
                                               style="font-size:16px;"
                                               data-value="{{ message.invalidAnswer ? 1 : 0 }}"
                                               id="message-has-invalid-answer-{{ suffix|e('html_attr') }}">
-                                            ?{% if message.isUnclear %}<span style="color:red;">*</span>{% endif %}
+                                            ?
                                             <span style="font-size:10px;">
                                                 <br/>
                                                 <span id="message-has-invalid-answer-time-{{ suffix|e('html_attr') }}">
@@ -283,7 +287,7 @@
                                     </span>
 
                                     {# Warnings #}
-                                    {% if message.volunteer.phoneNumber %}
+                                    {% if not message.volunteer.phoneNumber %}
                                         <div style="color:red;">{{ 'campaign_status.warning.no_phone'|trans }}</div>
                                     {% endif %}
                                     {% if not message.volunteer.email %}
@@ -559,6 +563,13 @@
                         $('#message-is-choice-' + choiceId + '-' + suffix).data('value', isChoice ? 1 : 0);
                     });
 
+                    {# Message has ambiguous answer #}
+                    if (messageStatus['is-unclear']) {
+                        $('#message-is-unclear-' + suffix).removeClass('d-none');
+                    } else {
+                        $('#message-is-unclear-' + suffix).addClass('d-none');
+                    }
+
                     {# Message has invalid answer #}
                     if (messageStatus['has-invalid-answer']['raw']) {
                         $('#message-has-invalid-answer-' + suffix).removeClass('d-none');
@@ -776,7 +787,9 @@
             var endpoint = that.data('endpoint');
             var choiceId = that.data('choice-id');
 
-            $('.answer-change').not(that).prop('checked', false);
+            if (!that.data('multi')) {
+                $('.answer-change').not(that).prop('checked', false);
+            }
 
             $.post(endpoint, {
                 choiceId: choiceId,
@@ -788,7 +801,6 @@
         {# -------------------------------------------------------------------------------- #}
         {# Create new communication #}
         {# -------------------------------------------------------------------------------- #}
-
         $('.new-message-button').click(function (e) {
             e.preventDefault();
             var communicationId = $(this).data('communication-id');
@@ -801,7 +813,6 @@
         {# -------------------------------------------------------------------------------- #}
         {# Download selection #}
         {# -------------------------------------------------------------------------------- #}
-
         $('.download-csv-button').click(function (e) {
             e.preventDefault();
             var communicationId = $(this).data('communication-id');
@@ -823,7 +834,6 @@
         {# -------------------------------------------------------------------------------- #}
         {# Filter responses using the table #}
         {# -------------------------------------------------------------------------------- #}
-
         $('.filter-response').click(function (e) {
             var that = $(this);
 

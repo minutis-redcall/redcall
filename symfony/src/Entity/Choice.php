@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -115,16 +117,6 @@ class Choice
         $this->communication = $communication;
 
         return $this;
-    }
-
-    /**
-     * @param array $answers
-     *
-     * @return bool
-     */
-    public function hasAnswered(array $answers): bool
-    {
-        return in_array(strtolower($this->label), array_map('strtolower', array_map('trim', explode('|', $answers))));
     }
 
     /**

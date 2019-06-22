@@ -57,7 +57,7 @@ class Message
     /**
      * @var Answer[]
      *
-     * @ORM\OneToMany(targetEntity="App\Entity\Answer", mappedBy="message", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity="App\Entity\Answer", mappedBy="message", cascade={"all"})
      * @ORM\OrderBy({"id" = "DESC"})
      */
     private $answers;
@@ -79,7 +79,7 @@ class Message
     private $webCode;
 
     /**
-     * @ORM\OneToOne(targetEntity="App\Entity\GeoLocation", mappedBy="message", cascade={"persist", "remove"})
+     * @ORM\OneToOne(targetEntity="App\Entity\GeoLocation", mappedBy="message", cascade={"all"})
      */
     private $geoLocation;
 
@@ -309,7 +309,7 @@ class Message
     public function alreadyAnsweredChoiceCode(string $code): bool
     {
         foreach ($this->getAnswers() ?? [] as $answer) {
-            if ($answer->getChoice() && $code == $answer->getChoice()->getCode()) {
+            if ($answer->hasChoiceByCode($code)) {
                 return true;
             }
         }
@@ -324,17 +324,8 @@ class Message
      */
     public function getAnswerByChoice(Choice $choice): ?Answer
     {
-        if (!$this->communication->isMultipleAnswer()) {
-            $answer = $this->getLastAnswer();
-            if ($answer && $answer->isChoice($choice)) {
-                return $answer;
-            }
-
-            return null;
-        }
-
         foreach ($this->answers ?? [] as $answer) {
-            if ($answer->isChoice($choice)) {
+            if ($answer->hasChoice($choice)) {
                 return $answer;
             }
         }
@@ -367,12 +358,7 @@ class Message
             return null;
         }
 
-        $lastAnswer = $this->getLastAnswer();
-        if ($lastAnswer && null === $lastAnswer->getChoice()) {
-            return $lastAnswer;
-        }
-
-        return null;
+        return $this->getLastAnswer();
     }
 
     /**
@@ -380,13 +366,8 @@ class Message
      */
     public function hasValidAnswer(): bool
     {
-        if (!$this->communication->isMultipleAnswer()) {
-            return $this->getLastAnswer() && $this->getLastAnswer()->getChoice();
-        }
-
-        foreach ($this->answers ?? [] as $answer) {
-            /* @var \App\Entity\Answer $answer */
-            if ($answer->getChoice()) {
+        foreach ($this->answers as $answer) {
+            if ($answer->isValid()) {
                 return true;
             }
         }
@@ -396,7 +377,8 @@ class Message
 
     /**
      * An answer is unclear if, for the current communication, volunteer
-     * answered at least 1 message that is invalid.
+     * answered at least 1 message that is invalid or does not exactly match
+     * the expected answers.
      *
      * @return bool
      */
@@ -404,12 +386,27 @@ class Message
     {
         foreach ($this->answers ?? [] as $answer) {
             /* @var \App\Entity\Answer $answer */
-            if (!$answer->getChoice()) {
+            if ($answer->isUnclear()) {
                 return true;
             }
         }
 
         return false;
+    }
 
+    /**
+     * @return Choice[]
+     */
+    public function getChoices() : array
+    {
+        $choices = [];
+
+        foreach ($this->answers as $answer) {
+            foreach ($answer->getChoices() as $choice) {
+                $choices[] = $choice;
+            }
+        }
+
+        return $choices;
     }
 }

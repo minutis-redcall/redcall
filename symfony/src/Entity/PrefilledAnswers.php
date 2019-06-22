@@ -12,8 +12,10 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class PrefilledAnswers
 {
-    // Because simple_array type use [im|ex]plode using "," as delimiter,
-    // we should "escape" commas on the PFAs
+    /**
+     * Because simple_array type use [im|ex]plode using "," as delimiter,
+     * we should "escape" commas on the PFAs
+     */
     const COMMA_REPLACEMENT = '#COM#';
 
     /**
@@ -47,16 +49,27 @@ class PrefilledAnswers
      */
     private $answers = [];
 
+    /**
+     * @return int|null
+     */
     public function getId(): ?int
     {
         return $this->id;
     }
 
+    /**
+     * @return string|null
+     */
     public function getLabel(): ?string
     {
         return $this->label;
     }
 
+    /**
+     * @param string $label
+     *
+     * @return PrefilledAnswers
+     */
     public function setLabel(string $label): self
     {
         $this->label = $label;
@@ -64,11 +77,19 @@ class PrefilledAnswers
         return $this;
     }
 
+    /**
+     * @return array|null
+     */
     public function getColors(): ?array
     {
         return $this->colors;
     }
 
+    /**
+     * @param array|null $colors
+     *
+     * @return PrefilledAnswers
+     */
     public function setColors(?array $colors): self
     {
         $this->colors = $colors;
@@ -76,11 +97,19 @@ class PrefilledAnswers
         return $this;
     }
 
+    /**
+     * @return array|null
+     */
     public function getAnswers(): ?array
     {
         return $this->answers;
     }
 
+    /**
+     * @param array $answers
+     *
+     * @return PrefilledAnswers
+     */
     public function setAnswers(array $answers): self
     {
         $this->answers = $answers;

@@ -22,7 +22,7 @@ final class Version20190602091834 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE volunteer ADD report JSON DEFAULT NULL COMMENT \'(DC2Type:json_array)\'');
+        $this->addSql('ALTER TABLE volunteer ADD report TEXT DEFAULT NULL COMMENT \'(DC2Type:json_array)\'');
     }
 
     public function down(Schema $schema) : void

@@ -55,16 +55,27 @@ class GeoLocation
      */
     private $message;
 
+    /**
+     * @return int|null
+     */
     public function getId(): ?int
     {
         return $this->id;
     }
 
+    /**
+     * @return string|null
+     */
     public function getLongitude(): ?string
     {
         return $this->longitude;
     }
 
+    /**
+     * @param string $longitude
+     *
+     * @return GeoLocation
+     */
     public function setLongitude(string $longitude): self
     {
         $this->longitude = $longitude;
@@ -72,11 +83,19 @@ class GeoLocation
         return $this;
     }
 
+    /**
+     * @return string|null
+     */
     public function getLatitude(): ?string
     {
         return $this->latitude;
     }
 
+    /**
+     * @param string $latitude
+     *
+     * @return GeoLocation
+     */
     public function setLatitude(string $latitude): self
     {
         $this->latitude = $latitude;
@@ -84,11 +103,19 @@ class GeoLocation
         return $this;
     }
 
+    /**
+     * @return int|null
+     */
     public function getAccuracy(): ?int
     {
         return $this->accuracy;
     }
 
+    /**
+     * @param int $accuracy
+     *
+     * @return GeoLocation
+     */
     public function setAccuracy(int $accuracy): self
     {
         $this->accuracy = $accuracy;
@@ -96,11 +123,19 @@ class GeoLocation
         return $this;
     }
 
+    /**
+     * @return \DateTime|null
+     */
     public function getDatetime(): ?\DateTime
     {
         return $this->datetime;
     }
 
+    /**
+     * @param \DateTime|null $datetime
+     *
+     * @return $this
+     */
     public function setDatetime(?\DateTime $datetime)
     {
         $this->datetime = $datetime;
@@ -108,11 +143,19 @@ class GeoLocation
         return $this;
     }
 
+    /**
+     * @return Message|null
+     */
     public function getMessage(): ?Message
     {
         return $this->message;
     }
 
+    /**
+     * @param Message|null $message
+     *
+     * @return GeoLocation
+     */
     public function setMessage(?Message $message): self
     {
         $this->message = $message;
@@ -120,11 +163,19 @@ class GeoLocation
         return $this;
     }
 
+    /**
+     * @return int|null
+     */
     public function getHeading(): ?int
     {
         return $this->heading;
     }
 
+    /**
+     * @param int|null $heading
+     *
+     * @return $this
+     */
     public function setHeading(?int $heading)
     {
         $this->heading = $heading;
@@ -132,6 +183,11 @@ class GeoLocation
         return $this;
     }
 
+    /**
+     * @param GeoLocation $geoLocation
+     *
+     * @return string
+     */
     public function getDistance(GeoLocation $geoLocation): string
     {
         $latFrom = deg2rad($this->getLatitude());
@@ -148,11 +204,19 @@ class GeoLocation
         return $this->getReadableDistance($angle * 6370981.162);
     }
 
+    /**
+     * @return string
+     */
     public function getReadableAccuracy(): string
     {
         return $this->getReadableDistance($this->accuracy);
     }
 
+    /**
+     * @param float $distance
+     *
+     * @return string
+     */
     private function getReadableDistance(float $distance): string
     {
         if ($distance >= 1000) {

@@ -9,6 +9,7 @@
                    data-endpoint="{{ path('communication_change_answer', {messageId: message.id, csrf: csrf_token('communication')}) }}"
                    data-message-id="{{ message.id }}"
                    data-choice-id="{{ choice.id }}"
+                   data-multi="{{ message.communication.isMultipleAnswer }}"
                    {% if message.answerByChoice(choice) %}checked{% endif %}
                    id="toggle-answer-{{ message.id }}-{{ choice.id }}"/>
             <span class="slider"></span>
@@ -23,11 +24,16 @@
     {% for answer in message.answers %}
         <tr>
             <td>
-                {{ answer.receivedAt|date('d/m/y H:i') }}:
-                {{ answer.raw }}
-                {% if answer.choice %}
-                    <br/>
-                    <em>{{ 'campaign_status.answers.label'|trans({'%label%': answer.choice.label}) }}</em>
+                <div {% if answer.unclear %}style="color:red"{% endif %}>
+                    {{ answer.receivedAt|date('d/m/y H:i') }}:
+                    {{ answer.raw }}
+                </div>
+                {% if answer.choices %}
+                    {% if answer.choices.count == 1 %}
+                        <em>{{ 'campaign_status.answers.label'|trans({'%label%': answer.choices[0].label }) }}</em>
+                    {% elseif answer.choices.count > 1 %}
+                        <em>{{ 'campaign_status.answers.label'|trans({'%label%': '"' ~ answer.choiceLabels|join('", "') ~ '"' }) }}</em>
+                    {% endif %}
                 {% endif %}
             </td>
         </tr>

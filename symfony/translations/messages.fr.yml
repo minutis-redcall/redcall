@@ -105,10 +105,10 @@ campaign_status:
   answer_no: 'Réponse %choice%'
   answers:
     change: 'Changer les réponses'
-    added_by: '- ajouté par %username%'
-    changed_by: '- supprimé par %username%'
     history: 'Historique'
     label: '(réponse "%label%")'
+    labels: '(réponses %label%)'
+    unclear: 'Réponse ambigüe'
   legend:
     sms_sent: '"SMS envoyé" indique si le message a bien été envoyé au volonaire. Si cette colonne reste vide, il y a probablement un problème technique.'
     sms_received: '"SMS reçu" indique si le message a bien été délivré au volontaire. Elle peut rester blanche si le volontaire a éteint son téléphone.'
