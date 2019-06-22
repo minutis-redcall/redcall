@@ -79,8 +79,10 @@ class MessageRepository extends ServiceEntityRepository
         if (!$multipleChoice) {
             // If no multiple answers are allowed, clearing up all previous answers
             foreach ($message->getAnswers() as $answer) {
-                $answer->setChoice(null);
-                $this->_em->persist($answer);
+                if ($answer->getChoice()) {
+                    $answer->setChoice(null);
+                    $this->_em->persist($answer);
+                }
             }
         }
 

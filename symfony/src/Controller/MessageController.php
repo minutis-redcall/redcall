@@ -67,7 +67,7 @@ class MessageController extends BaseController
         }
 
         // If the selected action has not already been made, store it
-        if (!$message->getAnswers()->contains($action)) {
+        if (!$message->getAnswers()->contains($choice)) {
             $this->messageRepository->addAnswer($message, $action, $choice);
         }
 
