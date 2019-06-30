@@ -22,15 +22,15 @@
         var answerSet = answerSets[$(this).val()];
 
         {# Clearing up the collection #}
-        $('.collection').find('.collection-remove').click();
+        $('#answer-collection').find('.remove-answer').click();
 
         {# Creating the fields #}
         for (var i = 0; i < answerSet.length; i++) {
-            $('.collection .add-answer').click();
+            $('#add-answer').click();
         }
 
         {# Filling the fields #}
-        $('.collection .answer-input').each(function (key) {
+        $('#answer-collection .answer-input').each(function (key) {
             $(this).val(answerSet[key]);
         });
     });

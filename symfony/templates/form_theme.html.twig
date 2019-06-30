@@ -33,7 +33,7 @@
 
 {% block answer_row %}
 
-    <div class="row" style="margin-bottom: 5px;">
+    <div class="row" style="margin-bottom: 5px;" id="answer-nb-__name__">
 
         <div class="col-10">
             {{ form_errors(form) }}
@@ -46,7 +46,7 @@
         </div>
 
         <div class="col-2 text-right">
-            <a href="#" class="collection-remove btn btn-danger">{{ 'form.communication.fields.remove'|trans }}</a>
+            <a href="#" data-index="__name__" class="remove-answer btn btn-danger">{{ 'form.communication.fields.remove'|trans }}</a>
         </div>
 
     </div>

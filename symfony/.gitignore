@@ -13,9 +13,6 @@
 /phpunit.xml
 ###< symfony/phpunit-bridge ###
 
-jquery.collection.js
-jquery.collection.html.twig
-
 /config/keys/*
 !/config/keys/.gitkeep
 

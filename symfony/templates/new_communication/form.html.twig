@@ -34,7 +34,11 @@
 
 {{ render(controller('\\App\\Controller\\PrefilledAnswersController::renderWidget', {campaignId: campaign.id|default(null)})) }}
 
-{{ form_row(form.answers, {label: false}) }}
+<div id="answer-collection">
+    {{ form_row(form.answers, {label: false}) }}
+    <div id="answer-separator"></div>
+    <a id="add-answer" href="#" class="btn btn-light" style="width:100%;">{{ 'form.communication.fields.add_answer'|trans }}</a>
+</div>
 
 {{ form_row(form.multipleAnswer) }}
 
@@ -61,18 +65,6 @@
 <script type="text/javascript" src="{{ asset('js/jquery.collection.js') }}"></script>
 <script type="text/javascript">
 
-    {# Answer's collection #}
-    $('.collection').collection({
-        allow_up: false,
-        allow_down: false,
-        add_at_the_end: true,
-        init_with_n_elements: 2,
-        fade_in: false,
-        fade_out: false,
-        max: 10,
-        add: '<a href="#" class="btn btn-light add-answer" style="width:100%;">{{ 'form.communication.fields.add_answer'|trans|e('js') }}</a>',
-    });
-
     {# Update message size automatically #}
     function updateMessageSize() {
         var textArea = $('#{{ form.message.vars.id }}');
@@ -95,7 +87,7 @@
 
     {# Refresh preview if form is changed #}
     var previewTimeout = null;
-    $('body').on('change keyup', 'input, textarea, select', function () {
+    function refreshPreview() {
         clearTimeout(previewTimeout);
         previewTimeout = setTimeout(function () {
             $.post('{{ path('communication_preview') }}', $('form').serialize(), function (data) {
@@ -110,6 +102,9 @@
                 }
             });
         }, 1000);
+    }
+    $('body').on('change keyup', 'input, textarea, select', function () {
+        refreshPreview();
     });
 
     {# When switching from email or sms, apply few changes #}
@@ -135,5 +130,34 @@
         updateMaxMessageSize();
     });
     updateMaxMessageSize();
+
+    {# Collection of answers #}
+    $('#add-answer').click(function(e) {
+        e.preventDefault();
+        var collection = $('#{{ form.answers.vars.id }}');
+        var prototype = collection.data('prototype');
+
+        var index = 0;
+        if (collection.data('index') !== undefined) {
+            index = collection.data('index');
+        }
+
+        $('#answer-separator').before(prototype.replace(/__name__/g, index));
+        collection.data('index', index + 1);
+
+        refreshPreview();
+    });
+
+    {# Initialize collection with 2 answers #}
+    $('#add-answer').click();
+    $('#add-answer').click();
+
+    {# Answer removal #}
+    $('body').on('click', '.remove-answer', function(e) {
+        e.preventDefault();
+        var index = $(this).data('index');
+        $('#answer-nb-' + index).remove();
+        refreshPreview();
+    });
 
 </script>

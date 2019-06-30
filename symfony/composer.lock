@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "24ca27450af4a6b4b2c2fbac5c87fe08",
+    "content-hash": "b083d5a31611173cb272a99c66263658",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -2747,39 +2747,6 @@
             ],
             "description": "PHP Client for using Nexmo's API.",
             "time": "2019-05-13T20:27:43+00:00"
-        },
-        {
-            "name": "ninsuo/symfony-collection",
-            "version": "2.1.30",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/ninsuo/symfony-collection.git",
-                "reference": "88db2caea7bba13cd7a7beb938fa706a340b38e9"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/ninsuo/symfony-collection/zipball/88db2caea7bba13cd7a7beb938fa706a340b38e9",
-                "reference": "88db2caea7bba13cd7a7beb938fa706a340b38e9",
-                "shasum": ""
-            },
-            "type": "library",
-            "autoload": {
-                "classmap": [
-                    "ScriptHandler.php"
-                ]
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Alain Tiemblo",
-                    "email": "ninsuo@gmail.com"
-                }
-            ],
-            "description": "A jQuery plugin that manages adding, deleting and moving elements from a Symfony collection",
-            "time": "2018-07-01T15:06:12+00:00"
         },
         {
             "name": "ocramius/package-versions",
@@ -8479,12 +8446,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/redcall-io/sandbox-bundle.git",
-                "reference": "5a791cd4364b285af9edf51caf08525768917a2f"
+                "reference": "10454bac75bd6bc0460c8515cdb7df7ecbc2f855"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/redcall-io/sandbox-bundle/zipball/5a791cd4364b285af9edf51caf08525768917a2f",
-                "reference": "5a791cd4364b285af9edf51caf08525768917a2f",
+                "url": "https://api.github.com/repos/redcall-io/sandbox-bundle/zipball/10454bac75bd6bc0460c8515cdb7df7ecbc2f855",
+                "reference": "10454bac75bd6bc0460c8515cdb7df7ecbc2f855",
                 "shasum": ""
             },
             "require": {
@@ -8519,7 +8486,7 @@
                 }
             ],
             "description": "Development tools for the redcall.io project",
-            "time": "2019-06-22T07:23:43+00:00"
+            "time": "2019-06-30T22:33:12+00:00"
         },
         {
             "name": "symfony/debug-bundle",
