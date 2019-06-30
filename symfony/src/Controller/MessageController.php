@@ -96,7 +96,7 @@ class MessageController extends BaseController
         }
 
         // If the selected action has been made, cancel it
-        if ($message->alreadyAnsweredChoiceCode($action)) {
+        if ($message->getAnswerByChoice($choice)) {
             $this->messageRepository->cancelAnswerByChoice($message, $choice);
         }
 

@@ -197,22 +197,6 @@ class Answer
     }
 
     /**
-     * @param string $code
-     *
-     * @return bool
-     */
-    public function hasChoiceByCode(string $code) : bool
-    {
-        foreach ($this->choices as $choice) {
-            if ($code === $choice->getCode()) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
      * @return array
      */
     public function getChoiceLabels() : array

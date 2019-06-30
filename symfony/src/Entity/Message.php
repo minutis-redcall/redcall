@@ -302,22 +302,6 @@ class Message
     }
 
     /**
-     * @param string $code
-     *
-     * @return bool
-     */
-    public function alreadyAnsweredChoiceCode(string $code): bool
-    {
-        foreach ($this->getAnswers() ?? [] as $answer) {
-            if ($answer->hasChoiceByCode($code)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
      * @param Choice $choice
      *
      * @return Answer
