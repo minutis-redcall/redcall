@@ -1,5 +1,5 @@
 
-## Creating a new Google App Engine instance
+## Set up a custon domain name
 
 **Objective**: Use your own domain name instead of the default appspot.com's one.
 
