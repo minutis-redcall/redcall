@@ -68,7 +68,7 @@ class MessageController extends BaseController
 
         // If the selected action has not already been made, store it
         if (!$message->getAnswers()->contains($choice)) {
-            $this->messageRepository->addAnswer($message, $action, $choice);
+            $this->messageRepository->addAnswer($message, $action);
         }
 
         return $this->redirectToRoute('message_open', [
@@ -96,7 +96,7 @@ class MessageController extends BaseController
         }
 
         // If the selected action has been made, cancel it
-        if ($message->alreadyAnsweredChoiceCode($action)) {
+        if ($message->getAnswerByChoice($choice)) {
             $this->messageRepository->cancelAnswerByChoice($message, $choice);
         }
 

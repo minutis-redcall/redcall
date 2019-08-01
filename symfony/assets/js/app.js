@@ -9,7 +9,6 @@ require('../css/main.css');
 require('popper.js');
 require('../js/bootstrap.min.js');
 require('../js/jquery.flexdatalist.min.js')
-require('../js/jquery.collection.js');
 require('../js/compass.js');
 require('../js/leaflet.js');
 require('../js/main.js');

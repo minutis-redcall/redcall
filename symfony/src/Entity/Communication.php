@@ -298,46 +298,18 @@ class Communication
     }
 
     /**
-     * @param int $code
+     * @param string $code
      *
      * @return Choice
      * @throws \Exception
      */
-    public function getChoiceByCode(int $code): ?Choice
+    public function getChoiceByCode(string $code): ?Choice
     {
         /**
          * @var Choice $choice
          */
         foreach ($this->getChoices() as $choice) {
             if ($choice->getCode() == $code) {
-                return $choice;
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * @param mixed $raw
-     *
-     * @return Choice|null
-     * @throws \Exception
-     */
-    public function getChoiceByLabelOrCode($raw): ?Choice
-    {
-        $raw = mb_strtolower(trim($raw));
-
-        /**
-         * @var Choice $choice
-         */
-        foreach ($this->getChoices() as $choice) {
-            // By label
-            if ($raw == mb_strtolower($choice->getLabel())) {
-                return $choice;
-            }
-
-            // By code
-            if ($raw == $choice->getCode()) {
                 return $choice;
             }
         }
@@ -357,23 +329,10 @@ class Communication
         $choices = [];
 
         foreach (array_filter(explode(' ', $raw)) as $split) {
-            $choices[] = $this->getChoiceByLabelOrCode($split);
+            $choices[] = $this->getChoiceByCode($split);
         }
 
         return array_filter($choices);
-    }
-
-    /**
-     * @return array
-     */
-    public function getChoicesAsString()
-    {
-        $answers = [];
-        foreach ($this->choices as $key => $choice) {
-            $answers[] = $choice->getLabel();
-        }
-
-        return $answers;
     }
 
     /**
@@ -428,5 +387,47 @@ class Communication
         }
 
         return $cost;
+    }
+
+    /**
+     * Returns true if message body doesn't exactly match expected choices.
+     *
+     * @param string $message
+     *
+     * @return bool
+     *
+     * @throws \Exception
+     */
+    public function isUnclear(string $message) : bool
+    {
+        $words = explode(' ', $message);
+        $choices = [];
+        foreach ($words as $index => $word) {
+            $choice = $this->getChoiceByCode($word);
+
+            // Answer contain something else than expected choice codes
+            if (!$choice) {
+                return true;
+            }
+
+            // Answer repeated
+            if (in_array($choice, $choices)) {
+                return true;
+            }
+
+            $choices[] = $choice;
+        }
+
+        // Answer does not match any choice
+        if (count($choices) == 0) {
+            return false;
+        }
+
+        // Communication requires 1 answer, but several were given
+        if (!$this->multipleAnswer && count($choices) > 1) {
+            return false;
+        }
+
+        return false;
     }
 }

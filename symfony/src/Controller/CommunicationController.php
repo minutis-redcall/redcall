@@ -335,11 +335,7 @@ class CommunicationController extends BaseController
             throw $this->createNotFoundException();
         }
 
-        if ($message->getCommunication()->isMultipleAnswer()) {
-            $this->messageRepository->toggleAnswer($message, $choiceEntity);
-        } else {
-            $this->messageRepository->changeAnswer($message, $choiceEntity);
-        }
+        $this->messageRepository->toggleAnswer($message, $choiceEntity);
 
         return new Response();
     }

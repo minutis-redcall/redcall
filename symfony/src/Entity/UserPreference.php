@@ -22,11 +22,19 @@ class UserPreference
      */
     private $locale;
 
+    /**
+     * @return User|null
+     */
     public function getUser(): ?User
     {
         return $this->user;
     }
 
+    /**
+     * @param User|null $user
+     *
+     * @return UserPreference
+     */
     public function setUser(?User $user): self
     {
         $this->user = $user;
@@ -34,11 +42,19 @@ class UserPreference
         return $this;
     }
 
+    /**
+     * @return string|null
+     */
     public function getLocale(): ?string
     {
         return $this->locale;
     }
 
+    /**
+     * @param string|null $locale
+     *
+     * @return UserPreference
+     */
     public function setLocale(?string $locale): self
     {
         $this->locale = $locale;

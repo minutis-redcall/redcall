@@ -106,10 +106,10 @@ campaign_status:
   answer_no: 'Answer %choice%'
   answers:
     change: 'Change answers'
-    added_by: '- added by %username%'
-    changed_by: '- deleted by %username%'
     history: 'History'
     label: '(response "%label%")'
+    labels: '(responses %label%)'
+    unclear: 'Unclear answer'
   legend:
     sms_sent: '"SMS sent" indicates whether message has been sent to the volunteer. May be blank if there is a technical issue.'
     sms_received: '"SMS received" indicates wether message has been received by the volunteer. If blank, volunteer may have turned off his phone number.'

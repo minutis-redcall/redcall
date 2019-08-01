@@ -58,7 +58,7 @@ class WebhookController extends Controller
         if (!$inbound->isValid()) {
             $this->logger->error('invalid message');
 
-            return new Response('');
+            return new Response();
         }
 
         $message = $this->get('doctrine')->getRepository('App:Message')->getLastMessageSentToPhone($inbound->getFrom());

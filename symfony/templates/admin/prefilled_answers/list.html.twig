@@ -34,7 +34,7 @@
 
                 <a href="{{ path('admin_prefilled_answers_delete', {pfaId: prefilledAnswer.id, csrf: csrf_token('prefilled_answers')}) }}"
                    class="btn btn-secondary"
-                   onclick="return confirm('{{ 'base.crud.confirm_delete'|trans({'%entity%': prefilledAnswer.label})|e('js') }}');">
+                   onclick="return confirm('{{ 'base.crud.delete_confirm'|trans({'%entity%': prefilledAnswer.label})|e('js') }}');">
                     {{ 'base.button.delete'|trans }}
                 </a>
 

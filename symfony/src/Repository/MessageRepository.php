@@ -7,6 +7,7 @@ use App\Entity\Call;
 use App\Entity\Campaign;
 use App\Entity\Choice;
 use App\Entity\Message;
+use App\Entity\Selection;
 use App\Services\Random;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
@@ -50,64 +51,62 @@ class MessageRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param Message     $message
-     * @param string      $body
-     * @param Choice|null $forcedChoice
+     * @param Message $message
+     * @param string  $body
+     * @param bool    $byAdmin
      *
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function addAnswer(Message $message, string $body, ?Choice $forcedChoice = null): void
+    public function addAnswer(Message $message, string $body, bool $byAdmin = false): void
     {
         // Get all valid choices in message
         if ($multipleChoice = $message->getCommunication()->isMultipleAnswer()) {
             $choices = $message->getCommunication()->getAllChoicesInText($body);
         } else {
-            $choices = [$message->getCommunication()->getChoiceByLabelOrCode($body)];
-        }
-
-        // Answer ticked manually
-        if ($forcedChoice) {
-            $choices = [$forcedChoice];
-        }
-
-        // Invalid answer
-        if (!$choices) {
-            $choices[] = null;
+            $choices = [];
+            if ($choice = $message->getCommunication()->getChoiceByCode($body)) {
+                $choices[] = $choice;
+            }
         }
 
         if (!$multipleChoice) {
             // If no multiple answers are allowed, clearing up all previous answers
             foreach ($message->getAnswers() as $answer) {
-                if ($answer->getChoice()) {
-                    $answer->setChoice(null);
+                /* @var Answer $answer */
+                $answer->getChoices()->clear();
+                $this->_em->persist($answer);
+            }
+        } else {
+            // If mulitple answers allowed, we'll only keep the last duplicate
+            foreach ($choices as $choice) {
+                if ($answer = $message->getAnswerByChoice($choice)) {
+                    $answer->getChoices()->removeElement($choice);
                     $this->_em->persist($answer);
                 }
             }
         }
+
+        // Storing the new answer
+        $answer = new Answer();
+        $message->addAnswser($answer);
+        $answer->setMessage($message);
+
+        if ($byAdmin) {
+            $answer->setRaw(sprintf('%s: %s', $this->tokenStorage->getToken()->getUsername(), $body));
+        } else {
+            $answer->setRaw($body);
+        }
+
+        $answer->setReceivedAt(new \DateTime());
+        $answer->setUnclear($message->getCommunication()->isUnclear($body));
 
         foreach ($choices as $choice) {
-            if ($multipleChoice) {
-                // If multiple answers allowed, we'll only keep the last duplicate
-                if ($choice && $answer = $message->getAnswerByChoice($choice)) {
-                    $answer->setChoice(null);
-                    $this->_em->persist($answer);
-                }
-            }
-
-            $answer = new Answer();
-
-            $answer->setMessage($message);
-            $message->addAnswser($answer);
-
-            $answer->setRaw($body);
-            $answer->setReceivedAt(new \DateTime());
-
-            $answer->setChoice($choice);
-
-            $this->_em->persist($answer);
-            $this->_em->flush();
+            $answer->addChoice($choice);
         }
+
+        $this->_em->persist($answer);
+        $this->_em->flush();
     }
 
     /**
@@ -121,10 +120,7 @@ class MessageRepository extends ServiceEntityRepository
     {
         foreach ($message->getAnswers() as $answer) {
             /* @var Answer $answer */
-            if ($answer->isChoice($choice)) {
-                $answer->setChoice(null);
-                $answer->setUpdatedAt(new \DateTime());
-
+            if ($answer->getChoices()->removeElement($choice)) {
                 $this->_em->persist($answer);
             }
         }
@@ -133,80 +129,22 @@ class MessageRepository extends ServiceEntityRepository
     }
 
     /**
-     * Method used when only 1 answer is allowed.
-     *
      * @param Message $message
      * @param Choice  $choice
-     */
-    public function changeAnswer(Message $message, Choice $choice)
-    {
-        $lastAnswer = $message->getLastAnswer();
-
-        // Last answer already removed previously
-        if ($lastAnswer && $lastAnswer->getChoice() === null) {
-            $lastAnswer = null;
-        }
-
-        // Deletes the last answer
-        $lastId = $lastAnswer ? $lastAnswer->getChoice()->getId() : null;
-        if ($lastId) {
-            $lastAnswer->setChoice(null);
-
-            $body = $this->translator->trans('campaign_status.answers.changed_by', [
-                '%username%' => $this->tokenStorage->getToken()->getUsername(),
-            ]);
-
-            $lastAnswer->setRaw($lastAnswer->getRaw().' '.$body);
-            $lastAnswer->setUpdatedAt((new \DateTime())->sub(new \DateInterval('PT1S')));
-        }
-
-        // If choice is different from last answer, add it (otherwise we would
-        // add the answer we just removed)
-        if (!$lastId || $lastId && $choice->getId() !== $lastId) {
-
-            if ($lastId) {
-                sleep(1); // makes this answer more recent
-            }
-
-            $body = $choice->getCode().' '.$this->translator->trans('campaign_status.answers.added_by', [
-                    '%username%' => $this->tokenStorage->getToken()->getUsername(),
-                ]);
-
-            $this->addAnswer($message, $body, $choice);
-        }
-
-        $this->_em->flush();
-    }
-
-    /**
-     * Method used when multiple answers are allowed
      *
-     * @param Message $message
-     * @param Choice  $choice
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function toggleAnswer(Message $message, Choice $choice)
     {
-        $hasAnswer = false;
-
-        foreach ($message->getAnswers() as $answer) {
-            if ($answer->getChoice() && $answer->getChoice()->getId() == $choice->getId()) {
-                $hasAnswer = true;
-                $answer->setChoice(null);
-                $body = $this->translator->trans('campaign_status.answers.changed_by', [
-                    '%username%' => $this->tokenStorage->getToken()->getUsername(),
-                ]);
-                $answer->setRaw($answer->getRaw().' '.$body);
-            }
+        // If choice currently selected, remove it
+        if ($answer = $message->getAnswerByChoice($choice)) {
+            $answer->getChoices()->removeElement($choice);
+            $this->_em->flush();
+            return;
         }
 
-        if (!$hasAnswer) {
-            $body = $choice->getCode().' '.$this->translator->trans('campaign_status.answers.added_by', [
-                    '%username%' => $this->tokenStorage->getToken()->getUsername(),
-                ]);
-            $this->addAnswer($message, $body, $choice);
-        }
-
-        $this->_em->flush();
+        $this->addAnswer($message, $choice->getCode(), true);
     }
 
     /**
@@ -272,7 +210,6 @@ class MessageRepository extends ServiceEntityRepository
     private function generateCode(string $column): string
     {
         do {
-
             $code = Random::generate(self::CODE_SIZE);
 
             if (null === $this->findOneBy([$column => $code])) {
