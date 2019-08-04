@@ -4,8 +4,10 @@
 !/var/.gitkeep
 .web-server-pid
 /deploy/prod/dotenv
+/deploy/prod/dotenv-migrate
 /deploy/prod/google-service-account.json
 /deploy/preprod/dotenv
+/deploy/preprod/dotenv-migrate
 /deploy/preprod/google-service-account.json
 /deploying
 /symfony/app.yaml

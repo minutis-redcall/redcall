@@ -47,4 +47,11 @@ cd deploy
 sh ./deploy.sh <env>
 ```
 
+To sync the database, use the migration script:
+
+```
+cd deploy
+sh ./migrate.sh <env>
+```
+
 To set-up your first account, [check that doc](docs/tech/12-enable-first-admin.md).

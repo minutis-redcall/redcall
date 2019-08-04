@@ -1,0 +1,2 @@
+# Should contain the database URL from your local computer (host will most probably contain your db ip address)
+DATABASE_URL=mysql://<user>:<password>@<host>:3306/<database>
