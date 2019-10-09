@@ -194,6 +194,7 @@ manage_volunteers:
     refresh_general: 'Full Pegass update'
     refresh_skills: 'Skills Pegass update'
     refresh_success: 'Volunteer update has been processed successfully.'
+    manual_update: 'Manual update'
   columns:
     nivol: Nivol
     firstname: First name
@@ -210,6 +211,7 @@ manage_volunteers:
   import_again_help: "⚠️ FYI, skills update will take more time."
   form:
     create: Create a new volunteer
+    update: Update volunteer
     organization: Organization
     nivol: Nivol
     first_name: First name
@@ -219,7 +221,8 @@ manage_volunteers:
     minor: Minor (under 18)
     enabled: Callable
     tags: Skills
-    saved: Volunteer has properly been saved.
+    added: Volunteer has properly been added.
+    updated: Volunteer has properly been updated.
 
 csv_export:
   nivol: Nivol

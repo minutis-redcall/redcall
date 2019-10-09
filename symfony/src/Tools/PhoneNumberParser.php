@@ -9,7 +9,7 @@ class PhoneNumberParser
      *
      * @return null|string
      */
-    static public function parse(string $phone) : ?string
+    static public function parse(?string $phone) : ?string
     {
         $phone = ltrim(preg_replace('/[^0-9]/', '', $phone), 0);
         if (strlen($phone) == 9) {

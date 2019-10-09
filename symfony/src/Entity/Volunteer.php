@@ -65,8 +65,6 @@ class Volunteer
      * @var string
      *
      * @ORM\Column(type="string", length=20, nullable=true)
-     * @Assert\NotNull
-     * @Assert\NotBlank
      * @Assert\Length(max=20)
      */
     private $phoneNumber;

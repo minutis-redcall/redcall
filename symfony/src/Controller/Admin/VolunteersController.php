@@ -177,11 +177,12 @@ class VolunteersController extends BaseController
     }
 
     /**
-     * @Route(path="/create", name="create")
+     * @Route(path="manual-update/{id}", name="manual_update")
      */
-    public function createAction(Request $request)
+    public function manualUpdateAction(Request $request, Volunteer $entity)
     {
-        $entity = new Volunteer();
+        $isCreate = !$entity->getId();
+
         $form = $this
             ->createForm(VolunteerType::class, $entity)
             ->handleRequest($request);
@@ -192,14 +193,27 @@ class VolunteersController extends BaseController
 
             $this->getManager(Volunteer::class)->save($entity);
 
-            $this->success('manage_volunteers.form.saved');
+            if ($isCreate) {
+                $this->success('manage_volunteers.form.added');
+            } else {
+                $this->success('manage_volunteers.form.updated');
+            }
 
             return $this->redirectToRoute('admin_volunteers_list');
         }
 
-        return $this->render('admin/volunteers/add.html.twig', [
+        return $this->render('admin/volunteers/form.html.twig', [
             'form' => $form->createView(),
+            'isCreate' => $isCreate,
         ]);
+    }
+
+    /**
+     * @Route(path="/create", name="create")
+     */
+    public function createAction(Request $request)
+    {
+        return $this->manualUpdateAction($request, new Volunteer());
     }
 
     /**

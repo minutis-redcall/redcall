@@ -193,6 +193,7 @@ manage_volunteers:
     refresh_general: 'MàJ totale Pegass'
     refresh_skills: 'MàJ compétences Pegass'
     refresh_success: 'La mise à jour du volontaire effectuée avec succès.'
+    manual_update: 'MàJ manuelle'
   columns:
     nivol: Nivol
     firstname: Prénom
@@ -208,6 +209,7 @@ manage_volunteers:
   import_again_help: "⚠️ Pour info, la mise à jour des compétences prendra plus de temps."
   form:
     create: Ajouter un nouveau volontaire
+    update: Mettre à jour un volontaire
     organization: UL ou DT de rattachement
     nivol: Nivol
     first_name: Prénom
@@ -217,7 +219,8 @@ manage_volunteers:
     minor: Mineur(e) (-18 ans)
     enabled: Déclenchable
     tags: Compétences
-    saved: Le volontaire a correctement été ajouté.
+    added: Le volontaire a correctement été ajouté.
+    updated: Le volontaire a correctement été modifié.
 
 csv_export:
   nivol: Nivol

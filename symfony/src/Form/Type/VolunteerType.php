@@ -81,6 +81,7 @@ class VolunteerType extends AbstractType
 
         $builder->get('phoneNumber')->addModelTransformer(new CallbackTransformer(
             function ($fromBase) {
+                return $fromBase;
             },
             function ($fromForm) {
                 return PhoneNumberParser::parse($fromForm);
