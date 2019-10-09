@@ -18,6 +18,14 @@
         </a>
     </div>
 
+    <div class="text-right skip-line">
+
+        <a href="{{ path('admin_volunteers_create') }}" class="btn btn-secondary">
+            {{ 'manage_volunteers.form.create'|trans }}
+        </a>
+
+    </div>
+
     <nav>
         <div class="nav nav-tabs" id="nav-tab" role="tablist">
             <a class="nav-item nav-link active" id="nav-enabled-tab" data-toggle="tab"
@@ -81,11 +89,23 @@
                                 {% endif %}
                             </td>
                             <td>
-                                {# Refresh volunteer #}
-                                <a href="{{ path('admin_volunteers_skills', app.request.query.all|merge({volunteerId: volunteer.id, csrf: csrf_token('manage_volunteers')})) }}"
-                                   class="btn btn-primary">
-                                    {{ 'manage_volunteers.action.refresh'|trans }}
+                                {# Refresh volunteer general data #}
+                                <a href="{{ path('admin_volunteers_refresh_general', app.request.query.all|merge({volunteerId: volunteer.id, csrf: csrf_token('manage_volunteers')})) }}" onclick="$(this).addClass('disabled');">
+                                    {{ 'manage_volunteers.action.refresh_general'|trans }}
                                 </a>
+                                <br/>
+
+                                {# Refresh volunteer skills #}
+                                <a href="{{ path('admin_volunteers_refresh_skills', app.request.query.all|merge({volunteerId: volunteer.id, csrf: csrf_token('manage_volunteers')})) }}" onclick="$(this).addClass('disabled');">
+                                    {{ 'manage_volunteers.action.refresh_skills'|trans }}
+                                </a>
+                                <br/>
+
+                                {# Manual volunteer update #}
+                                <a href="{{ path('admin_volunteers_manual_update', {id: volunteer.id}) }}">
+                                    {{ 'manage_volunteers.action.manual_update'|trans }}
+                                </a>
+
                                 <br/><br/>
 
                                 {# Lock volunteer #}

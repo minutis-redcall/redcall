@@ -5,8 +5,10 @@ namespace App\Controller\Admin;
 use App\Base\BaseController;
 use App\Entity\Volunteer;
 use App\Entity\VolunteerImport;
+use App\Form\Type\VolunteerType;
 use App\Services\VolunteerImporter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -145,9 +147,25 @@ class VolunteersController extends BaseController
     }
 
     /**
-     * @Route(path="skills/{volunteerId}/{csrf}", name="skills")
+     * @Route(path="refresh-general/{volunteerId}/{csrf}", name="refresh_general")
      */
-    public function skillsAction(Request $request, int $volunteerId, string $csrf)
+    public function refreshGeneralAction(Request $request, int $volunteerId, string $csrf)
+    {
+        $this->validateCsrfOrThrowNotFoundException('manage_volunteers', $csrf);
+
+        $volunteer = $this->getVolunteerOrThrowNotFound($volunteerId);
+
+        $this->importer->refreshVolunteerGeneral($volunteer);
+
+        $this->success('manage_volunteers.action.refresh_success');
+
+        return $this->redirectToRoute('admin_volunteers_list', $request->query->all());
+    }
+
+    /**
+     * @Route(path="refresh-skills/{volunteerId}/{csrf}", name="refresh_skills")
+     */
+    public function refreshSkillsAction(Request $request, int $volunteerId, string $csrf)
     {
         $this->validateCsrfOrThrowNotFoundException('manage_volunteers', $csrf);
 
@@ -156,6 +174,46 @@ class VolunteersController extends BaseController
         $this->importer->refreshVolunteerSkills($volunteer);
 
         return $this->redirectToRoute('admin_volunteers_list', $request->query->all());
+    }
+
+    /**
+     * @Route(path="manual-update/{id}", name="manual_update")
+     */
+    public function manualUpdateAction(Request $request, Volunteer $entity)
+    {
+        $isCreate = !$entity->getId();
+
+        $form = $this
+            ->createForm(VolunteerType::class, $entity)
+            ->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Locks volunteer from being removed at next Pegass sync
+            $entity->setLocked(true);
+
+            $this->getManager(Volunteer::class)->save($entity);
+
+            if ($isCreate) {
+                $this->success('manage_volunteers.form.added');
+            } else {
+                $this->success('manage_volunteers.form.updated');
+            }
+
+            return $this->redirectToRoute('admin_volunteers_list');
+        }
+
+        return $this->render('admin/volunteers/form.html.twig', [
+            'form' => $form->createView(),
+            'isCreate' => $isCreate,
+        ]);
+    }
+
+    /**
+     * @Route(path="/create", name="create")
+     */
+    public function createAction(Request $request)
+    {
+        return $this->manualUpdateAction($request, new Volunteer());
     }
 
     /**

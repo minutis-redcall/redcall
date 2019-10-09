@@ -2,9 +2,13 @@
 
 namespace App\Entity;
 
+use App\Tools\PhoneNumberParser;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
  * @ORM\Table(indexes={
@@ -12,6 +16,9 @@ use Doctrine\ORM\Mapping as ORM;
  *     @ORM\Index(name="lastpegassupdatex", columns={"last_pegass_update"})
  * })
  * @ORM\Entity(repositoryClass="App\Repository\VolunteerRepository")
+ * @UniqueEntity("nivol")
+ * @UniqueEntity("phoneNumber")
+ * @UniqueEntity("email")
  */
 class Volunteer
 {
@@ -28,6 +35,9 @@ class Volunteer
      * @var string
      *
      * @ORM\Column(type="string", length=80, unique=true)
+     * @Assert\NotNull
+     * @Assert\NotBlank
+     * @Assert\Length(max=80)
      */
     private $nivol;
 
@@ -35,6 +45,9 @@ class Volunteer
      * @var string
      *
      * @ORM\Column(type="string", length=80)
+     * @Assert\NotNull
+     * @Assert\NotBlank
+     * @Assert\Length(max=80)
      */
     private $firstName;
 
@@ -42,6 +55,9 @@ class Volunteer
      * @var string
      *
      * @ORM\Column(type="string", length=80)
+     * @Assert\NotNull
+     * @Assert\NotBlank
+     * @Assert\Length(max=80)
      */
     private $lastName;
 
@@ -49,6 +65,7 @@ class Volunteer
      * @var string
      *
      * @ORM\Column(type="string", length=20, nullable=true)
+     * @Assert\Length(max=20)
      */
     private $phoneNumber;
 
@@ -56,6 +73,10 @@ class Volunteer
      * @var string
      *
      * @ORM\Column(type="string", length=80, nullable=true)
+     * @Assert\NotNull
+     * @Assert\NotBlank
+     * @Assert\Length(max=80)
+     * @Assert\Email
      */
     private $email;
 
@@ -99,6 +120,7 @@ class Volunteer
      *
      * @ORM\ManyToOne(targetEntity="App\Entity\Organization", inversedBy="volunteers")
      * @ORM\JoinColumn(nullable=false)
+     * @Assert\NotBlank()
      */
     private $organization;
 
@@ -144,7 +166,7 @@ class Volunteer
     /**
      * @return string
      */
-    public function getNivol(): string
+    public function getNivol(): ?string
     {
         return $this->nivol;
     }
@@ -164,7 +186,7 @@ class Volunteer
     /**
      * @return string
      */
-    public function getFirstName(): string
+    public function getFirstName(): ?string
     {
         return $this->firstName;
     }
@@ -184,7 +206,7 @@ class Volunteer
     /**
      * @return string
      */
-    public function getLastName(): string
+    public function getLastName(): ?string
     {
         return $this->lastName;
     }
@@ -207,6 +229,20 @@ class Volunteer
     public function getPhoneNumber(): ?string
     {
         return $this->phoneNumber;
+    }
+
+    /**
+     * @param ExecutionContextInterface $context
+     * @param                           $payload
+     * @Assert\Callback()
+     */
+    public function validatePhoneNumber(ExecutionContextInterface $context, $payload)
+    {
+        if (null === PhoneNumberParser::parse($this->phoneNumber)) {
+            $context->buildViolation('This value is not valid.')
+                    ->atPath('phoneNumber')
+                    ->addViolation();
+        }
     }
 
     /**
@@ -244,7 +280,7 @@ class Volunteer
     /**
      * @return bool
      */
-    public function isEnabled(): bool
+    public function isEnabled(): ?bool
     {
         return $this->enabled;
     }
@@ -264,7 +300,7 @@ class Volunteer
     /**
      * @return bool
      */
-    public function isLocked(): bool
+    public function isLocked(): ?bool
     {
         return $this->locked;
     }
@@ -284,7 +320,7 @@ class Volunteer
     /**
      * @return bool
      */
-    public function isMinor(): bool
+    public function isMinor(): ?bool
     {
         return $this->minor;
     }

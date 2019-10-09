@@ -8,7 +8,7 @@ use App\Entity\Campaign;
 use App\Entity\Choice;
 use App\Entity\Message;
 use App\Entity\Selection;
-use App\Services\Random;
+use App\Tools\Random;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
