@@ -190,7 +190,9 @@ manage_volunteers:
     unlock: 'Dégeler'
     enable: 'Activer'
     disable: 'Desactiver'
-    refresh: 'Mettre à jour'
+    refresh_general: 'MàJ totale Pegass'
+    refresh_skills: 'MàJ compétences Pegass'
+    refresh_success: 'La mise à jour du volontaire effectuée avec succès.'
   columns:
     nivol: Nivol
     firstname: Prénom

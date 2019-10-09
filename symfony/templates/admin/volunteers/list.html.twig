@@ -89,10 +89,15 @@
                                 {% endif %}
                             </td>
                             <td>
-                                {# Refresh volunteer #}
-                                <a href="{{ path('admin_volunteers_skills', app.request.query.all|merge({volunteerId: volunteer.id, csrf: csrf_token('manage_volunteers')})) }}"
-                                   class="btn btn-primary">
-                                    {{ 'manage_volunteers.action.refresh'|trans }}
+                                {# Refresh volunteer general data #}
+                                <a href="{{ path('admin_volunteers_refresh_general', app.request.query.all|merge({volunteerId: volunteer.id, csrf: csrf_token('manage_volunteers')})) }}" onclick="$(this).addClass('disabled');">
+                                    {{ 'manage_volunteers.action.refresh_general'|trans }}
+                                </a>
+                                <br/>
+
+                                {# Refresh volunteer skills #}
+                                <a href="{{ path('admin_volunteers_refresh_skills', app.request.query.all|merge({volunteerId: volunteer.id, csrf: csrf_token('manage_volunteers')})) }}" onclick="$(this).addClass('disabled');">
+                                    {{ 'manage_volunteers.action.refresh_skills'|trans }}
                                 </a>
                                 <br/><br/>
 

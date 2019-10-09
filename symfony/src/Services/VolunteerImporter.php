@@ -88,6 +88,27 @@ class VolunteerImporter
         }
     }
 
+    public function refreshVolunteerGeneral(Volunteer $volunteer)
+    {
+        $volunteers = $this->pegass->listVolunteers($volunteer->getOrganization()->getCode());
+
+        if (!array_key_exists($volunteer->getNivol(), $volunteers)) {
+            $volunteer->setEnabled(false);
+        } else {
+            /** @var Volunteer $pegassVolunteer */
+            $pegassVolunteer = $volunteers[$volunteer->getNivol()];
+
+            $volunteer->setFirstName($pegassVolunteer->getFirstName());
+            $volunteer->setLastName($pegassVolunteer->getLastName());
+            $volunteer->setEmail($pegassVolunteer->getEmail());
+            $volunteer->setPhoneNumber($pegassVolunteer->getPhoneNumber());
+            $volunteer->setEnabled($pegassVolunteer->isEnabled());
+            $volunteer->setMinor($pegassVolunteer->isMinor());
+        }
+
+        $this->refreshVolunteerSkills($volunteer);
+    }
+
     public function refreshVolunteerSkills(Volunteer $volunteer)
     {
         /* @var \App\Entity\Volunteer $volunteer */

@@ -191,7 +191,9 @@ manage_volunteers:
     unlock: 'Unlock'
     enable: 'Enable'
     disable: 'Disable'
-    refresh: 'Update'
+    refresh_general: 'Full Pegass update'
+    refresh_skills: 'Skills Pegass update'
+    refresh_success: 'Volunteer update has been processed successfully.'
   columns:
     nivol: Nivol
     firstname: First name
