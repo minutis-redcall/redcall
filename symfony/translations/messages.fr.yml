@@ -204,6 +204,18 @@ manage_volunteers:
     never_updated: Compétences jamais importées
   import_again: 'Relancer un nouvel import maintenant.'
   import_again_help: "⚠️ Pour info, la mise à jour des compétences prendra plus de temps."
+  form:
+    create: Ajouter un nouveau volontaire
+    organization: UL ou DT de rattachement
+    nivol: Nivol
+    first_name: Prénom
+    last_name: Nom de famille
+    phone_number: Téléphone
+    email: Email
+    minor: Mineur(e) (-18 ans)
+    enabled: Déclenchable
+    tags: Compétences
+    saved: Le volontaire a correctement été ajouté.
 
 csv_export:
   nivol: Nivol

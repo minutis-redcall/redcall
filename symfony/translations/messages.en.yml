@@ -205,6 +205,19 @@ manage_volunteers:
     update: Updated on %date%
     never_updated: Skills never imported
   import_again: 'Run a new import now'
+  import_again_help: "⚠️ FYI, skills update will take more time."
+  form:
+    create: Create a new volunteer
+    organization: Organization
+    nivol: Nivol
+    first_name: First name
+    last_name: Last name
+    phone_number: Phone number
+    email: Email
+    minor: Minor (under 18)
+    enabled: Callable
+    tags: Skills
+    saved: Volunteer has properly been saved.
 
 csv_export:
   nivol: Nivol

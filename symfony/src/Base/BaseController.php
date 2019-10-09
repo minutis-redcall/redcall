@@ -102,4 +102,24 @@ class BaseController extends Controller
     {
         return $this->container->get('translator')->trans($property, $parameters);
     }
+
+    public function info($message, array $parameters = array())
+    {
+        $this->addFlash('info', $this->trans($message, $parameters));
+    }
+
+    public function alert($message, array $parameters = array())
+    {
+        $this->addFlash('alert', $this->trans($message, $parameters));
+    }
+
+    public function danger($message, array $parameters = array())
+    {
+        $this->addFlash('danger', $this->trans($message, $parameters));
+    }
+
+    public function success($message, array $parameters = array())
+    {
+        $this->addFlash('success', $this->trans($message, $parameters));
+    }
 }

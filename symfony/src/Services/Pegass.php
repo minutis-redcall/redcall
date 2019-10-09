@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Entity\Organization;
 use App\Entity\Tag;
 use App\Entity\Volunteer;
+use App\Tools\PhoneNumberParser;
 
 class Pegass
 {
@@ -99,7 +100,7 @@ class Pegass
                     }
 
                     if (in_array($contact['moyenComId'], ['POR', 'PORE', 'PORT', 'TELDOM', 'TELTRAV']) && $contact['libelle'] ?? false) {
-                        $phone = $this->parsePhone($contact['libelle']);
+                        $phone = PhoneNumberParser::parse($contact['libelle']);
                         if ($phone) {
                             $volunteer->setPhoneNumber($phone);
                         }
@@ -210,28 +211,5 @@ class Pegass
         $this->client->request('GET', $url);
 
         return json_decode($this->client->getResponse()->getContent(), true);
-    }
-
-    /**
-     * @param string $phone
-     *
-     * @return null|string
-     */
-    private function parsePhone(string $phone) : ?string
-    {
-        $phone = ltrim(preg_replace('/[^0-9]/', '', $phone), 0);
-        if (strlen($phone) == 9) {
-            $phone = '33'.ltrim($phone, 0);
-        }
-
-        if (strlen($phone) != 11) {
-            return null;
-        }
-
-        if (!in_array(substr($phone, 0, 3), ['336', '337'])) {
-            return null;
-        }
-
-        return $phone;
     }
 }

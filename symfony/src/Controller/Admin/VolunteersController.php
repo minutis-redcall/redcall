@@ -5,8 +5,10 @@ namespace App\Controller\Admin;
 use App\Base\BaseController;
 use App\Entity\Volunteer;
 use App\Entity\VolunteerImport;
+use App\Form\Type\VolunteerType;
 use App\Services\VolunteerImporter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -156,6 +158,32 @@ class VolunteersController extends BaseController
         $this->importer->refreshVolunteerSkills($volunteer);
 
         return $this->redirectToRoute('admin_volunteers_list', $request->query->all());
+    }
+
+    /**
+     * @Route(path="/create", name="create")
+     */
+    public function createAction(Request $request)
+    {
+        $entity = new Volunteer();
+        $form = $this
+            ->createForm(VolunteerType::class, $entity)
+            ->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Locks volunteer from being removed at next Pegass sync
+            $entity->setLocked(true);
+
+            $this->getManager(Volunteer::class)->save($entity);
+
+            $this->success('manage_volunteers.form.saved');
+
+            return $this->redirectToRoute('admin_volunteers_list');
+        }
+
+        return $this->render('admin/volunteers/add.html.twig', [
+            'form' => $form->createView(),
+        ]);
     }
 
     /**
