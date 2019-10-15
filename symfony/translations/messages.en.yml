@@ -187,6 +187,7 @@ manage_volunteers:
     locked: 'Locked'
     last_pegass_update: 'Last Pegass update'
   action:
+    title: Actions
     lock: 'Lock'
     unlock: 'Unlock'
     enable: 'Enable'
@@ -223,6 +224,8 @@ manage_volunteers:
     tags: Skills
     added: Volunteer has properly been added.
     updated: Volunteer has properly been updated.
+  contact:
+    mail_subject: ⚠️ RedCall Message
 
 csv_export:
   nivol: Nivol

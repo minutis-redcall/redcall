@@ -186,6 +186,7 @@ manage_volunteers:
     locked: 'Gelé'
     last_pegass_update: 'Dernière mise à jour Pegass'
   action:
+    title: Actions
     lock: 'Geler'
     unlock: 'Dégeler'
     enable: 'Activer'
@@ -204,7 +205,7 @@ manage_volunteers:
     callable: Déclenchable
     tags: Compétences
     update: MàJ le %date%
-    never_updated: Compétences jamais importées
+    never_updated: Pas encore importé
   import_again: 'Relancer un nouvel import maintenant.'
   import_again_help: "⚠️ Pour info, la mise à jour des compétences prendra plus de temps."
   form:
@@ -221,6 +222,8 @@ manage_volunteers:
     tags: Compétences
     added: Le volontaire a correctement été ajouté.
     updated: Le volontaire a correctement été modifié.
+  contact:
+    mail_subject: ⚠️ Message RedCall
 
 csv_export:
   nivol: Nivol
