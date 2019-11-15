@@ -91,9 +91,13 @@
                                     </div>
                                     <div class="col-5">
                                         {# Volunteer contact information #}
-                                        <a href="mailto:{{ volunteer.email }}?subject={{ 'manage_volunteers.contact.mail_subject'|trans|e('html_attr') }}">{{ volunteer.email }}</a>
+                                        {% if volunteer.email %}
+                                            <a href="mailto:{{ volunteer.email }}?subject={{ 'manage_volunteers.contact.mail_subject'|trans|e('html_attr') }}">{{ volunteer.email }}</a>
+                                        {% endif %}
                                         <br/>
-                                        <a href="tel:+{{ volunteer.phoneNumber }}">+{{ volunteer.phoneNumber }}</a>
+                                        {% if volunteer.phoneNumber %}
+                                            <a href="tel:+{{ volunteer.phoneNumber }}">+{{ volunteer.phoneNumber }}</a>
+                                        {% endif %}
                                     </div>
 
                                     <div class="col-2">
@@ -103,15 +107,19 @@
                                             </button>
 
                                             <div class="dropdown-menu">
-                                                {# Refresh volunteer general data #}
-                                                <a class="dropdown-item" href="{{ path('admin_volunteers_refresh_general', app.request.query.all|merge({volunteerId: volunteer.id, csrf: csrf_token('manage_volunteers')})) }}" onclick="$(this).addClass('disabled');">
-                                                    {{ 'manage_volunteers.action.refresh_general'|trans }}
-                                                </a>
+                                                {% if not volunteer.locked %}
 
-                                                {# Refresh volunteer skills #}
-                                                <a class="dropdown-item" href="{{ path('admin_volunteers_refresh_skills', app.request.query.all|merge({volunteerId: volunteer.id, csrf: csrf_token('manage_volunteers')})) }}" onclick="$(this).addClass('disabled');">
-                                                    {{ 'manage_volunteers.action.refresh_skills'|trans }}
-                                                </a>
+                                                    {# Refresh volunteer general data #}
+                                                    <a class="dropdown-item" href="{{ path('admin_volunteers_refresh_general', app.request.query.all|merge({volunteerId: volunteer.id, csrf: csrf_token('manage_volunteers')})) }}" onclick="$(this).addClass('disabled');">
+                                                        {{ 'manage_volunteers.action.refresh_general'|trans }}
+                                                    </a>
+
+                                                    {# Refresh volunteer skills #}
+                                                    <a class="dropdown-item" href="{{ path('admin_volunteers_refresh_skills', app.request.query.all|merge({volunteerId: volunteer.id, csrf: csrf_token('manage_volunteers')})) }}" onclick="$(this).addClass('disabled');">
+                                                        {{ 'manage_volunteers.action.refresh_skills'|trans }}
+                                                    </a>
+
+                                                {% endif %}
 
                                                 {# Manual volunteer update #}
                                                 <a class="dropdown-item"  href="{{ path('admin_volunteers_manual_update', {id: volunteer.id}) }}">
