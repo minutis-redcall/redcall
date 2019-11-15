@@ -160,4 +160,9 @@
         refreshPreview();
     });
 
+    {# Disable submit button at submission to prevent sending communication twice #}
+    $('#{{ form.vars.id }}').submit(function() {
+        $('#{{ form.submit.vars.id }}').prop('disabled', 'disabled');
+    });
+
 </script>
