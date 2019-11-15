@@ -92,6 +92,13 @@ class Communication
     private $multipleAnswer = false;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(type="string", nullable=true)
+     */
+    private $prefix;
+
+    /**
      * @return mixed
      */
     public function getId()
@@ -371,6 +378,26 @@ class Communication
     public function setMultipleAnswer(bool $multipleAnswer): Communication
     {
         $this->multipleAnswer = $multipleAnswer;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getPrefix(): string
+    {
+        return $this->prefix;
+    }
+
+    /**
+     * @param string|null $prefix
+     *
+     * @return Communication
+     */
+    public function setPrefix(?string $prefix): void
+    {
+        $this->prefix = $prefix;
 
         return $this;
     }
