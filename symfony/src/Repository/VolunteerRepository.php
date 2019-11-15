@@ -6,7 +6,6 @@ use App\Entity\Tag;
 use App\Entity\Volunteer;
 use App\Entity\VolunteerImport;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\Query\Expr\Join;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
 /**
@@ -77,7 +76,7 @@ class VolunteerRepository extends ServiceEntityRepository
 
             if ($volunteer && !$volunteer->isLocked() && $volunteer->isEnabled()) {
                 $volunteer->setReport([]);
-                $volunteer->addError('Volunteer is not on the organization anymore.');
+                $volunteer->addError('Volunteer is not in the organization anymore.');
                 $volunteer->setEnabled(false);
             }
 
