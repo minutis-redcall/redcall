@@ -65,6 +65,13 @@ class Communication
     public $multipleAnswer;
 
     /**
+     * @var string|null
+     *
+     * @Assert\Length(min=1, max=1)
+     */
+    public $prefix;
+
+    /**
      * @param ExecutionContextInterface $context
      * @param                           $payload
      *
@@ -93,5 +100,12 @@ class Communication
                         ->addViolation();
             }
         }
+
+        if (null !== $this->prefix) {
+
+
+        }
+
+
     }
 }
