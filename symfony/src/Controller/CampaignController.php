@@ -58,11 +58,11 @@ class CampaignController extends BaseController
         return $this->render('campaign/table.html.twig', [
             'data' => [
                 'ongoing'  => [
-                    'orderBy' => $this->orderBy($ongoing, Campaign::class, 'c.createdAt DESC', 'DESC', 'ongoing'),
+                    'orderBy' => $this->orderBy($ongoing, Campaign::class, 'c.createdAt', 'DESC', 'ongoing'),
                     'pager'   => $this->getPager($ongoing, 'ongoing'),
                 ],
                 'finished' => [
-                    'orderBy' => $this->orderBy($finished, Campaign::class, 'c.createdAt DESC', 'DESC', 'finished'),
+                    'orderBy' => $this->orderBy($finished, Campaign::class, 'c.createdAt', 'DESC', 'finished'),
                     'pager'   => $this->getPager($finished, 'finished'),
                 ],
             ],
