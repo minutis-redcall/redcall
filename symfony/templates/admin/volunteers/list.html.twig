@@ -140,16 +140,14 @@
                                                 {% endif %}
 
                                                 {# Disable volunteer #}
-                                                {% if not volunteer.locked %}
-                                                    {% if volunteer.enabled %}
-                                                        <a class="dropdown-item text-danger" href="{{ path('admin_volunteers_disable', app.request.query.all|merge({volunteerId: volunteer.id, csrf: csrf_token('manage_volunteers')})) }}">
-                                                            {{ 'manage_volunteers.action.disable'|trans }}
-                                                        </a>
-                                                    {% else %}
-                                                        <a class="dropdown-item text-success" href="{{ path('admin_volunteers_enable', app.request.query.all|merge({volunteerId: volunteer.id, csrf: csrf_token('manage_volunteers')})) }}">
-                                                            {{ 'manage_volunteers.action.enable'|trans }}
-                                                        </a>
-                                                    {% endif %}
+                                                {% if volunteer.enabled %}
+                                                    <a class="dropdown-item text-danger" href="{{ path('admin_volunteers_disable', app.request.query.all|merge({volunteerId: volunteer.id, csrf: csrf_token('manage_volunteers')})) }}">
+                                                        {{ 'manage_volunteers.action.disable'|trans }}
+                                                    </a>
+                                                {% else %}
+                                                    <a class="dropdown-item text-success" href="{{ path('admin_volunteers_enable', app.request.query.all|merge({volunteerId: volunteer.id, csrf: csrf_token('manage_volunteers')})) }}">
+                                                        {{ 'manage_volunteers.action.enable'|trans }}
+                                                    </a>
                                                 {% endif %}
 
                                             </div>

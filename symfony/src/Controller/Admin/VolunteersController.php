@@ -71,11 +71,7 @@ class VolunteersController extends BaseController
 
         $volunteer = $this->getVolunteerOrThrowNotFound($volunteerId);
 
-        if (!$volunteer->isLocked()) {
-            $volunteer->setLocked(true);
-            $this->getManager()->persist($volunteer);
-            $this->getManager()->flush($volunteer);
-        }
+        $this->getManager(Volunteer::class)->lock($volunteer);
 
         return $this->redirectToRoute('admin_volunteers_list', $request->query->all());
     }
@@ -89,11 +85,7 @@ class VolunteersController extends BaseController
 
         $volunteer = $this->getVolunteerOrThrowNotFound($volunteerId);
 
-        if ($volunteer->isLocked()) {
-            $volunteer->setLocked(false);
-            $this->getManager()->persist($volunteer);
-            $this->getManager()->flush($volunteer);
-        }
+        $this->getManager(Volunteer::class)->unlock($volunteer);
 
         return $this->redirectToRoute('admin_volunteers_list', $request->query->all());
     }
@@ -107,11 +99,8 @@ class VolunteersController extends BaseController
 
         $volunteer = $this->getVolunteerOrThrowNotFound($volunteerId);
 
-        if ($volunteer->isEnabled()) {
-            $volunteer->setEnabled(false);
-            $this->getManager()->persist($volunteer);
-            $this->getManager()->flush($volunteer);
-        }
+        $this->getManager(Volunteer::class)->disable($volunteer);
+        $this->getManager(Volunteer::class)->lock($volunteer);
 
         return $this->redirectToRoute('admin_volunteers_list', $request->query->all());
     }
@@ -125,11 +114,8 @@ class VolunteersController extends BaseController
 
         $volunteer = $this->getVolunteerOrThrowNotFound($volunteerId);
 
-        if (!$volunteer->isEnabled()) {
-            $volunteer->setEnabled(true);
-            $this->getManager()->persist($volunteer);
-            $this->getManager()->flush($volunteer);
-        }
+        $this->getManager(Volunteer::class)->enable($volunteer);
+        $this->getManager(Volunteer::class)->lock($volunteer);
 
         return $this->redirectToRoute('admin_volunteers_list', $request->query->all());
     }

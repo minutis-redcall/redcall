@@ -159,6 +159,63 @@ class VolunteerRepository extends ServiceEntityRepository
             ->getResult();
     }
 
+
+    /**
+     * @param Volunteer $volunteer
+     *
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function disable(Volunteer $volunteer)
+    {
+        if ($volunteer->isEnabled()) {
+            $volunteer->setEnabled(false);
+            $this->save($volunteer);
+        }
+    }
+
+    /**
+     * @param Volunteer $volunteer
+     *
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function enable(Volunteer $volunteer)
+    {
+        if (!$volunteer->isEnabled()) {
+            $volunteer->setEnabled(true);
+            $this->save($volunteer);
+        }
+    }
+
+    /**
+     * @param Volunteer $volunteer
+     *
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function lock(Volunteer $volunteer)
+    {
+        if (!$volunteer->isLocked()) {
+            $volunteer->setLocked(true);
+            $this->save($volunteer);
+        }
+    }
+
+    /**
+     * @param Volunteer $volunteer
+     *
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function unlock(Volunteer $volunteer)
+    {
+        if ($volunteer->isLocked()) {
+            $volunteer->setLocked(false);
+            $this->save($volunteer);
+        }
+    }
+
     /**
      * @param Volunteer $volunteer
      *
