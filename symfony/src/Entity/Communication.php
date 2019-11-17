@@ -316,7 +316,7 @@ class Communication
          * @var Choice $choice
          */
         foreach ($this->getChoices() as $choice) {
-            if ($choice->getCode() == $code) {
+            if (strtoupper($choice->getCode()) == strtoupper($code)) {
                 return $choice;
             }
         }
@@ -383,9 +383,9 @@ class Communication
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getPrefix(): string
+    public function getPrefix(): ?string
     {
         return $this->prefix;
     }
@@ -395,7 +395,7 @@ class Communication
      *
      * @return Communication
      */
-    public function setPrefix(?string $prefix): void
+    public function setPrefix(?string $prefix): Communication
     {
         $this->prefix = $prefix;
 

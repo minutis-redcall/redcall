@@ -52,15 +52,16 @@ class CampaignManager
     /**
      * Launches a campaign by creating a new one and sending an initial communication to a list of volunteers.
      *
-     * @param string     $label
-     * @param string     $color
-     * @param Collection $volunteers
-     * @param string     $message
-     * @param string[]   $choiceValues
-     * @param bool       $geoLocation
-     * @param string     $type
-     * @param bool       $multipleAnswer
-     * @param string     $subject
+     * @param string      $label
+     * @param string      $color
+     * @param Collection  $volunteers
+     * @param string      $message
+     * @param string[]    $choiceValues
+     * @param bool        $geoLocation
+     * @param string      $type
+     * @param bool        $multipleAnswer
+     * @param string|null $subject
+     * @param string      $prefix
      *
      * @return Campaign
      */
@@ -73,10 +74,11 @@ class CampaignManager
         bool $geoLocation,
         string $type,
         bool $multipleAnswer,
-        ?string $subject)
+        ?string $subject,
+        string $prefix)
     {
         // Create the campaign with an initial communication
-        $communication = $this->communicationFactory->create($message, $volunteers, $choiceValues, $geoLocation, $type, $multipleAnswer, $subject);
+        $communication = $this->communicationFactory->create($message, $volunteers, $choiceValues, $geoLocation, $type, $multipleAnswer, $subject, $prefix);
         $campaign      = $this->campaignFactory->create($label, $color, $communication);
 
         $this->entityManager->persist($campaign);
@@ -128,8 +130,9 @@ class CampaignManager
         $type           = $communication->type;
         $multipleAnswer = $communication->multipleAnswer;
         $subject        = $communication->subject;
+        $prefix         = $communication->prefix;
 
-        return $this->communicationFactory->create($message, $volunteers, $choiceValues, $geoLocation, $type, $multipleAnswer, $subject);
+        return $this->communicationFactory->create($message, $volunteers, $choiceValues, $geoLocation, $type, $multipleAnswer, $subject, $prefix);
     }
 
     /**

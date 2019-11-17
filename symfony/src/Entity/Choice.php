@@ -19,9 +19,9 @@ class Choice
     private $id;
 
     /**
-     * @var int
+     * @var string
      *
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="string", length=2)
      */
     private $code;
 
@@ -62,17 +62,17 @@ class Choice
     /**
      * @return int
      */
-    public function getCode(): int
+    public function getCode(): string
     {
         return $this->code;
     }
 
     /**
-     * @param int $code
+     * @param string $code
      *
      * @return $this
      */
-    public function setCode($code)
+    public function setCode(string $code)
     {
         $this->code = $code;
 

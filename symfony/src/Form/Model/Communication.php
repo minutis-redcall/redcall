@@ -50,7 +50,8 @@ class Communication
 
     /**
      * @var array
-     * @Assert\Count(max=10)
+     *
+     * @Assert\Count(max=9)
      */
     public $answers;
 
@@ -68,6 +69,7 @@ class Communication
      * @var string|null
      *
      * @Assert\Length(min=1, max=1)
+     * @Assert\Regex(pattern="/^[A-Z]$/u")
      */
     public $prefix;
 

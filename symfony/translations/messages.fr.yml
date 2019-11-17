@@ -162,6 +162,8 @@ form:
       cost: 'Coût du message multiplié par :'
       length: 'Longueur du message :'
       multiple_answer: 'Les destinataires peuvent choisir plusieurs réponses'
+      prefix: 'Préfixe de la réponse (à utiliser en cas de recensement multiple)'
+      prefixes_already_used: 'Ne pas utiliser le(s) préfix(es) suivant(s) car il(s) sont déjà utilisé(s) : %prefixes%'
   campaign:
     fields:
       label: 'Nom du déclenchement'
