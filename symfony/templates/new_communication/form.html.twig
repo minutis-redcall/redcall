@@ -43,6 +43,13 @@
 
 <div id="message-prefix">
     {{ form_row(form.prefix) }}
+    {% if taken_prefixes %}
+        <small>
+            <em>
+                {{ 'form.communication.fields.taken_prefixes'|trans({'%prefixes%':taken_prefixes|join(', ')}) }}
+            </em>
+        </small>
+    {% endif %}
 </div>
 
 {{ form_row(form.multipleAnswer) }}

@@ -12,3 +12,4 @@ form:
       email_geolocation: 'No possible geo location when message sent by email.'
       too_large_email: 'This email is too long.'
       too_large_sms: 'This SMS is too long.'
+      prefix_already_used: 'Prefix "{{ string }}" is already used by a communication, in an active campaign.'

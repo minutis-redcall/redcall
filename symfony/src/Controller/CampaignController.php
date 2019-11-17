@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Base\BaseController;
 use App\Campaign\CampaignManager;
 use App\Entity\Campaign;
+use App\Entity\Communication;
 use App\Form\Model\Campaign as CampaignModel;
 use App\Form\Type\CampaignType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -105,6 +106,7 @@ class CampaignController extends BaseController
 
         return $this->render('campaign/new.html.twig', [
             'form' => $form->createView(),
+            'taken_prefixes' => $this->getManager(Communication::class)->getTakenPrefixes(),
         ]);
     }
 
