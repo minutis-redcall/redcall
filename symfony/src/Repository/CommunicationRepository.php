@@ -33,4 +33,20 @@ class CommunicationRepository extends ServiceEntityRepository
         $communication->setLabel($newName);
         $this->_em->flush();
     }
+
+
+    /**
+     * Get prefixes that cannot be used.
+     */
+    public function getTakenPrefixes()
+    {
+        return array_column($this->createQueryBuilder('co')
+            ->select('co.prefix')
+            ->distinct()
+            ->innerJoin('App:Campaign', 'ca', 'WITH', 'ca = co.campaign')
+            ->where('co.prefix IS NOT NULL')
+            ->andWhere('ca.active = 1')
+            ->getQuery()
+            ->getArrayResult(), 'prefix');
+    }
 }

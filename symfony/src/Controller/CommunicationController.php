@@ -225,6 +225,7 @@ class CommunicationController extends BaseController
             'campaign'   => $campaign,
             'volunteers' => $volunteers,
             'form'       => $form->createView(),
+            'taken_prefixes' => $this->getManager(Communication::class)->getTakenPrefixes(),
         ]);
     }
 
