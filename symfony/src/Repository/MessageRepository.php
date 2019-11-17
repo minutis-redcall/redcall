@@ -125,15 +125,13 @@ class MessageRepository extends ServiceEntityRepository
         $answer = new Answer();
         $message->addAnswser($answer);
         $answer->setMessage($message);
-
-        if ($byAdmin) {
-            $answer->setRaw(sprintf('%s: %s', $this->tokenStorage->getToken()->getUsername(), $body));
-        } else {
-            $answer->setRaw($body);
-        }
-
+        $answer->setRaw($body);
         $answer->setReceivedAt(new \DateTime());
         $answer->setUnclear($message->getCommunication()->isUnclear($body));
+
+        if ($byAdmin) {
+            $answer->setByAdmin($this->tokenStorage->getToken()->getUsername());
+        }
 
         foreach ($choices as $choice) {
             $answer->addChoice($choice);

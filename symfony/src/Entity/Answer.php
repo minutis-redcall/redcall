@@ -66,6 +66,11 @@ class Answer
     private $choices;
 
     /**
+     * @ORM\Column(type="string", length=64, nullable=true)
+     */
+    private $byAdmin;
+
+    /**
      * Answer constructor.
      */
     public function __construct()
@@ -271,6 +276,26 @@ class Answer
         if ($this->choices->contains($choice)) {
             $this->choices->removeElement($choice);
         }
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getByAdmin()
+    {
+        return $this->byAdmin;
+    }
+
+    /**
+     * @param string $byAdmin
+     *
+     * @return Answer
+     */
+    public function setByAdmin(string $byAdmin)
+    {
+        $this->byAdmin = $byAdmin;
 
         return $this;
     }

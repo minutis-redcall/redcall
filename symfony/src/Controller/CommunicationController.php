@@ -205,7 +205,7 @@ class CommunicationController extends BaseController
          */
         $communication             = new \App\Form\Model\Communication();
         $communication->volunteers = $volunteers;
-        $communication->answers    = ['', ''];
+        $communication->answers    = [];
         $campaign                  = $this->getCampaignOrThrowNotFoundException($campaignId);
 
         $form = $this
