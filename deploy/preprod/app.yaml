@@ -13,12 +13,19 @@ env_variables:
 
 handlers:
   - url: /build
+    secure: always
     static_dir: public/build
   - url: /bundles
+    secure: always
     static_dir: public/bundles
   - url: /(.*\.(ico|txt|gif|png|jpg))$
+    secure: always
     static_files: public/\1
     upload: public/.*\.(ico|txt|gif|png|jpg)$
+  - url: /.*
+    secure: always
+    script: auto
+    redirect_http_response_code: 301
 
 manual_scaling:
   instances: 1
