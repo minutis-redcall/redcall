@@ -2,15 +2,16 @@
 
 namespace App\Controller;
 
+use App\Base\BaseController;
 use App\Communication\Dispatcher;
+use App\Entity\Message;
 use Nexmo\Message\InboundMessage;
 use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 
-class WebhookController extends Controller
+class WebhookController extends BaseController
 {
     /**
      * @var LoggerInterface
@@ -61,13 +62,14 @@ class WebhookController extends Controller
             return new Response();
         }
 
-        $message = $this->get('doctrine')->getRepository('App:Message')->getLastMessageSentToPhone($inbound->getFrom());
+        $message = $this->getManager(Message::class)->getMessageFromPhoneNumberAndPrefix($inbound->getFrom(), $inbound->getBody());
 
         if ($message && $message->getCommunication()->getCampaign()->isActive()) {
             $this->dispatcher->processInboundAnswer($message, $inbound->getBody());
         }
 
         $this->logger->info('SMS Inbound received!', [
+            'sender' => $inbound->getFrom(),
             'inbound' => $inbound->getBody(),
         ]);
 

@@ -94,7 +94,8 @@ class CampaignController extends BaseController
                 $campaign->communication->geoLocation,
                 $campaign->communication->type,
                 $campaign->communication->multipleAnswer,
-                $campaign->communication->subject
+                $campaign->communication->subject,
+                $campaign->communication->prefix
             );
 
             return $this->redirect($this->generateUrl('communication_index', [

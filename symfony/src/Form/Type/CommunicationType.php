@@ -79,6 +79,10 @@ class CommunicationType extends AbstractType
                     'class' => 'collection',
                 ],
             ])
+            ->add('prefix', TextType::class, [
+                'label' => 'form.communication.fields.prefix',
+                'required' => false,
+            ])
             ->add('geoLocation', CheckboxType::class, [
                 'label'    => 'form.communication.fields.geo_location',
                 'required' => false,

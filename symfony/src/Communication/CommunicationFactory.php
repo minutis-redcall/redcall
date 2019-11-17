@@ -32,6 +32,7 @@ class CommunicationFactory
      * @param bool       $geoLocation
      * @param string     $type
      * @param bool       $multipleAnswer
+     * @param string|null     $prefix
      *
      * @return Communication
      */
@@ -41,7 +42,8 @@ class CommunicationFactory
         bool $geoLocation,
         string $type,
         bool $multipleAnswer,
-        ?string $subject)
+        ?string $subject,
+        ?string $prefix)
     {
         $communication = new Communication();
         $communication
@@ -50,7 +52,8 @@ class CommunicationFactory
             ->setGeoLocation($geoLocation)
             ->setCreatedAt(new \DateTime())
             ->setMultipleAnswer($multipleAnswer)
-            ->setSubject($subject);
+            ->setSubject($subject)
+            ->setPrefix($prefix);
 
         foreach ($volunteers as $volunteer) {
             $message = new Message();
@@ -67,7 +70,7 @@ class CommunicationFactory
         foreach (array_unique($choiceValues) as $choiceValue) {
             $choice = new Choice();
             $choice
-                ->setCode($choiceKey)
+                ->setCode(sprintf('%s%d', $prefix, $choiceKey))
                 ->setLabel($choiceValue);
 
             $communication->addChoice($choice);
