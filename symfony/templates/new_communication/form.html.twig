@@ -67,7 +67,6 @@
     <span id="message-cost">--</span>
 </div>
 
-<script type="text/javascript" src="{{ asset('js/jquery.collection.js') }}"></script>
 <script type="text/javascript">
 
     {# Update message size automatically #}
@@ -141,23 +140,32 @@
     {# Collection of answers #}
     $('#add-answer').click(function(e) {
         e.preventDefault();
-        var collection = $('#{{ form.answers.vars.id }}');
-        var prototype = collection.data('prototype');
 
-        var index = 0;
-        if (collection.data('index') !== undefined) {
-            index = collection.data('index');
+        if ($('.answer-row').length >= 9) {
+            return;
         }
 
-        $('#answer-separator').before(prototype.replace(/__name__/g, index));
-        collection.data('index', index + 1);
+        var collection = $('#{{ form.answers.vars.id }}');
+        var prototype = collection.data('prototype');
+        var container = $('#answer-collection');
+        var index = container.data('index');
+
+        $('#answer-collection fieldset').append(prototype.replace(/__name__/g, index));
+        container.data('index', index + 1);
 
         refreshPreview();
+
+        if ($('.answer-row').length >= 9) {
+            $('#add-answer').addClass('d-none');
+        }
     });
+    refreshPreview();
 
     {# Initialize collection with 2 answers #}
-    $('#add-answer').click();
-    $('#add-answer').click();
+    if ($('#answer-collection').data('index') == 0) {
+        $('#add-answer').click();
+        $('#add-answer').click();
+    }
 
     {# Answer removal #}
     $('body').on('click', '.remove-answer', function(e) {
