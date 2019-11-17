@@ -40,7 +40,7 @@ class CommunicationRepository extends ServiceEntityRepository
      */
     public function getTakenPrefixes()
     {
-        return array_column($this->createQueryBuilder('co')
+        $prefixes = array_column($this->createQueryBuilder('co')
             ->select('co.prefix')
             ->distinct()
             ->innerJoin('App:Campaign', 'ca', 'WITH', 'ca = co.campaign')
@@ -48,5 +48,9 @@ class CommunicationRepository extends ServiceEntityRepository
             ->andWhere('ca.active = 1')
             ->getQuery()
             ->getArrayResult(), 'prefix');
+
+        sort($prefixes);
+
+        return $prefixes;
     }
 }
