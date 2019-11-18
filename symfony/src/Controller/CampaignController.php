@@ -42,19 +42,8 @@ class CampaignController extends BaseController
      */
     public function renderCampaignsTable(Request $request): Response
     {
-        $ongoing = $this
-            ->get('doctrine')
-            ->getManager()
-            ->getRepository(Campaign::class)
-            ->createQueryBuilder('c')
-            ->where('c.active = 1');
-
-        $finished = $this
-            ->get('doctrine')
-            ->getManager()
-            ->getRepository(Campaign::class)
-            ->createQueryBuilder('c')
-            ->where('c.active = 0');
+        $ongoing = $this->campaignManager->getActiveCampaignsQueryBuilder();
+        $finished = $this->campaignManager->getInactiveCampaignsQueryBuilder();
 
         return $this->render('campaign/table.html.twig', [
             'data' => [

@@ -75,7 +75,7 @@ class CampaignManager
         string $type,
         bool $multipleAnswer,
         ?string $subject,
-        string $prefix)
+        ?string $prefix)
     {
         // Create the campaign with an initial communication
         $communication = $this->communicationFactory->create($message, $volunteers, $choiceValues, $geoLocation, $type, $multipleAnswer, $subject, $prefix);
@@ -193,5 +193,21 @@ class CampaignManager
         $this->entityManager->clear();
 
         return $this->campaignRepository->findOneByIdNoCache($campaign->getId());
+    }
+
+    /**
+     * @return \Doctrine\ORM\QueryBuilder
+     */
+    public function getActiveCampaignsQueryBuilder()
+    {
+        return $this->campaignRepository->getActiveCampaignsQueryBuilder();
+    }
+
+    /**
+     * @return \Doctrine\ORM\QueryBuilder
+     */
+    public function getInactiveCampaignsQueryBuilder()
+    {
+        return $this->campaignRepository->getInactiveCampaignsQueryBuilder();
     }
 }

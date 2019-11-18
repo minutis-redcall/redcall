@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Campaign;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\QueryBuilder;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
 /**
@@ -32,5 +33,25 @@ class CampaignRepository extends ServiceEntityRepository
                     ->getQuery()
                     ->useResultCache(false)
                     ->getOneOrNullResult();
+    }
+
+    /**
+     * @return QueryBuilder
+     */
+    public function getActiveCampaignsQueryBuilder(): QueryBuilder
+    {
+       return $this
+            ->createQueryBuilder('c')
+            ->where('c.active = 1');
+    }
+
+    /**
+     * @return QueryBuilder
+     */
+    public function getInactiveCampaignsQueryBuilder(): QueryBuilder
+    {
+        return $this
+            ->createQueryBuilder('c')
+            ->where('c.active = 0');
     }
 }
