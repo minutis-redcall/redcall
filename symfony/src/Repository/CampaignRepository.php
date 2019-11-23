@@ -2,8 +2,8 @@
 
 namespace App\Repository;
 
+use App\Base\BaseRepository;
 use App\Entity\Campaign;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
@@ -13,7 +13,7 @@ use Symfony\Bridge\Doctrine\RegistryInterface;
  * @method Campaign[]    findAll()
  * @method Campaign[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class CampaignRepository extends ServiceEntityRepository
+class CampaignRepository extends BaseRepository
 {
     public function __construct(RegistryInterface $registry)
     {

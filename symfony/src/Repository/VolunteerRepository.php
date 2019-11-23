@@ -2,10 +2,10 @@
 
 namespace App\Repository;
 
+use App\Base\BaseRepository;
 use App\Entity\Tag;
 use App\Entity\Volunteer;
 use App\Entity\VolunteerImport;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
 /**
@@ -13,7 +13,7 @@ use Symfony\Bridge\Doctrine\RegistryInterface;
  * @method Volunteer|null findOneBy(array $criteria, array $orderBy = null)
  * @method Volunteer[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class VolunteerRepository extends ServiceEntityRepository
+class VolunteerRepository extends BaseRepository
 {
     public function __construct(RegistryInterface $registry)
     {
@@ -214,29 +214,5 @@ class VolunteerRepository extends ServiceEntityRepository
             $volunteer->setLocked(false);
             $this->save($volunteer);
         }
-    }
-
-    /**
-     * @param Volunteer $volunteer
-     *
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     */
-    public function save(Volunteer $volunteer)
-    {
-        $this->_em->persist($volunteer);
-        $this->_em->flush($volunteer);
-    }
-
-    /**
-     * @param Volunteer $volunteer
-     *
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     */
-    public function remove(Volunteer $volunteer)
-    {
-        $this->_em->remove($volunteer);
-        $this->_em->flush($volunteer);
     }
 }

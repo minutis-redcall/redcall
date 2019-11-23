@@ -3,11 +3,11 @@
 namespace App\Controller;
 
 use App\Base\BaseController;
-use App\Campaign\CampaignManager;
 use App\Entity\Campaign;
 use App\Entity\Communication;
 use App\Form\Model\Campaign as CampaignModel;
 use App\Form\Type\CampaignType;
+use App\Manager\CampaignManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -69,27 +69,16 @@ class CampaignController extends BaseController
      */
     public function createCampaign(Request $request)
     {
-        $campaign = new CampaignModel();
+        $campaignModel = new CampaignModel();
         $form     = $this
-            ->createForm(CampaignType::class, $campaign)
+            ->createForm(CampaignType::class, $campaignModel)
             ->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $campaignId = $this->campaignManager->launchNewCampaign(
-                $campaign->label ?: date('d/m/y H:i'),
-                $campaign->type,
-                $campaign->communication->volunteers,
-                $campaign->communication->message,
-                $campaign->communication->answers,
-                $campaign->communication->geoLocation,
-                $campaign->communication->type,
-                $campaign->communication->multipleAnswer,
-                $campaign->communication->subject,
-                $campaign->communication->prefix
-            );
+            $campaignEntity = $this->campaignManager->launchNewCampaign($campaignModel);
 
             return $this->redirect($this->generateUrl('communication_index', [
-                'campaignId' => $campaignId,
+                'campaignId' => $campaignEntity->getId(),
             ]));
         }
 

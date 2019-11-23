@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Base\BaseRepository;
 use App\Entity\Answer;
 use App\Entity\Call;
 use App\Entity\Campaign;
@@ -9,12 +10,11 @@ use App\Entity\Choice;
 use App\Entity\Message;
 use App\Entity\Selection;
 use App\Tools\Random;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Translation\TranslatorInterface;
 
-class MessageRepository extends ServiceEntityRepository
+class MessageRepository extends BaseRepository
 {
     const CODE_SIZE = 8;
 

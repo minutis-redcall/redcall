@@ -2,8 +2,8 @@
 
 namespace App\Repository;
 
+use App\Base\BaseRepository;
 use App\Entity\Communication;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
 /**
@@ -12,7 +12,7 @@ use Symfony\Bridge\Doctrine\RegistryInterface;
  * @method Communication[]    findAll()
  * @method Communication[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class CommunicationRepository extends ServiceEntityRepository
+class CommunicationRepository extends BaseRepository
 {
     /**
      * CommunicationRepository constructor.

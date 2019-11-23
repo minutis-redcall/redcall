@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Base\BaseController;
-use App\Campaign\CampaignManager;
 use App\Communication\Formatter;
 use App\Communication\GSM;
 use App\Entity\Campaign;
@@ -12,6 +11,8 @@ use App\Entity\Message;
 use App\Form\Model\Communication as CommunicationModel;
 use App\Form\Type\CampaignType;
 use App\Form\Type\CommunicationType;
+use App\Manager\CampaignManager;
+use App\Manager\CommunicationManager;
 use App\Repository\AnswerRepository;
 use App\Repository\CommunicationRepository;
 use App\Repository\MessageRepository;
@@ -32,6 +33,11 @@ class CommunicationController extends BaseController
      * @var CampaignManager
      */
     private $campaignManager;
+
+    /**
+     * @var CommunicationManager
+     */
+    private $communicationManager;
 
     /**
      * @var TagRepository
@@ -64,12 +70,14 @@ class CommunicationController extends BaseController
      * CommunicationController constructor.
      *
      * @param CampaignManager         $campaignManager
+     * @param CommunicationManager    $communicationManager
      * @param TagRepository           $tagRepository
      * @param MessageRepository       $messageRepository
      * @param AnswerRepository        $answerRepository
      * @param CommunicationRepository $communicationRepository
      */
     public function __construct(CampaignManager $campaignManager,
+        CommunicationManager $communicationManager,
         TagRepository $tagRepository,
         MessageRepository $messageRepository,
         AnswerRepository $answerRepository,
@@ -77,6 +85,7 @@ class CommunicationController extends BaseController
         Formatter $formatter)
     {
         $this->campaignManager         = $campaignManager;
+        $this->communicationManager    = $communicationManager;
         $this->tagRepository           = $tagRepository;
         $this->messageRepository       = $messageRepository;
         $this->answerRepository        = $answerRepository;
@@ -214,7 +223,7 @@ class CommunicationController extends BaseController
 
         // Creating the new communication is form has been submitted
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->campaignManager->createNewCommunication($campaign, $communication);
+            $this->communicationManager->launchNewCommunication($campaign, $communication);
 
             return $this->redirect($this->generateUrl('communication_index', [
                 'campaignId' => $campaign->getId(),
@@ -257,7 +266,7 @@ class CommunicationController extends BaseController
             return new JsonResponse(['success' => false]);
         }
 
-        $communicationEntity = $this->campaignManager->createCommunicationEntity($communicationModel);
+        $communicationEntity = $this->communicationManager->createCommunication($communicationModel);
 
         $message = new Message();
         $message->setCommunication($communicationEntity);

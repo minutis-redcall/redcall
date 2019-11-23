@@ -2,8 +2,8 @@
 
 namespace App\Repository;
 
+use App\Base\BaseRepository;
 use App\Entity\UserPreference;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -13,7 +13,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
  * @method UserPreference[]    findAll()
  * @method UserPreference[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class UserPreferenceRepository extends ServiceEntityRepository
+class UserPreferenceRepository extends BaseRepository
 {
     /**
      * UserPreferenceRepository constructor.
