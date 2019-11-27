@@ -27,6 +27,8 @@ class CampaignRepository extends BaseRepository
      */
     public function findOneByIdNoCache(int $campaignId)
     {
+        $this->_em->clear();
+
         return $this->createQueryBuilder('c')
                     ->where('c.id = :id')
                     ->setParameter('id', $campaignId)
@@ -53,5 +55,48 @@ class CampaignRepository extends BaseRepository
         return $this
             ->createQueryBuilder('c')
             ->where('c.active = 0');
+    }
+
+    /**
+     * @param Campaign $campaign
+     */
+    public function closeCampaign(Campaign $campaign)
+    {
+        $campaign->setActive(false);
+
+        $this->save($campaign);
+    }
+
+    /**
+     * @param Campaign $campaign
+     */
+    public function openCampaign(Campaign $campaign)
+    {
+        $campaign->setActive(true);
+
+        $this->save($campaign);
+    }
+
+
+    /**
+     * @param Campaign $campaign
+     * @param string   $color
+     */
+    public function changeColor(Campaign $campaign, string $color)
+    {
+        $campaign->setType($color);
+
+        $this->save($campaign);
+    }
+
+    /**
+     * @param Campaign $campaign
+     * @param string   $newName
+     */
+    public function changeName(Campaign $campaign, string $newName)
+    {
+        $campaign->setLabel($newName);
+
+        $this->save($campaign);
     }
 }

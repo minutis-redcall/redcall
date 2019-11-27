@@ -15,12 +15,12 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CampaignController extends BaseController
 {
-    /** @var CampaignManager */
+    /**
+     * @var CampaignManager
+     */
     private $campaignManager;
 
     /**
-     * CommunicationController constructor.
-     *
      * @param CampaignManager $campaignManager
      */
     public function __construct(CampaignManager $campaignManager)
@@ -29,7 +29,7 @@ class CampaignController extends BaseController
     }
 
     /**
-     * @Route(path="declenchement/liste", name="list_campaigns")
+     * @Route(path="campaign/list", name="list_campaigns")
      * @return Response
      */
     public function listCampaigns()
@@ -60,7 +60,7 @@ class CampaignController extends BaseController
     }
 
     /**
-     * @Route(path="declenchement/nouveau", name="create_campaign")
+     * @Route(path="campaign/new", name="create_campaign")
      *
      * @param Request $request
      *
@@ -89,7 +89,7 @@ class CampaignController extends BaseController
     }
 
     /**
-     * @Route(path="declenchement/{campaignId}/fermer/{csrf}", name="close_campaign")
+     * @Route(path="campaign/{campaignId}/close/{csrf}", name="close_campaign")
      *
      * @param int    $campaignId
      * @param string $csrf
@@ -113,7 +113,7 @@ class CampaignController extends BaseController
     }
 
     /**
-     * @Route(path="declenchement/{campaignId}/ouvrir/{csrf}", name="open_campaign")
+     * @Route(path="campaign/{campaignId}/open/{csrf}", name="open_campaign")
      *
      * @param int    $campaignId
      * @param string $csrf
@@ -137,7 +137,7 @@ class CampaignController extends BaseController
     }
 
     /**
-     * @Route(path="declenchement/{campaignId}/changer-couleur/{color}/{csrf}", name="color_campaign")
+     * @Route(path="campaign/{campaignId}/change-color/{color}/{csrf}", name="color_campaign")
      *
      * @param int    $campaignId
      * @param string $csrf
@@ -167,7 +167,7 @@ class CampaignController extends BaseController
     }
 
     /**
-     * @Route(path="declenchement/{campaignId}/changer-nom", name="rename_campaign")
+     * @Route(path="campaign/{campaignId}/rename", name="rename_campaign")
      *
      * @param Request $request
      * @param int     $campaignId
