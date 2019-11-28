@@ -2,7 +2,6 @@
 
 namespace App\Manager;
 
-use App\Entity\Campaign;
 use App\Entity\Campaign as CampaignEntity;
 use App\Form\Model\Campaign as CampaignModel;
 use App\Repository\CampaignRepository;
@@ -29,6 +28,16 @@ class CampaignManager
     ) {
         $this->campaignRepository      = $campaignRepository;
         $this->communicationManager    = $communicationManager;
+    }
+
+    /**
+     * @param int $campaignId
+     *
+     * @return CampaignEntity|null
+     */
+    public function find(int $campaignId) : ?CampaignEntity
+    {
+        return $this->campaignRepository->find($campaignId);
     }
 
     /**

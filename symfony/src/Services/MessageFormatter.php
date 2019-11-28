@@ -1,13 +1,14 @@
 <?php
 
-namespace App\Communication;
+namespace App\Services;
 
 use App\Entity\Communication;
 use App\Entity\Message;
+use App\Tools\GSM;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Translation\TranslatorInterface;
 
-class Formatter
+class MessageFormatter
 {
     /**
      * @var RouterInterface
@@ -20,8 +21,6 @@ class Formatter
     private $translator;
 
     /**
-     * Formatter constructor.
-     *
      * @param RouterInterface     $router
      * @param TranslatorInterface $translator
      */

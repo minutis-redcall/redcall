@@ -6,7 +6,12 @@ class Random
 {
     const BASE = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
 
-    static public function generate($size)
+    /**
+     * @param $size
+     *
+     * @return string
+     */
+    static public function generate($size) : string
     {
         list($usec, $sec) = explode(' ', microtime());
         $seed = (float)$sec + ((float)$usec * 100000);

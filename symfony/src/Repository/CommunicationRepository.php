@@ -31,7 +31,7 @@ class CommunicationRepository extends BaseRepository
     public function changeName(Communication $communication, string $newName): void
     {
         $communication->setLabel($newName);
-        $this->_em->flush();
+        $this->save($communication);
     }
 
 

@@ -4,10 +4,10 @@ namespace App\Controller;
 
 use App\Base\BaseController;
 use App\Entity\Campaign;
-use App\Entity\Communication;
 use App\Form\Model\Campaign as CampaignModel;
 use App\Form\Type\CampaignType;
 use App\Manager\CampaignManager;
+use App\Manager\CommunicationManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -21,11 +21,18 @@ class CampaignController extends BaseController
     private $campaignManager;
 
     /**
-     * @param CampaignManager $campaignManager
+     * @var CommunicationManager
      */
-    public function __construct(CampaignManager $campaignManager)
+    private $communicationManager;
+
+    /**
+     * @param CampaignManager $campaignManager
+     * @param CommunicationManager $communicationManager
+     */
+    public function __construct(CampaignManager $campaignManager, CommunicationManager $communicationManager)
     {
         $this->campaignManager = $campaignManager;
+        $this->communicationManager = $communicationManager;
     }
 
     /**
@@ -84,7 +91,7 @@ class CampaignController extends BaseController
 
         return $this->render('campaign/new.html.twig', [
             'form' => $form->createView(),
-            'taken_prefixes' => $this->getManager(Communication::class)->getTakenPrefixes(),
+            'taken_prefixes' => $this->communicationManager->getTakenPrefixes(),
         ]);
     }
 

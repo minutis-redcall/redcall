@@ -40,6 +40,16 @@ class CommunicationManager
     }
 
     /**
+     * @param int $communicationId
+     *
+     * @return CommunicationEntity|null
+     */
+    public function find(int $communicationId) : ?CommunicationEntity
+    {
+        return $this->communicationRepository->find($communicationId);
+    }
+
+    /**
      * @param CampaignManager $campaignManager
      */
     public function setCampaignManager(CampaignManager $campaignManager)
@@ -112,6 +122,23 @@ class CommunicationManager
         }
 
         return $communicationEntity;
+    }
+
+    /**
+     * @return array
+     */
+    public function getTakenPrefixes() : array
+    {
+        return $this->communicationRepository->getTakenPrefixes();
+    }
+
+    /**
+     * @param \App\Manager\Communication $communication
+     * @param string                     $newName
+     */
+    public function changeName(Communication $communication, string $newName)
+    {
+        $this->communicationRepository->changeName($communication, $newName);
     }
 
     private function dispatch(CommunicationEntity $communication)

@@ -18,7 +18,7 @@ class Sender
     private $SMSProvider;
 
     /**
-     * @var Formatter
+     * @var MessageFormatter
      */
     private $formatter;
 
@@ -41,7 +41,7 @@ class Sender
      * Sender constructor.
      *
      * @param SMSProvider            $SMSProvider
-     * @param Formatter              $formatter
+     * @param MessageFormatter       $formatter
      * @param EntityManagerInterface $entityManager
      * @param IssueLogger            $issueLogger
      * @param ParameterBagInterface  $parameterBag
@@ -49,7 +49,7 @@ class Sender
      */
     public function __construct(
         SMSProvider $SMSProvider,
-        Formatter $formatter,
+        MessageFormatter $formatter,
         EntityManagerInterface $entityManager,
         IssueLogger $issueLogger,
         EmailProvider $emailProvider
