@@ -41,6 +41,14 @@ class CampaignManager
     }
 
     /**
+     * @param CampaignEntity $campaign
+     */
+    public function save(CampaignEntity $campaign)
+    {
+        $this->campaignRepository->save($campaign);
+    }
+
+    /**
      * Launches a campaign by creating a new one and sending an initial communication to a list of volunteers.
      *
      * @param CampaignModel $campaignModel

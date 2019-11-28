@@ -35,7 +35,6 @@ by following the next sections.
 - [Setting up Symfony](docs/tech/05-configure-symfony.md)
 - [Setting up Google reCaptcha](docs/tech/06-google-recaptcha.md)
 - [Setting up Google Cloud SQL](docs/tech/07-google-cloud-sql.md)
-- [Setting up Sentry](docs/tech/08-configure-sentry.md)
 - [Setting up Mapbox](docs/tech/09-configure-mapbox.md)
 - [Setting up Nexmo](docs/tech/10-configure-nexmo.md)
 - [Setting up Pegass](docs/tech/11-configure-pegass.md)

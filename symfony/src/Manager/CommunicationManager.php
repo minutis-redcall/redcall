@@ -2,13 +2,13 @@
 
 namespace App\Manager;
 
+use App\Communication\Processor\ProcessorInterface;
 use App\Entity\Campaign;
 use App\Entity\Choice;
 use App\Entity\Communication;
 use App\Entity\Communication as CommunicationEntity;
 use App\Entity\Message;
 use App\Form\Model\Communication as CommunicationModel;
-use App\Issue\IssueLogger;
 use App\Repository\CommunicationRepository;
 
 class CommunicationManager
@@ -29,14 +29,31 @@ class CommunicationManager
     private $communicationRepository;
 
     /**
+     * @var ProcessorInterface
+     */
+    private $processor;
+
+    /**
      * @param MessageManager $messageManager
      * @param CommunicationRepository $communicationRepository
+     * @param ProcessorInterface $processor
      */
     public function __construct(MessageManager $messageManager,
-                                CommunicationRepository $communicationRepository)
+                                CommunicationRepository $communicationRepository,
+                                ProcessorInterface $processor)
     {
         $this->messageManager = $messageManager;
         $this->communicationRepository = $communicationRepository;
+        $this->processor = $processor;
+    }
+
+    /**
+     * @required
+     * @param CampaignManager $campaignManager
+     */
+    public function setCampaignManager(CampaignManager $campaignManager)
+    {
+        $this->campaignManager = $campaignManager;
     }
 
     /**
@@ -47,14 +64,6 @@ class CommunicationManager
     public function find(int $communicationId) : ?CommunicationEntity
     {
         return $this->communicationRepository->find($communicationId);
-    }
-
-    /**
-     * @param CampaignManager $campaignManager
-     */
-    public function setCampaignManager(CampaignManager $campaignManager)
-    {
-        $this->campaignManager = $campaignManager;
     }
 
     /**
@@ -140,18 +149,4 @@ class CommunicationManager
     {
         $this->communicationRepository->changeName($communication, $newName);
     }
-
-    private function dispatch(CommunicationEntity $communication)
-    {
-        try {
-            $this->processor->process($communication);
-        } catch (\Throwable $e) {
-            $this->eventLogger->fileIssueFromException('Failed to dispatch communication', $e, IssueLogger::SEVERITY_CRITICAL, [
-                'communication_id'    => $communication->getId(),
-                'communication_type'  => $communication->getType(),
-                'targeted_volunteers' => $communication->getMessages()->count(),
-            ]);
-        }
-
-   }
 }

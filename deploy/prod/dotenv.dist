@@ -18,10 +18,6 @@ GOOGLE_RECAPTCHA_SITE_KEY=key
 GOOGLE_RECAPTCHA_SECRET=secret
 ###< google/recaptcha ###
 
-###> sentry/sentry-symfony ###
-SENTRY_DSN=https://password@sentry.io/account
-###< sentry/sentry-symfony ###
-
 ###> google/apiclient ###
 GOOGLE_API_KEY=
 GOOGLE_CLIENT_ID=

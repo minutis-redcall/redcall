@@ -5,7 +5,6 @@ namespace App\Command;
 use App\Base\BaseCommand;
 use App\Communication\Sender;
 use App\Entity\Communication;
-use App\Issue\IssueLogger;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -45,15 +44,7 @@ class SendCommunicationCommand extends BaseCommand
 
         foreach ($communication->getMessages() as $message) {
             if (!$message->getMessageId()) {
-                try {
-                    $this->get(Sender::class)->send($message);
-                } catch (\Throwable $throwable) {
-                    $this->get(IssueLogger::class)->fileIssueFromException('Failed to send message', $throwable, IssueLogger::SEVERITY_CRITICAL, [
-                        'communication_id' => $communication->getId(),
-                        'message_id'       => $message->getId(),
-                    ]);
-                }
-
+                $this->get(Sender::class)->send($message);
                 usleep(self::PAUSE);
             }
         }
