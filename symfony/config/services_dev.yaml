@@ -2,12 +2,12 @@ parameters:
   communication.processor: 'App\Communication\Processor\SimpleProcessor'
 
 services:
-  App\SMS\SMSProvider:
+  App\Provider\SMS\SMSProvider:
     class: 'Bundles\SandboxBundle\Provider\FakeSmsProvider'
     arguments: ['@doctrine']
     public: true
 
-  App\Email\EmailProvider:
+  App\Provider\Email\EmailProvider:
     class: 'Bundles\SandboxBundle\Provider\FakeEmailProvider'
     arguments: ['@doctrine']
     public: true
