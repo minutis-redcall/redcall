@@ -10,6 +10,7 @@
 /deploy/preprod/dotenv-migrate
 /deploy/preprod/google-service-account.json
 /deploying
+/deploy.bkp
 /symfony/app.yaml
 
 notes.txt
