@@ -31,7 +31,6 @@ security:
 
     # Maintenance
     - { path: '^/cron', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
-    - { path: '^/database', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
 
     # Nexmo webhooks (sms response received)
     - { path: '^/webhooks', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
