@@ -180,7 +180,7 @@
         "version": "v2.0.15"
     },
     "php": {
-        "version": "7.3"
+        "version": "7.2"
     },
     "php-http/guzzle6-adapter": {
         "version": "v1.1.1"

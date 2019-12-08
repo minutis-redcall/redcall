@@ -59,6 +59,7 @@
       "*": "dist"
     },
     "platform": {
+      "php": "7.2"
     },
     "sort-packages": true
   },
