@@ -34,10 +34,22 @@
 
 {{ render(controller('\\App\\Controller\\PrefilledAnswersController::renderWidget', {campaignId: campaign.id|default(null)})) }}
 
-<div id="answer-collection">
+<div id="answer-collection" data-index="{{ form.answers.children|length }}">
     {{ form_row(form.answers, {label: false}) }}
-    <div id="answer-separator"></div>
     <a id="add-answer" href="#" class="btn btn-light" style="width:100%;">{{ 'form.communication.fields.add_answer'|trans }}</a>
+</div>
+
+<br/>
+
+<div id="message-prefix">
+    {{ form_row(form.prefix) }}
+    {% if taken_prefixes %}
+        <small>
+            <em>
+                {{ 'form.communication.fields.taken_prefixes'|trans({'%prefixes%':taken_prefixes|join(', ')}) }}
+            </em>
+        </small>
+    {% endif %}
 </div>
 
 {{ form_row(form.multipleAnswer) }}
@@ -62,7 +74,6 @@
     <span id="message-cost">--</span>
 </div>
 
-<script type="text/javascript" src="{{ asset('js/jquery.collection.js') }}"></script>
 <script type="text/javascript">
 
     {# Update message size automatically #}
@@ -113,12 +124,14 @@
             $('#message-max').html({{ max_length_sms }});
             $('#message-calc').removeClass('d-none');
             $('#message-subject').addClass('d-none');
+            $('#message-prefix').removeClass('d-none');
             $('#message-geo-location').removeClass('d-none');
             $('textarea, .textarea-wrapper').css('height', '78px');
         } else {
             $('#message-max').html({{ max_length_email }});
             $('#message-calc').addClass('d-none');
             $('#message-subject').removeClass('d-none');
+            $('#message-prefix').addClass('d-none');
             $('#message-geo-location').addClass('d-none');
             $('textarea, .textarea-wrapper').css('height', '150px');
         }
@@ -134,23 +147,32 @@
     {# Collection of answers #}
     $('#add-answer').click(function(e) {
         e.preventDefault();
-        var collection = $('#{{ form.answers.vars.id }}');
-        var prototype = collection.data('prototype');
 
-        var index = 0;
-        if (collection.data('index') !== undefined) {
-            index = collection.data('index');
+        if ($('.answer-row').length >= 9) {
+            return;
         }
 
-        $('#answer-separator').before(prototype.replace(/__name__/g, index));
-        collection.data('index', index + 1);
+        var collection = $('#{{ form.answers.vars.id }}');
+        var prototype = collection.data('prototype');
+        var container = $('#answer-collection');
+        var index = container.data('index');
+
+        $('#answer-collection fieldset').append(prototype.replace(/__name__/g, index));
+        container.data('index', index + 1);
 
         refreshPreview();
+
+        if ($('.answer-row').length >= 9) {
+            $('#add-answer').addClass('d-none');
+        }
     });
+    refreshPreview();
 
     {# Initialize collection with 2 answers #}
-    $('#add-answer').click();
-    $('#add-answer').click();
+    if ($('#answer-collection').data('index') == 0) {
+        $('#add-answer').click();
+        $('#add-answer').click();
+    }
 
     {# Answer removal #}
     $('body').on('click', '.remove-answer', function(e) {
@@ -158,6 +180,16 @@
         var index = $(this).data('index');
         $('#answer-nb-' + index).remove();
         refreshPreview();
+
+        $('#add-answer').removeClass('d-none');
+    });
+
+    {# Limit prefix to 1 uppercase char #}
+    $('#{{ form.prefix.vars.id }}').keyup(function() {
+        var that = $(this);
+        that.val(
+            that.val().toUpperCase().substring(0, 1)
+        );
     });
 
     {# Disable submit button at submission to prevent sending communication twice #}

@@ -2,13 +2,12 @@
 
 namespace App\Communication;
 
-use App\Email\EmailProvider;
 use App\Entity\Communication;
 use App\Entity\Message;
-use App\Issue\IssueLogger;
-use App\SMS\SMSProvider;
+use App\Provider\Email\EmailProvider;
+use App\Provider\SMS\SMSProvider;
+use App\Services\MessageFormatter;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 class Sender
 {
@@ -18,7 +17,7 @@ class Sender
     private $SMSProvider;
 
     /**
-     * @var Formatter
+     * @var MessageFormatter
      */
     private $formatter;
 
@@ -26,11 +25,6 @@ class Sender
      * @var EntityManagerInterface
      */
     private $entityManager;
-
-    /**
-     * @var IssueLogger
-     */
-    private $issueLogger;
 
     /**
      * @var EmailProvider
@@ -41,23 +35,19 @@ class Sender
      * Sender constructor.
      *
      * @param SMSProvider            $SMSProvider
-     * @param Formatter              $formatter
+     * @param MessageFormatter       $formatter
      * @param EntityManagerInterface $entityManager
-     * @param IssueLogger            $issueLogger
-     * @param ParameterBagInterface  $parameterBag
      * @param EmailProvider          $emailProvider
      */
     public function __construct(
         SMSProvider $SMSProvider,
-        Formatter $formatter,
+        MessageFormatter $formatter,
         EntityManagerInterface $entityManager,
-        IssueLogger $issueLogger,
         EmailProvider $emailProvider
     ) {
         $this->SMSProvider   = $SMSProvider;
         $this->formatter     = $formatter;
         $this->entityManager = $entityManager;
-        $this->issueLogger   = $issueLogger;
         $this->emailProvider = $emailProvider;
     }
 
@@ -84,24 +74,17 @@ class Sender
             return ;
         }
 
-        try {
-            $SMSSent = $this->SMSProvider->send(
-                $this->formatter->formatMessageContent($message),
-                $volunteer->getPhoneNumber()
-            );
+        $SMSSent = $this->SMSProvider->send(
+            $this->formatter->formatMessageContent($message),
+            $volunteer->getPhoneNumber()
+        );
 
-            $message->setMessageId($SMSSent->getId());
-            $message->setCost($SMSSent->getCost());
-            $message->setSent(true);
+        $message->setMessageId($SMSSent->getId());
+        $message->setCost($SMSSent->getCost());
+        $message->setSent(true);
 
-            $this->entityManager->merge($message);
-            $this->entityManager->flush();
-        } catch (\Exception $e) {
-            $this->issueLogger->fileIssueFromException('Failed to send SMS to volunteer', $e, IssueLogger::SEVERITY_MAJOR, [
-                'volunteer_id'  => $volunteer->getId(),
-                'provider_code' => $this->SMSProvider->getProviderCode(),
-            ]);
-        }
+        $this->entityManager->merge($message);
+        $this->entityManager->flush();
     }
 
     /**
@@ -113,23 +96,17 @@ class Sender
             return;
         }
 
-        try {
-            $this->emailProvider->send(
-                $message->getVolunteer()->getEmail(),
-                $message->getCommunication()->getSubject(),
-                $this->formatter->formatMessageContent($message)
-            );
+        $this->emailProvider->send(
+            $message->getVolunteer()->getEmail(),
+            $message->getCommunication()->getSubject(),
+            $this->formatter->formatMessageContent($message)
+        );
 
-            $message->setMessageId(time());
-            $message->setCost(0);
-            $message->setSent(true);
+        $message->setMessageId(time());
+        $message->setCost(0);
+        $message->setSent(true);
 
-            $this->entityManager->merge($message);
-            $this->entityManager->flush();
-        } catch (\Exception $e) {
-            $this->issueLogger->fileIssueFromException('Failed to send SMS to volunteer', $e, IssueLogger::SEVERITY_MAJOR, [
-                'volunteer_id' => $message->getVolunteer()->getId(),
-            ]);
-        }
+        $this->entityManager->merge($message);
+        $this->entityManager->flush();
     }
 }

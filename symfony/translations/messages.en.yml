@@ -107,9 +107,9 @@ campaign_status:
   answers:
     change: 'Change answers'
     history: 'History'
-    label: '(response "%label%")'
-    labels: '(responses %label%)'
-    unclear: 'Unclear answer'
+    label: 'Response "%label%"'
+    labels: 'Responses %label%'
+    unclear: 'Unclear'
   legend:
     sms_sent: '"SMS sent" indicates whether message has been sent to the volunteer. May be blank if there is a technical issue.'
     sms_received: '"SMS received" indicates wether message has been received by the volunteer. If blank, volunteer may have turned off his phone number.'
@@ -163,6 +163,8 @@ form:
       cost: 'Message cost multiplied by:'
       length: 'Message length:'
       multiple_answer: 'Volunteers can choose several answers'
+      prefix: 'Response prefix (to use in case of multiple communications at the same time)'
+      taken_prefixes: 'Do not use the following prefix(es) because they are already used: %prefixes%'
   campaign:
     fields:
       label: 'Campaign name'

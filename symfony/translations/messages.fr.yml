@@ -106,9 +106,9 @@ campaign_status:
   answers:
     change: 'Changer les réponses'
     history: 'Historique'
-    label: '(réponse "%label%")'
-    labels: '(réponses %label%)'
-    unclear: 'Réponse ambigüe'
+    label: 'Réponse "%label%"'
+    labels: 'Réponses %label%'
+    unclear: 'Ambigüe'
   legend:
     sms_sent: '"SMS envoyé" indique si le message a bien été envoyé au volonaire. Si cette colonne reste vide, il y a probablement un problème technique.'
     sms_received: '"SMS reçu" indique si le message a bien été délivré au volontaire. Elle peut rester blanche si le volontaire a éteint son téléphone.'
@@ -162,6 +162,8 @@ form:
       cost: 'Coût du message multiplié par :'
       length: 'Longueur du message :'
       multiple_answer: 'Les destinataires peuvent choisir plusieurs réponses'
+      prefix: 'Préfixe de la réponse (à utiliser en cas de recensement multiple)'
+      taken_prefixes: 'Ne pas utiliser le(s) préfix(es) suivant(s) car il(s) sont déjà utilisé(s) : %prefixes%'
   campaign:
     fields:
       label: 'Nom du déclenchement'

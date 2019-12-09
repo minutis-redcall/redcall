@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Base\BaseRepository;
 use App\Entity\Answer;
 use App\Entity\Call;
 use App\Entity\Campaign;
@@ -9,12 +10,11 @@ use App\Entity\Choice;
 use App\Entity\Message;
 use App\Entity\Selection;
 use App\Tools\Random;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Translation\TranslatorInterface;
 
-class MessageRepository extends ServiceEntityRepository
+class MessageRepository extends BaseRepository
 {
     const CODE_SIZE = 8;
 
@@ -38,16 +38,50 @@ class MessageRepository extends ServiceEntityRepository
         $this->tokenStorage = $tokenStorage;
     }
 
-    public function getLastMessageSentToPhone($phoneNumber)
+    /**
+     * @param string $phoneNumber
+     * @param string $body
+     *
+     * @return Message|null
+     *
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function getMessageFromPhoneNumberAndPrefix(string $phoneNumber, string $body)
     {
-        $stmt = $this->createQueryBuilder('m')
-                     ->innerJoin('App:Volunteer', 'v', 'WITH', 'v = m.volunteer')
-                     ->where('v.phoneNumber = :from')
-                     ->orderBy('m.id', 'DESC')
-                     ->setMaxResults(1)
-                     ->setParameter('from', $phoneNumber);
+        $message = null;
 
-        return $stmt->getQuery()->getOneOrNullResult();
+        if (preg_match('/^[a-zA-Z][1-9]$/u', $body)) {
+            // Get latest message sent to the volunteer on an active communication having a prefix.
+
+            $stmt = $this->createQueryBuilder('m')
+                         ->innerJoin('App:Volunteer', 'v', 'WITH', 'v = m.volunteer')
+                         ->innerJoin('App:Communication', 'co', 'WITH', 'co = m.communication')
+                         ->innerJoin('App:Campaign', 'ca', 'WITH', 'ca = co.campaign')
+                         ->where('v.phoneNumber = :phoneNumber')
+                         ->andWhere('ca.active = 1')
+                         ->andWhere('co.prefix = :prefix')
+                         ->orderBy('m.id', 'DESC')
+                         ->setMaxResults(1)
+                         ->setParameter('phoneNumber', $phoneNumber)
+                         ->setParameter('prefix', substr($body, 0, 1));
+
+            $message = $stmt->getQuery()->getOneOrNullResult();
+        }
+
+        if (null === $message) {
+            // Get latest message sent to the volunteer
+
+            $stmt = $this->createQueryBuilder('m')
+                         ->innerJoin('App:Volunteer', 'v', 'WITH', 'v = m.volunteer')
+                         ->where('v.phoneNumber = :from')
+                         ->orderBy('m.id', 'DESC')
+                         ->setMaxResults(1)
+                         ->setParameter('from', $phoneNumber);
+
+            $message = $stmt->getQuery()->getOneOrNullResult();
+        }
+
+        return $message;
     }
 
     /**
@@ -91,15 +125,13 @@ class MessageRepository extends ServiceEntityRepository
         $answer = new Answer();
         $message->addAnswser($answer);
         $answer->setMessage($message);
-
-        if ($byAdmin) {
-            $answer->setRaw(sprintf('%s: %s', $this->tokenStorage->getToken()->getUsername(), $body));
-        } else {
-            $answer->setRaw($body);
-        }
-
+        $answer->setRaw($body);
         $answer->setReceivedAt(new \DateTime());
         $answer->setUnclear($message->getCommunication()->isUnclear($body));
+
+        if ($byAdmin) {
+            $answer->setByAdmin($this->tokenStorage->getToken()->getUsername());
+        }
 
         foreach ($choices as $choice) {
             $answer->addChoice($choice);

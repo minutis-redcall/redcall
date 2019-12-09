@@ -2,8 +2,8 @@
 
 namespace App\Repository;
 
+use App\Base\BaseRepository;
 use App\Entity\Communication;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
 /**
@@ -12,7 +12,7 @@ use Symfony\Bridge\Doctrine\RegistryInterface;
  * @method Communication[]    findAll()
  * @method Communication[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class CommunicationRepository extends ServiceEntityRepository
+class CommunicationRepository extends BaseRepository
 {
     /**
      * CommunicationRepository constructor.
@@ -31,6 +31,26 @@ class CommunicationRepository extends ServiceEntityRepository
     public function changeName(Communication $communication, string $newName): void
     {
         $communication->setLabel($newName);
-        $this->_em->flush();
+        $this->save($communication);
+    }
+
+
+    /**
+     * Get prefixes that cannot be used.
+     */
+    public function getTakenPrefixes()
+    {
+        $prefixes = array_column($this->createQueryBuilder('co')
+            ->select('co.prefix')
+            ->distinct()
+            ->innerJoin('App:Campaign', 'ca', 'WITH', 'ca = co.campaign')
+            ->where('co.prefix IS NOT NULL')
+            ->andWhere('ca.active = 1')
+            ->getQuery()
+            ->getArrayResult(), 'prefix');
+
+        sort($prefixes);
+
+        return $prefixes;
     }
 }

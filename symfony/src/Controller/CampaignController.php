@@ -3,10 +3,11 @@
 namespace App\Controller;
 
 use App\Base\BaseController;
-use App\Campaign\CampaignManager;
 use App\Entity\Campaign;
 use App\Form\Model\Campaign as CampaignModel;
 use App\Form\Type\CampaignType;
+use App\Manager\CampaignManager;
+use App\Manager\CommunicationManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,21 +15,28 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CampaignController extends BaseController
 {
-    /** @var CampaignManager */
+    /**
+     * @var CampaignManager
+     */
     private $campaignManager;
 
     /**
-     * CommunicationController constructor.
-     *
-     * @param CampaignManager $campaignManager
+     * @var CommunicationManager
      */
-    public function __construct(CampaignManager $campaignManager)
+    private $communicationManager;
+
+    /**
+     * @param CampaignManager $campaignManager
+     * @param CommunicationManager $communicationManager
+     */
+    public function __construct(CampaignManager $campaignManager, CommunicationManager $communicationManager)
     {
         $this->campaignManager = $campaignManager;
+        $this->communicationManager = $communicationManager;
     }
 
     /**
-     * @Route(path="declenchement/liste", name="list_campaigns")
+     * @Route(path="campaign/list", name="list_campaigns")
      * @return Response
      */
     public function listCampaigns()
@@ -41,19 +49,8 @@ class CampaignController extends BaseController
      */
     public function renderCampaignsTable(Request $request): Response
     {
-        $ongoing = $this
-            ->get('doctrine')
-            ->getManager()
-            ->getRepository(Campaign::class)
-            ->createQueryBuilder('c')
-            ->where('c.active = 1');
-
-        $finished = $this
-            ->get('doctrine')
-            ->getManager()
-            ->getRepository(Campaign::class)
-            ->createQueryBuilder('c')
-            ->where('c.active = 0');
+        $ongoing = $this->campaignManager->getActiveCampaignsQueryBuilder();
+        $finished = $this->campaignManager->getInactiveCampaignsQueryBuilder();
 
         return $this->render('campaign/table.html.twig', [
             'data' => [
@@ -70,7 +67,7 @@ class CampaignController extends BaseController
     }
 
     /**
-     * @Route(path="declenchement/nouveau", name="create_campaign")
+     * @Route(path="campaign/new", name="create_campaign")
      *
      * @param Request $request
      *
@@ -79,36 +76,27 @@ class CampaignController extends BaseController
      */
     public function createCampaign(Request $request)
     {
-        $campaign = new CampaignModel();
+        $campaignModel = new CampaignModel();
         $form     = $this
-            ->createForm(CampaignType::class, $campaign)
+            ->createForm(CampaignType::class, $campaignModel)
             ->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $campaignId = $this->campaignManager->launchNewCampaign(
-                $campaign->label ?: date('d/m/y H:i'),
-                $campaign->type,
-                $campaign->communication->volunteers,
-                $campaign->communication->message,
-                $campaign->communication->answers,
-                $campaign->communication->geoLocation,
-                $campaign->communication->type,
-                $campaign->communication->multipleAnswer,
-                $campaign->communication->subject
-            );
+            $campaignEntity = $this->campaignManager->launchNewCampaign($campaignModel);
 
             return $this->redirect($this->generateUrl('communication_index', [
-                'campaignId' => $campaignId,
+                'campaignId' => $campaignEntity->getId(),
             ]));
         }
 
         return $this->render('campaign/new.html.twig', [
             'form' => $form->createView(),
+            'taken_prefixes' => $this->communicationManager->getTakenPrefixes(),
         ]);
     }
 
     /**
-     * @Route(path="declenchement/{campaignId}/fermer/{csrf}", name="close_campaign")
+     * @Route(path="campaign/{campaignId}/close/{csrf}", name="close_campaign")
      *
      * @param int    $campaignId
      * @param string $csrf
@@ -132,7 +120,7 @@ class CampaignController extends BaseController
     }
 
     /**
-     * @Route(path="declenchement/{campaignId}/ouvrir/{csrf}", name="open_campaign")
+     * @Route(path="campaign/{campaignId}/open/{csrf}", name="open_campaign")
      *
      * @param int    $campaignId
      * @param string $csrf
@@ -156,7 +144,7 @@ class CampaignController extends BaseController
     }
 
     /**
-     * @Route(path="declenchement/{campaignId}/changer-couleur/{color}/{csrf}", name="color_campaign")
+     * @Route(path="campaign/{campaignId}/change-color/{color}/{csrf}", name="color_campaign")
      *
      * @param int    $campaignId
      * @param string $csrf
@@ -186,7 +174,7 @@ class CampaignController extends BaseController
     }
 
     /**
-     * @Route(path="declenchement/{campaignId}/changer-nom", name="rename_campaign")
+     * @Route(path="campaign/{campaignId}/rename", name="rename_campaign")
      *
      * @param Request $request
      * @param int     $campaignId

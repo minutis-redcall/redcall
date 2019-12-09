@@ -21,7 +21,6 @@
     "ramsey/uuid": "^3.7",
     "redcall-io/password-login-bundle": "^0.9.0",
     "sensio/framework-extra-bundle": "^5.1",
-    "sentry/sentry-symfony": "^2.0",
     "symfony/apache-pack": "^1.0",
     "symfony/asset": "^4.1",
     "symfony/console": "^4.1",
@@ -60,6 +59,7 @@
       "*": "dist"
     },
     "platform": {
+      "php": "7.2"
     },
     "sort-packages": true
   },

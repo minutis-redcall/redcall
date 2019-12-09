@@ -2,8 +2,8 @@
 
 namespace App\Repository;
 
+use App\Base\BaseRepository;
 use App\Entity\Choice;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
 /**
@@ -12,7 +12,7 @@ use Symfony\Bridge\Doctrine\RegistryInterface;
  * @method Choice[]    findAll()
  * @method Choice[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class ChoiceRepository extends ServiceEntityRepository
+class ChoiceRepository extends BaseRepository
 {
     public function __construct(RegistryInterface $registry)
     {

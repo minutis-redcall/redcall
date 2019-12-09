@@ -4,8 +4,8 @@ namespace App\Controller\Maintenance;
 
 use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\HttpFoundation\Request;
@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\KernelInterface;
 
 /**
- * @Route(path="cron", name="cron_")
+ * @Route(path="cron")
  */
 class CronController extends AbstractController
 {
@@ -33,7 +33,7 @@ class CronController extends AbstractController
     /**
      * @Route("/{key}")
      */
-    public function run(Request $request, string $key,  KernelInterface $kernel)
+    public function run(Request $request, string $key, KernelInterface $kernel)
     {
         $key = str_replace('-', ':', $key);
         if (!in_array($key, self::CRONS)) {
@@ -48,9 +48,9 @@ class CronController extends AbstractController
         $application = new Application($kernel);
         $application->setAutoExit(false);
 
-        $input = new ArrayInput(array_merge([
+        $input = new ArrayInput(array_merge($request->query->all(), [
             'command' => $key,
-        ], $request->query->all()));
+        ]));
 
         $application->run($input, new NullOutput());
 

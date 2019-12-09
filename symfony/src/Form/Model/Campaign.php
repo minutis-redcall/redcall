@@ -10,6 +10,7 @@ class Campaign
     /**
      * @var string
      *
+     * @Assert\NotBlank()
      * @Assert\Length(max=255, groups={"label_edition", "Default"})
      */
     public $label;

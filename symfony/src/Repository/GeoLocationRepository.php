@@ -2,9 +2,9 @@
 
 namespace App\Repository;
 
+use App\Base\BaseRepository;
 use App\Entity\Communication;
 use App\Entity\GeoLocation;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
 /**
@@ -13,7 +13,7 @@ use Symfony\Bridge\Doctrine\RegistryInterface;
  * @method GeoLocation[]    findAll()
  * @method GeoLocation[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class GeoLocationRepository extends ServiceEntityRepository
+class GeoLocationRepository extends BaseRepository
 {
     /**
      * GeoLocationRepository constructor.

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Communication;
+namespace App\Tools;
 
 class GSM
 {
@@ -268,6 +268,11 @@ class GSM
         '/’|`/'                               => '\'',
     ];
 
+    /**
+     * @param string $message
+     *
+     * @return string
+     */
     public static function isGSMCompatible(string $message): string
     {
         foreach (preg_split('//u', $message, null, PREG_SPLIT_NO_EMPTY) as $letter) {
@@ -279,6 +284,11 @@ class GSM
         return true;
     }
 
+    /**
+     * @param string $message
+     *
+     * @return string
+     */
     public static function transliterate(string $message): string
     {
         return trim(preg_replace(
@@ -288,6 +298,11 @@ class GSM
         ));
     }
 
+    /**
+     * @param string $message
+     *
+     * @return string
+     */
     public static function enforceGSMAlphabet(string $message): string
     {
         $sanitized = '';
@@ -302,7 +317,12 @@ class GSM
         return $sanitized;
     }
 
-    public static function getSMSParts(string $message)
+    /**
+     * @param string $message
+     *
+     * @return array
+     */
+    public static function getSMSParts(string $message) : array
     {
         $unicode = false;
         if (!self::isGSMCompatible($message)) {

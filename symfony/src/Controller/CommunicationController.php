@@ -3,19 +3,20 @@
 namespace App\Controller;
 
 use App\Base\BaseController;
-use App\Campaign\CampaignManager;
-use App\Communication\Formatter;
-use App\Communication\GSM;
 use App\Entity\Campaign;
 use App\Entity\Communication;
 use App\Entity\Message;
 use App\Form\Model\Communication as CommunicationModel;
 use App\Form\Type\CampaignType;
 use App\Form\Type\CommunicationType;
-use App\Repository\AnswerRepository;
-use App\Repository\CommunicationRepository;
-use App\Repository\MessageRepository;
-use App\Repository\TagRepository;
+use App\Manager\AnswerManager;
+use App\Manager\CampaignManager;
+use App\Manager\CommunicationManager;
+use App\Manager\MessageManager;
+use App\Manager\TagManager;
+use App\Manager\VolunteerManager;
+use App\Services\MessageFormatter;
+use App\Tools\GSM;
 use App\Tools\Random;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -34,58 +35,66 @@ class CommunicationController extends BaseController
     private $campaignManager;
 
     /**
-     * @var TagRepository
+     * @var CommunicationManager
      */
-    private $tagRepository;
-
-    /**
-     * @var MessageRepository
-     */
-    private $messageRepository;
-
-    /**
-     * @var AnswerRepository
-     */
-    private $answerRepository;
-
-    /**
-     * @var CommunicationRepository
-     */
-    private $communicationRepository;
+    private $communicationManager;
 
     /**
      * Message formatter, used for previsualization
      *
-     * @var Formatter
+     * @var MessageFormatter
      */
     private $formatter;
+
+    /**
+     * @var TagManager
+     */
+    private $tagManager;
+
+    /**
+     * @var VolunteerManager
+     */
+    private $volunteerManager;
+
+    /**
+     * @var MessageManager
+     */
+    private $messageManager;
+
+    /**
+     * @var AnswerManager
+     */
+    private $answerManager;
 
     /**
      * CommunicationController constructor.
      *
      * @param CampaignManager         $campaignManager
-     * @param TagRepository           $tagRepository
-     * @param MessageRepository       $messageRepository
-     * @param AnswerRepository        $answerRepository
-     * @param CommunicationRepository $communicationRepository
+     * @param CommunicationManager    $communicationManager
+     * @param TagManager              $tagManager
+     * @param VolunteerManager $volunteerManager
+     * @param MessageManager $messageManager
+     * @param AnswerManager $answerManager
      */
     public function __construct(CampaignManager $campaignManager,
-        TagRepository $tagRepository,
-        MessageRepository $messageRepository,
-        AnswerRepository $answerRepository,
-        CommunicationRepository $communicationRepository,
-        Formatter $formatter)
+                                CommunicationManager $communicationManager,
+                                MessageFormatter $formatter,
+                                TagManager $tagManager,
+                                VolunteerManager $volunteerManager,
+                                MessageManager $messageManager,
+                                AnswerManager $answerManager)
     {
         $this->campaignManager         = $campaignManager;
-        $this->tagRepository           = $tagRepository;
-        $this->messageRepository       = $messageRepository;
-        $this->answerRepository        = $answerRepository;
-        $this->communicationRepository = $communicationRepository;
+        $this->communicationManager    = $communicationManager;
         $this->formatter               = $formatter;
+        $this->tagManager              = $tagManager;
+        $this->volunteerManager = $volunteerManager;
+        $this->messageManager = $messageManager;
+        $this->answerManager = $answerManager;
     }
 
     /**
-     * @Route(path="declenchement/{campaignId}", name="index", requirements={"campaignId" = "\d+"})
+     * @Route(path="campaign/{campaignId}", name="index", requirements={"campaignId" = "\d+"})
      *
      * @param int $campaignId
      *
@@ -99,14 +108,14 @@ class CommunicationController extends BaseController
 
         return $this->render('status_communication/index.html.twig', [
             'campaign'   => $campaign,
-            'skills'     => $this->tagRepository->findAll(),
+            'skills'     => $this->tagManager->findAll(),
             'statusHash' => $this->getStatusHash($campaign),
             'progress'   => $campaign->getCampaignProgression(),
         ]);
     }
 
     /**
-     * @Route(path="declenchement/{campaignId}/poll", name="poll", requirements={"campaignId" = "\d+"})
+     * @Route(path="campaign/{campaignId}/poll", name="poll", requirements={"campaignId" = "\d+"})
      *
      * @param int $campaignId
      *
@@ -126,7 +135,7 @@ class CommunicationController extends BaseController
     /**
      * @Route(
      *     name="add",
-     *     path="declenchement/{campaignId}/ajouter-une-communication",
+     *     path="campaign/{campaignId}/add-communication",
      *     requirements={"campaignId" = "\d+"}
      * )
      * @Method("POST")
@@ -141,7 +150,7 @@ class CommunicationController extends BaseController
         $selection = json_decode($request->request->get('volunteers', '[]'), true);
 
         foreach ($selection as $volunteerId) {
-            $volunteer = $this->get('doctrine')->getRepository('App:Volunteer')->find($volunteerId);
+            $volunteer = $this->volunteerManager->find($volunteerId);
             if (!$volunteer) {
                 throw $this->createNotFoundException();
             }
@@ -171,7 +180,7 @@ class CommunicationController extends BaseController
     /**
      * @Route(
      *     name="new",
-     *     path="declenchement/{campaignId}/nouvelle-communication/{key}",
+     *     path="campaign/{campaignId}/new-communication/{key}",
      *     defaults={"key" = null},
      *     requirements={"campaignId" = "\d+"}
      * )
@@ -188,12 +197,9 @@ class CommunicationController extends BaseController
         // restore it from the session.
         $volunteers = [];
         if (!is_null($key)) {
-            $selection = $this->get('session')->get('add-communication', [])[$campaignId][$key] ?? null;
-            if (is_null($selection)) {
-                return $this->redirectToRoute('communication_index', ['campaignId' => $campaignId]);
-            }
+            $selection = $this->get('session')->get('add-communication', [])[$campaignId][$key] ?? [];
             foreach ($selection as $volunteerId) {
-                $volunteer = $this->get('doctrine')->getRepository('App:Volunteer')->find($volunteerId);
+                $volunteer = $this->volunteerManager->find($volunteerId);
                 if ($volunteer) {
                     $volunteers[] = $volunteer;
                 }
@@ -205,7 +211,7 @@ class CommunicationController extends BaseController
          */
         $communication             = new \App\Form\Model\Communication();
         $communication->volunteers = $volunteers;
-        $communication->answers    = ['', ''];
+        $communication->answers    = [];
         $campaign                  = $this->getCampaignOrThrowNotFoundException($campaignId);
 
         $form = $this
@@ -214,7 +220,7 @@ class CommunicationController extends BaseController
 
         // Creating the new communication is form has been submitted
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->campaignManager->createNewCommunication($campaign, $communication);
+            $this->communicationManager->launchNewCommunication($campaign, $communication);
 
             return $this->redirect($this->generateUrl('communication_index', [
                 'campaignId' => $campaign->getId(),
@@ -225,11 +231,12 @@ class CommunicationController extends BaseController
             'campaign'   => $campaign,
             'volunteers' => $volunteers,
             'form'       => $form->createView(),
+            'taken_prefixes' => $this->communicationManager->getTakenPrefixes(),
         ]);
     }
 
     /**
-     * @Route(path="declenchement/preview", name="preview")
+     * @Route(path="campaign/preview", name="preview")
      *
      * @param Request $request
      *
@@ -256,7 +263,7 @@ class CommunicationController extends BaseController
             return new JsonResponse(['success' => false]);
         }
 
-        $communicationEntity = $this->campaignManager->createCommunicationEntity($communicationModel);
+        $communicationEntity = $this->communicationManager->createCommunication($communicationModel);
 
         $message = new Message();
         $message->setCommunication($communicationEntity);
@@ -276,7 +283,7 @@ class CommunicationController extends BaseController
     /**
      * @Route(
      *     name="answers",
-     *     path="declenchement/reponses"
+     *     path="campaign/answers"
      * )
      *
      * @param Request $request
@@ -290,7 +297,7 @@ class CommunicationController extends BaseController
             throw $this->createNotFoundException();
         }
 
-        $message = $this->messageRepository->find($messageId);
+        $message = $this->messageManager->find($messageId);
         if (!$message) {
             throw $this->createNotFoundException();
         }
@@ -303,7 +310,7 @@ class CommunicationController extends BaseController
     /**
      * @Route(
      *     name="change_answer",
-     *     path="declenchement/reponses/{messageId}/{csrf}",
+     *     path="campaign/answer/{messageId}/{csrf}",
      *     requirements={"messageId" = "\d+"}
      * )
      *
@@ -318,7 +325,7 @@ class CommunicationController extends BaseController
         $this->validateCsrfOrThrowNotFoundException('communication', $csrf);
 
         /* @var Message $message */
-        $message = $this->messageRepository->find($messageId);
+        $message = $this->messageManager->find($messageId);
         if (!$message) {
             throw $this->createNotFoundException();
         }
@@ -334,13 +341,13 @@ class CommunicationController extends BaseController
             throw $this->createNotFoundException();
         }
 
-        $this->messageRepository->toggleAnswer($message, $choiceEntity);
+        $this->messageManager->toggleAnswer($message, $choiceEntity);
 
         return new Response();
     }
 
     /**
-     * @Route(path="declenchement/{campaignId}/renommer-communication/{communicationId}", name="rename")
+     * @Route(path="campaign/{campaignId}/rename-communication/{communicationId}", name="rename")
      *
      * @param Request $request
      * @param int     $campaignId
@@ -361,7 +368,7 @@ class CommunicationController extends BaseController
                 $this->addFlash('danger', $error->getMessage());
             }
         } else {
-            $this->communicationRepository->changeName($communicationEntity, $communication->label);
+            $this->communicationManager->changeName($communicationEntity, $communication->label);
         }
 
         return $this->redirect($this->generateUrl('communication_index', [
@@ -378,7 +385,7 @@ class CommunicationController extends BaseController
      */
     private function getCampaignOrThrowNotFoundException(int $campaignId): Campaign
     {
-        $campaign = $this->getManager(Campaign::class)->find($campaignId);
+        $campaign = $this->campaignManager->find($campaignId);
 
         if (is_null($campaign)) {
             throw $this->createNotFoundException();
@@ -396,7 +403,7 @@ class CommunicationController extends BaseController
      */
     private function getCommunicationOrThrowNotFoundExcpetion(int $communicationId): Communication
     {
-        $communication = $this->getManager(Communication::class)->find($communicationId);
+        $communication = $this->communicationManager->find($communicationId);
 
         if (is_null($communication)) {
             throw $this->createNotFoundException();
@@ -423,10 +430,10 @@ class CommunicationController extends BaseController
             '%s-%s',
 
             // New answer arrived
-            $this->answerRepository->getLastCampaignUpdateTimestamp($campaign),
+            $this->answerManager->getLastCampaignUpdateTimestamp($campaign),
 
             // Number of messages sent changed
-            $this->messageRepository->getNumberOfSentMessages($campaign)
+            $this->messageManager->getNumberOfSentMessages($campaign)
         );
     }
 }

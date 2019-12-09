@@ -2,78 +2,31 @@
 
 namespace App\Communication;
 
-use App\Communication\Processor\ProcessorInterface;
-use App\Entity\Communication;
 use App\Entity\Message;
-use App\Issue\IssueLogger;
-use App\Repository\ChoiceRepository;
 use App\Repository\MessageRepository;
-use Doctrine\ORM\EntityManagerInterface;
 
 class Dispatcher
 {
-    /** @var ProcessorInterface */
-    private $processor;
-
-    /** @var EntityManagerInterface */
-    private $entityManager;
-
-    /** @var IssueLogger */
-    private $eventLogger;
-
-    /** @var ChoiceRepository */
-    private $choiceRepository;
-
     /**
      * @var MessageRepository
      */
     private $messageRepository;
 
     /**
-     * CommunicationManager constructor.
-     *
-     * @param ProcessorInterface     $processor
-     * @param EntityManagerInterface $entityManager
-     * @param IssueLogger            $eventLogger
-     * @param ChoiceRepository       $choiceRepository
-     * @param MessageRepository      $messageRepository
+     * @param MessageRepository $messageRepository
      */
-    public function __construct(ProcessorInterface $processor,
-        EntityManagerInterface $entityManager,
-        IssueLogger $eventLogger,
-        ChoiceRepository $choiceRepository,
+    public function __construct(
         MessageRepository $messageRepository)
     {
-        $this->processor         = $processor;
-        $this->entityManager     = $entityManager;
-        $this->eventLogger       = $eventLogger;
-        $this->choiceRepository  = $choiceRepository;
         $this->messageRepository = $messageRepository;
-    }
-
-    /**
-     * @param Communication $communication
-     */
-    public function dispatch(Communication $communication)
-    {
-        try {
-            $this->processor->process($communication);
-        } catch (\Throwable $e) {
-            $this->eventLogger->fileIssueFromException('Failed to dispatch communication', $e, IssueLogger::SEVERITY_CRITICAL, [
-                'communication_id'    => $communication->getId(),
-                'communication_type'  => $communication->getType(),
-                'targeted_volunteers' => $communication->getMessages()->count(),
-            ]);
-        }
-
-        $this->entityManager->flush();
     }
 
     /**
      * @param Message $message
      * @param string  $answer
      *
-     * @throws \RuntimeException
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function processInboundAnswer(Message $message, string $answer)
     {

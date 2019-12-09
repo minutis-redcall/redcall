@@ -2,9 +2,9 @@
 
 namespace App\Repository;
 
+use App\Base\BaseRepository;
 use App\Entity\Answer;
 use App\Entity\Campaign;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
 /**
@@ -13,7 +13,7 @@ use Symfony\Bridge\Doctrine\RegistryInterface;
  * @method Answer[]    findAll()
  * @method Answer[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class AnswerRepository extends ServiceEntityRepository
+class AnswerRepository extends BaseRepository
 {
     /**
      * AnswerRepository constructor.

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Email;
+namespace App\Provider\Email;
 
 interface EmailProvider
 {

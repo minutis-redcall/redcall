@@ -44,13 +44,6 @@ services:
     class: App\Email\SymfonyEmailProvider
     public: true
 
-  App\Issue\IssueLogger:
-    class: App\Issue\SentryIssueLogger
-    public: true
-    arguments:
-    - "@monolog.logger.issue"
-    - "@sentry.client"
-
   App\Communication\Formatter:
     public: true
 
