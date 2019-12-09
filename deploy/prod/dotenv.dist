@@ -24,7 +24,7 @@ GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 ###< google/apiclient ###
 
-WEBSITE_URL=https://prod.redcall.io
+WEBSITE_URL=https://redcall.fr
 
 NEXMO_API_KEY=key
 NEXMO_API_SECRET=secret
