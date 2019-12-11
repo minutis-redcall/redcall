@@ -9,8 +9,8 @@ MAILER_URL='smtp://auto@redcall.io:password@mail.provider.com:465?encryption=ssl
 ###< symfony/swiftmailer-bundle ###
 
 ###> doctrine/doctrine-bundle ###
-DATABASE_URL=mysql://redcall_preprod:password@localhost/redcall_preprod?unix_socket=/path/to/socket
-
+DATABASE_HOST=localhost
+DATABASE_URL=mysql://redcall_preprod:password@$DATABASE_HOST/redcall_preprod
 ###< doctrine/doctrine-bundle ###
 
 ###> google/recaptcha ###
@@ -34,3 +34,6 @@ MAPBOX_API_KEY=some key
 
 PEGASS_LOGIN=yourlogin
 PEGASS_PASSWORD=yourpassword
+
+GCP_PROJECT_NAME=project-name
+GCP_BASTION_INSTANCE=bastion

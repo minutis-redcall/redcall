@@ -1,6 +1,9 @@
 
 runtime: php72
 
+vpc_access_connector:
+  name: "projects/redcall-prod-260921/locations/europe-west1/connectors/gae-serverless-conn-prod"
+
 readiness_check:
   app_start_timeout_sec: 3600
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Stop deployment script on errors
-set -e
+set -ex
 
 ENV=$1
 ROOTDIR=$(dirname "$0")/../
@@ -26,7 +26,23 @@ cat deploy/${ENV}/dotenv-migrate >> symfony/.env
 # Migrating
 (
     cd symfony
-    php bin/console doctrine:migration:migrate
+    source .env
+
+    gcloud config set project ${GCP_PROJECT_NAME}
+
+    # Start Bastion
+    gcloud compute instances start ${GCP_BASTION_INSTANCE}
+    sleep 10
+
+    # Start MySQL tunneling
+    gcloud compute ssh ${USER}@${GCP_BASTION_INSTANCE} -- -L 3304:${DATABASE_HOST} -N -f
+
+    # Run the migration
+    php bin/console doctrine:migration:migrate --no-interaction
+
+    # Clear up everything
+    kill -9 `ps ax|grep 3304|grep google_compute_engine|grep -v grep|cut -d ' ' -f 1`
+    gcloud compute instances stop ${GCP_BASTION_INSTANCE}
 )
 
 # Restoring current context
