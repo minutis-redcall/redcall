@@ -25,23 +25,24 @@ Change the zone to west1c
 and click the "Show configuration option" link
 <br/>![](07/04.png)
 
-5.1 Click the connectivity button
+5. Additionnal configuration
+    - Click the connectivity button
 Uncheck the "public ip" and check the "private ip" and be sure to choose the VPC network created in step 1.b
 then click the "allocate and connect" blue button.
 While it's connecting, you can continue the configuration.
 <br/>![](07/04.a.png)
 
-5.2 Click the "Machine type and storage"
+    - Click the "Machine type and storage"
 click change
 <br/>![](07/04.b.png)
 and select the machine "db-n1-standard-2"
 <br/>![](07/04.c.png)
 
-5.3 Click the "Auto backups and high availability"
+    - Click the "Auto backups and high availability"
 and change the backup window to "03:00 to 07:00"
 <br/>![](07/04.d.png)
 
-5.4 Click the "Maintenance"
+    - Click the "Maintenance"
 Choose Monday, 02:00 - 03:00, Earlier
 <br/>![](07/04.e.png)
 
