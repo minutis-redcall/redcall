@@ -23,7 +23,9 @@ Find set up instructions [here](docs/tech/00-development.md).
 
 This project is built to be deployed in production on Google App Engine.
 
-- [Setting up a new Google Cloud Platform project](docs/tech/01-google-cloud-platform.md)
+- [Setting up a new Google Cloud Platform project](docs/tech/01.a-create-gcp-project.md)
+- [Setting up a VPC Network](docs/tech/01.b-create-vpc-network.md)
+- [Setting up a Bastion](docs/tech/01.c-Create-Bastion.md)
 - [Setting up a Google App Engine instance](docs/tech/02-google-app-engine.md)
 - [Setting up a custom domain name to your instance](docs/tech/03-custom-domain-name.md)
 
@@ -35,6 +37,7 @@ by following the next sections.
 - [Setting up Symfony](docs/tech/05-configure-symfony.md)
 - [Setting up Google reCaptcha](docs/tech/06-google-recaptcha.md)
 - [Setting up Google Cloud SQL](docs/tech/07-google-cloud-sql.md)
+- [Setting up a "Dev PC to MySQL" connection](docs/tech/08-connect-to-MySQL-from-your-pc.md)
 - [Setting up Mapbox](docs/tech/09-configure-mapbox.md)
 - [Setting up Nexmo](docs/tech/10-configure-nexmo.md)
 - [Setting up Pegass](docs/tech/11-configure-pegass.md)
