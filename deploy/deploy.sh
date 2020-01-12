@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Stop deployment script on errors
-set -e
+set -ex
 
 ENV=$1
 ROOTDIR=$(dirname "$0")/../
@@ -13,15 +13,6 @@ then
 fi
 
 # gcloud auth login
-
-if [[ "${ENV}" == "preprod" ]]
-then
-    gcloud config set project redcall-preprod
-else
-    gcloud config set project redcall-prod
-fi
-
-gcloud config set app/cloud_build_timeout 3600
 
 cd $ROOTDIR
 
@@ -38,8 +29,12 @@ cp deploy/${ENV}/google-service-account.json symfony/config/keys
 
 # Deploying
 cd symfony
-#yarn encore production
-gcloud app deploy --verbosity debug
+
+source .env
+gcloud config set project ${GCP_PROJECT_NAME}
+gcloud config set app/cloud_build_timeout 3600
+yarn encore production
+gcloud beta app deploy --verbosity debug
 cd ..
 
 # Cron jobs
