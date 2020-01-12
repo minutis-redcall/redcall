@@ -1,7 +1,6 @@
 <?php
 
 use App\Kernel;
-use Google\Cloud\Debugger\Agent;
 use Symfony\Component\Debug\Debug;
 use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\HttpFoundation\Request;
@@ -38,10 +37,6 @@ if ($trustedProxies = $_SERVER['TRUSTED_PROXIES'] ?? false) {
 
 if ($trustedHosts = $_SERVER['TRUSTED_HOSTS'] ?? false) {
     Request::setTrustedHosts(explode(',', $trustedHosts));
-}
-
-if (class_exists(Agent::class)) {
-    $agent = new Agent(['sourceRoot' => realpath('/app')]);
 }
 
 $kernel   = new Kernel($env, $debug);

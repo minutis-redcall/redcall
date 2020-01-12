@@ -1,8 +1,13 @@
 
 # Development environment
 
-You will need a running Docker environment to install this app locally.
-Set it up by following the guides available [docker](https://docs.docker.com/install/) and [docker compose](https://docs.docker.com/compose/install/).
+You need at least php 7.1 with the extensions gd, iconv, json, mbstrng installed.
+
+As well, you need Google Stackdriver, to isntall it:
+
+```bash
+pecl install stackdriver_debugger-alpha
+```
 
 ## Set up
 
@@ -54,7 +59,6 @@ mysql -h 127.0.0.1 -P 3307 -u root redcall
 
 > The local port of the container running the MySQL server is bound to the host port number **3307**.
 Connect to 127.0.0.1:3307 in order to access the MySQL server (`mysql -P 3307 ...`).
-
 
 
 From here, you can run the following commands to fully set-up the environment:
