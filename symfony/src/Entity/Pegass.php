@@ -6,19 +6,29 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\PegassRepository")
+ * @ORM\Table(
+ * uniqueConstraints={
+ *     @ORM\UniqueConstraint(name="type_identifier_idx", columns={"type", "identifier"})
+ * },
+ * indexes={
+ *    @ORM\Index(name="type_update_idx", columns={"type", "updated_at"}),
+ *    @ORM\Index(name="type_identifier_parent_idx", columns={"type", "identifier", "parent_identifier"})
+ * })
+ * @ORM\HasLifecycleCallbacks
+ * @ORM\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
  */
 class Pegass
 {
-    const TYPE_MAIN         = 'main';
-    const TYPE_DEPARTMENT   = 'department';
-    const TYPE_ORGANIZATION = 'organization';
-    const TYPE_VOLUNTEER    = 'volunteer';
+    const TYPE_AREA       = 'area';
+    const TYPE_DEPARTMENT = 'department';
+    const TYPE_STRUCTURE  = 'structure';
+    const TYPE_VOLUNTEER  = 'volunteer';
 
     const TTL = [
-        self::TYPE_MAIN         => 365 * 24 * 60 * 60, // 1 year
-        self::TYPE_DEPARTMENT   => 7 * 24 * 60 * 60, // 1 week
-        self::TYPE_ORGANIZATION => 7 * 24 * 60 * 60, // 1 week
-        self::TYPE_VOLUNTEER    => 30 * 24 * 60 * 60, // 1 month
+        self::TYPE_AREA       => 365 * 24 * 60 * 60, // 1 year
+        self::TYPE_DEPARTMENT => 7 * 24 * 60 * 60, // 1 week
+        self::TYPE_STRUCTURE  => 7 * 24 * 60 * 60, // 1 week
+        self::TYPE_VOLUNTEER  => 30 * 24 * 60 * 60, // 1 month
     ];
 
     /**
@@ -29,19 +39,19 @@ class Pegass
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=64)
+     * @ORM\Column(type="string", length=64, nullable=true)
      */
     private $identifier;
+
+    /**
+     * @ORM\Column(type="string", length=64, nullable=true)
+     */
+    private $parentIdentifier;
 
     /**
      * @ORM\Column(type="string", length=24)
      */
     private $type;
-
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $url;
 
     /**
      * @ORM\Column(type="text", nullable=true)
@@ -70,6 +80,18 @@ class Pegass
         return $this;
     }
 
+    public function getParentIdentifier(): ?string
+    {
+        return $this->parentIdentifier;
+    }
+
+    public function setParentIdentifier(string $parentIdentifier): self
+    {
+        $this->parentIdentifier = $parentIdentifier;
+
+        return $this;
+    }
+
     public function getType(): ?string
     {
         return $this->type;
@@ -78,18 +100,6 @@ class Pegass
     public function setType(string $type): self
     {
         $this->type = $type;
-
-        return $this;
-    }
-
-    public function getUrl(): ?string
-    {
-        return $this->url;
-    }
-
-    public function setUrl(string $url): self
-    {
-        $this->url = $url;
 
         return $this;
     }
@@ -116,5 +126,23 @@ class Pegass
         $this->updatedAt = $updatedAt;
 
         return $this;
+    }
+
+    /**
+     * @ORM\PrePersist
+     */
+    public function onPrePersist()
+    {
+        if (!$this->getUpdatedAt()) {
+            $this->setUpdatedAt(new \DateTime());
+        }
+    }
+
+    /**
+     * @ORM\PreUpdate
+     */
+    public function onPreUpdate()
+    {
+        $this->setUpdatedAt(new \DateTime());
     }
 }
