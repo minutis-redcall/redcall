@@ -63,6 +63,8 @@ class Pegass
      */
     private $updatedAt;
 
+    private $lockUpdateDate = false;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -128,12 +130,19 @@ class Pegass
         return $this;
     }
 
+    public function lockUpdateDate(): self
+    {
+        $this->lockUpdateDate = true;
+
+        return $this;
+    }
+
     /**
      * @ORM\PrePersist
      */
     public function onPrePersist()
     {
-        if (!$this->getUpdatedAt()) {
+        if (!$this->updatedAt) {
             $this->setUpdatedAt(new \DateTime());
         }
     }
@@ -143,6 +152,8 @@ class Pegass
      */
     public function onPreUpdate()
     {
-        $this->setUpdatedAt(new \DateTime());
+        if (!$this->lockUpdateDate) {
+            $this->setUpdatedAt(new \DateTime());
+        }
     }
 }

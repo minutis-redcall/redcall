@@ -20,6 +20,18 @@ class PegassRepository extends BaseRepository
     }
 
     /**
+     * @param string $type
+     *
+     * @return Pegass[]
+     */
+    public function getEntities(string $type)
+    {
+        return $this->findBy([
+            'type' => $type,
+        ]);
+    }
+
+    /**
      * @param string      $type
      * @param string|null $identifier
      *

@@ -8,14 +8,21 @@ use Goutte\Client;
 class PegassClient
 {
     const ENDPOINTS = [
+        /*
+         * Pegass::TYPE_SKILL => 'https://pegass.croix-rouge.fr/crf/rest/competences',
+         */
+
         Pegass::TYPE_AREA       => 'https://pegass.croix-rouge.fr/crf/rest/zonegeo',
         Pegass::TYPE_DEPARTMENT => 'https://pegass.croix-rouge.fr/crf/rest/zonegeo/departement/%identifier%',
         Pegass::TYPE_STRUCTURE  => 'https://pegass.croix-rouge.fr/crf/rest/utilisateur?page=%page%&pageInfo=true&perPage=50&searchType=benevoles&structure=%identifier%&withMoyensCom=true',
         Pegass::TYPE_VOLUNTEER  => [
-            'actions'   => 'https://pegass.croix-rouge.fr/crf/rest/structureaction?utilisateur=%identifier%',
-            'skills'    => 'https://pegass.croix-rouge.fr/crf/rest/competenceutilisateur/%identifier%',
-            'trainings' => 'https://pegass.croix-rouge.fr/crf/rest/formationutilisateur?utilisateur=%identifier%',
-            // TODO get all useful information
+            'user'        => 'https://pegass.croix-rouge.fr/crf/rest/utilisateur/%identifier%',
+            'infos'       => 'https://pegass.croix-rouge.fr/crf/rest/infoutilisateur/%identifier%',
+            'contact'     => 'https://pegass.croix-rouge.fr/crf/rest/moyencomutilisateur?utilisateur=%identifier%',
+            'actions'     => 'https://pegass.croix-rouge.fr/crf/rest/structureaction?utilisateur=%identifier%',
+            'skills'      => 'https://pegass.croix-rouge.fr/crf/rest/competenceutilisateur/%identifier%',
+            'trainings'   => 'https://pegass.croix-rouge.fr/crf/rest/formationutilisateur?utilisateur=%identifier%',
+            'nominations' => 'https://pegass.croix-rouge.fr/crf/rest/nominationutilisateur?utilisateur=%identifier%',
         ],
     ];
 
@@ -65,7 +72,7 @@ class PegassClient
     /**
      * @param string $identifier
      */
-    public function getDepartment(string $identifier)
+    public function getDepartment(string $identifier): array
     {
         $endpoint = str_replace('%identifier%', $identifier, self::ENDPOINTS[Pegass::TYPE_DEPARTMENT]);
 
@@ -77,7 +84,7 @@ class PegassClient
      *
      * @return array
      */
-    public function getStructure(string $identifier)
+    public function getStructure(string $identifier): array
     {
         $pages = [];
 
@@ -98,12 +105,18 @@ class PegassClient
 
     /**
      * @param string $identifier
+     *
+     * @return array
      */
-    public function getVolunteer(string $identifier)
+    public function getVolunteer(string $identifier): array
     {
-        $endpoint = str_replace('%identifier%', $identifier, self::ENDPOINTS[Pegass::TYPE_VOLUNTEER]);
+        $data = [];
+        foreach (self::ENDPOINTS[Pegass::TYPE_VOLUNTEER] as $key => $endpoint) {
+            $endpoint   = str_replace('%identifier%', $identifier, $endpoint);
+            $data[$key] = $this->get($endpoint);
+        }
 
-        return $this->get($endpoint);
+        return $data;
     }
 
     /**
@@ -118,6 +131,10 @@ class PegassClient
     {
         if ($this->isAuthenticated()) {
             return;
+        }
+
+        if (!getenv('PEGASS_LOGIN') || !getenv('PEGASS_PASSWORD')) {
+            throw new \LogicException('Credentials are required to access Pegass API.');
         }
 
         $crawler = $this->client->request('GET', 'https://pegass.croix-rouge.fr/');
