@@ -38,6 +38,8 @@ class PegassCommand extends BaseCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        date_default_timezone_set('UTC');
+
         $this->pegassManager->heat(
             $input->getArgument('limit')
         );
