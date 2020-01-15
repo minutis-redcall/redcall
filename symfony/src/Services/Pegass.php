@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Entity\Organization;
+use App\Entity\Structure;
 use App\Entity\Tag;
 use App\Entity\Volunteer;
 use App\Tools\PhoneNumberParser;
@@ -15,12 +15,12 @@ class Pegass
     public function __construct()
     {
         $this->client = new \Goutte\Client([
-            'cookies' => true,
+            'cookies'         => true,
             'allow_redirects' => true,
         ]);
     }
 
-    public function isAuthenticated() : bool
+    public function isAuthenticated(): bool
     {
         return $this->authenticated;
     }
@@ -28,24 +28,24 @@ class Pegass
     public function authenticate()
     {
         if ($this->isAuthenticated()) {
-            return ;
+            return;
         }
 
         $crawler = $this->client->request('GET', 'https://pegass.croix-rouge.fr/');
-        $form = $crawler->selectButton('Ouverture de session')->form();
+        $form    = $crawler->selectButton('Ouverture de session')->form();
 
         $crawler = $this->client->submit($form, [
             'username' => getenv('PEGASS_LOGIN'),
             'password' => getenv('PEGASS_PASSWORD'),
         ]);
-        $form = $crawler->selectButton('Continue')->form();
+        $form    = $crawler->selectButton('Continue')->form();
 
         $this->client->submit($form);
 
         $this->authenticated = true;
     }
 
-    public function listDepartments() : array
+    public function listDepartments(): array
     {
         $rows = $this->get('https://pegass.croix-rouge.fr/crf/rest/zonegeo');
 
@@ -60,13 +60,13 @@ class Pegass
         return $departments;
     }
 
-    public function listOrganizations(string $departmentId) : array
+    public function listOrganizations(string $departmentId): array
     {
         $rows = $this->get(sprintf('https://pegass.croix-rouge.fr/crf/rest/zonegeo/departement/%s', $departmentId));
 
         $organizations = [];
         foreach ($rows['structuresFilles'] as $row) {
-            $organization = new Organization();
+            $organization = new Structure();
             $organization->setCode($row['id']);
             $organization->setType($row['typeStructure']);
             $organization->setName($row['libelle']);
@@ -77,12 +77,15 @@ class Pegass
         return $organizations;
     }
 
-    public function listVolunteers(string $organizationCode) : array
+    public function listVolunteers(string $organizationCode): array
     {
         $volunteers = [];
-        $template = 'https://pegass.croix-rouge.fr/crf/rest/utilisateur?page=%page%&pageInfo=true&perPage=50&searchType=benevoles&structure=%code%&withMoyensCom=true';
+        $template   = 'https://pegass.croix-rouge.fr/crf/rest/utilisateur?page=%page%&pageInfo=true&perPage=50&searchType=benevoles&structure=%code%&withMoyensCom=true';
         do {
-            $data = $this->get(str_replace(['%code%', '%page%'], [$organizationCode, ($data['page'] ?? -1) + 1], $template));
+            $data = $this->get(str_replace(['%code%', '%page%'], [
+                $organizationCode,
+                ($data['page'] ?? -1) + 1,
+            ], $template));
 
             foreach ($data['list'] as $row) {
                 $volunteer = new Volunteer();
@@ -99,7 +102,13 @@ class Pegass
                         $volunteer->setEmail($contact['libelle']);
                     }
 
-                    if (in_array($contact['moyenComId'], ['POR', 'PORE', 'PORT', 'TELDOM', 'TELTRAV']) && $contact['libelle'] ?? false) {
+                    if (in_array($contact['moyenComId'], [
+                            'POR',
+                            'PORE',
+                            'PORT',
+                            'TELDOM',
+                            'TELTRAV',
+                        ]) && $contact['libelle'] ?? false) {
                         $phone = PhoneNumberParser::parse($contact['libelle']);
                         if ($phone) {
                             $volunteer->setPhoneNumber($phone);
@@ -123,7 +132,7 @@ class Pegass
         return $volunteers;
     }
 
-    public function getVolunteerTags(string $volunteerId) : array
+    public function getVolunteerTags(string $volunteerId): array
     {
         // US / AS ?
         $skills = $this->getVolunteerActions($volunteerId);
@@ -137,10 +146,10 @@ class Pegass
         return $skills;
     }
 
-    public function getVolunteerActions(string $volunteerId) : array
+    public function getVolunteerActions(string $volunteerId): array
     {
         $actions = $this->get(sprintf('https://pegass.croix-rouge.fr/crf/rest/structureaction?utilisateur=%s', $volunteerId));
-        $skills = [];
+        $skills  = [];
 
         foreach ($actions as $action) {
             if (1 == $action['groupeAction']['id']) {
@@ -155,9 +164,9 @@ class Pegass
         return array_unique($skills);
     }
 
-    public function getVolunteerVehicles(string $volunteerId) : array
+    public function getVolunteerVehicles(string $volunteerId): array
     {
-        $roles = $this->get(sprintf('https://pegass.croix-rouge.fr/crf/rest/competenceutilisateur/%s', $volunteerId));
+        $roles  = $this->get(sprintf('https://pegass.croix-rouge.fr/crf/rest/competenceutilisateur/%s', $volunteerId));
         $skills = [];
 
         foreach ($roles as $role) {
@@ -173,10 +182,10 @@ class Pegass
         return array_unique($skills);
     }
 
-    public function getVolunteerSkills(string $volunteerId) : array
+    public function getVolunteerSkills(string $volunteerId): array
     {
         $skills = $this->get(sprintf('https://pegass.croix-rouge.fr/crf/rest/formationutilisateur?utilisateur=%s', $volunteerId));
-        $tags = [];
+        $tags   = [];
 
         foreach ($skills as $skill) {
             if (in_array($skill['formation']['code'], ['RECCI', 'CI', 'CIP3'])) {
@@ -204,7 +213,7 @@ class Pegass
      *
      * @return array
      */
-    private function get(string $url) : array
+    private function get(string $url): array
     {
         $this->authenticate();
 

@@ -7,9 +7,9 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass="App\Repository\OrganizationRepository")
+ * @ORM\Entity(repositoryClass="App\Repository\StructureRepository")
  */
-class Organization
+class Structure
 {
     /**
      * @ORM\Id()
@@ -67,7 +67,7 @@ class Organization
     /**
      * @param int $code
      *
-     * @return Organization
+     * @return Structure
      */
     public function setCode(int $code): self
     {
@@ -87,7 +87,7 @@ class Organization
     /**
      * @param string $type
      *
-     * @return Organization
+     * @return Structure
      */
     public function setType($type)
     {
@@ -107,7 +107,7 @@ class Organization
     /**
      * @param string $name
      *
-     * @return Organization
+     * @return Structure
      */
     public function setName(string $name): self
     {
@@ -127,7 +127,7 @@ class Organization
     /**
      * @param \DateTimeInterface|null $lastVolunteerImport
      *
-     * @return Organization
+     * @return Structure
      */
     public function setLastVolunteerImport(?\DateTimeInterface $lastVolunteerImport): self
     {
@@ -147,13 +147,13 @@ class Organization
     /**
      * @param Volunteer $volunteer
      *
-     * @return Organization
+     * @return Structure
      */
     public function addVolunteer(Volunteer $volunteer): self
     {
         if (!$this->volunteers->contains($volunteer)) {
             $this->volunteers[] = $volunteer;
-            $volunteer->setOrganization($this);
+            $volunteer->setStructure($this);
         }
 
         return $this;
@@ -162,15 +162,15 @@ class Organization
     /**
      * @param Volunteer $volunteer
      *
-     * @return Organization
+     * @return Structure
      */
     public function removeVolunteer(Volunteer $volunteer): self
     {
         if ($this->volunteers->contains($volunteer)) {
             $this->volunteers->removeElement($volunteer);
             // set the owning side to null (unless already changed)
-            if ($volunteer->getOrganization() === $this) {
-                $volunteer->setOrganization(null);
+            if ($volunteer->getStructure() === $this) {
+                $volunteer->setStructure(null);
             }
         }
 

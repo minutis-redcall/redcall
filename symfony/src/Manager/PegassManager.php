@@ -40,7 +40,7 @@ class PegassManager
         $entities = $this->pegassRepository->findExpiredEntities($limit);
         foreach ($entities as $entity) {
             /* @var Pegass $entity */
-            echo sprintf('Processing %s/%s', $entity->getType(), $entity->getIdentifier()), PHP_EOL;
+            echo sprintf('%s Processing %s/%s', date('Y-m-d H:i:s'), $entity->getType(), $entity->getIdentifier()), PHP_EOL;
 
             switch ($entity->getType()) {
                 case Pegass::TYPE_AREA:

@@ -35,7 +35,7 @@ class PegassOrganizationsCommand extends BaseCommand
         $table->setHeaderTitle(sprintf('Organizations in department #%s', $department));
         $table->setHeaders(['ID', 'Type', 'Name']);
 
-        /* @var \App\Entity\Organization $organization */
+        /* @var \App\Entity\Structure $organization */
         foreach ($organizations as $organization) {
             $table->addRow([
                 $organization->getCode(),

@@ -2,7 +2,7 @@
 
 namespace App\Form\Type;
 
-use App\Entity\Organization;
+use App\Entity\Structure;
 use App\Entity\Tag;
 use App\Entity\Volunteer;
 use App\Repository\TagRepository;
@@ -37,12 +37,12 @@ class VolunteerType extends AbstractType
 
         $builder
             ->add('organization', EntityType::class, [
-                'label'    => 'manage_volunteers.form.organization',
-                'class' => Organization::class,
+                'label'        => 'manage_volunteers.form.organization',
+                'class'        => Structure::class,
                 'choice_label' => 'name',
             ])
             ->add('nivol', TextType::class, [
-                'label'    => 'manage_volunteers.form.nivol',
+                'label' => 'manage_volunteers.form.nivol',
             ])
             ->add('firstName', TextType::class, [
                 'label' => 'manage_volunteers.form.first_name',
@@ -57,20 +57,20 @@ class VolunteerType extends AbstractType
                 'label' => 'manage_volunteers.form.email',
             ])
             ->add('minor', CheckboxType::class, [
-                'label' => 'manage_volunteers.form.minor',
+                'label'    => 'manage_volunteers.form.minor',
                 'required' => false,
             ])
             ->add('enabled', CheckboxType::class, [
-                'label' => 'manage_volunteers.form.enabled',
+                'label'    => 'manage_volunteers.form.enabled',
                 'required' => false,
             ])
             ->add('tags', EntityType::class, [
-                'class' => Tag::class,
-                'choice_label' => function($tag) {
+                'class'        => Tag::class,
+                'choice_label' => function ($tag) {
                     return sprintf('tag.%s', $tag);
                 },
-                'expanded' => true,
-                'multiple' => true,
+                'expanded'     => true,
+                'multiple'     => true,
             ])
             ->add('submit', SubmitType::class, [
                 'label' => 'base.button.save',

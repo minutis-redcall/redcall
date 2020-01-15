@@ -118,13 +118,13 @@ class Volunteer
     private $tagsView;
 
     /**
-     * @var Organization
+     * @var Structure
      *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Organization", inversedBy="volunteers")
+     * @ORM\ManyToOne(targetEntity="Structure", inversedBy="volunteers")
      * @ORM\JoinColumn(nullable=false)
      * @Assert\NotBlank()
      */
-    private $organization;
+    private $structure;
 
     /**
      * @var \DateTime
@@ -234,6 +234,18 @@ class Volunteer
     }
 
     /**
+     * @param string $phoneNumber
+     *
+     * @return $this
+     */
+    public function setPhoneNumber(string $phoneNumber)
+    {
+        $this->phoneNumber = $phoneNumber;
+
+        return $this;
+    }
+
+    /**
      * @param ExecutionContextInterface $context
      * @param                           $payload
      * @Assert\Callback()
@@ -245,18 +257,6 @@ class Volunteer
                     ->atPath('phoneNumber')
                     ->addViolation();
         }
-    }
-
-    /**
-     * @param string $phoneNumber
-     *
-     * @return $this
-     */
-    public function setPhoneNumber(string $phoneNumber)
-    {
-        $this->phoneNumber = $phoneNumber;
-
-        return $this;
     }
 
     /**
@@ -417,21 +417,21 @@ class Volunteer
     }
 
     /**
-     * @return Organization|null
+     * @return Structure|null
      */
-    public function getOrganization(): ?Organization
+    public function getStructure(): ?Structure
     {
-        return $this->organization;
+        return $this->structure;
     }
 
     /**
-     * @param Organization|null $organization
+     * @param Structure|null $structure
      *
      * @return Volunteer
      */
-    public function setOrganization(?Organization $organization): self
+    public function setStructure(?Structure $structure): self
     {
-        $this->organization = $organization;
+        $this->structure = $structure;
 
         return $this;
     }
@@ -479,7 +479,7 @@ class Volunteer
     /**
      * @return bool
      */
-    public function isCallable() : bool
+    public function isCallable(): bool
     {
         return $this->enabled && ($this->phoneNumber || $this->email);
     }

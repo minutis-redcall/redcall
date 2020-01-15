@@ -213,7 +213,7 @@ manage_volunteers:
   form:
     create: Ajouter un nouveau volontaire
     update: Mettre à jour un volontaire
-    organization: UL ou DT de rattachement
+    organization: Structure de rattachement
     nivol: Nivol
     first_name: Prénom
     last_name: Nom de famille

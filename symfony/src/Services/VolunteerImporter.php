@@ -3,7 +3,7 @@
 namespace App\Services;
 
 use App\Entity\Volunteer;
-use App\Repository\OrganizationRepository;
+use App\Repository\StructureRepository;
 use App\Repository\TagRepository;
 use App\Repository\VolunteerImportRepository;
 use App\Repository\VolunteerRepository;
@@ -18,13 +18,13 @@ class VolunteerImporter
     /**
      * VolunteerImporter constructor.
      *
-     * @param OrganizationRepository $organizationRepository
-     * @param VolunteerRepository    $volunteerRepository
-     * @param TagRepository          $tagRepository
-     * @param Pegass                 $pegass
+     * @param StructureRepository $organizationRepository
+     * @param VolunteerRepository $volunteerRepository
+     * @param TagRepository       $tagRepository
+     * @param Pegass              $pegass
      */
     public function __construct(
-        OrganizationRepository $organizationRepository,
+        StructureRepository $organizationRepository,
         VolunteerRepository $volunteerRepository,
         TagRepository $tagRepository,
         Pegass $pegass)
@@ -37,21 +37,21 @@ class VolunteerImporter
 
     public function importOrganizationVolunteers(string $organizationCode)
     {
-        /* @var \App\Entity\Organization $organization */
+        /* @var \App\Entity\Structure $organization */
         $organization = $this->organizationRepository->findOneByCode($organizationCode);
         if (!$organization) {
             throw new \LogicException(sprintf('Organization code not found: %s', $organizationCode));
         }
 
-        $current = $this->volunteerRepository->findBy([
+        $current       = $this->volunteerRepository->findBy([
             'organization' => $organization->getId(),
-            'enabled' => true,
+            'enabled'      => true,
         ]);
-        $currentNivols = array_map(function(Volunteer $volunteer) {
+        $currentNivols = array_map(function (Volunteer $volunteer) {
             return $volunteer->getNivol();
         }, $current);
 
-        $imported = $this->pegass->listVolunteers($organizationCode);
+        $imported       = $this->pegass->listVolunteers($organizationCode);
         $importedNivols = array_keys($imported);
 
         if (count($imported) == 0) {
@@ -69,7 +69,7 @@ class VolunteerImporter
 
         // Import or update all other volunteers
         foreach ($imported as $volunteer) {
-            $volunteer->setOrganization($organization);
+            $volunteer->setStructure($organization);
             $this->volunteerRepository->import($volunteer);
         }
 
@@ -90,7 +90,7 @@ class VolunteerImporter
 
     public function refreshVolunteerGeneral(Volunteer $volunteer)
     {
-        $volunteers = $this->pegass->listVolunteers($volunteer->getOrganization()->getCode());
+        $volunteers = $this->pegass->listVolunteers($volunteer->getStructure()->getCode());
 
         if (!array_key_exists($volunteer->getNivol(), $volunteers)) {
             $volunteer->setEnabled(false);
