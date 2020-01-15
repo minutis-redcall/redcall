@@ -43,6 +43,11 @@ class Structure
      */
     private $volunteers;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Structure")
+     */
+    private $parentStructure;
+
     public function __construct()
     {
         $this->volunteers = new ArrayCollection();
@@ -173,6 +178,26 @@ class Structure
                 $volunteer->setStructure(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Structure|null
+     */
+    public function getParentStructure(): ?self
+    {
+        return $this->parentStructure;
+    }
+
+    /**
+     * @param self|null $parentStructure
+     *
+     * @return Structure
+     */
+    public function setParentStructure(?self $parentStructure): self
+    {
+        $this->parentStructure = $parentStructure;
 
         return $this;
     }

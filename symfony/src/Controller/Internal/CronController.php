@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\Maintenance;
+namespace App\Controller\Internal;
 
 use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -19,8 +19,7 @@ class CronController extends AbstractController
 {
     const CRONS = [
         'user:cron',
-        'import:volunteer',
-        'import:skill',
+        'pegass',
     ];
 
     private $logger;
