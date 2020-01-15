@@ -64,6 +64,27 @@ class PegassManager
     }
 
     /**
+     * @param string $type
+     *
+     * @return array
+     */
+    public function listIdentifiers(string $type): array
+    {
+        return $this->pegassRepository->listIdentifiers($type);
+    }
+
+    /**
+     * @param string   $type
+     * @param callable $callback
+     *
+     * @return int
+     */
+    public function foreach(string $type, callable $callback): int
+    {
+        return $this->pegassRepository->foreach($type, $callback);
+    }
+
+    /**
      * @throws \Exception
      */
     private function initialize()
@@ -89,7 +110,7 @@ class PegassManager
         $data = $this->pegassClient->getArea();
 
         $entity = $this->pegassRepository->getEntity(Pegass::TYPE_AREA);
-        $entity->setContent(json_encode($data, JSON_PRETTY_PRINT));
+        $entity->setContent($data);
         $this->pegassRepository->save($entity);
 
         if ($identifiers = array_column($data, 'id')) {
@@ -118,7 +139,7 @@ class PegassManager
     {
         $data = $this->pegassClient->getDepartment($entity->getIdentifier());
 
-        $entity->setContent(json_encode($data, JSON_PRETTY_PRINT));
+        $entity->setContent($data);
         $this->pegassRepository->save($entity);
 
         if (!isset($data['structuresFilles'])) {
@@ -150,9 +171,10 @@ class PegassManager
      */
     private function updateStructure(Pegass $entity)
     {
-        $pages = $this->pegassClient->getStructure($entity->getIdentifier());
+        $structure = $this->pegassClient->getStructure($entity->getIdentifier());
+        $pages     = $structure['volunteers'];
 
-        $entity->setContent(json_encode($pages, JSON_PRETTY_PRINT));
+        $entity->setContent($structure);
         $this->pegassRepository->save($entity);
 
         $identifiers = [];
@@ -189,7 +211,8 @@ class PegassManager
     {
         $data = $this->pegassClient->getVolunteer($entity->getIdentifier());
 
-        $entity->setContent(json_encode($data, JSON_PRETTY_PRINT));
+        $entity->setContent($data);
+
         $this->pegassRepository->save($entity);
     }
 

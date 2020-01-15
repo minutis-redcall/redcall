@@ -104,6 +104,56 @@ class PegassRepository extends BaseRepository
     /**
      * @param string $type
      *
+     * @return array
+     */
+    public function listIdentifiers(string $type): array
+    {
+        $rows = $this->createQueryBuilder('p')
+                     ->select('p.identifier')
+                     ->where('p.type = :type')
+                     ->setParameter('type', $type)
+                     ->getQuery()
+                     ->getArrayResult();
+
+        return array_column($rows, 'identifier');
+    }
+
+    /**
+     * @param string   $type
+     * @param callable $callback
+     *
+     * @return int
+     */
+    public function foreach(string $type, callable $callback): int
+    {
+        $count = 0;
+
+        $iterator = $this->createQueryBuilder('p')
+                         ->where('p.type = :type')
+                         ->setParameter('type', $type)
+                         ->getQuery()
+                         ->iterate();
+
+        while (($row = $iterator->next()) !== false) {
+            /* @var Pegass $entity */
+            $entity = reset($row);
+
+            if (!$entity->getContent()) {
+                continue;
+            }
+
+            $callback($entity);
+            $this->save($entity);
+            $this->_em->clear(Pegass::class);
+            $count++;
+        }
+
+        return $count;
+    }
+
+    /**
+     * @param string $type
+     *
      * @return \DateTime
      */
     private function getExpireDate(string $type): \DateTime

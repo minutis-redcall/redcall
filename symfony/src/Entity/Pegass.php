@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\PropertyAccess\PropertyAccess;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\PegassRepository")
@@ -106,14 +107,18 @@ class Pegass
         return $this;
     }
 
-    public function getContent(): ?string
+    public function getContent(): ?array
     {
-        return $this->content;
+        if ($this->content) {
+            return json_decode($this->content, true);
+        }
+
+        return null;
     }
 
-    public function setContent(?string $content): self
+    public function setContent(?array $content): self
     {
-        $this->content = $content;
+        $this->content = json_encode($content, JSON_PRETTY_PRINT);
 
         return $this;
     }
@@ -155,5 +160,24 @@ class Pegass
         if (!$this->lockUpdateDate) {
             $this->setUpdatedAt(new \DateTime());
         }
+    }
+
+    /**
+     * @param string $expression
+     *
+     * @return array|string|null
+     */
+    public function evaluate(string $expression)
+    {
+        $content = $this->getContent();
+
+        if (!$content) {
+            return null;
+        }
+
+        return PropertyAccess::createPropertyAccessorBuilder()
+                             ->disableExceptionOnInvalidPropertyPath()
+                             ->getPropertyAccessor()
+                             ->getValue(json_decode(json_encode($content)), $expression);
     }
 }

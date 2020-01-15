@@ -14,7 +14,11 @@ class PegassClient
 
         Pegass::TYPE_AREA       => 'https://pegass.croix-rouge.fr/crf/rest/zonegeo',
         Pegass::TYPE_DEPARTMENT => 'https://pegass.croix-rouge.fr/crf/rest/zonegeo/departement/%identifier%',
-        Pegass::TYPE_STRUCTURE  => 'https://pegass.croix-rouge.fr/crf/rest/utilisateur?page=%page%&pageInfo=true&perPage=50&searchType=benevoles&structure=%identifier%&withMoyensCom=true',
+        Pegass::TYPE_STRUCTURE  => [
+            'structure'   => 'https://pegass.croix-rouge.fr/crf/rest/structure/%identifier%',
+            'responsible' => 'https://pegass.croix-rouge.fr/crf/rest/structure/responsable/?structure=%identifier%',
+            'volunteers'  => 'https://pegass.croix-rouge.fr/crf/rest/utilisateur?page=%page%&pageInfo=true&perPage=50&searchType=benevoles&structure=%identifier%&withMoyensCom=true',
+        ],
         Pegass::TYPE_VOLUNTEER  => [
             'user'        => 'https://pegass.croix-rouge.fr/crf/rest/utilisateur/%identifier%',
             'infos'       => 'https://pegass.croix-rouge.fr/crf/rest/infoutilisateur/%identifier%',
@@ -86,6 +90,14 @@ class PegassClient
      */
     public function getStructure(string $identifier): array
     {
+        $structure = [];
+        foreach (self::ENDPOINTS[Pegass::TYPE_STRUCTURE] as $key => $endpoint) {
+            if ('volunteers' !== $key) {
+                $endpoint        = str_replace('%identifier%', $identifier, $endpoint);
+                $structure[$key] = $this->get($endpoint);
+            }
+        }
+
         $pages = [];
 
         do {
@@ -95,12 +107,14 @@ class PegassClient
             ], [
                 $identifier,
                 ($data['page'] ?? -1) + 1,
-            ], self::ENDPOINTS[Pegass::TYPE_STRUCTURE]);
+            ], self::ENDPOINTS[Pegass::TYPE_STRUCTURE]['volunteers']);
 
             $pages[] = $data = $this->get($endpoint);
         } while (count($data['list']) && $data['page'] < $data['pages']);
 
-        return $pages;
+        $structure['volunteers'] = $pages;
+
+        return $structure;
     }
 
     /**

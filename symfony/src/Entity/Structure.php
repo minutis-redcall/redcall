@@ -8,6 +8,10 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\StructureRepository")
+ * @ORM\Table(
+ * uniqueConstraints={
+ *     @ORM\UniqueConstraint(name="identifier_idx", columns={"identifier"})
+ * })
  */
 class Structure
 {
@@ -21,7 +25,7 @@ class Structure
     /**
      * @ORM\Column(type="integer")
      */
-    private $code;
+    private $identifier;
 
     /**
      * @ORM\Column(type="string", length=16)
@@ -34,11 +38,6 @@ class Structure
     private $name;
 
     /**
-     * @ORM\Column(type="datetime", nullable=true)
-     */
-    private $lastVolunteerImport;
-
-    /**
      * @ORM\OneToMany(targetEntity="App\Entity\Volunteer", mappedBy="organization", orphanRemoval=true)
      */
     private $volunteers;
@@ -47,6 +46,16 @@ class Structure
      * @ORM\ManyToOne(targetEntity="App\Entity\Structure")
      */
     private $parentStructure;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $enabled = true;
+
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $president;
 
     public function __construct()
     {
@@ -64,19 +73,19 @@ class Structure
     /**
      * @return int|null
      */
-    public function getCode(): ?int
+    public function getIdentifier(): ?int
     {
-        return $this->code;
+        return $this->identifier;
     }
 
     /**
-     * @param int $code
+     * @param int $identifier
      *
      * @return Structure
      */
-    public function setCode(int $code): self
+    public function setIdentifier(int $identifier): self
     {
-        $this->code = $code;
+        $this->identifier = $identifier;
 
         return $this;
     }
@@ -117,26 +126,6 @@ class Structure
     public function setName(string $name): self
     {
         $this->name = $name;
-
-        return $this;
-    }
-
-    /**
-     * @return \DateTimeInterface|null
-     */
-    public function getLastVolunteerImport(): ?\DateTimeInterface
-    {
-        return $this->lastVolunteerImport;
-    }
-
-    /**
-     * @param \DateTimeInterface|null $lastVolunteerImport
-     *
-     * @return Structure
-     */
-    public function setLastVolunteerImport(?\DateTimeInterface $lastVolunteerImport): self
-    {
-        $this->lastVolunteerImport = $lastVolunteerImport;
 
         return $this;
     }
@@ -198,6 +187,38 @@ class Structure
     public function setParentStructure(?self $parentStructure): self
     {
         $this->parentStructure = $parentStructure;
+
+        return $this;
+    }
+
+    /**
+     * @return bool|null
+     */
+    public function isEnabled(): bool
+    {
+        return $this->enabled;
+    }
+
+    /**
+     * @param bool $enabled
+     *
+     * @return Structure
+     */
+    public function setEnabled(bool $enabled): self
+    {
+        $this->enabled = $enabled;
+
+        return $this;
+    }
+
+    public function getPresident(): ?string
+    {
+        return $this->president;
+    }
+
+    public function setPresident(string $president): self
+    {
+        $this->president = $president;
 
         return $this;
     }

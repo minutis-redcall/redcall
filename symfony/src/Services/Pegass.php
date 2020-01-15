@@ -67,7 +67,7 @@ class Pegass
         $organizations = [];
         foreach ($rows['structuresFilles'] as $row) {
             $organization = new Structure();
-            $organization->setCode($row['id']);
+            $organization->setIdentifier($row['id']);
             $organization->setType($row['typeStructure']);
             $organization->setName($row['libelle']);
 

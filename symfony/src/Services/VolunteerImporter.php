@@ -90,7 +90,7 @@ class VolunteerImporter
 
     public function refreshVolunteerGeneral(Volunteer $volunteer)
     {
-        $volunteers = $this->pegass->listVolunteers($volunteer->getStructure()->getCode());
+        $volunteers = $this->pegass->listVolunteers($volunteer->getStructure()->getIdentifier());
 
         if (!array_key_exists($volunteer->getNivol(), $volunteers)) {
             $volunteer->setEnabled(false);
