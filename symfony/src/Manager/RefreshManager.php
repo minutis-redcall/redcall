@@ -58,12 +58,6 @@ class RefreshManager
             $structure->setName($pegass->evaluate('structure.libelle'));
             $structure->setPresident($pegass->evaluate('responsible.responsableId'));
             $structure->setEnabled(true);
-
-            // TODO wait until the end of the crawling before continuing
-
-            var_dump($structure);
-            die();
-
             $this->structureManager->save($structure);
         });
     }

@@ -53,7 +53,7 @@ class Structure
     private $enabled = true;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $president;
 
@@ -191,6 +191,18 @@ class Structure
         return $this;
     }
 
+    public function getPresident(): ?string
+    {
+        return $this->president;
+    }
+
+    public function setPresident(?string $president): self
+    {
+        $this->president = $president;
+
+        return $this;
+    }
+
     /**
      * @return bool|null
      */
@@ -207,18 +219,6 @@ class Structure
     public function setEnabled(bool $enabled): self
     {
         $this->enabled = $enabled;
-
-        return $this;
-    }
-
-    public function getPresident(): ?string
-    {
-        return $this->president;
-    }
-
-    public function setPresident(string $president): self
-    {
-        $this->president = $president;
 
         return $this;
     }
