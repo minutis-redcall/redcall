@@ -3,11 +3,18 @@
 namespace App\Manager;
 
 use App\Entity\Pegass;
+use App\Event\PegassEvent;
 use App\Repository\PegassRepository;
 use App\Services\PegassClient;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class PegassManager
 {
+    /**
+     * @var EventDispatcherInterface
+     */
+    private $eventDispatcher;
+
     /**
      * @var PegassRepository
      */
@@ -19,11 +26,15 @@ class PegassManager
     private $pegassClient;
 
     /**
-     * @param PegassRepository $pegassRepository
-     * @param PegassClient     $pegassClient
+     * @param EventDispatcherInterface $eventDispatcher
+     * @param PegassRepository         $pegassRepository
+     * @param PegassClient             $pegassClient
      */
-    public function __construct(PegassRepository $pegassRepository, PegassClient $pegassClient)
+    public function __construct(EventDispatcherInterface $eventDispatcher,
+        PegassRepository $pegassRepository,
+        PegassClient $pegassClient)
     {
+        $this->eventDispatcher  = $eventDispatcher;
         $this->pegassRepository = $pegassRepository;
         $this->pegassClient     = $pegassClient;
     }
@@ -39,28 +50,40 @@ class PegassManager
 
         $entities = $this->pegassRepository->findExpiredEntities($limit);
         foreach ($entities as $entity) {
-            /* @var Pegass $entity */
-            echo sprintf('%s Processing %s/%s', date('Y-m-d H:i:s'), $entity->getType(), $entity->getIdentifier()), PHP_EOL;
-
-            switch ($entity->getType()) {
-                case Pegass::TYPE_AREA:
-                    $this->updateArea();
-                    break;
-                case Pegass::TYPE_DEPARTMENT:
-                    $this->updateDepartment($entity);
-                    break;
-                case Pegass::TYPE_STRUCTURE:
-                    $this->updateStructure($entity);
-                    break;
-                case Pegass::TYPE_VOLUNTEER:
-                    $this->updateVolunteer($entity);
-                    break;
-            }
+            $this->updateEntity($entity);
         }
 
         if (!$entities) {
             $this->spreadUpdateDatesInTTL();
         }
+    }
+
+    /**
+     * @param Pegass $entity
+     *
+     * @throws \Exception
+     */
+    public function updateEntity(Pegass $entity)
+    {
+        // @todo remove this
+        echo sprintf('%s Processing %s/%s', date('Y-m-d H:i:s'), $entity->getType(), $entity->getIdentifier()), PHP_EOL;
+
+        switch ($entity->getType()) {
+            case Pegass::TYPE_AREA:
+                $this->updateArea();
+                break;
+            case Pegass::TYPE_DEPARTMENT:
+                $this->updateDepartment($entity);
+                break;
+            case Pegass::TYPE_STRUCTURE:
+                $this->updateStructure($entity);
+                break;
+            case Pegass::TYPE_VOLUNTEER:
+                $this->updateVolunteer($entity);
+                break;
+        }
+
+        $this->eventDispatcher->dispatch(new PegassEvent($entity));
     }
 
     /**

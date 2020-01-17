@@ -97,7 +97,7 @@ class VolunteerRepository extends BaseRepository
         $volunteer = $this->findOneByNivol($import->getNivol());
         if (!$volunteer) {
             $volunteer = $import;
-        } else if ($volunteer->isLocked()) {
+        } elseif ($volunteer->isLocked()) {
             $volunteer->setReport([]);
             $volunteer->addWarning('Cannot update a locked volunteer.');
             $this->save($volunteer);
@@ -120,19 +120,15 @@ class VolunteerRepository extends BaseRepository
         if (!$volunteer->getPhoneNumber() && !$volunteer->getEmail()) {
             $volunteer->addError('Volunteer has no phone and no email.');
             $volunteer->setEnabled(false);
-        } else if (!$volunteer->getPhoneNumber()) {
+        } elseif (!$volunteer->getPhoneNumber()) {
             $volunteer->addWarning('Volunteer has no phone number.');
-        } else if (!$volunteer->getEmail()) {
+        } elseif (!$volunteer->getEmail()) {
             $volunteer->addWarning('Volunteer has no email.');
         }
 
         if ($volunteer->isMinor()) {
             $volunteer->addError('Volunteer is minor.');
             $volunteer->setEnabled(false);
-        }
-
-        if (!$volunteer->getLastPegassUpdate()) {
-            $volunteer->setLastPegassUpdate(new \DateTime('2000-01-01'));
         }
 
         $this->save($volunteer);
@@ -145,7 +141,7 @@ class VolunteerRepository extends BaseRepository
      *
      * @throws \Exception
      */
-    public function findVolunteersToRefresh(int $limit) : array
+    public function findVolunteersToRefresh(int $limit): array
     {
         return $this
             ->createQueryBuilder('v')
@@ -214,5 +210,30 @@ class VolunteerRepository extends BaseRepository
             $volunteer->setLocked(false);
             $this->save($volunteer);
         }
+    }
+
+    /**
+     * @return array
+     */
+    public function listVolunteerNivols(): array
+    {
+        $rows = $this->createQueryBuilder('v')
+                     ->select('v.nivol')
+                     ->getQuery()
+                     ->getArrayResult();
+
+        return array_column($rows, 'nivol');
+    }
+
+    /**
+     * @param $nivol
+     *
+     * @return Volunteer|null
+     */
+    public function findOneByNivol($nivol): ?Volunteer
+    {
+        return $this->findOneBy([
+            'nivol' => ltrim($nivol, '0'),
+        ]);
     }
 }

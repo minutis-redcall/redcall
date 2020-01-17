@@ -61,7 +61,7 @@ class PegassSearchCommand extends BaseCommand
         $table->setHeaders(array_merge(['Type', 'Identifier'], $input->getArgument('expressions')));
 
         $hashes = [];
-        foreach ($input->getOption('type', Pegass::TYPES) as $type) {
+        foreach ($input->getOption('type') as $type) {
             $this->pegassManager->foreach($type, function (Pegass $pegass) use ($input, &$hashes, $table) {
 
                 // Filtering results by their content

@@ -269,3 +269,4 @@ geolocation:
   stop: Arrêter la géolocalisation
   na: Indispo.
   last_data: 'Position reçue à %time% (à %accuracy% près)'
+

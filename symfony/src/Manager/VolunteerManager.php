@@ -25,10 +25,35 @@ class VolunteerManager
      *
      * @return Volunteer|null
      */
-    public function find(int $volunteerId) : ?Volunteer
+    public function find(int $volunteerId): ?Volunteer
     {
         return $this->volunteerRepository->find($volunteerId);
     }
 
+    /**
+     * @return array
+     */
+    public function listVolunteerNivols(): array
+    {
+        return $this->volunteerRepository->listVolunteerNivols();
+    }
+
+    /**
+     * @param string $nivol
+     *
+     * @return Volunteer|null
+     */
+    public function findOneByNivol(string $nivol): ?Volunteer
+    {
+        return $this->volunteerRepository->findOneByNivol($nivol);
+    }
+
+    /**
+     * @param Volunteer $volunteer
+     */
+    public function save(Volunteer $volunteer)
+    {
+        $this->volunteerRepository->save($volunteer);
+    }
 
 }
