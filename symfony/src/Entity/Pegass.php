@@ -25,6 +25,13 @@ class Pegass
     const TYPE_STRUCTURE  = 'structure';
     const TYPE_VOLUNTEER  = 'volunteer';
 
+    const TYPES = [
+        self::TYPE_AREA,
+        self::TYPE_DEPARTMENT,
+        self::TYPE_STRUCTURE,
+        self::TYPE_VOLUNTEER,
+    ];
+
     const TTL = [
         self::TYPE_AREA       => 365 * 24 * 60 * 60, // 1 year
         self::TYPE_DEPARTMENT => 7 * 24 * 60 * 60, // 1 week
@@ -175,9 +182,13 @@ class Pegass
             return null;
         }
 
-        return PropertyAccess::createPropertyAccessorBuilder()
-                             ->disableExceptionOnInvalidPropertyPath()
-                             ->getPropertyAccessor()
-                             ->getValue(json_decode(json_encode($content)), $expression);
+        try {
+            return PropertyAccess::createPropertyAccessorBuilder()
+                                 ->disableExceptionOnInvalidPropertyPath()
+                                 ->getPropertyAccessor()
+                                 ->getValue(json_decode(json_encode($content)), $expression);
+        } catch (\Throwable $e) {
+            return null;
+        }
     }
 }
