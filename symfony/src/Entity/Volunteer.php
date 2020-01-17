@@ -118,15 +118,6 @@ class Volunteer
     private $tagsView;
 
     /**
-     * @var Structure
-     *
-     * @ORM\ManyToOne(targetEntity="Structure", inversedBy="volunteers")
-     * @ORM\JoinColumn(nullable=false)
-     * @Assert\NotBlank()
-     */
-    private $structure;
-
-    /**
      * @var \DateTime
      *
      * @ORM\Column(type="datetime", nullable=true)
@@ -140,9 +131,15 @@ class Volunteer
      */
     private $report;
 
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\Structure", inversedBy="volunteers")
+     */
+    private $structures;
+
     public function __construct()
     {
         $this->tags = new ArrayCollection();
+        $this->structures = new ArrayCollection();
     }
 
     /**
@@ -417,26 +414,6 @@ class Volunteer
     }
 
     /**
-     * @return Structure|null
-     */
-    public function getStructure(): ?Structure
-    {
-        return $this->structure;
-    }
-
-    /**
-     * @param Structure|null $structure
-     *
-     * @return Volunteer
-     */
-    public function setStructure(?Structure $structure): self
-    {
-        $this->structure = $structure;
-
-        return $this;
-    }
-
-    /**
      * @return \DateTime
      */
     public function getLastPegassUpdate(): ?\DateTime
@@ -503,5 +480,31 @@ class Volunteer
         $report       = $this->report ?? [];
         $report[]     = sprintf('WARNING: %s', $message);
         $this->report = $report;
+    }
+
+    /**
+     * @return Collection|Structure[]
+     */
+    public function getStructures(): Collection
+    {
+        return $this->structures;
+    }
+
+    public function addStructure(Structure $structure): self
+    {
+        if (!$this->structures->contains($structure)) {
+            $this->structures[] = $structure;
+        }
+
+        return $this;
+    }
+
+    public function removeStructure(Structure $structure): self
+    {
+        if ($this->structures->contains($structure)) {
+            $this->structures->removeElement($structure);
+        }
+
+        return $this;
     }
 }

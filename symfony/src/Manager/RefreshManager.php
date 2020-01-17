@@ -46,7 +46,7 @@ class RefreshManager
             $this->structureManager->disableByIdentifier($structureIdentiifer);
         }
 
-        // Import or update structures
+        // Import or refresh structures
         $this->pegassManager->foreach(Pegass::TYPE_STRUCTURE, function (Pegass $pegass) {
             $structure = $this->structureManager->getStructureByIdentifier($pegass->getIdentifier());
             if (!$structure) {
@@ -59,6 +59,17 @@ class RefreshManager
             $structure->setPresident($pegass->evaluate('responsible.responsableId'));
             $structure->setEnabled(true);
             $this->structureManager->save($structure);
+        });
+
+        // Refresh parent structures
+        $this->pegassManager->foreach(Pegass::TYPE_STRUCTURE, function (Pegass $pegass) {
+            if ($parentId = $pegass->evaluate('structure.parent.id')) {
+                if ($parent = $this->structureManager->getStructureByIdentifier($parentId)) {
+                    $structure = $this->structureManager->getStructureByIdentifier($pegass->getIdentifier());
+                    $structure->setParentStructure($parent);
+                    $this->structureManager->save($structure);
+                }
+            }
         });
     }
 

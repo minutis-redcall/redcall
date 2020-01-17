@@ -38,16 +38,6 @@ class Structure
     private $name;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Volunteer", mappedBy="organization", orphanRemoval=true)
-     */
-    private $volunteers;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Structure")
-     */
-    private $parentStructure;
-
-    /**
      * @ORM\Column(type="boolean")
      */
     private $enabled = true;
@@ -57,9 +47,25 @@ class Structure
      */
     private $president;
 
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\Volunteer", mappedBy="structures")
+     */
+    private $volunteers;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Structure", inversedBy="childrenStructures")
+     */
+    private $parentStructure;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Structure", mappedBy="parentStructure")
+     */
+    private $childrenStructures;
+
     public function __construct()
     {
         $this->volunteers = new ArrayCollection();
+        $this->childrenStructures = new ArrayCollection();
     }
 
     /**
@@ -130,66 +136,6 @@ class Structure
         return $this;
     }
 
-    /**
-     * @return Collection|Volunteer[]
-     */
-    public function getVolunteers(): Collection
-    {
-        return $this->volunteers;
-    }
-
-    /**
-     * @param Volunteer $volunteer
-     *
-     * @return Structure
-     */
-    public function addVolunteer(Volunteer $volunteer): self
-    {
-        if (!$this->volunteers->contains($volunteer)) {
-            $this->volunteers[] = $volunteer;
-            $volunteer->setStructure($this);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @param Volunteer $volunteer
-     *
-     * @return Structure
-     */
-    public function removeVolunteer(Volunteer $volunteer): self
-    {
-        if ($this->volunteers->contains($volunteer)) {
-            $this->volunteers->removeElement($volunteer);
-            // set the owning side to null (unless already changed)
-            if ($volunteer->getStructure() === $this) {
-                $volunteer->setStructure(null);
-            }
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Structure|null
-     */
-    public function getParentStructure(): ?self
-    {
-        return $this->parentStructure;
-    }
-
-    /**
-     * @param self|null $parentStructure
-     *
-     * @return Structure
-     */
-    public function setParentStructure(?self $parentStructure): self
-    {
-        $this->parentStructure = $parentStructure;
-
-        return $this;
-    }
 
     public function getPresident(): ?string
     {
@@ -219,6 +165,77 @@ class Structure
     public function setEnabled(bool $enabled): self
     {
         $this->enabled = $enabled;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Volunteer[]
+     */
+    public function getVolunteers(): Collection
+    {
+        return $this->volunteers;
+    }
+
+    public function addVolunteer(Volunteer $volunteer): self
+    {
+        if (!$this->volunteers->contains($volunteer)) {
+            $this->volunteers[] = $volunteer;
+            $volunteer->addStructure($this);
+        }
+
+        return $this;
+    }
+
+    public function removeVolunteer(Volunteer $volunteer): self
+    {
+        if ($this->volunteers->contains($volunteer)) {
+            $this->volunteers->removeElement($volunteer);
+            $volunteer->removeStructure($this);
+        }
+
+        return $this;
+    }
+
+    public function getParentStructure(): ?self
+    {
+        return $this->parentStructure;
+    }
+
+    public function setParentStructure(?self $parentStructure): self
+    {
+        $this->parentStructure = $parentStructure;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|self[]
+     */
+    public function getChildrenStructures(): Collection
+    {
+        return $this->childrenStructures;
+    }
+
+    public function addChildrenStructure(self $childrenStructure): self
+    {
+        if (!$this->childrenStructures->contains($childrenStructure)) {
+            $this->childrenStructures[] = $childrenStructure;
+            $childrenStructure->setParentStructure($this);
+        }
+
+        return $this;
+    }
+
+    public function removeChildrenStructure(self $childrenStructure): self
+    {
+        if ($this->childrenStructures->contains($childrenStructure)) {
+            $this->childrenStructures->removeElement($childrenStructure);
+            // set the owning side to null (unless already changed)
+            if ($childrenStructure->getParentStructure() === $this) {
+                $childrenStructure->setParentStructure(null);
+            }
+        }
 
         return $this;
     }
