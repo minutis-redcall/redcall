@@ -4,133 +4,36 @@
 {% block header %}{% endblock %}
 {% block footer %}{% endblock %}
 
+{% set type = app.request.query.get('type', 'list') %}
+
 {% block body %}
 
-    <br/>
+    <nav>
+        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+            <a class="nav-item nav-link {% if type == 'list' %}active{% endif %}" id="nav-list-tab" data-toggle="tab"
+               href="#nav-list" role="tab"
+               aria-controls="nav-enabled" aria-selected="true">{{ 'admin.user.list'|trans }}</a>
+            <a class="nav-item nav-link {% if type == 'pegass' %}active{% endif %}" id="nav-pegass-tab"
+               data-toggle="tab"
+               href="#nav-pegass" role="tab"
+               aria-controls="nav-disabled" aria-selected="false">{{ 'admin.user.pegass'|trans }}</a>
+        </div>
+    </nav>
 
-    <div class="row">
+    <div class="tab-content" id="nav-content">
 
-        <div class="col-md-12 jumbotron">
+        <div class="tab-pane {% if type == 'list' %}show active{% endif %}"
+             id="nav-list"
+             role="tabpanel" aria-labelledby="nav-list-tab">
 
-            <h3>{{ block('title') }}</h3>
+            {{ block('body', '@!PasswordLogin/admin/list.html.twig') }}
 
-            <table class="table">
-                <thead>
-                <tr>
-                    <th width="20%">{{ 'password_login.user_list.username'|trans }}</th>
-                    <th width="20%" colspan="2">
-                        {{ 'password_login.user_list.is_valid'|trans }} <sup>(1)</sup>
-                    </th>
-                    <th width="20%" colspan="2">
-                        {{ 'password_login.user_list.is_trusted'|trans }} <sup>(2)</sup>
-                    </th>
-                    <th width="20%" colspan="2">
-                        {{ 'password_login.user_list.is_admin'|trans }} <sup>(3)</sup>
-                    </th>
-                    <th width="20%">&nbsp;</th>
-                </tr>
-                </thead>
+        </div>
+        <div class="tab-pane {% if type == 'pegass' %}show active{% endif %}"
+             id="nav-pegass"
+             role="tabpanel" aria-labelledby="nav-pegass-tab">
 
-                <tbody>
-                {% for user in users %}
-                    <tr>
-                        <td>{{ user.username }}</td>
-                        <td>
-                            {% if user.verified %}
-                                <div class="h4">✅</div>
-                            {% else %}
-                                <div class="h4">❌</div>
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if not user.isEqualTo(app.user) %}
-                                {% if user.verified %}
-                                    <a href="{{ path('password_login_admin_toggle_verify', {username: user.username, csrf: csrf_token('password_login')}) }}" class="btn btn-secondary">
-                                        {{ 'password_login.user_list.disable'|trans }}
-                                    </a>
-                                {% else %}
-                                    <a href="{{ path('password_login_admin_toggle_verify', {username: user.username, csrf: csrf_token('password_login')}) }}" class="btn btn-secondary">
-                                        {{ 'password_login.user_list.enable'|trans }}
-                                    </a>
-                                {% endif %}
-                            {% else %}
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if user.trusted %}
-                                <div class="h4">✅</div>
-                            {% else %}
-                                <div class="h4">❌</div>
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if not user.isEqualTo(app.user) %}
-                                {% if user.trusted %}
-                                    <a href="{{ path('password_login_admin_toggle_trusted', {username: user.username, csrf: csrf_token('password_login')}) }}" class="btn btn-secondary">
-                                        {{ 'password_login.user_list.disable'|trans }}
-                                    </a>
-                                {% else %}
-                                    <a href="{{ path('password_login_admin_toggle_trusted', {username: user.username, csrf: csrf_token('password_login')}) }}" class="btn btn-secondary">
-                                        {{ 'password_login.user_list.enable'|trans }}
-                                    </a>
-                                {% endif %}
-                            {% else %}
-                                &nbsp;
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if user.admin %}
-                                <div class="h4">✅</div>
-                            {% else %}
-                                <div class="h4">❌</div>
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if not user.isEqualTo(app.user) %}
-                                {% if user.admin %}
-                                    <a href="{{ path('password_login_admin_toggle_admin', {username: user.username, csrf: csrf_token('password_login')}) }}" class="btn btn-secondary">
-                                        {{ 'password_login.user_list.disable'|trans }}
-                                    </a>
-                                {% else %}
-                                    <a href="{{ path('password_login_admin_toggle_admin', {username: user.username, csrf: csrf_token('password_login')}) }}" class="btn btn-secondary">
-                                        {{ 'password_login.user_list.enable'|trans }}
-                                    </a>
-                                {% endif %}
-                            {% else %}
-                                &nbsp;
-                            {% endif %}
-                        </td>
-                        <td>
-                            {% if not user.isEqualTo(app.user) %}
-                                <a href="{{ path('password_login_admin_delete', {username: user.username, csrf: csrf_token('password_login')}) }}" class="btn btn-secondary">
-                                    {{ 'password_login.user_list.delete'|trans }}
-                                </a>
-                            {% else %}
-                                &nbsp;
-                            {% endif %}
-                        </td>
-
-                    </tr>
-                {% endfor %}
-                </tbody>
-
-            </table>
-
-            <div class="text-left">
-                <sup>(1)</sup> {{ 'password_login.user_list.description_verified'|trans }}
-            </div>
-            <div class="text-left">
-                <sup>(2)</sup> {{ 'password_login.user_list.description_trusted'|trans }}
-            </div>
-            <div class="text-left">
-                <sup>(3)</sup> {{ 'password_login.user_list.description_admin'|trans }}
-            </div>
-
-            <div class="text-right">
-                <a href="{{ path('home') }}">
-                    {{ 'password_login.user_list.home'|trans }}
-                </a>
-            </div>
+            {{ render(controller('\\App\\Controller\\Admin\\PegassController::index')) }}
 
         </div>
 

@@ -53,7 +53,6 @@
                     'locked': 'manage_volunteers.order.locked'|trans,
                 }, 'nav-' ~ type) }}
 
-
                 <table class="table">
                     <tbody>
 
@@ -122,7 +121,7 @@
                                                 {% endif %}
 
                                                 {# Manual volunteer update #}
-                                                <a class="dropdown-item"  href="{{ path('admin_volunteers_manual_update', {id: volunteer.id}) }}">
+                                                <a class="dropdown-item" href="{{ path('admin_volunteers_manual_update', {id: volunteer.id}) }}">
                                                     {{ 'manage_volunteers.action.manual_update'|trans }}
                                                 </a>
 

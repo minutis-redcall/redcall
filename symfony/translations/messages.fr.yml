@@ -1,6 +1,9 @@
 admin:
   home:
     link: Administration
+  user:
+    list: Liste d'utilisateurs
+    pegass: Connexions à Pegass
 
 tag:
   emergency_assistance: Urg. Sec.

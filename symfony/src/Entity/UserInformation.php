@@ -34,11 +34,6 @@ class UserInformation
      */
     private $nivol;
 
-    /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\Structure", inversedBy="managedBy")
-     */
-    private $structures;
-
     public function __construct()
     {
         $this->structures = new ArrayCollection();
@@ -100,32 +95,6 @@ class UserInformation
     public function setNivol(?string $nivol): self
     {
         $this->nivol = $nivol;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Structure[]
-     */
-    public function getStructures(): Collection
-    {
-        return $this->structures;
-    }
-
-    public function addStructure(Structure $structure): self
-    {
-        if (!$this->structures->contains($structure)) {
-            $this->structures[] = $structure;
-        }
-
-        return $this;
-    }
-
-    public function removeStructure(Structure $structure): self
-    {
-        if ($this->structures->contains($structure)) {
-            $this->structures->removeElement($structure);
-        }
 
         return $this;
     }

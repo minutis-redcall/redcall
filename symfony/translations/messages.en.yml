@@ -1,6 +1,9 @@
 admin:
   home:
     link: Administration
+  user:
+    list: User list
+    pegass: Pegass bindings
 
 tag:
   emergency_assistance: Emergency Help
@@ -8,7 +11,7 @@ tag:
   psc_1: PSC 1
   pse_1: PSE 1
   pse_2: PSE 2
-  drvr_vl: LV driver
+  drvr_vl: VL driver
   drvr_vpsp: VPSP driver
   ci: Inter. chief
   shortcuts:

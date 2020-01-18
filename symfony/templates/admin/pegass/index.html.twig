@@ -1,0 +1,28 @@
+<div class="col-md-12 jumbotron">
+
+    <h3>Pegass stuff</h3>
+
+    <table class="table">
+        <tbody>
+        {% for user in users %}
+            <tr>
+                <td>
+                    <div class="row">
+                        <div class="col-4">
+                            <div class="h4">
+                                {{ user.username }}
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            Nivol selection
+                        </div>
+                        <div class="col-4">
+                            Volunteer details
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
