@@ -62,9 +62,14 @@ class Structure
      */
     private $childrenStructures;
 
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $lastPegassUpdate;
+
     public function __construct()
     {
-        $this->volunteers = new ArrayCollection();
+        $this->volunteers         = new ArrayCollection();
         $this->childrenStructures = new ArrayCollection();
     }
 
@@ -136,12 +141,19 @@ class Structure
         return $this;
     }
 
-
+    /**
+     * @return string|null
+     */
     public function getPresident(): ?string
     {
         return $this->president;
     }
 
+    /**
+     * @param string|null $president
+     *
+     * @return Structure
+     */
     public function setPresident(?string $president): self
     {
         $this->president = $president;
@@ -177,6 +189,11 @@ class Structure
         return $this->volunteers;
     }
 
+    /**
+     * @param Volunteer $volunteer
+     *
+     * @return Structure
+     */
     public function addVolunteer(Volunteer $volunteer): self
     {
         if (!$this->volunteers->contains($volunteer)) {
@@ -187,6 +204,11 @@ class Structure
         return $this;
     }
 
+    /**
+     * @param Volunteer $volunteer
+     *
+     * @return Structure
+     */
     public function removeVolunteer(Volunteer $volunteer): self
     {
         if ($this->volunteers->contains($volunteer)) {
@@ -197,11 +219,19 @@ class Structure
         return $this;
     }
 
+    /**
+     * @return Structure|null
+     */
     public function getParentStructure(): ?self
     {
         return $this->parentStructure;
     }
 
+    /**
+     * @param self|null $parentStructure
+     *
+     * @return Structure
+     */
     public function setParentStructure(?self $parentStructure): self
     {
         $this->parentStructure = $parentStructure;
@@ -217,6 +247,11 @@ class Structure
         return $this->childrenStructures;
     }
 
+    /**
+     * @param self $childrenStructure
+     *
+     * @return Structure
+     */
     public function addChildrenStructure(self $childrenStructure): self
     {
         if (!$this->childrenStructures->contains($childrenStructure)) {
@@ -227,6 +262,11 @@ class Structure
         return $this;
     }
 
+    /**
+     * @param self $childrenStructure
+     *
+     * @return Structure
+     */
     public function removeChildrenStructure(self $childrenStructure): self
     {
         if ($this->childrenStructures->contains($childrenStructure)) {
@@ -236,6 +276,26 @@ class Structure
                 $childrenStructure->setParentStructure(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * @return \DateTimeInterface|null
+     */
+    public function getLastPegassUpdate(): ?\DateTimeInterface
+    {
+        return $this->lastPegassUpdate;
+    }
+
+    /**
+     * @param \DateTimeInterface|null $lastPegassUpdate
+     *
+     * @return Structure
+     */
+    public function setLastPegassUpdate(?\DateTimeInterface $lastPegassUpdate): self
+    {
+        $this->lastPegassUpdate = $lastPegassUpdate;
 
         return $this;
     }

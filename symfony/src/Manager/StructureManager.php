@@ -46,9 +46,9 @@ class StructureManager
      *
      * @throws \Doctrine\ORM\NonUniqueResultException
      */
-    public function getStructureByIdentifier(string $identifier): ?Structure
+    public function findOneByIdentifier(string $identifier): ?Structure
     {
-        return $this->structureRepository->getStructureByIdentifier($identifier);
+        return $this->structureRepository->findOneByIdentifier($identifier);
     }
 
     /**

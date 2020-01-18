@@ -15,13 +15,16 @@ use Symfony\Component\Console\Output\OutputInterface;
  * Command help analysis data from Pegass
  *
  * Get distinct communication ids
- * php bin/console pegass:extract --type volunteer --distinct contact[0].moyenComId
+ * php bin/console pegass:search --type volunteer --distinct contact[0].moyenComId
+ *
+ * Get distinct trainings
+ * php bin/console pegass:search --type volunteer  trainings[0].formation.code trainings[0].formation.libelle --distinct
  *
  * Get specific data from a volunteer (root paths: user, infos, contact, actions, skills, trainings, nominations)
- * php bin/console pegass:extract --type volunteer --filter tiemblo contact
+ * php bin/console pegass:search --type volunteer --filter tiemblo contact
  *
  * Get specific data from a structure (root paths: responsible, structure, volunteers)
- * php bin/console pegass:extract --type structure --filter "paris 1er"  structure.libelle responsible.responsableId
+ * php bin/console pegass:search --type structure --filter "paris 1er"  structure.libelle responsible.responsableId
  */
 class PegassSearchCommand extends BaseCommand
 {
@@ -43,12 +46,13 @@ class PegassSearchCommand extends BaseCommand
     protected function configure()
     {
         $this
-            ->setName('pegass:extract')
+            ->setName('pegass:search')
             ->setDescription('Extract data from Pegass database for easier analysis')
             ->addArgument('expressions', InputArgument::OPTIONAL | InputArgument::IS_ARRAY, 'Json path expression(s) to seek for')
             ->addOption('type', 't', InputOption::VALUE_OPTIONAL | InputOption::VALUE_IS_ARRAY, sprintf('Pegass data type (%s)', implode(', ', Pegass::TYPES)), Pegass::TYPES)
             ->addOption('filter', 'f', InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Only fetch results matching any of these filters', [])
-            ->addOption('distinct', 'd', InputOption::VALUE_NONE, 'Only render distinct Pegass values');
+            ->addOption('distinct', 'd', InputOption::VALUE_NONE, 'Only render distinct Pegass values')
+            ->addOption('limit', 'l', InputOption::VALUE_REQUIRED, 'Limit table to N results');
     }
 
     /**
@@ -58,11 +62,12 @@ class PegassSearchCommand extends BaseCommand
     {
         $table = new Table($output);
         $table->setHeaderTitle('Pegass Search');
-        $table->setHeaders(array_merge(['Type', 'Identifier'], $input->getArgument('expressions')));
+        $table->setHeaders(array_merge(['Type', 'Identifier'], $input->getArgument('expressions') ?: ['content']));
 
         $hashes = [];
+        $count  = 0;
         foreach ($input->getOption('type') as $type) {
-            $this->pegassManager->foreach($type, function (Pegass $pegass) use ($input, &$hashes, $table) {
+            $this->pegassManager->foreach($type, function (Pegass $pegass) use ($input, &$hashes, $table, &$count) {
 
                 // Filtering results by their content
                 if ($input->getOption('filter')) {
@@ -79,18 +84,22 @@ class PegassSearchCommand extends BaseCommand
                 }
 
                 // Extracting data from JSON path expressions
-                $matches = [];
-                foreach ($input->getArgument('expressions') as $expression) {
-                    $match = $pegass->evaluate($expression);
+                if (!$input->getArgument('expressions')) {
+                    $matches[] = json_encode($pegass->getContent(), JSON_PRETTY_PRINT);
+                } else {
+                    $matches = [];
+                    foreach ($input->getArgument('expressions') as $expression) {
+                        $match = $pegass->evaluate($expression);
 
-                    if ($match && !is_scalar($match)) {
-                        $match = json_encode($match, JSON_PRETTY_PRINT);
+                        if ($match && !is_scalar($match)) {
+                            $match = json_encode($match, JSON_PRETTY_PRINT);
+                        }
+
+                        $matches[] = $match;
                     }
-
-                    $matches[] = $match;
-                }
-                if (!array_filter($matches)) {
-                    return;
+                    if (!array_filter($matches)) {
+                        return;
+                    }
                 }
 
                 // Removing duplicates if necessary
@@ -105,6 +114,11 @@ class PegassSearchCommand extends BaseCommand
                 }
 
                 $table->addRow(array_merge([$pegass->getType(), $pegass->getIdentifier()], $matches));
+                $count++;
+
+                if ($input->getOption('limit') && $count == $input->getOption('limit')) {
+                    return false;
+                }
             });
         }
 

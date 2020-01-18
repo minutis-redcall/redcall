@@ -273,7 +273,8 @@ geolocation:
   last_data: 'Position received at %time% (precision: %accuracy%)'
 
 import_report:
-  locked: 'Cannot update a locked volunteer.'
+  update_locked: 'Cannot update a locked volunteer.'
+  disable_locked: 'Cannot disable a locked volunteer.'
   no_contact: 'Volunteer has no phone and no email.'
   no_phone: 'Volunteer has no phone number.'
   no_email: 'Volunteer has no email.'

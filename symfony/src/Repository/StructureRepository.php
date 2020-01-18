@@ -49,22 +49,4 @@ class StructureRepository extends BaseRepository
              ->getQuery()
              ->execute();
     }
-
-
-    /**
-     * @param string $identifier
-     *
-     * @return Structure|null
-     *
-     * @throws \Doctrine\ORM\NonUniqueResultException
-     */
-    public function getStructureByIdentifier(string $identifier): ?Structure
-    {
-        return $this->createQueryBuilder('s')
-                    ->where('s.identifier = :identifier')
-                    ->setParameter('identifier', $identifier)
-                    ->getQuery()
-                    ->getOneOrNullResult();
-    }
-
 }

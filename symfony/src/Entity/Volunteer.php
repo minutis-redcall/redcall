@@ -22,6 +22,10 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
  */
 class Volunteer
 {
+    const RED_CROSS_DOMAINS = [
+        'croix-rouge.fr',
+    ];
+
     /**
      * @var int
      *
@@ -138,7 +142,7 @@ class Volunteer
 
     public function __construct()
     {
-        $this->tags = new ArrayCollection();
+        $this->tags       = new ArrayCollection();
         $this->structures = new ArrayCollection();
     }
 
@@ -231,11 +235,11 @@ class Volunteer
     }
 
     /**
-     * @param string $phoneNumber
+     * @param string|null $phoneNumber
      *
      * @return $this
      */
-    public function setPhoneNumber(string $phoneNumber)
+    public function setPhoneNumber(?string $phoneNumber)
     {
         $this->phoneNumber = $phoneNumber;
 

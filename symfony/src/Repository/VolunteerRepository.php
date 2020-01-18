@@ -5,7 +5,6 @@ namespace App\Repository;
 use App\Base\BaseRepository;
 use App\Entity\Tag;
 use App\Entity\Volunteer;
-use App\Entity\VolunteerImport;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
 /**

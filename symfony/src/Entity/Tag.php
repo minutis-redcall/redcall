@@ -10,10 +10,6 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Tag
 {
-    // If you add or change tags, you should do it as well on:
-    // - VolunteerImportCommand
-    // - messages.xx.yml
-    // - fixtures.sql
     const TAG_SOCIAL_ASSISTANCE    = 'social_assistance';
     const TAG_EMERGENCY_ASSISTANCE = 'emergency_assistance';
     const TAG_PSC_1                = 'psc_1';

@@ -37,7 +37,7 @@ class PegassRepository extends BaseRepository
      *
      * @return Pegass|null
      */
-    public function getEntity(string $type, string $identifier = null)
+    public function getEntity(string $type, string $identifier = null): ?Pegass
     {
         $filters['type'] = $type;
 
@@ -142,7 +142,10 @@ class PegassRepository extends BaseRepository
                 continue;
             }
 
-            $callback($entity);
+            if (false === $callback($entity)) {
+                break;
+            }
+
             $this->save($entity);
             $this->_em->clear(Pegass::class);
             $count++;

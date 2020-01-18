@@ -108,6 +108,17 @@ class PegassManager
     }
 
     /**
+     * @param string $type
+     * @param string $identifier
+     *
+     * @return Pegass|null
+     */
+    public function getEntity(string $type, string $identifier): ?Pegass
+    {
+        return $this->pegassRepository->getEntity($type, $identifier);
+    }
+
+    /**
      * @throws \Exception
      */
     private function initialize()

@@ -4,11 +4,8 @@ namespace App\Controller\Admin;
 
 use App\Base\BaseController;
 use App\Entity\Volunteer;
-use App\Entity\VolunteerImport;
 use App\Form\Type\VolunteerType;
-use App\Services\VolunteerImporter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -16,19 +13,6 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class VolunteersController extends BaseController
 {
-    /**
-     * @var VolunteerImporter
-     */
-    private $importer;
-
-    /**
-     * @param VolunteerImporter $importer
-     */
-    public function __construct(VolunteerImporter $importer)
-    {
-        $this->importer = $importer;
-    }
-
     /**
      * @Route(name="list")
      */
@@ -189,7 +173,7 @@ class VolunteersController extends BaseController
         }
 
         return $this->render('admin/volunteers/form.html.twig', [
-            'form' => $form->createView(),
+            'form'     => $form->createView(),
             'isCreate' => $isCreate,
         ]);
     }

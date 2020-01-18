@@ -270,3 +270,10 @@ geolocation:
   na: Indispo.
   last_data: 'Position reçue à %time% (à %accuracy% près)'
 
+import_report:
+  update_locked: 'Impossible de mettre à jour un volontaire gelé.'
+  disable_locked: 'Impossible de desactiver un volontaire gelé.'
+  no_contact: 'Le volontaire ne possède ni numéro de téléphone ni email.'
+  no_phone: 'Le volontaire ne possède pas de numéro de téléphone.'
+  no_email: 'Le volontaire ne possède pas d''email.'
+  minor: 'Le volontaire est mineur.'

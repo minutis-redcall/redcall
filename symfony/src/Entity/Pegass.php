@@ -183,12 +183,75 @@ class Pegass
         }
 
         try {
-            return PropertyAccess::createPropertyAccessorBuilder()
-                                 ->disableExceptionOnInvalidPropertyPath()
-                                 ->getPropertyAccessor()
-                                 ->getValue(json_decode(json_encode($content)), $expression);
+            $object = json_decode(json_encode($content));
+
+            $accessed = PropertyAccess::createPropertyAccessorBuilder()
+                                      ->disableExceptionOnInvalidPropertyPath()
+                                      ->getPropertyAccessor()
+                                      ->getValue($object, $expression);
+
+            return json_decode(json_encode($accessed), true);
         } catch (\Throwable $e) {
             return null;
         }
+    }
+
+    /**
+     * @param string $expression
+     *
+     * @return array|mixed|null
+     */
+    public function walk(string $expression)
+    {
+        $keys    = explode('.', $expression);
+        $content = $this->getContent();
+
+        if (!$content) {
+            return null;
+        }
+
+        if (!$keys) {
+            return $content;
+        }
+
+        return $this->_walk($content, $keys);
+    }
+
+    /**
+     * @param array $content
+     * @param array $keys
+     *
+     * @return array|mixed|null
+     */
+    private function _walk(array $content, array $keys)
+    {
+        $key = array_shift($keys);
+
+        if (null !== $key && '[]' !== $key) {
+            if (!array_key_exists($key, $content)) {
+                return null;
+            }
+
+            if ($keys) {
+                return $this->_walk($content[$key], $keys);
+            }
+
+            return $content[$key];
+        }
+
+        if (!$keys) {
+            return $content;
+        }
+
+        $data = [];
+        foreach ($content as $index => $value) {
+            if (!is_array($value)) {
+                $data[$index] = null;
+            } else {
+                $data[$index] = $this->_walk($value, $keys);
+            }
+        }
+
+        return $data;
     }
 }
