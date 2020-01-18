@@ -67,10 +67,16 @@ class Structure
      */
     private $lastPegassUpdate;
 
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\UserInformation", mappedBy="structures")
+     */
+    private $managedBy;
+
     public function __construct()
     {
         $this->volunteers         = new ArrayCollection();
         $this->childrenStructures = new ArrayCollection();
+        $this->managedBy          = new ArrayCollection();
     }
 
     /**
@@ -296,6 +302,34 @@ class Structure
     public function setLastPegassUpdate(?\DateTimeInterface $lastPegassUpdate): self
     {
         $this->lastPegassUpdate = $lastPegassUpdate;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|UserInformation[]
+     */
+    public function getManagedBy(): Collection
+    {
+        return $this->managedBy;
+    }
+
+    public function addManagedBy(UserInformation $managedBy): self
+    {
+        if (!$this->managedBy->contains($managedBy)) {
+            $this->managedBy[] = $managedBy;
+            $managedBy->addStructure($this);
+        }
+
+        return $this;
+    }
+
+    public function removeManagedBy(UserInformation $managedBy): self
+    {
+        if ($this->managedBy->contains($managedBy)) {
+            $this->managedBy->removeElement($managedBy);
+            $managedBy->removeStructure($this);
+        }
 
         return $this;
     }

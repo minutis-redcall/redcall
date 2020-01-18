@@ -2,8 +2,8 @@
 
 namespace App\EventSubscriber;
 
-use App\Entity\UserPreference;
-use App\Repository\UserPreferenceRepository;
+use App\Entity\UserInformation;
+use App\Repository\UserInformationRepository;
 use Bundles\PasswordLoginBundle\Event\PasswordLoginEvents;
 use Bundles\PasswordLoginBundle\Event\PostEditProfileEvent;
 use Bundles\PasswordLoginBundle\Event\PreEditProfileEvent;
@@ -12,23 +12,23 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 class PasswordLoginSubscriber implements EventSubscriberInterface
 {
     /**
-     * @var UserPreferenceRepository
+     * @var UserInformationRepository
      */
-    private $userPreferenceRepository;
+    private $userInformationRepository;
 
     /**
-     * @var UserPreference
+     * @var UserInformation
      */
-    private $userPreference;
+    private $userInformation;
 
     /**
      * PasswordLoginSubscriber constructor.
      *
-     * @param UserPreferenceRepository $userPreferenceRepository
+     * @param UserInformationRepository $userPreferenceRepository
      */
-    public function __construct(UserPreferenceRepository $userPreferenceRepository)
+    public function __construct(UserInformationRepository $userPreferenceRepository)
     {
-        $this->userPreferenceRepository = $userPreferenceRepository;
+        $this->userInformationRepository = $userPreferenceRepository;
     }
 
     /**
@@ -47,8 +47,8 @@ class PasswordLoginSubscriber implements EventSubscriberInterface
      */
     public function onPreEditProfile(PreEditProfileEvent $event)
     {
-        $this->userPreference = $this->userPreferenceRepository->find($event->getUser());
-        $this->userPreferenceRepository->removeForUser($event->getUser());
+        $this->userInformation = $this->userInformationRepository->find($event->getUser());
+        $this->userInformationRepository->removeForUser($event->getUser());
     }
 
     /**
@@ -59,6 +59,6 @@ class PasswordLoginSubscriber implements EventSubscriberInterface
      */
     public function onPostEditProfile(PostEditProfileEvent $event)
     {
-        $this->userPreferenceRepository->changeLocale($event->getUser(), $this->userPreference->getLocale());
+        $this->userInformationRepository->changeLocale($event->getUser(), $this->userInformation->getLocale());
     }
 }

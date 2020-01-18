@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Services;
+namespace App\Manager;
 
-use App\Repository\UserPreferenceRepository;
+use App\Repository\UserInformationRepository;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-class Locale
+class LocaleManager
 {
     /**
      * @var RequestStack
@@ -37,23 +37,23 @@ class Locale
     private $tokenStorage;
 
     /**
-     * @var UserPreferenceRepository
+     * @var UserInformationRepository
      */
     private $userPreferenceRepository;
 
     /**
      * Locale constructor.
      *
-     * @param RequestStack             $requestStack
-     * @param SessionInterface         $session
-     * @param ParameterBagInterface    $parameterBag
-     * @param UserPreferenceRepository $userPreferenceRepository
-     * @param TokenStorageInterface    $tokenStorage
+     * @param RequestStack              $requestStack
+     * @param SessionInterface          $session
+     * @param ParameterBagInterface     $parameterBag
+     * @param UserInformationRepository $userPreferenceRepository
+     * @param TokenStorageInterface     $tokenStorage
      */
     public function __construct(RequestStack $requestStack,
         SessionInterface $session,
         ParameterBagInterface $parameterBag,
-        UserPreferenceRepository $userPreferenceRepository,
+        UserInformationRepository $userPreferenceRepository,
         TokenStorageInterface $tokenStorage)
     {
         $this->requestStack             = $requestStack;

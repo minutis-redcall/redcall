@@ -3,30 +3,28 @@
 namespace App\Repository;
 
 use App\Base\BaseRepository;
-use App\Entity\UserPreference;
+use App\Entity\UserInformation;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
- * @method UserPreference|null find($id, $lockMode = null, $lockVersion = null)
- * @method UserPreference|null findOneBy(array $criteria, array $orderBy = null)
- * @method UserPreference[]    findAll()
- * @method UserPreference[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method UserInformation|null find($id, $lockMode = null, $lockVersion = null)
+ * @method UserInformation|null findOneBy(array $criteria, array $orderBy = null)
+ * @method UserInformation[]    findAll()
+ * @method UserInformation[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class UserPreferenceRepository extends BaseRepository
+class UserInformationRepository extends BaseRepository
 {
     /**
-     * UserPreferenceRepository constructor.
-     *
      * @param RegistryInterface $registry
      */
     public function __construct(RegistryInterface $registry)
     {
-        parent::__construct($registry, UserPreference::class);
+        parent::__construct($registry, UserInformation::class);
     }
 
     /**
-     * @param UserPreference $userPreference
+     * @param UserInformation $userPreference
      *
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
@@ -43,10 +41,10 @@ class UserPreferenceRepository extends BaseRepository
     /**
      * @param UserInterface $user
      *
-     * @return UserPreference
+     * @return UserInformation
      * @throws \Doctrine\ORM\NonUniqueResultException
      */
-    public function getByUser(UserInterface $user): UserPreference
+    public function getByUser(UserInterface $user): UserInformation
     {
         $preferences = $this->createQueryBuilder('p')
                             ->where('p.user = :user')
@@ -56,7 +54,7 @@ class UserPreferenceRepository extends BaseRepository
                             ->getOneOrNullResult();
 
         if (!$preferences) {
-            $preferences = new UserPreference();
+            $preferences = new UserInformation();
             $preferences->setUser($user);
         }
 
