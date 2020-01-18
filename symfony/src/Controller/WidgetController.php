@@ -4,17 +4,39 @@ namespace App\Controller;
 
 use App\Base\BaseController;
 use App\Entity\Campaign;
-use App\Entity\PrefilledAnswers;
+use App\Manager\CampaignManager;
+use App\Manager\PrefilledAnswersManager;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
-class PrefilledAnswersController extends BaseController
+class WidgetController extends BaseController
 {
-    public function renderWidget(?int $campaignId = null)
+    /**
+     * @var CampaignManager
+     */
+    private $campaignManager;
+
+    /**
+     * @var PrefilledAnswersManager
+     */
+    private $prefilledAnswersManager;
+
+    /**
+     * @param CampaignManager         $campaignManager
+     * @param PrefilledAnswersManager $prefilledAnswersManager
+     */
+    public function __construct(CampaignManager $campaignManager,
+        PrefilledAnswersManager $prefilledAnswersManager)
+    {
+        $this->campaignManager         = $campaignManager;
+        $this->prefilledAnswersManager = $prefilledAnswersManager;
+    }
+
+    public function prefilledAnswers(?int $campaignId = null)
     {
         $currentColor = Campaign::TYPE_GREEN;
 
         if ($campaignId) {
-            $campaign = $this->getManager(Campaign::class)->find($campaignId);
+            $campaign = $this->campaignManager->find($campaignId);
             if (!$campaign) {
                 throw $this->createNotFoundException();
             }
@@ -22,7 +44,7 @@ class PrefilledAnswersController extends BaseController
             $currentColor = $campaign->getType();
         }
 
-        $prefilledAnswers = $this->getManager(PrefilledAnswers::class)->findAll();
+        $prefilledAnswers = $this->prefilledAnswersManager->findAll();
 
         $choices = [];
         foreach ($prefilledAnswers as $prefilledAnswer) {
@@ -50,7 +72,7 @@ class PrefilledAnswersController extends BaseController
             ])->getForm()->createView();
         }
 
-        return $this->render('prefilled_answers/widget.html.twig', [
+        return $this->render('widget/prefilled_answers.html.twig', [
             'current_color' => $currentColor,
             'forms'         => $forms,
             'answers'       => $answers,
