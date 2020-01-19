@@ -72,7 +72,7 @@ class WidgetController extends BaseController
             ])->getForm()->createView();
         }
 
-        return $this->render('widget/prefilled_answers.html.twig', [
+        return $this->render('widget/prefilled_answers_dropdown.html.twig', [
             'current_color' => $currentColor,
             'forms'         => $forms,
             'answers'       => $answers,
