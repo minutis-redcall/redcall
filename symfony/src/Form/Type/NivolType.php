@@ -44,8 +44,10 @@ class NivolType extends TextType
     public function buildView(FormView $view, FormInterface $form, array $options)
     {
         if ($view->vars['value']) {
-            $volunteer          = $this->volunteerManager->findOneByNivol($view->vars['value']);
-            $view->vars['data'] = [$volunteer->toSearchResults($this->translator)];
+            $volunteer = $this->volunteerManager->findOneByNivol($view->vars['value']);
+            if ($volunteer) {
+                $view->vars['data'] = [$volunteer->toSearchResults($this->translator)];
+            }
         }
     }
 }

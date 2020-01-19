@@ -60,7 +60,7 @@
         attr: {
             'class': 'flexdatalist',
             'placeholder': 'base.search.placeholder'|trans,
-            'data-data': data|json_encode,
+            'data-data': data ? data|json_encode : '[]',
             'data-url': path('widget_nivol_search', {searchAll: true}),
             'data-search-disabled': true,
             'data-min-length': 1,
