@@ -8,10 +8,10 @@ use App\Form\Model\Campaign as CampaignModel;
 use App\Form\Type\CampaignType;
 use App\Manager\CampaignManager;
 use App\Manager\CommunicationManager;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Routing\Annotation\Route;
 
 class CampaignController extends BaseController
 {
@@ -26,31 +26,27 @@ class CampaignController extends BaseController
     private $communicationManager;
 
     /**
-     * @param CampaignManager $campaignManager
+     * @param CampaignManager      $campaignManager
      * @param CommunicationManager $communicationManager
      */
     public function __construct(CampaignManager $campaignManager, CommunicationManager $communicationManager)
     {
-        $this->campaignManager = $campaignManager;
+        $this->campaignManager      = $campaignManager;
         $this->communicationManager = $communicationManager;
     }
 
     /**
      * @Route(path="campaign/list", name="list_campaigns")
-     * @return Response
      */
     public function listCampaigns()
     {
         return $this->render('campaign/list.html.twig');
     }
 
-    /**
-     * @return Response
-     */
-    public function renderCampaignsTable(Request $request): Response
+    public function renderCampaignsTable(): Response
     {
-        $ongoing = $this->campaignManager->getActiveCampaignsQueryBuilder();
-        $finished = $this->campaignManager->getInactiveCampaignsQueryBuilder();
+        $ongoing  = $this->campaignManager->getActiveCampaignsForUserQueryBuilder($this->getUser());
+        $finished = $this->campaignManager->getInactiveCampaignsForUserQueryBuilder($this->getUser());
 
         return $this->render('campaign/table.html.twig', [
             'data' => [
@@ -68,16 +64,11 @@ class CampaignController extends BaseController
 
     /**
      * @Route(path="campaign/new", name="create_campaign")
-     *
-     * @param Request $request
-     *
-     * @return string
-     * @throws \Exception
      */
     public function createCampaign(Request $request)
     {
         $campaignModel = new CampaignModel();
-        $form     = $this
+        $form          = $this
             ->createForm(CampaignType::class, $campaignModel)
             ->handleRequest($request);
 
@@ -90,24 +81,18 @@ class CampaignController extends BaseController
         }
 
         return $this->render('campaign/new.html.twig', [
-            'form' => $form->createView(),
+            'form'           => $form->createView(),
             'taken_prefixes' => $this->communicationManager->getTakenPrefixes(),
         ]);
     }
 
     /**
-     * @Route(path="campaign/{campaignId}/close/{csrf}", name="close_campaign")
-     *
-     * @param int    $campaignId
-     * @param string $csrf
-     *
-     * @return Response
+     * @Route(path="campaign/{id}/close/{csrf}", name="close_campaign")
+     * @IsGranted("CAMPAIGN", subject="campaign")
      */
-    public function closeCampaign(int $campaignId, string $csrf): Response
+    public function closeCampaign(Campaign $campaign, string $csrf): Response
     {
         $this->validateCsrfOrThrowNotFoundException('campaign', $csrf);
-
-        $campaign = $this->getCampaignOrThrowNotFoundExcpetion($campaignId);
 
         // Close the campaign
         if ($campaign->isActive()) {
@@ -115,23 +100,17 @@ class CampaignController extends BaseController
         }
 
         return $this->redirect($this->generateUrl('communication_index', [
-            'campaignId' => $campaign->getId(),
+            'id' => $campaign->getId(),
         ]));
     }
 
     /**
-     * @Route(path="campaign/{campaignId}/open/{csrf}", name="open_campaign")
-     *
-     * @param int    $campaignId
-     * @param string $csrf
-     *
-     * @return Response
+     * @Route(path="campaign/{id}/open/{csrf}", name="open_campaign")
+     * @IsGranted("CAMPAIGN", subject="campaign")
      */
-    public function openCampaign(int $campaignId, string $csrf): Response
+    public function openCampaign(Campaign $campaign, string $csrf): Response
     {
         $this->validateCsrfOrThrowNotFoundException('campaign', $csrf);
-
-        $campaign = $this->getCampaignOrThrowNotFoundExcpetion($campaignId);
 
         // Reopen the campaign
         if (!$campaign->isActive()) {
@@ -139,23 +118,17 @@ class CampaignController extends BaseController
         }
 
         return $this->redirect($this->generateUrl('communication_index', [
-            'campaignId' => $campaign->getId(),
+            'id' => $campaign->getId(),
         ]));
     }
 
     /**
-     * @Route(path="campaign/{campaignId}/change-color/{color}/{csrf}", name="color_campaign")
-     *
-     * @param int    $campaignId
-     * @param string $csrf
-     *
-     * @return Response
+     * @Route(path="campaign/{id}/change-color/{color}/{csrf}", name="color_campaign")
+     * @IsGranted("CAMPAIGN", subject="campaignEntity")
      */
-    public function changeColor(int $campaignId, string $color, string $csrf): Response
+    public function changeColor(Campaign $campaignEntity, string $color, string $csrf): Response
     {
         $this->validateCsrfOrThrowNotFoundException('campaign', $csrf);
-
-        $campaignEntity = $this->getCampaignOrThrowNotFoundExcpetion($campaignId);
 
         $campaign       = new CampaignModel();
         $campaign->type = $color;
@@ -169,23 +142,22 @@ class CampaignController extends BaseController
         }
 
         return $this->redirect($this->generateUrl('communication_index', [
-            'campaignId' => $campaignId,
+            'id' => $campaignEntity->getId(),
         ]));
     }
 
     /**
-     * @Route(path="campaign/{campaignId}/rename", name="rename_campaign")
+     * @Route(path="campaign/{id}/rename", name="rename_campaign")
+     * @IsGranted("CAMPAIGN", subject="campaignEntity")
      *
      * @param Request $request
      * @param int     $campaignId
      *
      * @return Response
      */
-    public function rename(Request $request, int $campaignId): Response
+    public function rename(Request $request, Campaign $campaignEntity): Response
     {
         $this->validateCsrfOrThrowNotFoundException('campaign', $request->request->get('csrf'));
-
-        $campaignEntity = $this->getCampaignOrThrowNotFoundExcpetion($campaignId);
 
         $campaign        = new CampaignModel();
         $campaign->label = $request->request->get('new_name');
@@ -199,27 +171,7 @@ class CampaignController extends BaseController
         }
 
         return $this->redirect($this->generateUrl('communication_index', [
-            'campaignId' => $campaignId,
+            'id' => $campaignEntity->getId(),
         ]));
-    }
-
-    /**
-     * @param int $campaignId
-     *
-     * @return Campaign
-     *
-     * @throws NotFoundHttpException
-     */
-    private function getCampaignOrThrowNotFoundExcpetion(int $campaignId): Campaign
-    {
-        $campaign = $this->get('doctrine')->getRepository('App:Campaign')->findOneBy([
-            'id' => $campaignId,
-        ]);
-
-        if (is_null($campaign)) {
-            throw $this->createNotFoundException();
-        }
-
-        return $campaign;
     }
 }

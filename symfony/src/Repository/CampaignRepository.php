@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Base\BaseRepository;
 use App\Entity\Campaign;
+use Bundles\PasswordLoginBundle\Entity\User;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
@@ -38,23 +39,35 @@ class CampaignRepository extends BaseRepository
     }
 
     /**
+     * @param User $user
+     *
      * @return QueryBuilder
      */
-    public function getActiveCampaignsQueryBuilder(): QueryBuilder
-    {
-       return $this
-            ->createQueryBuilder('c')
-            ->where('c.active = 1');
-    }
-
-    /**
-     * @return QueryBuilder
-     */
-    public function getInactiveCampaignsQueryBuilder(): QueryBuilder
+    public function getActiveCampaignsQueryBuilder(User $user): QueryBuilder
     {
         return $this
             ->createQueryBuilder('c')
-            ->where('c.active = 0');
+            ->innerJoin('c.structure', 's')
+            ->innerJoin('s.users', 'u')
+            ->where('u.user = :user')
+            ->setParameter('user', $user)
+            ->andWhere('c.active = 1');
+    }
+
+    /**
+     * @param User $user
+     *
+     * @return QueryBuilder
+     */
+    public function getInactiveCampaignsQueryBuilder(User $user): QueryBuilder
+    {
+        return $this
+            ->createQueryBuilder('c')
+            ->innerJoin('c.structure', 's')
+            ->innerJoin('s.users', 'u')
+            ->where('u.user = :user')
+            ->setParameter('user', $user)
+            ->andWhere('c.active = 0');
     }
 
     /**

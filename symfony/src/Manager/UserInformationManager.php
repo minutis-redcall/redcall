@@ -4,6 +4,7 @@ namespace App\Manager;
 
 use App\Entity\UserInformation;
 use App\Repository\UserInformationRepository;
+use Bundles\PasswordLoginBundle\Entity\User;
 
 class UserInformationManager
 {
@@ -26,6 +27,16 @@ class UserInformationManager
     public function findAll(): array
     {
         return $this->userInformationRepository->findAll();
+    }
+
+    /**
+     * @param User $user
+     *
+     * @return UserInformation|null
+     */
+    public function findOneByUser(User $user): ?UserInformation
+    {
+        return $this->userInformationRepository->findOneByUser($user);
     }
 
     /**

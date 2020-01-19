@@ -72,11 +72,17 @@ class Structure
      */
     private $users;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Campaign", mappedBy="structure")
+     */
+    private $campaigns;
+
     public function __construct()
     {
         $this->volunteers         = new ArrayCollection();
         $this->childrenStructures = new ArrayCollection();
         $this->users = new ArrayCollection();
+        $this->campaigns = new ArrayCollection();
     }
 
     /**
@@ -329,6 +335,37 @@ class Structure
         if ($this->users->contains($user)) {
             $this->users->removeElement($user);
             $user->removeStructure($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Campaign[]
+     */
+    public function getCampaigns(): Collection
+    {
+        return $this->campaigns;
+    }
+
+    public function addCampaign(Campaign $campaign): self
+    {
+        if (!$this->campaigns->contains($campaign)) {
+            $this->campaigns[] = $campaign;
+            $campaign->setStructure($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCampaign(Campaign $campaign): self
+    {
+        if ($this->campaigns->contains($campaign)) {
+            $this->campaigns->removeElement($campaign);
+            // set the owning side to null (unless already changed)
+            if ($campaign->getStructure() === $this) {
+                $campaign->setStructure(null);
+            }
         }
 
         return $this;

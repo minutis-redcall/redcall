@@ -6,7 +6,7 @@
         <label class="switch">
             <input type="checkbox"
                    class="form-check-input answer-change"
-                   data-endpoint="{{ path('communication_change_answer', {messageId: message.id, csrf: csrf_token('communication')}) }}"
+                   data-endpoint="{{ path('communication_change_answer', {id: message.id, csrf: csrf_token('communication')}) }}"
                    data-message-id="{{ message.id }}"
                    data-choice-id="{{ choice.id }}"
                    data-multi="{{ message.communication.isMultipleAnswer }}"

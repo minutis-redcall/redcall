@@ -40,7 +40,7 @@
                         {{ macros.typeBadge(campaign.type) }}
                     </div>
                     <div class="col-9">
-                        <a href="{{ path('communication_index', {campaignId: campaign.id}) }}">
+                        <a href="{{ path('communication_index', {id: campaign.id}) }}">
                             {% if not campaign.active %}
                                 <strike>{{ campaign.label }}</strike>
                             {% else %}

@@ -68,4 +68,24 @@ class VolunteerManager
     {
         return $this->volunteerRepository->search($keyword, $maxResults, $user);
     }
+
+    /**
+     * @param User $user
+     *
+     * @return array
+     */
+    public function getVolunteersCountByTagsForUser(User $user): array
+    {
+        return $this->volunteerRepository->getVolunteersCountByTagsForUser($user);
+    }
+
+    /**
+     * @param User $user
+     *
+     * @return array
+     */
+    public function findCallableForUser(User $user): array
+    {
+        return $this->volunteerRepository->findCallableForUser($user);
+    }
 }

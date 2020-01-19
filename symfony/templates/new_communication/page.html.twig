@@ -8,11 +8,11 @@
         <div class="h3">{{ 'new_communication.subtitle'|trans({'%label%': campaign.label|lower}) }}</div>
     </h1>
 
-    {{ form_start(form, {attr: {'action': path('communication_new', {campaignId: campaign.id})}}) }}
+    {{ form_start(form, {attr: {'action': path('communication_new', {id: campaign.id})}}) }}
     {{ include('new_communication/form.html.twig') }}
     {{ form_end(form) }}
 
-    <a href="{{ path('communication_index', {campaignId: campaign.id}) }}" class="btn btn-light">
+    <a href="{{ path('communication_index', {id: campaign.id}) }}" class="btn btn-light">
         {{ 'form.communication.fields.back'|trans }}
     </a>
 

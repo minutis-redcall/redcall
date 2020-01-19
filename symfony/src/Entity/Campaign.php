@@ -73,6 +73,12 @@ class Campaign
     private $communications;
 
     /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Structure", inversedBy="campaigns")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $structure;
+
+    /**
      * @return mixed
      */
     public function getId()
@@ -312,5 +318,17 @@ class Campaign
         }
 
         return $cost;
+    }
+
+    public function getStructure(): ?Structure
+    {
+        return $this->structure;
+    }
+
+    public function setStructure(?Structure $structure): self
+    {
+        $this->structure = $structure;
+
+        return $this;
     }
 }

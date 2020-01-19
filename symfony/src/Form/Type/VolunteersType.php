@@ -4,8 +4,7 @@ namespace App\Form\Type;
 
 use App\Entity\Tag;
 use App\Entity\Volunteer;
-use App\Repository\TagRepository;
-use App\Repository\VolunteerRepository;
+use App\Manager\VolunteerManager;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -15,19 +14,15 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Translation\TranslatorInterface;
 
 class VolunteersType extends AbstractType
 {
     /**
-     * @var VolunteerRepository
+     * @var VolunteerManager
      */
-    private $volunteerRepository;
-
-    /**
-     * @var TagRepository
-     */
-    private $tagRepository;
+    private $volunteerManager;
 
     /**
      * @var TranslatorInterface
@@ -35,19 +30,22 @@ class VolunteersType extends AbstractType
     private $translator;
 
     /**
-     * VolunteersType constructor.
-     *
-     * @param VolunteerRepository $volunteerRepository
-     * @param TagRepository       $tagRepository
-     * @param TranslatorInterface $translator
+     * @var TokenStorageInterface
      */
-    public function __construct(VolunteerRepository $volunteerRepository,
-        TagRepository $tagRepository,
-        TranslatorInterface $translator)
+    private $tokenStorage;
+
+    /**
+     * @param VolunteerManager      $volunteerManager
+     * @param TranslatorInterface   $translator
+     * @param TokenStorageInterface $tokenStorage
+     */
+    public function __construct(VolunteerManager $volunteerManager,
+        TranslatorInterface $translator,
+        TokenStorageInterface $tokenStorage)
     {
-        $this->volunteerRepository = $volunteerRepository;
-        $this->tagRepository       = $tagRepository;
-        $this->translator          = $translator;
+        $this->volunteerManager = $volunteerManager;
+        $this->translator       = $translator;
+        $this->tokenStorage     = $tokenStorage;
     }
 
     /**
@@ -60,7 +58,9 @@ class VolunteersType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $tagCounts = $this->volunteerRepository->getVolunteersCountByTags();
+        $tagCounts = $this->volunteerManager->getVolunteersCountByTagsForUser(
+            $this->tokenStorage->getToken()->getUser()
+        );
 
         $builder
             ->add('tags', EntityType::class, [
@@ -93,7 +93,9 @@ class VolunteersType extends AbstractType
                 },
                 function (?array $volunteersAsIds) {
                     return array_filter(array_map(function ($volunteerId) {
-                        return $this->volunteerRepository->find($volunteerId);
+                        if ($volunteerId) {
+                            return $this->volunteerManager->find($volunteerId);
+                        }
                     }, explode(',', strval($volunteersAsIds['volunteers']))));
                 }
             ));
@@ -113,17 +115,19 @@ class VolunteersType extends AbstractType
     {
         $view->vars['volunteers'] = array_map(function (Volunteer $volunteer) {
             return [
-                'id'         => strval($volunteer->getId()),
-                'firstName'  => $volunteer->getFirstName(),
-                'lastName'   => $volunteer->getLastName(),
-                'tagIds'     => array_map(function (Tag $tag) {
+                'id'        => strval($volunteer->getId()),
+                'firstName' => $volunteer->getFirstName(),
+                'lastName'  => $volunteer->getLastName(),
+                'tagIds'    => array_map(function (Tag $tag) {
                     return $tag->getId();
                 }, $volunteer->getTags()->toArray()),
-                'tagLabels'  => $volunteer->getTagsView() ? sprintf('(%s)', implode(', ', array_map(function (Tag $tag) {
+                'tagLabels' => $volunteer->getTagsView() ? sprintf('(%s)', implode(', ', array_map(function (Tag $tag) {
                     return $this->translator->trans(sprintf('tag.shortcuts.%s', $tag->getLabel()));
                 }, $volunteer->getTagsView()))) : '',
             ];
-        }, $this->volunteerRepository->findAllEnabledVolunteers());
+        }, $this->volunteerManager->findCallableForUser(
+            $this->tokenStorage->getToken()->getUser()
+        ));
     }
 
     /**

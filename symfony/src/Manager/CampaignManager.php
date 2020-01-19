@@ -6,6 +6,8 @@ use App\Entity\Campaign;
 use App\Entity\Campaign as CampaignEntity;
 use App\Form\Model\Campaign as CampaignModel;
 use App\Repository\CampaignRepository;
+use Bundles\PasswordLoginBundle\Entity\User;
+use Doctrine\ORM\QueryBuilder;
 
 class CampaignManager
 {
@@ -20,15 +22,15 @@ class CampaignManager
     private $communicationManager;
 
     /**
-     * @param CampaignRepository     $campaignRepository
-     * @param CommunicationMAnager   $communicationManager;
+     * @param CampaignRepository   $campaignRepository
+     * @param CommunicationMAnager $communicationManager ;
      */
     public function __construct(
         CampaignRepository $campaignRepository,
         CommunicationManager $communicationManager
     ) {
-        $this->campaignRepository      = $campaignRepository;
-        $this->communicationManager    = $communicationManager;
+        $this->campaignRepository   = $campaignRepository;
+        $this->communicationManager = $communicationManager;
     }
 
     /**
@@ -36,7 +38,7 @@ class CampaignManager
      *
      * @return CampaignEntity|null
      */
-    public function find(int $campaignId) : ?CampaignEntity
+    public function find(int $campaignId): ?CampaignEntity
     {
         return $this->campaignRepository->find($campaignId);
     }
@@ -58,15 +60,14 @@ class CampaignManager
      *
      * @throws \Exception
      */
-    public function launchNewCampaign(CampaignModel $campaignModel) : CampaignEntity
+    public function launchNewCampaign(CampaignModel $campaignModel): CampaignEntity
     {
         $campaignEntity = new Campaign();
         $campaignEntity
             ->setLabel($campaignModel->label)
             ->setType($campaignModel->type)
             ->setActive(true)
-            ->setCreatedAt(new \DateTime())
-        ;
+            ->setCreatedAt(new \DateTime());
 
         $this->campaignRepository->save($campaignEntity);
 
@@ -122,18 +123,22 @@ class CampaignManager
     }
 
     /**
-     * @return \Doctrine\ORM\QueryBuilder
+     * @param User $user
+     *
+     * @return QueryBuilder
      */
-    public function getActiveCampaignsQueryBuilder()
+    public function getActiveCampaignsForUserQueryBuilder(User $user): QueryBuilder
     {
-        return $this->campaignRepository->getActiveCampaignsQueryBuilder();
+        return $this->campaignRepository->getActiveCampaignsQueryBuilder($user);
     }
 
     /**
-     * @return \Doctrine\ORM\QueryBuilder
+     * @param User $user
+     *
+     * @return QueryBuilder
      */
-    public function getInactiveCampaignsQueryBuilder()
+    public function getInactiveCampaignsForUserQueryBuilder(User $user): QueryBuilder
     {
-        return $this->campaignRepository->getInactiveCampaignsQueryBuilder();
+        return $this->campaignRepository->getInactiveCampaignsQueryBuilder($user);
     }
 }

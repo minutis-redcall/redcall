@@ -20,11 +20,6 @@ class VolunteerRepository extends BaseRepository
         parent::__construct($registry, Volunteer::class);
     }
 
-    public function findAllEnabledVolunteers()
-    {
-        return $this->findBy(['enabled' => true], ['firstName' => 'ASC']);
-    }
-
     /**
      * @param array $volunteerIds
      *
@@ -38,100 +33,6 @@ class VolunteerRepository extends BaseRepository
             ->setParameter('ids', $volunteerIds)
             ->getQuery()
             ->getResult();
-    }
-
-    /**
-     * @return array
-     */
-    public function getVolunteersCountByTags(): array
-    {
-        $rows = $this->_em->createQueryBuilder('t')
-                          ->select('t.id, COUNT(v.id) AS c')
-                          ->from(Tag::class, 't')
-                          ->join('t.volunteers', 'v')
-                          ->where('v.enabled = true')
-                          ->groupBy('t.id')
-                          ->getQuery()
-                          ->getArrayResult();
-
-        $tagCounts = [];
-        foreach ($rows as $row) {
-            $tagCounts[$row['id']] = $row['c'];
-        }
-
-        return $tagCounts;
-    }
-
-    /**
-     * @param array $nivolsToDisable
-     *
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     */
-    public function disableByNivols(array $nivolsToDisable)
-    {
-        foreach ($nivolsToDisable as $nivolToDisable) {
-            /* @var \App\Entity\Volunteer $volunteer */
-            $volunteer = $this->findOneByNivol($nivolToDisable);
-
-            if ($volunteer && !$volunteer->isLocked() && $volunteer->isEnabled()) {
-                $volunteer->setReport([]);
-                $volunteer->addError('Volunteer is not in the organization anymore.');
-                $volunteer->setEnabled(false);
-            }
-
-            $this->_em->persist($volunteer);
-        }
-
-        $this->_em->flush();
-    }
-
-    /**
-     * @param Volunteer $import
-     *
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     */
-    public function import(Volunteer $import)
-    {
-        $volunteer = $this->findOneByNivol($import->getNivol());
-        if (!$volunteer) {
-            $volunteer = $import;
-        } elseif ($volunteer->isLocked()) {
-            $volunteer->setReport([]);
-            $volunteer->addWarning('Cannot update a locked volunteer.');
-            $this->save($volunteer);
-
-            return;
-        } else {
-            $volunteer->setFirstName($import->getFirstName());
-            $volunteer->setLastName($import->getLastName());
-            if ($import->getPhoneNumber()) {
-                $volunteer->setPhoneNumber($import->getPhoneNumber());
-            }
-            if ($import->getEmail()) {
-                $volunteer->setEmail($import->getEmail());
-            }
-            $volunteer->setMinor($import->isMinor());
-            $volunteer->setReport([]);
-            $volunteer->setEnabled(true);
-        }
-
-        if (!$volunteer->getPhoneNumber() && !$volunteer->getEmail()) {
-            $volunteer->addError('Volunteer has no phone and no email.');
-            $volunteer->setEnabled(false);
-        } elseif (!$volunteer->getPhoneNumber()) {
-            $volunteer->addWarning('Volunteer has no phone number.');
-        } elseif (!$volunteer->getEmail()) {
-            $volunteer->addWarning('Volunteer has no email.');
-        }
-
-        if ($volunteer->isMinor()) {
-            $volunteer->addError('Volunteer is minor.');
-            $volunteer->setEnabled(false);
-        }
-
-        $this->save($volunteer);
     }
 
     /**
@@ -251,6 +152,52 @@ class VolunteerRepository extends BaseRepository
         }
 
         return $this->searchAll($keyword, $maxResults);
+    }
+
+    /**
+     * @param User $user
+     *
+     * @return array
+     */
+    public function getVolunteersCountByTagsForUser(User $user): array
+    {
+        $rows = $this->_em->createQueryBuilder('t')
+                          ->select('t.id, COUNT(v.id) AS c')
+                          ->from(Tag::class, 't')
+                          ->innerJoin('t.volunteers', 'v')
+                          ->innerJoin('v.structures', 's')
+                          ->innerJoin('s.users', 'u')
+                          ->where('u.user = :user')
+                          ->setParameter('user', $user)
+                          ->andWhere('v.enabled = true')
+                          ->groupBy('t.id')
+                          ->getQuery()
+                          ->getArrayResult();
+
+        $tagCounts = [];
+        foreach ($rows as $row) {
+            $tagCounts[$row['id']] = $row['c'];
+        }
+
+        return $tagCounts;
+    }
+
+    /**
+     * @param User $user
+     *
+     * @return array
+     */
+    public function findCallableForUser(User $user): array
+    {
+        return $this->createQueryBuilder('v')
+                    ->innerJoin('v.structures', 's')
+                    ->innerJoin('s.users', 'u')
+                    ->where('u.user = :user')
+                    ->setParameter('user', $user)
+                    ->andWhere('v.enabled = true')
+                    ->orderBy('v.firstName', 'ASC')
+                    ->getQuery()
+                    ->getResult();
     }
 
     /**
