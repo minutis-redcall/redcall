@@ -69,28 +69,28 @@ class CommunicationController extends BaseController
     /**
      * CommunicationController constructor.
      *
-     * @param CampaignManager         $campaignManager
-     * @param CommunicationManager    $communicationManager
-     * @param TagManager              $tagManager
-     * @param VolunteerManager $volunteerManager
-     * @param MessageManager $messageManager
-     * @param AnswerManager $answerManager
+     * @param CampaignManager      $campaignManager
+     * @param CommunicationManager $communicationManager
+     * @param TagManager           $tagManager
+     * @param VolunteerManager     $volunteerManager
+     * @param MessageManager       $messageManager
+     * @param AnswerManager        $answerManager
      */
     public function __construct(CampaignManager $campaignManager,
-                                CommunicationManager $communicationManager,
-                                MessageFormatter $formatter,
-                                TagManager $tagManager,
-                                VolunteerManager $volunteerManager,
-                                MessageManager $messageManager,
-                                AnswerManager $answerManager)
+        CommunicationManager $communicationManager,
+        MessageFormatter $formatter,
+        TagManager $tagManager,
+        VolunteerManager $volunteerManager,
+        MessageManager $messageManager,
+        AnswerManager $answerManager)
     {
-        $this->campaignManager         = $campaignManager;
-        $this->communicationManager    = $communicationManager;
-        $this->formatter               = $formatter;
-        $this->tagManager              = $tagManager;
-        $this->volunteerManager = $volunteerManager;
-        $this->messageManager = $messageManager;
-        $this->answerManager = $answerManager;
+        $this->campaignManager      = $campaignManager;
+        $this->communicationManager = $communicationManager;
+        $this->formatter            = $formatter;
+        $this->tagManager           = $tagManager;
+        $this->volunteerManager     = $volunteerManager;
+        $this->messageManager       = $messageManager;
+        $this->answerManager        = $answerManager;
     }
 
     /**
@@ -228,9 +228,9 @@ class CommunicationController extends BaseController
         }
 
         return $this->render('new_communication/page.html.twig', [
-            'campaign'   => $campaign,
-            'volunteers' => $volunteers,
-            'form'       => $form->createView(),
+            'campaign'       => $campaign,
+            'volunteers'     => $volunteers,
+            'form'           => $form->createView(),
             'taken_prefixes' => $this->communicationManager->getTakenPrefixes(),
         ]);
     }
@@ -310,7 +310,7 @@ class CommunicationController extends BaseController
     /**
      * @Route(
      *     name="change_answer",
-     *     path="campaign/answer/{messageId}/{csrf}",
+     *     path="campaign/answer/{csrf}/{messageId}",
      *     requirements={"messageId" = "\d+"}
      * )
      *

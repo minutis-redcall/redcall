@@ -47,7 +47,7 @@ class VolunteersController extends BaseController
     }
 
     /**
-     * @Route(path="lock/{volunteerId}/{csrf}", name="lock")
+     * @Route(path="lock/{csrf}/{volunteerId}", name="lock")
      */
     public function lockAction(Request $request, int $volunteerId, string $csrf)
     {
@@ -61,7 +61,7 @@ class VolunteersController extends BaseController
     }
 
     /**
-     * @Route(path="unlock/{volunteerId}/{csrf}", name="unlock")
+     * @Route(path="unlock/{csrf}/{volunteerId}", name="unlock")
      */
     public function unlockAction(Request $request, int $volunteerId, string $csrf)
     {
@@ -75,7 +75,7 @@ class VolunteersController extends BaseController
     }
 
     /**
-     * @Route(path="disable/{volunteerId}/{csrf}", name="disable")
+     * @Route(path="disable/{csrf}/{volunteerId}", name="disable")
      */
     public function disableAction(Request $request, int $volunteerId, string $csrf)
     {
@@ -90,7 +90,7 @@ class VolunteersController extends BaseController
     }
 
     /**
-     * @Route(path="enable/{volunteerId}/{csrf}", name="enable")
+     * @Route(path="enable/{csrf}/{volunteerId}", name="enable")
      */
     public function enableAction(Request $request, int $volunteerId, string $csrf)
     {
@@ -117,7 +117,7 @@ class VolunteersController extends BaseController
     }
 
     /**
-     * @Route(path="refresh-general/{volunteerId}/{csrf}", name="refresh_general")
+     * @Route(path="refresh-general/{csrf}/{volunteerId}", name="refresh_general")
      */
     public function refreshGeneralAction(Request $request, int $volunteerId, string $csrf)
     {
@@ -133,7 +133,7 @@ class VolunteersController extends BaseController
     }
 
     /**
-     * @Route(path="refresh-skills/{volunteerId}/{csrf}", name="refresh_skills")
+     * @Route(path="refresh-skills/{csrf}/{volunteerId}", name="refresh_skills")
      */
     public function refreshSkillsAction(Request $request, int $volunteerId, string $csrf)
     {

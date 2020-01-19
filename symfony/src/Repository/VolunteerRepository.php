@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Base\BaseRepository;
 use App\Entity\Tag;
 use App\Entity\Volunteer;
+use Bundles\PasswordLoginBundle\Entity\User;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
 /**
@@ -235,4 +236,67 @@ class VolunteerRepository extends BaseRepository
             'nivol' => ltrim($nivol, '0'),
         ]);
     }
+
+    /**
+     * @param string    $keyword
+     * @param int       $maxResults
+     * @param User|null $user
+     *
+     * @return array
+     */
+    public function search(string $keyword, int $maxResults = 20, User $user = null): array
+    {
+        if ($user) {
+            return $this->searchForUser($keyword, $maxResults, $user);
+        }
+
+        return $this->searchAll($keyword, $maxResults);
+    }
+
+    /**
+     * @param string $keyword
+     * @param int    $maxResults
+     * @param User   $user
+     */
+    private function searchForUser(string $keyword, int $maxResults, User $user)
+    {
+        $qb = $this->createQueryBuilder('v');
+
+        return $qb
+            ->innerJoin('v.structures', 's')
+            ->innerJoin('s.users', 'u')
+            ->where('u.user = :user')
+            ->setParameter('user', $user)
+            ->andWhere(
+                $qb->expr()->orX(
+                    'v.nivol LIKE :keyword',
+                    'v.firstName LIKE :keyword',
+                    'v.lastName LIKE :keyword'
+                )
+            )
+            ->setParameter('keyword', sprintf('%%%s%%', $keyword))
+            ->getQuery()
+            ->setMaxResults($maxResults)
+            ->getResult();
+    }
+
+    /**
+     * @param string $keyword
+     * @param int    $maxResults
+     * @param User   $user
+     *
+     * @return array
+     */
+    private function searchAll(string $keyword, int $maxResults): array
+    {
+        return $this->createQueryBuilder('v')
+                    ->where('v.nivol LIKE :keyword')
+                    ->orWhere('v.firstName LIKE :keyword')
+                    ->orWhere('v.lastName LIKE :keyword')
+                    ->setParameter('keyword', sprintf('%%%s%%', $keyword))
+                    ->getQuery()
+                    ->setMaxResults($maxResults)
+                    ->getResult();
+    }
+
 }

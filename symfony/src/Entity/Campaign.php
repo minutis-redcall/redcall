@@ -292,7 +292,7 @@ class Campaign
             $data[$communication->getId()] = [
                 'sent'    => $msgsSent,
                 'total'   => $count = count($communication->getMessages()),
-                'percent' => round($msgsSent * 100 / $count, 2),
+                'percent' => $count ? round($msgsSent * 100 / $count, 2) : 0,
                 'cost'    => $communication->getCost(),
             ];
         }

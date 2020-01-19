@@ -4,6 +4,7 @@ namespace App\Manager;
 
 use App\Entity\Volunteer;
 use App\Repository\VolunteerRepository;
+use Bundles\PasswordLoginBundle\Entity\User;
 
 class VolunteerManager
 {
@@ -56,4 +57,15 @@ class VolunteerManager
         $this->volunteerRepository->save($volunteer);
     }
 
+    /**
+     * @param string    $keyword
+     * @param int       $maxResults
+     * @param User|null $user
+     *
+     * @return array
+     */
+    public function search(string $keyword, int $maxResults, User $user = null): array
+    {
+        return $this->volunteerRepository->search($keyword, $maxResults, $user);
+    }
 }

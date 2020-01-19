@@ -4,6 +4,8 @@ admin:
   user:
     list: Liste d'utilisateurs
     pegass: Connexions à Pegass
+  pegass:
+    title: 'Connexions entre les utilisateurs de RedCall et la base de données Pegass'
 
 tag:
   emergency_assistance: Urg. Sec.
@@ -54,6 +56,7 @@ base:
   yes: Oui
   no: Non
   search:
+    placeholder: 'Rechercher...'
     no_results: 'Aucun résultat trouvé pour "{keyword}".'
   clear_selection: 'Effacer la sélection'
 

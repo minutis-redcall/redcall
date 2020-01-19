@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * @ORM\Table(indexes={
@@ -510,5 +511,29 @@ class Volunteer
         }
 
         return $this;
+    }
+
+    /**
+     * @param TranslatorInterface $translator
+     *
+     * @return array
+     */
+    public function toSearchResults(TranslatorInterface $translator)
+    {
+        return [
+            'nivol'      => strval($this->getNivol()),
+            'firstName'  => $this->getFirstName(),
+            'lastName'   => $this->getLastName(),
+            'tags'       => $this->getTagsView() ? sprintf('(%s)', implode(', ', array_map(function (Tag $tag) use (
+                $translator
+            ) {
+                return $translator->trans(sprintf('tag.shortcuts.%s', $tag->getLabel()));
+            }, $this->getTagsView()))) : '',
+            'structures' => sprintf('<br/>%s',
+                implode('<br/>', array_map(function (Structure $structure) {
+                    return $structure->getName();
+                }, $this->getStructures()->toArray()))
+            ),
+        ];
     }
 }

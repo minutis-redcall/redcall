@@ -4,6 +4,8 @@ admin:
   user:
     list: User list
     pegass: Pegass bindings
+  pegass:
+    title: 'Bindings between RedCall users and Pegass database'
 
 tag:
   emergency_assistance: Emergency Help
@@ -55,6 +57,7 @@ base:
   yes: Yes
   no: No
   search:
+    placeholder: 'Search...'
     no_results: 'No results found for "{keyword}".'
   clear_selection: 'Clear selection'
 

@@ -4,10 +4,15 @@ namespace App\Entity;
 
 use Bundles\PasswordLoginBundle\Entity\User;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserInformationRepository")
+ * @ORM\Table(
+ * indexes={
+ *    @ORM\Index(name="nivol_idx", columns={"nivol"})
+ * })
  */
 class UserInformation
 {
@@ -20,7 +25,7 @@ class UserInformation
 
     /**
      * @ORM\ManyToOne(targetEntity="Bundles\PasswordLoginBundle\Entity\User", cascade={"all"})
-     * @ORM\JoinColumn(referencedColumnName="username", nullable=false, onDelete="cascade")
+     * @ORM\JoinColumn(referencedColumnName="id", nullable=false, onDelete="cascade")
      */
     private $user;
 
@@ -33,6 +38,12 @@ class UserInformation
      * @ORM\Column(type="string", length=80, nullable=true)
      */
     private $nivol;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\Structure", inversedBy="users")
+     * @ORM\OrderBy({"identifier" = "ASC"})
+     */
+    private $structures;
 
     public function __construct()
     {
@@ -97,5 +108,42 @@ class UserInformation
         $this->nivol = $nivol;
 
         return $this;
+    }
+
+    /**
+     * @return Collection|Structure[]
+     */
+    public function getStructures(): Collection
+    {
+        return $this->structures;
+    }
+
+    public function addStructure(Structure $structure): self
+    {
+        if (!$this->structures->contains($structure)) {
+            $this->structures[] = $structure;
+        }
+
+        return $this;
+    }
+
+    public function removeStructure(Structure $structure): self
+    {
+        if ($this->structures->contains($structure)) {
+            $this->structures->removeElement($structure);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param Structure[] $structures
+     */
+    public function updateStructures(array $structures)
+    {
+        $this->getStructures()->clear();
+        foreach ($structures as $structure) {
+            $this->addStructure($structure);
+        }
     }
 }

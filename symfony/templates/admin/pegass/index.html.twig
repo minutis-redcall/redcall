@@ -1,23 +1,31 @@
 <div class="col-md-12 jumbotron">
 
-    <h3>Pegass stuff</h3>
+    <h3>{{ 'admin.pegass.title'|trans }}</h3>
 
     <table class="table">
         <tbody>
-        {% for user in users %}
+        {% for userInformation in userInformations %}
             <tr>
                 <td>
                     <div class="row">
                         <div class="col-4">
                             <div class="h4">
-                                {{ user.username }}
+                                {{ userInformation.user.username }}
                             </div>
                         </div>
                         <div class="col-4">
-                            Nivol selection
+                            <div class="nivol"
+                                 data-id="{{ userInformation.user.id }}"
+                                 data-uri="{{ path('admin_pegass_update', {csrf: csrf_token('pegass'), id: userInformation.id}) }}">
+                                {{ render(controller('\\App\\Controller\\WidgetController::nivolEditor', {
+                                    userInformation: userInformation
+                                })) }}
+                            </div>
                         </div>
-                        <div class="col-4">
-                            Volunteer details
+                        <div class="col-4" id="structures-{{ userInformation.user.id }}">
+                            {% for structure in userInformation.structures %}
+                                <div>{{ structure.name }}</div>
+                            {% endfor %}
                         </div>
                     </div>
                 </td>
@@ -33,3 +41,22 @@
     </div>
 
 </div>
+
+<script type="text/javascript">
+
+    $('.nivol input').change(function () {
+        var container = $(this).closest('.nivol');
+        var input = $(this);
+
+        $.post(container.data('uri'), {
+            nivol: input.val(),
+        }, function (data) {
+            var structuresContainer = $('#structures-' + container.data('id'));
+            structuresContainer.html('');
+            $.each(data.structures, function (index, value) {
+                structuresContainer.append('<div>' + value + '</div>');
+            });
+        });
+    });
+
+</script>

@@ -4,10 +4,22 @@ namespace App\Controller;
 
 use App\Base\BaseController;
 use App\Entity\Campaign;
+use App\Entity\UserInformation;
+use App\Form\Type\NivolType;
 use App\Manager\CampaignManager;
 use App\Manager\PrefilledAnswersManager;
+use App\Manager\VolunteerManager;
+use Ramsey\Uuid\Uuid;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\FormType;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Component\VarDumper\VarDumper;
 
+/**
+ * @Route(path="/widget", name="widget_")
+ */
 class WidgetController extends BaseController
 {
     /**
@@ -21,14 +33,30 @@ class WidgetController extends BaseController
     private $prefilledAnswersManager;
 
     /**
+     * @var VolunteerManager
+     */
+    private $volunteerManager;
+
+    /**
+     * @var TranslatorInterface
+     */
+    private $translator;
+
+    /**
      * @param CampaignManager         $campaignManager
      * @param PrefilledAnswersManager $prefilledAnswersManager
+     * @param VolunteerManager        $volunteerManager
+     * @param TranslatorInterface     $translator
      */
     public function __construct(CampaignManager $campaignManager,
-        PrefilledAnswersManager $prefilledAnswersManager)
+        PrefilledAnswersManager $prefilledAnswersManager,
+        VolunteerManager $volunteerManager,
+        TranslatorInterface $translator)
     {
         $this->campaignManager         = $campaignManager;
         $this->prefilledAnswersManager = $prefilledAnswersManager;
+        $this->volunteerManager        = $volunteerManager;
+        $this->translator              = $translator;
     }
 
     public function prefilledAnswers(?int $campaignId = null)
@@ -77,5 +105,48 @@ class WidgetController extends BaseController
             'forms'         => $forms,
             'answers'       => $answers,
         ]);
+    }
+
+    public function nivolEditor(UserInformation $userInformation)
+    {
+        VarDumper::dump($userInformation);
+        $form = $this
+            ->createNamedFormBuilder(
+                sprintf('nivol-%s', Uuid::uuid4()),
+                FormType::class
+            )
+            ->add('nivol', NivolType::class, [
+                'data' => $userInformation->getNivol(),
+            ])
+            ->getForm();
+
+        return $this->render('widget/nivol_editor.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+
+    /**
+     * @Route(path="/nivol-search/{searchAll}", name="nivol_search")
+     */
+    public function nivolSearch(Request $request, bool $searchAll = false)
+    {
+        if ($searchAll && !$this->isGranted('ROLE_ADMIN')) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $volunteers = $this->volunteerManager->search(
+            $request->query->get('keyword'),
+            20,
+            $searchAll ? null : $this->getUser()
+        );
+
+        // Format volunteer for the flexdatalist rendering
+        $results = [];
+        foreach ($volunteers as $volunteer) {
+            /* @var \App\Entity\Volunteer $volunteer */
+            $results[] = $volunteer->toSearchResults($this->translator);
+        }
+
+        return $this->json($results);
     }
 }

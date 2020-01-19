@@ -1,3 +1,4 @@
+{# Toggle instead of tick #}
 {% block checkbox_widget %}
     <div>
         {{ form_errors(form) }}
@@ -9,8 +10,8 @@
     </div>
 {% endblock %}
 
+{# Campaign type (red, orange, green) #}
 {% block types_row %}
-
     <div class="form-group">
         {{ form_label(form) }}
         <div style="padding-left:15px;padding-right:15px;">
@@ -28,11 +29,10 @@
             {% endfor %}
         </div>
     </div>
-
 {% endblock %}
 
+{# One answer of the collection (having the "delete" button at its right) #}
 {% block answer_row %}
-
     <div class="row answer-row" style="margin-bottom: 5px;" id="answer-nb-{{ name }}">
 
         <div class="col-10">
@@ -50,5 +50,27 @@
         </div>
 
     </div>
+{% endblock %}
+
+{% block nivol_row %}
+
+    {{ form_errors(form) }}
+
+    {{ form_widget(form, {
+        attr: {
+            'class': 'flexdatalist',
+            'placeholder': 'base.search.placeholder'|trans,
+            'data-data': data|json_encode,
+            'data-url': path('widget_nivol_search', {searchAll: true}),
+            'data-search-disabled': true,
+            'data-min-length': 1,
+            'data-visible-properties': '["firstName", "lastName", "tags", "structures"]',
+            'data-no-results-text': 'base.search.no_results'|trans,
+            'data-focus-first-result': true,
+            'data-selection-required': true,
+            'data-text-property': 'nivol',
+            'data-value-property': 'nivol',
+        }
+    }) }}
 
 {% endblock %}

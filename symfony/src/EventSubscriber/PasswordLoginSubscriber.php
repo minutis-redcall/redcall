@@ -6,6 +6,7 @@ use App\Entity\UserInformation;
 use App\Repository\UserInformationRepository;
 use Bundles\PasswordLoginBundle\Event\PasswordLoginEvents;
 use Bundles\PasswordLoginBundle\Event\PostEditProfileEvent;
+use Bundles\PasswordLoginBundle\Event\PostRegisterEvent;
 use Bundles\PasswordLoginBundle\Event\PreEditProfileEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -37,9 +38,21 @@ class PasswordLoginSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
+            PasswordLoginEvents::POST_REGISTER     => 'onPostRegister',
             PasswordLoginEvents::PRE_EDIT_PROFILE  => 'onPreEditProfile',
             PasswordLoginEvents::POST_EDIT_PROFILE => 'onPostEditProfile',
         ];
+    }
+
+    /**
+     * @param PostRegisterEvent $event
+     */
+    public function onPostRegister(PostRegisterEvent $event)
+    {
+        $preferences = new UserInformation();
+        $preferences->setUser($event->getUser());
+
+        $this->userInformationRepository->save($preferences);
     }
 
     /**

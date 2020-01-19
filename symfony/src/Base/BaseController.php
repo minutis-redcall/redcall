@@ -8,6 +8,7 @@ use Pagerfanta\Adapter\DoctrineORMAdapter;
 use Pagerfanta\Pagerfanta;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
+use Symfony\Component\Form\Test\FormBuilderInterface;
 
 class BaseController extends Controller
 {
@@ -86,6 +87,14 @@ class BaseController extends Controller
         return $em;
     }
 
+    /**
+     * @param string     $name
+     * @param string     $type
+     * @param array|null $data
+     * @param array      $options
+     *
+     * @return FormBuilderInterface
+     */
     public function createNamedFormBuilder($name, $type = FormType::class, $data = null, array $options = [])
     {
         return $this->container->get('form.factory')->createNamedBuilder($name, $type, $data, $options);
@@ -98,28 +107,28 @@ class BaseController extends Controller
         }
     }
 
-    protected function trans($property, array $parameters = [])
-    {
-        return $this->container->get('translator')->trans($property, $parameters);
-    }
-
-    public function info($message, array $parameters = array())
+    public function info($message, array $parameters = [])
     {
         $this->addFlash('info', $this->trans($message, $parameters));
     }
 
-    public function alert($message, array $parameters = array())
+    public function alert($message, array $parameters = [])
     {
         $this->addFlash('alert', $this->trans($message, $parameters));
     }
 
-    public function danger($message, array $parameters = array())
+    public function danger($message, array $parameters = [])
     {
         $this->addFlash('danger', $this->trans($message, $parameters));
     }
 
-    public function success($message, array $parameters = array())
+    public function success($message, array $parameters = [])
     {
         $this->addFlash('success', $this->trans($message, $parameters));
+    }
+
+    protected function trans($property, array $parameters = [])
+    {
+        return $this->container->get('translator')->trans($property, $parameters);
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Manager;
 
 use App\Entity\Structure;
+use App\Entity\Volunteer;
 use App\Repository\StructureRepository;
 
 class StructureManager
@@ -18,6 +19,16 @@ class StructureManager
     public function __construct(StructureRepository $structureRepository)
     {
         $this->structureRepository = $structureRepository;
+    }
+
+    /**
+     * @param int $id
+     *
+     * @return Structure|null
+     */
+    public function find(int $id): ?Structure
+    {
+        return $this->structureRepository->find($id);
     }
 
     /**
@@ -58,4 +69,15 @@ class StructureManager
     {
         $this->structureRepository->save($structure);
     }
+
+    /**
+     * @param Volunteer $volunteer
+     *
+     * @return array
+     */
+    public function findCallableStructuresForVolunteer(Volunteer $volunteer): array
+    {
+        return $this->structureRepository->findCallableStructuresForVolunteer($volunteer);
+    }
+
 }
