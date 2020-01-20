@@ -1,6 +1,13 @@
+{% import 'macros.html.twig' as macros %}
+
 <div class="col-md-12 jumbotron">
 
     <h3>{{ 'admin.pegass.title'|trans }}</h3>
+
+    {{ form_start(search) }}
+    <input type="hidden" name="type" value="pegass"/>
+    {{ form_end(search) }}
+
 
     <table class="table">
         <tbody>
@@ -9,8 +16,11 @@
                 <td>
                     <div class="row">
                         <div class="col-4">
-                            <div class="h4">
-                                {{ userInformation.user.username }}
+                            <div>
+                                <div class="h4">{{ userInformation.user.username }}</div>
+                                <div class="text-small">
+                                    {{ 'password_login.user_list.registered_at'|trans({'%date%': userInformation.user.registeredAt|date('d/m/Y H:i')}) }}
+                                </div>
                             </div>
                         </div>
                         <div class="col-4">
@@ -33,6 +43,8 @@
         {% endfor %}
         </tbody>
     </table>
+
+    {{ macros.pager(userInformations, null, {type: 'pegass'}) }}
 
     <div class="text-right">
         <a href="{{ path('home') }}">

@@ -4,13 +4,13 @@
 {% block header %}{% endblock %}
 {% block footer %}{% endblock %}
 
-{% set type = app.request.query.get('type', 'list') %}
+{% set type = app.request.query.get('type', 'user') %}
 
 {% block body %}
 
     <nav>
         <div class="nav nav-tabs" id="nav-tab" role="tablist">
-            <a class="nav-item nav-link {% if type == 'list' %}active{% endif %}" id="nav-list-tab" data-toggle="tab"
+            <a class="nav-item nav-link {% if type == 'user' %}active{% endif %}" id="nav-list-tab" data-toggle="tab"
                href="#nav-list" role="tab"
                aria-controls="nav-enabled" aria-selected="true">{{ 'admin.user.list'|trans }}</a>
             <a class="nav-item nav-link {% if type == 'pegass' %}active{% endif %}" id="nav-pegass-tab"
@@ -22,7 +22,7 @@
 
     <div class="tab-content" id="nav-content">
 
-        <div class="tab-pane {% if type == 'list' %}show active{% endif %}"
+        <div class="tab-pane {% if type == 'user' %}show active{% endif %}"
              id="nav-list"
              role="tabpanel" aria-labelledby="nav-list-tab">
 

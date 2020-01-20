@@ -5,6 +5,7 @@ namespace App\Manager;
 use App\Entity\UserInformation;
 use App\Repository\UserInformationRepository;
 use Bundles\PasswordLoginBundle\Entity\User;
+use Doctrine\ORM\QueryBuilder;
 
 class UserInformationManager
 {
@@ -45,5 +46,10 @@ class UserInformationManager
     public function save(UserInformation $userInformation)
     {
         $this->userInformationRepository->save($userInformation);
+    }
+
+    public function searchQueryBuilder(?string $criteria): QueryBuilder
+    {
+        return $this->userInformationRepository->searchQueryBuilder($criteria);
     }
 }

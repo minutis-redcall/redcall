@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Base\BaseRepository;
 use App\Entity\UserInformation;
+use Doctrine\ORM\QueryBuilder;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -73,5 +74,20 @@ class UserInformationRepository extends BaseRepository
 
         $this->_em->remove($preferences);
         $this->_em->flush($preferences);
+    }
+
+    /**
+     * @param string $criteria
+     *
+     * @return \Doctrine\ORM\QueryBuilder
+     */
+    public function searchQueryBuilder(?string $criteria): QueryBuilder
+    {
+        return $this->createQueryBuilder('ui')
+                    ->join('ui.user', 'u')
+                    ->where('u.username LIKE :criteria')
+                    ->orWhere('ui.nivol LIKE :criteria')
+                    ->setParameter('criteria', sprintf('%%%s%%', $criteria))
+                    ->orderBy('u.registeredAt', 'DESC');
     }
 }
