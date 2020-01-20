@@ -65,9 +65,6 @@ class PegassManager
      */
     public function updateEntity(Pegass $entity)
     {
-        // @todo remove this
-        echo sprintf('%s Processing %s/%s', date('Y-m-d H:i:s'), $entity->getType(), $entity->getIdentifier()), PHP_EOL;
-
         switch ($entity->getType()) {
             case Pegass::TYPE_AREA:
                 $this->updateArea();
@@ -278,8 +275,12 @@ class PegassManager
             $date = new \DateTime();
             $step = intval($ttl / count($entities));
             foreach ($entities as $entity) {
+                $updateAt = new \DateInterval(sprintf('PT%dS', $step));
+                $date->add($updateAt);
+
+                echo sprintf("Processing %s/%s: updated at becomes %s\n", $entity->getType(), $entity->getIdentifier(), $date->format('d/m/Y H:i:s'));
+
                 $entity->setUpdatedAt($date)->lockUpdateDate();
-                $date->add(new \DateInterval(sprintf('PT%dS', $step)));
                 $this->pegassRepository->save($entity);
             }
         }

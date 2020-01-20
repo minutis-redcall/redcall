@@ -129,7 +129,7 @@ class CampaignManager
      */
     public function getActiveCampaignsForUserQueryBuilder(User $user): QueryBuilder
     {
-        return $this->campaignRepository->getActiveCampaignsQueryBuilder($user);
+        return $this->campaignRepository->getActiveCampaignsForUserQueryBuilder($user);
     }
 
     /**
@@ -139,6 +139,6 @@ class CampaignManager
      */
     public function getInactiveCampaignsForUserQueryBuilder(User $user): QueryBuilder
     {
-        return $this->campaignRepository->getInactiveCampaignsQueryBuilder($user);
+        return $this->campaignRepository->getInactiveCampaignsForUserQueryBuilder($user);
     }
 }

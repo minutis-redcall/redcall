@@ -41,7 +41,7 @@ class PegassRepository extends BaseRepository
     {
         $filters['type'] = $type;
 
-        if ($filters) {
+        if ($identifier) {
             $filters['identifier'] = $identifier;
         }
 

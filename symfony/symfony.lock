@@ -239,6 +239,9 @@
     "ramsey/uuid": {
         "version": "3.7.3"
     },
+    "redcall-io/pagination-bundle": {
+        "version": "0.0.1"
+    },
     "redcall-io/password-login-bundle": {
         "version": "0.9.0"
     },

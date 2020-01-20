@@ -43,7 +43,7 @@ class CampaignRepository extends BaseRepository
      *
      * @return QueryBuilder
      */
-    public function getActiveCampaignsQueryBuilder(User $user): QueryBuilder
+    public function getActiveCampaignsForUserQueryBuilder(User $user): QueryBuilder
     {
         return $this
             ->createQueryBuilder('c')
@@ -59,7 +59,7 @@ class CampaignRepository extends BaseRepository
      *
      * @return QueryBuilder
      */
-    public function getInactiveCampaignsQueryBuilder(User $user): QueryBuilder
+    public function getInactiveCampaignsForUserQueryBuilder(User $user): QueryBuilder
     {
         return $this
             ->createQueryBuilder('c')
