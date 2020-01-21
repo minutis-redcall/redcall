@@ -216,9 +216,10 @@ class RefreshManager
         }
 
         // Update structures
-        $structure = $this->structureManager->findOneByIdentifier($pegass->evaluate('user.structure.id'));
-        if ($structure) {
-            $volunteer->addStructure($structure);
+        foreach (array_filter(explode('|', $pegass->getParentIdentifier())) as $identifier) {
+            if ($structure = $this->structureManager->findOneByIdentifier($identifier)) {
+                $volunteer->addStructure($structure);
+            }
         }
 
         // Some issues may lead to not contact a volunteer properly
