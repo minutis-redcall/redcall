@@ -34,21 +34,22 @@ class CommunicationManager
     private $processor;
 
     /**
-     * @param MessageManager $messageManager
+     * @param MessageManager          $messageManager
      * @param CommunicationRepository $communicationRepository
-     * @param ProcessorInterface $processor
+     * @param ProcessorInterface      $processor
      */
     public function __construct(MessageManager $messageManager,
-                                CommunicationRepository $communicationRepository,
-                                ProcessorInterface $processor)
+        CommunicationRepository $communicationRepository,
+        ProcessorInterface $processor)
     {
-        $this->messageManager = $messageManager;
+        $this->messageManager          = $messageManager;
         $this->communicationRepository = $communicationRepository;
-        $this->processor = $processor;
+        $this->processor               = $processor;
     }
 
     /**
      * @required
+     *
      * @param CampaignManager $campaignManager
      */
     public function setCampaignManager(CampaignManager $campaignManager)
@@ -61,24 +62,28 @@ class CommunicationManager
      *
      * @return CommunicationEntity|null
      */
-    public function find(int $communicationId) : ?CommunicationEntity
+    public function find(int $communicationId): ?CommunicationEntity
     {
         return $this->communicationRepository->find($communicationId);
     }
 
     /**
-     * @param Campaign $campaign
+     * @param Campaign           $campaign
      * @param CommunicationModel $communicationModel
      *
+     * @return CommunicationEntity
      * @throws \Exception
      *
-     * @return CommunicationEntity
      */
-    public function launchNewCommunication(Campaign $campaign, CommunicationModel $communicationModel) : CommunicationEntity
+    public function launchNewCommunication(Campaign $campaign,
+        CommunicationModel $communicationModel): CommunicationEntity
     {
         $communicationEntity = $this->createCommunication($communicationModel);
 
         $campaign->addCommunication($communicationEntity);
+        foreach ($communicationModel->structures as $structure) {
+            $campaign->addStructure($structure);
+        }
 
         $this->campaignManager->save($campaign);
 
@@ -96,7 +101,7 @@ class CommunicationManager
      *
      * @throws \Exception
      */
-    public function createCommunication(CommunicationModel $communicationModel) : CommunicationEntity
+    public function createCommunication(CommunicationModel $communicationModel): CommunicationEntity
     {
         $communicationEntity = new CommunicationEntity();
         $communicationEntity
@@ -136,7 +141,7 @@ class CommunicationManager
     /**
      * @return array
      */
-    public function getTakenPrefixes() : array
+    public function getTakenPrefixes(): array
     {
         return $this->communicationRepository->getTakenPrefixes();
     }

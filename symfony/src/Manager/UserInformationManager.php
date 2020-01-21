@@ -6,6 +6,7 @@ use App\Entity\UserInformation;
 use App\Repository\UserInformationRepository;
 use Bundles\PasswordLoginBundle\Entity\User;
 use Doctrine\ORM\QueryBuilder;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class UserInformationManager
 {
@@ -15,11 +16,19 @@ class UserInformationManager
     private $userInformationRepository;
 
     /**
-     * @param UserInformationRepository $userInformationRepository
+     * @var TokenStorageInterface
      */
-    public function __construct(UserInformationRepository $userInformationRepository)
+    private $tokenStorage;
+
+    /**
+     * @param UserInformationRepository $userInformationRepository
+     * @param TokenStorageInterface     $tokenStorage
+     */
+    public function __construct(UserInformationRepository $userInformationRepository,
+        TokenStorageInterface $tokenStorage)
     {
         $this->userInformationRepository = $userInformationRepository;
+        $this->tokenStorage              = $tokenStorage;
     }
 
     /**
@@ -28,6 +37,16 @@ class UserInformationManager
     public function findAll(): array
     {
         return $this->userInformationRepository->findAll();
+    }
+
+    /**
+     * @return UserInformation|null
+     */
+    public function findForCurrentUser(): ?UserInformation
+    {
+        return $this->findOneByUser(
+            $this->tokenStorage->getToken()->getUser()
+        );
     }
 
     /**

@@ -80,4 +80,13 @@ class StructureManager
         return $this->structureRepository->findCallableStructuresForVolunteer($volunteer);
     }
 
+    /**
+     * @param array $structures
+     *
+     * @return array
+     */
+    public function countVolunteersInStructures(array $structures): array
+    {
+        return $this->structureRepository->countVolunteersInStructures($structures);
+    }
 }

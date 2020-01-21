@@ -150,6 +150,7 @@ form:
       type_sms: 'Message urgent envoyé par SMS'
       type_email: 'Message envoyé par email'
       geo_location: 'Les destinataires de ce message pourront se géo-localiser entre eux'
+      structures: 'Structure(s) à déclencher'
       volunteers: Audience
       selection: Sélection:
       selection_count: volontaires

@@ -3,6 +3,7 @@
 namespace App\Form\Model;
 
 use App\Entity\Message;
+use App\Entity\Structure;
 use App\Validator\Constraints as CustomAssert;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -26,6 +27,13 @@ class Communication
      * })
      */
     public $type = \App\Entity\Communication::TYPE_SMS;
+
+    /**
+     * @var Collection
+     *
+     * @Assert\Count(min="1", minMessage="form.campaign.errors.volunteers.min")
+     */
+    public $structures;
 
     /**
      * @var Collection
@@ -76,9 +84,6 @@ class Communication
     public $prefix;
 
     /**
-     * @param ExecutionContextInterface $context
-     * @param                           $payload
-     *
      * @Assert\Callback
      */
     public function validate(ExecutionContextInterface $context, $payload)
@@ -102,6 +107,25 @@ class Communication
                 $context->buildViolation('form.communication.errors.too_large_sms')
                         ->atPath('message')
                         ->addViolation();
+            }
+        }
+
+        // Check that all selected volunteers appear in at least one selected structure
+        if ($this->structures) {
+            foreach ($this->volunteers->toArray() as $volunteer) {
+                $inStructures = false;
+                foreach ($this->structures as $structure) {
+                    /** @var Structure $structure */
+                    if ($structure->getVolunteers()->has($volunteer)) {
+                        $inStructures = true;
+                    }
+                }
+
+                if (!$inStructures) {
+                    $context->buildViolation('form.communication.errors.volunteer_not_in_structure')
+                            ->atPath('message')
+                            ->addViolation();
+                }
             }
         }
     }

@@ -14,6 +14,7 @@ use App\Manager\CampaignManager;
 use App\Manager\CommunicationManager;
 use App\Manager\MessageManager;
 use App\Manager\TagManager;
+use App\Manager\UserInformationManager;
 use App\Manager\VolunteerManager;
 use App\Services\MessageFormatter;
 use App\Tools\GSM;
@@ -69,14 +70,19 @@ class CommunicationController extends BaseController
     private $answerManager;
 
     /**
-     * CommunicationController constructor.
-     *
-     * @param CampaignManager      $campaignManager
-     * @param CommunicationManager $communicationManager
-     * @param TagManager           $tagManager
-     * @param VolunteerManager     $volunteerManager
-     * @param MessageManager       $messageManager
-     * @param AnswerManager        $answerManager
+     * @var UserInformationManager
+     */
+    private $userInformationManager;
+
+    /**
+     * @param CampaignManager        $campaignManager
+     * @param CommunicationManager   $communicationManager
+     * @param MessageFormatter       $formatter
+     * @param TagManager             $tagManager
+     * @param VolunteerManager       $volunteerManager
+     * @param MessageManager         $messageManager
+     * @param AnswerManager          $answerManager
+     * @param UserInformationManager $userInformationManager
      */
     public function __construct(CampaignManager $campaignManager,
         CommunicationManager $communicationManager,
@@ -84,15 +90,17 @@ class CommunicationController extends BaseController
         TagManager $tagManager,
         VolunteerManager $volunteerManager,
         MessageManager $messageManager,
-        AnswerManager $answerManager)
+        AnswerManager $answerManager,
+        UserInformationManager $userInformationManager)
     {
-        $this->campaignManager      = $campaignManager;
-        $this->communicationManager = $communicationManager;
-        $this->formatter            = $formatter;
-        $this->tagManager           = $tagManager;
-        $this->volunteerManager     = $volunteerManager;
-        $this->messageManager       = $messageManager;
-        $this->answerManager        = $answerManager;
+        $this->campaignManager        = $campaignManager;
+        $this->communicationManager   = $communicationManager;
+        $this->formatter              = $formatter;
+        $this->tagManager             = $tagManager;
+        $this->volunteerManager       = $volunteerManager;
+        $this->messageManager         = $messageManager;
+        $this->answerManager          = $answerManager;
+        $this->userInformationManager = $userInformationManager;
     }
 
     /**
@@ -135,6 +143,12 @@ class CommunicationController extends BaseController
      */
     public function addCommunicationAction(Request $request, Campaign $campaign)
     {
+        $userInformation = $this->userInformationManager->findForCurrentUser();
+
+        if (!$userInformation->getVolunteer() || !$userInformation->getStructures()->count()) {
+            return $this->redirectToRoute('home');
+        }
+
         $selection = json_decode($request->request->get('volunteers', '[]'), true);
 
         foreach ($selection as $volunteerId) {
@@ -176,6 +190,12 @@ class CommunicationController extends BaseController
      */
     public function newCommunicationAction(Request $request, Campaign $campaign, ?string $key)
     {
+        $userInformation = $this->userInformationManager->findForCurrentUser();
+
+        if (!$userInformation->getVolunteer() || !$userInformation->getStructures()->count()) {
+            return $this->redirectToRoute('home');
+        }
+
         // If volunteers selection have been made on the communication page,
         // restore it from the session.
         $volunteers = [];
@@ -193,6 +213,7 @@ class CommunicationController extends BaseController
          * @var \App\Form\Model\Communication
          */
         $communication             = new \App\Form\Model\Communication();
+        $communication->structures = $userInformation->getVolunteer()->getStructures();
         $communication->volunteers = $volunteers;
         $communication->answers    = [];
 

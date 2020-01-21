@@ -1,5 +1,10 @@
 {% form_theme form 'new_communication/form_theme.html.twig' %}
 
+<div class="h4">
+    {{ 'form.communication.fields.structures'|trans }}
+</div>
+{{ form_row(form.structures) }}
+
 {{ form_row(form.volunteers) }}
 
 {% set max_length_sms = constant('App\\Entity\\Message::MAX_LENGTH_SMS') %}

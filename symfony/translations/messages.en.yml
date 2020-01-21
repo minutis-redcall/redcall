@@ -151,6 +151,7 @@ form:
       type_sms: Emergency message sent through SMS
       type_email: Message sent by email
       geo_location: Message recipients will be able to geo locate each others
+      structures: 'Structure(s) to call'
       volunteers: Audience
       selection: Selection:
       selection_count: volunteers

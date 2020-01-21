@@ -8,6 +8,7 @@ use App\Form\Model\Campaign as CampaignModel;
 use App\Form\Type\CampaignType;
 use App\Manager\CampaignManager;
 use App\Manager\CommunicationManager;
+use App\Manager\UserInformationManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -26,13 +27,22 @@ class CampaignController extends BaseController
     private $communicationManager;
 
     /**
-     * @param CampaignManager      $campaignManager
-     * @param CommunicationManager $communicationManager
+     * @var UserInformationManager
      */
-    public function __construct(CampaignManager $campaignManager, CommunicationManager $communicationManager)
+    private $userInformationManager;
+
+    /**
+     * @param CampaignManager        $campaignManager
+     * @param CommunicationManager   $communicationManager
+     * @param UserInformationManager $userInformationManager
+     */
+    public function __construct(CampaignManager $campaignManager,
+        CommunicationManager $communicationManager,
+        UserInformationManager $userInformationManager)
     {
-        $this->campaignManager      = $campaignManager;
-        $this->communicationManager = $communicationManager;
+        $this->campaignManager        = $campaignManager;
+        $this->communicationManager   = $communicationManager;
+        $this->userInformationManager = $userInformationManager;
     }
 
     /**
@@ -67,8 +77,16 @@ class CampaignController extends BaseController
      */
     public function createCampaign(Request $request)
     {
-        $campaignModel = new CampaignModel();
-        $form          = $this
+        $userInformation = $this->userInformationManager->findForCurrentUser();
+
+        if (!$userInformation->getVolunteer() || !$userInformation->getStructures()->count()) {
+            return $this->redirectToRoute('home');
+        }
+
+        $campaignModel                            = new CampaignModel();
+        $campaignModel->communication->structures = $userInformation->getVolunteer()->getStructures();
+
+        $form = $this
             ->createForm(CampaignType::class, $campaignModel)
             ->handleRequest($request);
 
@@ -76,7 +94,7 @@ class CampaignController extends BaseController
             $campaignEntity = $this->campaignManager->launchNewCampaign($campaignModel);
 
             return $this->redirect($this->generateUrl('communication_index', [
-                'campaignId' => $campaignEntity->getId(),
+                'id' => $campaignEntity->getId(),
             ]));
         }
 
@@ -149,11 +167,6 @@ class CampaignController extends BaseController
     /**
      * @Route(path="campaign/{id}/rename", name="rename_campaign")
      * @IsGranted("CAMPAIGN", subject="campaignEntity")
-     *
-     * @param Request $request
-     * @param int     $campaignId
-     *
-     * @return Response
      */
     public function rename(Request $request, Campaign $campaignEntity): Response
     {

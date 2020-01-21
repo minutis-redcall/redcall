@@ -111,6 +111,7 @@ class PegassController extends BaseController
         }
 
         $userInformation->setNivol($nivol);
+        $userInformation->setVolunteer($volunteer);
 
         $structures = $this->structureManager->findCallableStructuresForVolunteer($volunteer);
         $userInformation->updateStructures($structures);

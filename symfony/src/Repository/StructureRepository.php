@@ -98,4 +98,29 @@ class StructureRepository extends BaseRepository
                     ->getResult();
     }
 
+    /**
+     * @param array $structures
+     *
+     * @return array
+     */
+    public function countVolunteersInStructures(array $structures): array
+    {
+        $ids = array_map(function (Structure $structure) {
+            return $structure->getId();
+        }, $structures);
+
+        $rows = $this->createQueryBuilder('s')
+                     ->select('s.id as structure_id, COUNT(v.id) as count')
+                     ->join('s.volunteers', 'v')
+                     ->where('s.id IN (:ids)')
+                     ->setParameter('ids', $ids)
+                     ->groupBy('s.id')
+                     ->getQuery()
+                     ->getArrayResult();
+
+        return array_combine(
+            array_column($rows, 'structure_id'),
+            array_column($rows, 'count')
+        );
+    }
 }

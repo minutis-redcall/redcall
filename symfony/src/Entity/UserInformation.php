@@ -40,6 +40,11 @@ class UserInformation
     private $nivol;
 
     /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Volunteer")
+     */
+    private $volunteer;
+
+    /**
      * @ORM\ManyToMany(targetEntity="App\Entity\Structure", inversedBy="users")
      * @ORM\OrderBy({"identifier" = "ASC"})
      */
@@ -106,6 +111,18 @@ class UserInformation
     public function setNivol(?string $nivol): self
     {
         $this->nivol = $nivol;
+
+        return $this;
+    }
+
+    public function getVolunteer(): ?Volunteer
+    {
+        return $this->volunteer;
+    }
+
+    public function setVolunteer(?Volunteer $volunteer): self
+    {
+        $this->volunteer = $volunteer;
 
         return $this;
     }
