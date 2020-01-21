@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -73,10 +75,14 @@ class Campaign
     private $communications;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Structure", inversedBy="campaigns")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\ManyToMany(targetEntity="App\Entity\Structure", inversedBy="campaigns")
      */
-    private $structure;
+    private $structures;
+
+    public function __construct()
+    {
+        $this->structures = new ArrayCollection();
+    }
 
     /**
      * @return mixed
@@ -320,14 +326,28 @@ class Campaign
         return $cost;
     }
 
-    public function getStructure(): ?Structure
+    /**
+     * @return Collection|Structure[]
+     */
+    public function getStructures(): Collection
     {
-        return $this->structure;
+        return $this->structures;
     }
 
-    public function setStructure(?Structure $structure): self
+    public function addStructure(Structure $structure): self
     {
-        $this->structure = $structure;
+        if (!$this->structures->contains($structure)) {
+            $this->structures[] = $structure;
+        }
+
+        return $this;
+    }
+
+    public function removeStructure(Structure $structure): self
+    {
+        if ($this->structures->contains($structure)) {
+            $this->structures->removeElement($structure);
+        }
 
         return $this;
     }

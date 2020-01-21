@@ -47,7 +47,7 @@ class CampaignRepository extends BaseRepository
     {
         return $this
             ->createQueryBuilder('c')
-            ->innerJoin('c.structure', 's')
+            ->innerJoin('c.structures', 's')
             ->innerJoin('s.users', 'u')
             ->where('u.user = :user')
             ->setParameter('user', $user)
@@ -63,7 +63,7 @@ class CampaignRepository extends BaseRepository
     {
         return $this
             ->createQueryBuilder('c')
-            ->innerJoin('c.structure', 's')
+            ->innerJoin('c.structures', 's')
             ->innerJoin('s.users', 'u')
             ->where('u.user = :user')
             ->setParameter('user', $user)

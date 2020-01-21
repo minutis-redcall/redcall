@@ -73,7 +73,7 @@ class Structure
     private $users;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Campaign", mappedBy="structure")
+     * @ORM\ManyToMany(targetEntity="App\Entity\Campaign", mappedBy="structures")
      */
     private $campaigns;
 
@@ -81,7 +81,7 @@ class Structure
     {
         $this->volunteers         = new ArrayCollection();
         $this->childrenStructures = new ArrayCollection();
-        $this->users = new ArrayCollection();
+        $this->users              = new ArrayCollection();
         $this->campaigns = new ArrayCollection();
     }
 
@@ -352,7 +352,7 @@ class Structure
     {
         if (!$this->campaigns->contains($campaign)) {
             $this->campaigns[] = $campaign;
-            $campaign->setStructure($this);
+            $campaign->addStructure($this);
         }
 
         return $this;
@@ -362,10 +362,7 @@ class Structure
     {
         if ($this->campaigns->contains($campaign)) {
             $this->campaigns->removeElement($campaign);
-            // set the owning side to null (unless already changed)
-            if ($campaign->getStructure() === $this) {
-                $campaign->setStructure(null);
-            }
+            $campaign->removeStructure($this);
         }
 
         return $this;
