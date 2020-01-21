@@ -3,7 +3,6 @@
 namespace App\Repository;
 
 use App\Base\BaseRepository;
-use App\Entity\Tag;
 use App\Entity\Volunteer;
 use Bundles\PasswordLoginBundle\Entity\User;
 use Symfony\Bridge\Doctrine\RegistryInterface;
@@ -152,34 +151,6 @@ class VolunteerRepository extends BaseRepository
         }
 
         return $this->searchAll($keyword, $maxResults);
-    }
-
-    /**
-     * @param User $user
-     *
-     * @return array
-     */
-    public function getVolunteersCountByTagsForUser(User $user): array
-    {
-        $rows = $this->_em->createQueryBuilder('t')
-                          ->select('t.id, COUNT(v.id) AS c')
-                          ->from(Tag::class, 't')
-                          ->innerJoin('t.volunteers', 'v')
-                          ->innerJoin('v.structures', 's')
-                          ->innerJoin('s.users', 'u')
-                          ->where('u.user = :user')
-                          ->setParameter('user', $user)
-                          ->andWhere('v.enabled = true')
-                          ->groupBy('t.id')
-                          ->getQuery()
-                          ->getArrayResult();
-
-        $tagCounts = [];
-        foreach ($rows as $row) {
-            $tagCounts[$row['id']] = $row['c'];
-        }
-
-        return $tagCounts;
     }
 
     /**

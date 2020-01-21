@@ -1,12 +1,12 @@
-
 {% block volunteers_row %}
 
-    {% set vId = form.volunteers.vars.id %}
+    {% set volunteerInput = form.volunteers.vars.id %}
+    {% set structureTicks = form.parent.structures.vars.id %}
 
     <div class="h4">{{ 'form.communication.fields.volunteers'|trans }}</div>
     <br/>
 
-    <div class="row checkbox-list" id="checkbox-list-{{ vId }}">
+    <div class="row checkbox-list" id="checkbox-list">
         {% for child in form.tags.children %}
             <div class="col-lg-3 col-md-4 col-6 col-12">
                 {{ form_widget(child, {
@@ -20,23 +20,25 @@
     </div>
     <div class="text-right">
         {{ 'form.communication.fields.selection'|trans }}
-        <span id="selected-volunteers-{{ vId }}">{{ form.vars.value.volunteers|length ? form.vars.value.volunteers|split(',')|length : 0 }}</span>
+        <span id="selected-volunteers">{{ form.vars.value.volunteers|length ? form.vars.value.volunteers|split(',')|length : 0 }}</span>
         {{ 'form.communication.fields.selection_count'|trans }}
     </div>
 
     {{ form_errors(form.volunteers) }}
     {{ form_widget(form.volunteers) }}
     <div class="text-right">
-        <a href="#" id="clear-selection-{{ vId }}">{{ 'base.clear_selection'|trans }}</a>
+        <a href="#" id="clear-selection">{{ 'base.clear_selection'|trans }}</a>
     </div>
 
     {# JavaScript used to filter volunteers and tag them #}
     <script type="text/javascript">
-        var volunteers_{{ vId }} = {{ form.vars.volunteers|json_encode|raw }};
+
+        var structures = {{ form.vars.structures|json_encode|raw }};
+        var volunteers = {{ form.vars.volunteers|json_encode|raw }};
 
         function initVolunteers() {
-            $('#{{ vId }}').flexdatalist({
-                data: volunteers_{{ vId }},
+            $('#{{ volunteerInput }}').flexdatalist({
+                data: volunteers,
                 minLength: 1,
                 focusFirstResult: true,
                 selectionRequired: true,
@@ -48,36 +50,36 @@
                 noResultsText: '{{ 'base.search.no_results'|trans|e('js') }}'
             });
 
-            if ($('#{{ vId }}').val().length > 0) {
-                $('#selected-volunteers-{{ vId }}').html(
-                    $('#{{ vId }}').val().split(',').length
+            if ($('#{{ volunteerInput }}').val().length > 0) {
+                $('#selected-volunteers').html(
+                    $('#{{ volunteerInput }}').val().split(',').length
                 );
             }
         }
 
         {# Hack used to disable auto-focus at the end of the list after removal #}
-        $('#{{ vId }}').on('after:flexdatalist.remove', function () {
-            $('#{{ vId }}-flexdatalist').prop('disabled', 'disabled');
+        $('#{{ volunteerInput }}').on('after:flexdatalist.remove', function () {
+            $('#{{ volunteerInput }}-flexdatalist').prop('disabled', 'disabled');
             setTimeout(function () {
-                $('#{{ vId }}-flexdatalist').prop('disabled', false);
+                $('#{{ volunteerInput }}-flexdatalist').prop('disabled', false);
             }, 0);
         });
 
         {# Used to refresh selection count #}
-        $('#{{ vId }}').on('change:flexdatalist', function () {
-            $('#selected-volunteers-{{ vId }}').html(
-                $('#{{ vId }}').val().split(',').length
+        $('#{{ volunteerInput }}').on('change:flexdatalist', function () {
+            $('#selected-volunteers').html(
+                $('#{{ volunteerInput }}').val().split(',').length
             );
         });
 
         initVolunteers();
 
-        // When ticking on a job, I add every people doing that job,
-        // except the ones that are already selected.
+        {# When ticking on a job, I add every people doing that job, #}
+        {# except the ones that are already selected. #}
         $('body').on('click', '.volunteer-tag', function () {
             var selection = [];
 
-            $.each(volunteers_{{ vId }}, function (index, volunteer) {
+            $.each(volunteers, function (index, volunteer) {
                 $('.volunteer-tag').each(function () {
                     var that = $(this);
                     if (
@@ -92,16 +94,47 @@
                 });
             });
 
-            $('#{{ vId }}').val(selection.join(','));
-            $('#selected-volunteers-{{ vId }}').html(selection.length);
+            $('#{{ volunteerInput }}').val(selection.join(','));
+            $('#selected-volunteers').html(selection.length);
         });
 
-        $('#clear-selection-{{ vId }}').click(function (e) {
-            $('#checkbox-list-{{ vId }}').find('input').prop('checked', false);
+        {# Click on "Clear selection" link #}
+        $('#clear-selection').click(function (e) {
+            $('#checkbox-list').find('input').prop('checked', false);
             $('#{{ form.volunteers.vars.id }}').val('');
-            $('#selected-volunteers-{{ vId }}').html('0');
+            $('#selected-volunteers').html('0');
             e.preventDefault();
         });
+
+        {# Refresh audience counts based on structure selection #}
+        function refreshAudienceCounts() {
+            $('.volunteer-tag').each(function () {
+                var skillTick = $(this);
+
+                var skillLabel = skillTick.parent().parent().find('label:eq(1)');
+                if (skillLabel.html().includes('(')) {
+                    skillLabel.html(skillLabel.html().substring(0, skillLabel.html().lastIndexOf('(') - 1));
+                }
+
+                var count = 0;
+                $('#{{ structureTicks }} input').each(function () {
+                    var structureTick = $(this);
+                    if (structureTick.is(':checked')) {
+                        if (undefined !== structures[structureTick.val()][skillTick.val()]) {
+                            count += parseInt(structures[structureTick.val()][skillTick.val()]);
+                        }
+                    }
+                });
+
+                skillLabel.html(skillLabel.html() + ' (' + count + ')');
+            });
+        }
+
+        $('#{{ structureTicks }} input').click(function () {
+            refreshAudienceCounts();
+        });
+
+        refreshAudienceCounts();
 
     </script>
 

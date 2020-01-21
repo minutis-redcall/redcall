@@ -5,6 +5,7 @@ namespace App\Form\Type;
 use App\Entity\Structure;
 use App\Entity\Tag;
 use App\Entity\Volunteer;
+use App\Manager\StructureManager;
 use App\Manager\UserInformationManager;
 use App\Manager\VolunteerManager;
 use Doctrine\ORM\EntityRepository;
@@ -27,6 +28,11 @@ class VolunteersType extends AbstractType
     private $volunteerManager;
 
     /**
+     * @var StructureManager
+     */
+    private $structureManager;
+
+    /**
      * @var UserInformationManager
      */
     private $userInformationManager;
@@ -43,16 +49,19 @@ class VolunteersType extends AbstractType
 
     /**
      * @param VolunteerManager       $volunteerManager
+     * @param StructureManager       $structureManager
      * @param UserInformationManager $userInformationManager
      * @param TranslatorInterface    $translator
      * @param TokenStorageInterface  $tokenStorage
      */
     public function __construct(VolunteerManager $volunteerManager,
+        StructureManager $structureManager,
         UserInformationManager $userInformationManager,
         TranslatorInterface $translator,
         TokenStorageInterface $tokenStorage)
     {
         $this->volunteerManager       = $volunteerManager;
+        $this->structureManager       = $structureManager;
         $this->userInformationManager = $userInformationManager;
         $this->translator             = $translator;
         $this->tokenStorage           = $tokenStorage;
@@ -68,10 +77,6 @@ class VolunteersType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $tagCounts = $this->volunteerManager->getVolunteersCountByTagsForUser(
-            $this->tokenStorage->getToken()->getUser()
-        );
-
         $builder
             ->add('tags', EntityType::class, [
                 'class'         => Tag::class,
@@ -79,11 +84,8 @@ class VolunteersType extends AbstractType
                     return $er->createQueryBuilder('t')
                               ->orderBy('t.id', 'asc');
                 },
-                'choice_label'  => function (Tag $tag) use ($tagCounts) {
-                    return sprintf('%s (%d)',
-                        $this->translator->trans(sprintf('tag.%s', $tag->getLabel())),
-                        $tagCounts[$tag->getId()] ?? 0
-                    );
+                'choice_label'  => function (Tag $tag) {
+                    return $this->translator->trans(sprintf('tag.%s', $tag->getLabel()));
                 },
                 'multiple'      => true,
                 'expanded'      => true,
@@ -123,7 +125,10 @@ class VolunteersType extends AbstractType
      */
     public function buildView(FormView $view, FormInterface $form, array $options)
     {
-        $view->vars['volunteers'] = array_map(function (Volunteer $volunteer) {
+        $structures               = $this->userInformationManager->findForCurrentUser()->getStructures()->toArray();
+        $view->vars['structures'] = $this->structureManager->getTagCountByStructuresForCurrentUser();
+
+        $view->vars['volunteers'] = array_map(function (Volunteer $volunteer) use ($structures) {
             return [
                 'id'         => strval($volunteer->getId()),
                 'firstName'  => $volunteer->getFirstName(),
@@ -138,7 +143,7 @@ class VolunteersType extends AbstractType
                     if ($volunteer->getStructures()->contains($structure)) {
                         return $structure->getId();
                     }
-                }, $this->userInformationManager->findForCurrentUser()->getStructures()->toArray())),
+                }, $structures)),
             ];
         }, $this->volunteerManager->findCallableForUser(
             $this->tokenStorage->getToken()->getUser()

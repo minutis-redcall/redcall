@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Base\BaseRepository;
 use App\Entity\Structure;
+use App\Entity\UserInformation;
 use App\Entity\Volunteer;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
@@ -122,5 +123,25 @@ class StructureRepository extends BaseRepository
             array_column($rows, 'structure_id'),
             array_column($rows, 'count')
         );
+    }
+
+    /**
+     * @param UserInformation $user
+     *
+     * @return array
+     */
+    public function getTagCountByStructuresForUser(UserInformation $user): array
+    {
+        return $this->createQueryBuilder('s')
+                    ->select('s.id as structure_id, t.id as tag_id, COUNT(v.id) as count')
+                    ->join('s.users', 'u')
+                    ->join('s.volunteers', 'v')
+                    ->join('v.tags', 't')
+                    ->where('u.id = :id')
+                    ->setParameter('id', $user->getId())
+                    ->orderBy('t.id', 'ASC')
+                    ->groupBy('s.id', 't.id')
+                    ->getQuery()
+                    ->getArrayResult();
     }
 }

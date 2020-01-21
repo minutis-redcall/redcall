@@ -9,16 +9,24 @@ use App\Repository\StructureRepository;
 class StructureManager
 {
     /**
+     * @var UserInformationManager
+     */
+    private $userInformationManager;
+
+    /**
      * @var StructureRepository
      */
     private $structureRepository;
 
     /**
-     * @param StructureRepository $structureRepository
+     * @param UserInformationManager $userInformationManager
+     * @param StructureRepository    $structureRepository
      */
-    public function __construct(StructureRepository $structureRepository)
+    public function __construct(UserInformationManager $userInformationManager,
+        StructureRepository $structureRepository)
     {
-        $this->structureRepository = $structureRepository;
+        $this->userInformationManager = $userInformationManager;
+        $this->structureRepository    = $structureRepository;
     }
 
     /**
@@ -88,5 +96,22 @@ class StructureManager
     public function countVolunteersInStructures(array $structures): array
     {
         return $this->structureRepository->countVolunteersInStructures($structures);
+    }
+
+    /**
+     * @return array
+     */
+    public function getTagCountByStructuresForCurrentUser(): array
+    {
+        $rows = $this->structureRepository->getTagCountByStructuresForUser(
+            $this->userInformationManager->findForCurrentUser()
+        );
+
+        $counts = [];
+        foreach ($rows as $row) {
+            $counts[$row['structure_id']][$row['tag_id']] = $row['count'];
+        }
+
+        return $counts;
     }
 }
