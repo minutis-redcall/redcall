@@ -6,6 +6,8 @@ use App\Entity\Pegass;
 use App\Event\PegassEvent;
 use App\Repository\PegassRepository;
 use App\Services\PegassClient;
+use Symfony\Component\Console\Output\NullOutput;
+use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class PegassManager
@@ -26,6 +28,11 @@ class PegassManager
     private $pegassClient;
 
     /**
+     * @var OutputInterface
+     */
+    private $output;
+
+    /**
      * @param EventDispatcherInterface $eventDispatcher
      * @param PegassRepository         $pegassRepository
      * @param PegassClient             $pegassClient
@@ -37,19 +44,24 @@ class PegassManager
         $this->eventDispatcher  = $eventDispatcher;
         $this->pegassRepository = $pegassRepository;
         $this->pegassClient     = $pegassClient;
+        $this->output           = new NullOutput();
     }
 
     /**
-     * @param int $limit
+     * @param int  $limit
+     * @param bool $fromCache
      *
      * @throws \Exception
      */
-    public function heat(int $limit, bool $fromCache = false)
+    public function heat(int $limit, OutputInterface $output, bool $fromCache = false)
     {
+        $this->output = $output;
+
         $this->initialize();
 
         $entities = $this->pegassRepository->findExpiredEntities($limit);
         foreach ($entities as $entity) {
+            $this->debug($entity, 'Entity has expired');
             $this->updateEntity($entity, $fromCache);
         }
 
@@ -126,11 +138,12 @@ class PegassManager
         $this->pegassClient->setMode(PegassClient::MODE_SLOW);
 
         // Create the first entity if it does not exist
-        $area = $this->pegassRepository->getEntity(Pegass::TYPE_AREA);
+        $area = $this->pegassRepository->getEntity(Pegass::TYPE_AREA, null, false);
         if (null === $area) {
             $area = new Pegass();
             $area->setType(Pegass::TYPE_AREA);
             $area->setUpdatedAt(new \DateTime('1984-07-10')); // Expired
+            $this->debug($area, 'Creating area');
             $this->pegassRepository->save($area);
         }
     }
@@ -143,7 +156,9 @@ class PegassManager
         if (!$fromCache) {
             $data = $this->pegassClient->getArea();
         } else {
-            $data = $entity->getContent();
+            if (!$data = $entity->getContent()) {
+                return;
+            }
         }
 
         $entity->setContent($data);
@@ -155,13 +170,14 @@ class PegassManager
         }
 
         foreach ($data as $row) {
-            $department = $this->pegassRepository->getEntity(Pegass::TYPE_DEPARTMENT, $row['id']);
+            $department = $this->pegassRepository->getEntity(Pegass::TYPE_DEPARTMENT, $row['id'], false);
             if (null === $department) {
                 $department = new Pegass();
                 $department->setType(Pegass::TYPE_DEPARTMENT);
                 $department->setIdentifier($row['id']);
                 $department->setParentIdentifier($row['id']);
                 $department->setUpdatedAt(new \DateTime('1984-07-10')); // Expired
+                $this->debug($department, 'Creating department');
                 $this->pegassRepository->save($department);
             }
         }
@@ -178,7 +194,9 @@ class PegassManager
         if (!$fromCache) {
             $data = $this->pegassClient->getDepartment($entity->getIdentifier());
         } else {
-            $data = $entity->getContent();
+            if (!$data = $entity->getContent()) {
+                return;
+            }
         }
 
         $entity->setContent($data);
@@ -195,13 +213,14 @@ class PegassManager
         }
 
         foreach ($data['structuresFilles'] as $row) {
-            $structure = $this->pegassRepository->getEntity(Pegass::TYPE_STRUCTURE, $row['id']);
+            $structure = $this->pegassRepository->getEntity(Pegass::TYPE_STRUCTURE, $row['id'], false);
             if (null === $structure) {
                 $structure = new Pegass();
                 $structure->setType(Pegass::TYPE_STRUCTURE);
                 $structure->setIdentifier($row['id']);
                 $structure->setParentIdentifier($entity->getIdentifier());
                 $structure->setUpdatedAt(new \DateTime('1984-07-10')); // Expired
+                $this->debug($structure, 'Creating structure');
                 $this->pegassRepository->save($structure);
             }
         }
@@ -218,21 +237,33 @@ class PegassManager
         if (!$fromCache) {
             $structure = $this->pegassClient->getStructure($entity->getIdentifier());
         } else {
-            $structure = $entity->getContent();
+            if (!$structure = $entity->getContent()) {
+                return;
+            }
         }
 
-        $pages     = $structure['volunteers'];
+        $pages = $structure['volunteers'];
 
         $entity->setContent($structure);
         $entity->setUpdatedAt(new \DateTime());
         $this->pegassRepository->save($entity);
+
+        $parentIdentifier = sprintf('|%s|', $entity->getIdentifier());
 
         $identifiers = [];
         foreach ($pages as $page) {
             $identifiers = array_merge($identifiers, array_column($page['list'], 'id'));
         }
         if ($identifiers) {
-            $this->pegassRepository->removeMissingEntities(Pegass::TYPE_VOLUNTEER, $identifiers, $entity->getParentIdentifier());
+            $missingEntities = $this->pegassRepository->findMissingEntities(Pegass::TYPE_VOLUNTEER, $identifiers, $parentIdentifier);
+            foreach ($missingEntities as $missingEntity) {
+                $missingEntity->setParentIdentifier(str_replace($parentIdentifier, '|', $missingEntity->getParentIdentifier()));
+                if ('|' === $missingEntity->getParentIdentifier()) {
+                    $missingEntity->setParentIdentifier(null);
+                    $missingEntity->setEnabled(false);
+                }
+                $this->pegassRepository->save($entity);
+            }
         }
 
         foreach ($pages as $page) {
@@ -241,14 +272,21 @@ class PegassManager
             }
 
             foreach ($page['list'] as $row) {
-                $volunteer = $this->pegassRepository->getEntity(Pegass::TYPE_VOLUNTEER, $row['id'], $entity->getIdentifier());
+                $volunteer = $this->pegassRepository->getEntity(Pegass::TYPE_VOLUNTEER, $row['id'], $entity->getIdentifier(), false);
                 if (null === $volunteer) {
                     $volunteer = new Pegass();
                     $volunteer->setType(Pegass::TYPE_VOLUNTEER);
                     $volunteer->setIdentifier($row['id']);
-                    $volunteer->setParentIdentifier($entity->getIdentifier());
+                    $volunteer->setParentIdentifier($parentIdentifier);
                     $volunteer->setUpdatedAt(new \DateTime('1984-07-10')); // Expired
+                    $this->debug($volunteer, 'Creating volunteer');
                     $this->pegassRepository->save($volunteer);
+                } else {
+                    if (false === strpos($volunteer->getParentIdentifier(), $parentIdentifier)) {
+                        $volunteer->setParentIdentifier(
+                            sprintf('%s%s|', $volunteer->getParentIdentifier(), $entity->getIdentifier())
+                        );
+                    }
                 }
             }
         }
@@ -265,7 +303,9 @@ class PegassManager
         if (!$fromCache) {
             $data = $this->pegassClient->getVolunteer($entity->getIdentifier());
         } else {
-            $data = $entity->getContent();
+            if (!$data = $entity->getContent()) {
+                return;
+            }
         }
 
         $entity->setContent($data);
@@ -285,7 +325,7 @@ class PegassManager
      */
     private function spreadUpdateDatesInTTL()
     {
-        $area = $this->pegassRepository->getEntity(Pegass::TYPE_AREA);
+        $area = $this->pegassRepository->getEntity(Pegass::TYPE_AREA, null, null, false);
         if (!$area || $area->getIdentifier()) {
             return;
         }
@@ -311,5 +351,23 @@ class PegassManager
                 $this->pegassRepository->save($entity);
             }
         }
+    }
+
+    /**
+     * @param Pegass $entity
+     * @param string ...$data
+     */
+    private function debug(Pegass $entity, string ...$data)
+    {
+        $prefix = sprintf(
+            '%s: %s/%s|%s(%d):',
+            date('d/m/Y H:i'),
+            $entity->getType(),
+            $entity->getIdentifier(),
+            ltrim($entity->getParentIdentifier(), '|'),
+            $entity->getId()
+        );
+
+        $this->output->writeln(implode(' ', array_merge([$prefix], $data)), OutputInterface::VERBOSITY_VERBOSE);
     }
 }

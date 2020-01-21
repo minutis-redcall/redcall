@@ -31,26 +31,18 @@ class PegassRepository extends BaseRepository
         ]);
     }
 
-    /**
-     * @param string      $type
-     * @param string|null $identifier
-     * @param string|null $parentIdentifier
-     *
-     * @return Pegass|null
-     */
-    public function getEntity(string $type, string $identifier = null, string $parentIdentifier = null): ?Pegass
+    public function getEntity(string $type,
+        string $identifier = null,
+        bool $onlyEnabled = true): ?Pegass
     {
-        $filters = [
-            'type'    => $type,
-            'enabled' => true,
-        ];
+        $filters['type'] = $type;
+
+        if ($onlyEnabled) {
+            $filters['enabled'] = true;
+        }
 
         if ($identifier) {
             $filters['identifier'] = $identifier;
-        }
-
-        if ($parentIdentifier) {
-            $filters['parentIdentifier'] = $parentIdentifier;
         }
 
         return $this->findOneBy($filters);
@@ -83,31 +75,45 @@ class PegassRepository extends BaseRepository
     }
 
     /**
-     * @param string      $type
-     * @param array       $identifiers
-     * @param string|null $parentIdentifier
+     * @param string $type
+     * @param array  $identifiers
      *
      * @return array
      */
-    public function removeMissingEntities(string $type, array $identifiers, string $parentIdentifier = null)
+    public function removeMissingEntities(string $type, array $identifiers)
     {
-        $qb = $this->createQueryBuilder('p')
-                   ->update(Pegass::class, 'p')
-                   ->set('p.enabled', false)
-                   ->where('p.type = :type')
-                   ->setParameter('type', $type)
-                   ->andWhere('p.identifier NOT IN (:identifiers)')
-                   ->setParameter('identifiers', $identifiers);
+        $qb = $this->createQueryBuilder('p');
 
-        if ($parentIdentifier) {
-            $qb
-                ->andWhere('p.parentIdentifier = :parentIdentifier')
-                ->setParameter('parentIdentifier', $parentIdentifier);
-        }
+        $qb->update(Pegass::class, 'p')
+           ->set('p.enabled', $qb->expr()->literal(false))
+           ->where('p.type = :type')
+           ->setParameter('type', $type)
+           ->andWhere('p.identifier NOT IN (:identifiers)')
+           ->setParameter('identifiers', $identifiers);
 
         return $qb
             ->getQuery()
             ->execute();
+    }
+
+    /**
+     * @param string $type
+     * @param array  $identifiers
+     * @param string $parentIdentifier
+     *
+     * @return Pegass[]
+     */
+    public function findMissingEntities(string $type, array $identifiers, string $parentIdentifier): array
+    {
+        return $this->createQueryBuilder('p')
+                    ->where('p.type = :type')
+                    ->setParameter('type', $type)
+                    ->andWhere('p.identifier NOT IN (:identifiers)')
+                    ->setParameter('identifiers', $identifiers)
+                    ->andWhere('p.parentIdentifier LIKE :parentIdentifier')
+                    ->setParameter('parentIdentifier', sprintf('%%%s%%', $parentIdentifier))
+                    ->getQuery()
+                    ->execute();
     }
 
     /**

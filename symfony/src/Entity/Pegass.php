@@ -9,10 +9,11 @@ use Symfony\Component\PropertyAccess\PropertyAccess;
  * @ORM\Entity(repositoryClass="App\Repository\PegassRepository")
  * @ORM\Table(
  * uniqueConstraints={
- *     @ORM\UniqueConstraint(name="typ_ide_par_idx", columns={"type", "identifier", "parent_identifier"})
+ *     @ORM\UniqueConstraint(name="type_identifier_idx", columns={"type", "identifier"})
  * },
  * indexes={
- *    @ORM\Index(name="type_update_idx", columns={"type", "updated_at"})
+ *    @ORM\Index(name="type_update_idx", columns={"type", "updated_at"}),
+ *    @ORM\Index(name="typ_ide_par_idx", columns={"type", "identifier", "parent_identifier"})
  * })
  * @ORM\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
  */
@@ -50,7 +51,7 @@ class Pegass
     private $identifier;
 
     /**
-     * @ORM\Column(type="string", length=64, nullable=true)
+     * @ORM\Column(type="string", length=256, nullable=true)
      */
     private $parentIdentifier;
 
@@ -96,7 +97,7 @@ class Pegass
         return $this->parentIdentifier;
     }
 
-    public function setParentIdentifier(string $parentIdentifier): self
+    public function setParentIdentifier(?string $parentIdentifier): self
     {
         $this->parentIdentifier = $parentIdentifier;
 
