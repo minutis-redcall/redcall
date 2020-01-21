@@ -34,10 +34,11 @@ class PegassRepository extends BaseRepository
     /**
      * @param string      $type
      * @param string|null $identifier
+     * @param string|null $parentIdentifier
      *
      * @return Pegass|null
      */
-    public function getEntity(string $type, string $identifier = null): ?Pegass
+    public function getEntity(string $type, string $identifier = null, string $parentIdentifier = null): ?Pegass
     {
         $filters = [
             'type'    => $type,
@@ -46,6 +47,10 @@ class PegassRepository extends BaseRepository
 
         if ($identifier) {
             $filters['identifier'] = $identifier;
+        }
+
+        if ($parentIdentifier) {
+            $filters['parentIdentifier'] = $parentIdentifier;
         }
 
         return $this->findOneBy($filters);

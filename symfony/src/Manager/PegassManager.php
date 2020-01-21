@@ -44,13 +44,13 @@ class PegassManager
      *
      * @throws \Exception
      */
-    public function heat(int $limit)
+    public function heat(int $limit, bool $fromCache = false)
     {
         $this->initialize();
 
         $entities = $this->pegassRepository->findExpiredEntities($limit);
         foreach ($entities as $entity) {
-            $this->updateEntity($entity);
+            $this->updateEntity($entity, $fromCache);
         }
 
         if (!$entities) {
@@ -60,23 +60,24 @@ class PegassManager
 
     /**
      * @param Pegass $entity
+     * @param bool   $fromCache
      *
      * @throws \Exception
      */
-    public function updateEntity(Pegass $entity)
+    public function updateEntity(Pegass $entity, bool $fromCache)
     {
         switch ($entity->getType()) {
             case Pegass::TYPE_AREA:
-                $this->updateArea();
+                $this->updateArea($entity, $fromCache);
                 break;
             case Pegass::TYPE_DEPARTMENT:
-                $this->updateDepartment($entity);
+                $this->updateDepartment($entity, $fromCache);
                 break;
             case Pegass::TYPE_STRUCTURE:
-                $this->updateStructure($entity);
+                $this->updateStructure($entity, $fromCache);
                 break;
             case Pegass::TYPE_VOLUNTEER:
-                $this->updateVolunteer($entity);
+                $this->updateVolunteer($entity, $fromCache);
                 break;
         }
 
@@ -105,14 +106,15 @@ class PegassManager
     }
 
     /**
-     * @param string $type
-     * @param string $identifier
+     * @param string      $type
+     * @param string      $identifier
+     * @param string|null $parentIdentifier
      *
      * @return Pegass|null
      */
-    public function getEntity(string $type, string $identifier): ?Pegass
+    public function getEntity(string $type, string $identifier, string $parentIdentifier = null): ?Pegass
     {
-        return $this->pegassRepository->getEntity($type, $identifier);
+        return $this->pegassRepository->getEntity($type, $identifier, $parentIdentifier);
     }
 
     /**
@@ -136,11 +138,14 @@ class PegassManager
     /**
      * @throws \Exception
      */
-    private function updateArea()
+    private function updateArea(Pegass $entity, bool $fromCache)
     {
-        $data = $this->pegassClient->getArea();
+        if (!$fromCache) {
+            $data = $this->pegassClient->getArea();
+        } else {
+            $data = $entity->getContent();
+        }
 
-        $entity = $this->pegassRepository->getEntity(Pegass::TYPE_AREA);
         $entity->setContent($data);
         $entity->setUpdatedAt(new \DateTime());
         $this->pegassRepository->save($entity);
@@ -163,13 +168,18 @@ class PegassManager
     }
 
     /**
-     * @param Pegass $department
+     * @param Pegass $entity
+     * @param bool   $fromCache
      *
      * @throws \Exception
      */
-    private function updateDepartment(Pegass $entity)
+    private function updateDepartment(Pegass $entity, bool $fromCache)
     {
-        $data = $this->pegassClient->getDepartment($entity->getIdentifier());
+        if (!$fromCache) {
+            $data = $this->pegassClient->getDepartment($entity->getIdentifier());
+        } else {
+            $data = $entity->getContent();
+        }
 
         $entity->setContent($data);
         $entity->setUpdatedAt(new \DateTime());
@@ -199,12 +209,18 @@ class PegassManager
 
     /**
      * @param Pegass $entity
+     * @param bool   $fromCache
      *
      * @throws \Exception
      */
-    private function updateStructure(Pegass $entity)
+    private function updateStructure(Pegass $entity, bool $fromCache)
     {
-        $structure = $this->pegassClient->getStructure($entity->getIdentifier());
+        if (!$fromCache) {
+            $structure = $this->pegassClient->getStructure($entity->getIdentifier());
+        } else {
+            $structure = $entity->getContent();
+        }
+
         $pages     = $structure['volunteers'];
 
         $entity->setContent($structure);
@@ -225,7 +241,7 @@ class PegassManager
             }
 
             foreach ($page['list'] as $row) {
-                $volunteer = $this->pegassRepository->getEntity(Pegass::TYPE_VOLUNTEER, $row['id']);
+                $volunteer = $this->pegassRepository->getEntity(Pegass::TYPE_VOLUNTEER, $row['id'], $entity->getIdentifier());
                 if (null === $volunteer) {
                     $volunteer = new Pegass();
                     $volunteer->setType(Pegass::TYPE_VOLUNTEER);
@@ -240,10 +256,17 @@ class PegassManager
 
     /**
      * @param Pegass $entity
+     * @param bool   $fromCache
+     *
+     * @throws \Exception
      */
-    private function updateVolunteer(Pegass $entity)
+    private function updateVolunteer(Pegass $entity, bool $fromCache)
     {
-        $data = $this->pegassClient->getVolunteer($entity->getIdentifier());
+        if (!$fromCache) {
+            $data = $this->pegassClient->getVolunteer($entity->getIdentifier());
+        } else {
+            $data = $entity->getContent();
+        }
 
         $entity->setContent($data);
         $entity->setUpdatedAt(new \DateTime());

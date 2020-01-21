@@ -9,11 +9,10 @@ use Symfony\Component\PropertyAccess\PropertyAccess;
  * @ORM\Entity(repositoryClass="App\Repository\PegassRepository")
  * @ORM\Table(
  * uniqueConstraints={
- *     @ORM\UniqueConstraint(name="type_identifier_idx", columns={"type", "identifier"})
+ *     @ORM\UniqueConstraint(name="typ_ide_par_idx", columns={"type", "identifier", "parent_identifier"})
  * },
  * indexes={
- *    @ORM\Index(name="type_update_idx", columns={"type", "updated_at"}),
- *    @ORM\Index(name="type_identifier_parent_idx", columns={"type", "identifier", "parent_identifier"})
+ *    @ORM\Index(name="type_update_idx", columns={"type", "updated_at"})
  * })
  * @ORM\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
  */
