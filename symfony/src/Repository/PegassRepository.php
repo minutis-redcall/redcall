@@ -39,7 +39,10 @@ class PegassRepository extends BaseRepository
      */
     public function getEntity(string $type, string $identifier = null): ?Pegass
     {
-        $filters['type'] = $type;
+        $filters = [
+            'type'    => $type,
+            'enabled' => true,
+        ];
 
         if ($identifier) {
             $filters['identifier'] = $identifier;
@@ -85,7 +88,7 @@ class PegassRepository extends BaseRepository
     {
         $qb = $this->createQueryBuilder('p')
                    ->update(Pegass::class, 'p')
-                   ->set('p.enabled = false')
+                   ->set('p.enabled', false)
                    ->where('p.type = :type')
                    ->setParameter('type', $type)
                    ->andWhere('p.identifier NOT IN (:identifiers)')
@@ -132,6 +135,7 @@ class PegassRepository extends BaseRepository
         $iterator = $this->createQueryBuilder('p')
                          ->where('p.type = :type')
                          ->setParameter('type', $type)
+                         ->andWhere('p.enabled = true')
                          ->getQuery()
                          ->iterate();
 
