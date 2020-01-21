@@ -111,7 +111,7 @@ class Communication
         }
 
         // Check that all selected volunteers appear in at least one selected structure
-        if ($this->structures) {
+        if ($this->structures && $this->volunteers) {
             foreach ($this->volunteers->toArray() as $volunteer) {
                 $inStructures = false;
                 foreach ($this->structures as $structure) {

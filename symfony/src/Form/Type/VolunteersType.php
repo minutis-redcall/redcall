@@ -2,8 +2,10 @@
 
 namespace App\Form\Type;
 
+use App\Entity\Structure;
 use App\Entity\Tag;
 use App\Entity\Volunteer;
+use App\Manager\UserInformationManager;
 use App\Manager\VolunteerManager;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -25,6 +27,11 @@ class VolunteersType extends AbstractType
     private $volunteerManager;
 
     /**
+     * @var UserInformationManager
+     */
+    private $userInformationManager;
+
+    /**
      * @var TranslatorInterface
      */
     private $translator;
@@ -35,17 +42,20 @@ class VolunteersType extends AbstractType
     private $tokenStorage;
 
     /**
-     * @param VolunteerManager      $volunteerManager
-     * @param TranslatorInterface   $translator
-     * @param TokenStorageInterface $tokenStorage
+     * @param VolunteerManager       $volunteerManager
+     * @param UserInformationManager $userInformationManager
+     * @param TranslatorInterface    $translator
+     * @param TokenStorageInterface  $tokenStorage
      */
     public function __construct(VolunteerManager $volunteerManager,
+        UserInformationManager $userInformationManager,
         TranslatorInterface $translator,
         TokenStorageInterface $tokenStorage)
     {
-        $this->volunteerManager = $volunteerManager;
-        $this->translator       = $translator;
-        $this->tokenStorage     = $tokenStorage;
+        $this->volunteerManager       = $volunteerManager;
+        $this->userInformationManager = $userInformationManager;
+        $this->translator             = $translator;
+        $this->tokenStorage           = $tokenStorage;
     }
 
     /**
@@ -115,15 +125,20 @@ class VolunteersType extends AbstractType
     {
         $view->vars['volunteers'] = array_map(function (Volunteer $volunteer) {
             return [
-                'id'        => strval($volunteer->getId()),
-                'firstName' => $volunteer->getFirstName(),
-                'lastName'  => $volunteer->getLastName(),
-                'tagIds'    => array_map(function (Tag $tag) {
+                'id'         => strval($volunteer->getId()),
+                'firstName'  => $volunteer->getFirstName(),
+                'lastName'   => $volunteer->getLastName(),
+                'tagIds'     => array_map(function (Tag $tag) {
                     return $tag->getId();
                 }, $volunteer->getTags()->toArray()),
-                'tagLabels' => $volunteer->getTagsView() ? sprintf('(%s)', implode(', ', array_map(function (Tag $tag) {
+                'tagLabels'  => $volunteer->getTagsView() ? sprintf('(%s)', implode(', ', array_map(function (Tag $tag) {
                     return $this->translator->trans(sprintf('tag.shortcuts.%s', $tag->getLabel()));
                 }, $volunteer->getTagsView()))) : '',
+                'structures' => array_filter(array_map(function (Structure $structure) use ($volunteer) {
+                    if ($volunteer->getStructures()->contains($structure)) {
+                        return $structure->getId();
+                    }
+                }, $this->userInformationManager->findForCurrentUser()->getStructures()->toArray())),
             ];
         }, $this->volunteerManager->findCallableForUser(
             $this->tokenStorage->getToken()->getUser()

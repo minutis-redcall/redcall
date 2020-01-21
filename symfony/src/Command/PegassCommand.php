@@ -30,7 +30,7 @@ class PegassCommand extends BaseCommand
         $this
             ->setName('pegass')
             ->setDescription('Heat Pegass cache')
-            ->addArgument('limit', InputArgument::OPTIONAL, 'Number of entities to refresh', 9);
+            ->addArgument('limit', InputArgument::OPTIONAL, 'Number of entities to refresh', 3);
     }
 
     /**

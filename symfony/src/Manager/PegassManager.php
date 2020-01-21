@@ -142,6 +142,7 @@ class PegassManager
 
         $entity = $this->pegassRepository->getEntity(Pegass::TYPE_AREA);
         $entity->setContent($data);
+        $entity->setUpdatedAt(new \DateTime());
         $this->pegassRepository->save($entity);
 
         if ($identifiers = array_column($data, 'id')) {
@@ -171,6 +172,7 @@ class PegassManager
         $data = $this->pegassClient->getDepartment($entity->getIdentifier());
 
         $entity->setContent($data);
+        $entity->setUpdatedAt(new \DateTime());
         $this->pegassRepository->save($entity);
 
         if (!isset($data['structuresFilles'])) {
@@ -206,6 +208,7 @@ class PegassManager
         $pages     = $structure['volunteers'];
 
         $entity->setContent($structure);
+        $entity->setUpdatedAt(new \DateTime());
         $this->pegassRepository->save($entity);
 
         $identifiers = [];
@@ -243,6 +246,7 @@ class PegassManager
         $data = $this->pegassClient->getVolunteer($entity->getIdentifier());
 
         $entity->setContent($data);
+        $entity->setUpdatedAt(new \DateTime());
 
         $this->pegassRepository->save($entity);
     }

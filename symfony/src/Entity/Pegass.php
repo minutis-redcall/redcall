@@ -15,7 +15,6 @@ use Symfony\Component\PropertyAccess\PropertyAccess;
  *    @ORM\Index(name="type_update_idx", columns={"type", "updated_at"}),
  *    @ORM\Index(name="type_identifier_parent_idx", columns={"type", "identifier", "parent_identifier"})
  * })
- * @ORM\HasLifecycleCallbacks
  * @ORM\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
  */
 class Pegass
@@ -71,7 +70,10 @@ class Pegass
      */
     private $updatedAt;
 
-    private $lockUpdateDate = false;
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $enabled = true;
 
     public function getId(): ?int
     {
@@ -142,33 +144,6 @@ class Pegass
         return $this;
     }
 
-    public function lockUpdateDate(): self
-    {
-        $this->lockUpdateDate = true;
-
-        return $this;
-    }
-
-    /**
-     * @ORM\PrePersist
-     */
-    public function onPrePersist()
-    {
-        if (!$this->updatedAt) {
-            $this->setUpdatedAt(new \DateTime());
-        }
-    }
-
-    /**
-     * @ORM\PreUpdate
-     */
-    public function onPreUpdate()
-    {
-        if (!$this->lockUpdateDate) {
-            $this->setUpdatedAt(new \DateTime());
-        }
-    }
-
     /**
      * @param string $expression
      *
@@ -215,6 +190,18 @@ class Pegass
         }
 
         return $this->_walk($content, $keys);
+    }
+
+    public function getEnabled(): ?bool
+    {
+        return $this->enabled;
+    }
+
+    public function setEnabled(bool $enabled): self
+    {
+        $this->enabled = $enabled;
+
+        return $this;
     }
 
     /**

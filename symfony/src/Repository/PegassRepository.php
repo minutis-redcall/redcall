@@ -84,7 +84,8 @@ class PegassRepository extends BaseRepository
     public function removeMissingEntities(string $type, array $identifiers, string $parentIdentifier = null)
     {
         $qb = $this->createQueryBuilder('p')
-                   ->delete(Pegass::class, 'p')
+                   ->update(Pegass::class, 'p')
+                   ->set('p.enabled = false')
                    ->where('p.type = :type')
                    ->setParameter('type', $type)
                    ->andWhere('p.identifier NOT IN (:identifiers)')
