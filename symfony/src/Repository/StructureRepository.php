@@ -6,6 +6,7 @@ use App\Base\BaseRepository;
 use App\Entity\Structure;
 use App\Entity\UserInformation;
 use App\Entity\Volunteer;
+use Doctrine\ORM\QueryBuilder;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
 /**
@@ -115,6 +116,7 @@ class StructureRepository extends BaseRepository
                      ->join('s.volunteers', 'v')
                      ->where('s.id IN (:ids)')
                      ->setParameter('ids', $ids)
+                     ->andWhere('v.enabled = true')
                      ->groupBy('s.id')
                      ->getQuery()
                      ->getArrayResult();
@@ -143,5 +145,19 @@ class StructureRepository extends BaseRepository
                     ->groupBy('s.id', 't.id')
                     ->getQuery()
                     ->getArrayResult();
+    }
+
+    /**
+     * @param UserInformation $userInformation
+     *
+     * @return QueryBuilder
+     */
+    public function getStructuresForUserQueryBuilder(UserInformation $userInformation): QueryBuilder
+    {
+        return $this->createQueryBuilder('s')
+                    ->join('s.users', 'u')
+                    ->where('u.id = :id')
+                    ->setParameter('id', $userInformation->getId())
+                    ->orderBy('s.identifier', 'asc');
     }
 }

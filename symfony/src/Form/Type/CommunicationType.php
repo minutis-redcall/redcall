@@ -7,7 +7,7 @@ use App\Entity\Structure;
 use App\Form\Model\Communication as CommunicationModel;
 use App\Manager\StructureManager;
 use App\Manager\UserInformationManager;
-use Doctrine\ORM\EntityRepository;
+use App\Repository\StructureRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -67,12 +67,8 @@ class CommunicationType extends AbstractType
             ->add('structures', EntityType::class, [
                 'label'         => false,
                 'class'         => Structure::class,
-                'query_builder' => function (EntityRepository $er) use ($currentUser) {
-                    return $er->createQueryBuilder('s')
-                              ->join('s.users', 'u')
-                              ->where('u.id = :id')
-                              ->setParameter('id', $currentUser->getId())
-                              ->orderBy('s.identifier', 'asc');
+                'query_builder' => function (StructureRepository $er) use ($currentUser) {
+                    return $er->getStructuresForUserQueryBuilder($currentUser);
                 },
                 'choice_label'  => function (Structure $structure) use ($volunteerCounts) {
                     return sprintf('%s (%s)', $structure->getName(), $volunteerCounts[$structure->getId()] ?? 0);

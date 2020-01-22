@@ -130,16 +130,19 @@ class VolunteersType extends AbstractType
 
         $view->vars['volunteers'] = array_map(function (Volunteer $volunteer) use ($structures) {
             return [
-                'id'         => strval($volunteer->getId()),
-                'firstName'  => $volunteer->getFirstName(),
-                'lastName'   => $volunteer->getLastName(),
-                'tagIds'     => array_map(function (Tag $tag) {
+                'id'           => strval($volunteer->getId()),
+                'firstName'    => $volunteer->getFirstName(),
+                'lastName'     => $volunteer->getLastName(),
+                'tagIds'       => array_map(function (Tag $tag) {
                     return $tag->getId();
                 }, $volunteer->getTags()->toArray()),
-                'tagLabels'  => $volunteer->getTagsView() ? sprintf('(%s)', implode(', ', array_map(function (Tag $tag) {
+                'structureIds' => array_map(function (Structure $tag) {
+                    return $tag->getId();
+                }, $volunteer->getStructures()->toArray()),
+                'tagLabels'    => $volunteer->getTagsView() ? sprintf('(%s)', implode(', ', array_map(function (Tag $tag) {
                     return $this->translator->trans(sprintf('tag.shortcuts.%s', $tag->getLabel()));
                 }, $volunteer->getTagsView()))) : '',
-                'structures' => array_filter(array_map(function (Structure $structure) use ($volunteer) {
+                'structures'   => array_filter(array_map(function (Structure $structure) use ($volunteer) {
                     if ($volunteer->getStructures()->contains($structure)) {
                         return $structure->getId();
                     }

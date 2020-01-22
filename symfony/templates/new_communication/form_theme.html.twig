@@ -34,11 +34,29 @@
     <script type="text/javascript">
 
         var structures = {{ form.vars.structures|json_encode|raw }};
+
         var volunteers = {{ form.vars.volunteers|json_encode|raw }};
+        var filteredVolunteers = [];
 
         function initVolunteers() {
+
+            // Filtering out volunteers belonging to unticked structures
+            var tickedStructures = {};
+            $('#{{ structureTicks }} input').each(function () {
+                var that = $(this);
+                tickedStructures[parseInt(that.val())] = that.is(':checked');
+            });
+            filteredVolunteers = [];
+            $.each(volunteers, function (index, volunteer) {
+                $.each(volunteer.structureIds, function (index, structureId) {
+                    if (tickedStructures[structureId]) {
+                        filteredVolunteers.push(volunteer);
+                    }
+                });
+            });
+
             $('#{{ volunteerInput }}').flexdatalist({
-                data: volunteers,
+                data: filteredVolunteers,
                 minLength: 1,
                 focusFirstResult: true,
                 selectionRequired: true,
@@ -72,14 +90,12 @@
             );
         });
 
-        initVolunteers();
-
         {# When ticking on a job, I add every people doing that job, #}
         {# except the ones that are already selected. #}
         $('body').on('click', '.volunteer-tag', function () {
             var selection = [];
 
-            $.each(volunteers, function (index, volunteer) {
+            $.each(filteredVolunteers, function (index, volunteer) {
                 $('.volunteer-tag').each(function () {
                     var that = $(this);
                     if (
@@ -89,7 +105,7 @@
                         && $.inArray(parseInt(that.val(), 10), volunteer.tagIds) !== -1
                         // Selection does not contain volunteer
                         && $.inArray(volunteer.id, selection) === -1) {
-                        selection.push(volunteer.id)
+                        selection.push(volunteer.id);
                     }
                 });
             });
@@ -128,6 +144,8 @@
 
                 skillLabel.html(skillLabel.html() + ' (' + count + ')');
             });
+
+            initVolunteers();
         }
 
         $('#{{ structureTicks }} input').click(function () {
