@@ -62,12 +62,6 @@ services:
   App\Repository\MessageRepository:
     arguments: ['@doctrine', '@translator', '@security.token_storage']
 
-  App\Twig\Extension\AppExtension:
-    tags: ['twig.extension']
-
-  App\Twig\Extension\CampaignExtension:
-    tags: ['twig.extension']
-
   App\Services\Pegass:
     public: true
 

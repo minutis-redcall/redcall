@@ -73,6 +73,9 @@ campaign:
     list: 'List'
     create_full: 'Create a campaign'
     list_full: 'List campaigns'
+  no_nivol:
+    title: 'No nivol bound'
+    description: 'Your RedCall account is not bound to your Pegass account, please contact us in order to use the platform.'
   types:
     1_green: 'Green'
     2_light_orange: 'Orange 1'

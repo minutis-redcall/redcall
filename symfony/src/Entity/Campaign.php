@@ -76,6 +76,7 @@ class Campaign
 
     /**
      * @ORM\ManyToMany(targetEntity="App\Entity\Structure", inversedBy="campaigns")
+     * @ORM\OrderBy({"identifier" = "ASC"})
      */
     private $structures;
 

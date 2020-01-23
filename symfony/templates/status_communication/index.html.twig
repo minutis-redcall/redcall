@@ -264,9 +264,17 @@
                                         {% if app.environment == 'dev' %}
                                             <a class="btn btn-default"
                                             {% if communication.type == constant('App\\Entity\\Communication::TYPE_SMS') %}
-                                                href="{{ path('sandbox_fake_sms_thread', {phoneNumber: message.volunteer.phoneNumber}) }}">☎️</a>
+                                                {% if message.volunteer.phoneNumber %}
+                                                    href="{{ path('sandbox_fake_sms_thread', {phoneNumber: message.volunteer.phoneNumber}) }}">☎️</a>
+                                                {% else %}
+                                                    href="#">&nbsp;</a>
+                                                {% endif %}
                                             {% else %}
-                                                href="{{ path('sandbox_fake_email_read', {email: message.volunteer.email}) }}">✉️</a>
+                                                {% if message.volunteer.email %}
+                                                    href="{{ path('sandbox_fake_email_read', {email: message.volunteer.email}) }}">✉️</a>
+                                                {% else %}
+                                                    href="#">&nbsp;</a>
+                                                {% endif %}
                                             {% endif %}
                                         {% endif %}
 

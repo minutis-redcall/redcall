@@ -3,8 +3,9 @@
 namespace App\Twig\Extension;
 
 use Symfony\Component\HttpFoundation\RequestStack;
+use Twig\Extension\AbstractExtension;
 
-class AppExtension extends \Twig_Extension
+class AppExtension extends AbstractExtension
 {
     protected $requestStack;
 
