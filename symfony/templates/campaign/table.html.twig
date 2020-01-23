@@ -48,19 +48,20 @@
                             {% endif %}
                         </a>
 
-                        {% if is_granted('ROLE_ADMIN') %}
-                            <div class="float-right" style="margin-top:2px;">
-                                <span class="badge badge-dark badge-pill">
-                                    {{ campaign.cost }}&euro;
-                                </span>
-                            </div>
-                        {% endif %}
+                        <div class="float-right" style="margin-top:2px;">
+                            <span class="badge badge-dark badge-pill">
+                                {{ campaign.cost }}&euro;
+                            </span>
+                        </div>
 
                         <br/>
 
                         <em>
                             <span class="text-sm-left color-grey">
-                                ({{ campaign.createdAt|date("d/m/y H:i") }})
+                                {% for structure in campaign.structures %}
+                                    <div>{{ structure.name }}</div>
+                                {% endfor %}
+                                {{ campaign.createdAt|date("d/m/y H:i") }}
                             </span>
                         </em>
                     </div>

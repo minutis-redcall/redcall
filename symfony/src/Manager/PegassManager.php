@@ -60,6 +60,7 @@ class PegassManager
         $this->initialize();
 
         $entities = $this->pegassRepository->findExpiredEntities($limit);
+
         foreach ($entities as $entity) {
             $this->debug($entity, 'Entity has expired');
             $this->updateEntity($entity, $fromCache);
