@@ -265,6 +265,7 @@ class CommunicationController extends BaseController
 
         $message = new Message();
         $message->setCommunication($communicationEntity);
+        $message->setPrefix('X');
         $message->setCode('xxxxxxxx');
 
         $content = $this->formatter->formatMessageContent($message);

@@ -69,7 +69,7 @@ class MessageFormatter
 
         if ($choices) {
             foreach ($choices as $choice) {
-                $contentParts[] = sprintf('%s: %s', $choice->getCode(), $choice->getLabel());
+                $contentParts[] = sprintf('%s%s: %s', $message->getPrefix(), $choice->getCode(), $choice->getLabel());
             }
             if (!$message->getCommunication()->isMultipleAnswer()) {
                 $contentParts[] = $this->translator->trans('message.sms.how_to_answer_simple');

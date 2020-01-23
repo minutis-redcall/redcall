@@ -81,6 +81,6 @@ class MessageManager
             $prefix++;
         } while (true);
 
-        return $message;
+        return $prefix;
     }
 }

@@ -135,8 +135,8 @@ new_communication:
 message:
   sms:
     announcement: 'RED-CROSS at %hours%h%mins%:'
-    how_to_answer_simple: Reply by giving your choice number.
-    how_to_answer_multiple: Reply by giving your choice(s) number(s), separated by a space.
+    how_to_answer_simple: Reply by giving your choice code.
+    how_to_answer_multiple: Reply by giving your choice(s) code(s), separated by a space.
     geo_location: 'Geolocation of your crew: %url%'
   email:
     announcement: 'RED-CROSS on %year%-%month%-%day% at %hours%h%mins%:'

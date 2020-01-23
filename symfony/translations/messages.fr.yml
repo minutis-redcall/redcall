@@ -134,8 +134,8 @@ new_communication:
 message:
   sms:
     announcement: 'CROIX-ROUGE à %hours%h%mins%:'
-    how_to_answer_simple: Pour répondre, saisir le numéro de votre choix.
-    how_to_answer_multiple: Pour répondre, saisir le(s) numéro(s) de votre choix, séparés par un espace.
+    how_to_answer_simple: Pour répondre, saisir le code de votre choix.
+    how_to_answer_multiple: Pour répondre, saisir le(s) code(s) de votre choix, séparés par un espace.
     geo_location: 'Géolocalisation de votre équipe: %url%'
   email:
     announcement: 'CROIX-ROUGE le %day%/%month%/%year% à %hours%h%mins% :'
