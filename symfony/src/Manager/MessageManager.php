@@ -5,6 +5,7 @@ namespace App\Manager;
 use App\Entity\Campaign;
 use App\Entity\Choice;
 use App\Entity\Message;
+use App\Entity\Volunteer;
 use App\Repository\MessageRepository;
 
 class MessageManager
@@ -60,5 +61,26 @@ class MessageManager
     public function getNumberOfSentMessages(Campaign $campaign): int
     {
         return $this->messageRepository->getNumberOfSentMessages($campaign);
+    }
+
+    /**
+     * @param Volunteer $volunteer
+     *
+     * @return string
+     */
+    public function generatePrefix(Volunteer $volunteer): string
+    {
+        $prefix = 'A';
+
+        do {
+            $message = $this->messageRepository->getMessageFromVolunteer($volunteer, $prefix);
+            if (!$message) {
+                break;
+            }
+
+            $prefix++;
+        } while (true);
+
+        return $message;
     }
 }

@@ -9,6 +9,7 @@ use App\Entity\Campaign;
 use App\Entity\Choice;
 use App\Entity\Message;
 use App\Entity\Selection;
+use App\Entity\Volunteer;
 use App\Tools\Random;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
@@ -218,5 +219,23 @@ class MessageRepository extends BaseRepository
         } while (true);
 
         return $code;
+    }
+
+    /**
+     * @param Volunteer $volunteer
+     * @param string    $prefix
+     */
+    public function getMessageFromVolunteer(Volunteer $volunteer, string $prefix)
+    {
+        return $this->createQueryBuilder('m')
+                    ->join('m.communication', 'co')
+                    ->join('co.campaign', 'ca')
+                    ->where('ca.active = true')
+                    ->andWhere('m.volunteer = :volunteer')
+                    ->andWhere('m.prefix = :prefix')
+                    ->setParameter('volunteer', $volunteer)
+                    ->setParameter('prefix', $prefix)
+                    ->getQuery()
+                    ->getOneOrNullResult();
     }
 }

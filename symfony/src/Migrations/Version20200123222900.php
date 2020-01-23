@@ -12,23 +12,23 @@ use Doctrine\Migrations\AbstractMigration;
  */
 final class Version20200123222900 extends AbstractMigration
 {
-    public function getDescription() : string
+    public function getDescription(): string
     {
         return '';
     }
 
-    public function up(Schema $schema) : void
+    public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('DROP INDEX web_codex ON message');
-        $this->addSql('ALTER TABLE message ADD prefix VARCHAR(255) NOT NULL, CHANGE web_code code VARBINARY(8) DEFAULT NULL');
+        $this->addSql('ALTER TABLE message ADD prefix VARCHAR(255) NOT NULL DEFAULT "A", CHANGE web_code code VARBINARY(8) DEFAULT NULL');
         $this->addSql('CREATE INDEX codex ON message (code)');
         $this->addSql('ALTER TABLE communication DROP prefix');
     }
 
-    public function down(Schema $schema) : void
+    public function down(Schema $schema): void
     {
         // this down() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');

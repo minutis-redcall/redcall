@@ -8,7 +8,8 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Table(indexes={
  *     @ORM\Index(name="message_idx", columns={"message_id"}),
- *     @ORM\Index(name="codex"  , columns={"code"})
+ *     @ORM\Index(name="codex"  , columns={"code"}),
+ *     @ORM\Index(name="prefixx"  , columns={"prefix"})
  * })
  * @ORM\Entity(repositoryClass="App\Repository\MessageRepository")
  */
@@ -84,9 +85,9 @@ class Message
     private $geoLocation;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", length=8)
      */
-    private $prefix = 'A';
+    private $prefix;
 
     /**
      * Message constructor.

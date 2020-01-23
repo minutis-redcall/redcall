@@ -115,6 +115,10 @@ class CommunicationManager
         foreach ($communicationModel->volunteers as $volunteer) {
             $message = new Message();
 
+            $message->setPrefix(
+                $this->messageManager->generatePrefix($volunteer)
+            );
+
             $message->setCode(
                 $this->messageManager->generateCode()
             );
