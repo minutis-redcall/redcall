@@ -100,13 +100,16 @@ class PegassController extends BaseController
     {
         $this->validateCsrfOrThrowNotFoundException('pegass', $csrf);
 
-        $nivol = $request->request->get('nivol');
-        if (!$nivol) {
-            return $this->json(null);
-        }
-
+        $nivol     = $request->request->get('nivol');
         $volunteer = $this->volunteerManager->findOneByNivol($nivol);
+
         if (!$volunteer) {
+            $userInformation->setNivol(null);
+            $userInformation->setVolunteer(null);
+            $userInformation->getStructures()->clear();
+
+            $this->userInformationManager->save($userInformation);
+
             return $this->json(null);
         }
 

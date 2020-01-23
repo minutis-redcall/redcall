@@ -15,7 +15,7 @@
             <tr>
                 <td>
                     <div class="row">
-                        <div class="col-4">
+                        <div class="col-md-4">
                             <div>
                                 <div class="h4">{{ userInformation.user.username }}</div>
                                 <div class="text-small">
@@ -23,7 +23,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="col-4">
+                        <div class="col-md-4">
                             <div class="nivol"
                                  data-id="{{ userInformation.user.id }}"
                                  data-uri="{{ path('admin_pegass_update', {csrf: csrf_token('pegass'), id: userInformation.id}) }}">
@@ -32,7 +32,7 @@
                                 })) }}
                             </div>
                         </div>
-                        <div class="col-4" id="structures-{{ userInformation.user.id }}">
+                        <div class="col-md-4" id="structures-{{ userInformation.user.id }}">
                             {% for structure in userInformation.structures %}
                                 <div>{{ structure.name }}</div>
                             {% endfor %}
