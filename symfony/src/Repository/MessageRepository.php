@@ -183,14 +183,6 @@ class MessageRepository extends BaseRepository
     }
 
     /**
-     * @return string
-     */
-    public function generateWebCode(): string
-    {
-        return $this->generateCode('webCode');
-    }
-
-    /**
      * @param Campaign $campaign
      *
      * @return int
@@ -214,7 +206,7 @@ class MessageRepository extends BaseRepository
      * POW(62, 8) = 218 340 105 584 896
      * we're safe.
      */
-    private function generateCode(string $column): string
+    public function generateCode(string $column = 'code'): string
     {
         do {
             $code = Random::generate(self::CODE_SIZE);

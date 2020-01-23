@@ -25,9 +25,9 @@ class MessageManager
     /**
      * @return string
      */
-    public function generateWebCode(): string
+    public function generateCode(): string
     {
-        return $this->messageRepository->generateWebCode();
+        return $this->messageRepository->generateCode();
     }
 
     /**
@@ -57,7 +57,7 @@ class MessageManager
      *
      * @return int
      */
-    public function getNumberOfSentMessages(Campaign $campaign) : int
+    public function getNumberOfSentMessages(Campaign $campaign): int
     {
         return $this->messageRepository->getNumberOfSentMessages($campaign);
     }

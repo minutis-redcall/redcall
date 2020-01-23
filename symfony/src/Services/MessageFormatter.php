@@ -81,7 +81,7 @@ class MessageFormatter
         // Enabled geo location
         if ($message->getCommunication()->hasGeoLocation()) {
             $contentParts[] = $this->translator->trans('message.sms.geo_location', [
-                '%url%' => trim(getenv('WEBSITE_URL'), '/').$this->router->generate('geo_open', ['code' => $message->getWebCode()]),
+                '%url%' => trim(getenv('WEBSITE_URL'), '/').$this->router->generate('geo_open', ['code' => $message->getCode()]),
             ]);
         }
 
@@ -128,7 +128,7 @@ class MessageFormatter
             }
             $contentParts[] = '';
 
-            $url = trim(getenv('WEBSITE_URL'), '/').$this->router->generate('message_open', ['code' => $message->getWebCode()]);
+            $url = trim(getenv('WEBSITE_URL'), '/').$this->router->generate('message_open', ['code' => $message->getCode()]);
             if (!$communication->isMultipleAnswer()) {
                 $contentParts[] = $this->translator->trans('message.email.how_to_answer_simple', [
                     '%url%' => $url,

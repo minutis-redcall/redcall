@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Table(indexes={
  *     @ORM\Index(name="message_idx", columns={"message_id"}),
- *     @ORM\Index(name="web_codex"  , columns={"web_code"})
+ *     @ORM\Index(name="codex"  , columns={"code"})
  * })
  * @ORM\Entity(repositoryClass="App\Repository\MessageRepository")
  */
@@ -76,12 +76,17 @@ class Message
      *
      * @ORM\Column(type="binary", length=8, nullable=true)
      */
-    private $webCode;
+    private $code;
 
     /**
      * @ORM\OneToOne(targetEntity="App\Entity\GeoLocation", mappedBy="message", cascade={"all"})
      */
     private $geoLocation;
+
+    /**
+     * @ORM\Column(type="string")
+     */
+    private $prefix = 'A';
 
     /**
      * Message constructor.
@@ -258,21 +263,21 @@ class Message
     /**
      * @return string
      */
-    public function getWebCode(): string
+    public function getCode(): string
     {
-        if (gettype($this->webCode) === 'resource') {
-            return stream_get_contents($this->webCode);
+        if (gettype($this->code) === 'resource') {
+            return stream_get_contents($this->code);
         }
 
-        return $this->webCode;
+        return $this->code;
     }
 
     /**
-     * @param string|resource $webCode
+     * @param string|resource $code
      */
-    public function setWebCode($webCode): void
+    public function setCode($code): void
     {
-        $this->webCode = $webCode;
+        $this->code = $code;
     }
 
     /**
@@ -366,7 +371,7 @@ class Message
      *
      * @return bool
      */
-    public function isUnclear() : bool
+    public function isUnclear(): bool
     {
         foreach ($this->answers ?? [] as $answer) {
             /* @var \App\Entity\Answer $answer */
@@ -381,7 +386,7 @@ class Message
     /**
      * @return Choice[]
      */
-    public function getChoices() : array
+    public function getChoices(): array
     {
         $choices = [];
 
@@ -392,5 +397,25 @@ class Message
         }
 
         return $choices;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getPrefix(): ?string
+    {
+        return $this->prefix;
+    }
+
+    /**
+     * @param string $prefix
+     *
+     * @return Message
+     */
+    public function setPrefix(string $prefix): self
+    {
+        $this->prefix = $prefix;
+
+        return $this;
     }
 }

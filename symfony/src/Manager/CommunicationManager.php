@@ -115,8 +115,8 @@ class CommunicationManager
         foreach ($communicationModel->volunteers as $volunteer) {
             $message = new Message();
 
-            $message->setWebCode(
-                $this->messageManager->generateWebCode()
+            $message->setCode(
+                $this->messageManager->generateCode()
             );
 
             $communicationEntity->addMessage($message->setVolunteer($volunteer));

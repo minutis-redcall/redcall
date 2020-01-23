@@ -39,7 +39,7 @@ class MessageController extends BaseController
      */
     public function openAction(string $code)
     {
-        $message = $this->getMessageByWebCode($code);
+        $message = $this->getMessageByCode($code);
 
         return $this->render('message/index.html.twig', [
             'code'    => $code,
@@ -58,7 +58,7 @@ class MessageController extends BaseController
      */
     public function actionAction(string $code, int $action)
     {
-        $message = $this->getMessageByWebCode($code);
+        $message = $this->getMessageByCode($code);
 
         // If the action does not exist, throw an exception
         $choice = $message->getCommunication()->getChoiceByCode($action);
@@ -87,7 +87,7 @@ class MessageController extends BaseController
      */
     public function cancelAction(string $code, int $action)
     {
-        $message = $this->getMessageByWebCode($code);
+        $message = $this->getMessageByCode($code);
 
         // If the action does not exist, throw an exception
         $choice = $message->getCommunication()->getChoiceByCode($action);
@@ -112,10 +112,10 @@ class MessageController extends BaseController
      *
      * @throws NotFoundHttpException
      */
-    private function getMessageByWebCode(string $code): Message
+    private function getMessageByCode(string $code): Message
     {
         $message = $this->messageRepository->findOneBy([
-            'webCode' => $code,
+            'code' => $code,
         ]);
 
         if (null === $message) {
