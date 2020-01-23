@@ -250,6 +250,7 @@ csv_export:
   received: Message reçu
 
 pdf_export:
+  others: 'et %others% autre(s)'
   generated: 'Généré le %date% à %time%'
   confidential: DOCUMENT INTERNE
   staff: EFFECTIFS

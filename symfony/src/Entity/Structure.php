@@ -82,7 +82,7 @@ class Structure
         $this->volunteers         = new ArrayCollection();
         $this->childrenStructures = new ArrayCollection();
         $this->users              = new ArrayCollection();
-        $this->campaigns = new ArrayCollection();
+        $this->campaigns          = new ArrayCollection();
     }
 
     /**
@@ -366,5 +366,13 @@ class Structure
         }
 
         return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->name;
     }
 }

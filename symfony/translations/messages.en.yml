@@ -252,6 +252,7 @@ csv_export:
   received: Message received
 
 pdf_export:
+  others: 'and %others% other(s)'
   generated: 'Generated on %date% at %time%'
   confidential: CONFIDENTIAL DOCUMENT
   staff: STAFF
