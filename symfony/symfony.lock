@@ -245,6 +245,9 @@
     "redcall-io/password-login-bundle": {
         "version": "0.9.0"
     },
+    "redcall-io/pegass-crawler-bundle": {
+        "version": "0.0.1"
+    },
     "redcall-io/sandbox-bundle": {
         "version": "dev-master"
     },

@@ -2,11 +2,12 @@
 
 namespace App\Manager;
 
-use App\Entity\Pegass;
 use App\Entity\Structure;
 use App\Entity\Tag;
 use App\Entity\Volunteer;
 use App\Tools\PhoneNumberParser;
+use Bundles\PegassCrawlerBundle\Entity\Pegass;
+use Bundles\PegassCrawlerBundle\Manager\PegassManager;
 
 /**
  * Refreshes Redcall database based on Pegass cache
