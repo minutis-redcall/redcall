@@ -99,8 +99,7 @@ class CampaignController extends BaseController
         }
 
         return $this->render('campaign/new.html.twig', [
-            'form'           => $form->createView(),
-            'taken_prefixes' => $this->communicationManager->getTakenPrefixes(),
+            'form' => $form->createView(),
         ]);
     }
 

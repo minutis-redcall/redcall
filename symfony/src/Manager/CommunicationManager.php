@@ -110,8 +110,7 @@ class CommunicationManager
             ->setGeoLocation($communicationModel->geoLocation)
             ->setCreatedAt(new \DateTime())
             ->setMultipleAnswer($communicationModel->multipleAnswer)
-            ->setSubject($communicationModel->subject)
-            ->setPrefix($communicationModel->prefix);
+            ->setSubject($communicationModel->subject);
 
         foreach ($communicationModel->volunteers as $volunteer) {
             $message = new Message();
@@ -128,7 +127,7 @@ class CommunicationManager
         foreach (array_unique($communicationModel->answers) as $choiceValue) {
             $choice = new Choice();
             $choice
-                ->setCode(sprintf('%s%d', $communicationModel->prefix, $choiceKey))
+                ->setCode($choiceKey)
                 ->setLabel($choiceValue);
 
             $communicationEntity->addChoice($choice);

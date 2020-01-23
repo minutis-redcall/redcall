@@ -231,10 +231,9 @@ class CommunicationController extends BaseController
         }
 
         return $this->render('new_communication/page.html.twig', [
-            'campaign'       => $campaign,
-            'volunteers'     => $volunteers,
-            'form'           => $form->createView(),
-            'taken_prefixes' => $this->communicationManager->getTakenPrefixes(),
+            'campaign'   => $campaign,
+            'volunteers' => $volunteers,
+            'form'       => $form->createView(),
         ]);
     }
 

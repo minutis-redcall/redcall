@@ -45,17 +45,6 @@
 
 <br/>
 
-<div id="message-prefix">
-    {{ form_row(form.prefix) }}
-    {% if taken_prefixes %}
-        <small>
-            <em>
-                {{ 'form.communication.fields.taken_prefixes'|trans({'%prefixes%':taken_prefixes|join(', ')}) }}
-            </em>
-        </small>
-    {% endif %}
-</div>
-
 {{ form_row(form.multipleAnswer) }}
 
 <div id="message-geo-location">
@@ -130,14 +119,12 @@
             $('#message-max').html({{ max_length_sms }});
             $('#message-calc').removeClass('d-none');
             $('#message-subject').addClass('d-none');
-            $('#message-prefix').removeClass('d-none');
             $('#message-geo-location').removeClass('d-none');
             $('textarea, .textarea-wrapper').css('height', '78px');
         } else {
             $('#message-max').html({{ max_length_email }});
             $('#message-calc').addClass('d-none');
             $('#message-subject').removeClass('d-none');
-            $('#message-prefix').addClass('d-none');
             $('#message-geo-location').addClass('d-none');
             $('textarea, .textarea-wrapper').css('height', '150px');
         }
@@ -151,14 +138,6 @@
     updateMaxMessageSize();
 
     refreshPreview();
-
-    {# Limit prefix to 1 uppercase char #}
-    $('#{{ form.prefix.vars.id }}').keyup(function () {
-        var that = $(this);
-        that.val(
-            that.val().toUpperCase().substring(0, 1)
-        );
-    });
 
     {# Disable submit button at submission to prevent sending communication twice #}
     $('form').submit(function () {

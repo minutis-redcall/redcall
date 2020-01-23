@@ -173,8 +173,6 @@ form:
       cost: 'Message cost multiplied by:'
       length: 'Message length:'
       multiple_answer: 'Volunteers can choose several answers'
-      prefix: 'Response prefix (to use in case of multiple communications at the same time)'
-      taken_prefixes: 'Do not use the following prefix(es) because they are already used: %prefixes%'
   campaign:
     fields:
       label: 'Campaign name'

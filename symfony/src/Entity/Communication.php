@@ -92,13 +92,6 @@ class Communication
     private $multipleAnswer = false;
 
     /**
-     * @var string
-     *
-     * @ORM\Column(type="string", nullable=true)
-     */
-    private $prefix;
-
-    /**
      * @return mixed
      */
     public function getId()
@@ -383,26 +376,6 @@ class Communication
     }
 
     /**
-     * @return string|null
-     */
-    public function getPrefix(): ?string
-    {
-        return $this->prefix;
-    }
-
-    /**
-     * @param string|null $prefix
-     *
-     * @return Communication
-     */
-    public function setPrefix(?string $prefix): Communication
-    {
-        $this->prefix = $prefix;
-
-        return $this;
-    }
-
-    /**
      * @return float
      */
     public function getCost(): float
@@ -425,9 +398,9 @@ class Communication
      *
      * @throws \Exception
      */
-    public function isUnclear(string $message) : bool
+    public function isUnclear(string $message): bool
     {
-        $words = explode(' ', $message);
+        $words   = explode(' ', $message);
         $choices = [];
         foreach ($words as $index => $word) {
             $choice = $this->getChoiceByCode($word);

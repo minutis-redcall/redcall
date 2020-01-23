@@ -33,24 +33,4 @@ class CommunicationRepository extends BaseRepository
         $communication->setLabel($newName);
         $this->save($communication);
     }
-
-
-    /**
-     * Get prefixes that cannot be used.
-     */
-    public function getTakenPrefixes()
-    {
-        $prefixes = array_column($this->createQueryBuilder('co')
-            ->select('co.prefix')
-            ->distinct()
-            ->innerJoin('App:Campaign', 'ca', 'WITH', 'ca = co.campaign')
-            ->where('co.prefix IS NOT NULL')
-            ->andWhere('ca.active = 1')
-            ->getQuery()
-            ->getArrayResult(), 'prefix');
-
-        sort($prefixes);
-
-        return $prefixes;
-    }
 }

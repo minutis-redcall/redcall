@@ -4,7 +4,6 @@ namespace App\Form\Model;
 
 use App\Entity\Message;
 use App\Entity\Structure;
-use App\Validator\Constraints as CustomAssert;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
@@ -73,15 +72,6 @@ class Communication
      * @var boolean
      */
     public $multipleAnswer;
-
-    /**
-     * @var string|null
-     *
-     * @Assert\Length(min=1, max=1)
-     * @Assert\Regex(pattern="/^[A-Z]$/u")
-     * @CustomAssert\UnusedPrefix()
-     */
-    public $prefix;
 
     /**
      * @Assert\Callback

@@ -62,14 +62,14 @@ class WebhookController extends BaseController
             return new Response();
         }
 
-        $message = $this->getManager(Message::class)->getMessageFromPhoneNumberAndPrefix($inbound->getFrom(), $inbound->getBody());
+        $message = $this->getManager(Message::class)->getMessageFromPhoneNumber($inbound->getFrom(), $inbound->getBody());
 
         if ($message && $message->getCommunication()->getCampaign()->isActive()) {
             $this->dispatcher->processInboundAnswer($message, $inbound->getBody());
         }
 
         $this->logger->info('SMS Inbound received!', [
-            'sender' => $inbound->getFrom(),
+            'sender'  => $inbound->getFrom(),
             'inbound' => $inbound->getBody(),
         ]);
 
