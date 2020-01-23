@@ -119,7 +119,7 @@ class PegassSearchCommand extends BaseCommand
                 if ($input->getOption('limit') && $count == $input->getOption('limit')) {
                     return false;
                 }
-            });
+            }, false);
         }
 
         $table->render();

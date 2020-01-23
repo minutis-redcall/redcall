@@ -109,12 +109,13 @@ class PegassManager
     /**
      * @param string   $type
      * @param callable $callback
+     * @param bool     $onlyEnabled
      *
      * @return int
      */
-    public function foreach(string $type, callable $callback): int
+    public function foreach(string $type, callable $callback, bool $onlyEnabled = true): int
     {
-        return $this->pegassRepository->foreach($type, $callback);
+        return $this->pegassRepository->foreach($type, $callback, $onlyEnabled);
     }
 
     /**
@@ -124,9 +125,9 @@ class PegassManager
      *
      * @return Pegass|null
      */
-    public function getEntity(string $type, string $identifier, string $parentIdentifier = null): ?Pegass
+    public function getEntity(string $type, string $identifier): ?Pegass
     {
-        return $this->pegassRepository->getEntity($type, $identifier, $parentIdentifier);
+        return $this->pegassRepository->getEntity($type, $identifier);
     }
 
     /**
@@ -325,7 +326,7 @@ class PegassManager
      */
     private function spreadUpdateDatesInTTL()
     {
-        $area = $this->pegassRepository->getEntity(Pegass::TYPE_AREA, null, null, false);
+        $area = $this->pegassRepository->getEntity(Pegass::TYPE_AREA, null);
         if (!$area || $area->getIdentifier()) {
             return;
         }
@@ -345,9 +346,9 @@ class PegassManager
                 $updateAt = new \DateInterval(sprintf('PT%dS', $step));
                 $date->add($updateAt);
 
-                echo sprintf("Processing %s/%s: updated at becomes %s\n", $entity->getType(), $entity->getIdentifier(), $date->format('d/m/Y H:i:s'));
+                $this->debug($entity, 'updated at becomes', $date->format('d/m/Y H:i:s'));
 
-                $entity->setUpdatedAt($date)->lockUpdateDate();
+                $entity->setUpdatedAt($date);
                 $this->pegassRepository->save($entity);
             }
         }

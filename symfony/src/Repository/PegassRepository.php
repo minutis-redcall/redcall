@@ -139,16 +139,19 @@ class PegassRepository extends BaseRepository
      *
      * @return int
      */
-    public function foreach(string $type, callable $callback): int
+    public function foreach(string $type, callable $callback, bool $onlyEnabled = true): int
     {
         $count = 0;
 
-        $iterator = $this->createQueryBuilder('p')
-                         ->where('p.type = :type')
-                         ->setParameter('type', $type)
-                         ->andWhere('p.enabled = true')
-                         ->getQuery()
-                         ->iterate();
+        $qb = $this->createQueryBuilder('p')
+                   ->where('p.type = :type')
+                   ->setParameter('type', $type);
+
+        if ($onlyEnabled) {
+            $qb->andWhere('p.enabled = true');
+        }
+
+        $iterator = $qb->getQuery()->iterate();
 
         while (($row = $iterator->next()) !== false) {
             /* @var Pegass $entity */

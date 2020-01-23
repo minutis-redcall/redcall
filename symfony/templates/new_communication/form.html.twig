@@ -1,9 +1,12 @@
 {% form_theme form 'new_communication/form_theme.html.twig' %}
 
-<div class="h4">
-    {{ 'form.communication.fields.structures'|trans }}
+<div class="{% if form.structures.children|length == 1 %}d-none{% endif %}">
+    <div class="h4">
+        {{ 'form.communication.fields.structures'|trans }}
+    </div>
+
+    {{ form_row(form.structures) }}
 </div>
-{{ form_row(form.structures) }}
 
 {{ form_row(form.volunteers) }}
 
