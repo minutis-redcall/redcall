@@ -119,7 +119,7 @@ class RefreshManager
         $structure->setIdentifier($pegass->evaluate('structure.id'));
         $structure->setType($pegass->evaluate('structure.typeStructure'));
         $structure->setName($pegass->evaluate('structure.libelle'));
-        $structure->setPresident($pegass->evaluate('responsible.responsableId'));
+        $structure->setPresident(ltrim($pegass->evaluate('responsible.responsableId'), '0'));
         $this->structureManager->save($structure);
     }
 
@@ -196,10 +196,10 @@ class RefreshManager
         if (!$volunteer) {
             $volunteer = new Volunteer();
         }
+        $volunteer->setReport([]);
 
         // Volunteer is locked
         if ($volunteer->isLocked()) {
-            $volunteer->setReport([]);
             $volunteer->addWarning('import_report.update_locked');
             $this->volunteerManager->save($volunteer);
 
@@ -207,10 +207,10 @@ class RefreshManager
         }
 
         // Volunteer already up to date
-        if ($volunteer->getLastPegassUpdate()
-            && $volunteer->getLastPegassUpdate()->getTimestamp() === $pegass->getUpdatedAt()->getTimestamp()) {
-            return;
-        }
+        //        if ($volunteer->getLastPegassUpdate()
+        //            && $volunteer->getLastPegassUpdate()->getTimestamp() === $pegass->getUpdatedAt()->getTimestamp()) {
+        //            return;
+        //        }
 
         $this->logger->info('Updating a volunteer', [
             'type'              => $pegass->getType(),

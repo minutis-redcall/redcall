@@ -15,7 +15,6 @@ use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Translation\TranslatorInterface;
-use Symfony\Component\VarDumper\VarDumper;
 
 /**
  * @Route(path="/widget", name="widget_")
@@ -109,7 +108,6 @@ class WidgetController extends BaseController
 
     public function nivolEditor(UserInformation $userInformation)
     {
-        VarDumper::dump($userInformation);
         $form = $this
             ->createNamedFormBuilder(
                 sprintf('nivol-%s', Uuid::uuid4()),
@@ -134,11 +132,13 @@ class WidgetController extends BaseController
             throw $this->createAccessDeniedException();
         }
 
-        $volunteers = $this->volunteerManager->search(
-            $request->query->get('keyword'),
-            20,
-            $searchAll ? null : $this->getUser()
-        );
+        $criteria = $request->query->get('keyword');
+
+        if ($searchAll) {
+            $volunteers = $this->volunteerManager->searchAll($criteria, 20);
+        } else {
+            $volunteers = $this->volunteerManager->searchForCurrentUser($criteria, 20);
+        }
 
         // Format volunteer for the flexdatalist rendering
         $results = [];

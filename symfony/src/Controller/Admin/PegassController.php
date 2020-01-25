@@ -88,7 +88,7 @@ class PegassController extends BaseController
 
     private function createSearchForm(Request $request)
     {
-        return $this->createFormBuilder()
+        return $this->createFormBuilder(null, ['csrf_protection' => false])
                     ->setMethod('GET')
                     ->add('criteria', TextType::class, [
                         'label'    => 'password_login.user_list.search.criteria',

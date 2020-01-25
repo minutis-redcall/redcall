@@ -192,6 +192,11 @@ prefilled_answers:
 
 manage_volunteers:
   title: 'Manage volunteers'
+  search:
+    label: 'Rechercher un volontaire'
+    button: 'Rechercher'
+
+
   tabs:
     enabled: 'Enabled volunteers'
     disabled: 'Disabled volunteers'
@@ -244,6 +249,15 @@ manage_volunteers:
 
 manage_structures:
   title: 'Manage structures'
+  search:
+    label: 'Search structure'
+    button: 'Search'
+  president: 'President: %president%'
+  volunteers: 'Volunteers count: %count%'
+  users: 'RedCall users count: %count%'
+  last_update: 'Last Pegass synchro on: %last_update% UTC'
+  next_update: 'Next Pegass synchro on: %next_update% UTC'
+  force_update: 'Force update now'
 
 csv_export:
   nivol: Nivol

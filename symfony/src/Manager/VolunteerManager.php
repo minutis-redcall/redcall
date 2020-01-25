@@ -2,9 +2,10 @@
 
 namespace App\Manager;
 
+use App\Entity\UserInformation;
 use App\Entity\Volunteer;
 use App\Repository\VolunteerRepository;
-use Bundles\PasswordLoginBundle\Entity\User;
+use Doctrine\ORM\QueryBuilder;
 
 class VolunteerManager
 {
@@ -14,11 +15,19 @@ class VolunteerManager
     private $volunteerRepository;
 
     /**
-     * @param VolunteerRepository $volunteerRepository
+     * @var UserInformationManager
      */
-    public function __construct(VolunteerRepository $volunteerRepository)
+    private $userInformationManager;
+
+    /**
+     * @param VolunteerRepository    $volunteerRepository
+     * @param UserInformationManager $userInformationManager
+     */
+    public function __construct(VolunteerRepository $volunteerRepository,
+        UserInformationManager $userInformationManager)
     {
-        $this->volunteerRepository = $volunteerRepository;
+        $this->volunteerRepository    = $volunteerRepository;
+        $this->userInformationManager = $userInformationManager;
     }
 
     /**
@@ -68,34 +77,51 @@ class VolunteerManager
     }
 
     /**
-     * @param string    $keyword
-     * @param int       $maxResults
-     * @param User|null $user
+     * @param string|null $criteria
      *
-     * @return array
+     * @return Volunteer[]|array
      */
-    public function search(string $keyword, int $maxResults, User $user = null): array
+    public function searchAll(?string $criteria, int $limit)
     {
-        return $this->volunteerRepository->search($keyword, $maxResults, $user);
+        return $this->volunteerRepository->searchAll($criteria, $limit);
     }
 
     /**
-     * @param User $user
+     * @param UserInformation $user
+     * @param string|null     $criteria
      *
-     * @return array
+     * @return Volunteer[]|array
      */
-    public function getVolunteersCountByTagsForUser(User $user): array
+    public function searchForCurrentUser(?string $criteria, int $limit)
     {
-        return $this->volunteerRepository->getVolunteersCountByTagsForUser($user);
+        return $this->volunteerRepository->searchForUser(
+            $this->userInformationManager->findForCurrentUser(),
+            $criteria,
+            $limit
+        );
     }
 
     /**
-     * @param User $user
+     * @param string $criteria
      *
-     * @return array
+     * @return QueryBuilder
      */
-    public function findCallableForUser(User $user): array
+    public function searchAllQueryBuilder(?string $criteria): QueryBuilder
     {
-        return $this->volunteerRepository->findCallableForUser($user);
+        return $this->volunteerRepository->searchAllQueryBuilder($criteria);
+    }
+
+    /**
+     * @param UserInformation $user
+     * @param string          $criteria
+     *
+     * @return QueryBuilder
+     */
+    public function searchForCurrentUserQueryBuilder(?string $criteria): QueryBuilder
+    {
+        return $this->volunteerRepository->searchForUserQueryBuilder(
+            $this->userInformationManager->findForCurrentUser(),
+            $criteria
+        );
     }
 }

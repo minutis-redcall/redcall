@@ -3,8 +3,10 @@
 namespace App\Repository;
 
 use App\Base\BaseRepository;
+use App\Entity\UserInformation;
 use App\Entity\Volunteer;
 use Bundles\PasswordLoginBundle\Entity\User;
+use Doctrine\ORM\QueryBuilder;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
 /**
@@ -138,83 +140,92 @@ class VolunteerRepository extends BaseRepository
     }
 
     /**
-     * @param string    $keyword
-     * @param int       $maxResults
-     * @param User|null $user
+     * @param string          $keyword
+     * @param int             $maxResults
+     * @param UserInformation $user
      *
-     * @return array
+     * @return Volunteer[]
      */
-    public function search(string $keyword, int $maxResults = 20, User $user = null): array
+    public function searchForUser(UserInformation $user, ?string $keyword, int $maxResults): array
     {
-        if ($user) {
-            return $this->searchForUser($keyword, $maxResults, $user);
-        }
-
-        return $this->searchAll($keyword, $maxResults);
-    }
-
-    /**
-     * @param User $user
-     *
-     * @return array
-     */
-    public function findCallableForUser(User $user): array
-    {
-        return $this->createQueryBuilder('v')
-                    ->innerJoin('v.structures', 's')
-                    ->innerJoin('s.users', 'u')
-                    ->where('u.user = :user')
-                    ->setParameter('user', $user)
-                    ->andWhere('v.enabled = true')
-                    ->orderBy('v.firstName', 'ASC')
-                    ->getQuery()
-                    ->getResult();
-    }
-
-    /**
-     * @param string $keyword
-     * @param int    $maxResults
-     * @param User   $user
-     */
-    private function searchForUser(string $keyword, int $maxResults, User $user)
-    {
-        $qb = $this->createQueryBuilder('v');
-
-        return $qb
-            ->innerJoin('v.structures', 's')
-            ->innerJoin('s.users', 'u')
-            ->where('u.user = :user')
-            ->setParameter('user', $user)
-            ->andWhere(
-                $qb->expr()->orX(
-                    'v.nivol LIKE :keyword',
-                    'v.firstName LIKE :keyword',
-                    'v.lastName LIKE :keyword'
-                )
-            )
-            ->setParameter('keyword', sprintf('%%%s%%', $keyword))
-            ->getQuery()
-            ->setMaxResults($maxResults)
-            ->getResult();
-    }
-
-    /**
-     * @param string $keyword
-     * @param int    $maxResults
-     * @param User   $user
-     *
-     * @return array
-     */
-    private function searchAll(string $keyword, int $maxResults): array
-    {
-        return $this->createQueryBuilder('v')
-                    ->where('v.nivol LIKE :keyword')
-                    ->orWhere('v.firstName LIKE :keyword')
-                    ->orWhere('v.lastName LIKE :keyword')
-                    ->setParameter('keyword', sprintf('%%%s%%', $keyword))
+        return $this->searchForUserQueryBuilder($user, $keyword)
                     ->getQuery()
                     ->setMaxResults($maxResults)
                     ->getResult();
+    }
+
+    /**
+     * @param UserInformation $user
+     * @param string|null     $keyword
+     *
+     * @return QueryBuilder
+     */
+    public function searchForUserQueryBuilder(UserInformation $user, ?string $keyword): QueryBuilder
+    {
+        $qb = $this->createQueryBuilder('v');
+
+        $qb
+            ->innerJoin('v.structures', 's')
+            ->innerJoin('s.users', 'u')
+            ->where('u.id = :user')
+            ->setParameter('user', $user);
+
+        if ($keyword) {
+            $qb
+                ->andWhere(
+                    $qb->expr()->orX(
+                        'v.nivol LIKE :keyword',
+                        'v.firstName LIKE :keyword',
+                        'v.lastName LIKE :keyword',
+                        'v.phoneNumber LIKE :keyword',
+                        'v.email LIKE :keyword'
+                    )
+                )
+                ->setParameter('keyword', sprintf('%%%s%%', $keyword));
+        }
+
+        return $qb;
+    }
+
+    /**
+     * @param string $keyword
+     * @param int    $maxResults
+     * @param User   $user
+     *
+     * @return Volunteer[]
+     */
+    public function searchAll(?string $keyword, int $maxResults): array
+    {
+        return $this->searchAllQueryBuilder($keyword)
+                    ->getQuery()
+                    ->setMaxResults($maxResults)
+                    ->getResult();
+    }
+
+    /**
+     * @param string $keyword
+     *
+     * @return QueryBuilder
+     */
+    public function searchAllQueryBuilder(?string $keyword): QueryBuilder
+    {
+        $qb = $this->createQueryBuilder('v');
+
+        if ($keyword) {
+            $qb
+                ->where(
+                    $qb->expr()->orX(
+                        'v.nivol LIKE :keyword',
+                        'v.firstName LIKE :keyword',
+                        'v.lastName LIKE :keyword',
+                        'v.phoneNumber LIKE :keyword',
+                        'v.email LIKE :keyword'
+                    )
+                )
+                ->setParameter('keyword', sprintf('%%%s%%', $keyword));
+        }
+
+        return $qb;
     }
 
 }

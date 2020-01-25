@@ -17,7 +17,6 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Translation\TranslatorInterface;
 
 class VolunteersType extends AbstractType
@@ -43,28 +42,20 @@ class VolunteersType extends AbstractType
     private $translator;
 
     /**
-     * @var TokenStorageInterface
-     */
-    private $tokenStorage;
-
-    /**
      * @param VolunteerManager       $volunteerManager
      * @param StructureManager       $structureManager
      * @param UserInformationManager $userInformationManager
      * @param TranslatorInterface    $translator
-     * @param TokenStorageInterface  $tokenStorage
      */
     public function __construct(VolunteerManager $volunteerManager,
         StructureManager $structureManager,
         UserInformationManager $userInformationManager,
-        TranslatorInterface $translator,
-        TokenStorageInterface $tokenStorage)
+        TranslatorInterface $translator)
     {
         $this->volunteerManager       = $volunteerManager;
         $this->structureManager       = $structureManager;
         $this->userInformationManager = $userInformationManager;
         $this->translator             = $translator;
-        $this->tokenStorage           = $tokenStorage;
     }
 
     /**
@@ -148,9 +139,7 @@ class VolunteersType extends AbstractType
                     }
                 }, $structures)),
             ];
-        }, $this->volunteerManager->findCallableForUser(
-            $this->tokenStorage->getToken()->getUser()
-        ));
+        }, $this->volunteerManager->searchForCurrentUser(null, 0xFFFFFFFF));
     }
 
     /**

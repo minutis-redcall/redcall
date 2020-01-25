@@ -471,10 +471,9 @@ class Volunteer
      */
     public function addError(string $message)
     {
-        $report             = $this->report ?? [];
-        $report[]           = sprintf('ERROR: %s', $message);
-        $this->report       = $report;
-        $this->isImportable = false;
+        $report       = $this->report ?? [];
+        $report[]     = $message;
+        $this->report = $report;
     }
 
     /**
@@ -483,7 +482,7 @@ class Volunteer
     public function addWarning(string $message)
     {
         $report       = $this->report ?? [];
-        $report[]     = sprintf('WARNING: %s', $message);
+        $report[]     = $message;
         $this->report = $report;
     }
 
@@ -535,5 +534,50 @@ class Volunteer
                 }, $this->getStructures()->toArray()))
             ),
         ];
+    }
+
+    /**
+     * @return \DateTime|null
+     *
+     * @throws \Exception
+     */
+    public function getNextPegassUpdate(): ?\DateTime
+    {
+        if (!$this->lastPegassUpdate) {
+            return null;
+        }
+
+        // Doctrine loaded an UTC-saved date using the default timezone (Europe/Paris)
+        $utc      = (new \DateTime($this->lastPegassUpdate->format('Y-m-d H:i:s'), new \DateTimeZone('UTC')));
+        $interval = new \DateInterval(sprintf('PT%dS', Pegass::TTL[Pegass::TYPE_STRUCTURE]));
+
+        $nextPegassUpdate = clone $utc;
+        $nextPegassUpdate->add($interval);
+
+        return $nextPegassUpdate;
+    }
+
+    /**
+     * @return bool
+     *
+     * @throws \Exception
+     */
+    public function canForcePegassUpdate(): bool
+    {
+        if (!$this->lastPegassUpdate) {
+            return true;
+        }
+
+        // Doctrine loaded an UTC-saved date using the default timezone (Europe/Paris)
+        $utc = (new \DateTime($this->lastPegassUpdate->format('Y-m-d H:i:s'), new \DateTimeZone('UTC')));
+
+        // Can happen when update dates are spread on a larger timeframe
+        // See: PegassManager:spreadUpdateDatesInTTL()
+        if ($utc->getTimestamp() > time()) {
+            return true;
+        }
+
+        // Prevent several updates in less than 1h
+        return time() - $utc->getTimestamp() > 3600;
     }
 }

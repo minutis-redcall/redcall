@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Bundles\PegassCrawlerBundle\Entity\Pegass;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -11,6 +12,9 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(
  * uniqueConstraints={
  *     @ORM\UniqueConstraint(name="identifier_idx", columns={"identifier"})
+ * },
+ * indexes={
+ *     @ORM\Index(name="name_idx", columns={"name"})
  * })
  */
 class Structure
@@ -366,6 +370,73 @@ class Structure
         }
 
         return $this;
+    }
+
+    /**
+     * @return Volunteer|null
+     */
+    public function getPresidentVolunteer(): ?Volunteer
+    {
+        foreach ($this->getVolunteers() as $volunteer) {
+            if ($volunteer->getNivol() === $this->getPresident()) {
+                return $volunteer;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @return array
+     */
+    public function getActiveVolunteers()
+    {
+        return array_filter($this->volunteers->toArray(), function (Volunteer $volunteer) {
+            return $volunteer->isEnabled();
+        });
+    }
+
+    /**
+     * @return \DateTime|null
+     *
+     * @throws \Exception
+     */
+    public function getNextPegassUpdate(): ?\DateTime
+    {
+        if (!$this->lastPegassUpdate) {
+            return null;
+        }
+
+        // Doctrine loaded an UTC-saved date using the default timezone (Europe/Paris)
+        $utc      = (new \DateTime($this->lastPegassUpdate->format('Y-m-d H:i:s'), new \DateTimeZone('UTC')));
+        $interval = new \DateInterval(sprintf('PT%dS', Pegass::TTL[Pegass::TYPE_STRUCTURE]));
+
+        $nextPegassUpdate = clone $utc;
+        $nextPegassUpdate->add($interval);
+
+        return $nextPegassUpdate;
+    }
+
+    /**
+     * @return bool
+     */
+    public function canForcePegassUpdate(): bool
+    {
+        if (!$this->lastPegassUpdate) {
+            return true;
+        }
+
+        // Doctrine loaded an UTC-saved date using the default timezone (Europe/Paris)
+        $utc = (new \DateTime($this->lastPegassUpdate->format('Y-m-d H:i:s'), new \DateTimeZone('UTC')));
+
+        // Can happen when update dates are spread on a larger timeframe
+        // See: PegassManager:spreadUpdateDatesInTTL()
+        if ($utc->getTimestamp() > time()) {
+            return true;
+        }
+
+        // Prevent several updates in less than 1h
+        return time() - $utc->getTimestamp() > 3600;
     }
 
     /**

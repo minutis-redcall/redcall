@@ -3,8 +3,10 @@
 namespace App\Manager;
 
 use App\Entity\Structure;
+use App\Entity\UserInformation;
 use App\Entity\Volunteer;
 use App\Repository\StructureRepository;
+use Doctrine\ORM\QueryBuilder;
 
 class StructureManager
 {
@@ -114,4 +116,29 @@ class StructureManager
 
         return $counts;
     }
+
+    /**
+     * @param string $criteria
+     *
+     * @return QueryBuilder
+     */
+    public function searchAllQueryBuilder(?string $criteria): QueryBuilder
+    {
+        return $this->structureRepository->searchAllQueryBuilder($criteria);
+    }
+
+    /**
+     * @param UserInformation $user
+     * @param string          $criteria
+     *
+     * @return QueryBuilder
+     */
+    public function searchForCurrentUser(?string $criteria): QueryBuilder
+    {
+        return $this->structureRepository->searchForUser(
+            $this->userInformationManager->findForCurrentUser(),
+            $criteria
+        );
+    }
+
 }

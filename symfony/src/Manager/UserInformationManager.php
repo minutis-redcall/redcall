@@ -36,12 +36,20 @@ class UserInformationManager
      * @param TokenStorageInterface     $tokenStorage
      */
     public function __construct(UserInformationRepository $userInformationRepository,
-        VolunteerManager $volunteerManager,
         TokenStorageInterface $tokenStorage)
     {
         $this->userInformationRepository = $userInformationRepository;
-        $this->volunteerManager          = $volunteerManager;
         $this->tokenStorage              = $tokenStorage;
+    }
+
+    /**
+     * @required
+     *
+     * @param VolunteerManager $campaignManager
+     */
+    public function setVolunteerManager(VolunteerManager $volunteerManager)
+    {
+        $this->volunteerManager = $volunteerManager;
     }
 
     /**

@@ -81,6 +81,11 @@ class StructureRepository extends BaseRepository
                            ->leftJoin('sss.childrenStructures', 'ssss')
                            ->leftJoin('ssss.childrenStructures', 'sssss')
                            ->where('v.id = :id')
+                           ->andWhere('s.enabled IS NULL OR s.enabled = true')
+                           ->andWhere('ss.enabled IS NULL OR ss.enabled = true')
+                           ->andWhere('sss.enabled IS NULL OR sss.enabled = true')
+                           ->andWhere('ssss.enabled IS NULL OR ssss.enabled = true')
+                           ->andWhere('sssss.enabled IS NULL OR sssss.enabled = true')
                            ->setParameter('id', $volunteer->getId())
                            ->getQuery()
                            ->getArrayResult();
@@ -115,6 +120,7 @@ class StructureRepository extends BaseRepository
                      ->select('s.id as structure_id, COUNT(v.id) as count')
                      ->join('s.volunteers', 'v')
                      ->where('s.id IN (:ids)')
+                     ->andWhere('s.enabled = true')
                      ->setParameter('ids', $ids)
                      ->andWhere('v.enabled = true')
                      ->groupBy('s.id')
@@ -140,6 +146,7 @@ class StructureRepository extends BaseRepository
                     ->join('s.volunteers', 'v')
                     ->join('v.tags', 't')
                     ->where('u.id = :id')
+                    ->andWhere('s.enabled = true')
                     ->setParameter('id', $user->getId())
                     ->orderBy('t.id', 'ASC')
                     ->groupBy('s.id', 't.id')
@@ -158,6 +165,47 @@ class StructureRepository extends BaseRepository
                     ->join('s.users', 'u')
                     ->where('u.id = :id')
                     ->setParameter('id', $userInformation->getId())
+                    ->andWhere('s.enabled = true')
                     ->orderBy('s.identifier', 'asc');
     }
+
+    /**
+     * @param string $criteria
+     *
+     * @return QueryBuilder
+     */
+    public function searchAllQueryBuilder(?string $criteria): QueryBuilder
+    {
+        $qb = $this->createQueryBuilder('s');
+
+        if ($criteria) {
+            $qb->where('s.identifier LIKE :criteria OR s.name LIKE :criteria')
+               ->setParameter('criteria', sprintf('%%%s%%', $criteria));
+        }
+
+        return $qb;
+    }
+
+    /**
+     * @param UserInformation $user
+     * @param string          $criteria
+     *
+     * @return QueryBuilder
+     */
+    public function searchForUser(UserInformation $user, ?string $criteria): QueryBuilder
+    {
+        $qb = $this->createQueryBuilder('s')
+                   ->join('s.users', 'u')
+                   ->where('u.id = :user_id')
+                   ->setParameter('user_id', $user->getId());
+
+        if ($criteria) {
+            $qb->where('s.identifier LIKE :criteria OR s.name LIKE :criteria')
+               ->setParameter('criteria', sprintf('%%%s%%', $criteria));
+        }
+
+        return $qb;
+    }
+
+
 }

@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20200121194516 extends AbstractMigration
+final class Version20200125141018 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -22,6 +22,9 @@ final class Version20200121194516 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
+        $this->addSql('UPDATE volunteer SET nivol = TRIM(LEADING "0" FROM nivol)');
+
+        $this->addSql('CREATE INDEX name_idx ON structure (name)');
         $this->addSql('ALTER TABLE pegass CHANGE parent_identifier parent_identifier VARCHAR(64) DEFAULT NULL');
     }
 
@@ -31,5 +34,6 @@ final class Version20200121194516 extends AbstractMigration
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('ALTER TABLE pegass CHANGE parent_identifier parent_identifier VARCHAR(64) CHARACTER SET utf8mb4 DEFAULT NULL COLLATE `utf8mb4_unicode_ci`');
+        $this->addSql('DROP INDEX name_idx ON structure');
     }
 }
