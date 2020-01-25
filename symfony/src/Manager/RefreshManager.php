@@ -8,6 +8,8 @@ use App\Entity\Volunteer;
 use App\Tools\PhoneNumberParser;
 use Bundles\PegassCrawlerBundle\Entity\Pegass;
 use Bundles\PegassCrawlerBundle\Manager\PegassManager;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 
 /**
  * Refreshes Redcall database based on Pegass cache
@@ -35,20 +37,28 @@ class RefreshManager
     private $tagManager;
 
     /**
-     * @param PegassManager    $pegassManager
-     * @param StructureManager $structureManager
-     * @param VolunteerManager $volunteerManager
-     * @param TagManager       $tagManager
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
+     * @param PegassManager        $pegassManager
+     * @param StructureManager     $structureManager
+     * @param VolunteerManager     $volunteerManager
+     * @param TagManager           $tagManager
+     * @param LoggerInterface|null $logger
      */
     public function __construct(PegassManager $pegassManager,
         StructureManager $structureManager,
         VolunteerManager $volunteerManager,
-        TagManager $tagManager)
+        TagManager $tagManager,
+        LoggerInterface $logger = null)
     {
         $this->pegassManager    = $pegassManager;
         $this->structureManager = $structureManager;
         $this->volunteerManager = $volunteerManager;
         $this->tagManager       = $tagManager;
+        $this->logger           = $logger ?: new NullLogger();
     }
 
     /**
@@ -92,7 +102,11 @@ class RefreshManager
         $structure->setLastPegassUpdate(clone $pegass->getUpdatedAt());
         $structure->setEnabled(true);
 
-        echo sprintf('Importing %s/%s%s', $pegass->getType(), $pegass->getIdentifier(), PHP_EOL);
+        $this->logger->info('Updating a structure', [
+            'type'              => $pegass->getType(),
+            'identifier'        => $pegass->getIdentifier(),
+            'parent-identifier' => $pegass->getParentIdentifier(),
+        ]);
 
         $structure->setIdentifier($pegass->evaluate('structure.id'));
         $structure->setType($pegass->evaluate('structure.typeStructure'));
@@ -190,7 +204,11 @@ class RefreshManager
             return;
         }
 
-        echo sprintf('Importing %s/%s%s', $pegass->getType(), $pegass->getIdentifier(), PHP_EOL);
+        $this->logger->info('Updating a volunteer', [
+            'type'              => $pegass->getType(),
+            'identifier'        => $pegass->getIdentifier(),
+            'parent-identifier' => $pegass->getParentIdentifier(),
+        ]);
 
         $volunteer->setLastPegassUpdate(clone $pegass->getUpdatedAt());
         $volunteer->setEnabled(true);
