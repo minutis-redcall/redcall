@@ -16,7 +16,7 @@
 
                 <a class="respond btn btn-primary"
                    style="width: 100%;white-space: normal;"
-                   href="{{ path('message_action', {code: code, action: choice.code }) }}">
+                   href="{{ path('message_action', {code: code, action: choice.code, csrf: csrf_token('message') }) }}">
                     <span class="h4">{{ choice.label }}</span>
                 </a>
 
@@ -38,7 +38,7 @@
                     <td style="width: 20%;" align="center" valign="middle">
                         <a class="respond btn btn-light"
                            style="width: 100%;"
-                           href="{{ path('message_cancel', {code: code, action: choice.code }) }}">
+                           href="{{ path('message_cancel', {code: code, action: choice.code, csrf: csrf_token('message') }) }}">
                             <span class="h4">❌</span>
                         </a>
                     </td>

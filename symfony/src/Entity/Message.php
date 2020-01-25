@@ -374,6 +374,10 @@ class Message
      */
     public function isUnclear(): bool
     {
+        if ($this->getInvalidAnswer()) {
+            return false;
+        }
+
         foreach ($this->answers ?? [] as $answer) {
             /* @var \App\Entity\Answer $answer */
             if ($answer->isUnclear()) {

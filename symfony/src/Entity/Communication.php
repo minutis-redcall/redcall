@@ -298,19 +298,34 @@ class Communication
     }
 
     /**
+     * @param string $prefix
      * @param string $code
      *
-     * @return Choice
-     * @throws \Exception
+     * @return Choice|null
      */
-    public function getChoiceByCode(string $code): ?Choice
+    public function getChoiceByCode(string $prefix, string $code): ?Choice
     {
-        /**
-         * @var Choice $choice
-         */
-        foreach ($this->getChoices() as $choice) {
-            if (strtoupper($choice->getCode()) == strtoupper($code)) {
-                return $choice;
+        $codes = explode(' ', $code);
+        foreach ($codes as $code) {
+
+            $matches = [];
+            preg_match('/^([a-zA-Z]+)(\d)/', $code, $matches);
+            if (3 === count($matches)) {
+
+                // Invalid prefix: do not take any choice
+                $codePrefix = strtoupper($matches[1]);
+                if ($prefix !== $codePrefix) {
+                    continue;
+                }
+
+                /**
+                 * @var Choice $choice
+                 */
+                foreach ($this->getChoices() as $choice) {
+                    if ($choice->getCode() == $matches[2]) {
+                        return $choice;
+                    }
+                }
             }
         }
 
@@ -318,18 +333,17 @@ class Communication
     }
 
     /**
+     * @param string $prefix
      * @param string $raw
      *
      * @return array
-     *
-     * @throws \Exception
      */
-    public function getAllChoicesInText(string $raw): array
+    public function getAllChoicesInText(string $prefix, string $raw): array
     {
         $choices = [];
 
         foreach (array_filter(explode(' ', $raw)) as $split) {
-            $choices[] = $this->getChoiceByCode($split);
+            $choices[] = $this->getChoiceByCode($prefix, $split);
         }
 
         return array_filter($choices);
@@ -392,18 +406,31 @@ class Communication
     /**
      * Returns true if message body doesn't exactly match expected choices.
      *
+     * @param string $prefix
      * @param string $message
      *
      * @return bool
      *
      * @throws \Exception
      */
-    public function isUnclear(string $message): bool
+    public function isUnclear(string $prefix, string $message): bool
     {
         $words   = explode(' ', $message);
         $choices = [];
         foreach ($words as $index => $word) {
-            $choice = $this->getChoiceByCode($word);
+            // No prefix
+            preg_match('/^([a-zA-Z]+)(\d)/', $word, $matches);
+            if (count($matches) !== 3) {
+                return true;
+            }
+
+            // Invalid prefix
+            $givenPrefix = strtoupper($matches[1]);
+            if ($givenPrefix !== $prefix) {
+                return true;
+            }
+
+            $choice = $this->getChoiceByCode($prefix, $word);
 
             // Answer contain something else than expected choice codes
             if (!$choice) {

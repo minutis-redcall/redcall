@@ -12,31 +12,14 @@ use App\Entity\Selection;
 use App\Entity\Volunteer;
 use App\Tools\Random;
 use Symfony\Bridge\Doctrine\RegistryInterface;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
-use Symfony\Component\Translation\TranslatorInterface;
 
 class MessageRepository extends BaseRepository
 {
     const CODE_SIZE = 8;
 
-    /**
-     * @var TranslatorInterface
-     */
-    protected $translator;
-
-    /**
-     * @var TokenStorageInterface
-     */
-    protected $tokenStorage;
-
-    public function __construct(RegistryInterface $registry,
-        TranslatorInterface $translator,
-        TokenStorageInterface $tokenStorage)
+    public function __construct(RegistryInterface $registry)
     {
         parent::__construct($registry, Message::class);
-
-        $this->translator   = $translator;
-        $this->tokenStorage = $tokenStorage;
     }
 
     /**
@@ -47,73 +30,44 @@ class MessageRepository extends BaseRepository
      *
      * @throws \Doctrine\ORM\NonUniqueResultException
      */
-    public function getMessageFromPhoneNumber(string $phoneNumber, string $prefix)
+    public function getMessageFromPhoneNumber(string $phoneNumber): ?Message
     {
         return $this->createQueryBuilder('m')
-                    ->innerJoin('App:Volunteer', 'v', 'WITH', 'v = m.volunteer')
-                    ->where('v.phoneNumber = :from')
+                    ->join('m.volunteer', 'v')
+                    ->join('m.communication', 'co')
+                    ->join('co.campaign', 'ca')
+                    ->where('v.phoneNumber = :phoneNumber')
+                    ->andWhere('ca.active = true')
                     ->orderBy('m.id', 'DESC')
                     ->setMaxResults(1)
-                    ->setParameter('from', $phoneNumber)
+                    ->setParameter('phoneNumber', $phoneNumber)
                     ->getQuery()
                     ->getOneOrNullResult();
     }
 
     /**
-     * @param Message $message
-     * @param string  $body
-     * @param bool    $byAdmin
+     * @param string $phoneNumber
+     * @param string $prefix
      *
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @return Message|null
+     *
+     * @throws \Doctrine\ORM\NonUniqueResultException
      */
-    public function addAnswer(Message $message, string $body, bool $byAdmin = false): void
+    public function getMessageFromPhoneNumberAndPrefix(string $phoneNumber, string $prefix): ?Message
     {
-        // Get all valid choices in message
-        if ($multipleChoice = $message->getCommunication()->isMultipleAnswer()) {
-            $choices = $message->getCommunication()->getAllChoicesInText($body);
-        } else {
-            $choices = [];
-            if ($choice = $message->getCommunication()->getChoiceByCode($body)) {
-                $choices[] = $choice;
-            }
-        }
-
-        if (!$multipleChoice) {
-            // If no multiple answers are allowed, clearing up all previous answers
-            foreach ($message->getAnswers() as $answer) {
-                /* @var Answer $answer */
-                $answer->getChoices()->clear();
-                $this->_em->persist($answer);
-            }
-        } else {
-            // If mulitple answers allowed, we'll only keep the last duplicate
-            foreach ($choices as $choice) {
-                if ($answer = $message->getAnswerByChoice($choice)) {
-                    $answer->getChoices()->removeElement($choice);
-                    $this->_em->persist($answer);
-                }
-            }
-        }
-
-        // Storing the new answer
-        $answer = new Answer();
-        $message->addAnswser($answer);
-        $answer->setMessage($message);
-        $answer->setRaw($body);
-        $answer->setReceivedAt(new \DateTime());
-        $answer->setUnclear($message->getCommunication()->isUnclear($body));
-
-        if ($byAdmin) {
-            $answer->setByAdmin($this->tokenStorage->getToken()->getUsername());
-        }
-
-        foreach ($choices as $choice) {
-            $answer->addChoice($choice);
-        }
-
-        $this->_em->persist($answer);
-        $this->_em->flush();
+        return $this->createQueryBuilder('m')
+                    ->join('m.volunteer', 'v')
+                    ->join('m.communication', 'co')
+                    ->join('co.campaign', 'ca')
+                    ->where('v.phoneNumber = :phoneNumber')
+                    ->setParameter('phoneNumber', $phoneNumber)
+                    ->andWhere('m.prefix = :prefix')
+                    ->setParameter('prefix', $prefix)
+                    ->andWhere('ca.active = true')
+                    ->orderBy('m.id', 'DESC')
+                    ->setMaxResults(1)
+                    ->getQuery()
+                    ->getOneOrNullResult();
     }
 
     /**
@@ -133,26 +87,6 @@ class MessageRepository extends BaseRepository
         }
 
         $this->_em->flush();
-    }
-
-    /**
-     * @param Message $message
-     * @param Choice  $choice
-     *
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     */
-    public function toggleAnswer(Message $message, Choice $choice)
-    {
-        // If choice currently selected, remove it
-        if ($answer = $message->getAnswerByChoice($choice)) {
-            $answer->getChoices()->removeElement($choice);
-            $this->_em->flush();
-
-            return;
-        }
-
-        $this->addAnswer($message, $choice->getCode(), true);
     }
 
     /**

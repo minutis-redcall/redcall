@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Base\BaseRepository;
 use App\Entity\Answer;
 use App\Entity\Campaign;
+use App\Entity\Message;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
 /**
@@ -52,5 +53,41 @@ class AnswerRepository extends BaseRepository
         }
 
         return null;
+    }
+
+    /**
+     * @param Message $message
+     *
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function clearAnswers(Message $message)
+    {
+        foreach ($message->getAnswers() as $answer) {
+            /* @var Answer $answer */
+            $answer->getChoices()->clear();
+            $this->_em->persist($answer);
+        }
+
+        $this->_em->flush();
+    }
+
+    /**
+     * @param Message $message
+     * @param array   $choices
+     *
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function clearChoices(Message $message, array $choices)
+    {
+        foreach ($choices as $choice) {
+            if ($answer = $message->getAnswerByChoice($choice)) {
+                $answer->getChoices()->removeElement($choice);
+                $this->_em->persist($answer);
+            }
+        }
+
+        $this->_em->flush();
     }
 }

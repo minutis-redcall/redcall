@@ -264,7 +264,7 @@ class Campaign
                 $data[$communication->getId()]['msg'][$message->getId()] = [
                     'sent'               => $message->isSent(),
                     'choices'            => $choices,
-                    'is-unclear'         => !$invalidAnswer && $message->isUnclear(),
+                    'is-unclear'         => $message->isUnclear(),
                     'has-invalid-answer' => [
                         'raw'  => $invalidAnswer ? $invalidAnswer->getSafeRaw() : null,
                         'time' => $invalidAnswer ? $invalidAnswer->getReceivedAt()->format('H:i') : null,

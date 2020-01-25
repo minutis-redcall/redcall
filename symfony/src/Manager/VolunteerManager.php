@@ -50,6 +50,16 @@ class VolunteerManager
     }
 
     /**
+     * @param string $phoneNumber
+     *
+     * @return Volunteer|null
+     */
+    public function findOneByPhoneNumber(string $phoneNumber): ?Volunteer
+    {
+        return $this->volunteerRepository->findOneByPhoneNumber($phoneNumber);
+    }
+
+    /**
      * @param Volunteer $volunteer
      */
     public function save(Volunteer $volunteer)
