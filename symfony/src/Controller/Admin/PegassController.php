@@ -5,11 +5,8 @@ namespace App\Controller\Admin;
 use App\Base\BaseController;
 use App\Entity\Structure;
 use App\Entity\UserInformation;
-use App\Manager\StructureManager;
 use App\Manager\UserInformationManager;
-use App\Manager\VolunteerManager;
 use Bundles\PaginationBundle\Manager\PaginationManager;
-use Bundles\PasswordLoginBundle\Manager\UserManager;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
@@ -21,21 +18,6 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class PegassController extends BaseController
 {
-    /**
-     * @var UserManager
-     */
-    private $userManager;
-
-    /**
-     * @var VolunteerManager
-     */
-    private $volunteerManager;
-
-    /**
-     * @var StructureManager
-     */
-    private $structureManager;
-
     /**
      * @var UserInformationManager
      */
@@ -52,23 +34,14 @@ class PegassController extends BaseController
     private $requestStack;
 
     /**
-     * @param UserManager            $userManager
-     * @param VolunteerManager       $volunteerManager
-     * @param StructureManager       $structureManager
      * @param UserInformationManager $userInformationManager
      * @param PaginationManager      $paginationManager
      * @param RequestStack           $requestStack
      */
-    public function __construct(UserManager $userManager,
-        VolunteerManager $volunteerManager,
-        StructureManager $structureManager,
-        UserInformationManager $userInformationManager,
+    public function __construct(UserInformationManager $userInformationManager,
         PaginationManager $paginationManager,
         RequestStack $requestStack)
     {
-        $this->userManager            = $userManager;
-        $this->volunteerManager       = $volunteerManager;
-        $this->structureManager       = $structureManager;
         $this->userInformationManager = $userInformationManager;
         $this->paginationManager      = $paginationManager;
         $this->requestStack           = $requestStack;
@@ -100,30 +73,13 @@ class PegassController extends BaseController
     {
         $this->validateCsrfOrThrowNotFoundException('pegass', $csrf);
 
-        $nivol     = $request->request->get('nivol');
-        $volunteer = $this->volunteerManager->findOneByNivol($nivol);
+        $nivol = $request->request->get('nivol');
 
-        if (!$volunteer) {
-            $userInformation->setNivol(null);
-            $userInformation->setVolunteer(null);
-            $userInformation->getStructures()->clear();
-
-            $this->userInformationManager->save($userInformation);
-
-            return $this->json(null);
-        }
-
-        $userInformation->setNivol($nivol);
-        $userInformation->setVolunteer($volunteer);
-
-        $structures = $this->structureManager->findCallableStructuresForVolunteer($volunteer);
-        $userInformation->updateStructures($structures);
-
-        $this->userInformationManager->save($userInformation);
+        $this->userInformationManager->updateNivol($userInformation, $nivol);
 
         $structureNames = array_map(function (Structure $structure) {
             return $structure->getName();
-        }, $structures);
+        }, $userInformation->getStructures()->toArray());
 
         return $this->json([
             'structures' => array_map('htmlentities', $structureNames),

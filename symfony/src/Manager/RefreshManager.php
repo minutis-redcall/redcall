@@ -37,28 +37,36 @@ class RefreshManager
     private $tagManager;
 
     /**
+     * @var UserInformationManager
+     */
+    private $userInformationManager;
+
+    /**
      * @var LoggerInterface
      */
     private $logger;
 
     /**
-     * @param PegassManager        $pegassManager
-     * @param StructureManager     $structureManager
-     * @param VolunteerManager     $volunteerManager
-     * @param TagManager           $tagManager
-     * @param LoggerInterface|null $logger
+     * @param PegassManager          $pegassManager
+     * @param StructureManager       $structureManager
+     * @param VolunteerManager       $volunteerManager
+     * @param TagManager             $tagManager
+     * @param UserInformationManager $userInformationManager
+     * @param LoggerInterface|null   $logger
      */
     public function __construct(PegassManager $pegassManager,
         StructureManager $structureManager,
         VolunteerManager $volunteerManager,
         TagManager $tagManager,
+        UserInformationManager $userInformationManager,
         LoggerInterface $logger = null)
     {
-        $this->pegassManager    = $pegassManager;
-        $this->structureManager = $structureManager;
-        $this->volunteerManager = $volunteerManager;
-        $this->tagManager       = $tagManager;
-        $this->logger           = $logger ?: new NullLogger();
+        $this->pegassManager          = $pegassManager;
+        $this->structureManager       = $structureManager;
+        $this->volunteerManager       = $volunteerManager;
+        $this->tagManager             = $tagManager;
+        $this->userInformationManager = $userInformationManager;
+        $this->logger                 = $logger ?: new NullLogger();
     }
 
     /**
@@ -235,6 +243,7 @@ class RefreshManager
         }
 
         // Update structures
+        $volunteer->getStructures()->clear();
         foreach (array_filter(explode('|', $pegass->getParentIdentifier())) as $identifier) {
             if ($structure = $this->structureManager->findOneByIdentifier($identifier)) {
                 $volunteer->addStructure($structure);
@@ -258,6 +267,12 @@ class RefreshManager
         }
 
         $this->volunteerManager->save($volunteer);
+
+        // If volunteer is bound to a RedCall user, update its structures
+        $userInformation = $this->userInformationManager->findOneByNivol($volunteer->getNivol());
+        if ($userInformation) {
+            $this->userInformationManager->updateNivol($userInformation, $volunteer->getNivol());
+        }
     }
 
     /**
