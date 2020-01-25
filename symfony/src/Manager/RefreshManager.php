@@ -177,7 +177,7 @@ class RefreshManager
 
             if ($volunteer->isLocked()) {
                 $volunteer->setReport([]);
-                $volunteer->addWarning('import_report.disable_locked');
+                $volunteer->addReportMessage('import_report.disable_locked');
             } else {
                 $volunteer->setEnabled(false);
             }
@@ -200,17 +200,17 @@ class RefreshManager
 
         // Volunteer is locked
         if ($volunteer->isLocked()) {
-            $volunteer->addWarning('import_report.update_locked');
+            $volunteer->addReportMessage('import_report.update_locked');
             $this->volunteerManager->save($volunteer);
 
             return;
         }
 
         // Volunteer already up to date
-        //        if ($volunteer->getLastPegassUpdate()
-        //            && $volunteer->getLastPegassUpdate()->getTimestamp() === $pegass->getUpdatedAt()->getTimestamp()) {
-        //            return;
-        //        }
+        if ($volunteer->getLastPegassUpdate()
+            && $volunteer->getLastPegassUpdate()->getTimestamp() === $pegass->getUpdatedAt()->getTimestamp()) {
+            return;
+        }
 
         $this->logger->info('Updating a volunteer', [
             'type'              => $pegass->getType(),
@@ -219,13 +219,17 @@ class RefreshManager
         ]);
 
         $volunteer->setLastPegassUpdate(clone $pegass->getUpdatedAt());
-        $volunteer->setEnabled(true);
+
+        $enabled = $pegass->evaluate('user.actif');
+        if (!$enabled) {
+            $volunteer->addReportMessage('import_report.disabled');
+        }
+        $volunteer->setEnabled($enabled);
 
         // Update basic information
         $volunteer->setNivol(ltrim($pegass->evaluate('infos.id'), '0'));
         $volunteer->setFirstName($this->normalizeName($pegass->evaluate('user.prenom')));
         $volunteer->setLastName($this->normalizeName($pegass->evaluate('user.nom')));
-        $volunteer->setEnabled($pegass->evaluate('user.actif'));
         $volunteer->setPhoneNumber($this->fetchPhoneNumber($pegass->evaluate('contact')));
         $volunteer->setEmail($this->fetchEmail($pegass->evaluate('contact')));
 
@@ -252,17 +256,17 @@ class RefreshManager
 
         // Some issues may lead to not contact a volunteer properly
         if (!$volunteer->getPhoneNumber() && !$volunteer->getEmail()) {
-            $volunteer->addError('import_report.no_contact');
+            $volunteer->addReportMessage('import_report.no_contact');
             $volunteer->setEnabled(false);
         } elseif (!$volunteer->getPhoneNumber()) {
-            $volunteer->addWarning('import_report.no_phone');
+            $volunteer->addReportMessage('import_report.no_phone');
         } elseif (!$volunteer->getEmail()) {
-            $volunteer->addWarning('import_report.no_email');
+            $volunteer->addReportMessage('import_report.no_email');
         }
 
         // Disabling minors
         if ($volunteer->isMinor()) {
-            $volunteer->addError('import_report.minor');
+            $volunteer->addReportMessage('import_report.minor');
             $volunteer->setEnabled(false);
         }
 

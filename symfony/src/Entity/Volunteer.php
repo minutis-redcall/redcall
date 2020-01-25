@@ -469,17 +469,7 @@ class Volunteer
     /**
      * @param string $message
      */
-    public function addError(string $message)
-    {
-        $report       = $this->report ?? [];
-        $report[]     = $message;
-        $this->report = $report;
-    }
-
-    /**
-     * @param string $message
-     */
-    public function addWarning(string $message)
+    public function addReport(string $message)
     {
         $report       = $this->report ?? [];
         $report[]     = $message;

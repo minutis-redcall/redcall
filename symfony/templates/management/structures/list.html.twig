@@ -46,7 +46,7 @@
 
                             {% if structure.canForcePegassUpdate %}
                                 <br/>
-                                <a href="{{ path('management_structures_force_update', {id: structure.id, csrf: csrf_token('structures')}) }}">
+                                <a href="{{ path('management_structures_force_update', app.request.query.all|merge({id: structure.id, csrf: csrf_token('structures')})) }}">
                                     {{ 'manage_structures.force_update'|trans }}
                                 </a>
                             {% endif %}

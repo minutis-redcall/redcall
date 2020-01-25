@@ -194,44 +194,20 @@ manage_volunteers:
   search:
     label: 'Rechercher un volontaire'
     button: 'Rechercher'
-
-
-  tabs:
-    enabled: 'Volontaires déclenchables'
-    disabled: 'Volontaires non déclenchables'
-  order:
-    nivol: 'Nivol'
-    firstname: 'Prénom'
-    lastname: 'Nom'
-    locked: 'Gelé'
-    last_pegass_update: 'Dernière mise à jour Pegass'
   action:
-    title: Actions
+    title: 'Actions'
     lock: 'Geler'
     unlock: 'Dégeler'
     enable: 'Activer'
     disable: 'Desactiver'
-    refresh_general: 'MàJ totale Pegass'
-    refresh_skills: 'MàJ compétences Pegass'
-    refresh_success: 'La mise à jour du volontaire effectuée avec succès.'
+    pegass_update: 'MàJ Pegass'
     manual_update: 'MàJ manuelle'
   columns:
-    nivol: Nivol
-    firstname: Prénom
-    lastname: Nom
-    phone: Téléphone
-    email: Email
-    minor: Mineur
-    callable: Déclenchable
-    tags: Compétences
     update: MàJ le %date%
     never_updated: Pas encore importé
-  import_again: 'Relancer un nouvel import maintenant.'
-  import_again_help: "⚠️ Pour info, la mise à jour des compétences prendra plus de temps."
   form:
     create: Ajouter un nouveau volontaire
     update: Mettre à jour un volontaire
-    organization: Structure de rattachement
     nivol: Nivol
     first_name: Prénom
     last_name: Nom de famille
@@ -242,6 +218,7 @@ manage_volunteers:
     tags: Compétences
     added: Le volontaire a correctement été ajouté.
     updated: Le volontaire a correctement été modifié.
+    structures: Structure(s) de rattachement
   contact:
     mail_subject: ⚠️ Message RedCall
 
@@ -308,3 +285,4 @@ import_report:
   no_phone: 'Le volontaire ne possède pas de numéro de téléphone.'
   no_email: 'Le volontaire ne possède pas d''email.'
   minor: 'Le volontaire est mineur.'
+  disabled: 'Le volontaire est desactivé sur Pegass.'

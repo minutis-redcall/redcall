@@ -8,6 +8,12 @@
         {{ 'manage_volunteers.title'|trans }}
     </h1>
 
+    <div class="text-right">
+        <a href="{{ path('management_volunteers_create') }}" class="btn btn-secondary">
+            {{ 'manage_volunteers.form.create'|trans }}
+        </a>
+    </div>
+
     {{ form(search) }}
 
     <table class="table">
@@ -68,20 +74,17 @@
                                 <div class="dropdown-menu">
                                     {% if not volunteer.locked %}
 
-                                        {# Refresh volunteer general data #}
-                                        <a class="dropdown-item" href="{{ path('admin_volunteers_refresh_general', app.request.query.all|merge({volunteerId: volunteer.id, csrf: csrf_token('manage_volunteers')})) }}" onclick="$(this).addClass('disabled');">
-                                            {{ 'manage_volunteers.action.refresh_general'|trans }}
-                                        </a>
-
-                                        {# Refresh volunteer skills #}
-                                        <a class="dropdown-item" href="{{ path('admin_volunteers_refresh_skills', app.request.query.all|merge({volunteerId: volunteer.id, csrf: csrf_token('manage_volunteers')})) }}" onclick="$(this).addClass('disabled');">
-                                            {{ 'manage_volunteers.action.refresh_skills'|trans }}
-                                        </a>
+                                        {# Pegass update #}
+                                        {% if volunteer.canForcePegassUpdate %}
+                                            <a class="dropdown-item" href="{{ path('management_volunteers_pegass_update', app.request.query.all|merge({id: volunteer.id, csrf: csrf_token('volunteers')})) }}" onclick="$(this).addClass('disabled');">
+                                                {{ 'manage_volunteers.action.pegass_update'|trans }}
+                                            </a>
+                                        {% endif %}
 
                                     {% endif %}
 
                                     {# Manual volunteer update #}
-                                    <a class="dropdown-item" href="{{ path('admin_volunteers_manual_update', {id: volunteer.id}) }}">
+                                    <a class="dropdown-item" href="{{ path('management_volunteers_manual_update', app.request.query.all|merge({id: volunteer.id})) }}">
                                         {{ 'manage_volunteers.action.manual_update'|trans }}
                                     </a>
 
@@ -89,22 +92,22 @@
 
                                     {# Lock volunteer #}
                                     {% if volunteer.locked %}
-                                        <a class="dropdown-item text-success" href="{{ path('admin_volunteers_unlock', app.request.query.all|merge({volunteerId: volunteer.id, csrf: csrf_token('manage_volunteers')})) }}">
+                                        <a class="dropdown-item text-success" href="{{ path('management_volunteers_unlock', app.request.query.all|merge({id: volunteer.id, csrf: csrf_token('volunteers')})) }}">
                                             {{ 'manage_volunteers.action.unlock'|trans }}
                                         </a>
                                     {% else %}
-                                        <a class="dropdown-item text-danger" href="{{ path('admin_volunteers_lock', app.request.query.all|merge({volunteerId: volunteer.id, csrf: csrf_token('manage_volunteers')})) }}">
+                                        <a class="dropdown-item text-danger" href="{{ path('management_volunteers_lock', app.request.query.all|merge({id: volunteer.id, csrf: csrf_token('volunteers')})) }}">
                                             {{ 'manage_volunteers.action.lock'|trans }}
                                         </a>
                                     {% endif %}
 
                                     {# Disable volunteer #}
                                     {% if volunteer.enabled %}
-                                        <a class="dropdown-item text-danger" href="{{ path('admin_volunteers_disable', app.request.query.all|merge({volunteerId: volunteer.id, csrf: csrf_token('manage_volunteers')})) }}">
+                                        <a class="dropdown-item text-danger" href="{{ path('management_volunteers_disable', app.request.query.all|merge({id: volunteer.id, csrf: csrf_token('volunteers')})) }}">
                                             {{ 'manage_volunteers.action.disable'|trans }}
                                         </a>
                                     {% else %}
-                                        <a class="dropdown-item text-success" href="{{ path('admin_volunteers_enable', app.request.query.all|merge({volunteerId: volunteer.id, csrf: csrf_token('manage_volunteers')})) }}">
+                                        <a class="dropdown-item text-success" href="{{ path('management_volunteers_enable', app.request.query.all|merge({id: volunteer.id, csrf: csrf_token('volunteers')})) }}">
                                             {{ 'manage_volunteers.action.enable'|trans }}
                                         </a>
                                     {% endif %}

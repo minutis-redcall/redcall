@@ -4,6 +4,7 @@ namespace App\Controller\Management;
 
 use App\Base\BaseController;
 use App\Entity\Volunteer;
+use App\Form\Type\VolunteerType;
 use App\Manager\UserInformationManager;
 use App\Manager\VolunteerManager;
 use Bundles\PaginationBundle\Manager\PaginationManager;
@@ -92,10 +93,10 @@ class VolunteersController extends BaseController
     }
 
     /**
-     * @Route(name="force_update", path="/force-update/{csrf}/{id}")
+     * @Route(name="pegass_update", path="/pegass-update/{csrf}/{id}")
      * @IsGranted("VOLUNTEER", subject="volunteer")
      */
-    public function forceUpdate(Request $request, Volunteer $volunteer, string $csrf)
+    public function pegassUpdate(Request $request, Volunteer $volunteer, string $csrf)
     {
         $this->validateCsrfOrThrowNotFoundException('volunteers', $csrf);
 
@@ -104,18 +105,118 @@ class VolunteersController extends BaseController
         }
 
         // Just in case Pegass database would contain some RCE?
-        if (!preg_match('/^[a-zA-Z0-9]+$/', $volunteer->getIdentifier())) {
+        $nivol = str_pad($volunteer->getNivol(), 12, '0', STR_PAD_LEFT);
+        if (!preg_match('/^[a-zA-Z0-9]+$/', $nivol)) {
             return $this->redirectToRoute('management_volunteers_list', $request->query->all());
         }
 
         // Prevents multiple clicks
         $volunteer->setLastPegassUpdate(new \DateTime('now', new \DateTimeZone('UTC')));
-        $this->structureManager->save($volunteer);
+        $this->volunteerManager->save($volunteer);
 
         // Executing asynchronous task to prevent against interruptions
         $console = sprintf('%s/../bin/console', $this->kernel->getRootDir());
-        $command = sprintf('%s pegass --volunteer %d', escapeshellarg($console), $volunteer->getIdentifier());
+        $command = sprintf('%s pegass --volunteer %d', escapeshellarg($console), $nivol);
         exec(sprintf('%s > /dev/null 2>&1 & echo -n \$!', $command));
+
+        return $this->redirectToRoute('management_volunteers_list', $request->query->all());
+    }
+
+    /**
+     * @Route(path="manual-update/{id}", name="manual_update")
+     * @IsGranted("VOLUNTEER", subject="volunteer")
+     */
+    public function manualUpdateAction(Request $request, Volunteer $volunteer)
+    {
+        $isCreate = !$volunteer->getId();
+
+        $form = $this
+            ->createForm(VolunteerType::class, $volunteer)
+            ->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Locks volunteer from being removed at next Pegass sync
+            $volunteer->setLocked(true);
+
+            $this->volunteerManager->save($volunteer);
+
+            if ($isCreate) {
+                $this->success('manage_volunteers.form.added');
+            } else {
+                $this->success('manage_volunteers.form.updated');
+            }
+
+            return $this->redirectToRoute('management_volunteers_list', $request->query->all());
+        }
+
+        return $this->render('management/volunteers/form.html.twig', [
+            'form'     => $form->createView(),
+            'isCreate' => $isCreate,
+        ]);
+    }
+
+    /**
+     * @Route(path="/create", name="create")
+     */
+    public function createAction(Request $request)
+    {
+        return $this->manualUpdateAction($request, new Volunteer());
+    }
+
+    /**
+     * @Route(path="lock/{csrf}/{id}", name="lock")
+     * @IsGranted("VOLUNTEER", subject="volunteer")
+     */
+    public function lockAction(Request $request, Volunteer $volunteer, string $csrf)
+    {
+        $this->validateCsrfOrThrowNotFoundException('volunteers', $csrf);
+
+        $volunteer->setLocked(true);
+        $this->volunteerManager->save($volunteer);
+
+        return $this->redirectToRoute('management_volunteers_list', $request->query->all());
+    }
+
+    /**
+     * @Route(path="unlock/{csrf}/{id}", name="unlock")
+     * @IsGranted("VOLUNTEER", subject="volunteer")
+     */
+    public function unlockAction(Request $request, Volunteer $volunteer, string $csrf)
+    {
+        $this->validateCsrfOrThrowNotFoundException('volunteers', $csrf);
+
+        $volunteer->setLocked(false);
+        $this->volunteerManager->save($volunteer);
+
+        return $this->redirectToRoute('management_volunteers_list', $request->query->all());
+    }
+
+    /**
+     * @Route(path="disable/{csrf}/{id}", name="disable")
+     * @IsGranted("VOLUNTEER", subject="volunteer")
+     */
+    public function disableAction(Request $request, Volunteer $volunteer, string $csrf)
+    {
+        $this->validateCsrfOrThrowNotFoundException('volunteers', $csrf);
+
+        $volunteer->setEnabled(false);
+        $volunteer->setLocked(true);
+        $this->volunteerManager->save($volunteer);
+
+        return $this->redirectToRoute('management_volunteers_list', $request->query->all());
+    }
+
+    /**
+     * @Route(path="enable/{csrf}/{id}", name="enable")
+     * @IsGranted("VOLUNTEER", subject="volunteer")
+     */
+    public function enableAction(Request $request, Volunteer $volunteer, string $csrf)
+    {
+        $this->validateCsrfOrThrowNotFoundException('volunteers', $csrf);
+
+        $volunteer->setEnabled(true);
+        $volunteer->setLocked(true);
+        $this->volunteerManager->save($volunteer);
 
         return $this->redirectToRoute('management_volunteers_list', $request->query->all());
     }

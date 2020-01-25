@@ -195,45 +195,20 @@ manage_volunteers:
   search:
     label: 'Rechercher un volontaire'
     button: 'Rechercher'
-
-
-  tabs:
-    enabled: 'Enabled volunteers'
-    disabled: 'Disabled volunteers'
-  order:
-    nivol: 'Nivol'
-    firstname: 'First name'
-    lastname: 'Last name'
-    locked: 'Locked'
-    last_pegass_update: 'Last Pegass update'
   action:
-    title: Actions
+    title: 'Actions'
     lock: 'Lock'
     unlock: 'Unlock'
     enable: 'Enable'
     disable: 'Disable'
-    refresh_general: 'Full Pegass update'
-    refresh_skills: 'Skills Pegass update'
-    refresh_success: 'Volunteer update has been processed successfully.'
+    pegass_update: 'Pegass update'
     manual_update: 'Manual update'
   columns:
-    nivol: Nivol
-    firstname: First name
-    lastname: Last name
-    phone: Phone
-    postal_code: Postal code
-    email: Email
-    minor: Minor
-    callable: Callable
-    tags: Skills
     update: Updated on %date%
     never_updated: Skills never imported
-  import_again: 'Run a new import now'
-  import_again_help: "⚠️ FYI, skills update will take more time."
   form:
     create: Create a new volunteer
     update: Update volunteer
-    organization: Organization
     nivol: Nivol
     first_name: First name
     last_name: Last name
@@ -244,6 +219,7 @@ manage_volunteers:
     tags: Skills
     added: Volunteer has properly been added.
     updated: Volunteer has properly been updated.
+    structures: Affiliate structure(s)
   contact:
     mail_subject: ⚠️ RedCall Message
 
@@ -310,3 +286,4 @@ import_report:
   no_phone: 'Volunteer has no phone number.'
   no_email: 'Volunteer has no email.'
   minor: 'Volunteer is minor.'
+  disabled: 'Volunteer is disabled on Pegass.'
