@@ -10,7 +10,3 @@ cron:
     url: /cron/pegass
     schedule: every 1 minute
 
-  # 0 * * * * <path/to/the/project>/symfony/bin/console refresh
-  - description: "Refresh structures & volunteers"
-    url: /cron/refresh
-    schedule: every 1 hour

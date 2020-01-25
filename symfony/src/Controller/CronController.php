@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\Internal;
+namespace App\Controller;
 
 use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;

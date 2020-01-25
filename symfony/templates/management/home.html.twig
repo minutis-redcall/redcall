@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+
+{% block menu %}{% endblock %}
+
+{% block body %}
+
+    <div class="jumbotron text-center">
+
+        <a href="{{ path('management_structures_list') }}"
+           class="text-lg-center large-button btn btn-secondary">{{ 'manage_structures.title'|trans }}</a>
+
+        <br/><br/>
+
+        <a href="{{ path('management_volunteers_list') }}"
+           class="text-lg-center large-button btn btn-secondary">{{ 'manage_volunteers.title'|trans }}</a>
+
+        <br/><br/><br/>
+
+        <a href="{{ path('home') }}"
+           class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+
+    </div>
+
+{% endblock %}

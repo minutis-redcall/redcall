@@ -7,6 +7,10 @@ admin:
   pegass:
     title: 'Connexions entre les utilisateurs de RedCall et la base de données Pegass'
 
+management:
+  home:
+    link: Gestion des effectifs
+
 tag:
   emergency_assistance: Urg. Sec.
   social_assistance: Ass. Soc.
@@ -235,6 +239,9 @@ manage_volunteers:
     updated: Le volontaire a correctement été modifié.
   contact:
     mail_subject: ⚠️ Message RedCall
+
+manage_structures:
+  title: 'Gestion des structures'
 
 csv_export:
   nivol: Nivol

@@ -7,6 +7,10 @@ admin:
   pegass:
     title: 'Bindings between RedCall users and Pegass database'
 
+management:
+  home:
+    link: Workforce Management
+
 tag:
   emergency_assistance: Emergency Help
   social_assistance: Social Assistance
@@ -237,6 +241,9 @@ manage_volunteers:
     updated: Volunteer has properly been updated.
   contact:
     mail_subject: ⚠️ RedCall Message
+
+manage_structures:
+  title: 'Manage structures'
 
 csv_export:
   nivol: Nivol
