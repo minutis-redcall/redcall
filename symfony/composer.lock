@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "da0eb797c08eb4ef8aea336ee1cd82fe",
+    "content-hash": "547d4a0fc147e8d861d5aff5c260aff7",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -3948,16 +3948,16 @@
         },
         {
             "name": "redcall-io/pagination-bundle",
-            "version": "0.0.1",
+            "version": "0.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/redcall-io/pagination-bundle.git",
-                "reference": "60efb73365ba596ee55720e2509848bcc173896c"
+                "reference": "aadddd2ee1110815ed38515d90179aff90141660"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/redcall-io/pagination-bundle/zipball/60efb73365ba596ee55720e2509848bcc173896c",
-                "reference": "60efb73365ba596ee55720e2509848bcc173896c",
+                "url": "https://api.github.com/repos/redcall-io/pagination-bundle/zipball/aadddd2ee1110815ed38515d90179aff90141660",
+                "reference": "aadddd2ee1110815ed38515d90179aff90141660",
                 "shasum": ""
             },
             "require": {
@@ -3983,20 +3983,20 @@
                 }
             ],
             "description": "Helpers for Pagerfanta in Symfony with Bootstrap 4",
-            "time": "2020-01-20T19:22:18+00:00"
+            "time": "2020-01-25T22:44:08+00:00"
         },
         {
             "name": "redcall-io/password-login-bundle",
-            "version": "0.9.2",
+            "version": "0.9.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/redcall-io/password-login-bundle.git",
-                "reference": "73f1d27610e186ca699be3e1e4e5bf308ce05d78"
+                "reference": "15a87b0b415eb68a96a5e0214e72ec95211658bf"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/redcall-io/password-login-bundle/zipball/73f1d27610e186ca699be3e1e4e5bf308ce05d78",
-                "reference": "73f1d27610e186ca699be3e1e4e5bf308ce05d78",
+                "url": "https://api.github.com/repos/redcall-io/password-login-bundle/zipball/15a87b0b415eb68a96a5e0214e72ec95211658bf",
+                "reference": "15a87b0b415eb68a96a5e0214e72ec95211658bf",
                 "shasum": ""
             },
             "require": {
@@ -4038,20 +4038,20 @@
                 }
             ],
             "description": "A decent backoffice authentication layer for Symfony projects",
-            "time": "2019-12-03T20:34:51+00:00"
+            "time": "2020-01-25T22:46:04+00:00"
         },
         {
             "name": "redcall-io/pegass-crawler-bundle",
-            "version": "0.0.1",
+            "version": "0.0.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/redcall-io/pegass-crawler-bundle.git",
-                "reference": "da9dd1c0f3a92a03c5c5ce218e036e56f8b0754e"
+                "reference": "a1995485e40aa8a5cba7a6ce0a31e06988962b21"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/redcall-io/pegass-crawler-bundle/zipball/da9dd1c0f3a92a03c5c5ce218e036e56f8b0754e",
-                "reference": "da9dd1c0f3a92a03c5c5ce218e036e56f8b0754e",
+                "url": "https://api.github.com/repos/redcall-io/pegass-crawler-bundle/zipball/a1995485e40aa8a5cba7a6ce0a31e06988962b21",
+                "reference": "a1995485e40aa8a5cba7a6ce0a31e06988962b21",
                 "shasum": ""
             },
             "require": {
@@ -4080,7 +4080,7 @@
                 }
             ],
             "description": "Download, cache and refresh Pegass data",
-            "time": "2020-01-23T21:21:36+00:00"
+            "time": "2020-01-25T22:47:09+00:00"
         },
         {
             "name": "rize/uri-template",
@@ -8630,12 +8630,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/redcall-io/sandbox-bundle.git",
-                "reference": "fe4215b6c1782f414b6df1a4c3b271650cc720e8"
+                "reference": "d3cbf01309403a17df6c919fcf83b421842f149a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/redcall-io/sandbox-bundle/zipball/fe4215b6c1782f414b6df1a4c3b271650cc720e8",
-                "reference": "fe4215b6c1782f414b6df1a4c3b271650cc720e8",
+                "url": "https://api.github.com/repos/redcall-io/sandbox-bundle/zipball/d3cbf01309403a17df6c919fcf83b421842f149a",
+                "reference": "d3cbf01309403a17df6c919fcf83b421842f149a",
                 "shasum": ""
             },
             "require": {
@@ -8670,7 +8670,7 @@
                 }
             ],
             "description": "Development tools for the redcall.io project",
-            "time": "2020-01-23T19:24:39+00:00"
+            "time": "2020-01-25T05:44:20+00:00"
         },
         {
             "name": "symfony/debug-bundle",
