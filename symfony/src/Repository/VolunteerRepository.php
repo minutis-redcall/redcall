@@ -228,4 +228,13 @@ class VolunteerRepository extends BaseRepository
         return $qb;
     }
 
+    public function expireAll()
+    {
+        $this->createQueryBuilder('v')
+             ->update()
+             ->set('v.lastPegassUpdate = :expiredDate')
+             ->setParameter('expiredDate', new \DateTime('1984-07-10'))
+             ->getQuery()
+             ->execute();
+    }
 }

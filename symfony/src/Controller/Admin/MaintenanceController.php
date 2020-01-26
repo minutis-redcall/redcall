@@ -3,8 +3,8 @@
 namespace App\Controller\Admin;
 
 use App\Base\BaseController;
+use App\Manager\MaintenanceManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Symfony\Component\HttpKernel\KernelInterface;
 
 /**
  * @Route(path="admin/maintenance/", name="admin_maintenance_")
@@ -12,16 +12,16 @@ use Symfony\Component\HttpKernel\KernelInterface;
 class MaintenanceController extends BaseController
 {
     /**
-     * @var KernelInterface
+     * @var MaintenanceManager
      */
-    private $kernel;
+    private $maintenanceManager;
 
     /**
-     * @param KernelInterface $kernel
+     * @param MaintenanceManager $maintenanceManager
      */
-    public function __construct(KernelInterface $kernel)
+    public function __construct(MaintenanceManager $maintenanceManager)
     {
-        $this->kernel = $kernel;
+        $this->maintenanceManager = $maintenanceManager;
     }
 
     /**
@@ -37,10 +37,19 @@ class MaintenanceController extends BaseController
      */
     public function refresh()
     {
-        // Executing asynchronous task to prevent against interruptions
-        $console = sprintf('%s/../bin/console', $this->kernel->getRootDir());
-        $command = sprintf('%s refresh --env=prod', escapeshellarg($console));
-        exec(sprintf('%s > /dev/null 2>&1 & echo -n \$!', $command));
+        $this->maintenanceManager->refresh();
+
+        $this->success('maintenance.refresh_started');
+
+        return $this->redirectToRoute('admin_maintenance_index');
+    }
+
+    /**
+     * @Route(name="refresh_all", path="/refresh-all")
+     */
+    public function refreshAll()
+    {
+        $this->maintenanceManager->refreshAll();
 
         $this->success('maintenance.refresh_started');
 

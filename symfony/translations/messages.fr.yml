@@ -289,5 +289,6 @@ import_report:
 
 maintenance:
   title: 'Maintenance'
-  refresh: 'Synchroniser la base de données RedCall avec celle de Pegass'
+  refresh: 'Synchroniser les entités expirées entre la base de données RedCall et celle de Pegass'
+  refresh_all: 'Synchroniser entièrement la base de données RedCall avec celle de Pegass'
   refresh_started: 'Synchronisation lancée, cela va prendre du temps.'
