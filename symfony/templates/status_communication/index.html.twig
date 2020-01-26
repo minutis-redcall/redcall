@@ -265,13 +265,13 @@
                                             <a class="btn btn-default"
                                             {% if communication.type == constant('App\\Entity\\Communication::TYPE_SMS') %}
                                                 {% if message.volunteer.phoneNumber %}
-                                                    href="{{ path('sandbox_fake_sms_thread', {phoneNumber: message.volunteer.phoneNumber}) }}">☎️</a>
+                                                    href="{{ path('sandbox_fake_sms_thread', {phoneNumber: message.volunteer.phoneNumber, campaignId: campaign.id}) }}">☎️</a>
                                                 {% else %}
                                                     href="#">&nbsp;</a>
                                                 {% endif %}
                                             {% else %}
                                                 {% if message.volunteer.email %}
-                                                    href="{{ path('sandbox_fake_email_read', {email: message.volunteer.email}) }}">✉️</a>
+                                                    href="{{ path('sandbox_fake_email_read', {email: message.volunteer.email, campaignId: campaign.id}) }}">✉️</a>
                                                 {% else %}
                                                     href="#">&nbsp;</a>
                                                 {% endif %}

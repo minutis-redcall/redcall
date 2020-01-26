@@ -83,7 +83,7 @@ class VolunteersController extends BaseController
         if ($this->isGranted('ROLE_ADMIN')) {
             $queryBuilder = $this->volunteerManager->searchAllQueryBuilder($criteria);
         } else {
-            $queryBuilder = $this->volunteerManager->searchForCurrentUser($criteria);
+            $queryBuilder = $this->volunteerManager->searchForCurrentUserQueryBuilder($criteria);
         }
 
         return $this->render('management/volunteers/list.html.twig', [

@@ -221,7 +221,7 @@ manage_volunteers:
     updated: Volunteer has properly been updated.
     structures: Affiliate structure(s)
   contact:
-    mail_subject: ⚠️ RedCall Message
+    mail_subject: '⚠️ RED CROSS: You have a RedCall Message'
 
 manage_structures:
   title: 'Manage structures'
