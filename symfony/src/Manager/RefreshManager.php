@@ -206,16 +206,16 @@ class RefreshManager
             }
         }
 
-        // If volunteer is bound to a RedCall user, update its structures
-        $userInformation = $this->userInformationManager->findOneByNivol($volunteer->getNivol());
-        if ($userInformation) {
-            $this->userInformationManager->updateNivol($userInformation, $volunteer->getNivol());
-        }
-
         // Volunteer is locked
         if ($volunteer->isLocked()) {
             $volunteer->addReport('import_report.update_locked');
             $this->volunteerManager->save($volunteer);
+
+            // If volunteer is bound to a RedCall user, update its structures
+            $userInformation = $this->userInformationManager->findOneByNivol($volunteer->getNivol());
+            if ($userInformation) {
+                $this->userInformationManager->updateNivol($userInformation, $volunteer->getNivol());
+            }
 
             return;
         }
@@ -277,6 +277,12 @@ class RefreshManager
         }
 
         $this->volunteerManager->save($volunteer);
+
+        // If volunteer is bound to a RedCall user, update its structures
+        $userInformation = $this->userInformationManager->findOneByNivol($volunteer->getNivol());
+        if ($userInformation) {
+            $this->userInformationManager->updateNivol($userInformation, $volunteer->getNivol());
+        }
     }
 
     /**
