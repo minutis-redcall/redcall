@@ -287,3 +287,8 @@ import_report:
   no_email: 'Volunteer has no email.'
   minor: 'Volunteer is minor.'
   disabled: 'Volunteer is disabled on Pegass.'
+
+maintenance:
+  title: 'Maintenance'
+  refresh: 'Synchronize RedCall database with Pegass database'
+  refresh_started: 'Synchronize launched, it will take a while.'

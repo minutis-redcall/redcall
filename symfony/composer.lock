@@ -3987,16 +3987,16 @@
         },
         {
             "name": "redcall-io/password-login-bundle",
-            "version": "0.9.3",
+            "version": "0.9.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/redcall-io/password-login-bundle.git",
-                "reference": "15a87b0b415eb68a96a5e0214e72ec95211658bf"
+                "reference": "a0d662dc40ead3e4c18db1d835ebb75a98ade26e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/redcall-io/password-login-bundle/zipball/15a87b0b415eb68a96a5e0214e72ec95211658bf",
-                "reference": "15a87b0b415eb68a96a5e0214e72ec95211658bf",
+                "url": "https://api.github.com/repos/redcall-io/password-login-bundle/zipball/a0d662dc40ead3e4c18db1d835ebb75a98ade26e",
+                "reference": "a0d662dc40ead3e4c18db1d835ebb75a98ade26e",
                 "shasum": ""
             },
             "require": {
@@ -4038,20 +4038,20 @@
                 }
             ],
             "description": "A decent backoffice authentication layer for Symfony projects",
-            "time": "2020-01-25T22:46:04+00:00"
+            "time": "2020-01-26T15:35:04+00:00"
         },
         {
             "name": "redcall-io/pegass-crawler-bundle",
-            "version": "0.0.2",
+            "version": "0.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/redcall-io/pegass-crawler-bundle.git",
-                "reference": "a1995485e40aa8a5cba7a6ce0a31e06988962b21"
+                "reference": "14d230a26c267504194d71328735a6d038611fe2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/redcall-io/pegass-crawler-bundle/zipball/a1995485e40aa8a5cba7a6ce0a31e06988962b21",
-                "reference": "a1995485e40aa8a5cba7a6ce0a31e06988962b21",
+                "url": "https://api.github.com/repos/redcall-io/pegass-crawler-bundle/zipball/14d230a26c267504194d71328735a6d038611fe2",
+                "reference": "14d230a26c267504194d71328735a6d038611fe2",
                 "shasum": ""
             },
             "require": {
@@ -4080,7 +4080,7 @@
                 }
             ],
             "description": "Download, cache and refresh Pegass data",
-            "time": "2020-01-25T22:47:09+00:00"
+            "time": "2020-01-26T14:34:46+00:00"
         },
         {
             "name": "rize/uri-template",
