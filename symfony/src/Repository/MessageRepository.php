@@ -9,136 +9,65 @@ use App\Entity\Campaign;
 use App\Entity\Choice;
 use App\Entity\Message;
 use App\Entity\Selection;
+use App\Entity\Volunteer;
 use App\Tools\Random;
 use Symfony\Bridge\Doctrine\RegistryInterface;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
-use Symfony\Component\Translation\TranslatorInterface;
 
 class MessageRepository extends BaseRepository
 {
     const CODE_SIZE = 8;
 
-    /**
-     * @var TranslatorInterface
-     */
-    protected $translator;
-
-    /**
-     * @var TokenStorageInterface
-     */
-    protected $tokenStorage;
-
-    public function __construct(RegistryInterface $registry,
-        TranslatorInterface $translator,
-        TokenStorageInterface $tokenStorage)
+    public function __construct(RegistryInterface $registry)
     {
         parent::__construct($registry, Message::class);
-
-        $this->translator   = $translator;
-        $this->tokenStorage = $tokenStorage;
     }
 
     /**
      * @param string $phoneNumber
-     * @param string $body
+     * @param string $prefix
      *
      * @return Message|null
      *
      * @throws \Doctrine\ORM\NonUniqueResultException
      */
-    public function getMessageFromPhoneNumberAndPrefix(string $phoneNumber, string $body)
+    public function getMessageFromPhoneNumber(string $phoneNumber): ?Message
     {
-        $message = null;
-
-        if (preg_match('/^[a-zA-Z][1-9]$/u', $body)) {
-            // Get latest message sent to the volunteer on an active communication having a prefix.
-
-            $stmt = $this->createQueryBuilder('m')
-                         ->innerJoin('App:Volunteer', 'v', 'WITH', 'v = m.volunteer')
-                         ->innerJoin('App:Communication', 'co', 'WITH', 'co = m.communication')
-                         ->innerJoin('App:Campaign', 'ca', 'WITH', 'ca = co.campaign')
-                         ->where('v.phoneNumber = :phoneNumber')
-                         ->andWhere('ca.active = 1')
-                         ->andWhere('co.prefix = :prefix')
-                         ->orderBy('m.id', 'DESC')
-                         ->setMaxResults(1)
-                         ->setParameter('phoneNumber', $phoneNumber)
-                         ->setParameter('prefix', substr($body, 0, 1));
-
-            $message = $stmt->getQuery()->getOneOrNullResult();
-        }
-
-        if (null === $message) {
-            // Get latest message sent to the volunteer
-
-            $stmt = $this->createQueryBuilder('m')
-                         ->innerJoin('App:Volunteer', 'v', 'WITH', 'v = m.volunteer')
-                         ->where('v.phoneNumber = :from')
-                         ->orderBy('m.id', 'DESC')
-                         ->setMaxResults(1)
-                         ->setParameter('from', $phoneNumber);
-
-            $message = $stmt->getQuery()->getOneOrNullResult();
-        }
-
-        return $message;
+        return $this->createQueryBuilder('m')
+                    ->join('m.volunteer', 'v')
+                    ->join('m.communication', 'co')
+                    ->join('co.campaign', 'ca')
+                    ->where('v.phoneNumber = :phoneNumber')
+                    ->andWhere('ca.active = true')
+                    ->orderBy('m.id', 'DESC')
+                    ->setMaxResults(1)
+                    ->setParameter('phoneNumber', $phoneNumber)
+                    ->getQuery()
+                    ->getOneOrNullResult();
     }
 
     /**
-     * @param Message $message
-     * @param string  $body
-     * @param bool    $byAdmin
+     * @param string $phoneNumber
+     * @param string $prefix
      *
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @return Message|null
+     *
+     * @throws \Doctrine\ORM\NonUniqueResultException
      */
-    public function addAnswer(Message $message, string $body, bool $byAdmin = false): void
+    public function getMessageFromPhoneNumberAndPrefix(string $phoneNumber, string $prefix): ?Message
     {
-        // Get all valid choices in message
-        if ($multipleChoice = $message->getCommunication()->isMultipleAnswer()) {
-            $choices = $message->getCommunication()->getAllChoicesInText($body);
-        } else {
-            $choices = [];
-            if ($choice = $message->getCommunication()->getChoiceByCode($body)) {
-                $choices[] = $choice;
-            }
-        }
-
-        if (!$multipleChoice) {
-            // If no multiple answers are allowed, clearing up all previous answers
-            foreach ($message->getAnswers() as $answer) {
-                /* @var Answer $answer */
-                $answer->getChoices()->clear();
-                $this->_em->persist($answer);
-            }
-        } else {
-            // If mulitple answers allowed, we'll only keep the last duplicate
-            foreach ($choices as $choice) {
-                if ($answer = $message->getAnswerByChoice($choice)) {
-                    $answer->getChoices()->removeElement($choice);
-                    $this->_em->persist($answer);
-                }
-            }
-        }
-
-        // Storing the new answer
-        $answer = new Answer();
-        $message->addAnswser($answer);
-        $answer->setMessage($message);
-        $answer->setRaw($body);
-        $answer->setReceivedAt(new \DateTime());
-        $answer->setUnclear($message->getCommunication()->isUnclear($body));
-
-        if ($byAdmin) {
-            $answer->setByAdmin($this->tokenStorage->getToken()->getUsername());
-        }
-
-        foreach ($choices as $choice) {
-            $answer->addChoice($choice);
-        }
-
-        $this->_em->persist($answer);
-        $this->_em->flush();
+        return $this->createQueryBuilder('m')
+                    ->join('m.volunteer', 'v')
+                    ->join('m.communication', 'co')
+                    ->join('co.campaign', 'ca')
+                    ->where('v.phoneNumber = :phoneNumber')
+                    ->setParameter('phoneNumber', $phoneNumber)
+                    ->andWhere('m.prefix = :prefix')
+                    ->setParameter('prefix', $prefix)
+                    ->andWhere('ca.active = true')
+                    ->orderBy('m.id', 'DESC')
+                    ->setMaxResults(1)
+                    ->getQuery()
+                    ->getOneOrNullResult();
     }
 
     /**
@@ -158,25 +87,6 @@ class MessageRepository extends BaseRepository
         }
 
         $this->_em->flush();
-    }
-
-    /**
-     * @param Message $message
-     * @param Choice  $choice
-     *
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     */
-    public function toggleAnswer(Message $message, Choice $choice)
-    {
-        // If choice currently selected, remove it
-        if ($answer = $message->getAnswerByChoice($choice)) {
-            $answer->getChoices()->removeElement($choice);
-            $this->_em->flush();
-            return;
-        }
-
-        $this->addAnswer($message, $choice->getCode(), true);
     }
 
     /**
@@ -208,14 +118,6 @@ class MessageRepository extends BaseRepository
     }
 
     /**
-     * @return string
-     */
-    public function generateWebCode(): string
-    {
-        return $this->generateCode('webCode');
-    }
-
-    /**
      * @param Campaign $campaign
      *
      * @return int
@@ -239,7 +141,7 @@ class MessageRepository extends BaseRepository
      * POW(62, 8) = 218 340 105 584 896
      * we're safe.
      */
-    private function generateCode(string $column): string
+    public function generateCode(string $column = 'code'): string
     {
         do {
             $code = Random::generate(self::CODE_SIZE);
@@ -251,5 +153,23 @@ class MessageRepository extends BaseRepository
         } while (true);
 
         return $code;
+    }
+
+    /**
+     * @param Volunteer $volunteer
+     * @param string    $prefix
+     */
+    public function getMessageFromVolunteer(Volunteer $volunteer, string $prefix)
+    {
+        return $this->createQueryBuilder('m')
+                    ->join('m.communication', 'co')
+                    ->join('co.campaign', 'ca')
+                    ->where('ca.active = true')
+                    ->andWhere('m.volunteer = :volunteer')
+                    ->andWhere('m.prefix = :prefix')
+                    ->setParameter('volunteer', $volunteer)
+                    ->setParameter('prefix', $prefix)
+                    ->getQuery()
+                    ->getOneOrNullResult();
     }
 }

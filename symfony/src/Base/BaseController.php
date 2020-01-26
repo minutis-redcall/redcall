@@ -2,17 +2,15 @@
 
 namespace App\Base;
 
+use Bundles\PaginationBundle\Manager\PaginationManager;
 use Doctrine\ORM\QueryBuilder;
-use Pagerfanta\Adapter\ArrayAdapter;
-use Pagerfanta\Adapter\DoctrineORMAdapter;
 use Pagerfanta\Pagerfanta;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
+use Symfony\Component\Form\Test\FormBuilderInterface;
 
 class BaseController extends Controller
 {
-    const PAGER_PER_PAGE_DEFAULT = 20;
-
     public function orderBy(QueryBuilder $qb,
         $class,
         $prefixedDefaultColumn,
@@ -51,26 +49,9 @@ class BaseController extends Controller
         ];
     }
 
-    public function getPager($data, $prefix = '', $hasJoins = false)
+    public function getPager($data, $prefix = '', $hasJoins = false): Pagerfanta
     {
-        $request = $this->get('request_stack')->getMasterRequest();
-
-        $adapter = null;
-        if ($data instanceof QueryBuilder) {
-            $adapter = new DoctrineORMAdapter($data, $hasJoins);
-        } elseif (is_array($data)) {
-            $adapter = new ArrayAdapter($data);
-        } else {
-            throw new \RuntimeException('This data type has no Pagerfanta adapter yet.');
-        }
-
-        $pager = new Pagerfanta($adapter);
-        $pager->setNormalizeOutOfRangePages(true);
-
-        $pager->setMaxPerPage(self::PAGER_PER_PAGE_DEFAULT);
-        $pager->setCurrentPage($request->request->get($prefix.'page') ?: $request->query->get($prefix.'page', 1));
-
-        return $pager;
+        return $this->get(PaginationManager::class)->getPager($data, $prefix, $hasJoins);
     }
 
     public function getManager($manager = null)
@@ -86,6 +67,14 @@ class BaseController extends Controller
         return $em;
     }
 
+    /**
+     * @param string     $name
+     * @param string     $type
+     * @param array|null $data
+     * @param array      $options
+     *
+     * @return FormBuilderInterface
+     */
     public function createNamedFormBuilder($name, $type = FormType::class, $data = null, array $options = [])
     {
         return $this->container->get('form.factory')->createNamedBuilder($name, $type, $data, $options);
@@ -98,28 +87,28 @@ class BaseController extends Controller
         }
     }
 
-    protected function trans($property, array $parameters = [])
-    {
-        return $this->container->get('translator')->trans($property, $parameters);
-    }
-
-    public function info($message, array $parameters = array())
+    public function info($message, array $parameters = [])
     {
         $this->addFlash('info', $this->trans($message, $parameters));
     }
 
-    public function alert($message, array $parameters = array())
+    public function alert($message, array $parameters = [])
     {
         $this->addFlash('alert', $this->trans($message, $parameters));
     }
 
-    public function danger($message, array $parameters = array())
+    public function danger($message, array $parameters = [])
     {
         $this->addFlash('danger', $this->trans($message, $parameters));
     }
 
-    public function success($message, array $parameters = array())
+    public function success($message, array $parameters = [])
     {
         $this->addFlash('success', $this->trans($message, $parameters));
+    }
+
+    protected function trans($property, array $parameters = [])
+    {
+        return $this->container->get('translator')->trans($property, $parameters);
     }
 }

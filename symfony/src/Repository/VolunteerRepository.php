@@ -3,9 +3,10 @@
 namespace App\Repository;
 
 use App\Base\BaseRepository;
-use App\Entity\Tag;
+use App\Entity\UserInformation;
 use App\Entity\Volunteer;
-use App\Entity\VolunteerImport;
+use Bundles\PasswordLoginBundle\Entity\User;
+use Doctrine\ORM\QueryBuilder;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
 /**
@@ -18,11 +19,6 @@ class VolunteerRepository extends BaseRepository
     public function __construct(RegistryInterface $registry)
     {
         parent::__construct($registry, Volunteer::class);
-    }
-
-    public function findAllEnabledVolunteers()
-    {
-        return $this->findBy(['enabled' => true], ['firstName' => 'ASC']);
     }
 
     /**
@@ -41,111 +37,13 @@ class VolunteerRepository extends BaseRepository
     }
 
     /**
-     * @return array
-     */
-    public function getVolunteersCountByTags(): array
-    {
-        $rows = $this->_em->createQueryBuilder('t')
-                          ->select('t.id, COUNT(v.id) AS c')
-                          ->from(Tag::class, 't')
-                          ->join('t.volunteers', 'v')
-                          ->where('v.enabled = true')
-                          ->groupBy('t.id')
-                          ->getQuery()
-                          ->getArrayResult();
-
-        $tagCounts = [];
-        foreach ($rows as $row) {
-            $tagCounts[$row['id']] = $row['c'];
-        }
-
-        return $tagCounts;
-    }
-
-    /**
-     * @param array $nivolsToDisable
-     *
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     */
-    public function disableByNivols(array $nivolsToDisable)
-    {
-        foreach ($nivolsToDisable as $nivolToDisable) {
-            /* @var \App\Entity\Volunteer $volunteer */
-            $volunteer = $this->findOneByNivol($nivolToDisable);
-
-            if ($volunteer && !$volunteer->isLocked() && $volunteer->isEnabled()) {
-                $volunteer->setReport([]);
-                $volunteer->addError('Volunteer is not in the organization anymore.');
-                $volunteer->setEnabled(false);
-            }
-
-            $this->_em->persist($volunteer);
-        }
-
-        $this->_em->flush();
-    }
-
-    /**
-     * @param Volunteer $import
-     *
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     */
-    public function import(Volunteer $import)
-    {
-        $volunteer = $this->findOneByNivol($import->getNivol());
-        if (!$volunteer) {
-            $volunteer = $import;
-        } else if ($volunteer->isLocked()) {
-            $volunteer->setReport([]);
-            $volunteer->addWarning('Cannot update a locked volunteer.');
-            $this->save($volunteer);
-
-            return;
-        } else {
-            $volunteer->setFirstName($import->getFirstName());
-            $volunteer->setLastName($import->getLastName());
-            if ($import->getPhoneNumber()) {
-                $volunteer->setPhoneNumber($import->getPhoneNumber());
-            }
-            if ($import->getEmail()) {
-                $volunteer->setEmail($import->getEmail());
-            }
-            $volunteer->setMinor($import->isMinor());
-            $volunteer->setReport([]);
-            $volunteer->setEnabled(true);
-        }
-
-        if (!$volunteer->getPhoneNumber() && !$volunteer->getEmail()) {
-            $volunteer->addError('Volunteer has no phone and no email.');
-            $volunteer->setEnabled(false);
-        } else if (!$volunteer->getPhoneNumber()) {
-            $volunteer->addWarning('Volunteer has no phone number.');
-        } else if (!$volunteer->getEmail()) {
-            $volunteer->addWarning('Volunteer has no email.');
-        }
-
-        if ($volunteer->isMinor()) {
-            $volunteer->addError('Volunteer is minor.');
-            $volunteer->setEnabled(false);
-        }
-
-        if (!$volunteer->getLastPegassUpdate()) {
-            $volunteer->setLastPegassUpdate(new \DateTime('2000-01-01'));
-        }
-
-        $this->save($volunteer);
-    }
-
-    /**
      * @param int $limit
      *
      * @return array
      *
      * @throws \Exception
      */
-    public function findVolunteersToRefresh(int $limit) : array
+    public function findVolunteersToRefresh(int $limit): array
     {
         return $this
             ->createQueryBuilder('v')
@@ -215,4 +113,119 @@ class VolunteerRepository extends BaseRepository
             $this->save($volunteer);
         }
     }
+
+    /**
+     * @return array
+     */
+    public function listVolunteerNivols(): array
+    {
+        $rows = $this->createQueryBuilder('v')
+                     ->select('v.nivol')
+                     ->getQuery()
+                     ->getArrayResult();
+
+        return array_column($rows, 'nivol');
+    }
+
+    /**
+     * @param $nivol
+     *
+     * @return Volunteer|null
+     */
+    public function findOneByNivol($nivol): ?Volunteer
+    {
+        return $this->findOneBy([
+            'nivol' => ltrim($nivol, '0'),
+        ]);
+    }
+
+    /**
+     * @param string          $keyword
+     * @param int             $maxResults
+     * @param UserInformation $user
+     *
+     * @return Volunteer[]
+     */
+    public function searchForUser(UserInformation $user, ?string $keyword, int $maxResults): array
+    {
+        return $this->searchForUserQueryBuilder($user, $keyword)
+                    ->getQuery()
+                    ->setMaxResults($maxResults)
+                    ->getResult();
+    }
+
+    /**
+     * @param UserInformation $user
+     * @param string|null     $keyword
+     *
+     * @return QueryBuilder
+     */
+    public function searchForUserQueryBuilder(UserInformation $user, ?string $keyword): QueryBuilder
+    {
+        $qb = $this->createQueryBuilder('v');
+
+        $qb
+            ->innerJoin('v.structures', 's')
+            ->innerJoin('s.users', 'u')
+            ->where('u.id = :user')
+            ->setParameter('user', $user);
+
+        if ($keyword) {
+            $qb
+                ->andWhere(
+                    $qb->expr()->orX(
+                        'v.nivol LIKE :keyword',
+                        'v.firstName LIKE :keyword',
+                        'v.lastName LIKE :keyword',
+                        'v.phoneNumber LIKE :keyword',
+                        'v.email LIKE :keyword'
+                    )
+                )
+                ->setParameter('keyword', sprintf('%%%s%%', $keyword));
+        }
+
+        return $qb;
+    }
+
+    /**
+     * @param string $keyword
+     * @param int    $maxResults
+     * @param User   $user
+     *
+     * @return Volunteer[]
+     */
+    public function searchAll(?string $keyword, int $maxResults): array
+    {
+        return $this->searchAllQueryBuilder($keyword)
+                    ->getQuery()
+                    ->setMaxResults($maxResults)
+                    ->getResult();
+    }
+
+    /**
+     * @param string $keyword
+     *
+     * @return QueryBuilder
+     */
+    public function searchAllQueryBuilder(?string $keyword): QueryBuilder
+    {
+        $qb = $this->createQueryBuilder('v');
+
+        if ($keyword) {
+            $qb
+                ->where(
+                    $qb->expr()->orX(
+                        'v.nivol LIKE :keyword',
+                        'v.firstName LIKE :keyword',
+                        'v.lastName LIKE :keyword',
+                        'v.phoneNumber LIKE :keyword',
+                        'v.email LIKE :keyword'
+                    )
+                )
+                ->setParameter('keyword', sprintf('%%%s%%', $keyword));
+        }
+
+        return $qb;
+    }
+
 }

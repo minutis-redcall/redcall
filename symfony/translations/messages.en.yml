@@ -1,6 +1,15 @@
 admin:
   home:
     link: Administration
+  user:
+    list: User list
+    pegass: Pegass bindings
+  pegass:
+    title: 'Bindings between RedCall users and Pegass database'
+
+management:
+  home:
+    link: Workforce Management
 
 tag:
   emergency_assistance: Emergency Help
@@ -8,7 +17,7 @@ tag:
   psc_1: PSC 1
   pse_1: PSE 1
   pse_2: PSE 2
-  drvr_vl: LV driver
+  drvr_vl: VL driver
   drvr_vpsp: VPSP driver
   ci: Inter. chief
   shortcuts:
@@ -52,6 +61,7 @@ base:
   yes: Yes
   no: No
   search:
+    placeholder: 'Search...'
     no_results: 'No results found for "{keyword}".'
   clear_selection: 'Clear selection'
 
@@ -67,6 +77,9 @@ campaign:
     list: 'List'
     create_full: 'Create a campaign'
     list_full: 'List campaigns'
+  no_nivol:
+    title: 'No nivol bound'
+    description: 'Your RedCall account is not bound to your Pegass account, please contact us in order to use the platform.'
   types:
     1_green: 'Green'
     2_light_orange: 'Orange 1'
@@ -110,6 +123,7 @@ campaign_status:
     label: 'Response "%label%"'
     labels: 'Responses %label%'
     unclear: 'Unclear'
+    prefix: 'Response prefix: %prefix%'
   legend:
     sms_sent: '"SMS sent" indicates whether message has been sent to the volunteer. May be blank if there is a technical issue.'
     sms_received: '"SMS received" indicates wether message has been received by the volunteer. If blank, volunteer may have turned off his phone number.'
@@ -126,8 +140,8 @@ new_communication:
 message:
   sms:
     announcement: 'RED-CROSS at %hours%h%mins%:'
-    how_to_answer_simple: Reply by giving your choice number.
-    how_to_answer_multiple: Reply by giving your choice(s) number(s), separated by a space.
+    how_to_answer_simple: Reply by giving your choice code.
+    how_to_answer_multiple: Reply by giving your choice(s) code(s), separated by a space.
     geo_location: 'Geolocation of your crew: %url%'
   email:
     announcement: 'RED-CROSS on %year%-%month%-%day% at %hours%h%mins%:'
@@ -145,6 +159,7 @@ form:
       type_sms: Emergency message sent through SMS
       type_email: Message sent by email
       geo_location: Message recipients will be able to geo locate each others
+      structures: 'Structure(s) to call'
       volunteers: Audience
       selection: Selection:
       selection_count: volunteers
@@ -163,8 +178,6 @@ form:
       cost: 'Message cost multiplied by:'
       length: 'Message length:'
       multiple_answer: 'Volunteers can choose several answers'
-      prefix: 'Response prefix (to use in case of multiple communications at the same time)'
-      taken_prefixes: 'Do not use the following prefix(es) because they are already used: %prefixes%'
   campaign:
     fields:
       label: 'Campaign name'
@@ -179,43 +192,23 @@ prefilled_answers:
 
 manage_volunteers:
   title: 'Manage volunteers'
-  tabs:
-    enabled: 'Enabled volunteers'
-    disabled: 'Disabled volunteers'
-  order:
-    nivol: 'Nivol'
-    firstname: 'First name'
-    lastname: 'Last name'
-    locked: 'Locked'
-    last_pegass_update: 'Last Pegass update'
+  search:
+    label: 'Rechercher un volontaire'
+    button: 'Rechercher'
   action:
-    title: Actions
+    title: 'Actions'
     lock: 'Lock'
     unlock: 'Unlock'
     enable: 'Enable'
     disable: 'Disable'
-    refresh_general: 'Full Pegass update'
-    refresh_skills: 'Skills Pegass update'
-    refresh_success: 'Volunteer update has been processed successfully.'
+    pegass_update: 'Pegass update'
     manual_update: 'Manual update'
   columns:
-    nivol: Nivol
-    firstname: First name
-    lastname: Last name
-    phone: Phone
-    postal_code: Postal code
-    email: Email
-    minor: Minor
-    callable: Callable
-    tags: Skills
     update: Updated on %date%
     never_updated: Skills never imported
-  import_again: 'Run a new import now'
-  import_again_help: "⚠️ FYI, skills update will take more time."
   form:
     create: Create a new volunteer
     update: Update volunteer
-    organization: Organization
     nivol: Nivol
     first_name: First name
     last_name: Last name
@@ -226,8 +219,21 @@ manage_volunteers:
     tags: Skills
     added: Volunteer has properly been added.
     updated: Volunteer has properly been updated.
+    structures: Affiliate structure(s)
   contact:
-    mail_subject: ⚠️ RedCall Message
+    mail_subject: '⚠️ RED CROSS: You have a RedCall Message'
+
+manage_structures:
+  title: 'Manage structures'
+  search:
+    label: 'Search structure'
+    button: 'Search'
+  president: 'President: %president%'
+  volunteers: 'Volunteers count: %count%'
+  users: 'RedCall users count: %count%'
+  last_update: 'Last Pegass synchro on: %last_update% UTC'
+  next_update: 'Next Pegass synchro on: %next_update% UTC'
+  force_update: 'Force update now'
 
 csv_export:
   nivol: Nivol
@@ -242,6 +248,7 @@ csv_export:
   received: Message received
 
 pdf_export:
+  others: 'and %others% other(s)'
   generated: 'Generated on %date% at %time%'
   confidential: CONFIDENTIAL DOCUMENT
   staff: STAFF
@@ -271,3 +278,12 @@ geolocation:
   stop: Stop geolocalization
   na: N/A
   last_data: 'Position received at %time% (precision: %accuracy%)'
+
+import_report:
+  update_locked: 'Cannot update a locked volunteer.'
+  disable_locked: 'Cannot disable a locked volunteer.'
+  no_contact: 'Volunteer has no phone and no email.'
+  no_phone: 'Volunteer has no phone number.'
+  no_email: 'Volunteer has no email.'
+  minor: 'Volunteer is minor.'
+  disabled: 'Volunteer is disabled on Pegass.'

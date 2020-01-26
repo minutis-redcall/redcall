@@ -2,7 +2,7 @@
 
 namespace App\EventSubscriber;
 
-use App\Services\Locale;
+use App\Manager\LocaleManager;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
@@ -16,9 +16,9 @@ class LocaleSubscriber implements EventSubscriberInterface
     /**
      * LocaleSubscriber constructor.
      *
-     * @param Locale $locale
+     * @param LocaleManager $locale
      */
-    public function __construct(Locale $locale)
+    public function __construct(LocaleManager $locale)
     {
         $this->locale = $locale;
     }

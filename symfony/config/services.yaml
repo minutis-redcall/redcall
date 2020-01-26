@@ -20,7 +20,7 @@ services:
   Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler:
     arguments:
       - '@Doctrine\DBAL\Driver\PDOConnection'
-      -  { lock_mode: 1 }
+      - { lock_mode: 1 }
   Doctrine\DBAL\Driver\PDOConnection:
     factory: 'doctrine.dbal.default_connection:getWrappedConnection'
 
@@ -62,24 +62,8 @@ services:
   App\Repository\MessageRepository:
     arguments: ['@doctrine', '@translator', '@security.token_storage']
 
-  App\Twig\Extension\AppExtension:
-    tags: ['twig.extension']
-
-  App\Twig\Extension\CampaignExtension:
-    tags: ['twig.extension']
-
   App\Services\Pegass:
     public: true
-
-  pagerfanta.view:
-    class: App\Pagerfanta\View\LightView
-    arguments: ['@pagerfanta.template']
-    tags:
-    - { name: pagerfanta.view, alias: light }
-
-  pagerfanta.template:
-    class: App\Pagerfanta\Template\LightTemplate
-    arguments: ['@translator']
 
   password_login.mail.service:
     autowire: false

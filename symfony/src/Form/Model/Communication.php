@@ -3,7 +3,7 @@
 namespace App\Form\Model;
 
 use App\Entity\Message;
-use App\Validator\Constraints as CustomAssert;
+use App\Entity\Structure;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
@@ -26,6 +26,13 @@ class Communication
      * })
      */
     public $type = \App\Entity\Communication::TYPE_SMS;
+
+    /**
+     * @var Collection
+     *
+     * @Assert\Count(min="1", minMessage="form.campaign.errors.volunteers.min")
+     */
+    public $structures;
 
     /**
      * @var Collection
@@ -67,18 +74,6 @@ class Communication
     public $multipleAnswer;
 
     /**
-     * @var string|null
-     *
-     * @Assert\Length(min=1, max=1)
-     * @Assert\Regex(pattern="/^[A-Z]$/u")
-     * @CustomAssert\UnusedPrefix()
-     */
-    public $prefix;
-
-    /**
-     * @param ExecutionContextInterface $context
-     * @param                           $payload
-     *
      * @Assert\Callback
      */
     public function validate(ExecutionContextInterface $context, $payload)
@@ -102,6 +97,25 @@ class Communication
                 $context->buildViolation('form.communication.errors.too_large_sms')
                         ->atPath('message')
                         ->addViolation();
+            }
+        }
+
+        // Check that all selected volunteers appear in at least one selected structure
+        if ($this->structures && $this->volunteers) {
+            foreach ($this->volunteers as $volunteer) {
+                $inStructures = false;
+                foreach ($this->structures as $structure) {
+                    /** @var Structure $structure */
+                    if ($structure->getVolunteers()->contains($volunteer)) {
+                        $inStructures = true;
+                    }
+                }
+
+                if (!$inStructures) {
+                    $context->buildViolation('form.communication.errors.volunteer_not_in_structure')
+                            ->atPath('message')
+                            ->addViolation();
+                }
             }
         }
     }

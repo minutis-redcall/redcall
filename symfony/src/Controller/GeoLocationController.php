@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Base\BaseController;
-use App\Component\HttpFoundation\EventStreamResponse;
 use App\Entity\GeoLocation;
 use App\Entity\Message;
 use App\Form\Type\GeoLocationType;
@@ -58,7 +57,7 @@ class GeoLocationController extends BaseController
     public function openAction(string $code)
     {
         /* @var Message $message */
-        $message = $this->getMessageByWebCode($code);
+        $message = $this->getMessageByCode($code);
 
         return $this->render('geo_location/index.html.twig', [
             'code'    => $code,
@@ -69,7 +68,7 @@ class GeoLocationController extends BaseController
     public function content(string $code)
     {
         /* @var Message $message */
-        $message       = $this->getMessageByWebCode($code);
+        $message       = $this->getMessageByCode($code);
         $communication = $message->getCommunication();
 
         return $this->render('geo_location/content.html.twig', [
@@ -93,7 +92,7 @@ class GeoLocationController extends BaseController
     public function updateAction(Request $request, string $code)
     {
         /* @var Message $message */
-        $message = $this->getMessageByWebCode($code);
+        $message = $this->getMessageByCode($code);
 
         $geolocation = new GeoLocation();
 
@@ -133,7 +132,7 @@ class GeoLocationController extends BaseController
     public function pollAction(string $code)
     {
         /* @var Message $message */
-        $message = $this->getMessageByWebCode($code);
+        $message = $this->getMessageByCode($code);
 
         return new JsonResponse(
             $this->getGeolocationInformation($message)
@@ -174,10 +173,10 @@ class GeoLocationController extends BaseController
      *
      * @throws NotFoundHttpException
      */
-    private function getMessageByWebCode(string $code): Message
+    private function getMessageByCode(string $code): Message
     {
         $message = $this->messageRepository->findOneBy([
-            'webCode' => $code,
+            'code' => $code,
         ]);
 
         if (null === $message) {

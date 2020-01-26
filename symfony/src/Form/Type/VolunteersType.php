@@ -2,10 +2,12 @@
 
 namespace App\Form\Type;
 
+use App\Entity\Structure;
 use App\Entity\Tag;
 use App\Entity\Volunteer;
-use App\Repository\TagRepository;
-use App\Repository\VolunteerRepository;
+use App\Manager\StructureManager;
+use App\Manager\UserInformationManager;
+use App\Manager\VolunteerManager;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -20,14 +22,19 @@ use Symfony\Component\Translation\TranslatorInterface;
 class VolunteersType extends AbstractType
 {
     /**
-     * @var VolunteerRepository
+     * @var VolunteerManager
      */
-    private $volunteerRepository;
+    private $volunteerManager;
 
     /**
-     * @var TagRepository
+     * @var StructureManager
      */
-    private $tagRepository;
+    private $structureManager;
+
+    /**
+     * @var UserInformationManager
+     */
+    private $userInformationManager;
 
     /**
      * @var TranslatorInterface
@@ -35,19 +42,20 @@ class VolunteersType extends AbstractType
     private $translator;
 
     /**
-     * VolunteersType constructor.
-     *
-     * @param VolunteerRepository $volunteerRepository
-     * @param TagRepository       $tagRepository
-     * @param TranslatorInterface $translator
+     * @param VolunteerManager       $volunteerManager
+     * @param StructureManager       $structureManager
+     * @param UserInformationManager $userInformationManager
+     * @param TranslatorInterface    $translator
      */
-    public function __construct(VolunteerRepository $volunteerRepository,
-        TagRepository $tagRepository,
+    public function __construct(VolunteerManager $volunteerManager,
+        StructureManager $structureManager,
+        UserInformationManager $userInformationManager,
         TranslatorInterface $translator)
     {
-        $this->volunteerRepository = $volunteerRepository;
-        $this->tagRepository       = $tagRepository;
-        $this->translator          = $translator;
+        $this->volunteerManager       = $volunteerManager;
+        $this->structureManager       = $structureManager;
+        $this->userInformationManager = $userInformationManager;
+        $this->translator             = $translator;
     }
 
     /**
@@ -60,8 +68,6 @@ class VolunteersType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $tagCounts = $this->volunteerRepository->getVolunteersCountByTags();
-
         $builder
             ->add('tags', EntityType::class, [
                 'class'         => Tag::class,
@@ -69,11 +75,8 @@ class VolunteersType extends AbstractType
                     return $er->createQueryBuilder('t')
                               ->orderBy('t.id', 'asc');
                 },
-                'choice_label'  => function (Tag $tag) use ($tagCounts) {
-                    return sprintf('%s (%d)',
-                        $this->translator->trans(sprintf('tag.%s', $tag->getLabel())),
-                        $tagCounts[$tag->getId()] ?? 0
-                    );
+                'choice_label'  => function (Tag $tag) {
+                    return $this->translator->trans(sprintf('tag.%s', $tag->getLabel()));
                 },
                 'multiple'      => true,
                 'expanded'      => true,
@@ -93,7 +96,9 @@ class VolunteersType extends AbstractType
                 },
                 function (?array $volunteersAsIds) {
                     return array_filter(array_map(function ($volunteerId) {
-                        return $this->volunteerRepository->find($volunteerId);
+                        if ($volunteerId) {
+                            return $this->volunteerManager->find($volunteerId);
+                        }
                     }, explode(',', strval($volunteersAsIds['volunteers']))));
                 }
             ));
@@ -111,19 +116,30 @@ class VolunteersType extends AbstractType
      */
     public function buildView(FormView $view, FormInterface $form, array $options)
     {
-        $view->vars['volunteers'] = array_map(function (Volunteer $volunteer) {
+        $structures               = $this->userInformationManager->findForCurrentUser()->getStructures()->toArray();
+        $view->vars['structures'] = $this->structureManager->getTagCountByStructuresForCurrentUser();
+
+        $view->vars['volunteers'] = array_map(function (Volunteer $volunteer) use ($structures) {
             return [
-                'id'         => strval($volunteer->getId()),
-                'firstName'  => $volunteer->getFirstName(),
-                'lastName'   => $volunteer->getLastName(),
-                'tagIds'     => array_map(function (Tag $tag) {
+                'id'           => strval($volunteer->getId()),
+                'firstName'    => $volunteer->getFirstName(),
+                'lastName'     => $volunteer->getLastName(),
+                'tagIds'       => array_map(function (Tag $tag) {
                     return $tag->getId();
                 }, $volunteer->getTags()->toArray()),
-                'tagLabels'  => $volunteer->getTagsView() ? sprintf('(%s)', implode(', ', array_map(function (Tag $tag) {
+                'structureIds' => array_map(function (Structure $tag) {
+                    return $tag->getId();
+                }, $volunteer->getStructures()->toArray()),
+                'tagLabels'    => $volunteer->getTagsView() ? sprintf('(%s)', implode(', ', array_map(function (Tag $tag) {
                     return $this->translator->trans(sprintf('tag.shortcuts.%s', $tag->getLabel()));
                 }, $volunteer->getTagsView()))) : '',
+                'structures'   => array_filter(array_map(function (Structure $structure) use ($volunteer) {
+                    if ($volunteer->getStructures()->contains($structure)) {
+                        return $structure->getId();
+                    }
+                }, $structures)),
             ];
-        }, $this->volunteerRepository->findAllEnabledVolunteers());
+        }, $this->volunteerManager->searchForCurrentUser(null, 0xFFFFFFFF));
     }
 
     /**

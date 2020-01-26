@@ -2,6 +2,7 @@
 
 namespace App\Manager;
 
+use App\Entity\Tag;
 use App\Repository\TagRepository;
 
 class TagManager
@@ -22,8 +23,18 @@ class TagManager
     /**
      * @return array
      */
-    public function findAll() : array
+    public function findAll(): array
     {
         return $this->tagRepository->findAll();
+    }
+
+    /**
+     * @param string $label
+     *
+     * @return Tag|null
+     */
+    public function findOneByLabel(string $label): ?Tag
+    {
+        return $this->tagRepository->findOneByLabel($label);
     }
 }

@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -71,6 +73,17 @@ class Campaign
      * @ORM\OrderBy({"createdAt" = "DESC"})
      */
     private $communications;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\Structure", inversedBy="campaigns")
+     * @ORM\OrderBy({"identifier" = "ASC"})
+     */
+    private $structures;
+
+    public function __construct()
+    {
+        $this->structures = new ArrayCollection();
+    }
 
     /**
      * @return mixed
@@ -251,7 +264,7 @@ class Campaign
                 $data[$communication->getId()]['msg'][$message->getId()] = [
                     'sent'               => $message->isSent(),
                     'choices'            => $choices,
-                    'is-unclear'         => !$invalidAnswer && $message->isUnclear(),
+                    'is-unclear'         => $message->isUnclear(),
                     'has-invalid-answer' => [
                         'raw'  => $invalidAnswer ? $invalidAnswer->getSafeRaw() : null,
                         'time' => $invalidAnswer ? $invalidAnswer->getReceivedAt()->format('H:i') : null,
@@ -292,7 +305,7 @@ class Campaign
             $data[$communication->getId()] = [
                 'sent'    => $msgsSent,
                 'total'   => $count = count($communication->getMessages()),
-                'percent' => round($msgsSent * 100 / $count, 2),
+                'percent' => $count ? round($msgsSent * 100 / $count, 2) : 0,
                 'cost'    => $communication->getCost(),
             ];
         }
@@ -312,5 +325,31 @@ class Campaign
         }
 
         return $cost;
+    }
+
+    /**
+     * @return Collection|Structure[]
+     */
+    public function getStructures(): Collection
+    {
+        return $this->structures;
+    }
+
+    public function addStructure(Structure $structure): self
+    {
+        if (!$this->structures->contains($structure)) {
+            $this->structures[] = $structure;
+        }
+
+        return $this;
+    }
+
+    public function removeStructure(Structure $structure): self
+    {
+        if ($this->structures->contains($structure)) {
+            $this->structures->removeElement($structure);
+        }
+
+        return $this;
     }
 }

@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Services\Locale;
+use App\Manager\LocaleManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
@@ -13,9 +13,9 @@ class HomeController extends Controller
     /**
      * HomeController constructor.
      *
-     * @param Locale $locale
+     * @param LocaleManager $locale
      */
-    public function __construct(Locale $locale)
+    public function __construct(LocaleManager $locale)
     {
         $this->locale = $locale;
     }

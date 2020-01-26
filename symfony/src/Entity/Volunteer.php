@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * @ORM\Table(indexes={
@@ -22,6 +23,10 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
  */
 class Volunteer
 {
+    const RED_CROSS_DOMAINS = [
+        'croix-rouge.fr',
+    ];
+
     /**
      * @var int
      *
@@ -118,15 +123,6 @@ class Volunteer
     private $tagsView;
 
     /**
-     * @var Organization
-     *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Organization", inversedBy="volunteers")
-     * @ORM\JoinColumn(nullable=false)
-     * @Assert\NotBlank()
-     */
-    private $organization;
-
-    /**
      * @var \DateTime
      *
      * @ORM\Column(type="datetime", nullable=true)
@@ -140,9 +136,15 @@ class Volunteer
      */
     private $report;
 
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\Structure", inversedBy="volunteers")
+     */
+    private $structures;
+
     public function __construct()
     {
-        $this->tags = new ArrayCollection();
+        $this->tags       = new ArrayCollection();
+        $this->structures = new ArrayCollection();
     }
 
     /**
@@ -234,6 +236,18 @@ class Volunteer
     }
 
     /**
+     * @param string|null $phoneNumber
+     *
+     * @return $this
+     */
+    public function setPhoneNumber(?string $phoneNumber)
+    {
+        $this->phoneNumber = $phoneNumber;
+
+        return $this;
+    }
+
+    /**
      * @param ExecutionContextInterface $context
      * @param                           $payload
      * @Assert\Callback()
@@ -245,18 +259,6 @@ class Volunteer
                     ->atPath('phoneNumber')
                     ->addViolation();
         }
-    }
-
-    /**
-     * @param string $phoneNumber
-     *
-     * @return $this
-     */
-    public function setPhoneNumber(string $phoneNumber)
-    {
-        $this->phoneNumber = $phoneNumber;
-
-        return $this;
     }
 
     /**
@@ -417,26 +419,6 @@ class Volunteer
     }
 
     /**
-     * @return Organization|null
-     */
-    public function getOrganization(): ?Organization
-    {
-        return $this->organization;
-    }
-
-    /**
-     * @param Organization|null $organization
-     *
-     * @return Volunteer
-     */
-    public function setOrganization(?Organization $organization): self
-    {
-        $this->organization = $organization;
-
-        return $this;
-    }
-
-    /**
      * @return \DateTime
      */
     public function getLastPegassUpdate(): ?\DateTime
@@ -479,7 +461,7 @@ class Volunteer
     /**
      * @return bool
      */
-    public function isCallable() : bool
+    public function isCallable(): bool
     {
         return $this->enabled && ($this->phoneNumber || $this->email);
     }
@@ -487,21 +469,105 @@ class Volunteer
     /**
      * @param string $message
      */
-    public function addError(string $message)
+    public function addReport(string $message)
     {
-        $report             = $this->report ?? [];
-        $report[]           = sprintf('ERROR: %s', $message);
-        $this->report       = $report;
-        $this->isImportable = false;
+        $report       = $this->report ?? [];
+        $report[]     = $message;
+        $this->report = $report;
     }
 
     /**
-     * @param string $message
+     * @return Collection|Structure[]
      */
-    public function addWarning(string $message)
+    public function getStructures(): Collection
     {
-        $report       = $this->report ?? [];
-        $report[]     = sprintf('WARNING: %s', $message);
-        $this->report = $report;
+        return $this->structures;
+    }
+
+    public function addStructure(Structure $structure): self
+    {
+        if (!$this->structures->contains($structure)) {
+            $this->structures[] = $structure;
+        }
+
+        return $this;
+    }
+
+    public function removeStructure(Structure $structure): self
+    {
+        if ($this->structures->contains($structure)) {
+            $this->structures->removeElement($structure);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param TranslatorInterface $translator
+     *
+     * @return array
+     */
+    public function toSearchResults(TranslatorInterface $translator)
+    {
+        return [
+            'nivol'      => strval($this->getNivol()),
+            'firstName'  => $this->getFirstName(),
+            'lastName'   => $this->getLastName(),
+            'tags'       => $this->getTagsView() ? sprintf('(%s)', implode(', ', array_map(function (Tag $tag) use (
+                $translator
+            ) {
+                return $translator->trans(sprintf('tag.shortcuts.%s', $tag->getLabel()));
+            }, $this->getTagsView()))) : '',
+            'structures' => sprintf('<br/>%s',
+                implode('<br/>', array_map(function (Structure $structure) {
+                    return $structure->getName();
+                }, $this->getStructures()->toArray()))
+            ),
+        ];
+    }
+
+    /**
+     * @return \DateTime|null
+     *
+     * @throws \Exception
+     */
+    public function getNextPegassUpdate(): ?\DateTime
+    {
+        if (!$this->lastPegassUpdate) {
+            return null;
+        }
+
+        // Doctrine loaded an UTC-saved date using the default timezone (Europe/Paris)
+        $utc      = (new \DateTime($this->lastPegassUpdate->format('Y-m-d H:i:s'), new \DateTimeZone('UTC')));
+        $interval = new \DateInterval(sprintf('PT%dS', Pegass::TTL[Pegass::TYPE_STRUCTURE]));
+
+        $nextPegassUpdate = clone $utc;
+        $nextPegassUpdate->add($interval);
+
+        return $nextPegassUpdate;
+    }
+
+    /**
+     * @return bool
+     *
+     * @throws \Exception
+     */
+    public function canForcePegassUpdate(): bool
+    {
+        if (!$this->lastPegassUpdate) {
+            return true;
+        }
+
+        // Doctrine loaded an UTC-saved date using the default timezone (Europe/Paris)
+        $utc = (new \DateTime($this->lastPegassUpdate->format('Y-m-d H:i:s'), new \DateTimeZone('UTC')));
+
+        // Can happen when update dates are spread on a larger timeframe
+        // See: PegassManager:spreadUpdateDatesInTTL()
+        if ($utc->getTimestamp() > time()) {
+            return true;
+        }
+
+        // Prevent several updates in less than 1h
+        return time() - $utc->getTimestamp() > 3600;
     }
 }

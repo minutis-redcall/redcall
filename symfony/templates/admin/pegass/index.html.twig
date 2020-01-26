@@ -1,0 +1,73 @@
+{% import 'macros.html.twig' as macros %}
+
+<div class="col-md-12 jumbotron">
+
+    <h3>{{ 'admin.pegass.title'|trans }}</h3>
+
+    {{ form_start(search) }}
+    <input type="hidden" name="type" value="pegass"/>
+    {{ form_end(search) }}
+
+    <table class="table">
+        <tbody>
+        {% for userInformation in userInformations %}
+            <tr>
+                <td>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div>
+                                <div class="h4">{{ userInformation.user.username }}</div>
+                                <div class="text-small">
+                                    {{ 'password_login.user_list.registered_at'|trans({'%date%': userInformation.user.registeredAt|date('d/m/Y H:i')}) }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="nivol"
+                                 data-id="{{ userInformation.user.id }}"
+                                 data-uri="{{ path('admin_pegass_update', {csrf: csrf_token('pegass'), id: userInformation.id}) }}">
+                                {{ render(controller('\\App\\Controller\\WidgetController::nivolEditor', {
+                                    userInformation: userInformation
+                                })) }}
+                            </div>
+                        </div>
+                        <div class="col-md-4" id="structures-{{ userInformation.user.id }}">
+                            {% for structure in userInformation.structures %}
+                                <div>{{ structure.name }}</div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {{ macros.pager(userInformations, null, {type: 'pegass'}) }}
+
+    <div class="text-right">
+        <a href="{{ path('home') }}">
+            {{ 'password_login.user_list.home'|trans }}
+        </a>
+    </div>
+
+</div>
+
+<script type="text/javascript">
+
+    $('.nivol input').change(function () {
+        var container = $(this).closest('.nivol');
+        var input = $(this);
+
+        $.post(container.data('uri'), {
+            nivol: input.val(),
+        }, function (data) {
+            var structuresContainer = $('#structures-' + container.data('id'));
+            structuresContainer.html('');
+            $.each(data.structures, function (index, value) {
+                structuresContainer.append('<div>' + value + '</div>');
+            });
+        });
+    });
+
+</script>

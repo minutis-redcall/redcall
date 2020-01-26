@@ -3,8 +3,7 @@
 namespace App\Controller;
 
 use App\Base\BaseController;
-use App\Communication\Dispatcher;
-use App\Entity\Message;
+use App\Manager\MessageManager;
 use Nexmo\Message\InboundMessage;
 use Psr\Log\LoggerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -19,20 +18,18 @@ class WebhookController extends BaseController
     private $logger;
 
     /**
-     * @var Dispatcher
+     * @var MessageManager
      */
-    private $dispatcher;
+    private $messageManager;
 
     /**
-     * WebhookController constructor.
-     *
      * @param LoggerInterface $logger
-     * @param Dispatcher      $dispatcher
+     * @param MessageManager  $messageManager
      */
-    public function __construct(LoggerInterface $logger, Dispatcher $dispatcher)
+    public function __construct(LoggerInterface $logger, MessageManager $messageManager)
     {
-        $this->logger     = $logger;
-        $this->dispatcher = $dispatcher;
+        $this->logger         = $logger;
+        $this->messageManager = $messageManager;
     }
 
     /**
@@ -62,17 +59,15 @@ class WebhookController extends BaseController
             return new Response();
         }
 
-        $message = $this->getManager(Message::class)->getMessageFromPhoneNumberAndPrefix($inbound->getFrom(), $inbound->getBody());
-
-        if ($message && $message->getCommunication()->getCampaign()->isActive()) {
-            $this->dispatcher->processInboundAnswer($message, $inbound->getBody());
-        }
+        $this->messageManager->handleAnswer($inbound->getFrom(), $inbound->getBody());
 
         $this->logger->info('SMS Inbound received!', [
-            'sender' => $inbound->getFrom(),
+            'sender'  => $inbound->getFrom(),
             'inbound' => $inbound->getBody(),
         ]);
 
         return new Response();
     }
+
+
 }

@@ -12,7 +12,14 @@
         {% endif %}
     </h1>
 
-    {{ form(form) }}
+    {{ form_start(form) }}
+    {{ form_row(form.label) }}
+    {{ form_row(form.colors) }}
+
+    {{ include('widget/prefilled_answers_editor.html.twig', {answers: form.answers, label: true}) }}
+
+    {{ form_row(form.submit) }}
+    {{ form_end(form) }}
 
     <br/><br/>
 
@@ -23,20 +30,3 @@
 
 {% endblock %}
 
-{% block javascripts %}
-
-    <script type="text/javascript" src="{{ asset('js/jquery.collection.js') }}"></script>
-    <script type="text/javascript">
-
-        {# Answer's collection #}
-        $('.collection').collection({
-            allow_up: false,
-            allow_down: false,
-            add_at_the_end: true,
-            init_with_n_elements: 2,
-            max: 10,
-            add: '<a href="#" class="btn btn-light" style="width:100%;">{{ 'form.communication.fields.add_answer'|trans|e('js') }}</a>',
-        });
-
-    </script>
-{% endblock %}

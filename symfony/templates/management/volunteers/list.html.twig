@@ -1,0 +1,146 @@
+{% extends 'base.html.twig' %}
+
+{% import 'macros.html.twig' as macros %}
+
+{% block body %}
+
+    <h1>
+        {{ 'manage_volunteers.title'|trans }}
+    </h1>
+
+    <div class="text-right">
+        <a href="{{ path('management_volunteers_create') }}" class="btn btn-secondary">
+            {{ 'manage_volunteers.form.create'|trans }}
+        </a>
+    </div>
+
+    {{ form(search) }}
+
+    <table class="table">
+        <tbody>
+
+        {% for volunteer in volunteers %}
+
+            <tr>
+                <td>
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="h4">
+                                {# Volunteer name and minority #}
+                                {% if volunteer.enabled %}
+                                    {{ volunteer.firstname ~ ' ' ~ volunteer.lastname }}
+                                {% else %}
+                                    <span style="color:grey;">{{ volunteer.firstname ~ ' ' ~ volunteer.lastname }}</span>
+                                {% endif %}
+                                {% if volunteer.minor %}
+                                    <span title="{{ 'manage_volunteers.form.minor'|trans }}">🐻</span>
+                                {% endif %}
+                                {% if is_granted('ROLE_ADMIN') %}
+                                    <a href="{{ path('management_volunteers_pegass', {id: volunteer.id}) }}" target="_blank">🛠</a>
+                                {% endif %}
+                            </div>
+                            <div>
+                                {# Volunteer skills #}
+                                {% for skill in volunteer.tagsView %}
+                                    {{ ('tag.shortcuts.' ~ skill)|trans }}{% if not loop.last %},{% endif %}
+                                {% endfor %}
+                            </div>
+                            <div class="text-small">
+                                {# Last volunteer update #}
+                                {% if volunteer.lastPegassUpdate and volunteer.lastPegassUpdate|date('Y') != 2000 %}
+                                    {{ 'manage_volunteers.columns.update'|trans({'%date%': volunteer.lastPegassUpdate|date('d/m/Y')}) }}
+                                {% else %}
+                                    {{ 'manage_volunteers.columns.never_updated'|trans }}
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            {# Volunteer contact information #}
+                            {% if volunteer.email %}
+                                <a href="mailto:{{ volunteer.email }}?subject={{ 'manage_volunteers.contact.mail_subject'|trans|e('html_attr') }}">{{ volunteer.email }}</a>
+                            {% endif %}
+                            <br/>
+                            {% if volunteer.phoneNumber %}
+                                <a href="tel:+{{ volunteer.phoneNumber }}">+{{ volunteer.phoneNumber }}</a>
+                            {% endif %}
+                        </div>
+
+                        <div class="col-md-2">
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    {{ 'manage_volunteers.action.title'|trans }}
+                                </button>
+
+                                <div class="dropdown-menu">
+                                    {% if not volunteer.locked %}
+
+                                        {# Pegass update #}
+                                        {% if volunteer.canForcePegassUpdate %}
+                                            <a class="dropdown-item" href="{{ path('management_volunteers_pegass_update', app.request.query.all|merge({id: volunteer.id, csrf: csrf_token('volunteers')})) }}" onclick="$(this).addClass('disabled');">
+                                                {{ 'manage_volunteers.action.pegass_update'|trans }}
+                                            </a>
+                                        {% endif %}
+
+                                    {% endif %}
+
+                                    {# Manual volunteer update #}
+                                    <a class="dropdown-item" href="{{ path('management_volunteers_manual_update', app.request.query.all|merge({id: volunteer.id})) }}">
+                                        {{ 'manage_volunteers.action.manual_update'|trans }}
+                                    </a>
+
+                                    <div class="dropdown-divider"></div>
+
+                                    {# Lock volunteer #}
+                                    {% if volunteer.locked %}
+                                        <a class="dropdown-item text-success" href="{{ path('management_volunteers_unlock', app.request.query.all|merge({id: volunteer.id, csrf: csrf_token('volunteers')})) }}">
+                                            {{ 'manage_volunteers.action.unlock'|trans }}
+                                        </a>
+                                    {% else %}
+                                        <a class="dropdown-item text-danger" href="{{ path('management_volunteers_lock', app.request.query.all|merge({id: volunteer.id, csrf: csrf_token('volunteers')})) }}">
+                                            {{ 'manage_volunteers.action.lock'|trans }}
+                                        </a>
+                                    {% endif %}
+
+                                    {# Disable volunteer #}
+                                    {% if volunteer.enabled %}
+                                        <a class="dropdown-item text-danger" href="{{ path('management_volunteers_disable', app.request.query.all|merge({id: volunteer.id, csrf: csrf_token('volunteers')})) }}">
+                                            {{ 'manage_volunteers.action.disable'|trans }}
+                                        </a>
+                                    {% else %}
+                                        <a class="dropdown-item text-success" href="{{ path('management_volunteers_enable', app.request.query.all|merge({id: volunteer.id, csrf: csrf_token('volunteers')})) }}">
+                                            {{ 'manage_volunteers.action.enable'|trans }}
+                                        </a>
+                                    {% endif %}
+
+                                </div>
+                            </div>
+                        </div>
+
+                        {# Errors during volunteer importation #}
+                        {% if volunteer.report %}
+                            <div class="col-12">
+                                {% for error in volunteer.report %}
+                                    <div><code>{{ error|trans }}</code></div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
+
+        {% endfor %}
+
+        </tbody>
+    </table>
+
+    {{ macros.pager(volunteers) }}
+
+    <br/>
+
+    <div class="text-center">
+        <a href="{{ path('management_home') }}" class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+    </div>
+
+    <br/><br/>
+
+{% endblock %}

@@ -34,21 +34,22 @@ class CommunicationManager
     private $processor;
 
     /**
-     * @param MessageManager $messageManager
+     * @param MessageManager          $messageManager
      * @param CommunicationRepository $communicationRepository
-     * @param ProcessorInterface $processor
+     * @param ProcessorInterface      $processor
      */
     public function __construct(MessageManager $messageManager,
-                                CommunicationRepository $communicationRepository,
-                                ProcessorInterface $processor)
+        CommunicationRepository $communicationRepository,
+        ProcessorInterface $processor)
     {
-        $this->messageManager = $messageManager;
+        $this->messageManager          = $messageManager;
         $this->communicationRepository = $communicationRepository;
-        $this->processor = $processor;
+        $this->processor               = $processor;
     }
 
     /**
      * @required
+     *
      * @param CampaignManager $campaignManager
      */
     public function setCampaignManager(CampaignManager $campaignManager)
@@ -61,24 +62,28 @@ class CommunicationManager
      *
      * @return CommunicationEntity|null
      */
-    public function find(int $communicationId) : ?CommunicationEntity
+    public function find(int $communicationId): ?CommunicationEntity
     {
         return $this->communicationRepository->find($communicationId);
     }
 
     /**
-     * @param Campaign $campaign
+     * @param Campaign           $campaign
      * @param CommunicationModel $communicationModel
      *
+     * @return CommunicationEntity
      * @throws \Exception
      *
-     * @return CommunicationEntity
      */
-    public function launchNewCommunication(Campaign $campaign, CommunicationModel $communicationModel) : CommunicationEntity
+    public function launchNewCommunication(Campaign $campaign,
+        CommunicationModel $communicationModel): CommunicationEntity
     {
         $communicationEntity = $this->createCommunication($communicationModel);
 
         $campaign->addCommunication($communicationEntity);
+        foreach ($communicationModel->structures as $structure) {
+            $campaign->addStructure($structure);
+        }
 
         $this->campaignManager->save($campaign);
 
@@ -96,7 +101,7 @@ class CommunicationManager
      *
      * @throws \Exception
      */
-    public function createCommunication(CommunicationModel $communicationModel) : CommunicationEntity
+    public function createCommunication(CommunicationModel $communicationModel): CommunicationEntity
     {
         $communicationEntity = new CommunicationEntity();
         $communicationEntity
@@ -105,14 +110,17 @@ class CommunicationManager
             ->setGeoLocation($communicationModel->geoLocation)
             ->setCreatedAt(new \DateTime())
             ->setMultipleAnswer($communicationModel->multipleAnswer)
-            ->setSubject($communicationModel->subject)
-            ->setPrefix($communicationModel->prefix);
+            ->setSubject($communicationModel->subject);
 
         foreach ($communicationModel->volunteers as $volunteer) {
             $message = new Message();
 
-            $message->setWebCode(
-                $this->messageManager->generateWebCode()
+            $message->setPrefix(
+                $this->messageManager->generatePrefix($volunteer)
+            );
+
+            $message->setCode(
+                $this->messageManager->generateCode()
             );
 
             $communicationEntity->addMessage($message->setVolunteer($volunteer));
@@ -123,7 +131,7 @@ class CommunicationManager
         foreach (array_unique($communicationModel->answers) as $choiceValue) {
             $choice = new Choice();
             $choice
-                ->setCode(sprintf('%s%d', $communicationModel->prefix, $choiceKey))
+                ->setCode($choiceKey)
                 ->setLabel($choiceValue);
 
             $communicationEntity->addChoice($choice);
@@ -136,7 +144,7 @@ class CommunicationManager
     /**
      * @return array
      */
-    public function getTakenPrefixes() : array
+    public function getTakenPrefixes(): array
     {
         return $this->communicationRepository->getTakenPrefixes();
     }

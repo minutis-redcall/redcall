@@ -263,11 +263,19 @@
 
                                         {% if app.environment == 'dev' %}
                                             <a class="btn btn-default"
-                                               {% if communication.type == constant('App\\Entity\\Communication::TYPE_SMS') %}
-                                                   href="{{ path('sandbox_fake_sms_thread', {phoneNumber: message.volunteer.phoneNumber}) }}">☎️</a>
-                                               {% else %}
-                                                   href="{{ path('sandbox_fake_email_read', {email: message.volunteer.email}) }}">✉️</a>
-                                               {% endif %}
+                                            {% if communication.type == constant('App\\Entity\\Communication::TYPE_SMS') %}
+                                                {% if message.volunteer.phoneNumber %}
+                                                    href="{{ path('sandbox_fake_sms_thread', {phoneNumber: message.volunteer.phoneNumber, campaignId: campaign.id}) }}">☎️</a>
+                                                {% else %}
+                                                    href="#">&nbsp;</a>
+                                                {% endif %}
+                                            {% else %}
+                                                {% if message.volunteer.email %}
+                                                    href="{{ path('sandbox_fake_email_read', {email: message.volunteer.email, campaignId: campaign.id}) }}">✉️</a>
+                                                {% else %}
+                                                    href="#">&nbsp;</a>
+                                                {% endif %}
+                                            {% endif %}
                                         {% endif %}
 
                                         {% if answerCount and campaign.active %}
@@ -328,7 +336,7 @@
                                     {{ 'campaign_status.selection.new_message'|trans }}
                                 </a>
                                 <form id="selection-new-message-form-{{ communication.id }}"
-                                      action="{{ path('communication_add', {campaignId: campaign.id}) }}"
+                                      action="{{ path('communication_add', {id: campaign.id}) }}"
                                       method="post" class="d-none">
                                     <input type="hidden" name="volunteers"
                                            id="selection-new-message-field-{{ communication.id }}" value=""/>
@@ -371,12 +379,12 @@
                         {# Open / Close campaign #}
                         <div class="col-md-3 col-12 skip-line">
                             {% if campaign.active %}
-                                <a href="{{ path('close_campaign', { campaignId: campaign.id, csrf: csrf_token('campaign') }) }}"
+                                <a href="{{ path('close_campaign', { id: campaign.id, csrf: csrf_token('campaign') }) }}"
                                    class="btn btn-warning" role="button">
                                     {{ 'campaign.actions.close'|trans }}
                                 </a>
                             {% else %}
-                                <a href="{{ path('open_campaign', { campaignId: campaign.id, csrf: csrf_token('campaign') }) }}"
+                                <a href="{{ path('open_campaign', { id: campaign.id, csrf: csrf_token('campaign') }) }}"
                                    class="btn btn-danger" role="button">
                                     {{ 'campaign.actions.open'|trans }}
                                 </a>
@@ -401,7 +409,7 @@
     {# -------------------------------------------------------------------------------- #}
     {% if campaign.active %}
         {% set body %}
-            <form id="rename-campaign" action="{{ path('rename_campaign', {campaignId: campaign.id}) }}" method="post">
+            <form id="rename-campaign" action="{{ path('rename_campaign', {id: campaign.id}) }}" method="post">
                 <input type="text" class="form-control" name="new_name" value="{{ campaign.label }}"/>
                 <input type="hidden" name="csrf" value="{{ csrf_token('campaign') }}"/>
             </form>
@@ -421,7 +429,7 @@
     {% if campaign.active %}
         {% set body %}
             {% for color, hexColor in constant('App\\Entity\\Campaign::COLORS') %}
-                <a href="{{ path('color_campaign', app.request.query.all|merge({campaignId: campaign.id, color: color, csrf: csrf_token('campaign')})) }}"
+                <a href="{{ path('color_campaign', app.request.query.all|merge({id: campaign.id, color: color, csrf: csrf_token('campaign')})) }}"
                    class="btn btn-primary text-white border-0 w-100"
                    style="background-color:{{ hexColor }};">
                     {{ ('campaign.types.' ~ color)|trans|title }}
@@ -542,7 +550,7 @@
     <script type="text/javascript">
 
         {# -------------------------------------------------------------------------------- #}
-        {# Auto refresh of values (Poll or SSE) #}
+        {# Auto refresh information
         {# -------------------------------------------------------------------------------- #}
 
         function refreshStatuses(data) {
@@ -617,8 +625,9 @@
             refreshVisibility();
         }
 
+        {# SSE does not work on GAE #}
         setInterval(function () {
-            $.ajax('{{ path('communication_poll', {campaignId: campaign.id}) }}', {
+            $.ajax('{{ path('communication_poll', {id: campaign.id}) }}', {
                 type: 'POST',
                 statusCode: {
                     200: refreshStatuses,

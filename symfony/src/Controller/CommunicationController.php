@@ -14,10 +14,13 @@ use App\Manager\CampaignManager;
 use App\Manager\CommunicationManager;
 use App\Manager\MessageManager;
 use App\Manager\TagManager;
+use App\Manager\UserInformationManager;
 use App\Manager\VolunteerManager;
 use App\Services\MessageFormatter;
 use App\Tools\GSM;
 use App\Tools\Random;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -67,44 +70,46 @@ class CommunicationController extends BaseController
     private $answerManager;
 
     /**
-     * CommunicationController constructor.
-     *
-     * @param CampaignManager         $campaignManager
-     * @param CommunicationManager    $communicationManager
-     * @param TagManager              $tagManager
-     * @param VolunteerManager $volunteerManager
-     * @param MessageManager $messageManager
-     * @param AnswerManager $answerManager
+     * @var UserInformationManager
+     */
+    private $userInformationManager;
+
+    /**
+     * @param CampaignManager        $campaignManager
+     * @param CommunicationManager   $communicationManager
+     * @param MessageFormatter       $formatter
+     * @param TagManager             $tagManager
+     * @param VolunteerManager       $volunteerManager
+     * @param MessageManager         $messageManager
+     * @param AnswerManager          $answerManager
+     * @param UserInformationManager $userInformationManager
      */
     public function __construct(CampaignManager $campaignManager,
-                                CommunicationManager $communicationManager,
-                                MessageFormatter $formatter,
-                                TagManager $tagManager,
-                                VolunteerManager $volunteerManager,
-                                MessageManager $messageManager,
-                                AnswerManager $answerManager)
+        CommunicationManager $communicationManager,
+        MessageFormatter $formatter,
+        TagManager $tagManager,
+        VolunteerManager $volunteerManager,
+        MessageManager $messageManager,
+        AnswerManager $answerManager,
+        UserInformationManager $userInformationManager)
     {
-        $this->campaignManager         = $campaignManager;
-        $this->communicationManager    = $communicationManager;
-        $this->formatter               = $formatter;
-        $this->tagManager              = $tagManager;
-        $this->volunteerManager = $volunteerManager;
-        $this->messageManager = $messageManager;
-        $this->answerManager = $answerManager;
+        $this->campaignManager        = $campaignManager;
+        $this->communicationManager   = $communicationManager;
+        $this->formatter              = $formatter;
+        $this->tagManager             = $tagManager;
+        $this->volunteerManager       = $volunteerManager;
+        $this->messageManager         = $messageManager;
+        $this->answerManager          = $answerManager;
+        $this->userInformationManager = $userInformationManager;
     }
 
     /**
-     * @Route(path="campaign/{campaignId}", name="index", requirements={"campaignId" = "\d+"})
-     *
-     * @param int $campaignId
-     *
-     * @return Response
+     * @Route(path="campaign/{id}", name="index", requirements={"id" = "\d+"})
+     * @IsGranted("CAMPAIGN", subject="campaign")
      */
-    public function indexAction(int $campaignId)
+    public function indexAction(Campaign $campaign)
     {
         $this->get('session')->save();
-
-        $campaign = $this->getCampaignOrThrowNotFoundException($campaignId);
 
         return $this->render('status_communication/index.html.twig', [
             'campaign'   => $campaign,
@@ -115,17 +120,12 @@ class CommunicationController extends BaseController
     }
 
     /**
-     * @Route(path="campaign/{campaignId}/poll", name="poll", requirements={"campaignId" = "\d+"})
-     *
-     * @param int $campaignId
-     *
-     * @return Response
+     * @Route(path="campaign/{id}/poll", name="poll", requirements={"id" = "\d+"})
+     * @IsGranted("CAMPAIGN", subject="campaign")
      */
-    public function pollAction(int $campaignId)
+    public function pollAction(Campaign $campaign)
     {
         $this->get('session')->save();
-
-        $campaign = $this->getCampaignOrThrowNotFoundException($campaignId);
 
         return new JsonResponse(
             $campaign->getCampaignStatus()
@@ -135,18 +135,20 @@ class CommunicationController extends BaseController
     /**
      * @Route(
      *     name="add",
-     *     path="campaign/{campaignId}/add-communication",
-     *     requirements={"campaignId" = "\d+"}
+     *     path="campaign/{id}/add-communication",
+     *     requirements={"id" = "\d+"}
      * )
+     * @IsGranted("CAMPAIGN", subject="campaign")
      * @Method("POST")
-     *
-     * @param Request $request
-     * @param int     $campaignId
-     *
-     * @return Response
      */
-    public function addCommunicationAction(Request $request, int $campaignId)
+    public function addCommunicationAction(Request $request, Campaign $campaign)
     {
+        $userInformation = $this->userInformationManager->findForCurrentUser();
+
+        if (!$userInformation->getVolunteer() || !$userInformation->getStructures()->count()) {
+            return $this->redirectToRoute('home');
+        }
+
         $selection = json_decode($request->request->get('volunteers', '[]'), true);
 
         foreach ($selection as $volunteerId) {
@@ -161,43 +163,44 @@ class CommunicationController extends BaseController
         // should allow the dispatcher to create several new communications
         // on separate tabs.
         $selections = $this->get('session')->get('add-communication', []);
-        if (!isset($selections[$campaignId])) {
-            $selections[$campaignId] = [];
+        if (!isset($selections[$campaign->getId()])) {
+            $selections[$campaign->getId()] = [];
         }
-        $key                           = Random::generate(8);
-        $selections[$campaignId][$key] = $selection;
-        if ($count = count($selections[$campaignId]) > 100) {
-            $selections[$campaignId] = array_slice($selections[$campaignId], $count - 100);
+        $key                                  = Random::generate(8);
+        $selections[$campaign->getId()][$key] = $selection;
+        if ($count = count($selections[$campaign->getId()]) > 100) {
+            $selections[$campaign->getId()] = array_slice($selections[$campaign->getId()], $count - 100);
         }
         $this->get('session')->set('add-communication', $selections);
 
         return $this->redirectToRoute('communication_new', [
-            'campaignId' => $campaignId,
-            'key'        => $key,
+            'id'  => $campaign->getId(),
+            'key' => $key,
         ]);
     }
 
     /**
      * @Route(
      *     name="new",
-     *     path="campaign/{campaignId}/new-communication/{key}",
+     *     path="campaign/{id}/new-communication/{key}",
      *     defaults={"key" = null},
-     *     requirements={"campaignId" = "\d+"}
+     *     requirements={"id" = "\d+"}
      * )
-     *
-     * @param Request $request
-     * @param int     $campaignId
-     * @param string  $key
-     *
-     * @return Response
+     * @IsGranted("CAMPAIGN", subject="campaign")
      */
-    public function newCommunicationAction(Request $request, int $campaignId, ?string $key)
+    public function newCommunicationAction(Request $request, Campaign $campaign, ?string $key)
     {
+        $userInformation = $this->userInformationManager->findForCurrentUser();
+
+        if (!$userInformation->getVolunteer() || !$userInformation->getStructures()->count()) {
+            return $this->redirectToRoute('home');
+        }
+
         // If volunteers selection have been made on the communication page,
         // restore it from the session.
         $volunteers = [];
         if (!is_null($key)) {
-            $selection = $this->get('session')->get('add-communication', [])[$campaignId][$key] ?? [];
+            $selection = $this->get('session')->get('add-communication', [])[$campaign->getId()][$key] ?? [];
             foreach ($selection as $volunteerId) {
                 $volunteer = $this->volunteerManager->find($volunteerId);
                 if ($volunteer) {
@@ -210,9 +213,9 @@ class CommunicationController extends BaseController
          * @var \App\Form\Model\Communication
          */
         $communication             = new \App\Form\Model\Communication();
+        $communication->structures = $userInformation->getVolunteer()->getStructures();
         $communication->volunteers = $volunteers;
         $communication->answers    = [];
-        $campaign                  = $this->getCampaignOrThrowNotFoundException($campaignId);
 
         $form = $this
             ->createForm(CommunicationType::class, $communication)
@@ -223,7 +226,7 @@ class CommunicationController extends BaseController
             $this->communicationManager->launchNewCommunication($campaign, $communication);
 
             return $this->redirect($this->generateUrl('communication_index', [
-                'campaignId' => $campaign->getId(),
+                'id' => $campaign->getId(),
             ]));
         }
 
@@ -231,16 +234,11 @@ class CommunicationController extends BaseController
             'campaign'   => $campaign,
             'volunteers' => $volunteers,
             'form'       => $form->createView(),
-            'taken_prefixes' => $this->communicationManager->getTakenPrefixes(),
         ]);
     }
 
     /**
      * @Route(path="campaign/preview", name="preview")
-     *
-     * @param Request $request
-     *
-     * @return JsonResponse
      */
     public function previewCommunicationAction(Request $request)
     {
@@ -267,7 +265,8 @@ class CommunicationController extends BaseController
 
         $message = new Message();
         $message->setCommunication($communicationEntity);
-        $message->setWebCode('xxxxxxxx');
+        $message->setPrefix('X');
+        $message->setCode('xxxxxxxx');
 
         $content = $this->formatter->formatMessageContent($message);
         $parts   = GSM::getSMSParts($content);
@@ -285,10 +284,6 @@ class CommunicationController extends BaseController
      *     name="answers",
      *     path="campaign/answers"
      * )
-     *
-     * @param Request $request
-     *
-     * @return Response
      */
     public function answersAction(Request $request)
     {
@@ -302,6 +297,10 @@ class CommunicationController extends BaseController
             throw $this->createNotFoundException();
         }
 
+        if (!$this->isGranted('CAMPAIGN', $message->getCommunication()->getCampaign())) {
+            throw $this->createAccessDeniedException();
+        }
+
         return $this->render('status_communication/answers.html.twig', [
             'message' => $message,
         ]);
@@ -310,24 +309,16 @@ class CommunicationController extends BaseController
     /**
      * @Route(
      *     name="change_answer",
-     *     path="campaign/answer/{messageId}/{csrf}",
-     *     requirements={"messageId" = "\d+"}
+     *     path="campaign/answer/{csrf}/{id}",
+     *     requirements={"id" = "\d+"}
      * )
-     *
-     * @param Request $request
-     * @param int     $messageId
-     * @param string  $csrf
-     *
-     * @return Response
      */
-    public function changeAnswerAction(Request $request, int $messageId, string $csrf)
+    public function changeAnswerAction(Request $request, Message $message, string $csrf)
     {
         $this->validateCsrfOrThrowNotFoundException('communication', $csrf);
 
-        /* @var Message $message */
-        $message = $this->messageManager->find($messageId);
-        if (!$message) {
-            throw $this->createNotFoundException();
+        if (!$this->isGranted('CAMPAIGN', $message->getCommunication()->getCampaign())) {
+            throw $this->createAccessDeniedException();
         }
 
         $choiceEntity = null;
@@ -348,17 +339,13 @@ class CommunicationController extends BaseController
 
     /**
      * @Route(path="campaign/{campaignId}/rename-communication/{communicationId}", name="rename")
-     *
-     * @param Request $request
-     * @param int     $campaignId
-     * @param int     $communicationId
-     *
-     * @return Response
+     * @Entity("campaign", expr="repository.find(campaignId)")
+     * @Entity("communicationEntity", expr="repository.find(communicationId)")
+     * @IsGranted("CAMPAIGN", subject="campaign")
      */
-    public function rename(Request $request, int $campaignId, int $communicationId): Response
+    public function rename(Request $request, Campaign $campaign, Communication $communicationEntity): Response
     {
         $this->validateCsrfOrThrowNotFoundException('communication', $request->request->get('csrf'));
-        $communicationEntity = $this->getCommunicationOrThrowNotFoundExcpetion($communicationId);
 
         $communication        = new CommunicationModel();
         $communication->label = $request->request->get('new_name');
@@ -372,44 +359,8 @@ class CommunicationController extends BaseController
         }
 
         return $this->redirect($this->generateUrl('communication_index', [
-            'campaignId' => $campaignId,
+            'id' => $campaign->getId(),
         ]));
-    }
-
-    /**
-     * @param int $campaignid
-     *
-     * @return Campaign
-     *
-     * @throws NotFoundHttpException
-     */
-    private function getCampaignOrThrowNotFoundException(int $campaignId): Campaign
-    {
-        $campaign = $this->campaignManager->find($campaignId);
-
-        if (is_null($campaign)) {
-            throw $this->createNotFoundException();
-        }
-
-        return $campaign;
-    }
-
-    /**
-     * @param int $communicationId
-     *
-     * @return Communication
-     *
-     * @throws NotFoundHttpException
-     */
-    private function getCommunicationOrThrowNotFoundExcpetion(int $communicationId): Communication
-    {
-        $communication = $this->communicationManager->find($communicationId);
-
-        if (is_null($communication)) {
-            throw $this->createNotFoundException();
-        }
-
-        return $communication;
     }
 
     /**
@@ -419,10 +370,6 @@ class CommunicationController extends BaseController
      * Notes:
      * - status hash should match [0-9-]*
      * - no cache should be involved (take care of doctrine)
-     *
-     * @param Campaign $campaign
-     *
-     * @return string
      */
     private function getStatusHash(Campaign $campaign): string
     {

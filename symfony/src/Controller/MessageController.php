@@ -4,9 +4,7 @@ namespace App\Controller;
 
 use App\Base\BaseController;
 use App\Entity\Message;
-use App\Repository\MessageRepository;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use App\Manager\MessageManager;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -19,109 +17,69 @@ use Symfony\Component\Routing\Annotation\Route;
 class MessageController extends BaseController
 {
     /**
-     * @var MessageRepository
+     * @var MessageManager
      */
-    protected $messageRepository;
+    protected $messageManager;
 
-    public function __construct(MessageRepository $messageRepository)
+    public function __construct(MessageManager $messageRepository)
     {
-        $this->messageRepository = $messageRepository;
+        $this->messageManager = $messageRepository;
     }
 
     /**
-     * @Route(path="{code}", name="open")
-     * @Method({"GET"})
-     *
-     * @param string $code
-     * @param int    $action
-     *
-     * @return Response
+     * @Route(path="{code}", name="open", methods={"GET"})
      */
-    public function openAction(string $code)
+    public function openAction(Message $message)
     {
-        $message = $this->getMessageByWebCode($code);
-
         return $this->render('message/index.html.twig', [
-            'code'    => $code,
+            'code'    => $message->getCode(),
             'message' => $message,
         ]);
     }
 
     /**
-     * @Route(path="{code}/{action}", name="action", requirements={"action" = "\d+"})
-     * @Method({"GET"})
-     *
-     * @param string $code
-     * @param int    $action
-     *
-     * @return Response
+     * @Route(path="{code}/{csrf}/{action}", name="action", requirements={"action" = "\d+"}, methods={"GET"})
      */
-    public function actionAction(string $code, int $action)
+    public function actionAction(Message $message, int $action, string $csrf)
     {
-        $message = $this->getMessageByWebCode($code);
+        $this->validateCsrfOrThrowNotFoundException('message', $csrf);
 
         // If the action does not exist, throw an exception
-        $choice = $message->getCommunication()->getChoiceByCode($action);
+        $choice = $message->getCommunication()->getChoiceByCode($message->getPrefix(), sprintf('%s%s', $message->getPrefix(), $action));
         if (null === $choice) {
             throw $this->createNotFoundException();
         }
 
         // If the selected action has not already been made, store it
         if (!$message->getAnswers()->contains($choice)) {
-            $this->messageRepository->addAnswer($message, $action);
+            $this->messageManager->addAnswer($message, sprintf('%s%s', $message->getPrefix(), $action));
         }
 
         return $this->redirectToRoute('message_open', [
-            'code' => $code,
+            'code' => $message->getCode(),
         ]);
     }
 
     /**
-     * @Route(path="{code}/annuler/{action}", name="cancel", requirements={"action" = "\d+"})
-     * @Method({"GET"})
-     *
-     * @param string $code
-     * @param int    $action
-     *
-     * @return Response
+     * @Route(path="{code}/annuler/{csrf}/{action}", name="cancel", requirements={"action" = "\d+"}, methods={"GET"})
      */
-    public function cancelAction(string $code, int $action)
+    public function cancelAction(Message $message, int $action, string $csrf)
     {
-        $message = $this->getMessageByWebCode($code);
+        $this->validateCsrfOrThrowNotFoundException('message', $csrf);
 
         // If the action does not exist, throw an exception
-        $choice = $message->getCommunication()->getChoiceByCode($action);
+        $choice = $message->getCommunication()->getChoiceByCode($message->getPrefix(), sprintf('%s%s', $message->getPrefix(), $action));
         if (null === $choice) {
             throw $this->createNotFoundException();
         }
 
         // If the selected action has been made, cancel it
         if ($message->getAnswerByChoice($choice)) {
-            $this->messageRepository->cancelAnswerByChoice($message, $choice);
+            $this->messageManager->cancelAnswerByChoice($message, $choice);
         }
 
         return $this->redirectToRoute('message_open', [
-            'code' => $code,
+            'code' => $message->getCode(),
         ]);
-    }
-
-    /**
-     * @param string $code
-     *
-     * @return Message
-     *
-     * @throws NotFoundHttpException
-     */
-    private function getMessageByWebCode(string $code): Message
-    {
-        $message = $this->messageRepository->findOneBy([
-            'webCode' => $code,
-        ]);
-
-        if (null === $message) {
-            throw $this->createNotFoundException();
-        }
-
-        return $message;
     }
 }

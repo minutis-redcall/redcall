@@ -7,13 +7,31 @@
     <br/>
     <div class="jumbotron text-center">
 
-        <a href="{{ path('create_campaign') }}"
-           class="text-lg-center large-button btn btn-secondary">{{ 'campaign.titles.create_full'|trans }}</a>
+        {% if not user_information().structures.count %}
 
-        <br/><br/><br/>
+            <div class="row">
 
-        <a href="{{ path('list_campaigns') }}"
-           class="text-lg-center large-button btn btn-secondary">{{ 'campaign.titles.list_full'|trans }}</a>
+                <div class="col-md-12 jumbotron">
+
+                    <h3>{{ 'campaign.no_nivol.title'|trans }}</h3>
+
+                    {{ 'campaign.no_nivol.description'|trans }}
+
+                </div>
+
+            </div>
+
+        {% else %}
+
+            <a href="{{ path('create_campaign') }}"
+               class="text-lg-center large-button btn btn-secondary">{{ 'campaign.titles.create_full'|trans }}</a>
+
+            <br/><br/><br/>
+
+            <a href="{{ path('list_campaigns') }}"
+               class="text-lg-center large-button btn btn-secondary">{{ 'campaign.titles.list_full'|trans }}</a>
+
+        {% endif %}
 
     </div>
 

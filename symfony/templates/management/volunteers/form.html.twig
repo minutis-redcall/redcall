@@ -1,0 +1,30 @@
+{% extends 'base.html.twig' %}
+
+{% import 'macros.html.twig' as macros %}
+
+{% block body %}
+
+    <h1>
+        {% if isCreate %}
+            {{ 'manage_volunteers.form.create'|trans }}
+        {% else %}
+            {{ 'manage_volunteers.form.update'|trans }}
+        {% endif %}
+    </h1>
+
+    {{ form_start(form) }}
+    {{ form_row(form.nivol) }}
+    {% if form.structures|default(false) %}
+        {{ form_row(form.structures) }}
+    {% endif %}
+    {{ form_end(form) }}
+
+    <br/>
+
+    <div class="text-center">
+        <a href="{{ path('management_volunteers_list', app.request.query.all) }}" class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+    </div>
+
+    <br/><br/>
+
+{% endblock %}

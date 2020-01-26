@@ -10,16 +10,21 @@
         </div>
         <div style="margin-left:50px;">
             <b>
-            <span style="font-size:30px;font-family:Arial Black;color:{{ red }};">
-                PARIS 1ER-2IEME {# MVP #}
-            </span>
+                <span style="font-size:30px;font-family:Arial Black;color:{{ red }};">
+                    {{ campaign.structures.get(0).name }}
+                    {% if campaign.structures.count > 1 %}
+                        <span style="font-size:20px;font-family:Arial Black;color:{{ red }};">
+                            {{ 'pdf_export.others'|trans({'%others%': campaign.structures.count - 1}) }}
+                        </span>
+                    {% endif %}
+                </span>
                 <br/>
                 <span style="font-size:20px;font-family:Arial Black;color:{{ red }};">
                 {{ 'pdf_export.generated'|trans({
                     '%date%': current_date|date('d/m/Y'),
                     '%time%': current_date|date('H:i'),
                 }) }}
-            </span>
+                </span>
             </b>
         </div>
         <div style="text-align:right;">
@@ -113,6 +118,9 @@
                     <tr>
                         <td style="padding:10px;color:black;background-color:{{ offwhite }};border: 1px solid black;">
                             {{ volunteer.firstName }} {{ volunteer.lastName }}
+                            {% if campaign.structures.count > 1 %}
+                                <div style="font-size:12px;">{{ volunteer.structures|join(', ') }}</div>
+                            {% endif %}
                         </td>
                         <td style="padding:10px;color:white;background-color:{{ red }};border: 1px solid black;">
                             {{ volunteer.formattedPhoneNumber }}

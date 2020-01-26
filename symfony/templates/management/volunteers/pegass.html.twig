@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    <h1>{{ volunteer.firstName }} {{ volunteer.lastName }} ({{ volunteer.nivol }})</h1>
+
+    <div class="jumbotron">
+        <pre><code>{{ pegass|nl2br }}</code></pre>
+    </div>
+
+{% endblock %}

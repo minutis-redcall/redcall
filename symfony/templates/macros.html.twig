@@ -1,22 +1,6 @@
 {% macro pager(pager, prefix = '', queryParams = {}) %}
-    {% if pager.nbResults > pager.maxPerPage %}
-
-        <div class="row">
-            <div class="col-md-12 text-center">
-                {{ pager.nbResults }} {{ 'base.pager.result' | transchoice(pager.nbResults) }}
-            </div>
-            <div class="col-md-12 d-flex">
-
-                {{ pagerfanta(pager, 'light', {
-                    'pageParameter': '[' ~ prefix ~ 'page]',
-                    'routeName': master_request().get('_route'),
-                    'routeParams': master_request().query.all|merge(queryParams),
-                    'proximity': 2,
-                }) }}
-
-            </div>
-        </div>
-    {% endif %}
+    {% import '@Pagination/macros.html.twig' as macros %}
+    {{ macros.pager(pager, prefix, queryParams) }}
 {% endmacro %}
 
 {% macro orderBy(order, columnsAndLabels, hash = '') %}

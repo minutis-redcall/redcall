@@ -1,0 +1,71 @@
+{% extends 'base.html.twig' %}
+
+{% import 'macros.html.twig' as macros %}
+
+{% block body %}
+
+    <h1>
+        {{ 'manage_structures.title'|trans }}
+    </h1>
+
+    {{ form(search) }}
+
+    <table class="table">
+        <tbody>
+        {% for structure in structures %}
+            <tr>
+                <td>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div>
+                                <div class="h4 {% if not structure.enabled %}text-black-50{% endif %}">
+                                    {{ structure.name }}
+                                    {% if is_granted('ROLE_ADMIN') %}
+                                        <a href="{{ path('management_structures_pegass', {id: structure.id}) }}" target="_blank">🛠</a>
+                                    {% endif %}
+                                </div>
+                                <div class="text-small">
+                                    {% set president = structure.presidentVolunteer %}
+                                    {% if president %}
+                                        {{ 'manage_structures.president'|trans({'%president%': president.firstName ~ ' ' ~ president.lastName}) }}
+                                        <br/>
+                                    {% endif %}
+                                    {{ 'manage_structures.volunteers'|trans({'%count%': structure.activeVolunteers|length}) }}
+                                    <br/>
+                                    {{ 'manage_structures.users'|trans({'%count%': structure.users|length}) }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            {{ 'manage_structures.last_update'|trans({'%last_update%': structure.lastPegassUpdate|date('d/m/Y H:i')}) }}
+
+                            {% if structure.nextPegassUpdate %}
+                                <br/>
+                                {{ 'manage_structures.next_update'|trans({'%next_update%': structure.nextPegassUpdate|date('d/m/Y H:i')}) }}
+                            {% endif %}
+
+                            {% if structure.canForcePegassUpdate %}
+                                <br/>
+                                <a href="{{ path('management_structures_force_update', app.request.query.all|merge({id: structure.id, csrf: csrf_token('structures')})) }}">
+                                    {{ 'manage_structures.force_update'|trans }}
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    {{ macros.pager(structures) }}
+
+    <br/>
+
+    <div class="text-center">
+        <a href="{{ path('management_home') }}" class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+    </div>
+
+    <br/><br/>
+
+{% endblock %}

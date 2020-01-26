@@ -64,7 +64,7 @@ class PrefilledAnswersController extends BaseController
     /**
      * @Route(
      *     name="delete",
-     *     path="supprimer/{pfaId}/{csrf}",
+     *     path="supprimer/{csrf}/{pfaId}",
      *     requirements={"pfaId" = "\d+"}
      * )
      */

@@ -1,5 +1,12 @@
-
 {% form_theme form 'new_communication/form_theme.html.twig' %}
+
+<div class="{% if form.structures.children|length == 1 %}d-none{% endif %}">
+    <div class="h4">
+        {{ 'form.communication.fields.structures'|trans }}
+    </div>
+
+    {{ form_row(form.structures) }}
+</div>
 
 {{ form_row(form.volunteers) }}
 
@@ -32,25 +39,11 @@
 
 {{ form_label(form.answers) }}
 
-{{ render(controller('\\App\\Controller\\PrefilledAnswersController::renderWidget', {campaignId: campaign.id|default(null)})) }}
+{{ render(controller('\\App\\Controller\\WidgetController::prefilledAnswers', {campaignId: campaign.id|default(null)})) }}
 
-<div id="answer-collection" data-index="{{ form.answers.children|length }}">
-    {{ form_row(form.answers, {label: false}) }}
-    <a id="add-answer" href="#" class="btn btn-light" style="width:100%;">{{ 'form.communication.fields.add_answer'|trans }}</a>
-</div>
+{{ include('widget/prefilled_answers_editor.html.twig', {answers: form.answers}) }}
 
 <br/>
-
-<div id="message-prefix">
-    {{ form_row(form.prefix) }}
-    {% if taken_prefixes %}
-        <small>
-            <em>
-                {{ 'form.communication.fields.taken_prefixes'|trans({'%prefixes%':taken_prefixes|join(', ')}) }}
-            </em>
-        </small>
-    {% endif %}
-</div>
 
 {{ form_row(form.multipleAnswer) }}
 
@@ -98,6 +91,7 @@
 
     {# Refresh preview if form is changed #}
     var previewTimeout = null;
+
     function refreshPreview() {
         clearTimeout(previewTimeout);
         previewTimeout = setTimeout(function () {
@@ -114,6 +108,7 @@
             });
         }, 1000);
     }
+
     $('body').on('change keyup', 'input, textarea, select', function () {
         refreshPreview();
     });
@@ -124,14 +119,12 @@
             $('#message-max').html({{ max_length_sms }});
             $('#message-calc').removeClass('d-none');
             $('#message-subject').addClass('d-none');
-            $('#message-prefix').removeClass('d-none');
             $('#message-geo-location').removeClass('d-none');
             $('textarea, .textarea-wrapper').css('height', '78px');
         } else {
             $('#message-max').html({{ max_length_email }});
             $('#message-calc').addClass('d-none');
             $('#message-subject').removeClass('d-none');
-            $('#message-prefix').addClass('d-none');
             $('#message-geo-location').addClass('d-none');
             $('textarea, .textarea-wrapper').css('height', '150px');
         }
@@ -144,56 +137,10 @@
     });
     updateMaxMessageSize();
 
-    {# Collection of answers #}
-    $('#add-answer').click(function(e) {
-        e.preventDefault();
-
-        if ($('.answer-row').length >= 9) {
-            return;
-        }
-
-        var collection = $('#{{ form.answers.vars.id }}');
-        var prototype = collection.data('prototype');
-        var container = $('#answer-collection');
-        var index = container.data('index');
-
-        $('#answer-collection fieldset').append(prototype.replace(/__name__/g, index));
-        container.data('index', index + 1);
-
-        refreshPreview();
-
-        if ($('.answer-row').length >= 9) {
-            $('#add-answer').addClass('d-none');
-        }
-    });
     refreshPreview();
 
-    {# Initialize collection with 2 answers #}
-    if ($('#answer-collection').data('index') == 0) {
-        $('#add-answer').click();
-        $('#add-answer').click();
-    }
-
-    {# Answer removal #}
-    $('body').on('click', '.remove-answer', function(e) {
-        e.preventDefault();
-        var index = $(this).data('index');
-        $('#answer-nb-' + index).remove();
-        refreshPreview();
-
-        $('#add-answer').removeClass('d-none');
-    });
-
-    {# Limit prefix to 1 uppercase char #}
-    $('#{{ form.prefix.vars.id }}').keyup(function() {
-        var that = $(this);
-        that.val(
-            that.val().toUpperCase().substring(0, 1)
-        );
-    });
-
     {# Disable submit button at submission to prevent sending communication twice #}
-    $('form').submit(function() {
+    $('form').submit(function () {
         $('#{{ form.submit.vars.id }}').prop('disabled', 'disabled');
     });
 
