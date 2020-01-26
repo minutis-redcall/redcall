@@ -4084,11 +4084,11 @@
         },
         {
             "name": "redcall-io/settings-bundle",
-            "version": "0.0.2",
+            "version": "0.0.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/redcall-io/settings-bundle.git",
-                "reference": "b8bcf09869daec55c43e0a6283b15b1ad5c80d20"
+                "reference": "cc99420cbaeeb826cb8b93a25648f4b31a501a66"
             },
             "dist": {
                 "type": "zip",

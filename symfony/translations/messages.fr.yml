@@ -294,3 +294,12 @@ maintenance:
   refresh_all: 'Synchroniser entièrement la base de données RedCall avec celle de Pegass'
   refresh_started: 'Synchronisation lancée, cela va prendre du temps.'
   refresh_error: 'Vous ne pouvez pas synchroniser plus qu''une fois par heure.'
+  message:
+    title: 'Mettre un message en haut de toutes les pages'
+    type:
+      label: 'Couleur de l''encart'
+      success: 'Vert (succès)'
+      info: 'Bleu (information)'
+      alert: 'Jaune (alerte)'
+      danger: 'Rouge (danger)'
+    content: 'Contenu du message (sauts de lignes acceptés)'

@@ -79,7 +79,17 @@
                 {% endif %}
 
             {% endblock %}
+
         </div>
+    {% endblock %}
+
+    {% block maintenance %}
+        {% set maintenance = setting(constant('App\\Settings::MAINTENANCE_MESSAGE_CONTENT')) %}
+        {% if maintenance %}
+            <div class="alert alert-{{ setting(constant('App\\Settings::MAINTENANCE_MESSAGE_TYPE')) }}">
+                {{ maintenance|nl2br }}
+            </div>
+        {% endif %}
     {% endblock %}
 
     {% block modals %}{% endblock %}

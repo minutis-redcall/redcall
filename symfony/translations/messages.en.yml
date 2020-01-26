@@ -295,3 +295,12 @@ maintenance:
   refresh_all: 'Synchronize RedCall and Pegass databases entirely'
   refresh_started: 'Synchronize launched, it will take a while.'
   refresh_error: 'You cannot synchronize more than once every hour.'
+  message:
+    title: 'Set a message at the top of every page'
+    type:
+      label: 'Message color'
+      success: 'Green (success)'
+      info: 'Blue (info)'
+      alert: 'Yellow (alert)'
+      danger: 'Red (danger)'
+    content: 'Message content (newlines allowed)'

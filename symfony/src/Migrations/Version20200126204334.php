@@ -26,10 +26,9 @@ final class Version20200126204334 extends AbstractMigration
 
         $this->addSql('
             UPDATE volunteer v
-            JOIN pegass p ON v.nivol = trim(LEADING "0" FROM identifier)
-            SET v.pegass_identifier = p.identifier
+            JOIN pegass p ON v.nivol = trim(LEADING "0" FROM p.identifier)
+            SET v.identifier = p.identifier
         ');
-
     }
 
     public function down(Schema $schema): void
