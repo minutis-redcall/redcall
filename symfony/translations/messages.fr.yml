@@ -286,3 +286,10 @@ import_report:
   no_email: 'Le volontaire ne possède pas d''email.'
   minor: 'Le volontaire est mineur.'
   disabled: 'Le volontaire est desactivé sur Pegass.'
+
+maintenance:
+  title: 'Maintenance'
+  refresh: 'Synchroniser les entités expirées entre la base de données RedCall et celle de Pegass'
+  refresh_all: 'Synchroniser entièrement la base de données RedCall avec celle de Pegass'
+  refresh_started: 'Synchronisation lancée, cela va prendre du temps.'
+  refresh_error: 'Vous ne pouvez pas synchroniser plus qu''une fois par heure.'

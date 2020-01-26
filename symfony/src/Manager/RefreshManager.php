@@ -177,7 +177,7 @@ class RefreshManager
 
             if ($volunteer->isLocked()) {
                 $volunteer->setReport([]);
-                $volunteer->addReportMessage('import_report.disable_locked');
+                $volunteer->addReport('import_report.disable_locked');
             } else {
                 $volunteer->setEnabled(false);
             }
@@ -198,10 +198,24 @@ class RefreshManager
         }
         $volunteer->setReport([]);
 
+        // Update structures
+        $volunteer->getStructures()->clear();
+        foreach (array_filter(explode('|', $pegass->getParentIdentifier())) as $identifier) {
+            if ($structure = $this->structureManager->findOneByIdentifier($identifier)) {
+                $volunteer->addStructure($structure);
+            }
+        }
+
         // Volunteer is locked
         if ($volunteer->isLocked()) {
-            $volunteer->addReportMessage('import_report.update_locked');
+            $volunteer->addReport('import_report.update_locked');
             $this->volunteerManager->save($volunteer);
+
+            // If volunteer is bound to a RedCall user, update its structures
+            $userInformation = $this->userInformationManager->findOneByNivol($volunteer->getNivol());
+            if ($userInformation) {
+                $this->userInformationManager->updateNivol($userInformation, $volunteer->getNivol());
+            }
 
             return;
         }
@@ -222,7 +236,7 @@ class RefreshManager
 
         $enabled = $pegass->evaluate('user.actif');
         if (!$enabled) {
-            $volunteer->addReportMessage('import_report.disabled');
+            $volunteer->addReport('import_report.disabled');
         }
         $volunteer->setEnabled($enabled);
 
@@ -246,27 +260,19 @@ class RefreshManager
             }
         }
 
-        // Update structures
-        $volunteer->getStructures()->clear();
-        foreach (array_filter(explode('|', $pegass->getParentIdentifier())) as $identifier) {
-            if ($structure = $this->structureManager->findOneByIdentifier($identifier)) {
-                $volunteer->addStructure($structure);
-            }
-        }
-
         // Some issues may lead to not contact a volunteer properly
         if (!$volunteer->getPhoneNumber() && !$volunteer->getEmail()) {
-            $volunteer->addReportMessage('import_report.no_contact');
+            $volunteer->addReport('import_report.no_contact');
             $volunteer->setEnabled(false);
         } elseif (!$volunteer->getPhoneNumber()) {
-            $volunteer->addReportMessage('import_report.no_phone');
+            $volunteer->addReport('import_report.no_phone');
         } elseif (!$volunteer->getEmail()) {
-            $volunteer->addReportMessage('import_report.no_email');
+            $volunteer->addReport('import_report.no_email');
         }
 
         // Disabling minors
         if ($volunteer->isMinor()) {
-            $volunteer->addReportMessage('import_report.minor');
+            $volunteer->addReport('import_report.minor');
             $volunteer->setEnabled(false);
         }
 

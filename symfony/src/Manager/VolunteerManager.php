@@ -124,4 +124,9 @@ class VolunteerManager
             $criteria
         );
     }
+
+    public function expireAll()
+    {
+        $this->volunteerRepository->expireAll();
+    }
 }

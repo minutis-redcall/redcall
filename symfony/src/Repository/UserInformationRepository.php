@@ -88,6 +88,6 @@ class UserInformationRepository extends BaseRepository
                     ->where('u.username LIKE :criteria')
                     ->orWhere('ui.nivol LIKE :criteria')
                     ->setParameter('criteria', sprintf('%%%s%%', $criteria))
-                    ->orderBy('u.registeredAt', 'DESC');
+                    ->orderBy('u.id', 'DESC');
     }
 }

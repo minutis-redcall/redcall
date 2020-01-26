@@ -141,4 +141,8 @@ class StructureManager
         );
     }
 
+    public function expireAll()
+    {
+        $this->structureRepository->expireAll();
+    }
 }
