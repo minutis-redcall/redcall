@@ -25,38 +25,28 @@ final class Version20200123223558 extends AbstractMigration
         $this->addSql('ALTER TABLE message CHANGE prefix prefix VARCHAR(8) NOT NULL');
         $this->addSql('CREATE INDEX prefixx ON message (prefix)');
 
+        $prefixes = [];
+        $updates  = [];
         $messages = $this->connection->fetchAll('SELECT id, volunteer_id FROM message');
         foreach ($messages as $message) {
-            $prefix = 'A';
+            if (!array_key_exists($message['volunteer_id'], $prefixes)) {
+                $prefixes[$message['volunteer_id']] = 'A';
+            }
 
-            do {
-                $test = $this->connection->fetchColumn('
-                    SELECT m.id
-                    FROM message m
-                    JOIN communication co on m.communication_id = co.id
-                    JOIN campaign ca ON co.campaign_id = ca.id
-                    WHERE ca.active = 1
-                    AND m.volunteer_id = :volunteer_id
-                    AND m.prefix = :prefix
-                ', [
-                    'volunteer_id' => $message['volunteer_id'],
-                    'prefix'       => $prefix,
-                ]);
-
-                if (!$test) {
-                    break;
-                }
-
-                $prefix++;
-            } while (true);
-
-            $this->connection->update('message', [
-                'prefix' => $prefix,
-            ], [
-                'id' => $message['id'],
-            ]);
+            $updates[$message['id']] = $prefixes[$message['volunteer_id']];
+            $prefixes[$message['volunteer_id']]++;
         }
 
+        $parameters = [];
+        $sql        = 'UPDATE message SET prefix = CASE ';
+        foreach ($updates as $id => $prefix) {
+            $sql          .= ' WHEN ? THEN ? ';
+            $parameters[] = $id;
+            $parameters[] = $prefix;
+        }
+        $sql .= ' END';
+
+        $this->addSql($sql, $parameters);
     }
 
     public function down(Schema $schema): void

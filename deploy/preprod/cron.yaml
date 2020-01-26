@@ -1,0 +1,8 @@
+# Cron file for App Engine
+cron:
+  # 0 0 * * * <path/to/the/project>/symfony/bin/console user:cron --env=prod
+  - description: "Clears up non activated accounts and expired captcha whitelists"
+    url: /cron/user-cron
+    schedule: every 24 hours
+
+

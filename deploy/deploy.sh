@@ -26,11 +26,12 @@ cp symfony/config/keys/google-service-account.json deploying/
 cp deploy/${ENV}/app.yaml symfony/
 cp deploy/${ENV}/dotenv symfony/.env
 cp deploy/${ENV}/google-service-account.json symfony/config/keys
+cp deploy/${ENV}/cron.yaml symfony/
 
 # Deploying
 cd symfony
 
-source .env
+source .env > /dev/null
 gcloud config set project ${GCP_PROJECT_NAME}
 gcloud config set app/cloud_build_timeout 3600
 yarn encore production
@@ -45,3 +46,4 @@ cp deploying/.env symfony/.env
 cp deploying/google-service-account.json symfony/config/keys/google-service-account.json
 rm -r deploying
 rm symfony/app.yaml
+rm symfony/cron.yaml
