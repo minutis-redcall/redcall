@@ -39,6 +39,13 @@ class Volunteer
     /**
      * @var string
      *
+     * @ORM\Column(type="string", length=80, nullable=true)
+     */
+    private $identifier;
+
+    /**
+     * @var string
+     *
      * @ORM\Column(type="string", length=80, unique=true)
      * @Assert\NotNull
      * @Assert\NotBlank
@@ -163,6 +170,26 @@ class Volunteer
     public function setId($id)
     {
         $this->id = $id;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getIdentifier(): ?string
+    {
+        return $this->identifier;
+    }
+
+    /**
+     * @param string $identifier
+     *
+     * @return Volunteer
+     */
+    public function setIdentifier(string $identifier): self
+    {
+        $this->identifier = $identifier;
 
         return $this;
     }

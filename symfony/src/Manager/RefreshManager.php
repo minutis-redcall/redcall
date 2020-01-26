@@ -197,6 +197,7 @@ class RefreshManager
             $volunteer = new Volunteer();
         }
 
+        $volunteer->setIdentifier($pegass->getIdentifier());
         $volunteer->setNivol(ltrim($pegass->getIdentifier(), '0'));
         $volunteer->setReport([]);
 
