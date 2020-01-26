@@ -196,6 +196,8 @@ class RefreshManager
         if (!$volunteer) {
             $volunteer = new Volunteer();
         }
+
+        $volunteer->setNivol(ltrim($pegass->getIdentifier(), '0'));
         $volunteer->setReport([]);
 
         // Update structures
@@ -223,6 +225,7 @@ class RefreshManager
         // Volunteer already up to date
         if ($volunteer->getLastPegassUpdate()
             && $volunteer->getLastPegassUpdate()->getTimestamp() === $pegass->getUpdatedAt()->getTimestamp()) {
+
             return;
         }
 
@@ -234,14 +237,20 @@ class RefreshManager
 
         $volunteer->setLastPegassUpdate(clone $pegass->getUpdatedAt());
 
+        if (!$pegass->evaluate('user.id')) {
+            $volunteer->addReport('import_report.failed');
+            $this->volunteerManager->save($volunteer);
+
+            return;
+        }
+
         $enabled = $pegass->evaluate('user.actif');
         if (!$enabled) {
             $volunteer->addReport('import_report.disabled');
         }
-        $volunteer->setEnabled($enabled);
+        $volunteer->setEnabled($enabled ?? false);
 
         // Update basic information
-        $volunteer->setNivol(ltrim($pegass->evaluate('infos.id'), '0'));
         $volunteer->setFirstName($this->normalizeName($pegass->evaluate('user.prenom')));
         $volunteer->setLastName($this->normalizeName($pegass->evaluate('user.nom')));
         $volunteer->setPhoneNumber($this->fetchPhoneNumber($pegass->evaluate('contact')));

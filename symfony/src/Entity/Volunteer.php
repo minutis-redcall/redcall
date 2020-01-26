@@ -49,7 +49,7 @@ class Volunteer
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=80)
+     * @ORM\Column(type="string", length=80, nullable=true)
      * @Assert\NotNull
      * @Assert\NotBlank
      * @Assert\Length(max=80)
@@ -59,7 +59,7 @@ class Volunteer
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=80)
+     * @ORM\Column(type="string", length=80, nullable=true)
      * @Assert\NotNull
      * @Assert\NotBlank
      * @Assert\Length(max=80)

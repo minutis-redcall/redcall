@@ -286,6 +286,7 @@ import_report:
   no_email: 'Le volontaire ne possède pas d''email.'
   minor: 'Le volontaire est mineur.'
   disabled: 'Le volontaire est desactivé sur Pegass.'
+  failed: 'La synchronisation avec Pegass a échoué.'
 
 maintenance:
   title: 'Maintenance'

@@ -287,6 +287,7 @@ import_report:
   no_email: 'Volunteer has no email.'
   minor: 'Volunteer is minor.'
   disabled: 'Volunteer is disabled on Pegass.'
+  failed: 'Volunteer is broken on Pegass.'
 
 maintenance:
   title: 'Maintenance'
