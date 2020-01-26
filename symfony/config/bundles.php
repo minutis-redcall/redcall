@@ -15,10 +15,11 @@ return [
     Bundles\PasswordLoginBundle\PasswordLoginBundle::class => ['all' => true],
     Bundles\PaginationBundle\PaginationBundle::class => ['all' => true],
     Bundles\PegassCrawlerBundle\PegassCrawlerBundle::class => ['all' => true],
+    Bundles\SandboxBundle\SandboxBundle::class => ['dev' => true],
+    Bundles\SettingsBundle\SettingsBundle::class => ['all' => true],
     Symfony\Bundle\WebServerBundle\WebServerBundle::class => ['dev' => true],
     Symfony\Bundle\WebProfilerBundle\WebProfilerBundle::class => ['dev' => true, 'test' => true],
     Symfony\Bundle\DebugBundle\DebugBundle::class => ['dev' => true, 'test' => true],
     Symfony\Bundle\MakerBundle\MakerBundle::class => ['dev' => true],
-    Bundles\SandboxBundle\SandboxBundle::class => ['dev' => true],
     Symfony\WebpackEncoreBundle\WebpackEncoreBundle::class => ['all' => true],
 ];

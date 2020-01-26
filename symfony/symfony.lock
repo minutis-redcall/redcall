@@ -251,6 +251,9 @@
     "redcall-io/sandbox-bundle": {
         "version": "dev-master"
     },
+    "redcall-io/settings-bundle": {
+        "version": "0.0.2"
+    },
     "rize/uri-template": {
         "version": "0.3.2"
     },

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "547d4a0fc147e8d861d5aff5c260aff7",
+    "content-hash": "69305525da6187fc70480b344cb82e40",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -4042,16 +4042,16 @@
         },
         {
             "name": "redcall-io/pegass-crawler-bundle",
-            "version": "0.0.3",
+            "version": "0.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/redcall-io/pegass-crawler-bundle.git",
-                "reference": "14d230a26c267504194d71328735a6d038611fe2"
+                "reference": "d46941137b29dcb308938d8a085d31b1666cd7ef"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/redcall-io/pegass-crawler-bundle/zipball/14d230a26c267504194d71328735a6d038611fe2",
-                "reference": "14d230a26c267504194d71328735a6d038611fe2",
+                "url": "https://api.github.com/repos/redcall-io/pegass-crawler-bundle/zipball/d46941137b29dcb308938d8a085d31b1666cd7ef",
+                "reference": "d46941137b29dcb308938d8a085d31b1666cd7ef",
                 "shasum": ""
             },
             "require": {
@@ -4080,7 +4080,49 @@
                 }
             ],
             "description": "Download, cache and refresh Pegass data",
-            "time": "2020-01-26T14:34:46+00:00"
+            "time": "2020-01-26T17:20:32+00:00"
+        },
+        {
+            "name": "redcall-io/settings-bundle",
+            "version": "0.0.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/redcall-io/settings-bundle.git",
+                "reference": "b8bcf09869daec55c43e0a6283b15b1ad5c80d20"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/redcall-io/settings-bundle/zipball/b8bcf09869daec55c43e0a6283b15b1ad5c80d20",
+                "reference": "b8bcf09869daec55c43e0a6283b15b1ad5c80d20",
+                "shasum": ""
+            },
+            "require": {
+                "doctrine/dbal": "^2.9",
+                "doctrine/doctrine-bundle": "^1.9",
+                "doctrine/orm": "^2.6",
+                "php": ">=7.1"
+            },
+            "suggest": {
+                "symfony/console": "^4.1"
+            },
+            "type": "symfony-bundle",
+            "autoload": {
+                "psr-4": {
+                    "Bundles\\SettingsBundle\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Alain Tiemblo",
+                    "email": "alain.tiemblo@croix-rouge.fr"
+                }
+            ],
+            "description": "Simple key/value storage",
+            "time": "2020-01-26T17:05:54+00:00"
         },
         {
             "name": "rize/uri-template",
@@ -8634,8 +8676,8 @@
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/redcall-io/sandbox-bundle/zipball/d3cbf01309403a17df6c919fcf83b421842f149a",
-                "reference": "d3cbf01309403a17df6c919fcf83b421842f149a",
+                "url": "https://api.github.com/repos/redcall-io/sandbox-bundle/zipball/0dcede3c501aad78b6b70f5956083ec9fbb4136f",
+                "reference": "0dcede3c501aad78b6b70f5956083ec9fbb4136f",
                 "shasum": ""
             },
             "require": {

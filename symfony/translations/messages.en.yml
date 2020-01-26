@@ -293,3 +293,4 @@ maintenance:
   refresh: 'Synchronize expired entities from RedCall and Pegass database'
   refresh_all: 'Synchronize RedCall and Pegass databases entirely'
   refresh_started: 'Synchronize launched, it will take a while.'
+  refresh_error: 'You cannot synchronize more than once every hour.'

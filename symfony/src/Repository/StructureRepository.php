@@ -211,7 +211,7 @@ class StructureRepository extends BaseRepository
     {
         $this->createQueryBuilder('s')
              ->update()
-             ->set('s.lastPegassUpdate = :expiredDate')
+             ->set('s.lastPegassUpdate', ':expiredDate')
              ->setParameter('expiredDate', new \DateTime('1984-07-10'))
              ->getQuery()
              ->execute();

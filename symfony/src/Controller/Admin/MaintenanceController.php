@@ -37,9 +37,11 @@ class MaintenanceController extends BaseController
      */
     public function refresh()
     {
-        $this->maintenanceManager->refresh();
-
-        $this->success('maintenance.refresh_started');
+        if ($this->maintenanceManager->refresh()) {
+            $this->success('maintenance.refresh_started');
+        } else {
+            $this->alert('maintenance.refresh_error');
+        }
 
         return $this->redirectToRoute('admin_maintenance_index');
     }
@@ -49,9 +51,11 @@ class MaintenanceController extends BaseController
      */
     public function refreshAll()
     {
-        $this->maintenanceManager->refreshAll();
-
-        $this->success('maintenance.refresh_started');
+        if ($this->maintenanceManager->refreshAll()) {
+            $this->success('maintenance.refresh_started');
+        } else {
+            $this->alert('maintenance.refresh_error');
+        }
 
         return $this->redirectToRoute('admin_maintenance_index');
     }
