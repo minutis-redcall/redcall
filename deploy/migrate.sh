@@ -26,13 +26,13 @@ cat deploy/${ENV}/dotenv-migrate >> symfony/.env
 # Migrating
 (
     cd symfony
-    source .env
+    source .env > /dev/null
 
     gcloud config set project ${GCP_PROJECT_NAME}
 
     # Start Bastion
     gcloud compute instances start ${GCP_BASTION_INSTANCE}
-    sleep 10
+    sleep 30
 
     # Start MySQL tunneling
     gcloud compute ssh ${USER}@${GCP_BASTION_INSTANCE} -- -L 3304:${DATABASE_HOST} -N -f
@@ -41,7 +41,7 @@ cat deploy/${ENV}/dotenv-migrate >> symfony/.env
     php bin/console doctrine:migration:migrate --no-interaction
 
     # Clear up everything
-    kill -9 `ps ax|grep 3304|grep google_compute_engine|grep -v grep|cut -d ' ' -f 1`
+    kill -9 `ps ax|grep 3304|grep google_compute_engine|grep -v grep|cut -d ' ' -f 2`
     gcloud compute instances stop ${GCP_BASTION_INSTANCE}
 )
 
