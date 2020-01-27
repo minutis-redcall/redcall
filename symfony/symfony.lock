@@ -101,26 +101,14 @@
     "google/auth": {
         "version": "v1.4.0"
     },
-    "google/cloud": {
-        "version": "v0.96.0"
-    },
-    "google/cloud-common-protos": {
-        "version": "v0.2.0"
-    },
-    "google/cloud-core": {
-        "version": "v1.34.0"
-    },
-    "google/cloud-debugger": {
-        "version": "v0.20.0"
-    },
     "google/cloud-error-reporting": {
         "version": "v0.14.5"
     },
-    "google/cloud-logging": {
-        "version": "v1.18.0"
-    },
     "google/common-protos": {
         "version": "0.1.0"
+    },
+    "google/crc32": {
+        "version": "v0.1.0"
     },
     "google/gax": {
         "version": "0.38.0"

@@ -1606,62 +1606,182 @@
         },
         {
             "name": "google/cloud",
-            "version": "v0.33.1",
+            "version": "v0.123.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/googleapis/google-cloud-php.git",
-                "reference": "df82b6ed1403b9bdce9a1f7e7e9aa34351539934"
+                "reference": "3bf8b7bf041cf7a70440cc497678389ca9940001"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/googleapis/google-cloud-php/zipball/df82b6ed1403b9bdce9a1f7e7e9aa34351539934",
-                "reference": "df82b6ed1403b9bdce9a1f7e7e9aa34351539934",
+                "url": "https://api.github.com/repos/googleapis/google-cloud-php/zipball/3bf8b7bf041cf7a70440cc497678389ca9940001",
+                "reference": "3bf8b7bf041cf7a70440cc497678389ca9940001",
                 "shasum": ""
             },
             "require": {
-                "google/auth": "^1.0",
+                "google/auth": "^1.6",
+                "google/common-protos": "^1.0",
+                "google/crc32": "^0.1.0",
+                "google/gax": "^1.1",
                 "guzzlehttp/guzzle": "^5.3|^6.0",
                 "guzzlehttp/psr7": "^1.2",
-                "monolog/monolog": "~1",
+                "monolog/monolog": "^1.1|^2.0",
                 "php": ">=5.5",
                 "psr/http-message": "1.0.*",
                 "ramsey/uuid": "~3",
                 "rize/uri-template": "~0.3"
             },
+            "replace": {
+                "google/cloud-asset": "0.5.0",
+                "google/cloud-automl": "0.8.1",
+                "google/cloud-bigquery": "1.12.2",
+                "google/cloud-bigquerydatatransfer": "0.15.1",
+                "google/cloud-bigtable": "1.1.1",
+                "google/cloud-common-protos": "0.2.0",
+                "google/cloud-container": "0.11.0",
+                "google/cloud-core": "1.34.0",
+                "google/cloud-dataproc": "0.16.1",
+                "google/cloud-datastore": "1.10.1",
+                "google/cloud-debugger": "0.20.0",
+                "google/cloud-dialogflow": "0.10.0",
+                "google/cloud-dlp": "0.24.0",
+                "google/cloud-error-reporting": "0.15.0",
+                "google/cloud-firestore": "1.10.1",
+                "google/cloud-iot": "0.10.0",
+                "google/cloud-kms": "1.8.0",
+                "google/cloud-language": "0.21.0",
+                "google/cloud-logging": "1.18.0",
+                "google/cloud-monitoring": "0.19.0",
+                "google/cloud-oslogin": "0.10.0",
+                "google/cloud-pubsub": "1.19.0",
+                "google/cloud-redis": "0.11.0",
+                "google/cloud-scheduler": "1.1.0",
+                "google/cloud-secret-manager": "0.1.0",
+                "google/cloud-security-center": "0.3.0",
+                "google/cloud-spanner": "1.23.0",
+                "google/cloud-speech": "0.30.0",
+                "google/cloud-storage": "1.17.0",
+                "google/cloud-talent": "0.8.2",
+                "google/cloud-tasks": "1.4.0",
+                "google/cloud-text-to-speech": "0.5.0",
+                "google/cloud-trace": "0.16.0",
+                "google/cloud-translate": "1.6.0",
+                "google/cloud-videointelligence": "1.7.1",
+                "google/cloud-vision": "0.24.1",
+                "google/cloud-web-risk": "0.3.0",
+                "google/cloud-web-security-scanner": "0.3.0"
+            },
             "require-dev": {
                 "erusev/parsedown": "^1.6",
-                "google/gax": "^0.20.1",
-                "google/proto-client": "^0.20.1",
-                "league/json-guard": "^0.3",
+                "google/cloud-tools": "^0.9.0",
+                "opis/closure": "^3.0",
                 "phpdocumentor/reflection": "^3.0",
-                "phpseclib/phpseclib": "^2.0",
-                "phpunit/phpunit": "4.8.*",
+                "phpseclib/phpseclib": "^2",
+                "phpunit/phpunit": "^4.8|^5.0",
                 "squizlabs/php_codesniffer": "2.*",
+                "swaggest/json-schema": "^0.12.0",
                 "symfony/console": "^3.0",
                 "symfony/lock": "3.3.x-dev#1ba6ac9",
                 "vierbergenlars/php-semver": "^3.0"
             },
             "suggest": {
-                "google/gax": "Required to support gRPC",
-                "google/proto-client-php": "Required to support gRPC",
-                "phpseclib/phpseclib": "May be used in place of OpenSSL for creating signed Cloud Storage URLs.",
-                "symfony/lock": "Required for the Spanner cached based session pool. Please require the following commit: 3.3.x-dev#1ba6ac9"
+                "opis/closure": "May be used to serialize closures to process jobs in the batch daemon. Please require version ^3.",
+                "phpseclib/phpseclib": "May be used in place of OpenSSL for creating signed Cloud Storage URLs. Please require version ^2."
             },
             "bin": [
-                "src/Core/bin/google-cloud-batch"
+                "Core/bin/google-cloud-batch",
+                "Debugger/bin/google-cloud-debugger"
             ],
             "type": "library",
             "extra": {
                 "component": {
                     "id": "google-cloud",
-                    "target": "git@github.com:jdpedrie-gcp/google-cloud-php.git",
+                    "target": "googleapis/google-cloud-php.git",
                     "path": "src",
-                    "entry": "ServiceBuilder.php"
+                    "entry": [
+                        "Version.php",
+                        "ServiceBuilder.php"
+                    ]
                 }
             },
             "autoload": {
                 "psr-4": {
-                    "Google\\Cloud\\": "src"
+                    "GPBMetadata\\Google\\": "CommonProtos/metadata",
+                    "GPBMetadata\\Google\\Bigtable\\": "Bigtable/metadata",
+                    "GPBMetadata\\Google\\Cloud\\Asset\\": "Asset/metadata",
+                    "GPBMetadata\\Google\\Cloud\\Automl\\": "AutoMl/metadata",
+                    "GPBMetadata\\Google\\Cloud\\Bigquery\\Datatransfer\\": "BigQueryDataTransfer/metadata",
+                    "GPBMetadata\\Google\\Cloud\\Dataproc\\": "Dataproc/metadata",
+                    "GPBMetadata\\Google\\Cloud\\Dialogflow\\": "Dialogflow/metadata",
+                    "GPBMetadata\\Google\\Cloud\\Iot\\": "Iot/metadata",
+                    "GPBMetadata\\Google\\Cloud\\Kms\\": "Kms/metadata",
+                    "GPBMetadata\\Google\\Cloud\\Language\\": "Language/metadata",
+                    "GPBMetadata\\Google\\Cloud\\Oslogin\\": "OsLogin/metadata",
+                    "GPBMetadata\\Google\\Cloud\\Redis\\": "Redis/metadata",
+                    "GPBMetadata\\Google\\Cloud\\Scheduler\\": "Scheduler/metadata",
+                    "GPBMetadata\\Google\\Cloud\\Secrets\\": "SecretManager/metadata",
+                    "GPBMetadata\\Google\\Cloud\\Securitycenter\\": "SecurityCenter/metadata",
+                    "GPBMetadata\\Google\\Cloud\\Speech\\": "Speech/metadata",
+                    "GPBMetadata\\Google\\Cloud\\Talent\\": "Talent/metadata",
+                    "GPBMetadata\\Google\\Cloud\\Tasks\\": "Tasks/metadata",
+                    "GPBMetadata\\Google\\Cloud\\Texttospeech\\": "TextToSpeech/metadata",
+                    "GPBMetadata\\Google\\Cloud\\Translate\\": "Translate/metadata",
+                    "GPBMetadata\\Google\\Cloud\\Videointelligence\\": "VideoIntelligence/metadata",
+                    "GPBMetadata\\Google\\Cloud\\Vision\\": "Vision/metadata",
+                    "GPBMetadata\\Google\\Cloud\\Webrisk\\": "WebRisk/metadata",
+                    "GPBMetadata\\Google\\Cloud\\Websecurityscanner\\": "WebSecurityScanner/metadata",
+                    "GPBMetadata\\Google\\Container\\": "Container/metadata",
+                    "GPBMetadata\\Google\\Datastore\\": "Datastore/metadata",
+                    "GPBMetadata\\Google\\Devtools\\Clouddebugger\\": "Debugger/metadata",
+                    "GPBMetadata\\Google\\Devtools\\Clouderrorreporting\\": "ErrorReporting/metadata",
+                    "GPBMetadata\\Google\\Devtools\\Cloudtrace\\": "Trace/metadata",
+                    "GPBMetadata\\Google\\Firestore\\": "Firestore/metadata",
+                    "GPBMetadata\\Google\\Logging\\": "Logging/metadata",
+                    "GPBMetadata\\Google\\Monitoring\\": "Monitoring/metadata",
+                    "GPBMetadata\\Google\\Privacy\\Dlp\\": "Dlp/metadata",
+                    "GPBMetadata\\Google\\Pubsub\\": "PubSub/metadata",
+                    "GPBMetadata\\Google\\Spanner\\": "Spanner/metadata",
+                    "Google\\Cloud\\": [
+                        "src",
+                        "CommonProtos/src"
+                    ],
+                    "Google\\Cloud\\Asset\\": "Asset/src",
+                    "Google\\Cloud\\AutoMl\\": "AutoMl/src",
+                    "Google\\Cloud\\BigQuery\\": "BigQuery/src",
+                    "Google\\Cloud\\BigQuery\\DataTransfer\\": "BigQueryDataTransfer/src",
+                    "Google\\Cloud\\Bigtable\\": "Bigtable/src",
+                    "Google\\Cloud\\Container\\": "Container/src",
+                    "Google\\Cloud\\Core\\": "Core/src",
+                    "Google\\Cloud\\Dataproc\\": "Dataproc/src",
+                    "Google\\Cloud\\Datastore\\": "Datastore/src",
+                    "Google\\Cloud\\Debugger\\": "Debugger/src",
+                    "Google\\Cloud\\Dialogflow\\": "Dialogflow/src",
+                    "Google\\Cloud\\Dlp\\": "Dlp/src",
+                    "Google\\Cloud\\ErrorReporting\\": "ErrorReporting/src",
+                    "Google\\Cloud\\Firestore\\": "Firestore/src",
+                    "Google\\Cloud\\Iot\\": "Iot/src",
+                    "Google\\Cloud\\Kms\\": "Kms/src",
+                    "Google\\Cloud\\Language\\": "Language/src",
+                    "Google\\Cloud\\Logging\\": "Logging/src",
+                    "Google\\Cloud\\Monitoring\\": "Monitoring/src",
+                    "Google\\Cloud\\OsLogin\\": "OsLogin/src",
+                    "Google\\Cloud\\PubSub\\": "PubSub/src",
+                    "Google\\Cloud\\Redis\\": "Redis/src",
+                    "Google\\Cloud\\Scheduler\\": "Scheduler/src",
+                    "Google\\Cloud\\SecretManager\\": "SecretManager/src",
+                    "Google\\Cloud\\SecurityCenter\\": "SecurityCenter/src",
+                    "Google\\Cloud\\Spanner\\": "Spanner/src",
+                    "Google\\Cloud\\Speech\\": "Speech/src",
+                    "Google\\Cloud\\Storage\\": "Storage/src",
+                    "Google\\Cloud\\Talent\\": "Talent/src",
+                    "Google\\Cloud\\Tasks\\": "Tasks/src",
+                    "Google\\Cloud\\TextToSpeech\\": "TextToSpeech/src",
+                    "Google\\Cloud\\Trace\\": "Trace/src",
+                    "Google\\Cloud\\Translate\\": "Translate/src",
+                    "Google\\Cloud\\VideoIntelligence\\": "VideoIntelligence/src",
+                    "Google\\Cloud\\Vision\\": "Vision/src",
+                    "Google\\Cloud\\WebRisk\\": "WebRisk/src",
+                    "Google\\Cloud\\WebSecurityScanner\\": "WebSecurityScanner/src"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -1670,19 +1790,21 @@
             ],
             "authors": [
                 {
-                    "name": "John Pedrie",
-                    "email": "john@pedrie.com"
-                },
-                {
                     "name": "Dave Supplee",
                     "email": "dwsupplee@gmail.com"
+                },
+                {
+                    "name": "John Pedrie",
+                    "email": "john@pedrie.com"
                 }
             ],
             "description": "Google Cloud Client Library",
-            "homepage": "http://github.com/GoogleCloudPlatform/google-cloud-php",
+            "homepage": "http://github.com/googleapis/google-cloud-php",
             "keywords": [
+                "Tasks",
                 "big query",
                 "bigquery",
+                "bigtable",
                 "cloud",
                 "datastore",
                 "gcs",
@@ -1693,6 +1815,7 @@
                 "google apis client",
                 "google cloud",
                 "google cloud platform",
+                "kms",
                 "language",
                 "natural language",
                 "pub sub",
@@ -1705,276 +1828,7 @@
                 "translation",
                 "vision"
             ],
-            "time": "2017-07-07T21:36:56+00:00"
-        },
-        {
-            "name": "google/cloud-common-protos",
-            "version": "v0.2.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/googleapis/google-cloud-php-common-protos.git",
-                "reference": "625cf12fb125fa98d73c513fb17f41a737fd7a2b"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/googleapis/google-cloud-php-common-protos/zipball/625cf12fb125fa98d73c513fb17f41a737fd7a2b",
-                "reference": "625cf12fb125fa98d73c513fb17f41a737fd7a2b",
-                "shasum": ""
-            },
-            "require": {
-                "google/common-protos": "^1.0",
-                "google/protobuf": "^3.7.1"
-            },
-            "require-dev": {
-                "phpunit/phpunit": "^4.8.36"
-            },
-            "type": "library",
-            "extra": {
-                "component": {
-                    "id": "cloud-common-protos",
-                    "target": "googleapis/google-cloud-php-common-protos.git",
-                    "path": "CommonProtos",
-                    "entry": "README.md"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Google\\Cloud\\": "src",
-                    "GPBMetadata\\Google\\": "metadata"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "Apache-2.0"
-            ],
-            "description": "Common Protos for Google Cloud APIs",
-            "homepage": "https://github.com/googleapis/google-cloud-php-common-protos",
-            "keywords": [
-                "google"
-            ],
-            "time": "2019-03-27T22:13:43+00:00"
-        },
-        {
-            "name": "google/cloud-core",
-            "version": "v1.34.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/googleapis/google-cloud-php-core.git",
-                "reference": "52db21acb2da25d2d79e493842de58da7836c97f"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/googleapis/google-cloud-php-core/zipball/52db21acb2da25d2d79e493842de58da7836c97f",
-                "reference": "52db21acb2da25d2d79e493842de58da7836c97f",
-                "shasum": ""
-            },
-            "require": {
-                "google/auth": "^1.6",
-                "guzzlehttp/guzzle": "^5.3|^6.0",
-                "guzzlehttp/promises": "^1.3",
-                "guzzlehttp/psr7": "^1.2",
-                "monolog/monolog": "^1.1|^2.0",
-                "php": ">=5.5",
-                "psr/http-message": "1.0.*",
-                "rize/uri-template": "~0.3"
-            },
-            "require-dev": {
-                "erusev/parsedown": "^1.6",
-                "google/common-protos": "^1.0",
-                "google/gax": "^1.1",
-                "opis/closure": "^3",
-                "phpdocumentor/reflection": "^3.0",
-                "phpunit/phpunit": "^4.8|^5.0",
-                "squizlabs/php_codesniffer": "2.*"
-            },
-            "suggest": {
-                "opis/closure": "May be used to serialize closures to process jobs in the batch daemon. Please require version ^3.",
-                "symfony/lock": "Required for the Spanner cached based session pool. Please require the following commit: 3.3.x-dev#1ba6ac9"
-            },
-            "bin": [
-                "bin/google-cloud-batch"
-            ],
-            "type": "library",
-            "extra": {
-                "component": {
-                    "id": "cloud-core",
-                    "target": "googleapis/google-cloud-php-core.git",
-                    "path": "Core",
-                    "entry": "src/ServiceBuilder.php"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Google\\Cloud\\Core\\": "src"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "Apache-2.0"
-            ],
-            "description": "Google Cloud PHP shared dependency, providing functionality useful to all components.",
-            "time": "2019-10-28T19:05:44+00:00"
-        },
-        {
-            "name": "google/cloud-debugger",
-            "version": "v0.20.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/googleapis/google-cloud-php-debugger.git",
-                "reference": "12bc685a6fdad40ae22c8118a6150472e5560380"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/googleapis/google-cloud-php-debugger/zipball/12bc685a6fdad40ae22c8118a6150472e5560380",
-                "reference": "12bc685a6fdad40ae22c8118a6150472e5560380",
-                "shasum": ""
-            },
-            "require": {
-                "google/cloud-common-protos": "^0.2",
-                "google/cloud-core": "^1.31",
-                "google/cloud-logging": "^1.16",
-                "google/gax": "^1.1",
-                "psr/log": "^1.0"
-            },
-            "require-dev": {
-                "erusev/parsedown": "^1.6",
-                "google/cloud-tools": "^0.9.0",
-                "phpdocumentor/reflection": "^3.0",
-                "phpunit/phpunit": "^4.8|^5.0",
-                "squizlabs/php_codesniffer": "2.*"
-            },
-            "suggest": {
-                "ext-grpc": "The gRPC extension enables use of the performant gRPC transport",
-                "ext-protobuf": "Provides a significant increase in throughput over the pure PHP protobuf implementation. See https://cloud.google.com/php/grpc for installation instructions.",
-                "ext-stackdriver_debugger": "*"
-            },
-            "bin": [
-                "bin/google-cloud-debugger"
-            ],
-            "type": "library",
-            "extra": {
-                "component": {
-                    "id": "cloud-debugger",
-                    "target": "googleapis/google-cloud-php-debugger.git",
-                    "path": "Debugger",
-                    "entry": "src/DebuggerClient.php"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Google\\Cloud\\Debugger\\": "src",
-                    "GPBMetadata\\Google\\Devtools\\Clouddebugger\\": "metadata"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "Apache-2.0"
-            ],
-            "description": "Stackdriver Debugger Client for PHP",
-            "time": "2019-11-18T18:21:54+00:00"
-        },
-        {
-            "name": "google/cloud-error-reporting",
-            "version": "v0.15.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/googleapis/google-cloud-php-errorreporting.git",
-                "reference": "e4b81dcbb3597d2cfd91bd41974ace230d3a1449"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/googleapis/google-cloud-php-errorreporting/zipball/e4b81dcbb3597d2cfd91bd41974ace230d3a1449",
-                "reference": "e4b81dcbb3597d2cfd91bd41974ace230d3a1449",
-                "shasum": ""
-            },
-            "require": {
-                "google/cloud-logging": "^1.16",
-                "google/gax": "^1.1"
-            },
-            "require-dev": {
-                "google/cloud-core": "^1.31",
-                "phpdocumentor/reflection": "^3.0",
-                "phpunit/phpunit": "^4.8|^5.0"
-            },
-            "suggest": {
-                "ext-grpc": "The gRPC extension allows more granular control over Error Reporting",
-                "ext-protobuf": "Provides a significant increase in throughput over the pure PHP protobuf implementation. See https://cloud.google.com/php/grpc for installation instructions."
-            },
-            "type": "library",
-            "extra": {
-                "component": {
-                    "id": "cloud-error-reporting",
-                    "target": "googleapis/google-cloud-php-errorreporting.git",
-                    "path": "ErrorReporting",
-                    "entry": null
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Google\\Cloud\\ErrorReporting\\": "src",
-                    "GPBMetadata\\Google\\Devtools\\Clouderrorreporting\\": "metadata"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "Apache-2.0"
-            ],
-            "description": "Stackdriver Error Reporting Client for PHP",
-            "time": "2019-08-07T20:57:43+00:00"
-        },
-        {
-            "name": "google/cloud-logging",
-            "version": "v1.18.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/googleapis/google-cloud-php-logging.git",
-                "reference": "e50214e9dba163b7666eda2f915c62742dc834d3"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/googleapis/google-cloud-php-logging/zipball/e50214e9dba163b7666eda2f915c62742dc834d3",
-                "reference": "e50214e9dba163b7666eda2f915c62742dc834d3",
-                "shasum": ""
-            },
-            "require": {
-                "google/cloud-core": "^1.31",
-                "google/gax": "^1.1"
-            },
-            "require-dev": {
-                "erusev/parsedown": "^1.6",
-                "google/cloud-bigquery": "^1.0",
-                "google/cloud-pubsub": "^1.0",
-                "google/cloud-storage": "^1.3",
-                "opis/closure": "^3",
-                "phpdocumentor/reflection": "^3.0",
-                "phpunit/phpunit": "^4.8|^5.0",
-                "squizlabs/php_codesniffer": "2.*"
-            },
-            "suggest": {
-                "ext-grpc": "The gRPC extension enables use of the performant gRPC transport",
-                "ext-protobuf": "Provides a significant increase in throughput over the pure PHP protobuf implementation. See https://cloud.google.com/php/grpc for installation instructions."
-            },
-            "type": "library",
-            "extra": {
-                "component": {
-                    "id": "cloud-logging",
-                    "target": "googleapis/google-cloud-php-logging.git",
-                    "path": "Logging",
-                    "entry": "src/LoggingClient.php"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Google\\Cloud\\Logging\\": "src",
-                    "GPBMetadata\\Google\\Logging\\": "metadata"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "Apache-2.0"
-            ],
-            "description": "Stackdriver Logging Client for PHP",
-            "time": "2019-08-29T21:08:15+00:00"
+            "time": "2020-01-16T23:11:20+00:00"
         },
         {
             "name": "google/common-protos",
@@ -2014,6 +1868,48 @@
                 "google"
             ],
             "time": "2019-07-24T01:25:25+00:00"
+        },
+        {
+            "name": "google/crc32",
+            "version": "v0.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/google/php-crc32.git",
+                "reference": "a8525f0dea6fca1893e1bae2f6e804c5f7d007fb"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/google/php-crc32/zipball/a8525f0dea6fca1893e1bae2f6e804c5f7d007fb",
+                "reference": "a8525f0dea6fca1893e1bae2f6e804c5f7d007fb",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.4"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^1.13 || v2.14.2",
+                "paragonie/random_compat": ">=2",
+                "phpunit/phpunit": "^4"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Google\\CRC32\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "Apache-2.0"
+            ],
+            "authors": [
+                {
+                    "name": "Andrew Brampton",
+                    "email": "bramp@google.com"
+                }
+            ],
+            "description": "Various CRC32 implementations",
+            "homepage": "https://github.com/google/php-crc32",
+            "time": "2019-05-09T06:24:58+00:00"
         },
         {
             "name": "google/gax",
@@ -5501,16 +5397,16 @@
         },
         {
             "name": "symfony/flex",
-            "version": "v1.6.0",
+            "version": "v1.6.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/flex.git",
-                "reference": "952f45d1c5077e658cb16a61d11603bee873f968"
+                "reference": "c497c0c77cb9018cccd9c092832ebf9826612f92"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/flex/zipball/952f45d1c5077e658cb16a61d11603bee873f968",
-                "reference": "952f45d1c5077e658cb16a61d11603bee873f968",
+                "url": "https://api.github.com/repos/symfony/flex/zipball/c497c0c77cb9018cccd9c092832ebf9826612f92",
+                "reference": "c497c0c77cb9018cccd9c092832ebf9826612f92",
                 "shasum": ""
             },
             "require": {
@@ -5546,7 +5442,7 @@
                 }
             ],
             "description": "Composer plugin for Symfony",
-            "time": "2019-12-13T18:05:11+00:00"
+            "time": "2020-01-27T15:38:49+00:00"
         },
         {
             "name": "symfony/form",
