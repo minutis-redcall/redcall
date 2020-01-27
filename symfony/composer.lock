@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c1071161c78c7b602b633e9581c8dc28",
+    "content-hash": "09dcc0b03a55f630f1e633a80964dd41",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -1875,24 +1875,24 @@
         },
         {
             "name": "google/cloud-error-reporting",
-            "version": "v0.14.5",
+            "version": "v0.15.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/googleapis/google-cloud-php-errorreporting.git",
-                "reference": "f34699bc72fbe52101bf545fab9c0dc405b24483"
+                "reference": "e4b81dcbb3597d2cfd91bd41974ace230d3a1449"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/googleapis/google-cloud-php-errorreporting/zipball/f34699bc72fbe52101bf545fab9c0dc405b24483",
-                "reference": "f34699bc72fbe52101bf545fab9c0dc405b24483",
+                "url": "https://api.github.com/repos/googleapis/google-cloud-php-errorreporting/zipball/e4b81dcbb3597d2cfd91bd41974ace230d3a1449",
+                "reference": "e4b81dcbb3597d2cfd91bd41974ace230d3a1449",
                 "shasum": ""
             },
             "require": {
                 "google/cloud-logging": "^1.16",
-                "google/gax": "^1.0"
+                "google/gax": "^1.1"
             },
             "require-dev": {
-                "google/cloud-core": "^1.28",
+                "google/cloud-core": "^1.31",
                 "phpdocumentor/reflection": "^3.0",
                 "phpunit/phpunit": "^4.8|^5.0"
             },
@@ -1920,7 +1920,7 @@
                 "Apache-2.0"
             ],
             "description": "Stackdriver Error Reporting Client for PHP",
-            "time": "2019-06-10T19:08:31+00:00"
+            "time": "2019-08-07T20:57:43+00:00"
         },
         {
             "name": "google/cloud-logging",

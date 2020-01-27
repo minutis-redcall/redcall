@@ -40,7 +40,7 @@ final class Version20200123223558 extends AbstractMigration
         $parameters = [];
         $sql        = 'UPDATE message SET prefix = CASE ';
         foreach ($updates as $id => $prefix) {
-            $sql          .= ' WHEN ? THEN ? ';
+            $sql          .= ' WHEN id = ? THEN ? ';
             $parameters[] = $id;
             $parameters[] = $prefix;
         }
