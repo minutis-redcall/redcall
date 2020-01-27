@@ -93,6 +93,7 @@ campaign:
     label: Intitulé
     type: Couleur
     created_at: Date de création
+  cannot_reopen: 'Impossible de réouvrir le déclenchement : depuis sa fermeure, un ou plusieurs volontaires ont été déclenchés et le préfixe associé à leur réponse a été réuilisé.'
 
 modal:
   change_color: Changer de couleur...

@@ -129,9 +129,12 @@ class CampaignController extends BaseController
     {
         $this->validateCsrfOrThrowNotFoundException('campaign', $csrf);
 
-        // Reopen the campaign
         if (!$campaign->isActive()) {
-            $this->campaignManager->openCampaign($campaign);
+            if (!$this->campaignManager->canReopenCampaign($campaign)) {
+                $this->danger('campaign.cannot_reopen');
+            } else {
+                $this->campaignManager->openCampaign($campaign);
+            }
         }
 
         return $this->redirect($this->generateUrl('communication_index', [

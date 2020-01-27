@@ -172,4 +172,40 @@ class MessageRepository extends BaseRepository
                     ->getQuery()
                     ->getOneOrNullResult();
     }
+
+    /**
+     * @param array $volunteersTakenPrefixes
+     *
+     * @return bool
+     */
+    public function canUsePrefixesForEveryone(array $volunteersTakenPrefixes): bool
+    {
+        if (!$volunteersTakenPrefixes) {
+            return true;
+        }
+
+        $qb = $this->createQueryBuilder('m')
+                   ->select('COUNT(m.id)')
+                   ->join('m.communication', 'co')
+                   ->join('co.campaign', 'ca')
+                   ->join('m.volunteer', 'v')
+                   ->where('ca.active = true')
+                   ->andWhere('v.id IN (:volunteerIds)')
+                   ->setParameter('volunteerIds', array_keys($volunteersTakenPrefixes));
+
+        // Simulating CASE WHEN THEN END
+        $orXs = [];
+        foreach ($volunteersTakenPrefixes as $volunteerId => $prefixes) {
+            $orXs[] = sprintf('v.id = :v_%d AND m.prefix IN (:p_%d)', $volunteerId, $volunteerId);
+            $qb->setParameter(sprintf('v_%d', $volunteerId), $volunteerId);
+            $qb->setParameter(sprintf('p_%d', $volunteerId), $prefixes);
+        }
+
+        $result = (bool)$qb
+            ->andWhere(call_user_func_array([$qb->expr(), 'orX'], $orXs))
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        return !$result;
+    }
 }

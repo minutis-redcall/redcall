@@ -51,7 +51,7 @@ class CampaignRepository extends BaseRepository
             ->innerJoin('s.users', 'u')
             ->where('u.user = :user')
             ->setParameter('user', $user)
-            ->andWhere('c.active = 1');
+            ->andWhere('c.active = true');
     }
 
     /**
@@ -67,7 +67,7 @@ class CampaignRepository extends BaseRepository
             ->innerJoin('s.users', 'u')
             ->where('u.user = :user')
             ->setParameter('user', $user)
-            ->andWhere('c.active = 0');
+            ->andWhere('c.active = false');
     }
 
     /**

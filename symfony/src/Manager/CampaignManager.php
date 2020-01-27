@@ -4,6 +4,7 @@ namespace App\Manager;
 
 use App\Entity\Campaign;
 use App\Entity\Campaign as CampaignEntity;
+use App\Entity\Communication;
 use App\Form\Model\Campaign as CampaignModel;
 use App\Repository\CampaignRepository;
 use Bundles\PasswordLoginBundle\Entity\User;
@@ -22,15 +23,22 @@ class CampaignManager
     private $communicationManager;
 
     /**
-     * @param CampaignRepository   $campaignRepository
-     * @param CommunicationMAnager $communicationManager ;
+     * @var MessageManager
      */
-    public function __construct(
-        CampaignRepository $campaignRepository,
-        CommunicationManager $communicationManager
-    ) {
+    private $messageManager;
+
+    /**
+     * @param CampaignRepository   $campaignRepository
+     * @param CommunicationManager $communicationManager
+     * @param MessageManager       $messageManager
+     */
+    public function __construct(CampaignRepository $campaignRepository,
+        CommunicationManager $communicationManager,
+        MessageManager $messageManager)
+    {
         $this->campaignRepository   = $campaignRepository;
         $this->communicationManager = $communicationManager;
+        $this->messageManager       = $messageManager;
     }
 
     /**
@@ -140,5 +148,31 @@ class CampaignManager
     public function getInactiveCampaignsForUserQueryBuilder(User $user): QueryBuilder
     {
         return $this->campaignRepository->getInactiveCampaignsForUserQueryBuilder($user);
+    }
+
+    /**
+     * A campaign can only be reopened if any of the prefix associated to everyone's
+     * messages are not used in any of the currently open campaigns.
+     *
+     * @param CampaignEntity $campaign
+     *
+     * @return bool
+     */
+    public function canReopenCampaign(CampaignEntity $campaign): bool
+    {
+        // Fetch all taken prefixes for all called volunteers
+        $volunteersTakenPrefixes = [];
+        foreach ($campaign->getCommunications() as $communication) {
+            /** @var Communication $communication */
+            foreach ($communication->getMessages() as $message) {
+                if (!array_key_exists($message->getVolunteer()->getId(), $volunteersTakenPrefixes)) {
+                    $volunteersTakenPrefixes[$message->getVolunteer()->getId()] = [];
+                }
+
+                $volunteersTakenPrefixes[$message->getVolunteer()->getId()][] = $message->getPrefix();
+            }
+        }
+
+        return $this->messageManager->canUsePrefixesForEveryone($volunteersTakenPrefixes);
     }
 }
