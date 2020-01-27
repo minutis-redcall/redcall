@@ -8568,12 +8568,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/redcall-io/sandbox-bundle.git",
-                "reference": "0dcede3c501aad78b6b70f5956083ec9fbb4136f"
+                "reference": "799d14f31e60a5763695ae10f3a5f923c370f64b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/redcall-io/sandbox-bundle/zipball/0dcede3c501aad78b6b70f5956083ec9fbb4136f",
-                "reference": "0dcede3c501aad78b6b70f5956083ec9fbb4136f",
+                "url": "https://api.github.com/repos/redcall-io/sandbox-bundle/zipball/799d14f31e60a5763695ae10f3a5f923c370f64b",
+                "reference": "799d14f31e60a5763695ae10f3a5f923c370f64b",
                 "shasum": ""
             },
             "require": {
@@ -8582,6 +8582,7 @@
                 "doctrine/orm": "^2.6",
                 "league/csv": "^9.1",
                 "php": ">=7.1",
+                "redcall-io/settings-bundle": "^0.0",
                 "sensio/framework-extra-bundle": "^5.1",
                 "symfony/config": "^4.1",
                 "symfony/console": "^4.1",
@@ -8608,7 +8609,7 @@
                 }
             ],
             "description": "Development tools for the redcall.io project",
-            "time": "2020-01-26T08:13:43+00:00"
+            "time": "2020-01-27T22:08:05+00:00"
         },
         {
             "name": "symfony/debug-bundle",
