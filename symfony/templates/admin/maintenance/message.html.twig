@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block menu %}{% endblock %}
+
+{% block body %}
+
+    <div class="jumbotron text-center">
+
+        {{ form(form) }}
+
+        <br/>
+
+        <a href="{{ path('admin_maintenance_index') }}"
+           class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+
+    </div>
+
+{% endblock %}

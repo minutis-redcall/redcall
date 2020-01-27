@@ -1,34 +1,33 @@
 monolog:
-    handlers:
-        main:
-            type: fingers_crossed
-            action_level: error
-            handler: nested
-            excluded_404s:
-                # regex: exclude all 404 errors from the logs
-                - ^/
-        nested:
-            type: stream
-            path: "%kernel.logs_dir%/%kernel.environment%.log"
-            level: debug
-        console:
-            type:   console
-            process_psr_3_messages: false
-            channels: ["!event", "!doctrine"]
-
-        google_cloud:
-            type: service
-            id: monolog_psr_batch_logger
+  handlers:
+    main:
+      type: fingers_crossed
+      action_level: error
+      handler: nested
+      excluded_404s:
+        # regex: exclude all 404 errors from the logs
+        - ^/
+    nested:
+      type: stream
+      path: "%kernel.logs_dir%/%kernel.environment%.log"
+      level: debug
+    console:
+      type:   console
+      process_psr_3_messages: false
+      channels: ["!event", "!doctrine"]
+    google_cloud:
+      type: service
+      id: monolog_psr_batch_logger
 
 services:
 
-    # Monolog wrapper
-    monolog_psr_batch_logger:
-        class: Monolog\Handler\PsrHandler
-        arguments: ['@google_cloud_stackdriver_psr_batch_logger']
+  # Monolog wrapper
+  monolog_psr_batch_logger:
+    class: Monolog\Handler\PsrHandler
+    arguments: ['@google_cloud_stackdriver_psr_batch_logger']
 
-    # PsrBatchLogger
-    google_cloud_stackdriver_psr_batch_logger:
-        class: Google\Cloud\Logging\PsrLogger
-        factory: ['Google\Cloud\Logging\LoggingClient', 'psrBatchLogger']
-        arguments: ['app']
+  # PsrBatchLogger
+  google_cloud_stackdriver_psr_batch_logger:
+    class: Google\Cloud\Logging\PsrLogger
+    factory: ['Google\Cloud\Logging\LoggingClient', 'psrBatchLogger']
+    arguments: ['app']

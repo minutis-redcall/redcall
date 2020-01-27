@@ -1,4 +1,3 @@
-
 runtime: php72
 
 vpc_access_connector:

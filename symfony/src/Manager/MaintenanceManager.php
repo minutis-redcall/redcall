@@ -69,7 +69,7 @@ class MaintenanceManager
 
         // Executing asynchronous task to prevent against interruptions
         $console = sprintf('%s/../bin/console', $this->kernel->getRootDir());
-        $command = sprintf('%s refresh --env=prod', escapeshellarg($console));
+        $command = sprintf('%s refresh', escapeshellarg($console));
         exec(sprintf('%s > /dev/null 2>&1 & echo -n \$!', $command));
 
         return true;

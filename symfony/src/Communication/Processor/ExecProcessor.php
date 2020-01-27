@@ -17,7 +17,7 @@ class ExecProcessor implements ProcessorInterface
     public function process(Communication $communication)
     {
         $console = sprintf('%s/../bin/console', $this->kernel->getRootDir());
-        $command = sprintf('%s send:communication %d --env=prod', escapeshellarg($console), $communication->getId());
+        $command = sprintf('%s send:communication %d', escapeshellarg($console), $communication->getId());
         exec(sprintf('%s > /dev/null 2>&1 & echo -n \$!', $command));
     }
 }

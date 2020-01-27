@@ -41,7 +41,7 @@ cat deploy/${ENV}/dotenv-migrate >> symfony/.env
     php bin/console doctrine:migration:migrate --no-interaction
 
     # Clear up everything
-    kill -9 `ps ax|grep 3304|grep google_compute_engine|grep -v grep|cut -d ' ' -f 2`
+    kill -9 `ps ax|grep 3304|grep google_compute_engine|grep -v grep|awk '{print $1;}'`
     gcloud compute instances stop ${GCP_BASTION_INSTANCE}
 )
 
