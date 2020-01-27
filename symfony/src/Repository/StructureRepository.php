@@ -146,6 +146,7 @@ class StructureRepository extends BaseRepository
                     ->join('s.volunteers', 'v')
                     ->join('v.tags', 't')
                     ->where('u.id = :id')
+                    ->andWhere('v.enabled = true')
                     ->andWhere('s.enabled = true')
                     ->setParameter('id', $user->getId())
                     ->orderBy('t.id', 'ASC')

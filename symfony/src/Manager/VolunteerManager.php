@@ -69,6 +69,16 @@ class VolunteerManager
     }
 
     /**
+     * @param string $email
+     *
+     * @return Volunteer|null
+     */
+    public function findOneByEmail(string $email): ?Volunteer
+    {
+        return $this->volunteerRepository->findOneByEmail($email);
+    }
+
+    /**
      * @param Volunteer $volunteer
      */
     public function save(Volunteer $volunteer)
