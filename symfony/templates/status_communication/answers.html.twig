@@ -20,7 +20,6 @@
 {% endfor %}
 
 <p>{{ 'campaign_status.answers.history'|trans }}</p>
-<div class="text-right">{{ 'campaign_status.answers.prefix'|trans({'%prefix%': message.prefix}) }}</div>
 <table class="table">
     {% for answer in message.answers %}
         <tr>
@@ -43,4 +42,6 @@
         </tr>
     {% endfor %}
 </table>
+
+<div class="text-right">{{ 'campaign_status.answers.prefix'|trans({'%prefix%': message.prefix}) }}</div>
 
