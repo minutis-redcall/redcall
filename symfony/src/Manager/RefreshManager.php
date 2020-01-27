@@ -13,6 +13,15 @@ use Psr\Log\NullLogger;
 
 /**
  * Refreshes Redcall database based on Pegass cache
+ *
+ * Query to check inconsistencies:
+ *
+ * select count(*)
+ * from pegass p
+ * left join volunteer v on v.nivol = trim(leading '0' from p.identifier)
+ * where p.type = 'volunteer'
+ * and p.enabled = 1
+ * and v.id is null
  */
 class RefreshManager
 {
@@ -226,6 +235,7 @@ class RefreshManager
         // Volunteer already up to date
         if ($volunteer->getLastPegassUpdate()
             && $volunteer->getLastPegassUpdate()->getTimestamp() === $pegass->getUpdatedAt()->getTimestamp()) {
+            $this->volunteerManager->save($volunteer);
 
             return;
         }

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "69305525da6187fc70480b344cb82e40",
+    "content-hash": "c1071161c78c7b602b633e9581c8dc28",
     "packages": [
         {
             "name": "doctrine/annotations",
@@ -1518,16 +1518,16 @@
         },
         {
             "name": "google/apiclient-services",
-            "version": "v0.123",
+            "version": "v0.124",
             "source": {
                 "type": "git",
                 "url": "https://github.com/googleapis/google-api-php-client-services.git",
-                "reference": "a8c3c7563729ecb98a9ed66f675366527bcbad4d"
+                "reference": "7bdd526abda4d802e973816cd7b4f3f3bc75fa03"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/googleapis/google-api-php-client-services/zipball/a8c3c7563729ecb98a9ed66f675366527bcbad4d",
-                "reference": "a8c3c7563729ecb98a9ed66f675366527bcbad4d",
+                "url": "https://api.github.com/repos/googleapis/google-api-php-client-services/zipball/7bdd526abda4d802e973816cd7b4f3f3bc75fa03",
+                "reference": "7bdd526abda4d802e973816cd7b4f3f3bc75fa03",
                 "shasum": ""
             },
             "require": {
@@ -1551,7 +1551,7 @@
             "keywords": [
                 "google"
             ],
-            "time": "2020-01-19T00:24:13+00:00"
+            "time": "2020-01-25T00:24:16+00:00"
         },
         {
             "name": "google/auth",
@@ -4084,16 +4084,16 @@
         },
         {
             "name": "redcall-io/settings-bundle",
-            "version": "0.0.3",
+            "version": "0.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/redcall-io/settings-bundle.git",
-                "reference": "cc99420cbaeeb826cb8b93a25648f4b31a501a66"
+                "reference": "fcbf7b86690100033567771bab7dab1f02440bbc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/redcall-io/settings-bundle/zipball/b8bcf09869daec55c43e0a6283b15b1ad5c80d20",
-                "reference": "b8bcf09869daec55c43e0a6283b15b1ad5c80d20",
+                "url": "https://api.github.com/repos/redcall-io/settings-bundle/zipball/fcbf7b86690100033567771bab7dab1f02440bbc",
+                "reference": "fcbf7b86690100033567771bab7dab1f02440bbc",
                 "shasum": ""
             },
             "require": {
@@ -4122,7 +4122,7 @@
                 }
             ],
             "description": "Simple key/value storage",
-            "time": "2020-01-26T17:05:54+00:00"
+            "time": "2020-01-26T22:04:28+00:00"
         },
         {
             "name": "rize/uri-template",

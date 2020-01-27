@@ -23,7 +23,7 @@
     "redcall-io/pagination-bundle": "^0.0",
     "redcall-io/password-login-bundle": "^0.9",
     "redcall-io/pegass-crawler-bundle": "^0.0",
-    "redcall-io/settings-bundle": "^0.0.2",
+    "redcall-io/settings-bundle": "^0.0",
     "sensio/framework-extra-bundle": "^5.1",
     "symfony/apache-pack": "^1.0",
     "symfony/asset": "^4.1",

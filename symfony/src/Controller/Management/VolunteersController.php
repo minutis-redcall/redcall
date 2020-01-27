@@ -115,7 +115,7 @@ class VolunteersController extends BaseController
 
         // Executing asynchronous task to prevent against interruptions
         $console = sprintf('%s/../bin/console', $this->kernel->getRootDir());
-        $command = sprintf('%s pegass --volunteer %s --env=prod', escapeshellarg($console), $nivol);
+        $command = sprintf('%s pegass --volunteer %s', escapeshellarg($console), $volunteer->getIdentifier());
         exec(sprintf('%s > /dev/null 2>&1 & echo -n \$!', $command));
 
         return $this->redirectToRoute('management_volunteers_list', $request->query->all());
