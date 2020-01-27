@@ -34,7 +34,6 @@
     <script type="text/javascript">
 
         var structures = {{ form.vars.structures|json_encode|raw }};
-
         var volunteers = {{ form.vars.volunteers|json_encode|raw }};
         var filteredVolunteers = [];
 
@@ -136,7 +135,8 @@
                 $('#{{ structureTicks }} input').each(function () {
                     var structureTick = $(this);
                     if (structureTick.is(':checked')) {
-                        if (undefined !== structures[structureTick.val()][skillTick.val()]) {
+                        if (undefined !== structures[structureTick.val()]
+                            && undefined !== structures[structureTick.val()][skillTick.val()]) {
                             count += parseInt(structures[structureTick.val()][skillTick.val()]);
                         }
                     }

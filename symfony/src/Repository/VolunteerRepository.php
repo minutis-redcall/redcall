@@ -165,9 +165,10 @@ class VolunteerRepository extends BaseRepository
         $qb = $this->createQueryBuilder('v');
 
         $qb
-            ->innerJoin('v.structures', 's')
-            ->innerJoin('s.users', 'u')
-            ->where('u.id = :user')
+            ->join('v.structures', 's')
+            ->join('s.users', 'u')
+            ->where('v.enabled = true')
+            ->andWhere('u.id = :user')
             ->setParameter('user', $user);
 
         if ($keyword) {

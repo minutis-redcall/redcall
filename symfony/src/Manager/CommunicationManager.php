@@ -8,6 +8,7 @@ use App\Entity\Choice;
 use App\Entity\Communication;
 use App\Entity\Communication as CommunicationEntity;
 use App\Entity\Message;
+use App\Entity\Volunteer;
 use App\Form\Model\Communication as CommunicationModel;
 use App\Repository\CommunicationRepository;
 
@@ -125,6 +126,11 @@ class CommunicationManager
         }
 
         foreach ($communicationModel->volunteers as $volunteer) {
+            /** @var Volunteer $volunteer */
+            if (!$volunteer->isEnabled()) {
+                continue;
+            }
+
             $message = new Message();
 
             if (1 !== $choiceKey) {
