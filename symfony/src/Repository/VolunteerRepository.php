@@ -237,4 +237,54 @@ class VolunteerRepository extends BaseRepository
              ->getQuery()
              ->execute();
     }
+
+    /**
+     * @param callable $callback
+     * @param bool     $onlyEnabled
+     *
+     * @throws \Doctrine\Common\Persistence\Mapping\MappingException
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function foreach(callable $callback, bool $onlyEnabled = true)
+    {
+        $count = $this->createQueryBuilder('v')
+                      ->select('COUNT(v.id)')
+                      ->getQuery()
+                      ->getSingleScalarResult();
+
+        $offset = 0;
+        while ($offset < $count) {
+            $qb = $this->createQueryBuilder('v');
+
+            if ($onlyEnabled) {
+                $qb->where('v.enabled = true');
+            }
+
+            $qb->setFirstResult($offset)
+               ->setMaxResults(1000);
+
+            $iterator = $qb->getQuery()->iterate();
+
+            while (($row = $iterator->next()) !== false) {
+                /* @var Volunteer $entity */
+                $entity = reset($row);
+
+                if (false === $return = $callback($entity)) {
+                    break;
+                }
+
+                if (true === $return) {
+                    continue;
+                }
+
+                $this->_em->persist($entity);
+            }
+
+            $this->_em->flush();
+            $this->_em->clear();
+
+            $offset += 1000;
+        }
+    }
 }

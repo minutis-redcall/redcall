@@ -129,4 +129,13 @@ class VolunteerManager
     {
         $this->volunteerRepository->expireAll();
     }
+
+    /**
+     * @param callable $callback
+     * @param bool     $onlyEnabled
+     */
+    public function foreach(callable $callback, bool $onlyEnabled = true)
+    {
+        $this->volunteerRepository->foreach($callback, $onlyEnabled);
+    }
 }
