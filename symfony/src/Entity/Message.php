@@ -85,7 +85,7 @@ class Message
     private $geoLocation;
 
     /**
-     * @ORM\Column(type="string", length=8)
+     * @ORM\Column(type="string", length=8, nullable=true)
      */
     private $prefix;
 

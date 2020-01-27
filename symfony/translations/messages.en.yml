@@ -99,6 +99,7 @@ campaign:
     label: Label
     type: Color
     created_at: Creation date
+  cannot_reopen: 'Impossible to reopen the campaign: since it was closed, one or several volunteers were triggered and prefix used for their answers was reused.'
 
 campaign_status:
   communication_tabs: Communications

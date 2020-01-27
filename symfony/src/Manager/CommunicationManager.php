@@ -112,20 +112,6 @@ class CommunicationManager
             ->setMultipleAnswer($communicationModel->multipleAnswer)
             ->setSubject($communicationModel->subject);
 
-        foreach ($communicationModel->volunteers as $volunteer) {
-            $message = new Message();
-
-            $message->setPrefix(
-                $this->messageManager->generatePrefix($volunteer)
-            );
-
-            $message->setCode(
-                $this->messageManager->generateCode()
-            );
-
-            $communicationEntity->addMessage($message->setVolunteer($volunteer));
-        }
-
         // The first choice key is always "1"
         $choiceKey = 1;
         foreach (array_unique($communicationModel->answers) as $choiceValue) {
@@ -136,6 +122,22 @@ class CommunicationManager
 
             $communicationEntity->addChoice($choice);
             $choiceKey++;
+        }
+
+        foreach ($communicationModel->volunteers as $volunteer) {
+            $message = new Message();
+
+            if (1 !== $choiceKey) {
+                $message->setPrefix(
+                    $this->messageManager->generatePrefix($volunteer)
+                );
+            }
+
+            $message->setCode(
+                $this->messageManager->generateCode()
+            );
+
+            $communicationEntity->addMessage($message->setVolunteer($volunteer));
         }
 
         return $communicationEntity;

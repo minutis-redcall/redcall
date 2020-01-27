@@ -64,9 +64,9 @@ class Campaign
     /**
      * @var int
      *
-     * @ORM\Column(type="integer", options={"default" : 1})
+     * @ORM\Column(type="boolean")
      */
-    private $active;
+    private $active = true;
 
     /**
      * @ORM\OneToMany(targetEntity="App\Entity\Communication", mappedBy="campaign", cascade={"persist"})

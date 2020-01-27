@@ -237,4 +237,14 @@ class MessageManager
     {
         $this->messageRepository->cancelAnswerByChoice($message, $choice);
     }
+
+    /**
+     * @param array $volunteersTakenPrefixes
+     *
+     * @return bool
+     */
+    public function canUsePrefixesForEveryone(array $volunteersTakenPrefixes): bool
+    {
+        return $this->messageRepository->canUsePrefixesForEveryone($volunteersTakenPrefixes);
+    }
 }
