@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(indexes={
  *     @ORM\Index(name="message_idx", columns={"message_id"}),
  *     @ORM\Index(name="codex"  , columns={"code"}),
- *     @ORM\Index(name="prefixx"  , columns={"prefix"})
+ *     @ORM\Index(name="prefixx"  , columns={"volunteer_id", "prefix"})
  * })
  * @ORM\Entity(repositoryClass="App\Repository\MessageRepository")
  */

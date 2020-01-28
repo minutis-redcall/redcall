@@ -14,7 +14,9 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 /**
  * @ORM\Table(indexes={
  *     @ORM\Index(name="nivolx", columns={"nivol"}),
- *     @ORM\Index(name="lastpegassupdatex", columns={"last_pegass_update"})
+ *     @ORM\Index(name="phone_numberx", columns={"phone_number"}),
+ *     @ORM\Index(name="emailx", columns={"email"}),
+ *     @ORM\Index(name="enabledx", columns={"id", "enabled"})
  * })
  * @ORM\Entity(repositoryClass="App\Repository\VolunteerRepository")
  * @UniqueEntity("nivol")

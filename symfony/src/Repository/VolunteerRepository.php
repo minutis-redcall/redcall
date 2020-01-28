@@ -37,28 +37,6 @@ class VolunteerRepository extends BaseRepository
     }
 
     /**
-     * @param int $limit
-     *
-     * @return array
-     *
-     * @throws \Exception
-     */
-    public function findVolunteersToRefresh(int $limit): array
-    {
-        return $this
-            ->createQueryBuilder('v')
-            ->andWhere('v.enabled = true')
-            ->andWhere('v.locked = false')
-            ->andWhere('v.lastPegassUpdate < :lastMonth')
-            ->setParameter('lastMonth', new \DateTime('last month'))
-            ->orderBy('v.lastPegassUpdate', 'ASC')
-            ->setMaxResults($limit)
-            ->getQuery()
-            ->getResult();
-    }
-
-
-    /**
      * @param Volunteer $volunteer
      *
      * @throws \Doctrine\ORM\ORMException
