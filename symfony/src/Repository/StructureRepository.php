@@ -6,8 +6,8 @@ use App\Base\BaseRepository;
 use App\Entity\Structure;
 use App\Entity\UserInformation;
 use App\Entity\Volunteer;
+use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\ORM\QueryBuilder;
-use Symfony\Bridge\Doctrine\RegistryInterface;
 
 /**
  * @method Structure|null find($id, $lockMode = null, $lockVersion = null)
@@ -17,7 +17,7 @@ use Symfony\Bridge\Doctrine\RegistryInterface;
  */
 class StructureRepository extends BaseRepository
 {
-    public function __construct(RegistryInterface $registry)
+    public function __construct(Registry $registry)
     {
         parent::__construct($registry, Structure::class);
     }

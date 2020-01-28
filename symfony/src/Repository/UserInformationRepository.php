@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Base\BaseRepository;
 use App\Entity\UserInformation;
+use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -19,7 +20,7 @@ class UserInformationRepository extends BaseRepository
     /**
      * @param RegistryInterface $registry
      */
-    public function __construct(RegistryInterface $registry)
+    public function __construct(Registry $registry)
     {
         parent::__construct($registry, UserInformation::class);
     }

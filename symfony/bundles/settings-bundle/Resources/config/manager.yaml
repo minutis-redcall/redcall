@@ -1,0 +1,5 @@
+services:
+
+  Bundles\SettingsBundle\Manager\SettingManager:
+    arguments:
+      - '@Bundles\SettingsBundle\Repository\SettingRepository'

@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block menu %}{% endblock %}
+
+{% block body %}
+
+    <div class="jumbotron text-center">
+
+        <a href="{{ path('sandbox_fake_sms_list') }}"
+           class="text-lg-center large-button btn btn-secondary">{{ 'sandbox.fake_sms.button'|trans }}</a>
+
+        <br/><br/>
+
+        <a href="{{ path('sandbox_fake_email_list') }}"
+           class="text-lg-center large-button btn btn-secondary">{{ 'sandbox.fake_email.button'|trans }}</a>
+
+        <br/><br/>
+
+        <a href="{{ path('sandbox_anonymize', {csrf: csrf_token('anonymize')}) }}"
+           class="text-lg-center large-button btn btn-secondary">{{ 'sandbox.anonymize.button'|trans }}</a>
+
+        <br/><br/><br/>
+
+        <a href="{{ path('home') }}"
+           class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+
+    </div>
+
+{% endblock %}

@@ -1,0 +1,26 @@
+sandbox:
+
+  home:
+    link: 'Sandbox'
+
+  volunteer_generator:
+    button: 'Volunteer Generator'
+    title: 'Generate fake volunteers'
+    label: 'Number of volunteers to create'
+
+  fake_sms:
+    button: 'SMS Simulator'
+    title: 'SMS Simulator - List of recipients'
+    thread: '+%phoneNumber% inbox (%name%)'
+    your_message: 'Your message'
+    send: 'Send'
+    clear: 'Remove all messages'
+
+  fake_email:
+    button: 'Email Simulator'
+    title: 'Email Simulator - List of recipients'
+    read: '%email% inbox (%name%)'
+    clear: 'Remove all messages'
+
+  anonymize:
+    button: 'Anonymize the database'

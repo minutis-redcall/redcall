@@ -1,0 +1,13 @@
+services:
+
+  Bundles\PegassCrawlerBundle\Command\PegassCommand:
+    arguments:
+      - '@Bundles\PegassCrawlerBundle\Manager\PegassManager'
+    tags:
+      - { name: console.command }
+
+  Bundles\PegassCrawlerBundle\Command\PegassSearchCommand:
+    arguments:
+      - '@Bundles\PegassCrawlerBundle\Manager\PegassManager'
+    tags:
+      - { name: console.command }

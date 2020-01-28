@@ -11,13 +11,13 @@ use App\Entity\Message;
 use App\Entity\Selection;
 use App\Entity\Volunteer;
 use App\Tools\Random;
-use Symfony\Bridge\Doctrine\RegistryInterface;
+use Doctrine\Bundle\DoctrineBundle\Registry;
 
 class MessageRepository extends BaseRepository
 {
     const CODE_SIZE = 8;
 
-    public function __construct(RegistryInterface $registry)
+    public function __construct(Registry $registry)
     {
         parent::__construct($registry, Message::class);
     }
