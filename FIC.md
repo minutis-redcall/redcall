@@ -13,12 +13,12 @@ ayant des fonctions diverses, notament dans l'action sociale et le secourisme.
 
 - Si par exemple un grave accident a lieu dans un immeuble et des dizaines
 de personnes se retrouvent à la rue, l'Action Sociale va les prendre en
-charge, les réchauffer/nourir si besoin, et et trouver des solutions
+charge, les réchauffer/nourir si besoin, et trouver des solutions
 d'urgence.
 
 - Ou si par exemple une manifestation déborde et que le SAMU est trop 
 solicité, ils peuvent faire appel à nous afin qu'on vienne leur donner 
-un coup de avec nos ambulances.
+un coup de main avec nos ambulances.
 
 Mais voilà : on est tous des civiles et bénévoles et on habite un peu partout.
 Pour réunir les effectifs dont une intervention a besoin, les responsbles

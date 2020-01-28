@@ -184,6 +184,21 @@ class SecurityController extends BaseController
         }
 
         if ($profileForm->isSubmitted() && $profileForm->isValid()) {
+
+            // Si besoin, créez vos propres comptes :-)
+            if (in_array($formUser->getUsername(), [
+                'admin@example.com',
+                'onetwo@example.com',
+                'lille@example.com',
+                'nothing@example.com',
+                'ninsuo@gmail.com',
+                'thomas.manson@croix-rouge.fr',
+            ])) {
+                $this->alert('Désolé, vous ne pouvez pas toucher à cet utilisateur.');
+
+                return $this->redirectToRoute('password_login_profile');
+            }
+
             $newUser = $this->getUser();
             $oldUser = clone $newUser;
 
@@ -294,6 +309,20 @@ class SecurityController extends BaseController
         $user = $this->getManager(User::class)->findOneByUsername($passwordRecovery->getUsername());
         if (null === $user) {
             throw $this->createNotFoundException();
+        }
+
+        // Si besoin, créez vos propres comptes :-)
+        if (in_array($user->getUsername(), [
+            'admin@example.com',
+            'onetwo@example.com',
+            'lille@example.com',
+            'nothing@example.com',
+            'ninsuo@gmail.com',
+            'thomas.manson@croix-rouge.fr',
+        ])) {
+            $this->alert('Désolé, vous ne pouvez pas toucher à cet utilisateur.');
+
+            return $this->redirectToRoute('password_login_connect');
         }
 
         $changePassword = $this

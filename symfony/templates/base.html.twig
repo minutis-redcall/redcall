@@ -108,12 +108,10 @@
 
             <br/>
 
-            {% if app.environment == 'dev' %}
 
-                <a href="{{ path('sandbox_home') }}" class="btn btn-secondary">{{ 'sandbox.home.link'|trans }}</a>
+            <a href="{{ path('sandbox_home') }}" class="btn btn-secondary">{{ 'sandbox.home.link'|trans }}</a>
                 &nbsp;&nbsp;
 
-            {% endif %}
 
             {% if app.user|default(false) and (is_granted('ROLE_ADMIN') or user_information().structures.count) %}
 

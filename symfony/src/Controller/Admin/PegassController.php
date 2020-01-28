@@ -73,8 +73,21 @@ class PegassController extends BaseController
     {
         $this->validateCsrfOrThrowNotFoundException('pegass', $csrf);
 
-        $nivol = $request->request->get('nivol');
+        // Si besoin, créez vos propres comptes ;-)
+        if (in_array($userInformation->getUser()->getUsername(), [
+            'admin@example.com',
+            'onetwo@example.com',
+            'lille@example.com',
+            'nothing@example.com',
+            'ninsuo@gmail.com',
+            'thomas.manson@croix-rouge.fr',
+        ])) {
+            $this->alert('Désolé, vous ne pouvez pas toucher à cet utilisateur.');
 
+            return $this->json([]);
+        }
+
+        $nivol = $request->request->get('nivol');
         $this->userInformationManager->updateNivol($userInformation, $nivol);
 
         $structureNames = array_map(function (Structure $structure) {

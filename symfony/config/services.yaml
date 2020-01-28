@@ -36,12 +36,22 @@ services:
     resource: '../src/Controller'
     tags: ['controller.service_arguments']
 
-  App\SMS\SMSProvider:
-    class: App\SMS\Nexmo
+  #  App\SMS\SMSProvider:
+  #    class: App\SMS\Nexmo
+  #    public: true
+  #
+  #  App\Email\EmailProvider:
+  #    class: App\Email\SymfonyEmailProvider
+  #    public: true
+
+  App\Provider\SMS\SMSProvider:
+    class: 'Bundles\SandboxBundle\Provider\FakeSmsProvider'
+    arguments: ['@doctrine']
     public: true
 
-  App\Email\EmailProvider:
-    class: App\Email\SymfonyEmailProvider
+  App\Provider\Email\EmailProvider:
+    class: 'Bundles\SandboxBundle\Provider\FakeEmailProvider'
+    arguments: ['@doctrine']
     public: true
 
   App\Communication\Formatter:

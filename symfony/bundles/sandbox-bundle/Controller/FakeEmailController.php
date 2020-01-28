@@ -58,6 +58,11 @@ class FakeEmailController extends BaseController
     {
         $this->validateCsrfOrThrowNotFoundException('fake_email', $csrf);
 
+        // D'autres hunters sont peut-être en train de bosser sur des messages.
+        $this->alert('Cette fonctionnalité est desactivée pour le FIC.');
+
+        return $this->redirectToRoute('sandbox_fake_email_list');
+
         $this->fakeEmailManager->truncate();
 
         return $this->redirectToRoute('sandbox_fake_email_list');

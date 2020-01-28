@@ -28,6 +28,13 @@ class AnonymizeController extends BaseController
     {
         $this->validateCsrfOrThrowNotFoundException('anonymize', $csrf);
 
+        // C'est déjà fait :-)
+        $this->alert('Cette fonctionnalité est desactivée pour le FIC.');
+
+        return $this->redirectToRoute('sandbox_home');
+
+        $this->success('sandbox.anonymize.ran');
+
         $this->anonymizeManager->anonymizeDatabase();
 
         return $this->redirectToRoute('sandbox_home');

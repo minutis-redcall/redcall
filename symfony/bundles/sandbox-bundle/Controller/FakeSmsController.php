@@ -73,6 +73,11 @@ class FakeSmsController extends BaseController
     {
         $this->validateCsrfOrThrowNotFoundException('fake_sms', $csrf);
 
+        // D'autres hunters sont peut-être en train de bosser sur des messages.
+        $this->alert('Cette fonctionnalité est desactivée pour le FIC.');
+
+        return $this->redirectToRoute('sandbox_fake_sms_list');
+
         $this->fakeSmsManager->truncate();
 
         return $this->redirectToRoute('sandbox_fake_sms_list');

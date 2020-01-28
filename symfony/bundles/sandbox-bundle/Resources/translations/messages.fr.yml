@@ -24,3 +24,4 @@ sandbox:
 
   anonymize:
     button: 'Anonymiser la base de données'
+    ran: 'Anonymisation lancée, elle peut prendre du temps.'

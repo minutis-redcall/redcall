@@ -90,6 +90,11 @@ class StructuresController extends BaseController
     {
         $this->validateCsrfOrThrowNotFoundException('structures', $csrf);
 
+        // Synchroniser la structure risque révéler les vrais noms des bénévoles
+        $this->alert('Cette fonctionnalité est desactivée pour le FIC.');
+
+        return $this->redirectToRoute('management_structures_list', $request->query->all());
+
         if (!$structure->canForcePegassUpdate()) {
             return $this->redirectToRoute('management_structures_list', $request->query->all());
         }
@@ -117,6 +122,11 @@ class StructuresController extends BaseController
      */
     public function pegass(Structure $structure)
     {
+        // Cette page permet d'afficher les données de la base CRF
+        $this->alert('Cette fonctionnalité est desactivée pour le FIC.');
+
+        return $this->redirectToRoute('management_structures_list');
+
         $entity = $this->pegassManager->getEntity(Pegass::TYPE_STRUCTURE, $structure->getIdentifier(), false);
         if (!$entity) {
             throw $this->createNotFoundException();

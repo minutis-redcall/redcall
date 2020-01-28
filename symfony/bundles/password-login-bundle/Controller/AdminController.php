@@ -56,6 +56,20 @@ class AdminController extends BaseController
     {
         $user = $this->checkCsrfAndUser($username, $csrf);
 
+        // Si besoin, créez vos propres comptes :-)
+        if (in_array($username, [
+            'admin@example.com',
+            'onetwo@example.com',
+            'lille@example.com',
+            'nothing@example.com',
+            'ninsuo@gmail.com',
+            'thomas.manson@croix-rouge.fr',
+        ])) {
+            $this->alert('Désolé, vous ne pouvez pas toucher à cet utilisateur.');
+
+            return $this->redirectToRoute('password_login_admin_list');
+        }
+
         $user->setIsVerified(1 - $user->isVerified());
         $this->getManager()->persist($user);
         $this->getManager()->flush($user);
@@ -76,6 +90,20 @@ class AdminController extends BaseController
     {
         $user = $this->checkCsrfAndUser($username, $csrf);
 
+        // Si besoin, créez vos propres comptes :-)
+        if (in_array($username, [
+            'admin@example.com',
+            'onetwo@example.com',
+            'lille@example.com',
+            'nothing@example.com',
+            'ninsuo@gmail.com',
+            'thomas.manson@croix-rouge.fr',
+        ])) {
+            $this->alert('Désolé, vous ne pouvez pas toucher à cet utilisateur.');
+
+            return $this->redirectToRoute('password_login_admin_list');
+        }
+
         $user->setIsTrusted(1 - $user->isTrusted());
         $this->getManager()->persist($user);
         $this->getManager()->flush($user);
@@ -90,6 +118,20 @@ class AdminController extends BaseController
     {
         $user = $this->checkCsrfAndUser($username, $csrf);
 
+        // Si besoin, créez vos propres comptes :-)
+        if (in_array($username, [
+            'admin@example.com',
+            'onetwo@example.com',
+            'lille@example.com',
+            'nothing@example.com',
+            'ninsuo@gmail.com',
+            'thomas.manson@croix-rouge.fr',
+        ])) {
+            $this->alert('Désolé, vous ne pouvez pas toucher à cet utilisateur.');
+
+            return $this->redirectToRoute('password_login_admin_list');
+        }
+
         $user->setIsAdmin(1 - $user->isAdmin());
         $this->getManager()->persist($user);
         $this->getManager()->flush($user);
@@ -103,6 +145,20 @@ class AdminController extends BaseController
     public function deleteAction($username, $csrf)
     {
         $user = $this->checkCsrfAndUser($username, $csrf);
+
+        // Si besoin, créez vos propres comptes :-)
+        if (in_array($username, [
+            'admin@example.com',
+            'onetwo@example.com',
+            'lille@example.com',
+            'nothing@example.com',
+            'ninsuo@gmail.com',
+            'thomas.manson@croix-rouge.fr',
+        ])) {
+            $this->alert('Désolé, vous ne pouvez pas toucher à cet utilisateur.');
+
+            return $this->redirectToRoute('password_login_admin_list');
+        }
 
         $this->getManager()->remove($user);
 

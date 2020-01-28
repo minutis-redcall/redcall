@@ -100,6 +100,11 @@ class VolunteersController extends BaseController
     {
         $this->validateCsrfOrThrowNotFoundException('volunteers', $csrf);
 
+        // Synchroniser le nivol avec le vrai bénévole va révéler ses vraies coordonnées.
+        $this->alert('Cette fonctionnalité est desactivée pour le FIC.');
+
+        return $this->redirectToRoute('management_volunteers_list', $request->query->all());
+
         if (!$volunteer->canForcePegassUpdate()) {
             return $this->redirectToRoute('management_volunteers_list', $request->query->all());
         }
@@ -226,6 +231,11 @@ class VolunteersController extends BaseController
      */
     public function pegass(Volunteer $volunteer)
     {
+        // Cette page permet d'afficher les données de la base CRF
+        $this->alert('Cette fonctionnalité est desactivée pour le FIC.');
+
+        return $this->redirectToRoute('management_volunteers_list');
+
         $entity = $this->pegassManager->getEntity(Pegass::TYPE_VOLUNTEER, $volunteer->getIdentifier(), false);
         if (!$entity) {
             throw $this->createNotFoundException();

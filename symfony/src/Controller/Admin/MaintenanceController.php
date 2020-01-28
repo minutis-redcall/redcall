@@ -6,11 +6,11 @@ use App\Base\BaseController;
 use App\Manager\MaintenanceManager;
 use App\Settings;
 use Bundles\SettingsBundle\Manager\SettingManager;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Constraints\Choice;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -53,6 +53,11 @@ class MaintenanceController extends BaseController
      */
     public function refresh()
     {
+        // Répare la DB RedCall en se basant sur la DB de la croix-rouge (Pegass)
+        $this->alert('Cette fonctionnalité est desactivée pour le FIC.');
+
+        return $this->redirectToRoute('admin_maintenance_index');
+
         if ($this->maintenanceManager->refresh()) {
             $this->success('maintenance.refresh_started');
         } else {
@@ -67,6 +72,11 @@ class MaintenanceController extends BaseController
      */
     public function refreshAll()
     {
+        // Crée la DB RedCall en se basant sur la DB de la croix-rouge (Pegass)
+        $this->alert('Cette fonctionnalité est desactivée pour le FIC.');
+
+        return $this->redirectToRoute('admin_maintenance_index');
+
         if ($this->maintenanceManager->refreshAll()) {
             $this->success('maintenance.refresh_started');
         } else {
