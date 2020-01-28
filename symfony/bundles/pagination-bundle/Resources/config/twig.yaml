@@ -1,0 +1,6 @@
+services:
+  Bundles\PaginationBundle\Twig\Extension\PaginationExtension:
+    arguments:
+      - '@request_stack'
+    tags:
+      - 'twig.extension'

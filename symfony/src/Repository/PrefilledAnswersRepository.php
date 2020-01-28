@@ -4,7 +4,7 @@ namespace App\Repository;
 
 use App\Base\BaseRepository;
 use App\Entity\PrefilledAnswers;
-use Symfony\Bridge\Doctrine\RegistryInterface;
+use Doctrine\Bundle\DoctrineBundle\Registry;
 
 /**
  * @method PrefilledAnswers|null find($id, $lockMode = null, $lockVersion = null)
@@ -14,14 +14,14 @@ use Symfony\Bridge\Doctrine\RegistryInterface;
  */
 class PrefilledAnswersRepository extends BaseRepository
 {
-    public function __construct(RegistryInterface $registry)
+    public function __construct(Registry $registry)
     {
         parent::__construct($registry, PrefilledAnswers::class);
     }
 
-//    /**
-//     * @return PrefilledAnswers[] Returns an array of PrefilledAnswers objects
-//     */
+    //    /**
+    //     * @return PrefilledAnswers[] Returns an array of PrefilledAnswers objects
+    //     */
     /*
     public function findByExampleField($value)
     {

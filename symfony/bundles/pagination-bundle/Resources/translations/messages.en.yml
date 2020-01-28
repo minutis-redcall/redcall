@@ -1,0 +1,8 @@
+pagination:
+  prev: '←'
+  current: '-'
+  next: '→'
+  result: '{0} results | {1} result | ]1,Inf[ results'
+  per_page: 'Results per page'
+  go_to: 'Go to page'
+  go: 'Go'

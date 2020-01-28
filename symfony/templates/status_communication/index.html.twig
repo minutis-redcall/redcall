@@ -215,7 +215,7 @@
                                     <span id="volunteer-name-{{ suffix }}"
                                           class="h4 {% if not message.sent %}text-black-50{% endif %}"
                                           onclick="$('#select-{{ suffix }}').click();">
-                                    {{ message.volunteer.firstname ~ ' ' ~ message.volunteer.lastname }}
+                                    {{ message.volunteer.displayName }}
                                     </span>
 
                                     <div class="float-right">

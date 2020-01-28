@@ -1,0 +1,6 @@
+services:
+  Bundles\SettingsBundle\Twig\Extension\SettingExtension:
+    arguments:
+      - '@Bundles\SettingsBundle\Manager\SettingManager'
+    tags:
+      - 'twig.extension'

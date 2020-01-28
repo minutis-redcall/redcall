@@ -1,0 +1,35 @@
+<?php
+
+namespace Bundles\SandboxBundle\Controller;
+
+use App\Base\BaseController;
+use Bundles\SandboxBundle\Manager\AnonymizeManager;
+use Symfony\Component\Routing\Annotation\Route;
+
+class AnonymizeController extends BaseController
+{
+    /**
+     * @var AnonymizeManager
+     */
+    private $anonymizeManager;
+
+    /**
+     * @param AnonymizeManager $anonymizeManager
+     */
+    public function __construct(AnonymizeManager $anonymizeManager)
+    {
+        $this->anonymizeManager = $anonymizeManager;
+    }
+
+    /**
+     * @Route("/anonymize/{csrf}", name="anonymize")
+     */
+    public function anonymizeAction(string $csrf)
+    {
+        $this->validateCsrfOrThrowNotFoundException('anonymize', $csrf);
+
+        $this->anonymizeManager->anonymizeDatabase();
+
+        return $this->redirectToRoute('sandbox_home');
+    }
+}

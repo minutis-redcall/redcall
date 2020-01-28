@@ -1,0 +1,161 @@
+{% extends '@PasswordLogin/base.html.twig' %}
+
+{% block title %}{{ 'password_login.user_list.title'|trans }}{% endblock %}
+
+{% block body %}
+
+    <br/>
+
+    <div class="row">
+
+        {% block content %}
+
+            <div class="col-md-12 jumbotron">
+
+                <h3>{{ block('title') }}</h3>
+
+                {{ form(search) }}
+
+                <table class="table">
+                    <tbody>
+
+                    {% for user in users|default({}) %}
+                        <tr>
+                            <td>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div>
+                                            <div class="h4">{{ user.username }}</div>
+                                            <div class="text-small">
+                                                {{ 'password_login.user_list.registered_at'|trans({'%date%': user.registeredAt|date('d/m/Y H:i')}) }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4">
+
+                                        {% if not user.isEqualTo(app.user) %}
+
+                                            <div>
+                                                {% if user.verified %}
+                                                    <span class="h4">✅</span>
+                                                {% else %}
+                                                    <span class="h4">❌</span>
+                                                {% endif %}
+
+                                                {{ 'password_login.user_list.is_valid'|trans }} <sup>(1)</sup>
+                                            </div>
+
+                                            <div>
+                                                {% if user.trusted %}
+                                                    <span class="h4">✅</span>
+                                                {% else %}
+                                                    <span class="h4">❌</span>
+                                                {% endif %}
+
+                                                {{ 'password_login.user_list.is_trusted'|trans }} <sup>(2)</sup>
+                                            </div>
+
+                                            <div class="text-small">
+                                                {% if user.admin %}
+                                                    <span class="h4">✅</span>
+                                                {% else %}
+                                                    <span class="h4">❌</span>
+                                                {% endif %}
+
+                                                {{ 'password_login.user_list.is_admin'|trans }} <sup>(3)</sup>
+                                            </div>
+
+                                        {% else %}
+                                            <div class="col-md-4">
+                                                <div class="text-small">&nbsp;</div>
+                                                <div class="text-small">&nbsp;</div>
+                                                <div class="text-small">&nbsp;</div>
+                                            </div>
+                                        {% endif %}
+
+                                    </div>
+
+                                    <div class="col-md-4">
+
+                                        {% if not user.isEqualTo(app.user) %}
+
+                                            <div>
+                                                {% if user.verified %}
+                                                    <a href="{{ path('password_login_admin_toggle_verify', {username: user.username, csrf: csrf_token('password_login')}) }}" class="text-danger">
+                                                        {{ 'password_login.user_list.unverify'|trans }}
+                                                    </a>
+                                                {% else %}
+                                                    <a href="{{ path('password_login_admin_toggle_verify', {username: user.username, csrf: csrf_token('password_login')}) }}" class="text-success">
+                                                        {{ 'password_login.user_list.verify'|trans }}
+                                                    </a>
+                                                {% endif %}
+                                            </div>
+
+                                            <div>
+                                                {% if user.trusted %}
+                                                    <a href="{{ path('password_login_admin_toggle_trust', {username: user.username, csrf: csrf_token('password_login')}) }}" class="text-danger">
+                                                        {{ 'password_login.user_list.untrust'|trans }}
+                                                    </a>
+                                                {% else %}
+                                                    <a href="{{ path('password_login_admin_toggle_trust', {username: user.username, csrf: csrf_token('password_login')}) }}" class="text-success">
+                                                        {{ 'password_login.user_list.trust'|trans }}
+                                                    </a>
+                                                {% endif %}
+                                            </div>
+
+                                            <div class="text-small">
+                                                {% if user.admin %}
+                                                    <a href="{{ path('password_login_admin_toggle_admin', {username: user.username, csrf: csrf_token('password_login')}) }}" class="text-danger">
+                                                        {{ 'password_login.user_list.unadmin'|trans }}
+                                                    </a>
+                                                {% else %}
+                                                    <a href="{{ path('password_login_admin_toggle_admin', {username: user.username, csrf: csrf_token('password_login')}) }}" class="text-success">
+                                                        {{ 'password_login.user_list.admin'|trans }}
+                                                    </a>
+                                                {% endif %}
+                                            </div>
+
+                                        {% else %}
+                                            <div class="col-md-4">
+                                                <div class="text-small">&nbsp;</div>
+                                                <div class="text-small">&nbsp;</div>
+                                                <div class="text-small">&nbsp;</div>
+                                            </div>
+                                        {% endif %}
+
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+
+                {% if pager %}
+                    {% import '@Pagination/macros.html.twig' as macros %}
+                    {{ macros.pager(users, null, {type: 'user'}) }}
+                {% endif %}
+
+                <div class="text-left">
+                    <sup>(1)</sup> {{ 'password_login.user_list.description_verified'|trans }}
+                </div>
+                <div class="text-left">
+                    <sup>(2)</sup> {{ 'password_login.user_list.description_trusted'|trans }}
+                </div>
+                <div class="text-left">
+                    <sup>(3)</sup> {{ 'password_login.user_list.description_admin'|trans }}
+                </div>
+
+                <div class="text-right">
+                    <a href="{{ path('home') }}">
+                        {{ 'password_login.user_list.home'|trans }}
+                    </a>
+                </div>
+
+            </div>
+
+        {% endblock %}
+
+    </div>
+
+{% endblock %}

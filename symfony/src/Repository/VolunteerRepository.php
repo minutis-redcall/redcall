@@ -6,8 +6,8 @@ use App\Base\BaseRepository;
 use App\Entity\UserInformation;
 use App\Entity\Volunteer;
 use Bundles\PasswordLoginBundle\Entity\User;
+use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\ORM\QueryBuilder;
-use Symfony\Bridge\Doctrine\RegistryInterface;
 
 /**
  * @method Volunteer|null find($id, $lockMode = null, $lockVersion = null)
@@ -16,7 +16,7 @@ use Symfony\Bridge\Doctrine\RegistryInterface;
  */
 class VolunteerRepository extends BaseRepository
 {
-    public function __construct(RegistryInterface $registry)
+    public function __construct(Registry $registry)
     {
         parent::__construct($registry, Volunteer::class);
     }
@@ -35,28 +35,6 @@ class VolunteerRepository extends BaseRepository
             ->getQuery()
             ->getResult();
     }
-
-    /**
-     * @param int $limit
-     *
-     * @return array
-     *
-     * @throws \Exception
-     */
-    public function findVolunteersToRefresh(int $limit): array
-    {
-        return $this
-            ->createQueryBuilder('v')
-            ->andWhere('v.enabled = true')
-            ->andWhere('v.locked = false')
-            ->andWhere('v.lastPegassUpdate < :lastMonth')
-            ->setParameter('lastMonth', new \DateTime('last month'))
-            ->orderBy('v.lastPegassUpdate', 'ASC')
-            ->setMaxResults($limit)
-            ->getQuery()
-            ->getResult();
-    }
-
 
     /**
      * @param Volunteer $volunteer

@@ -1,0 +1,5 @@
+services:
+  Bundles\PaginationBundle\Manager\PaginationManager:
+    arguments:
+      - '@request_stack'
+    public: true

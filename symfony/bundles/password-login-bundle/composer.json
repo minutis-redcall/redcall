@@ -1,0 +1,39 @@
+{
+  "name": "redcall-io/password-login-bundle",
+  "type": "symfony-bundle",
+  "description": "A decent backoffice authentication layer for Symfony projects",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Alain Tiemblo",
+      "email": "alain.tiemblo@croix-rouge.fr"
+    }
+  ],
+  "require": {
+    "doctrine/doctrine-bundle": "^1.9",
+    "doctrine/orm": "^2.6",
+    "doctrine/dbal": "^2.9",
+    "excelwebzone/recaptcha-bundle": "^1.5",
+    "php": ">=7.1",
+    "ramsey/uuid": "^3.7",
+    "sensio/framework-extra-bundle": "^5.1",
+    "symfony/config": "^4.1",
+    "symfony/dependency-injection": "^4.1",
+    "symfony/form": "^4.1",
+    "symfony/framework-bundle": "^4.1",
+    "symfony/http-foundation": "^4.1",
+    "symfony/http-kernel": "^4.1",
+    "symfony/console": "^4.1",
+    "symfony/security": "^4.1",
+    "symfony/security-bundle": "^4.1",
+    "symfony/security-csrf": "^4.1",
+    "symfony/swiftmailer-bundle": "^3.1",
+    "symfony/validator": "^4.1",
+    "twig/twig": "^2"
+  },
+  "autoload": {
+    "psr-4": {
+      "Bundles\\PasswordLoginBundle\\": ""
+    }
+  }
+}

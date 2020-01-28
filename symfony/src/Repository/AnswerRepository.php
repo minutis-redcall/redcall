@@ -6,7 +6,7 @@ use App\Base\BaseRepository;
 use App\Entity\Answer;
 use App\Entity\Campaign;
 use App\Entity\Message;
-use Symfony\Bridge\Doctrine\RegistryInterface;
+use Doctrine\Bundle\DoctrineBundle\Registry;
 
 /**
  * @method Answer|null find($id, $lockMode = null, $lockVersion = null)
@@ -16,12 +16,7 @@ use Symfony\Bridge\Doctrine\RegistryInterface;
  */
 class AnswerRepository extends BaseRepository
 {
-    /**
-     * AnswerRepository constructor.
-     *
-     * @param RegistryInterface $registry
-     */
-    public function __construct(RegistryInterface $registry)
+    public function __construct(Registry $registry)
     {
         parent::__construct($registry, Answer::class);
     }

@@ -1,0 +1,8 @@
+services:
+
+  Bundles\PegassCrawlerBundle\Manager\PegassManager:
+    arguments:
+      - '@event_dispatcher'
+      - '@Bundles\PegassCrawlerBundle\Repository\PegassRepository'
+      - '@Bundles\PegassCrawlerBundle\Service\PegassClient'
+      - '@logger'

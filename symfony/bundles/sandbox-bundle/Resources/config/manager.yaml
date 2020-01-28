@@ -1,0 +1,17 @@
+services:
+
+  Bundles\SandboxBundle\Manager\FakeSmsManager:
+    arguments:
+      - '@Bundles\SandboxBundle\Repository\FakeSmsRepository'
+
+  Bundles\SandboxBundle\Manager\FakeEmailManager:
+    arguments:
+      - '@Bundles\SandboxBundle\Repository\FakeEmailRepository'
+
+  Bundles\SandboxBundle\Manager\AnonymizeManager:
+    arguments:
+      - '@App\Manager\VolunteerManager'
+      - '@Bundles\SettingsBundle\Manager\SettingManager'
+      - '@Bundles\SandboxBundle\Manager\FakeSmsManager'
+      - '@Bundles\SandboxBundle\Manager\FakeEmailManager'
+      - '@kernel'

@@ -14,7 +14,9 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 /**
  * @ORM\Table(indexes={
  *     @ORM\Index(name="nivolx", columns={"nivol"}),
- *     @ORM\Index(name="lastpegassupdatex", columns={"last_pegass_update"})
+ *     @ORM\Index(name="phone_numberx", columns={"phone_number"}),
+ *     @ORM\Index(name="emailx", columns={"email"}),
+ *     @ORM\Index(name="enabledx", columns={"id", "enabled"})
  * })
  * @ORM\Entity(repositoryClass="App\Repository\VolunteerRepository")
  * @UniqueEntity("nivol")
@@ -596,5 +598,34 @@ class Volunteer
 
         // Prevent several updates in less than 1h
         return time() - $utc->getTimestamp() > 3600;
+    }
+
+    public function getDisplayName()
+    {
+        if ($this->firstName && $this->lastName) {
+            return sprintf('%s %s', $this->toName($this->firstName), $this->toName($this->lastName));
+        }
+
+        return sprintf('#%s', mb_strtoupper($this->nivol));
+    }
+
+    /**
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->getDisplayName();
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return string
+     */
+    private function toName(string $name): string
+    {
+        return preg_replace_callback('/[^\\s\-]+/ui', function (array $match) {
+            return sprintf("%s%s", mb_strtoupper(mb_substr($match[0], 0, 1)), mb_strtolower(mb_substr($match[0], 1)));
+        }, $name);
     }
 }

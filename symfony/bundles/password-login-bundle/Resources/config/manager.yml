@@ -1,0 +1,3 @@
+services:
+  Bundles\PasswordLoginBundle\Manager\UserManager:
+    parent: password_login.base.service

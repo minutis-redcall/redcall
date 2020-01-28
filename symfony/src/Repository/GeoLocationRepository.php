@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Base\BaseRepository;
 use App\Entity\Communication;
 use App\Entity\GeoLocation;
+use Doctrine\Bundle\DoctrineBundle\Registry;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
 /**
@@ -20,7 +21,7 @@ class GeoLocationRepository extends BaseRepository
      *
      * @param RegistryInterface $registry
      */
-    public function __construct(RegistryInterface $registry)
+    public function __construct(Registry $registry)
     {
         parent::__construct($registry, GeoLocation::class);
     }

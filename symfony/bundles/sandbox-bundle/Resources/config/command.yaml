@@ -1,0 +1,8 @@
+services:
+
+  Bundles\SandboxBundle\Command\AnonymizeCommand:
+    public: true
+    arguments:
+      - '@Bundles\SandboxBundle\Manager\AnonymizeManager'
+    tags:
+      - console.command

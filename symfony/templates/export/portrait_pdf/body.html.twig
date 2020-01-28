@@ -117,7 +117,7 @@
                     {% set answer = data.answer|default(null) %}
                     <tr>
                         <td style="padding:10px;color:black;background-color:{{ offwhite }};border: 1px solid black;">
-                            {{ volunteer.firstName }} {{ volunteer.lastName }}
+                            {{ volunteer.displayName }}
                             {% if campaign.structures.count > 1 %}
                                 <div style="font-size:12px;">{{ volunteer.structures|join(', ') }}</div>
                             {% endif %}
