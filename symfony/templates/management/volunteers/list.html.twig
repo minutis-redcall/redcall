@@ -55,11 +55,12 @@
                             </div>
                         </div>
                         <div class="col-md-5">
-                            {# Volunteer contact information #}
+                            #{{ volunteer.nivol }}
+                            <br/>
                             {% if volunteer.email %}
                                 <a href="mailto:{{ volunteer.email }}?subject={{ 'manage_volunteers.contact.mail_subject'|trans|e('html_attr') }}">{{ volunteer.email }}</a>
+                                <br/>
                             {% endif %}
-                            <br/>
                             {% if volunteer.phoneNumber %}
                                 <a href="tel:+{{ volunteer.phoneNumber }}">+{{ volunteer.phoneNumber }}</a>
                             {% endif %}
