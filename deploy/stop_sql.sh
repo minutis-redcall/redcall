@@ -37,4 +37,8 @@ cat deploy/${ENV}/dotenv-migrate >> symfony/.env
 
 # Restoring current context
 cp deploying/.env symfony/.env
+<<<<<<< HEAD
 rm -r deploying
+=======
+rm -r deploying
+>>>>>>> a bit of context
