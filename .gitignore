@@ -12,6 +12,7 @@
 /deploying
 /deploy.ulparis0102
 /symfony/app.yaml
+/symfony/cron.yaml
 
 deploy.ulparis0102
 
