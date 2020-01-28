@@ -28,9 +28,9 @@
                             <div class="h4">
                                 {# Volunteer name and minority #}
                                 {% if volunteer.enabled %}
-                                    {{ volunteer.firstname ~ ' ' ~ volunteer.lastname }}
+                                    {{ volunteer.displayName }}
                                 {% else %}
-                                    <span style="color:grey;">{{ volunteer.firstname ~ ' ' ~ volunteer.lastname }}</span>
+                                    <span style="color:grey;">{{ volunteer.displayName }}</span>
                                 {% endif %}
                                 {% if volunteer.minor %}
                                     <span title="{{ 'manage_volunteers.form.minor'|trans }}">🐻</span>

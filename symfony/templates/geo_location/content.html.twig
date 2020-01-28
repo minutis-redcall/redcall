@@ -42,7 +42,7 @@
                     </span>
                 </div>
 
-                <div class="h4">{{ msg.volunteer.firstName }} {{ msg.volunteer.lastName }}</div>
+                <div class="h4">{{ msg.volunteer.displayName }}</div>
 
                 <div class="text-small">
                     {% for skill in msg.volunteer.tagsView %}
@@ -196,7 +196,7 @@
 
     markers[{{ msg.id }}] = L.marker([{{ msg.geoLocation.latitude }}, {{ msg.geoLocation.longitude }}]).addTo(map);
     markers[{{ msg.id }}].bindPopup(
-        "{{ msg.volunteer.firstName|e('js') }} {{ msg.volunteer.lastName|e('js') }}"
+        "{{ msg.volunteer.displayName|e('js') }}"
         + "<br/>"
         + '<a href="tel:{{ msg.volunteer.formattedPhoneNumber|e('js') }}">{{ msg.volunteer.formattedPhoneNumber|e('js') }}</a>'
         + '<div id="compass-{{ msg.id }}" style="width:100%;text-align:center;transform: rotate({{ msg.geoLocation.heading }}deg)">⬆</div>'
@@ -211,7 +211,7 @@
 
     markers[{{ msg.id }}] = L.marker([0, 0]).addTo(map);
     markers[{{ msg.id }}].bindPopup(
-        "{{ msg.volunteer.firstName|e('js') }} {{ msg.volunteer.lastName|e('js') }}"
+        "{{ msg.volunteer.displayName|e('js') }}"
         + "<br/>"
         + '<a href="tel:{{ msg.volunteer.formattedPhoneNumber|e('js') }}">{{ msg.volunteer.formattedPhoneNumber|e('js') }}</a>'
         + '<div id="compass-{{ msg.id }}" style="width:100%;text-align:center;">⬆</div>'

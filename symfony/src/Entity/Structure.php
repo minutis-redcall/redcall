@@ -439,11 +439,16 @@ class Structure
         return time() - $utc->getTimestamp() > 3600;
     }
 
+    public function getDisplayName()
+    {
+        return mb_strtoupper($this->name);
+    }
+
     /**
      * @return string
      */
     public function __toString()
     {
-        return $this->name;
+        return $this->getDisplayName();
     }
 }

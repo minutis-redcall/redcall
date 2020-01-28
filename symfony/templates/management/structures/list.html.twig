@@ -27,7 +27,7 @@
                                 <div class="text-small">
                                     {% set president = structure.presidentVolunteer %}
                                     {% if president %}
-                                        {{ 'manage_structures.president'|trans({'%president%': president.firstName ~ ' ' ~ president.lastName}) }}
+                                        {{ 'manage_structures.president'|trans({'%president%': president.displayName}) }}
                                         <br/>
                                     {% endif %}
                                     {{ 'manage_structures.volunteers'|trans({'%count%': structure.activeVolunteers|length}) }}
