@@ -316,4 +316,5 @@ infos:
   context_5: 'RedCall address this matter and allows local Red-Cross officials to contact volunteers with SMS and emails.'
   context_6: 'What the volunteer sees:'
   context_7: 'What the responsible sees:'
-  context_8: 'The application is currently being beta-tested by a few structures, but we''ll keep you aware of its deployment through Minutis.'
+  context_8: 'Once teams are complete, responsible can send a PDF containing all relevant information to his territorial direction.'
+  context_9: 'The application is currently being beta-tested by a few structures, but we''ll keep you aware of its deployment through Minutis.'
