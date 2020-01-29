@@ -28,6 +28,11 @@ final class Version20200123223558 extends AbstractMigration
         $prefixes = [];
         $updates  = [];
         $messages = $this->connection->fetchAll('SELECT id, volunteer_id FROM message');
+
+        if (!$messages) {
+            return;
+        }
+
         foreach ($messages as $message) {
             if (!array_key_exists($message['volunteer_id'], $prefixes)) {
                 $prefixes[$message['volunteer_id']] = 'A';
