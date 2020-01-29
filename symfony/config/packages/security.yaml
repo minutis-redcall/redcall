@@ -26,11 +26,17 @@ security:
       guard:
         authenticators:
           - password_login.authenticator.form_login
+          - App\Security\Authenticator\MinutisAuthenticator
+        entry_point: password_login.authenticator.form_login
 
   access_control:
 
-    # Maintenance
+    # Technical
     - { path: '^/cron', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
+
+    # Minutis authentication
+    - { path: '^/auth$', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
+    - { path: '^/infos/', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
 
     # Nexmo webhooks (sms response received)
     - { path: '^/webhooks', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
