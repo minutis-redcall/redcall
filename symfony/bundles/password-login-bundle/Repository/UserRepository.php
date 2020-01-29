@@ -10,15 +10,16 @@ class UserRepository extends EntityRepository
     public function searchAll(?string $criteria)
     {
         return $this->searchAllQueryBuilder($criteria)
-                    ->getQuery()
-                    ->getResult();
+            ->getQuery()
+            ->getResult();
     }
 
     public function searchAllQueryBuilder(?string $criteria): QueryBuilder
     {
         return $this->createQueryBuilder('u')
-                    ->where('u.username LIKE :criteria')
-                    ->setParameter('criteria', sprintf('%%%s%%', $criteria))
-                    ->orderBy('u.id', 'DESC');
+            ->where('u.username LIKE :criteria')
+            ->setParameter('criteria', sprintf('%%%s%%', $criteria))
+            ->addOrderBy('u.registeredAt', 'DESC')
+            ->addOrderBy('u.username', 'ASC');
     }
 }

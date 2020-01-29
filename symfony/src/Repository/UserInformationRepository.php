@@ -49,11 +49,11 @@ class UserInformationRepository extends BaseRepository
     public function getByUser(UserInterface $user): UserInformation
     {
         $preferences = $this->createQueryBuilder('p')
-                            ->where('p.user = :user')
-                            ->setParameter('user', $user)
-                            ->getQuery()
-                            ->useResultCache(false)
-                            ->getOneOrNullResult();
+            ->where('p.user = :user')
+            ->setParameter('user', $user)
+            ->getQuery()
+            ->useResultCache(false)
+            ->getOneOrNullResult();
 
         if (!$preferences) {
             $preferences = new UserInformation();
@@ -85,10 +85,11 @@ class UserInformationRepository extends BaseRepository
     public function searchQueryBuilder(?string $criteria): QueryBuilder
     {
         return $this->createQueryBuilder('ui')
-                    ->join('ui.user', 'u')
-                    ->where('u.username LIKE :criteria')
-                    ->orWhere('ui.nivol LIKE :criteria')
-                    ->setParameter('criteria', sprintf('%%%s%%', $criteria))
-                    ->orderBy('u.id', 'DESC');
+            ->join('ui.user', 'u')
+            ->where('u.username LIKE :criteria')
+            ->orWhere('ui.nivol LIKE :criteria')
+            ->setParameter('criteria', sprintf('%%%s%%', $criteria))
+            ->addOrderBy('u.registeredAt', 'DESC')
+            ->addOrderBy('u.username', 'ASC');
     }
 }
