@@ -107,11 +107,11 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
                 'nivol' => $nivol,
             ]);
 
-            // Will be used by onAuthenticationFailure handler
-            $this->volunteer = $volunteer;
-
             throw new BadCredentialsException();
         }
+
+        // Will be used by onAuthenticationFailure handler
+        $this->volunteer = $volunteer;
 
         // Seek for a RedCall user attached to that volunteer
         $userInformation = $this->userInformationManager->findOneByNivol($nivol);
