@@ -76,8 +76,8 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
     {
         // Decode and verify JWT token
         try {
-            $decoded = JWT::decode($jwt, $this->getMinutisPublicKey(), ['RS256']);
-        } catch (\Throwable $e) {
+            $decoded = (array)JWT::decode($jwt, $this->getMinutisPublicKey(), ['RS256']);
+        } catch (\Exception $e) {
             // Either invalid JWT, invalid algo, expired token...
             $this->logger->warning('Unable to decode JWT', [
                 'token' => $jwt,
@@ -88,12 +88,15 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
         }
 
         // Seek for a nivol in payload
-        if (!array_key_exists('nivol', $decoded)) {
-            $this->logger->warning('Nivol not given in JWT', [
-                'token' => $jwt,
-            ]);
+        foreach (['iat', 'exp', 'nivol'] as $requiredKey) {
+            if (!array_key_exists($requiredKey, $decoded)) {
+                $this->logger->warning('Key not given in JWT', [
+                    'key' => $requiredKey,
+                    'token' => $jwt,
+                ]);
 
-            throw new BadCredentialsException();
+                throw new BadCredentialsException();
+            }
         }
 
         // Seek for a volunteer attached to that nivol
@@ -127,7 +130,7 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
 
         $client->request('GET', getenv('MINUTIS_JWT_PUBLIC_KEY_URL'));
 
-        return $this->client->getResponse()->getContent();
+        return $client->getResponse()->getContent();
     }
 
     public function checkCredentials($credentials, UserInterface $user)

@@ -52,4 +52,12 @@ class HomeController extends Controller
 
         return $this->redirectToRoute('home');
     }
+
+    /**
+     * @Route("/auth", name="auth")
+     */
+    public function auth()
+    {
+        // never reached
+    }
 }
