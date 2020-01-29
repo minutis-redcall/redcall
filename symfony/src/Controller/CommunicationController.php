@@ -85,21 +85,21 @@ class CommunicationController extends BaseController
      * @param UserInformationManager $userInformationManager
      */
     public function __construct(CampaignManager $campaignManager,
-        CommunicationManager $communicationManager,
-        MessageFormatter $formatter,
-        TagManager $tagManager,
-        VolunteerManager $volunteerManager,
-        MessageManager $messageManager,
-        AnswerManager $answerManager,
-        UserInformationManager $userInformationManager)
+                                CommunicationManager $communicationManager,
+                                MessageFormatter $formatter,
+                                TagManager $tagManager,
+                                VolunteerManager $volunteerManager,
+                                MessageManager $messageManager,
+                                AnswerManager $answerManager,
+                                UserInformationManager $userInformationManager)
     {
-        $this->campaignManager        = $campaignManager;
-        $this->communicationManager   = $communicationManager;
-        $this->formatter              = $formatter;
-        $this->tagManager             = $tagManager;
-        $this->volunteerManager       = $volunteerManager;
-        $this->messageManager         = $messageManager;
-        $this->answerManager          = $answerManager;
+        $this->campaignManager = $campaignManager;
+        $this->communicationManager = $communicationManager;
+        $this->formatter = $formatter;
+        $this->tagManager = $tagManager;
+        $this->volunteerManager = $volunteerManager;
+        $this->messageManager = $messageManager;
+        $this->answerManager = $answerManager;
         $this->userInformationManager = $userInformationManager;
     }
 
@@ -112,11 +112,32 @@ class CommunicationController extends BaseController
         $this->get('session')->save();
 
         return $this->render('status_communication/index.html.twig', [
-            'campaign'   => $campaign,
-            'skills'     => $this->tagManager->findAll(),
+            'campaign' => $campaign,
+            'skills' => $this->tagManager->findAll(),
             'statusHash' => $this->getStatusHash($campaign),
-            'progress'   => $campaign->getCampaignProgression(),
+            'progress' => $campaign->getCampaignProgression(),
         ]);
+    }
+
+    /**
+     * Returns the campaign's status hash, a hash used by SSE in order
+     * to know if campaign status is up to date or needs to be refreshed.
+     *
+     * Notes:
+     * - status hash should match [0-9-]*
+     * - no cache should be involved (take care of doctrine)
+     */
+    private function getStatusHash(Campaign $campaign): string
+    {
+        return sprintf(
+            '%s-%s',
+
+            // New answer arrived
+            $this->answerManager->getLastCampaignUpdateTimestamp($campaign),
+
+            // Number of messages sent changed
+            $this->messageManager->getNumberOfSentMessages($campaign)
+        );
     }
 
     /**
@@ -166,7 +187,7 @@ class CommunicationController extends BaseController
         if (!isset($selections[$campaign->getId()])) {
             $selections[$campaign->getId()] = [];
         }
-        $key                                  = Random::generate(8);
+        $key = Random::generate(8);
         $selections[$campaign->getId()][$key] = $selection;
         if ($count = count($selections[$campaign->getId()]) > 100) {
             $selections[$campaign->getId()] = array_slice($selections[$campaign->getId()], $count - 100);
@@ -174,7 +195,7 @@ class CommunicationController extends BaseController
         $this->get('session')->set('add-communication', $selections);
 
         return $this->redirectToRoute('communication_new', [
-            'id'  => $campaign->getId(),
+            'id' => $campaign->getId(),
             'key' => $key,
         ]);
     }
@@ -212,10 +233,10 @@ class CommunicationController extends BaseController
         /**
          * @var \App\Form\Model\Communication
          */
-        $communication             = new \App\Form\Model\Communication();
+        $communication = new \App\Form\Model\Communication();
         $communication->structures = $userInformation->getVolunteer()->getStructures();
         $communication->volunteers = $volunteers;
-        $communication->answers    = [];
+        $communication->answers = [];
 
         $form = $this
             ->createForm(CommunicationType::class, $communication)
@@ -231,9 +252,9 @@ class CommunicationController extends BaseController
         }
 
         return $this->render('new_communication/page.html.twig', [
-            'campaign'   => $campaign,
+            'campaign' => $campaign,
             'volunteers' => $volunteers,
-            'form'       => $form->createView(),
+            'form' => $form->createView(),
         ]);
     }
 
@@ -269,13 +290,13 @@ class CommunicationController extends BaseController
         $message->setCode('xxxxxxxx');
 
         $content = $this->formatter->formatMessageContent($message);
-        $parts   = GSM::getSMSParts($content);
+        $parts = GSM::getSMSParts($content);
 
         return new JsonResponse([
             'success' => true,
-            'message' => $content,
-            'cost'    => count($parts),
-            'length'  => array_sum(array_map('mb_strlen', $parts)),
+            'message' => htmlentities($content),
+            'cost' => count($parts),
+            'length' => array_sum(array_map('mb_strlen', $parts)),
         ]);
     }
 
@@ -322,7 +343,7 @@ class CommunicationController extends BaseController
         }
 
         $choiceEntity = null;
-        $choiceId     = $request->request->get('choiceId');
+        $choiceId = $request->request->get('choiceId');
         foreach ($message->getCommunication()->getChoices() as $choice) {
             if ($choice->getId() == $choiceId) {
                 $choiceEntity = $choice;
@@ -347,9 +368,9 @@ class CommunicationController extends BaseController
     {
         $this->validateCsrfOrThrowNotFoundException('communication', $request->request->get('csrf'));
 
-        $communication        = new CommunicationModel();
+        $communication = new CommunicationModel();
         $communication->label = $request->request->get('new_name');
-        $errors               = $this->get('validator')->validate($communication, null, ['label_edition']);
+        $errors = $this->get('validator')->validate($communication, null, ['label_edition']);
         if (count($errors) > 0) {
             foreach ($errors as $error) {
                 $this->addFlash('danger', $error->getMessage());
@@ -361,26 +382,5 @@ class CommunicationController extends BaseController
         return $this->redirect($this->generateUrl('communication_index', [
             'id' => $campaign->getId(),
         ]));
-    }
-
-    /**
-     * Returns the campaign's status hash, a hash used by SSE in order
-     * to know if campaign status is up to date or needs to be refreshed.
-     *
-     * Notes:
-     * - status hash should match [0-9-]*
-     * - no cache should be involved (take care of doctrine)
-     */
-    private function getStatusHash(Campaign $campaign): string
-    {
-        return sprintf(
-            '%s-%s',
-
-            // New answer arrived
-            $this->answerManager->getLastCampaignUpdateTimestamp($campaign),
-
-            // Number of messages sent changed
-            $this->messageManager->getNumberOfSentMessages($campaign)
-        );
     }
 }
