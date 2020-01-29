@@ -305,3 +305,15 @@ maintenance:
       alert: 'Yellow (alert)'
       danger: 'Red (danger)'
     content: 'Message content (newlines allowed)'
+
+infos:
+  hello_name: 'Welcome %firstName%,'
+  hello_anonymous: 'Welcome,'
+  context_1: 'The French Red-Cross is composed of more than a thousand different structures, especially working on Social Action and First Aid.'
+  context_2: 'For example, if a severe accident occurs in a given building and tens of people find themselves with no housing, the Social Action will take care of them, offering emergency solutions, and providing food and warm clothes if needed.'
+  context_3: 'Or, if a strike gets out of hand and French Emergencies are overwhelmed, the French Red-Cross can assist them with ambulances and volunteers.'
+  context_4: 'Since members are all civilians and volunteers from all parts of France, it is a great challenge to trigger and mobilise them efficiently.'
+  context_5: 'RedCall address this matter and allows local Red-Cross officials to contact volunteers with SMS and emails.'
+  context_6: 'What the volunteer sees:'
+  context_7: 'What the responsible sees:'
+  context_8: 'The application is currently being beta-tested by a few structures, but we''ll keep you aware of its deployment through Minutis.'

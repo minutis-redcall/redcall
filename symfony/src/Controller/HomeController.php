@@ -2,9 +2,10 @@
 
 namespace App\Controller;
 
+use App\Entity\Volunteer;
 use App\Manager\LocaleManager;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Routing\Annotation\Route;
 
 class HomeController extends Controller
 {
@@ -23,7 +24,7 @@ class HomeController extends Controller
     /**
      * @Route(name="home")
      */
-    public function indexAction()
+    public function home()
     {
         if (!$this->isGranted('ROLE_TRUSTED')) {
             return $this->redirectToRoute('password_login_not_trusted');
@@ -33,9 +34,19 @@ class HomeController extends Controller
     }
 
     /**
+     * @Route("/infos/{nivol}", name="infos")
+     */
+    public function infos(Volunteer $volunteer)
+    {
+        return $this->render('infos.html.twig', [
+            'volunteer' => $volunteer,
+        ]);
+    }
+
+    /**
      * @Route("/locale/{locale}", name="locale")
      */
-    public function localeAction(string $locale)
+    public function locale(string $locale)
     {
         $this->locale->save($locale);
 

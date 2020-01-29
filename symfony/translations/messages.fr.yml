@@ -304,3 +304,15 @@ maintenance:
       alert: 'Jaune (alerte)'
       danger: 'Rouge (danger)'
     content: 'Contenu du message (sauts de lignes acceptés)'
+
+infos:
+  hello_name: 'Bievenue %firstName%,'
+  hello_anonymous: 'Bienvene,'
+  context_1: 'La Croix-Rouge Française possède un peu plus d''un millier de structures ayant des fonctions diverses, notament dans l''action sociale et le secourisme.'
+  context_2: 'Si par exemple un grave accident a lieu dans un immeuble et des dizaines de personnes se retrouvent à la rue, l''Action Sociale va les prendre en charge, les réchauffer/nourir si besoin, et trouver des solutions d''urgence.'
+  context_3: 'Ou si par exemple une manifestation déborde et que le SAMU est trop solicité, ils peuvent faire appel à nous afin qu''on vienne leur donner un coup de main avec nos ambulances.'
+  context_4: 'Pour réunir les effectifs dont une intervention a besoin, les responsbles de chaque unité locale doivent efficacement faire appel à leurs volontaires.'
+  context_5: 'C''est là que RedCall intervient : elle permet à ces responsables de contacter les ressources dont ils ont besoin par SMS ou email.'
+  context_6: 'Ce que le volontaire voit:'
+  context_7: 'Ce que le responsable voit:'
+  context_8: 'L''application n''est pour le moment qu''en béta test par quelques unités locales, mais nous vous tiendrons informés de son déploiement au travers de Minutis.'
