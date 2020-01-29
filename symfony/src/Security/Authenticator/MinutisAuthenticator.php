@@ -119,6 +119,8 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
             $this->logger->info('A volunteer without RedCall access clicked on Minutis link', [
                 'nivol' => $nivol,
             ]);
+
+            throw new BadCredentialsException();
         }
 
         return $userInformation->getUser();
