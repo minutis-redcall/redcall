@@ -115,6 +115,12 @@
                                                 {% endif %}
                                             </div>
 
+                                            <div class="text-small">
+                                                <a href="{{ path('password_login_admin_delete', {username: user.username, csrf: csrf_token('password_login')}) }}" class="text-danger">
+                                                    {{ 'password_login.user_list.delete'|trans }}
+                                                </a>
+                                            </div>
+
                                         {% else %}
                                             <div class="col-md-4">
                                                 <div class="text-small">&nbsp;</div>
