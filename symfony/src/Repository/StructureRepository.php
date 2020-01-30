@@ -28,9 +28,9 @@ class StructureRepository extends BaseRepository
     public function listStructureIdentifiers(): array
     {
         $rows = $this->createQueryBuilder('s')
-                     ->select('s.identifier')
-                     ->getQuery()
-                     ->getArrayResult();
+            ->select('s.identifier')
+            ->getQuery()
+            ->getArrayResult();
 
         return array_column($rows, 'identifier');
     }
@@ -44,13 +44,13 @@ class StructureRepository extends BaseRepository
     public function disableByIdentifier(string $identifier)
     {
         $this->createQueryBuilder('s')
-             ->update()
-             ->set('s.enabled = :enabled')
-             ->setParameter('enabled', false)
-             ->where('s.identifier = :identifier')
-             ->setParameter('identifier', $identifier)
-             ->getQuery()
-             ->execute();
+            ->update()
+            ->set('s.enabled', ':enabled')
+            ->setParameter('enabled', false)
+            ->where('s.identifier = :identifier')
+            ->setParameter('identifier', $identifier)
+            ->getQuery()
+            ->execute();
     }
 
     /**
@@ -68,27 +68,27 @@ class StructureRepository extends BaseRepository
     public function findCallableStructuresForVolunteer(Volunteer $volunteer): array
     {
         $structures = $this->createQueryBuilder('s')
-                           ->select('
+            ->select('
                                 s.id as s1,
                                 ss.id as s2,
                                 sss.id as s3,
                                 ssss.id as s4,
                                 sssss.id as s5'
-                           )
-                           ->innerJoin('s.volunteers', 'v')
-                           ->leftJoin('s.childrenStructures', 'ss')
-                           ->leftJoin('ss.childrenStructures', 'sss')
-                           ->leftJoin('sss.childrenStructures', 'ssss')
-                           ->leftJoin('ssss.childrenStructures', 'sssss')
-                           ->where('v.id = :id')
-                           ->andWhere('s.enabled IS NULL OR s.enabled = true')
-                           ->andWhere('ss.enabled IS NULL OR ss.enabled = true')
-                           ->andWhere('sss.enabled IS NULL OR sss.enabled = true')
-                           ->andWhere('ssss.enabled IS NULL OR ssss.enabled = true')
-                           ->andWhere('sssss.enabled IS NULL OR sssss.enabled = true')
-                           ->setParameter('id', $volunteer->getId())
-                           ->getQuery()
-                           ->getArrayResult();
+            )
+            ->innerJoin('s.volunteers', 'v')
+            ->leftJoin('s.childrenStructures', 'ss')
+            ->leftJoin('ss.childrenStructures', 'sss')
+            ->leftJoin('sss.childrenStructures', 'ssss')
+            ->leftJoin('ssss.childrenStructures', 'sssss')
+            ->where('v.id = :id')
+            ->andWhere('s.enabled IS NULL OR s.enabled = true')
+            ->andWhere('ss.enabled IS NULL OR ss.enabled = true')
+            ->andWhere('sss.enabled IS NULL OR sss.enabled = true')
+            ->andWhere('ssss.enabled IS NULL OR ssss.enabled = true')
+            ->andWhere('sssss.enabled IS NULL OR sssss.enabled = true')
+            ->setParameter('id', $volunteer->getId())
+            ->getQuery()
+            ->getArrayResult();
 
         $ids = array_filter(array_unique(array_merge(
             array_column($structures, 's1'),
@@ -99,10 +99,10 @@ class StructureRepository extends BaseRepository
         )));
 
         return $this->createQueryBuilder('s')
-                    ->where('s.id IN (:ids)')
-                    ->setParameter('ids', $ids)
-                    ->getQuery()
-                    ->getResult();
+            ->where('s.id IN (:ids)')
+            ->setParameter('ids', $ids)
+            ->getQuery()
+            ->getResult();
     }
 
     /**
@@ -117,15 +117,15 @@ class StructureRepository extends BaseRepository
         }, $structures);
 
         $rows = $this->createQueryBuilder('s')
-                     ->select('s.id as structure_id, COUNT(v.id) as count')
-                     ->join('s.volunteers', 'v')
-                     ->where('s.id IN (:ids)')
-                     ->andWhere('s.enabled = true')
-                     ->setParameter('ids', $ids)
-                     ->andWhere('v.enabled = true')
-                     ->groupBy('s.id')
-                     ->getQuery()
-                     ->getArrayResult();
+            ->select('s.id as structure_id, COUNT(v.id) as count')
+            ->join('s.volunteers', 'v')
+            ->where('s.id IN (:ids)')
+            ->andWhere('s.enabled = true')
+            ->setParameter('ids', $ids)
+            ->andWhere('v.enabled = true')
+            ->groupBy('s.id')
+            ->getQuery()
+            ->getArrayResult();
 
         return array_combine(
             array_column($rows, 'structure_id'),
@@ -141,18 +141,18 @@ class StructureRepository extends BaseRepository
     public function getTagCountByStructuresForUser(UserInformation $user): array
     {
         return $this->createQueryBuilder('s')
-                    ->select('s.id as structure_id, t.id as tag_id, COUNT(v.id) as count')
-                    ->join('s.users', 'u')
-                    ->join('s.volunteers', 'v')
-                    ->join('v.tags', 't')
-                    ->where('u.id = :id')
-                    ->andWhere('v.enabled = true')
-                    ->andWhere('s.enabled = true')
-                    ->setParameter('id', $user->getId())
-                    ->orderBy('t.id', 'ASC')
-                    ->groupBy('s.id', 't.id')
-                    ->getQuery()
-                    ->getArrayResult();
+            ->select('s.id as structure_id, t.id as tag_id, COUNT(v.id) as count')
+            ->join('s.users', 'u')
+            ->join('s.volunteers', 'v')
+            ->join('v.tags', 't')
+            ->where('u.id = :id')
+            ->andWhere('v.enabled = true')
+            ->andWhere('s.enabled = true')
+            ->setParameter('id', $user->getId())
+            ->orderBy('t.id', 'ASC')
+            ->groupBy('s.id', 't.id')
+            ->getQuery()
+            ->getArrayResult();
     }
 
     /**
@@ -163,11 +163,11 @@ class StructureRepository extends BaseRepository
     public function getStructuresForUserQueryBuilder(UserInformation $userInformation): QueryBuilder
     {
         return $this->createQueryBuilder('s')
-                    ->join('s.users', 'u')
-                    ->where('u.id = :id')
-                    ->setParameter('id', $userInformation->getId())
-                    ->andWhere('s.enabled = true')
-                    ->orderBy('s.identifier', 'asc');
+            ->join('s.users', 'u')
+            ->where('u.id = :id')
+            ->setParameter('id', $userInformation->getId())
+            ->andWhere('s.enabled = true')
+            ->orderBy('s.identifier', 'asc');
     }
 
     /**
@@ -181,7 +181,7 @@ class StructureRepository extends BaseRepository
 
         if ($criteria) {
             $qb->where('s.identifier LIKE :criteria OR s.name LIKE :criteria')
-               ->setParameter('criteria', sprintf('%%%s%%', $criteria));
+                ->setParameter('criteria', sprintf('%%%s%%', $criteria));
         }
 
         return $qb;
@@ -196,13 +196,13 @@ class StructureRepository extends BaseRepository
     public function searchForUser(UserInformation $user, ?string $criteria): QueryBuilder
     {
         $qb = $this->createQueryBuilder('s')
-                   ->join('s.users', 'u')
-                   ->where('u.id = :user_id')
-                   ->setParameter('user_id', $user->getId());
+            ->join('s.users', 'u')
+            ->where('u.id = :user_id')
+            ->setParameter('user_id', $user->getId());
 
         if ($criteria) {
             $qb->where('s.identifier LIKE :criteria OR s.name LIKE :criteria')
-               ->setParameter('criteria', sprintf('%%%s%%', $criteria));
+                ->setParameter('criteria', sprintf('%%%s%%', $criteria));
         }
 
         return $qb;
@@ -211,10 +211,10 @@ class StructureRepository extends BaseRepository
     public function expireAll()
     {
         $this->createQueryBuilder('s')
-             ->update()
-             ->set('s.lastPegassUpdate', ':expiredDate')
-             ->setParameter('expiredDate', new \DateTime('1984-07-10'))
-             ->getQuery()
-             ->execute();
+            ->update()
+            ->set('s.lastPegassUpdate', ':expiredDate')
+            ->setParameter('expiredDate', new \DateTime('1984-07-10'))
+            ->getQuery()
+            ->execute();
     }
 }
