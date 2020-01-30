@@ -20,10 +20,10 @@ use Symfony\Component\PropertyAccess\PropertyAccess;
  */
 class Pegass
 {
-    const TYPE_AREA       = 'area';
+    const TYPE_AREA = 'area';
     const TYPE_DEPARTMENT = 'department';
-    const TYPE_STRUCTURE  = 'structure';
-    const TYPE_VOLUNTEER  = 'volunteer';
+    const TYPE_STRUCTURE = 'structure';
+    const TYPE_VOLUNTEER = 'volunteer';
 
     const TYPES = [
         self::TYPE_AREA,
@@ -33,10 +33,10 @@ class Pegass
     ];
 
     const TTL = [
-        self::TYPE_AREA       => 365 * 24 * 60 * 60, // 1 year
-        self::TYPE_DEPARTMENT => 7 * 24 * 60 * 60, // 1 week
-        self::TYPE_STRUCTURE  => 7 * 24 * 60 * 60, // 1 week
-        self::TYPE_VOLUNTEER  => 30 * 24 * 60 * 60, // 1 month
+        self::TYPE_AREA => 365 * 24 * 60 * 60, // 1 year
+        self::TYPE_DEPARTMENT => 90 * 24 * 60 * 60, // 3 months
+        self::TYPE_STRUCTURE => 7 * 24 * 60 * 60, // 1 week
+        self::TYPE_VOLUNTEER => 30 * 24 * 60 * 60, // 1 month
     ];
 
     /**
@@ -117,22 +117,6 @@ class Pegass
         return $this;
     }
 
-    public function getContent(): ?array
-    {
-        if ($this->content) {
-            return json_decode($this->content, true);
-        }
-
-        return null;
-    }
-
-    public function setContent(?array $content): self
-    {
-        $this->content = json_encode($content, JSON_PRETTY_PRINT);
-
-        return $this;
-    }
-
     public function getUpdatedAt(): ?\DateTimeInterface
     {
         return $this->updatedAt;
@@ -162,14 +146,30 @@ class Pegass
             $object = json_decode(json_encode($content));
 
             $accessed = PropertyAccess::createPropertyAccessorBuilder()
-                                      ->disableExceptionOnInvalidPropertyPath()
-                                      ->getPropertyAccessor()
-                                      ->getValue($object, $expression);
+                ->disableExceptionOnInvalidPropertyPath()
+                ->getPropertyAccessor()
+                ->getValue($object, $expression);
 
             return json_decode(json_encode($accessed), true);
         } catch (\Throwable $e) {
             return null;
         }
+    }
+
+    public function getContent(): ?array
+    {
+        if ($this->content) {
+            return json_decode($this->content, true);
+        }
+
+        return null;
+    }
+
+    public function setContent(?array $content): self
+    {
+        $this->content = json_encode($content, JSON_PRETTY_PRINT);
+
+        return $this;
     }
 
     public function getEnabled(): ?bool
