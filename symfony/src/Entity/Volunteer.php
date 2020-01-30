@@ -3,9 +3,13 @@
 namespace App\Entity;
 
 use App\Tools\PhoneNumberParser;
+use DateInterval;
+use DateTime;
+use DateTimeZone;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Exception;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
@@ -132,7 +136,7 @@ class Volunteer
     private $tagsView;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      *
      * @ORM\Column(type="datetime", nullable=true)
      */
@@ -438,7 +442,7 @@ class Volunteer
     {
         $highest = -1;
         foreach ($this->getTags() as $tag) {
-            /* @var \App\Entity\Tag $tag */
+            /* @var Tag $tag */
             if ($tag->getTagPriority() > $highest) {
                 $highest = $tag->getTagPriority();
             }
@@ -448,19 +452,19 @@ class Volunteer
     }
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
-    public function getLastPegassUpdate(): ?\DateTime
+    public function getLastPegassUpdate(): ?DateTime
     {
         return $this->lastPegassUpdate;
     }
 
     /**
-     * @param \DateTime $lastPegassUpdate
+     * @param DateTime $lastPegassUpdate
      *
      * @return Volunteer
      */
-    public function setLastPegassUpdate(\DateTime $lastPegassUpdate): Volunteer
+    public function setLastPegassUpdate(DateTime $lastPegassUpdate): Volunteer
     {
         $this->lastPegassUpdate = $lastPegassUpdate;
 
@@ -556,19 +560,19 @@ class Volunteer
     }
 
     /**
-     * @return \DateTime|null
+     * @return DateTime|null
      *
-     * @throws \Exception
+     * @throws Exception
      */
-    public function getNextPegassUpdate(): ?\DateTime
+    public function getNextPegassUpdate(): ?DateTime
     {
         if (!$this->lastPegassUpdate) {
             return null;
         }
 
         // Doctrine loaded an UTC-saved date using the default timezone (Europe/Paris)
-        $utc      = (new \DateTime($this->lastPegassUpdate->format('Y-m-d H:i:s'), new \DateTimeZone('UTC')));
-        $interval = new \DateInterval(sprintf('PT%dS', Pegass::TTL[Pegass::TYPE_STRUCTURE]));
+        $utc      = (new DateTime($this->lastPegassUpdate->format('Y-m-d H:i:s'), new DateTimeZone('UTC')));
+        $interval = new DateInterval(sprintf('PT%dS', Pegass::TTL[Pegass::TYPE_STRUCTURE]));
 
         $nextPegassUpdate = clone $utc;
         $nextPegassUpdate->add($interval);
@@ -579,7 +583,7 @@ class Volunteer
     /**
      * @return bool
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function canForcePegassUpdate(): bool
     {
@@ -588,7 +592,7 @@ class Volunteer
         }
 
         // Doctrine loaded an UTC-saved date using the default timezone (Europe/Paris)
-        $utc = (new \DateTime($this->lastPegassUpdate->format('Y-m-d H:i:s'), new \DateTimeZone('UTC')));
+        $utc = (new DateTime($this->lastPegassUpdate->format('Y-m-d H:i:s'), new DateTimeZone('UTC')));
 
         // Can happen when update dates are spread on a larger timeframe
         // See: PegassManager:spreadUpdateDatesInTTL()

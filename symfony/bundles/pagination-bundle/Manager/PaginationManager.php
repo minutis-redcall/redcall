@@ -6,6 +6,7 @@ use Doctrine\ORM\QueryBuilder;
 use Pagerfanta\Adapter\ArrayAdapter;
 use Pagerfanta\Adapter\DoctrineORMAdapter;
 use Pagerfanta\Pagerfanta;
+use RuntimeException;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 class PaginationManager
@@ -65,7 +66,7 @@ class PaginationManager
         } elseif (is_array($data)) {
             $adapter = new ArrayAdapter($data);
         } else {
-            throw new \RuntimeException('This data type has no Pagerfanta adapter yet.');
+            throw new RuntimeException('This data type has no Pagerfanta adapter yet.');
         }
 
         $pager = new Pagerfanta($adapter);

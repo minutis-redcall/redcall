@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -40,7 +41,7 @@ class Answer
     /**
      * Date of the answer's reception
      *
-     * @var \DateTime
+     * @var DateTime
      *
      * @ORM\Column(type="datetime")
      */
@@ -49,7 +50,7 @@ class Answer
     /**
      * Date of the answer's last update
      *
-     * @var \DateTime
+     * @var DateTime
      *
      * @ORM\Column(type="datetime")
      */
@@ -127,6 +128,18 @@ class Answer
     }
 
     /**
+     * @param string $raw
+     *
+     * @return Answer
+     */
+    public function setRaw(string $raw): Answer
+    {
+        $this->raw = $raw;
+
+        return $this;
+    }
+
+    /**
      * @return string
      */
     public function getSafeRaw(): string
@@ -140,31 +153,19 @@ class Answer
     }
 
     /**
-     * @param string $raw
-     *
-     * @return Answer
+     * @return DateTime
      */
-    public function setRaw(string $raw): Answer
-    {
-        $this->raw = $raw;
-
-        return $this;
-    }
-
-    /**
-     * @return \DateTime
-     */
-    public function getReceivedAt(): \DateTime
+    public function getReceivedAt(): DateTime
     {
         return $this->receivedAt;
     }
 
     /**
-     * @param \DateTime $receivedAt
+     * @param DateTime $receivedAt
      *
      * @return Answer
      */
-    public function setReceivedAt(\DateTime $receivedAt): Answer
+    public function setReceivedAt(DateTime $receivedAt): Answer
     {
         $this->receivedAt = $receivedAt;
 
@@ -172,19 +173,19 @@ class Answer
     }
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
-    public function getUpdatedAt(): ?\DateTime
+    public function getUpdatedAt(): ?DateTime
     {
         return $this->updatedAt;
     }
 
     /**
-     * @param \DateTime $updatedAt
+     * @param DateTime $updatedAt
      *
      * @return Answer
      */
-    public function setUpdatedAt(\DateTime $updatedAt): Answer
+    public function setUpdatedAt(DateTime $updatedAt): Answer
     {
         $this->updatedAt = $updatedAt;
 
@@ -204,7 +205,7 @@ class Answer
     /**
      * @return array
      */
-    public function getChoiceLabels() : array
+    public function getChoiceLabels(): array
     {
         $labels = [];
 
@@ -306,7 +307,7 @@ class Answer
     public function onPrePersist()
     {
         if (!$this->getUpdatedAt()) {
-            $this->setUpdatedAt(new \DateTime());
+            $this->setUpdatedAt(new DateTime());
         }
     }
 
@@ -316,7 +317,7 @@ class Answer
     public function onPreUpdate()
     {
         if (!$this->getUpdatedAt()) {
-            $this->setUpdatedAt(new \DateTime());
+            $this->setUpdatedAt(new DateTime());
         }
     }
 }

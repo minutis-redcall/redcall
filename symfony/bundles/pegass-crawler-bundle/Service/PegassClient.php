@@ -4,6 +4,7 @@ namespace Bundles\PegassCrawlerBundle\Service;
 
 use Bundles\PegassCrawlerBundle\Entity\Pegass;
 use Goutte\Client;
+use LogicException;
 
 class PegassClient
 {
@@ -144,7 +145,7 @@ class PegassClient
         }
 
         if (!getenv('PEGASS_LOGIN') || !getenv('PEGASS_PASSWORD')) {
-            throw new \LogicException('Credentials are required to access Pegass API.');
+            throw new LogicException('Credentials are required to access Pegass API.');
         }
 
         $crawler = $this->client->request('GET', 'https://pegass.croix-rouge.fr/');

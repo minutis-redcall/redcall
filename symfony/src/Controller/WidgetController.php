@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Base\BaseController;
 use App\Entity\Campaign;
 use App\Entity\UserInformation;
+use App\Entity\Volunteer;
 use App\Form\Type\NivolType;
 use App\Manager\CampaignManager;
 use App\Manager\PrefilledAnswersManager;
@@ -143,7 +144,7 @@ class WidgetController extends BaseController
         // Format volunteer for the flexdatalist rendering
         $results = [];
         foreach ($volunteers as $volunteer) {
-            /* @var \App\Entity\Volunteer $volunteer */
+            /* @var Volunteer $volunteer */
             $results[] = $volunteer->toSearchResults($this->translator);
         }
 

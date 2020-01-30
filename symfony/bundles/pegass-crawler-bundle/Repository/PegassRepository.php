@@ -3,8 +3,12 @@
 namespace Bundles\PegassCrawlerBundle\Repository;
 
 use Bundles\PegassCrawlerBundle\Entity\Pegass;
+use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Common\Persistence\Mapping\MappingException;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 
 /**
  * @method Pegass|null find($id, $lockMode = null, $lockVersion = null)
@@ -138,9 +142,9 @@ class PegassRepository extends ServiceEntityRepository
      * @param callable $callback
      * @param bool     $onlyEnabled
      *
-     * @throws \Doctrine\Common\Persistence\Mapping\MappingException
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws MappingException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function foreach(string $type, callable $callback, bool $onlyEnabled = true)
     {
@@ -190,8 +194,8 @@ class PegassRepository extends ServiceEntityRepository
     /**
      * @param Pegass $entity
      *
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function save(Pegass $entity)
     {
@@ -202,10 +206,10 @@ class PegassRepository extends ServiceEntityRepository
     /**
      * @param string $type
      *
-     * @return \DateTime
+     * @return DateTime
      */
-    private function getExpireDate(string $type): \DateTime
+    private function getExpireDate(string $type): DateTime
     {
-        return \DateTime::createFromFormat('U', time() - Pegass::TTL[$type]);
+        return DateTime::createFromFormat('U', time() - Pegass::TTL[$type]);
     }
 }

@@ -8,6 +8,7 @@ use App\Provider\SMS\SMSSent;
 use App\Tools\Random;
 use Bundles\SandboxBundle\Entity\FakeSms;
 use Doctrine\Bundle\DoctrineBundle\Registry;
+use LogicException;
 
 class FakeSmsProvider implements SMSProvider
 {
@@ -25,7 +26,7 @@ class FakeSmsProvider implements SMSProvider
         $volunteer = $this->volunteerRepository->findOneByPhoneNumber($phoneNumber);
 
         if (!$volunteer) {
-            throw new \LogicException('Cannot send fake SMS to unknown volunteer.');
+            throw new LogicException('Cannot send fake SMS to unknown volunteer.');
         }
 
         $this->fakeSmsRepository->save($volunteer, $message, FakeSms::DIRECTION_RECEIVED);

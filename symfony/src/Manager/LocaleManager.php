@@ -8,6 +8,10 @@ use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use function in_array;
+use function strpos;
+use function strtolower;
+use function substr;
 
 class LocaleManager
 {
@@ -143,13 +147,13 @@ class LocaleManager
      */
     private function sanitizeLocale(string $locale): string
     {
-        $locale = \strtolower($locale);
+        $locale = strtolower($locale);
 
-        if (\strpos($locale, '_')) {
-            $locale = \substr($locale, 0, \strpos($locale, '_'));
+        if (strpos($locale, '_')) {
+            $locale = substr($locale, 0, strpos($locale, '_'));
         }
 
-        if (!\in_array($locale, $this->availableLocales)) {
+        if (!in_array($locale, $this->availableLocales)) {
             $locale = $this->defaultLocale;
         }
 

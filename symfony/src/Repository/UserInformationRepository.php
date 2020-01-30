@@ -5,6 +5,9 @@ namespace App\Repository;
 use App\Base\BaseRepository;
 use App\Entity\UserInformation;
 use Doctrine\Bundle\DoctrineBundle\Registry;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -28,8 +31,8 @@ class UserInformationRepository extends BaseRepository
     /**
      * @param UserInformation $userPreference
      *
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function changeLocale(UserInterface $user, string $locale)
     {
@@ -44,16 +47,16 @@ class UserInformationRepository extends BaseRepository
      * @param UserInterface $user
      *
      * @return UserInformation
-     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws NonUniqueResultException
      */
     public function getByUser(UserInterface $user): UserInformation
     {
         $preferences = $this->createQueryBuilder('p')
-            ->where('p.user = :user')
-            ->setParameter('user', $user)
-            ->getQuery()
-            ->useResultCache(false)
-            ->getOneOrNullResult();
+                            ->where('p.user = :user')
+                            ->setParameter('user', $user)
+                            ->getQuery()
+                            ->useResultCache(false)
+                            ->getOneOrNullResult();
 
         if (!$preferences) {
             $preferences = new UserInformation();
@@ -66,8 +69,8 @@ class UserInformationRepository extends BaseRepository
     /**
      * @param UserInterface $user
      *
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function removeForUser(UserInterface $user)
     {
@@ -80,16 +83,16 @@ class UserInformationRepository extends BaseRepository
     /**
      * @param string $criteria
      *
-     * @return \Doctrine\ORM\QueryBuilder
+     * @return QueryBuilder
      */
     public function searchQueryBuilder(?string $criteria): QueryBuilder
     {
         return $this->createQueryBuilder('ui')
-            ->join('ui.user', 'u')
-            ->where('u.username LIKE :criteria')
-            ->orWhere('ui.nivol LIKE :criteria')
-            ->setParameter('criteria', sprintf('%%%s%%', $criteria))
-            ->addOrderBy('u.registeredAt', 'DESC')
-            ->addOrderBy('u.username', 'ASC');
+                    ->join('ui.user', 'u')
+                    ->where('u.username LIKE :criteria')
+                    ->orWhere('ui.nivol LIKE :criteria')
+                    ->setParameter('criteria', sprintf('%%%s%%', $criteria))
+                    ->addOrderBy('u.registeredAt', 'DESC')
+                    ->addOrderBy('u.username', 'ASC');
     }
 }

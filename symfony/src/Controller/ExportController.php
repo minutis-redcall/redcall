@@ -5,11 +5,15 @@ namespace App\Controller;
 use App\Base\BaseController;
 use App\Component\HttpFoundation\ArrayToCsvResponse;
 use App\Component\HttpFoundation\MpdfResponse;
+use App\Entity\Answer;
 use App\Entity\Choice;
 use App\Entity\Communication;
 use App\Entity\Message;
 use App\Entity\Tag;
 use App\Entity\Volunteer;
+use DateTime;
+use Mpdf\Mpdf;
+use Mpdf\MpdfException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,7 +29,7 @@ class ExportController extends BaseController
      * @Method("POST")
      *
      * @param Request $request
-     * @param int $communicationId
+     * @param int     $communicationId
      *
      * @return Response
      */
@@ -56,13 +60,13 @@ class ExportController extends BaseController
             }, $volunteer->getTags()->toArray()));
 
             $row = [
-                $this->trans('csv_export.nivol') => $volunteer->getNivol(),
-                $this->trans('csv_export.firstname') => $volunteer->getFirstName(),
-                $this->trans('csv_export.lastname') => $volunteer->getLastName(),
-                $this->trans('csv_export.email') => $volunteer->getEmail(),
+                $this->trans('csv_export.nivol')        => $volunteer->getNivol(),
+                $this->trans('csv_export.firstname')    => $volunteer->getFirstName(),
+                $this->trans('csv_export.lastname')     => $volunteer->getLastName(),
+                $this->trans('csv_export.email')        => $volunteer->getEmail(),
                 $this->trans('csv_export.phone_number') => $volunteer->getFormattedPhoneNumber(),
-                $this->trans('csv_export.tags') => $tags,
-                $this->trans('csv_export.sent') => $this->trans($message->isSent() ? 'base.yes' : 'base.no'),
+                $this->trans('csv_export.tags')         => $tags,
+                $this->trans('csv_export.sent')         => $this->trans($message->isSent() ? 'base.yes' : 'base.no'),
             ];
 
             /* @var Choice $choice */
@@ -80,7 +84,7 @@ class ExportController extends BaseController
             }
 
             $row[$this->trans('csv_export.other')] = $message->getInvalidAnswer() ? $message->getInvalidAnswer()->getRaw() : null;
-            $rows[] = $row;
+            $rows[]                                = $row;
         }
 
         return new ArrayToCsvResponse($rows, sprintf('export-%s.csv', date('Y-m-d.H:i:s')));
@@ -91,39 +95,39 @@ class ExportController extends BaseController
      * @Method("POST")
      *
      * @param Request $request
-     * @param int $communicationId
+     * @param int     $communicationId
      *
      * @return MpdfResponse
      *
-     * @throws \Mpdf\MpdfException
+     * @throws MpdfException
      */
     public function portraitPdfAction(Request $request, int $communicationId)
     {
         $this->validateCsrfOrThrowNotFoundException('communication', $request->request->get('csrf'));
 
         $communication = $this->getCommunication($communicationId);
-        $selection = $this->getSelection($request, $communication);
-        $campaign = $communication->getCampaign();
+        $selection     = $this->getSelection($request, $communication);
+        $campaign      = $communication->getCampaign();
 
-        $tables = [];
+        $tables   = [];
         $messages = $communication->getMessages()->toArray();
         if ($communication->getChoices()->toArray()) {
             // Get one table per communication choice
             foreach ($communication->getChoices() as $choice) {
-                $label = $choice->getLabel();
+                $label          = $choice->getLabel();
                 $tables[$label] = [];
                 foreach ($messages as $message) {
                     if (!in_array($message->getVolunteer()->getId(), $selection)) {
                         continue;
                     }
 
-                    /* @var \App\Entity\Answer|null $answer */
+                    /* @var Answer|null $answer */
                     if (!$communication->isMultipleAnswer()) {
                         $answer = $message->getLastAnswer();
                         if ($answer && $answer->hasChoice($choice)) {
                             $tables[$label][] = [
                                 'volunteer' => $message->getVolunteer(),
-                                'answer' => $answer,
+                                'answer'    => $answer,
                             ];
                         }
                     } elseif ($message->getAnswers()) {
@@ -131,7 +135,7 @@ class ExportController extends BaseController
                             if ($answer->hasChoice($choice)) {
                                 $tables[$label][] = [
                                     'volunteer' => $message->getVolunteer(),
-                                    'answer' => $answer,
+                                    'answer'    => $answer,
                                 ];
                             }
                         }
@@ -151,7 +155,7 @@ class ExportController extends BaseController
             }, $messages));
         }
         foreach ($tables as $label => $table) {
-            usort($tables[$label], function(array $rowA, array $rowB) {
+            usort($tables[$label], function (array $rowA, array $rowB) {
                 /* @var Volunteer $volunteerA */
                 $volunteerA = $rowA['volunteer'];
                 /* @var Volunteer $volunteerB */
@@ -162,16 +166,16 @@ class ExportController extends BaseController
         }
 
         $context = [
-            'current_date' => new \DateTime(),
-            'campaign' => $campaign,
+            'current_date'  => new DateTime(),
+            'campaign'      => $campaign,
             'communication' => $communication,
-            'tables' => $tables,
+            'tables'        => $tables,
         ];
 
-        $mpdf = new \Mpdf\Mpdf([
-            'tempDir' => sys_get_temp_dir(),
-            'margin_left' => 0,
-            'margin_right' => 0,
+        $mpdf = new Mpdf([
+            'tempDir'       => sys_get_temp_dir(),
+            'margin_left'   => 0,
+            'margin_right'  => 0,
             'margin_bottom' => 25,
         ]);
 
@@ -203,7 +207,7 @@ class ExportController extends BaseController
     }
 
     /**
-     * @param Request $request
+     * @param Request       $request
      * @param Communication $communication
      *
      * @return array

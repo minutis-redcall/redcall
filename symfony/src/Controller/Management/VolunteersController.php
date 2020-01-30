@@ -10,6 +10,8 @@ use App\Manager\VolunteerManager;
 use Bundles\PaginationBundle\Manager\PaginationManager;
 use Bundles\PegassCrawlerBundle\Entity\Pegass;
 use Bundles\PegassCrawlerBundle\Manager\PegassManager;
+use DateTime;
+use DateTimeZone;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -110,7 +112,7 @@ class VolunteersController extends BaseController
         }
 
         // Prevents multiple clicks
-        $volunteer->setLastPegassUpdate(new \DateTime('now', new \DateTimeZone('UTC')));
+        $volunteer->setLastPegassUpdate(new DateTime('now', new DateTimeZone('UTC')));
         $this->volunteerManager->save($volunteer);
 
         // Executing asynchronous task to prevent against interruptions

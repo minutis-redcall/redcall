@@ -2,6 +2,7 @@
 
 namespace Bundles\PasswordLoginBundle\Entity;
 
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Security\Core\User\EquatableInterface;
@@ -151,7 +152,7 @@ class User implements UserInterface, EquatableInterface
      */
     public function onPrePersist()
     {
-        $this->setRegisteredAt(new \DateTime());
+        $this->setRegisteredAt(new DateTime());
     }
 
     public function eraseCredentials(): void

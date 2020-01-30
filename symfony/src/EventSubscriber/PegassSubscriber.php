@@ -5,6 +5,7 @@ namespace App\EventSubscriber;
 use App\Manager\RefreshManager;
 use Bundles\PegassCrawlerBundle\Event\PegassEvent;
 use Bundles\PegassCrawlerBundle\PegassEvents;
+use Doctrine\ORM\NonUniqueResultException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class PegassSubscriber implements EventSubscriberInterface
@@ -40,7 +41,7 @@ class PegassSubscriber implements EventSubscriberInterface
     /**
      * @param PegassEvent $event
      *
-     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws NonUniqueResultException
      */
     public function onUpdateStructure(PegassEvent $event)
     {

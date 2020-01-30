@@ -8,6 +8,8 @@ use App\Manager\StructureManager;
 use Bundles\PaginationBundle\Manager\PaginationManager;
 use Bundles\PegassCrawlerBundle\Entity\Pegass;
 use Bundles\PegassCrawlerBundle\Manager\PegassManager;
+use DateTime;
+use DateTimeZone;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -100,7 +102,7 @@ class StructuresController extends BaseController
         }
 
         // Prevents multiple clicks
-        $structure->setLastPegassUpdate(new \DateTime('now', new \DateTimeZone('UTC')));
+        $structure->setLastPegassUpdate(new DateTime('now', new DateTimeZone('UTC')));
         $this->structureManager->save($structure);
 
         // Executing asynchronous task to prevent against interruptions

@@ -2,6 +2,8 @@
 
 namespace App\Provider\SMS;
 
+use Exception;
+
 interface SMSProvider
 {
     /**
@@ -9,7 +11,7 @@ interface SMSProvider
      * @param string $phoneNumber
      *
      * @return string
-     * @throws \Exception
+     * @throws Exception
      */
     public function send(string $message, string $phoneNumber): SMSSent;
 

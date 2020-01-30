@@ -379,7 +379,7 @@ class Message
         }
 
         foreach ($this->answers ?? [] as $answer) {
-            /* @var \App\Entity\Answer $answer */
+            /* @var Answer $answer */
             if ($answer->isUnclear()) {
                 return true;
             }

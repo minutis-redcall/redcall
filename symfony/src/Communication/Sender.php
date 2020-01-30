@@ -71,7 +71,7 @@ class Sender
         $volunteer = $message->getVolunteer();
 
         if (!$volunteer->getPhoneNumber()) {
-            return ;
+            return;
         }
 
         $SMSSent = $this->SMSProvider->send(

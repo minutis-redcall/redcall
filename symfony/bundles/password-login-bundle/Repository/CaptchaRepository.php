@@ -4,6 +4,8 @@ namespace Bundles\PasswordLoginBundle\Repository;
 
 use Bundles\PasswordLoginBundle\Entity\Captcha;
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use Doctrine\ORM\UnitOfWork;
 
 class CaptchaRepository extends EntityRepository
@@ -44,8 +46,8 @@ class CaptchaRepository extends EntityRepository
     /**
      * @param Captcha $captcha
      *
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function decreaseGrace(string $ip): void
     {
@@ -61,8 +63,8 @@ class CaptchaRepository extends EntityRepository
     /**
      * @param string $ip
      *
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function whitelistNow(string $ip): void
     {
@@ -79,8 +81,8 @@ class CaptchaRepository extends EntityRepository
     /**
      * @param Captcha $captcha
      *
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     private function save(Captcha $captcha): void
     {

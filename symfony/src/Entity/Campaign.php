@@ -2,9 +2,11 @@
 
 namespace App\Entity;
 
+use DateTime;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use LogicException;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\CampaignRepository")
@@ -55,7 +57,7 @@ class Campaign
     private $type = self::TYPE_GREEN;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      *
      * @ORM\Column(type="datetime")
      */
@@ -137,7 +139,7 @@ class Campaign
      * @param string $type
      *
      * @return $this
-     * @throws \LogicException
+     * @throws LogicException
      */
     public function setType(string $type)
     {
@@ -147,15 +149,15 @@ class Campaign
     }
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
-    public function getCreatedAt(): \DateTime
+    public function getCreatedAt(): DateTime
     {
         return $this->createdAt;
     }
 
     /**
-     * @param \DateTime $createdAt
+     * @param DateTime $createdAt
      *
      * @return $this
      */

@@ -3,7 +3,10 @@
 namespace Bundles\SandboxBundle\Repository;
 
 use Bundles\SandboxBundle\Entity\FakeEmail;
+use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -29,8 +32,8 @@ class FakeEmailRepository extends ServiceEntityRepository
      * @param string $subject
      * @param string $body
      *
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function store(string $to, string $subject, string $body)
     {
@@ -38,7 +41,7 @@ class FakeEmailRepository extends ServiceEntityRepository
         $fake->setEmail($to);
         $fake->setSubject($subject);
         $fake->setBody($body);
-        $fake->setCreatedAt(new \DateTime());
+        $fake->setCreatedAt(new DateTime());
 
         $this->_em->persist($fake);
         $this->_em->flush($fake);

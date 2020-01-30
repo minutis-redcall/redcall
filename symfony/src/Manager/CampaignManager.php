@@ -8,7 +8,10 @@ use App\Entity\Communication;
 use App\Form\Model\Campaign as CampaignModel;
 use App\Repository\CampaignRepository;
 use Bundles\PasswordLoginBundle\Entity\User;
+use DateTime;
 use Doctrine\ORM\QueryBuilder;
+use Exception;
+use LogicException;
 
 class CampaignManager
 {
@@ -66,7 +69,7 @@ class CampaignManager
      *
      * @return CampaignEntity
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function launchNewCampaign(CampaignModel $campaignModel): CampaignEntity
     {
@@ -75,7 +78,7 @@ class CampaignManager
             ->setLabel($campaignModel->label)
             ->setType($campaignModel->type)
             ->setActive(true)
-            ->setCreatedAt(new \DateTime());
+            ->setCreatedAt(new DateTime());
 
         $this->campaignRepository->save($campaignEntity);
 
@@ -87,7 +90,7 @@ class CampaignManager
     /**
      * @param Campaign $campaign
      *
-     * @throws \LogicException
+     * @throws LogicException
      */
     public function closeCampaign(Campaign $campaign)
     {
@@ -97,7 +100,7 @@ class CampaignManager
     /**
      * @param Campaign $campaign
      *
-     * @throws \LogicException
+     * @throws LogicException
      */
     public function openCampaign(Campaign $campaign)
     {

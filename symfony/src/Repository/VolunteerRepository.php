@@ -6,7 +6,11 @@ use App\Base\BaseRepository;
 use App\Entity\UserInformation;
 use App\Entity\Volunteer;
 use Bundles\PasswordLoginBundle\Entity\User;
+use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Registry;
+use Doctrine\Common\Persistence\Mapping\MappingException;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use Doctrine\ORM\QueryBuilder;
 
 /**
@@ -39,8 +43,8 @@ class VolunteerRepository extends BaseRepository
     /**
      * @param Volunteer $volunteer
      *
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function disable(Volunteer $volunteer)
     {
@@ -53,8 +57,8 @@ class VolunteerRepository extends BaseRepository
     /**
      * @param Volunteer $volunteer
      *
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function enable(Volunteer $volunteer)
     {
@@ -67,8 +71,8 @@ class VolunteerRepository extends BaseRepository
     /**
      * @param Volunteer $volunteer
      *
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function lock(Volunteer $volunteer)
     {
@@ -81,8 +85,8 @@ class VolunteerRepository extends BaseRepository
     /**
      * @param Volunteer $volunteer
      *
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function unlock(Volunteer $volunteer)
     {
@@ -212,7 +216,7 @@ class VolunteerRepository extends BaseRepository
         $this->createQueryBuilder('v')
              ->update()
              ->set('v.lastPegassUpdate', ':expiredDate')
-             ->setParameter('expiredDate', new \DateTime('1984-07-10'))
+             ->setParameter('expiredDate', new DateTime('1984-07-10'))
              ->getQuery()
              ->execute();
     }
@@ -221,9 +225,9 @@ class VolunteerRepository extends BaseRepository
      * @param callable $callback
      * @param bool     $onlyEnabled
      *
-     * @throws \Doctrine\Common\Persistence\Mapping\MappingException
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws MappingException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function foreach(callable $callback, bool $onlyEnabled = true)
     {

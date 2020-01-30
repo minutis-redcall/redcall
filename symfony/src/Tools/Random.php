@@ -11,9 +11,9 @@ class Random
      *
      * @return string
      */
-    static public function generate($size) : string
+    static public function generate($size): string
     {
-        list($usec, $sec) = explode(' ', microtime());
+        [$usec, $sec] = explode(' ', microtime());
         $seed = (float)$sec + ((float)$usec * 100000);
         mt_srand($seed);
 

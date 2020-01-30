@@ -11,6 +11,8 @@ use App\Entity\Message;
 use App\Entity\Volunteer;
 use App\Form\Model\Communication as CommunicationModel;
 use App\Repository\CommunicationRepository;
+use DateTime;
+use Exception;
 
 class CommunicationManager
 {
@@ -73,7 +75,7 @@ class CommunicationManager
      * @param CommunicationModel $communicationModel
      *
      * @return CommunicationEntity
-     * @throws \Exception
+     * @throws Exception
      *
      */
     public function launchNewCommunication(Campaign $campaign,
@@ -100,7 +102,7 @@ class CommunicationManager
      *
      * @return CommunicationEntity
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function createCommunication(CommunicationModel $communicationModel): CommunicationEntity
     {
@@ -109,7 +111,7 @@ class CommunicationManager
             ->setType($communicationModel->type)
             ->setBody($communicationModel->message)
             ->setGeoLocation($communicationModel->geoLocation)
-            ->setCreatedAt(new \DateTime())
+            ->setCreatedAt(new DateTime())
             ->setMultipleAnswer($communicationModel->multipleAnswer)
             ->setSubject($communicationModel->subject);
 

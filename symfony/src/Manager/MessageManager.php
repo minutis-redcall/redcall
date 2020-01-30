@@ -9,6 +9,10 @@ use App\Entity\Communication;
 use App\Entity\Message;
 use App\Entity\Volunteer;
 use App\Repository\MessageRepository;
+use DateTime;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class MessageManager
@@ -95,9 +99,9 @@ class MessageManager
      * @param string $phoneNumber
      * @param string $body
      *
-     * @throws \Doctrine\ORM\NonUniqueResultException
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws NonUniqueResultException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function handleAnswer(string $phoneNumber, string $body)
     {
@@ -137,7 +141,7 @@ class MessageManager
      *
      * @return Message|null
      *
-     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws NonUniqueResultException
      */
     public function getMessageFromPhoneNumber(string $phoneNumber, string $body): ?Message
     {
@@ -163,8 +167,8 @@ class MessageManager
      * @param string  $body
      * @param bool    $byAdmin
      *
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function addAnswer(Message $message, string $body, bool $byAdmin = false): void
     {
@@ -191,7 +195,7 @@ class MessageManager
         $message->addAnswser($answer);
         $answer->setMessage($message);
         $answer->setRaw($body);
-        $answer->setReceivedAt(new \DateTime());
+        $answer->setReceivedAt(new DateTime());
         $answer->setUnclear($message->getCommunication()->isUnclear($message->getPrefix(), $body));
 
         if ($byAdmin) {
@@ -210,8 +214,8 @@ class MessageManager
      * @param Message $message
      * @param Choice  $choice
      *
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function toggleAnswer(Message $message, Choice $choice)
     {
@@ -230,8 +234,8 @@ class MessageManager
      * @param Message $message
      * @param Choice  $choice
      *
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function cancelAnswerByChoice(Message $message, Choice $choice): void
     {

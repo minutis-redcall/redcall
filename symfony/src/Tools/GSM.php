@@ -322,7 +322,7 @@ class GSM
      *
      * @return array
      */
-    public static function getSMSParts(string $message) : array
+    public static function getSMSParts(string $message): array
     {
         $unicode = false;
         if (!self::isGSMCompatible($message)) {

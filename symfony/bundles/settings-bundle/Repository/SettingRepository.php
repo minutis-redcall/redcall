@@ -4,6 +4,8 @@ namespace Bundles\SettingsBundle\Repository;
 
 use Bundles\SettingsBundle\Entity\Setting;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
 class SettingRepository extends ServiceEntityRepository
@@ -52,8 +54,8 @@ class SettingRepository extends ServiceEntityRepository
      * @param string $property
      * @param string $value
      *
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function set(string $property, string $value)
     {
@@ -73,8 +75,8 @@ class SettingRepository extends ServiceEntityRepository
     /**
      * @param string $property
      *
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function remove(string $property)
     {

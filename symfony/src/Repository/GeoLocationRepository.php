@@ -6,6 +6,7 @@ use App\Base\BaseRepository;
 use App\Entity\Communication;
 use App\Entity\GeoLocation;
 use Doctrine\Bundle\DoctrineBundle\Registry;
+use Doctrine\ORM\NonUniqueResultException;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
 /**
@@ -30,7 +31,7 @@ class GeoLocationRepository extends BaseRepository
      * @param Communication $communication
      *
      * @return int|null
-     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws NonUniqueResultException
      */
     public function getLastGeoLocationUpdateTimestamp(Communication $communication): ?int
     {

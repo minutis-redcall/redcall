@@ -2,7 +2,9 @@
 
 namespace App\Exception;
 
-class ImportWarningException extends \RuntimeException
+use RuntimeException;
+
+class ImportWarningException extends RuntimeException
 {
 
 }

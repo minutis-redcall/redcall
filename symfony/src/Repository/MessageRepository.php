@@ -12,6 +12,10 @@ use App\Entity\Selection;
 use App\Entity\Volunteer;
 use App\Tools\Random;
 use Doctrine\Bundle\DoctrineBundle\Registry;
+use Doctrine\Common\Persistence\Mapping\MappingException;
+use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 
 class MessageRepository extends BaseRepository
 {
@@ -28,7 +32,7 @@ class MessageRepository extends BaseRepository
      *
      * @return Message|null
      *
-     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws NonUniqueResultException
      */
     public function getMessageFromPhoneNumber(string $phoneNumber): ?Message
     {
@@ -51,7 +55,7 @@ class MessageRepository extends BaseRepository
      *
      * @return Message|null
      *
-     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws NonUniqueResultException
      */
     public function getMessageFromPhoneNumberAndPrefix(string $phoneNumber, string $prefix): ?Message
     {
@@ -74,8 +78,8 @@ class MessageRepository extends BaseRepository
      * @param Message $message
      * @param Choice  $choice
      *
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function cancelAnswerByChoice(Message $message, Choice $choice): void
     {
@@ -108,7 +112,7 @@ class MessageRepository extends BaseRepository
      * @param Message $message
      *
      * @return Message|null
-     * @throws \Doctrine\Common\Persistence\Mapping\MappingException
+     * @throws MappingException
      */
     public function refresh(Message $message): Message
     {

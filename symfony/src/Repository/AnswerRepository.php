@@ -7,6 +7,8 @@ use App\Entity\Answer;
 use App\Entity\Campaign;
 use App\Entity\Message;
 use Doctrine\Bundle\DoctrineBundle\Registry;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 
 /**
  * @method Answer|null find($id, $lockMode = null, $lockVersion = null)
@@ -43,7 +45,7 @@ class AnswerRepository extends BaseRepository
         if ($lastAnswer) {
             $this->_em->detach($lastAnswer);
 
-            /* @var \App\Entity\Answer $lastAnswer */
+            /* @var Answer $lastAnswer */
             return $lastAnswer->getUpdatedAt()->getTimestamp();
         }
 
@@ -53,8 +55,8 @@ class AnswerRepository extends BaseRepository
     /**
      * @param Message $message
      *
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function clearAnswers(Message $message)
     {
@@ -71,8 +73,8 @@ class AnswerRepository extends BaseRepository
      * @param Message $message
      * @param array   $choices
      *
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function clearChoices(Message $message, array $choices)
     {

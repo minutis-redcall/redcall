@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -124,19 +125,19 @@ class GeoLocation
     }
 
     /**
-     * @return \DateTime|null
+     * @return DateTime|null
      */
-    public function getDatetime(): ?\DateTime
+    public function getDatetime(): ?DateTime
     {
         return $this->datetime;
     }
 
     /**
-     * @param \DateTime|null $datetime
+     * @param DateTime|null $datetime
      *
      * @return $this
      */
-    public function setDatetime(?\DateTime $datetime)
+    public function setDatetime(?DateTime $datetime)
     {
         $this->datetime = $datetime;
 

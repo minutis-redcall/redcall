@@ -3,6 +3,8 @@
 namespace Bundles\SettingsBundle\Manager;
 
 use Bundles\SettingsBundle\Repository\SettingRepository;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 
 class SettingManager
 {
@@ -42,8 +44,8 @@ class SettingManager
      * @param string $property
      * @param string $value
      *
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function set(string $property, string $value)
     {

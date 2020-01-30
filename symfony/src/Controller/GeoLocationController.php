@@ -8,6 +8,7 @@ use App\Entity\Message;
 use App\Form\Type\GeoLocationType;
 use App\Repository\GeoLocationRepository;
 use App\Repository\MessageRepository;
+use DateTime;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -112,7 +113,7 @@ class GeoLocationController extends BaseController
 
             $message->setGeoLocation($geolocation);
             $geolocation->setMessage($message);
-            $geolocation->setDatetime(new \DateTime());
+            $geolocation->setDatetime(new DateTime());
 
             $this->getManager()->persist($message);
             $this->getManager()->persist($geolocation);

@@ -3,6 +3,7 @@
 namespace App\Component\HttpFoundation;
 
 use Mpdf\Mpdf;
+use Mpdf\MpdfException;
 use Mpdf\Output\Destination;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -16,7 +17,7 @@ class MpdfResponse extends Response
      * @param int    $status
      * @param array  $headers
      *
-     * @throws \Mpdf\MpdfException
+     * @throws MpdfException
      */
     public function __construct(Mpdf $mpdf, string $filename, int $status = Response::HTTP_OK, array $headers = [])
     {

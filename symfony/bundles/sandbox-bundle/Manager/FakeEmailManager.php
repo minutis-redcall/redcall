@@ -4,6 +4,8 @@ namespace Bundles\SandboxBundle\Manager;
 
 use Bundles\SandboxBundle\Entity\FakeEmail;
 use Bundles\SandboxBundle\Repository\FakeEmailRepository;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 
 class FakeEmailManager
 {
@@ -25,8 +27,8 @@ class FakeEmailManager
      * @param string $subject
      * @param string $body
      *
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function store(string $to, string $subject, string $body)
     {

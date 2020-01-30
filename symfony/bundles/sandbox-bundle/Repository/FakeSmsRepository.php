@@ -4,6 +4,7 @@ namespace Bundles\SandboxBundle\Repository;
 
 use App\Entity\Volunteer;
 use Bundles\SandboxBundle\Entity\FakeSms;
+use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -69,7 +70,7 @@ class FakeSmsRepository extends ServiceEntityRepository
         $fakeSms->setPhoneNumber($volunteer->getPhoneNumber());
         $fakeSms->setContent(substr($content, 0, 1024));
         $fakeSms->setDirection($direction);
-        $fakeSms->setCreatedAt(new \DateTime());
+        $fakeSms->setCreatedAt(new DateTime());
 
         $this->_em->persist($fakeSms);
         $this->_em->flush($fakeSms);

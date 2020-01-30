@@ -7,6 +7,12 @@ use Bundles\PegassCrawlerBundle\Event\PegassEvent;
 use Bundles\PegassCrawlerBundle\PegassEvents;
 use Bundles\PegassCrawlerBundle\Repository\PegassRepository;
 use Bundles\PegassCrawlerBundle\Service\PegassClient;
+use DateInterval;
+use DateTime;
+use Doctrine\Common\Persistence\Mapping\MappingException;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
+use Exception;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -53,7 +59,7 @@ class PegassManager
      * @param int  $limit
      * @param bool $fromCache
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function heat(int $limit, bool $fromCache = false)
     {
@@ -75,7 +81,7 @@ class PegassManager
      * @param Pegass $entity
      * @param bool   $fromCache
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function updateEntity(Pegass $entity, bool $fromCache)
     {
@@ -112,9 +118,9 @@ class PegassManager
      * @param callable $callback
      * @param bool     $onlyEnabled
      *
-     * @throws \Doctrine\Common\Persistence\Mapping\MappingException
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws MappingException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function foreach(string $type, callable $callback, bool $onlyEnabled = true)
     {
@@ -134,7 +140,7 @@ class PegassManager
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     private function initialize()
     {
@@ -146,14 +152,14 @@ class PegassManager
         if (null === $area) {
             $area = new Pegass();
             $area->setType(Pegass::TYPE_AREA);
-            $area->setUpdatedAt(new \DateTime('1984-07-10')); // Expired
+            $area->setUpdatedAt(new DateTime('1984-07-10')); // Expired
             $this->debug($area, 'Creating area');
             $this->pegassRepository->save($area);
         }
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     private function updateArea(Pegass $entity, bool $fromCache)
     {
@@ -166,7 +172,7 @@ class PegassManager
         }
 
         $entity->setContent($data);
-        $entity->setUpdatedAt(new \DateTime());
+        $entity->setUpdatedAt(new DateTime());
         $this->pegassRepository->save($entity);
 
         if ($identifiers = array_column($data, 'id')) {
@@ -180,7 +186,7 @@ class PegassManager
                 $department->setType(Pegass::TYPE_DEPARTMENT);
                 $department->setIdentifier($row['id']);
                 $department->setParentIdentifier($row['id']);
-                $department->setUpdatedAt(new \DateTime('1984-07-10')); // Expired
+                $department->setUpdatedAt(new DateTime('1984-07-10')); // Expired
                 $this->debug($department, 'Creating department');
                 $this->pegassRepository->save($department);
             }
@@ -191,7 +197,7 @@ class PegassManager
      * @param Pegass $entity
      * @param bool   $fromCache
      *
-     * @throws \Exception
+     * @throws Exception
      */
     private function updateDepartment(Pegass $entity, bool $fromCache)
     {
@@ -204,7 +210,7 @@ class PegassManager
         }
 
         $entity->setContent($data);
-        $entity->setUpdatedAt(new \DateTime());
+        $entity->setUpdatedAt(new DateTime());
         $this->pegassRepository->save($entity);
 
         if (!isset($data['structuresFilles'])) {
@@ -223,7 +229,7 @@ class PegassManager
                 $structure->setType(Pegass::TYPE_STRUCTURE);
                 $structure->setIdentifier($row['id']);
                 $structure->setParentIdentifier($entity->getIdentifier());
-                $structure->setUpdatedAt(new \DateTime('1984-07-10')); // Expired
+                $structure->setUpdatedAt(new DateTime('1984-07-10')); // Expired
                 $this->debug($structure, 'Creating structure');
                 $this->pegassRepository->save($structure);
             }
@@ -234,7 +240,7 @@ class PegassManager
      * @param Pegass $entity
      * @param bool   $fromCache
      *
-     * @throws \Exception
+     * @throws Exception
      */
     private function updateStructure(Pegass $entity, bool $fromCache)
     {
@@ -249,7 +255,7 @@ class PegassManager
         $pages = $structure['volunteers'];
 
         $entity->setContent($structure);
-        $entity->setUpdatedAt(new \DateTime());
+        $entity->setUpdatedAt(new DateTime());
         $this->pegassRepository->save($entity);
 
         $parentIdentifier = sprintf('|%s|', $entity->getIdentifier());
@@ -282,7 +288,7 @@ class PegassManager
                     $volunteer->setType(Pegass::TYPE_VOLUNTEER);
                     $volunteer->setIdentifier($row['id']);
                     $volunteer->setParentIdentifier($parentIdentifier);
-                    $volunteer->setUpdatedAt(new \DateTime('1984-07-10')); // Expired
+                    $volunteer->setUpdatedAt(new DateTime('1984-07-10')); // Expired
                     $this->debug($volunteer, 'Creating volunteer');
                     $this->pegassRepository->save($volunteer);
                 } else {
@@ -300,7 +306,7 @@ class PegassManager
      * @param Pegass $entity
      * @param bool   $fromCache
      *
-     * @throws \Exception
+     * @throws Exception
      */
     private function updateVolunteer(Pegass $entity, bool $fromCache)
     {
@@ -313,7 +319,7 @@ class PegassManager
         }
 
         $entity->setContent($data);
-        $entity->setUpdatedAt(new \DateTime());
+        $entity->setUpdatedAt(new DateTime());
 
         $this->pegassRepository->save($entity);
     }
@@ -343,10 +349,10 @@ class PegassManager
                 continue;
             }
 
-            $date = new \DateTime();
+            $date = new DateTime();
             $step = intval($ttl / count($entities));
             foreach ($entities as $entity) {
-                $updateAt = new \DateInterval(sprintf('PT%dS', $step));
+                $updateAt = new DateInterval(sprintf('PT%dS', $step));
                 $date->add($updateAt);
 
                 $this->debug($entity, 'Change updatedAt date', [

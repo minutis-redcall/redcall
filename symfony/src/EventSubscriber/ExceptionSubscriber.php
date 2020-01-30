@@ -35,9 +35,11 @@ class ExceptionSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         // return the subscribed events, their methods and priorities
-        return [KernelEvents::EXCEPTION => [
-            ['logException', 0]
-        ]];
+        return [
+            KernelEvents::EXCEPTION => [
+                ['logException', 0],
+            ],
+        ];
     }
 
     public function logException(GetResponseForExceptionEvent $event)

@@ -2,7 +2,9 @@
 
 namespace App\Entity;
 
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
+use Exception;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\CommunicationRepository")
@@ -55,7 +57,7 @@ class Communication
     private $body;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      *
      * @ORM\Column(type="datetime")
      */
@@ -245,15 +247,15 @@ class Communication
     }
 
     /**
-     * @return \DateTime
+     * @return DateTime
      */
-    public function getCreatedAt(): \DateTime
+    public function getCreatedAt(): DateTime
     {
         return $this->createdAt;
     }
 
     /**
-     * @param \DateTime $createdAt
+     * @param DateTime $createdAt
      *
      * @return $this
      */
@@ -411,7 +413,7 @@ class Communication
      *
      * @return bool
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function isUnclear(string $prefix, string $message): bool
     {

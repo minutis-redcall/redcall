@@ -8,6 +8,8 @@ use Bundles\PasswordLoginBundle\Event\PasswordLoginEvents;
 use Bundles\PasswordLoginBundle\Event\PostEditProfileEvent;
 use Bundles\PasswordLoginBundle\Event\PostRegisterEvent;
 use Bundles\PasswordLoginBundle\Event\PreEditProfileEvent;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class PasswordLoginSubscriber implements EventSubscriberInterface
@@ -67,8 +69,8 @@ class PasswordLoginSubscriber implements EventSubscriberInterface
     /**
      * @param PostEditProfileEvent $event
      *
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function onPostEditProfile(PostEditProfileEvent $event)
     {

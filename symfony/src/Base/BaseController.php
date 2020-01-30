@@ -4,6 +4,7 @@ namespace App\Base;
 
 use Bundles\PaginationBundle\Manager\PaginationManager;
 use Doctrine\ORM\QueryBuilder;
+use LogicException;
 use Pagerfanta\Pagerfanta;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
@@ -20,14 +21,14 @@ class BaseController extends Controller
         $request = $this->get('request_stack')->getMasterRequest();
 
         if (strpos($prefixedDefaultColumn, '.') === false) {
-            throw new \LogicException("Invalid format of the given doctrine default column: {$prefixedDefaultColumn}.");
+            throw new LogicException("Invalid format of the given doctrine default column: {$prefixedDefaultColumn}.");
         }
 
         $qbPrefix      = substr($prefixedDefaultColumn, 0, strpos($prefixedDefaultColumn, '.'));
         $defaultColumn = substr($prefixedDefaultColumn, strpos($prefixedDefaultColumn, '.') + 1);
 
         if (!class_exists($class)) {
-            throw new \LogicException("Class '$class' not found.");
+            throw new LogicException("Class '$class' not found.");
         }
 
         $column = $request->get($prefix.'order-by', $defaultColumn);

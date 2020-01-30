@@ -5,6 +5,7 @@ namespace App\Security\Authenticator;
 use App\Entity\Volunteer;
 use App\Manager\UserInformationManager;
 use App\Manager\VolunteerManager;
+use Exception;
 use Firebase\JWT\JWT;
 use Goutte\Client;
 use Psr\Log\LoggerInterface;
@@ -52,19 +53,22 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
      * @param RouterInterface        $router
      * @param LoggerInterface|null   $logger
      */
-    public function __construct(VolunteerManager $volunteerManager, UserInformationManager $userInformationManager, RouterInterface $router, LoggerInterface $logger = null)
+    public function __construct(VolunteerManager $volunteerManager,
+        UserInformationManager $userInformationManager,
+        RouterInterface $router,
+        LoggerInterface $logger = null)
     {
-        $this->volunteerManager = $volunteerManager;
+        $this->volunteerManager       = $volunteerManager;
         $this->userInformationManager = $userInformationManager;
-        $this->router = $router;
-        $this->logger = $logger ?? new NullLogger();
+        $this->router                 = $router;
+        $this->logger                 = $logger ?? new NullLogger();
     }
 
     public function supports(Request $request)
     {
         return getenv('MINUTIS_JWT_PUBLIC_KEY_URL')
-            && '/auth' === $request->getPathInfo()
-            && 'POST' === $request->getMethod();
+               && '/auth' === $request->getPathInfo()
+               && 'POST' === $request->getMethod();
     }
 
     public function getCredentials(Request $request)
@@ -77,10 +81,10 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
         // Decode and verify JWT token
         try {
             $decoded = (array)JWT::decode($jwt, $this->getMinutisPublicKey(), ['RS256']);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // Either invalid JWT, invalid algo, expired token...
             $this->logger->warning('Unable to decode JWT', [
-                'token' => $jwt,
+                'token'     => $jwt,
                 'exception' => $e->getMessage(),
             ]);
 
@@ -91,7 +95,7 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
         foreach (['iat', 'exp', 'nivol'] as $requiredKey) {
             if (!array_key_exists($requiredKey, $decoded)) {
                 $this->logger->warning('Key not given in JWT', [
-                    'key' => $requiredKey,
+                    'key'   => $requiredKey,
                     'token' => $jwt,
                 ]);
 
@@ -100,7 +104,7 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
         }
 
         // Seek for a volunteer attached to that nivol
-        $nivol = $decoded['nivol'];
+        $nivol     = $decoded['nivol'];
         $volunteer = $this->volunteerManager->findOneByNivol($nivol);
         if (null === $volunteer) {
             $this->logger->warning('Nivol not associated with a volunteer', [
@@ -124,15 +128,6 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
         }
 
         return $userInformation->getUser();
-    }
-
-    private function getMinutisPublicKey()
-    {
-        $client = new Client();
-
-        $client->request('GET', getenv('MINUTIS_JWT_PUBLIC_KEY_URL'));
-
-        return $client->getResponse()->getContent();
     }
 
     public function checkCredentials($credentials, UserInterface $user)
@@ -166,5 +161,14 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
     public function supportsRememberMe()
     {
         return false;
+    }
+
+    private function getMinutisPublicKey()
+    {
+        $client = new Client();
+
+        $client->request('GET', getenv('MINUTIS_JWT_PUBLIC_KEY_URL'));
+
+        return $client->getResponse()->getContent();
     }
 }

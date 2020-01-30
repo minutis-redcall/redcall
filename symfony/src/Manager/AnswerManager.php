@@ -6,6 +6,8 @@ use App\Entity\Answer;
 use App\Entity\Campaign;
 use App\Entity\Message;
 use App\Repository\AnswerRepository;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 
 class AnswerManager
 {
@@ -35,8 +37,8 @@ class AnswerManager
     /**
      * @param Message $message
      *
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function clearAnswers(Message $message)
     {
@@ -47,8 +49,8 @@ class AnswerManager
      * @param Message $message
      * @param array   $choices
      *
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws ORMException
+     * @throws OptimisticLockException
      */
     public function clearChoices(Message $message, array $choices)
     {
