@@ -64,18 +64,18 @@ class RefreshManager
      * @param LoggerInterface|null   $logger
      */
     public function __construct(PegassManager $pegassManager,
-        StructureManager $structureManager,
-        VolunteerManager $volunteerManager,
-        TagManager $tagManager,
-        UserInformationManager $userInformationManager,
-        LoggerInterface $logger = null)
+                                StructureManager $structureManager,
+                                VolunteerManager $volunteerManager,
+                                TagManager $tagManager,
+                                UserInformationManager $userInformationManager,
+                                LoggerInterface $logger = null)
     {
-        $this->pegassManager          = $pegassManager;
-        $this->structureManager       = $structureManager;
-        $this->volunteerManager       = $volunteerManager;
-        $this->tagManager             = $tagManager;
+        $this->pegassManager = $pegassManager;
+        $this->structureManager = $structureManager;
+        $this->volunteerManager = $volunteerManager;
+        $this->tagManager = $tagManager;
         $this->userInformationManager = $userInformationManager;
-        $this->logger                 = $logger ?: new NullLogger();
+        $this->logger = $logger ?: new NullLogger();
     }
 
     /**
@@ -83,80 +83,8 @@ class RefreshManager
      */
     public function refresh()
     {
-        $this->refreshStructures();
+        //  $this->refreshStructures();
         $this->refreshVolunteers();
-    }
-
-    public function refreshStructures()
-    {
-        $this->disableInactiveStructures();
-
-        // Import or refresh structures
-        $this->pegassManager->foreach(Pegass::TYPE_STRUCTURE, function (Pegass $pegass) {
-            $this->refreshStructure($pegass);
-        });
-
-        $this->refreshParentStructures();
-    }
-
-    /**
-     * @param Pegass $pegass
-     *
-     * @throws \Doctrine\ORM\NonUniqueResultException
-     */
-    public function refreshStructure(Pegass $pegass)
-    {
-        $structure = $this->structureManager->findOneByIdentifier($pegass->getIdentifier());
-        if (!$structure) {
-            $structure = new Structure();
-        }
-
-        // Structure already up to date
-        if ($structure->getLastPegassUpdate()
-            && $structure->getLastPegassUpdate()->getTimestamp() === $pegass->getUpdatedAt()->getTimestamp()) {
-            return;
-        }
-        $structure->setLastPegassUpdate(clone $pegass->getUpdatedAt());
-        $structure->setEnabled(true);
-
-        $this->logger->info('Updating a structure', [
-            'type'              => $pegass->getType(),
-            'identifier'        => $pegass->getIdentifier(),
-            'parent-identifier' => $pegass->getParentIdentifier(),
-        ]);
-
-        $structure->setIdentifier($pegass->evaluate('structure.id'));
-        $structure->setType($pegass->evaluate('structure.typeStructure'));
-        $structure->setName($pegass->evaluate('structure.libelle'));
-        $structure->setPresident(ltrim($pegass->evaluate('responsible.responsableId'), '0'));
-        $this->structureManager->save($structure);
-    }
-
-    public function refreshParentStructures()
-    {
-        $this->pegassManager->foreach(Pegass::TYPE_STRUCTURE, function (Pegass $pegass) {
-            if ($parentId = $pegass->evaluate('structure.parent.id')) {
-                $structure = $this->structureManager->findOneByIdentifier($pegass->getIdentifier());
-
-                if ($structure->getParentStructure() && $parentId === $structure->getParentStructure()->getIdentifier()) {
-                    return;
-                }
-
-                if ($parent = $this->structureManager->findOneByIdentifier($parentId)) {
-                    $structure->setParentStructure($parent);
-                    $this->structureManager->save($structure);
-                }
-            }
-        });
-    }
-
-    public function disableInactiveStructures()
-    {
-        $redcallStructures = $this->structureManager->listStructureIdentifiers();
-        $pegassStructures  = $this->pegassManager->listIdentifiers(Pegass::TYPE_STRUCTURE);
-        foreach (array_diff($redcallStructures, $pegassStructures) as $structureIdentiifer) {
-            $this->structureManager->disableByIdentifier($structureIdentiifer);
-        }
     }
 
     public function refreshVolunteers()
@@ -241,8 +169,8 @@ class RefreshManager
         }
 
         $this->logger->info('Updating a volunteer', [
-            'type'              => $pegass->getType(),
-            'identifier'        => $pegass->getIdentifier(),
+            'type' => $pegass->getType(),
+            'identifier' => $pegass->getIdentifier(),
             'parent-identifier' => $pegass->getParentIdentifier(),
         ]);
 
@@ -330,7 +258,7 @@ class RefreshManager
         // Filter out keys that are not phones
         $contact = array_filter($contact, function ($data) use ($phoneKeys) {
             return in_array($data['moyenComId'] ?? [], $phoneKeys)
-                   && PhoneNumberParser::parse($data['libelle'] ?? false);
+                && PhoneNumberParser::parse($data['libelle'] ?? false);
         });
 
         // Order phones in order to take work phone last
@@ -357,7 +285,7 @@ class RefreshManager
         // Filter out keys that are not emails
         $contact = array_filter($contact, function ($data) use ($emailKeys) {
             return in_array($data['moyenComId'] ?? [], $emailKeys)
-                   && preg_match('/^.+\@.+\..+$/', $data['libelle'] ?? false);
+                && preg_match('/^.+\@.+\..+$/', $data['libelle'] ?? false);
         });
 
         // Order emails
@@ -434,5 +362,78 @@ class RefreshManager
         }
 
         return $skills;
+    }
+
+    public function refreshStructures()
+    {
+        $this->disableInactiveStructures();
+
+        // Import or refresh structures
+        $this->pegassManager->foreach(Pegass::TYPE_STRUCTURE, function (Pegass $pegass) {
+            $this->refreshStructure($pegass);
+        });
+
+        $this->refreshParentStructures();
+    }
+
+    public function disableInactiveStructures()
+    {
+        $redcallStructures = $this->structureManager->listStructureIdentifiers();
+        $pegassStructures = $this->pegassManager->listIdentifiers(Pegass::TYPE_STRUCTURE);
+        foreach (array_diff($redcallStructures, $pegassStructures) as $structureIdentiifer) {
+            $this->structureManager->disableByIdentifier($structureIdentiifer);
+        }
+    }
+
+    /**
+     * @param Pegass $pegass
+     *
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function refreshStructure(Pegass $pegass)
+    {
+        $structure = $this->structureManager->findOneByIdentifier($pegass->getIdentifier());
+        if (!$structure) {
+            $structure = new Structure();
+        }
+
+        // Structure already up to date
+        if ($structure->getLastPegassUpdate()
+            && $structure->getLastPegassUpdate()->getTimestamp() === $pegass->getUpdatedAt()->getTimestamp()) {
+            return;
+        }
+        $structure->setLastPegassUpdate(clone $pegass->getUpdatedAt());
+        $structure->setEnabled(true);
+
+
+        $this->logger->info('Updating a structure', [
+            'type' => $pegass->getType(),
+            'identifier' => $pegass->getIdentifier(),
+            'parent-identifier' => $pegass->getParentIdentifier(),
+        ]);
+
+        $structure->setIdentifier($pegass->evaluate('structure.id'));
+        $structure->setType($pegass->evaluate('structure.typeStructure'));
+        $structure->setName($pegass->evaluate('structure.libelle'));
+        $structure->setPresident(ltrim($pegass->evaluate('responsible.responsableId'), '0'));
+        $this->structureManager->save($structure);
+    }
+
+    public function refreshParentStructures()
+    {
+        $this->pegassManager->foreach(Pegass::TYPE_STRUCTURE, function (Pegass $pegass) {
+            if ($parentId = $pegass->evaluate('structure.parent.id')) {
+                $structure = $this->structureManager->findOneByIdentifier($pegass->getIdentifier());
+
+                if ($structure->getParentStructure() && $parentId === $structure->getParentStructure()->getIdentifier()) {
+                    return;
+                }
+
+                if ($parent = $this->structureManager->findOneByIdentifier($parentId)) {
+                    $structure->setParentStructure($parent);
+                    $this->structureManager->save($structure);
+                }
+            }
+        });
     }
 }
