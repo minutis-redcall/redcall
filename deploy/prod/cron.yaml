@@ -8,5 +8,5 @@ cron:
   # */5 * * * * <path/to/the/project>/symfony/bin/console pegass
   - description: "Maintain Pegass cache"
     url: /cron/pegass
-    schedule: every 1 minute
+    schedule: every 1 minutes
 
