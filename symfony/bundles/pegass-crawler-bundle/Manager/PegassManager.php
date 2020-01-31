@@ -349,7 +349,7 @@ class PegassManager
                 continue;
             }
 
-            $date = new DateTime();
+            $date = (new DateTime())->sub(new DateInterval(sprintf('PT%dS', $ttl)));
             $step = intval($ttl / count($entities));
             foreach ($entities as $entity) {
                 $updateAt = new DateInterval(sprintf('PT%dS', $step));
