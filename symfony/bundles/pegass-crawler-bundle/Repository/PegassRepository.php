@@ -150,6 +150,8 @@ class PegassRepository extends ServiceEntityRepository
     {
         $count = $this->createQueryBuilder('p')
                       ->select('COUNT(p.id)')
+                      ->where('p.type = :type')
+                      ->setParameter('type', $type)
                       ->getQuery()
                       ->getSingleScalarResult();
 
