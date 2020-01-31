@@ -28,11 +28,27 @@ class PegassRepository extends ServiceEntityRepository
      *
      * @return Pegass[]
      */
-    public function getEntities(string $type)
+    public function getEntities(string $type): array
     {
         return $this->findBy([
             'type' => $type,
         ]);
+    }
+
+    /**
+     * @param string $type
+     *
+     * @return int
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function countEntities(string $type): int
+    {
+        return $this->createQueryBuilder('p')
+                    ->select('COUNT(p.id)')
+                    ->where('p.type = :type')
+                    ->setParameter('type', $type)
+                    ->getQuery()
+                    ->getSingleScalarResult();
     }
 
     public function getEntity(string $type,

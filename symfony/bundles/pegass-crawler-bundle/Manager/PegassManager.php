@@ -344,14 +344,10 @@ class PegassManager
         $this->pegassRepository->save($area);
 
         foreach (Pegass::TTL as $type => $ttl) {
-            $entities = $this->pegassRepository->getEntities($type);
-            if (!$entities) {
-                continue;
-            }
-
-            $date = (new DateTime())->sub(new DateInterval(sprintf('PT%dS', $ttl)));
-            $step = intval($ttl / count($entities));
-            foreach ($entities as $entity) {
+            $count = $this->pegassRepository->countEntities($type);
+            $date  = (new DateTime())->sub(new DateInterval(sprintf('PT%dS', $ttl)));
+            $step  = intval($ttl / $count);
+            $this->pegassRepository->foreach($type, function (Pegass $entity) use ($date, $step) {
                 $updateAt = new DateInterval(sprintf('PT%dS', $step));
                 $date->add($updateAt);
 
@@ -361,7 +357,7 @@ class PegassManager
 
                 $entity->setUpdatedAt($date);
                 $this->pegassRepository->save($entity);
-            }
+            });
         }
     }
 
@@ -370,12 +366,16 @@ class PegassManager
      */
     private function debug(Pegass $entity, string $message, array $data = [])
     {
-        $this->logger->debug($message, array_merge($data, [
+        $params = array_merge($data, [
             'at'                => date('d/m/Y H:i'),
             'type'              => $entity->getType(),
             'identifier'        => $entity->getIdentifier(),
             'parent_identifier' => $entity->getParentIdentifier(),
-        ]));
+        ]);
+
+        $this->logger->debug($message, $params);
+
+        echo sprintf('%s %s (%s)', date('d/m/Y H:i:s'), $message, json_encode($params)), PHP_EOL;
     }
 
     /**
