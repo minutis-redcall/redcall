@@ -155,7 +155,8 @@ class RefreshManager
     {
         $this->pegassManager->foreach(Pegass::TYPE_STRUCTURE, function (Pegass $pegass) {
             $this->debug('Updating parent structures for a structure', [
-                'identifier' => $pegass->getIdentifier(),
+                'identifier'        => $pegass->getIdentifier(),
+                'parent_identifier' => $pegass->getParentIdentifier(),
             ]);
 
             if ($parentId = $pegass->evaluate('structure.parent.id')) {
