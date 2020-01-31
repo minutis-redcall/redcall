@@ -164,7 +164,7 @@ class PegassRepository extends ServiceEntityRepository
             }
 
             $qb->setFirstResult($offset)
-               ->setMaxResults(1000);
+               ->setMaxResults(100);
 
             $iterator = $qb->getQuery()->iterate();
 
@@ -187,7 +187,7 @@ class PegassRepository extends ServiceEntityRepository
             $this->_em->flush();
             $this->_em->clear();
 
-            $offset += 1000;
+            $offset += 100;
         }
     }
 

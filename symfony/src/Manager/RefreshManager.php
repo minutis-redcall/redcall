@@ -84,8 +84,93 @@ class RefreshManager
      */
     public function refresh()
     {
-        //  $this->refreshStructures();
+        $this->refreshStructures();
         $this->refreshVolunteers();
+    }
+
+    public function refreshStructures()
+    {
+        $this->disableInactiveStructures();
+
+        // Import or refresh structures
+        $this->pegassManager->foreach(Pegass::TYPE_STRUCTURE, function (Pegass $pegass) {
+            $this->debug('Walking through a structure', [
+                'identifier' => $pegass->getIdentifier(),
+            ]);
+
+            $this->refreshStructure($pegass);
+        });
+
+        $this->refreshParentStructures();
+    }
+
+    public function disableInactiveStructures()
+    {
+        $this->debug('Disabling inactive structures');
+        $redcallStructures = $this->structureManager->listStructureIdentifiers();
+        $pegassStructures  = $this->pegassManager->listIdentifiers(Pegass::TYPE_STRUCTURE);
+        foreach (array_diff($redcallStructures, $pegassStructures) as $structureIdentiifer) {
+            $this->debug('Disabling a structure', [
+                'identifier' => $structureIdentiifer,
+            ]);
+
+            $this->structureManager->disableByIdentifier($structureIdentiifer);
+        }
+    }
+
+    /**
+     * @param Pegass $pegass
+     *
+     * @throws NonUniqueResultException
+     */
+    public function refreshStructure(Pegass $pegass)
+    {
+        $structure = $this->structureManager->findOneByIdentifier($pegass->getIdentifier());
+        if (!$structure) {
+            $structure = new Structure();
+        }
+
+        // Structure already up to date
+        if ($structure->getLastPegassUpdate()
+            && $structure->getLastPegassUpdate()->getTimestamp() === $pegass->getUpdatedAt()->getTimestamp()) {
+            return;
+        }
+        $structure->setLastPegassUpdate(clone $pegass->getUpdatedAt());
+        $structure->setEnabled(true);
+
+        $this->debug('Updating a structure', [
+            'type'              => $pegass->getType(),
+            'identifier'        => $pegass->getIdentifier(),
+            'parent-identifier' => $pegass->getParentIdentifier(),
+        ]);
+
+        $structure->setIdentifier($pegass->evaluate('structure.id'));
+        $structure->setType($pegass->evaluate('structure.typeStructure'));
+        $structure->setName($pegass->evaluate('structure.libelle'));
+        $structure->setPresident(ltrim($pegass->evaluate('responsible.responsableId'), '0'));
+        $this->structureManager->save($structure);
+    }
+
+    public function refreshParentStructures()
+    {
+        $this->pegassManager->foreach(Pegass::TYPE_STRUCTURE, function (Pegass $pegass) {
+            $this->debug('Updating parent structures for a structure', [
+                'identifier' => $pegass->getIdentifier(),
+            ]);
+
+            if ($parentId = $pegass->evaluate('structure.parent.id')) {
+                $structure = $this->structureManager->findOneByIdentifier($pegass->getIdentifier());
+
+                if ($structure->getParentStructure() && $parentId === $structure->getParentStructure()->getIdentifier()) {
+                    return;
+                }
+
+                if ($parent = $this->structureManager->findOneByIdentifier($parentId)) {
+                    $structure->setParentStructure($parent);
+                    $this->structureManager->save($structure);
+                }
+            }
+        });
     }
 
     public function refreshVolunteers()
@@ -93,6 +178,10 @@ class RefreshManager
         $this->disableInactiveVolunteers();
 
         $this->pegassManager->foreach(Pegass::TYPE_VOLUNTEER, function (Pegass $pegass) {
+            $this->debug('Walking through a volunteer', [
+                'identifier' => $pegass->getIdentifier(),
+            ]);
+
             // Volunteer is invalid (ex: 00000048004C)
             if (!$pegass->evaluate('user.id')) {
                 return;
@@ -104,6 +193,7 @@ class RefreshManager
 
     public function disableInactiveVolunteers()
     {
+        $this->debug('Disabling inactive volunteers');
         $redcallVolunteers = $this->volunteerManager->listVolunteerNivols();
 
         $pegassVolunteers = array_map(function (string $identifier) {
@@ -111,6 +201,10 @@ class RefreshManager
         }, $this->pegassManager->listIdentifiers(Pegass::TYPE_VOLUNTEER));
 
         foreach (array_diff($redcallVolunteers, $pegassVolunteers) as $volunteerIdentiifer) {
+            $this->debug('Disabling a volunteer', [
+                'identifier' => $volunteerIdentiifer,
+            ]);
+
             $volunteer = $this->volunteerManager->findOneByNivol($volunteerIdentiifer);
 
             if ($volunteer->isLocked()) {
@@ -169,7 +263,7 @@ class RefreshManager
             return;
         }
 
-        $this->logger->info('Updating a volunteer', [
+        $this->debug('Updating a volunteer', [
             'type'              => $pegass->getType(),
             'identifier'        => $pegass->getIdentifier(),
             'parent-identifier' => $pegass->getParentIdentifier(),
@@ -232,78 +326,6 @@ class RefreshManager
         if ($userInformation) {
             $this->userInformationManager->updateNivol($userInformation, $volunteer->getNivol());
         }
-    }
-
-    public function refreshStructures()
-    {
-        $this->disableInactiveStructures();
-
-        // Import or refresh structures
-        $this->pegassManager->foreach(Pegass::TYPE_STRUCTURE, function (Pegass $pegass) {
-            $this->refreshStructure($pegass);
-        });
-
-        $this->refreshParentStructures();
-    }
-
-    public function disableInactiveStructures()
-    {
-        $redcallStructures = $this->structureManager->listStructureIdentifiers();
-        $pegassStructures  = $this->pegassManager->listIdentifiers(Pegass::TYPE_STRUCTURE);
-        foreach (array_diff($redcallStructures, $pegassStructures) as $structureIdentiifer) {
-            $this->structureManager->disableByIdentifier($structureIdentiifer);
-        }
-    }
-
-    /**
-     * @param Pegass $pegass
-     *
-     * @throws NonUniqueResultException
-     */
-    public function refreshStructure(Pegass $pegass)
-    {
-        $structure = $this->structureManager->findOneByIdentifier($pegass->getIdentifier());
-        if (!$structure) {
-            $structure = new Structure();
-        }
-
-        // Structure already up to date
-        if ($structure->getLastPegassUpdate()
-            && $structure->getLastPegassUpdate()->getTimestamp() === $pegass->getUpdatedAt()->getTimestamp()) {
-            return;
-        }
-        $structure->setLastPegassUpdate(clone $pegass->getUpdatedAt());
-        $structure->setEnabled(true);
-
-        $this->logger->info('Updating a structure', [
-            'type'              => $pegass->getType(),
-            'identifier'        => $pegass->getIdentifier(),
-            'parent-identifier' => $pegass->getParentIdentifier(),
-        ]);
-
-        $structure->setIdentifier($pegass->evaluate('structure.id'));
-        $structure->setType($pegass->evaluate('structure.typeStructure'));
-        $structure->setName($pegass->evaluate('structure.libelle'));
-        $structure->setPresident(ltrim($pegass->evaluate('responsible.responsableId'), '0'));
-        $this->structureManager->save($structure);
-    }
-
-    public function refreshParentStructures()
-    {
-        $this->pegassManager->foreach(Pegass::TYPE_STRUCTURE, function (Pegass $pegass) {
-            if ($parentId = $pegass->evaluate('structure.parent.id')) {
-                $structure = $this->structureManager->findOneByIdentifier($pegass->getIdentifier());
-
-                if ($structure->getParentStructure() && $parentId === $structure->getParentStructure()->getIdentifier()) {
-                    return;
-                }
-
-                if ($parent = $this->structureManager->findOneByIdentifier($parentId)) {
-                    $structure->setParentStructure($parent);
-                    $this->structureManager->save($structure);
-                }
-            }
-        });
     }
 
     /**
@@ -435,5 +457,16 @@ class RefreshManager
         }
 
         return $skills;
+    }
+
+    /**
+     * @param string $message
+     * @param array  $params
+     */
+    private function debug(string $message, array $params = [])
+    {
+        $this->logger->info($message, $params);
+
+        echo sprintf('%s %s (%s)', date('d/m/Y H:i:s'), $message, json_encode($params)), PHP_EOL;
     }
 }
