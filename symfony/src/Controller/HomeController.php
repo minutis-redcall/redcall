@@ -58,6 +58,6 @@ class HomeController extends Controller
      */
     public function auth()
     {
-        // never reached
+        return $this->redirectToRoute('home');
     }
 }
