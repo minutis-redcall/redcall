@@ -92,7 +92,7 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
         }
 
         // Seek for a nivol in payload
-        foreach (['iat', 'exp', 'nivol'] as $requiredKey) {
+        foreach (['exp', 'nivol'] as $requiredKey) {
             if (!array_key_exists($requiredKey, $decoded)) {
                 $this->logger->warning('Key not given in JWT', [
                     'key'   => $requiredKey,
@@ -104,7 +104,7 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
         }
 
         // Seek for a volunteer attached to that nivol
-        $nivol     = $decoded['nivol'];
+        $nivol     = ltrim($decoded['nivol'], '0');
         $volunteer = $this->volunteerManager->findOneByNivol($nivol);
         if (null === $volunteer) {
             $this->logger->warning('Nivol not associated with a volunteer', [
@@ -169,6 +169,11 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
 
         $client->request('GET', getenv('MINUTIS_JWT_PUBLIC_KEY_URL'));
 
-        return $client->getResponse()->getContent();
+        $key = $client->getResponse()->getContent();
+
+        return sprintf(
+            "-----BEGIN PUBLIC KEY-----\n%s\n-----END PUBLIC KEY-----",
+            str_pad($key, 64, "\n")
+        );
     }
 }
