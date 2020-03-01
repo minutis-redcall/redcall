@@ -45,6 +45,7 @@
     "symfony/web-link": "^4.1",
     "symfony/webpack-encore-bundle": "^1.5",
     "symfony/yaml": "^4.1",
+    "twilio/sdk": "^6.0",
     "white-october/pagerfanta-bundle": "^1.3"
   },
   "require-dev": {
@@ -71,7 +72,8 @@
       "Bundles\\PasswordLoginBundle\\": "bundles/password-login-bundle/",
       "Bundles\\PegassCrawlerBundle\\": "bundles/pegass-crawler-bundle/",
       "Bundles\\SandboxBundle\\": "bundles/sandbox-bundle/",
-      "Bundles\\SettingsBundle\\": "bundles/settings-bundle/"
+      "Bundles\\SettingsBundle\\": "bundles/settings-bundle/",
+      "Bundles\\TwilioBundle\\": "bundles/twilio-bundle/"
     }
   },
   "autoload-dev": {

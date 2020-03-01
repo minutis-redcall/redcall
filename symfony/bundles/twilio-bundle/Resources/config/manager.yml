@@ -1,0 +1,5 @@
+services:
+
+  Bundles\TwilioBundle\Manager\TwilioMessageManager:
+    arguments:
+      - '@Bundles\TwilioBundle\Repository\TwilioMessageRepository'

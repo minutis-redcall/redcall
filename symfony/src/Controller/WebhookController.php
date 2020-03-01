@@ -6,9 +6,8 @@ use App\Base\BaseController;
 use App\Manager\MessageManager;
 use Nexmo\Message\InboundMessage;
 use Psr\Log\LoggerInterface;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
 class WebhookController extends BaseController
 {
@@ -28,13 +27,12 @@ class WebhookController extends BaseController
      */
     public function __construct(LoggerInterface $logger, MessageManager $messageManager)
     {
-        $this->logger         = $logger;
+        $this->logger = $logger;
         $this->messageManager = $messageManager;
     }
 
     /**
-     * @Route(path="webhooks/delivery-receipt")
-     * @Method({"GET"})
+     * @Route(path="webhooks/delivery-receipt", methods={"GET"})
      *
      * @return Response
      */
@@ -44,8 +42,7 @@ class WebhookController extends BaseController
     }
 
     /**
-     * @Route(path="webhooks/inbound-sms")
-     * @Method({"GET"})
+     * @Route(path="webhooks/inbound-sms", methods={"GET"})
      *
      * @return Response
      */
@@ -62,12 +59,10 @@ class WebhookController extends BaseController
         $this->messageManager->handleAnswer($inbound->getFrom(), $inbound->getBody());
 
         $this->logger->info('SMS Inbound received!', [
-            'sender'  => $inbound->getFrom(),
+            'sender' => $inbound->getFrom(),
             'inbound' => $inbound->getBody(),
         ]);
 
         return new Response();
     }
-
-
 }

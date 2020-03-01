@@ -1,7 +1,11 @@
 controllers:
-    resource: ../../src/Controller/
-    type: annotation
+  resource: ../../src/Controller/
+  type: annotation
 
 password_login:
-    resource: '@PasswordLoginBundle/Controller/'
-    type: annotation
+  resource: '@PasswordLoginBundle/Controller/'
+  type: annotation
+
+twilio:
+  resource: '@TwilioBundle/Controller/'
+  type: annotation

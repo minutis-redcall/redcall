@@ -1,0 +1,6 @@
+services:
+
+  Bundles\TwilioBundle\Repository\TwilioMessageRepository:
+    arguments:
+      - '@Doctrine\Common\Persistence\ManagerRegistry'
+      - 'Bundles\TwilioBundle\Entity\TwilioMessage'

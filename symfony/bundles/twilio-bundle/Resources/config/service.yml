@@ -1,0 +1,7 @@
+services:
+
+  Bundles\TwilioBundle\SMS\Twilio:
+    arguments:
+      - '@router'
+      - '@event_dispatcher'
+      - '@Bundles\TwilioBundle\Manager\TwilioMessageManager'

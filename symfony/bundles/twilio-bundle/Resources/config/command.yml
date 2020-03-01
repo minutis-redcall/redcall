@@ -1,0 +1,13 @@
+services:
+
+  Bundles\TwilioBundle\Command\PriceCommand:
+    arguments:
+      - '@Bundles\TwilioBundle\SMS\Twilio'
+    tags:
+      - console.command
+
+  Bundles\TwilioBundle\Command\SmsCommand:
+    arguments:
+      - '@Bundles\TwilioBundle\SMS\Twilio'
+    tags:
+      - console.command

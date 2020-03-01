@@ -38,8 +38,9 @@ security:
     - { path: '^/auth$', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
     - { path: '^/infos/', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
 
-    # Nexmo webhooks (sms response received)
+    # Webhooks (sms response received)
     - { path: '^/webhooks', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
+    - { path: '^/twilio', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
 
     # Unauthenticated identity management
     - { path: '^/connect', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
