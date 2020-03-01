@@ -52,13 +52,15 @@ class Twilio
      * on the database for further tracking.
      *
      * @param string $phoneNumber
-     * @param string $outbound
+     * @param string $message
      * @param array  $context
+     *
+     * @return TwilioMessage
      *
      * @throws \Twilio\Exceptions\ConfigurationException
      * @throws \Twilio\Exceptions\TwilioException
      */
-    public function send(string $phoneNumber, string $message, array $context = [])
+    public function send(string $phoneNumber, string $message, array $context = []): TwilioMessage
     {
         $entity = new TwilioMessage();
         $entity->setUuid(Uuid::uuid4());
@@ -81,6 +83,8 @@ class Twilio
         $this->messageManager->save($entity);
         $this->eventDispatcher->dispatch(new TwilioEvent($entity), TwiliEvents::MESSAGE_SENT);
         $this->messageManager->save($entity);
+
+        return $entity;
     }
 
     /**
@@ -118,8 +122,8 @@ class Twilio
         $entity->setUuid(Uuid::uuid4());
         $entity->setDirection(TwilioMessage::DIRECTION_INBOUND);
         $entity->setMessage($inbound->body);
-        $entity->setFromNumber($inbound->from);
-        $entity->setToNumber($inbound->to);
+        $entity->setFromNumber(ltrim($inbound->from, '+'));
+        $entity->setToNumber(ltrim($inbound->to, '+'));
         $entity->setSid($inbound->sid);
         $entity->setStatus($inbound->status);
         $entity->setPrice($inbound->price);

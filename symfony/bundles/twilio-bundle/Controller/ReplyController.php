@@ -33,7 +33,7 @@ class ReplyController extends BaseController
      */
     public function reply(Request $request)
     {
-        //        $this->validateRequestSignature($request);
+        $this->validateRequestSignature($request);
 
         $sid = $request->get('MessageSid');
         if (!$sid) {

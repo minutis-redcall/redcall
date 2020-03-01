@@ -2,11 +2,14 @@
 
 namespace Bundles\TwilioBundle\Controller;
 
+use Bundles\TwilioBundle\Event\TwilioEvent;
 use Bundles\TwilioBundle\Manager\TwilioMessageManager;
+use Bundles\TwilioBundle\TwiliEvents;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**
  * @Route(name="twilio_", path="/twilio/")
@@ -17,6 +20,11 @@ class StatusController extends BaseController
      * @var TwilioMessageManager
      */
     private $messageManager;
+
+    /**
+     * @var EventDispatcherInterface
+     */
+    private $eventDispatcher;
 
     /**
      * @param TwilioMessageManager $messageManager
@@ -38,6 +46,8 @@ class StatusController extends BaseController
 
         if ($outbound) {
             $outbound->setStatus($request->get('MessageStatus'));
+            $this->messageManager->save($outbound);
+            $this->eventDispatcher->dispatch(new TwilioEvent($outbound), TwiliEvents::STATUS_UPDATED);
             $this->messageManager->save($outbound);
         }
 
