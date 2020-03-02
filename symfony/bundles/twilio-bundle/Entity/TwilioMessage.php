@@ -5,7 +5,17 @@ namespace Bundles\TwilioBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
+ * @ORM\Table(
+ *     uniqueConstraints={
+ *         @ORM\UniqueConstraint(name="uuid_idx", columns={"uuid"})
+ *     },
+ *     indexes={
+ *         @ORM\Index(name="sid_idx", columns={"sid"}),
+ *         @ORM\Index(name="price_idx", columns={"price"})
+ *     }
+ * )
  * @ORM\Entity(repositoryClass="TwilioMessageRepository")
+ * @ORM\HasLifecycleCallbacks
  */
 class TwilioMessage
 {
@@ -68,6 +78,16 @@ class TwilioMessage
      * @ORM\Column(type="text", nullable=true)
      */
     private $context;
+
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    private $createdAt;
+
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    private $updatedAt;
 
     public function getId(): ?int
     {
@@ -187,10 +207,51 @@ class TwilioMessage
         return $this->context ? json_decode($this->context, true) : null;
     }
 
-    public function setContext($context)
+    public function setContext($context): self
     {
         $this->context = json_encode($context);
 
         return $this;
+    }
+
+    public function getCreatedAt(): ?\DateTime
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTime $createdAt): self
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): ?\DateTime
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(\DateTime $updatedAt): self
+    {
+        $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    /**
+     * @ORM\PrePersist
+     */
+    public function onPrePersist()
+    {
+        $this->setCreatedAt(new \DateTime());
+        $this->setUpdatedAt(new \DateTime());
+    }
+
+    /**
+     * @ORM\PreUpdate
+     */
+    public function onPreUpdate()
+    {
+        $this->setUpdatedAt(new \DateTime());
     }
 }
