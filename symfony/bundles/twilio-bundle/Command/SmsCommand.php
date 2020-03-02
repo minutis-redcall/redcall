@@ -47,7 +47,7 @@ class SmsCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->twilio->send(
+        $this->twilio->sendMessage(
             $input->getArgument('phoneNumber'),
             implode(' ', $input->getArgument('message'))
         );

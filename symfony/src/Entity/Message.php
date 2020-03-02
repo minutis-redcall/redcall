@@ -30,7 +30,7 @@ class Message
     /**
      * This is the message id given by the SMS provider on success.
      *
-     * @ORM\Column(type="string", length=20, nullable=true)
+     * @ORM\Column(type="string", length=64, nullable=true)
      */
     private $messageId;
 

@@ -2,21 +2,14 @@
 
 namespace App\Provider\SMS;
 
-use Exception;
-
 interface SMSProvider
 {
     /**
-     * @param string $message
      * @param string $phoneNumber
+     * @param string $message
+     * @param array  $context
      *
-     * @return string
-     * @throws Exception
+     * @return SMSSent
      */
-    public function send(string $message, string $phoneNumber): SMSSent;
-
-    /**
-     * @return string
-     */
-    public function getProviderCode(): string;
+    public function send(string $phoneNumber, string $message, array $context = []): SMSSent;
 }

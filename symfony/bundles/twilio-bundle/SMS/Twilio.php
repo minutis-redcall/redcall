@@ -60,7 +60,7 @@ class Twilio
      * @throws \Twilio\Exceptions\ConfigurationException
      * @throws \Twilio\Exceptions\TwilioException
      */
-    public function send(string $phoneNumber, string $message, array $context = []): TwilioMessage
+    public function sendMessage(string $phoneNumber, string $message, array $context = []): TwilioMessage
     {
         $entity = new TwilioMessage();
         $entity->setUuid(Uuid::uuid4());
