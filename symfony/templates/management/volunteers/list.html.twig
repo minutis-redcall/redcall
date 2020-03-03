@@ -40,6 +40,14 @@
                                 {% endif %}
                             </div>
                             <div>
+                                {% if volunteer.structures %}
+                                    <strong>{{ volunteer.structures.get(0).name }}</strong>
+                                    {% if volunteer.structures.count > 1 %}
+                                        {{ 'manage_volunteers.others'|trans({'%count%': volunteer.structures.count - 1}) }}
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                            <div>
                                 {# Volunteer skills #}
                                 {% for skill in volunteer.tagsView %}
                                     {{ ('tag.shortcuts.' ~ skill)|trans }}{% if not loop.last %},{% endif %}

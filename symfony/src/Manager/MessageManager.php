@@ -99,11 +99,13 @@ class MessageManager
      * @param string $phoneNumber
      * @param string $body
      *
+     * @return int|null
+     *
      * @throws NonUniqueResultException
      * @throws ORMException
      * @throws OptimisticLockException
      */
-    public function handleAnswer(string $phoneNumber, string $body)
+    public function handleAnswer(string $phoneNumber, string $body): ?int
     {
         // In case of multiple calls, we should handle the "A1 B2" body case.
         $messages = [];
@@ -127,12 +129,18 @@ class MessageManager
         }
 
         // A better way would be to add a @ManyToMany on Answer<->Message entities,
-        // but answers are currently tied to much on their communications.
+        // but answers are currently tied too much on their communications.
         foreach ($messages as $message) {
             if (Communication::TYPE_SMS === $message->getCommunication()->getType()) {
                 $this->addAnswer($message, $body);
             }
         }
+
+        if (!$messages) {
+            return null;
+        }
+
+        return reset($messages)->getId();
     }
 
     /**

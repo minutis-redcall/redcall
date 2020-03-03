@@ -10,8 +10,7 @@ As SMS are expensive, we track everything by storing outbounds, inbounds, costs 
 +----+--------------------------------------+-----------+-------------+-------------+-------------+------------------------------------+-----------+----------+------+---------+
 |  3 | 5e54a6a2-27db-448a-be4e-0b20199dc84d | outbound  | hello world | 33xxxxxxxxx | 33yyyyyyyyy | SMzjQJKmGYdz0cAf2rgymILNTv7PmhAPz7 | delivered | -0.07600 | USD  | []      |
 |  4 | 7303e136-e832-481b-a38b-f1603db9ba4a | outbound  | hello world | 33xxxxxxxxx | 33yyyyyyyyy | SM4FFJqdViROSy2hI33cUJeOcx1qkbn9lV | queued    | -0.07600 | USD  | []      |
-|  5 | e37abd25-b611-4bdb-99b1-85641892ff70 | outbound  | hello world | 33xxxxxxxxx | 33yyyyyyyyy | SMk9Sdf5JDMBp5GskUGns82y1Iw4o0hQQC | delivered | -0.07600 | USD  | []      |
-|  6 | 6013617f-874f-4f44-9690-ec581d2f98fd | outbound  | hello world | 33xxxxxxxxx | 33yyyyyyyyy | SM7Ze1IZCMJkhi3pxV52UAhJy6385739m2 | delivered | -0.07600 | USD  | []      |
+|  5 | e37abd25-b611-4bdb-99b1-85641892ff70 | outbound  | hello world | 33xxxxxxxxx | 33yyyyyyyyy | SMk9Sdf5JDMBp5GskUGns82y1Iw4o0hQQC | delivered | -0.07600 | USD  | []      |  6 | 6013617f-874f-4f44-9690-ec581d2f98fd | outbound  | hello world | 33xxxxxxxxx | 33yyyyyyyyy | SM7Ze1IZCMJkhi3pxV52UAhJy6385739m2 | delivered | -0.07600 | USD  | []      |
 |  7 | 8c821e08-4a75-46a6-9459-e8fe10503b3f | outbound  | hello world | 33xxxxxxxxx | 33yyyyyyyyy | SM5ZFPrZYC9YA4COVmrmrWDtfQPX0XMtme | delivered | -0.07600 | USD  | []      |
 |  8 | 0531a363-5dfa-4764-9365-6d638993ac02 | inbound   | Test        | 33yyyyyyyyy | 33xxxxxxxxx | SM5nAFUMkOFub9YuovkEbX0H5jBrJMETIw | receiving | -0.00750 | USD  | NULL    |
 +----+--------------------------------------+-----------+-------------+-------------+-------------+------------------------------------+-----------+----------+------+---------+

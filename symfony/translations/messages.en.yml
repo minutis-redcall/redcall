@@ -193,6 +193,7 @@ prefilled_answers:
 
 manage_volunteers:
   title: 'Manage volunteers'
+  others: 'and %count% other(s)'
   search:
     label: 'Rechercher un volontaire'
     button: 'Rechercher'

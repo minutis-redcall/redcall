@@ -192,6 +192,7 @@ prefilled_answers:
 
 manage_volunteers:
   title: 'Gestion des volontaires'
+  others: 'et %count% autre(s)'
   search:
     label: 'Rechercher un volontaire'
     button: 'Rechercher'

@@ -67,6 +67,9 @@ class TwilioSubscriber implements EventSubscriberInterface
     {
         $twilioMessage = $event->getMessage();
 
-        $this->messageManager->handleAnswer($twilioMessage->getFromNumber(), $twilioMessage->getMessage());
+        $messageId = $this->messageManager->handleAnswer($twilioMessage->getFromNumber(), $twilioMessage->getMessage());
+        if ($messageId) {
+            $twilioMessage->setContext(['message_id' => $messageId]);
+        }
     }
 }
