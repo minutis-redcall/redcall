@@ -26,10 +26,6 @@ GOOGLE_CLIENT_SECRET=
 
 WEBSITE_URL=https://redcall.fr
 
-NEXMO_API_KEY=key
-NEXMO_API_SECRET=secret
-NEXMO_SEND_FROM=phonenumber
-
 MAPBOX_API_KEY=some key
 
 PEGASS_LOGIN=yourlogin

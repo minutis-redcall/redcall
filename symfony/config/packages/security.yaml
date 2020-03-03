@@ -39,7 +39,6 @@ security:
     - { path: '^/infos/', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
 
     # Webhooks (sms response received)
-    - { path: '^/webhooks', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
     - { path: '^/twilio', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
 
     # Unauthenticated identity management
