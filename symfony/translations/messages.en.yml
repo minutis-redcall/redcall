@@ -128,8 +128,8 @@ campaign_status:
   legend:
     sms_sent: '"SMS sent" indicates whether message has been sent to the volunteer. May be blank if there is a technical issue.'
     sms_received: '"SMS received" indicates wether message has been received by the volunteer. If blank, volunteer may have turned off his phone number.'
-  progress: 'Sending: %sent% / %total% (%progress%%). Current communication cost: %cost%€.'
-  finish: 'Sent all messages. Cost: %cost%€.'
+  progress: 'Sending: %sent% / %total% (%progress%%).'
+  finish: 'Sent all messages.'
   warning:
     no_phone: 'No phone number'
     no_email: "No email"

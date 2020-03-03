@@ -60,7 +60,7 @@ class Message
      *
      * @ORM\Column(type="string", length=3)
      */
-    private $currency;
+    private $currency = 'EUR';
 
     /**
      * @var Answer[]

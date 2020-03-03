@@ -97,15 +97,12 @@
                         <span id="progress-text-{{ communication.id }}"
                               class="justify-content-center d-flex position-absolute w-100 text-white">
                             {% if progress[communication.id].percent == 100 %}
-                                {{ 'campaign_status.finish'|trans({
-                                    '%cost%': communication.cost
-                                }) }}
+                                {{ 'campaign_status.finish'|trans }}
                             {% else %}
                                 {{ 'campaign_status.progress'|trans({
                                     '%sent%': progress[communication.id].sent,
                                     '%total%': progress[communication.id].total,
-                                    '%progress%': progress[communication.id].percent,
-                                    '%cost%': communication.cost
+                                    '%progress%': progress[communication.id].percent
                                 }) }}
                             {% endif %}
                         </span>

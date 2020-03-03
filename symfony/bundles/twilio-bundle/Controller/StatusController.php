@@ -27,11 +27,13 @@ class StatusController extends BaseController
     private $eventDispatcher;
 
     /**
-     * @param TwilioMessageManager $messageManager
+     * @param TwilioMessageManager     $messageManager
+     * @param EventDispatcherInterface $eventDispatcher
      */
-    public function __construct(TwilioMessageManager $messageManager)
+    public function __construct(TwilioMessageManager $messageManager, EventDispatcherInterface $eventDispatcher)
     {
-        $this->messageManager = $messageManager;
+        $this->messageManager  = $messageManager;
+        $this->eventDispatcher = $eventDispatcher;
     }
 
     /**
