@@ -21,7 +21,7 @@ class FakeSmsProvider implements SMSProvider
         $this->fakeSmsRepository   = $registry->getRepository(FakeSms::class);
     }
 
-    public function send(string $message, string $phoneNumber): SMSSent
+    public function send(string $phoneNumber, string $message, array $context = []): SMSSent
     {
         $volunteer = $this->volunteerRepository->findOneByPhoneNumber($phoneNumber);
 

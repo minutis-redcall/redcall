@@ -2,7 +2,6 @@
 
 namespace Bundles\TwilioBundle\Event;
 
-use App\Entity\Message;
 use Bundles\TwilioBundle\Entity\TwilioMessage;
 
 class TwilioEvent
@@ -21,9 +20,9 @@ class TwilioEvent
     }
 
     /**
-     * @return Message
+     * @return TwilioMessage
      */
-    public function getMessage(): Message
+    public function getMessage(): TwilioMessage
     {
         return $this->message;
     }

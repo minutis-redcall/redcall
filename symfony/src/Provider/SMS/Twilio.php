@@ -14,6 +14,6 @@ class Twilio extends BaseTwilio implements SMSProvider
         $twilioMessage = parent::sendMessage($phoneNumber, $message, $context);
 
         // With Twilio, we get cost of the message asynchronously
-        return new SMSSent($twilioMessage->getSid(), 0.0);
+        return new SMSSent($twilioMessage->getSid(), 0.0, 'USD');
     }
 }

@@ -251,4 +251,12 @@ class MessageManager
     {
         return $this->messageRepository->canUsePrefixesForEveryone($volunteersTakenPrefixes);
     }
+
+    /**
+     * @param Message $message
+     */
+    public function save(Message $message)
+    {
+        $this->messageRepository->save($message);
+    }
 }

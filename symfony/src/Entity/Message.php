@@ -56,6 +56,13 @@ class Message
     private $cost = 0.0;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=3)
+     */
+    private $currency;
+
+    /**
      * @var Answer[]
      *
      * @ORM\OneToMany(targetEntity="App\Entity\Answer", mappedBy="message", cascade={"all"})
@@ -193,6 +200,26 @@ class Message
     public function setCost(float $cost): Message
     {
         $this->cost = $cost;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCurrency(): string
+    {
+        return $this->currency;
+    }
+
+    /**
+     * @param string $currency
+     *
+     * @return Message
+     */
+    public function setCurrency(string $currency): Message
+    {
+        $this->currency = $currency;
 
         return $this;
     }
