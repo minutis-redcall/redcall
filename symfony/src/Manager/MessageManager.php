@@ -180,6 +180,7 @@ class MessageManager
      */
     public function addAnswer(Message $message, string $body, bool $byAdmin = false): void
     {
+        $choices = [];
         if (0 !== count($message->getCommunication()->getChoices())) {
             // Get all valid choices in message
             if ($multipleChoice = $message->getCommunication()->isMultipleAnswer()) {
