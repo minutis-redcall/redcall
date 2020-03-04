@@ -22,6 +22,15 @@ class TwilioMessage
     const DIRECTION_INBOUND  = 'inbound'; // messages received
     const DIRECTION_OUTBOUND = 'outbound'; // messages sent
 
+    const STATUS_QUEUED      = 'queued';
+    const STATUS_ACCEPTED    = 'accepted';
+    const STATUS_SENT        = 'sent';
+    const STATUS_DELIVERED   = 'delivered';
+    const STATUS_UNDELIVERED = 'undelivered';
+    const STATUS_FAILED      = 'failed';
+    const STATUS_RECEIVING   = 'receiving';
+    const STATUS_RECEIVED    = 'received';
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()

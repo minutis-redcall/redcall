@@ -5,7 +5,7 @@ namespace Bundles\TwilioBundle\SMS;
 use Bundles\TwilioBundle\Entity\TwilioMessage;
 use Bundles\TwilioBundle\Event\TwilioEvent;
 use Bundles\TwilioBundle\Manager\TwilioMessageManager;
-use Bundles\TwilioBundle\TwiliEvents;
+use Bundles\TwilioBundle\TwilioEvents;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Routing\RouterInterface;
@@ -81,7 +81,7 @@ class Twilio
         $entity->setStatus($outbound->status);
 
         $this->messageManager->save($entity);
-        $this->eventDispatcher->dispatch(new TwilioEvent($entity), TwiliEvents::MESSAGE_SENT);
+        $this->eventDispatcher->dispatch(new TwilioEvent($entity), TwilioEvents::MESSAGE_SENT);
         $this->messageManager->save($entity);
 
         return $entity;
@@ -100,7 +100,7 @@ class Twilio
                 $entity->setUnit($message->priceUnit);
 
                 $this->messageManager->save($entity);
-                $this->eventDispatcher->dispatch(new TwilioEvent($entity), TwiliEvents::PRICE_UPDATED);
+                $this->eventDispatcher->dispatch(new TwilioEvent($entity), TwilioEvents::PRICE_UPDATED);
                 $this->messageManager->save($entity);
             }
         }
@@ -130,7 +130,7 @@ class Twilio
         $entity->setUnit($inbound->priceUnit);
 
         $this->messageManager->save($entity);
-        $this->eventDispatcher->dispatch(new TwilioEvent($entity), TwiliEvents::MESSAGE_RECEIVED);
+        $this->eventDispatcher->dispatch(new TwilioEvent($entity), TwilioEvents::MESSAGE_RECEIVED);
         $this->messageManager->save($entity);
     }
 

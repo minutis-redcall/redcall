@@ -2,7 +2,7 @@
 
 namespace Bundles\TwilioBundle;
 
-class TwiliEvents
+class TwilioEvents
 {
     const MESSAGE_SENT     = 'twilio.message_sent';
     const MESSAGE_RECEIVED = 'twilio.message_received';

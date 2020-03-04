@@ -4,7 +4,7 @@ namespace App\EventSubscriber;
 
 use App\Manager\MessageManager;
 use Bundles\TwilioBundle\Event\TwilioEvent;
-use Bundles\TwilioBundle\TwiliEvents;
+use Bundles\TwilioBundle\TwilioEvents;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 class TwilioSubscriber implements EventSubscriberInterface
@@ -28,8 +28,8 @@ class TwilioSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            TwiliEvents::PRICE_UPDATED    => 'onPriceUpdated',
-            TwiliEvents::MESSAGE_RECEIVED => 'onMessageReceived',
+            TwilioEvents::PRICE_UPDATED    => 'onPriceUpdated',
+            TwilioEvents::MESSAGE_RECEIVED => 'onMessageReceived',
         ];
     }
 

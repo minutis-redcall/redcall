@@ -28,42 +28,261 @@ TWILIO_AUTH_TOKEN=your auth token
 TWILIO_NUMBER=the phone number to send and receive messages
 ```
 
+Make sure Twilio webhooks are not behind your security firewall. 
+
+```yaml
+  # security.yaml
+
+  access_control:
+    # ...
+    - { path: '^/twilio', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
+```
+
+Add the webhooks routing:
+
+```yaml
+# annotations.yaml
+
+twilio:
+  resource: '@TwilioBundle/Controller/'
+  type: annotation
+```
+
 On Twilio website, to receive messages, add `<your website>/twilio/reply` in your "Phone Number"
 configuration page (example: `https://d7185d61.ngrok.io/twilio/reply`).
 
 ## Send an SMS and keep a log of it
 
-- Send an SMS through Twilio
-- Store the message and its context for further use
-- Fire a symfony Event to notify of the message sending
+Send sms through Twilio API. Once sent, an SMS log is stored along with some custom context for further uses. The `TwilioEvents::MESSAGE_SENT` event is also dispatched once message is sent to Twilio. 
 
-```
+```php
+<?php
+
+namespace App\Controller;
+
+use App\Entity\Communication;use Bundles\TwilioBundle\SMS\Twilio;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+
+class ReplyController extends BaseController
+{
+    /**
+     * @var Twilio
+     */
+    private $twilio;
+
+    /**
+     * @param Twilio $twilio
+     */
+    public function __construct(Twilio $twilio)
+    {
+        $this->twilio = $twilio;
+    }
+
+    /**
+     * @Route(name="test", path="/test/{id}")
+     * @Template()
+     */
+    public function test(Communication $communication)
+    {
+        $user = $this->getUser();
+        
+        // Send a simple message
+        $this->twilio->sendMessage('336123456789', 'Hello, world!');
+
+        // Attach a context for later use (billing, etc)
+        $this->twilio->sendMessage($user->getPhoneNumber(), 'Hello, world!', [
+            'communication_id' => $communication->getId(),
+        ]);
+
+        return new Response();
+    }
+}
 ```
 
 ## Track every SMS delivery status
 
-- This bundle manage delivery status webhook automatically.
-- Store the delivery status for further uses
-- Fire a symfony Event to notify of the new delivery status
+This bundle expose a secured delivery status webhook automatically, and that webook fires a `TwilioEvents::STATUS_UPDATED` event when that status is updated.
 
-```
+```php
+<?php
+
+namespace App\EventSubscriber;
+
+use App\Manager\CommunicationManager;
+use Bundles\TwilioBundle\Entity\TwilioMessage;
+use Bundles\TwilioBundle\Event\TwilioEvent;
+use Bundles\TwilioBundle\TwilioEvents;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+
+class TwilioSubscriber implements EventSubscriberInterface
+{
+    /**
+     * @var CommunicationManager
+     */
+    private $communicationManager;
+
+    /**
+     * @param CommunicationManager $communicationManager
+     */
+    public function __construct(CommunicationManager $communicationManager)
+    {
+        $this->communicationManager = $communicationManager;
+    }
+
+    /**
+     * @return array
+     */
+    public static function getSubscribedEvents()
+    {
+        return [
+            TwilioEvents::STATUS_UPDATED => 'onStatusUpdated',
+        ];
+    }
+
+    public function onStatusUpdated(TwilioEvent $event)
+    {
+        $twilioMessage = $event->getMessage();
+
+        $communicationId = $twilioMessage->getContext()['communication_id'] ?? null;
+        if (!$communicationId) {
+            return;
+        }
+
+        $communication = $this->communicationManager->find($communicationId);
+        if (!$communication) {
+            return;
+        }
+
+        if (TwilioMessage::STATUS_DELIVERED === $twilioMessage->getStatus()) {
+            // In order to add green on some progress bar?
+            $communication->incrementSuccessDelivery();
+        }
+    }
+}
 ```
 
 ## Get and store cost of all SMS sent
 
-- Provides a command that you need to cron in order to store sms prices.
-- Works for sms sent, but also sms received
+Provides a command `twilio:price` that you need to cron in order to fetch and store sms prices. Works for sms sent, but also sms received. A `TwilioEvents::PRICE_UPDATED` event is then fired in order for your code to apply its own business on it. 
 
+```php
+<?php
 
+namespace App\EventSubscriber;
+
+use App\Manager\CommunicationManager;
+use Bundles\TwilioBundle\Event\TwilioEvent;
+use Bundles\TwilioBundle\TwilioEvents;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+
+class TwilioSubscriber implements EventSubscriberInterface
+{
+    /**
+     * @var CommunicationManager
+     */
+    private $communicationManager;
+
+    /**
+     * @param CommunicationManager $communicationManager
+     */
+    public function __construct(CommunicationManager $communicationManager)
+    {
+        $this->communicationManager = $communicationManager;
+    }
+
+    /**
+     * @return array
+     */
+    public static function getSubscribedEvents()
+    {
+        return [
+            TwilioEvents::PRICE_UPDATED => 'onPriceUpdated',
+        ];
+    }
+
+    /**
+     * @param TwilioEvent $event
+     */
+    public function onPriceUpdated(TwilioEvent $event)
+    {
+        $twilioMessage = $event->getMessage();
+
+        $communicationId = $twilioMessage->getContext()['communication_id'] ?? null;
+        if (!$communicationId) {
+            return;
+        }
+
+        $communication = $this->communicationManager->find($communicationId);
+        if (!$communication) {
+            return;
+        }
+
+        $communication->increaseCost(-1 * (float)$twilioMessage->getPrice());
+        $communication->setCurrency($twilioMessage->getUnit());
+
+        $this->communicationManager->save($communication);
+    }
+}
 ```
-```
 
-## Receive SMS inbounds
+## Receive SMS replies
 
-- Store the inbound message for further operations
-- Fire a symfony Event to notify of the new sms inbound
+Store the inbound message for further operations. Dispatch a symfony Event to notify of the new sms inbound.
 
-```
+```php
+<?php
+
+namespace App\EventSubscriber;
+
+use App\Manager\CommunicationManager;
+use Bundles\TwilioBundle\Event\TwilioEvent;
+use Bundles\TwilioBundle\TwilioEvents;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+
+class TwilioSubscriber implements EventSubscriberInterface
+{
+    /**
+     * @var CommunicationManager
+     */
+    private $communicationManager;
+
+    /**
+     * @param CommunicationManager $communicationManager
+     */
+    public function __construct(CommunicationManager $communicationManager)
+    {
+        $this->communicationManager = $communicationManager;
+    }
+
+    /**
+     * @return array
+     */
+    public static function getSubscribedEvents()
+    {
+        return [
+            TwilioEvents::MESSAGE_RECEIVED => 'onMessageReceived',
+        ];
+    }
+
+    /**
+     * @param TwilioEvent $event
+     *
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function onMessageReceived(TwilioEvent $event)
+    {
+        $twilioMessage = $event->getMessage();
+
+        $communicationId = $this->communicationManager->handleAnswer($twilioMessage->getFromNumber(), $twilioMessage->getMessage());
+        if ($communicationId) {
+            $twilioMessage->setContext(['communication_id' => $communicationId]);
+        }
+    }
+}
 ```
 
 ## Helpers
