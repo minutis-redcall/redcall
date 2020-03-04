@@ -161,11 +161,9 @@
                     {# -------------------------------------------------------------------------------- #}
                     <div class="skip-line text-small">
                         {{ 'campaign_status.filter.title'|trans }}
-                        {% if answerCount %}
-                            <a href="#"
-                               onclick="$('#filter-response-{{ communication.id }}').modal(); return false;">{{ 'campaign_status.filter.by_response'|trans }}</a>
-                            {{ 'campaign_status.filter.or'|trans }}
-                        {% endif %}
+                        <a href="#"
+                           onclick="$('#filter-response-{{ communication.id }}').modal(); return false;">{{ 'campaign_status.filter.by_response'|trans }}</a>
+                        {{ 'campaign_status.filter.or'|trans }}
                         <a href="#"
                            onclick="$('#filter-skill-{{ communication.id }}').modal(); return false;">{{ 'campaign_status.filter.by_skill'|trans }}</a>
                     </div>
@@ -650,11 +648,11 @@
             {% for communication in campaign.communications %}
             actions["{{ communication.id|e('js') }}"] = [
                 {% if communication.choices|length %}
-                {% for choice in communication.choices %}
-                "is-choice-{{ choice.id|e('js') }}",
-                {% endfor %}
-                "has-invalid-answer",
+                    {% for choice in communication.choices %}
+                        "is-choice-{{ choice.id|e('js') }}",
+                    {% endfor %}
                 {% endif %}
+                "has-invalid-answer",
             ];
             {% endfor %}
 
