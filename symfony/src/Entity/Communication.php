@@ -307,7 +307,7 @@ class Communication
      */
     public function getChoiceByCode(string $prefix, string $code): ?Choice
     {
-        $codes = explode(' ', $code);
+        $codes = explode(' ', trim($code));
         foreach ($codes as $code) {
 
             $matches = [];
@@ -344,7 +344,7 @@ class Communication
     {
         $choices = [];
 
-        foreach (array_filter(explode(' ', $raw)) as $split) {
+        foreach (array_filter(explode(' ', trim($raw))) as $split) {
             $choices[] = $this->getChoiceByCode($prefix, $split);
         }
 
@@ -417,7 +417,7 @@ class Communication
      */
     public function isUnclear(string $prefix, string $message): bool
     {
-        $words   = explode(' ', $message);
+        $words   = explode(' ', trim($message));
         $choices = [];
         foreach ($words as $index => $word) {
             // No prefix
