@@ -180,22 +180,24 @@ class MessageManager
      */
     public function addAnswer(Message $message, string $body, bool $byAdmin = false): void
     {
-        // Get all valid choices in message
-        if ($multipleChoice = $message->getCommunication()->isMultipleAnswer()) {
-            $choices = $message->getCommunication()->getAllChoicesInText($message->getPrefix(), $body);
-        } else {
-            $choices = [];
-            if ($choice = $message->getCommunication()->getChoiceByCode($message->getPrefix(), $body)) {
-                $choices[] = $choice;
+        if (0 !== count($message->getCommunication()->getChoices())) {
+            // Get all valid choices in message
+            if ($multipleChoice = $message->getCommunication()->isMultipleAnswer()) {
+                $choices = $message->getCommunication()->getAllChoicesInText($message->getPrefix(), $body);
+            } else {
+                $choices = [];
+                if ($choice = $message->getCommunication()->getChoiceByCode($message->getPrefix(), $body)) {
+                    $choices[] = $choice;
+                }
             }
-        }
 
-        if (!$multipleChoice) {
-            // If no multiple answers are allowed, clearing up all previous answers
-            $this->answerManager->clearAnswers($message);
-        } else {
-            // If mulitple answers allowed, we'll only keep the last duplicate
-            $this->answerManager->clearChoices($message, $choices);
+            if (!$multipleChoice) {
+                // If no multiple answers are allowed, clearing up all previous answers
+                $this->answerManager->clearAnswers($message);
+            } else {
+                // If mulitple answers allowed, we'll only keep the last duplicate
+                $this->answerManager->clearChoices($message, $choices);
+            }
         }
 
         // Storing the new answer
