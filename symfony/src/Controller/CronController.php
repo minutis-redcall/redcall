@@ -20,6 +20,7 @@ class CronController extends AbstractController
     const CRONS = [
         'user:cron',
         'pegass',
+        'twilio:price',
     ];
 
     /**

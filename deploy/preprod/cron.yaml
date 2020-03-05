@@ -4,3 +4,8 @@ cron:
   - description: "Clears up non activated accounts and expired captcha whitelists"
     url: /cron/user-cron
     schedule: every 24 hours
+
+  # * * * * * <path/to/the/project>/symfony/bin/console twilio:price
+  - description: "Fetch missing message prices on Twilio"
+    url: /cron/twilio-price
+    schedule: every 1 minutes

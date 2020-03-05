@@ -15,13 +15,19 @@ class SMSSent
     private $cost;
 
     /**
+     * @var string
+     */
+    private $currency;
+
+    /**
      * @param string $id
      * @param float  $cost
      */
-    public function __construct(string $id, float $cost)
+    public function __construct(string $id, float $cost, string $currency = 'EUR')
     {
-        $this->id   = $id;
-        $this->cost = $cost;
+        $this->id       = $id;
+        $this->cost     = $cost;
+        $this->currency = $currency;
     }
 
     /**

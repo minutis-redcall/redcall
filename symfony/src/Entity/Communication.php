@@ -300,14 +300,18 @@ class Communication
     }
 
     /**
-     * @param string $prefix
-     * @param string $code
+     * @param string|null $prefix
+     * @param string      $code
      *
      * @return Choice|null
      */
-    public function getChoiceByCode(string $prefix, string $code): ?Choice
+    public function getChoiceByCode(?string $prefix, string $code): ?Choice
     {
-        $codes = explode(' ', $code);
+        if (!$prefix) {
+            return null;
+        }
+
+        $codes = explode(' ', trim($code));
         foreach ($codes as $code) {
 
             $matches = [];
@@ -335,16 +339,20 @@ class Communication
     }
 
     /**
-     * @param string $prefix
-     * @param string $raw
+     * @param string|null $prefix
+     * @param string      $raw
      *
      * @return array
      */
-    public function getAllChoicesInText(string $prefix, string $raw): array
+    public function getAllChoicesInText(?string $prefix, string $raw): array
     {
+        if (!$prefix) {
+            return [];
+        }
+
         $choices = [];
 
-        foreach (array_filter(explode(' ', $raw)) as $split) {
+        foreach (array_filter(explode(' ', trim($raw))) as $split) {
             $choices[] = $this->getChoiceByCode($prefix, $split);
         }
 
@@ -408,16 +416,20 @@ class Communication
     /**
      * Returns true if message body doesn't exactly match expected choices.
      *
-     * @param string $prefix
-     * @param string $message
+     * @param string|null $prefix
+     * @param string      $message
      *
      * @return bool
      *
      * @throws Exception
      */
-    public function isUnclear(string $prefix, string $message): bool
+    public function isUnclear(?string $prefix, string $message): bool
     {
-        $words   = explode(' ', $message);
+        if (!$prefix) {
+            return false;
+        }
+
+        $words   = explode(' ', trim($message));
         $choices = [];
         foreach ($words as $index => $word) {
             // No prefix

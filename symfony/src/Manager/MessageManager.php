@@ -99,11 +99,13 @@ class MessageManager
      * @param string $phoneNumber
      * @param string $body
      *
+     * @return int|null
+     *
      * @throws NonUniqueResultException
      * @throws ORMException
      * @throws OptimisticLockException
      */
-    public function handleAnswer(string $phoneNumber, string $body)
+    public function handleAnswer(string $phoneNumber, string $body): ?int
     {
         // In case of multiple calls, we should handle the "A1 B2" body case.
         $messages = [];
@@ -127,12 +129,18 @@ class MessageManager
         }
 
         // A better way would be to add a @ManyToMany on Answer<->Message entities,
-        // but answers are currently tied to much on their communications.
+        // but answers are currently tied too much on their communications.
         foreach ($messages as $message) {
             if (Communication::TYPE_SMS === $message->getCommunication()->getType()) {
                 $this->addAnswer($message, $body);
             }
         }
+
+        if (!$messages) {
+            return null;
+        }
+
+        return reset($messages)->getId();
     }
 
     /**
@@ -172,22 +180,25 @@ class MessageManager
      */
     public function addAnswer(Message $message, string $body, bool $byAdmin = false): void
     {
-        // Get all valid choices in message
-        if ($multipleChoice = $message->getCommunication()->isMultipleAnswer()) {
-            $choices = $message->getCommunication()->getAllChoicesInText($message->getPrefix(), $body);
-        } else {
-            $choices = [];
-            if ($choice = $message->getCommunication()->getChoiceByCode($message->getPrefix(), $body)) {
-                $choices[] = $choice;
+        $choices = [];
+        if (0 !== count($message->getCommunication()->getChoices())) {
+            // Get all valid choices in message
+            if ($multipleChoice = $message->getCommunication()->isMultipleAnswer()) {
+                $choices = $message->getCommunication()->getAllChoicesInText($message->getPrefix(), $body);
+            } else {
+                $choices = [];
+                if ($choice = $message->getCommunication()->getChoiceByCode($message->getPrefix(), $body)) {
+                    $choices[] = $choice;
+                }
             }
-        }
 
-        if (!$multipleChoice) {
-            // If no multiple answers are allowed, clearing up all previous answers
-            $this->answerManager->clearAnswers($message);
-        } else {
-            // If mulitple answers allowed, we'll only keep the last duplicate
-            $this->answerManager->clearChoices($message, $choices);
+            if (!$multipleChoice) {
+                // If no multiple answers are allowed, clearing up all previous answers
+                $this->answerManager->clearAnswers($message);
+            } else {
+                // If mulitple answers allowed, we'll only keep the last duplicate
+                $this->answerManager->clearChoices($message, $choices);
+            }
         }
 
         // Storing the new answer
@@ -250,5 +261,13 @@ class MessageManager
     public function canUsePrefixesForEveryone(array $volunteersTakenPrefixes): bool
     {
         return $this->messageRepository->canUsePrefixesForEveryone($volunteersTakenPrefixes);
+    }
+
+    /**
+     * @param Message $message
+     */
+    public function save(Message $message)
+    {
+        $this->messageRepository->save($message);
     }
 }

@@ -75,8 +75,9 @@ class Sender
         }
 
         $SMSSent = $this->SMSProvider->send(
+            $volunteer->getPhoneNumber(),
             $this->formatter->formatMessageContent($message),
-            $volunteer->getPhoneNumber()
+            ['message_id' => $message->getId()]
         );
 
         $message->setMessageId($SMSSent->getId());

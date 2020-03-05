@@ -36,12 +36,12 @@ services:
     resource: '../src/Controller'
     tags: ['controller.service_arguments']
 
-  App\SMS\SMSProvider:
-    class: App\SMS\Nexmo
+  App\Provider\SMS\SMSProvider:
+    class: App\Provider\SMS\Twilio
     public: true
 
-  App\Email\EmailProvider:
-    class: App\Email\SymfonyEmailProvider
+  App\Provider\Email\EmailProvider:
+    class: App\Provider\Email\SymfonyEmailProvider
     public: true
 
   App\Communication\Formatter:

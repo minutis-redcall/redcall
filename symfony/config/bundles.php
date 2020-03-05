@@ -16,6 +16,7 @@ return [
     Bundles\PegassCrawlerBundle\PegassCrawlerBundle::class => ['all' => true],
     Bundles\SandboxBundle\SandboxBundle::class => ['dev' => true],
     Bundles\SettingsBundle\SettingsBundle::class => ['all' => true],
+    Bundles\TwilioBundle\TwilioBundle::class => ['all' => true],
     Symfony\Bundle\WebServerBundle\WebServerBundle::class => ['dev' => true],
     Symfony\Bundle\WebProfilerBundle\WebProfilerBundle::class => ['dev' => true, 'test' => true],
     Symfony\Bundle\DebugBundle\DebugBundle::class => ['dev' => true, 'test' => true],

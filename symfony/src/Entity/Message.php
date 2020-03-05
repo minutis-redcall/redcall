@@ -30,7 +30,7 @@ class Message
     /**
      * This is the message id given by the SMS provider on success.
      *
-     * @ORM\Column(type="string", length=20, nullable=true)
+     * @ORM\Column(type="string", length=64, nullable=true)
      */
     private $messageId;
 
@@ -54,6 +54,13 @@ class Message
      * @ORM\Column(type="float")
      */
     private $cost = 0.0;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=3)
+     */
+    private $currency = 'EUR';
 
     /**
      * @var Answer[]
@@ -193,6 +200,26 @@ class Message
     public function setCost(float $cost): Message
     {
         $this->cost = $cost;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCurrency(): string
+    {
+        return $this->currency;
+    }
+
+    /**
+     * @param string $currency
+     *
+     * @return Message
+     */
+    public function setCurrency(string $currency): Message
+    {
+        $this->currency = $currency;
 
         return $this;
     }

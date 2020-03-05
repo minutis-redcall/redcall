@@ -1,0 +1,14 @@
+services:
+
+  Bundles\TwilioBundle\Controller\ReplyController:
+    arguments:
+      - '@Bundles\TwilioBundle\SMS\Twilio'
+    tags:
+      - controller.service_arguments
+
+  Bundles\TwilioBundle\Controller\StatusController:
+    arguments:
+      - '@Bundles\TwilioBundle\Manager\TwilioMessageManager'
+      - '@event_dispatcher'
+    tags:
+      - controller.service_arguments
