@@ -9,7 +9,7 @@ interface SMSProvider
      * @param string $message
      * @param array  $context
      *
-     * @return SMSSent
+     * @return string
      */
-    public function send(string $phoneNumber, string $message, array $context = []): SMSSent;
+    public function send(string $phoneNumber, string $message, array $context = []): string;
 }
