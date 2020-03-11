@@ -50,7 +50,11 @@ class TwilioSubscriber implements EventSubscriberInterface
             return;
         }
 
-        $message->setCost(-1 * (float)$twilioMessage->getPrice());
+        if ($message->getCost() && $message->getCurrency() !== $twilioMessage->getUnit()) {
+            throw new \RuntimeException('Currencies mismatch for a message');
+        }
+
+        $message->setCost($message->getCost() + -1 * (float)$twilioMessage->getPrice());
         $message->setCurrency($twilioMessage->getUnit());
 
         $this->messageManager->save($message);
