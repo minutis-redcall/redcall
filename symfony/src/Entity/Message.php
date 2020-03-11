@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -49,20 +50,6 @@ class Message
     private $sent;
 
     /**
-     * @var float
-     *
-     * @ORM\Column(type="float")
-     */
-    private $cost = 0.0;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(type="string", length=3)
-     */
-    private $currency = 'EUR';
-
-    /**
      * @var Answer[]
      *
      * @ORM\OneToMany(targetEntity="App\Entity\Answer", mappedBy="message", cascade={"all"})
@@ -97,11 +84,17 @@ class Message
     private $prefix;
 
     /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Cost", mappedBy="message")
+     */
+    private $costs;
+
+    /**
      * Message constructor.
      */
     public function __construct()
     {
         $this->sent = false;
+        $this->costs = new ArrayCollection();
     }
 
     /**
@@ -185,43 +178,23 @@ class Message
     }
 
     /**
+     * Return approximate cost for a message
+     *
+     * For billing purposes, this method should not be used because it does
+     * not take currencies into account, and calculations using floats are
+     * discouraged.
+     *
      * @return float
      */
     public function getCost(): float
     {
-        return $this->cost;
-    }
+        $price = 0.0;
+        foreach ($this->costs as $cost) {
+            /** @var Cost $cost */
+            $price += $cost->getPrice();
+        }
 
-    /**
-     * @param float $cost
-     *
-     * @return Message
-     */
-    public function setCost(float $cost): Message
-    {
-        $this->cost = $cost;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getCurrency(): string
-    {
-        return $this->currency;
-    }
-
-    /**
-     * @param string $currency
-     *
-     * @return Message
-     */
-    public function setCurrency(string $currency): Message
-    {
-        $this->currency = $currency;
-
-        return $this;
+        return $price;
     }
 
     /**
@@ -447,6 +420,37 @@ class Message
     public function setPrefix(string $prefix): self
     {
         $this->prefix = $prefix;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Cost[]
+     */
+    public function getCosts(): Collection
+    {
+        return $this->costs;
+    }
+
+    public function addCost(Cost $cost): self
+    {
+        if (!$this->costs->contains($cost)) {
+            $this->costs[] = $cost;
+            $cost->setMessage($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCost(Cost $cost): self
+    {
+        if ($this->costs->contains($cost)) {
+            $this->costs->removeElement($cost);
+            // set the owning side to null (unless already changed)
+            if ($cost->getMessage() === $this) {
+                $cost->setMessage(null);
+            }
+        }
 
         return $this;
     }
