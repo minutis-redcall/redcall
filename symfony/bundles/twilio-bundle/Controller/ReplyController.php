@@ -3,7 +3,6 @@
 namespace Bundles\TwilioBundle\Controller;
 
 use Bundles\TwilioBundle\SMS\Twilio;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -29,7 +28,6 @@ class ReplyController extends BaseController
 
     /**
      * @Route(name="reply", path="reply")
-     * @Template()
      */
     public function reply(Request $request)
     {
