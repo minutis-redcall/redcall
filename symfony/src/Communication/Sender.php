@@ -74,14 +74,13 @@ class Sender
             return;
         }
 
-        $SMSSent = $this->SMSProvider->send(
+        $messageId = $this->SMSProvider->send(
             $volunteer->getPhoneNumber(),
             $this->formatter->formatMessageContent($message),
             ['message_id' => $message->getId()]
         );
 
-        $message->setMessageId($SMSSent->getId());
-        $message->setCost($SMSSent->getCost());
+        $message->setMessageId($messageId);
         $message->setSent(true);
 
         $this->entityManager->merge($message);
@@ -104,8 +103,6 @@ class Sender
         );
 
         $message->setMessageId(time());
-        $message->setCost(0);
-        $message->setSent(true);
 
         $this->entityManager->merge($message);
         $this->entityManager->flush();

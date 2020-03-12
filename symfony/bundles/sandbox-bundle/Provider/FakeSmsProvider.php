@@ -4,7 +4,6 @@ namespace Bundles\SandboxBundle\Provider;
 
 use App\Entity\Volunteer;
 use App\Provider\SMS\SMSProvider;
-use App\Provider\SMS\SMSSent;
 use App\Tools\Random;
 use Bundles\SandboxBundle\Entity\FakeSms;
 use Doctrine\Bundle\DoctrineBundle\Registry;
@@ -21,7 +20,7 @@ class FakeSmsProvider implements SMSProvider
         $this->fakeSmsRepository   = $registry->getRepository(FakeSms::class);
     }
 
-    public function send(string $phoneNumber, string $message, array $context = []): SMSSent
+    public function send(string $phoneNumber, string $message, array $context = []): string
     {
         $volunteer = $this->volunteerRepository->findOneByPhoneNumber($phoneNumber);
 
@@ -31,7 +30,7 @@ class FakeSmsProvider implements SMSProvider
 
         $this->fakeSmsRepository->save($volunteer, $message, FakeSms::DIRECTION_RECEIVED);
 
-        return new SMSSent(sprintf('FAKE-%s', Random::generate(15)), 0.0);
+        return sprintf('FAKE-%s', Random::generate(15));
     }
 
     public function getProviderCode(): string

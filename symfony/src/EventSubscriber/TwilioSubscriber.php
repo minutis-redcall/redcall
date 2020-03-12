@@ -2,7 +2,10 @@
 
 namespace App\EventSubscriber;
 
+use App\Entity\Cost;
+use App\Manager\CostManager;
 use App\Manager\MessageManager;
+use Bundles\TwilioBundle\Entity\TwilioMessage;
 use Bundles\TwilioBundle\Event\TwilioEvent;
 use Bundles\TwilioBundle\TwilioEvents;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -10,15 +13,22 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 class TwilioSubscriber implements EventSubscriberInterface
 {
     /**
+     * @var CostManager
+     */
+    private $costManager;
+
+    /**
      * @var MessageManager
      */
     private $messageManager;
 
     /**
+     * @param CostManager    $costManager
      * @param MessageManager $messageManager
      */
-    public function __construct(MessageManager $messageManager)
+    public function __construct(CostManager $costManager, MessageManager $messageManager)
     {
+        $this->costManager = $costManager;
         $this->messageManager = $messageManager;
     }
 
@@ -40,20 +50,20 @@ class TwilioSubscriber implements EventSubscriberInterface
     {
         $twilioMessage = $event->getMessage();
 
-        $messageId = $twilioMessage->getContext()['message_id'] ?? null;
-        if (!$messageId) {
-            return;
+        $message = null;
+        if ($messageId = $twilioMessage->getContext()['message_id'] ?? null) {
+            $message = $this->messageManager->find($messageId);
         }
 
-        $message = $this->messageManager->find($messageId);
-        if (!$message) {
-            return;
-        }
-
-        $message->setCost(-1 * (float)$twilioMessage->getPrice());
-        $message->setCurrency($twilioMessage->getUnit());
-
-        $this->messageManager->save($message);
+        $this->costManager->saveCost(
+            TwilioMessage::DIRECTION_INBOUND === $twilioMessage->getDirection() ? Cost::DIRECTION_INBOUND : Cost::DIRECTION_OUTBOUND,
+            $twilioMessage->getFromNumber(),
+            $twilioMessage->getToNumber(),
+            $twilioMessage->getMessage(),
+            $twilioMessage->getPrice(),
+            $twilioMessage->getUnit(),
+            $message
+        );
     }
 
     /**
