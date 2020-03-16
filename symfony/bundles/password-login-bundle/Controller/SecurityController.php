@@ -114,7 +114,6 @@ class SecurityController extends BaseController
         }
 
         $this->getManager()->persist($user);
-        $this->getManager()->remove($emailVerification);
         $this->getManager()->flush();
 
         $this->dispatch(PasswordLoginEvents::POST_VERIFY_EMAIL, new PostVerifyEmailEvent($user));
@@ -310,7 +309,6 @@ class SecurityController extends BaseController
             );
 
             $this->getManager()->persist($user);
-            $this->getManager()->remove($passwordRecovery);
             $this->getManager()->flush();
 
             $this->dispatch(PasswordLoginEvents::POST_CHANGE_PASSWORD, new PostChangePasswordEvent($user));
