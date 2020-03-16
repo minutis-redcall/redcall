@@ -4,7 +4,7 @@
 
         {{ 'password_login.connect.who_am_i'|trans({'%username%': app.user.username}) }}
 
-        <br/><br/>
+        <br/>
 
         {% if is_granted('ROLE_ADMIN') %}
 
@@ -25,7 +25,7 @@
         {% endif %}
 
         {% if display_logout is not defined or display_logout %}
-            <a href="{{ logout_url('main') }}" class="btn btn-secondary">{{ 'password_login.logout.button'|trans }}</a>
+            <a href="{{ logout_url('main') }}">{{ 'password_login.logout.button'|trans }}</a>
         {% endif %}
 
     </div>
