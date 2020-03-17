@@ -74,6 +74,8 @@ class PasswordLoginSubscriber implements EventSubscriberInterface
      */
     public function onPostEditProfile(PostEditProfileEvent $event)
     {
-        $this->userInformationRepository->changeLocale($event->getUser(), $this->userInformation->getLocale());
+        if ($this->userInformation) {
+            $this->userInformationRepository->changeLocale($event->getUser(), $this->userInformation->getLocale());
+        }
     }
 }

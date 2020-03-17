@@ -6,7 +6,28 @@
 
 {% block body %}
 
-    {{ block('body', '@!PasswordLogin/security/not_trusted.html.twig') }}
+    <br/>
+
+    <div class="clearfix"></div>
+
+    <hr/>
+
+    <div class="row">
+
+        <div class="col-md-12 jumbotron">
+
+            <h3>{{ block('title') }}</h3>
+
+            {{ 'password_login.not_trusted.description'|trans }}
+
+        </div>
+
+    </div>
+
+    {{ include('@PasswordLogin/menu.html.twig', {
+        display_profile: false,
+        display_manage_users: false,
+    }) }}
 
     {{ block('locales') }}
 

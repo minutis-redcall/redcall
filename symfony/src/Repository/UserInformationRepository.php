@@ -76,8 +76,10 @@ class UserInformationRepository extends BaseRepository
     {
         $preferences = $this->find($user);
 
-        $this->_em->remove($preferences);
-        $this->_em->flush($preferences);
+        if ($preferences) {
+            $this->_em->remove($preferences);
+            $this->_em->flush($preferences);
+        }
     }
 
     /**
