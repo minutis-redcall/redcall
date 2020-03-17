@@ -28,14 +28,14 @@ Si vous n'avez pas encore accès à la plateforme, merci de bien vouloir contact
 
 ## Accueil
 
-![Accueil](02-accueil.png)
-
-L'affichage est très large car l'application est optimisée pour être utilisable sur un smartphone.
-
 L'accueil vous permet:
  
 - de créer un nouveau déclenchement
 - de lister les déclenchements en cours dans votre unité locale
+
+![Accueil](02-accueil.png)
+
+L'affichage est très large car l'application est optimisée pour être utilisable sur un smartphone.
 
 Vous pouvez également aller dans "Gestion des effectifs" si vous souhaitez rajouter ou modifier les coordonnées ou les compétences d'un bénévole.
 
