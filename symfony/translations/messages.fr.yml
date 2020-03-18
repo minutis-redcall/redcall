@@ -8,6 +8,8 @@ admin:
     title: 'Connexions entre les utilisateurs de RedCall et la base de données Pegass'
 
 management:
+  current_structures: 'Vous pouvez actuellement déclencher les structures suivantes :'
+  support_email: 'Si cette information est erronée, merci de contacter l''équipe à %email%'
   home:
     link: Gestion des effectifs
 
