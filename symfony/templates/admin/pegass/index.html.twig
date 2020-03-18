@@ -17,6 +17,9 @@
                         <div class="col-md-4">
                             <div>
                                 <div class="h4">{{ userInformation.user.username }}</div>
+                                {% if userInformation.volunteer %}
+                                    <div>{{ userInformation.volunteer.firstName }} {{ userInformation.volunteer.lastName }}</div>
+                                {% endif %}
                                 <div class="text-small">
                                     {{ 'password_login.user_list.registered_at'|trans({'%date%': userInformation.user.registeredAt|date('d/m/Y H:i')}) }}
                                 </div>
