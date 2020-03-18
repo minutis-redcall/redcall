@@ -71,6 +71,7 @@ class CreateUserCommand extends BaseCommand
 
             if (!$volunteer->getEmail()) {
                 $output->writeln(sprintf('KO: %s: volunteer has no email', $nivol));
+                continue;
             }
 
             if ($this->userManager->findByUsername($volunteer->getEmail())) {

@@ -35,6 +35,7 @@ tag:
     ci: CI
 
 base:
+  documentation: Documentation
   pager:
     prev: '←'
     current: '-'

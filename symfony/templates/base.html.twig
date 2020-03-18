@@ -125,8 +125,12 @@
             {% if app.user|default(false) and is_granted('ROLE_ADMIN') %}
 
                 <a href="{{ path('admin_home') }}" class="btn btn-secondary">{{ 'admin.home.link'|trans }}</a>
+                &nbsp;&nbsp;
 
             {% endif %}
+
+            <a href="https://github.com/redcall-io/app/blob/master/docs/user/fr/README.md"
+               target="_blank" class="btn btn-secondary">{{ 'base.documentation'|trans }}</a>
 
             {% block locales %}
                 <div class="text-center">
@@ -146,5 +150,6 @@
 </div>
 
 {% block javascripts %}{% endblock %}
+
 </body>
 </html>

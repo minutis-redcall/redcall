@@ -1,5 +1,7 @@
 # Manuel d'utilisation de RedCall
 
+#### [Aller lire la documentation à destination des bénévoles déclenchés](benevole.md)
+
 ## Présentation
 
 RedCall permet aux responsables de l'urgence de recenser les bénévoles de leur(s) unité(s) locale(s) en fonction de leurs compétences. 
