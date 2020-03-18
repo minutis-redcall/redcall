@@ -40,7 +40,7 @@
                                 {% endif %}
                             </div>
                             <div>
-                                {% if volunteer.structures %}
+                                {% if volunteer.structures.count %}
                                     <strong>{{ volunteer.structures.get(0).name }}</strong>
                                     {% if volunteer.structures.count > 1 %}
                                         {{ 'manage_volunteers.others'|trans({'%count%': volunteer.structures.count - 1}) }}
