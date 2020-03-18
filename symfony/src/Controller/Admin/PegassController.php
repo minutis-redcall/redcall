@@ -104,7 +104,7 @@ class PegassController extends BaseController
     }
 
     /**
-     * @Route(name="add_structure", path="/add-structure/{csrf}{id}")
+     * @Route(name="add_structure", path="/add-structure/{csrf}/{id}")
      */
     public function addStructure(Request $request, string $csrf, UserInformation $userInformation)
     {
