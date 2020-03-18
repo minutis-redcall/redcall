@@ -104,7 +104,7 @@ class UserInformationRepository extends BaseRepository
                             'v.phoneNumber LIKE :criteria',
                             'v.email LIKE :criteria',
                             'CONCAT(v.firstName, \' \', v.lastName) LIKE :criteria',
-                            'CONCAT(v.lastName, \' \', v.firstName) LIKE :criteria',
+                            'CONCAT(v.lastName, \' \', v.firstName) LIKE :criteria'
                         )
                     )
                     ->setParameter('criteria', sprintf('%%%s%%', $criteria))
