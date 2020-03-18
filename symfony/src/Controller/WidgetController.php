@@ -4,11 +4,14 @@ namespace App\Controller;
 
 use App\Base\BaseController;
 use App\Entity\Campaign;
+use App\Entity\Structure;
 use App\Entity\UserInformation;
 use App\Entity\Volunteer;
 use App\Form\Type\NivolType;
+use App\Form\Type\StructureType;
 use App\Manager\CampaignManager;
 use App\Manager\PrefilledAnswersManager;
+use App\Manager\StructureManager;
 use App\Manager\VolunteerManager;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -38,6 +41,11 @@ class WidgetController extends BaseController
     private $volunteerManager;
 
     /**
+     * @var StructureManager
+     */
+    private $structureManager;
+
+    /**
      * @var TranslatorInterface
      */
     private $translator;
@@ -46,16 +54,19 @@ class WidgetController extends BaseController
      * @param CampaignManager         $campaignManager
      * @param PrefilledAnswersManager $prefilledAnswersManager
      * @param VolunteerManager        $volunteerManager
+     * @param StructureManager        $structureManager
      * @param TranslatorInterface     $translator
      */
     public function __construct(CampaignManager $campaignManager,
         PrefilledAnswersManager $prefilledAnswersManager,
         VolunteerManager $volunteerManager,
+        StructureManager $structureManager,
         TranslatorInterface $translator)
     {
         $this->campaignManager         = $campaignManager;
         $this->prefilledAnswersManager = $prefilledAnswersManager;
         $this->volunteerManager        = $volunteerManager;
+        $this->structureManager        = $structureManager;
         $this->translator              = $translator;
     }
 
@@ -119,7 +130,7 @@ class WidgetController extends BaseController
             ])
             ->getForm();
 
-        return $this->render('widget/nivol_editor.html.twig', [
+        return $this->render('widget/form.html.twig', [
             'form' => $form->createView(),
         ]);
     }
@@ -146,6 +157,48 @@ class WidgetController extends BaseController
         foreach ($volunteers as $volunteer) {
             /* @var Volunteer $volunteer */
             $results[] = $volunteer->toSearchResults($this->translator);
+        }
+
+        return $this->json($results);
+    }
+
+    public function structureEditor(UserInformation $userInformation)
+    {
+        $form = $this
+            ->createNamedFormBuilder(
+                sprintf('structure-%s', Uuid::uuid4()),
+                FormType::class
+            )
+            ->add('structure', StructureType::class)
+            ->getForm();
+
+        return $this->render('widget/form.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+
+    /**
+     * @Route(path="/structure-search/{searchAll}", name="structure_search")
+     */
+    public function structureSearch(Request $request, bool $searchAll = false)
+    {
+        if ($searchAll && !$this->isGranted('ROLE_ADMIN')) {
+            throw $this->createAccessDeniedException();
+        }
+
+        $criteria = $request->query->get('keyword');
+
+        if ($searchAll) {
+            $structures = $this->structureManager->searchAll($criteria, 20);
+        } else {
+            $structures = $this->structureManager->searchForCurrentUser($criteria, 20);
+        }
+
+        // Format volunteer for the flexdatalist rendering
+        $results = [];
+        foreach ($structures as $structure) {
+            /** @var Structure $structure */
+            $results[] = $structure->toSearchResults($this->translator);
         }
 
         return $this->json($results);

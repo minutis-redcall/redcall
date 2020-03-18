@@ -16,6 +16,18 @@
 
         <br/><br/><br/>
 
+        <div class="text-left">
+            <p>{{ 'management.current_structures'|trans }}</p>
+
+            {% for structure in user.structures %}
+                <p>{{ structure.name }}</p>
+            {% endfor %}
+
+            <p>{{ 'management.support_email'|trans({'%email%': email}) }}</p>
+        </div>
+
+        <br/><br/><br/>
+
         <a href="{{ path('home') }}"
            class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
 

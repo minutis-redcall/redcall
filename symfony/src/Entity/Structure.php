@@ -444,9 +444,21 @@ class Structure
         return time() - $utc->getTimestamp() > 3600;
     }
 
-    public function getDisplayName()
+    public function getDisplayName(): string
     {
         return mb_strtoupper($this->name);
+    }
+
+    /**
+     * @return array
+     */
+    public function toSearchResults(): array
+    {
+        return [
+            'id' => $this->getId(),
+            'name'      => $this->getDisplayName(),
+            'volunteers' => sprintf('(%d)', count($this->getVolunteers())),
+        ];
     }
 
     /**

@@ -109,6 +109,57 @@ class StructureRepository extends BaseRepository
     }
 
     /**
+     * This method performs nested search of all children structures of a structure
+     *
+     * Each structure can have children structures:
+     * - an AS can call its volunteers
+     * - an UL can call some AS + its volunteers
+     * - a DT can call its ULs + all their ASs
+     *
+     * @param Volunteer $volunteer
+     *
+     * @return array
+     */
+    public function findCallableStructuresForStructure(Structure $structure): array
+    {
+        $structures = $this->createQueryBuilder('s')
+            ->select('
+                                s.id as s1,
+                                ss.id as s2,
+                                sss.id as s3,
+                                ssss.id as s4,
+                                sssss.id as s5'
+            )
+            ->leftJoin('s.childrenStructures', 'ss')
+            ->leftJoin('ss.childrenStructures', 'sss')
+            ->leftJoin('sss.childrenStructures', 'ssss')
+            ->leftJoin('ssss.childrenStructures', 'sssss')
+            ->where('s.id = :id')
+            ->andWhere('s.enabled IS NULL OR s.enabled = true')
+            ->andWhere('ss.enabled IS NULL OR ss.enabled = true')
+            ->andWhere('sss.enabled IS NULL OR sss.enabled = true')
+            ->andWhere('ssss.enabled IS NULL OR ssss.enabled = true')
+            ->andWhere('sssss.enabled IS NULL OR sssss.enabled = true')
+            ->setParameter('id', $structure->getId())
+            ->getQuery()
+            ->getArrayResult();
+
+        $ids = array_filter(array_unique(array_merge(
+            array_column($structures, 's1'),
+            array_column($structures, 's2'),
+            array_column($structures, 's3'),
+            array_column($structures, 's4'),
+            array_column($structures, 's5')
+        )));
+
+        return $this->createQueryBuilder('s')
+            ->where('s.id IN (:ids)')
+            ->setParameter('ids', $ids)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
      * @param array $structures
      *
      * @return array
@@ -187,28 +238,63 @@ class StructureRepository extends BaseRepository
                ->setParameter('criteria', sprintf('%%%s%%', $criteria));
         }
 
+        $qb->orderBy('s.name');
+
+        return $qb;
+    }
+
+    /**
+     * @param string|null $criteria
+     * @param int         $maxResults
+     *
+     * @return array
+     */
+    public function searchAll(?string $criteria, int $maxResults): array
+    {
+        return $this
+            ->searchAllQueryBuilder($criteria)
+            ->setMaxResults($maxResults)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @param UserInformation $user
+     * @param string|null     $criteria
+     *
+     * @return QueryBuilder
+     */
+    public function searchForUserQueryBuilder(UserInformation $user, ?string $criteria): QueryBuilder
+    {
+        $qb = $this->createQueryBuilder('s')
+            ->join('s.users', 'u')
+            ->where('u.id = :user_id')
+            ->setParameter('user_id', $user->getId());
+
+        if ($criteria) {
+            $qb->where('s.identifier LIKE :criteria OR s.name LIKE :criteria')
+                ->setParameter('criteria', sprintf('%%%s%%', $criteria));
+        }
+
+        $qb->orderBy('s.name');
+
         return $qb;
     }
 
     /**
      * @param UserInformation $user
-     * @param string          $criteria
+     * @param string|null     $criteria
+     * @param int             $maxResults
      *
-     * @return QueryBuilder
+     * @return array
      */
-    public function searchForUser(UserInformation $user, ?string $criteria): QueryBuilder
+    public function searchForUser(UserInformation $user, ?string $criteria, int $maxResults): array
     {
-        $qb = $this->createQueryBuilder('s')
-                   ->join('s.users', 'u')
-                   ->where('u.id = :user_id')
-                   ->setParameter('user_id', $user->getId());
-
-        if ($criteria) {
-            $qb->where('s.identifier LIKE :criteria OR s.name LIKE :criteria')
-               ->setParameter('criteria', sprintf('%%%s%%', $criteria));
-        }
-
-        return $qb;
+        return $this
+            ->searchForUserQueryBuilder($criteria)
+            ->setMaxResults($maxResults)
+            ->getQuery()
+            ->getResult();
     }
 
     public function expireAll()
