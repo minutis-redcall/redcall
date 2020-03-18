@@ -6,10 +6,12 @@ admin:
     pegass: Connexions à Pegass
   pegass:
     title: 'Connexions entre les utilisateurs de RedCall et la base de données Pegass'
+    structures: 'Mise à jour des structures pour %name%'
 
 management:
   current_structures: 'Vous pouvez actuellement déclencher les structures suivantes :'
   support_email: 'Si cette information est erronée, merci de contacter l''équipe à %email%'
+  update_structures: 'Modifier les structures'
   home:
     link: Gestion des effectifs
 

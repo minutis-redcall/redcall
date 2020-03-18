@@ -44,6 +44,16 @@ class StructureManager
     }
 
     /**
+     * @param string $name
+     *
+     * @return Structure|null
+     */
+    public function findOneByName(string $name): ?Structure
+    {
+        return $this->structureRepository->findOneByName($name);
+    }
+
+    /**
      * @return array
      */
     public function listStructureIdentifiers(): array
@@ -93,6 +103,16 @@ class StructureManager
     }
 
     /**
+     * @param Structure $volunteer
+     *
+     * @return array
+     */
+    public function findCallableStructuresForStructure(Structure $structure): array
+    {
+        return $this->structureRepository->findCallableStructuresForStructure($structure);
+    }
+
+    /**
      * @param array $structures
      *
      * @return array
@@ -130,16 +150,28 @@ class StructureManager
     }
 
     /**
+     * @param string|null $criteria
+     * @param int         $maxResults
+     *
+     * @return array
+     */
+    public function searchAll(?string $criteria, int $maxResults): array
+    {
+        return $this->structureRepository->searchAll($criteria, $maxResults);
+    }
+
+    /**
      * @param UserInformation $user
      * @param string          $criteria
      *
      * @return QueryBuilder
      */
-    public function searchForCurrentUser(?string $criteria): QueryBuilder
+    public function searchForCurrentUser(?string $criteria, int $maxResults): QueryBuilder
     {
         return $this->structureRepository->searchForUser(
             $this->userInformationManager->findForCurrentUser(),
-            $criteria
+            $criteria,
+            $maxResults
         );
     }
 

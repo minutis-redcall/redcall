@@ -1,0 +1,40 @@
+{% extends 'base.html.twig' %}
+
+{% import 'macros.html.twig' as macros %}
+
+{% block body %}
+
+    <div class="col-md-12 jumbotron">
+
+        <h3>{{ 'admin.pegass.structures'|trans({'%name%': user.user.username}) }}</h3>
+
+        <table class="table">
+            <tbody>
+                {% for structure in user.structures %}
+                    <tr>
+                        <td>{{ structure.name }}</td>
+                        <td>
+                            <a href="{{ path('admin_pegass_delete_structure', {userInformationId: user.id, structureId: structure.id, csrf: csrf_token('pegass')}) }}" class="btn btn-danger">
+                                {{ 'base.button.delete'|trans }}
+                            </a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div id="structure-to-add">
+            {{ render(controller('\\App\\Controller\\WidgetController::structureEditor', {
+                userInformation: user
+            })) }}
+        </div>
+
+    </div>
+
+    <script type="text/javascript">
+        $('#structure-to-add input').change(function() {
+            document.location = '{{ path('admin_pegass_add_structure', {id: user.id, csrf: csrf_token('pegass')})|e('js') }}?structure=' + $(this).val();
+        });
+    </script>
+
+{% endblock %}

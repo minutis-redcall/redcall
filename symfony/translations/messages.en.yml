@@ -6,10 +6,12 @@ admin:
     pegass: Pegass bindings
   pegass:
     title: 'Bindings between RedCall users and Pegass database'
+    structures: 'Update structures for %name%'
 
 management:
   current_structures: 'You are currently able to trigger the following structures:'
   support_email: 'If there is a mistake, please contact support team at %email%'
+  update_structures: 'Update structures'
   home:
     link: Workforce Management
 
