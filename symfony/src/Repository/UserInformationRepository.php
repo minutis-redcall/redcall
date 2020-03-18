@@ -89,10 +89,24 @@ class UserInformationRepository extends BaseRepository
      */
     public function searchQueryBuilder(?string $criteria): QueryBuilder
     {
-        return $this->createQueryBuilder('ui')
+        $qb = $this->createQueryBuilder('ui');
+
+        return $qb
                     ->join('ui.user', 'u')
-                    ->where('u.username LIKE :criteria')
-                    ->orWhere('ui.nivol LIKE :criteria')
+                    ->leftJoin('ui.volunteer', 'v')
+                    ->where(
+                        $qb->expr()->orX(
+                            'u.username LIKE :criteria',
+                            'ui.nivol LIKE :criteria',
+                            'v.nivol LIKE :criteria',
+                            'v.firstName LIKE :criteria',
+                            'v.lastName LIKE :criteria',
+                            'v.phoneNumber LIKE :criteria',
+                            'v.email LIKE :criteria',
+                            'CONCAT(v.firstName, \' \', v.lastName) LIKE :criteria',
+                            'CONCAT(v.lastName, \' \', v.firstName) LIKE :criteria',
+                        )
+                    )
                     ->setParameter('criteria', sprintf('%%%s%%', $criteria))
                     ->addOrderBy('u.registeredAt', 'DESC')
                     ->addOrderBy('u.username', 'ASC');

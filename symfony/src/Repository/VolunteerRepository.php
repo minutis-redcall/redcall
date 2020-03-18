@@ -161,7 +161,9 @@ class VolunteerRepository extends BaseRepository
                         'v.firstName LIKE :keyword',
                         'v.lastName LIKE :keyword',
                         'v.phoneNumber LIKE :keyword',
-                        'v.email LIKE :keyword'
+                        'v.email LIKE :keyword',
+                        'CONCAT(v.firstName, \' \', v.lastName) LIKE :keyword',
+                        'CONCAT(v.lastName, \' \', v.firstName) LIKE :keyword',
                     )
                 )
                 ->setParameter('keyword', sprintf('%%%s%%', $keyword));
@@ -202,7 +204,9 @@ class VolunteerRepository extends BaseRepository
                         'v.firstName LIKE :keyword',
                         'v.lastName LIKE :keyword',
                         'v.phoneNumber LIKE :keyword',
-                        'v.email LIKE :keyword'
+                        'v.email LIKE :keyword',
+                        'CONCAT(v.firstName, \' \', v.lastName) LIKE :keyword',
+                        'CONCAT(v.lastName, \' \', v.firstName) LIKE :keyword',
                     )
                 )
                 ->setParameter('keyword', sprintf('%%%s%%', $keyword));

@@ -14,7 +14,7 @@
             <tbody>
                 {% for structure in user.structures %}
                     <tr>
-                        <td>{{ structure.name }}</td>
+                        <td>{{ structure.displayName }}</td>
                         <td>
                             <a href="{{ path('admin_pegass_delete_structure', {userInformationId: user.id, structureId: structure.id, csrf: csrf_token('pegass')}) }}" class="btn btn-danger">
                                 {{ 'base.button.delete'|trans }}
