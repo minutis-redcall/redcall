@@ -7,6 +7,7 @@ admin:
   pegass:
     title: 'Connexions entre les utilisateurs de RedCall et la base de données Pegass'
     structures: 'Mise à jour des structures pour %name%'
+    create_user: 'Ajouter un nouvel utilisateur'
 
 management:
   current_structures: 'Vous pouvez actuellement déclencher les structures suivantes :'
@@ -169,7 +170,7 @@ form:
       geo_location: 'Les destinataires de ce message pourront se géo-localiser entre eux'
       structures: 'Structure(s) à déclencher'
       volunteers: Audience
-      selection: Sélection:
+      selection: 'Sélection:'
       selection_count: volontaires
       message: Message
       subject: Sujet

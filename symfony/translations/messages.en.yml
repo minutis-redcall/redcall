@@ -7,6 +7,7 @@ admin:
   pegass:
     title: 'Bindings between RedCall users and Pegass database'
     structures: 'Update structures for %name%'
+    create_user: 'Add a new user'
 
 management:
   current_structures: 'You are currently able to trigger the following structures:'

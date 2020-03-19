@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block menu %}{% endblock %}
+
+{% block body %}
+
+    <div class="col-md-12 jumbotron">
+
+        <h3>{{ 'admin.pegass.create_user'|trans }}</h3>
+
+        <div id="input">
+            {{ render(controller('\\App\\Controller\\WidgetController::nivolEditor')) }}
+        </div>
+
+        <br/>
+
+        <button id="submit" class="btn btn-primary">{{ 'base.button.create'|trans }}</button>
+
+    </div>
+
+    <script type="text/javascript">
+
+        $('#submit').click(function() {
+            document.location = '{{ path('admin_pegass_submit_user', {csrf: csrf_token('pegass')}) }}?nivol=' + $('#input input').val();
+        });
+
+    </script>
+
+{% endblock %}
