@@ -34,6 +34,9 @@ tag:
     drvr_vpsp: VPSP
     ci: CI
 
+minutis:
+  back: Retourner sur Minutis
+
 base:
   documentation: Documentation
   pager:

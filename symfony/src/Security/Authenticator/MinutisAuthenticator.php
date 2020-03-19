@@ -12,6 +12,7 @@ use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
@@ -43,6 +44,11 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
     private $logger;
 
     /**
+     * @var KernelInterface
+     */
+    private $kernel;
+
+    /**
      * @var Volunteer
      */
     private $volunteer;
@@ -51,16 +57,19 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
      * @param VolunteerManager       $volunteerManager
      * @param UserInformationManager $userInformationManager
      * @param RouterInterface        $router
+     * @param KernelInterface        $kernel
      * @param LoggerInterface|null   $logger
      */
     public function __construct(VolunteerManager $volunteerManager,
         UserInformationManager $userInformationManager,
         RouterInterface $router,
+        KernelInterface $kernel,
         LoggerInterface $logger = null)
     {
         $this->volunteerManager       = $volunteerManager;
         $this->userInformationManager = $userInformationManager;
         $this->router                 = $router;
+        $this->kernel                 = $kernel;
         $this->logger                 = $logger ?? new NullLogger();
     }
 
@@ -175,7 +184,13 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
 
     public function start(Request $request, AuthenticationException $authException = null)
     {
-        // The login form guard authenticator is called by default.
+        $url = $this->router->generate('password_login_connect');
+
+        if ('dev' !== $this->kernel->getEnvironment()) {
+            $url = getenv('MINUTIS_URL');
+        }
+
+        return new RedirectResponse($url);
     }
 
     public function supportsRememberMe()

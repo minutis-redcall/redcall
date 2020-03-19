@@ -27,7 +27,7 @@ security:
         authenticators:
           - App\Security\Authenticator\MinutisAuthenticator
           - password_login.authenticator.form_login
-        entry_point: password_login.authenticator.form_login
+        entry_point: App\Security\Authenticator\MinutisAuthenticator
 
   access_control:
 
