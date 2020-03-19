@@ -166,12 +166,11 @@ class StructureManager
      *
      * @return QueryBuilder
      */
-    public function searchForCurrentUser(?string $criteria, int $maxResults): QueryBuilder
+    public function searchForCurrentUserQueryBuilder(?string $criteria): QueryBuilder
     {
-        return $this->structureRepository->searchForUser(
+        return $this->structureRepository->searchForUserQueryBuilder(
             $this->userInformationManager->findForCurrentUser(),
-            $criteria,
-            $maxResults
+            $criteria
         );
     }
 

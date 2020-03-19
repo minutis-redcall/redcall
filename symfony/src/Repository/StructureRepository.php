@@ -291,7 +291,7 @@ class StructureRepository extends BaseRepository
     public function searchForUser(UserInformation $user, ?string $criteria, int $maxResults): array
     {
         return $this
-            ->searchForUserQueryBuilder($criteria)
+            ->searchForUserQueryBuilder($user, $criteria)
             ->setMaxResults($maxResults)
             ->getQuery()
             ->getResult();
