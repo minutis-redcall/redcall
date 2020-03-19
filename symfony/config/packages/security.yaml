@@ -25,9 +25,9 @@ security:
         csrf_token_generator: security.csrf.token_manager
       guard:
         authenticators:
-          - password_login.authenticator.form_login
           - App\Security\Authenticator\MinutisAuthenticator
-        entry_point: password_login.authenticator.form_login
+          - password_login.authenticator.form_login
+        entry_point: App\Security\Authenticator\MinutisAuthenticator
 
   access_control:
 

@@ -5,3 +5,5 @@ twig:
   form_themes:
   - 'bootstrap_4_layout.html.twig'
   - 'form_theme.html.twig'
+  globals:
+    minutis_url: '%env(MINUTIS_URL)%'

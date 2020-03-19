@@ -75,7 +75,7 @@ class StructuresController extends BaseController
         if ($this->isGranted('ROLE_ADMIN')) {
             $queryBuilder = $this->structureManager->searchAllQueryBuilder($criteria);
         } else {
-            $queryBuilder = $this->structureManager->searchForCurrentUser($criteria);
+            $queryBuilder = $this->structureManager->searchForCurrentUserQueryBuilder($criteria);
         }
 
         return $this->render('management/structures/list.html.twig', [

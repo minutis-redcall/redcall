@@ -8,6 +8,12 @@
 
 {% block body %}
 
+    <div class="text-center">
+        <br/>
+        <a href="{{ path('admin_pegass_create_user') }}" class="btn btn-secondary">{{ 'admin.pegass.create_user'|trans }}</a>
+        <br/><br/>
+    </div>
+
     <nav>
         <div class="nav nav-tabs" id="nav-tab" role="tablist">
             <a class="nav-item nav-link {% if type == 'user' %}active{% endif %}" id="nav-list-tab" data-toggle="tab"

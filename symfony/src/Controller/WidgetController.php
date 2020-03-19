@@ -118,7 +118,7 @@ class WidgetController extends BaseController
         ]);
     }
 
-    public function nivolEditor(UserInformation $userInformation)
+    public function nivolEditor(UserInformation $userInformation = null)
     {
         $form = $this
             ->createNamedFormBuilder(
@@ -126,7 +126,7 @@ class WidgetController extends BaseController
                 FormType::class
             )
             ->add('nivol', NivolType::class, [
-                'data' => $userInformation->getNivol(),
+                'data' => $userInformation ? $userInformation->getNivol() : null,
             ])
             ->getForm();
 
