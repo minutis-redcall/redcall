@@ -150,7 +150,7 @@ https://github.com/redcall-io/app/blob/master/symfony/src/Manager/CampaignManage
 - a repository cannot be called by anything else than its own manager, even if there are no business logic
 https://github.com/redcall-io/app/blob/master/symfony/src/Manager/CampaignManager.php#L97
 
-- a repository only perform sql queries, and it does it through doctrine ORM (no native queries yet, we may move to another)
+- a repository only perform sql queries, and it does it through doctrine ORM (no native queries yet, we may move to another platform than cloud sql)
 https://github.com/redcall-io/app/blob/master/symfony/src/Repository/CampaignRepository.php#L17
 
 - only repositories perform queries, if you find some legacy code still performing queries, you're welcome to fix it
