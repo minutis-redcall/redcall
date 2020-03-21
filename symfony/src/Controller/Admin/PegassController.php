@@ -86,7 +86,7 @@ class PegassController extends BaseController
     }
 
     /**
-     * @Route(name="update", path="/update/{csrf}/{id}")
+     * @Route(name="update", path="update/{csrf}/{id}")
      */
     public function updateNivol(Request $request, string $csrf, UserInformation $userInformation)
     {
@@ -106,7 +106,7 @@ class PegassController extends BaseController
     }
 
     /**
-     * @Route(name="update_structures", path="/update-structures/{id}")
+     * @Route(name="update_structures", path="update-structures/{id}")
      */
     public function updateStructures(Request $request, UserInformation $userInformation)
     {
@@ -116,7 +116,7 @@ class PegassController extends BaseController
     }
 
     /**
-     * @Route(name="add_structure", path="/add-structure/{csrf}/{id}")
+     * @Route(name="add_structure", path="add-structure/{csrf}/{id}")
      */
     public function addStructure(Request $request, string $csrf, UserInformation $userInformation)
     {
@@ -145,7 +145,7 @@ class PegassController extends BaseController
     }
 
     /**
-     * @Route(name="delete_structure", path="/delete-structure/{csrf}/{userInformationId}/{structureId}")
+     * @Route(name="delete_structure", path="delete-structure/{csrf}/{userInformationId}/{structureId}")
      * @Entity("userInformation", expr="repository.find(userInformationId)")
      * @Entity("structure", expr="repository.find(structureId)")
      */
@@ -163,7 +163,7 @@ class PegassController extends BaseController
     }
 
     /**
-     * @Route(name="create_user", path="/create-user")
+     * @Route(name="create_user", path="create-user")
      */
     public function createUser()
     {
@@ -171,7 +171,7 @@ class PegassController extends BaseController
     }
 
     /**
-     * @Route(name="submit_user", path="/submit-user/{csrf}")
+     * @Route(name="submit_user", path="submit-user/{csrf}")
      */
     public function submitUser(Request $request, KernelInterface $kernel, string $csrf)
     {
