@@ -161,3 +161,8 @@ https://github.com/redcall-io/app/blob/master/symfony/src/Repository/CampaignRep
 php bin/console make:migration
 php bin/console doctrine:migrations:migrate
 ```
+
+### Documentation
+
+If you add a new feature or change the behavior of an existing one, please edit the documentation as well.
+ 
