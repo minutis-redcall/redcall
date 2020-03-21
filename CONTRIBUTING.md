@@ -152,6 +152,8 @@ Some simple rules to speak the same language.
 
 This project is built on top of Symfony 4 (so far), it's a classic MVC:
 
+- views should be mobile friendly
+
 - views are translated in french and english, even though medical english is probably wrong. Let's
 continue this practice in order to scale up someday without hassle.
 
