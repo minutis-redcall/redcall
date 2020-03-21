@@ -85,7 +85,7 @@
 
     {% block maintenance %}
         {% set maintenance = setting(constant('App\\Settings::MAINTENANCE_MESSAGE_CONTENT')) %}
-        {% if maintenance and app.user %}
+        {% if maintenance and is_granted('ROLE_TRUSTED') %}
             <div class="alert alert-{{ setting(constant('App\\Settings::MAINTENANCE_MESSAGE_TYPE')) }}">
                 {{ maintenance|nl2br }}
             </div>
