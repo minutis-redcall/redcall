@@ -132,6 +132,20 @@ Two exceptions though:
 
 - sandbox-bundle is a development bundle used to mock SMS and email providers (and soon authentication), application entities, managers, repos etc can be used there without issues
 
+### Permissions
+
+- ROLE_USER for connected users (but not necessarly having access to his features)
+
+- ROLE_TRUSTED for users allowed to use the platform
+
+- CAMPAIGN to check that a user can access a given campaign
+
+- STRUCTURE to check that a user is allowed to trigger a structure
+
+- VOLUNTEER to check that a user is allowed to trigger a volunteer
+
+You can check the voters for more details.
+
 ### Code guidelines
 
 Some simple rules to speak the same language.
