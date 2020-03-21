@@ -147,7 +147,7 @@ https://github.com/redcall-io/app/blob/master/symfony/src/Controller/Admin/Pegas
 - a manager can call its own repository or other managers/services: 
 https://github.com/redcall-io/app/blob/master/symfony/src/Manager/CampaignManager.php#L18
 
-- a repository cannot be called by anything else than managers, even for if there are no business logic
+- a repository cannot be called by anything else than its own manager, even if there are no business logic
 https://github.com/redcall-io/app/blob/master/symfony/src/Manager/CampaignManager.php#L97
 
 - a repository only perform sql queries, and it does it through doctrine ORM (no native queries yet, we may move to another)
