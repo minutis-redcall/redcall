@@ -8,10 +8,10 @@
                 <img height="30" src="{{ website_url }}/{{ asset('build/images/corner_topleft.png')[1:] }}"/>
             </td>
             <td width="80%" height="90">
-                <span style="font-size:30px;font-family:Arial Black;color:{{ red }};">
+                <span style="font-size:25px;color:{{ red }};font-weight:bold;">
                     {{ campaign.structures.get(0).name }}
                     {% if campaign.structures.count > 1 %}
-                        <span style="font-size:20px;font-family:Arial Black;color:{{ red }};">
+                        <span style="font-size:20px;font-weight:bold;color:{{ red }};">
                             {{ 'pdf_export.others'|trans({'%others%': campaign.structures.count - 1}) }}
                         </span>
                     {% endif %}
@@ -40,7 +40,7 @@
             </td>
         </tr>
         <tr>
-            <td colspan="3" style="height:70px;padding-left:45px;padding-right:60px;font-family:Arial Black;color:white;font-weight:bold;font-size:18px;background-color:{{ lightgrey }};">
+            <td colspan="3" style="height:70px;padding-left:45px;padding-right:60px;font-weight:bold;color:white;font-weight:bold;font-size:18px;background-color:{{ lightgrey }};">
                 {{ communication.subject }}
             </td>
         </tr>
@@ -54,7 +54,7 @@
             <td colspan="3">&nbsp;</td>
         </tr>
         <tr>
-            <td colspan="3" align="center" style="color:{{ darkgrey }};font-size:18px;">
+            <td colspan="3" align="center" style="color:{{ darkgrey }};font-size:14px;">
                 {{ 'message.email.answer_here'|trans }}
                 <br/><br/>
             </td>
@@ -62,7 +62,7 @@
         {% for choice in communication.choices %}
             <tr>
                 <td colspan="3" align="center">
-                    <a style="width: 80%; background-color: {{ offwhite }}; border-color: {{ offwhite }}; display: inline-block; font-weight: 400; text-align: center; white-space: nowrap; vertical-align: middle; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; border: 1px solid transparent; padding: .375rem .75rem; font-size: 1rem; line-height: 1.5; border-radius: .25rem; transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out; font-size: 20px; text-decoration:none; color:{{ red }};"
+                    <a style="width: 80%; background-color: {{ red }}; border-color: {{ red }}; display: inline-block; font-weight: 400; text-align: center; white-space: nowrap; vertical-align: middle; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; border: 1px solid transparent; padding: .375rem .75rem; font-size: 1rem; line-height: 1.5; border-radius: .25rem; transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out; font-size: 20px; text-decoration:none; color:white;"
                        href="{{ website_url }}/{{ path('message_action', {code: message.code, action: choice.code, signature: message.signature}) }}">
                         {{ choice.label }}
                     </a>

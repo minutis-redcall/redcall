@@ -31,7 +31,7 @@ class MessageController extends BaseController
      */
     public function openAction(Message $message)
     {
-        return $this->render('message/email.html.twig', [
+        return $this->render('message/index.html.twig', [
             'campaign' => $message->getCommunication()->getCampaign(),
             'communication' => $message->getCommunication(),
             'message' => $message,
