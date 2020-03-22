@@ -14,12 +14,13 @@ class SymfonyEmailProvider implements EmailProvider
         $this->mailer = $mailer;
     }
 
-    public function send(string $to, string $subject, string $body)
+    public function send(string $to, string $subject, string $textBody, string $htmlBody)
     {
         $email = (new Swift_Message($subject))
             ->setFrom(getenv('MAILER_FROM'))
             ->setTo($to)
-            ->setBody($body, 'text/plain');
+            ->setBody($htmlBody, 'text/html')
+            ->addPart($textBody, 'text/plain');
 
         $this->mailer->send($email);
     }

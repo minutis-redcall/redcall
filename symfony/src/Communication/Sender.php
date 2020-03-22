@@ -76,7 +76,7 @@ class Sender
 
         $messageId = $this->SMSProvider->send(
             $volunteer->getPhoneNumber(),
-            $this->formatter->formatMessageContent($message),
+            $this->formatter->formatSMSContent($message),
             ['message_id' => $message->getId()]
         );
 
@@ -99,7 +99,8 @@ class Sender
         $this->emailProvider->send(
             $message->getVolunteer()->getEmail(),
             $message->getCommunication()->getSubject(),
-            $this->formatter->formatMessageContent($message)
+            $this->formatter->formatTextEmailContent($message),
+            $this->formatter->formatHtmlEmailContent($message)
         );
 
         $message->setMessageId(time());

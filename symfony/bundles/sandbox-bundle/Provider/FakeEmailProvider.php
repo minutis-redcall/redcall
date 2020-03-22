@@ -15,8 +15,8 @@ class FakeEmailProvider implements EmailProvider
         $this->fakeEmailRepository = $registry->getRepository(FakeEmail::class);
     }
 
-    public function send(string $to, string $subject, string $body)
+    public function send(string $to, string $subject, string $textBody, string $htmlBody)
     {
-        $this->fakeEmailRepository->store($to, $subject, $body);
+        $this->fakeEmailRepository->store($to, $subject, $textBody);
     }
 }

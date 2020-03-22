@@ -7,6 +7,7 @@ use App\Entity\Message;
 use App\Tools\GSM;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Translation\TranslatorInterface;
+use Twig\Environment;
 
 class MessageFormatter
 {
@@ -21,16 +22,25 @@ class MessageFormatter
     private $translator;
 
     /**
+     * @var Environment
+     */
+    private $templating;
+
+    /**
      * @param RouterInterface     $router
      * @param TranslatorInterface $translator
+     * @param Environment         $templating
      */
-    public function __construct(RouterInterface $router, TranslatorInterface $translator)
+    public function __construct(RouterInterface $router, TranslatorInterface $translator, Environment $templating)
     {
-        $this->router     = $router;
+        $this->router = $router;
         $this->translator = $translator;
+        $this->templating = $templating;
     }
 
     /**
+     * Used for preview only.
+     *
      * @param Message $message
      *
      * @return string
@@ -41,7 +51,7 @@ class MessageFormatter
             return $this->formatSMSContent($message);
         }
 
-        return $this->formatEmailContent($message);
+        return $this->formatTextEmailContent($message);
     }
 
     /**
@@ -93,7 +103,7 @@ class MessageFormatter
      *
      * @return string
      */
-    public function formatEmailContent(Message $message): string
+    public function formatTextEmailContent(Message $message): string
     {
         $contentParts  = [];
         $communication = $message->getCommunication();
@@ -142,5 +152,24 @@ class MessageFormatter
         }
 
         return implode("\n", $contentParts);
+    }
+
+    /**
+     * @param Message $message
+     *
+     * @return string
+     *
+     * @throws \Twig\Error\LoaderError
+     * @throws \Twig\Error\RuntimeError
+     * @throws \Twig\Error\SyntaxError
+     */
+    public function formatHtmlEmailContent(Message $message): string
+    {
+        return $this->templating->render('message/email.html.twig', [
+            'website_url' => getenv('WEBSITE_URL'),
+            'message' => $message,
+            'communication' => $message->getCommunication(),
+            'campaign' => $message->getCommunication()->getCampaign(),
+        ]);
     }
 }
