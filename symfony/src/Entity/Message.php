@@ -178,6 +178,17 @@ class Message
     }
 
     /**
+     * @return bool
+     */
+    public function canBeSent(): bool
+    {
+        return !$this->sent && (
+                Communication::TYPE_SMS === $this->communication->getType() && $this->volunteer->getPhoneNumber() ||
+                Communication::TYPE_EMAIL === $this->communication->getType() && $this->volunteer->getEmail()
+            );
+    }
+
+    /**
      * Return approximate cost for a message
      *
      * For billing purposes, this method should not be used because it does
