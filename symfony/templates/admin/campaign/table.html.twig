@@ -1,0 +1,57 @@
+{% import 'macros.html.twig' as macros %}
+
+<h1>
+    {{ 'campaign.titles.list_full'|trans }}
+</h1>
+
+{{ macros.orderBy(ongoing.orderBy, {
+    'type': 'campaign.order.type'|trans,
+    'createdAt': 'campaign.order.created_at'|trans,
+    'label': 'campaign.order.label'|trans,
+}, 'nav') }}
+
+    {% for index, campaign in ongoing.pager.currentPageResults %}
+        <div class="row separated" style="background-color: {{ cycle(['#eeeeee', '#ffffff'], index) }};">
+            <div class="col-3" style="display:flex;align-items:center;">
+                {{ macros.typeBadge(campaign.type) }}
+            </div>
+            <div class="col-9">
+                <a href="{{ path('communication_index', {id: campaign.id}) }}">
+                    {% if not campaign.active %}
+                        <strike>{{ campaign.label }}</strike>
+                    {% else %}
+                        {{ campaign.label }}
+                    {% endif %}
+                </a>
+
+                <br/>
+
+                <em>
+                    <span class="text-sm-left color-grey">
+                    {% for structure in campaign.structures %}
+                        <div>{{ structure.name }}</div>
+                    {% endfor %}
+                        {{ campaign.createdAt|date("d/m/y H:i") }}
+                    </span>
+                </em>
+            </div>
+        </div>
+        <br/>
+    {% endfor %}
+
+    {{ macros.pager(ongoing.pager, 'ongoing', {type: 'ongoing'}) }}
+
+<script type="text/javascript">
+
+    var anchor;
+    if (location.hash) {
+        anchor = location.hash;
+    } else if (qs('type')) {
+        anchor = '#nav-' + qs('type');
+    } else {
+        anchor = $("a[data-toggle='tab']").first().attr("href");
+    }
+
+    $("a[href='" + anchor + "']").tab("show");
+
+</script>
