@@ -62,7 +62,7 @@
         {% for choice in communication.choices %}
             <tr>
                 <td colspan="3" align="center">
-                    <a style="width: 80%; background-color: {{ red }}; border-color: {{ red }}; display: inline-block; font-weight: 400; text-align: center; white-space: nowrap; vertical-align: middle; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; border: 1px solid transparent; padding: .375rem .75rem; font-size: 1rem; line-height: 1.5; border-radius: .25rem; transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out; font-size: 20px; text-decoration:none; color:white;"
+                    <a style="width: 80%; background-color: {{ red }}; border-color: {{ red }}; display: inline-block; font-weight: 400; text-align: center; vertical-align: middle; -webkit-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; border: 1px solid transparent; padding: .375rem .75rem; font-size: 1rem; line-height: 1.5; border-radius: .25rem; transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out; font-size: 20px; text-decoration:none; color:white;"
                        href="{{ website_url }}/{{ path('message_action', {code: message.code, action: choice.code, signature: message.signature}) }}">
                         {{ choice.label }}
                     </a>
