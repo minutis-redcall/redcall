@@ -267,7 +267,7 @@ class Message
     public function getCode(): string
     {
         if (gettype($this->code) === 'resource') {
-            return stream_get_contents($this->code);
+            $this->code = stream_get_contents($this->code);
         }
 
         return $this->code;
@@ -453,5 +453,15 @@ class Message
         }
 
         return $this;
+    }
+
+    /**
+     * This signature is used to replace CSRF tokens on answer links sent by email.
+     *
+     * @return string
+     */
+    public function getSignature(): string
+    {
+        return sha1(sprintf('%s%s', $this->getCode(), getenv('APP_SECRET')));
     }
 }
