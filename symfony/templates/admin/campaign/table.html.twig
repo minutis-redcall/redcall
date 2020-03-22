@@ -4,55 +4,43 @@
     {{ 'campaign.titles.list_full'|trans }}
 </h1>
 
-<div class="tab-content" id="nav-content">
-    {% for type, table in data %}
+{{ macros.orderBy(ongoing.orderBy, {
+    'type': 'campaign.order.type'|trans,
+    'createdAt': 'campaign.order.created_at'|trans,
+    'label': 'campaign.order.label'|trans,
+}, 'nav') }}
 
-        <div class="tab-pane show active"
-             id="nav-{{ type }}"
-             role="tabpanel" aria-labelledby="nav-{{ type }}-tab">
+    {% for index, campaign in ongoing.pager.currentPageResults %}
+        <div class="row separated" style="background-color: {{ cycle(['#eeeeee', '#ffffff'], index) }};">
+            <div class="col-3" style="display:flex;align-items:center;">
+                {{ macros.typeBadge(campaign.type) }}
+            </div>
+            <div class="col-9">
+                <a href="{{ path('communication_index', {id: campaign.id}) }}">
+                    {% if not campaign.active %}
+                        <strike>{{ campaign.label }}</strike>
+                    {% else %}
+                        {{ campaign.label }}
+                    {% endif %}
+                </a>
 
-            {{ macros.orderBy(table.orderBy, {
-                'type': 'campaign.order.type'|trans,
-                'createdAt': 'campaign.order.created_at'|trans,
-                'label': 'campaign.order.label'|trans,
-            }, 'nav-' ~ type) }}
+                <br/>
 
-            {% for index, campaign in table.pager.currentPageResults %}
-                <div class="row separated" style="background-color: {{ cycle(['#eeeeee', '#ffffff'], index) }};">
-                    <div class="col-3" style="display:flex;align-items:center;">
-                        {{ macros.typeBadge(campaign.type) }}
-                    </div>
-                    <div class="col-9">
-                        <a href="{{ path('communication_index', {id: campaign.id}) }}">
-                            {% if not campaign.active %}
-                                <strike>{{ campaign.label }}</strike>
-                            {% else %}
-                                {{ campaign.label }}
-                            {% endif %}
-                        </a>
-
-                        <br/>
-
-                        <em>
+                <em>
                             <span class="text-sm-left color-grey">
                                 {% for structure in campaign.structures %}
                                     <div>{{ structure.name }}</div>
                                 {% endfor %}
                                 {{ campaign.createdAt|date("d/m/y H:i") }}
                             </span>
-                        </em>
-                    </div>
-                </div>
-            {% endfor %}
-
-            <br/>
-
-            {{ macros.pager(table.pager, type, {type: type}) }}
-
+                </em>
+            </div>
         </div>
+        <br/>
 
     {% endfor %}
-</div>
+
+    {{ macros.pager(ongoing.pager, 'ongoing', {type: 'ongoing'}) }}
 
 <script type="text/javascript">
 
