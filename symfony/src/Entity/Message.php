@@ -89,12 +89,18 @@ class Message
     private $costs;
 
     /**
+     * @ORM\Column(type="datetime")
+     */
+    private $updatedAt;
+
+    /**
      * Message constructor.
      */
     public function __construct()
     {
         $this->sent = false;
         $this->costs = new ArrayCollection();
+        $this->updatedAt = new \DateTime();
     }
 
     /**
@@ -462,6 +468,18 @@ class Message
                 $cost->setMessage(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getUpdatedAt(): \DateTimeInterface
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(\DateTimeInterface $updatedAt): self
+    {
+        $this->updatedAt = $updatedAt;
 
         return $this;
     }

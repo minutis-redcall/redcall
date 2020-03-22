@@ -14,6 +14,7 @@ use App\Tools\Random;
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\ORM\NonUniqueResultException;
+use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 
@@ -211,5 +212,23 @@ class MessageRepository extends BaseRepository
             ->getSingleScalarResult();
 
         return !$result;
+    }
+
+    /**
+     * @return Message|null
+     *
+     * @throws NonUniqueResultException
+     */
+    public function getLatestMessageUpdated(): ?Message
+    {
+        try {
+            return $this->createQueryBuilder('m')
+                ->orderBy('m.updatedAt', 'DESC')
+                ->setMaxResults(1)
+                ->getQuery()
+                ->getSingleResult();
+        } catch (NoResultException $e) {
+            return null;
+        }
     }
 }
