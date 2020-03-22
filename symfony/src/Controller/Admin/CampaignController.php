@@ -45,11 +45,11 @@ class CampaignController extends BaseController
     {
         $ongoing = $this->campaignManager->getAllOpenCampaigns();
 
-        return ['data' => [
+        return [
             'ongoing' => [
                 'orderBy' => $this->orderBy($ongoing, Campaign::class, 'c.createdAt', 'DESC', 'ongoing'),
                 'pager' => $this->getPager($ongoing, 'ongoing'),
-            ],
-        ]];
+
+            ]];
     }
 }
