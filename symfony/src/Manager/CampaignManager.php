@@ -178,4 +178,14 @@ class CampaignManager
 
         return $this->messageManager->canUsePrefixesForEveryone($volunteersTakenPrefixes);
     }
+
+    /**
+     * Return all active campaign
+     *
+     * @return QueryBuilder
+     */
+    public function getAllOpenCampaigns()
+    {
+        return $this->campaignRepository->getActiveCampaigns();
+    }
 }

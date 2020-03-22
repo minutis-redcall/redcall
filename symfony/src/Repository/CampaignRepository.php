@@ -112,4 +112,16 @@ class CampaignRepository extends BaseRepository
 
         $this->save($campaign);
     }
+
+    /**
+     * Return all active campaigns
+     *
+     * @return QueryBuilder
+     */
+    public function getActiveCampaigns()
+    {
+        return $this->createQueryBuilder('c')
+            ->where('c.active = :active')
+            ->setParameter('active', true);
+    }
 }
