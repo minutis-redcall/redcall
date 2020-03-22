@@ -27,17 +27,16 @@
                 <br/>
 
                 <em>
-                            <span class="text-sm-left color-grey">
-                                {% for structure in campaign.structures %}
-                                    <div>{{ structure.name }}</div>
-                                {% endfor %}
-                                {{ campaign.createdAt|date("d/m/y H:i") }}
-                            </span>
+                    <span class="text-sm-left color-grey">
+                    {% for structure in campaign.structures %}
+                        <div>{{ structure.name }}</div>
+                    {% endfor %}
+                        {{ campaign.createdAt|date("d/m/y H:i") }}
+                    </span>
                 </em>
             </div>
         </div>
         <br/>
-
     {% endfor %}
 
     {{ macros.pager(ongoing.pager, 'ongoing', {type: 'ongoing'}) }}
