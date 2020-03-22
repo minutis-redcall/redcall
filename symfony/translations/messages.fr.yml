@@ -153,10 +153,11 @@ message:
     how_to_answer_multiple: Pour répondre, saisir le(s) code(s) de votre choix, séparés par un espace.
     geo_location: 'Géolocalisation de votre équipe: %url%'
   email:
-    announcement: 'CROIX-ROUGE le %day%/%month%/%year% à %hours%h%mins% :'
+    announcement: 'CROIX-ROUGE le %day%/%month%/%year% à %hours%h%mins%'
     how_to_answer_simple: 'Afin de donner votre réponse, veuillez cliquer sur le lien suivant : %url%'
     how_to_answer_multiple: 'Afin de donner votre ou vos réponses, veuillez cliquer sur le lien suivant : %url%'
     possible_answers: 'Réponse(s) possibles :'
+    answer_here: 'Cliquez sur le(s) bouton(s) de votre choix pour répondre.'
 
 button:
   submit: 'Valider'

@@ -43,7 +43,7 @@ class SendCommunicationCommand extends BaseCommand
         date_default_timezone_set('Europe/Paris');
 
         foreach ($communication->getMessages() as $message) {
-            if (!$message->getMessageId()) {
+            if ($message->canBeSent()) {
                 $this->get(Sender::class)->send($message);
                 usleep(self::PAUSE);
             }

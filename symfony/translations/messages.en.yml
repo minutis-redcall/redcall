@@ -158,6 +158,7 @@ message:
     how_to_answer_simple: 'To give your answer, please click on the following link: %url%'
     how_to_answer_multiple: 'To give your answer(s), please click on the following link: %url%'
     possible_answers: 'Possible response(s):'
+    answer_here: 'Click on the following buttons to answer.'
 
 button:
   submit: 'Submit'

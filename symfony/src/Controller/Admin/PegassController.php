@@ -108,7 +108,7 @@ class PegassController extends BaseController
     /**
      * @Route(name="update_structures", path="update-structures/{id}")
      */
-    public function updateStructures(Request $request, UserInformation $userInformation)
+    public function updateStructures(UserInformation $userInformation)
     {
         return $this->render('admin/pegass/structures.html.twig', [
             'user' => $userInformation,

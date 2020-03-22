@@ -17,6 +17,8 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 
 class MessageManager
 {
+    const DEPLOY_GRACE = 120; /* 2 mins */
+
     /**
      * @var AnswerManager
      */
@@ -269,5 +271,33 @@ class MessageManager
     public function save(Message $message)
     {
         $this->messageRepository->save($message);
+    }
+
+    /**
+     * Returns true whether is it possible to deploy, if
+     * last message was sent less than N seconds ago,
+     * we consider that the activity is too high.
+     *
+     * This method is subject to race conditions, if
+     * a user launches a trigger during the deployment
+     * time.
+     *
+     * @return int
+     */
+    public function getDeployGreenlight(): int
+    {
+        /** @var Message $message */
+        $message = $this->messageRepository->getLatestMessageUpdated();
+
+        if (!$message) {
+            return true;
+        }
+
+        $diff = time() - $message->getUpdatedAt()->getTimestamp();
+        if ($diff > self::DEPLOY_GRACE) {
+            return 0;
+        }
+
+        return self::DEPLOY_GRACE - $diff;
     }
 }

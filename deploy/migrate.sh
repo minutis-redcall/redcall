@@ -28,6 +28,15 @@ cat deploy/${ENV}/dotenv-migrate >> symfony/.env
     cd symfony
     source .env > /dev/null
 
+    GREENLIGHT=`wget -O- ${WEBSITE_URL}/deploy`
+    if [[ "${GREENLIGHT}" != "0" ]]
+    then
+      echo "A communication has recently been triggered, cannot deploy before ${GREENLIGHT} seconds"
+      cp deploying/.env symfony/.env
+      rm -r deploying
+      exit 1
+    fi
+
     gcloud config set project ${GCP_PROJECT_NAME}
 
     # Start Bastion
@@ -48,3 +57,4 @@ cat deploy/${ENV}/dotenv-migrate >> symfony/.env
 # Restoring current context
 cp deploying/.env symfony/.env
 rm -r deploying
+

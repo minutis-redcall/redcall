@@ -89,12 +89,18 @@ class Message
     private $costs;
 
     /**
+     * @ORM\Column(type="datetime")
+     */
+    private $updatedAt;
+
+    /**
      * Message constructor.
      */
     public function __construct()
     {
         $this->sent = false;
         $this->costs = new ArrayCollection();
+        $this->updatedAt = new \DateTime();
     }
 
     /**
@@ -175,6 +181,17 @@ class Message
         $this->sent = $sent;
 
         return $this;
+    }
+
+    /**
+     * @return bool
+     */
+    public function canBeSent(): bool
+    {
+        return !$this->sent && (
+                Communication::TYPE_SMS === $this->communication->getType() && $this->volunteer->getPhoneNumber() ||
+                Communication::TYPE_EMAIL === $this->communication->getType() && $this->volunteer->getEmail()
+            );
     }
 
     /**
@@ -267,7 +284,7 @@ class Message
     public function getCode(): string
     {
         if (gettype($this->code) === 'resource') {
-            return stream_get_contents($this->code);
+            $this->code = stream_get_contents($this->code);
         }
 
         return $this->code;
@@ -453,5 +470,27 @@ class Message
         }
 
         return $this;
+    }
+
+    public function getUpdatedAt(): \DateTimeInterface
+    {
+        return $this->updatedAt;
+    }
+
+    public function setUpdatedAt(\DateTimeInterface $updatedAt): self
+    {
+        $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    /**
+     * This signature is used to replace CSRF tokens on answer links sent by email.
+     *
+     * @return string
+     */
+    public function getSignature(): string
+    {
+        return sha1(sprintf('%s%s', $this->getCode(), getenv('APP_SECRET')));
     }
 }
