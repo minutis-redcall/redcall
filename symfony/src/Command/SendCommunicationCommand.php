@@ -11,7 +11,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class SendCommunicationCommand extends BaseCommand
 {
-    const PAUSE = 500000; // 2 sms / second
+    const PAUSE = 100000; // 10 sms / second
 
     /**
      * {@inheritdoc}
