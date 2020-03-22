@@ -24,3 +24,19 @@ sandbox:
 
   anonymize:
     button: 'Anonymize the database'
+
+  fixtures:
+    title: 'Generate skills, volunteers & structures'
+    tags: 'Generate skills'
+    structure:
+      title: 'Generate structure'
+      name: 'Structure name'
+      parent: 'Optional parent structure'
+      number_volunteers: 'Number of volunteers to generate in the structure'
+      bind_to_user: 'Link this new structure to your user account'
+      created: 'Structure created'
+    volunteer:
+      title: 'Generate volunteers'
+      number_volunteers: 'Number of volunteers to generate'
+      structure: 'Affiliate structure'
+      created: '%nbr% volunteers created'

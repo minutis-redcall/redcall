@@ -37,4 +37,14 @@ class TagManager
     {
         return $this->tagRepository->findOneByLabel($label);
     }
+
+    /**
+     * @param Tag $tag
+     */
+    public function create(Tag $tag)
+    {
+        if (!$this->tagRepository->findByLabel($tag->getLabel())) {
+            $this->tagRepository->save($tag);
+        }
+    }
 }
