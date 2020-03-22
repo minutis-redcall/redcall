@@ -18,3 +18,9 @@ services:
       - '@App\Manager\MessageManager'
       - '@App\Manager\VolunteerManager'
 
+  Bundles\SandboxBundle\Controller\FixturesController:
+    public: true
+    arguments:
+      - '@Bundles\SandboxBundle\Manager\FixturesManager'
+      - '@App\Manager\TagManager'
+      - '@translator'

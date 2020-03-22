@@ -108,6 +108,14 @@ TWILIO_NUMBER=xxx
 To create your first user, register it and use the commands (user:verify, user:trust, user:admin) in
 order to enable it.
 
+To create skills, structures and volunteers, connect to the platform and click on the "Sandbox" button,
+you will find there some fixtures generator.
+
+Once you've some volunteers and structures, go into "Administration", "Manage users" and bind your
+user to a "nivol" and some structures.
+
+Now you can play!
+
 ### Preproduction & Production
  
 The project is built to run on Google App Engine. Once you'll get signed (either a professional contract

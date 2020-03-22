@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'sandbox.fixtures.title'|trans }}{% endblock %}
+
+{% block body %}
+
+<div class="jumbotron text-center">
+
+    {% if tags %}
+
+        <a href="{{ path('sandbox_fixtures_tags') }}"
+           class="text-lg-center large-button btn btn-secondary">{{ 'sandbox.fixtures.tags'|trans }}</a>
+
+    {% else %}
+
+        <h3>{{ 'sandbox.fixtures.structure.title'|trans }}</h3>
+
+        <div class="text-left">
+            {{ form_start(structure) }}
+            {{ form_row(structure.name) }}
+            <div class="form-group">
+                <label for="{{ volunteer.structure.vars.id }}">{{ 'sandbox.fixtures.structure.parent'|trans }}</label>
+                {{ form_row(structure.parent) }}
+            </div>
+            {{ form_row(structure.number_volunteers) }}
+            {{ form_row(structure.bind_to_user) }}
+            {{ form_end(structure) }}
+        </div>
+
+        <br/><hr/><br/>
+
+        <h3>{{ 'sandbox.fixtures.volunteer.title'|trans }}</h3>
+
+        <div class="text-left">
+            {{ form_start(volunteer) }}
+            {{ form_row(volunteer.number_volunteers) }}
+            <div class="form-group">
+            <label for="{{ volunteer.structure.vars.id }}">{{ 'sandbox.fixtures.volunteer.structure'|trans }}</label>
+                {{ form_row(volunteer.structure) }}
+            </div>
+            {{ form_end(volunteer) }}
+        </div>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}
