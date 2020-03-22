@@ -103,6 +103,7 @@ class Sender
         );
 
         $message->setMessageId(time());
+        $message->setSent(true);
 
         $this->entityManager->merge($message);
         $this->entityManager->flush();
