@@ -243,8 +243,6 @@ class MessageRepository extends BaseRepository
 
     /**
      * Return all triggered volounteers
-     * @return Message|null
-     *
      * @param \DateTime $from
      * @param \DateTime $to
      * @return array
@@ -277,7 +275,6 @@ class MessageRepository extends BaseRepository
      * @throws \Doctrine\ORM\NoResultException
      */
     public function getNumberOfAnswersReceived(\DateTime $from, \DateTime $to)
-    public function getLatestMessageUpdated(): ?Message
     {
         $sql = 'select count(*) answers from message m
                 join communication c on m.communication_id = c.id
@@ -293,6 +290,15 @@ class MessageRepository extends BaseRepository
             ->setParameter(':fromDate', $from)
             ->setParameter(':toDate', $to)
             ->getSingleResult();
+    }
+
+    /**
+     * @return Message|null
+     * @throws NonUniqueResultException
+     * @throws \Doctrine\ORM\NoResultException
+     */
+    public function getLatestMessageUpdated(): ?Message
+    {
         try {
             return $this->createQueryBuilder('m')
                 ->orderBy('m.updatedAt', 'DESC')
