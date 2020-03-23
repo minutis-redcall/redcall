@@ -14,9 +14,10 @@ use App\Tools\Random;
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\ORM\NonUniqueResultException;
-use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
+use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\ORM\QueryBuilder;
 
 class MessageRepository extends BaseRepository
 {
@@ -154,7 +155,6 @@ class MessageRepository extends BaseRepository
             if (null === $this->findOneBy([$column => $code])) {
                 break;
             }
-
         } while (true);
 
         return $code;
@@ -215,20 +215,81 @@ class MessageRepository extends BaseRepository
     }
 
     /**
-     * @return Message|null
+     * Return all sent messages and group by kind (communication.type)
      *
-     * @throws NonUniqueResultException
+     * @param \DateTime $from
+     * @param \DateTime $to
+     * @return array
      */
-    public function getLatestMessageUpdated(): ?Message
+    public function getNumberOfSentMessagesByKind(\DateTime $from, \DateTime $to)
     {
-        try {
-            return $this->createQueryBuilder('m')
-                ->orderBy('m.updatedAt', 'DESC')
-                ->setMaxResults(1)
-                ->getQuery()
-                ->getSingleResult();
-        } catch (NoResultException $e) {
-            return null;
-        }
+        $sql = 'select c.type, count(*)
+                from message m join communication c
+                on m.communication_id = c.id
+                where c.created_at > :fromDate
+                and c.created_at < :toDate
+                group by c.type;';
+
+        $rsm = new ResultSetMapping();
+        $rsm->addScalarResult('type', 'type')
+            ->addScalarResult('count(*)', 'count', 'integer');
+
+        return $this->_em
+            ->createNativeQuery($sql, $rsm)
+            ->setParameter('fromDate', $from)
+            ->setParameter('toDate', $to)
+            ->getResult();
+    }
+
+    /**
+     * Return all triggered volounteers
+     *
+     * @param \DateTime $from
+     * @param \DateTime $to
+     * @return array
+     * @throws NonUniqueResultException
+     * @throws \Doctrine\ORM\NoResultException
+     */
+    public function getNumberOfTriggeredVolounteers(\DateTime $from, \DateTime $to)
+    {
+        $sql = 'select count(distinct m.volunteer_id) volounteers
+                from message m
+                join communication c on m.communication_id = c.id
+                where c.created_at > :fromDate
+                and c.created_at <= :toDate;';
+
+        $rsm = new ResultSetMapping();
+        $rsm->addScalarResult('volounteers', 'volounteers', 'integer');
+
+        return $this->_em
+            ->createNativeQuery($sql, $rsm)
+            ->setParameter('fromDate', $from)
+            ->setParameter('toDate', $to)
+            ->getSingleResult();
+    }
+
+    /**
+     * Return all answers received
+     *
+     * @return QueryBuilder
+     * @throws NonUniqueResultException
+     * @throws \Doctrine\ORM\NoResultException
+     */
+    public function getNumberOfAnswersReceived(\DateTime $from, \DateTime $to)
+    {
+        $sql = 'select count(*) answers from message m
+                join communication c on m.communication_id = c.id
+                join answer a on a.message_id = m.id
+                where c.created_at > :fromDate
+                and c.created_at <= :toDate';
+
+        $rsm = new ResultSetMapping();
+        $rsm->addScalarResult('answers', 'answers', 'integer');
+
+        return $this->_em
+            ->createNativeQuery($sql, $rsm)
+            ->setParameter(':fromDate', $from)
+            ->setParameter(':toDate', $to)
+            ->getSingleResult();
     }
 }

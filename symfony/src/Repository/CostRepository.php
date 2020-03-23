@@ -5,6 +5,8 @@ namespace App\Repository;
 use App\Base\BaseRepository;
 use App\Entity\Cost;
 use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\ORM\Query\ResultSetMapping;
+use Doctrine\ORM\QueryBuilder;
 
 /**
  * @method Cost|null find($id, $lockMode = null, $lockVersion = null)
@@ -47,4 +49,30 @@ class CostRepository extends BaseRepository
         ;
     }
     */
+
+    /**
+     * Return the costs grouped by c.direction
+     *
+     * @param \DateTime $from
+     * @param \DateTime $to
+     * @return QueryBuilder
+     * @throws \Exception
+     */
+    public function getSumOfCost(\DateTime $from, \DateTime $to)
+    {
+        $sql = 'select sum(price) sum_cost, direction
+                from cost
+                where created_at > :fromDate
+                and created_at <= :toDate
+                group by direction';
+
+        $rsm = new ResultSetMapping();
+        $rsm->addScalarResult('sum_cost', 'cost', 'integer')
+            ->addScalarResult('direction', 'direction');
+
+        return $this->_em->createNativeQuery($sql, $rsm)
+            ->setParameter('fromDate', $from)
+            ->setParameter('toDate', $to)
+            ->getResult();
+    }
 }

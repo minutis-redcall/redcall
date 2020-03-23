@@ -330,3 +330,8 @@ infos:
   context_7: 'What the responsible sees:'
   context_8: 'Once teams are complete, responsible can send a PDF containing all relevant information to his territorial direction.'
   context_9: 'The application is currently being beta-tested by a few structures, but we''ll keep you aware of its deployment through Minutis.'
+
+title:
+  costs: "Costs"
+  messages: "Messages"
+  campaigns: "Campaigns"

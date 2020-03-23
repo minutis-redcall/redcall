@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block menu %}{% endblock %}
+
+
+{% block body %}
+    <h1>{{ 'admin.dashboard.title' | trans }}</h1>
+
+    <form method="get">
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label>Du</label>
+                <input class="form-control" name="from" type="date" value="{{ from | date('Y-m-d') }}">
+            </div>
+            <div class="form-group col-md-6">
+                <label>Au</label>
+                <input class="form-control" name="to" type="date" value="{{ to | date('Y-m-d') }}">
+            </div>
+        </div>
+        <div class="form-group">
+            <input class="btn btn-primary" type="submit" value="Valider"/>
+        </div>
+    </form>
+
+    <h2>{{ 'campaign.titles.campaign' | trans }}</h2>
+    <p>11 déclenchements, dont 8 tests et 3 recensements réels</p>
+
+
+    <h2>{{ 'title.messages' | trans }}</h2>
+    {% if stats.messagesSent.types is defined %}
+        <p><b>{{ stats.messagesSent.totalCount }}</b> messages ont été envoyés dont
+            {% for type, count in stats.messagesSent.types %}
+                {% if loop.index0 > 0 %}
+                    et
+                {% endif %}
+                <b>{{ count }}  {{ type }}</b>
+            {% endfor %} à <b>{{ stats.triggeredVolounteers }}</b> bénévoles.</p>
+        <p><b>{{ stats.answersReceived }}</b> réponses ont été reçues.</p>
+    {% else %}
+        <p>No statistics for this section in the selected period.</p>
+    {% endif %}
+
+    <h2>{{ 'title.costs' | trans }}</h2>
+
+    <p>Le coût total pour la journée d'hier s'élève à 5,44 euros, dont 5,21 pour l'envoi et 0,23 en réception.</p>
+    <br>
+{% endblock %}

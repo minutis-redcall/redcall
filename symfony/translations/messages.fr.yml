@@ -329,3 +329,8 @@ infos:
   context_7: 'Ce que le responsable voit:'
   context_8: 'Une fois que les équipages sont formés, le responsable peut envoyer un PDF contenant toutes les bonnes informations a sa direction territoriale.'
   context_9: 'L''application n''est pour le moment qu''en béta test par quelques unités locales, mais nous vous tiendrons informés de son déploiement au travers de Minutis.'
+
+title:
+  costs: "Coûts"
+  messages: "Messages"
+  campaigns: "Déclenchements"
