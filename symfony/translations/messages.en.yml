@@ -8,6 +8,22 @@ admin:
     title: 'Bindings between RedCall users and Pegass database'
     structures: 'Update structures for %name%'
     create_user: 'Add a new user'
+  dashboard:
+    title: Dashboard
+  statistics:
+    no_stats: "No statistics for this section in the selected period."
+    campaign:
+      title: "Campaigns"
+      stats: "campaigns were opened on this period."
+    messages:
+      title: "Messages"
+      messages_sent: "<b>%stat%</b> messages were sent"
+      to_volounteers: "to <b>%volounteers%</b> volounteers."
+      answers_received: "<b>%answers%</b> answers were received."
+    costs:
+      title: "Costs"
+      received: "for reception."
+      sent: "for sending."
 
 management:
   current_structures: 'You are currently able to trigger the following structures:'
@@ -335,3 +351,8 @@ title:
   costs: "Costs"
   messages: "Messages"
   campaigns: "Campaigns"
+
+label:
+  and: "and"
+  from: "From"
+  to: "To"

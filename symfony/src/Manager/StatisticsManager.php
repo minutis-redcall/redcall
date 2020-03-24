@@ -3,6 +3,7 @@
 namespace App\Manager;
 
 use App\Entity\Structure;
+use App\Repository\CampaignRepository;
 use App\Repository\CostRepository;
 use App\Repository\MessageRepository;
 
@@ -17,11 +18,16 @@ class StatisticsManager
      * @var CostRepository
      */
     private $costRepository;
+    /**
+     * @var CampaignRepository
+     */
+    private $campaignRepository;
 
-    public function __construct(MessageRepository $messageRepository, CostRepository $costRepository)
+    public function __construct(MessageRepository $messageRepository, CostRepository $costRepository, CampaignRepository $campaignRepository)
     {
         $this->messageRepository = $messageRepository;
         $this->costRepository = $costRepository;
+        $this->campaignRepository = $campaignRepository;
     }
 
     /**
@@ -39,6 +45,11 @@ class StatisticsManager
     {
         $statistics = [];
 
+        //Campaign section
+        $openCampagins = $this->campaignRepository->getActiveCampaigns();
+        $statistics['openCampaigns'] = count($openCampagins->select('c.id')->getQuery()->getResult());
+
+        //Messages section
         $countMessages = $this->messageRepository->getNumberOfSentMessagesByKind($from, $to);
 
         $totalCount = 0;
@@ -53,7 +64,18 @@ class StatisticsManager
 
         $statistics['answersReceived'] = $this->messageRepository->getNumberOfAnswersReceived($from, $to)['answers'];
 
-        $statistics['costs'] = $this->costRepository->getSumOfCost($from, $to);
+        //Costs section
+        $costsByDirection = $this->costRepository->getSumOfCost($from, $to);
+        if (!empty($costsByDirection)) {
+            $totalCost = 0;
+
+            foreach ($costsByDirection as $cost) {
+                $totalCost += abs($cost['cost']);
+                $statistics['costs']['types'][$cost['direction']] = abs($cost['cost']);
+            }
+            $statistics['costs']['total'] = $totalCost;
+            $statistics['costs']['currency'] = $costsByDirection[0]['currency'];
+        }
 
         return $statistics;
     }

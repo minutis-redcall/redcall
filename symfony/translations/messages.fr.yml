@@ -8,6 +8,23 @@ admin:
     title: 'Connexions entre les utilisateurs de RedCall et la base de données Pegass'
     structures: 'Mise à jour des structures pour %name%'
     create_user: 'Ajouter un nouvel utilisateur'
+  dashboard:
+    title: Tableau de bord
+  statistics:
+    no_stats: "Aucune statistique à afficher pour cette période."
+    campaign:
+      title: "Déclenchements"
+      stats: "déclenchements ont été ouverts sur cette periode."
+    messages:
+      title: "Messages"
+      messages_sent: "<b>%stat%</b> messages ont été envoyés dont"
+      to_volounteers: "à <b>%volounteers%</b> bénévoles."
+      answers_received: "<b>%answers%</b> réponses ont été reçues."
+    costs:
+      title: "Coûts"
+      total: "Le coût total pour la période est de "
+      received: "pour la réception."
+      sent: "pour l'envoi."
 
 management:
   current_structures: 'Vous pouvez actuellement déclencher les structures suivantes :'
@@ -334,3 +351,8 @@ title:
   costs: "Coûts"
   messages: "Messages"
   campaigns: "Déclenchements"
+
+label:
+  and: "et"
+  from: "Du"
+  to: "Au"

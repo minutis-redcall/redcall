@@ -59,15 +59,16 @@ class CostRepository extends BaseRepository
      */
     public function getSumOfCost(\DateTime $from, \DateTime $to)
     {
-        $sql = 'select sum(price) sum_cost, direction
+        $sql = 'select sum(price) sum_cost, direction, currency
                 from cost
                 where created_at > :fromDate
                 and created_at <= :toDate
                 group by direction';
 
         $rsm = new ResultSetMapping();
-        $rsm->addScalarResult('sum_cost', 'cost', 'integer')
-            ->addScalarResult('direction', 'direction');
+        $rsm->addScalarResult('sum_cost', 'cost', 'float')
+            ->addScalarResult('direction', 'direction')
+            ->addScalarResult('currency', 'currency');
 
         return $this->_em->createNativeQuery($sql, $rsm)
             ->setParameter('fromDate', $from)

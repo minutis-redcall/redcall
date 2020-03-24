@@ -9,39 +9,50 @@
     <form method="get">
         <div class="form-row">
             <div class="form-group col-md-6">
-                <label>Du</label>
+                <label>{{ 'label.from' | trans }}</label>
                 <input class="form-control" name="from" type="date" value="{{ from | date('Y-m-d') }}">
             </div>
             <div class="form-group col-md-6">
-                <label>Au</label>
+                <label>{{ 'label.to' | trans }}</label>
                 <input class="form-control" name="to" type="date" value="{{ to | date('Y-m-d') }}">
             </div>
         </div>
         <div class="form-group">
-            <input class="btn btn-primary" type="submit" value="Valider"/>
+            <input class="btn btn-primary" type="submit" value="{{ 'button.submit' | trans }}"/>
         </div>
     </form>
 
-    <h2>{{ 'campaign.titles.campaign' | trans }}</h2>
-    <p>11 déclenchements, dont 8 tests et 3 recensements réels</p>
-
-
-    <h2>{{ 'title.messages' | trans }}</h2>
-    {% if stats.messagesSent.types is defined %}
-        <p><b>{{ stats.messagesSent.totalCount }}</b> messages ont été envoyés dont
-            {% for type, count in stats.messagesSent.types %}
-                {% if loop.index0 > 0 %}
-                    et
-                {% endif %}
-                <b>{{ count }}  {{ type }}</b>
-            {% endfor %} à <b>{{ stats.triggeredVolounteers }}</b> bénévoles.</p>
-        <p><b>{{ stats.answersReceived }}</b> réponses ont été reçues.</p>
+    <h2>{{ 'admin.statistics.campaign.title' | trans }}</h2>
+    {% if stats.openCampaigns is defined %}
+        <p><b>{{ stats.openCampaigns }}</b> {{ 'admin.statistics.campaign.stats' | trans }}</p>
     {% else %}
-        <p>No statistics for this section in the selected period.</p>
+        <p>{{ 'admin.statistics.no_stats' | trans }}</p>
     {% endif %}
 
-    <h2>{{ 'title.costs' | trans }}</h2>
+    <h2>{{ 'admin.statistics.messages.title' | trans }}</h2>
+    {% if stats.messagesSent.types is defined %}
+        <p>{{ 'admin.statistics.messages.messages_sent' | trans({'%stat%' :stats.messagesSent.totalCount}) | raw }}
+            {% for type, count in stats.messagesSent.types %}
+                {% if loop.index0 > 0 %}
+                    {{ 'label.and' | trans }}
+                {% endif %}
+                <b>{{ count }}  {{ type }}</b>
+            {% endfor %} {{ 'admin.statistics.messages.to_volounteers' | trans({'%volounteers%': stats.triggeredVolounteers}) | raw }}
+        </p>
+        <p>{{ 'admin.statistics.messages.answers_received' | trans({'%answers%': stats.answersReceived}) | raw }}</p>
+    {% else %}
+        <p>{{ 'admin.statistics.no_stats' | trans }}</p>
+    {% endif %}
 
-    <p>Le coût total pour la journée d'hier s'élève à 5,44 euros, dont 5,21 pour l'envoi et 0,23 en réception.</p>
+    <h2>{{ 'admin.statistics.costs.title' | trans }}</h2>
+    {% if stats.costs is defined and stats.costs is not empty %}
+        <p>{{ 'admin.statistics.costs.total' | trans() | raw }}<b>{{ stats.costs.total | format_currency(stats.costs.currency) }}:</b></p>
+        <ul>
+            <li><b>{{ stats.costs.types.received | format_currency(stats.costs.currency) }}</b> {{ 'admin.statistics.costs.received' | trans }}</li>
+            <li><b>{{ stats.costs.types.sent | format_currency(stats.costs.currency) }}</b> pour l'envoi.</li>
+        </ul>
+    {% else %}
+        <p>{{ 'admin.statistics.no_stats' | trans }}</p>
+    {% endif %}
     <br>
 {% endblock %}
