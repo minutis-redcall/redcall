@@ -21,14 +21,18 @@
             <input class="btn btn-primary" type="submit" value="{{ 'button.submit' | trans }}"/>
         </div>
     </form>
+    <br>
 
+    {# CAMPAIGNS SECTION #}
     <h2>{{ 'admin.statistics.campaign.title' | trans }}</h2>
     {% if stats.openCampaigns is defined %}
         <p><b>{{ stats.openCampaigns }}</b> {{ 'admin.statistics.campaign.stats' | trans }}</p>
     {% else %}
         <p>{{ 'admin.statistics.no_stats' | trans }}</p>
     {% endif %}
+    <br>
 
+    {# MESSAGES SECTION #}
     <h2>{{ 'admin.statistics.messages.title' | trans }}</h2>
     {% if stats.messagesSent.types is defined %}
         <p>{{ 'admin.statistics.messages.messages_sent' | trans({'%stat%' :stats.messagesSent.totalCount}) | raw }}
@@ -37,20 +41,46 @@
                     {{ 'label.and' | trans }}
                 {% endif %}
                 <b>{{ count }}  {{ type }}</b>
-            {% endfor %} {{ 'admin.statistics.messages.to_volounteers' | trans({'%volounteers%': stats.triggeredVolounteers}) | raw }}
+            {% endfor %} {{ 'admin.statistics.messages.to_volunteers' | trans({'%volunteers%': stats.triggeredVolounteers}) | raw }}
         </p>
         <p>{{ 'admin.statistics.messages.answers_received' | trans({'%answers%': stats.answersReceived}) | raw }}</p>
     {% else %}
         <p>{{ 'admin.statistics.no_stats' | trans }}</p>
     {% endif %}
+    <br>
 
+    {# COSTS SECTION #}
     <h2>{{ 'admin.statistics.costs.title' | trans }}</h2>
     {% if stats.costs is defined and stats.costs is not empty %}
-        <p>{{ 'admin.statistics.costs.total' | trans() | raw }}<b>{{ stats.costs.total | format_currency(stats.costs.currency) }}:</b></p>
+        <p>{{ 'admin.statistics.costs.total' | trans() | raw }}
+            <b>{{ stats.costs.total | format_currency(stats.costs.currency) }}:</b></p>
         <ul>
-            <li><b>{{ stats.costs.types.received | format_currency(stats.costs.currency) }}</b> {{ 'admin.statistics.costs.received' | trans }}</li>
+            <li>
+                <b>{{ stats.costs.types.received | format_currency(stats.costs.currency) }}</b> {{ 'admin.statistics.costs.received' | trans }}
+            </li>
             <li><b>{{ stats.costs.types.sent | format_currency(stats.costs.currency) }}</b> pour l'envoi.</li>
         </ul>
+    {% else %}
+        <p>{{ 'admin.statistics.no_stats' | trans }}</p>
+    {% endif %}
+    <br>
+
+
+    {# VOLOUNTEERS SECTION #}
+    <h2>{{ 'admin.statistics.volunteers.title' | trans }}</h2>
+    {% if stats.volunteers is defined and stats.volunteers is not empty %}
+        {% set volStats = stats.volunteers %}
+        {% set transVars = {'%total_number%' : volStats.total.number,
+                            '%total_percent%': volStats.total.percent,
+                            '%email_number%' : volStats.email.number,
+                            '%email_percent%': volStats.email.percent,
+                            '%phone_number%' : volStats.phone.number,
+                            '%phone_percent%': volStats.phone.percent,
+                            '%both_number%'  : volStats.both.number,
+                            '%both_percent%' : volStats.both.percent
+        } %}
+
+        <p>{{ 'admin.statistics.volunteers.stats' | trans(transVars) | raw }} </p>
     {% else %}
         <p>{{ 'admin.statistics.no_stats' | trans }}</p>
     {% endif %}

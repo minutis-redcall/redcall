@@ -18,12 +18,20 @@ admin:
     messages:
       title: "Messages"
       messages_sent: "<b>%stat%</b> messages were sent"
-      to_volounteers: "to <b>%volounteers%</b> volounteers."
+      to_volunteers: "to <b>%volunteers%</b> volunteers."
       answers_received: "<b>%answers%</b> answers were received."
     costs:
       title: "Costs"
+      total: "The total costs for the period is "
       received: "for reception."
       sent: "for sending."
+    volunteers:
+      title: "Volunteers"
+      description: "All data are not filtered by period. These are globals."
+      stats: "The RedCall database has <b>%total_number% (%total_percent%%)</b> volunteers who are not necessarily reachable,
+              including <b>%email_number% (%email_percent%%)</b> who do not have email,
+              <b>%phone_number% (%phone_percent%%)</b> who do not have phone number,
+              and <b>%both_number% (%both_percent%%)</b> who have neither."
 
 management:
   current_structures: 'You are currently able to trigger the following structures:'

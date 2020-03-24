@@ -6,6 +6,7 @@ use App\Entity\Structure;
 use App\Repository\CampaignRepository;
 use App\Repository\CostRepository;
 use App\Repository\MessageRepository;
+use App\Repository\VolunteerRepository;
 
 class StatisticsManager
 {
@@ -22,12 +23,17 @@ class StatisticsManager
      * @var CampaignRepository
      */
     private $campaignRepository;
+    /**
+     * @var VolunteerRepository
+     */
+    private $volunteerRepository;
 
-    public function __construct(MessageRepository $messageRepository, CostRepository $costRepository, CampaignRepository $campaignRepository)
+    public function __construct(MessageRepository $messageRepository, CostRepository $costRepository, CampaignRepository $campaignRepository, VolunteerRepository $volunteerRepository)
     {
         $this->messageRepository = $messageRepository;
         $this->costRepository = $costRepository;
         $this->campaignRepository = $campaignRepository;
+        $this->volunteerRepository = $volunteerRepository;
     }
 
     /**
@@ -77,6 +83,28 @@ class StatisticsManager
             $statistics['costs']['currency'] = $costsByDirection[0]['currency'];
         }
 
+        //Volunteers Section
+        $volunteersStats = $this->volunteerRepository->getEmailAndPhoneNumberMissings();
+        $array = [
+            'total' => [
+                'number' => $volunteersStats['one_is_null'],
+                'percent' => $volunteersStats['one_is_null'] / $volunteersStats['total'] * 100
+            ],
+            'email' => [
+                'number' => $volunteersStats['email_null'],
+                'percent' => $volunteersStats['email_null'] / $volunteersStats['total'] * 100
+            ],
+            'phone' => [
+                'number' => $volunteersStats['phone_null'],
+                'percent' => $volunteersStats['phone_null'] / $volunteersStats['total'] * 100
+            ],
+            'both' => [
+                'number' => $volunteersStats['both_null'],
+                'percent' => $volunteersStats['both_null'] / $volunteersStats['total'] * 100
+            ]
+        ];
+
+        $statistics['volunteers'] = $array;
         return $statistics;
     }
 

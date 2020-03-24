@@ -18,13 +18,20 @@ admin:
     messages:
       title: "Messages"
       messages_sent: "<b>%stat%</b> messages ont été envoyés dont"
-      to_volounteers: "à <b>%volounteers%</b> bénévoles."
+      to_volunteers: "à <b>%volunteers%</b> bénévoles."
       answers_received: "<b>%answers%</b> réponses ont été reçues."
     costs:
       title: "Coûts"
       total: "Le coût total pour la période est de "
       received: "pour la réception."
       sent: "pour l'envoi."
+    volunteers:
+      title: "Volontaires"
+      description: "Toutes les données ne sont pas filtrées par une période."
+      stats: "La base de données RedCall contient <b>%total_number% (%total_percent%%)</b> bénévoles qui ne sont pas forcément joignables,
+              dont <b>%email_number% (%email_percent%%)</b> qui n’ont pas d’email,
+              <b>%phone_number% (%phone_percent%%)</b> qui n’ont pas de numéro de téléphone,
+              et <b>%both_number% (%both_percent%%)</b> qui n’ont ni l’un ni l’autre."
 
 management:
   current_structures: 'Vous pouvez actuellement déclencher les structures suivantes :'
