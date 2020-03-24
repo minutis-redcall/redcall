@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Base\BaseRepository;
 use App\Entity\Cost;
 use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\QueryBuilder;
 
 /**
