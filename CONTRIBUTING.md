@@ -117,9 +117,12 @@ user to a "nivol" and some structures.
 Now you can play!
 
 ### Preproduction & Production
- 
-The project is built to run on Google App Engine. Once you'll get signed (either a professional contract
-or as a red cross volunteer), you will get the accesses and the preproduction & production dotenvs.
+
+Most of the time, I will be here to push your changes in preproduction or in production. Just ask!
+
+Otherwise, the project is built to run on Google App Engine. Once you'll get signed (either a professional contract
+or as a red cross volunteer), you will get the write accesses to this repository, to the prod / preprod projects in GCP,
+and to the right dotenvs.
 
 Then, you will be able to use scripts in [deploy](deploy) to perform operations (can be changed for
 a more professional tool, all ideas welcome).
