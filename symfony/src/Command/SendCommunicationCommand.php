@@ -11,7 +11,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class SendCommunicationCommand extends BaseCommand
 {
-    const PAUSE = 100000; // 10 sms / second
+    const PAUSE_SMS = 100000; // 10 sms / second
+    const PAUSE_EMAIL = '1000000'; // 1 email / second
 
     /**
      * {@inheritdoc}
@@ -45,7 +46,11 @@ class SendCommunicationCommand extends BaseCommand
         foreach ($communication->getMessages() as $message) {
             if ($message->canBeSent()) {
                 $this->get(Sender::class)->send($message);
-                usleep(self::PAUSE);
+                if (Communication::TYPE_SMS === $message->getCommunication()->getType()) {
+                    usleep(self::PAUSE_SMS);
+                } else {
+                    usleep(self::PAUSE_EMAIL);
+                }
             }
         }
     }
