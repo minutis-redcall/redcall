@@ -10,6 +10,7 @@ use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
+use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\QueryBuilder;
 
 /**
@@ -305,5 +306,25 @@ class StructureRepository extends BaseRepository
              ->setParameter('expiredDate', new DateTime('1984-07-10'))
              ->getQuery()
              ->execute();
+    }
+
+    /**
+     * Return first and last pegass update for structures
+     * @return mixed
+     * @throws \Doctrine\ORM\NoResultException
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function getPegassUpdate()
+    {
+        $sql = "select min(structure.last_pegass_update) oldest_update, max(structure.last_pegass_update) newest_update from structure where structure.enabled = 1";
+
+        $rsm = new ResultSetMapping();
+        $rsm->addScalarResult('oldest_update', 'oldest_update', 'datetime')
+            ->addScalarResult('newest_update', 'newest_update', 'datetime');
+
+        return $this->_em
+            ->createNativeQuery($sql, $rsm)
+            ->getSingleResult();
+
     }
 }

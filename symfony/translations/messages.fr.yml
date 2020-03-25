@@ -28,10 +28,14 @@ admin:
     volunteers:
       title: "Volontaires"
       description: "Toutes les données ne sont pas filtrées par une période."
-      stats: "La base de données RedCall contient <b>%total_number% (%total_percent%%)</b> bénévoles qui ne sont pas forcément joignables,
-              dont <b>%email_number% (%email_percent%%)</b> qui n’ont pas d’email,
-              <b>%phone_number% (%phone_percent%%)</b> qui n’ont pas de numéro de téléphone,
-              et <b>%both_number% (%both_percent%%)</b> qui n’ont ni l’un ni l’autre."
+      summary: "La base de données RedCall contient <b>%total_number% (%total_percent%%)</b> bénévoles qui ne sont pas forcément joignables"
+      email: "<b>%email_number% (%email_percent%%)</b> qui n’ont pas d’email"
+      phone: "<b>%phone_number% (%phone_percent%%)</b> qui n’ont pas de numéro de téléphone"
+      both: "<b>%both_number% (%both_percent%%)</b> qui n’ont ni l’un ni l’autre"
+    pegass:
+      title: "Mise à jour Pegass"
+      oldest_update: "Mise à jour la plus ancienne"
+      newest_update: "Mise à jour la plus récente"
 
 management:
   current_structures: 'Vous pouvez actuellement déclencher les structures suivantes :'
@@ -363,3 +367,5 @@ label:
   and: "et"
   from: "Du"
   to: "Au"
+  volunteers: "volontaires"
+  structures: "structures"

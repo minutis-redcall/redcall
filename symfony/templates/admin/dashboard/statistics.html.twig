@@ -79,10 +79,28 @@
                             '%both_number%'  : volStats.both.number,
                             '%both_percent%' : volStats.both.percent
         } %}
-
-        <p>{{ 'admin.statistics.volunteers.stats' | trans(transVars) | raw }} </p>
+        <p>{{ 'admin.statistics.volunteers.summary' | trans(transVars) | raw}}</p>
+        <ul>
+            <li>{{ 'admin.statistics.volunteers.email' | trans(transVars) | raw }}</li>
+            <li>{{ 'admin.statistics.volunteers.phone' | trans(transVars) | raw }}</li>
+            <li>{{ 'admin.statistics.volunteers.both' | trans(transVars) | raw }}</li>
+        </ul>
     {% else %}
         <p>{{ 'admin.statistics.no_stats' | trans }}</p>
     {% endif %}
     <br>
+
+    {# PEGASS UPDATE SECTION #}
+    <h2>{{ 'admin.statistics.pegass.title' | trans }}</h2>
+    <p>{{ 'label.volunteers' | trans | capitalize }}</p>
+    <ul>
+        <li>{{ 'admin.statistics.pegass.oldest_update' | trans}} {{ stats.pegassUpdates.volunteers.oldest_update | date('d/m/Y h:i') }}</li>
+        <li>{{ 'admin.statistics.pegass.newest_update' | trans}} {{ stats.pegassUpdates.volunteers.newest_update | date('d/m/Y h:i') }}</li>
+    </ul>
+    <br>
+    <p>{{ 'label.structures' | trans | capitalize }}</p>
+    <ul>
+        <li>{{ 'admin.statistics.pegass.oldest_update' | trans}} {{ stats.pegassUpdates.structures.oldest_update | date('d/m/Y h:i') }}</li>
+        <li>{{ 'admin.statistics.pegass.newest_update' | trans}} {{ stats.pegassUpdates.structures.newest_update | date('d/m/Y h:i') }}</li>
+    </ul>
 {% endblock %}

@@ -6,6 +6,7 @@ use App\Entity\Structure;
 use App\Repository\CampaignRepository;
 use App\Repository\CostRepository;
 use App\Repository\MessageRepository;
+use App\Repository\StructureRepository;
 use App\Repository\VolunteerRepository;
 
 class StatisticsManager
@@ -27,13 +28,22 @@ class StatisticsManager
      * @var VolunteerRepository
      */
     private $volunteerRepository;
+    /**
+     * @var StructureRepository
+     */
+    private $structureRepository;
 
-    public function __construct(MessageRepository $messageRepository, CostRepository $costRepository, CampaignRepository $campaignRepository, VolunteerRepository $volunteerRepository)
+    public function __construct(MessageRepository $messageRepository,
+                                CostRepository $costRepository,
+                                CampaignRepository $campaignRepository,
+                                VolunteerRepository $volunteerRepository,
+                                StructureRepository $structureRepository)
     {
         $this->messageRepository = $messageRepository;
         $this->costRepository = $costRepository;
         $this->campaignRepository = $campaignRepository;
         $this->volunteerRepository = $volunteerRepository;
+        $this->structureRepository = $structureRepository;
     }
 
     /**
@@ -103,8 +113,12 @@ class StatisticsManager
                 'percent' => $volunteersStats['both_null'] / $volunteersStats['total'] * 100
             ]
         ];
-
         $statistics['volunteers'] = $array;
+
+        //Pegass update Section
+        $statistics['pegassUpdates']['structures'] = $this->structureRepository->getPegassUpdate();
+        $statistics['pegassUpdates']['volunteers'] = $this->volunteerRepository->getPegassUpdate();
+
         return $statistics;
     }
 

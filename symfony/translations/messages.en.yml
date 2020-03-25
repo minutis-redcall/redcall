@@ -28,10 +28,14 @@ admin:
     volunteers:
       title: "Volunteers"
       description: "All data are not filtered by period. These are globals."
-      stats: "The RedCall database has <b>%total_number% (%total_percent%%)</b> volunteers who are not necessarily reachable,
-              including <b>%email_number% (%email_percent%%)</b> who do not have email,
-              <b>%phone_number% (%phone_percent%%)</b> who do not have phone number,
-              and <b>%both_number% (%both_percent%%)</b> who have neither."
+      summary: "The RedCall database has <b>%total_number% (%total_percent%%)</b> volunteers who are not necessarily reachable"
+      email: "<b>%email_number% (%email_percent%%)</b> who do not have email"
+      phone: "<b>%phone_number% (%phone_percent%%)</b> who do not have phone number"
+      both: "<b>%both_number% (%both_percent%%)</b> who have neither"
+    pegass:
+      title: "Pegass updates"
+      oldest_update: "Oldest update"
+      newest_update: "Newest update
 
 management:
   current_structures: 'You are currently able to trigger the following structures:'
@@ -364,3 +368,5 @@ label:
   and: "and"
   from: "From"
   to: "To"
+  volunteers: "volunteers"
+  structures: "structures"

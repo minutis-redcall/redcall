@@ -296,4 +296,23 @@ class VolunteerRepository extends BaseRepository
             ->createNativeQuery($sql, $rsm)
             ->getSingleResult();
     }
+
+    /**
+     * Return first and last pegass update for volunteers
+     * @return mixed
+     * @throws \Doctrine\ORM\NoResultException
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function getPegassUpdate()
+    {
+        $sql = "select min(volunteer.last_pegass_update) oldest_update, max(volunteer.last_pegass_update) newest_update from volunteer where volunteer.enabled = 1 and locked=0";
+
+        $rsm = new ResultSetMapping();
+        $rsm->addScalarResult('oldest_update', 'oldest_update', 'datetime')
+            ->addScalarResult('newest_update', 'newest_update', 'datetime');
+
+        return $this->_em
+            ->createNativeQuery($sql, $rsm)
+            ->getSingleResult();
+    }
 }
