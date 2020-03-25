@@ -196,7 +196,7 @@ class StatisticsRepository
                 from cost
                 where created_at > :fromDate
                 and created_at <= :toDate
-                group by direction';
+                group by direction, currency';
 
         $rsm = new ResultSetMapping();
         $rsm->addScalarResult('sum_cost', 'cost', 'float')

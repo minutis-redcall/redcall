@@ -9,7 +9,7 @@ admin:
     structures: 'Mise à jour des structures pour %name%'
     create_user: 'Ajouter un nouvel utilisateur'
   dashboard:
-    title: Tableau de bord
+    title: 'Statistiques'
   statistics:
     no_stats: "Aucune statistique à afficher pour cette période."
     campaign:

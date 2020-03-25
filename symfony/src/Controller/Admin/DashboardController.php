@@ -28,8 +28,11 @@ class DashboardController extends BaseController
      */
     public function statistics(StatisticsManager $statisticsManager, Request $request): array
     {
-        $from = $request->query->get('from') ? \DateTime::createFromFormat('Y-m-d 00:00:00', $request->query->get('from')) : new \DateTime('-7days');
-        $to = $request->query->get('to') ? \DateTime::createFromFormat('Y-m-d 23:59:59', $request->query->get('to')) : new \DateTime();
+        $from = $request->query->get('from') ? \DateTime::createFromFormat('Y-m-d', $request->query->get('from')) : new \DateTime('-7days');
+        $to = $request->query->get('to') ? \DateTime::createFromFormat('Y-m-d', $request->query->get('to')) : new \DateTime();
+
+        $from->setTime(0, 0,0);
+        $to->setTime(23, 59, 59);
 
         return ['stats' => $statisticsManager->getDashboardStatistics($from, $to),
                 'from'  => $from,

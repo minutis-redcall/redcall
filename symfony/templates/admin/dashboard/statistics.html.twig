@@ -107,4 +107,14 @@
         <li>{{ 'admin.statistics.pegass.oldest_update' | trans}} {{ stats.pegassUpdates.structures.oldest_update | date('d/m/Y h:i') }}</li>
         <li>{{ 'admin.statistics.pegass.newest_update' | trans}} {{ stats.pegassUpdates.structures.newest_update | date('d/m/Y h:i') }}</li>
     </ul>
+
+    <div class="text-center">
+        <br/><br/>
+
+        <a href="{{ path('admin_home') }}"
+           class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+
+        <br/><br/>
+    </div>
+
 {% endblock %}
