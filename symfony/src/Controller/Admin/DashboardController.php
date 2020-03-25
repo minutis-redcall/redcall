@@ -19,8 +19,10 @@ class DashboardController extends BaseController
      * @Template("admin/dashboard/statistics.html.twig")
      *
      * @param StatisticsManager $statisticsManager
-     * @param Request $request
+     * @param Request           $request
+     *
      * @return array
+     *
      * @throws \Doctrine\ORM\NoResultException
      * @throws \Doctrine\ORM\NonUniqueResultException
      */

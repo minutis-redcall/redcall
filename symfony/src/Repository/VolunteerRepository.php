@@ -11,7 +11,6 @@ use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
-use Doctrine\ORM\Query\ResultSetMapping;
 use Doctrine\ORM\QueryBuilder;
 
 /**
@@ -274,45 +273,5 @@ class VolunteerRepository extends BaseRepository
 
             $offset += 1000;
         }
-    }
-
-    public function getEmailAndPhoneNumberMissings()
-    {
-        $sql = "select count(*) as total,
-        (SELECT COUNT(*) FROM volunteer where volunteer.email is null and volunteer.phone_number is not null) email_null,
-        (SELECT COUNT(*) FROM volunteer where volunteer.phone_number is null and volunteer.email is not null) phone_null,
-        (SELECT COUNT(*) FROM volunteer where volunteer.email is null and volunteer.phone_number is null) both_null,       
-        (SELECT COUNT(*) FROM volunteer where volunteer.phone_number is null or volunteer.email is null) one_is_null
-        from volunteer;";
-
-        $rsm = new ResultSetMapping();
-        $rsm->addScalarResult('total', 'total', 'integer')
-            ->addScalarResult('email_null', 'email_null', 'integer')
-            ->addScalarResult('phone_null', 'phone_null', 'integer')
-            ->addScalarResult('both_null', 'both_null', 'integer')
-            ->addScalarResult('one_is_null', 'one_is_null', 'integer');
-
-        return $this->_em
-            ->createNativeQuery($sql, $rsm)
-            ->getSingleResult();
-    }
-
-    /**
-     * Return first and last pegass update for volunteers
-     * @return mixed
-     * @throws \Doctrine\ORM\NoResultException
-     * @throws \Doctrine\ORM\NonUniqueResultException
-     */
-    public function getPegassUpdate()
-    {
-        $sql = "select min(volunteer.last_pegass_update) oldest_update, max(volunteer.last_pegass_update) newest_update from volunteer where volunteer.enabled = 1 and locked=0";
-
-        $rsm = new ResultSetMapping();
-        $rsm->addScalarResult('oldest_update', 'oldest_update', 'datetime')
-            ->addScalarResult('newest_update', 'newest_update', 'datetime');
-
-        return $this->_em
-            ->createNativeQuery($sql, $rsm)
-            ->getSingleResult();
     }
 }

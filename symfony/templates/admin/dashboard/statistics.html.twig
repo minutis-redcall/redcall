@@ -71,13 +71,13 @@
     {% if stats.volunteers is defined and stats.volunteers is not empty %}
         {% set volStats = stats.volunteers %}
         {% set transVars = {'%total_number%' : volStats.total.number,
-                            '%total_percent%': volStats.total.percent,
+                            '%total_percent%': volStats.total.percent|round(2),
                             '%email_number%' : volStats.email.number,
-                            '%email_percent%': volStats.email.percent,
+                            '%email_percent%': volStats.email.percent|round(2),
                             '%phone_number%' : volStats.phone.number,
-                            '%phone_percent%': volStats.phone.percent,
+                            '%phone_percent%': volStats.phone.percent|round(2),
                             '%both_number%'  : volStats.both.number,
-                            '%both_percent%' : volStats.both.percent
+                            '%both_percent%' : volStats.both.percent|round(2)
         } %}
         <p>{{ 'admin.statistics.volunteers.summary' | trans(transVars) | raw}}</p>
         <ul>

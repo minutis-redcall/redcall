@@ -43,7 +43,7 @@ class CampaignController extends BaseController
      */
     public function renderCampaignsTable(): array
     {
-        $ongoing = $this->campaignManager->getAllOpenCampaigns();
+        $ongoing = $this->campaignManager->getAllOpenCampaignsQueryBuilder();
 
         return [
             'ongoing' => [

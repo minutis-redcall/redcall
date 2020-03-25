@@ -184,8 +184,19 @@ class CampaignManager
      *
      * @return QueryBuilder
      */
-    public function getAllOpenCampaigns()
+    public function getAllOpenCampaignsQueryBuilder()
     {
-        return $this->campaignRepository->getActiveCampaigns();
+        return $this->campaignRepository->getActiveCampaignsQueryBuilder();
+    }
+
+    /**
+     * @return int
+     *
+     * @throws \Doctrine\ORM\NoResultException
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function countAllOpenCampaigns(): int
+    {
+        return $this->campaignRepository->countAllOpenCampaigns();
     }
 }

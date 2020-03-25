@@ -3,47 +3,28 @@
 namespace App\Manager;
 
 use App\Entity\Structure;
-use App\Repository\CampaignRepository;
-use App\Repository\CostRepository;
-use App\Repository\MessageRepository;
-use App\Repository\StructureRepository;
-use App\Repository\VolunteerRepository;
+use App\Repository\StatisticsRepository;
 
 class StatisticsManager
 {
+    /**
+     * @var StatisticsRepository
+     */
+    private $statisticsRepository;
 
     /**
-     * @var MessageRepository
+     * @var CampaignManager
      */
-    private $messageRepository;
-    /**
-     * @var CostRepository
-     */
-    private $costRepository;
-    /**
-     * @var CampaignRepository
-     */
-    private $campaignRepository;
-    /**
-     * @var VolunteerRepository
-     */
-    private $volunteerRepository;
-    /**
-     * @var StructureRepository
-     */
-    private $structureRepository;
+    private $campaignManager;
 
-    public function __construct(MessageRepository $messageRepository,
-                                CostRepository $costRepository,
-                                CampaignRepository $campaignRepository,
-                                VolunteerRepository $volunteerRepository,
-                                StructureRepository $structureRepository)
+    /**
+     * @param StatisticsRepository $statisticsRepository
+     * @param CampaignManager      $campaignManager
+     */
+    public function __construct(StatisticsRepository $statisticsRepository, CampaignManager $campaignManager)
     {
-        $this->messageRepository = $messageRepository;
-        $this->costRepository = $costRepository;
-        $this->campaignRepository = $campaignRepository;
-        $this->volunteerRepository = $volunteerRepository;
-        $this->structureRepository = $structureRepository;
+        $this->statisticsRepository = $statisticsRepository;
+        $this->campaignManager = $campaignManager;
     }
 
     /**
@@ -62,11 +43,10 @@ class StatisticsManager
         $statistics = [];
 
         //Campaign section
-        $openCampagins = $this->campaignRepository->getActiveCampaigns();
-        $statistics['openCampaigns'] = count($openCampagins->select('c.id')->getQuery()->getResult());
+        $statistics['openCampaigns'] = $this->campaignManager->countAllOpenCampaigns();
 
         //Messages section
-        $countMessages = $this->messageRepository->getNumberOfSentMessagesByKind($from, $to);
+        $countMessages = $this->statisticsRepository->getNumberOfSentMessagesByKind($from, $to);
 
         $totalCount = 0;
         foreach ($countMessages as $countByType) {
@@ -76,12 +56,12 @@ class StatisticsManager
         $statistics['messagesSent']['totalCount'] = $totalCount;
 
 
-        $statistics['triggeredVolounteers'] = $this->messageRepository->getNumberOfTriggeredVolounteers($from, $to)['volounteers'];
+        $statistics['triggeredVolounteers'] = $this->statisticsRepository->getNumberOfTriggeredVolounteers($from, $to)['volounteers'];
 
-        $statistics['answersReceived'] = $this->messageRepository->getNumberOfAnswersReceived($from, $to)['answers'];
+        $statistics['answersReceived'] = $this->statisticsRepository->getNumberOfAnswersReceived($from, $to)['answers'];
 
         //Costs section
-        $costsByDirection = $this->costRepository->getSumOfCost($from, $to);
+        $costsByDirection = $this->statisticsRepository->getSumOfCost($from, $to);
         if (!empty($costsByDirection)) {
             $totalCost = 0;
 
@@ -94,7 +74,7 @@ class StatisticsManager
         }
 
         //Volunteers Section
-        $volunteersStats = $this->volunteerRepository->getEmailAndPhoneNumberMissings();
+        $volunteersStats = $this->statisticsRepository->getEmailAndPhoneNumberMissings();
         $array = [
             'total' => [
                 'number' => $volunteersStats['one_is_null'],
@@ -116,10 +96,9 @@ class StatisticsManager
         $statistics['volunteers'] = $array;
 
         //Pegass update Section
-        $statistics['pegassUpdates']['structures'] = $this->structureRepository->getPegassUpdate();
-        $statistics['pegassUpdates']['volunteers'] = $this->volunteerRepository->getPegassUpdate();
+        $statistics['pegassUpdates']['structures'] = $this->statisticsRepository->getStructurePegassUpdate();
+        $statistics['pegassUpdates']['volunteers'] = $this->statisticsRepository->getVolunteerPegassUpdate();
 
         return $statistics;
     }
-
 }

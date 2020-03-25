@@ -28,7 +28,7 @@ admin:
     volunteers:
       title: "Volunteers"
       description: "All data are not filtered by period. These are globals."
-      summary: "The RedCall database has <b>%total_number% (%total_percent%%)</b> volunteers who are not necessarily reachable"
+      summary: "The RedCall database has <b>%total_number% (%total_percent%%)</b> volunteers who may not be reachable"
       email: "<b>%email_number% (%email_percent%%)</b> who do not have email"
       phone: "<b>%phone_number% (%phone_percent%%)</b> who do not have phone number"
       both: "<b>%both_number% (%both_percent%%)</b> who have neither"
