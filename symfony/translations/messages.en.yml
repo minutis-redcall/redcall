@@ -35,7 +35,7 @@ admin:
     pegass:
       title: "Pegass updates"
       oldest_update: "Oldest update"
-      newest_update: "Newest update
+      newest_update: "Newest update"
 
 management:
   current_structures: 'You are currently able to trigger the following structures:'
@@ -114,7 +114,7 @@ campaign:
     list: 'List'
     create_full: 'Create a campaign'
     list_full: 'List campaigns'
-    list_amdin: 'List all campaigns'
+    list_admin: 'List all campaigns'
   no_nivol:
     title: 'No nivol bound'
     description: 'Your RedCall account is not bound to your Pegass account, please contact us in order to use the platform.'
