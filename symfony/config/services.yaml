@@ -71,3 +71,8 @@ services:
     public: true
     class: App\Services\Mail
     parent: password_login.base.service
+
+  twig.extension.intl:
+    class: Twig\Extra\Intl\IntlExtension
+    tags:
+      - { name: twig.extension }

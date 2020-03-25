@@ -13,6 +13,7 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class CampaignController extends BaseController
 {
+
     /**
      * @var CampaignManager
      */
@@ -26,18 +27,23 @@ class CampaignController extends BaseController
     /**
      * @Route(name="index")
      * @Template("admin/campaign/index.html.twig")
+     *
+     * @return array
      */
     public function index(): array
     {
         return [];
     }
 
+
     /**
      * @Template("admin/campaign/table.html.twig")
+     *
+     * @return array
      */
     public function renderCampaignsTable(): array
     {
-        $ongoing = $this->campaignManager->getAllOpenCampaigns();
+        $ongoing = $this->campaignManager->getAllOpenCampaignsQueryBuilder();
 
         return [
             'ongoing' => [

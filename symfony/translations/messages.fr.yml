@@ -8,6 +8,34 @@ admin:
     title: 'Connexions entre les utilisateurs de RedCall et la base de données Pegass'
     structures: 'Mise à jour des structures pour %name%'
     create_user: 'Ajouter un nouvel utilisateur'
+  dashboard:
+    title: Tableau de bord
+  statistics:
+    no_stats: "Aucune statistique à afficher pour cette période."
+    campaign:
+      title: "Déclenchements"
+      stats: "déclenchements ont été ouverts sur cette periode."
+    messages:
+      title: "Messages"
+      messages_sent: "<b>%stat%</b> messages ont été envoyés dont"
+      to_volunteers: "à <b>%volunteers%</b> bénévoles."
+      answers_received: "<b>%answers%</b> réponses ont été reçues."
+    costs:
+      title: "Coûts"
+      total: "Le coût total pour la période est de "
+      received: "pour la réception."
+      sent: "pour l'envoi."
+    volunteers:
+      title: "Volontaires"
+      description: "Toutes les données ne sont pas filtrées par une période."
+      summary: "La base de données RedCall contient <b>%total_number% (%total_percent%%)</b> bénévoles qui ne sont pas forcément joignables"
+      email: "<b>%email_number% (%email_percent%%)</b> qui n’ont pas d’email"
+      phone: "<b>%phone_number% (%phone_percent%%)</b> qui n’ont pas de numéro de téléphone"
+      both: "<b>%both_number% (%both_percent%%)</b> qui n’ont ni l’un ni l’autre"
+    pegass:
+      title: "Mise à jour Pegass"
+      oldest_update: "Mise à jour la plus ancienne"
+      newest_update: "Mise à jour la plus récente"
 
 management:
   current_structures: 'Vous pouvez actuellement déclencher les structures suivantes :'
@@ -80,7 +108,7 @@ campaign:
     list: 'Liste'
     create_full: 'Créer un déclenchement'
     list_full: 'Liste des déclenchements'
-    list_amdin: 'Liste de tous les déclenchements'
+    list_admin: 'Liste de tous les déclenchements'
   no_nivol:
     title: 'Pas de Nivol relié'
     description: 'Votre compte RedCall n''est pas relié à votre compte Pegass, merci de nous contacter afin de pouvoir utiliser la plateforme.'
@@ -329,3 +357,15 @@ infos:
   context_7: 'Ce que le responsable voit:'
   context_8: 'Une fois que les équipages sont formés, le responsable peut envoyer un PDF contenant toutes les bonnes informations a sa direction territoriale.'
   context_9: 'L''application n''est pour le moment qu''en béta test par quelques unités locales, mais nous vous tiendrons informés de son déploiement au travers de Minutis.'
+
+title:
+  costs: "Coûts"
+  messages: "Messages"
+  campaigns: "Déclenchements"
+
+label:
+  and: "et"
+  from: "Du"
+  to: "Au"
+  volunteers: "volontaires"
+  structures: "structures"

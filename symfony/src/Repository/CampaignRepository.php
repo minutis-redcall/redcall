@@ -118,10 +118,24 @@ class CampaignRepository extends BaseRepository
      *
      * @return QueryBuilder
      */
-    public function getActiveCampaigns()
+    public function getActiveCampaignsQueryBuilder(): QueryBuilder
     {
         return $this->createQueryBuilder('c')
             ->where('c.active = :active')
             ->setParameter('active', true);
+    }
+
+    /**
+     * @return int
+     *
+     * @throws \Doctrine\ORM\NoResultException
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function countAllOpenCampaigns(): int
+    {
+        return $this->getActiveCampaignsQueryBuilder()
+            ->select('COUNT(c.id)')
+            ->getQuery()
+            ->getSingleScalarResult();
     }
 }

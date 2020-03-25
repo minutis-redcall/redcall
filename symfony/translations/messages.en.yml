@@ -8,6 +8,34 @@ admin:
     title: 'Bindings between RedCall users and Pegass database'
     structures: 'Update structures for %name%'
     create_user: 'Add a new user'
+  dashboard:
+    title: Dashboard
+  statistics:
+    no_stats: "No statistics for this section in the selected period."
+    campaign:
+      title: "Campaigns"
+      stats: "campaigns were opened on this period."
+    messages:
+      title: "Messages"
+      messages_sent: "<b>%stat%</b> messages were sent"
+      to_volunteers: "to <b>%volunteers%</b> volunteers."
+      answers_received: "<b>%answers%</b> answers were received."
+    costs:
+      title: "Costs"
+      total: "The total costs for the period is "
+      received: "for reception."
+      sent: "for sending."
+    volunteers:
+      title: "Volunteers"
+      description: "All data are not filtered by period. These are globals."
+      summary: "The RedCall database has <b>%total_number% (%total_percent%%)</b> volunteers who may not be reachable"
+      email: "<b>%email_number% (%email_percent%%)</b> who do not have email"
+      phone: "<b>%phone_number% (%phone_percent%%)</b> who do not have phone number"
+      both: "<b>%both_number% (%both_percent%%)</b> who have neither"
+    pegass:
+      title: "Pegass updates"
+      oldest_update: "Oldest update"
+      newest_update: "Newest update"
 
 management:
   current_structures: 'You are currently able to trigger the following structures:'
@@ -86,7 +114,7 @@ campaign:
     list: 'List'
     create_full: 'Create a campaign'
     list_full: 'List campaigns'
-    list_amdin: 'List all campaigns'
+    list_admin: 'List all campaigns'
   no_nivol:
     title: 'No nivol bound'
     description: 'Your RedCall account is not bound to your Pegass account, please contact us in order to use the platform.'
@@ -330,3 +358,15 @@ infos:
   context_7: 'What the responsible sees:'
   context_8: 'Once teams are complete, responsible can send a PDF containing all relevant information to his territorial direction.'
   context_9: 'The application is currently being beta-tested by a few structures, but we''ll keep you aware of its deployment through Minutis.'
+
+title:
+  costs: "Costs"
+  messages: "Messages"
+  campaigns: "Campaigns"
+
+label:
+  and: "and"
+  from: "From"
+  to: "To"
+  volunteers: "volunteers"
+  structures: "structures"

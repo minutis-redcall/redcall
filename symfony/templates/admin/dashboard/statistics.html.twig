@@ -1,0 +1,106 @@
+{% extends 'base.html.twig' %}
+
+{% block menu %}{% endblock %}
+
+
+{% block body %}
+    <h1>{{ 'admin.dashboard.title' | trans }}</h1>
+
+    <form method="get">
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label>{{ 'label.from' | trans }}</label>
+                <input class="form-control" name="from" type="date" value="{{ from | date('Y-m-d') }}">
+            </div>
+            <div class="form-group col-md-6">
+                <label>{{ 'label.to' | trans }}</label>
+                <input class="form-control" name="to" type="date" value="{{ to | date('Y-m-d') }}">
+            </div>
+        </div>
+        <div class="form-group">
+            <input class="btn btn-primary" type="submit" value="{{ 'button.submit' | trans }}"/>
+        </div>
+    </form>
+    <br>
+
+    {# CAMPAIGNS SECTION #}
+    <h2>{{ 'admin.statistics.campaign.title' | trans }}</h2>
+    {% if stats.openCampaigns is defined %}
+        <p><b>{{ stats.openCampaigns }}</b> {{ 'admin.statistics.campaign.stats' | trans }}</p>
+    {% else %}
+        <p>{{ 'admin.statistics.no_stats' | trans }}</p>
+    {% endif %}
+    <br>
+
+    {# MESSAGES SECTION #}
+    <h2>{{ 'admin.statistics.messages.title' | trans }}</h2>
+    {% if stats.messagesSent.types is defined %}
+        <p>{{ 'admin.statistics.messages.messages_sent' | trans({'%stat%' :stats.messagesSent.totalCount}) | raw }}
+            {% for type, count in stats.messagesSent.types %}
+                {% if loop.index0 > 0 %}
+                    {{ 'label.and' | trans }}
+                {% endif %}
+                <b>{{ count }}  {{ type }}</b>
+            {% endfor %} {{ 'admin.statistics.messages.to_volunteers' | trans({'%volunteers%': stats.triggeredVolounteers}) | raw }}
+        </p>
+        <p>{{ 'admin.statistics.messages.answers_received' | trans({'%answers%': stats.answersReceived}) | raw }}</p>
+    {% else %}
+        <p>{{ 'admin.statistics.no_stats' | trans }}</p>
+    {% endif %}
+    <br>
+
+    {# COSTS SECTION #}
+    <h2>{{ 'admin.statistics.costs.title' | trans }}</h2>
+    {% if stats.costs is defined and stats.costs is not empty %}
+        <p>{{ 'admin.statistics.costs.total' | trans() | raw }}
+            <b>{{ stats.costs.total | format_currency(stats.costs.currency) }}:</b></p>
+        <ul>
+            <li>
+                <b>{{ stats.costs.types.received | format_currency(stats.costs.currency) }}</b> {{ 'admin.statistics.costs.received' | trans }}
+            </li>
+            <li><b>{{ stats.costs.types.sent | format_currency(stats.costs.currency) }}</b> pour l'envoi.</li>
+        </ul>
+    {% else %}
+        <p>{{ 'admin.statistics.no_stats' | trans }}</p>
+    {% endif %}
+    <br>
+
+
+    {# VOLOUNTEERS SECTION #}
+    <h2>{{ 'admin.statistics.volunteers.title' | trans }}</h2>
+    {% if stats.volunteers is defined and stats.volunteers is not empty %}
+        {% set volStats = stats.volunteers %}
+        {% set transVars = {'%total_number%' : volStats.total.number,
+                            '%total_percent%': volStats.total.percent|round(2),
+                            '%email_number%' : volStats.email.number,
+                            '%email_percent%': volStats.email.percent|round(2),
+                            '%phone_number%' : volStats.phone.number,
+                            '%phone_percent%': volStats.phone.percent|round(2),
+                            '%both_number%'  : volStats.both.number,
+                            '%both_percent%' : volStats.both.percent|round(2)
+        } %}
+        <p>{{ 'admin.statistics.volunteers.summary' | trans(transVars) | raw}}</p>
+        <ul>
+            <li>{{ 'admin.statistics.volunteers.email' | trans(transVars) | raw }}</li>
+            <li>{{ 'admin.statistics.volunteers.phone' | trans(transVars) | raw }}</li>
+            <li>{{ 'admin.statistics.volunteers.both' | trans(transVars) | raw }}</li>
+        </ul>
+    {% else %}
+        <p>{{ 'admin.statistics.no_stats' | trans }}</p>
+    {% endif %}
+    <br>
+
+    {# PEGASS UPDATE SECTION #}
+    <h2>{{ 'admin.statistics.pegass.title' | trans }}</h2>
+    <p>{{ 'label.volunteers' | trans | capitalize }}</p>
+    <ul>
+        <li>{{ 'admin.statistics.pegass.oldest_update' | trans}} {{ stats.pegassUpdates.volunteers.oldest_update | date('d/m/Y h:i') }}</li>
+        <li>{{ 'admin.statistics.pegass.newest_update' | trans}} {{ stats.pegassUpdates.volunteers.newest_update | date('d/m/Y h:i') }}</li>
+    </ul>
+    <br>
+    <p>{{ 'label.structures' | trans | capitalize }}</p>
+    <ul>
+        <li>{{ 'admin.statistics.pegass.oldest_update' | trans}} {{ stats.pegassUpdates.structures.oldest_update | date('d/m/Y h:i') }}</li>
+        <li>{{ 'admin.statistics.pegass.newest_update' | trans}} {{ stats.pegassUpdates.structures.newest_update | date('d/m/Y h:i') }}</li>
+    </ul>
+{% endblock %}

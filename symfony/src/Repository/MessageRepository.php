@@ -14,7 +14,6 @@ use App\Tools\Random;
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\ORM\NonUniqueResultException;
-use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 
@@ -154,7 +153,6 @@ class MessageRepository extends BaseRepository
             if (null === $this->findOneBy([$column => $code])) {
                 break;
             }
-
         } while (true);
 
         return $code;
@@ -216,8 +214,8 @@ class MessageRepository extends BaseRepository
 
     /**
      * @return Message|null
-     *
      * @throws NonUniqueResultException
+     * @throws \Doctrine\ORM\NoResultException
      */
     public function getLatestMessageUpdated(): ?Message
     {

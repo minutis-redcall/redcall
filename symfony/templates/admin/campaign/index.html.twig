@@ -1,7 +1,7 @@
 {% extends 'base.html.twig' %}
 
-{% block body %}
 
+{% block body %}
     <div class="row justify-content-md-center">
         <div class="col-md-12">
             {{ render(controller('App\\Controller\\Admin\\CampaignController::renderCampaignsTable')) }}
@@ -16,5 +16,4 @@
 
         <br/><br/>
     </div>
-
 {% endblock %}
