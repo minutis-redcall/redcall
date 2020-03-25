@@ -14,7 +14,8 @@ admin:
     no_stats: "No statistics for this section in the selected period."
     campaign:
       title: "Campaigns"
-      stats: "campaigns were opened on this period."
+      stats: "campaigns are still open right now."
+      period: "In the period, <b>%created%</b> campaigns were open, including <b>%active%</b> that are still active."
     messages:
       title: "Messages"
       messages_sent: "<b>%stat%</b> messages were sent"

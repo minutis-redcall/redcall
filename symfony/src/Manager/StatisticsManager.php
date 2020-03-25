@@ -44,6 +44,7 @@ class StatisticsManager
 
         //Campaign section
         $statistics['openCampaigns'] = $this->campaignManager->countAllOpenCampaigns();
+        $statistics['campaignsPeriod'] = $this->statisticsRepository->getNumberOfCampaigns($from, $to);
 
         //Messages section
         $countMessages = $this->statisticsRepository->getNumberOfSentMessagesByKind($from, $to);
