@@ -31,6 +31,24 @@
             <a href="{{ path('list_campaigns') }}"
                class="text-lg-center large-button btn btn-secondary">{{ 'campaign.titles.list_full'|trans }}</a>
 
+            <br/><br/><br/>
+
+            {% if issues.phones or issues.emails %}
+                <div class="alert alert-warning">
+                    <p>⚠️</p>
+                    <hr/>
+                    <div class="text-left">
+                        <p>{{ 'issues.not_reachable'|trans }}️</p>
+                        <p>{{ 'issues.phones'|trans({'%nbr%': issues.phones}) }}️</p>
+                        <p>{{ 'issues.emails'|trans({'%nbr%': issues.phones}) }}️</p>
+                        <p>
+                            <a href="#">{{ 'issues.list'|trans }}</a>
+                        </p>
+                    </div>
+                </div>
+            {% endif %}
+
+
         {% endif %}
 
     </div>

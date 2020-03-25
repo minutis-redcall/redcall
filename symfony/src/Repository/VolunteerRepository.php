@@ -274,4 +274,28 @@ class VolunteerRepository extends BaseRepository
             $offset += 1000;
         }
     }
+
+    /**
+     * @param UserInformation $user
+     *
+     * @return array
+     */
+    public function findIssues(UserInformation $user): array
+    {
+        $qb = $this->createQueryBuilder('v');
+
+        return $qb->join('v.structures', 's')
+            ->join('s.users', 'u')
+            ->where('v.enabled = true')
+            ->andWhere('u.id = :user')
+            ->andWhere(
+                $qb->expr()->orX(
+                    'v.email IS NULL or v.email = \'\'',
+                    'v.phoneNumber IS NULL or v.phoneNumber = \'\''
+                )
+            )
+            ->setParameter('user', $user)
+            ->getQuery()
+            ->getResult();
+    }
 }

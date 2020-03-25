@@ -143,9 +143,40 @@ class VolunteerManager
     /**
      * @param callable $callback
      * @param bool     $onlyEnabled
+     *
+     * @throws \Doctrine\Common\Persistence\Mapping\MappingException
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function foreach(callable $callback, bool $onlyEnabled = true)
     {
         $this->volunteerRepository->foreach($callback, $onlyEnabled);
+    }
+
+    /**
+     * @return array
+     */
+    public function findIssues(): array
+    {
+        $volunteers = $this->volunteerRepository->findIssues(
+            $this->userInformationManager->findForCurrentUser()
+        );
+
+        $issues = [
+            'phones' => 0,
+            'emails' => 0,
+        ];
+
+        foreach ($volunteers as $volunteer) {
+            /** @var Volunteer $volunteer */
+            if (!$volunteer->getPhoneNumber()) {
+                $issues['phones']++;
+            }
+            if (!$volunteer->getEmail()) {
+                $issues['emails']++;
+            }
+        }
+
+        return $issues;
     }
 }

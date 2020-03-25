@@ -68,6 +68,7 @@ minutis:
   back: Retourner sur Minutis
 
 base:
+  home: Accueil
   documentation: Documentation
   pager:
     prev: '←'
@@ -104,9 +105,6 @@ base:
 
 campaign:
   titles:
-    campaign: 'Déclenchement :'
-    create: 'Créer'
-    list: 'Liste'
     create_full: 'Créer un déclenchement'
     list_full: 'Liste des déclenchements'
     list_admin: 'Liste de tous les déclenchements'
@@ -138,6 +136,12 @@ modal:
   change_color: Changer de couleur...
   change_campaign_label: Changer de nom...
   answers: Réponses
+
+issues:
+  not_reachable: 'Des bénévoles de vos structures de rattachement ne sont pas déclenchables :'
+  phones: '- %nbr% n''ont pas de numéro de téléphone'
+  emails: '- %nbr% n''ont pas d''email'
+  list: 'Voir la liste des problèmes'
 
 campaign_status:
   communication_tabs: Communications

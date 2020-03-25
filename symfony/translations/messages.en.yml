@@ -68,6 +68,7 @@ minutis:
   back: Go back to Minutis
 
 base:
+  home: Home
   documentation: Documentation
   pager:
     prev: '←'
@@ -110,9 +111,6 @@ modal:
 
 campaign:
   titles:
-    campaign: 'Campaign:'
-    create: 'Create'
-    list: 'List'
     create_full: 'Create a campaign'
     list_full: 'List campaigns'
     list_admin: 'List all campaigns'
@@ -139,6 +137,12 @@ campaign:
     type: Color
     created_at: Creation date
   cannot_reopen: 'Impossible to reopen the campaign: since it was closed, one or several volunteers were triggered and prefix used for their answers was reused.'
+
+issues:
+  not_reachable: 'Some volunteers from your assigned structures are not reachable:'
+  phones: '- %nbr% do not have a phone number'
+  emails: '- %nbr% do not have an email'
+  list: 'See the list of issues'
 
 campaign_status:
   communication_tabs: Communications
