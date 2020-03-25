@@ -98,14 +98,14 @@
     <h2>{{ 'admin.statistics.pegass.title' | trans }}</h2>
     <p>{{ 'label.volunteers' | trans | capitalize }}</p>
     <ul>
-        <li>{{ 'admin.statistics.pegass.oldest_update' | trans}} {{ stats.pegassUpdates.volunteers.oldest_update | date('d/m/Y h:i') }}</li>
-        <li>{{ 'admin.statistics.pegass.newest_update' | trans}} {{ stats.pegassUpdates.volunteers.newest_update | date('d/m/Y h:i') }}</li>
+        <li>{{ 'admin.statistics.pegass.oldest_update' | trans}} {{ stats.pegassUpdates.volunteers.oldest_update | date('d/m/Y H:i') }} UTC</li>
+        <li>{{ 'admin.statistics.pegass.newest_update' | trans}} {{ stats.pegassUpdates.volunteers.newest_update | date('d/m/Y H:i') }} UTC</li>
     </ul>
     <br>
     <p>{{ 'label.structures' | trans | capitalize }}</p>
     <ul>
-        <li>{{ 'admin.statistics.pegass.oldest_update' | trans}} {{ stats.pegassUpdates.structures.oldest_update | date('d/m/Y h:i') }}</li>
-        <li>{{ 'admin.statistics.pegass.newest_update' | trans}} {{ stats.pegassUpdates.structures.newest_update | date('d/m/Y h:i') }}</li>
+        <li>{{ 'admin.statistics.pegass.oldest_update' | trans}} {{ stats.pegassUpdates.structures.oldest_update | date('d/m/Y H:i') }} UTC</li>
+        <li>{{ 'admin.statistics.pegass.newest_update' | trans}} {{ stats.pegassUpdates.structures.newest_update | date('d/m/Y H:i') }} UTC</li>
     </ul>
 
     <div class="text-center">

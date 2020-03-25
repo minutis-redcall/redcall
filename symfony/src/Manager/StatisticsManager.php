@@ -64,8 +64,8 @@ class StatisticsManager
         //Costs section
         $costsByDirection = $this->statisticsRepository->getSumOfCost($from, $to);
         if (!empty($costsByDirection)) {
+            // TODO Wrong, currencies are mixed
             $totalCost = 0;
-
             foreach ($costsByDirection as $cost) {
                 $totalCost += abs($cost['cost']);
                 $statistics['costs']['types'][$cost['direction']] = abs($cost['cost']);
