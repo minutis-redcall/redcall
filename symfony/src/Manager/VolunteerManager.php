@@ -158,7 +158,7 @@ class VolunteerManager
      */
     public function findIssues(): array
     {
-        $volunteers = $this->volunteerRepository->findIssues(
+        $volunteers = $this->volunteerRepository->getIssues(
             $this->userInformationManager->findForCurrentUser()
         );
 
@@ -178,5 +178,15 @@ class VolunteerManager
         }
 
         return $issues;
+    }
+
+    /**
+     * @return array
+     */
+    public function getIssues(): array
+    {
+        return $this->volunteerRepository->getIssues(
+            $this->userInformationManager->findForCurrentUser()
+        );
     }
 }

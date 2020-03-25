@@ -20,8 +20,11 @@
     </form>
     <br>
 
+    <h2>{{ from|date('d/m/Y') }} - {{ to|date('d/m/Y') }}</h2>
+    <hr/>
+
     {# CAMPAIGNS SECTION #}
-    <h2>{{ 'admin.statistics.campaign.title' | trans }}</h2>
+    <h4>{{ 'admin.statistics.campaign.title' | trans }}</h4>
     {% if stats.openCampaigns is defined %}
         <p><b>{{ stats.openCampaigns }}</b> {{ 'admin.statistics.campaign.stats' | trans }}</p>
     {% else %}
@@ -37,7 +40,7 @@
     <br>
 
     {# MESSAGES SECTION #}
-    <h2>{{ 'admin.statistics.messages.title' | trans }}</h2>
+    <h4>{{ 'admin.statistics.messages.title' | trans }}</h4>
     {% if stats.messagesSent.types is defined %}
         <p>{{ 'admin.statistics.messages.messages_sent' | trans({'%stat%' :stats.messagesSent.totalCount}) | raw }}
             {% for type, count in stats.messagesSent.types %}
@@ -54,7 +57,7 @@
     <br>
 
     {# COSTS SECTION #}
-    <h2>{{ 'admin.statistics.costs.title' | trans }}</h2>
+    <h4>{{ 'admin.statistics.costs.title' | trans }}</h4>
     {% if stats.costs is defined and stats.costs is not empty %}
         <p>{{ 'admin.statistics.costs.total' | trans() | raw }}
             <b>{{ stats.costs.total | format_currency(stats.costs.currency) }}:</b></p>
@@ -71,7 +74,7 @@
 
 
     {# VOLOUNTEERS SECTION #}
-    <h2>{{ 'admin.statistics.volunteers.title' | trans }}</h2>
+    <h4>{{ 'admin.statistics.volunteers.title' | trans }}</h4>
     {% if stats.volunteers is defined and stats.volunteers is not empty %}
         {% set volStats = stats.volunteers %}
         {% set transVars = {'%total_number%' : volStats.total.number,
@@ -95,7 +98,7 @@
     <br>
 
     {# PEGASS UPDATE SECTION #}
-    <h2>{{ 'admin.statistics.pegass.title' | trans }}</h2>
+    <h4>{{ 'admin.statistics.pegass.title' | trans }}</h4>
     <p>{{ 'label.volunteers' | trans | capitalize }}</p>
     <ul>
         <li>{{ 'admin.statistics.pegass.oldest_update' | trans}} {{ stats.pegassUpdates.volunteers.oldest_update | date('d/m/Y H:i') }} UTC</li>

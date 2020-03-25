@@ -280,7 +280,7 @@ class VolunteerRepository extends BaseRepository
      *
      * @return array
      */
-    public function findIssues(UserInformation $user): array
+    public function getIssues(UserInformation $user): array
     {
         $qb = $this->createQueryBuilder('v');
 

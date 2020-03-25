@@ -139,6 +139,14 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
             throw new BadCredentialsException();
         }
 
+        if (!$volunteer->isEnabled()) {
+            $this->logger->warning('Minutis authenticator: nivol associated to a disabled volunteer', [
+                'nivol' => $nivol,
+            ]);
+
+            throw new BadCredentialsException();
+        }
+
         // Will be used by onAuthenticationFailure handler
         $this->volunteer = $volunteer;
 

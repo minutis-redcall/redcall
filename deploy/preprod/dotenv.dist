@@ -31,6 +31,8 @@ MAPBOX_API_KEY=some key
 PEGASS_LOGIN=yourlogin
 PEGASS_PASSWORD=yourpassword
 
+GAIA_URL='https://gaia.croix-rouge.fr/crf-benevoles/#contact/NIVOL/%nivol%'
+
 GCP_PROJECT_NAME=project-name
 GCP_BASTION_INSTANCE=bastion
 

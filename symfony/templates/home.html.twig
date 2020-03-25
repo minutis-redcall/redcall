@@ -40,9 +40,9 @@
                     <div class="text-left">
                         <p>{{ 'issues.not_reachable'|trans }}️</p>
                         <p>{{ 'issues.phones'|trans({'%nbr%': issues.phones}) }}️</p>
-                        <p>{{ 'issues.emails'|trans({'%nbr%': issues.phones}) }}️</p>
+                        <p>{{ 'issues.emails'|trans({'%nbr%': issues.emails}) }}️</p>
                         <p>
-                            <a href="#">{{ 'issues.list'|trans }}</a>
+                            <a href="{{ path('management_issues_index') }}">{{ 'issues.list'|trans }}</a>
                         </p>
                     </div>
                 </div>

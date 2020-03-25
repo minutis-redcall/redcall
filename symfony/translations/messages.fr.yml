@@ -24,8 +24,8 @@ admin:
     costs:
       title: "Coûts"
       total: "Le coût total pour la période est de "
-      received: "pour la réception."
-      sent: "pour l'envoi."
+      received: "pour la réception"
+      sent: "pour l'envoi"
     volunteers:
       title: "Volontaires"
       description: "Toutes les données ne sont pas filtrées par une période."
@@ -138,10 +138,17 @@ modal:
   answers: Réponses
 
 issues:
-  not_reachable: 'Des bénévoles de vos structures de rattachement ne sont pas déclenchables :'
+  not_reachable: 'Des bénévoles de vos structures d''action ne sont pas déclenchables :'
   phones: '- %nbr% n''ont pas de numéro de téléphone'
   emails: '- %nbr% n''ont pas d''email'
   list: 'Voir la liste des problèmes'
+  details:
+    title: 'Numéros de téléphones et emails manquants'
+    info1: 'RedCall ne peut fonctionner que si les données de contact de nos bénévoles sont correctes et à jour.'
+    info2: 'Cette page vous montre les bénévoles n''ayant pas de numéro de téléphone ou/et d''email afin que vous puissiez les saisir.'
+    info3: 'Attention, même si un bénévole possède un numéro et un email, rien ne garantit qu''ils soient à jour sur la base de données Gaia.'
+    info4: 'Dès que vous le pourrez, invitez les membres de votre structure à consulter leurs informations de contact sur Gaia, notamment leur "email préféré" et "numéro de téléphone préféré" afin d''augmenter vos chances de déclencher un maximum de monde.'
+    open: 'ouvrir dans Gaia'
 
 campaign_status:
   communication_tabs: Communications

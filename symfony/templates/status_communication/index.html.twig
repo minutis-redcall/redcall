@@ -45,6 +45,11 @@
                         <li class="nav-item">
                             <a id="{{ communication.id }}-tab" data-toggle="tab" class="nav-link {{ key ?: 'active' }}"
                                href="#tab-{{ communication.id }}" role="tab" aria-controls="{{ communication.id }}">
+                                {% if communication.type == constant('App\\Entity\\Communication::TYPE_SMS') %}
+                                    ☎️
+                                {% else %}
+                                    📧
+                                {% endif %}
                                 {% if communication.label %}
                                     {{ communication.label }}
                                 {% else %}
@@ -72,6 +77,11 @@
                     {# Communication title #}
                     {# -------------------------------------------------------------------------------- #}
                     <h3 onclick="$('#change-communication-label-{{ communication.id }}').modal();">
+                        {% if communication.type == constant('App\\Entity\\Communication::TYPE_SMS') %}
+                            ☎️
+                        {% else %}
+                            📧
+                        {% endif %}
                         {% if communication.label %}
                             {{ communication.label }}
                         {% else %}

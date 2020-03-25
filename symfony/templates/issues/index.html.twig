@@ -1,0 +1,107 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    <h1>{{ 'issues.details.title'|trans }}</h1>
+
+    <p>
+        {{ 'issues.details.info1'|trans }}
+        {{ 'issues.details.info2'|trans }}
+    </p>
+    <br/>
+    <p>
+        {{ 'issues.details.info3'|trans }}
+        {{ 'issues.details.info4'|trans }}
+    </p>
+
+    <br/>
+
+    <table class="table">
+        <tbody>
+        {% for volunteer in issues %}
+            <tr>
+                <td>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="h4">
+                                {% if volunteer.enabled %}
+                                    {{ volunteer.displayName }}
+                                {% else %}
+                                    <span style="color:grey;">{{ volunteer.displayName }}</span>
+                                {% endif %}
+                                {% if volunteer.minor %}
+                                    <span title="{{ 'manage_volunteers.form.minor'|trans }}">🐻</span>
+                                {% endif %}
+                            </div>
+                            <div>
+                                {% if volunteer.structures.count %}
+                                    <strong>{{ volunteer.structures.get(0).name }}</strong>
+                                    {% if volunteer.structures.count > 1 %}
+                                        {{ 'manage_volunteers.others'|trans({'%count%': volunteer.structures.count - 1}) }}
+                                    {% endif %}
+                                {% endif %}
+                            </div>
+                            <div>
+                                {% for skill in volunteer.tagsView %}
+                                    {{ ('tag.shortcuts.' ~ skill)|trans }}{% if not loop.last %},{% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            #{{ volunteer.nivol }} (<a target="_blank" href="{{ gaia|replace({'%nivol%': volunteer.identifier}) }}">{{ 'issues.details.open'|trans }}</a>)
+                            <br/>
+                            <p>
+                                ☎️ <input id="phone-{{ volunteer.nivol }}" type="text" style="width: 80%;" value="{{ volunteer.phoneNumber }}" />
+                            </p>
+                            <p>
+                                📧️ <input id="email-{{ volunteer.nivol }}" type="text" style="width: 80%;" value="{{ volunteer.email }}" />
+                            </p>
+                            <p class="text-center">
+                                <a href="#"
+                                   data-href="{{ path('management_issues_save', {csrf: csrf_token('issues'), nivol: volunteer.nivol}) }}"
+                                   data-nivol="{{ volunteer.nivol }}"
+                                   class="save-now btn btn-sm btn-secondary">{{ 'base.button.save'|trans }}</a>
+                                &nbsp;
+                                <span id="result-{{ volunteer.nivol }}"></span>
+                            </p>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <div class="text-center">
+        <br/><br/><br/>
+
+        <a href="{{ path('home') }}"
+           class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+
+        <br/><br/>
+    </div>
+
+    <script type="text/javascript">
+
+        $('.save-now').click(function(e) {
+            e.preventDefault();
+
+            var that = $(this);
+            var nivol = that.data('nivol');
+            var href = that.data('href');
+
+            $.post(href, {
+                phone: $('#phone-' + nivol).val(),
+                email: $('#email-' + nivol).val(),
+            }, function (data) {
+                if (data.success) {
+                    $('#result-' + nivol).html('✅');
+                } else {
+                    $('#result-' + nivol).html('❌');
+                }
+            });
+        });
+
+    </script>
+
+{% endblock %}
