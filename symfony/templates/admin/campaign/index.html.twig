@@ -7,4 +7,13 @@
             {{ render(controller('App\\Controller\\Admin\\CampaignController::renderCampaignsTable')) }}
         </div>
     </div>
+
+    <div class="text-center">
+        <br/><br/>
+
+        <a href="{{ path('admin_home') }}"
+           class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+
+        <br/><br/>
+    </div>
 {% endblock %}
