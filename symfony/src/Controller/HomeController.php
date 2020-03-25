@@ -4,21 +4,32 @@ namespace App\Controller;
 
 use App\Entity\Volunteer;
 use App\Manager\LocaleManager;
+use App\Manager\VolunteerManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Routing\Annotation\Route;
 
 class HomeController extends Controller
 {
+    /**
+     * @var LocaleManager
+     */
     private $locale;
+
+    /**
+     * @var VolunteerManager
+     */
+    private $volunteerManager;
 
     /**
      * HomeController constructor.
      *
      * @param LocaleManager $locale
+     * @param VolunteerManager $volunteerManager
      */
-    public function __construct(LocaleManager $locale)
+    public function __construct(LocaleManager $locale, VolunteerManager $volunteerManager)
     {
         $this->locale = $locale;
+        $this->volunteerManager = $volunteerManager;
     }
 
     /**
@@ -30,7 +41,9 @@ class HomeController extends Controller
             return $this->redirectToRoute('password_login_not_trusted');
         }
 
-        return $this->render('home.html.twig');
+        return $this->render('home.html.twig', [
+            'issues' => $this->volunteerManager->findIssues(),
+        ]);
     }
 
     /**

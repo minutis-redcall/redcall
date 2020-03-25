@@ -65,14 +65,14 @@
                 {% if app.user|default(false) %}
 
                     {% if app.user.trusted %}
-
-                        <strong>{{ 'campaign.titles.campaign'|trans }}</strong>
+                        <a href="{{ path('home') }}"
+                           class="btn btn-secondary text-sm-center">{{ 'base.home'|trans }}</a>
 
                         <a href="{{ path('create_campaign') }}"
-                           class="btn btn-secondary text-sm-center">{{ 'campaign.titles.create'|trans }}</a>
+                           class="btn btn-secondary text-sm-center">{{ 'campaign.titles.create_full'|trans }}</a>
 
                         <a href="{{ path('list_campaigns') }}"
-                           class="btn btn-secondary text-sm-center">{{ 'campaign.titles.list'|trans }}</a>
+                           class="btn btn-secondary text-sm-center">{{ 'campaign.titles.list_full'|trans }}</a>
 
                     {% endif %}
 

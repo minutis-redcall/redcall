@@ -62,10 +62,18 @@ class FixturesManager
         }
     }
 
-    public function createStructure(string $name, ?int $parent, int $numberOfVolunteers, bool $bindToUser)
+    /**
+     * @param string   $name
+     * @param int|null $parent
+     * @param int      $numberOfVolunteers
+     * @param bool     $bindToUser
+     *
+     * @return Structure
+     */
+    public function createStructure(string $name, ?int $parent, int $numberOfVolunteers, bool $bindToUser): Structure
     {
-        if ($this->structureManager->findOneByName($name)) {
-            return;
+        if ($structure = $this->structureManager->findOneByName($name)) {
+            return $structure;
         }
 
         $structure = new Structure();
@@ -87,28 +95,34 @@ class FixturesManager
             $this->userInformationManager->save($me);
         }
 
+        return $structure;
     }
 
     /**
      * @param int      $numberOfVolunteers
      * @param int|null $structureId
+     *
+     * @return array
      */
-    public function createVolunteers(int $numberOfVolunteers, ?int $structureId)
+    public function createVolunteers(int $numberOfVolunteers, ?int $structureId): array
     {
         if ($structureId) {
             $structure = $this->structureManager->find($structureId);
             if (!$structure) {
-                return;
+                return [];
             }
         }
 
+        $volunteers = [];
         for ($i = 0; $i < $numberOfVolunteers; $i++) {
             $volunteer = $this->createVolunteer();
             if ($structureId) {
                 $volunteer->addStructure($structure);
-                $this->volunteerManager->save($volunteer);
+                $volunteers[] = $this->volunteerManager->save($volunteer);
             }
         }
+
+        return $volunteers;
     }
 
     /**

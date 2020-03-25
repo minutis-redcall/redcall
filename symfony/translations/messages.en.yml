@@ -24,8 +24,8 @@ admin:
     costs:
       title: "Costs"
       total: "The total costs for the period is "
-      received: "for reception."
-      sent: "for sending."
+      received: "for receiving"
+      sent: "for sending"
     volunteers:
       title: "Volunteers"
       description: "All data are not filtered by period. These are globals."
@@ -68,6 +68,7 @@ minutis:
   back: Go back to Minutis
 
 base:
+  home: Home
   documentation: Documentation
   pager:
     prev: '←'
@@ -110,9 +111,6 @@ modal:
 
 campaign:
   titles:
-    campaign: 'Campaign:'
-    create: 'Create'
-    list: 'List'
     create_full: 'Create a campaign'
     list_full: 'List campaigns'
     list_admin: 'List all campaigns'
@@ -139,6 +137,19 @@ campaign:
     type: Color
     created_at: Creation date
   cannot_reopen: 'Impossible to reopen the campaign: since it was closed, one or several volunteers were triggered and prefix used for their answers was reused.'
+
+issues:
+  not_reachable: 'Some volunteers from your action structures are not reachable:'
+  phones: '- %nbr% do not have a phone number'
+  emails: '- %nbr% do not have an email'
+  list: 'See the list of issues'
+  details:
+    title: 'Missing phone numbers & emails'
+    info1: 'RedCall can only work if volunteer''s contact information are valid and updated.'
+    info2: 'This page only show you volunteers that do not have an email or a phone number so you can fill them up.'
+    info3: 'Warning, even though a volunteer has both a phone number and an email, nothing guarantees that they are valid on the Gaia database.'
+    info4: 'As soon as you can, invite your structure members to check their contact information on Gaia (most importantly their "favorite phone number" and "favorite email") to have better chances of reaching out a maximum of people.'
+    open: 'open in Gaia'
 
 campaign_status:
   communication_tabs: Communications
