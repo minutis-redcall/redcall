@@ -192,7 +192,7 @@ class StatisticsRepository
      */
     public function getSumOfCost(\DateTime $from, \DateTime $to)
     {
-        $sql = 'select sum(price) sum_cost, direction, currency
+        $sql = 'select sum(price) as sum_cost, direction, currency
                 from cost
                 where created_at > :fromDate
                 and created_at <= :toDate
