@@ -249,7 +249,7 @@ class RefreshManager
 
             // If volunteer is bound to a RedCall user, update its structures
             $userInformation = $this->userInformationManager->findOneByNivol($volunteer->getNivol());
-            if ($userInformation) {
+            if ($userInformation && !$userInformation->getStructures()->count()) {
                 $this->userInformationManager->updateNivol($userInformation, $volunteer->getNivol());
             }
 
@@ -324,7 +324,7 @@ class RefreshManager
 
         // If volunteer is bound to a RedCall user, update its structures
         $userInformation = $this->userInformationManager->findOneByNivol($volunteer->getNivol());
-        if ($userInformation) {
+        if ($userInformation && !$userInformation->getStructures()->count()) {
             $this->userInformationManager->updateNivol($userInformation, $volunteer->getNivol());
         }
     }
