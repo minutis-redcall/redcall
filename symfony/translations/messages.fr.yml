@@ -14,7 +14,8 @@ admin:
     no_stats: "Aucune statistique à afficher pour cette période."
     campaign:
       title: "Déclenchements"
-      stats: "déclenchements ont été ouverts sur cette periode."
+      stats: "déclenchements sont toujours actifs à l'heure actuelle."
+      period: 'Dans cette période, <b>%created%</b> déclenchements ont été créés, dont <b>%active%</b> sont toujours actifs.'
     messages:
       title: "Messages"
       messages_sent: "<b>%stat%</b> messages ont été envoyés dont"

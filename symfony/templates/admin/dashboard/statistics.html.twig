@@ -1,8 +1,5 @@
 {% extends 'base.html.twig' %}
 
-{% block menu %}{% endblock %}
-
-
 {% block body %}
     <h1>{{ 'admin.dashboard.title' | trans }}</h1>
 
@@ -31,6 +28,13 @@
         <p>{{ 'admin.statistics.no_stats' | trans }}</p>
     {% endif %}
     <br>
+    {% if stats.campaignsPeriod is defined %}
+        <p>{{ 'admin.statistics.campaign.period' | trans({
+                '%created%': stats.campaignsPeriod.created,
+                '%active%': stats.campaignsPeriod.active,
+            }) | raw }}</p>
+    {% endif %}
+    <br>
 
     {# MESSAGES SECTION #}
     <h2>{{ 'admin.statistics.messages.title' | trans }}</h2>
@@ -40,7 +44,7 @@
                 {% if loop.index0 > 0 %}
                     {{ 'label.and' | trans }}
                 {% endif %}
-                <b>{{ count }}  {{ type }}</b>
+                <b>{{ count }} {{ type }}</b>
             {% endfor %} {{ 'admin.statistics.messages.to_volunteers' | trans({'%volunteers%': stats.triggeredVolounteers}) | raw }}
         </p>
         <p>{{ 'admin.statistics.messages.answers_received' | trans({'%answers%': stats.answersReceived}) | raw }}</p>

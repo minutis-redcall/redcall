@@ -24,6 +24,18 @@ class StatisticsRepository
         $this->entityManager = $entityManager;
     }
 
+    public function getNumberOfCampaigns(\DateTime $from, \DateTime $to): array
+    {
+        return $this->entityManager->getConnection()->fetchAssoc('
+            SELECT COUNT(*) as created, SUM(IF(c.active, 1, 0)) as active
+            FROM campaign c
+            WHERE c.created_at BETWEEN :from AND :to
+        ', [
+            'from' => $from->format('Y-m-d 00:00:00'),
+            'to' => $to->format('Y-m-d 23:59:59'),
+        ]);
+    }
+
     public function getEmailAndPhoneNumberMissings()
     {
         $sql = "
