@@ -65,6 +65,9 @@
     <br/>
     {{ 'form.communication.fields.cost'|trans }}
     <span id="message-cost">--</span>
+    <br/>
+    {{ 'form.communication.fields.price'|trans }}
+    <span id="message-price">--</span>&euro;
 </div>
 
 <script type="text/javascript">
@@ -99,10 +102,12 @@
                 if (data.success) {
                     $('#message-preview').html(nl2br(data.message));
                     $('#message-cost').html(data.cost);
+                    $('#message-price').html(data.price);
                     $('#message-length').html(data.length);
                 } else {
                     $('#message-preview').html('&nbsp;');
                     $('#message-cost').html('--');
+                    $('#message-price').html('--');
                     $('#message-length').html('--');
                 }
             });

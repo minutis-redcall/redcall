@@ -226,8 +226,9 @@ form:
       back: Retour
       other_options: Autres options
       preview: Prévisualisation
-      cost: 'Coût du message multiplié par :'
+      cost: 'La longueur du message multiplie son prix par :'
       length: 'Longueur du message :'
+      price: 'Le prix de la communication payé par la Croix-Rouge est estimé à :'
       multiple_answer: 'Les destinataires peuvent choisir plusieurs réponses'
   campaign:
     fields:

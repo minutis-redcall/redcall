@@ -70,7 +70,7 @@ class Communication
      *
      * @ORM\OneToMany(targetEntity="App\Entity\Message", mappedBy="communication", cascade={"persist"})
      */
-    private $messages;
+    private $messages = [];
 
     /**
      * @var Choice[]

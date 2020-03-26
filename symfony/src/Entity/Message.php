@@ -21,6 +21,8 @@ class Message
     const MAX_LENGTH_SMS   = 300;
     const MAX_LENGTH_EMAIL = 1600;
 
+    const SMS_COST = 0.05052;
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()

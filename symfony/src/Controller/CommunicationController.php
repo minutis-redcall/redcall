@@ -271,10 +271,16 @@ class CommunicationController extends BaseController
         $content = $this->formatter->formatMessageContent($message);
         $parts   = GSM::getSMSParts($content);
 
+        $estimated = 0;
+        if (Communication::TYPE_SMS === $message->getCommunication()->getType()) {
+            $estimated = count($parts) * count($communicationEntity->getMessages()) * Message::SMS_COST;
+        }
+
         return new JsonResponse([
             'success' => true,
             'message' => htmlentities($content),
             'cost'    => count($parts),
+            'price'   => round($estimated, 2),
             'length'  => array_sum(array_map('mb_strlen', $parts)),
         ]);
     }

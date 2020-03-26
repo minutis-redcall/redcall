@@ -227,8 +227,9 @@ form:
       back: Back
       other_options: Other options
       preview: Preview
-      cost: 'Message cost multiplied by:'
+      cost: 'Message length multiplies its cost by:'
       length: 'Message length:'
+      price: 'Estimated communication price:'
       multiple_answer: 'Volunteers can choose several answers'
   campaign:
     fields:

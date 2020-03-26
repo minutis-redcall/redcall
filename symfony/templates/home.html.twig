@@ -39,8 +39,12 @@
                     <hr/>
                     <div class="text-left">
                         <p>{{ 'issues.not_reachable'|trans }}️</p>
-                        <p>{{ 'issues.phones'|trans({'%nbr%': issues.phones}) }}️</p>
-                        <p>{{ 'issues.emails'|trans({'%nbr%': issues.emails}) }}️</p>
+                        {% if issues.phones %}
+                            <p>{{ 'issues.phones'|trans({'%nbr%': issues.phones}) }}️</p>
+                        {% endif %}
+                        {% if issues.emails %}
+                            <p>{{ 'issues.emails'|trans({'%nbr%': issues.emails}) }}️</p>
+                        {% endif %}
                         <p>
                             <a href="{{ path('management_issues_index') }}">{{ 'issues.list'|trans }}</a>
                         </p>
