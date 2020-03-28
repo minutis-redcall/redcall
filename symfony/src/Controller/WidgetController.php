@@ -162,8 +162,12 @@ class WidgetController extends BaseController
         return $this->json($results);
     }
 
-    public function structureEditor(UserInformation $userInformation)
+    public function structureEditor()
     {
+        if (!$this->isGranted('ROLE_ADMIN')) {
+            throw $this->createAccessDeniedException();
+        }
+
         $form = $this
             ->createNamedFormBuilder(
                 sprintf('structure-%s', Uuid::uuid4()),

@@ -3,8 +3,10 @@
 namespace App\Controller\Management;
 
 use App\Base\BaseController;
+use App\Entity\Structure;
 use App\Entity\Volunteer;
 use App\Form\Type\VolunteerType;
+use App\Manager\StructureManager;
 use App\Manager\UserInformationManager;
 use App\Manager\VolunteerManager;
 use Bundles\PaginationBundle\Manager\PaginationManager;
@@ -12,6 +14,7 @@ use Bundles\PegassCrawlerBundle\Entity\Pegass;
 use Bundles\PegassCrawlerBundle\Manager\PegassManager;
 use DateTime;
 use DateTimeZone;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -36,6 +39,11 @@ class VolunteersController extends BaseController
     private $volunteerManager;
 
     /**
+     * @var StructureManager
+     */
+    private $structureManager;
+
+    /**
      * @var PegassManager
      */
     private $pegassManager;
@@ -53,18 +61,21 @@ class VolunteersController extends BaseController
     /**
      * @param UserInformationManager $userInformationManager
      * @param VolunteerManager       $volunteerManager
+     * @param StructureManager       $structureManager
      * @param PegassManager          $pegassManager
      * @param PaginationManager      $paginationManager
      * @param KernelInterface        $kernel
      */
     public function __construct(UserInformationManager $userInformationManager,
         VolunteerManager $volunteerManager,
+        StructureManager $structureManager,
         PegassManager $pegassManager,
         PaginationManager $paginationManager,
         KernelInterface $kernel)
     {
         $this->userInformationManager = $userInformationManager;
         $this->volunteerManager       = $volunteerManager;
+        $this->structureManager       = $structureManager;
         $this->pegassManager          = $pegassManager;
         $this->paginationManager      = $paginationManager;
         $this->kernel                 = $kernel;
@@ -147,12 +158,19 @@ class VolunteersController extends BaseController
                 $this->success('manage_volunteers.form.updated');
             }
 
+            if ($isCreate && $this->isGranted('ROLE_ADMIN')) {
+                return $this->redirectToRoute('management_volunteers_edit_structures', array_merge($request->query->all(), [
+                    'id' => $volunteer->getId(),
+                ]));
+            }
+
             return $this->redirectToRoute('management_volunteers_list', $request->query->all());
         }
 
         return $this->render('management/volunteers/form.html.twig', [
-            'form'     => $form->createView(),
-            'isCreate' => $isCreate,
+            'form'      => $form->createView(),
+            'isCreate'  => $isCreate,
+            'volunteer' => $volunteer,
         ]);
     }
 
@@ -237,6 +255,63 @@ class VolunteersController extends BaseController
             'volunteer' => $volunteer,
             'pegass'    => json_encode($entity->getContent(), JSON_PRETTY_PRINT),
         ]);
+    }
+
+    /**
+     * @Route(path="/edit-structures/{id}", name="edit_structures")
+     */
+    public function editStructures(Volunteer $volunteer)
+    {
+        return $this->render('management/volunteers/structures.html.twig', [
+            'volunteer' => $volunteer,
+        ]);
+    }
+
+    /**
+     * @Route(name="add_structure", path="add-structure/{csrf}/{id}")
+     */
+    public function addStructure(Request $request, string $csrf, Volunteer $volunteer)
+    {
+        $this->validateCsrfOrThrowNotFoundException('volunteer', $csrf);
+
+        $structureId = $request->get('structure');
+        if (!$structureId) {
+            throw $this->createNotFoundException();
+        }
+
+        $parentStructure = $this->structureManager->find($structureId);
+        if (!$parentStructure) {
+            throw $this->createNotFoundException();
+        }
+
+        $structures = $this->structureManager->findCallableStructuresForStructure($parentStructure);
+        foreach ($structures as $structure) {
+            $volunteer->addStructure($structure);
+        }
+
+        $this->volunteerManager->save($volunteer);
+
+        return $this->redirectToRoute('management_volunteers_edit_structures', array_merge([
+            'id' => $volunteer->getId(),
+        ], $request->query->all()));
+    }
+
+    /**
+     * @Route(name="delete_structure", path="delete-structure/{csrf}/{volunteerId}/{structureId}")
+     * @Entity("volunteer", expr="repository.find(volunteerId)")
+     * @Entity("structure", expr="repository.find(structureId)")
+     */
+    public function deleteStructure(Request $request, string $csrf, Volunteer $volunteer, Structure $structure)
+    {
+        $this->validateCsrfOrThrowNotFoundException('volunteer', $csrf);
+
+        $volunteer->removeStructure($structure);
+
+        $this->volunteerManager->save($volunteer);
+
+        return $this->redirectToRoute('management_volunteers_edit_structures', array_merge($request->query->all(), [
+            'id' => $volunteer->getId(),
+        ]));
     }
 
     /**
