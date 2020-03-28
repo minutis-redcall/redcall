@@ -18,6 +18,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Security\Core\Security;
 
 class VolunteerType extends AbstractType
 {
@@ -27,11 +28,18 @@ class VolunteerType extends AbstractType
     private $userInformationManager;
 
     /**
-     * @param UserInformationManager $userInformationManager
+     * @var Security
      */
-    public function __construct(UserInformationManager $userInformationManager)
+    private $security;
+
+    /**
+     * @param UserInformationManager $userInformationManager
+     * @param Security               $security
+     */
+    public function __construct(UserInformationManager $userInformationManager, Security $security)
     {
         $this->userInformationManager = $userInformationManager;
+        $this->security = $security;
     }
 
     /**
@@ -94,7 +102,7 @@ class VolunteerType extends AbstractType
             $volunteer = $event->getData();
             $builder   = $event->getForm();
 
-            if (!$volunteer || null === $volunteer->getId()) {
+            if (!$this->security->isGranted('ROLE_ADMIN')) {
                 $currentUser = $this->userInformationManager->findForCurrentUser();
 
                 $builder

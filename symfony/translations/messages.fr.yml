@@ -275,6 +275,10 @@ manage_volunteers:
     structures: Structure(s) de rattachement
   contact:
     mail_subject: '⚠️ CROIX-ROUGE: Vous avez un message RedCall'
+  admin_structures:
+    create: 'Vous serez en mesure d''éditer les structures du bénévole après sa création.'
+    edit: 'Editer les structures'
+    structures: 'Mise à jour des structures pour %name%'
 
 manage_structures:
   title: 'Gestion des structures'

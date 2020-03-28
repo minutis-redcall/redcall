@@ -276,6 +276,10 @@ manage_volunteers:
     structures: Affiliate structure(s)
   contact:
     mail_subject: '⚠️ RED CROSS: You have a RedCall Message'
+  admin_structures:
+    create: 'You will be able to set volunteer''s structures after creating it.'
+    edit: 'Edit structures'
+    structures: 'Structures update for %name%'
 
 manage_structures:
   title: 'Manage structures'
