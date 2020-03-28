@@ -32,6 +32,7 @@ security:
   access_control:
 
     # Technical
+    - { path: '^/_ah', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
     - { path: '^/cron', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
     - { path: '^/deploy', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
 
