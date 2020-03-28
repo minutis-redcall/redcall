@@ -93,7 +93,7 @@ class FixturesController  extends BaseController
     }
 
     /**
-     * @Route(path="/", name="tags")
+     * @Route(path="/skills", name="tags")
      * @Template()
      */
     public function tags()
