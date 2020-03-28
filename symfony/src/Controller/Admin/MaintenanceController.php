@@ -84,14 +84,19 @@ class MaintenanceController extends BaseController
         $types = [
             'maintenance.message.type.success' => 'success',
             'maintenance.message.type.info'    => 'info',
-            'maintenance.message.type.alert'   => 'alert',
+            'maintenance.message.type.alert'   => 'warning',
             'maintenance.message.type.danger'  => 'danger',
         ];
+
+        $content = $this->settingManager->get(Settings::MAINTENANCE_MESSAGE_CONTENT);
+        if ($content) {
+            $content = mb_substr($content, 18);
+        }
 
         $form = $this
             ->createFormBuilder([
                 'type'    => $this->settingManager->get(Settings::MAINTENANCE_MESSAGE_TYPE),
-                'content' => $this->settingManager->get(Settings::MAINTENANCE_MESSAGE_CONTENT),
+                'content' => $content,
             ])
             ->add('type', ChoiceType::class, [
                 'label'       => 'maintenance.message.type.label',
@@ -122,10 +127,12 @@ class MaintenanceController extends BaseController
 
             $content = $form['content']->getData();
             if ($content) {
-                $this->settingManager->set(Settings::MAINTENANCE_MESSAGE_CONTENT, $content);
+                $this->settingManager->set(Settings::MAINTENANCE_MESSAGE_CONTENT, sprintf('%s: %s', date('d/m/Y H:i'), $content));
             } else {
                 $this->settingManager->remove(Settings::MAINTENANCE_MESSAGE_CONTENT);
             }
+
+            return $this->redirectToRoute('admin_maintenance_message');
         }
 
         return $this->render('admin/maintenance/message.html.twig', [
