@@ -185,7 +185,7 @@ class StructureManager
         $this->structureRepository->expireAll();
     }
 
-    public function createRedcallStructure()
+    public function createRedCallStructure()
     {
         if (!$this->structureRepository->findOneByName('RedCall')) {
             $structure = new Structure();

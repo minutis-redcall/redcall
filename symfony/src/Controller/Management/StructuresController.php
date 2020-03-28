@@ -92,6 +92,10 @@ class StructuresController extends BaseController
     {
         $this->validateCsrfOrThrowNotFoundException('structures', $csrf);
 
+        if (0 === $structure->getIdentifier()) {
+            return $this->redirectToRoute('management_structures_list', $request->query->all());
+        }
+
         if (!$structure->canForcePegassUpdate()) {
             return $this->redirectToRoute('management_structures_list', $request->query->all());
         }
@@ -117,8 +121,12 @@ class StructuresController extends BaseController
      * @Route(name="pegass", path="/pegass/{id}")
      * @IsGranted("ROLE_ADMIN")
      */
-    public function pegass(Structure $structure)
+    public function pegass(Structure $structure, Request $request)
     {
+        if (0 === $structure->getIdentifier()) {
+            return $this->redirectToRoute('management_structures_list', $request->query->all());
+        }
+
         $entity = $this->pegassManager->getEntity(Pegass::TYPE_STRUCTURE, $structure->getIdentifier(), false);
         if (!$entity) {
             throw $this->createNotFoundException();
@@ -149,5 +157,4 @@ class StructuresController extends BaseController
                     ->getForm()
                     ->handleRequest($request);
     }
-
 }

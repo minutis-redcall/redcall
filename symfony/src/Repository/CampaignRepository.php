@@ -43,7 +43,7 @@ class CampaignRepository extends BaseRepository
      *
      * @return QueryBuilder
      */
-    public function getActiveCampaignsForUserQueryBuilder(User $user): QueryBuilder
+    public function getActiveCampaignsForAdminQueryBuilder(User $user): QueryBuilder
     {
         return $this
             ->createQueryBuilder('c')
@@ -59,7 +59,18 @@ class CampaignRepository extends BaseRepository
      *
      * @return QueryBuilder
      */
-    public function getInactiveCampaignsForUserQueryBuilder(User $user): QueryBuilder
+    public function getActiveCampaignsForUserQueryBuilder(User $user): QueryBuilder
+    {
+        return $this->getActiveCampaignsForAdminQueryBuilder($user)
+            ->andWhere('s.identifier <> 0');
+    }
+
+    /**
+     * @param User $user
+     *
+     * @return QueryBuilder
+     */
+    public function getInactiveCampaignsForAdminQueryBuilder(User $user): QueryBuilder
     {
         return $this
             ->createQueryBuilder('c')
@@ -68,6 +79,17 @@ class CampaignRepository extends BaseRepository
             ->where('u.user = :user')
             ->setParameter('user', $user)
             ->andWhere('c.active = false');
+    }
+
+    /**
+     * @param User $user
+     *
+     * @return QueryBuilder
+     */
+    public function getInactiveCampaignsForUserQueryBuilder(User $user): QueryBuilder
+    {
+        return $this->getInactiveCampaignsForAdminQueryBuilder($user)
+            ->andWhere('s.identifier <> 0');
     }
 
     /**

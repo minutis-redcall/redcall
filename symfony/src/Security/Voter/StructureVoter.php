@@ -58,8 +58,11 @@ class StructureVoter extends Voter
             return false;
         }
 
-        /** @var Structure $volunteer */
+        /** @var Structure $structure */
         $structure = $subject;
+        if (0 === $structure->getIdentifier()) {
+            return false;
+        }
 
         return $userInformation->getStructures()->contains($structure);
     }

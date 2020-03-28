@@ -151,6 +151,7 @@ class VolunteerRepository extends BaseRepository
             ->join('s.users', 'u')
             ->where('v.enabled = true')
             ->andWhere('u.id = :user')
+            ->andWhere('s.identifier <> 0')
             ->setParameter('user', $user);
 
         if ($keyword) {

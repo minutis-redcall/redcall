@@ -29,7 +29,7 @@ class HomeController extends BaseController
      */
     public function indexAction()
     {
-        $this->structureManager->createRedcallStructure();
+        $this->structureManager->createRedCallStructure();
 
         return $this->render('admin/home.html.twig');
     }

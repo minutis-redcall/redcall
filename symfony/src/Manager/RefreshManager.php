@@ -110,13 +110,15 @@ class RefreshManager
         $redcallStructures = $this->structureManager->listStructureIdentifiers();
         $pegassStructures  = $this->pegassManager->listIdentifiers(Pegass::TYPE_STRUCTURE);
         foreach (array_diff($redcallStructures, $pegassStructures) as $structureIdentiifer) {
-            if ($structureIdentiifer !== 0) {
-                $this->debug('Disabling a structure', [
-                    'identifier' => $structureIdentiifer,
-                ]);
-
-                $this->structureManager->disableByIdentifier($structureIdentiifer);
+            if (0 === $structureIdentiifer) {
+                continue;
             }
+
+            $this->debug('Disabling a structure', [
+                'identifier' => $structureIdentiifer,
+            ]);
+
+            $this->structureManager->disableByIdentifier($structureIdentiifer);
         }
     }
 

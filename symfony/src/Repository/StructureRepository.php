@@ -214,7 +214,7 @@ class StructureRepository extends BaseRepository
      *
      * @return QueryBuilder
      */
-    public function getStructuresForUserQueryBuilder(UserInformation $userInformation): QueryBuilder
+    public function getStructuresForAdminQueryBuilder(UserInformation $userInformation): QueryBuilder
     {
         return $this->createQueryBuilder('s')
                     ->join('s.users', 'u')
@@ -225,16 +225,29 @@ class StructureRepository extends BaseRepository
     }
 
     /**
+     * @param UserInformation $userInformation
+     *
+     * @return QueryBuilder
+     */
+    public function getStructuresForUserQueryBuilder(UserInformation $userInformation): QueryBuilder
+    {
+        return $this->getStructuresForAdminQueryBuilder($userInformation)
+            ->andWhere('s.identifier <> 0');
+    }
+
+    /**
      * @param string $criteria
      *
      * @return QueryBuilder
      */
     public function searchAllQueryBuilder(?string $criteria): QueryBuilder
     {
-        $qb = $this->createQueryBuilder('s');
+        $qb = $this
+            ->createQueryBuilder('s')
+            ->where('s.identifier <> 0');
 
         if ($criteria) {
-            $qb->where('s.identifier LIKE :criteria OR s.name LIKE :criteria')
+            $qb->andWhere('s.identifier LIKE :criteria OR s.name LIKE :criteria')
                ->setParameter('criteria', sprintf('%%%s%%', $criteria));
         }
 
@@ -269,10 +282,12 @@ class StructureRepository extends BaseRepository
         $qb = $this->createQueryBuilder('s')
             ->join('s.users', 'u')
             ->where('u.id = :user_id')
-            ->setParameter('user_id', $user->getId());
+            ->setParameter('user_id', $user->getId())
+            ->andWhere('s.identifier <> 0')
+        ;
 
         if ($criteria) {
-            $qb->where('s.identifier LIKE :criteria OR s.name LIKE :criteria')
+            $qb->andWhere('s.identifier LIKE :criteria OR s.name LIKE :criteria')
                 ->setParameter('criteria', sprintf('%%%s%%', $criteria));
         }
 
