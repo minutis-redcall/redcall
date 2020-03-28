@@ -55,8 +55,13 @@ class CampaignController extends BaseController
 
     public function renderCampaignsTable(): Response
     {
-        $ongoing  = $this->campaignManager->getActiveCampaignsForUserQueryBuilder($this->getUser());
-        $finished = $this->campaignManager->getInactiveCampaignsForUserQueryBuilder($this->getUser());
+        if ($this->isGranted('ROLE_ADMIN')) {
+            $ongoing  = $this->campaignManager->getActiveCampaignsForAdminQueryBuilder($this->getUser());
+            $finished = $this->campaignManager->getInactiveCampaignsForAdminQueryBuilder($this->getUser());
+        } else {
+            $ongoing  = $this->campaignManager->getActiveCampaignsForUserQueryBuilder($this->getUser());
+            $finished = $this->campaignManager->getInactiveCampaignsForUserQueryBuilder($this->getUser());
+        }
 
         return $this->render('campaign/table.html.twig', [
             'data' => [

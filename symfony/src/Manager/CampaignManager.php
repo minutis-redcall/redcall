@@ -154,6 +154,26 @@ class CampaignManager
     }
 
     /**
+     * @param User $user
+     *
+     * @return QueryBuilder
+     */
+    public function getActiveCampaignsForAdminQueryBuilder(User $user): QueryBuilder
+    {
+        return $this->campaignRepository->getActiveCampaignsForAdminQueryBuilder($user);
+    }
+
+    /**
+     * @param User $user
+     *
+     * @return QueryBuilder
+     */
+    public function getInactiveCampaignsForAdminQueryBuilder(User $user): QueryBuilder
+    {
+        return $this->campaignRepository->getInactiveCampaignsForAdminQueryBuilder($user);
+    }
+
+    /**
      * A campaign can only be reopened if any of the prefix associated to everyone's
      * messages are not used in any of the currently open campaigns.
      *

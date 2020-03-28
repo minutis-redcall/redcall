@@ -18,19 +18,25 @@ class StructureManager
     private $userInformationManager;
 
     /**
+     * @var VolunteerManager
+     */
+    private $volunteerManager;
+
+    /**
      * @var StructureRepository
      */
     private $structureRepository;
 
     /**
      * @param UserInformationManager $userInformationManager
+     * @param VolunteerManager       $volunteerManager
      * @param StructureRepository    $structureRepository
      */
-    public function __construct(UserInformationManager $userInformationManager,
-        StructureRepository $structureRepository)
+    public function __construct(UserInformationManager $userInformationManager, VolunteerManager $volunteerManager, StructureRepository $structureRepository)
     {
         $this->userInformationManager = $userInformationManager;
-        $this->structureRepository    = $structureRepository;
+        $this->volunteerManager = $volunteerManager;
+        $this->structureRepository = $structureRepository;
     }
 
     /**
@@ -177,5 +183,28 @@ class StructureManager
     public function expireAll()
     {
         $this->structureRepository->expireAll();
+    }
+
+    public function createRedCallStructure()
+    {
+        if (!$this->structureRepository->findOneByName('RedCall')) {
+            $structure = new Structure();
+            $structure->setIdentifier(0);
+            $structure->setName('RedCall');
+            $structure->setType('UL');
+            $structure->setEnabled(true);
+            $this->structureRepository->save($structure);
+
+            $users = $this->userInformationManager->findAll();
+            foreach ($users as $user) {
+                $volunteer = $user->getVolunteer();
+                $structure->addVolunteer($volunteer);
+                $user->addStructure($structure);
+                $this->userInformationManager->save($user);
+                $volunteer->addStructure($structure);
+                $this->volunteerManager->save($volunteer);
+            }
+            $this->structureRepository->save($structure);
+        }
     }
 }

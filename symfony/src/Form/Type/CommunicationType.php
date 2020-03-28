@@ -18,6 +18,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Security\Core\Security;
 
 class CommunicationType extends AbstractType
 {
@@ -32,13 +33,20 @@ class CommunicationType extends AbstractType
     private $userInformationManager;
 
     /**
+     * @var Security
+     */
+    private $security;
+
+    /**
      * @param StructureManager       $structureManager
      * @param UserInformationManager $userInformationManager
+     * @param Security               $security
      */
-    public function __construct(StructureManager $structureManager, UserInformationManager $userInformationManager)
+    public function __construct(StructureManager $structureManager, UserInformationManager $userInformationManager, Security $security)
     {
-        $this->structureManager       = $structureManager;
+        $this->structureManager = $structureManager;
         $this->userInformationManager = $userInformationManager;
+        $this->security = $security;
     }
 
     /**
@@ -68,7 +76,11 @@ class CommunicationType extends AbstractType
                 'label'         => false,
                 'class'         => Structure::class,
                 'query_builder' => function (StructureRepository $er) use ($currentUser) {
-                    return $er->getStructuresForUserQueryBuilder($currentUser);
+                    if ($this->security->isGranted('ROLE_ADMIN')) {
+                        return $er->getStructuresForAdminQueryBuilder($currentUser);
+                    } else {
+                        return $er->getStructuresForUserQueryBuilder($currentUser);
+                    }
                 },
                 'choice_label'  => function (Structure $structure) use ($volunteerCounts) {
                     return sprintf('%s (%s)', $structure->getName(), $volunteerCounts[$structure->getId()] ?? 0);

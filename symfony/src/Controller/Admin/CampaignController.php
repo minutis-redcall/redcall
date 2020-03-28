@@ -13,7 +13,6 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class CampaignController extends BaseController
 {
-
     /**
      * @var CampaignManager
      */
