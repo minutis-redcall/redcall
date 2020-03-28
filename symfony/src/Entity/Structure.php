@@ -88,7 +88,7 @@ class Structure
 
     /**
      * @var ArrayCollection[]
-     * @ORM\OneToMany(targetEntity="App\Entity\PrefilledAnswers", mappedBy="structures")
+     * @ORM\OneToMany(targetEntity="App\Entity\PrefilledAnswers", mappedBy="structure")
      */
     private $prefilledAnswers;
 

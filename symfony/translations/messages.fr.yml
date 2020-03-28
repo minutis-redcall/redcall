@@ -287,7 +287,7 @@ manage_structures:
   last_update: 'Dernière synchro avec Pegass : %last_update% UTC'
   next_update: 'Prochaine synchro avec Pegass : %next_update% UTC'
   force_update: 'Forcer la mise à jour maintenant'
-
+  manage_prefilled_answers: 'Gérer les réponses pré-formattés'
 csv_export:
   nivol: Nivol
   firstname: Prénom
