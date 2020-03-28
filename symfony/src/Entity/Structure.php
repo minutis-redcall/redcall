@@ -86,12 +86,19 @@ class Structure
      */
     private $campaigns;
 
+    /**
+     * @var ArrayCollection[]
+     * @ORM\OneToMany(targetEntity="App\Entity\PrefilledAnswers", mappedBy="structures")
+     */
+    private $prefilledAnswers;
+
     public function __construct()
     {
         $this->volunteers         = new ArrayCollection();
         $this->childrenStructures = new ArrayCollection();
         $this->users              = new ArrayCollection();
         $this->campaigns          = new ArrayCollection();
+        $this->prefilledAnswers   = new ArrayCollection();
     }
 
     /**
@@ -376,6 +383,37 @@ class Structure
 
         return $this;
     }
+
+    /**
+     * @return Collection|PrefilledAnswers[]
+     */
+    public function getPrefilledAnswers(): Collection
+    {
+        return $this->prefilledAnswers;
+    }
+
+    public function addPrefilledAnswer(PrefilledAnswers $prefilledAnswer): self
+    {
+        if(!$this->prefilledAnswers->contains($prefilledAnswer))
+        {
+            $this->prefilledAnswers->add($prefilledAnswer);
+            $prefilledAnswer->setStructure($this);
+        }
+
+        return $this;
+    }
+
+    public function removePrefilledAnswer(PrefilledAnswers $prefilledAnswers): self
+    {
+        if($this->prefilledAnswers->contains($prefilledAnswers))
+        {
+            $this->prefilledAnswers->remove($prefilledAnswers);
+            $prefilledAnswers->setStructure(null);
+        }
+
+        return $this;
+    }
+
 
     /**
      * @return Volunteer|null
