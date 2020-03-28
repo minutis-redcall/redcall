@@ -87,6 +87,7 @@
                         {% else %}
                             {{ 'campaign_status.communication_title'|trans({'%date%': communication.createdAt|date('d/m/Y'), '%time%': communication.createdAt|date('H:i')}) }}
                         {% endif %}
+                        <span class="color-grey" style="font-size: 14px;">(#{{ communication.id }})</span>
                         {% if campaign.active %}
                             <span class="float-right badge badge-light">✏️</span>
                         {% endif %}

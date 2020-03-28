@@ -30,6 +30,7 @@ class TwilioMessage
     const STATUS_FAILED      = 'failed';
     const STATUS_RECEIVING   = 'receiving';
     const STATUS_RECEIVED    = 'received';
+    const STATUS_ERROR       = 'error';
 
     /**
      * @ORM\Id()

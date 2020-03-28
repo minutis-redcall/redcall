@@ -5,6 +5,7 @@ namespace Bundles\TwilioBundle\Repository;
 use Bundles\TwilioBundle\Entity\TwilioMessage;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\DBAL\Connection;
 
 /**
  * @method TwilioMessage|null find($id, $lockMode = null, $lockVersion = null)
@@ -33,6 +34,8 @@ class TwilioMessageRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('m')
                     ->where('m.price IS NULL')
                     ->andWhere('m.sid IS NOT NULL')
+                    ->andWhere('m.status NOT IN :status')
+                    ->setParameter('status', [TwilioMessage::STATUS_ERROR, TwilioMessage::STATUS_FAILED], Connection::PARAM_STR_ARRAY)
                     ->getQuery()
                     ->getResult();
     }
