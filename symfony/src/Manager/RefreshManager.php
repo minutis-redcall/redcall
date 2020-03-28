@@ -211,9 +211,10 @@ class RefreshManager
             if ($volunteer->isLocked()) {
                 $volunteer->setReport([]);
                 $volunteer->addReport('import_report.disable_locked');
-            } else {
-                $volunteer->setEnabled(false);
             }
+
+            // Even if locked, it's important to disable the volunteer if it is inactive
+            $volunteer->setEnabled(false);
 
             $this->volunteerManager->save($volunteer);
         }
