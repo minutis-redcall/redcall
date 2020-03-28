@@ -153,9 +153,11 @@ class PegassController extends BaseController
     {
         $this->validateCsrfOrThrowNotFoundException('pegass', $csrf);
 
-        $userInformation->removeStructure($structure);
+        if (0 !== $structure->getIdentifier()) {
+            $userInformation->removeStructure($structure);
 
-        $this->userInformationManager->save($userInformation);
+            $this->userInformationManager->save($userInformation);
+        }
 
         return $this->redirectToRoute('admin_pegass_update_structures', [
             'id' => $userInformation->getId(),

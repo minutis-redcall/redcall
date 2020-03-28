@@ -114,6 +114,8 @@ class UserInformationManager
      */
     public function updateNivol(UserInformation $userInformation, string $nivol)
     {
+        $this->removeRedCallStructure($userInformation);
+
         $volunteer = $this->volunteerManager->findOneByNivol($nivol);
 
         if (!$volunteer) {
@@ -126,12 +128,60 @@ class UserInformationManager
             return;
         }
 
+        $this->addRedCallStructure($userInformation);
+
         $userInformation->setNivol($nivol);
         $userInformation->setVolunteer($volunteer);
 
         $structures = $this->structureManager->findCallableStructuresForVolunteer($volunteer);
         $userInformation->updateStructures($structures);
 
+        $this->save($userInformation);
+    }
+
+    /**
+     * @param UserInformation $userInformation
+     *
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function removeRedCallStructure(UserInformation $userInformation)
+    {
+        $volunteer = $userInformation->getVolunteer();
+
+        $structure = $this->structureManager->findOneByIdentifier(0);
+        if (!$structure) {
+            return;
+        }
+
+        if ($volunteer) {
+            $volunteer->removeStructure($structure);
+            $this->volunteerManager->save($volunteer);
+        }
+
+        $userInformation->removeStructure($structure);
+        $this->save($userInformation);
+    }
+
+    /**
+     * @param UserInformation $userInformation
+     *
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     */
+    public function addRedCallStructure(UserInformation $userInformation)
+    {
+        $volunteer = $userInformation->getVolunteer();
+
+        $structure = $this->structureManager->findOneByIdentifier(0);
+        if (!$structure) {
+            return;
+        }
+
+        if ($volunteer) {
+            $volunteer->addStructure($structure);
+            $this->volunteerManager->save($volunteer);
+        }
+
+        $userInformation->addStructure($structure);
         $this->save($userInformation);
     }
 
