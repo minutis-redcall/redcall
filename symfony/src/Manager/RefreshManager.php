@@ -236,7 +236,6 @@ class RefreshManager
         $volunteer->setReport([]);
 
         // Update structures
-        $volunteer->getStructures()->clear();
         foreach (array_filter(explode('|', $pegass->getParentIdentifier())) as $identifier) {
             if ($structure = $this->structureManager->findOneByIdentifier($identifier)) {
                 $volunteer->addStructure($structure);
@@ -250,7 +249,7 @@ class RefreshManager
 
             // If volunteer is bound to a RedCall user, update its structures
             $userInformation = $this->userInformationManager->findOneByNivol($volunteer->getNivol());
-            if ($userInformation && !$userInformation->getStructures()->count()) {
+            if ($userInformation) {
                 $this->userInformationManager->updateNivol($userInformation, $volunteer->getNivol());
             }
 
@@ -325,7 +324,7 @@ class RefreshManager
 
         // If volunteer is bound to a RedCall user, update its structures
         $userInformation = $this->userInformationManager->findOneByNivol($volunteer->getNivol());
-        if ($userInformation && !$userInformation->getStructures()->count()) {
+        if ($userInformation) {
             $this->userInformationManager->updateNivol($userInformation, $volunteer->getNivol());
         }
     }

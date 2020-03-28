@@ -158,7 +158,6 @@ class UserInformation
      */
     public function updateStructures(array $structures)
     {
-        $this->getStructures()->clear();
         foreach ($structures as $structure) {
             $this->addStructure($structure);
         }
