@@ -6,6 +6,7 @@ use Bundles\TwilioBundle\Entity\TwilioMessage;
 use Bundles\TwilioBundle\Event\TwilioEvent;
 use Bundles\TwilioBundle\Manager\TwilioMessageManager;
 use Bundles\TwilioBundle\TwilioEvents;
+use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Routing\RouterInterface;
@@ -34,17 +35,25 @@ class Twilio
     private $messageManager;
 
     /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
      * @param RouterInterface          $router
      * @param EventDispatcherInterface $eventDispatcher
      * @param TwilioMessageManager     $messageManager
+     * @param LoggerInterface          $logger
      */
     public function __construct(RouterInterface $router,
         EventDispatcherInterface $eventDispatcher,
-        TwilioMessageManager $messageManager)
+        TwilioMessageManager $messageManager,
+        LoggerInterface $logger)
     {
         $this->router          = $router;
         $this->eventDispatcher = $eventDispatcher;
         $this->messageManager  = $messageManager;
+        $this->logger          = $logger;
     }
 
     /**
@@ -71,17 +80,28 @@ class Twilio
         $entity->setContext($context);
         $this->messageManager->save($entity);
 
-        $outbound = $this->getClient()->messages->create($phoneNumber, [
-            'from'           => getenv('TWILIO_NUMBER'),
-            'body'           => $message,
-            'statusCallback' => trim(getenv('WEBSITE_URL'), '/').$this->router->generate('twilio_status', ['uuid' => $entity->getUuid()]),
-        ]);
+        try {
+            $outbound = $this->getClient()->messages->create($phoneNumber, [
+                'from'           => getenv('TWILIO_NUMBER'),
+                'body'           => $message,
+                'statusCallback' => trim(getenv('WEBSITE_URL'), '/').$this->router->generate('twilio_status', ['uuid' => $entity->getUuid()]),
+            ]);
 
-        $entity->setSid($outbound->sid);
-        $entity->setStatus($outbound->status);
+            $entity->setSid($outbound->sid);
+            $entity->setStatus($outbound->status);
 
-        $this->messageManager->save($entity);
-        $this->eventDispatcher->dispatch(new TwilioEvent($entity), TwilioEvents::MESSAGE_SENT);
+            $this->messageManager->save($entity);
+            $this->eventDispatcher->dispatch(new TwilioEvent($entity), TwilioEvents::MESSAGE_SENT);
+        } catch (\Exception $e) {
+            $entity->setStatus('error');
+
+            $this->logger->error('Unable to send SMS', [
+                'phoneNumber' => $entity->getToNumber(),
+                'context' => $context,
+                'exception' => $e,
+            ]);
+        }
+
         $this->messageManager->save($entity);
 
         return $entity;

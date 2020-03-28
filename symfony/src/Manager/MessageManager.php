@@ -116,7 +116,7 @@ class MessageManager
             preg_match('/^([a-zA-Z]+)(\d)/', $word, $matches);
             if (3 === count($matches)) {
                 $message = $this->getMessageFromPhoneNumber($phoneNumber, $word);
-                if (!array_key_exists($message->getId(), $messages)) {
+                if ($message && !array_key_exists($message->getId(), $messages)) {
                     $messages[$message->getId()] = $message;
                 }
             }

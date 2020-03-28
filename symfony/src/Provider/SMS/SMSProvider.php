@@ -11,5 +11,5 @@ interface SMSProvider
      *
      * @return string
      */
-    public function send(string $phoneNumber, string $message, array $context = []): string;
+    public function send(string $phoneNumber, string $message, array $context = []): ?string;
 }

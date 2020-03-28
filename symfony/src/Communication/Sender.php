@@ -80,8 +80,10 @@ class Sender
             ['message_id' => $message->getId()]
         );
 
-        $message->setMessageId($messageId);
-        $message->setSent(true);
+        if ($messageId) {
+            $message->setMessageId($messageId);
+            $message->setSent(true);
+        }
 
         $this->entityManager->merge($message);
         $this->entityManager->flush();

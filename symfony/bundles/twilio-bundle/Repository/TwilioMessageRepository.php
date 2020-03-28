@@ -33,6 +33,8 @@ class TwilioMessageRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('m')
                     ->where('m.price IS NULL')
                     ->andWhere('m.sid IS NOT NULL')
+                    ->andWhere('m.status NOT IN :status')
+                    ->setParameter('status', [TwilioMessage::STATUS_ERROR, TwilioMessage::STATUS_FAILED])
                     ->getQuery()
                     ->getResult();
     }

@@ -9,7 +9,7 @@ class Twilio extends BaseTwilio implements SMSProvider
     /**
      * {@inheritdoc}
      */
-    public function send(string $phoneNumber, string $message, array $context = []): string
+    public function send(string $phoneNumber, string $message, array $context = []): ?string
     {
         $twilioMessage = parent::sendMessage($phoneNumber, $message, $context);
 
