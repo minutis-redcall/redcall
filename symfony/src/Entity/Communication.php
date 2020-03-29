@@ -206,6 +206,15 @@ class Communication
         return $this->body;
     }
 
+    public function getLimitedBody(int $limit = 300): string
+    {
+        if (mb_strlen($this->body) > $limit) {
+            return sprintf('%s...', mb_substr($this->body, 0, $limit - 3));
+        }
+
+        return $this->body;
+    }
+
     /**
      * @param string $body
      *
