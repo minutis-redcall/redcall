@@ -374,7 +374,11 @@ infos:
   context_6: 'Ce que le volontaire voit:'
   context_7: 'Ce que le responsable voit:'
   context_8: 'Une fois que les équipages sont formés, le responsable peut envoyer un PDF contenant toutes les bonnes informations a sa direction territoriale.'
-  context_9: 'L''application n''est pour le moment qu''en béta test par quelques unités locales, mais nous vous tiendrons informés de son déploiement au travers de Minutis.'
+  context_9: 'RedCall est actif par défaut pour les DLUS, DTUS et PDT, ils peuvent déclencher leurs structures de rattachement et d''action. S’il y a besoin de droits supplémentaires, la demande peut se faire par email au support Minutis en précisant les éléments suivants :'
+  context_10: '- Nom'
+  context_11: '- Prénom'
+  context_12: '- Nivol'
+  context_13: 'Structures sur lesquels les droits RedCall sont nécessaires.'
 
 title:
   costs: "Coûts"

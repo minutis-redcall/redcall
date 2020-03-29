@@ -214,7 +214,7 @@ form:
       geo_location: Message recipients will be able to geo locate each others
       structures: 'Structure(s) to call'
       volunteers: Audience
-      selection: Selection:
+      selection: 'Selection:'
       selection_count: volunteers
       message: Message
       subject: Subject
@@ -327,7 +327,7 @@ geolocation:
   share: Share my location
   share_explains: This will let other members of the crew locate you.
   not_supported: Your browser does not support geo localization.
-  last_update: Last update:
+  last_update: 'Last update:'
   waiting: Waiting...
   error: An error occured.
   error_permission: You (or a setting in your device) refused to share your location.
@@ -375,7 +375,11 @@ infos:
   context_6: 'What the volunteer sees:'
   context_7: 'What the responsible sees:'
   context_8: 'Once teams are complete, responsible can send a PDF containing all relevant information to his territorial direction.'
-  context_9: 'The application is currently being beta-tested by a few structures, but we''ll keep you aware of its deployment through Minutis.'
+  context_9: 'RedCall is by default enabled for DLUS, DTUS and PDT, they can trigger their affiliate and action structures. If more permissions are required, you can request them to the Minutis support, with the following information attached:'
+  context_10: '- First name'
+  context_11: '- Last name'
+  context_12: '- Nivol'
+  context_13: 'Structures on which permissions are required'
 
 title:
   costs: "Costs"
