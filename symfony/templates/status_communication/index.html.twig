@@ -122,7 +122,7 @@
                     </div>
 
                     {% if not answerCount %}
-                        <strong>{{ communication.body }}</strong>
+                        <strong>{{ communication.limitedBody }}</strong>
                         {% if communication.volunteer %}
                             <div class="float-right color-grey" style="font-weight: normal;" title="{{ communication.volunteer.nivol }}">{{ 'campaign_status.by'|trans({'%name%': communication.volunteer.displayName}) }}</div>
                         {% endif %}
@@ -138,7 +138,7 @@
                             <thead>
                             <tr>
                                 <th colspan="{{ answerCount }}">
-                                    <u>{{ 'campaign_status.message'|trans }}</u> {{ communication.body }}
+                                    <u>{{ 'campaign_status.message'|trans }}</u> {{ communication.limitedBody }}
                                     {% if communication.volunteer %}
                                         <div class="float-right color-grey" style="font-weight: normal;" title="{{ communication.volunteer.nivol }}">{{ 'campaign_status.by'|trans({'%name%': communication.volunteer.displayName}) }}</div>
                                     {% endif %}

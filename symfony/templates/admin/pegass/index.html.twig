@@ -37,7 +37,9 @@
                         <div class="col-md-4">
                             <div id="structures-{{ userInformation.user.id }}">
                                 {% for structure in userInformation.structures %}
-                                    <div>{{ structure.name }}</div>
+                                    {% if structure.identifier %}
+                                        <div>{{ structure.name }}</div>
+                                    {% endif %}
                                 {% endfor %}
                             </div>
 

@@ -20,7 +20,9 @@
             <p>{{ 'management.current_structures'|trans }}</p>
 
             {% for structure in user.structures %}
-                <p>{{ structure.name }}</p>
+                {% if structure.identifier %}
+                    <p>{{ structure.name }}</p>
+                {% endif %}
             {% endfor %}
 
             <p>{{ 'management.support_email'|trans({'%email%': email}) }}</p>

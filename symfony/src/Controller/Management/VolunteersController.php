@@ -109,17 +109,17 @@ class VolunteersController extends BaseController
      * @Route(name="pegass_update", path="/pegass-update/{csrf}/{id}")
      * @IsGranted("VOLUNTEER", subject="volunteer")
      */
-    public function pegassUpdate(Request $request, Volunteer $volunteer, string $csrf)
+    public function pegassUpdate(Volunteer $volunteer, string $csrf)
     {
         $this->validateCsrfOrThrowNotFoundException('volunteers', $csrf);
 
         if (!$volunteer->canForcePegassUpdate()) {
-            return $this->redirectToRoute('management_volunteers_list', $request->query->all());
+            return $this->redirectToRoute('management_volunteers_list');
         }
 
         // Just in case Pegass database would contain some RCE?
         if (!preg_match('/^[a-zA-Z0-9]+$/', $volunteer->getIdentifier())) {
-            return $this->redirectToRoute('management_volunteers_list', $request->query->all());
+            return $this->redirectToRoute('management_volunteers_list');
         }
 
         // Prevents multiple clicks
@@ -131,7 +131,7 @@ class VolunteersController extends BaseController
         $command = sprintf('%s pegass --volunteer %s', escapeshellarg($console), $volunteer->getIdentifier());
         exec(sprintf('%s > /dev/null 2>&1 & echo -n \$!', $command));
 
-        return $this->redirectToRoute('management_volunteers_list', $request->query->all());
+        return $this->redirectToRoute('management_volunteers_list');
     }
 
     /**
@@ -159,12 +159,12 @@ class VolunteersController extends BaseController
             }
 
             if ($isCreate && $this->isGranted('ROLE_ADMIN')) {
-                return $this->redirectToRoute('management_volunteers_edit_structures', array_merge($request->query->all(), [
+                return $this->redirectToRoute('management_volunteers_edit_structures', [
                     'id' => $volunteer->getId(),
-                ]));
+                ]);
             }
 
-            return $this->redirectToRoute('management_volunteers_list', $request->query->all());
+            return $this->redirectToRoute('management_volunteers_list');
         }
 
         return $this->render('management/volunteers/form.html.twig', [
@@ -186,35 +186,35 @@ class VolunteersController extends BaseController
      * @Route(path="lock/{csrf}/{id}", name="lock")
      * @IsGranted("VOLUNTEER", subject="volunteer")
      */
-    public function lockAction(Request $request, Volunteer $volunteer, string $csrf)
+    public function lockAction(Volunteer $volunteer, string $csrf)
     {
         $this->validateCsrfOrThrowNotFoundException('volunteers', $csrf);
 
         $volunteer->setLocked(true);
         $this->volunteerManager->save($volunteer);
 
-        return $this->redirectToRoute('management_volunteers_list', $request->query->all());
+        return $this->redirectToRoute('management_volunteers_list');
     }
 
     /**
      * @Route(path="unlock/{csrf}/{id}", name="unlock")
      * @IsGranted("VOLUNTEER", subject="volunteer")
      */
-    public function unlockAction(Request $request, Volunteer $volunteer, string $csrf)
+    public function unlockAction(Volunteer $volunteer, string $csrf)
     {
         $this->validateCsrfOrThrowNotFoundException('volunteers', $csrf);
 
         $volunteer->setLocked(false);
         $this->volunteerManager->save($volunteer);
 
-        return $this->redirectToRoute('management_volunteers_list', $request->query->all());
+        return $this->redirectToRoute('management_volunteers_list');
     }
 
     /**
      * @Route(path="disable/{csrf}/{id}", name="disable")
      * @IsGranted("VOLUNTEER", subject="volunteer")
      */
-    public function disableAction(Request $request, Volunteer $volunteer, string $csrf)
+    public function disableAction(Volunteer $volunteer, string $csrf)
     {
         $this->validateCsrfOrThrowNotFoundException('volunteers', $csrf);
 
@@ -222,14 +222,14 @@ class VolunteersController extends BaseController
         $volunteer->setLocked(true);
         $this->volunteerManager->save($volunteer);
 
-        return $this->redirectToRoute('management_volunteers_list', $request->query->all());
+        return $this->redirectToRoute('management_volunteers_list');
     }
 
     /**
      * @Route(path="enable/{csrf}/{id}", name="enable")
      * @IsGranted("VOLUNTEER", subject="volunteer")
      */
-    public function enableAction(Request $request, Volunteer $volunteer, string $csrf)
+    public function enableAction(Volunteer $volunteer, string $csrf)
     {
         $this->validateCsrfOrThrowNotFoundException('volunteers', $csrf);
 
@@ -237,7 +237,7 @@ class VolunteersController extends BaseController
         $volunteer->setLocked(true);
         $this->volunteerManager->save($volunteer);
 
-        return $this->redirectToRoute('management_volunteers_list', $request->query->all());
+        return $this->redirectToRoute('management_volunteers_list');
     }
 
     /**
@@ -291,9 +291,9 @@ class VolunteersController extends BaseController
 
         $this->volunteerManager->save($volunteer);
 
-        return $this->redirectToRoute('management_volunteers_edit_structures', array_merge([
+        return $this->redirectToRoute('management_volunteers_edit_structures', [
             'id' => $volunteer->getId(),
-        ], $request->query->all()));
+        ]);
     }
 
     /**
@@ -301,7 +301,7 @@ class VolunteersController extends BaseController
      * @Entity("volunteer", expr="repository.find(volunteerId)")
      * @Entity("structure", expr="repository.find(structureId)")
      */
-    public function deleteStructure(Request $request, string $csrf, Volunteer $volunteer, Structure $structure)
+    public function deleteStructure(string $csrf, Volunteer $volunteer, Structure $structure)
     {
         $this->validateCsrfOrThrowNotFoundException('volunteer', $csrf);
 
@@ -311,9 +311,9 @@ class VolunteersController extends BaseController
             $this->volunteerManager->save($volunteer);
         }
 
-        return $this->redirectToRoute('management_volunteers_edit_structures', array_merge($request->query->all(), [
+        return $this->redirectToRoute('management_volunteers_edit_structures', [
             'id' => $volunteer->getId(),
-        ]));
+        ]);
     }
 
     /**

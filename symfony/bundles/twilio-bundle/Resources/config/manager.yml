@@ -3,3 +3,7 @@ services:
   Bundles\TwilioBundle\Manager\TwilioMessageManager:
     arguments:
       - '@Bundles\TwilioBundle\Repository\TwilioMessageRepository'
+
+  Bundles\TwilioBundle\Manager\TwilioStatusManager:
+    arguments:
+      - '@Bundles\TwilioBundle\Repository\TwilioStatusRepository'

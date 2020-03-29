@@ -16,10 +16,10 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Message
 {
-    const MIN_LENGTH = 5;
+    const MIN_LENGTH = 1;
 
     const MAX_LENGTH_SMS   = 300;
-    const MAX_LENGTH_EMAIL = 1600;
+    const MAX_LENGTH_EMAIL = 5000;
 
     const SMS_COST = 0.05052;
 

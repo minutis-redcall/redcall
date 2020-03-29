@@ -4,3 +4,8 @@ services:
     arguments:
       - '@Doctrine\Common\Persistence\ManagerRegistry'
       - 'Bundles\TwilioBundle\Entity\TwilioMessage'
+
+  Bundles\TwilioBundle\Repository\TwilioStatusRepository:
+    arguments:
+      - '@Doctrine\Common\Persistence\ManagerRegistry'
+      - 'Bundles\TwilioBundle\Entity\TwilioStatus'

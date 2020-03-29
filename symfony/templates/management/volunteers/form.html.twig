@@ -14,17 +14,21 @@
 
     {% if is_granted('ROLE_ADMIN') %}
         {% if isCreate %}
-            <p>{{ 'manage_volunteers.admin_structures.create'|trans }}</p
+            <p>{{ 'manage_volunteers.admin_structures.create'|trans }}</p>
         {% else %}
             <div class="jumbotron">
                 <h3>{{ 'manage_volunteers.admin_structures.structures'|trans({'%name%': volunteer.displayName}) }}</h3>
+
                 <br/>
+
                 {% for structure in volunteer.structures %}
-                    {{ structure.displayName }}<br/>
+                    {% if structure.identifier %}
+                        {{ structure.displayName }}<br/>
+                    {% endif %}
                 {% endfor %}
 
                 <div class="text-center">
-                    <a href="{{ path('management_volunteers_edit_structures', {id: volunteer.id}|merge(app.request.query.all)) }}" class="btn btn-secondary">
+                    <a href="{{ path('management_volunteers_edit_structures', {id: volunteer.id}) }}" class="btn btn-secondary">
                         {{ 'manage_volunteers.admin_structures.edit'|trans }}
                     </a>
                 </div>
