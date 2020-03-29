@@ -243,10 +243,21 @@ class RefreshManager
         $volunteer->setNivol(ltrim($pegass->getIdentifier(), '0'));
         $volunteer->setReport([]);
 
-        // Update structures
+        // Update structures based on where volunteer was found while crawling structures
         foreach (array_filter(explode('|', $pegass->getParentIdentifier())) as $identifier) {
             if ($structure = $this->structureManager->findOneByIdentifier($identifier)) {
                 $volunteer->addStructure($structure);
+            }
+        }
+
+        // Add structures based on the actions performed by the volunteer
+        $identifiers = [];
+        foreach ($pegass->evaluate('actions') ?? [] as $action) {
+            if (isset($action['structure']['identifier']) && !in_array($action['structure']['identifier'], $identifiers)) {
+                if ($structure = $this->structureManager->findOneByIdentifier($action['structure']['identifier'])) {
+                    $volunteer->addStructure($structure);
+                }
+                $identifiers[] = $action['structure']['identifier'];
             }
         }
 
