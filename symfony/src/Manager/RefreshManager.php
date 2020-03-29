@@ -8,7 +8,6 @@ use App\Entity\Volunteer;
 use App\Tools\PhoneNumberParser;
 use Bundles\PegassCrawlerBundle\Entity\Pegass;
 use Bundles\PegassCrawlerBundle\Manager\PegassManager;
-use Doctrine\ORM\NonUniqueResultException;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
@@ -56,14 +55,6 @@ class RefreshManager
      */
     private $logger;
 
-    /**
-     * @param PegassManager          $pegassManager
-     * @param StructureManager       $structureManager
-     * @param VolunteerManager       $volunteerManager
-     * @param TagManager             $tagManager
-     * @param UserInformationManager $userInformationManager
-     * @param LoggerInterface|null   $logger
-     */
     public function __construct(PegassManager $pegassManager,
         StructureManager $structureManager,
         VolunteerManager $volunteerManager,
@@ -79,28 +70,12 @@ class RefreshManager
         $this->logger                 = $logger ?: new NullLogger();
     }
 
-    /**
-     * Refreshes everything, it is an heavy operation.
-     *
-     * @param bool $force
-     *
-     * @throws \Doctrine\Common\Persistence\Mapping\MappingException
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     */
     public function refresh(bool $force)
     {
         $this->refreshStructures($force);
         $this->refreshVolunteers($force);
     }
 
-    /**
-     * @param bool $force
-     *
-     * @throws \Doctrine\Common\Persistence\Mapping\MappingException
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     */
     public function refreshStructures(bool $force)
     {
         $this->disableInactiveStructures();
@@ -135,14 +110,12 @@ class RefreshManager
         }
     }
 
-    /**
-     * @param Pegass $pegass
-     * @param bool   $force
-     *
-     * @throws NonUniqueResultException
-     */
     public function refreshStructure(Pegass $pegass, bool $force)
     {
+        if (!$pegass->evaluate('structure.id')) {
+            return;
+        }
+
         $structure = $this->structureManager->findOneByIdentifier($pegass->getIdentifier());
         if (!$structure) {
             $structure = new Structure();
@@ -153,6 +126,7 @@ class RefreshManager
             && $structure->getLastPegassUpdate()->getTimestamp() === $pegass->getUpdatedAt()->getTimestamp()) {
             return;
         }
+
         $structure->setLastPegassUpdate(clone $pegass->getUpdatedAt());
         $structure->setEnabled(true);
 
@@ -192,13 +166,6 @@ class RefreshManager
         });
     }
 
-    /**
-     * @param bool $force
-     *
-     * @throws \Doctrine\Common\Persistence\Mapping\MappingException
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     */
     public function refreshVolunteers(bool $force)
     {
         $this->disableInactiveVolunteers();
@@ -245,9 +212,6 @@ class RefreshManager
         }
     }
 
-    /**
-     * @param Pegass $pegass
-     */
     public function refreshVolunteer(Pegass $pegass, bool $force)
     {
         // Create or update?
@@ -319,13 +283,13 @@ class RefreshManager
         // Update volunteer skills
         $skills = $this->fetchSkills($pegass);
         foreach ($skills as $skill) {
-            if (!$volunteer->hasTag($skill)) {
-                $volunteer->getTags()->add($this->tagManager->findOneByLabel($skill));
-            }
+            $volunteer->addTag(
+                $this->tagManager->findOneByLabel($skill)
+            );
         }
         foreach ($volunteer->getTags() as $tag) {
             if (!in_array($tag->getLabel(), $skills)) {
-                $volunteer->getTags()->removeElement($tag);
+                $volunteer->removeTag($tag);
             }
         }
 
@@ -354,11 +318,6 @@ class RefreshManager
         }
     }
 
-    /**
-     * @param string $name
-     *
-     * @return string
-     */
     private function normalizeName(string $name): string
     {
         return sprintf('%s%s',
@@ -367,11 +326,6 @@ class RefreshManager
         );
     }
 
-    /**
-     * @param array $contact
-     *
-     * @return string|null
-     */
     private function fetchPhoneNumber(array $contact): ?string
     {
         $phoneKeys = ['POR', 'PORT', 'TELDOM', 'TELTRAV', 'PORE'];
@@ -394,12 +348,6 @@ class RefreshManager
         return PhoneNumberParser::parse(reset($contact)['libelle']);
     }
 
-    /**
-     * @param array $infos
-     * @param array $contact
-     *
-     * @return string|null
-     */
     private function fetchEmail(array $infos, array $contact): ?string
     {
         $emailKeys = ['MAIL', 'MAILDOM', 'MAILTRAV'];
@@ -442,11 +390,6 @@ class RefreshManager
         return reset($contact)['libelle'];
     }
 
-    /**
-     * @param Pegass $pegass
-     *
-     * @return array
-     */
     private function fetchSkills(Pegass $pegass)
     {
         $skills = [];
@@ -475,6 +418,14 @@ class RefreshManager
 
         // PSC1, PSE1, PSE2, CI
         foreach ($pegass->evaluate('trainings') as $training) {
+            // Check skill expiration (expiration date + 6 months)
+            if (isset($training['dateRecyclage']) && preg_match('/^\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}$/', $training['dateRecyclage'])) {
+                $expiration = (new \DateTime($training['dateRecyclage']))->add(new \DateInterval('P6M'));
+                if (time() > $expiration->getTimestamp()) {
+                    continue;
+                }
+            }
+
             if (in_array($training['formation']['code'] ?? false, ['RECCI', 'CI', 'CIP3'])) {
                 $skills[] = Tag::TAG_CI;
             }
@@ -495,10 +446,6 @@ class RefreshManager
         return $skills;
     }
 
-    /**
-     * @param string $message
-     * @param array  $params
-     */
     private function debug(string $message, array $params = [])
     {
         $this->logger->info($message, $params);

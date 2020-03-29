@@ -32,6 +32,7 @@ class StructureRepository extends BaseRepository
     {
         $rows = $this->createQueryBuilder('s')
                      ->select('s.identifier')
+                     ->where('s.enabled = 1')
                      ->getQuery()
                      ->getArrayResult();
 
