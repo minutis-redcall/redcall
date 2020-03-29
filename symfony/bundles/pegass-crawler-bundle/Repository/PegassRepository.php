@@ -141,14 +141,20 @@ class PegassRepository extends ServiceEntityRepository
      *
      * @return array
      */
-    public function listIdentifiers(string $type): array
+    public function listIdentifiers(string $type, bool $onlyEnabled = true): array
     {
-        $rows = $this->createQueryBuilder('p')
+        $qb = $this->createQueryBuilder('p')
                      ->select('p.identifier')
                      ->where('p.type = :type')
-                     ->setParameter('type', $type)
-                     ->getQuery()
-                     ->getArrayResult();
+                     ->setParameter('type', $type);
+
+        if ($onlyEnabled) {
+            $qb->andWhere('p.enabled = true');
+        }
+
+        $rows = $qb
+            ->getQuery()
+            ->getArrayResult();
 
         return array_column($rows, 'identifier');
     }

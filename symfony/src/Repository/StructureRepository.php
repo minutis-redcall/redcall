@@ -58,6 +58,24 @@ class StructureRepository extends BaseRepository
     }
 
     /**
+     * @param string $identifier
+     *
+     * @throws NoResultException
+     * @throws NonUniqueResultException
+     */
+    public function enableByIdentifier(string $identifier)
+    {
+        $this->createQueryBuilder('s')
+            ->update()
+            ->set('s.enabled', ':enabled')
+            ->setParameter('enabled', true)
+            ->where('s.identifier = :identifier')
+            ->setParameter('identifier', $identifier)
+            ->getQuery()
+            ->execute();
+    }
+
+    /**
      * This method perform nested search of all volunteer's structures
      *
      * Each structure can have children structures:

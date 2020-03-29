@@ -95,8 +95,27 @@ class RefreshManager
     public function disableInactiveStructures()
     {
         $this->debug('Disabling inactive structures');
+
+        // RedCall structures that are enabled
         $redcallStructures = $this->structureManager->listStructureIdentifiers();
-        $pegassStructures  = $this->pegassManager->listIdentifiers(Pegass::TYPE_STRUCTURE);
+
+        // Pegass structures that are enabled
+        $pegassStructures = $this->pegassManager->listIdentifiers(Pegass::TYPE_STRUCTURE, true);
+
+        // We try to enable Pegass structures not in RedCall structures
+        foreach (array_diff($pegassStructures, $redcallStructures) as $structureIdentiifer) {
+            if (0 === $structureIdentiifer) {
+                continue;
+            }
+
+            $this->debug('Enabling a structure', [
+                'identifier' => $structureIdentiifer,
+            ]);
+
+            $this->structureManager->enableByIdentifier($structureIdentiifer);
+        }
+
+        // We disable RedCall structures not in Pegass structures
         foreach (array_diff($redcallStructures, $pegassStructures) as $structureIdentiifer) {
             if (0 === $structureIdentiifer) {
                 continue;

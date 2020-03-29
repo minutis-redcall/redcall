@@ -81,6 +81,17 @@ class StructureManager
     /**
      * @param string $identifier
      *
+     * @throws NoResultException
+     * @throws NonUniqueResultException
+     */
+    public function enableByIdentifier(string $identifier)
+    {
+        $this->structureRepository->enableByIdentifier($identifier);
+    }
+
+    /**
+     * @param string $identifier
+     *
      * @return Structure|null
      *
      * @throws NonUniqueResultException
