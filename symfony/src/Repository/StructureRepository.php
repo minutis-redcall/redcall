@@ -32,6 +32,7 @@ class StructureRepository extends BaseRepository
     {
         $rows = $this->createQueryBuilder('s')
                      ->select('s.identifier')
+                     ->where('s.enabled = 1')
                      ->getQuery()
                      ->getArrayResult();
 
@@ -54,6 +55,24 @@ class StructureRepository extends BaseRepository
              ->setParameter('identifier', $identifier)
              ->getQuery()
              ->execute();
+    }
+
+    /**
+     * @param string $identifier
+     *
+     * @throws NoResultException
+     * @throws NonUniqueResultException
+     */
+    public function enableByIdentifier(string $identifier)
+    {
+        $this->createQueryBuilder('s')
+            ->update()
+            ->set('s.enabled', ':enabled')
+            ->setParameter('enabled', true)
+            ->where('s.identifier = :identifier')
+            ->setParameter('identifier', $identifier)
+            ->getQuery()
+            ->execute();
     }
 
     /**

@@ -108,9 +108,9 @@ class PegassManager
      *
      * @return array
      */
-    public function listIdentifiers(string $type): array
+    public function listIdentifiers(string $type, bool $onlyEnabled = true): array
     {
-        return $this->pegassRepository->listIdentifiers($type);
+        return $this->pegassRepository->listIdentifiers($type, $onlyEnabled);
     }
 
     /**

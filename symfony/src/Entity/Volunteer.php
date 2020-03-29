@@ -383,6 +383,24 @@ class Volunteer
     }
 
     /**
+     * @param Tag $tag
+     */
+    public function addTag(Tag $tag)
+    {
+        if (!$this->hasTag($tag)) {
+            $this->tags->add($tag);
+        }
+    }
+
+    /**
+     * @param Tag $tag
+     */
+    public function removeTag(Tag $tag)
+    {
+        $this->tags->removeElement($tag);
+    }
+
+    /**
      * @return array
      */
     public function getTagsView(): array

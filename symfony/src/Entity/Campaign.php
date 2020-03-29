@@ -246,6 +246,8 @@ class Campaign
         $data = [];
         foreach ($this->getCommunications() as $communication) {
             $msgsSent = 0;
+
+            // Messages & Answers
             foreach ($communication->getMessages() as $message) {
                 if ($message->getMessageId()) {
                     $msgsSent++;
@@ -274,6 +276,7 @@ class Campaign
                 ];
             }
 
+            // Progression
             $count                                     = count($communication->getMessages());
             $data[$communication->getId()]['progress'] = [
                 'sent'    => $msgsSent,
@@ -282,8 +285,24 @@ class Campaign
                 'cost'    => $communication->getCost(),
             ];
 
+            // Choice counts
             foreach ($communication->getChoices() as $choice) {
                 $data[$communication->getId()]['choices'][$choice->getId()] = $choice->getCount();
+            }
+
+            // Geolocation
+            $data[$communication->getId()]['geo'] = [];
+            if ($communication->hasGeoLocation()) {
+                foreach ($communication->getMessages() as $message) {
+                    $data[$communication->getId()]['geo'][$message->getId()] = [
+                        'display-name' => $message->getVolunteer()->getDisplayName(),
+                        'phone-number' => $message->getVolunteer()->getPhoneNumber(),
+                        'longitude'    => $message->getGeoLocation()->getLongitude(),
+                        'latitude'     => $message->getGeoLocation()->getLatitude(),
+                        'accuracy'     => $message->getGeoLocation()->getAccuracy(),
+                        'heading'      => $message->getGeoLocation()->getHeading(),
+                    ];
+                }
             }
         }
 

@@ -81,6 +81,17 @@ class StructureManager
     /**
      * @param string $identifier
      *
+     * @throws NoResultException
+     * @throws NonUniqueResultException
+     */
+    public function enableByIdentifier(string $identifier)
+    {
+        $this->structureRepository->enableByIdentifier($identifier);
+    }
+
+    /**
+     * @param string $identifier
+     *
      * @return Structure|null
      *
      * @throws NonUniqueResultException
@@ -198,6 +209,9 @@ class StructureManager
             $users = $this->userInformationManager->findAll();
             foreach ($users as $user) {
                 $volunteer = $user->getVolunteer();
+                if (!$volunteer) {
+                    continue;
+                }
                 $structure->addVolunteer($volunteer);
                 $user->addStructure($structure);
                 $this->userInformationManager->save($user);

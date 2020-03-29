@@ -35,7 +35,15 @@ class TagManager
      */
     public function findOneByLabel(string $label): ?Tag
     {
-        return $this->tagRepository->findOneByLabel($label);
+        static $cache = [];
+
+        if (array_key_exists($label, $cache)) {
+            return $cache[$label];
+        }
+
+        $cache[$label] = $this->tagRepository->findOneByLabel($label);
+
+        return $cache[$label];
     }
 
     /**
