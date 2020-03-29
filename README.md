@@ -4,6 +4,8 @@ This Red Cross project concerns volunteers that do social activities (roams, eme
 
 RedCall.io is a messaging tool for head of emergencies. They use it to ask for volunteer's availability, gather volunteer's answers, and fill up ambulances or assistance units with the required people and skills.
 
+[![Présentation de Redcall](https://img.youtube.com/vi/0g8YDprUqg8/0.jpg)](https://www.youtube.com/watch?v=0g8YDprUqg8)
+
 This project was initially developed by the BlaBlaCar team as part of a Coding Night event, check out more details on [that medium blog post](https://medium.com/blablacar-tech/extending-our-principles-outside-blablacar-the-redalert-project-cf50110f0848).
 
 ## Installation

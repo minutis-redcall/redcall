@@ -198,6 +198,9 @@ class StructureManager
             $users = $this->userInformationManager->findAll();
             foreach ($users as $user) {
                 $volunteer = $user->getVolunteer();
+                if (!$volunteer) {
+                    continue;
+                }
                 $structure->addVolunteer($volunteer);
                 $user->addStructure($structure);
                 $this->userInformationManager->save($user);
