@@ -294,14 +294,16 @@ class Campaign
             $data[$communication->getId()]['geo'] = [];
             if ($communication->hasGeoLocation()) {
                 foreach ($communication->getMessages() as $message) {
-                    $data[$communication->getId()]['geo'][$message->getId()] = [
-                        'display-name' => $message->getVolunteer()->getDisplayName(),
-                        'phone-number' => $message->getVolunteer()->getPhoneNumber(),
-                        'longitude'    => $message->getGeoLocation()->getLongitude(),
-                        'latitude'     => $message->getGeoLocation()->getLatitude(),
-                        'accuracy'     => $message->getGeoLocation()->getAccuracy(),
-                        'heading'      => $message->getGeoLocation()->getHeading(),
-                    ];
+                    if ($message->getGeoLocation()) {
+                        $data[$communication->getId()]['geo'][$message->getId()] = [
+                            'display-name' => $message->getVolunteer()->getDisplayName(),
+                            'phone-number' => $message->getVolunteer()->getPhoneNumber(),
+                            'longitude'    => $message->getGeoLocation()->getLongitude(),
+                            'latitude'     => $message->getGeoLocation()->getLatitude(),
+                            'accuracy'     => $message->getGeoLocation()->getAccuracy(),
+                            'heading'      => $message->getGeoLocation()->getHeading(),
+                        ];
+                    }
                 }
             }
         }
