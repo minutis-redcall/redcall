@@ -13,14 +13,16 @@
         <table class="table">
             <tbody>
             {% for structure in volunteer.structures %}
-                <tr>
-                    <td>{{ structure.displayName }}</td>
-                    <td>
-                        <a href="{{ path('management_volunteers_delete_structure', {volunteerId: volunteer.id, structureId: structure.id, csrf: csrf_token('volunteer')}|merge(app.request.query.all) ) }}" class="btn btn-danger">
-                            {{ 'base.button.delete'|trans }}
-                        </a>
-                    </td>
-                </tr>
+                {% if structure.identifier %}
+                    <tr>
+                        <td>{{ structure.displayName }}</td>
+                        <td>
+                            <a href="{{ path('management_volunteers_delete_structure', {volunteerId: volunteer.id, structureId: structure.id, csrf: csrf_token('volunteer')}|merge(app.request.query.all) ) }}" class="btn btn-danger">
+                                {{ 'base.button.delete'|trans }}
+                            </a>
+                        </td>
+                    </tr>
+                {% endif %}
             {% endfor %}
             </tbody>
         </table>

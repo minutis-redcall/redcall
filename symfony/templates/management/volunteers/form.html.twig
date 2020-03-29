@@ -14,13 +14,17 @@
 
     {% if is_granted('ROLE_ADMIN') %}
         {% if isCreate %}
-            <p>{{ 'manage_volunteers.admin_structures.create'|trans }}</p
+            <p>{{ 'manage_volunteers.admin_structures.create'|trans }}</p>
         {% else %}
             <div class="jumbotron">
                 <h3>{{ 'manage_volunteers.admin_structures.structures'|trans({'%name%': volunteer.displayName}) }}</h3>
+
                 <br/>
+
                 {% for structure in volunteer.structures %}
-                    {{ structure.displayName }}<br/>
+                    {% if structure.identifier %}
+                        {{ structure.displayName }}<br/>
+                    {% endif %}
                 {% endfor %}
 
                 <div class="text-center">
