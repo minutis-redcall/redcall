@@ -37,17 +37,22 @@ class CommunicationManager
     private $processor;
 
     /**
+     * @var UserInformationManager
+     */
+    private $userInformationManager;
+
+    /**
      * @param MessageManager          $messageManager
      * @param CommunicationRepository $communicationRepository
      * @param ProcessorInterface      $processor
+     * @param UserInformationManager  $userInformationManager
      */
-    public function __construct(MessageManager $messageManager,
-        CommunicationRepository $communicationRepository,
-        ProcessorInterface $processor)
+    public function __construct(MessageManager $messageManager, CommunicationRepository $communicationRepository, ProcessorInterface $processor, UserInformationManager $userInformationManager)
     {
-        $this->messageManager          = $messageManager;
+        $this->messageManager = $messageManager;
         $this->communicationRepository = $communicationRepository;
-        $this->processor               = $processor;
+        $this->processor = $processor;
+        $this->userInformationManager = $userInformationManager;
     }
 
     /**
@@ -108,6 +113,9 @@ class CommunicationManager
     {
         $communicationEntity = new CommunicationEntity();
         $communicationEntity
+            ->setVolunteer(
+                $this->userInformationManager->findForCurrentUser()->getVolunteer()
+            )
             ->setType($communicationModel->type)
             ->setBody($communicationModel->message)
             ->setGeoLocation($communicationModel->geoLocation)

@@ -182,6 +182,7 @@ campaign_status:
   warning:
     no_phone: 'Pas de numéro de téléphone'
     no_email: "Pas d'email"
+  by: 'Envoyée par %name%'
 
 new_communication:
   title: Ecrire un nouveau message

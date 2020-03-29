@@ -183,6 +183,7 @@ campaign_status:
   warning:
     no_phone: 'No phone number'
     no_email: "No email"
+  by: 'Sent by %name%'
 
 new_communication:
   title: Write a new message

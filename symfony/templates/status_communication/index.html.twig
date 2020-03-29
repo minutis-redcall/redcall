@@ -123,6 +123,9 @@
 
                     {% if not answerCount %}
                         <strong>{{ communication.body }}</strong>
+                        {% if communication.volunteer %}
+                            <div class="float-right color-grey" style="font-weight: normal;" title="{{ communication.volunteer.nivol }}">{{ 'campaign_status.by'|trans({'%name%': communication.volunteer.displayName}) }}</div>
+                        {% endif %}
                         <br/><br/>
                     {% endif %}
 
@@ -136,6 +139,9 @@
                             <tr>
                                 <th colspan="{{ answerCount }}">
                                     <u>{{ 'campaign_status.message'|trans }}</u> {{ communication.body }}
+                                    {% if communication.volunteer %}
+                                        <div class="float-right color-grey" style="font-weight: normal;" title="{{ communication.volunteer.nivol }}">{{ 'campaign_status.by'|trans({'%name%': communication.volunteer.displayName}) }}</div>
+                                    {% endif %}
                                 </th>
                             </tr>
                             <tr>

@@ -94,6 +94,11 @@ class Communication
     private $multipleAnswer = false;
 
     /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Volunteer", inversedBy="communications")
+     */
+    private $volunteer;
+
+    /**
      * @return mixed
      */
     public function getId()
@@ -470,5 +475,17 @@ class Communication
         }
 
         return false;
+    }
+
+    public function getVolunteer(): ?Volunteer
+    {
+        return $this->volunteer;
+    }
+
+    public function setVolunteer(?Volunteer $volunteer): self
+    {
+        $this->volunteer = $volunteer;
+
+        return $this;
     }
 }

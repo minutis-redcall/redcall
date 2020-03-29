@@ -154,10 +154,16 @@ class Volunteer
      */
     private $structures;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Communication", mappedBy="volunteer")
+     */
+    private $communications;
+
     public function __construct()
     {
         $this->tags       = new ArrayCollection();
         $this->structures = new ArrayCollection();
+        $this->communications = new ArrayCollection();
     }
 
     /**
@@ -649,5 +655,36 @@ class Volunteer
         return preg_replace_callback('/[^\\s\-]+/ui', function (array $match) {
             return sprintf("%s%s", mb_strtoupper(mb_substr($match[0], 0, 1)), mb_strtolower(mb_substr($match[0], 1)));
         }, $name);
+    }
+
+    /**
+     * @return Collection|Communication[]
+     */
+    public function getCommunications(): Collection
+    {
+        return $this->communications;
+    }
+
+    public function addCommunication(Communication $communication): self
+    {
+        if (!$this->communications->contains($communication)) {
+            $this->communications[] = $communication;
+            $communication->setVolunteer($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCommunication(Communication $communication): self
+    {
+        if ($this->communications->contains($communication)) {
+            $this->communications->removeElement($communication);
+            // set the owning side to null (unless already changed)
+            if ($communication->getVolunteer() === $this) {
+                $communication->setVolunteer(null);
+            }
+        }
+
+        return $this;
     }
 }
