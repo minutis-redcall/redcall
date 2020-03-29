@@ -31,7 +31,7 @@ class Communication
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=20, nullable=true)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $label;
 
@@ -92,6 +92,11 @@ class Communication
      * @ORM\Column(type="boolean")
      */
     private $multipleAnswer = false;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="App\Entity\Volunteer", inversedBy="communications")
+     */
+    private $volunteer;
 
     /**
      * @return mixed
@@ -470,5 +475,17 @@ class Communication
         }
 
         return false;
+    }
+
+    public function getVolunteer(): ?Volunteer
+    {
+        return $this->volunteer;
+    }
+
+    public function setVolunteer(?Volunteer $volunteer): self
+    {
+        $this->volunteer = $volunteer;
+
+        return $this;
     }
 }
