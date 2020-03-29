@@ -28,7 +28,7 @@
                 {% endfor %}
 
                 <div class="text-center">
-                    <a href="{{ path('management_volunteers_edit_structures', {id: volunteer.id}|merge(app.request.query.all)) }}" class="btn btn-secondary">
+                    <a href="{{ path('management_volunteers_edit_structures', {id: volunteer.id}) }}" class="btn btn-secondary">
                         {{ 'manage_volunteers.admin_structures.edit'|trans }}
                     </a>
                 </div>

@@ -17,7 +17,7 @@
                     <tr>
                         <td>{{ structure.displayName }}</td>
                         <td>
-                            <a href="{{ path('management_volunteers_delete_structure', {volunteerId: volunteer.id, structureId: structure.id, csrf: csrf_token('volunteer')}|merge(app.request.query.all) ) }}" class="btn btn-danger">
+                            <a href="{{ path('management_volunteers_delete_structure', {volunteerId: volunteer.id, structureId: structure.id, csrf: csrf_token('volunteer')} ) }}" class="btn btn-danger">
                                 {{ 'base.button.delete'|trans }}
                             </a>
                         </td>
@@ -33,14 +33,14 @@
 
         <br/>
 
-        <a href="{{ path('management_volunteers_manual_update', {id: volunteer.id}|merge(app.request.query.all)) }}"
+        <a href="{{ path('management_volunteers_manual_update', {id: volunteer.id}) }}"
            class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
 
     </div>
 
     <script type="text/javascript">
         $('#structure-to-add input').change(function() {
-            document.location = '{{ path('management_volunteers_add_structure', {id: volunteer.id, csrf: csrf_token('volunteer')}|merge(app.request.query.all))|e('js') }}?structure=' + $(this).val();
+            document.location = '{{ path('management_volunteers_add_structure', {id: volunteer.id, csrf: csrf_token('volunteer')})|e('js') }}?structure=' + $(this).val();
         });
     </script>
 

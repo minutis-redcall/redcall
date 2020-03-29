@@ -20,7 +20,7 @@ class TwilioMessageRepository extends ServiceEntityRepository
         parent::__construct($registry, TwilioMessage::class);
     }
 
-    public function save($entity)
+    public function save(TwilioMessage $entity)
     {
         $this->_em->persist($entity);
         $this->_em->flush();

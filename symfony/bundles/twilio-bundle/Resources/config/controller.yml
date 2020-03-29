@@ -9,6 +9,7 @@ services:
   Bundles\TwilioBundle\Controller\StatusController:
     arguments:
       - '@Bundles\TwilioBundle\Manager\TwilioMessageManager'
+      - '@Bundles\TwilioBundle\Manager\TwilioStatusManager'
       - '@event_dispatcher'
     tags:
       - controller.service_arguments

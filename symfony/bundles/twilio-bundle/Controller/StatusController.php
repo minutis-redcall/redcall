@@ -2,8 +2,10 @@
 
 namespace Bundles\TwilioBundle\Controller;
 
+use Bundles\TwilioBundle\Entity\TwilioStatus;
 use Bundles\TwilioBundle\Event\TwilioEvent;
 use Bundles\TwilioBundle\Manager\TwilioMessageManager;
+use Bundles\TwilioBundle\Manager\TwilioStatusManager;
 use Bundles\TwilioBundle\TwilioEvents;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,17 +24,24 @@ class StatusController extends BaseController
     private $messageManager;
 
     /**
+     * @var TwilioStatusManager
+     */
+    private $statusManager;
+
+    /**
      * @var EventDispatcherInterface
      */
     private $eventDispatcher;
 
     /**
      * @param TwilioMessageManager     $messageManager
+     * @param TwilioStatusManager      $statusManager
      * @param EventDispatcherInterface $eventDispatcher
      */
-    public function __construct(TwilioMessageManager $messageManager, EventDispatcherInterface $eventDispatcher)
+    public function __construct(TwilioMessageManager $messageManager, TwilioStatusManager $statusManager, EventDispatcherInterface $eventDispatcher)
     {
-        $this->messageManager  = $messageManager;
+        $this->messageManager = $messageManager;
+        $this->statusManager = $statusManager;
         $this->eventDispatcher = $eventDispatcher;
     }
 
@@ -52,6 +61,11 @@ class StatusController extends BaseController
             $this->eventDispatcher->dispatch(new TwilioEvent($outbound), TwilioEvents::STATUS_UPDATED);
             $this->messageManager->save($outbound);
         }
+
+        $status = new TwilioStatus();
+        $status->setSid($request->get('MessageSid'));
+        $status->setStatus($request->get('MessageStatus'));
+        $this->statusManager->save($status);
 
         return new Response();
     }
