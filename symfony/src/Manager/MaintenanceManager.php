@@ -51,25 +51,24 @@ class MaintenanceManager
             return false;
         }
 
-        $this->structureManager->expireAll();
-        $this->volunteerManager->expireAll();
-
-        $this->refresh();
+        $this->refresh(true);
 
         return true;
     }
 
-    public function refresh(): bool
+    public function refresh($force = false): bool
     {
         if (!$this->canRefresh()) {
             return false;
         }
 
+        $force = $force ? '--force' : '';
+
         $this->settingManager->set(Settings::MAINTENANCE_LAST_REFRESH, time());
 
         // Executing asynchronous task to prevent against interruptions
         $console = sprintf('%s/../bin/console', $this->kernel->getRootDir());
-        $command = sprintf('%s refresh', escapeshellarg($console));
+        $command = sprintf('%s refresh %s', escapeshellarg($console), $force);
         exec(sprintf('%s > /dev/null 2>&1 & echo -n \$!', $command));
 
         return true;

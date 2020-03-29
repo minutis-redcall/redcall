@@ -191,11 +191,6 @@ class StructureManager
         );
     }
 
-    public function expireAll()
-    {
-        $this->structureRepository->expireAll();
-    }
-
     public function createRedCallStructure()
     {
         if (!$this->structureRepository->findOneByName('RedCall')) {

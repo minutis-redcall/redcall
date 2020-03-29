@@ -135,11 +135,6 @@ class VolunteerManager
         );
     }
 
-    public function expireAll()
-    {
-        $this->volunteerRepository->expireAll();
-    }
-
     /**
      * @param callable $callback
      * @param bool     $onlyEnabled

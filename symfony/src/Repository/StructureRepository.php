@@ -6,7 +6,6 @@ use App\Base\BaseRepository;
 use App\Entity\Structure;
 use App\Entity\UserInformation;
 use App\Entity\Volunteer;
-use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
@@ -329,15 +328,5 @@ class StructureRepository extends BaseRepository
             ->setMaxResults($maxResults)
             ->getQuery()
             ->getResult();
-    }
-
-    public function expireAll()
-    {
-        $this->createQueryBuilder('s')
-             ->update()
-             ->set('s.lastPegassUpdate', ':expiredDate')
-             ->setParameter('expiredDate', new DateTime('1984-07-10'))
-             ->getQuery()
-             ->execute();
     }
 }
