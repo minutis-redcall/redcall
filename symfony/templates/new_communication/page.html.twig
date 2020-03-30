@@ -8,14 +8,25 @@
         <div class="h3">{{ 'new_communication.subtitle'|trans({'%label%': campaign.label|lower}) }}</div>
     </h1>
 
-    {{ form_start(form, {attr: {'action': path('communication_new', {id: campaign.id})}}) }}
-    {{ include('new_communication/form.html.twig') }}
-    {{ form_end(form) }}
+    <div id="form-container">
 
-    <a href="{{ path('communication_index', {id: campaign.id}) }}" class="btn btn-light">
-        {{ 'form.communication.fields.back'|trans }}
-    </a>
+        {{ form_start(form, {attr: {'action': path('communication_new', {id: campaign.id})}}) }}
+        {{ include('new_communication/form.html.twig') }}
+        {{ form_end(form) }}
 
-    <br/><br/>
+        <a href="{{ path('communication_index', {id: campaign.id}) }}" class="btn btn-light">
+            {{ 'form.communication.fields.back'|trans }}
+        </a>
 
+        <br/><br/>
+
+    </div>
+
+    <div id="spinner-container" class="d-none">
+        <div class="jumbotron text-center">
+            <div class="h2">{{ 'base.wait'|trans }}</div>
+            <img src="{{ asset('spinner.gif') }}" />
+        </div>
+    </div>
+    
 {% endblock %}

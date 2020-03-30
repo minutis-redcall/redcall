@@ -7,18 +7,29 @@
                 {{ 'campaign.titles.create_full'|trans }}
             </h1>
 
-            {{ form_start(form) }}
-            {{ form_errors(form) }}
+            <div id="form-container">
 
-            {{ form_row(form.label) }}
+                {{ form_start(form) }}
+                {{ form_errors(form) }}
 
-            {{ form_row(form.type) }}
+                {{ form_row(form.label) }}
 
-            <hr/>
+                {{ form_row(form.type) }}
 
-            {{ include('new_communication/form.html.twig', _context|merge({form: form.communication})) }}
+                <hr/>
 
-            {{ form_end(form) }}
+                {{ include('new_communication/form.html.twig', _context|merge({form: form.communication})) }}
+
+                {{ form_end(form) }}
+
+            </div>
+
+            <div id="spinner-container" class="d-none">
+                <div class="jumbotron text-center">
+                    <div class="h2">{{ 'base.wait'|trans }}</div>
+                    <img src="{{ asset('spinner.gif') }}" />
+                </div>
+            </div>
 
         </div>
     </div>

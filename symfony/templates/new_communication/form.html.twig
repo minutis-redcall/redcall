@@ -145,8 +145,11 @@
     refreshPreview();
 
     {# Disable submit button at submission to prevent sending communication twice #}
+    $('#form-container').removeClass('d-none');
+    $('#spinner-container').addClass('d-none');
     $('form').submit(function () {
-        $('#{{ form.submit.vars.id }}').prop('disabled', 'disabled');
+        $('#form-container').addClass('d-none');
+        $('#spinner-container').removeClass('d-none');
     });
 
 </script>
