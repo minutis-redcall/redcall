@@ -81,8 +81,8 @@ class Twilio
         $this->messageManager->save($entity);
 
         try {
-            $outbound = $this->getClient()->messages->create($phoneNumber, [
-                'from'           => getenv('TWILIO_NUMBER'),
+            $outbound = $this->getClient()->messages->create(sprintf('+%s', $phoneNumber), [
+                'from'           => sprintf('+%s', getenv('TWILIO_NUMBER')),
                 'body'           => $message,
                 'statusCallback' => trim(getenv('WEBSITE_URL'), '/').$this->router->generate('twilio_status', ['uuid' => $entity->getUuid()]),
             ]);
