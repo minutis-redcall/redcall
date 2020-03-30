@@ -320,11 +320,7 @@
 
                                     <div id="invalid-answer-raw-{{ suffix }}" style="font-size:10px;">
                                         {% if message.invalidAnswer %}
-                                            {% if message.invalidAnswer.raw|length > 45 %}
-                                                {{ message.invalidAnswer.raw|slice(0, 45) }}...
-                                            {% else %}
-                                                {{ message.invalidAnswer.raw|slice(0, 45) }}
-                                            {% endif %}
+                                            {{ message.invalidAnswer.raw }}
                                         {% endif %}
                                     </div>
                                 </td>
