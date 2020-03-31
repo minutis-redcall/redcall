@@ -41,7 +41,7 @@ services:
     public: true
 
   App\Provider\Email\EmailProvider:
-    class: App\Provider\Email\SymfonyEmailProvider
+    class: App\Provider\Email\Sendgrid
     public: true
 
   App\Communication\Formatter:

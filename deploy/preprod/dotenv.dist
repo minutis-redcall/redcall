@@ -5,6 +5,7 @@ APP_SECRET='some secret'
 
 ###> symfony/swiftmailer-bundle ###
 MAILER_FROM=preprod@redcall.io
+MAILER_NAME=Croix-Rouge
 MAILER_URL='smtp://auto@redcall.io:password@mail.provider.com:465?encryption=ssl'
 ###< symfony/swiftmailer-bundle ###
 
@@ -42,3 +43,5 @@ MINUTIS_SUPPORT=support.minutis@croix-rouge.fr
 TWILIO_ACCOUNT_SID=xxx
 TWILIO_AUTH_TOKEN=xxx
 TWILIO_NUMBER=xxx
+
+SENDGRID_API_KEY=bla
