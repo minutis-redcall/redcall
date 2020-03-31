@@ -35,7 +35,7 @@ class PegassSubscriber implements EventSubscriberInterface
      */
     public function onUpdateDepartment(PegassEvent $event)
     {
-        $this->refreshManager->refreshStructures();
+        $this->refreshManager->refreshStructures(false);
     }
 
     /**
@@ -45,7 +45,7 @@ class PegassSubscriber implements EventSubscriberInterface
      */
     public function onUpdateStructure(PegassEvent $event)
     {
-        $this->refreshManager->refreshStructure($event->getPegass());
+        $this->refreshManager->refreshStructure($event->getPegass(), false);
     }
 
     /**
@@ -53,6 +53,6 @@ class PegassSubscriber implements EventSubscriberInterface
      */
     public function onUpdateVolunteer(PegassEvent $event)
     {
-        $this->refreshManager->refreshVolunteer($event->getPegass());
+        $this->refreshManager->refreshVolunteer($event->getPegass(), false);
     }
 }

@@ -5,7 +5,7 @@ namespace App\Provider\Email;
 use Swift_Mailer;
 use Swift_Message;
 
-class SymfonyEmailProvider implements EmailProvider
+class Symfony implements EmailProvider
 {
     private $mailer;
 

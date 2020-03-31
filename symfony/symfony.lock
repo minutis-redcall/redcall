@@ -212,6 +212,12 @@
     "rize/uri-template": {
         "version": "0.3.2"
     },
+    "sendgrid/php-http-client": {
+        "version": "3.10.5"
+    },
+    "sendgrid/sendgrid": {
+        "version": "7.4.5"
+    },
     "sensio/framework-extra-bundle": {
         "version": "4.0",
         "recipe": {

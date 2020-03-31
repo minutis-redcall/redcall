@@ -7,6 +7,7 @@ use App\Communication\Sender;
 use App\Entity\Communication;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class SendCommunicationCommand extends BaseCommand
@@ -22,7 +23,8 @@ class SendCommunicationCommand extends BaseCommand
         $this
             ->setName('send:communication')
             ->setDescription('Run a "send:message" process on all messages of the given communication')
-            ->addArgument('communication-id', InputArgument::REQUIRED, 'Communication ID');
+            ->addArgument('communication-id', InputArgument::REQUIRED, 'Communication ID')
+            ->addOption('force', null, InputOption::VALUE_NONE, 'Send messages even though they have been sent already.');
     }
 
     /**
@@ -44,7 +46,7 @@ class SendCommunicationCommand extends BaseCommand
         date_default_timezone_set('Europe/Paris');
 
         foreach ($communication->getMessages() as $message) {
-            if ($message->canBeSent()) {
+            if ($input->getOption('force') || $message->canBeSent()) {
                 $this->get(Sender::class)->send($message);
                 if (Communication::TYPE_SMS === $message->getCommunication()->getType()) {
                     usleep(self::PAUSE_SMS);
