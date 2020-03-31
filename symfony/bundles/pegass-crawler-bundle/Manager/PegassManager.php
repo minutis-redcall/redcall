@@ -256,6 +256,7 @@ class PegassManager
 
         $entity->setContent($structure);
         $entity->setUpdatedAt(new DateTime());
+        $entity->setEnabled(true);
         $this->pegassRepository->save($entity);
 
         $parentIdentifier = sprintf('|%s|', $entity->getIdentifier());
