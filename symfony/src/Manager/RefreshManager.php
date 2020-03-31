@@ -225,7 +225,10 @@ class RefreshManager
             }
 
             // Even if locked, it's important to disable the volunteer if it is inactive
-            $volunteer->setEnabled(false);
+            // except if it has been created manually.
+            if ('2100-12-31' !== $volunteer->getLastPegassUpdate()->format('Y-m-d')) {
+                $volunteer->setEnabled(false);
+            }
 
             $this->volunteerManager->save($volunteer);
         }

@@ -150,6 +150,11 @@ class VolunteersController extends BaseController
             // Locks volunteer from being removed at next Pegass sync
             $volunteer->setLocked(true);
 
+            // We should not trigger Pegass updates on a volunteer not taken from Pegass
+            if (!$volunteer->getId()) {
+                $volunteer->setLastPegassUpdate(new \DateTime('2100-12-31'));
+            }
+
             $this->volunteerManager->save($volunteer);
 
             if ($isCreate) {
