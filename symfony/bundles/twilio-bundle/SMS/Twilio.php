@@ -123,7 +123,7 @@ class Twilio
                 $this->eventDispatcher->dispatch(new TwilioEvent($entity), TwilioEvents::PRICE_UPDATED);
                 $this->messageManager->save($entity);
             }
-            usleep(100000);
+            usleep(200000);
         }
     }
 
