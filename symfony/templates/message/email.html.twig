@@ -12,12 +12,8 @@
                 <img height="30" src="{{ website_url }}/{{ asset('build/images/corner_topleft.png')[1:] }}"/>
             </td>
             <td width="80%" height="90">
-                <span style="font-size:25px;color:{{ red }};font-weight:bold;">
-                    {{ campaign.structures.get(0).name }}
-                    {% if campaign.structures.count > 1 %}
-                        <span style="font-size:20px;font-weight:bold;color:{{ red }};">
-                            {{ 'pdf_export.others'|trans({'%others%': campaign.structures.count - 1}) }}
-                        </span>
+                <span style="font-size:25px;color:{{ red }};font-weight:bold;">Minutis
+                        <span style="font-size:20px;font-weight:bold;color:{{ red }};">RedCall</span>
                     {% endif %}
                 </span>
             </td>
