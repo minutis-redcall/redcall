@@ -215,6 +215,11 @@ class Communication
         return $this->body;
     }
 
+    public function canExpandBody(): string
+    {
+        return $this->body !== $this->getLimitedBody();
+    }
+
     /**
      * @param string $body
      *

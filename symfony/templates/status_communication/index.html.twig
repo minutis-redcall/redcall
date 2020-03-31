@@ -121,29 +121,35 @@
                              class="d-none">{{ 'campaign_status.progress'|trans }}</div>
                     </div>
 
-                    {% if not answerCount %}
+                    {# -------------------------------------------------------------------------------- #}
+                    {# Message (shorten and normal version) #}
+                    {# -------------------------------------------------------------------------------- #}
+                    <div id="limited-body-{{ communication.id }}">
                         <strong>{{ communication.limitedBody }}</strong>
+                        {% if communication.canExpandBody %}
+                            <a href="#" class="show-complete-body" data-communication-id="{{ communication.id }}">🔽️</a>
+                        {% endif %}
                         {% if communication.volunteer %}
                             <div class="float-right color-grey" style="font-weight: normal;" title="{{ communication.volunteer.nivol }}">{{ 'campaign_status.by'|trans({'%name%': communication.volunteer.displayName}) }}</div>
                         {% endif %}
-                        <br/><br/>
-                    {% endif %}
+                    </div>
+                    <div id="complete-body-{{ communication.id }}" class="d-none">
+                        {% if communication.subject %}
+                            <br/>
+                            <div class="text-center h4">{{ communication.subject }}</div>
+                        {% endif %}
+
+                        {{ communication.body|nl2br }}
+                        <a href="#" class="show-limited-body" data-communication-id="{{ communication.id }}">🔼️</a>
+                    </div>
+                    <br/>
 
                     {% if answerCount %}
-
                         {# -------------------------------------------------------------------------------- #}
                         {# Table containing message and answers #}
                         {# -------------------------------------------------------------------------------- #}
                         <table class="table">
                             <thead>
-                            <tr>
-                                <th colspan="{{ answerCount }}">
-                                    <u>{{ 'campaign_status.message'|trans }}</u> {{ communication.limitedBody }}
-                                    {% if communication.volunteer %}
-                                        <div class="float-right color-grey" style="font-weight: normal;" title="{{ communication.volunteer.nivol }}">{{ 'campaign_status.by'|trans({'%name%': communication.volunteer.displayName}) }}</div>
-                                    {% endif %}
-                                </th>
-                            </tr>
                             <tr>
                                 {% for choice in communication.choices %}
                                     <th width="{{ (100/answerCount) }}%">
@@ -170,7 +176,6 @@
                             </tr>
                             </tbody>
                         </table>
-
                     {% endif %}
 
                     {# -------------------------------------------------------------------------------- #}
@@ -874,6 +879,25 @@
             }
 
             e.preventDefault();
+        });
+
+        {# -------------------------------------------------------------------------------- #}
+        {# Toggle the message if it is large #}
+        {# -------------------------------------------------------------------------------- #}
+        $('.show-complete-body').click(function(e) {
+            e.preventDefault();
+            var that = $(this);
+            var communicationId = that.data('communication-id');
+            $('#complete-body-' + communicationId).removeClass('d-none');
+            $('#limited-body-' + communicationId).addClass('d-none');
+        });
+
+        $('.show-limited-body').click(function(e) {
+            e.preventDefault();
+            var that = $(this);
+            var communicationId = that.data('communication-id');
+            $('#complete-body-' + communicationId).addClass('d-none');
+            $('#limited-body-' + communicationId).removeClass('d-none');
         });
 
     </script>
