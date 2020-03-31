@@ -98,8 +98,6 @@ class VolunteerType extends AbstractType
         ));
 
         $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
-            /** @var Volunteer $volunteer */
-            $volunteer = $event->getData();
             $builder   = $event->getForm();
 
             if (!$this->security->isGranted('ROLE_ADMIN')) {

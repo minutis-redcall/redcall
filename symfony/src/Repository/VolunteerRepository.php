@@ -150,8 +150,8 @@ class VolunteerRepository extends BaseRepository
             ->join('s.users', 'u')
             ->where('v.enabled = true')
             ->andWhere('u.id = :user')
-            ->andWhere('s.identifier <> 0')
-            ->setParameter('user', $user);
+            ->setParameter('user', $user)
+            ->distinct();
 
         if ($keyword) {
             $qb
@@ -194,7 +194,8 @@ class VolunteerRepository extends BaseRepository
      */
     public function searchAllQueryBuilder(?string $keyword): QueryBuilder
     {
-        $qb = $this->createQueryBuilder('v');
+        $qb = $this->createQueryBuilder('v')
+            ->distinct();
 
         if ($keyword) {
             $qb
