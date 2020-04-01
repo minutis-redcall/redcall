@@ -213,7 +213,7 @@ class CommunicationController extends BaseController
          * @var CommunicationModel
          */
         $communication             = new CommunicationModel();
-        $communication->structures = $userInformation->getVolunteer()->getStructures();
+        $communication->structures = $userInformation->computeStructureList();;
         $communication->volunteers = $volunteers;
         $communication->answers    = [];
 

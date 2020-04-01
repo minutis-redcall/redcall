@@ -100,7 +100,7 @@ class PegassRepository extends ServiceEntityRepository
      *
      * @return array
      */
-    public function removeMissingEntities(string $type, array $identifiers)
+    public function removeMissingEntities(string $type, array $identifiers, string $parentIdentifier = null)
     {
         $qb = $this->createQueryBuilder('p');
 
@@ -110,6 +110,11 @@ class PegassRepository extends ServiceEntityRepository
            ->setParameter('type', $type)
            ->andWhere('p.identifier NOT IN (:identifiers)')
            ->setParameter('identifiers', $identifiers);
+
+        if ($parentIdentifier) {
+            $qb->andWhere('p.parentIdentifier = :parentIdentifier')
+                ->setParameter('parentIdentifier', $parentIdentifier);
+        }
 
         return $qb
             ->getQuery()

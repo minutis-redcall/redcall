@@ -162,4 +162,23 @@ class UserInformation
             $this->addStructure($structure);
         }
     }
+
+    /**
+     * @return array|ArrayCollection
+     */
+    public function computeStructureList()
+    {
+        if (count($this->structures) < 2) {
+            return $this->structures;
+        }
+
+        return array_filter(
+            $this->getStructures()->toArray(), function(Structure $structure) {
+            if (0 == $structure->getIdentifier()) {
+                return false;
+            }
+
+            return true;
+        });
+    }
 }

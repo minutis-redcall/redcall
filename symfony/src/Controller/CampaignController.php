@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Base\BaseController;
 use App\Entity\Campaign;
-use App\Entity\Structure;
 use App\Form\Model\Campaign as CampaignModel;
 use App\Form\Type\CampaignType;
 use App\Manager\CampaignManager;
@@ -90,14 +89,7 @@ class CampaignController extends BaseController
         }
 
         $campaignModel                            = new CampaignModel();
-        $campaignModel->communication->structures = array_filter(
-            $userInformation->getStructures()->toArray(), function(Structure $structure) {
-            if (0 == $structure->getIdentifier()) {
-                return false;
-            }
-
-            return true;
-        });
+        $campaignModel->communication->structures = $userInformation->computeStructureList();
 
         $form = $this
             ->createForm(CampaignType::class, $campaignModel)
