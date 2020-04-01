@@ -25,6 +25,11 @@ use Exception;
 class Structure
 {
     /**
+     * A structure that only contain redcall users, so they can be reached out if needed.
+     */
+    const REDCALL_STRUCTURE = 0;
+
+    /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")

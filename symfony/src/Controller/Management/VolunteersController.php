@@ -264,6 +264,7 @@ class VolunteersController extends BaseController
 
     /**
      * @Route(path="/edit-structures/{id}", name="edit_structures")
+     * @IsGranted("ROLE_ADMIN")
      */
     public function editStructures(Volunteer $volunteer)
     {
@@ -274,6 +275,7 @@ class VolunteersController extends BaseController
 
     /**
      * @Route(name="add_structure", path="add-structure/{csrf}/{id}")
+     * @IsGranted("ROLE_ADMIN")
      */
     public function addStructure(Request $request, string $csrf, Volunteer $volunteer)
     {

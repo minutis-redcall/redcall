@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Base\BaseRepository;
 use App\Entity\Campaign;
+use App\Entity\Structure;
 use Bundles\PasswordLoginBundle\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\ORM\QueryBuilder;
@@ -62,7 +63,8 @@ class CampaignRepository extends BaseRepository
     public function getActiveCampaignsForUserQueryBuilder(User $user): QueryBuilder
     {
         return $this->getActiveCampaignsForAdminQueryBuilder($user)
-            ->andWhere('s.identifier <> 0');
+            ->andWhere('s.identifier <> :redcall')
+            ->setParameter('redcall', Structure::REDCALL_STRUCTURE);
     }
 
     /**
@@ -89,7 +91,8 @@ class CampaignRepository extends BaseRepository
     public function getInactiveCampaignsForUserQueryBuilder(User $user): QueryBuilder
     {
         return $this->getInactiveCampaignsForAdminQueryBuilder($user)
-            ->andWhere('s.identifier <> 0');
+            ->andWhere('s.identifier <> :redcall')
+            ->setParameter('redcall', Structure::REDCALL_STRUCTURE);
     }
 
     /**
