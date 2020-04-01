@@ -2,6 +2,7 @@
 
 namespace App\Manager;
 
+use App\Entity\Structure;
 use App\Entity\UserInformation;
 use App\Repository\UserInformationRepository;
 use Bundles\PasswordLoginBundle\Entity\User;
@@ -148,7 +149,7 @@ class UserInformationManager
     {
         $volunteer = $userInformation->getVolunteer();
 
-        $structure = $this->structureManager->findOneByIdentifier(0);
+        $structure = $this->structureManager->findOneByIdentifier(Structure::REDCALL_STRUCTURE);
         if (!$structure) {
             return;
         }
@@ -171,7 +172,7 @@ class UserInformationManager
     {
         $volunteer = $userInformation->getVolunteer();
 
-        $structure = $this->structureManager->findOneByIdentifier(0);
+        $structure = $this->structureManager->findOneByIdentifier(Structure::REDCALL_STRUCTURE);
         if (!$structure) {
             return;
         }

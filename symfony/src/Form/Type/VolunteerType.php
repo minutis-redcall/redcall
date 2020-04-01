@@ -5,6 +5,7 @@ namespace App\Form\Type;
 use App\Entity\Structure;
 use App\Entity\Tag;
 use App\Entity\Volunteer;
+use App\Manager\StructureManager;
 use App\Manager\UserInformationManager;
 use App\Repository\StructureRepository;
 use App\Tools\PhoneNumberParser;
@@ -28,17 +29,24 @@ class VolunteerType extends AbstractType
     private $userInformationManager;
 
     /**
+     * @var StructureManager
+     */
+    private $structureManager;
+
+    /**
      * @var Security
      */
     private $security;
 
     /**
      * @param UserInformationManager $userInformationManager
+     * @param StructureManager       $structureManager
      * @param Security               $security
      */
-    public function __construct(UserInformationManager $userInformationManager, Security $security)
+    public function __construct(UserInformationManager $userInformationManager, StructureManager $structureManager, Security $security)
     {
         $this->userInformationManager = $userInformationManager;
+        $this->structureManager = $structureManager;
         $this->security = $security;
     }
 
@@ -118,6 +126,16 @@ class VolunteerType extends AbstractType
                     ]);
             }
         });
+
+        if (!$this->security->isGranted('ROLE_ADMIN')) {
+            $builder->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event) {
+                /** @var Volunteer $volunteer */
+                $volunteer = $event->getData();
+                if ($this->userInformationManager->findOneByNivol($volunteer->getNivol())) {
+                    $volunteer->addStructure($this->structureManager->findOneByIdentifier(Structure::REDCALL_STRUCTURE));
+                }
+            });
+        }
     }
 
     /**

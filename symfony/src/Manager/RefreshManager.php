@@ -256,11 +256,11 @@ class RefreshManager
         // Add structures based on the actions performed by the volunteer
         $identifiers = [];
         foreach ($pegass->evaluate('actions') ?? [] as $action) {
-            if (isset($action['structure']['identifier']) && !in_array($action['structure']['identifier'], $identifiers)) {
-                if ($structure = $this->structureManager->findOneByIdentifier($action['structure']['identifier'])) {
+            if (isset($action['structure']['id']) && !in_array($action['structure']['id'], $identifiers)) {
+                if ($structure = $this->structureManager->findOneByIdentifier($action['structure']['id'])) {
                     $volunteer->addStructure($structure);
                 }
-                $identifiers[] = $action['structure']['identifier'];
+                $identifiers[] = $action['structure']['id'];
             }
         }
 

@@ -106,7 +106,7 @@ class VolunteersController extends BaseController
     }
 
     /**
-     * @Route(name="pegass_update", path="/pegass-update/{csrf}/{id}")
+     * @Route(path="/pegass-update/{csrf}/{id}", name="pegass_update")
      * @IsGranted("VOLUNTEER", subject="volunteer")
      */
     public function pegassUpdate(Volunteer $volunteer, string $csrf)
@@ -135,7 +135,7 @@ class VolunteersController extends BaseController
     }
 
     /**
-     * @Route(path="manual-update/{id}", name="manual_update")
+     * @Route(path="/manual-update/{id}", name="manual_update")
      * @IsGranted("VOLUNTEER", subject="volunteer")
      */
     public function manualUpdateAction(Request $request, Volunteer $volunteer)
@@ -188,7 +188,7 @@ class VolunteersController extends BaseController
     }
 
     /**
-     * @Route(path="lock/{csrf}/{id}", name="lock")
+     * @Route(path="/lock/{csrf}/{id}", name="lock")
      * @IsGranted("VOLUNTEER", subject="volunteer")
      */
     public function lockAction(Volunteer $volunteer, string $csrf)
@@ -202,7 +202,7 @@ class VolunteersController extends BaseController
     }
 
     /**
-     * @Route(path="unlock/{csrf}/{id}", name="unlock")
+     * @Route(path="/unlock/{csrf}/{id}", name="unlock")
      * @IsGranted("VOLUNTEER", subject="volunteer")
      */
     public function unlockAction(Volunteer $volunteer, string $csrf)
@@ -216,7 +216,7 @@ class VolunteersController extends BaseController
     }
 
     /**
-     * @Route(path="disable/{csrf}/{id}", name="disable")
+     * @Route(path="/disable/{csrf}/{id}", name="disable")
      * @IsGranted("VOLUNTEER", subject="volunteer")
      */
     public function disableAction(Volunteer $volunteer, string $csrf)
@@ -231,7 +231,7 @@ class VolunteersController extends BaseController
     }
 
     /**
-     * @Route(path="enable/{csrf}/{id}", name="enable")
+     * @Route(path="/enable/{csrf}/{id}", name="enable")
      * @IsGranted("VOLUNTEER", subject="volunteer")
      */
     public function enableAction(Volunteer $volunteer, string $csrf)
@@ -246,7 +246,7 @@ class VolunteersController extends BaseController
     }
 
     /**
-     * @Route(name="pegass", path="/pegass/{id}")
+     * @Route(path="/pegass/{id}", name="pegass")
      * @IsGranted("ROLE_ADMIN")
      */
     public function pegass(Volunteer $volunteer)
@@ -264,6 +264,7 @@ class VolunteersController extends BaseController
 
     /**
      * @Route(path="/edit-structures/{id}", name="edit_structures")
+     * @IsGranted("ROLE_ADMIN")
      */
     public function editStructures(Volunteer $volunteer)
     {
@@ -273,7 +274,8 @@ class VolunteersController extends BaseController
     }
 
     /**
-     * @Route(name="add_structure", path="add-structure/{csrf}/{id}")
+     * @Route(path="/add-structure/{csrf}/{id}", name="add_structure")
+     * @IsGranted("ROLE_ADMIN")
      */
     public function addStructure(Request $request, string $csrf, Volunteer $volunteer)
     {
@@ -302,7 +304,7 @@ class VolunteersController extends BaseController
     }
 
     /**
-     * @Route(name="delete_structure", path="delete-structure/{csrf}/{volunteerId}/{structureId}")
+     * @Route(path="/delete-structure/{csrf}/{volunteerId}/{structureId}", name="delete_structure")
      * @Entity("volunteer", expr="repository.find(volunteerId)")
      * @Entity("structure", expr="repository.find(structureId)")
      */

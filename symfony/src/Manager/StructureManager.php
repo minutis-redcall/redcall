@@ -195,7 +195,7 @@ class StructureManager
     {
         if (!$this->structureRepository->findOneByName('RedCall')) {
             $structure = new Structure();
-            $structure->setIdentifier(0);
+            $structure->setIdentifier(Structure::REDCALL_STRUCTURE);
             $structure->setName('RedCall');
             $structure->setType('UL');
             $structure->setEnabled(true);
