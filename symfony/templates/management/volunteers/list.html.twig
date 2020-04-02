@@ -35,7 +35,7 @@
                                 {% if volunteer.minor %}
                                     <span title="{{ 'manage_volunteers.form.minor'|trans }}">🐻</span>
                                 {% endif %}
-                                {% if is_granted('ROLE_ADMIN') %}
+                                {% if is_granted('ROLE_ADMIN') and volunteer.identifier %}
                                     <a href="{{ path('management_volunteers_pegass', {id: volunteer.id}) }}" target="_blank">🛠</a>
                                 {% endif %}
                             </div>
