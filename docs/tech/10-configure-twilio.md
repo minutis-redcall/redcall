@@ -2,7 +2,7 @@
 
 Twilio is the SMS provider: http://twilio.com/
 
-Once you created your account, 
+Once you created your account:
 
 1) You need to get your API credentials, you'll find them at https://www.twilio.com/console/project/settings
 
