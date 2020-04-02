@@ -83,4 +83,22 @@ class PrefilledAnswersController extends BaseController
         return ['form' => $form->createView(), 'structure' => $structure];
     }
 
+    /**
+     * @Route("/{prefilledAnswers}/delete", requirements={"prefilledAnswers" = "\d+"}, name="delete")
+     */
+    public function deleteAction(Request $request, PrefilledAnswers $prefilledAnswers, Structure $structure)
+    {
+        $csrf = $request->get('csrf');
+        if($csrf === null || !$this->isCsrfTokenValid('prefilled_answers',$csrf)) {
+            throw $this->createNotFoundException();
+        }
+
+
+        $em = $this->getManager();
+        $em->remove($prefilledAnswers);
+        $em->flush();
+
+        return $this->redirectToRoute('management_structures_prefilled_answers_list', ['structure' => $structure->getId()]);
+    }
+
 }

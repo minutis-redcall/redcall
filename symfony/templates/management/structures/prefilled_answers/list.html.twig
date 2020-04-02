@@ -25,18 +25,18 @@
 
                 <br/>
 
-                <a href="{{ path('management_structures_prefilled_answers_edit', {structure: prefilledAnswer.structure.id, prefilledAnswers: prefilledAnswer.id}) }}"
+                <a href="{{ path('management_structures_prefilled_answers_edit', {structure: structure.id, prefilledAnswers: prefilledAnswer.id}) }}"
                    class="btn btn-primary">
                     {{ 'base.button.update'|trans }}
                 </a>
 
                 &nbsp;&nbsp;&nbsp;
 
-{#                <a href="{{ path('admin_prefilled_answers_delete', {pfaId: prefilledAnswer.id, csrf: csrf_token('prefilled_answers')}) }}"#}
-{#                   class="btn btn-secondary"#}
-{#                   onclick="return confirm('{{ 'base.crud.delete_confirm'|trans({'%entity%': prefilledAnswer.label})|e('js') }}');">#}
-{#                    {{ 'base.button.delete'|trans }}#}
-{#                </a>#}
+                <a href="{{ path('management_structures_prefilled_answers_delete', {structure: structure.id, prefilledAnswers: prefilledAnswer.id, csrf: csrf_token('prefilled_answers')}) }}"
+                   class="btn btn-secondary"
+                   onclick="return confirm('{{ 'base.crud.delete_confirm'|trans({'%entity%': prefilledAnswer.label})|e('js') }}');">
+                    {{ 'base.button.delete'|trans }}
+                </a>
 
             </div>
 
