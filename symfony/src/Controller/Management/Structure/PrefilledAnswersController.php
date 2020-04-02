@@ -65,6 +65,9 @@ class PrefilledAnswersController extends BaseController
             $prefilledAnswers->setStructure($structure);
         } else {
             $prefilledAnswers = $this->prefilledAnswersManager->findById($request->get('prefilledAnswers'));
+            if (!$prefilledAnswers) {
+                throw $this->createNotFoundException();
+            }
         }
 
         $form = $this
