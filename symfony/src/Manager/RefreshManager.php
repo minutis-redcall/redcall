@@ -94,6 +94,10 @@ class RefreshManager
 
     public function disableInactiveStructures()
     {
+        // todo: we should disable those who are enabled=0 in pegass, not the ones missing
+        // otherwise volunteers created manually will be deleted
+        return;
+
         $this->debug('Disabling inactive structures');
 
         // RedCall structures that are enabled
@@ -104,7 +108,7 @@ class RefreshManager
 
         // We try to enable Pegass structures not in RedCall structures
         foreach (array_diff($pegassStructures, $redcallStructures) as $structureIdentiifer) {
-            if (0 === $structureIdentiifer) {
+            if (Structure::REDCALL_STRUCTURE === $structureIdentiifer) {
                 continue;
             }
 
@@ -117,7 +121,7 @@ class RefreshManager
 
         // We disable RedCall structures not in Pegass structures
         foreach (array_diff($redcallStructures, $pegassStructures) as $structureIdentiifer) {
-            if (0 === $structureIdentiifer) {
+            if (Structure::REDCALL_STRUCTURE === $structureIdentiifer) {
                 continue;
             }
 
@@ -205,6 +209,10 @@ class RefreshManager
 
     public function disableInactiveVolunteers()
     {
+        // todo: we should disable those who are enabled=0 in pegass, not the ones missing
+        // otherwise volunteers created manually will be deleted
+        return;
+
         $this->debug('Disabling inactive volunteers');
         $redcallVolunteers = $this->volunteerManager->listVolunteerNivols();
 
@@ -218,6 +226,9 @@ class RefreshManager
             ]);
 
             $volunteer = $this->volunteerManager->findOneByNivol($volunteerIdentiifer);
+            if (!$volunteer) {
+                continue;
+            }
 
             if ($volunteer->isLocked()) {
                 $volunteer->setReport([]);
