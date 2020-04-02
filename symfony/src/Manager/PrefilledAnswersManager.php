@@ -59,4 +59,24 @@ class PrefilledAnswersManager
         return $this->prefilledAnswersRepository->findByUserForStructureAndGlobal($userInformation);
     }
 
+    public function save(PrefilledAnswers $prefilledAnswers)
+    {
+        $this->prefilledAnswersRepository->save($prefilledAnswers);
+    }
+
+    public function remove(PrefilledAnswers $prefilledAnswers)
+    {
+        $this->prefilledAnswersRepository->remove($prefilledAnswers);
+    }
+
+    /**
+     * Return all prefilled answers that are not related to any structure
+     *
+     * @return QueryBuilder
+     */
+    public function getGlobalPrefilledAnswers()
+    {
+        return $this->prefilledAnswersRepository->getGlobalPrefilledAnswers();
+    }
+
 }

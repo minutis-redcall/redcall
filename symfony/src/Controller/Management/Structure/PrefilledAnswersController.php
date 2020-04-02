@@ -75,10 +75,7 @@ class PrefilledAnswersController extends BaseController
             ->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getManager();
-            $em->persist($prefilledAnswers);
-            $em->flush();
-
+            $this->prefilledAnswersManager->save($prefilledAnswers);
             return $this->redirectToRoute('management_structures_prefilled_answers_list', ['structure' => $structure->getId()]);
         }
 
@@ -93,10 +90,7 @@ class PrefilledAnswersController extends BaseController
     {
         $this->validateCsrfOrThrowNotFoundException('prefilled_answers', $request->get('csrf'));
 
-
-        $em = $this->getManager();
-        $em->remove($prefilledAnswers);
-        $em->flush();
+        $this->prefilledAnswersManager->remove($prefilledAnswers);
 
         return $this->redirectToRoute('management_structures_prefilled_answers_list', ['structure' => $structure->getId()]);
     }

@@ -73,4 +73,14 @@ class PrefilledAnswersRepository extends BaseRepository
 
         return $qb->getQuery()->getResult();
     }
+
+    /**
+     * Return query builder of all global prefilled answers (all without structure)
+     *
+     * @return QueryBuilder
+     */
+    public function getGlobalPrefilledAnswers()
+    {
+        return $this->createQueryBuilder('pa')->where('pa.structure is null');
+    }
 }
