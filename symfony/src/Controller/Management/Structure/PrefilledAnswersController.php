@@ -10,6 +10,7 @@ use App\Entity\Structure;
 use App\Form\Type\PrefilledAnswersType;
 use App\Manager\PrefilledAnswersManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -17,6 +18,7 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * @Route(path="management/structures/{structure}/prefilled-answers", name="management_structures_prefilled_answers_")
  * @ParamConverter("structure", options={"id" = "structure"})
+ * @Security("is_granted('STRUCTURE', structure)")
  */
 class PrefilledAnswersController extends BaseController
 {
