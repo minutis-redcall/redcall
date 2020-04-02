@@ -91,10 +91,7 @@ class PrefilledAnswersController extends BaseController
      */
     public function deleteAction(Request $request, PrefilledAnswers $prefilledAnswers, Structure $structure)
     {
-        $csrf = $request->get('csrf');
-        if($csrf === null || !$this->isCsrfTokenValid('prefilled_answers',$csrf)) {
-            throw $this->createNotFoundException();
-        }
+        $this->validateCsrfOrThrowNotFoundException('prefilled_answers', $request->get('csrf'));
 
 
         $em = $this->getManager();
