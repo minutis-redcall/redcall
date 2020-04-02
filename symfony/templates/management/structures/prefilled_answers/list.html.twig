@@ -49,4 +49,12 @@
     {% endfor %}
 
     {{ macros.pager(pager) }}
+
+    <br><br>
+    <a href="{{ path('management_structures_prefilled_answers_new', {structure: structure.id}) }}"
+       class="btn btn-secondary">
+        {{ 'base.button.create'|trans }}
+    </a>
+
+    <br><br>
 {% endblock %}

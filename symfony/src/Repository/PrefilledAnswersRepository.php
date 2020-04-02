@@ -63,4 +63,14 @@ class PrefilledAnswersRepository extends BaseRepository
 
         return $qb;
     }
+
+    public function findByUserForStructureAndGlobal(\App\Entity\UserInformation $userInformation)
+    {
+        $qb = $this->createQueryBuilder('pa')
+            ->where('pa.structure is null')
+            ->orWhere('pa.structure in(:ids)')
+            ->setParameter('ids', $userInformation->getStructures());
+
+        return $qb->getQuery()->getResult();
+    }
 }

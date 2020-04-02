@@ -5,7 +5,7 @@
 {% block body %}
 
     <h1>
-        {{ 'manage_structures.prefilled_answers.title'|trans }}
+        {{ 'manage_structures.prefilled_answers.form.title'|trans }}
     </h1>
 
     {{ form_start(form) }}
@@ -20,7 +20,7 @@
     <br/>
 
     <div class="text-center">
-        <a href="{{ path('management_home') }}" class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+        <a href="{{ path('management_structures_prefilled_answers_list', {structure: structure.id}) }}" class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
     </div>
 
     <br/><br/>

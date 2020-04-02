@@ -288,6 +288,10 @@ manage_structures:
   next_update: 'Prochaine synchro avec Pegass : %next_update% UTC'
   force_update: 'Forcer la mise à jour maintenant'
   manage_prefilled_answers: 'Gérer les réponses pré-formattés'
+  prefilled_answers:
+    form:
+      title: "Ajout/edition de messages pré-formattés"
+    list_title: "Liste des messages pré-formattés"
 csv_export:
   nivol: Nivol
   firstname: Prénom

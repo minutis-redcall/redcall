@@ -43,7 +43,7 @@ class PrefilledAnswersController extends BaseController
     {
         $prefilledAnswers = $this->prefilledAnswersManager->getPrefilledAnswersByStructure($structure);
 
-        return ['pager' => $this->getPager($prefilledAnswers)];
+        return ['pager' => $this->getPager($prefilledAnswers), 'structure' => $structure];
     }
 
 
@@ -53,15 +53,16 @@ class PrefilledAnswersController extends BaseController
      * @Template("management/structures/prefilled_answers/editor.html.twig")
      *
      * @param Structure $structure
-     * @param PrefilledAnswers|null $prefilledAnswers
      *
      * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function editorPrefilledAnswers(Request $request, Structure $structure, ?PrefilledAnswers $prefilledAnswers = null)
+    public function editorPrefilledAnswers(Request $request, Structure $structure)
     {
-        if($prefilledAnswers === null) {
+        if($request->get('prefilledAnswers') === null) {
             $prefilledAnswers = new PrefilledAnswers();
             $prefilledAnswers->setStructure($structure);
+        } else {
+            $prefilledAnswers = $this->prefilledAnswersManager->findById($request->get('prefilledAnswers'));
         }
 
         $form = $this
@@ -77,7 +78,7 @@ class PrefilledAnswersController extends BaseController
         }
 
 
-        return ['form' => $form->createView()];
+        return ['form' => $form->createView(), 'structure' => $structure];
     }
 
 }
