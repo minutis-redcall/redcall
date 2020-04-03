@@ -7,5 +7,3 @@ COVID-19 battle and we decided to make this project usable
 by other parties than the Red Cross.
 
 
-
-

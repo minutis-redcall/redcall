@@ -5,9 +5,10 @@ admin:
     list: Liste d'utilisateurs
     pegass: Connexions à Pegass
   pegass:
-    title: 'Connexions entre les utilisateurs de RedCall et la base de données Pegass'
+    title: 'Connexions entre les utilisateurs de RedCall et la base de données volontaire'
     structures: 'Mise à jour des structures pour %name%'
     create_user: 'Ajouter un nouvel utilisateur'
+    bound_volunteer: 'Volontaire associé : %name%'
   dashboard:
     title: 'Statistiques'
   statistics:
@@ -103,6 +104,7 @@ base:
     no_results: 'Aucun résultat trouvé pour "{keyword}".'
   clear_selection: 'Effacer la sélection'
   wait: 'Un petit instant...'
+  actions: 'Actions'
 
 campaign:
   titles:
@@ -293,11 +295,11 @@ manage_structures:
   last_update: 'Dernière synchro avec Pegass : %last_update% UTC'
   next_update: 'Prochaine synchro avec Pegass : %next_update% UTC'
   force_update: 'Forcer la mise à jour maintenant'
-  manage_prefilled_answers: 'Gérer les réponses pré-formattés'
+  manage_prefilled_answers: 'Gérer les réponses pré-remplies'
   prefilled_answers:
     form:
-      title: "Ajout/edition de messages pré-formattés"
-    list_title: "Liste des messages pré-formattés"
+      title: "Ajout/edition de réponse pré-remplies"
+    list_title: "Liste des réponses pré-remplies"
 csv_export:
   nivol: Nivol
   firstname: Prénom

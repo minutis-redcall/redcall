@@ -8,42 +8,7 @@
 
 {% block body %}
 
-    <div class="text-center">
-        <br/>
-        <a href="{{ path('admin_pegass_create_user') }}" class="btn btn-secondary">{{ 'admin.pegass.create_user'|trans }}</a>
-        <br/><br/>
-    </div>
-
-    <nav>
-        <div class="nav nav-tabs" id="nav-tab" role="tablist">
-            <a class="nav-item nav-link {% if type == 'user' %}active{% endif %}" id="nav-list-tab" data-toggle="tab"
-               href="#nav-list" role="tab"
-               aria-controls="nav-enabled" aria-selected="true">{{ 'admin.user.list'|trans }}</a>
-            <a class="nav-item nav-link {% if type == 'pegass' %}active{% endif %}" id="nav-pegass-tab"
-               data-toggle="tab"
-               href="#nav-pegass" role="tab"
-               aria-controls="nav-disabled" aria-selected="false">{{ 'admin.user.pegass'|trans }}</a>
-        </div>
-    </nav>
-
-    <div class="tab-content" id="nav-content">
-
-        <div class="tab-pane {% if type == 'user' %}show active{% endif %}"
-             id="nav-list"
-             role="tabpanel" aria-labelledby="nav-list-tab">
-
-            {{ block('content', '@!PasswordLogin/admin/list.html.twig') }}
-
-        </div>
-        <div class="tab-pane {% if type == 'pegass' %}show active{% endif %}"
-             id="nav-pegass"
-             role="tabpanel" aria-labelledby="nav-pegass-tab">
-
-            {{ render(controller('\\App\\Controller\\Admin\\PegassController::index')) }}
-
-        </div>
-
-    </div>
+    {{ render(controller('\\App\\Controller\\Admin\\PegassController::index')) }}
 
     {{ block('locales') }}
 

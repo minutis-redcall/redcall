@@ -34,7 +34,7 @@ class AdminController extends BaseController
 
         if (class_exists(PaginationBundle::class)) {
             return [
-                'pager'  => false,
+                'pager'  => true,
                 'search' => $search->createView(),
                 'users'  => $this->get(PaginationManager::class)->getPager(
                     $this->getManager(User::class)->searchAllQueryBuilder($criteria)
@@ -43,7 +43,7 @@ class AdminController extends BaseController
         }
 
         return [
-            'pager'  => true,
+            'pager'  => false,
             'search' => $search->createView(),
             'users'  => $this->getManager(User::class)->searchAll($criteria),
         ];

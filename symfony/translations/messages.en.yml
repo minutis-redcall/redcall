@@ -5,9 +5,10 @@ admin:
     list: User list
     pegass: Pegass bindings
   pegass:
-    title: 'Bindings between RedCall users and Pegass database'
+    title: 'Bindings between RedCall users and volunteer database'
     structures: 'Update structures for %name%'
     create_user: 'Add a new user'
+    bound_volunteer: 'Bound volunteer: %name%'
   dashboard:
     title: 'Statistics'
   statistics:
@@ -104,6 +105,7 @@ base:
     no_results: 'No results found for "{keyword}".'
   clear_selection: 'Clear selection'
   wait: 'One moment...'
+  actions: 'Actions'
 
 modal:
   change_color: Change color...

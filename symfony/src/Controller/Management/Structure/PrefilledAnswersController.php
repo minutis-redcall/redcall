@@ -2,8 +2,6 @@
 
 namespace App\Controller\Management\Structure;
 
-
-
 use App\Base\BaseController;
 use App\Entity\PrefilledAnswers;
 use App\Entity\Structure;
@@ -22,7 +20,6 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class PrefilledAnswersController extends BaseController
 {
-
     /**
      * @var PrefilledAnswersManager
      */
@@ -47,7 +44,6 @@ class PrefilledAnswersController extends BaseController
 
         return ['pager' => $this->getPager($prefilledAnswers), 'structure' => $structure];
     }
-
 
     /**
      * @Route("/{prefilledAnswers}/editor", requirements={"prefilledAnswers" = "\d+"}, name="edit")
@@ -94,5 +90,4 @@ class PrefilledAnswersController extends BaseController
 
         return $this->redirectToRoute('management_structures_prefilled_answers_list', ['structure' => $structure->getId()]);
     }
-
 }
