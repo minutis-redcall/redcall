@@ -100,9 +100,11 @@
 
             {% block security %}
 
-                <a href="{{ minutis_url }}">{{ 'minutis.back'|trans }}</a>
+                {% if is_redcross %}
+                    <a href="{{ minutis_url }}">{{ 'minutis.back'|trans }}</a>
 
-                <br/><br/>
+                    <br/><br/>
+                {% endif %}
 
                 {{ include('@PasswordLogin/menu.html.twig', {
                     display_profile: false,

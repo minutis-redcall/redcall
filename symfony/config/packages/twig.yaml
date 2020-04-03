@@ -6,4 +6,5 @@ twig:
   - 'bootstrap_4_layout.html.twig'
   - 'form_theme.html.twig'
   globals:
+    is_redcross: '%env(IS_REDCROSS)%'
     minutis_url: '%env(MINUTIS_URL)%'

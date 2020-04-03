@@ -75,9 +75,10 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
 
     public function supports(Request $request)
     {
-        $support = getenv('MINUTIS_JWT_PUBLIC_KEY_URL')
-               && '/auth' === $request->getPathInfo()
-               && 'POST' === $request->getMethod();
+        $support = getenv('IS_REDCROSS')
+            && getenv('MINUTIS_JWT_PUBLIC_KEY_URL')
+            && '/auth' === $request->getPathInfo()
+            && 'POST' === $request->getMethod();
 
         if (!$support) {
             $this->logger->debug('Minutis authenticator: request not supported.', [
