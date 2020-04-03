@@ -19,7 +19,7 @@ This project runs on Docker for development purposes.
 Many tools have been developed to disable or mock external providers,
 so you can get ready to work in a few seconds.
 
-Find set up instructions [here](docs/tech/00-development.md).
+Set up instructions [here](docs/tech/00-development.md), and read the [CONTRIBUTING](CONTRIBUTING.md).
 
 ### Staging and production
 
@@ -41,7 +41,8 @@ by following the next sections.
 - [Setting up Google Cloud SQL](docs/tech/07-google-cloud-sql.md)
 - [Setting up a "Dev PC to MySQL" connection](docs/tech/08-connect-to-MySQL-from-your-pc.md)
 - [Setting up Mapbox](docs/tech/09-configure-mapbox.md)
-- [Setting up Nexmo](docs/tech/10-configure-nexmo.md)
+- [Setting up Twilio](docs/tech/10-configure-twilio.md)
+- [Setting up Sendgrid](docs/tech/10-configure-sendgrid.md)
 - [Setting up Pegass](docs/tech/11-configure-pegass.md)
 
 To deploy, run the following commands:
