@@ -284,6 +284,8 @@ manage_volunteers:
 
 manage_structures:
   title: 'Gestion des structures'
+  import: 'Importer un fichier CSV'
+  import_submit: 'Importer'
   search:
     label: 'Rechercher une structure'
     button: 'Rechercher'

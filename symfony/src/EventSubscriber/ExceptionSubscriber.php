@@ -44,6 +44,8 @@ class ExceptionSubscriber implements EventSubscriberInterface
 
     public function logException(GetResponseForExceptionEvent $event)
     {
+        return;
+
         $exception = $event->getException();
         Bootstrap::init();
         Bootstrap::exceptionHandler($exception);

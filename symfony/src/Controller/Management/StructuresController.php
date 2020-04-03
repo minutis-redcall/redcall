@@ -4,7 +4,9 @@ namespace App\Controller\Management;
 
 use App\Base\BaseController;
 use App\Entity\Structure;
+use App\Form\Type\StructureImportType;
 use App\Manager\StructureManager;
+use App\Structure\StructureImporter;
 use Bundles\PaginationBundle\Manager\PaginationManager;
 use Bundles\PegassCrawlerBundle\Entity\Pegass;
 use Bundles\PegassCrawlerBundle\Manager\PegassManager;
@@ -17,6 +19,7 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\ConstraintViolationList;
 
 /**
  * @Route(path="management/structures", name="management_structures_")
@@ -44,27 +47,55 @@ class StructuresController extends BaseController
     private $kernel;
 
     /**
+     * @var StructureImporter
+     */
+    private $structureImporter;
+
+    /**
      * @param StructureManager  $structureManager
      * @param PaginationManager $paginationManager
      * @param PegassManager     $pegassManager
      * @param KernelInterface   $kernel
+     * @param StructureImporter $structureImporter
      */
     public function __construct(StructureManager $structureManager,
         PaginationManager $paginationManager,
         PegassManager $pegassManager,
-        KernelInterface $kernel)
+        KernelInterface $kernel,
+        StructureImporter $structureImporter
+    )
     {
         $this->structureManager  = $structureManager;
         $this->paginationManager = $paginationManager;
         $this->pegassManager     = $pegassManager;
         $this->kernel            = $kernel;
+        $this->structureImporter = $structureImporter;
     }
 
     /**
      * @Route(name="list")
+     * @param Request $request
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
+     * @throws \Doctrine\DBAL\DBALException
      */
     public function listAction(Request $request)
     {
+        // CSV import form.
+        $violationList = new ConstraintViolationList();
+        $importForm = $this->createForm(StructureImportType::class);
+        $importForm->handleRequest($request);
+
+        if ($importForm->isSubmitted() && $importForm->isValid()) {
+            $file = $importForm->get('file')->getData();
+            $this->structureImporter->getDataProvider()->init([
+                'file' => $file,
+                'delimiter' => ';',
+            ]);
+            $violationList = $this->structureImporter->import();
+        }
+
+        // Search form.
         $search = $this->createSearchForm($request);
 
         $criteria = null;
@@ -78,9 +109,13 @@ class StructuresController extends BaseController
             $queryBuilder = $this->structureManager->searchForCurrentUserQueryBuilder($criteria);
         }
 
+        $importForm = $this->createForm(StructureImportType::class);
+
         return $this->render('management/structures/list.html.twig', [
             'search'     => $search->createView(),
             'structures' => $this->paginationManager->getPager($queryBuilder),
+            'importForm' => $importForm->createView(),
+            'importViolationList' => $violationList,
         ]);
     }
 
