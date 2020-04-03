@@ -5,25 +5,36 @@ namespace App\Controller\Admin;
 use App\Base\BaseController;
 use App\Entity\PrefilledAnswers;
 use App\Form\Type\PrefilledAnswersType;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use App\Manager\PrefilledAnswersManager;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * @Route(path="admin/reponses-pre-remplies/", name="admin_prefilled_answers_")
  */
 class PrefilledAnswersController extends BaseController
 {
+
+    /**
+     * @var PrefilledAnswersManager
+     */
+    private $prefilledAnswersManager;
+
+    public function __construct(PrefilledAnswersManager $prefilledAnswersManager)
+    {
+        $this->prefilledAnswersManager = $prefilledAnswersManager;
+    }
+
     /**
      * @Route(name="list")
      */
     public function listAction()
     {
-        $pfas = $this
-            ->getManager(PrefilledAnswers::class)
-            ->createQueryBuilder('p');
+        $prefilledAnswers = $this->prefilledAnswersManager->getGlobalPrefilledAnswers();
 
         return $this->render('admin/prefilled_answers/list.html.twig', [
-            'pager' => $this->getPager($pfas),
+            'pager' => $this->getPager($prefilledAnswers),
         ]);
     }
 
@@ -40,7 +51,10 @@ class PrefilledAnswersController extends BaseController
         $pfa = new PrefilledAnswers();
 
         if ($pfaId) {
-            $pfa = $this->getPrefilledAnswser($pfaId);
+            $pfa = $this->prefilledAnswersManager->findById($pfaId);
+            if (!$pfa) {
+                throw $this->createNotFoundException();
+            }
         }
 
         $form = $this
@@ -48,9 +62,7 @@ class PrefilledAnswersController extends BaseController
             ->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $em = $this->getManager();
-            $em->persist($pfa);
-            $em->flush();
+            $this->prefilledAnswersManager->save($pfa);
 
             return $this->redirectToRoute('admin_prefilled_answers_list');
         }
@@ -67,27 +79,13 @@ class PrefilledAnswersController extends BaseController
      *     path="supprimer/{csrf}/{pfaId}",
      *     requirements={"pfaId" = "\d+"}
      * )
+     * @ParamConverter("prefilledAnswers", options={"id"= "pfaId"})
      */
-    public function deleteAction(int $pfaId, string $csrf)
+    public function deleteAction(PrefilledAnswers $prefilledAnswers, string $csrf)
     {
         $this->validateCsrfOrThrowNotFoundException('prefilled_answers', $csrf);
 
-        $pfa = $this->getPrefilledAnswser($pfaId);
-
-        $this->getManager()->remove($pfa);
-        $this->getManager()->flush();
-
+        $this->prefilledAnswersManager->remove($prefilledAnswers);
         return $this->redirectToRoute('admin_prefilled_answers_list');
-    }
-
-    private function getPrefilledAnswser(int $pfaId)
-    {
-        $pfa = $this->getManager(PrefilledAnswers::class)->find($pfaId);
-
-        if (is_null($pfa)) {
-            throw $this->createNotFoundException();
-        }
-
-        return $pfa;
     }
 }

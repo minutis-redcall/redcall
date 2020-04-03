@@ -4,7 +4,9 @@ namespace App\Repository;
 
 use App\Base\BaseRepository;
 use App\Entity\PrefilledAnswers;
+use App\Entity\Structure;
 use Doctrine\Bundle\DoctrineBundle\Registry;
+use Doctrine\ORM\QueryBuilder;
 
 /**
  * @method PrefilledAnswers|null find($id, $lockMode = null, $lockVersion = null)
@@ -47,4 +49,38 @@ class PrefilledAnswersRepository extends BaseRepository
         ;
     }
     */
+
+    /**
+     * Return all prefilled answers for a structure
+     * @return QueryBuilder
+     */
+    public function getPrefilledAnswersByStructure(Structure $structure)
+    {
+        $qb = $this->createQueryBuilder('pa');
+        $qb->where($qb->expr()->eq('pa.structure', ':structure'))
+            ->setParameter('structure', $structure)
+        ;
+
+        return $qb;
+    }
+
+    public function findByUserForStructureAndGlobal(\App\Entity\UserInformation $userInformation)
+    {
+        $qb = $this->createQueryBuilder('pa')
+            ->where('pa.structure is null')
+            ->orWhere('pa.structure in(:ids)')
+            ->setParameter('ids', $userInformation->getStructures());
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * Return query builder of all global prefilled answers (all without structure)
+     *
+     * @return QueryBuilder
+     */
+    public function getGlobalPrefilledAnswers()
+    {
+        return $this->createQueryBuilder('pa')->where('pa.structure is null');
+    }
 }

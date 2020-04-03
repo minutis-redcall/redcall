@@ -50,6 +50,12 @@
                                     {{ 'manage_structures.force_update'|trans }}
                                 </a>
                             {% endif %}
+
+                            <br>
+                            <a href="{{ path('management_structures_prefilled_answers_list', {structure: structure.id}) }}">
+                                {{ 'manage_structures.manage_prefilled_answers'| trans }}
+
+                            </a>
                         </div>
                     </div>
                 </td>

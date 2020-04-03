@@ -294,7 +294,11 @@ manage_structures:
   last_update: 'Last Pegass synchro on: %last_update% UTC'
   next_update: 'Next Pegass synchro on: %next_update% UTC'
   force_update: 'Force update now'
-
+  manage_prefilled_answers: 'Manage prefilled answers'
+  prefilled_answers:
+    form:
+      title: "Edition of prefilled answers"
+    list_title: "List of prefilled answers"
 csv_export:
   nivol: Nivol
   firstname: Firstname

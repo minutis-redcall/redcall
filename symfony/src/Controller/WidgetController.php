@@ -12,6 +12,7 @@ use App\Form\Type\StructureType;
 use App\Manager\CampaignManager;
 use App\Manager\PrefilledAnswersManager;
 use App\Manager\StructureManager;
+use App\Manager\UserInformationManager;
 use App\Manager\VolunteerManager;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -49,6 +50,10 @@ class WidgetController extends BaseController
      * @var TranslatorInterface
      */
     private $translator;
+    /**
+     * @var UserInformationManager
+     */
+    private $informationManager;
 
     /**
      * @param CampaignManager         $campaignManager
@@ -61,13 +66,15 @@ class WidgetController extends BaseController
         PrefilledAnswersManager $prefilledAnswersManager,
         VolunteerManager $volunteerManager,
         StructureManager $structureManager,
-        TranslatorInterface $translator)
+        TranslatorInterface $translator,
+        UserInformationManager $informationManager)
     {
         $this->campaignManager         = $campaignManager;
         $this->prefilledAnswersManager = $prefilledAnswersManager;
         $this->volunteerManager        = $volunteerManager;
         $this->structureManager        = $structureManager;
         $this->translator              = $translator;
+        $this->informationManager      = $informationManager;
     }
 
     public function prefilledAnswers(?int $campaignId = null)
@@ -83,7 +90,8 @@ class WidgetController extends BaseController
             $currentColor = $campaign->getType();
         }
 
-        $prefilledAnswers = $this->prefilledAnswersManager->findAll();
+        $userInformation = $this->informationManager->findForCurrentUser();
+        $prefilledAnswers = $this->prefilledAnswersManager->findByUserForStructureAndGlobal($userInformation);
 
         $choices = [];
         foreach ($prefilledAnswers as $prefilledAnswer) {
