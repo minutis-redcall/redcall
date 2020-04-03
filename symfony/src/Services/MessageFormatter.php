@@ -65,6 +65,7 @@ class MessageFormatter
         $communication = $message->getCommunication();
 
         $contentParts[] = $this->translator->trans('message.sms.announcement', [
+            '%brand%' => mb_strtoupper(getenv('BRAND')),
             '%hours%' => date('H'),
             '%mins%'  => date('i'),
         ]);

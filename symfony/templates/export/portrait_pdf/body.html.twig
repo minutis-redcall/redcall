@@ -1,13 +1,13 @@
-{% extends 'export/base.html.twig' %}
-
 {% block content %}
     {% spaceless %}
 
     {# Header #}
-    <div style="margin-left:60px;margin-right:60px;border:1px solid {{ lightgrey }};">
-        <div style="text-align:left;position:relative;left:-30px;">
-            <img height="30" src="{{ asset('build/images/corner_topleft.png')[1:] }}"/>
-        </div>
+    <div {% if is_redcross %}style="margin-left:60px;margin-right:60px;border:1px solid {{ lightgrey }};"{% endif %}>
+        {% if is_redcross %}
+            <div style="text-align:left;position:relative;left:-30px;">
+                <img height="30" src="{{ asset('build/images/corner_topleft.png')[1:] }}"/>
+            </div>
+        {% endif %}
         <div style="margin-left:50px;">
             <b>
                 <span style="font-size:30px;font-family:Arial Black;color:{{ red }};">
@@ -27,9 +27,11 @@
                 </span>
             </b>
         </div>
-        <div style="text-align:right;">
-            <img height="30" src="{{ asset('build/images/corner_bottomright.png')[1:] }}"/>
-        </div>
+        {% if is_redcross %}
+            <div style="text-align:right;">
+                <img height="30" src="{{ asset('build/images/corner_bottomright.png')[1:] }}"/>
+            </div>
+        {% endif %}
     </div>
 
     <br/><br/>
@@ -69,7 +71,7 @@
             {% if communication.choices|length %}
                 <br/>
                 <span style="color:{{ red }};font-size:14px;">
-                    <em>"{{ communication.body }}"</em>
+                    <em>{{ communication.body|nl2br }}</em>
                 </span>
             {% endif %}
         </h2>

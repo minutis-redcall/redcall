@@ -8,3 +8,10 @@ twig:
   globals:
     is_redcross: '%env(IS_REDCROSS)%'
     minutis_url: '%env(MINUTIS_URL)%'
+    red: '%env(COLOR_RED)%'
+    darkgrey: '%env(COLOR_DARKGREY)%'
+    lightgrey: '%env(COLOR_LIGHTGREY)%'
+    coolgrey: '%env(COLOR_COOLGREY)%'
+    offwhite: '%env(COLOR_OFFWHITE)%'
+    logo: '%env(LOGO)%'
+    brand: '%env(BRAND)%'

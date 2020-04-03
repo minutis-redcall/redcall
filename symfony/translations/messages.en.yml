@@ -194,12 +194,12 @@ new_communication:
 
 message:
   sms:
-    announcement: 'RED-CROSS at %hours%h%mins%:'
+    announcement: '%brand% at %hours%h%mins%:'
     how_to_answer_simple: Reply by giving your choice code.
     how_to_answer_multiple: Reply by giving your choice(s) code(s), separated by a space.
     geo_location: 'Geolocation of your crew: %url%'
   email:
-    announcement: 'RED-CROSS on %year%-%month%-%day% at %hours%h%mins%:'
+    announcement: '%brand% on %year%-%month%-%day% at %hours%h%mins%:'
     how_to_answer_simple: 'To give your answer, please click on the following link: %url%'
     how_to_answer_multiple: 'To give your answer(s), please click on the following link: %url%'
     possible_answers: 'Possible response(s):'
@@ -279,7 +279,7 @@ manage_volunteers:
     updated: Volunteer has properly been updated.
     structures: Affiliate structure(s)
   contact:
-    mail_subject: '⚠️ RED CROSS: You have a RedCall Message'
+    mail_subject: '⚠️ %brand%: You have a RedCall Message'
   admin_structures:
     create: 'You will be able to set volunteer''s structures after creating it.'
     edit: 'Edit structures'
