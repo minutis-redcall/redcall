@@ -1,4 +1,4 @@
 #!/bin/bash
 
 # Launch PHP-FPM
-php-fpm7.2 -F -R
+php-fpm7.3 -F -R

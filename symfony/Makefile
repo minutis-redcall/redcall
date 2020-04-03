@@ -21,7 +21,7 @@ reset: reset-db ## Resets the development environment
 
 reset-db: ## Resets the development database
 	@echo "\033[1m\033[36m> Resetting development database\033[0m\033[21m"
-	./data/reset.sh
+	./dev/database/reset.sh
 
 run: # Runs the application on a local web server
 	@echo "\033[1m\033[36m> Starting the application\033[0m\033[21m"

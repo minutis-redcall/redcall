@@ -1,4 +1,4 @@
-FROM ubuntu:18.10
+FROM ubuntu:19.10
 
 # Libraries
 ENV TZ=Europe/Paris
@@ -30,8 +30,8 @@ RUN apt-get update && apt-get install -my \
 RUN mkdir /run/php
 
 # PHP-FPM
-ADD www.conf /etc/php/7.2/fpm/pool.d/www.conf
-ADD php-fpm.conf /etc/php/7.2/fpm/php-fpm.conf
+ADD www.conf /etc/php/7.3/fpm/pool.d/www.conf
+ADD php-fpm.conf /etc/php/7.3/fpm/php-fpm.conf
 
 # Composer
 RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');"
