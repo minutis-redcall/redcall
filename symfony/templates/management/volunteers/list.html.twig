@@ -77,7 +77,7 @@
                             #{{ volunteer.nivol }}
                             <br/>
                             {% if volunteer.email %}
-                                <a href="mailto:{{ volunteer.email }}?subject={{ 'manage_volunteers.contact.mail_subject'|trans|e('html_attr') }}">{{ volunteer.email }}</a>
+                                <a href="mailto:{{ volunteer.email }}?subject={{ 'manage_volunteers.contact.mail_subject'|trans({'%brand%': brand|upper})|e('html_attr') }}">{{ volunteer.email }}</a>
                                 <br/>
                             {% endif %}
                             {% if volunteer.phoneNumber %}

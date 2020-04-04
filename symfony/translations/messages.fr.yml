@@ -193,12 +193,12 @@ new_communication:
 
 message:
   sms:
-    announcement: 'CROIX-ROUGE à %hours%h%mins%:'
+    announcement: '%brand% à %hours%h%mins%:'
     how_to_answer_simple: Pour répondre, saisir le code de votre choix.
     how_to_answer_multiple: Pour répondre, saisir le(s) code(s) de votre choix, séparés par un espace.
     geo_location: 'Géolocalisation de votre équipe: %url%'
   email:
-    announcement: 'CROIX-ROUGE le %day%/%month%/%year% à %hours%h%mins%'
+    announcement: '%brand% le %day%/%month%/%year% à %hours%h%mins%'
     how_to_answer_simple: 'Afin de donner votre réponse, veuillez cliquer sur le lien suivant : %url%'
     how_to_answer_multiple: 'Afin de donner votre ou vos réponses, veuillez cliquer sur le lien suivant : %url%'
     possible_answers: 'Réponse(s) possibles :'
@@ -232,7 +232,7 @@ form:
       preview: Prévisualisation
       cost: 'La longueur du message multiplie son prix par :'
       length: 'Longueur du message :'
-      price: 'Le prix de la communication payé par la Croix-Rouge est estimé à :'
+      price: 'Le prix de la communication est estimé à :'
       multiple_answer: 'Les destinataires peuvent choisir plusieurs réponses'
   campaign:
     fields:
@@ -278,7 +278,7 @@ manage_volunteers:
     updated: Le volontaire a correctement été modifié.
     structures: Structure(s) de rattachement
   contact:
-    mail_subject: '⚠️ CROIX-ROUGE: Vous avez un message RedCall'
+    mail_subject: '⚠️ %brand%: Vous avez un message RedCall'
   admin_structures:
     create: 'Vous serez en mesure d''éditer les structures du bénévole après sa création.'
     edit: 'Editer les structures'

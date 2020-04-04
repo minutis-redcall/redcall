@@ -25,25 +25,24 @@ Set up instructions [here](docs/tech/00-development.md), and read the [CONTRIBUT
 
 This project is built to be deployed in production on Google App Engine.
 
-- [Setting up a new Google Cloud Platform project](docs/tech/01.a-create-gcp-project.md)
-- [Setting up a VPC Network](docs/tech/01.b-create-vpc-network.md)
-- [Setting up a Bastion](docs/tech/01.c-Create-Bastion.md)
-- [Setting up a Google App Engine instance](docs/tech/02-google-app-engine.md)
-- [Setting up a custom domain name to your instance](docs/tech/03-custom-domain-name.md)
+- [Setting up GCP](docs/tech/01-gcp.md)
 
 Configuration is located in [deploy/prod](deploy/prod) and [deploy/preprod](deploy/preprod) directories,
 for each environment you need, you should rename `dotenv.dist` into `dotenv` and fill up every variable
 by following the next sections.
 
-- [Setting up a Google Service Account](docs/tech/04-google-service-account.md)
 - [Setting up Symfony](docs/tech/05-configure-symfony.md)
 - [Setting up Google reCaptcha](docs/tech/06-google-recaptcha.md)
-- [Setting up Google Cloud SQL](docs/tech/07-google-cloud-sql.md)
-- [Setting up a "Dev PC to MySQL" connection](docs/tech/08-connect-to-MySQL-from-your-pc.md)
 - [Setting up Mapbox](docs/tech/09-configure-mapbox.md)
 - [Setting up Twilio](docs/tech/10-configure-twilio.md)
 - [Setting up Sendgrid](docs/tech/10-configure-sendgrid.md)
+
+RedCross only:
 - [Setting up Pegass](docs/tech/11-configure-pegass.md)
+
+Once everything is configured, go to the following page:
+
+- [First deployment](docs/tech/12-first-deployment.md)
 
 To deploy, run the following commands:
 
@@ -59,4 +58,3 @@ cd deploy
 sh ./migrate.sh <env>
 ```
 
-To set-up your first account, [check that doc](docs/tech/12-enable-first-admin.md).
