@@ -8,13 +8,14 @@
         {{ 'manage_structures.title'|trans }}
     </h1>
 
-    {{ form(importForm) }}
-    {% if not importViolationList is empty %}
-        <ul>
-        {% for violation in importViolationList %}
-            <li>{{ violation.message }}</li>
-        {% endfor %}
-        </ul>
+    {% if not is_redcross %}
+        {% if not importViolationList is empty %}
+            <ul>
+                {% for violation in importViolationList %}
+                    <li>{{ violation.message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
     {% endif %}
 
     {{ form(search) }}
@@ -80,6 +81,11 @@
     {{ macros.pager(structures) }}
 
     <br/>
+
+    {% if not is_redcross and is_granted('ROLE_ADMIN') %}
+        {{ form(importForm) }}
+        <br/>
+    {% endif %}
 
     <div class="text-center">
         <a href="{{ path('management_home') }}" class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>

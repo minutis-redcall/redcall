@@ -8,7 +8,6 @@
         {{ 'manage_volunteers.title'|trans }}
     </h1>
 
-    {{ form(importForm) }}
     {% if not importViolationList is empty %}
         <ul>
             {% for violation in importViolationList %}
@@ -156,6 +155,11 @@
     {{ macros.pager(volunteers) }}
 
     <br/>
+
+    {% if not is_redcross and is_granted('ROLE_ADMIN') %}
+        {{ form(importForm) }}
+        <br/>
+    {% endif %}
 
     <div class="text-center">
         <a href="{{ path('management_home') }}" class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
