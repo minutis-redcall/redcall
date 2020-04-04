@@ -68,10 +68,6 @@ services:
   App\Services\Pegass:
     public: true
 
-  App\Structure\StructureImporter:
-    arguments:
-      $dataProvider: '@App\Structure\DataProvider\CSVFileDataProvider'
-
   password_login.mail.service:
     autowire: false
     autoconfigure: false

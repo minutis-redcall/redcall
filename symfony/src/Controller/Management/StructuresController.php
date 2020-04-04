@@ -5,8 +5,8 @@ namespace App\Controller\Management;
 use App\Base\BaseController;
 use App\Entity\Structure;
 use App\Form\Type\StructureImportType;
+use App\Import\StructureImporter;
 use App\Manager\StructureManager;
-use App\Structure\StructureImporter;
 use Bundles\PaginationBundle\Manager\PaginationManager;
 use Bundles\PegassCrawlerBundle\Entity\Pegass;
 use Bundles\PegassCrawlerBundle\Manager\PegassManager;
@@ -88,11 +88,7 @@ class StructuresController extends BaseController
 
         if ($importForm->isSubmitted() && $importForm->isValid()) {
             $file = $importForm->get('file')->getData();
-            $this->structureImporter->getDataProvider()->init([
-                'file' => $file,
-                'delimiter' => ';',
-            ]);
-            $violationList = $this->structureImporter->import();
+            $violationList = $this->structureImporter->import($file);
         }
 
         // Search form.
