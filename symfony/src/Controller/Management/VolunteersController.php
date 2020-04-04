@@ -102,8 +102,8 @@ class VolunteersController extends BaseController
         $violationList = new ConstraintViolationList();
         $importForm = $this->createForm(CSVImportType::class);
         $importForm->handleRequest($request);
-
-        if ($importForm->isSubmitted() && $importForm->isValid()) {
+        if ($this->isGranted('ROLE_ADMIN') && !getenv('IS_REDCROSS')
+            && $importForm->isSubmitted() && $importForm->isValid()) {
             $file = $importForm->get('file')->getData();
             $violationList = $this->volunteerImporter->import($file);
         }

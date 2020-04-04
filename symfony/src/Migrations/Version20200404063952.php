@@ -21,7 +21,7 @@ final class Version20200404063952 extends AbstractMigration
     {
         // this up() migration is auto-generated, please modify it to your needs
 
-        $this->addSql("INSERT INTO `tag` VALUES (1,'emergency_assistance'),(2,'social_assistance'),(3,'psc_1'),(4,'pse_1'),(6,'pse_2'),(8,'drvr_vl'),(9,'drvr_vpsp'),(10,'ci');");
+        $this->addSql("INSERT IGNORE INTO `tag` VALUES (1,'emergency_assistance'),(2,'social_assistance'),(3,'psc_1'),(4,'pse_1'),(6,'pse_2'),(8,'drvr_vl'),(9,'drvr_vpsp'),(10,'ci');");
     }
 
     public function down(Schema $schema) : void
