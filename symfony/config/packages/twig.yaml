@@ -7,5 +7,3 @@ twig:
   - 'form_theme.html.twig'
   globals:
     minutis_url: '%env(MINUTIS_URL)%'
-    color_primary: "%color_primary%"
-    color_secondary: "%color_secondary%"

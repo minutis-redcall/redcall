@@ -9,11 +9,10 @@
     </h1>
 
     {{ form(importForm) }}
-
     {% if not importViolationList is empty %}
         <ul>
         {% for violation in importViolationList %}
-            <li>{{ violation.propertyPath }}: {{ violation.message }}</li>
+            <li>{{ violation.message }}</li>
         {% endfor %}
         </ul>
     {% endif %}
