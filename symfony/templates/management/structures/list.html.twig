@@ -8,6 +8,15 @@
         {{ 'manage_structures.title'|trans }}
     </h1>
 
+    {{ form(importForm) }}
+    {% if not importViolationList is empty %}
+        <ul>
+        {% for violation in importViolationList %}
+            <li>{{ violation.message }}</li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+
     {{ form(search) }}
 
     <table class="table">

@@ -398,3 +398,8 @@ label:
   to: "Au"
   volunteers: "volontaires"
   structures: "structures"
+
+import:
+  label: 'Importer un fichier CSV'
+  submit: 'Importer'
+

@@ -12,7 +12,6 @@ services:
       - ./symfony/bundles:/var/www/symfony/bundles:delegated
       - ./symfony/config:/var/www/symfony/config:delegated
       - ./symfony/dev:/var/www/symfony/dev:delegated
-      - ./symfony/node_modules:/var/www/symfony/node_modules:cached
       - ./symfony/public:/var/www/symfony/public:delegated
       - ./symfony/src:/var/www/symfony/src:delegated
       - ./symfony/templates:/var/www/symfony/templates:delegated
@@ -51,6 +50,6 @@ services:
     expose:
       - "3306"
     ports:
-      - "3307:3306"
+      - "3308:3306"
     volumes:
       - ./var/mysql:/var/lib/mysql:cached

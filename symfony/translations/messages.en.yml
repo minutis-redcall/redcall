@@ -399,3 +399,8 @@ label:
   to: "To"
   volunteers: "volunteers"
   structures: "structures"
+
+import:
+  label: 'Import CSV file'
+  submit: 'Import'
+
