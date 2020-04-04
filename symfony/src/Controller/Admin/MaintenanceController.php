@@ -53,6 +53,10 @@ class MaintenanceController extends BaseController
      */
     public function refresh()
     {
+        if (!getenv('IS_REDCROSS')) {
+            throw $this->createNotFoundException();
+        }
+
         if ($this->maintenanceManager->refresh()) {
             $this->success('maintenance.refresh_started');
         } else {
@@ -67,6 +71,10 @@ class MaintenanceController extends BaseController
      */
     public function refreshAll()
     {
+        if (!getenv('IS_REDCROSS')) {
+            throw $this->createNotFoundException();
+        }
+
         if ($this->maintenanceManager->refreshAll()) {
             $this->success('maintenance.refresh_started');
         } else {

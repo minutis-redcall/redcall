@@ -10,6 +10,7 @@
 /deploy/preprod/dotenv
 /deploy/preprod/dotenv-migrate
 /deploy/preprod/google-service-account.json
+/deploy/protec
 /deploying
 /deploy.ulparis0102
 /symfony/app.yaml

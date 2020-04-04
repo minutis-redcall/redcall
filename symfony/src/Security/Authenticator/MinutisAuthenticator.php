@@ -195,7 +195,7 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
     {
         $url = $this->router->generate('password_login_connect');
 
-        if ('dev' !== $this->kernel->getEnvironment()) {
+        if (getenv('IS_REDCROSS') && 'dev' !== $this->kernel->getEnvironment()) {
             $url = getenv('MINUTIS_URL');
         }
 
