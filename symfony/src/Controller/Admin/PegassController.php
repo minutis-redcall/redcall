@@ -96,9 +96,13 @@ class PegassController extends BaseController
 
         $this->userInformationManager->updateNivol($userInformation, $nivol);
 
-        $structureNames = array_map(function (Structure $structure) {
+        $structureNames = array_filter(array_map(function (Structure $structure) {
+            if (Structure::REDCALL_STRUCTURE === $structure->getIdentifier()) {
+                return null;
+            }
+
             return $structure->getName();
-        }, $userInformation->getStructures()->toArray());
+        }, $userInformation->getStructures()->toArray()));
 
         return $this->json([
             'structures' => array_map('htmlentities', $structureNames),

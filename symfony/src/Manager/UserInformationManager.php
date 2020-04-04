@@ -129,10 +129,10 @@ class UserInformationManager
             return;
         }
 
-        $this->addRedCallStructure($userInformation);
-
         $userInformation->setNivol($nivol);
         $userInformation->setVolunteer($volunteer);
+
+        $this->addRedCallStructure($userInformation);
 
         $structures = $this->structureManager->findCallableStructuresForVolunteer($volunteer);
         $userInformation->updateStructures($structures);
