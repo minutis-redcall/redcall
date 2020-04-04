@@ -17,7 +17,7 @@
             <td style="background-color:{{ red }};padding-top:5px;padding-bottom:5px;padding-left:50px;">
                 <span style="font-size:12px;color:white;">
                     {{ 'message.email.announcement'|trans({
-                        '%brand%': brand,
+                        '%brand%': brand|upper,
                         '%day%':'now'|date('d'),
                         '%month%':'now'|date('m'),
                         '%year%':'now'|date('Y'),
