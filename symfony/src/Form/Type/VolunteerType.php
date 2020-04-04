@@ -69,9 +69,11 @@ class VolunteerType extends AbstractType
             ])
             ->add('phoneNumber', TextType::class, [
                 'label' => 'manage_volunteers.form.phone_number',
+                'required' => false,
             ])
             ->add('email', TextType::class, [
                 'label' => 'manage_volunteers.form.email',
+                'required' => false,
             ])
             ->add('minor', CheckboxType::class, [
                 'label'    => 'manage_volunteers.form.minor',

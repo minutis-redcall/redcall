@@ -51,6 +51,10 @@ class HomeController extends Controller
      */
     public function infos(Volunteer $volunteer)
     {
+        if (!getenv('IS_REDCROSS')) {
+            throw $this->createNotFoundException();
+        }
+
         return $this->render('infos.html.twig', [
             'volunteer' => $volunteer,
         ]);

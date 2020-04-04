@@ -50,6 +50,12 @@ class PrefilledAnswers
     private $answers = [];
 
     /**
+     * @var Structure|null
+     * @ORM\ManyToOne(targetEntity="App\Entity\Structure", inversedBy="prefilledAnswers")
+     */
+    private $structure;
+
+    /**
      * @return int|null
      */
     public function getId(): ?int
@@ -115,6 +121,22 @@ class PrefilledAnswers
         $this->answers = $answers;
 
         return $this;
+    }
+
+    /**
+     * @return Structure|null
+     */
+    public function getStructure(): ?Structure
+    {
+        return $this->structure;
+    }
+
+    /**
+     * @param Structure|null $structure
+     */
+    public function setStructure(?Structure $structure): void
+    {
+        $this->structure = $structure;
     }
 
     /**

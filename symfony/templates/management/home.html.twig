@@ -25,7 +25,9 @@
                 {% endif %}
             {% endfor %}
 
-            <p>{{ 'management.support_email'|trans({'%email%': email}) }}</p>
+            {% if is_redcross %}
+                <p>{{ 'management.support_email'|trans({'%email%': email}) }}</p>
+            {% endif %}
         </div>
 
         <br/><br/><br/>

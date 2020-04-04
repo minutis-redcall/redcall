@@ -29,19 +29,24 @@ WEBSITE_URL=https://preprod.redcall.fr
 
 MAPBOX_API_KEY=some key
 
-PEGASS_LOGIN=yourlogin
-PEGASS_PASSWORD=yourpassword
-
-GAIA_URL='https://gaia.croix-rouge.fr/crf-benevoles/#contact/NIVOL/%nivol%'
-
 GCP_PROJECT_NAME=project-name
 GCP_BASTION_INSTANCE=bastion
-
-MINUTIS_JWT_PUBLIC_KEY_URL=
-MINUTIS_SUPPORT=support.minutis@croix-rouge.fr
 
 TWILIO_ACCOUNT_SID=xxx
 TWILIO_AUTH_TOKEN=xxx
 TWILIO_NUMBER=xxx
 
 SENDGRID_API_KEY=bla
+
+# Red Cross specific
+
+IS_REDCROSS=0
+
+MINUTIS_JWT_PUBLIC_KEY_URL=xxx
+MINUTIS_SUPPORT=support.minutis@croix-rouge.fr
+MINUTIS_URL=xxx
+
+PEGASS_LOGIN=yourlogin
+PEGASS_PASSWORD=yourpassword
+
+GAIA_URL='https://gaia.croix-rouge.fr/crf-benevoles/#contact/NIVOL/%nivol%'

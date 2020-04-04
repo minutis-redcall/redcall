@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+
+{% import 'macros.html.twig' as macros %}
+
+{% block body %}
+
+    <h1>
+        {{ 'manage_structures.prefilled_answers.form.title'|trans }}
+    </h1>
+
+    {{ form_start(form) }}
+    {{ form_row(form.label) }}
+    {{ form_row(form.colors) }}
+
+    {{ include('widget/prefilled_answers_editor.html.twig', {answers: form.answers, label: true}) }}
+
+    {{ form_row(form.submit) }}
+    {{ form_end(form) }}
+
+    <br/>
+
+    <div class="text-center">
+        <a href="{{ path('management_structures_prefilled_answers_list', {structure: structure.id}) }}" class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+    </div>
+
+    <br/><br/>
+
+{% endblock %}

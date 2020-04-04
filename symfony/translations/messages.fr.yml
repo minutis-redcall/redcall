@@ -5,9 +5,10 @@ admin:
     list: Liste d'utilisateurs
     pegass: Connexions à Pegass
   pegass:
-    title: 'Connexions entre les utilisateurs de RedCall et la base de données Pegass'
+    title: 'Connexions entre les utilisateurs de RedCall et la base de données volontaire'
     structures: 'Mise à jour des structures pour %name%'
     create_user: 'Ajouter un nouvel utilisateur'
+    bound_volunteer: 'Volontaire associé : %name%'
   dashboard:
     title: 'Statistiques'
   statistics:
@@ -103,6 +104,7 @@ base:
     no_results: 'Aucun résultat trouvé pour "{keyword}".'
   clear_selection: 'Effacer la sélection'
   wait: 'Un petit instant...'
+  actions: 'Actions'
 
 campaign:
   titles:
@@ -293,7 +295,11 @@ manage_structures:
   last_update: 'Dernière synchro avec Pegass : %last_update% UTC'
   next_update: 'Prochaine synchro avec Pegass : %next_update% UTC'
   force_update: 'Forcer la mise à jour maintenant'
-
+  manage_prefilled_answers: 'Gérer les réponses pré-remplies'
+  prefilled_answers:
+    form:
+      title: "Ajout/edition de réponse pré-remplies"
+    list_title: "Liste des réponses pré-remplies"
 csv_export:
   nivol: Nivol
   firstname: Prénom
@@ -367,15 +373,15 @@ maintenance:
 infos:
   hello_name: 'Bievenue %firstName%,'
   hello_anonymous: 'Bienvene,'
-  context_1: 'La Croix-Rouge Française possède un peu plus d''un millier de structures ayant des fonctions diverses, notament dans l''action sociale et le secourisme.'
-  context_2: 'Si par exemple un grave accident a lieu dans un immeuble et des dizaines de personnes se retrouvent à la rue, l''Action Sociale va les prendre en charge, les réchauffer/nourir si besoin, et trouver des solutions d''urgence.'
-  context_3: 'Ou si par exemple une manifestation déborde et que le SAMU est trop solicité, ils peuvent faire appel à nous afin qu''on vienne leur donner un coup de main avec nos ambulances.'
-  context_4: 'Pour réunir les effectifs dont une intervention a besoin, les responsbles de chaque unité locale doivent efficacement faire appel à leurs volontaires.'
+  context_1: 'La Croix-Rouge Française possède un peu plus d''un millier de structures ayant des fonctions diverses, notamment dans l''action sociale et le secourisme.'
+  context_2: 'Si par exemple un grave accident a lieu dans un immeuble et des dizaines de personnes se retrouvent à la rue, l''Action Sociale va les prendre en charge, les réchauffer/nourrir si besoin, et trouver des solutions d''urgence.'
+  context_3: 'Ou si par exemple une manifestation déborde et que le SAMU est trop sollicité, ils peuvent faire appel à nous afin qu''on vienne leur donner un coup de main avec nos ambulances.'
+  context_4: 'Pour réunir les effectifs dont une intervention a besoin, les responsables de chaque unité locale doivent efficacement faire appel à leurs volontaires.'
   context_5: 'C''est là que RedCall intervient : elle permet à ces responsables de contacter les ressources dont ils ont besoin par SMS ou email.'
   context_6: 'Ce que le volontaire voit:'
   context_7: 'Ce que le responsable voit:'
-  context_8: 'Une fois que les équipages sont formés, le responsable peut envoyer un PDF contenant toutes les bonnes informations a sa direction territoriale.'
-  context_9: 'RedCall est actif par défaut pour les DLUS, DTUS et PDT, ils peuvent déclencher leurs structures de rattachement et d''action. S’il y a besoin de droits supplémentaires, la demande peut se faire par email au support Minutis en précisant les éléments suivants :'
+  context_8: 'Une fois que les équipages sont formés, le responsable peut envoyer un PDF contenant toutes les bonnes informations à sa direction territoriale.'
+  context_9: 'RedCall est actif par défaut pour les DLUS, DTUS et PDT, qui peuvent déclencher leurs structures de rattachement et d''action. S’il y a besoin de droits supplémentaires, la demande peut se faire par email au support Minutis en précisant les éléments suivants :'
   context_10: '- Nom'
   context_11: '- Prénom'
   context_12: '- Nivol'
@@ -396,3 +402,4 @@ label:
 import:
   label: 'Importer un fichier CSV'
   submit: 'Importer'
+
