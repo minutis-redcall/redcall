@@ -6,23 +6,9 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
-class StructureImportType extends AbstractType
+class CSVImportType extends AbstractType
 {
-    /** @var UrlGeneratorInterface */
-    private $urlGenerator;
-
-    /**
-     * StructureImportType constructor.
-     *
-     * @param UrlGeneratorInterface $urlGenerator
-     */
-    public function __construct(UrlGeneratorInterface $urlGenerator)
-    {
-        $this->urlGenerator = $urlGenerator;
-    }
-
     /**
      * {@inheritDoc}
      */
@@ -30,11 +16,11 @@ class StructureImportType extends AbstractType
     {
         $builder
             ->add('file', FileType::class, [
-                'label' => 'manage_structures.import',
+                'label' => 'import.label',
                 'required' => true,
             ])
             ->add('submit', SubmitType::class, [
-                'label' => 'manage_structures.import_submit'
+                'label' => 'import.submit'
             ])
         ;
     }

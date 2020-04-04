@@ -4,7 +4,7 @@ namespace App\Controller\Management;
 
 use App\Base\BaseController;
 use App\Entity\Structure;
-use App\Form\Type\StructureImportType;
+use App\Form\Type\CSVImportType;
 use App\Import\StructureImporter;
 use App\Manager\StructureManager;
 use Bundles\PaginationBundle\Manager\PaginationManager;
@@ -83,7 +83,7 @@ class StructuresController extends BaseController
     {
         // CSV import form.
         $violationList = new ConstraintViolationList();
-        $importForm = $this->createForm(StructureImportType::class);
+        $importForm = $this->createForm(CSVImportType::class);
         $importForm->handleRequest($request);
 
         if ($importForm->isSubmitted() && $importForm->isValid()) {
@@ -105,7 +105,7 @@ class StructuresController extends BaseController
             $queryBuilder = $this->structureManager->searchForCurrentUserQueryBuilder($criteria);
         }
 
-        $importForm = $this->createForm(StructureImportType::class);
+        $importForm = $this->createForm(CSVImportType::class);
 
         return $this->render('management/structures/list.html.twig', [
             'search'     => $search->createView(),
