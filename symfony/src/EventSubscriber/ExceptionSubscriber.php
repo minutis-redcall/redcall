@@ -16,7 +16,6 @@
  * limitations under the License.
  */
 
-# [START error_reporting_setup_php_symfony]
 // src/EventSubscriber/ExceptionSubscriber.php
 namespace App\EventSubscriber;
 
@@ -24,6 +23,7 @@ use Google\Cloud\ErrorReporting\Bootstrap;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
+use Symfony\Component\HttpKernel\KernelInterface;
 
 /**
  * EventSubscrber used to log all exceptions to Stackdriver Error Reporting on Google Cloud Platform
@@ -32,6 +32,19 @@ use Symfony\Component\HttpKernel\KernelEvents;
  */
 class ExceptionSubscriber implements EventSubscriberInterface
 {
+    /**
+     * @var KernelInterface
+     */
+    private $kernel;
+
+    /**
+     * @param KernelInterface $kernel
+     */
+    public function __construct(KernelInterface $kernel)
+    {
+        $this->kernel = $kernel;
+    }
+
     public static function getSubscribedEvents()
     {
         // return the subscribed events, their methods and priorities
@@ -44,9 +57,10 @@ class ExceptionSubscriber implements EventSubscriberInterface
 
     public function logException(GetResponseForExceptionEvent $event)
     {
-        $exception = $event->getException();
-        Bootstrap::init();
-        Bootstrap::exceptionHandler($exception);
+        if ('prod' === $this->kernel->getEnvironment()) {
+            $exception = $event->getException();
+            Bootstrap::init();
+            Bootstrap::exceptionHandler($exception);
+        }
     }
 }
-# [END error_reporting_setup_php_symfony]

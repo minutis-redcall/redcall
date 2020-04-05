@@ -7,8 +7,28 @@ services:
     depends_on:
       - mysql
     volumes:
-      - ./symfony:/var/www/symfony:cached
-      - ./logs:/var/log
+      - ./symfony/assets:/var/www/symfony/assets:delegated
+      - ./symfony/bin:/var/www/symfony/bin:delegated
+      - ./symfony/bundles:/var/www/symfony/bundles:delegated
+      - ./symfony/config:/var/www/symfony/config:delegated
+      - ./symfony/dev:/var/www/symfony/dev:delegated
+      - ./symfony/public:/var/www/symfony/public:delegated
+      - ./symfony/src:/var/www/symfony/src:delegated
+      - ./symfony/templates:/var/www/symfony/templates:delegated
+      - ./symfony/tests:/var/www/symfony/tests:delegated
+      - ./symfony/translations:/var/www/symfony/translations:delegated
+      - ./symfony/var:/var/www/symfony/var:cached
+      - ./symfony/vendor:/var/www/symfony/vendor:delegated
+      - ./symfony/.env:/var/www/symfony/.env:delegated
+      - ./symfony/composer.json:/var/www/symfony/composer.json:delegated
+      - ./symfony/composer.lock:/var/www/symfony/composer.lock:cached
+      - ./symfony/Makefile:/var/www/symfony/Makefile:delegated
+      - ./symfony/package.json:/var/www/symfony/package.json:delegated
+      - ./symfony/phpunit.xml.dist:/var/www/symfony/phpunit.xml.dist:delegated
+      - ./symfony/symfony.lock:/var/www/symfony/symfony.lock:cached
+      - ./symfony/webpack.config.js:/var/www/symfony/webpack.config.js:delegated
+      - ./symfony/yarn.lock:/var/www/symfony/yarn.lock:cached
+      - ./logs:/var/log:cached
 
   nginx:
     build: build/nginx
@@ -20,7 +40,7 @@ services:
       - mysql
     volumes:
       - ./symfony:/var/www/symfony:cached
-      - ./logs:/var/log/nginx
+      - ./logs:/var/log/nginx:cached
 
   mysql:
     image: mysql/mysql-server:5.7
@@ -30,6 +50,6 @@ services:
     expose:
       - "3306"
     ports:
-      - "3307:3306"
+      - "3308:3306"
     volumes:
-      - /var/lib/mysql
+      - ./var/mysql:/var/lib/mysql:cached

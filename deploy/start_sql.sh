@@ -6,9 +6,9 @@ set -ex
 ENV=$1
 ROOTDIR=$(dirname "$0")/../
 
-if [[ "${ENV}" != "preprod" ]] && [[ "${ENV}" != "prod" ]]
+if [ ! -d "${ENV}" ]
 then
-  echo "'${ENV}' is not a valid environment. Valid values are ['preprod', 'prod']"
+  echo "'${ENV}' is not a valid environment."
   exit 1
 fi
 

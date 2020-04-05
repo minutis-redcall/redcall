@@ -29,10 +29,6 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  */
 class Volunteer
 {
-    const RED_CROSS_DOMAINS = [
-        'croix-rouge.fr',
-    ];
-
     /**
      * @var int
      *

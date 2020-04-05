@@ -25,6 +25,10 @@ use Psr\Log\NullLogger;
  */
 class RefreshManager
 {
+    const RED_CROSS_DOMAINS = [
+        'croix-rouge.fr',
+    ];
+
     /**
      * @var PegassManager
      */
@@ -415,7 +419,7 @@ class RefreshManager
         usort($contact, function ($a, $b) use ($emailKeys) {
 
             // Red cross emails should be put last
-            foreach (Volunteer::RED_CROSS_DOMAINS as $domain) {
+            foreach (self::RED_CROSS_DOMAINS as $domain) {
                 if (false !== stripos($a['libelle'] ?? false, $domain)) {
                     return 1;
                 }

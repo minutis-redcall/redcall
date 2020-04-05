@@ -8,6 +8,16 @@
         {{ 'manage_structures.title'|trans }}
     </h1>
 
+    {% if not is_redcross %}
+        {% if not importViolationList is empty %}
+            <ul>
+                {% for violation in importViolationList %}
+                    <li>{{ violation.message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endif %}
+
     {{ form(search) }}
 
     <table class="table">
@@ -20,7 +30,7 @@
                             <div>
                                 <div class="h4 {% if not structure.enabled %}text-black-50{% endif %}">
                                     {{ structure.name }}
-                                    {% if is_granted('ROLE_ADMIN') %}
+                                    {% if is_redcross and is_granted('ROLE_ADMIN') %}
                                         <a href="{{ path('management_structures_pegass', {id: structure.id}) }}" target="_blank">🛠</a>
                                     {% endif %}
                                 </div>
@@ -37,21 +47,25 @@
                             </div>
                         </div>
                         <div class="col-md-6">
-                            {{ 'manage_structures.last_update'|trans({'%last_update%': structure.lastPegassUpdate|date('d/m/Y H:i')}) }}
+                            {% if is_redcross %}
 
-                            {% if structure.nextPegassUpdate %}
-                                <br/>
-                                {{ 'manage_structures.next_update'|trans({'%next_update%': structure.nextPegassUpdate|date('d/m/Y H:i')}) }}
+                                {{ 'manage_structures.last_update'|trans({'%last_update%': structure.lastPegassUpdate|date('d/m/Y H:i')}) }}
+
+                                {% if structure.nextPegassUpdate %}
+                                    <br/>
+                                    {{ 'manage_structures.next_update'|trans({'%next_update%': structure.nextPegassUpdate|date('d/m/Y H:i')}) }}
+                                {% endif %}
+
+                                {% if structure.canForcePegassUpdate %}
+                                    <br/>
+                                    <a href="{{ path('management_structures_force_update', app.request.query.all|merge({id: structure.id, csrf: csrf_token('structures')})) }}">
+                                        {{ 'manage_structures.force_update'|trans }}
+                                    </a>
+                                {% endif %}
+
+                                <br>
+
                             {% endif %}
-
-                            {% if structure.canForcePegassUpdate %}
-                                <br/>
-                                <a href="{{ path('management_structures_force_update', app.request.query.all|merge({id: structure.id, csrf: csrf_token('structures')})) }}">
-                                    {{ 'manage_structures.force_update'|trans }}
-                                </a>
-                            {% endif %}
-
-                            <br>
                             <a href="{{ path('management_structures_prefilled_answers_list', {structure: structure.id}) }}">
                                 {{ 'manage_structures.manage_prefilled_answers'| trans }}
 
@@ -67,6 +81,11 @@
     {{ macros.pager(structures) }}
 
     <br/>
+
+    {% if not is_redcross and is_granted('ROLE_ADMIN') %}
+        {{ form(importForm) }}
+        <br/>
+    {% endif %}
 
     <div class="text-center">
         <a href="{{ path('management_home') }}" class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>

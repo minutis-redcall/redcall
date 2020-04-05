@@ -43,6 +43,10 @@ class RefreshCommand extends BaseCommand
     {
         date_default_timezone_set('UTC');
 
+        if (!getenv('IS_REDCROSS')) {
+            return;
+        }
+
         // Refresh everything
         $this->refreshManager->refresh(
             $input->getOption('force')

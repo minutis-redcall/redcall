@@ -4,6 +4,12 @@
 
     <h3>{{ 'admin.pegass.title'|trans }}</h3>
 
+    <div class="text-center">
+        <br/>
+        <a href="{{ path('admin_pegass_create_user') }}" class="btn btn-secondary">{{ 'admin.pegass.create_user'|trans }}</a>
+        <br/><br/>
+    </div>
+
     {{ form_start(search) }}
     <input type="hidden" name="type" value="pegass"/>
     {{ form_end(search) }}
@@ -11,31 +17,66 @@
     <table class="table">
         <tbody>
         {% for userInformation in userInformations %}
+            {% set user = userInformation.user %}
+
             <tr>
                 <td>
                     <div class="row">
                         <div class="col-md-4">
                             <div>
-                                <div class="h4">{{ userInformation.user.username }}</div>
-                                {% if userInformation.volunteer %}
-                                    <div>{{ userInformation.volunteer.firstName }} {{ userInformation.volunteer.lastName }}</div>
-                                {% endif %}
+                                <div class="h4">{{ user.username }}</div>
                                 <div class="text-small">
-                                    {{ 'password_login.user_list.registered_at'|trans({'%date%': userInformation.user.registeredAt|date('d/m/Y H:i')}) }}
+                                    {{ 'password_login.user_list.registered_at'|trans({'%date%': user.registeredAt|date('d/m/Y H:i')}) }}
                                 </div>
+                                {% if userInformation.volunteer %}
+                                    <div>{{ 'admin.pegass.bound_volunteer'|trans({'%name%': userInformation.volunteer.displayName}) }}</div>
+                                {% endif %}
                             </div>
+                        </div>
+                        <div class="col-md-3">
+                            {% if not user.isEqualTo(app.user) %}
+                                <div>
+                                    {% if user.verified %}
+                                        <span class="h4">✅</span>
+                                    {% else %}
+                                        <span class="h4">❌</span>
+                                    {% endif %}
+
+                                    {{ 'password_login.user_list.is_valid'|trans }} <sup>(1)</sup>
+                                </div>
+                                <div>
+                                    {% if user.trusted %}
+                                        <span class="h4">✅</span>
+                                    {% else %}
+                                        <span class="h4">❌</span>
+                                    {% endif %}
+
+                                    {{ 'password_login.user_list.is_trusted'|trans }} <sup>(2)</sup>
+                                </div>
+                                <div class="text-small">
+                                    {% if user.admin %}
+                                        <span class="h4">✅</span>
+                                    {% else %}
+                                        <span class="h4">❌</span>
+                                    {% endif %}
+
+                                    {{ 'password_login.user_list.is_admin'|trans }} <sup>(3)</sup>
+                                </div>
+                            {% else %}
+                                <div class="text-small">&nbsp;</div>
+                                <div class="text-small">&nbsp;</div>
+                                <div class="text-small">&nbsp;</div>
+                            {% endif %}
                         </div>
                         <div class="col-md-4">
                             <div class="nivol"
-                                 data-id="{{ userInformation.user.id }}"
+                                 data-id="{{ user.id }}"
                                  data-uri="{{ path('admin_pegass_update', {csrf: csrf_token('pegass'), id: userInformation.id}) }}">
                                 {{ render(controller('\\App\\Controller\\WidgetController::nivolEditor', {
                                     userInformation: userInformation
                                 })) }}
                             </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div id="structures-{{ userInformation.user.id }}">
+                            <div id="structures-{{ user.id }}">
                                 {% for structure in userInformation.structures %}
                                     {% if structure.identifier %}
                                         <div>{{ structure.name }}</div>
@@ -44,6 +85,52 @@
                             </div>
 
                             <a href="{{ path('admin_pegass_update_structures', {id: userInformation.id}) }}">{{ 'management.update_structures'|trans }}</a>
+                        </div>
+                        <div class="col-md-1">
+                            {% if not user.isEqualTo(app.user) %}
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    {{ 'base.actions'|trans }}
+                                </button>
+                                <div class="dropdown-menu">
+                                    {% if user.verified %}
+                                        <a class="dropdown-item text-danger" href="{{ path('password_login_admin_toggle_verify', {username: user.username, csrf: csrf_token('password_login')}) }}">
+                                            {{ 'password_login.user_list.unverify'|trans }}
+                                        </a>
+                                    {% else %}
+                                        <a class="dropdown-item text-success" href="{{ path('password_login_admin_toggle_verify', {username: user.username, csrf: csrf_token('password_login')}) }}">
+                                            {{ 'password_login.user_list.verify'|trans }}
+                                        </a>
+                                    {% endif %}
+
+                                    {% if user.trusted %}
+                                        <a class="dropdown-item text-danger" href="{{ path('password_login_admin_toggle_trust', {username: user.username, csrf: csrf_token('password_login')}) }}">
+                                            {{ 'password_login.user_list.untrust'|trans }}
+                                        </a>
+                                    {% else %}
+                                        <a class="dropdown-item text-success" href="{{ path('password_login_admin_toggle_trust', {username: user.username, csrf: csrf_token('password_login')}) }}">
+                                            {{ 'password_login.user_list.trust'|trans }}
+                                        </a>
+                                    {% endif %}
+
+                                    {% if user.admin %}
+                                        <a class="dropdown-item text-danger" href="{{ path('password_login_admin_toggle_admin', {username: user.username, csrf: csrf_token('password_login')}) }}">
+                                            {{ 'password_login.user_list.unadmin'|trans }}
+                                        </a>
+                                    {% else %}
+                                        <a class="dropdown-item text-success" href="{{ path('password_login_admin_toggle_admin', {username: user.username, csrf: csrf_token('password_login')}) }}">
+                                            {{ 'password_login.user_list.admin'|trans }}
+                                        </a>
+                                    {% endif %}
+
+                                    <div class="dropdown-divider"></div>
+
+                                    <a class="dropdown-item text-danger" href="{{ path('password_login_admin_delete', {username: user.username, csrf: csrf_token('password_login')}) }}">
+                                        {{ 'password_login.user_list.delete'|trans }}
+                                    </a>
+                                </div>
+                            </div>
+                            {% endif %}
                         </div>
                     </div>
                 </td>
@@ -54,10 +141,21 @@
 
     {{ macros.pager(userInformations, null, {type: 'pegass'}) }}
 
-    <div class="text-right">
-        <a href="{{ path('home') }}">
-            {{ 'password_login.user_list.home'|trans }}
-        </a>
+    <div class="text-left">
+        <sup>(1)</sup> {{ 'password_login.user_list.description_verified'|trans }}
+    </div>
+    <div class="text-left">
+        <sup>(2)</sup> {{ 'password_login.user_list.description_trusted'|trans }}
+    </div>
+    <div class="text-left">
+        <sup>(3)</sup> {{ 'password_login.user_list.description_admin'|trans }}
+    </div>
+
+    <br/>
+
+    <div class="text-center">
+        <a href="{{ path('admin_home') }}"
+           class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
     </div>
 
 </div>

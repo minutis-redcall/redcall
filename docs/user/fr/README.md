@@ -39,7 +39,7 @@ L'accueil vous permet:
 
 L'affichage est très large car l'application est optimisée pour être utilisable sur un smartphone.
 
-Vous pouvez également aller dans "Gestion des effectifs" si vous souhaitez rajouter ou modifier les coordonnées ou les compétences d'un bénévole.
+Depuis la page d'accueil, vous pouvez également aller dans "Gestion des effectifs", afin de rajouter ou modifier les coordonnées ou les compétences d'un bénévole.
 
 ---
 
@@ -53,7 +53,7 @@ Vous pouvez envoyer vos déclenchements par deux moyens:
 
 ![Création d'un déclenchement](03-a-global.png)
 
-### Nom et type
+### Nom et Type de déclenchement
 
 ![Type de déclenchement](03-a-type.png)
 
@@ -63,7 +63,7 @@ Le type de déclenchement dépend du contexte :
 
 - Vert : phase d'informations à propos d'un risque ou d'un événement. Exemple: il y a un match OM / PSG à risque ce soir, du coup on demande à nos volontaires s'ils sont disponibles, au cas où.
 
-- Orange : phase de préparation du recrutement, au niveau local (orange 1) ou départemental (orange 2). Exemple : une manifestation qui s'est mal passée le week-end dernier va se répéter ce week-end ; à ce moment là on prévoit des équipages à l'avance, avec une bonne certitude de les déclencher.
+- Orange : phase de préparation du recrutement, au niveau local (orange 1) ou départemental (orange 2). Exemple : une manifestation qui s'est mal passée le week-end dernier va se répéter ce week-end ; à ce moment-là on prévoit des équipages à l'avance, avec une bonne certitude de les déclencher.
 
 - Rouge : phase d'intervention / regroupement au point de rassemblement déterminé. Exemple : la manifestation "orange" préparée précédemment se déroule mal à nouveau, ou alors une explosion vient d'avoir lieu quelque part et des équipages sont immédiatement requis. 
 
@@ -83,7 +83,7 @@ Cette seconde partie vous permet de sélectionner la liste des bénévoles que v
 
 ![Ajout manuel d'un bénévole](03-b-audience-2.png)
 
-### Message
+### Le Contenu du message
 
 ![Message envoyé par SMS](03-c-message-sms.png)
 
@@ -97,13 +97,13 @@ Dans la plupart des cas, vous utiliserez ce dernier type de message car il perme
 
 Vous pouvez envoyer deux types de messages:
 
-#### Par SMS
+#### SMS
 
 Pour les envois urgents uniquement.
 
 Les SMS sont limités à 300 caractères pour des raisons de fiabilité et de coût. Plus un message est long, plus il coûte cher et moins il a de chances d'arriver rapidement.
 
-#### Par email
+#### Email
 
 Utilisez les emails pour tout autre déclenchement.
 
@@ -120,15 +120,15 @@ Utilisez le menu déroulant pour utiliser des modèles de réponses les plus cou
 - "Jours de la semaine" pré-remplira "Lundi" ... "Dimanche"
 - etc.
 
-Si aucun modèle ne correspond à votre besoin, vous avez la possibilité de proposer jusque 9 choix de réponses personnalisés.
+Si aucun modèle ne correspond à votre besoin, vous avez la possibilité de proposer jusqu'à 9 choix de réponses personnalisées.
 
-La dernière coche permet à un volontaire d'avoir la possibilité de répondre en donnant plusieurs choix (ex: lundi et mardi).
+Vous pouvez également décider d’offrir la possibilité aux destinataires de choisir plusieurs réponse, en activant le bouton situé sous le cadre de réponse.
 
-Chaque volontaire devra répondre par le code correspondant à la réponse qui lui convient, ou donner plusieurs codes séparés par un espace si vous avez coché la case "Les destinataires peuvent choisir plusieurs réponses".
+Dès réception du message, chaque volontaire de répondre par le code correspondant à la réponse qui lui convient. Les volontaires pourront également donner plusieurs réponses en séparant chaque code d’un espace, dans le cas où l’option a été cochée.
 
 ### Autres options
 
-Une dernière coche permet aux volontaires déclenchés de se géo-localiser entre eux. 
+Une dernière option permet aux volontaires déclenchés de se géo-localiser entre eux. 
 
 ![Autres options](03-e-autres.png)
 
@@ -136,7 +136,7 @@ Lorsqu'un équipage est complet, envoyez un message aux bénévoles afin de donn
 
 ### Prévisualisation
 
-La prévisualisation vous montre le message tel qu'il sera envoyé à l'audience.
+La prévisualisation vous permet de voir le message tel qu'il sera envoyé à l'audience.
 
 ![Prévisualisation](03-f-prevsualiser.png)
 
@@ -158,20 +158,20 @@ La liste des déclenchements est par défaut organisée par date de création d�
 
 - Cliquez sur le titre d'un déclenchement pour l'ouvrir
 
-Pour des raisons techniques, pensez à fermer les déclenchements lorsqu'ils sont terminés (cela libèrera par exemple les préfixes utilisés dans les codes de réponse envoyés aux bénévoles) .
+Pour des raisons techniques, pensez à fermer les déclenchements lorsqu'ils sont terminés (cela libérera par exemple les préfixes utilisés dans les codes de réponse envoyés aux bénévoles) .
 
 ---
 
 ## Suivi d'un déclenchement
 
-Lorsque vous créez ou ouvrez un déclenchement, vous arrivez sur la page de suivi
+Lorsque vous créez ou ouvrez un déclenchement, vous arrivez sur la page de suivi.
 
 ![Suivi d'un déclenchement](05-a-global.png)
 
 Cette page permet:
 - d'afficher la liste des bénévoles déclenchés
 - d'afficher leur réponses aux messages en temps réel
-- de filtrer les bénévoles en fonction de leur réponse ou/et de leurs compétences
+- de filtrer les bénévoles en fonction de leur réponse et/ou de leurs compétences
 - d'envoyer un nouveau message à une sélection de bénévoles
 
 ### Naviguer entre les messages
@@ -180,7 +180,7 @@ Dans le cas où votre déclenchement contiendrait plusieurs communications, util
 
 ![Onglets de communication](05-f-onglets.png)
 
-### Progression de l'envoi d'un message
+### Suivi de l'avancement de l'envoi d'un message
 
 Vous pouvez suivre l'avancement de l'envoi de ce message via la barre de progression:
 
@@ -188,7 +188,7 @@ Vous pouvez suivre l'avancement de l'envoi de ce message via la barre de progres
 
 Si la barre de progression ne va pas au bout, il est possible que certains volontaires n'aient pas de numéro de téléphone sur Pegass. Vous devrez alors leur demander de renseigner ces informations sur Gaia afin qu'ils deviennent déclenchables.
 
-La barre indique l'envoi des messages par RedCall, mais ne grantit pas de leur arrivée à destination (téléphone éteint, délais opérateurs etc).
+La barre indique l'envoi des messages par RedCall, mais ne grantit pas leur arrivée à destination (téléphone éteint, délais opérateurs etc).
 
 ### Tableau de bord
 
@@ -197,7 +197,7 @@ Chaque ligne du tableau correspond à un volontaire à qui vous avez envoyé un 
 De gauche à droite:
 - une case à cocher qui va permettre de sélectionner le volontaire
 - son nom et ses compétences
-- le numéro de la réponse qu'il a répondu au message
+- le numéro de la réponse qu'il a envoyé en réponse au message
 - l'heure à laquelle la réponse a été reçue
 - la possibilité d'éditer manuellement la réponse
 
@@ -213,11 +213,11 @@ Une ligne qui contient le bénévole en noir et un chiffre signifie qu'il a corr
 
 ![Réponse connue](05-g-reponse-connue.png)
 
-Une réponse qui contient "Ambigüe" signfie que la réponse au message est valide, mais que le volontaire a probablement dit autre chose avec (ex: "A1 mais seulement jusqu'à 18h!") 
+Une réponse qui contient "Ambigüe" signfie que la réponse au message est valide, mais que le volontaire a probablement ajouté d'autres informations (ex: "A1 mais seulement jusqu'à 18h!") 
 
 ![Réponse ambigüe](05-k-ambigue.png)
 
-Une réponse qui contient "?" signifie que RedCall n'a pas pu interprêter la réponse renvoyée par le bénévole. Elle est du coup affichée en dessous de ses compétences.
+Une réponse qui contient "?" signifie que RedCall n'a pas pu interprêter la réponse renvoyée par le bénévole. Ce type de réponse sera affiché en dessous de ses compétences.
 
 ![Réponse inconnue](05-h-reponse-inconnue.png)
 
@@ -233,21 +233,21 @@ A2: Non
 Pour répondre, saisir le code de votre choix.
 ```
 
-Le préfixe (ici "A") permet à RedCall de supporter des déclenchements multiples au même moment. Si un autre déclenchement a lieu, ou si une autre question est posée, le préfixe deviendra "B" afin de savoir à quelle question rattacher la réponse.
+Le préfixe (ici "A") permet à RedCall de supporter plusieurs déclenchements au même moment. Si un autre déclenchement a lieu, ou si une autre question est posée, le préfixe deviendra "B" afin de savoir à quelle question rattacher la réponse.
 
 Le numéro (ici "1" ou "2") correspond au numéro de la réponse.
 
-Et pour que la réponse ne soit pas ambigüe, elle doit être soit A1, soit A2, pas autre chose.
+Ainsi, pour que la réponse ne soit pas ambigüe, elle doit être soit A1, soit A2. Les autres réponses ne seront pas comprises par RedCall.
 
 Devant cette complexité, certains bénévoles vont seulement répondre "Non", ou bien "2", ou bien "Oui, mais seulement pendant 2h"
 
-Du coup, le petit crayon à droite des réponses vous permet de changer la réponse d'un bénévole, afin de pouvoir par la suite utiliser les filtres.
+Si vous recevez une réponse "ambigüe", vous pourrez utiliser le crayon situé à droite des réponses pour changer la réponse d'un bénévole mnanuellement. Vous pourrez ainsi utiliser les filtres pour traiter les réponses de la meilleure manière.
 
 ![Changer les réponses](05-n-filtrer-reponse.png)
 
 ### Filtres
 
-Il est possible de filtrer les lignes de ce tableau par réponse, afin, par exemple, de n'afficher que les bénévoles disponibles dans le cadre d'une opération. C'est également utile pour repérer les "mauvaises" réponses afin de les recatégoriser correctement.
+Il est possible de filtrer les lignes de ce tableau par réponse, afin, par exemple, de n'afficher que les bénévoles disponibles dans le cadre d'une opération. C'est également utile pour repérer les "mauvaises" réponses, afin de les recatégoriser correctement.
 
 ![Filtrer par réponse](05-l-filtrer-reponse.png)
 
@@ -261,13 +261,13 @@ Si vous souhaitez contacter les bénévoles disponibles (afin de leur envoyer le
 
 ![Nouveau message](05-o-nouveau-msg.png)
 
-Cliquez sur "Ecrire un nouveau message" afin d'accéder au formulaire de déclenchement, avec la liste des bénévoles choisis présélectionnés. 
+Cliquez sur "Ecrire un nouveau message" afin d'accéder au formulaire de déclenchement. Vous verrez apparaître la liste des bénévoles présélectionnés. 
 
 Une fois le message envoyé, un nouvel onglet de communication apparaîtra en haut de votre déclenchement.
 
 ### Téléchargements
 
-De la même manière, après avoir sélectionné les volontaires, vous pouvez télécharger un fichier CSV ou un fichier PDF afin d'effectuer la remontées des équipages créés auprès de votre DT. 
+De la même manière, après avoir sélectionné les volontaires, vous pouvez télécharger un fichier CSV ou un fichier PDF afin d'effectuer la remontée des équipages créés auprès de votre DT. 
 
 ![Téléchargement PDF](05-p-pdf.png)
 
@@ -301,26 +301,26 @@ La page de gestion des structures vous permet de:
 
 - voir à quelle date votre structure a été mise à jour ou sera prochainement synchronisée avec Pegass (les dates sont au format UTC, comprendre à l'heure anglaise).
 
-- vous pouvez forcer la mise à jour de votre structure si par exemple vous souhaitez intégrer un bénévole qui est arrivé, ou supprimer les bénévoles qui n'ont pas réglé leur cotisation.
+- forcer la mise à jour de votre structure, si par exemple vous souhaitez intégrer un bénévole qui est arrivé, ou supprimer les bénévoles qui n'ont pas réglé leur cotisation.
 
 ![Structures](06-b-structures.png)
 
 ### Volontaires
 
-Il faut savoir que les bénévoles sont importés de Pegass mais cela peut avoir plusieurs effets de bords :
+Il faut savoir que les bénévoles sont importés de Pegass, mais cela peut avoir plusieurs effets de bords :
 
-Si un bénévole possède plusieurs numéros de téléphone, on récupère le premier de disponible dans l'ordre suivant:
+Si un bénévole possède plusieurs numéros de téléphone, on récupère le premier numéro disponible dans l'ordre suivant:
 - téléphone portable personnel
 - téléphone fixe personnel (si c'est un n* de mobile)
 - téléphone portable pro
 - téléphone fixe pro (si c'est un n* de mobile)
 
-Si un bénévole possède plusieurs emails, on récupère le premier de disponible dans l'ordre suivant:
+Si un bénévole possède plusieurs emails, on récupère le premier email disponible dans l'ordre suivant:
 - email personnel
 - email professionel
 - email croix-rouge
 
-La page de gestion de volontaires vous permet donc de vérifier ou/et corriger d'éventuelles erreurs.
+La page de gestion de volontaires vous permet donc de vérifier et/ou corriger d'éventuelles erreurs.
 
 ![Gestion des volontaires](06-c-volontaires.png)
 
@@ -330,13 +330,13 @@ Sur chaque volontaire, vous pouvez effectuer les actions suivantes:
 
 ![Actions sur un volontaire](06-d-actions.png)
 
-- Synchroniser avec Pegass : si un bénévole a récemment validé une formation (ex: PSE1) et que celle-ci a été saisie dans Pegass, vous aurez probablement envie de pouvoir déclencher ce volonaire en cas de besoin. Vous pouvez donc forcer une synchronisation avec Pegass avant le délai habituel de 30 jours.
+- Synchroniser avec Pegass : si un bénévole a récemment validé une formation (ex: PSE1) et que celle-ci a été saisie dans Pegass, vous aurez probablement envie de pouvoir déclencher ce volontaire en cas de besoin. Vous pouvez donc forcer une synchronisation avec Pegass avant le délai habituel de 30 jours.
 
-- Mise à jour manuelle : si un bénévole se plaint de ne pas être déclenché, vous pouvez par exemple changer ses coordonnées (numéro de téléphone ou/et email). Vous pouvez également changer ses compétences si vous n'avez pas pu les mettre à jour sur Pegass.
+- Mise à jour manuelle : si un bénévole se plaint de ne pas être déclenché, vous pouvez par exemple changer ses coordonnées (numéro de téléphone et/ou email). Vous pouvez également changer ses compétences si vous n'avez pas pu les mettre à jour sur Pegass.
 
-- Geler le volontaire : cela vous permet de ne plus synchroniser un volontaire avec Pegass (c'est normalement fait tous les 30 jours). Un volontaire est automatiquement gelé si vous effectuez une mise à jour manuelle ce qui permet d'éviter que Pegass vienne écraser vos changements. Si le volontaire est déjà gelé, ce bouton est remplacé par "Dégeler", qui réautorise la synchronisation avec Pegass.
+- Geler le volontaire : cela vous permet de ne plus synchroniser un volontaire avec Pesages (c'est normalement fait tous les 30 jours). Un volontaire est automatiquement gelé si vous effectuez une mise à jour manuelle ce qui permet d'éviter que Pegass vienne écraser vos changements. Si le volontaire est déjà gelé, ce bouton est remplacé par "Dégeler", qui réautorise la synchronisation avec Pegass.
 
-- Desactiver un volontaire : utile si un bénévole encore actif ne souhaite plus être déclenché et vous en fait la demande.
+- Désactiver un volontaire : utile si un bénévole encore actif ne souhaite plus être déclenché et vous en fait la demande.
 
 #### Ajouter un volontaire
 

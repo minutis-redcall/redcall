@@ -98,18 +98,20 @@
     <br>
 
     {# PEGASS UPDATE SECTION #}
-    <h4>{{ 'admin.statistics.pegass.title' | trans }}</h4>
-    <p>{{ 'label.volunteers' | trans | capitalize }}</p>
-    <ul>
-        <li>{{ 'admin.statistics.pegass.oldest_update' | trans}} {{ stats.pegassUpdates.volunteers.oldest_update | date('d/m/Y H:i') }} UTC</li>
-        <li>{{ 'admin.statistics.pegass.newest_update' | trans}} {{ stats.pegassUpdates.volunteers.newest_update | date('d/m/Y H:i') }} UTC</li>
-    </ul>
-    <br>
-    <p>{{ 'label.structures' | trans | capitalize }}</p>
-    <ul>
-        <li>{{ 'admin.statistics.pegass.oldest_update' | trans}} {{ stats.pegassUpdates.structures.oldest_update | date('d/m/Y H:i') }} UTC</li>
-        <li>{{ 'admin.statistics.pegass.newest_update' | trans}} {{ stats.pegassUpdates.structures.newest_update | date('d/m/Y H:i') }} UTC</li>
-    </ul>
+    {% if is_redcross %}
+        <h4>{{ 'admin.statistics.pegass.title' | trans }}</h4>
+        <p>{{ 'label.volunteers' | trans | capitalize }}</p>
+        <ul>
+            <li>{{ 'admin.statistics.pegass.oldest_update' | trans}} {{ stats.pegassUpdates.volunteers.oldest_update | date('d/m/Y H:i') }} UTC</li>
+            <li>{{ 'admin.statistics.pegass.newest_update' | trans}} {{ stats.pegassUpdates.volunteers.newest_update | date('d/m/Y H:i') }} UTC</li>
+        </ul>
+        <br>
+        <p>{{ 'label.structures' | trans | capitalize }}</p>
+        <ul>
+            <li>{{ 'admin.statistics.pegass.oldest_update' | trans}} {{ stats.pegassUpdates.structures.oldest_update | date('d/m/Y H:i') }} UTC</li>
+            <li>{{ 'admin.statistics.pegass.newest_update' | trans}} {{ stats.pegassUpdates.structures.newest_update | date('d/m/Y H:i') }} UTC</li>
+        </ul>
+    {% endif %}
 
     <div class="text-center">
         <br/><br/>
