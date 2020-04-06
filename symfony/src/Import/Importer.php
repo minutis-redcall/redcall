@@ -73,8 +73,14 @@ abstract class Importer
     public function import(File $file): Result
     {
         $h = fopen($file->getRealPath(), 'r');
+        $n = 0;
         while (false !== $line = fgetcsv($h, 0, ';')) {
-            $this->lines[] = $this->normalizeLine($line);
+            // Skip the first line.
+            if ($n !== 0) {
+                $this->lines[] = $this->normalizeLine($line);
+            }
+
+            $n++;
         }
 
         fclose($h);
@@ -86,7 +92,7 @@ abstract class Importer
              /** @var ConstraintViolation $violation */
             foreach ($violationList as &$violation) {
                 $errors[] = $this->translator->trans('import.error_message', [
-                    '%lineNumber%' => $lineNumber + 1,
+                    '%lineNumber%' => $lineNumber,
                     '%field%' => $violation->getPropertyPath(),
                     '%error%' => $violation->getMessage(),
                     '%value%' => $violation->getInvalidValue(),
