@@ -5,7 +5,6 @@ namespace App\Controller\Management;
 use App\Base\BaseController;
 use App\Entity\Structure;
 use App\Form\Type\CSVImportType;
-use App\Import\ImportViolations;
 use App\Import\Result;
 use App\Import\StructureImporter;
 use App\Manager\StructureManager;
