@@ -116,6 +116,7 @@ class MessageFormatter
         }
 
         $contentParts[] = $this->translator->trans('message.email.announcement', [
+            '%brand%' => mb_strtoupper(getenv('BRAND')),
             '%day%'   => date('d'),
             '%month%' => date('m'),
             '%year%'  => date('Y'),
