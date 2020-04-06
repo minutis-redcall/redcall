@@ -79,6 +79,12 @@ class Communication
     public function validate(ExecutionContextInterface $context, $payload)
     {
         if ($this->type === \App\Entity\Communication::TYPE_EMAIL) {
+            if (!$this->subject) {
+                $context->buildViolation('form.communication.errors.no_subject')
+                    ->atPath('subject')
+                    ->addViolation();
+            }
+
             if ($this->geoLocation) {
                 $context->buildViolation('form.communication.errors.email_geolocation')
                         ->atPath('geoLocation')
