@@ -402,4 +402,8 @@ label:
 import:
   label: 'Importer un fichier CSV'
   submit: 'Importer'
+  validation_failed: 'Le fichier à importer contient les erreurs suivantes. Merci de les corriger avant de réeessayer.'
+  completed: 'Le fichier a été correctement traité. %nbImportedLines% lignes ont été importées, %nbIgnoredLines% ont été ignorées.'
+  error: 'Une erreur est survenue pendant le traitement du fichier %fileName%'
+  error_message: '[Ligne %lineNumber%] %field% %error% (%value%)'
 

@@ -8,14 +8,6 @@
         {{ 'manage_volunteers.title'|trans }}
     </h1>
 
-    {% if not importViolationList is empty %}
-        <ul>
-            {% for violation in importViolationList %}
-                <li>{{ violation.message }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
-
     <div class="text-right">
         <a href="{{ path('management_volunteers_create') }}" class="btn btn-secondary">
             {{ 'manage_volunteers.form.create'|trans }}
@@ -158,6 +150,23 @@
 
     {% if not is_redcross and is_granted('ROLE_ADMIN') %}
         {{ form(importForm) }}
+
+        {% if not errors is empty %}
+            {% if not errors is empty %}
+                <div class="alert alert-warning alert-dismissible">
+                    {{ 'import.validation_failed'|trans }}
+                    <ul>
+                        {% for error in errors %}
+                            <li>{{ error }}</li>
+                        {% endfor %}
+                    </ul>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            {% endif %}
+        {% endif %}
+
         <br/>
     {% endif %}
 

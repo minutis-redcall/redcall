@@ -9,14 +9,13 @@ use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Validator\Constraint;
-use Symfony\Component\Validator\ConstraintViolationList;
+use Symfony\Component\Validator\Constraints\Collection;
+use Symfony\Component\Validator\ConstraintViolation;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 abstract class Importer
 {
-    /** @var array */
-    private $lines = [];
-
     /** @var Connection */
     private $connection;
 
@@ -26,8 +25,17 @@ abstract class Importer
     /** @var LoggerInterface */
     private $logger;
 
+    /** @var TranslatorInterface */
+    private $translator;
+
+    /** @var array */
+    protected $lines = [];
+
     /** @var EntityManagerInterface */
     protected $entityManager;
+
+    /** @var array */
+    protected $constraints = [];
 
     /**
      * Importer constructor.
@@ -36,29 +44,33 @@ abstract class Importer
      * @param ValidatorInterface     $validator
      * @param LoggerInterface        $logger
      * @param EntityManagerInterface $entityManager
+     * @param TranslatorInterface    $translator
      */
     public function __construct(
         Connection $connection,
         ValidatorInterface $validator,
         LoggerInterface $logger,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
+        TranslatorInterface $translator
     )
     {
         $this->connection = $connection;
         $this->validator = $validator;
         $this->logger = $logger;
         $this->entityManager = $entityManager;
+        $this->translator =  $translator;
+        $this->constraints = $this->getConstraints();
     }
 
     /**
      * @param File $file
      *
-     * @return ConstraintViolationList
+     * @return Result
      * @throws ConnectionException
      * @throws DBALException
      * @throws \Exception
      */
-    public function import(File $file): ConstraintViolationList
+    public function import(File $file): Result
     {
         $h = fopen($file->getRealPath(), 'r');
         while (false !== $line = fgetcsv($h, 0, ';')) {
@@ -68,24 +80,37 @@ abstract class Importer
         fclose($h);
         $this->sort();
 
-        $violationList = new ConstraintViolationList();
-        foreach ($this->lines as &$line) {
-            $violationList->addAll($this->validator->validate($line, $this->getConstraints()));
+        $errors = [];
+        foreach ($this->lines as $lineNumber => &$line) {
+             $violationList = $this->validator->validate($line, new Collection($this->constraints));
+             /** @var ConstraintViolation $violation */
+            foreach ($violationList as &$violation) {
+                $errors[] = $this->translator->trans('import.error_message', [
+                    '%lineNumber%' => $lineNumber + 1,
+                    '%field%' => $violation->getPropertyPath(),
+                    '%error%' => $violation->getMessage(),
+                    '%value%' => $violation->getInvalidValue(),
+                 ]);
+            }
         }
 
-        if ($violationList->count() > 0) {
-            return $violationList;
+        if (!empty($errors)) {
+            return new Result($errors);
         }
 
         try {
             $this->connection->beginTransaction();
+            $nbImportedLines = 0;
+            $nbIgnoredLines = 0;
+
             foreach ($this->lines as &$line) {
-                $this->importLine($line);
+                $r = $this->importLine($line);
+                $r ? $nbImportedLines++ : $nbIgnoredLines++;
             }
 
             $this->connection->commit();
 
-            return $violationList;
+            return new Result($errors, $nbImportedLines, $nbIgnoredLines);
         } catch (\Exception $e) {
             $this->logger->error($e->getMessage());
             if ($this->connection->isTransactionActive()) {
@@ -117,6 +142,8 @@ abstract class Importer
 
     /**
      * @param array $data
+     *
+     * @return bool True if the line was imported, false if it was ignored.
      */
-    abstract protected function importLine(array &$data);
+    abstract protected function importLine(array &$data): bool;
 }

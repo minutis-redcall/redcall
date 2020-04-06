@@ -79,6 +79,16 @@ class VolunteerManager
     }
 
     /**
+     * @param int $identifier
+     *
+     * @return Volunteer|null
+     */
+    public function findOneByIdentifier(int $identifier): ?Volunteer
+    {
+        return $this->volunteerRepository->findOneByIdentifier($identifier);
+    }
+
+    /**
      * @param Volunteer $volunteer
      */
     public function save(Volunteer $volunteer)

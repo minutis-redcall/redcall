@@ -403,4 +403,8 @@ label:
 import:
   label: 'Import CSV file'
   submit: 'Import'
+  validation_failed: 'The file contains the following errors. Fix them and try again.'
+  completed: 'File was successfully processed. %nbImportedLines% lines were imported, %nbIgnoredLines% were ignored'
+  error: 'An error occurred wile processing the file %fileName%'
+  error_message: '[Line %lineNumber%] %field% %error% (%value%)'
 

@@ -3,16 +3,21 @@
 namespace App\Import;
 
 use App\Entity\Structure;
-use App\Repository\StructureRepository;
+use App\Manager\StructureManager;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\Validator\Constraints\GreaterThan;
+use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Constraints\LessThanOrEqual;
+use Symfony\Component\Validator\Constraints\Type;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class StructureImporter extends Importer
 {
-    /** @var StructureRepository */
-    private $structureRepository;
+    /** @var StructureManager */
+    private $structureManager;
 
     /**
      * StructureImporter constructor.
@@ -21,18 +26,21 @@ class StructureImporter extends Importer
      * @param ValidatorInterface     $validator
      * @param LoggerInterface        $logger
      * @param EntityManagerInterface $entityManager
-     * @param StructureRepository    $structureRepository
+     * @param TranslatorInterface    $translator
+     * @param StructureManager       $structureManager
      */
     public function __construct(
         Connection $connection,
         ValidatorInterface $validator,
         LoggerInterface $logger,
         EntityManagerInterface $entityManager,
-        StructureRepository $structureRepository)
+        TranslatorInterface $translator,
+        StructureManager $structureManager
+    )
     {
-        parent::__construct($connection, $validator, $logger, $entityManager);
+        parent::__construct($connection, $validator, $logger, $entityManager, $translator);
 
-        $this->structureRepository = $structureRepository;
+        $this->structureManager = $structureManager;
     }
 
     /**
@@ -42,11 +50,9 @@ class StructureImporter extends Importer
     {
         return [
             'identifier' => (int) $data[0],
-            'type' => $data[1],
-            'name' => $data[2],
-            'parent_structure' => !empty($data[3]) ? $data[3] : null,
-            'enabled' => (bool) $data[4],
-            'president' => $data[5],
+            'type' => 'foo',
+            'name' => $data[1],
+            'parent_structure' => !empty($data[2]) ? $data[2] : null,
         ];
     }
 
@@ -62,28 +68,52 @@ class StructureImporter extends Importer
      */
     protected function getConstraints(): array
     {
-        return [];
+        return [
+            'identifier' => [
+                new Type([
+                    'type' => 'int'
+                ]),
+                new GreaterThan([
+                    'value' => 0,
+                ]),
+                new LessThanOrEqual([
+                    'value' => 4294967295,
+                ]),
+            ],
+            'type' => new Length([
+                'min' => 1,
+                'max' => 16,
+            ]),
+            'name' => new Length([
+                'min' => 1,
+                'max' => 255,
+            ]),
+            'parent_structure' => [],
+        ];
     }
 
     /**
      * {@inheritDoc}
      */
-    protected function importLine(array &$data)
+    protected function importLine(array &$data): bool
     {
+        // Assess if the structure already exists.
+        $structure = $this->structureManager->findOneByIdentifier($data['identifier']);
+
+        if (!is_null($structure)) {
+            return false;
+        }
+
         $structure = new Structure();
         $structure
             ->setIdentifier($data['identifier'])
             ->setType($data['type'])
             ->setName($data['name'])
-            ->setEnabled($data['enabled'])
-            ->setPresident($data['president'])
         ;
 
         // Get the parent structure if needed.
         if (!is_null($data['parent_structure'])) {
-            $parentStructure = $this->structureRepository->findOneBy([
-                'name' => $data['parent_structure'],
-            ]);
+            $parentStructure = $this->structureManager->findOneByName($data['parent_structure']);
 
             if (is_null($parentStructure)) {
                 throw new \RuntimeException('Parent structure was not found');
@@ -94,5 +124,7 @@ class StructureImporter extends Importer
 
         $this->entityManager->persist($structure);
         $this->entityManager->flush($structure);
+
+        return true;
     }
 }
