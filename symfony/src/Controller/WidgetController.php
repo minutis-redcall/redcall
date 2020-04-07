@@ -181,7 +181,7 @@ class WidgetController extends BaseController
                 sprintf('structure-%s', Uuid::uuid4()),
                 FormType::class
             )
-            ->add('structure', StructureWidgetType::class)
+            ->add('structure', StructureWidgetType::class, ['label' => false])
             ->getForm();
 
         return $this->render('widget/form.html.twig', [

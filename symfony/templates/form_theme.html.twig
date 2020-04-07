@@ -46,7 +46,8 @@
         </div>
 
         <div class="col-2 text-right">
-            <a href="#" data-index="{{ name }}" class="remove-answer btn btn-danger">{{ 'form.communication.fields.remove'|trans }}</a>
+            <a href="#" data-index="{{ name }}"
+               class="remove-answer btn btn-danger">{{ 'form.communication.fields.remove'|trans }}</a>
         </div>
 
     </div>
@@ -76,24 +77,27 @@
 {% endblock %}
 
 {% block structure_widget_row %}
+    <div class="form-group">
+        {{ form_errors(form) }}
 
-    {{ form_errors(form) }}
+        {{ form_label(form) }}
 
-    {{ form_widget(form, {
-        attr: {
-            'class': 'flexdatalist',
-            'placeholder': 'base.search.placeholder'|trans,
-            'data-data': data ? data|json_encode : '[]',
-            'data-url': path('widget_structure_search', {searchAll: true}),
-            'data-search-disabled': true,
-            'data-min-length': 1,
-            'data-visible-properties': '["name", "volunteers"]',
-            'data-no-results-text': 'base.search.no_results'|trans,
-            'data-focus-first-result': true,
-            'data-selection-required': true,
-            'data-text-property': 'name',
-            'data-value-property': 'id',
-        }
-    }) }}
+        {{ form_widget(form, {
+            attr: {
+                'class': 'flexdatalist',
+                'placeholder': 'base.search.placeholder'|trans,
+                'data-data': data ? data|json_encode : '[]',
+                'data-url': path('widget_structure_search', {searchAll: true}),
+                'data-search-disabled': true,
+                'data-min-length': 1,
+                'data-visible-properties': '["name", "volunteers"]',
+                'data-no-results-text': 'base.search.no_results'|trans,
+                'data-focus-first-result': true,
+                'data-selection-required': true,
+                'data-text-property': 'name',
+                'data-value-property': 'id',
+            }
+        }) }}
+    </div>
 
 {% endblock %}

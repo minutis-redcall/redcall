@@ -120,6 +120,7 @@ class FixturesController  extends BaseController
             ])
             ->add('parent', StructureWidgetType::class, [
                 'required' => false,
+                'label' => 'sandbox.fixtures.structure.parent'
             ])
             ->add('number_volunteers', NumberType::class, [
                 'label' => 'sandbox.fixtures.structure.number_volunteers',

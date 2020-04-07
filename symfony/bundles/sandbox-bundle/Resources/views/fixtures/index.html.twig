@@ -16,15 +16,7 @@
         <h3>{{ 'sandbox.fixtures.structure.title'|trans }}</h3>
 
         <div class="text-left">
-            {{ form_start(structure) }}
-            {{ form_row(structure.name) }}
-            <div class="form-group">
-                <label for="{{ volunteer.structure.vars.id }}">{{ 'sandbox.fixtures.structure.parent'|trans }}</label>
-                {{ form_row(structure.parent) }}
-            </div>
-            {{ form_row(structure.number_volunteers) }}
-            {{ form_row(structure.bind_to_user) }}
-            {{ form_end(structure) }}
+            {{ form(structure) }}
         </div>
 
         <br/><hr/><br/>
