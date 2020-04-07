@@ -78,7 +78,7 @@
                             </div>
                             <div id="structures-{{ user.id }}">
                                 {% for structure in userInformation.structures %}
-                                    {% if structure.identifier %}
+                                    {% if not structure.isRedCall %}
                                         <div>{{ structure.name }}</div>
                                     {% endif %}
                                 {% endfor %}

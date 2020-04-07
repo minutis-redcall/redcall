@@ -163,4 +163,21 @@ class CampaignRepository extends BaseRepository
             ->getQuery()
             ->getSingleScalarResult();
     }
+
+    /**
+     * @param int $days
+     *
+     * @return array
+     *
+     * @throws \Exception
+     */
+    public function findInactiveCampaignsSince(int $days): array
+    {
+        return $this->getActiveCampaignsQueryBuilder()
+            ->join('c.communications', 'co')
+            ->andWhere('co.createdAt < :limit')
+            ->setParameter('limit', (new \DateTime('now'))->sub(new \DateInterval(sprintf('P%dD', $days))))
+            ->getQuery()
+            ->getResult();
+    }
 }

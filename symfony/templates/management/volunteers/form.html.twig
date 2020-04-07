@@ -22,7 +22,7 @@
                 <br/>
 
                 {% for structure in volunteer.structures %}
-                    {% if structure.identifier %}
+                    {% if not structure.isRedCall %}
                         {{ structure.displayName }}<br/>
                     {% endif %}
                 {% endfor %}
