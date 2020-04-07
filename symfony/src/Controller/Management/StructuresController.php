@@ -131,8 +131,7 @@ class StructuresController extends BaseController
 
         $form->handleRequest($request);
 
-        if($form->isSubmitted() && $form->isValid())
-        {
+        if ($form->isSubmitted() && $form->isValid()) {
             $this->structureManager->save($structure);
 
             return $this->redirectToRoute('management_structures_list');
