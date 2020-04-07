@@ -45,7 +45,7 @@ class StructureType extends AbstractType
                 return $fromBase ? $fromBase->getId() : null;
             },
             function ($fromForm) {
-                return $this->structureManager->find($fromForm);
+                return $fromForm ? $this->structureManager->find($fromForm) : null;
             }
         ));
     }
