@@ -5,6 +5,11 @@ cron:
     url: /cron/user-cron
     schedule: every 24 hours
 
+  # * * * * * <path/to/the/project>/symfony/bin/console campaign:expired
+  - description: "Automatically close inactive campaigns"
+    url: /cron/campaign-expired
+    schedule: every 24 hours
+
   # * * * * * <path/to/the/project>/symfony/bin/console pegass
   - description: "Maintain Pegass cache"
     url: /cron/pegass

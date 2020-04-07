@@ -219,4 +219,14 @@ class CampaignManager
     {
         return $this->campaignRepository->countAllOpenCampaigns();
     }
+
+    /**
+     * @param int $days
+     *
+     * @return array
+     */
+    public function findInactiveCampaignsSince(int $days): array
+    {
+        return $this->campaignRepository->findInactiveCampaignsSince($days);
+    }
 }
