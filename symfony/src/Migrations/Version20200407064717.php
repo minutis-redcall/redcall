@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20200329161557 extends AbstractMigration
+final class Version20200407064717 extends AbstractMigration
 {
     public function getDescription() : string
     {
@@ -22,9 +22,8 @@ final class Version20200329161557 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE communication ADD volunteer_id INT DEFAULT NULL, CHANGE label label VARCHAR(255) DEFAULT NULL');
-        $this->addSql('ALTER TABLE communication ADD CONSTRAINT FK_F9AFB5EB8EFAB6B1 FOREIGN KEY (volunteer_id) REFERENCES volunteer (id)');
-        $this->addSql('CREATE INDEX IDX_F9AFB5EB8EFAB6B1 ON communication (volunteer_id)');
+        $this->addSql('ALTER TABLE structure DROP type, CHANGE identifier identifier INT DEFAULT NULL');
+        $this->addSql('ALTER TABLE message CHANGE updated_at updated_at DATETIME NOT NULL');
     }
 
     public function down(Schema $schema) : void
@@ -32,8 +31,7 @@ final class Version20200329161557 extends AbstractMigration
         // this down() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE communication DROP FOREIGN KEY FK_F9AFB5EB8EFAB6B1');
-        $this->addSql('DROP INDEX IDX_F9AFB5EB8EFAB6B1 ON communication');
-        $this->addSql('ALTER TABLE communication DROP volunteer_id, CHANGE label label VARCHAR(20) CHARACTER SET utf8mb4 DEFAULT NULL COLLATE `utf8mb4_unicode_ci`');
+        $this->addSql('ALTER TABLE message CHANGE updated_at updated_at DATETIME DEFAULT \'2020-01-01 00:00:00\' NOT NULL');
+        $this->addSql('ALTER TABLE structure ADD type VARCHAR(16) CHARACTER SET utf8mb4 NOT NULL COLLATE `utf8mb4_unicode_ci`, CHANGE identifier identifier INT NOT NULL');
     }
 }

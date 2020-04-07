@@ -37,14 +37,9 @@ class Structure
     private $id;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", nullable=true)
      */
     private $identifier;
-
-    /**
-     * @ORM\Column(type="string", length=16)
-     */
-    private $type;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -92,7 +87,6 @@ class Structure
     private $campaigns;
 
     /**
-     * @var ArrayCollection[]
      * @ORM\OneToMany(targetEntity="App\Entity\PrefilledAnswers", mappedBy="structure")
      */
     private $prefilledAnswers;
@@ -130,26 +124,6 @@ class Structure
     public function setIdentifier(int $identifier): self
     {
         $this->identifier = $identifier;
-
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getType()
-    {
-        return $this->type;
-    }
-
-    /**
-     * @param string $type
-     *
-     * @return Structure
-     */
-    public function setType($type)
-    {
-        $this->type = $type;
 
         return $this;
     }
@@ -502,6 +476,14 @@ class Structure
             'name'      => $this->getDisplayName(),
             'volunteers' => sprintf('(%d)', count($this->getVolunteers())),
         ];
+    }
+
+    /**
+     * @return bool
+     */
+    public function isRedCall(): bool
+    {
+        return self::REDCALL_STRUCTURE === $this->identifier;
     }
 
     /**

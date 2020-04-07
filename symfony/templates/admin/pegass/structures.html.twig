@@ -13,7 +13,7 @@
         <table class="table">
             <tbody>
                 {% for structure in user.structures %}
-                    {% if structure.identifier %}
+                    {% if not structure.isRedCall %}
                         <tr>
                             <td>{{ structure.displayName }}</td>
                             <td>

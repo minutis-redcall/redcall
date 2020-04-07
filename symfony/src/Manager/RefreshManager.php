@@ -164,7 +164,6 @@ class RefreshManager
         ]);
 
         $structure->setIdentifier($pegass->evaluate('structure.id'));
-        $structure->setType($pegass->evaluate('structure.typeStructure'));
         $structure->setName($pegass->evaluate('structure.libelle'));
         $structure->setPresident(ltrim($pegass->evaluate('responsible.responsableId'), '0'));
         $this->structureManager->save($structure);

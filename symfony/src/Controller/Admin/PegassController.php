@@ -97,7 +97,7 @@ class PegassController extends BaseController
         $this->userInformationManager->updateNivol($userInformation, $nivol);
 
         $structureNames = array_filter(array_map(function (Structure $structure) {
-            if (Structure::REDCALL_STRUCTURE === $structure->getIdentifier()) {
+            if ($structure->isRedCall()) {
                 return null;
             }
 
