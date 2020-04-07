@@ -4,7 +4,7 @@ namespace Bundles\SandboxBundle\Controller;
 
 use App\Base\BaseController;
 use App\Entity\Tag;
-use App\Form\Type\StructureType;
+use App\Form\Type\StructureWidgetType;
 use App\Manager\TagManager;
 use Bundles\SandboxBundle\Manager\FixturesManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -118,8 +118,9 @@ class FixturesController  extends BaseController
                     new Length(['min' => 3]),
                 ]
             ])
-            ->add('parent', StructureType::class, [
+            ->add('parent', StructureWidgetType::class, [
                 'required' => false,
+                'label' => 'sandbox.fixtures.structure.parent'
             ])
             ->add('number_volunteers', NumberType::class, [
                 'label' => 'sandbox.fixtures.structure.number_volunteers',
@@ -154,7 +155,7 @@ class FixturesController  extends BaseController
                     new Length(['min' => 0]),
                 ],
             ])
-            ->add('structure', StructureType::class, [
+            ->add('structure', StructureWidgetType::class, [
                 'label' => 'sandbox.fixtures.volunteer.structure',
                 'required' => false,
             ])

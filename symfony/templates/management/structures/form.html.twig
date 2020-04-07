@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% import 'macros.html.twig' as macros %}
+
+{% block body %}
+
+    <h1>
+        {{ 'manage_structures.form.create'|trans }}
+    </h1>
+
+    {{ form(form) }}
+
+    <br/>
+
+    <div class="text-center">
+        <a href="{{ path('management_structures_list') }}"
+           class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+    </div>
+
+    <br/><br/>
+
+{% endblock %}

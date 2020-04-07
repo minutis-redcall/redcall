@@ -18,6 +18,14 @@
         {% endif %}
     {% endif %}
 
+    {% if is_granted('ROLE_ADMIN') %}
+    <div class="text-right">
+        <a href="{{ path('management_structures_create') }}" class="btn btn-secondary">
+            {{ 'manage_structures.form.create'|trans }}
+        </a>
+    </div>
+    {% endif %}
+
     {{ form(search) }}
 
     <table class="table">

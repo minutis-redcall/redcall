@@ -5,6 +5,7 @@ namespace App\Controller\Management;
 use App\Base\BaseController;
 use App\Entity\Structure;
 use App\Form\Type\CSVImportType;
+use App\Form\Type\StructureType;
 use App\Import\StructureImporter;
 use App\Manager\StructureManager;
 use Bundles\PaginationBundle\Manager\PaginationManager;
@@ -13,6 +14,8 @@ use Bundles\PegassCrawlerBundle\Manager\PegassManager;
 use DateTime;
 use DateTimeZone;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormInterface;
@@ -113,6 +116,29 @@ class StructuresController extends BaseController
             'importForm' => $importForm->createView(),
             'importViolationList' => $violationList,
         ]);
+    }
+
+    /**
+     * @Route("/create", name="create")
+     * @Security("is_granted('ROLE_ADMIN')")
+     * @Template("management/structures/form.html.twig")
+     */
+    public function createStructure(Request $request)
+    {
+        $structure = new Structure();
+
+        $form = $this->createForm(StructureType::class, $structure);
+
+        $form->handleRequest($request);
+
+        if($form->isSubmitted() && $form->isValid())
+        {
+            $this->structureManager->save($structure);
+
+            return $this->redirectToRoute('management_structures_list');
+        }
+
+        return ['form' => $form->createView()];
     }
 
     /**

@@ -297,6 +297,8 @@ manage_structures:
   next_update: 'Next Pegass synchro on: %next_update% UTC'
   force_update: 'Force update now'
   manage_prefilled_answers: 'Manage prefilled answers'
+  form:
+    create: "Create new structure"
   prefilled_answers:
     form:
       title: "Edition of prefilled answers"
@@ -404,3 +406,7 @@ import:
   label: 'Import CSV file'
   submit: 'Import'
 
+structure:
+  form:
+    parent: 'Optional parent structure'
+    name: 'Structure name'

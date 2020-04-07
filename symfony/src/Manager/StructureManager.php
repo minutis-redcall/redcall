@@ -106,6 +106,10 @@ class StructureManager
      */
     public function save(Structure $structure)
     {
+        //TODO Put all identifier to 'null' after https://github.com/redcall-io/app/issues/191
+        if(null === $structure->getIdentifier()) {
+            $structure->setIdentifier(time());
+        }
         $this->structureRepository->save($structure);
     }
 
@@ -197,7 +201,6 @@ class StructureManager
             $structure = new Structure();
             $structure->setIdentifier(Structure::REDCALL_STRUCTURE);
             $structure->setName('RedCall');
-            $structure->setType('UL');
             $structure->setEnabled(true);
             $this->structureRepository->save($structure);
 
