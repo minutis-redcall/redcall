@@ -35,7 +35,7 @@ class VolunteerWidgetType extends TextType
      */
     public function getBlockPrefix()
     {
-        return 'nivol';
+        return 'volunteer_widget';
     }
 
     /**

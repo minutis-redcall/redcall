@@ -27,7 +27,7 @@ class StructureWidgetType extends TextType
      */
     public function getBlockPrefix()
     {
-        return 'structure';
+        return 'structure_widget';
     }
 
     /**
