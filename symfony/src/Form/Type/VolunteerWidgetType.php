@@ -8,7 +8,7 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-class NivolType extends TextType
+class VolunteerWidgetType extends TextType
 {
     /**
      * @var VolunteerManager

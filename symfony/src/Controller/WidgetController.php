@@ -7,8 +7,8 @@ use App\Entity\Campaign;
 use App\Entity\Structure;
 use App\Entity\UserInformation;
 use App\Entity\Volunteer;
-use App\Form\Type\NivolType;
-use App\Form\Type\StructureType;
+use App\Form\Type\VolunteerWidgetType;
+use App\Form\Type\StructureWidgetType;
 use App\Manager\CampaignManager;
 use App\Manager\PrefilledAnswersManager;
 use App\Manager\StructureManager;
@@ -133,7 +133,7 @@ class WidgetController extends BaseController
                 sprintf('nivol-%s', Uuid::uuid4()),
                 FormType::class
             )
-            ->add('nivol', NivolType::class, [
+            ->add('nivol', VolunteerWidgetType::class, [
                 'data' => $userInformation ? $userInformation->getNivol() : null,
             ])
             ->getForm();
@@ -181,7 +181,7 @@ class WidgetController extends BaseController
                 sprintf('structure-%s', Uuid::uuid4()),
                 FormType::class
             )
-            ->add('structure', StructureType::class)
+            ->add('structure', StructureWidgetType::class)
             ->getForm();
 
         return $this->render('widget/form.html.twig', [
