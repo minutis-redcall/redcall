@@ -22,6 +22,8 @@ class Message
     const MAX_LENGTH_EMAIL = 5000;
 
     const SMS_COST = 0.05052;
+    const CALL_COST = 0.05;
+    const EMAIL_COST = 0.000375;
 
     /**
      * @ORM\Id()
@@ -192,6 +194,7 @@ class Message
     {
         return !$this->sent && (
                 Communication::TYPE_SMS === $this->communication->getType() && $this->volunteer->getPhoneNumber() ||
+                Communication::TYPE_CALL === $this->communication->getType() && $this->volunteer->getPhoneNumber() ||
                 Communication::TYPE_EMAIL === $this->communication->getType() && $this->volunteer->getEmail()
             );
     }

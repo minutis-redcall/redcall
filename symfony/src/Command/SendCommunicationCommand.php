@@ -4,7 +4,7 @@ namespace App\Command;
 
 use App\Base\BaseCommand;
 use App\Communication\Sender;
-use App\Entity\Communication;
+use App\Manager\CommunicationManager;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -12,8 +12,26 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class SendCommunicationCommand extends BaseCommand
 {
-    const PAUSE_SMS = 100000; // 10 sms / second
-    const PAUSE_EMAIL = 300000; // 3 email / second
+    /**
+     * @var CommunicationManager
+     */
+    private $communicationManager;
+
+    /**
+     * @var Sender
+     */
+    private $sender;
+
+    /**
+     * @param CommunicationManager $communicationManager
+     * @param Sender               $sender
+     */
+    public function __construct(CommunicationManager $communicationManager, Sender $sender)
+    {
+        parent::__construct();
+        $this->communicationManager = $communicationManager;
+        $this->sender = $sender;
+    }
 
     /**
      * {@inheritdoc}
@@ -32,11 +50,10 @@ class SendCommunicationCommand extends BaseCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        date_default_timezone_set('Europe/Paris');
+
         $communicationId = $input->getArgument('communication-id');
-
-        /* @var Communication $communication */
-        $communication = $this->getManager(Communication::class)->find($communicationId);
-
+        $communication = $this->communicationManager->find($communicationId);
         if (!$communication) {
             $output->writeln(sprintf('<error>Communication "%d" not found.</error>', $communicationId));
 
@@ -45,15 +62,6 @@ class SendCommunicationCommand extends BaseCommand
 
         date_default_timezone_set('Europe/Paris');
 
-        foreach ($communication->getMessages() as $message) {
-            if ($input->getOption('force') || $message->canBeSent()) {
-                $this->get(Sender::class)->send($message);
-                if (Communication::TYPE_SMS === $message->getCommunication()->getType()) {
-                    usleep(self::PAUSE_SMS);
-                } else {
-                    usleep(self::PAUSE_EMAIL);
-                }
-            }
-        }
+        $this->sender->sendCommunication($communication, $input->getOption('force'));
     }
 }

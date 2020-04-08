@@ -9,8 +9,8 @@ sandbox:
     label: 'Number of volunteers to create'
 
   fake_sms:
-    button: 'SMS Simulator'
-    title: 'SMS Simulator - List of recipients'
+    button: 'SMS & Calls Simulator'
+    title: 'SMS & Calls Simulator - List of recipients'
     thread: '+%phoneNumber% inbox (%name%)'
     your_message: 'Your message'
     send: 'Send'

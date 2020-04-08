@@ -9,8 +9,8 @@ sandbox:
     label: 'Nombre de volontaires à créer'
 
   fake_sms:
-    button: 'Simulateur de SMS'
-    title: 'Simulateur de SMS - Liste des destinataires'
+    button: 'Simulateur de SMS & appels'
+    title: 'Simulateur de SMS & appels - Liste des destinataires'
     thread: 'Messagerie du +%phoneNumber% (%name%)'
     your_message: 'Votre message'
     send: 'Envoyer'

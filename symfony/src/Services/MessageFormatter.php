@@ -47,11 +47,14 @@ class MessageFormatter
      */
     public function formatMessageContent(Message $message): string
     {
-        if ($message->getCommunication()->getType() === Communication::TYPE_SMS) {
-            return $this->formatSMSContent($message);
+        switch ($message->getCommunication()->getType()) {
+            case Communication::TYPE_SMS:
+                return $this->formatSMSContent($message);
+            case Communication::TYPE_CALL:
+                return $this->formatCallContent($message);
+            case Communication::TYPE_EMAIL:
+                return $this->formatTextEmailContent($message);
         }
-
-        return $this->formatTextEmailContent($message);
     }
 
     /**
@@ -97,6 +100,44 @@ class MessageFormatter
         }
 
         return GSM::enforceGSMAlphabet(implode("\n", $contentParts));
+    }
+
+    /**
+     * @param Message $message
+     *
+     * @return string
+     */
+    public function formatCallContent(Message $message): string
+    {
+        $contentParts  = [];
+        $communication = $message->getCommunication();
+
+        $contentParts[] = $this->translator->trans('message.call.announcement', [
+            '%brand%' => mb_strtoupper(getenv('BRAND')),
+            '%hours%' => date('H'),
+            '%mins%'  => date('i'),
+        ]);
+
+        $contentParts[] = $communication->getBody();
+
+        // Possible responses
+        $choices = $communication->getChoices();
+        if (is_object($choices)) {
+            $choices = $communication->getChoices()->toArray();
+        }
+
+        if ($choices) {
+            foreach ($choices as $choice) {
+                $contentParts[] = $this->translator->trans('message.call.choices', [
+                    '%answer%' => $choice->getLabel(),
+                    '%code%' => $choice->getCode(),
+                ]);
+            }
+        }
+
+        $contentParts[] = $this->translator->trans('message.call.repeat');
+
+        return implode("\n", $contentParts);
     }
 
     /**

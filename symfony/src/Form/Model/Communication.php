@@ -22,6 +22,7 @@ class Communication
      *
      * @Assert\Choice(choices = {
      *     \App\Entity\Communication::TYPE_SMS,
+     *     \App\Entity\Communication::TYPE_CALL,
      *     \App\Entity\Communication::TYPE_EMAIL
      * })
      */
@@ -78,17 +79,35 @@ class Communication
      */
     public function validate(ExecutionContextInterface $context, $payload)
     {
+        if ($this->type !== \App\Entity\Communication::TYPE_SMS) {
+            if ($this->geoLocation) {
+                $context->buildViolation('form.communication.errors.email_geolocation')
+                    ->atPath('geoLocation')
+                    ->addViolation();
+            }
+        }
+
+        if ($this->type === \App\Entity\Communication::TYPE_CALL) {
+            if ($this->multipleAnswer) {
+                $context->buildViolation('form.communication.errors.call_multiple')
+                    ->atPath('multipleAnswer')
+                    ->addViolation();
+            }
+        }
+
+        if ($this->type === \App\Entity\Communication::TYPE_SMS) {
+            if (mb_strlen($this->message) > Message::MAX_LENGTH_SMS) {
+                $context->buildViolation('form.communication.errors.too_large_sms')
+                    ->atPath('message')
+                    ->addViolation();
+            }
+        }
+
         if ($this->type === \App\Entity\Communication::TYPE_EMAIL) {
             if (!$this->subject) {
                 $context->buildViolation('form.communication.errors.no_subject')
                     ->atPath('subject')
                     ->addViolation();
-            }
-
-            if ($this->geoLocation) {
-                $context->buildViolation('form.communication.errors.email_geolocation')
-                        ->atPath('geoLocation')
-                        ->addViolation();
             }
 
             if (mb_strlen($this->message) > Message::MAX_LENGTH_EMAIL) {
@@ -98,15 +117,8 @@ class Communication
             }
         }
 
-        if ($this->type == \App\Entity\Communication::TYPE_SMS) {
-            if (mb_strlen($this->message) > Message::MAX_LENGTH_SMS) {
-                $context->buildViolation('form.communication.errors.too_large_sms')
-                        ->atPath('message')
-                        ->addViolation();
-            }
-        }
-
         // Check that all selected volunteers appear in at least one selected structure
+        // @todo PERF KILLER
         if ($this->structures && $this->volunteers) {
             foreach ($this->volunteers as $volunteer) {
                 $inStructures = false;

@@ -15,3 +15,4 @@ form:
       prefix_already_used: 'Prefix "{{ string }}" is already used by a communication, in an active campaign.'
       volunteer_not_in_structure: 'One of the selected volunteer does not belong to any of the selected structures.'
       no_subject: 'You should provide a subject to the email'
+      call_multiple: 'Multiple answers are not possible on phone calls.'

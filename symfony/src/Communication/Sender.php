@@ -11,6 +11,10 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class Sender
 {
+    const PAUSE_SMS = 100000; // 10 sms / second
+    const PAUSE_CALL = 100000; // 10 calls / second
+    const PAUSE_EMAIL = 300000; // 3 email / second
+
     /**
      * @var SMSProvider
      */
@@ -52,14 +56,43 @@ class Sender
     }
 
     /**
-     * @param Message $message
+     * @param Communication $communication
+     * @param bool          $force
+     *
+     * @throws \Twig\Error\LoaderError
+     * @throws \Twig\Error\RuntimeError
+     * @throws \Twig\Error\SyntaxError
      */
-    public function send(Message $message)
+    public function sendCommunication(Communication $communication, bool $force = false)
     {
-        if ($message->getCommunication()->getType() === Communication::TYPE_SMS) {
-            $this->sendSms($message);
-        } else {
-            $this->sendEmail($message);
+        foreach ($communication->getMessages() as $message) {
+            if ($force || $message->canBeSent()) {
+                $this->sendMessage($message);
+            }
+        }
+    }
+
+    /**
+     * @param Message $message
+     *
+     * @throws \Twig\Error\LoaderError
+     * @throws \Twig\Error\RuntimeError
+     * @throws \Twig\Error\SyntaxError
+     */
+    public function sendMessage(Message $message)
+    {
+        switch ($message->getCommunication()->getType()) {
+            case Communication::TYPE_SMS:
+                $this->sendSms($message);
+                usleep(self::PAUSE_SMS);
+                break;
+            case Communication::TYPE_CALL:
+                usleep(self::PAUSE_CALL);
+                break;
+            case Communication::TYPE_EMAIL:
+                $this->sendEmail($message);
+                usleep(self::PAUSE_EMAIL);
+                break;
         }
     }
 
@@ -91,6 +124,10 @@ class Sender
 
     /**
      * @param Message $message
+     *
+     * @throws \Twig\Error\LoaderError
+     * @throws \Twig\Error\RuntimeError
+     * @throws \Twig\Error\SyntaxError
      */
     public function sendEmail(Message $message)
     {
