@@ -1,8 +1,9 @@
 services:
 
-  Bundles\TwilioBundle\SMS\Twilio:
+  Bundles\TwilioBundle\Service\Twilio:
     arguments:
       - '@router'
       - '@event_dispatcher'
       - '@Bundles\TwilioBundle\Manager\TwilioMessageManager'
+      - '@Bundles\TwilioBundle\Manager\TwilioCallManager'
       - '@logger'

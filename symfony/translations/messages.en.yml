@@ -200,8 +200,8 @@ message:
     geo_location: 'Geolocation of your crew: %url%'
   call:
     announcement: '%brand% at %hours% hours %mins%'
-    choices: 'To answer %answer%, press %code%'
-    repeat: 'To repeat this message, press 0'
+    choices: 'To answer %answer%, press %code%.'
+    repeat: 'To repeat this message, press 0.'
 
   email:
     announcement: '%brand% on %year%-%month%-%day% at %hours%h%mins%:'

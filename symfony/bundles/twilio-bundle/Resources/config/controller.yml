@@ -1,8 +1,16 @@
 services:
 
+  Bundles\TwilioBundle\Controller\CallController:
+    arguments:
+      - '@Bundles\TwilioBundle\Manager\TwilioCallManager'
+      - '@logger'
+    tags:
+      - controller.service_arguments
+
   Bundles\TwilioBundle\Controller\ReplyController:
     arguments:
-      - '@Bundles\TwilioBundle\SMS\Twilio'
+      - '@Bundles\TwilioBundle\Service\Twilio'
+      - '@logger'
     tags:
       - controller.service_arguments
 
@@ -11,5 +19,6 @@ services:
       - '@Bundles\TwilioBundle\Manager\TwilioMessageManager'
       - '@Bundles\TwilioBundle\Manager\TwilioStatusManager'
       - '@event_dispatcher'
+      - '@logger'
     tags:
       - controller.service_arguments

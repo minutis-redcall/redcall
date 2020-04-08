@@ -6,9 +6,11 @@ use App\Entity\Cost;
 use App\Manager\CostManager;
 use App\Manager\MessageManager;
 use Bundles\TwilioBundle\Entity\TwilioMessage;
-use Bundles\TwilioBundle\Event\TwilioEvent;
+use Bundles\TwilioBundle\Event\TwilioCallEvent;
+use Bundles\TwilioBundle\Event\TwilioMessageEvent;
 use Bundles\TwilioBundle\TwilioEvents;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Twilio\TwiML\VoiceResponse;
 
 class TwilioSubscriber implements EventSubscriberInterface
 {
@@ -38,15 +40,16 @@ class TwilioSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            TwilioEvents::PRICE_UPDATED    => 'onPriceUpdated',
+            TwilioEvents::MESSAGE_PRICE_UPDATED    => 'onPriceUpdated',
             TwilioEvents::MESSAGE_RECEIVED => 'onMessageReceived',
+            TwilioEvents::CALL_RECEIVED => 'onCallReceived',
         ];
     }
 
     /**
-     * @param TwilioEvent $event
+     * @param TwilioMessageEvent $event
      */
-    public function onPriceUpdated(TwilioEvent $event)
+    public function onPriceUpdated(TwilioMessageEvent $event)
     {
         $twilioMessage = $event->getMessage();
 
@@ -67,13 +70,13 @@ class TwilioSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * @param TwilioEvent $event
+     * @param TwilioMessageEvent $event
      *
      * @throws \Doctrine\ORM\NonUniqueResultException
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function onMessageReceived(TwilioEvent $event)
+    public function onMessageReceived(TwilioMessageEvent $event)
     {
         $twilioMessage = $event->getMessage();
 
@@ -81,5 +84,31 @@ class TwilioSubscriber implements EventSubscriberInterface
         if ($messageId) {
             $twilioMessage->setContext(['message_id' => $messageId]);
         }
+    }
+
+    /**
+     * @param TwilioCallEvent $event
+     */
+    public function onCallReceived(TwilioCallEvent $event)
+    {
+        $response = new VoiceResponse();
+
+        $response->say(
+            sprintf('%s bonjour, ce numéro ne prend pas d\'appels, merci de contacter votre unité locale afin de poser vos questions.', getenv('BRAND')), [
+                'voice' => 'alice',
+                'language' => 'fr-FR',
+            ]
+        );
+
+        $response->pause(['length' => 1]);
+
+        $response->say(
+            sprintf('%s greetings, this phone number does not take any calls, please contact your local unit if you have any questions.', getenv('BRAND')), [
+                'voice' => 'alice',
+                'language' => 'en-GB',
+            ]
+        );
+
+        $event->setResponse($response);
     }
 }

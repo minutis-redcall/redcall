@@ -2,7 +2,9 @@
 
 namespace Bundles\TwilioBundle\Controller;
 
-use Bundles\TwilioBundle\SMS\Twilio;
+use Bundles\TwilioBundle\Service\Twilio;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -19,26 +21,39 @@ class ReplyController extends BaseController
     private $twilio;
 
     /**
-     * @param Twilio $twilio
+     * @var LoggerInterface
      */
-    public function __construct(Twilio $twilio)
+    private $logger;
+
+    /**
+     * @param Twilio          $twilio
+     * @param LoggerInterface|null $logger
+     */
+    public function __construct(Twilio $twilio, LoggerInterface $logger = null)
     {
         $this->twilio = $twilio;
+        $this->logger = $logger ?? new NullLogger();
     }
 
     /**
-     * @Route(name="reply", path="reply")
+     * @Route(name="inbound", path="incoming-message")
      */
-    public function reply(Request $request)
+    public function inbound(Request $request)
     {
         $this->validateRequestSignature($request);
+
+        $this->logger->info('Twilio webhooks - incoming message', [
+            'headers' => $request->headers->all(),
+            'query' => $request->query->all(),
+            'request' => $request->request->all(),
+        ]);
 
         $sid = $request->get('MessageSid');
         if (!$sid) {
             throw new BadRequestHttpException();
         }
 
-        $this->twilio->handleReply($sid);
+        $this->twilio->handleInboundMessage($sid);
 
         return new Response();
     }

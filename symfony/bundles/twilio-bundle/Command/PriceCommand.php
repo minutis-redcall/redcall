@@ -2,8 +2,9 @@
 
 namespace Bundles\TwilioBundle\Command;
 
-use Bundles\TwilioBundle\SMS\Twilio;
+use Bundles\TwilioBundle\Service\Twilio;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -30,7 +31,8 @@ class PriceCommand extends Command
 
         $this
             ->setName('twilio:price')
-            ->setDescription('Fetch missing SMS prices');
+            ->setDescription('Fetch missing SMS prices')
+            ->addArgument('retry', InputArgument::OPTIONAL, 'Number of retries on Twilio before skipping', 48);
     }
 
     /**
@@ -44,6 +46,8 @@ class PriceCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->twilio->fetchPrices();
+        $this->twilio->fetchPrices(
+            $input->getArgument('retry')
+        );
     }
 }

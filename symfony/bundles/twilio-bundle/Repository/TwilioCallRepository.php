@@ -2,6 +2,7 @@
 
 namespace Bundles\TwilioBundle\Repository;
 
+use Bundles\TwilioBundle\Entity\TwilioCall;
 use Bundles\TwilioBundle\Entity\TwilioMessage;
 use Doctrine\Common\Persistence\ManagerRegistry;
 
@@ -11,10 +12,10 @@ use Doctrine\Common\Persistence\ManagerRegistry;
  * @method TwilioMessage[]    findAll()
  * @method TwilioMessage[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class TwilioMessageRepository extends BaseTwilioRepository
+class TwilioCallRepository extends BaseTwilioRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, TwilioMessage::class);
+        parent::__construct($registry, TwilioCall::class);
     }
 }

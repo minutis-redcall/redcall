@@ -39,10 +39,12 @@ class TwilioMessageManager
     }
 
     /**
+     * @param int $retries
+     *
      * @return TwilioMessage[]
      */
-    public function findMessagesWithoutPrice(): array
+    public function findMessagesWithoutPrice(int $retries): array
     {
-        return $this->messageRepository->findMessagesWithoutPrice();
+        return $this->messageRepository->findEntitiesWithoutPrice($retries);
     }
 }

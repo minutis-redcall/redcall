@@ -1,12 +1,14 @@
 <?php
 
-namespace Bundles\TwilioBundle\SMS;
+namespace Bundles\TwilioBundle\Service;
 
 use Bundles\TwilioBundle\Entity\TwilioMessage;
-use Bundles\TwilioBundle\Event\TwilioEvent;
+use Bundles\TwilioBundle\Event\TwilioMessageEvent;
+use Bundles\TwilioBundle\Manager\TwilioCallManager;
 use Bundles\TwilioBundle\Manager\TwilioMessageManager;
 use Bundles\TwilioBundle\TwilioEvents;
 use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Routing\RouterInterface;
@@ -35,6 +37,11 @@ class Twilio
     private $messageManager;
 
     /**
+     * @var TwilioCallManager
+     */
+    private $callManager;
+
+    /**
      * @var LoggerInterface
      */
     private $logger;
@@ -43,17 +50,16 @@ class Twilio
      * @param RouterInterface          $router
      * @param EventDispatcherInterface $eventDispatcher
      * @param TwilioMessageManager     $messageManager
-     * @param LoggerInterface          $logger
+     * @param TwilioCallManager        $callManager
+     * @param LoggerInterface|null     $logger
      */
-    public function __construct(RouterInterface $router,
-        EventDispatcherInterface $eventDispatcher,
-        TwilioMessageManager $messageManager,
-        LoggerInterface $logger)
+    public function __construct(RouterInterface $router, EventDispatcherInterface $eventDispatcher, TwilioMessageManager $messageManager, TwilioCallManager $callManager, LoggerInterface $logger = null)
     {
-        $this->router          = $router;
+        $this->router = $router;
         $this->eventDispatcher = $eventDispatcher;
-        $this->messageManager  = $messageManager;
-        $this->logger          = $logger;
+        $this->messageManager = $messageManager;
+        $this->callManager = $callManager;
+        $this->logger = $logger ?: new NullLogger();
     }
 
     /**
@@ -66,8 +72,7 @@ class Twilio
      *
      * @return TwilioMessage
      *
-     * @throws \Twilio\Exceptions\ConfigurationException
-     * @throws \Twilio\Exceptions\TwilioException
+     * @throws \Exception
      */
     public function sendMessage(string $phoneNumber, string $message, array $context = []): TwilioMessage
     {
@@ -78,7 +83,6 @@ class Twilio
         $entity->setFromNumber(getenv('TWILIO_NUMBER'));
         $entity->setToNumber($phoneNumber);
         $entity->setContext($context);
-        $this->messageManager->save($entity);
 
         try {
             $outbound = $this->getClient()->messages->create(sprintf('+%s', $phoneNumber), [
@@ -90,8 +94,7 @@ class Twilio
             $entity->setSid($outbound->sid);
             $entity->setStatus($outbound->status);
 
-            $this->messageManager->save($entity);
-            $this->eventDispatcher->dispatch(new TwilioEvent($entity), TwilioEvents::MESSAGE_SENT);
+            $this->eventDispatcher->dispatch(new TwilioMessageEvent($entity), TwilioEvents::MESSAGE_SENT);
         } catch (\Exception $e) {
             $entity->setStatus('error');
 
@@ -107,23 +110,33 @@ class Twilio
         return $entity;
     }
 
-    /**
-     * Fetch prices of messages on Twilio when they are missing on our database.
-     */
-    public function fetchPrices()
+    public function fetchPrices(int $retries)
     {
-        $entities = $this->messageManager->findMessagesWithoutPrice();
+  //      $this->fetchMessagePrices($retries);
+        $this->fetchCallPrices($retries);
+    }
+
+    /**
+     * @param int $retries
+     *
+     * @throws \Twilio\Exceptions\ConfigurationException
+     * @throws \Twilio\Exceptions\TwilioException
+     */
+    public function fetchMessagePrices(int $retries)
+    {
+        $entities = $this->messageManager->findMessagesWithoutPrice($retries);
         foreach ($entities as $entity) {
             $message = $this->getClient()->messages($entity->getSid())->fetch();
             if ($message->price) {
                 $entity->setPrice($message->price);
                 $entity->setUnit($message->priceUnit);
-
-                $this->messageManager->save($entity);
-                $this->eventDispatcher->dispatch(new TwilioEvent($entity), TwilioEvents::PRICE_UPDATED);
-                $this->messageManager->save($entity);
+                $this->eventDispatcher->dispatch(new TwilioMessageEvent($entity), TwilioEvents::MESSAGE_PRICE_UPDATED);
+            } else {
+                $entity->setRetry($entity->getRetry() + 1);
             }
-            usleep(200000);
+
+            $this->messageManager->save($entity);
+            usleep(500000);
         }
     }
 
@@ -135,7 +148,7 @@ class Twilio
      * @throws \Twilio\Exceptions\ConfigurationException
      * @throws \Twilio\Exceptions\TwilioException
      */
-    public function handleReply(string $sid)
+    public function handleInboundMessage(string $sid)
     {
         $inbound = $this->getClient()->messages($sid)->fetch();
 
@@ -150,9 +163,56 @@ class Twilio
         $entity->setPrice($inbound->price);
         $entity->setUnit($inbound->priceUnit);
 
+        // Required to create the TwilioMessage id
         $this->messageManager->save($entity);
-        $this->eventDispatcher->dispatch(new TwilioEvent($entity), TwilioEvents::MESSAGE_RECEIVED);
+
+        $this->eventDispatcher->dispatch(new TwilioMessageEvent($entity), TwilioEvents::MESSAGE_RECEIVED);
         $this->messageManager->save($entity);
+    }
+
+    /**
+     * @param int $retries
+     *
+     * @throws \Twilio\Exceptions\ConfigurationException
+     * @throws \Twilio\Exceptions\TwilioException
+     */
+    public function fetchCallPrices(int $retries)
+    {
+        $entities = $this->callManager->findCallsWithoutPrice($retries);
+        foreach ($entities as $entity) {
+            $entity->setRetry($entity->getRetry() + 1);
+
+            try {
+                $message = $this->getClient()->calls($entity->getSid())->fetch();
+            } catch (\Exception $e) {
+                $this->logger->error('Unable to fetch Twilio call', [
+                    'id' => $entity->getId(),
+                    'sid' => $entity->getSid(),
+                    'exception' => $e->getMessage(),
+                ]);
+
+                $this->callManager->save($entity);
+
+                continue;
+            }
+            if ($message->startTime) {
+                $entity->setStartedAt($message->startTime);
+            }
+            if ($message->endTime) {
+                $entity->setEndedAt($message->endTime);
+            }
+            if ($message->duration) {
+                $entity->setDuration($message->duration);
+            }
+            if ($message->price) {
+                $entity->setPrice($message->price);
+                $entity->setUnit($message->priceUnit);
+                $this->eventDispatcher->dispatch(new TwilioMessageEvent($entity), TwilioEvents::CALL_PRICE_UPDATED);
+            }
+
+            $this->callManager->save($entity);
+            usleep(500000);
+        }
     }
 
     /**

@@ -11,9 +11,11 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class Sender
 {
-    const PAUSE_SMS = 100000; // 10 sms / second
-    const PAUSE_CALL = 100000; // 10 calls / second
-    const PAUSE_EMAIL = 300000; // 3 email / second
+    // We should not send too many messages at the same time
+    // to prevent Twilio reaching GAE quotas (200 qpm/ip)
+    const PAUSE_SMS = 500000; // 2 sms / second
+    const PAUSE_CALL = 2000000; // 1 call / 2 seconds
+    const PAUSE_EMAIL = 100000; // 10 emails / second
 
     /**
      * @var SMSProvider

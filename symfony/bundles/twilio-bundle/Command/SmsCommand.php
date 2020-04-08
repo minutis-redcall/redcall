@@ -2,7 +2,7 @@
 
 namespace Bundles\TwilioBundle\Command;
 
-use Bundles\TwilioBundle\SMS\Twilio;
+use Bundles\TwilioBundle\Service\Twilio;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;

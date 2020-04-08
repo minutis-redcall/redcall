@@ -4,6 +4,11 @@ services:
     arguments:
       - '@Bundles\TwilioBundle\Repository\TwilioMessageRepository'
 
+  Bundles\TwilioBundle\Manager\TwilioCallManager:
+    arguments:
+      - '@Bundles\TwilioBundle\Repository\TwilioCallRepository'
+      - '@event_dispatcher'
+
   Bundles\TwilioBundle\Manager\TwilioStatusManager:
     arguments:
       - '@Bundles\TwilioBundle\Repository\TwilioStatusRepository'
