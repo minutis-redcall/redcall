@@ -3,16 +3,9 @@
 namespace Bundles\TwilioBundle\Repository;
 
 use Bundles\TwilioBundle\Entity\BaseTwilio;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
-class BaseTwilioRepository extends ServiceEntityRepository
+class BaseTwilioRepository extends BaseRepository
 {
-    public function save(BaseTwilio $entity)
-    {
-        $this->_em->persist($entity);
-        $this->_em->flush();
-    }
-
     /**
      * @param int $retries
      *

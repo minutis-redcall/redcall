@@ -11,7 +11,7 @@ use Doctrine\Common\Persistence\ManagerRegistry;
  * @method TwilioStatus[]    findAll()
  * @method TwilioStatus[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class TwilioStatusRepository extends BaseTwilioRepository
+class TwilioStatusRepository extends BaseRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
