@@ -4,7 +4,6 @@ namespace App\Communication\Processor;
 
 use App\Communication\Sender;
 use App\Entity\Communication;
-use App\Entity\Message;
 
 class SimpleProcessor implements ProcessorInterface
 {
@@ -26,9 +25,6 @@ class SimpleProcessor implements ProcessorInterface
      */
     public function process(Communication $communication)
     {
-        /** @var Message $message */
-        foreach ($communication->getMessages() as $message) {
-            $this->sender->send($message);
-        }
+        $this->sender->sendCommunication($communication);
     }
 }

@@ -16,6 +16,14 @@ sandbox:
     send: 'Envoyer'
     clear: 'Effacer tous les messages'
 
+  fake_call:
+    button: 'Simulateur d''appels'
+    title: 'Simulateur d''appels - Liste des destinataires'
+    read: 'Appels au +%phoneNumber% (%name%)'
+    your_message: 'Code'
+    send: 'Envoyer'
+    clear: 'Effacer tous les appels'
+
   fake_email:
     button: 'Simulateur d''emails'
     title: 'Simulateur d''emails - Liste des destinataires'

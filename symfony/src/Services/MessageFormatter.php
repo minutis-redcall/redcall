@@ -38,27 +38,18 @@ class MessageFormatter
         $this->templating = $templating;
     }
 
-    /**
-     * Used for preview only.
-     *
-     * @param Message $message
-     *
-     * @return string
-     */
     public function formatMessageContent(Message $message): string
     {
-        if ($message->getCommunication()->getType() === Communication::TYPE_SMS) {
-            return $this->formatSMSContent($message);
+        switch ($message->getCommunication()->getType()) {
+            case Communication::TYPE_SMS:
+                return $this->formatSMSContent($message);
+            case Communication::TYPE_CALL:
+                return $this->formatCallContent($message);
+            case Communication::TYPE_EMAIL:
+                return $this->formatTextEmailContent($message);
         }
-
-        return $this->formatTextEmailContent($message);
     }
 
-    /**
-     * @param Message $message
-     *
-     * @return string
-     */
     public function formatSMSContent(Message $message): string
     {
         $contentParts  = [];
@@ -99,11 +90,63 @@ class MessageFormatter
         return GSM::enforceGSMAlphabet(implode("\n", $contentParts));
     }
 
-    /**
-     * @param Message $message
-     *
-     * @return string
-     */
+    public function formatCallContent(Message $message): string
+    {
+        $communication = $message->getCommunication();
+
+        $contentParts  = [];
+        $contentParts = array_merge($contentParts, $this->formatCallContentHeaderPart($communication));
+        $contentParts = array_merge($contentParts, $this->formatCallContentMessagePart($communication));
+        $contentParts = array_merge($contentParts, $this->formatCallContentGatherPart($communication));
+
+        return implode("\n", $contentParts);
+    }
+
+    public function formatCallContentHeaderPart(Communication $communication): array
+    {
+        $contentParts  = [];
+
+        $contentParts[] = $this->translator->trans('message.call.announcement', [
+            '%brand%' => mb_strtoupper(getenv('BRAND')),
+            '%hours%' => date('H'),
+            '%mins%'  => date('i'),
+        ]);
+
+        return $contentParts;
+    }
+
+    public function formatCallContentMessagePart(Communication $communication): array
+    {
+        $contentParts  = [];
+
+        $contentParts[] = $communication->getBody();
+
+        return $contentParts;
+    }
+
+    public function formatCallContentGatherPart(Communication $communication): array
+    {
+        $contentParts  = [];
+
+        $choices = $communication->getChoices();
+        if (is_object($choices)) {
+            $choices = $communication->getChoices()->toArray();
+        }
+
+        if ($choices) {
+            foreach ($choices as $choice) {
+                $contentParts[] = $this->translator->trans('message.call.choices', [
+                    '%answer%' => $choice->getLabel(),
+                    '%code%' => $choice->getCode(),
+                ]);
+            }
+        }
+
+        $contentParts[] = $this->translator->trans('message.call.repeat');
+
+        return $contentParts;
+    }
+
     public function formatTextEmailContent(Message $message): string
     {
         $contentParts  = [];

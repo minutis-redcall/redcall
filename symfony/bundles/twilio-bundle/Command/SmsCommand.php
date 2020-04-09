@@ -2,7 +2,7 @@
 
 namespace Bundles\TwilioBundle\Command;
 
-use Bundles\TwilioBundle\SMS\Twilio;
+use Bundles\TwilioBundle\Manager\TwilioMessageManager;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -11,18 +11,15 @@ use Symfony\Component\Console\Output\OutputInterface;
 class SmsCommand extends Command
 {
     /**
-     * @var Twilio
+     * @var TwilioMessageManager
      */
-    private $twilio;
+    private $messageManager;
 
-    /**
-     * @param Twilio $twilio
-     */
-    public function __construct(Twilio $twilio)
+    public function __construct(TwilioMessageManager $messageManager)
     {
         parent::__construct();
 
-        $this->twilio = $twilio;
+        $this->messageManager = $messageManager;
     }
 
     protected function configure()
@@ -36,18 +33,9 @@ class SmsCommand extends Command
             ->addArgument('message', InputArgument::IS_ARRAY | InputArgument::REQUIRED, 'Message to send');
     }
 
-    /**
-     * @param InputInterface  $input
-     * @param OutputInterface $output
-     *
-     * @return int|void|null
-     *
-     * @throws \Twilio\Exceptions\ConfigurationException
-     * @throws \Twilio\Exceptions\TwilioException
-     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->twilio->sendMessage(
+        $this->messageManager->sendMessage(
             $input->getArgument('phoneNumber'),
             implode(' ', $input->getArgument('message'))
         );

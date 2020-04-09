@@ -15,3 +15,4 @@ form:
       prefix_already_used: 'Le préfixe "{{ string }}" est déjà utilisé dans une communication d''un déclenchement en cours.'
       volunteer_not_in_structure: 'L''un des volontaires sélectionné n''appartient à aucune des structures sélectionnées.'
       no_subject: 'Vous devez définir un sujet au mail'
+      call_multiple: 'Les réponses multiples ne sont pas possibles par téléphone.'

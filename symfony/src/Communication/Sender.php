@@ -4,6 +4,7 @@ namespace App\Communication;
 
 use App\Entity\Communication;
 use App\Entity\Message;
+use App\Provider\Call\CallProvider;
 use App\Provider\Email\EmailProvider;
 use App\Provider\SMS\SMSProvider;
 use App\Services\MessageFormatter;
@@ -11,10 +12,26 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class Sender
 {
+    // We should not send too many messages at the same time
+    // to prevent Twilio reaching GAE quotas (200 qpm/ip)
+    const PAUSE_SMS = 500000; // 2 sms / second
+    const PAUSE_CALL = 2000000; // 1 call / 2 seconds
+    const PAUSE_EMAIL = 100000; // 10 emails / second
+
     /**
      * @var SMSProvider
      */
     private $SMSProvider;
+
+    /**
+     * @var CallProvider
+     */
+    private $callProvider;
+
+    /**
+     * @var EmailProvider
+     */
+    private $emailProvider;
 
     /**
      * @var MessageFormatter
@@ -26,40 +43,59 @@ class Sender
      */
     private $entityManager;
 
-    /**
-     * @var EmailProvider
-     */
-    private $emailProvider;
-
-    /**
-     * Sender constructor.
-     *
-     * @param SMSProvider            $SMSProvider
-     * @param MessageFormatter       $formatter
-     * @param EntityManagerInterface $entityManager
-     * @param EmailProvider          $emailProvider
-     */
     public function __construct(
         SMSProvider $SMSProvider,
+        CallProvider $callProvider,
+        EmailProvider $emailProvider,
         MessageFormatter $formatter,
-        EntityManagerInterface $entityManager,
-        EmailProvider $emailProvider
+        EntityManagerInterface $entityManager
     ) {
         $this->SMSProvider   = $SMSProvider;
+        $this->callProvider  = $callProvider;
+        $this->emailProvider = $emailProvider;
         $this->formatter     = $formatter;
         $this->entityManager = $entityManager;
-        $this->emailProvider = $emailProvider;
+    }
+
+    /**
+     * @param Communication $communication
+     * @param bool          $force
+     *
+     * @throws \Twig\Error\LoaderError
+     * @throws \Twig\Error\RuntimeError
+     * @throws \Twig\Error\SyntaxError
+     */
+    public function sendCommunication(Communication $communication, bool $force = false)
+    {
+        foreach ($communication->getMessages() as $message) {
+            if ($force || $message->canBeSent()) {
+                $this->sendMessage($message);
+            }
+        }
     }
 
     /**
      * @param Message $message
+     *
+     * @throws \Twig\Error\LoaderError
+     * @throws \Twig\Error\RuntimeError
+     * @throws \Twig\Error\SyntaxError
      */
-    public function send(Message $message)
+    public function sendMessage(Message $message)
     {
-        if ($message->getCommunication()->getType() === Communication::TYPE_SMS) {
-            $this->sendSms($message);
-        } else {
-            $this->sendEmail($message);
+        switch ($message->getCommunication()->getType()) {
+            case Communication::TYPE_SMS:
+                $this->sendSms($message);
+                usleep(self::PAUSE_SMS);
+                break;
+            case Communication::TYPE_CALL:
+                $this->sendCall($message);
+                usleep(self::PAUSE_CALL);
+                break;
+            case Communication::TYPE_EMAIL:
+                $this->sendEmail($message);
+                usleep(self::PAUSE_EMAIL);
+                break;
         }
     }
 
@@ -91,6 +127,35 @@ class Sender
 
     /**
      * @param Message $message
+     */
+    public function sendCall(Message $message)
+    {
+        $volunteer = $message->getVolunteer();
+
+        if (!$volunteer->getPhoneNumber()) {
+            return;
+        }
+
+        $messageId = $this->callProvider->send(
+            $volunteer->getPhoneNumber(),
+            ['message_id' => $message->getId()]
+        );
+
+        if ($messageId) {
+            $message->setMessageId($messageId);
+            $message->setSent(true);
+        }
+
+        $this->entityManager->merge($message);
+        $this->entityManager->flush();
+    }
+
+    /**
+     * @param Message $message
+     *
+     * @throws \Twig\Error\LoaderError
+     * @throws \Twig\Error\RuntimeError
+     * @throws \Twig\Error\SyntaxError
      */
     public function sendEmail(Message $message)
     {

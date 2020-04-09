@@ -2,12 +2,13 @@ services:
 
   Bundles\TwilioBundle\Command\PriceCommand:
     arguments:
-      - '@Bundles\TwilioBundle\SMS\Twilio'
+      - '@Bundles\TwilioBundle\Manager\TwilioMessageManager'
+      - '@Bundles\TwilioBundle\Manager\TwilioCallManager'
     tags:
       - console.command
 
   Bundles\TwilioBundle\Command\SmsCommand:
     arguments:
-      - '@Bundles\TwilioBundle\SMS\Twilio'
+      - '@Bundles\TwilioBundle\Manager\TwilioMessageManager'
     tags:
       - console.command

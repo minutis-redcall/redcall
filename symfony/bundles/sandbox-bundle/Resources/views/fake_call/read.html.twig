@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    {{ 'sandbox.fake_call.read'|trans({
+        '%phoneNumber%': volunteer.phoneNumber,
+        '%name%': volunteer.firstName ~ ' ' ~ volunteer.lastName,
+    }) }}
+{% endblock %}
+
+{% block body %}
+
+    <h1>{{ block('title') }}</h1>
+
+    {{ form(form) }}
+
+    <div id="messages">
+        {% for message in messages %}
+
+            <div><span class="h3">{{ message.createdAt|date('d/m/Y H:i') }}</span> <strong>{{ message.type|upper }}</strong></div>
+            <div style="padding:10px;background-color: #eeeeee;">
+                <pre>{{ message.content }}</pre>
+            </div>
+
+            {% if not loop.last %}
+                <hr/>
+            {% endif %}
+
+        {% endfor %}
+    </div>
+
+    <br/><br/>
+
+    <div class="text-center">
+        {% if not campaignId %}
+            <a href="{{ path('sandbox_fake_sms_list') }}"
+               class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+        {% else %}
+            <a href="{{ path('communication_index', {id: campaignId}) }}"
+               class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+        {% endif %}
+    </div>
+
+    <br/><br/>
+
+{% endblock %}

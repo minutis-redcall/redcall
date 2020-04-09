@@ -13,4 +13,4 @@ cron:
   # * * * * * <path/to/the/project>/symfony/bin/console twilio:price
   - description: "Fetch missing message prices on Twilio"
     url: /cron/twilio-price
-    schedule: every 1 minutes
+    schedule: every 1 hours

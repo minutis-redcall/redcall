@@ -45,7 +45,9 @@
 
 <br/>
 
-{{ form_row(form.multipleAnswer) }}
+<div id="message-multiple-answer">
+    {{ form_row(form.multipleAnswer) }}
+</div>
 
 <div id="message-geo-location">
     <div class="h4">{{ 'form.communication.fields.other_options'|trans }}</div>
@@ -59,13 +61,15 @@
     &nbsp;
 </div>
 
-<div id="message-calc" style="margin-bottom:10px;">
-    {{ 'form.communication.fields.length'|trans }}
-    <span id="message-length">--</span>
-    <br/>
-    {{ 'form.communication.fields.cost'|trans }}
-    <span id="message-cost">--</span>
-    <br/>
+<div id="message-calc-all" style="margin-bottom:10px;">
+    <div id="message-calc">
+        {{ 'form.communication.fields.length'|trans }}
+        <span id="message-length">--</span>
+        <br/>
+        {{ 'form.communication.fields.cost'|trans }}
+        <span id="message-cost">--</span>
+        <br/>
+    </div>
     {{ 'form.communication.fields.price'|trans }}
     <span id="message-price">--</span>&euro;
 </div>
@@ -118,20 +122,33 @@
         refreshPreview();
     });
 
-    {# When switching from email or sms, apply few changes #}
+    {# When switching from email, voice or sms, apply few changes #}
     function updateMaxMessageSize() {
-        if ($('#{{ form.type.vars.id }}').find('input:checked').val() === '{{ constant('App\\Entity\\Communication::TYPE_SMS') }}') {
-            $('#message-max').html({{ max_length_sms }});
-            $('#message-calc').removeClass('d-none');
-            $('#message-subject').addClass('d-none');
-            $('#message-geo-location').removeClass('d-none');
-            $('textarea, .textarea-wrapper').css('height', '78px');
-        } else {
-            $('#message-max').html({{ max_length_email }});
-            $('#message-calc').addClass('d-none');
-            $('#message-subject').removeClass('d-none');
-            $('#message-geo-location').addClass('d-none');
-            $('textarea, .textarea-wrapper').css('height', '150px');
+        switch ($('#{{ form.type.vars.id }}').find('input:checked').val()) {
+            case '{{ constant('App\\Entity\\Communication::TYPE_SMS') }}':
+                $('#message-max').html({{ max_length_sms }});
+                $('#message-calc').removeClass('d-none');
+                $('#message-subject').addClass('d-none');
+                $('#message-geo-location').removeClass('d-none');
+                $('textarea, .textarea-wrapper').css('height', '78px');
+                $('#message-multiple-answer').removeClass('d-none');
+                break;
+            case '{{ constant('App\\Entity\\Communication::TYPE_CALL') }}':
+                $('#message-max').html({{ max_length_sms }});
+                $('#message-calc').addClass('d-none');
+                $('#message-subject').addClass('d-none');
+                $('#message-geo-location').addClass('d-none');
+                $('textarea, .textarea-wrapper').css('height', '78px');
+                $('#message-multiple-answer').addClass('d-none');
+                break;
+            case '{{ constant('App\\Entity\\Communication::TYPE_EMAIL') }}':
+                $('#message-max').html({{ max_length_email }});
+                $('#message-calc').addClass('d-none');
+                $('#message-subject').removeClass('d-none');
+                $('#message-geo-location').addClass('d-none');
+                $('textarea, .textarea-wrapper').css('height', '150px');
+                $('#message-multiple-answer').removeClass('d-none');
+                break;
         }
 
         updateMessageSize();

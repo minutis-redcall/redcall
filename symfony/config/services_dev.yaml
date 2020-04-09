@@ -7,6 +7,14 @@ services:
     arguments: ['@doctrine']
     public: true
 
+  App\Provider\Call\CallProvider:
+    class: 'Bundles\SandboxBundle\Provider\FakeCallProvider'
+    arguments:
+      - '@App\Manager\MessageManager'
+      - '@Bundles\SandboxBundle\Manager\FakeCallManager'
+      - '@event_dispatcher'
+    public: true
+
   App\Provider\Email\EmailProvider:
     class: 'Bundles\SandboxBundle\Provider\FakeEmailProvider'
     arguments: ['@doctrine']

@@ -9,12 +9,20 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class TwilioStatus
 {
+    const TYPE_MESSAGE = 'message';
+    const TYPE_CALL = 'call';
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
      */
     private $id;
+
+    /**
+     * @ORM\Column(type="string", length=32)
+     */
+    private $type;
 
     /**
      * @ORM\Column(type="string", length=64)
@@ -39,6 +47,18 @@ class TwilioStatus
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getType(): ?string
+    {
+        return $this->type;
+    }
+
+    public function setType($type): self
+    {
+        $this->type = $type;
+
+        return $this;
     }
 
     public function getSid(): ?string
