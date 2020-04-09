@@ -3,14 +3,18 @@ services:
   Bundles\SandboxBundle\Repository\FakeSmsRepository:
     arguments:
       - '@Doctrine\Common\Persistence\ManagerRegistry'
-      - 'Bundles\SandboxBundle\Entity\FakeSms'
+    tags:
+      - doctrine.repository_service
+
+  Bundles\SandboxBundle\Repository\FakeCallRepository:
+    arguments:
+      - '@Doctrine\Common\Persistence\ManagerRegistry'
     tags:
       - doctrine.repository_service
 
   Bundles\SandboxBundle\Repository\FakeEmailRepository:
     arguments:
       - '@Doctrine\Common\Persistence\ManagerRegistry'
-      - 'Bundles\SandboxBundle\Entity\FakeEmail'
     tags:
       - doctrine.repository_service
 

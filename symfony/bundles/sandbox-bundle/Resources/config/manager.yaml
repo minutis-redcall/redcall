@@ -4,6 +4,10 @@ services:
     arguments:
       - '@Bundles\SandboxBundle\Repository\FakeSmsRepository'
 
+  Bundles\SandboxBundle\Manager\FakeCallManager:
+    arguments:
+      - '@Bundles\SandboxBundle\Repository\FakeCallRepository'
+
   Bundles\SandboxBundle\Manager\FakeEmailManager:
     arguments:
       - '@Bundles\SandboxBundle\Repository\FakeEmailRepository'

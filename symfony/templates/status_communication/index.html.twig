@@ -280,9 +280,15 @@
 
                                         {% if app.environment == 'dev' %}
                                             <a class="btn btn-default"
-                                            {% if communication.type == constant('App\\Entity\\Communication::TYPE_SMS') or communication.type == constant('App\\Entity\\Communication::TYPE_CALL') %}
+                                            {% if communication.type == constant('App\\Entity\\Communication::TYPE_SMS') %}
                                                 {% if message.volunteer.phoneNumber %}
                                                     href="{{ path('sandbox_fake_sms_thread', {phoneNumber: message.volunteer.phoneNumber, campaignId: campaign.id}) }}">☎️</a>
+                                                {% else %}
+                                                    href="#">&nbsp;</a>
+                                                {% endif %}
+                                            {% elseif communication.type == constant('App\\Entity\\Communication::TYPE_CALL') %}
+                                                {% if message.volunteer.phoneNumber %}
+                                                    href="{{ path('sandbox_fake_call_read', {phoneNumber: message.volunteer.phoneNumber, campaignId: campaign.id}) }}">☎️</a>
                                                 {% else %}
                                                     href="#">&nbsp;</a>
                                                 {% endif %}

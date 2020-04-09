@@ -2,10 +2,14 @@
 
 namespace Bundles\SandboxBundle\Provider;
 
-use App\Entity\Message;
 use App\Manager\MessageManager;
 use App\Provider\Call\CallProvider;
-use App\Services\MessageFormatter;
+use Bundles\SandboxBundle\Entity\FakeCall;
+use Bundles\SandboxBundle\Manager\FakeCallManager;
+use Bundles\TwilioBundle\Entity\TwilioCall;
+use Bundles\TwilioBundle\Event\TwilioCallEvent;
+use Bundles\TwilioBundle\TwilioEvents;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class FakeCallProvider implements CallProvider
 {
@@ -15,39 +19,54 @@ class FakeCallProvider implements CallProvider
     private $messageManager;
 
     /**
-     * @var FakeSmsProvider
+     * @var FakeCallManager
      */
-    private $fakeSmsProvider;
+    private $fakeCallManager;
 
     /**
-     * @var MessageFormatter
+     * @var EventDispatcherInterface
      */
-    private $formatter;
+    private $dispatcher;
 
     /**
-     * @param MessageManager   $messageManager
-     * @param FakeSmsProvider  $fakeSmsProvider
-     * @param MessageFormatter $formatter
+     * @param MessageManager      $messageManager
+     * @param FakeCallManager     $fakeCallManager
+     * @param EventDispatcherInterface $dispatcher
      */
-    public function __construct(MessageManager $messageManager, FakeSmsProvider $fakeSmsProvider, MessageFormatter $formatter)
+    public function __construct(MessageManager $messageManager, FakeCallManager $fakeCallManager, EventDispatcherInterface $dispatcher)
     {
         $this->messageManager = $messageManager;
-        $this->fakeSmsProvider = $fakeSmsProvider;
-        $this->formatter = $formatter;
+        $this->fakeCallManager = $fakeCallManager;
+        $this->dispatcher = $dispatcher;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function send(string $phoneNumber, array $context = []): ?string
     {
-        /** @var Message $message */
-        $message = $this->messageManager->find($context['message_id']);
-
-        $body = $this->formatter->formatSMSContent($message);
-
-        $this->fakeSmsProvider->send($phoneNumber, $body);
+        $this->triggerHook($phoneNumber, $context, TwilioEvents::CALL_ESTABLISHED, FakeCall::TYPE_ESTABLISH);
 
         return 'ok';
+    }
+
+    public function triggerHook(string $phoneNumber, array $context, string $eventType, string $hookType, string $keyPressed = null)
+    {
+        $call = new TwilioCall();
+        $call->setContext($context);
+
+        $event = new TwilioCallEvent($call, $keyPressed);
+        $this->dispatcher->dispatch($event, $eventType);
+
+        $domxml = new \DOMDocument('1.0');
+        $domxml->preserveWhiteSpace = false;
+        $domxml->formatOutput = true;
+        $domxml->loadXML($event->getResponse()->asXML());
+
+        $fakeCall = new FakeCall();
+        $fakeCall->setType($hookType);
+        $fakeCall->setPhoneNumber($phoneNumber);
+        $fakeCall->setMessageId($context['message_id']);
+        $fakeCall->setContent($domxml->saveXML());
+        $fakeCall->setCreatedAt(new \DateTime());
+
+        $this->fakeCallManager->save($fakeCall);
     }
 }
