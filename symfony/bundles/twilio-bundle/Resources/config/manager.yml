@@ -13,6 +13,7 @@ services:
       - '@Bundles\TwilioBundle\Repository\TwilioCallRepository'
       - '@Bundles\TwilioBundle\Service\Twilio'
       - '@event_dispatcher'
+      - '@router'
       - '@logger'
 
   Bundles\TwilioBundle\Manager\TwilioStatusManager:

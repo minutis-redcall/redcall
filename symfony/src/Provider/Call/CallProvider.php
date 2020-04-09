@@ -5,11 +5,10 @@ namespace App\Provider\Call;
 interface CallProvider
 {
     /**
-     * @param string $phoneNumber
-     * @param string $message
-     * @param array  $context
+     * @param string $phoneNumber Phone number to call
+     * @param array  $context     App contextual data to attach a call to your business logic
      *
-     * @return string
+     * @return string|null
      */
-    public function send(string $phoneNumber, string $message, array $context = []): ?string;
+    public function send(string $phoneNumber, array $context = []): ?string;
 }

@@ -201,6 +201,8 @@ message:
     announcement: '%brand% à %hours% heure %mins%'
     choices: 'Pour répondre %answer%, tapez %code%.'
     repeat: 'Pour réécouter le message, tapez 0.'
+    unknown: 'Réponse invalide.'
+    answer: 'Vous avez répondu : %choice%. Merci pour votre participation.'
   email:
     announcement: '%brand% le %day%/%month%/%year% à %hours%h%mins%'
     how_to_answer_simple: 'Afin de donner votre réponse, veuillez cliquer sur le lien suivant : %url%'

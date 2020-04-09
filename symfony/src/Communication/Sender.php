@@ -4,6 +4,7 @@ namespace App\Communication;
 
 use App\Entity\Communication;
 use App\Entity\Message;
+use App\Provider\Call\CallProvider;
 use App\Provider\Email\EmailProvider;
 use App\Provider\SMS\SMSProvider;
 use App\Services\MessageFormatter;
@@ -23,6 +24,16 @@ class Sender
     private $SMSProvider;
 
     /**
+     * @var CallProvider
+     */
+    private $callProvider;
+
+    /**
+     * @var EmailProvider
+     */
+    private $emailProvider;
+
+    /**
      * @var MessageFormatter
      */
     private $formatter;
@@ -32,29 +43,18 @@ class Sender
      */
     private $entityManager;
 
-    /**
-     * @var EmailProvider
-     */
-    private $emailProvider;
-
-    /**
-     * Sender constructor.
-     *
-     * @param SMSProvider            $SMSProvider
-     * @param MessageFormatter       $formatter
-     * @param EntityManagerInterface $entityManager
-     * @param EmailProvider          $emailProvider
-     */
     public function __construct(
         SMSProvider $SMSProvider,
+        CallProvider $callProvider,
+        EmailProvider $emailProvider,
         MessageFormatter $formatter,
-        EntityManagerInterface $entityManager,
-        EmailProvider $emailProvider
+        EntityManagerInterface $entityManager
     ) {
         $this->SMSProvider   = $SMSProvider;
+        $this->callProvider  = $callProvider;
+        $this->emailProvider = $emailProvider;
         $this->formatter     = $formatter;
         $this->entityManager = $entityManager;
-        $this->emailProvider = $emailProvider;
     }
 
     /**
@@ -89,6 +89,7 @@ class Sender
                 usleep(self::PAUSE_SMS);
                 break;
             case Communication::TYPE_CALL:
+                $this->sendCall($message);
                 usleep(self::PAUSE_CALL);
                 break;
             case Communication::TYPE_EMAIL:
@@ -112,6 +113,31 @@ class Sender
         $messageId = $this->SMSProvider->send(
             $volunteer->getPhoneNumber(),
             $this->formatter->formatSMSContent($message),
+            ['message_id' => $message->getId()]
+        );
+
+        if ($messageId) {
+            $message->setMessageId($messageId);
+            $message->setSent(true);
+        }
+
+        $this->entityManager->merge($message);
+        $this->entityManager->flush();
+    }
+
+    /**
+     * @param Message $message
+     */
+    public function sendCall(Message $message)
+    {
+        $volunteer = $message->getVolunteer();
+
+        if (!$volunteer->getPhoneNumber()) {
+            return;
+        }
+
+        $messageId = $this->callProvider->send(
+            $volunteer->getPhoneNumber(),
             ['message_id' => $message->getId()]
         );
 

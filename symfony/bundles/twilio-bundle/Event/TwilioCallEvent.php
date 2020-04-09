@@ -13,18 +13,29 @@ class TwilioCallEvent
     private $call;
 
     /**
+     * @var int|null
+     */
+    private $keyPressed;
+
+    /**
      * @var VoiceResponse|null
      */
     private $response;
 
-    public function __construct(TwilioCall $call)
+    public function __construct(TwilioCall $call, int $keyPressed = null)
     {
         $this->call = $call;
+        $this->keyPressed = $keyPressed;
     }
 
     public function getCall(): TwilioCall
     {
         return $this->call;
+    }
+
+    public function getKeyPressed(): ?int
+    {
+        return $this->keyPressed;
     }
 
     public function getResponse(): ?VoiceResponse

@@ -55,4 +55,36 @@ class CallController extends BaseController
 
         return new XmlResponse($response->asXml());
     }
+
+    /**
+     * @Route(name="outgoing_call", path="outgoing-call/{uuid}")
+     */
+    public function outgoing(Request $request, string $uuid)
+    {
+        $this->validateRequestSignature($request);
+
+        $this->logger->info('Twilio webhooks - outgoing call', [
+            'payload' => $request->request->all(),
+        ]);
+
+        $call = $this->callManager->get($uuid);
+        if (!$call) {
+            throw $this->createNotFoundException();
+        }
+
+        $key = $request->get('Digits');
+        if (null === $key) {
+            $response = $this->callManager->handleCallEstablished($call);
+        } else {
+            $response = $this->callManager->handleKeyPressed($call, $key);
+        }
+
+        if ($response) {
+            return new XmlResponse($response->asXml());
+        }
+
+        return $this->redirectToRoute('twilio_outgoing_call', [
+            'uuid' => $uuid,
+        ]);
+    }
 }

@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20200409061127 extends AbstractMigration
+final class Version20200409094527 extends AbstractMigration
 {
     public function getDescription() : string
     {
@@ -23,7 +23,7 @@ final class Version20200409061127 extends AbstractMigration
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('ALTER TABLE twilio_message CHANGE message message LONGTEXT DEFAULT NULL');
-        $this->addSql('ALTER TABLE twilio_call CHANGE message message LONGTEXT DEFAULT NULL');
+        $this->addSql('ALTER TABLE twilio_call ADD `loops` INT NOT NULL, CHANGE message message LONGTEXT DEFAULT NULL');
     }
 
     public function down(Schema $schema) : void
@@ -31,7 +31,7 @@ final class Version20200409061127 extends AbstractMigration
         // this down() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE twilio_call CHANGE message message VARCHAR(4096) CHARACTER SET utf8mb4 DEFAULT NULL COLLATE `utf8mb4_unicode_ci`');
+        $this->addSql('ALTER TABLE twilio_call DROP `loops`, CHANGE message message VARCHAR(4096) CHARACTER SET utf8mb4 DEFAULT NULL COLLATE `utf8mb4_unicode_ci`');
         $this->addSql('ALTER TABLE twilio_message CHANGE message message VARCHAR(4096) CHARACTER SET utf8mb4 DEFAULT NULL COLLATE `utf8mb4_unicode_ci`');
     }
 }
