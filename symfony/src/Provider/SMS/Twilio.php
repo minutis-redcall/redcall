@@ -2,7 +2,7 @@
 
 namespace App\Provider\SMS;
 
-use Bundles\TwilioBundle\Service\Twilio as BaseTwilio;
+use Bundles\TwilioBundle\Manager\TwilioMessageManager as BaseTwilio;
 
 class Twilio extends BaseTwilio implements SMSProvider
 {

@@ -7,9 +7,9 @@ services:
     tags:
       - controller.service_arguments
 
-  Bundles\TwilioBundle\Controller\ReplyController:
+  Bundles\TwilioBundle\Controller\MessageController:
     arguments:
-      - '@Bundles\TwilioBundle\Service\Twilio'
+      - '@Bundles\TwilioBundle\Manager\TwilioMessageManager'
       - '@logger'
     tags:
       - controller.service_arguments

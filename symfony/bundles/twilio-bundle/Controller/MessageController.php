@@ -3,7 +3,7 @@
 namespace Bundles\TwilioBundle\Controller;
 
 use Bundles\TwilioBundle\Component\HttpFoundation\XmlResponse;
-use Bundles\TwilioBundle\Manager\TwilioCallManager;
+use Bundles\TwilioBundle\Manager\TwilioMessageManager;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -12,12 +12,12 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * @Route(name="twilio_", path="/twilio/")
  */
-class CallController extends BaseController
+class MessageController extends BaseController
 {
     /**
-     * @var TwilioCallManager
+     * @var TwilioMessageManager
      */
-    private $callManager;
+    private $messageManager;
 
     /**
      * @var LoggerInterface
@@ -25,27 +25,27 @@ class CallController extends BaseController
     private $logger;
 
     /**
-     * @param TwilioCallManager    $callManager
+     * @param TwilioMessageManager $messageManager
      * @param LoggerInterface|null $logger
      */
-    public function __construct(TwilioCallManager $callManager, LoggerInterface $logger = null)
+    public function __construct(TwilioMessageManager $messageManager, LoggerInterface $logger = null)
     {
-        $this->callManager = $callManager;
+        $this->messageManager = $messageManager;
         $this->logger = $logger ?? new NullLogger();
     }
 
     /**
-     * @Route(name="incoming_call", path="incoming-call")
+     * @Route(name="incoming_message", path="incoming-message")
      */
     public function incoming(Request $request)
     {
         $this->validateRequestSignature($request);
 
-        $this->logger->info('Twilio webhooks - incoming call', [
+        $this->logger->info('Twilio webhooks - incoming message', [
             'payload' => $request->request->all(),
         ]);
 
-        $response = $this->callManager->handleIncomingCall(
+        $response = $this->messageManager->handleInboundMessage(
             $request->request->all()
         );
 
