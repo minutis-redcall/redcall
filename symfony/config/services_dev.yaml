@@ -9,7 +9,10 @@ services:
 
   App\Provider\Call\CallProvider:
     class: 'Bundles\SandboxBundle\Provider\FakeCallProvider'
-    arguments: ['@doctrine']
+    arguments:
+      - '@App\Manager\MessageManager'
+      - '@App\Provider\SMS\SMSProvider'
+      - '@App\Services\MessageFormatter'
     public: true
 
   App\Provider\Email\EmailProvider:
