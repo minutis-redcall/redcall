@@ -520,10 +520,10 @@ class Communication
                 $estimated = count($parts) * count($this->getMessages()) * Message::SMS_COST;
                 break;
             case self::TYPE_CALL:
-                $estimated = count($parts) * count($this->getMessages()) * Message::CALL_COST;
+                $estimated = count($this->getMessages()) * Message::CALL_COST;
                 break;
             case self::TYPE_EMAIL:
-                $estimated = count($parts) * count($this->getMessages()) * Message::EMAIL_COST;
+                $estimated = count($this->getMessages()) * Message::EMAIL_COST;
                 break;
         }
 

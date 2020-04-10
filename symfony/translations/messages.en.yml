@@ -200,10 +200,10 @@ message:
     geo_location: 'Geolocation of your crew: %url%'
   call:
     announcement: '%brand% at %hours% hours %mins%'
-    choices: 'To answer %answer%, press %code%.'
+    choices: 'To answer "%answer%", press %code%.'
     repeat: 'To repeat this message, press 0.'
     unknown: 'Invalid answer.'
-    answer: 'You answered: %choice%. Thank you for your participation.'
+    answer: 'You answered: "%choice%". Thank you for your participation.'
   email:
     announcement: '%brand% on %year%-%month%-%day% at %hours%h%mins%:'
     how_to_answer_simple: 'To give your answer, please click on the following link: %url%'

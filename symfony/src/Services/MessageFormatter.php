@@ -95,16 +95,6 @@ class MessageFormatter
         $communication = $message->getCommunication();
 
         $contentParts  = [];
-        $contentParts = array_merge($contentParts, $this->formatCallContentHeaderPart($communication));
-        $contentParts = array_merge($contentParts, $this->formatCallContentMessagePart($communication));
-        $contentParts = array_merge($contentParts, $this->formatCallContentGatherPart($communication));
-
-        return implode("\n", $contentParts);
-    }
-
-    public function formatCallContentHeaderPart(Communication $communication): array
-    {
-        $contentParts  = [];
 
         $contentParts[] = $this->translator->trans('message.call.announcement', [
             '%brand%' => mb_strtoupper(getenv('BRAND')),
@@ -112,21 +102,7 @@ class MessageFormatter
             '%mins%'  => date('i'),
         ]);
 
-        return $contentParts;
-    }
-
-    public function formatCallContentMessagePart(Communication $communication): array
-    {
-        $contentParts  = [];
-
         $contentParts[] = $communication->getBody();
-
-        return $contentParts;
-    }
-
-    public function formatCallContentGatherPart(Communication $communication): array
-    {
-        $contentParts  = [];
 
         $choices = $communication->getChoices();
         if (is_object($choices)) {
@@ -144,7 +120,7 @@ class MessageFormatter
 
         $contentParts[] = $this->translator->trans('message.call.repeat');
 
-        return $contentParts;
+        return implode("\n", $contentParts);
     }
 
     public function formatTextEmailContent(Message $message): string

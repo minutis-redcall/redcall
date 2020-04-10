@@ -209,6 +209,22 @@ In order to reach out the application from a custom domain name, we should confi
 6. The format should look like this in your registrar
 <br/>![](01/55.png)
 
+## Enable Text To Speech API
+
+If you want to enable voice calls, you need to enable the Text To Speech API.
+
+1. In the menu, go to "Marketplace" under "Product"
+<br/>![](01/58.png)
+
+2. Search for "Text To Speech"
+<br/>![](01/59.png)
+
+3. Click on Google Text To Speech
+<br/>![](01/60.png)
+
+4. Click "Enable" button
+<br/>![](01/61.png)
+
 ---
 
 [Go back](../../README.md)

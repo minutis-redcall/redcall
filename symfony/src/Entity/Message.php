@@ -22,7 +22,7 @@ class Message
     const MAX_LENGTH_EMAIL = 5000;
 
     const SMS_COST = 0.05052;
-    const CALL_COST = 0.05;
+    const CALL_COST = 0.033;
     const EMAIL_COST = 0.000375;
 
     /**
