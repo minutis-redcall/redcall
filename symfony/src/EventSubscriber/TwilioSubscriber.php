@@ -3,6 +3,7 @@
 namespace App\EventSubscriber;
 
 use App\Entity\Cost;
+use App\Entity\Message;
 use App\Manager\CostManager;
 use App\Manager\MessageManager;
 use App\Services\VoiceCalls;
@@ -104,9 +105,6 @@ class TwilioSubscriber implements EventSubscriberInterface
         }
     }
 
-    /**
-     * @param TwilioCallEvent $event
-     */
     public function onCallReceived(TwilioCallEvent $event)
     {
         $response = new VoiceResponse();
@@ -132,29 +130,24 @@ class TwilioSubscriber implements EventSubscriberInterface
 
     public function onCallEstablished(TwilioCallEvent $event)
     {
-        $call = $event->getCall();
+        $message = $this->getMessage($event);
 
-        $message = null;
-        if ($messageId = $call->getContext()['message_id'] ?? null) {
-            $message = $this->messageManager->find($messageId);
-        }
-
-        if (!$message) {
-            throw new \LogicException('An outgoing call must be attached to a RedCall message');
-        }
-
-        return $this->voiceCalls->establishCall($message);
+        $event->setResponse(
+            $this->voiceCalls->establishCall($message)
+        );
     }
 
     public function onCallKeyPressed(TwilioCallEvent $event)
     {
-        $key = $event->getKeyPressed();
-        if (0 === $key) {
-            $this->onCallEstablished($event);
+        $message = $this->getMessage($event);
 
-            return;
-        }
+        $event->setResponse(
+            $this->voiceCalls->handleKeyPress($message, $event->getKeyPressed())
+        );
+    }
 
+    private function getMessage(TwilioCallEvent $event): Message
+    {
         $call = $event->getCall();
 
         $message = null;
@@ -166,35 +159,6 @@ class TwilioSubscriber implements EventSubscriberInterface
             throw new \LogicException('An outgoing call must be attached to a RedCall message');
         }
 
-        $answer = sprintf('%s%s', $message->getPrefix(), $key);
-
-        $response = new VoiceResponse();
-
-        $choice = $message->getCommunication()->getChoiceByCode($message->getPrefix(), $answer);
-        if (!$choice) {
-            // Invalid answer
-            $this->say($response, $this->translator->trans('message.call.unknown'));
-            $response->pause(['length' => 1]);
-            $gather = $response->gather(['numDigits' => 1]);
-            $this->say($gather, implode(' ', $this->formatter->formatCallContent($message->getCommunication())));
-            $event->setResponse($response);
-            return;
-        }
-
-        $this->say($response, $this->translator->trans('message.call.answer', [
-            '%choice%' => $choice->getLabel(),
-        ]));
-
-        $this->messageManager->addAnswer($message, $answer);
-
-        $event->setResponse($response);
-    }
-
-    private function say(VoiceResponse $response, string $message)
-    {
-        $response->say($message, [
-            'voice' => 'alice',
-            'language' => 'fr-FR',
-        ]);
+        return $message;
     }
 }

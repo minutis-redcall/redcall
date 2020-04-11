@@ -28,20 +28,6 @@ class MediaManager
         $this->textToSpeech = $textToSpeech;
     }
 
-    public function findUuidByText(string $text): ?string
-    {
-        /** @var Media|null $media */
-        $media = $this->mediaRepository->findOneByHash(
-            hash('SHA256', $text)
-        );
-
-        if (!$media) {
-            return null;
-        }
-
-        return $media->getUuid();
-    }
-
     public function createMp3(string $text): string
     {
         /** @var Media $media */
@@ -60,6 +46,20 @@ class MediaManager
         $media->setExpiresAt((new \DateTime())->add(new \DateInterval('P7D')));
 
         $this->mediaManager->save($media);
+
+        return $media->getUuid();
+    }
+
+    private function findUuidByText(string $text): ?string
+    {
+        /** @var Media|null $media */
+        $media = $this->mediaRepository->findOneByHash(
+            hash('SHA256', $text)
+        );
+
+        if (!$media) {
+            return null;
+        }
 
         return $media->getUuid();
     }

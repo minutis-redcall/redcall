@@ -4,7 +4,9 @@ namespace App\Services;
 
 use App\Entity\Message;
 use App\Manager\MediaManager;
+use App\Manager\MessageManager;
 use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Translation\TranslatorInterface;
 use Twilio\TwiML\VoiceResponse;
 
 class VoiceCalls
@@ -13,6 +15,11 @@ class VoiceCalls
      * @var RouterInterface
      */
     private $router;
+
+    /**
+     * @var TranslatorInterface
+     */
+    private $translator;
 
     /**
      * @var MessageFormatter
@@ -25,40 +32,80 @@ class VoiceCalls
     private $mediaManager;
 
     /**
-     * @param RouterInterface  $router
-     * @param MessageFormatter $formatter
-     * @param MediaManager     $mediaManager
+     * @var MessageManager
      */
-    public function __construct(RouterInterface $router, MessageFormatter $formatter, MediaManager $mediaManager)
+    private $messageManager;
+
+    public function __construct(RouterInterface $router, TranslatorInterface $translator, MessageFormatter $formatter, MediaManager $mediaManager, MessageManager $messageManager)
     {
         $this->router = $router;
+        $this->translator = $translator;
         $this->formatter = $formatter;
         $this->mediaManager = $mediaManager;
+        $this->messageManager = $messageManager;
     }
 
     public function establishCall(Message $message)
     {
-        $uuid = $this->mediaManager->findUuidByText(
+        return $this->getVoiceResponse(
             $this->formatter->formatCallContent($message)
         );
-
-        $url = trim(getenv('WEBSITE_URL'), '/').$this->router->generate('twilio_outgoing_call', [
-                'uuid' => $entity->getUuid(),
-            ])
-
-        $response = new VoiceResponse();
-        $gather = $response->gather(['numDigits' => 1]);
-        $gather->play()
-
-        $this->say($gather, implode(' ', $this->formatter->formatCallContent($message->getCommunication())));
-
-        $event->setResponse($response);
-
-
     }
 
     public function handleKeyPress(Message $message, int $digit)
     {
+        // Repeat
+        if (0 === $digit) {
+            $this->establishCall($message);
 
+            return;
+        }
+
+        $answer = sprintf('%s%s', $message->getPrefix(), $digit);
+        $choice = $message->getCommunication()->getChoiceByCode($message->getPrefix(), $answer);
+
+        // Invalid answer
+        if (!$choice) {
+            $text = sprintf(
+                '%s %s',
+                $this->translator->trans('message.call.unknown'),
+                $this->formatter->formatCallChoicesContent($message)
+            );
+
+            return $this->getVoiceResponse($text);
+        }
+
+        $this->messageManager->addAnswer($message, $answer);
+
+        // Answer saved, thanks
+        $text = $this->translator->trans('message.call.answer', [
+            '%choice%' => $choice->getLabel(),
+        ]);
+
+        return $this->getVoiceResponse($text);
+    }
+
+    private function getMediaUrl(string $text): string
+    {
+        $uuid = $this->mediaManager->createMp3($text);
+
+        $relativeUrl = $this->router->generate('twilio_outgoing_call', [
+            'uuid' => $uuid,
+        ]);
+
+        $absoluteUrl = sprintf('%s%s', trim(getenv('WEBSITE_URL'), '/'), $relativeUrl);
+
+        return $absoluteUrl;
+    }
+
+    private function getVoiceResponse(string $text): VoiceResponse
+    {
+        $url = $this->getMediaUrl($text);
+
+        $response = new VoiceResponse();
+        $gather = $response->gather(['numDigits' => 1]);
+        $gather->play($url);
+
+        return $response;
     }
 }

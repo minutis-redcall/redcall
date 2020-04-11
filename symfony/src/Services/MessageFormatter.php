@@ -104,6 +104,17 @@ class MessageFormatter
 
         $contentParts[] = $communication->getBody();
 
+        $contentParts[] = $this->formatCallChoicesContent($message);
+
+        return implode("\n", $contentParts);
+    }
+
+    public function formatCallChoicesContent(Message $message): string
+    {
+        $contentParts = [];
+
+        $communication = $message->getCommunication();
+
         $choices = $communication->getChoices();
         if (is_object($choices)) {
             $choices = $communication->getChoices()->toArray();
