@@ -96,10 +96,20 @@ class MessageFormatter
 
         $contentParts  = [];
 
+        $hours = ltrim($message->getCommunication()->getCreatedAt()->format('H'), 0);
+        if (!$hours) {
+            $hours = 0;
+        }
+
+        $mins = ltrim($message->getCommunication()->getCreatedAt()->format('i'), 0);
+        if (!$mins) {
+            $mins = 0;
+        }
+
         $contentParts[] = $this->translator->trans('message.call.announcement', [
             '%brand%' => mb_strtoupper(getenv('BRAND')),
-            '%hours%' => $message->getCommunication()->getCreatedAt()->format('H'),
-            '%mins%'  => $message->getCommunication()->getCreatedAt()->format('i'),
+            '%hours%' => $hours,
+            '%mins%'  => $mins,
         ]);
 
         $contentParts[] = $communication->getBody();
