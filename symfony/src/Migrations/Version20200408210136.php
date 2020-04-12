@@ -23,7 +23,10 @@ final class Version20200408210136 extends AbstractMigration
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('CREATE TABLE twilio_call (id INT AUTO_INCREMENT NOT NULL, started_at DATETIME DEFAULT NULL, ended_at DATETIME DEFAULT NULL, duration INT DEFAULT NULL, uuid VARCHAR(36) NOT NULL, direction VARCHAR(16) NOT NULL, message VARCHAR(4096) DEFAULT NULL, from_number VARCHAR(16) NOT NULL, to_number VARCHAR(16) NOT NULL, sid VARCHAR(64) NOT NULL, status VARCHAR(20) DEFAULT NULL, price VARCHAR(255) DEFAULT NULL, unit VARCHAR(255) DEFAULT NULL, retry INT NOT NULL, context LONGTEXT DEFAULT NULL, created_at DATETIME NOT NULL, updated_at DATETIME NOT NULL, INDEX sid_idx (sid), INDEX price_idx (price), UNIQUE INDEX uuid_idx (uuid), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
-        $this->addSql('ALTER TABLE twilio_message ADD retry INT NOT NULL, CHANGE message message VARCHAR(4096) DEFAULT NULL, CHANGE sid sid VARCHAR(64) NOT NULL');
+        $this->addSql('ALTER TABLE twilio_message ADD retry INT NOT NULL DEFAULT 0');
+        $this->addSql('ALTER TABLE twilio_message CHANGE message message VARCHAR(4096) DEFAULT NULL');
+        $this->addSql('UPDATE twilio_message SET sid = "" WHERE sid IS NULL');
+        $this->addSql('ALTER TABLE twilio_message CHANGE sid sid VARCHAR(64) NOT NULL');
         $this->addSql('ALTER TABLE twilio_status ADD type VARCHAR(32) NOT NULL');
     }
 
