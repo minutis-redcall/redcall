@@ -182,10 +182,12 @@
     $('#message-play').click(function(e) {
         e.preventDefault();
         $('#message-play').prop('disabled', 'disabled');
+        $('#message-play').html("{{ 'base.wait'|trans }}");
         $.post('{{ path('communication_play') }}', $('form').serialize(), function (data) {
             if (data.success) {
                 $('#message-player').html(data.player);
                 $('#message-play').removeProp('disabled');
+                $('#message-play').html("{{ 'base.play'|trans }}");
             }
         });
     });
