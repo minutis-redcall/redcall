@@ -186,9 +186,9 @@
         $.post('{{ path('communication_play') }}', $('form').serialize(), function (data) {
             if (data.success) {
                 $('#message-player').html(data.player);
-                $('#message-play').removeProp('disabled');
-                $('#message-play').html("{{ 'base.play'|trans }}");
             }
+            $('#message-play').removeProp('disabled');
+            $('#message-play').html("{{ 'base.play'|trans }}");
         });
     });
 
