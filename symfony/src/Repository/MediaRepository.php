@@ -19,32 +19,19 @@ class MediaRepository extends ServiceEntityRepository
         parent::__construct($registry, Media::class);
     }
 
-    // /**
-    //  * @return Media[] Returns an array of Media objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    public function save(Media $media)
     {
-        return $this->createQueryBuilder('m')
-            ->andWhere('m.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('m.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
+        $this->_em->persist($media);
+        $this->_em->flush($media);
     }
-    */
 
-    /*
-    public function findOneBySomeField($value): ?Media
+    public function clearExpired()
     {
-        return $this->createQueryBuilder('m')
-            ->andWhere('m.exampleField = :val')
-            ->setParameter('val', $value)
+        $this->createQueryBuilder('m')
+            ->delete(Media::class, 'm')
+            ->where('m.expiresAt < :now')
+            ->setParameter('now', new \DateTime())
             ->getQuery()
-            ->getOneOrNullResult()
-        ;
+            ->execute();
     }
-    */
 }

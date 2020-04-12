@@ -61,6 +61,12 @@
     &nbsp;
 </div>
 
+<div id="message-preview-audio" class="d-none">
+    <a href="#" id="message-play" class="btn btn-sm btn-secondary">{{ 'base.play'|trans }}</a>
+    <div id="message-player" class="d-none"></div>
+    <br/><br/>
+</div>
+
 <div id="message-calc-all" style="margin-bottom:10px;">
     <div id="message-calc">
         {{ 'form.communication.fields.length'|trans }}
@@ -132,6 +138,7 @@
                 $('#message-geo-location').removeClass('d-none');
                 $('textarea, .textarea-wrapper').css('height', '78px');
                 $('#message-multiple-answer').removeClass('d-none');
+                $('#message-preview-audio').addClass('d-none');
                 break;
             case '{{ constant('App\\Entity\\Communication::TYPE_CALL') }}':
                 $('#message-max').html({{ max_length_sms }});
@@ -140,6 +147,7 @@
                 $('#message-geo-location').addClass('d-none');
                 $('textarea, .textarea-wrapper').css('height', '78px');
                 $('#message-multiple-answer').addClass('d-none');
+                $('#message-preview-audio').removeClass('d-none');
                 break;
             case '{{ constant('App\\Entity\\Communication::TYPE_EMAIL') }}':
                 $('#message-max').html({{ max_length_email }});
@@ -148,6 +156,7 @@
                 $('#message-geo-location').addClass('d-none');
                 $('textarea, .textarea-wrapper').css('height', '150px');
                 $('#message-multiple-answer').removeClass('d-none');
+                $('#message-preview-audio').addClass('d-none');
                 break;
         }
 
@@ -167,6 +176,18 @@
     $('form').submit(function () {
         $('#form-container').addClass('d-none');
         $('#spinner-container').removeClass('d-none');
+    });
+
+    {# Preview voice calls #}
+    $('#message-play').click(function(e) {
+        e.preventDefault();
+        $('#message-play').prop('disabled', 'disabled');
+        $.post('{{ path('communication_play') }}', $('form').serialize(), function (data) {
+            if (data.success) {
+                $('#message-player').html(data.player);
+                $('#message-play').removeProp('disabled');
+            }
+        });
     });
 
 </script>

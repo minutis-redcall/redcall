@@ -2,11 +2,11 @@
 
 namespace App\Services;
 
-use Google\Cloud\Dialogflow\V2\VoiceSelectionParams;
 use Google\Cloud\TextToSpeech\V1\AudioConfig;
 use Google\Cloud\TextToSpeech\V1\AudioEncoding;
 use Google\Cloud\TextToSpeech\V1\SynthesisInput;
 use Google\Cloud\TextToSpeech\V1\TextToSpeechClient;
+use Google\Cloud\TextToSpeech\V1\VoiceSelectionParams;
 
 class TextToSpeech
 {
@@ -22,7 +22,8 @@ class TextToSpeech
             ->setName('fr-FR-Wavenet-A');
 
         $audioConfig = (new AudioConfig())
-            ->setAudioEncoding(AudioEncoding::MP3);
+            ->setAudioEncoding(AudioEncoding::MP3)
+            ->setSpeakingRate(0.8);
 
         $synthesisInputText = (new SynthesisInput())
             ->setText($text);
@@ -37,5 +38,7 @@ class TextToSpeech
         if (!$this->client) {
             $this->client = new TextToSpeechClient();
         }
+
+        return $this->client;
     }
 }

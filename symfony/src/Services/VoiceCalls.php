@@ -56,9 +56,7 @@ class VoiceCalls
     {
         // Repeat
         if (0 === $digit) {
-            $this->establishCall($message);
-
-            return;
+            return $this->establishCall($message);
         }
 
         $answer = sprintf('%s%s', $message->getPrefix(), $digit);
@@ -89,7 +87,7 @@ class VoiceCalls
     {
         $uuid = $this->mediaManager->createMp3($text);
 
-        $relativeUrl = $this->router->generate('twilio_outgoing_call', [
+        $relativeUrl = $this->router->generate('media_play', [
             'uuid' => $uuid,
         ]);
 

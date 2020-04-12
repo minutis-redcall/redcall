@@ -4,7 +4,7 @@ namespace App\Controller;
 
 
 use App\Entity\Media;
-use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -13,20 +13,11 @@ use Symfony\Component\Routing\Annotation\Route;
 class MediaController
 {
     /**
-     * @Route("/{uuid}", name="play")
+     * @Route("/{uuid}.mp3", name="play")
      */
     public function play(Media $media)
     {
-        return new StreamedResponse(function() use ($media) {
-            $handle = fopen($media->getContent(), 'r');
-            while (!feof($handle)) {
-                $buffer = fread($handle, 1024);
-                echo $buffer;
-                ob_flush();
-                flush();
-            }
-            fclose($handle);
-        }, 200, [
+        return new Response(stream_get_contents($media->getContent()), 200, [
             'Content-Type' => 'audio/mpeg',
         ]);
     }

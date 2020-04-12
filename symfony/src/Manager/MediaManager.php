@@ -5,6 +5,7 @@ namespace App\Manager;
 use App\Entity\Media;
 use App\Repository\MediaRepository;
 use App\Services\TextToSpeech;
+use Ramsey\Uuid\Uuid;
 
 class MediaManager
 {
@@ -31,7 +32,7 @@ class MediaManager
     public function createMp3(string $text): string
     {
         /** @var Media $media */
-        if ($media = $this->findUuidByText($text)) {
+        if ($media = $this->findOneByText($text)) {
             return $media->getUuid();
         }
 
@@ -45,12 +46,17 @@ class MediaManager
         $media->setCreatedAt(new \DateTime());
         $media->setExpiresAt((new \DateTime())->add(new \DateInterval('P7D')));
 
-        $this->mediaManager->save($media);
+        $this->mediaRepository->save($media);
 
         return $media->getUuid();
     }
 
-    private function findUuidByText(string $text): ?string
+    public function clearExpired()
+    {
+        $this->mediaRepository->clearExpired();
+    }
+
+    private function findOneByText(string $text): ?Media
     {
         /** @var Media|null $media */
         $media = $this->mediaRepository->findOneByHash(
@@ -61,6 +67,6 @@ class MediaManager
             return null;
         }
 
-        return $media->getUuid();
+        return $media;
     }
 }

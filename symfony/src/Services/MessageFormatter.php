@@ -98,8 +98,8 @@ class MessageFormatter
 
         $contentParts[] = $this->translator->trans('message.call.announcement', [
             '%brand%' => mb_strtoupper(getenv('BRAND')),
-            '%hours%' => date('H'),
-            '%mins%'  => date('i'),
+            '%hours%' => $message->getCommunication()->getCreatedAt()->format('H'),
+            '%mins%'  => $message->getCommunication()->getCreatedAt()->format('i'),
         ]);
 
         $contentParts[] = $communication->getBody();

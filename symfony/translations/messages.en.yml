@@ -106,6 +106,7 @@ base:
   clear_selection: 'Clear selection'
   wait: 'One moment...'
   actions: 'Actions'
+  play: 'Play'
 
 modal:
   change_color: Change color...
@@ -199,7 +200,7 @@ message:
     how_to_answer_multiple: Reply by giving your choice(s) code(s), separated by a space.
     geo_location: 'Geolocation of your crew: %url%'
   call:
-    announcement: '%brand% at %hours% hours %mins%'
+    announcement: '%brand% at %hours% hours %mins%.'
     choices: 'To answer "%answer%", press %code%.'
     repeat: 'To repeat this message, press 0.'
     unknown: 'Invalid answer.'

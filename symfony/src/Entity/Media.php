@@ -12,7 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
  *     @ORM\UniqueConstraint(name="hash_idx", columns={"hash"})
  *   },
  *   indexes={
- *     @ORM\Index(name="expiration_idx", columns={"expiresAt"})
+ *     @ORM\Index(name="expiration_idx", columns={"expires_at"})
  *   }
  * )
  */
