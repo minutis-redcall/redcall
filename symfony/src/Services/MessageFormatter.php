@@ -95,38 +95,35 @@ class MessageFormatter
         $communication = $message->getCommunication();
 
         $contentParts  = [];
-        $contentParts = array_merge($contentParts, $this->formatCallContentHeaderPart($communication));
-        $contentParts = array_merge($contentParts, $this->formatCallContentMessagePart($communication));
-        $contentParts = array_merge($contentParts, $this->formatCallContentGatherPart($communication));
+
+        $hours = ltrim($message->getCommunication()->getCreatedAt()->format('H'), 0);
+        if (!$hours) {
+            $hours = 0;
+        }
+
+        $mins = ltrim($message->getCommunication()->getCreatedAt()->format('i'), 0);
+        if (!$mins) {
+            $mins = 0;
+        }
+
+        $contentParts[] = $this->translator->trans('message.call.announcement', [
+            '%brand%' => mb_strtoupper(getenv('BRAND')),
+            '%hours%' => $hours,
+            '%mins%'  => $mins,
+        ]);
+
+        $contentParts[] = $communication->getBody();
+
+        $contentParts[] = $this->formatCallChoicesContent($message);
 
         return implode("\n", $contentParts);
     }
 
-    public function formatCallContentHeaderPart(Communication $communication): array
+    public function formatCallChoicesContent(Message $message): string
     {
-        $contentParts  = [];
+        $contentParts = [];
 
-        $contentParts[] = $this->translator->trans('message.call.announcement', [
-            '%brand%' => mb_strtoupper(getenv('BRAND')),
-            '%hours%' => date('H'),
-            '%mins%'  => date('i'),
-        ]);
-
-        return $contentParts;
-    }
-
-    public function formatCallContentMessagePart(Communication $communication): array
-    {
-        $contentParts  = [];
-
-        $contentParts[] = $communication->getBody();
-
-        return $contentParts;
-    }
-
-    public function formatCallContentGatherPart(Communication $communication): array
-    {
-        $contentParts  = [];
+        $communication = $message->getCommunication();
 
         $choices = $communication->getChoices();
         if (is_object($choices)) {
@@ -144,7 +141,7 @@ class MessageFormatter
 
         $contentParts[] = $this->translator->trans('message.call.repeat');
 
-        return $contentParts;
+        return implode("\n", $contentParts);
     }
 
     public function formatTextEmailContent(Message $message): string

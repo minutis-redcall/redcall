@@ -2,11 +2,11 @@
 
 namespace App\EventSubscriber;
 
-use App\Entity\Communication;
 use App\Entity\Cost;
+use App\Entity\Message;
 use App\Manager\CostManager;
 use App\Manager\MessageManager;
-use App\Services\MessageFormatter;
+use App\Services\VoiceCalls;
 use Bundles\TwilioBundle\Entity\TwilioMessage;
 use Bundles\TwilioBundle\Event\TwilioCallEvent;
 use Bundles\TwilioBundle\Event\TwilioMessageEvent;
@@ -28,9 +28,9 @@ class TwilioSubscriber implements EventSubscriberInterface
     private $messageManager;
 
     /**
-     * @var MessageFormatter
+     * @var VoiceCalls
      */
-    private $formatter;
+    private $voiceCalls;
 
     /**
      * @var TranslatorInterface
@@ -40,14 +40,14 @@ class TwilioSubscriber implements EventSubscriberInterface
     /**
      * @param CostManager         $costManager
      * @param MessageManager      $messageManager
-     * @param MessageFormatter    $formatter
+     * @param VoiceCalls          $voiceCalls
      * @param TranslatorInterface $translator
      */
-    public function __construct(CostManager $costManager, MessageManager $messageManager, MessageFormatter $formatter, TranslatorInterface $translator)
+    public function __construct(CostManager $costManager, MessageManager $messageManager, VoiceCalls $voiceCalls, TranslatorInterface $translator)
     {
         $this->costManager = $costManager;
         $this->messageManager = $messageManager;
-        $this->formatter = $formatter;
+        $this->voiceCalls = $voiceCalls;
         $this->translator = $translator;
     }
 
@@ -79,7 +79,6 @@ class TwilioSubscriber implements EventSubscriberInterface
 
         $this->costManager->saveCost(
             TwilioMessage::DIRECTION_INBOUND === $twilioMessage->getDirection() ? Cost::DIRECTION_INBOUND : Cost::DIRECTION_OUTBOUND,
-
             $twilioMessage->getFromNumber(),
             $twilioMessage->getToNumber(),
             $twilioMessage->getMessage(),
@@ -106,9 +105,6 @@ class TwilioSubscriber implements EventSubscriberInterface
         }
     }
 
-    /**
-     * @param TwilioCallEvent $event
-     */
     public function onCallReceived(TwilioCallEvent $event)
     {
         $response = new VoiceResponse();
@@ -134,61 +130,24 @@ class TwilioSubscriber implements EventSubscriberInterface
 
     public function onCallEstablished(TwilioCallEvent $event)
     {
-        $call = $event->getCall();
+        $message = $this->getMessage($event);
 
-        $message = null;
-        if ($messageId = $call->getContext()['message_id'] ?? null) {
-            $message = $this->messageManager->find($messageId);
-        }
-
-        if (!$message) {
-            throw new \LogicException('An outgoing call must be attached to a RedCall message');
-        }
-
-        $response = new VoiceResponse();
-
-        $response->say(implode(' ', $this->formatter->formatCallContentHeaderPart($message->getCommunication())), [
-            'voice' => 'alice',
-            'language' => 'fr-FR',
-        ]);
-
-        $response->pause([
-            'length' => 1,
-        ]);
-
-        $response->say(implode(' ', $this->formatter->formatCallContentMessagePart($message->getCommunication())), [
-            'voice' => 'alice',
-            'language' => 'fr-FR',
-        ]);
-
-        $response->pause([
-            'length' => 1,
-        ]);
-
-        $this->generateGatherPart($response, $message->getCommunication());
-
-        $event->setResponse($response);
-    }
-
-    private function generateGatherPart(VoiceResponse $response, Communication $communication)
-    {
-        $gather = $response->gather(['numDigits' => 1]);
-
-        $gather->say(implode(' ', $this->formatter->formatCallContentGatherPart($communication)), [
-            'voice' => 'man',
-            'language' => 'fr',
-        ]);
+        $event->setResponse(
+            $this->voiceCalls->establishCall($message)
+        );
     }
 
     public function onCallKeyPressed(TwilioCallEvent $event)
     {
-        $key = $event->getKeyPressed();
-        if (0 === $key) {
-            $this->onCallEstablished($event);
+        $message = $this->getMessage($event);
 
-            return;
-        }
+        $event->setResponse(
+            $this->voiceCalls->handleKeyPress($message, $event->getKeyPressed())
+        );
+    }
 
+    private function getMessage(TwilioCallEvent $event): Message
+    {
         $call = $event->getCall();
 
         $message = null;
@@ -200,35 +159,6 @@ class TwilioSubscriber implements EventSubscriberInterface
             throw new \LogicException('An outgoing call must be attached to a RedCall message');
         }
 
-        $answer = sprintf('%s%s', $message->getPrefix(), $key);
-
-        $response = new VoiceResponse();
-
-        // Invalid answer
-        $choice = $message->getCommunication()->getChoiceByCode($message->getPrefix(), $answer);
-        if (!$choice) {
-            $response->say($this->translator->trans('message.call.unknown'), [
-                'voice' => 'alice',
-                'language' => 'fr-FR',
-            ]);
-
-            $response->pause(['length' => 1]);
-            $this->generateGatherPart($response, $message->getCommunication());
-
-            $event->setResponse($response);
-
-            return;
-        }
-
-        $response->say($this->translator->trans('message.call.answer', [
-            '%choice%' => $choice->getLabel(),
-        ]), [
-            'voice' => 'alice',
-            'language' => 'fr-FR',
-        ]);
-
-        $this->messageManager->addAnswer($message, $answer);
-
-        $event->setResponse($response);
+        return $message;
     }
 }

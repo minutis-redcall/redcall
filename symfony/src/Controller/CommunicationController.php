@@ -12,6 +12,7 @@ use App\Form\Type\CommunicationType;
 use App\Manager\AnswerManager;
 use App\Manager\CampaignManager;
 use App\Manager\CommunicationManager;
+use App\Manager\MediaManager;
 use App\Manager\MessageManager;
 use App\Manager\TagManager;
 use App\Manager\UserInformationManager;
@@ -75,6 +76,11 @@ class CommunicationController extends BaseController
     private $userInformationManager;
 
     /**
+     * @var MediaManager
+     */
+    private $mediaManager;
+
+    /**
      * @param CampaignManager        $campaignManager
      * @param CommunicationManager   $communicationManager
      * @param MessageFormatter       $formatter
@@ -83,24 +89,19 @@ class CommunicationController extends BaseController
      * @param MessageManager         $messageManager
      * @param AnswerManager          $answerManager
      * @param UserInformationManager $userInformationManager
+     * @param MediaManager           $mediaManager
      */
-    public function __construct(CampaignManager $campaignManager,
-        CommunicationManager $communicationManager,
-        MessageFormatter $formatter,
-        TagManager $tagManager,
-        VolunteerManager $volunteerManager,
-        MessageManager $messageManager,
-        AnswerManager $answerManager,
-        UserInformationManager $userInformationManager)
+    public function __construct(CampaignManager $campaignManager, CommunicationManager $communicationManager, MessageFormatter $formatter, TagManager $tagManager, VolunteerManager $volunteerManager, MessageManager $messageManager, AnswerManager $answerManager, UserInformationManager $userInformationManager, MediaManager $mediaManager)
     {
-        $this->campaignManager        = $campaignManager;
-        $this->communicationManager   = $communicationManager;
-        $this->formatter              = $formatter;
-        $this->tagManager             = $tagManager;
-        $this->volunteerManager       = $volunteerManager;
-        $this->messageManager         = $messageManager;
-        $this->answerManager          = $answerManager;
+        $this->campaignManager = $campaignManager;
+        $this->communicationManager = $communicationManager;
+        $this->formatter = $formatter;
+        $this->tagManager = $tagManager;
+        $this->volunteerManager = $volunteerManager;
+        $this->messageManager = $messageManager;
+        $this->answerManager = $answerManager;
         $this->userInformationManager = $userInformationManager;
+        $this->mediaManager = $mediaManager;
     }
 
     /**
@@ -114,7 +115,6 @@ class CommunicationController extends BaseController
         return $this->render('status_communication/index.html.twig', [
             'campaign'   => $campaign,
             'skills'     => $this->tagManager->findAll(),
-            'statusHash' => $this->getStatusHash($campaign),
             'progress'   => $campaign->getCampaignProgression(),
         ]);
     }
@@ -242,20 +242,7 @@ class CommunicationController extends BaseController
      */
     public function previewCommunicationAction(Request $request)
     {
-        if ($request->request->get('campaign')) {
-            // New campaign form
-            $campaignModel = new \App\Form\Model\Campaign();
-            $this
-                ->createForm(CampaignType::class, $campaignModel)
-                ->handleRequest($request);
-            $communicationModel = $campaignModel->communication;
-        } else {
-            // Add communication form
-            $communicationModel = new CommunicationModel();
-            $this
-                ->createForm(CommunicationType::class, $communicationModel)
-                ->handleRequest($request);
-        }
+        $communicationModel = $this->getCommunicationFromRequest($request);
 
         if (!$communicationModel->message) {
             return new JsonResponse(['success' => false]);
@@ -278,6 +265,36 @@ class CommunicationController extends BaseController
             'cost'    => count($parts),
             'price'   => round($estimated, 2),
             'length'  => array_sum(array_map('mb_strlen', $parts)),
+        ]);
+    }
+
+    /**
+     * @Route(path="campaign/play", name="play")
+     */
+    public function playCommunication(Request $request)
+    {
+        $communicationModel = $this->getCommunicationFromRequest($request);
+
+        if (!$communicationModel->message) {
+            return new JsonResponse(['success' => false]);
+        }
+
+        $communicationEntity = $this->communicationManager->createCommunication($communicationModel);
+
+        $message = new Message();
+        $message->setCommunication($communicationEntity);
+        $message->setPrefix('X');
+        $message->setCode('xxxxxxxx');
+
+        $uuid = $this->mediaManager->createMp3(
+            $this->formatter->formatMessageContent($message)
+        );
+
+        return new JsonResponse([
+            'success' => true,
+            'player' => $this->renderView('new_communication/player.html.twig', [
+                'uuid' => $uuid,
+            ])
         ]);
     }
 
@@ -365,24 +382,23 @@ class CommunicationController extends BaseController
         ]));
     }
 
-    /**
-     * Returns the campaign's status hash, a hash used by SSE in order
-     * to know if campaign status is up to date or needs to be refreshed.
-     *
-     * Notes:
-     * - status hash should match [0-9-]*
-     * - no cache should be involved (take care of doctrine)
-     */
-    private function getStatusHash(Campaign $campaign): string
+    private function getCommunicationFromRequest(Request $request): CommunicationModel
     {
-        return sprintf(
-            '%s-%s',
+        if ($request->request->get('campaign')) {
+            // New campaign form
+            $campaignModel = new \App\Form\Model\Campaign();
+            $this
+                ->createForm(CampaignType::class, $campaignModel)
+                ->handleRequest($request);
+            $communicationModel = $campaignModel->communication;
+        } else {
+            // Add communication form
+            $communicationModel = new CommunicationModel();
+            $this
+                ->createForm(CommunicationType::class, $communicationModel)
+                ->handleRequest($request);
+        }
 
-            // New answer arrived
-            $this->answerManager->getLastCampaignUpdateTimestamp($campaign),
-
-            // Number of messages sent changed
-            $this->messageManager->getNumberOfSentMessages($campaign)
-        );
+        return $communicationModel;
     }
 }

@@ -119,20 +119,22 @@ class Communication
 
         // Check that all selected volunteers appear in at least one selected structure
         // @todo PERF KILLER
-        if ($this->structures && $this->volunteers) {
-            foreach ($this->volunteers as $volunteer) {
-                $inStructures = false;
-                foreach ($this->structures as $structure) {
-                    /** @var Structure $structure */
-                    if ($structure->getVolunteers()->contains($volunteer)) {
-                        $inStructures = true;
+        if (false) {
+            if ($this->structures && $this->volunteers) {
+                foreach ($this->volunteers as $volunteer) {
+                    $inStructures = false;
+                    foreach ($this->structures as $structure) {
+                        /** @var Structure $structure */
+                        if ($structure->getVolunteers()->contains($volunteer)) {
+                            $inStructures = true;
+                        }
                     }
-                }
 
-                if (!$inStructures) {
-                    $context->buildViolation('form.communication.errors.volunteer_not_in_structure')
+                    if (!$inStructures) {
+                        $context->buildViolation('form.communication.errors.volunteer_not_in_structure')
                             ->atPath('message')
                             ->addViolation();
+                    }
                 }
             }
         }
