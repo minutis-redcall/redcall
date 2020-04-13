@@ -2,7 +2,10 @@
 
 namespace App\Form\Type;
 
+use App\Entity\Volunteer;
+use App\Manager\VolunteerManager;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
@@ -14,10 +17,15 @@ class NivolsWidgetType extends AbstractType
      * @var UrlGeneratorInterface
      */
     private $urlGenerator;
+    /**
+     * @var VolunteerManager
+     */
+    private $volunteerManager;
 
-    public function __construct(UrlGeneratorInterface $urlGenerator)
+    public function __construct(UrlGeneratorInterface $urlGenerator, VolunteerManager $volunteerManager)
     {
         $this->urlGenerator = $urlGenerator;
+        $this->volunteerManager = $volunteerManager;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -32,9 +40,26 @@ class NivolsWidgetType extends AbstractType
                 'data-selection-required'=> true,
                 'data-text-property'=> '{nivol} - {lastName} {firstName}',
                 'data-search-in' => 'nivol',
-                'multiple' => 'multiple'
+                'multiple' => 'multiple',
+                'data-value-property' => 'nivol'
             ]
         ])
-            ;
+            ->addModelTransformer(new CallbackTransformer(
+                function (?array $volunteersAsArray) {
+                    //TO ARRAY
+                    dump($volunteersAsArray);
+                    return [
+                        'nivols' => implode(',', array_map(function (Volunteer $volunteer) {
+                            return $volunteer->getId();
+                        }, $volunteersAsArray ?? [])),
+                    ];
+                },
+                function (?array $nivolsToEntity) {
+                    //TO ENTITY
+                    return array_filter(array_map(function($nivol) {
+                        return $this->volunteerManager->findOneByNivol($nivol);
+                    }, explode(',', strval($nivolsToEntity['nivols']))));
+                }
+            ));
     }
 }
