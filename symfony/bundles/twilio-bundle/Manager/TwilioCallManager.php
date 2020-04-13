@@ -213,6 +213,11 @@ class TwilioCallManager
         }
     }
 
+    public function foreach(callable $callback)
+    {
+        $this->callRepository->foreach($callback);
+    }
+
     private function getClient(): Client
     {
         return $this->twilio->getClient();

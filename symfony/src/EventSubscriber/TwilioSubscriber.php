@@ -2,12 +2,10 @@
 
 namespace App\EventSubscriber;
 
-use App\Entity\Cost;
 use App\Entity\Message;
 use App\Manager\CostManager;
 use App\Manager\MessageManager;
 use App\Services\VoiceCalls;
-use Bundles\TwilioBundle\Entity\TwilioMessage;
 use Bundles\TwilioBundle\Event\TwilioCallEvent;
 use Bundles\TwilioBundle\Event\TwilioMessageEvent;
 use Bundles\TwilioBundle\TwilioEvents;
@@ -57,8 +55,9 @@ class TwilioSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            TwilioEvents::MESSAGE_PRICE_UPDATED    => 'onPriceUpdated',
+            TwilioEvents::MESSAGE_PRICE_UPDATED    => 'onMessagePriceUpdated',
             TwilioEvents::MESSAGE_RECEIVED => 'onMessageReceived',
+            TwilioEvents::CALL_PRICE_UPDATED    => 'onCallPriceUpdated',
             TwilioEvents::CALL_RECEIVED => 'onCallReceived',
             TwilioEvents::CALL_ESTABLISHED => 'onCallEstablished',
             TwilioEvents::CALL_KEY_PRESSED => 'onCallKeyPressed',
@@ -68,7 +67,7 @@ class TwilioSubscriber implements EventSubscriberInterface
     /**
      * @param TwilioMessageEvent $event
      */
-    public function onPriceUpdated(TwilioMessageEvent $event)
+    public function onMessagePriceUpdated(TwilioMessageEvent $event)
     {
         $twilioMessage = $event->getMessage();
 
@@ -77,15 +76,7 @@ class TwilioSubscriber implements EventSubscriberInterface
             $message = $this->messageManager->find($messageId);
         }
 
-        $this->costManager->saveCost(
-            TwilioMessage::DIRECTION_INBOUND === $twilioMessage->getDirection() ? Cost::DIRECTION_INBOUND : Cost::DIRECTION_OUTBOUND,
-            $twilioMessage->getFromNumber(),
-            $twilioMessage->getToNumber(),
-            $twilioMessage->getMessage(),
-            $twilioMessage->getPrice(),
-            $twilioMessage->getUnit(),
-            $message
-        );
+        $this->costManager->saveMessageCost($twilioMessage, $message);
     }
 
     /**
@@ -103,6 +94,21 @@ class TwilioSubscriber implements EventSubscriberInterface
         if ($messageId) {
             $twilioMessage->setContext(['message_id' => $messageId]);
         }
+    }
+
+    /**
+     * @param TwilioCallEvent $event
+     */
+    public function onCallPriceUpdated(TwilioCallEvent $event)
+    {
+        $twilioCall = $event->getCall();
+
+        $message = null;
+        if ($messageId = $twilioCall->getContext()['message_id'] ?? null) {
+            $message = $this->messageManager->find($messageId);
+        }
+
+        $this->costManager->saveCallCost($twilioCall, $message);
     }
 
     public function onCallReceived(TwilioCallEvent $event)
@@ -130,7 +136,7 @@ class TwilioSubscriber implements EventSubscriberInterface
 
     public function onCallEstablished(TwilioCallEvent $event)
     {
-        $message = $this->getMessage($event);
+        $message = $this->getMessageFromCall($event);
 
         $event->setResponse(
             $this->voiceCalls->establishCall($message)
@@ -139,14 +145,14 @@ class TwilioSubscriber implements EventSubscriberInterface
 
     public function onCallKeyPressed(TwilioCallEvent $event)
     {
-        $message = $this->getMessage($event);
+        $message = $this->getMessageFromCall($event);
 
         $event->setResponse(
             $this->voiceCalls->handleKeyPress($message, $event->getKeyPressed())
         );
     }
 
-    private function getMessage(TwilioCallEvent $event): Message
+    private function getMessageFromCall(TwilioCallEvent $event): Message
     {
         $call = $event->getCall();
 
