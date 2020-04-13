@@ -93,6 +93,10 @@ class CommunicationType extends AbstractType
                     '.' => 'volunteers',
                 ],
             ])
+            ->add('nivols', NivolsWidgetType::class, [
+                'mapped' => false,
+                'label' => false
+            ])
             ->add('subject', TextType::class, [
                 'label'    => 'form.communication.fields.subject',
                 'required' => false,
