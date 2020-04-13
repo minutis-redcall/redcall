@@ -173,6 +173,11 @@ class TwilioMessageManager
         }
     }
 
+    public function foreach(callable $callback)
+    {
+        $this->messageRepository->foreach($callback);
+    }
+
     private function getClient(): Client
     {
         return $this->twilio->getClient();

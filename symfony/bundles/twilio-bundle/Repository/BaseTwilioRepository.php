@@ -21,4 +21,45 @@ class BaseTwilioRepository extends BaseRepository
             ->getQuery()
             ->getResult();
     }
+
+    /**
+     * @param callable $callback
+     *
+     * @throws \Doctrine\Common\Persistence\Mapping\MappingException
+     * @throws \Doctrine\ORM\NoResultException
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function foreach(callable $callback)
+    {
+        $count = $this->createQueryBuilder('t')
+            ->select('COUNT(t.id)')
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        $offset = 0;
+        while ($offset < $count) {
+            $qb = $this->createQueryBuilder('t')
+                ->setFirstResult($offset)
+                ->setMaxResults(100);
+
+            $iterator = $qb->getQuery()->iterate();
+
+            while (($row = $iterator->next()) !== false) {
+                $entity = reset($row);
+
+                if (false === $callback($entity)) {
+                    break;
+                }
+
+                $this->_em->persist($entity);
+            }
+
+            $this->_em->flush();
+            $this->_em->clear();
+
+            $offset += 100;
+        }
+    }
 }
