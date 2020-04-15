@@ -16,6 +16,8 @@ Once you created your account:
 
 - Share it with your volunteers so they'll know you will trigger them through it
 
+3) If you wish to accelerate the number of voice calls sent per second, you need to ask your account manager for more "Twilio Voice API CPS". By default, RedCall send 5 calls per second.
+
 ### Project configuration
 
 - Set `TWILIO_ACCOUNT_SID` with your Twilio account SID
