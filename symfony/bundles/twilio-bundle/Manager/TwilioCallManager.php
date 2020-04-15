@@ -154,7 +154,7 @@ class TwilioCallManager
         return $response;
     }
 
-    public function handleKeyPressed(TwilioCall $call, int $keyPressed): ?VoiceResponse
+    public function handleKeyPressed(TwilioCall $call, string $keyPressed): ?VoiceResponse
     {
         $event = new TwilioCallEvent($call, $keyPressed);
 
