@@ -72,11 +72,11 @@ class CallController extends BaseController
             throw $this->createNotFoundException();
         }
 
-        $key = $request->get('Digits');
-        if (null === $key) {
+        $keys = $request->get('Digits');
+        if (null === $keys) {
             $response = $this->callManager->handleCallEstablished($call);
         } else {
-            $response = $this->callManager->handleKeyPressed($call, $key);
+            $response = $this->callManager->handleKeyPressed($call, $keys);
         }
 
         if ($response) {
