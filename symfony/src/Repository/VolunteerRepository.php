@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Base\BaseRepository;
+use App\Entity\Structure;
 use App\Entity\UserInformation;
 use App\Entity\Volunteer;
 use Bundles\PasswordLoginBundle\Entity\User;
@@ -279,6 +280,8 @@ class VolunteerRepository extends BaseRepository
             ->join('s.users', 'u')
             ->where('v.enabled = true')
             ->andWhere('u.id = :user')
+            ->andWhere('s.identifier <> :redcall')
+            ->setParameter('redcall', Structure::REDCALL_STRUCTURE)
             ->andWhere(
                 $qb->expr()->orX(
                     'v.email IS NULL or v.email = \'\'',
