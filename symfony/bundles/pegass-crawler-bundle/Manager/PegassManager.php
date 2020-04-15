@@ -107,16 +107,6 @@ class PegassManager
     }
 
     /**
-     * @param string $type
-     *
-     * @return array
-     */
-    public function listIdentifiers(string $type, bool $onlyEnabled = true): array
-    {
-        return $this->pegassRepository->listIdentifiers($type, $onlyEnabled);
-    }
-
-    /**
      * @param string   $type
      * @param callable $callback
      * @param bool     $onlyEnabled

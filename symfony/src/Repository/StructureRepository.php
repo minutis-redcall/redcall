@@ -6,6 +6,7 @@ use App\Base\BaseRepository;
 use App\Entity\Structure;
 use App\Entity\UserInformation;
 use App\Entity\Volunteer;
+use Bundles\PegassCrawlerBundle\Entity\Pegass;
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\NoResultException;
@@ -22,20 +23,6 @@ class StructureRepository extends BaseRepository
     public function __construct(Registry $registry)
     {
         parent::__construct($registry, Structure::class);
-    }
-
-    /**
-     * @return array
-     */
-    public function listStructureIdentifiers(): array
-    {
-        $rows = $this->createQueryBuilder('s')
-                     ->select('s.identifier')
-                     ->where('s.enabled = 1')
-                     ->getQuery()
-                     ->getArrayResult();
-
-        return array_column($rows, 'identifier');
     }
 
     /**
@@ -331,5 +318,29 @@ class StructureRepository extends BaseRepository
             ->setMaxResults($maxResults)
             ->getQuery()
             ->getResult();
+    }
+
+    public function synchronizeWithPegass()
+    {
+        foreach ([false, true] as $enabled) {
+            $qb = $this->createQueryBuilder('s');
+
+            $sub = $this->_em->createQueryBuilder()
+                ->select('p.identifier')
+                ->from(Pegass::class, 'p')
+                ->where('p.type = :type')
+                ->andWhere('p.enabled = :enabled');
+
+            $qb
+                ->setParameter('type', Pegass::TYPE_STRUCTURE)
+                ->setParameter('enabled', $enabled);
+
+            $qb
+                ->update()
+                ->set('s.enabled', true)
+                ->where($qb->expr()->in('s.identifier', $sub->getDQL()))
+                ->getQuery()
+                ->execute();
+        }
     }
 }

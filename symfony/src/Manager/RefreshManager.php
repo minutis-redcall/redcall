@@ -82,7 +82,7 @@ class RefreshManager
 
     public function refreshStructures(bool $force)
     {
-        $this->disableInactiveStructures();
+        $this->structureManager->synchronizeWithPegass();
 
         // Import or refresh structures
         $this->pegassManager->foreach(Pegass::TYPE_STRUCTURE, function (Pegass $pegass) use ($force) {
@@ -94,47 +94,6 @@ class RefreshManager
         });
 
         $this->refreshParentStructures();
-    }
-
-    public function disableInactiveStructures()
-    {
-        // todo: we should disable those who are enabled=0 in pegass, not the ones missing
-        // otherwise volunteers created manually will be deleted
-        return;
-
-        $this->debug('Disabling inactive structures');
-
-        // RedCall structures that are enabled
-        $redcallStructures = $this->structureManager->listStructureIdentifiers();
-
-        // Pegass structures that are enabled
-        $pegassStructures = $this->pegassManager->listIdentifiers(Pegass::TYPE_STRUCTURE, true);
-
-        // We try to enable Pegass structures not in RedCall structures
-        foreach (array_diff($pegassStructures, $redcallStructures) as $structureIdentiifer) {
-            if (Structure::REDCALL_STRUCTURE === $structureIdentiifer) {
-                continue;
-            }
-
-            $this->debug('Enabling a structure', [
-                'identifier' => $structureIdentiifer,
-            ]);
-
-            $this->structureManager->enableByIdentifier($structureIdentiifer);
-        }
-
-        // We disable RedCall structures not in Pegass structures
-        foreach (array_diff($redcallStructures, $pegassStructures) as $structureIdentiifer) {
-            if (Structure::REDCALL_STRUCTURE === $structureIdentiifer) {
-                continue;
-            }
-
-            $this->debug('Disabling a structure', [
-                'identifier' => $structureIdentiifer,
-            ]);
-
-            $this->structureManager->disableByIdentifier($structureIdentiifer);
-        }
     }
 
     public function refreshStructure(Pegass $pegass, bool $force)
@@ -194,7 +153,7 @@ class RefreshManager
 
     public function refreshVolunteers(bool $force)
     {
-        $this->disableInactiveVolunteers();
+        $this->volunteerManager->synchronizeWithPegass();
 
         $this->pegassManager->foreach(Pegass::TYPE_VOLUNTEER, function (Pegass $pegass) use ($force) {
             $this->debug('Walking through a volunteer', [
@@ -208,44 +167,6 @@ class RefreshManager
 
             $this->refreshVolunteer($pegass, $force);
         });
-    }
-
-    public function disableInactiveVolunteers()
-    {
-        // todo: we should disable those who are enabled=0 in pegass, not the ones missing
-        // otherwise volunteers created manually will be deleted
-        return;
-
-        $this->debug('Disabling inactive volunteers');
-        $redcallVolunteers = $this->volunteerManager->listVolunteerNivols();
-
-        $pegassVolunteers = array_map(function (string $identifier) {
-            return ltrim($identifier, '0');
-        }, $this->pegassManager->listIdentifiers(Pegass::TYPE_VOLUNTEER));
-
-        foreach (array_diff($redcallVolunteers, $pegassVolunteers) as $volunteerIdentiifer) {
-            $this->debug('Disabling a volunteer', [
-                'identifier' => $volunteerIdentiifer,
-            ]);
-
-            $volunteer = $this->volunteerManager->findOneByNivol($volunteerIdentiifer);
-            if (!$volunteer) {
-                continue;
-            }
-
-            if ($volunteer->isLocked()) {
-                $volunteer->setReport([]);
-                $volunteer->addReport('import_report.disable_locked');
-            }
-
-            // Even if locked, it's important to disable the volunteer if it is inactive
-            // except if it has been created manually.
-            if ('2100-12-31' !== $volunteer->getLastPegassUpdate()->format('Y-m-d')) {
-                $volunteer->setEnabled(false);
-            }
-
-            $this->volunteerManager->save($volunteer);
-        }
     }
 
     public function refreshVolunteer(Pegass $pegass, bool $force)
