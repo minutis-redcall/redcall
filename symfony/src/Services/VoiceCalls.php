@@ -52,8 +52,15 @@ class VoiceCalls
         );
     }
 
-    public function handleKeyPress(Message $message, int $digit)
+    public function handleKeyPress(Message $message, string $digit)
     {
+        // #, *
+        if (!is_numeric($digit)) {
+            return $this->getInvalidAnswerResponse($message);
+        }
+
+        $digit = intval($digit);
+
         // Repeat
         if (0 === $digit) {
             return $this->establishCall($message);
@@ -64,13 +71,7 @@ class VoiceCalls
 
         // Invalid answer
         if (!$choice) {
-            $text = sprintf(
-                '%s %s',
-                $this->translator->trans('message.call.unknown'),
-                $this->formatter->formatCallChoicesContent($message)
-            );
-
-            return $this->getVoiceResponse($text);
+            return $this->getInvalidAnswerResponse($message);
         }
 
         $this->messageManager->addAnswer($message, $answer);
@@ -79,6 +80,17 @@ class VoiceCalls
         $text = $this->translator->trans('message.call.answer', [
             '%choice%' => $choice->getLabel(),
         ]);
+
+        return $this->getVoiceResponse($text);
+    }
+
+    private function getInvalidAnswerResponse(Message $message): VoiceResponse
+    {
+        $text = sprintf(
+            '%s %s',
+            $this->translator->trans('message.call.unknown'),
+            $this->formatter->formatCallChoicesContent($message)
+        );
 
         return $this->getVoiceResponse($text);
     }

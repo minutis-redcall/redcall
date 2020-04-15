@@ -4,7 +4,7 @@ namespace Bundles\PegassCrawlerBundle\Service;
 
 use Bundles\PegassCrawlerBundle\Entity\Pegass;
 use Goutte\Client;
-use LogicException;
+use Symfony\Component\HttpClient\HttpClient;
 
 class PegassClient
 {
@@ -34,27 +34,11 @@ class PegassClient
     private $authenticated = false;
     private $mode          = self::MODE_FAST;
 
-    public function __construct()
-    {
-        $this->client = new Client([
-            'cookies'         => true,
-            'allow_redirects' => true,
-        ]);
-    }
-
-    /**
-     * @return string
-     */
     public function getMode(): string
     {
         return $this->mode;
     }
 
-    /**
-     * @param string $mode
-     *
-     * @return PegassClient
-     */
     public function setMode(string $mode): PegassClient
     {
         $this->mode = $mode;
@@ -62,17 +46,11 @@ class PegassClient
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getArea(): array
     {
         return $this->get(self::ENDPOINTS[Pegass::TYPE_AREA]);
     }
 
-    /**
-     * @param string $identifier
-     */
     public function getDepartment(string $identifier): array
     {
         $endpoint = str_replace('%identifier%', $identifier, self::ENDPOINTS[Pegass::TYPE_DEPARTMENT]);
@@ -80,11 +58,6 @@ class PegassClient
         return $this->get($endpoint);
     }
 
-    /**
-     * @param string $identifier
-     *
-     * @return array
-     */
     public function getStructure(string $identifier): array
     {
         $structure = [];
@@ -114,11 +87,6 @@ class PegassClient
         return $structure;
     }
 
-    /**
-     * @param string $identifier
-     *
-     * @return array
-     */
     public function getVolunteer(string $identifier): array
     {
         $data = [];
@@ -130,9 +98,6 @@ class PegassClient
         return $data;
     }
 
-    /**
-     * @return bool
-     */
     private function isAuthenticated(): bool
     {
         return $this->authenticated;
@@ -145,28 +110,23 @@ class PegassClient
         }
 
         if (!getenv('PEGASS_LOGIN') || !getenv('PEGASS_PASSWORD')) {
-            throw new LogicException('Credentials are required to access Pegass API.');
+            throw new \LogicException('Credentials are required to access Pegass API.');
         }
 
-        $crawler = $this->client->request('GET', 'https://pegass.croix-rouge.fr/');
+        $crawler = $this->getClient()->request('GET', 'https://pegass.croix-rouge.fr/');
         $form    = $crawler->selectButton('Ouverture de session')->form();
 
-        $crawler = $this->client->submit($form, [
+        $crawler = $this->getClient()->submit($form, [
             'username' => getenv('PEGASS_LOGIN'),
             'password' => getenv('PEGASS_PASSWORD'),
         ]);
         $form    = $crawler->selectButton('Continue')->form();
 
-        $this->client->submit($form);
+        $this->getClient()->submit($form);
 
         $this->authenticated = true;
     }
 
-    /**
-     * @param string $url
-     *
-     * @return array
-     */
     private function get(string $url): array
     {
         $this->authenticate();
@@ -176,8 +136,19 @@ class PegassClient
             usleep(500000);
         }
 
-        $this->client->request('GET', $url);
+        $this->getClient()->request('GET', $url);
 
-        return json_decode($this->client->getResponse()->getContent(), true);
+        return json_decode($this->getClient()->getResponse()->getContent(), true);
+    }
+
+    private function getClient(): Client
+    {
+        if (!$this->client) {
+            $this->client = new Client(HttpClient::create([
+                'max_redirects' => 10,
+            ]));
+        }
+
+        return $this->client;
     }
 }

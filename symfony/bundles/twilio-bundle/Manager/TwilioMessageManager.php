@@ -104,6 +104,8 @@ class TwilioMessageManager
      */
     public function sendMessage(string $phoneNumber, string $message, array $context = []): TwilioMessage
     {
+        $phoneNumber = ltrim($phoneNumber, '+');
+
         $entity = new TwilioMessage();
         $entity->setUuid(Uuid::uuid4());
         $entity->setDirection(TwilioMessage::DIRECTION_OUTBOUND);
