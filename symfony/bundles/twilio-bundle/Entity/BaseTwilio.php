@@ -82,6 +82,11 @@ abstract class BaseTwilio
     protected $context;
 
     /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $error;
+
+    /**
      * @ORM\Column(type="datetime")
      */
     protected $createdAt;
@@ -232,6 +237,18 @@ abstract class BaseTwilio
     public function setContext($context): self
     {
         $this->context = json_encode($context);
+
+        return $this;
+    }
+
+    public function getError(): ?string
+    {
+        return $this->error;
+    }
+
+    public function setError(?string $error): self
+    {
+        $this->error = mb_substr($error, 0, 255);
 
         return $this;
     }

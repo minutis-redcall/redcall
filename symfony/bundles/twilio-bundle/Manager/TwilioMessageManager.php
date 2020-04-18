@@ -127,6 +127,9 @@ class TwilioMessageManager
             $this->eventDispatcher->dispatch(new TwilioMessageEvent($entity), TwilioEvents::MESSAGE_SENT);
         } catch (\Exception $e) {
             $entity->setStatus('error');
+            $entity->setError($e->getMessage());
+
+            $this->eventDispatcher->dispatch(new TwilioMessageEvent($entity), TwilioEvents::MESSAGE_ERROR);
 
             $this->logger->error('Unable to send SMS', [
                 'phoneNumber' => $entity->getToNumber(),

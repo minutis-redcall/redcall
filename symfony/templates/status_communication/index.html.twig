@@ -328,7 +328,9 @@
                                     {% if not message.volunteer.email %}
                                         <div style="color:red;">{{ 'campaign_status.warning.no_email'|trans }}</div>
                                     {% endif %}
-
+                                    <div id="error-{{ suffix }}" style="color:red;">
+                                        {{ message.error }}
+                                    </div>
                                     <div id="invalid-answer-raw-{{ suffix }}" style="font-size:10px;">
                                         {% if message.invalidAnswer %}
                                             {{ message.invalidAnswer.raw }}
@@ -599,6 +601,11 @@
                         $('#message-is-unclear-' + suffix).removeClass('d-none');
                     } else {
                         $('#message-is-unclear-' + suffix).addClass('d-none');
+                    }
+
+                    {# an error occured while sending message #}
+                    if (messageStatus['error']) {
+                        $('#error-' + suffix).html(messageStatus['error']).removeClass('d-none');
                     }
 
                     {# Message has invalid answer #}

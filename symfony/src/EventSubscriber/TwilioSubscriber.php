@@ -57,10 +57,12 @@ class TwilioSubscriber implements EventSubscriberInterface
         return [
             TwilioEvents::MESSAGE_PRICE_UPDATED    => 'onMessagePriceUpdated',
             TwilioEvents::MESSAGE_RECEIVED => 'onMessageReceived',
+            TwilioEvents::MESSAGE_ERROR => 'onMessageError',
             TwilioEvents::CALL_PRICE_UPDATED    => 'onCallPriceUpdated',
             TwilioEvents::CALL_RECEIVED => 'onCallReceived',
             TwilioEvents::CALL_ESTABLISHED => 'onCallEstablished',
             TwilioEvents::CALL_KEY_PRESSED => 'onCallKeyPressed',
+            TwilioEvents::CALL_ERROR => 'onCallError',
         ];
     }
 
@@ -69,11 +71,10 @@ class TwilioSubscriber implements EventSubscriberInterface
      */
     public function onMessagePriceUpdated(TwilioMessageEvent $event)
     {
-        $twilioMessage = $event->getMessage();
+        $message = $this->getMessageFromSms($event);
 
-        $message = null;
-        if ($messageId = $twilioMessage->getContext()['message_id'] ?? null) {
-            $message = $this->messageManager->find($messageId);
+        if (!$message) {
+            return;
         }
 
         $this->costManager->saveMessageCost($twilioMessage, $message);
@@ -94,6 +95,19 @@ class TwilioSubscriber implements EventSubscriberInterface
         if ($messageId) {
             $twilioMessage->setContext(['message_id' => $messageId]);
         }
+    }
+
+    public function onMessageError(TwilioMessageEvent $event)
+    {
+        $message = $this->getMessageFromSms($event);
+
+        if (!$message) {
+            return;
+        }
+
+        $message->setError($event->getMessage()->getError());
+
+        $this->messageManager->save($message);
     }
 
     /**
@@ -150,6 +164,27 @@ class TwilioSubscriber implements EventSubscriberInterface
         $event->setResponse(
             $this->voiceCalls->handleKeyPress($message, $event->getKeyPressed())
         );
+    }
+
+    public function onCallError(TwilioCallEvent $event)
+    {
+        $message = $this->getMessageFromCall($event);
+
+        $message->setError($event->getCall()->getError());
+
+        $this->messageManager->save($message);
+    }
+
+    private function getMessageFromSms(TwilioMessageEvent $event): ?Message
+    {
+        $twilioMessage = $event->getMessage();
+
+        $message = null;
+        if ($messageId = $twilioMessage->getContext()['message_id'] ?? null) {
+            $message = $this->messageManager->find($messageId);
+        }
+
+        return $message;
     }
 
     private function getMessageFromCall(TwilioCallEvent $event): Message

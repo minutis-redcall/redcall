@@ -93,6 +93,11 @@ class Message
     private $costs;
 
     /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $error;
+
+    /**
      * @ORM\Column(type="datetime")
      */
     private $updatedAt;
@@ -473,6 +478,18 @@ class Message
                 $cost->setMessage(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getError(): ?string
+    {
+        return $this->error;
+    }
+
+    public function setError(?string $error): self
+    {
+        $this->error = $error;
 
         return $this;
     }

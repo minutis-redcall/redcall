@@ -125,6 +125,9 @@ class TwilioCallManager
             $this->eventDispatcher->dispatch(new TwilioCallEvent($entity), TwilioEvents::CALL_INITIALIZED);
         } catch (\Exception $e) {
             $entity->setStatus('error');
+            $entity->setError($e->getMessage());
+
+            $this->eventDispatcher->dispatch(new TwilioCallEvent($entity), TwilioEvents::CALL_ERROR);
 
             $this->logger->error('Unable to send call', [
                 'phoneNumber' => $entity->getToNumber(),
