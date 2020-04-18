@@ -33,7 +33,7 @@ class NivolsWidgetType extends AbstractType
         $builder->add('nivols', TextType::class, [
             'attr' => [
                 'class' => 'flexdatalist',
-                'data-url' => $this->urlGenerator->generate('widget_nivol_search', ['searchAll' => true]),
+                'data-url' => $this->urlGenerator->generate('widget_nivol_search'),
                 'data-min-length'=> 1,
                 'data-visible-properties'=> '["nivol", "lastName", "firstName"]',
                 'data-focus-first-result'=> true,
