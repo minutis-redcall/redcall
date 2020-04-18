@@ -235,6 +235,10 @@ form:
       length: 'Message length:'
       price: 'Estimated communication price:'
       multiple_answer: 'Volunteers can choose several answers'
+    nivols_search: 'Search by nivol'
+    toggle:
+      by_nivol: 'Fill by nivols'
+      by_filters: 'Back to filters selection'
   campaign:
     fields:
       label: 'Campaign name'

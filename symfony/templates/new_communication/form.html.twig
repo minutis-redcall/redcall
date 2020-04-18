@@ -1,7 +1,15 @@
 {% form_theme form 'new_communication/form_theme.html.twig' %}
 
-<span id="switch-by-nivol">Saisir une liste de nivol</span>
-
+<div class="float-right">
+    <p id="switch-by-nivol">
+        <span class="btn btn-link">{{ 'form.communication.toggle.by_nivol'|trans }}</span>
+    </p>
+    <p id="switch-by-filters" style="display: none">
+        <span class="btn btn-link">{{ 'form.communication.toggle.by_filters'| trans }}</span>
+    </p>
+</div>
+<br>
+<br>
 
 <div id="form-structures" class="{% if form.structures.children|length == 1 %}d-none{% endif %}">
     <div class="h4">
@@ -15,7 +23,7 @@
     {{ form_row(form.volunteers) }}
 </div>
 <div id="form-nivols" style="display: none">
-    <h4>Recherche par nivol</h4>
+    <h4>{{ 'form.communication.nivols_search'| trans }}</h4>
     {{ form_row(form.nivols) }}
 </div>
 
@@ -163,9 +171,11 @@
     });
 
 
-    $('#switch-by-nivol').click(function() {
-        $('#form-structures').fadeToggle();
-        $('#form-volunteers').fadeToggle();
-        $('#form-nivols').fadeToggle();
+    $('#switch-by-nivol, #switch-by-filters').click(function() {
+        $('#form-structures').fadeToggle(0);
+        $('#form-volunteers').fadeToggle(0);
+        $('#form-nivols').fadeToggle(0);
+        $('#switch-by-filters').fadeToggle(0);
+        $('#switch-by-nivol').fadeToggle(0);
     });
 </script>
