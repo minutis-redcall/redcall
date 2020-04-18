@@ -5,6 +5,13 @@ services:
     arguments:
       - '@Bundles\SandboxBundle\Manager\AnonymizeManager'
 
+  Bundles\SandboxBundle\Controller\FakeSmsController:
+    public: true
+    arguments:
+      - '@Bundles\SandboxBundle\Manager\FakeSmsManager'
+      - '@App\Manager\MessageManager'
+      - '@App\Manager\VolunteerManager'
+
   Bundles\SandboxBundle\Controller\FakeCallController:
     public: true
     arguments:

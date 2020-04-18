@@ -51,7 +51,7 @@ cat deploy/${ENV}/dotenv-migrate >> symfony/.env
 
     # Clear up everything
     kill -9 `ps ax|grep 3304|grep google_compute_engine|grep -v grep|awk '{print $1;}'`
-    gcloud compute instances stop ${GCP_BASTION_INSTANCE}
+    #gcloud compute instances stop ${GCP_BASTION_INSTANCE}
 )
 
 # Restoring current context

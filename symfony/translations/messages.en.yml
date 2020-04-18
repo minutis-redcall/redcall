@@ -164,6 +164,7 @@ campaign_status:
     title: Filter
     by_response: by response
     by_skill: by skill
+    by_unreachable: unreachable people
     or: or/and
   table:
     other: Other response

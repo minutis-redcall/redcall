@@ -93,6 +93,11 @@ class Message
     private $costs;
 
     /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $error;
+
+    /**
      * @ORM\Column(type="datetime")
      */
     private $updatedAt;
@@ -477,6 +482,18 @@ class Message
         return $this;
     }
 
+    public function getError(): ?string
+    {
+        return $this->error;
+    }
+
+    public function setError(?string $error): self
+    {
+        $this->error = $error;
+
+        return $this;
+    }
+
     public function getUpdatedAt(): \DateTimeInterface
     {
         return $this->updatedAt;
@@ -497,5 +514,18 @@ class Message
     public function getSignature(): string
     {
         return sha1(sprintf('%s%s', $this->getCode(), getenv('APP_SECRET')));
+    }
+
+    public function isReachable(): bool
+    {
+        switch ($this->communication->getType()) {
+            case Communication::TYPE_SMS:
+            case Communication::TYPE_CALL:
+                return boolval($this->volunteer->getPhoneNumber());
+            case Communication::TYPE_EMAIL:
+                return boolval($this->volunteer->getEmail());
+            default:
+                return false;
+        }
     }
 }

@@ -59,3 +59,13 @@
     </div>
 
 {% endmacro %}
+
+{% macro communicationIcon(communication) %}
+    {% if communication.type == constant('App\\Entity\\Communication::TYPE_SMS') %}
+        📱
+    {% elseif communication.type == constant('App\\Entity\\Communication::TYPE_CALL') %}
+        ☎️
+    {% else %}
+        📧
+    {% endif %}
+{% endmacro %}

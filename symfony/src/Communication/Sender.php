@@ -110,15 +110,19 @@ class Sender
             return;
         }
 
-        $messageId = $this->SMSProvider->send(
-            $volunteer->getPhoneNumber(),
-            $this->formatter->formatSMSContent($message),
-            ['message_id' => $message->getId()]
-        );
+        try {
+            $messageId = $this->SMSProvider->send(
+                $volunteer->getPhoneNumber(),
+                $this->formatter->formatSMSContent($message),
+                ['message_id' => $message->getId()]
+            );
 
-        if ($messageId) {
-            $message->setMessageId($messageId);
-            $message->setSent(true);
+            if ($messageId) {
+                $message->setMessageId($messageId);
+                $message->setSent(true);
+            }
+        } catch (\Exception $e) {
+            $message->setError($e->getMessage());
         }
 
         $this->entityManager->merge($message);
@@ -136,14 +140,18 @@ class Sender
             return;
         }
 
-        $messageId = $this->callProvider->send(
-            $volunteer->getPhoneNumber(),
-            ['message_id' => $message->getId()]
-        );
+        try {
+            $messageId = $this->callProvider->send(
+                $volunteer->getPhoneNumber(),
+                ['message_id' => $message->getId()]
+            );
 
-        if ($messageId) {
-            $message->setMessageId($messageId);
-            $message->setSent(true);
+            if ($messageId) {
+                $message->setMessageId($messageId);
+                $message->setSent(true);
+            }
+        } catch (\Exception $e) {
+            $message->setError($e->getMessage());
         }
 
         $this->entityManager->merge($message);
@@ -163,15 +171,19 @@ class Sender
             return;
         }
 
-        $this->emailProvider->send(
-            $message->getVolunteer()->getEmail(),
-            $message->getCommunication()->getSubject(),
-            $this->formatter->formatTextEmailContent($message),
-            $this->formatter->formatHtmlEmailContent($message)
-        );
+        try {
+            $this->emailProvider->send(
+                $message->getVolunteer()->getEmail(),
+                $message->getCommunication()->getSubject(),
+                $this->formatter->formatTextEmailContent($message),
+                $this->formatter->formatHtmlEmailContent($message)
+            );
 
-        $message->setMessageId(time());
-        $message->setSent(true);
+            $message->setMessageId(time());
+            $message->setSent(true);
+        } catch (\Exception $e) {
+            $message->setError($e->getMessage());
+        }
 
         $this->entityManager->merge($message);
         $this->entityManager->flush();

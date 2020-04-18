@@ -163,6 +163,7 @@ campaign_status:
     title: Filtrer
     by_response: par réponse
     by_skill: par compétence
+    by_unreachable: les personnes injoignables
     or: ou/et
   table:
     other: Autre réponse
