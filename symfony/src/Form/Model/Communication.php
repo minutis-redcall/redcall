@@ -36,10 +36,13 @@ class Communication
 
     /**
      * @var Collection
-     *
-     * @Assert\Count(min="1", minMessage="form.campaign.errors.volunteers.min")
      */
     public $volunteers;
+
+    /**
+     * @var Collection
+     */
+    public $nivols;
 
     /**
      * @var string
@@ -123,6 +126,11 @@ class Communication
                             ->addViolation();
                 }
             }
+        }
+
+        if(count($this->nivols) === 0 && count($this->volunteers) === 0) {
+            $context->buildViolation('form.communiation.errors.volunteers.min')
+            ->addViolation();
         }
     }
 }

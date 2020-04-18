@@ -135,7 +135,8 @@ class CommunicationManager
             $choiceKey++;
         }
 
-        foreach ($communicationModel->volunteers as $volunteer) {
+        $volunteers = array_unique(array_merge($communicationModel->volunteers, $communicationModel->nivols));
+        foreach ($volunteers as $volunteer) {
             /** @var Volunteer $volunteer */
             if (!$volunteer->isEnabled()) {
                 continue;

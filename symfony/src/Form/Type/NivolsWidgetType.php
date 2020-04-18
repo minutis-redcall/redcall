@@ -47,7 +47,6 @@ class NivolsWidgetType extends AbstractType
             ->addModelTransformer(new CallbackTransformer(
                 function (?array $volunteersAsArray) {
                     //TO ARRAY
-                    dump($volunteersAsArray);
                     return [
                         'nivols' => implode(',', array_map(function (Volunteer $volunteer) {
                             return $volunteer->getId();
