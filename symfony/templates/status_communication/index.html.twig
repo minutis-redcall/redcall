@@ -45,11 +45,7 @@
                         <li class="nav-item">
                             <a id="{{ communication.id }}-tab" data-toggle="tab" class="nav-link {{ key ?: 'active' }}"
                                href="#tab-{{ communication.id }}" role="tab" aria-controls="{{ communication.id }}">
-                                {% if communication.type == constant('App\\Entity\\Communication::TYPE_SMS') or communication.type == constant('App\\Entity\\Communication::TYPE_CALL') %}
-                                    ☎️
-                                {% else %}
-                                    📧
-                                {% endif %}
+                                {{ macros.communicationIcon(communication) }}
                                 {% if communication.label %}
                                     {{ communication.label }}
                                 {% else %}
@@ -77,11 +73,7 @@
                     {# Communication title #}
                     {# -------------------------------------------------------------------------------- #}
                     <h3 onclick="$('#change-communication-label-{{ communication.id }}').modal();">
-                        {% if communication.type == constant('App\\Entity\\Communication::TYPE_SMS') or communication.type == constant('App\\Entity\\Communication::TYPE_CALL') %}
-                            ☎️
-                        {% else %}
-                            📧
-                        {% endif %}
+                        {{ macros.communicationIcon(communication) }}
                         {% if communication.label %}
                             {{ communication.label }}
                         {% else %}
@@ -179,15 +171,19 @@
                     {% endif %}
 
                     {# -------------------------------------------------------------------------------- #}
-                    {# Filter by responses or skills #}
+                    {# Filter by responses or skills... #}
                     {# -------------------------------------------------------------------------------- #}
                     <div class="skip-line text-small">
                         {{ 'campaign_status.filter.title'|trans }}
                         <a href="#"
+                           id="link-filter-response-{{ communication.id }}"
                            onclick="$('#filter-response-{{ communication.id }}').modal(); return false;">{{ 'campaign_status.filter.by_response'|trans }}</a>
                         {{ 'campaign_status.filter.or'|trans }}
                         <a href="#"
+                           id="link-filter-skill-{{ communication.id }}"
                            onclick="$('#filter-skill-{{ communication.id }}').modal(); return false;">{{ 'campaign_status.filter.by_skill'|trans }}</a>
+                        {{ 'campaign_status.filter.or'|trans }}
+                        <a href="#" id="link-filter-unreachable-{{ communication.id }}" class="filter-unreachable" data-value="0">{{ 'campaign_status.filter.by_unreachable'|trans }}</a>
                     </div>
 
                     {# -------------------------------------------------------------------------------- #}
@@ -211,7 +207,8 @@
                             {% set suffix = communication.id ~ '-' ~ message.id %}
                             <tr id="row-{{ suffix|e('html_attr') }}"
                                 class="row-{{ communication.id }}"
-                                data-volunteer-id="{{ message.volunteer.id }}">
+                                data-volunteer-id="{{ message.volunteer.id }}"
+                                data-is-reachable="{{ message.reachable }}">
 
                                 {# Selection #}
                                 <td id="message-selected-{{ suffix|e('html_attr') }}"
@@ -498,7 +495,7 @@
                     <label class="switch">
                         <input type="checkbox"
                                data-toggle="toggle" data-onstyle="primary"
-                               class="form-check-input filter-action filter-response-{{ communication.id }} filter-action-{{ communication.id }}"
+                               class="form-check-input filter-action filter-response-{{ communication.id }} filter-response-{{ communication.id }} filter-action-{{ communication.id }}"
                                id="filter-is-choice-{{ choice.id }}-{{ communication.id }}"/>
                         <span class="slider"></span>
                     </label>
@@ -513,7 +510,7 @@
                 <label class="switch">
                     <input type="checkbox"
                            data-toggle="toggle" data-onstyle="primary"
-                           class="form-check-input filter-action filter-action-{{ communication.id }}"
+                           class="form-check-input filter-action filter-response-{{ communication.id }} filter-action-{{ communication.id }}"
                            id="filter-has-invalid-answer-{{ communication.id }}"/>
                     <span class="slider"></span>
                 </label>
@@ -535,7 +532,7 @@
                 <div class="form-check">
                     <label class="switch">
                         <input type="checkbox"
-                               class="form-check-input filter-action filter-action-{{ communication.id }}"
+                               class="form-check-input filter-action filter-skill-{{ communication.id }} filter-action-{{ communication.id }}"
                                id="filter-is-skill-{{ skill.id }}-{{ communication.id }}"/>
                         <span class="slider"></span>
                     </label>
@@ -703,12 +700,38 @@
              # answered "Yes")
              #}
             $.each(communicationIds, function (key, communicationId) {
-                {# if all checkbox unticked, is visible #}
-                var count = 0;
-                $('.filter-action-' + communicationId).each(function () {
-                    count += $(this).is(':checked');
+                {# counting number of filters ticked #}
+                var response = 0;
+                $('.filter-response-' + communicationId).each(function () {
+                    response += $(this).is(':checked');
                 });
-                if (count === 0) {
+
+                var skill = 0;
+                $('.filter-skill-' + communicationId).each(function () {
+                    skill += $(this).is(':checked');
+                });
+
+                var unreachable = $('#link-filter-unreachable-' + communicationId).data('value');
+
+                {# change links color to understand which filters are enabled #}
+                if (response) {
+                    $('#link-filter-response-' + communicationId).css('color', 'red');
+                } else {
+                    $('#link-filter-response-' + communicationId).css('color', '');
+                }
+                if (skill) {
+                    $('#link-filter-skill-' + communicationId).css('color', 'red');
+                } else {
+                    $('#link-filter-skill-' + communicationId).css('color', '');
+                }
+                if (unreachable) {
+                    $('#link-filter-unreachable-' + communicationId).css('color', 'red');
+                } else {
+                    $('#link-filter-unreachable-' + communicationId).css('color', '');
+                }
+
+                {# if no filter used, everything is visible #}
+                if (response + skill + unreachable === 0) {
                     $('.row-' + communicationId).fadeIn();
                     return true;
                 }
@@ -745,8 +768,14 @@
                         skillVisible = true;
                     }
 
+                    {# is visible if unreachable filter disabled or volunteer is reachable #}
+                    var unreachableVisible = true;
+                    if ($('#link-filter-unreachable-' + communicationId).data('value')) {
+                        unreachableVisible = !row.data('is-reachable');
+                    }
+
                     {# displays the row only if the 2 conditions above are true #}
-                    if (actionVisible && skillVisible) {
+                    if (actionVisible && skillVisible && unreachableVisible) {
                         row.fadeIn();
                     } else {
                         row.fadeOut();
@@ -760,6 +789,13 @@
             refreshVisibility();
         });
         refreshVisibility();
+
+        $('.filter-unreachable').click(function(e) {
+            e.preventDefault();
+            var that = $(this);
+            that.data('value', 1 - that.data('value'));
+            refreshVisibility();
+        });
 
         {# -------------------------------------------------------------------------------- #}
         {# Volunteer selection #}

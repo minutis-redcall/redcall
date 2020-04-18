@@ -515,4 +515,17 @@ class Message
     {
         return sha1(sprintf('%s%s', $this->getCode(), getenv('APP_SECRET')));
     }
+
+    public function isReachable(): bool
+    {
+        switch ($this->communication->getType()) {
+            case Communication::TYPE_SMS:
+            case Communication::TYPE_CALL:
+                return boolval($this->volunteer->getPhoneNumber());
+            case Communication::TYPE_EMAIL:
+                return boolval($this->volunteer->getEmail());
+            default:
+                return false;
+        }
+    }
 }
