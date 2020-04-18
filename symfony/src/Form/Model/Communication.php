@@ -129,7 +129,7 @@ class Communication
         }
 
         if(count($this->nivols) === 0 && count($this->volunteers) === 0) {
-            $context->buildViolation('form.communiation.errors.volunteers.min')
+            $context->buildViolation('form.campaign.errors.volunteers.min')
             ->addViolation();
         }
     }
