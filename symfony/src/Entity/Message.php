@@ -518,6 +518,10 @@ class Message
 
     public function isReachable(): bool
     {
+        if ($this->error) {
+            return false;
+        }
+
         switch ($this->communication->getType()) {
             case Communication::TYPE_SMS:
             case Communication::TYPE_CALL:
