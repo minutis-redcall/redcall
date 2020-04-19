@@ -181,4 +181,9 @@ class UserInformation
             return true;
         });
     }
+
+    public function isAdmin(): bool
+    {
+        return $this->user->isAdmin();
+    }
 }

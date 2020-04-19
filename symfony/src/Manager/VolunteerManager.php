@@ -41,14 +41,6 @@ class VolunteerManager
     }
 
     /**
-     * @return array
-     */
-    public function listVolunteerNivols(): array
-    {
-        return $this->volunteerRepository->listVolunteerNivols();
-    }
-
-    /**
      * @param string $nivol
      *
      * @return Volunteer|null
@@ -188,5 +180,37 @@ class VolunteerManager
     public function synchronizeWithPegass()
     {
         $this->volunteerRepository->synchronizeWithPegass();
+    }
+
+    /**
+     * @param array $nivols
+     *
+     * @return Volunteer[]
+     */
+    public function filterByNivolAndAccess(array $nivols): array
+    {
+       $user = $this->userInformationManager->findForCurrentUser();
+
+       if ($user->isAdmin()) {
+           return $this->volunteerRepository->filterByNivols($nivols);
+       }
+
+        return $this->volunteerRepository->filterByNivolsAndAccess($nivols, $user);
+    }
+
+    /**
+     * @param array $ids
+     *
+     * @return Volunteer[]
+     */
+    public function filterByIdAndAccess(array $ids): array
+    {
+        $user = $this->userInformationManager->findForCurrentUser();
+
+        if ($user->isAdmin()) {
+            return $this->volunteerRepository->filterByIds($ids);
+        }
+
+        return $this->volunteerRepository->filterByIdsAndAccess($ids, $user);
     }
 }

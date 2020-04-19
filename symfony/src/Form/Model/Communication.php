@@ -3,7 +3,6 @@
 namespace App\Form\Model;
 
 use App\Entity\Message;
-use App\Entity\Structure;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
@@ -120,31 +119,9 @@ class Communication
             }
         }
 
-        // Check that all selected volunteers appear in at least one selected structure
-        // @todo PERF KILLER
-        if (false) {
-            if ($this->structures && $this->volunteers) {
-                foreach ($this->volunteers as $volunteer) {
-                    $inStructures = false;
-                    foreach ($this->structures as $structure) {
-                        /** @var Structure $structure */
-                        if ($structure->getVolunteers()->contains($volunteer)) {
-                            $inStructures = true;
-                        }
-                    }
-
-                    if (!$inStructures) {
-                        $context->buildViolation('form.communication.errors.volunteer_not_in_structure')
-                            ->atPath('message')
-                            ->addViolation();
-                    }
-                }
-            }
-        }
-
-        if(count($this->nivols) === 0 && count($this->volunteers) === 0) {
+        if (0 === count($this->nivols) && 0 === count($this->volunteers)) {
             $context->buildViolation('form.campaign.errors.volunteers.min')
-            ->addViolation();
+                    ->addViolation();
         }
     }
 }
