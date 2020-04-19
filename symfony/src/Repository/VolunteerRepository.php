@@ -3,9 +3,11 @@
 namespace App\Repository;
 
 use App\Base\BaseRepository;
+use App\Entity\Structure;
 use App\Entity\UserInformation;
 use App\Entity\Volunteer;
 use Bundles\PasswordLoginBundle\Entity\User;
+use Bundles\PegassCrawlerBundle\Entity\Pegass;
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\ORM\OptimisticLockException;
@@ -279,6 +281,8 @@ class VolunteerRepository extends BaseRepository
             ->join('s.users', 'u')
             ->where('v.enabled = true')
             ->andWhere('u.id = :user')
+            ->andWhere('s.identifier <> :redcall')
+            ->setParameter('redcall', Structure::REDCALL_STRUCTURE)
             ->andWhere(
                 $qb->expr()->orX(
                     'v.email IS NULL or v.email = \'\'',
@@ -288,5 +292,29 @@ class VolunteerRepository extends BaseRepository
             ->setParameter('user', $user)
             ->getQuery()
             ->getResult();
+    }
+
+    public function synchronizeWithPegass()
+    {
+        foreach ([false, true] as $enabled) {
+            $qb = $this->createQueryBuilder('v');
+
+            $sub = $this->_em->createQueryBuilder()
+                ->select('p.identifier')
+                ->from(Pegass::class, 'p')
+                ->where('p.type = :type')
+                ->andWhere('p.enabled = :enabled');
+
+            $qb
+                ->setParameter('type', Pegass::TYPE_VOLUNTEER)
+                ->setParameter('enabled', $enabled);
+
+            $qb
+                ->update()
+                ->set('v.enabled', $enabled)
+                ->where($qb->expr()->in('v.identifier', $sub->getDQL()))
+                ->getQuery()
+                ->execute();
+        }
     }
 }

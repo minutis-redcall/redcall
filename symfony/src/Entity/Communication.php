@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Tools\GSM;
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Exception;
@@ -12,6 +13,7 @@ use Exception;
 class Communication
 {
     const TYPE_SMS   = 'sms';
+    const TYPE_CALL = 'call';
     const TYPE_EMAIL = 'email';
 
     /**
@@ -501,5 +503,30 @@ class Communication
         $this->volunteer = $volunteer;
 
         return $this;
+    }
+
+    /**
+     * @param string $body
+     *
+     * @return float
+     */
+    public function getEstimatedCost(string $body): float
+    {
+        $parts = GSM::getSMSParts($body);
+
+        $estimated = 0;
+        switch ($this->getType()) {
+            case self::TYPE_SMS:
+                $estimated = count($parts) * count($this->getMessages()) * Message::SMS_COST;
+                break;
+            case self::TYPE_CALL:
+                $estimated = count($this->getMessages()) * Message::CALL_COST;
+                break;
+            case self::TYPE_EMAIL:
+                $estimated = count($this->getMessages()) * Message::EMAIL_COST;
+                break;
+        }
+
+        return $estimated;
     }
 }

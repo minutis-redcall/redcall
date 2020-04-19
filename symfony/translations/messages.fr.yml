@@ -105,6 +105,7 @@ base:
   clear_selection: 'Effacer la sélection'
   wait: 'Un petit instant...'
   actions: 'Actions'
+  play: 'Ecouter'
 
 campaign:
   titles:
@@ -162,6 +163,7 @@ campaign_status:
     title: Filtrer
     by_response: par réponse
     by_skill: par compétence
+    by_unreachable: les personnes injoignables
     or: ou/et
   table:
     other: Autre réponse
@@ -193,10 +195,16 @@ new_communication:
 
 message:
   sms:
-    announcement: '%brand% à %hours%h%mins%:'
+    announcement: '%brand% à %hours%h%mins%.'
     how_to_answer_simple: Pour répondre, saisir le code de votre choix.
     how_to_answer_multiple: Pour répondre, saisir le(s) code(s) de votre choix, séparés par un espace.
     geo_location: 'Géolocalisation de votre équipe: %url%'
+  call:
+    announcement: '%brand% à %hours% heure %mins%.'
+    choices: 'Pour répondre "%answer%", tapez %code%.'
+    repeat: 'Pour réécouter le message, tapez 0.'
+    unknown: 'Réponse invalide.'
+    answer: 'Vous avez répondu : "%choice%". Merci pour votre participation.'
   email:
     announcement: '%brand% le %day%/%month%/%year% à %hours%h%mins%'
     how_to_answer_simple: 'Afin de donner votre réponse, veuillez cliquer sur le lien suivant : %url%'
@@ -212,6 +220,7 @@ form:
     fields:
       response_title: "Réponses"
       type_sms: 'Message urgent envoyé par SMS'
+      type_call: 'Message urgent envoyé par appel vocal'
       type_email: 'Message envoyé par email'
       geo_location: 'Les destinataires de ce message pourront se géo-localiser entre eux'
       structures: 'Structure(s) à déclencher'

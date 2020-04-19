@@ -106,6 +106,7 @@ base:
   clear_selection: 'Clear selection'
   wait: 'One moment...'
   actions: 'Actions'
+  play: 'Play'
 
 modal:
   change_color: Change color...
@@ -163,6 +164,7 @@ campaign_status:
     title: Filter
     by_response: by response
     by_skill: by skill
+    by_unreachable: unreachable people
     or: or/and
   table:
     other: Other response
@@ -198,6 +200,12 @@ message:
     how_to_answer_simple: Reply by giving your choice code.
     how_to_answer_multiple: Reply by giving your choice(s) code(s), separated by a space.
     geo_location: 'Geolocation of your crew: %url%'
+  call:
+    announcement: '%brand% at %hours% hours %mins%.'
+    choices: 'To answer "%answer%", press %code%.'
+    repeat: 'To repeat this message, press 0.'
+    unknown: 'Invalid answer.'
+    answer: 'You answered: "%choice%". Thank you for your participation.'
   email:
     announcement: '%brand% on %year%-%month%-%day% at %hours%h%mins%:'
     how_to_answer_simple: 'To give your answer, please click on the following link: %url%'
@@ -213,6 +221,7 @@ form:
     fields:
       response_title: "Responses"
       type_sms: Emergency message sent through SMS
+      type_call: Emergency message sent through a voice call
       type_email: Message sent by email
       geo_location: Message recipients will be able to geo locate each others
       structures: 'Structure(s) to call'

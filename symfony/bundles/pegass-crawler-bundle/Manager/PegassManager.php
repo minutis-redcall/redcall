@@ -85,6 +85,9 @@ class PegassManager
      */
     public function updateEntity(Pegass $entity, bool $fromCache)
     {
+        // Just in case entity would not be managed anymore
+        $entity = $this->pegassRepository->find($entity->getId());
+
         switch ($entity->getType()) {
             case Pegass::TYPE_AREA:
                 $this->updateArea($entity, $fromCache);
@@ -101,16 +104,6 @@ class PegassManager
         }
 
         $this->dispatchEvent($entity);
-    }
-
-    /**
-     * @param string $type
-     *
-     * @return array
-     */
-    public function listIdentifiers(string $type, bool $onlyEnabled = true): array
-    {
-        return $this->pegassRepository->listIdentifiers($type, $onlyEnabled);
     }
 
     /**
@@ -211,6 +204,7 @@ class PegassManager
 
         $entity->setContent($data);
         $entity->setUpdatedAt(new DateTime());
+
         $this->pegassRepository->save($entity);
 
         if (!isset($data['structuresFilles'])) {

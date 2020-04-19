@@ -60,14 +60,6 @@ class StructureManager
     }
 
     /**
-     * @return array
-     */
-    public function listStructureIdentifiers(): array
-    {
-        return $this->structureRepository->listStructureIdentifiers();
-    }
-
-    /**
      * @param string $identifier
      *
      * @throws NoResultException
@@ -218,5 +210,10 @@ class StructureManager
             }
             $this->structureRepository->save($structure);
         }
+    }
+
+    public function synchronizeWithPegass()
+    {
+        $this->structureRepository->synchronizeWithPegass();
     }
 }

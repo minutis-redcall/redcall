@@ -64,6 +64,7 @@ class CommunicationType extends AbstractType
                 'label'    => false,
                 'choices'  => [
                     'form.communication.fields.type_sms'   => Communication::TYPE_SMS,
+                    'form.communication.fields.type_call'   => Communication::TYPE_CALL,
                     'form.communication.fields.type_email' => Communication::TYPE_EMAIL,
                 ],
                 'expanded' => true,

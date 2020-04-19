@@ -43,6 +43,9 @@ security:
     # Webhooks (sms response received)
     - { path: '^/twilio', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
 
+    # Medias (generated voice calls)
+    - { path: '^/media', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
+
     # Unauthenticated identity management
     - { path: '^/connect', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
     - { path: '^/register', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }

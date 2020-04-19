@@ -2,26 +2,35 @@
 
 namespace Bundles\TwilioBundle\Command;
 
-use Bundles\TwilioBundle\SMS\Twilio;
+use Bundles\TwilioBundle\Manager\TwilioCallManager;
+use Bundles\TwilioBundle\Manager\TwilioMessageManager;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class PriceCommand extends Command
 {
     /**
-     * @var Twilio
+     * @var TwilioMessageManager
      */
-    private $twilio;
+    private $messageManager;
 
     /**
-     * @param Twilio $twilio
+     * @var TwilioCallManager
      */
-    public function __construct(Twilio $twilio)
+    private $callManager;
+
+    /**
+     * @param TwilioMessageManager $messageManager
+     * @param TwilioCallManager    $callManager
+     */
+    public function __construct(TwilioMessageManager $messageManager, TwilioCallManager $callManager)
     {
         parent::__construct();
 
-        $this->twilio = $twilio;
+        $this->messageManager = $messageManager;
+        $this->callManager = $callManager;
     }
 
     protected function configure()
@@ -30,7 +39,8 @@ class PriceCommand extends Command
 
         $this
             ->setName('twilio:price')
-            ->setDescription('Fetch missing SMS prices');
+            ->setDescription('Fetch missing SMS prices')
+            ->addArgument('retry', InputArgument::OPTIONAL, 'Number of retries on Twilio before skipping', 48);
     }
 
     /**
@@ -44,6 +54,12 @@ class PriceCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->twilio->fetchPrices();
+        $this->messageManager->fetchPrices(
+            $input->getArgument('retry')
+        );
+
+        $this->callManager->fetchPrices(
+            $input->getArgument('retry')
+        );
     }
 }

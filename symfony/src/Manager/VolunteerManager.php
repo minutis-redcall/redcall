@@ -184,4 +184,9 @@ class VolunteerManager
             $this->userInformationManager->findForCurrentUser()
         );
     }
+
+    public function synchronizeWithPegass()
+    {
+        $this->volunteerRepository->synchronizeWithPegass();
+    }
 }

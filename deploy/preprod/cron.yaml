@@ -13,4 +13,9 @@ cron:
   # * * * * * <path/to/the/project>/symfony/bin/console twilio:price
   - description: "Fetch missing message prices on Twilio"
     url: /cron/twilio-price
-    schedule: every 1 minutes
+    schedule: every 1 hours
+
+  # * * * * * <path/to/the/project>/symfony/bin/console media:clear
+  - description: "Remove epxired medias"
+    url: /cron/media-clear
+    schedule: every 24 hours

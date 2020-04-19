@@ -22,6 +22,8 @@ class Message
     const MAX_LENGTH_EMAIL = 5000;
 
     const SMS_COST = 0.05052;
+    const CALL_COST = 0.033;
+    const EMAIL_COST = 0.000375;
 
     /**
      * @ORM\Id()
@@ -89,6 +91,11 @@ class Message
      * @ORM\OneToMany(targetEntity="App\Entity\Cost", mappedBy="message")
      */
     private $costs;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $error;
 
     /**
      * @ORM\Column(type="datetime")
@@ -192,6 +199,7 @@ class Message
     {
         return !$this->sent && (
                 Communication::TYPE_SMS === $this->communication->getType() && $this->volunteer->getPhoneNumber() ||
+                Communication::TYPE_CALL === $this->communication->getType() && $this->volunteer->getPhoneNumber() ||
                 Communication::TYPE_EMAIL === $this->communication->getType() && $this->volunteer->getEmail()
             );
     }
@@ -474,6 +482,18 @@ class Message
         return $this;
     }
 
+    public function getError(): ?string
+    {
+        return $this->error;
+    }
+
+    public function setError(?string $error): self
+    {
+        $this->error = $error;
+
+        return $this;
+    }
+
     public function getUpdatedAt(): \DateTimeInterface
     {
         return $this->updatedAt;
@@ -494,5 +514,18 @@ class Message
     public function getSignature(): string
     {
         return sha1(sprintf('%s%s', $this->getCode(), getenv('APP_SECRET')));
+    }
+
+    public function isReachable(): bool
+    {
+        switch ($this->communication->getType()) {
+            case Communication::TYPE_SMS:
+            case Communication::TYPE_CALL:
+                return boolval($this->volunteer->getPhoneNumber());
+            case Communication::TYPE_EMAIL:
+                return boolval($this->volunteer->getEmail());
+            default:
+                return false;
+        }
     }
 }

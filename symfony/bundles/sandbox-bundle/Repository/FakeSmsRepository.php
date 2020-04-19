@@ -16,11 +16,6 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class FakeSmsRepository extends ServiceEntityRepository
 {
-    /**
-     * AnswerRepository constructor.
-     *
-     * @param ManagerRegistry $registry
-     */
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, FakeSms::class);
@@ -43,11 +38,6 @@ class FakeSmsRepository extends ServiceEntityRepository
 
     }
 
-    /**
-     * @param string $phoneNumber
-     *
-     * @return array
-     */
     public function findMessagesForPhoneNumber(string $phoneNumber): array
     {
         return $this->createQueryBuilder('s')
@@ -58,11 +48,6 @@ class FakeSmsRepository extends ServiceEntityRepository
                     ->getResult();
     }
 
-    /**
-     * @param Volunteer $volunteer
-     * @param string    $content
-     * @param string    $direction
-     */
     public function save(Volunteer $volunteer, string $content, string $direction)
     {
         $fakeSms = new FakeSms();
@@ -76,12 +61,6 @@ class FakeSmsRepository extends ServiceEntityRepository
         $this->_em->flush($fakeSms);
     }
 
-    /**
-     * @param string      $phoneNumber
-     * @param string|null $lastMessageId
-     *
-     * @return array
-     */
     public function findMessagesHavingIdGreaterThan(string $phoneNumber, ?string $lastMessageId): array
     {
         $builder = $this->createQueryBuilder('s')

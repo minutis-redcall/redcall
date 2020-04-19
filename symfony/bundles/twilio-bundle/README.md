@@ -1,20 +1,10 @@
 # Twilio Bundle
 
-Purpose of this bundle is to manage sending and receiving SMS in a way independent from your application logic. 
+Manage incoming and outgoing SMS and voice calls in your Symfony application.
 
-As SMS are expensive, we track everything by storing outbounds, inbounds, costs and delivery statuses. Your app is then free to use those information for business-related uses.
+## What is it?
 
-```
-+----+--------------------------------------+-----------+-------------+-------------+-------------+------------------------------------+-----------+----------+------+---------+
-| id | uuid                                 | direction | message     | from_number | to_number   | sid                                | status    | price    | unit | context |
-+----+--------------------------------------+-----------+-------------+-------------+-------------+------------------------------------+-----------+----------+------+---------+
-|  3 | 5e54a6a2-27db-448a-be4e-0b20199dc84d | outbound  | hello world | 33xxxxxxxxx | 33yyyyyyyyy | SMzjQJKmGYdz0cAf2rgymILNTv7PmhAPz7 | delivered | -0.07600 | USD  | []      |
-|  4 | 7303e136-e832-481b-a38b-f1603db9ba4a | outbound  | hello world | 33xxxxxxxxx | 33yyyyyyyyy | SM4FFJqdViROSy2hI33cUJeOcx1qkbn9lV | queued    | -0.07600 | USD  | []      |
-|  5 | e37abd25-b611-4bdb-99b1-85641892ff70 | outbound  | hello world | 33xxxxxxxxx | 33yyyyyyyyy | SMk9Sdf5JDMBp5GskUGns82y1Iw4o0hQQC | delivered | -0.07600 | USD  | []      |  6 | 6013617f-874f-4f44-9690-ec581d2f98fd | outbound  | hello world | 33xxxxxxxxx | 33yyyyyyyyy | SM7Ze1IZCMJkhi3pxV52UAhJy6385739m2 | delivered | -0.07600 | USD  | []      |
-|  7 | 8c821e08-4a75-46a6-9459-e8fe10503b3f | outbound  | hello world | 33xxxxxxxxx | 33yyyyyyyyy | SM5ZFPrZYC9YA4COVmrmrWDtfQPX0XMtme | delivered | -0.07600 | USD  | []      |
-|  8 | 0531a363-5dfa-4764-9365-6d638993ac02 | inbound   | Test        | 33yyyyyyyyy | 33xxxxxxxxx | SM5nAFUMkOFub9YuovkEbX0H5jBrJMETIw | receiving | -0.00750 | USD  | NULL    |
-+----+--------------------------------------+-----------+-------------+-------------+-------------+------------------------------------+-----------+----------+------+---------+
-```
+Purpose of this bundle is to manage sending and receiving SMS and voice calls in a way independent from your application logic.
 
 In order to stay KISS, this bundle does not handle cost optimizations (transliteration, character set filtering etc). You should implement them by yourself.
 
@@ -23,9 +13,21 @@ In order to stay KISS, this bundle does not handle cost optimizations (translite
 Set the following environment variables:
 
 ```
+WEBSITE_URL=your website base url, used to generate absolute urls without possible host injections
 TWILIO_ACCOUNT_SID=your account sid
 TWILIO_AUTH_TOKEN=your auth token
 TWILIO_NUMBER=the phone number to send and receive messages
+```
+
+Add the bundle in the project:
+
+```php
+// config/bundles.php
+
+return [
+    // ...
+    Bundles\TwilioBundle\TwilioBundle::class => ['all' => true],
+];
 ```
 
 Make sure Twilio webhooks are not behind your security firewall. 
@@ -48,217 +50,99 @@ twilio:
   type: annotation
 ```
 
-On Twilio website, to receive messages, add `<your website>/twilio/reply` in your "Phone Number"
-configuration page (example: `https://d7185d61.ngrok.io/twilio/reply`).
+Make sure to add the `twilio:price` command in your cron jobs (executed once every hour) in order to store prices associated with your usage.
 
-## Send an SMS and keep a log of it
+On Twilio console:
 
-Send sms through Twilio API. Once sent, an SMS log is stored along with some custom context for further uses. The `TwilioEvents::MESSAGE_SENT` event is also dispatched once message is sent to Twilio. 
+- to receive messages, add `<your website>/twilio/incoming-message` in your "Phone Number"
+configuration page (example: `https://d7185d61.ngrok.io/twilio/incoming-message`).
+
+- to receive voice calls, add `<your website>/twilio/incoming-call` in your "Phone Number"
+configuration page (example: `https://d7185d61.ngrok.io/twilio/incoming-call`).
+
+## Usage
+
+### Send a text message
 
 ```php
 <?php
 
 namespace App\Controller;
 
-use App\Entity\Communication;use Bundles\TwilioBundle\SMS\Twilio;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Bundles\TwilioBundle\Entity\TwilioMessage;
+use Bundles\TwilioBundle\Manager\TwilioMessageManager;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-class ReplyController extends BaseController
+/**
+ * @Route(path="demo", name="demo_")
+ */
+class DemoController
 {
-    /**
-     * @var Twilio
-     */
-    private $twilio;
+    /** @var TwilioMessageManager */
+    private $messageManager;
 
     /**
-     * @param Twilio $twilio
+     * @param TwilioMessageManager $messageManager
      */
-    public function __construct(Twilio $twilio)
+    public function __construct(TwilioMessageManager $messageManager)
     {
-        $this->twilio = $twilio;
+        $this->messageManager = $messageManager;
     }
 
     /**
-     * @Route(name="test", path="/test/{id}")
-     * @Template()
+     * @Route("/send-sms", name="sms")
      */
-    public function test(Communication $communication)
+    public function sendSms()
     {
-        $user = $this->getUser();
-        
-        // Send a simple message
-        $this->twilio->sendMessage('336123456789', 'Hello, world!');
+        /** @var TwilioMessage $twilioMessage */
+        $twilioMessage = $this->messageManager->sendMessage(
+            // Message recipient
+            '+33600000000',
 
-        // Attach a context for later use (billing, etc)
-        $this->twilio->sendMessage($user->getPhoneNumber(), 'Hello, world!', [
-            'communication_id' => $communication->getId(),
-        ]);
+            // Message to send (cost optimizations warning, take care to
+            // use transliteration to replace/remove special chars)
+            'This is a demo of SMS',
 
-        return new Response();
+            // Your application context (to bind this message to your app logic,
+            // will be sent back in events)
+            ['custom_data' => 42]
+        );
+
+        return new Response('Sms sent!');
     }
 }
 ```
 
-## Track every SMS delivery status
+### Receive a text message
 
-This bundle expose a secured delivery status webhook automatically, and that webook fires a `TwilioEvents::STATUS_UPDATED` event when that status is updated.
+In order to receive SMS, you need to subscribe to the `TwilioEvents::MESSAGE_RECEIVED` event.
 
 ```php
 <?php
 
 namespace App\EventSubscriber;
 
-use App\Manager\CommunicationManager;
 use Bundles\TwilioBundle\Entity\TwilioMessage;
-use Bundles\TwilioBundle\Event\TwilioEvent;
+use Bundles\TwilioBundle\Event\TwilioMessageEvent;
 use Bundles\TwilioBundle\TwilioEvents;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Twilio\TwiML\MessagingResponse;
 
-class TwilioSubscriber implements EventSubscriberInterface
+class DemoSubscriber implements EventSubscriberInterface
 {
     /**
-     * @var CommunicationManager
+     * @var LoggerInterface
      */
-    private $communicationManager;
+    private $logger;
 
-    /**
-     * @param CommunicationManager $communicationManager
-     */
-    public function __construct(CommunicationManager $communicationManager)
+    public function __construct(LoggerInterface $logger = null)
     {
-        $this->communicationManager = $communicationManager;
+        $this->logger = $logger ?: new NullLogger();
     }
 
-    /**
-     * @return array
-     */
-    public static function getSubscribedEvents()
-    {
-        return [
-            TwilioEvents::STATUS_UPDATED => 'onStatusUpdated',
-        ];
-    }
-
-    public function onStatusUpdated(TwilioEvent $event)
-    {
-        $twilioMessage = $event->getMessage();
-
-        $communicationId = $twilioMessage->getContext()['communication_id'] ?? null;
-        if (!$communicationId) {
-            return;
-        }
-
-        $communication = $this->communicationManager->find($communicationId);
-        if (!$communication) {
-            return;
-        }
-
-        if (TwilioMessage::STATUS_DELIVERED === $twilioMessage->getStatus()) {
-            // In order to add green on some progress bar?
-            $communication->incrementSuccessDelivery();
-        }
-    }
-}
-```
-
-## Get and store cost of all SMS sent
-
-Provides a command `twilio:price` that you need to cron in order to fetch and store sms prices. Works for sms sent, but also sms received. A `TwilioEvents::PRICE_UPDATED` event is then fired in order for your code to apply its own business on it. 
-
-```php
-<?php
-
-namespace App\EventSubscriber;
-
-use App\Manager\CommunicationManager;
-use Bundles\TwilioBundle\Event\TwilioEvent;
-use Bundles\TwilioBundle\TwilioEvents;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-
-class TwilioSubscriber implements EventSubscriberInterface
-{
-    /**
-     * @var CommunicationManager
-     */
-    private $communicationManager;
-
-    /**
-     * @param CommunicationManager $communicationManager
-     */
-    public function __construct(CommunicationManager $communicationManager)
-    {
-        $this->communicationManager = $communicationManager;
-    }
-
-    /**
-     * @return array
-     */
-    public static function getSubscribedEvents()
-    {
-        return [
-            TwilioEvents::PRICE_UPDATED => 'onPriceUpdated',
-        ];
-    }
-
-    /**
-     * @param TwilioEvent $event
-     */
-    public function onPriceUpdated(TwilioEvent $event)
-    {
-        $twilioMessage = $event->getMessage();
-
-        $communicationId = $twilioMessage->getContext()['communication_id'] ?? null;
-        if (!$communicationId) {
-            return;
-        }
-
-        $communication = $this->communicationManager->find($communicationId);
-        if (!$communication) {
-            return;
-        }
-
-        $communication->increaseCost(-1 * (float)$twilioMessage->getPrice());
-        $communication->setCurrency($twilioMessage->getUnit());
-
-        $this->communicationManager->save($communication);
-    }
-}
-```
-
-## Receive SMS replies
-
-Store the inbound message for further operations. Dispatch a symfony Event to notify of the new sms inbound.
-
-```php
-<?php
-
-namespace App\EventSubscriber;
-
-use App\Manager\CommunicationManager;
-use Bundles\TwilioBundle\Event\TwilioEvent;
-use Bundles\TwilioBundle\TwilioEvents;
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-
-class TwilioSubscriber implements EventSubscriberInterface
-{
-    /**
-     * @var CommunicationManager
-     */
-    private $communicationManager;
-
-    /**
-     * @param CommunicationManager $communicationManager
-     */
-    public function __construct(CommunicationManager $communicationManager)
-    {
-        $this->communicationManager = $communicationManager;
-    }
-
-    /**
-     * @return array
-     */
     public static function getSubscribedEvents()
     {
         return [
@@ -266,25 +150,217 @@ class TwilioSubscriber implements EventSubscriberInterface
         ];
     }
 
-    /**
-     * @param TwilioEvent $event
-     *
-     * @throws \Doctrine\ORM\NonUniqueResultException
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     */
-    public function onMessageReceived(TwilioEvent $event)
+    public function onMessageReceived(TwilioMessageEvent $event)
     {
+        /** @var TwilioMessage $twilioMessage */
         $twilioMessage = $event->getMessage();
 
-        $communicationId = $this->communicationManager->handleAnswer($twilioMessage->getFromNumber(), $twilioMessage->getMessage());
-        if ($communicationId) {
-            $twilioMessage->setContext(['communication_id' => $communicationId]);
-        }
+        // Do something with the message
+        $this->logger->info('Received a new SMS', [
+            'from' => $twilioMessage->getFromNumber(),
+            'body' => $twilioMessage->getMessage(),
+        ]);
+
+        // Optionally, reply to the message
+        $response = new MessagingResponse();
+        $message = $response->message('');
+        $message->body('Thank you for your answer!');
+        $event->setResponse($response);
     }
 }
 ```
 
-## Helpers
+### Send and receive voice calls
 
-- Provides a command `twilio:sms` to send an sms to any phone number
+To create an outgoing voice call, you should initialize it:
+
+```php
+<?php
+
+namespace App\Controller;
+
+use Bundles\TwilioBundle\Manager\TwilioCallManager;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+
+/**
+ * @Route(path="demo", name="demo_")
+ */
+class DemoController
+{
+    /** @var TwilioCallManager */
+    private $callManager;
+
+    /**
+     * @param TwilioCallManager    $callManager
+     */
+    public function __construct(TwilioCallManager $callManager)
+    {
+        $this->callManager = $callManager;
+    }
+
+    /**
+     * @Route("/initialize-call", name="call")
+     */
+    public function initializeCall()
+    {
+        $this->callManager->sendCall(
+            // Call recipient
+            '33600000000',
+            // Your application context (to bind this call to your app logic,
+            // will be sent back in events)
+            [
+                'workflow' => 'package_ready', 
+                'customer_name' => 'John Doe',
+            ]
+        );
+
+        return new Response('Call initialized!');
+    }
+}
+```
+
+You can then manage all other events in a subscriber:
+
+- `TwilioEvents::CALL_RECEIVED` for incoming voice calls
+- `TwilioEvents::CALL_ESTABLISHED` for outgoing voice calls
+- `TwilioEvents::CALL_KEY_PRESSED` for any interaction needed
+
+```php
+<?php
+
+namespace App\EventSubscriber;
+
+use Bundles\TwilioBundle\Entity\TwilioCall;
+use Bundles\TwilioBundle\Event\TwilioCallEvent;
+use Bundles\TwilioBundle\TwilioEvents;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Twilio\TwiML\VoiceResponse;
+
+class DemoSubscriber implements EventSubscriberInterface
+{
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    public function __construct(LoggerInterface $logger = null)
+    {
+        $this->logger = $logger ?: new NullLogger();
+    }
+
+    public static function getSubscribedEvents()
+    {
+        return [
+            TwilioEvents::CALL_ESTABLISHED => 'onCallEstablished',
+            TwilioEvents::CALL_RECEIVED => 'onCallReceived',
+            TwilioEvents::CALL_KEY_PRESSED => 'onCallEstablished',
+        ];
+    }
+
+    public function onCallEstablished(TwilioCallEvent $event)
+    {
+        /** @var TwilioCall $twilioCall */
+        $twilioCall = $event->getCall();
+
+        $this->logger->info('Established a new ongoing call', [
+            'from' => $twilioCall->getFromNumber(),
+            'context' => $twilioCall->getContext(),
+        ]);
+
+        $customerName = $twilioCall->getContext()['customer_name'];
+
+        // A response is needed otherwise Twilio will hang up
+        $response = new VoiceResponse();
+        $response->say(sprintf('Good day %s!', $customerName));
+        $response->pause(['length' => 1]);
+        $response->say('Your package is now ready to be delivered.');
+
+        $gather = $response->gather(['numDigits' => 1]);
+        $gather->say('Let us know if you are home now by pressing 1, otherwise, press 2.');
+
+        $event->setResponse($response);
+    }
+
+    public function onCallReceived(TwilioCallEvent $event)
+    {
+        /** @var TwilioCall $twilioCall */
+        $twilioCall = $event->getCall();
+
+        $this->logger->info('Received an incoming call', [
+            'from' => $twilioCall->getFromNumber(),
+            'context' => $twilioCall->getContext(),
+            'digit' => $event->getKeyPressed(),
+        ]);
+
+        $twilioCall->setContext([
+            'some_custom_data' => 42,
+            'workflow' => 'ask_delivery_status',
+        ]);
+
+        $response = new VoiceResponse();
+        $response->say('Welcome to our delivery service.');
+        $response->pause(['length' => 1]);
+        $gather = $response->gather(['numDigits' => 12]);
+        $gather->say('Please press the 12 digits of your tracking number.');
+
+        $event->setResponse($response);
+    }
+
+    public function onKeyPressed(TwilioCallEvent $event)
+    {
+        /** @var TwilioCall $twilioCall */
+        $twilioCall = $event->getCall();
+
+        // Do something with the call
+        $this->logger->info('Received a new key press', [
+            'from' => $twilioCall->getFromNumber(),
+            'context' => $twilioCall->getContext(),
+            'digit' => $event->getKeyPressed(),
+        ]);
+
+        $response = new VoiceResponse();
+
+        // Answer differently according to what you've put in the context
+        if ('ask_delivery_status' === $twilioCall->getContext()['workflow']) {
+
+            // ...
+
+        }
+
+        if ('package_ready' === $twilioCall->getContext()['workflow']) {
+            switch ($event->getKeyPressed()) {
+                case 1:
+                    $response->say('Okay! We are advising our driver to deliver your package now.');
+                    break;
+                case 2:
+                    $response->say('Okay! We will call you back tomorrow, thank you.');
+                    break;
+                default:
+                    $response->say('Sorry, we did not understand this answer.');
+                    break;
+            }
+        }
+
+        $event->setResponse($response);
+    }
+}
+```
+
+### Price tracking
+
+With Twilio, all costs are asynchronous, you can't know how much costed a call or
+a message when you trigger it. Thus, there is a command that try to fetch prices
+for every message or call SIDs known by the application.
+
+In order to handle prices on your application, you can add the `twilio:price`
+command in your cron jobs, ran every hour. Prices will be fetched 48 times for
+each SIDs for which prices are unknown.
+
+You can then subscribe to the following events if you want to bind those costs
+to your application logic (billing etc):
+
+- `TwilioEvents::MESSAGE_PRICE_UPDATED` to get the TwilioMessage for which price is available
+- `TwilioEvents::CALL_PRICE_UPDATED` to get the TwilioCall for which the price is available

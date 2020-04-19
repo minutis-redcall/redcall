@@ -16,6 +16,14 @@ sandbox:
     send: 'Send'
     clear: 'Remove all messages'
 
+  fake_call:
+    button: 'Calls Simulator'
+    title: 'Calls Simulator - List of recipients'
+    read: '+%phoneNumber% calls (%name%)'
+    your_message: 'Digit'
+    send: 'Send'
+    clear: 'Remove all calls'
+
   fake_email:
     button: 'Email Simulator'
     title: 'Email Simulator - List of recipients'
