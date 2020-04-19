@@ -243,6 +243,10 @@ form:
       length: 'Longueur du message :'
       price: 'Le prix de la communication est estimé à :'
       multiple_answer: 'Les destinataires peuvent choisir plusieurs réponses'
+    nivols_search: 'Recherche par nivol'
+    toggle:
+      by_nivol: 'Saisir une liste de nivol'
+      by_filters: 'Revenir aux filtres de sélection'
   campaign:
     fields:
       label: 'Nom du déclenchement'

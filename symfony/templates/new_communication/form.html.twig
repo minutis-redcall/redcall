@@ -1,14 +1,32 @@
 {% form_theme form 'new_communication/form_theme.html.twig' %}
 
-<div class="{% if form.structures.children|length == 1 %}d-none{% endif %}">
+<div class="float-right">
+    <p id="switch-by-nivol">
+        <span class="btn btn-link">{{ 'form.communication.toggle.by_nivol'|trans }}</span>
+    </p>
+    <p id="switch-by-filters" style="display: none">
+        <span class="btn btn-link">{{ 'form.communication.toggle.by_filters'| trans }}</span>
+    </p>
+</div>
+<br>
+<br>
+
+<div id="form-structures" class="{% if form.structures.children|length == 1 %}d-none{% endif %}">
     <div class="h4">
         {{ 'form.communication.fields.structures'|trans }}
     </div>
 
-    {{ form_row(form.structures) }}
+        {{ form_row(form.structures) }}
 </div>
 
-{{ form_row(form.volunteers) }}
+<div id="form-volunteers">
+    {{ form_row(form.volunteers) }}
+</div>
+<div id="form-nivols" style="display: none">
+    <h4>{{ 'form.communication.nivols_search'| trans }}</h4>
+    {{ form_row(form.nivols) }}
+</div>
+
 
 {% set max_length_sms = constant('App\\Entity\\Message::MAX_LENGTH_SMS') %}
 {% set max_length_email = constant('App\\Entity\\Message::MAX_LENGTH_EMAIL') %}
@@ -176,6 +194,14 @@
     $('form').submit(function () {
         $('#form-container').addClass('d-none');
         $('#spinner-container').removeClass('d-none');
+    });
+
+    $('#switch-by-nivol, #switch-by-filters').click(function() {
+        $('#form-structures').fadeToggle(0);
+        $('#form-volunteers').fadeToggle(0);
+        $('#form-nivols').fadeToggle(0);
+        $('#switch-by-filters').fadeToggle(0);
+        $('#switch-by-nivol').fadeToggle(0);
     });
 
     {# Preview voice calls #}
