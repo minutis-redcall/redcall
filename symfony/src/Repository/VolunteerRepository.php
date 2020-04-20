@@ -356,4 +356,29 @@ class VolunteerRepository extends BaseRepository
             ->getQuery()
             ->getResult();
     }
+
+    public function filterInvalidNivols(array $nivols): array
+    {
+        $valid = $this->createVolunteersQueryBuilder(false)
+            ->select('v.nivol')
+            ->andWhere('v.nivol IN (:nivols)')
+            ->setParameter('nivols', $nivols)
+            ->getQuery()
+            ->getArrayResult();
+
+        return array_diff($nivols, array_column($valid, 'nivol'));
+    }
+
+    public function filterDisabledNivols(array $nivols): array
+    {
+        $disabled = $this->createVolunteersQueryBuilder(false)
+            ->select('v.nivol')
+            ->andWhere('v.nivol IN (:nivols)')
+            ->setParameter('nivols', $nivols)
+            ->andWhere('v.enabled = false')
+            ->getQuery()
+            ->getArrayResult();
+
+        return array_column($disabled, 'nivol');
+    }
 }

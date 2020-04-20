@@ -192,6 +192,11 @@ campaign_status:
 new_communication:
   title: Ecrire un nouveau message
   subtitle: 'Dans le cadre du déclenchement "%label%"'
+  classify:
+    invalid: '%nbr% nivols n''existent pas'
+    disabled: '%nbr% nivols sont rattachés à des volontaires desactivés'
+    inaccessible: '%nbr% nivols appartiennent à des structures auxquelles vous n''êtes pas rattaché(e)'
+    valid: '%nbr% nivols sont valides'
 
 message:
   sms:
