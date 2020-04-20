@@ -213,4 +213,30 @@ class VolunteerManager
 
         return $this->volunteerRepository->filterByIdsAndAccess($ids, $user);
     }
+
+    public function classifyNivols(array $nivols): array
+    {
+        $user = $this->userInformationManager->findForCurrentUser();
+
+        $accessibles = array_map(function(Volunteer $volunteer) {
+            return $volunteer->getNivol();
+        }, $this->filterByNivolAndAccess($nivols));
+
+        if ($user->isAdmin()) {
+            $inaccessibles = [];
+        } else {
+            $all = array_map(function(Volunteer $volunteer) {
+                return $volunteer->getNivol();
+            }, $this->volunteerRepository->filterByNivols($nivols));
+
+            $inaccessibles = array_diff($all, $accessibles);
+        }
+
+        return [
+            'invalid' => $this->volunteerRepository->filterInvalidNivols($nivols),
+            'disabled' => $this->volunteerRepository->filterDisabledNivols($nivols),
+            'inaccessible' => $inaccessibles,
+            'valid' => $accessibles,
+        ];
+    }
 }

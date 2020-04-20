@@ -7,8 +7,8 @@ use App\Entity\Campaign;
 use App\Entity\Structure;
 use App\Entity\UserInformation;
 use App\Entity\Volunteer;
-use App\Form\Type\VolunteerWidgetType;
 use App\Form\Type\StructureWidgetType;
+use App\Form\Type\VolunteerWidgetType;
 use App\Manager\CampaignManager;
 use App\Manager\PrefilledAnswersManager;
 use App\Manager\StructureManager;
@@ -17,6 +17,7 @@ use App\Manager\VolunteerManager;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Translation\TranslatorInterface;
@@ -214,5 +215,22 @@ class WidgetController extends BaseController
         }
 
         return $this->json($results);
+    }
+
+    /**
+     * @Route(path="/nivols", name="nivols")
+     */
+    public function nivols(Request $request)
+    {
+        $nivols = array_unique(array_filter(preg_split('/[^0-9a-z*]/ui', $request->get('nivols'))));
+
+        $view = $this->renderView('widget/nivols.html.twig', [
+            'classified' => $this->volunteerManager->classifyNivols($nivols),
+        ]);
+
+        return new JsonResponse([
+            'success' => true,
+            'view' => $view,
+        ]);
     }
 }

@@ -193,6 +193,11 @@ campaign_status:
 new_communication:
   title: Write a new message
   subtitle: 'As part of campaign "%label%"'
+  classify:
+    invalid: '%nbr% nivols do not exist'
+    disabled: '%nbr% nivols are bound to disabled volunteers'
+    inaccessible: '%nbr% nivols are bound to volunteers that are not in your perimeter'
+    valid: '%nbr% nivols are valid'
 
 message:
   sms:

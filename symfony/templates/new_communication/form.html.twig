@@ -1,6 +1,6 @@
 {% form_theme form 'new_communication/form_theme.html.twig' %}
 
-<div class="float-right">
+<div class="text-right">
     <p id="switch-by-nivol">
         <span class="btn btn-link">{{ 'form.communication.toggle.by_nivol'|trans }}</span>
     </p>
@@ -8,25 +8,23 @@
         <span class="btn btn-link">{{ 'form.communication.toggle.by_filters'| trans }}</span>
     </p>
 </div>
-<br>
-<br>
 
 <div id="form-structures" class="{% if form.structures.children|length == 1 %}d-none{% endif %}">
     <div class="h4">
         {{ 'form.communication.fields.structures'|trans }}
     </div>
 
-        {{ form_row(form.structures) }}
+    {{ form_row(form.structures) }}
 </div>
 
 <div id="form-volunteers">
     {{ form_row(form.volunteers) }}
 </div>
-<div id="form-nivols" style="display: none">
+<div id="form-nivols" style="display: none;">
     <h4>{{ 'form.communication.nivols_search'| trans }}</h4>
     {{ form_row(form.nivols) }}
+    <div id="form-nivols-result"></div>
 </div>
-
 
 {% set max_length_sms = constant('App\\Entity\\Message::MAX_LENGTH_SMS') %}
 {% set max_length_email = constant('App\\Entity\\Message::MAX_LENGTH_EMAIL') %}
@@ -215,6 +213,23 @@
             }
             $('#message-play').removeProp('disabled');
             $('#message-play').html("{{ 'base.play'|trans }}");
+        });
+    });
+
+    $(document).ready(function() {
+        var timeout = null;
+        $('#{{ form.nivols.vars.id }} textarea').keyup(function() {
+            var that = $(this);
+            if (timeout) {
+                clearTimeout(timeout);
+            }
+            timeout = setTimeout(function() {
+                $.post('{{ path('widget_nivols') }}', {nivols: that.val()}, function (data) {
+                    if (data.success) {
+                        $('#form-nivols-result').html(data.view);
+                    }
+                });
+            }, 500);
         });
     });
 
