@@ -95,11 +95,9 @@ class VolunteersType extends AbstractType
                     ];
                 },
                 function (?array $volunteersAsIds) {
-                    return array_filter(array_map(function ($volunteerId) {
-                        if ($volunteerId) {
-                            return $this->volunteerManager->find($volunteerId);
-                        }
-                    }, explode(',', strval($volunteersAsIds['volunteers']))));
+                    $ids = explode(',', strval($volunteersAsIds['volunteers']));
+
+                    return $this->volunteerManager->filterByIdAndAccess($ids);
                 }
             ));
     }

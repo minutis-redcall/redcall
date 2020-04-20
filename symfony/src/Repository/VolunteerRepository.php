@@ -10,6 +10,7 @@ use Bundles\PasswordLoginBundle\Entity\User;
 use Bundles\PegassCrawlerBundle\Entity\Pegass;
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\Common\Persistence\Mapping\MappingException;
+use Doctrine\DBAL\Connection;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\QueryBuilder;
@@ -26,19 +27,25 @@ class VolunteerRepository extends BaseRepository
         parent::__construct($registry, Volunteer::class);
     }
 
-    /**
-     * @param array $volunteerIds
-     *
-     * @return Volunteer[]
-     */
-    public function findByIds(array $volunteerIds)
+    private function createVolunteersQueryBuilder(bool $enabled = true): QueryBuilder
     {
-        return $this
-            ->createQueryBuilder('v')
-            ->andWhere('v.id IN (:ids)')
-            ->setParameter('ids', $volunteerIds)
-            ->getQuery()
-            ->getResult();
+        $qb = $this->createQueryBuilder('v')
+            ->distinct();
+
+        if ($enabled) {
+            $qb->andWhere('v.enabled = true');
+        }
+
+        return $qb;
+    }
+
+    private function createAccessibleVolunteersQueryBuilder(UserInformation $user, bool $enabled = true): QueryBuilder
+    {
+        return $this->createVolunteersQueryBuilder($enabled)
+            ->join('v.structures', 's')
+            ->join('s.users', 'u')
+            ->andWhere('u.id = :user')
+            ->setParameter('user', $user);
     }
 
     /**
@@ -98,19 +105,6 @@ class VolunteerRepository extends BaseRepository
     }
 
     /**
-     * @return array
-     */
-    public function listVolunteerNivols(): array
-    {
-        $rows = $this->createQueryBuilder('v')
-                     ->select('v.nivol')
-                     ->getQuery()
-                     ->getArrayResult();
-
-        return array_column($rows, 'nivol');
-    }
-
-    /**
      * @param $nivol
      *
      * @return Volunteer|null
@@ -145,15 +139,7 @@ class VolunteerRepository extends BaseRepository
      */
     public function searchForUserQueryBuilder(UserInformation $user, ?string $keyword): QueryBuilder
     {
-        $qb = $this->createQueryBuilder('v');
-
-        $qb
-            ->join('v.structures', 's')
-            ->join('s.users', 'u')
-            ->where('v.enabled = true')
-            ->andWhere('u.id = :user')
-            ->setParameter('user', $user)
-            ->distinct();
+        $qb = $this->createAccessibleVolunteersQueryBuilder($user, false);
 
         if ($keyword) {
             $qb
@@ -196,12 +182,11 @@ class VolunteerRepository extends BaseRepository
      */
     public function searchAllQueryBuilder(?string $keyword): QueryBuilder
     {
-        $qb = $this->createQueryBuilder('v')
-            ->distinct();
+        $qb = $this->createVolunteersQueryBuilder(false);
 
         if ($keyword) {
             $qb
-                ->where(
+                ->andWhere(
                     $qb->expr()->orX(
                         'v.nivol LIKE :keyword',
                         'v.firstName LIKE :keyword',
@@ -275,12 +260,9 @@ class VolunteerRepository extends BaseRepository
      */
     public function getIssues(UserInformation $user): array
     {
-        $qb = $this->createQueryBuilder('v');
+        $qb = $this->createAccessibleVolunteersQueryBuilder($user);
 
-        return $qb->join('v.structures', 's')
-            ->join('s.users', 'u')
-            ->where('v.enabled = true')
-            ->andWhere('u.id = :user')
+        return $qb
             ->andWhere('s.identifier <> :redcall')
             ->setParameter('redcall', Structure::REDCALL_STRUCTURE)
             ->andWhere(
@@ -289,7 +271,6 @@ class VolunteerRepository extends BaseRepository
                     'v.phoneNumber IS NULL or v.phoneNumber = \'\''
                 )
             )
-            ->setParameter('user', $user)
             ->getQuery()
             ->getResult();
     }
@@ -316,5 +297,63 @@ class VolunteerRepository extends BaseRepository
                 ->getQuery()
                 ->execute();
         }
+    }
+
+    /**
+     * @param array $nivols
+     *
+     * @return Volunteer[]
+     */
+    public function filterByNivols(array $nivols): array
+    {
+        return $this->createVolunteersQueryBuilder()
+            ->andWhere('v.nivol IN (:nivols)')
+            ->setParameter('nivols', $nivols, Connection::PARAM_STR_ARRAY)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @param array           $nivols
+     * @param UserInformation $user
+     *
+     * @return Volunteer[]
+     */
+    public function filterByNivolsAndAccess(array $nivols, UserInformation $user): array
+    {
+        return $this->createAccessibleVolunteersQueryBuilder($user)
+            ->andWhere('v.nivol IN (:nivols)')
+            ->setParameter('nivols', $nivols, Connection::PARAM_STR_ARRAY)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @param array $nivols
+     *
+     * @return Volunteer[]
+     */
+    public function filterByIds(array $ids): array
+    {
+        return $this->createVolunteersQueryBuilder()
+            ->andWhere('v.id IN (:ids)')
+            ->setParameter('ids', $ids, Connection::PARAM_INT_ARRAY)
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * @param array           $ids
+     * @param UserInformation $user
+     *
+     * @return Volunteer[]
+     */
+    public function filterByIdsAndAccess(array $ids, UserInformation $user): array
+    {
+        return $this->createAccessibleVolunteersQueryBuilder($user)
+            ->andWhere('v.id IN (:ids)')
+            ->setParameter('ids', $ids, Connection::PARAM_INT_ARRAY)
+            ->getQuery()
+            ->getResult();
     }
 }

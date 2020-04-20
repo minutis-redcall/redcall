@@ -244,7 +244,8 @@ form:
       length: 'Message length:'
       price: 'Estimated communication price:'
       multiple_answer: 'Volunteers can choose several answers'
-    nivols_search: 'Search by nivol'
+    nivols_search: 'Copy/paste a list of nivols'
+    nivols_separator: 'You can use any separator you want.'
     toggle:
       by_nivol: 'Fill by nivols'
       by_filters: 'Back to filters selection'
