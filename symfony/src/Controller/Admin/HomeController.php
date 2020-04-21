@@ -3,7 +3,6 @@
 namespace App\Controller\Admin;
 
 use App\Base\BaseController;
-use App\Manager\StructureManager;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -12,25 +11,10 @@ use Symfony\Component\Routing\Annotation\Route;
 class HomeController extends BaseController
 {
     /**
-     * @var StructureManager
-     */
-    private $structureManager;
-
-    /**
-     * @param StructureManager $structureManager
-     */
-    public function __construct(StructureManager $structureManager)
-    {
-        $this->structureManager = $structureManager;
-    }
-
-    /**
      * @Route(name="home")
      */
     public function indexAction()
     {
-        $this->structureManager->createRedCallStructure();
-
         return $this->render('admin/home.html.twig');
     }
 }

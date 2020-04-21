@@ -128,16 +128,6 @@ class VolunteerType extends AbstractType
                     ]);
             }
         });
-
-        if (!$this->security->isGranted('ROLE_ADMIN')) {
-            $builder->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event) {
-                /** @var Volunteer $volunteer */
-                $volunteer = $event->getData();
-                if ($this->userInformationManager->findOneByNivol($volunteer->getNivol())) {
-                    $volunteer->addStructure($this->structureManager->findOneByIdentifier(Structure::REDCALL_STRUCTURE));
-                }
-            });
-        }
     }
 
     /**

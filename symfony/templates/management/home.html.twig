@@ -20,9 +20,7 @@
             <p>{{ 'management.current_structures'|trans }}</p>
 
             {% for structure in user.structures %}
-                {% if not structure.isRedCall %}
-                    <p>{{ structure.name }}</p>
-                {% endif %}
+                <p>{{ structure.name }}</p>
             {% endfor %}
 
             {% if is_redcross %}

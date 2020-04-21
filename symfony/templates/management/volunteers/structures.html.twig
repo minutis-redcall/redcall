@@ -13,16 +13,14 @@
         <table class="table">
             <tbody>
             {% for structure in volunteer.structures %}
-                {% if not structure.isRedCall %}
-                    <tr>
-                        <td>{{ structure.displayName }}</td>
-                        <td>
-                            <a href="{{ path('management_volunteers_delete_structure', {volunteerId: volunteer.id, structureId: structure.id, csrf: csrf_token('volunteer')} ) }}" class="btn btn-danger">
-                                {{ 'base.button.delete'|trans }}
-                            </a>
-                        </td>
-                    </tr>
-                {% endif %}
+                <tr>
+                    <td>{{ structure.displayName }}</td>
+                    <td>
+                        <a href="{{ path('management_volunteers_delete_structure', {volunteerId: volunteer.id, structureId: structure.id, csrf: csrf_token('volunteer')} ) }}" class="btn btn-danger">
+                            {{ 'base.button.delete'|trans }}
+                        </a>
+                    </td>
+                </tr>
             {% endfor %}
             </tbody>
         </table>

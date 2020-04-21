@@ -236,9 +236,7 @@ class StructureRepository extends BaseRepository
      */
     public function getStructuresForUserQueryBuilder(UserInformation $userInformation): QueryBuilder
     {
-        return $this->getStructuresForAdminQueryBuilder($userInformation)
-            ->andWhere('s.identifier <> :redcall')
-            ->setParameter('redcall', Structure::REDCALL_STRUCTURE);
+        return $this->getStructuresForAdminQueryBuilder($userInformation);
     }
 
     /**
@@ -249,9 +247,7 @@ class StructureRepository extends BaseRepository
     public function searchAllQueryBuilder(?string $criteria): QueryBuilder
     {
         $qb = $this
-            ->createQueryBuilder('s')
-            ->where('s.identifier <> :redcall')
-            ->setParameter('redcall', Structure::REDCALL_STRUCTURE);
+            ->createQueryBuilder('s');
 
         if ($criteria) {
             $qb->andWhere('s.identifier LIKE :criteria OR s.name LIKE :criteria')
@@ -290,8 +286,6 @@ class StructureRepository extends BaseRepository
             ->join('s.users', 'u')
             ->where('u.id = :user_id')
             ->setParameter('user_id', $user->getId())
-            ->andWhere('s.identifier <> :redcall')
-            ->setParameter('redcall', Structure::REDCALL_STRUCTURE)
         ;
 
         if ($criteria) {

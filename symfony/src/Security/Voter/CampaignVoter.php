@@ -62,9 +62,6 @@ class CampaignVoter extends Voter
         $campaign = $subject;
 
         foreach ($campaign->getStructures() as $structure) {
-            if (0 == $structure->getIdentifier()) {
-                continue;
-            }
             if ($userInformation->getStructures()->contains($structure)) {
                 return true;
             }
