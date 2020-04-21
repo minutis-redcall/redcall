@@ -86,6 +86,22 @@ class PegassController extends BaseController
     }
 
     /**
+     * @Route(name="list_users", path="list-users")
+     */
+    public function userList()
+    {
+        $users = $this->userInformationManager->findAll();
+
+        $list = array_filter(array_map(function(UserInformation $user) {
+            return $user->getNivol();
+        }, $users));
+
+        return $this->render('admin/pegass/user_list.html.twig', [
+            'list' => $list,
+        ]);
+    }
+
+    /**
      * @Route(name="update", path="update/{csrf}/{id}")
      */
     public function updateNivol(Request $request, string $csrf, UserInformation $userInformation)
