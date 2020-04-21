@@ -77,7 +77,7 @@ class TwilioSubscriber implements EventSubscriberInterface
             return;
         }
 
-        $this->costManager->saveMessageCost($twilioMessage, $message);
+        $this->costManager->saveMessageCost($event->getMessage(), $message);
     }
 
     /**
