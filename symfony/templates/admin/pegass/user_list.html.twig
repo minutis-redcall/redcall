@@ -1,0 +1,22 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    <div class="col-md-12 jumbotron">
+
+        <h3>{{ 'admin.pegass.list_users'|trans }}</h3>
+
+        <br/>
+        <p>{{ 'admin.pegass.list_users_explain'|trans }}</p>
+        <br/>
+
+        <div class="form-group">
+            <textarea class="form-control" rows="15">{{ list|join(', ') }}</textarea>
+        </div>
+
+        <a href="{{ path('password_login_admin_list') }}"
+           class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+
+    </div>
+
+{% endblock %}

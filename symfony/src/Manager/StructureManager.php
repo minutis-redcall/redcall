@@ -18,24 +18,17 @@ class StructureManager
     private $userInformationManager;
 
     /**
-     * @var VolunteerManager
-     */
-    private $volunteerManager;
-
-    /**
      * @var StructureRepository
      */
     private $structureRepository;
 
     /**
      * @param UserInformationManager $userInformationManager
-     * @param VolunteerManager       $volunteerManager
      * @param StructureRepository    $structureRepository
      */
-    public function __construct(UserInformationManager $userInformationManager, VolunteerManager $volunteerManager, StructureRepository $structureRepository)
+    public function __construct(UserInformationManager $userInformationManager, StructureRepository $structureRepository)
     {
         $this->userInformationManager = $userInformationManager;
-        $this->volunteerManager = $volunteerManager;
         $this->structureRepository = $structureRepository;
     }
 
@@ -185,31 +178,6 @@ class StructureManager
             $this->userInformationManager->findForCurrentUser(),
             $criteria
         );
-    }
-
-    public function createRedCallStructure()
-    {
-        if (!$this->structureRepository->findOneByName('RedCall')) {
-            $structure = new Structure();
-            $structure->setIdentifier(Structure::REDCALL_STRUCTURE);
-            $structure->setName('RedCall');
-            $structure->setEnabled(true);
-            $this->structureRepository->save($structure);
-
-            $users = $this->userInformationManager->findAll();
-            foreach ($users as $user) {
-                $volunteer = $user->getVolunteer();
-                if (!$volunteer) {
-                    continue;
-                }
-                $structure->addVolunteer($volunteer);
-                $user->addStructure($structure);
-                $this->userInformationManager->save($user);
-                $volunteer->addStructure($structure);
-                $this->volunteerManager->save($volunteer);
-            }
-            $this->structureRepository->save($structure);
-        }
     }
 
     public function synchronizeWithPegass()

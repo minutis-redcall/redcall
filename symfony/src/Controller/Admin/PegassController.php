@@ -86,6 +86,22 @@ class PegassController extends BaseController
     }
 
     /**
+     * @Route(name="list_users", path="list-users")
+     */
+    public function userList()
+    {
+        $users = $this->userInformationManager->findAll();
+
+        $list = array_filter(array_map(function(UserInformation $user) {
+            return $user->getNivol();
+        }, $users));
+
+        return $this->render('admin/pegass/user_list.html.twig', [
+            'list' => $list,
+        ]);
+    }
+
+    /**
      * @Route(name="update", path="update/{csrf}/{id}")
      */
     public function updateNivol(Request $request, string $csrf, UserInformation $userInformation)
@@ -97,10 +113,6 @@ class PegassController extends BaseController
         $this->userInformationManager->updateNivol($userInformation, $nivol);
 
         $structureNames = array_filter(array_map(function (Structure $structure) {
-            if ($structure->isRedCall()) {
-                return null;
-            }
-
             return $structure->getName();
         }, $userInformation->getStructures()->toArray()));
 
@@ -157,11 +169,9 @@ class PegassController extends BaseController
     {
         $this->validateCsrfOrThrowNotFoundException('pegass', $csrf);
 
-        if (0 !== $structure->getIdentifier()) {
-            $userInformation->removeStructure($structure);
+        $userInformation->removeStructure($structure);
 
-            $this->userInformationManager->save($userInformation);
-        }
+        $this->userInformationManager->save($userInformation);
 
         return $this->redirectToRoute('admin_pegass_update_structures', [
             'id' => $userInformation->getId(),

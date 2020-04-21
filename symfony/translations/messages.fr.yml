@@ -7,6 +7,8 @@ admin:
   pegass:
     title: 'Connexions entre les utilisateurs de RedCall et la base de données volontaire'
     structures: 'Mise à jour des structures pour %name%'
+    list_users: 'Envoyer un message à tous les utilisateurs'
+    list_users_explain: 'Afin de contacter tous les utilisateurs, copiez/collez cette liste de nivols dans un nouveau déclenchement.'
     create_user: 'Ajouter un nouvel utilisateur'
     bound_volunteer: 'Volontaire associé : %name%'
   dashboard:

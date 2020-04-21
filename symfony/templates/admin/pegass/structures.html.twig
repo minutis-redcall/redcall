@@ -13,16 +13,14 @@
         <table class="table">
             <tbody>
                 {% for structure in user.structures %}
-                    {% if not structure.isRedCall %}
-                        <tr>
-                            <td>{{ structure.displayName }}</td>
-                            <td>
-                                <a href="{{ path('admin_pegass_delete_structure', {userInformationId: user.id, structureId: structure.id, csrf: csrf_token('pegass')}) }}" class="btn btn-danger">
-                                    {{ 'base.button.delete'|trans }}
-                                </a>
-                            </td>
-                        </tr>
-                    {% endif %}
+                    <tr>
+                        <td>{{ structure.displayName }}</td>
+                        <td>
+                            <a href="{{ path('admin_pegass_delete_structure', {userInformationId: user.id, structureId: structure.id, csrf: csrf_token('pegass')}) }}" class="btn btn-danger">
+                                {{ 'base.button.delete'|trans }}
+                            </a>
+                        </td>
+                    </tr>
                 {% endfor %}
             </tbody>
         </table>

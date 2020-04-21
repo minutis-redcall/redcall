@@ -7,6 +7,8 @@
     <div class="text-center">
         <br/>
         <a href="{{ path('admin_pegass_create_user') }}" class="btn btn-secondary">{{ 'admin.pegass.create_user'|trans }}</a>
+        &nbsp; &nbsp;
+        <a href="{{ path('admin_pegass_list_users') }}" class="btn btn-secondary">{{ 'admin.pegass.list_users'|trans }}</a>
         <br/><br/>
     </div>
 
@@ -78,9 +80,7 @@
                             </div>
                             <div id="structures-{{ user.id }}">
                                 {% for structure in userInformation.structures %}
-                                    {% if not structure.isRedCall %}
-                                        <div>{{ structure.name }}</div>
-                                    {% endif %}
+                                    <div>{{ structure.name }}</div>
                                 {% endfor %}
                             </div>
 

@@ -3,7 +3,6 @@
 namespace App\Repository;
 
 use App\Base\BaseRepository;
-use App\Entity\Structure;
 use App\Entity\UserInformation;
 use App\Entity\Volunteer;
 use Bundles\PasswordLoginBundle\Entity\User;
@@ -263,8 +262,6 @@ class VolunteerRepository extends BaseRepository
         $qb = $this->createAccessibleVolunteersQueryBuilder($user);
 
         return $qb
-            ->andWhere('s.identifier <> :redcall')
-            ->setParameter('redcall', Structure::REDCALL_STRUCTURE)
             ->andWhere(
                 $qb->expr()->orX(
                     'v.email IS NULL or v.email = \'\'',

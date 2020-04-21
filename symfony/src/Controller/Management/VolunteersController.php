@@ -344,11 +344,9 @@ class VolunteersController extends BaseController
     {
         $this->validateCsrfOrThrowNotFoundException('volunteer', $csrf);
 
-        if (0 !== $structure->getIdentifier()) {
-            $volunteer->removeStructure($structure);
+        $volunteer->removeStructure($structure);
 
-            $this->volunteerManager->save($volunteer);
-        }
+        $this->volunteerManager->save($volunteer);
 
         return $this->redirectToRoute('management_volunteers_edit_structures', [
             'id' => $volunteer->getId(),

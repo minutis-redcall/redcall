@@ -152,10 +152,6 @@ class StructuresController extends BaseController
             throw $this->createNotFoundException();
         }
 
-        if (0 === $structure->getIdentifier()) {
-            return $this->redirectToRoute('management_structures_list', $request->query->all());
-        }
-
         if (!$structure->canForcePegassUpdate()) {
             return $this->redirectToRoute('management_structures_list', $request->query->all());
         }
@@ -185,10 +181,6 @@ class StructuresController extends BaseController
     {
         if (!getenv('IS_REDCROSS')) {
             throw $this->createNotFoundException();
-        }
-
-        if (0 === $structure->getIdentifier()) {
-            return $this->redirectToRoute('management_structures_list', $request->query->all());
         }
 
         $entity = $this->pegassManager->getEntity(Pegass::TYPE_STRUCTURE, $structure->getIdentifier(), false);
