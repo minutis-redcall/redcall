@@ -46,7 +46,7 @@ class CostManager
         $this->twilioCallManager = $twilioCallManager;
     }
 
-    public function saveMessageCost(TwilioMessage $twilioMessage, Message $message)
+    public function saveMessageCost(TwilioMessage $twilioMessage, Message $message = null)
     {
         $this->saveCost(
             TwilioMessage::DIRECTION_INBOUND === $twilioMessage->getDirection() ? Cost::DIRECTION_INBOUND : Cost::DIRECTION_OUTBOUND,
@@ -59,7 +59,7 @@ class CostManager
         );
     }
 
-    public function saveCallCost(TwilioCall $twilioCall, Message $message)
+    public function saveCallCost(TwilioCall $twilioCall, Message $message = null)
     {
         $this->saveCost(
             TwilioCall::DIRECTION_INBOUND === $twilioCall->getDirection() ? Cost::DIRECTION_INBOUND : Cost::DIRECTION_OUTBOUND,
