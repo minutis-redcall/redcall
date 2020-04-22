@@ -166,6 +166,8 @@ class Cost
      */
     public function onPrePersist()
     {
-        $this->setCreatedAt(new \DateTime());
+        if (null === $this->createdAt) {
+            $this->setCreatedAt(new \DateTime());
+        }
     }
 }

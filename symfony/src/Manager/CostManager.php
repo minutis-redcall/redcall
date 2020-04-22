@@ -74,6 +74,7 @@ class CostManager
 
     public function recoverCosts()
     {
+        $this->costRepository->truncate();
         $this->recoverMessageCosts();
         $this->recoverCallCosts();
     }
@@ -89,6 +90,7 @@ class CostManager
         $cost->setCurrency($currency);
 
         if ($message) {
+            $cost->setCreatedAt($message->getUpdatedAt());
             $message->addCost($cost);
         }
 
@@ -116,11 +118,7 @@ class CostManager
                 return;
             }
 
-            if ($message->getCost()) {
-                return;
-            }
-
-            echo sprintf("Recovered price for message #%d: %s %s\n", $message->getId(), $twilioMessage->getPrice(), $twilioMessage->getUnit());
+            echo sprintf("[sms] Recovered price for message #%d: %s %s\n", $message->getId(), $twilioMessage->getPrice(), $twilioMessage->getUnit());
 
             $this->saveMessageCost($twilioMessage, $message);
         });
@@ -143,11 +141,7 @@ class CostManager
                 return;
             }
 
-            if ($message->getCost()) {
-                return;
-            }
-
-            echo sprintf("Recovered price for message #%d: %s %s\n", $message->getId(), $twilioCall->getPrice(), $twilioCall->getUnit());
+            echo sprintf("[call] Recovered price for message #%d: %s %s\n", $message->getId(), $twilioCall->getPrice(), $twilioCall->getUnit());
 
             $this->saveCallCost($twilioCall, $message);
         });
