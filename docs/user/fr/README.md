@@ -330,9 +330,9 @@ Sur chaque volontaire, vous pouvez effectuer les actions suivantes:
 
 ![Actions sur un volontaire](06-d-actions.png)
 
-- Synchroniser avec Pegass : si un bénévole a récemment validé une formation (ex: PSE1) et que celle-ci a été saisie dans Pegass, vous aurez probablement envie de pouvoir déclencher ce volontaire en cas de besoin. Vous pouvez donc forcer une synchronisation avec Pegass avant le délai habituel de 30 jours.
+- Synchroniser avec Pegass : si un bénévole a récemment validé une formation (ex: PSE1) et que celle-ci a été saisie dans Pegass, vous aurez probablement envie de pouvoir déclencher ce volontaire en cas de besoin. Vous pouvez donc forcer une synchronisation avec Pegass avant le délai habituel de 30 jours. A noter que la synchronisation Pegass met aussi à jour les droits de l'utilisateur RedCall.
 
-- Mise à jour manuelle : si un bénévole se plaint de ne pas être déclenché, vous pouvez par exemple changer ses coordonnées (numéro de téléphone et/ou email). Vous pouvez également changer ses compétences si vous n'avez pas pu les mettre à jour sur Pegass.
+- Mise à jour manuelle : si un bénévole se plaint de ne pas être déclenché, vous pouvez par exemple changer ses coordonnées (numéro de téléphone et/ou email). Vous pouvez également changer ses compétences si vous n'avez pas pu les mettre à jour sur Pegass. L'utilisateur est gelé.
 
 - Geler le volontaire : cela vous permet de ne plus synchroniser un volontaire avec Pesages (c'est normalement fait tous les 30 jours). Un volontaire est automatiquement gelé si vous effectuez une mise à jour manuelle ce qui permet d'éviter que Pegass vienne écraser vos changements. Si le volontaire est déjà gelé, ce bouton est remplacé par "Dégeler", qui réautorise la synchronisation avec Pegass.
 
@@ -343,3 +343,23 @@ Sur chaque volontaire, vous pouvez effectuer les actions suivantes:
 Si vous le souhaitez, vous pouvez créer de nouveaux volontaires, qui ne sont pas sur Pegass, et qui seront rattachés à votre structures.
 
 ![Ajouter un volontaire](06-e-ajouter.png) 
+
+#### Mise à jour des droits des utilisateurs Pegass
+
+Les droits Pegass sont synchronisé automatiquement tous les 30 jours (sauf pour les volontaires gelés).
+
+Si un changement d'affectation dans Pegass fait que les droits d'un bénévole sont changés dans RedCall (ajout/suppression/périmètre), vous pouvez mettre à jour les droits dans RedCall via la fonction "MàJ Pegass" qui synchronise les coordonnées, les compétences et les droits RedCall.
+
+Si le bénévole concerné est gelé dans RedCall, le bouton "Màj Pegass" ne sera pas disponible.
+
+Dans ce cas, pour ne pas perdre d'eventuelles modifications de coordonnées ou de compétence, procédez comme suit : 
+
+- Cliquez sur "Màj manuelle"
+- Prenez une capture d'écran ou notez les informations (coordonnées, compétences) du bénévole
+- cliquez sur "Retour"
+- cliquez sur "Actions", puis "Dégeler"
+- cliquez sur "MàJ Pegass"
+- Vérifiez que des informations n'ont pas été écrasées, et en fonction de la demande, éventuellement remettre les données du screenshot dans la fiche (ce qui va re-geler la fiche)
+ 
+
+
