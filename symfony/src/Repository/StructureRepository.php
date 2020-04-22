@@ -331,7 +331,7 @@ class StructureRepository extends BaseRepository
 
             $qb
                 ->update()
-                ->set('s.enabled', true)
+                ->set('s.enabled', ':enabled')
                 ->where($qb->expr()->in('s.identifier', $sub->getDQL()))
                 ->getQuery()
                 ->execute();
