@@ -289,7 +289,7 @@ class VolunteerRepository extends BaseRepository
 
             $qb
                 ->update()
-                ->set('v.enabled', $enabled)
+                ->set('v.enabled', ':enabled')
                 ->where($qb->expr()->in('v.identifier', $sub->getDQL()))
                 ->getQuery()
                 ->execute();

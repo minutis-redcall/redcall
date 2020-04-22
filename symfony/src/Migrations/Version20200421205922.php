@@ -39,6 +39,8 @@ final class Version20200421205922 extends AbstractMigration
         $this->addSql('UPDATE structure SET enabled = 0 WHERE id = :id', [
             'id' => $structureId,
         ]);
+
+        $this->addSql('UPDATE structure SET identifier = NULL WHERE identifier > 10000000');
     }
 
     public function down(Schema $schema) : void

@@ -63,17 +63,25 @@ class PegassManager
      */
     public function heat(int $limit, bool $fromCache = false)
     {
-        $this->initialize();
+        $entity = null;
+        try {
+            $this->initialize();
 
-        $entities = $this->pegassRepository->findExpiredEntities($limit);
+            $entities = $this->pegassRepository->findExpiredEntities($limit);
 
-        foreach ($entities as $entity) {
-            $this->debug($entity, 'Entity has expired');
-            $this->updateEntity($entity, $fromCache);
-        }
+            foreach ($entities as $entity) {
+                $this->debug($entity, 'Entity has expired');
+                $this->updateEntity($entity, $fromCache);
+            }
 
-        if (!$entities) {
-            $this->spreadUpdateDatesInTTL();
+            if (!$entities) {
+                $this->spreadUpdateDatesInTTL();
+            }
+        } catch (\Throwable $e) {
+            $this->logger->warning('Failed to update a Pegass entity', [
+                'exception' => $e->getMessage(),
+                'entity' => strval($entity),
+            ]);
         }
     }
 
