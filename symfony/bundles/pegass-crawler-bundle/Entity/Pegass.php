@@ -185,4 +185,9 @@ class Pegass
 
         return $this;
     }
+
+    public function __toString()
+    {
+        return sprintf('%s[%s/%s]', $this->type, $this->identifier, $this->parentIdentifier);
+    }
 }
