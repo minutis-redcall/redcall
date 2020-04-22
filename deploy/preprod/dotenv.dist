@@ -48,6 +48,12 @@ COLOR_COOLGREY='#eae7e1'
 COLOR_OFFWHITE='#f5e7d3'
 LOGO='croix_rouge_2.png'
 
+# Slack monitoring
+
+SLACK_TOKEN=''
+SLACK_CHANNEL='#monitoring'
+SLACK_EMOJI='🛠'
+
 # Red Cross specific
 
 IS_REDCROSS=0

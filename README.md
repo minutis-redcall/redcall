@@ -36,6 +36,7 @@ by following the next sections.
 - [Setting up Mapbox](docs/tech/09-configure-mapbox.md)
 - [Setting up Twilio](docs/tech/10-configure-twilio.md)
 - [Setting up Sendgrid](docs/tech/10-configure-sendgrid.md)
+- [Setting up Slack](docs/tech/13-configure-slack.md)
 
 RedCross only:
 - [Setting up Pegass](docs/tech/11-configure-pegass.md)

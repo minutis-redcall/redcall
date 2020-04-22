@@ -18,6 +18,11 @@ monolog:
     google_cloud:
       type: service
       id: monolog_psr_batch_logger
+    slack:
+      type: slack
+      token: '%env(SLACK_TOKEN)%'
+      channel: '%env(SLACK_CHANNEL)%'
+      level: 'ERROR'
 
 services:
 
