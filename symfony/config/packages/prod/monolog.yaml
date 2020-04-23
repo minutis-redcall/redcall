@@ -27,6 +27,7 @@ monolog:
       token: '%env(SLACK_TOKEN)%'
       channel: '%env(SLACK_CHANNEL)%'
       level: 'ERROR'
+      include_extra: true
 
 services:
 
