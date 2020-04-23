@@ -126,6 +126,10 @@ class UserInformationManager
             return;
         }
 
+        if ($userInformation->isLocked()) {
+            return;
+        }
+
         $userInformation->setNivol($nivol);
         $userInformation->setVolunteer($volunteer);
 

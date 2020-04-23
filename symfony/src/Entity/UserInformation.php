@@ -50,6 +50,11 @@ class UserInformation
      */
     private $structures;
 
+    /**
+     * @ORM\Column(type="boolean", options={"default" : 0})
+     */
+    private $locked = false;
+
     public function __construct()
     {
         $this->structures = new ArrayCollection();
@@ -174,5 +179,29 @@ class UserInformation
     public function isAdmin(): bool
     {
         return $this->user->isAdmin();
+    }
+
+    /**
+     * @return bool
+     */
+    public function isLocked(): ?bool
+    {
+        if (0 === getenv('IS_REDCROSS')) {
+            return false;
+        }
+
+        return $this->locked;
+    }
+
+    /**
+     * @param bool $locked
+     *
+     * @return UserInformation
+     */
+    public function setLocked(bool $locked): UserInformation
+    {
+        $this->locked = $locked;
+
+        return $this;
     }
 }

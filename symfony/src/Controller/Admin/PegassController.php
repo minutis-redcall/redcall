@@ -110,7 +110,9 @@ class PegassController extends BaseController
 
         $nivol = $request->request->get('nivol');
 
-        $this->userInformationManager->updateNivol($userInformation, $nivol);
+        if (!$userInformation->isLocked()) {
+            $this->userInformationManager->updateNivol($userInformation, $nivol);
+        }
 
         $structureNames = array_filter(array_map(function (Structure $structure) {
             return $structure->getName();
@@ -153,6 +155,9 @@ class PegassController extends BaseController
             $userInformation->addStructure($structure);
         }
 
+        // Freeze user to keep prevent Pegass from overwriting the change
+        $userInformation->setLocked(true);
+
         $this->userInformationManager->save($userInformation);
 
         return $this->redirectToRoute('admin_pegass_update_structures', [
@@ -170,6 +175,9 @@ class PegassController extends BaseController
         $this->validateCsrfOrThrowNotFoundException('pegass', $csrf);
 
         $userInformation->removeStructure($structure);
+
+        // Freeze user to keep prevent Pegass from overwriting the change
+        $userInformation->setLocked(true);
 
         $this->userInformationManager->save($userInformation);
 
@@ -211,6 +219,21 @@ class PegassController extends BaseController
         return $this->redirectToRoute('password_login_admin_list', [
             'type' => 'pegass',
             'form[criteria]' => $volunteer->getNivol(),
+        ]);
+    }
+
+    /**
+     * @Route("/toggle-lock/{csrf}/{id}", name="toggle_lock")
+     */
+    public function toggleLockAction(UserInformation $userInformation, string $csrf)
+    {
+        $this->validateCsrfOrThrowNotFoundException('pegass', $csrf);
+
+        $userInformation->setLocked(1 - $userInformation->isLocked());
+        $this->userInformationManager->save($userInformation);
+
+        return $this->redirectToRoute('password_login_admin_list', [
+            'form[criteria]' => $userInformation->getNivol(),
         ]);
     }
 

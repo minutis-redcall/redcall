@@ -11,6 +11,10 @@ admin:
     list_users_explain: 'Afin de contacter tous les utilisateurs, copiez/collez cette liste de nivols dans un nouveau déclenchement.'
     create_user: 'Ajouter un nouvel utilisateur'
     bound_volunteer: 'Volontaire associé : %name%'
+    locked: 'Gelé'
+    locked_details: 'Les structures d''un utilisateur gelé ne seront pas mises à jour avec la mise à jour Pegass de son volontaire attaché.'
+    lock: 'Geler'
+    unlock: 'Dégeler'
   dashboard:
     title: 'Statistiques'
   statistics:
