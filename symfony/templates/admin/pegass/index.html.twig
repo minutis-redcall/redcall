@@ -64,6 +64,16 @@
 
                                     {{ 'password_login.user_list.is_admin'|trans }} <sup>(3)</sup>
                                 </div>
+                                {% if is_redcross %}
+                                    <div class="text-small">
+                                        {% if userInformation.locked %}
+                                            <span class="h4">✅</span>
+                                        {% else %}
+                                            <span class="h4">❌</span>
+                                        {% endif %}
+                                        {{ 'admin.pegass.locked'|trans }} <sup>(4)</sup>
+                                    </div>
+                                {% endif %}
                             {% else %}
                                 <div class="text-small">&nbsp;</div>
                                 <div class="text-small">&nbsp;</div>
@@ -74,9 +84,13 @@
                             <div class="nivol"
                                  data-id="{{ user.id }}"
                                  data-uri="{{ path('admin_pegass_update', {csrf: csrf_token('pegass'), id: userInformation.id}) }}">
-                                {{ render(controller('\\App\\Controller\\WidgetController::nivolEditor', {
-                                    userInformation: userInformation
-                                })) }}
+                                {% if userInformation.locked %}
+                                    <strong>{{ userInformation.nivol }}</strong>
+                                {% else %}
+                                    {{ render(controller('\\App\\Controller\\WidgetController::nivolEditor', {
+                                        userInformation: userInformation
+                                    })) }}
+                                {% endif %}
                             </div>
                             <div id="structures-{{ user.id }}">
                                 {% for structure in userInformation.structures %}
@@ -123,6 +137,16 @@
                                         </a>
                                     {% endif %}
 
+                                    {% if userInformation.locked %}
+                                        <a class="dropdown-item text-danger" href="{{ path('admin_pegass_toggle_lock', {id: userInformation.id, csrf: csrf_token('pegass')}) }}">
+                                            {{ 'admin.pegass.unlock'|trans }}
+                                        </a>
+                                    {% else %}
+                                        <a class="dropdown-item text-success" href="{{ path('admin_pegass_toggle_lock', {id: userInformation.id, csrf: csrf_token('pegass')}) }}">
+                                            {{ 'admin.pegass.lock'|trans }}
+                                        </a>
+                                    {% endif %}
+
                                     <div class="dropdown-divider"></div>
 
                                     <a class="dropdown-item text-danger" href="{{ path('password_login_admin_delete', {username: user.username, csrf: csrf_token('password_login')}) }}">
@@ -150,6 +174,11 @@
     <div class="text-left">
         <sup>(3)</sup> {{ 'password_login.user_list.description_admin'|trans }}
     </div>
+    {% if is_redcross %}
+        <div class="text-left">
+            <sup>(4)</sup> {{ 'admin.pegass.locked_details'|trans }}
+        </div>
+    {% endif %}
 
     <br/>
 

@@ -18,11 +18,18 @@ monolog:
     google_cloud:
       type: service
       id: monolog_psr_batch_logger
+    slack_no_404:
+      type: fingers_crossed
+      handler: slack
+      action_level: error
+      excluded_404s:
+        - ^/
     slack:
       type: slack
       token: '%env(SLACK_TOKEN)%'
       channel: '%env(SLACK_CHANNEL)%'
       level: 'ERROR'
+      include_extra: true
 
 services:
 

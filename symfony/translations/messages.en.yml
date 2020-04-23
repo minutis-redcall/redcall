@@ -11,6 +11,10 @@ admin:
     list_users_explain: 'In order to contact all users, copy/paste this nivol list in a new campaign.'
     create_user: 'Add a new user'
     bound_volunteer: 'Bound volunteer: %name%'
+    locked: 'Frozen'
+    locked_details: 'Structures of a frozen user are not updated when Pegass is updating its bound volunteer.'
+    lock: 'Lock'
+    unlock: 'Unlock'
   dashboard:
     title: 'Statistics'
   statistics:
