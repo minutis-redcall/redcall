@@ -43,6 +43,11 @@
                                 {% if volunteer.minor %}
                                     <span title="{{ 'manage_volunteers.form.minor'|trans }}">🐻</span>
                                 {% endif %}
+                                {% if volunteer.userInformation %}
+                                    <span title="{{ 'manage_volunteers.form.minor'|trans }}">
+                                        <img src="{{ asset('minutis.png') }}" />
+                                    </span>
+                                {% endif %}
                                 {% if is_redcross and is_granted('ROLE_ADMIN') and volunteer.identifier %}
                                     <a href="{{ path('management_volunteers_pegass', {id: volunteer.id}) }}" target="_blank">🛠</a>
                                 {% endif %}

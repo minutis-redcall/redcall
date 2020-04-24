@@ -24,7 +24,7 @@ class UserInformation
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="Bundles\PasswordLoginBundle\Entity\User", cascade={"all"})
+     * @ORM\OneToOne(targetEntity="Bundles\PasswordLoginBundle\Entity\User", cascade={"all"})
      * @ORM\JoinColumn(referencedColumnName="id", nullable=false, onDelete="cascade")
      */
     private $user;
@@ -40,7 +40,7 @@ class UserInformation
     private $nivol;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Volunteer")
+     * @ORM\OneToOne(targetEntity="App\Entity\Volunteer")
      */
     private $volunteer;
 
