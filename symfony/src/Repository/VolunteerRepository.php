@@ -3,12 +3,11 @@
 namespace App\Repository;
 
 use App\Base\BaseRepository;
+use App\Entity\Structure;
 use App\Entity\UserInformation;
 use App\Entity\Volunteer;
-use Bundles\PasswordLoginBundle\Entity\User;
 use Bundles\PegassCrawlerBundle\Entity\Pegass;
 use Doctrine\Bundle\DoctrineBundle\Registry;
-use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
@@ -130,12 +129,6 @@ class VolunteerRepository extends BaseRepository
                     ->getResult();
     }
 
-    /**
-     * @param UserInformation $user
-     * @param string|null     $keyword
-     *
-     * @return QueryBuilder
-     */
     public function searchForUserQueryBuilder(UserInformation $user, ?string $keyword): QueryBuilder
     {
         $qb = $this->createAccessibleVolunteersQueryBuilder($user, false);
@@ -160,9 +153,8 @@ class VolunteerRepository extends BaseRepository
     }
 
     /**
-     * @param string $keyword
-     * @param int    $maxResults
-     * @param User   $user
+     * @param string|null $keyword
+     * @param int         $maxResults
      *
      * @return Volunteer[]
      */
@@ -174,11 +166,14 @@ class VolunteerRepository extends BaseRepository
                     ->getResult();
     }
 
-    /**
-     * @param string $keyword
-     *
-     * @return QueryBuilder
-     */
+    public function searchInStructureQueryBuilder(Structure $structure, ?string $keyword): QueryBuilder
+    {
+        return $this->searchAllQueryBuilder($keyword)
+            ->join('v.structures', 's')
+            ->where('s.id = :structure')
+            ->setParameter('structure', $structure);
+    }
+
     public function searchAllQueryBuilder(?string $keyword): QueryBuilder
     {
         $qb = $this->createVolunteersQueryBuilder(false);
@@ -202,14 +197,6 @@ class VolunteerRepository extends BaseRepository
         return $qb;
     }
 
-    /**
-     * @param callable $callback
-     * @param bool     $onlyEnabled
-     *
-     * @throws MappingException
-     * @throws ORMException
-     * @throws OptimisticLockException
-     */
     public function foreach(callable $callback, bool $onlyEnabled = true)
     {
         $count = $this->createQueryBuilder('v')
@@ -252,11 +239,6 @@ class VolunteerRepository extends BaseRepository
         }
     }
 
-    /**
-     * @param UserInformation $user
-     *
-     * @return array
-     */
     public function getIssues(UserInformation $user): array
     {
         $qb = $this->createAccessibleVolunteersQueryBuilder($user);

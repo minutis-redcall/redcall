@@ -2,6 +2,7 @@
 
 namespace App\Manager;
 
+use App\Entity\Structure;
 use App\Entity\UserInformation;
 use App\Entity\Volunteer;
 use App\Repository\VolunteerRepository;
@@ -101,6 +102,15 @@ class VolunteerManager
             $criteria,
             $limit
         );
+    }
+
+    /**
+     * @param Structure $structure
+     * @param string    $criteria
+     */
+    public function searchInStructureQueryBuilder(Structure $structure, ?string $criteria)
+    {
+        return $this->volunteerRepository->searchInStructureQueryBuilder($structure, $criteria);
     }
 
     /**

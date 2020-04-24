@@ -37,7 +37,7 @@
                         <div class="col-md-6">
                             <div>
                                 <div class="h4 {% if not structure.enabled %}text-black-50{% endif %}">
-                                    {{ structure.name }}
+                                    <a href="{{ path('management_volunteers_list', {id: structure.id}) }}">{{ structure.name }}</a>
                                     {% if is_redcross and is_granted('ROLE_ADMIN') %}
                                         <a href="{{ path('management_structures_pegass', {id: structure.id}) }}" target="_blank">🛠</a>
                                     {% endif %}

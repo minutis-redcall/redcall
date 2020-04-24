@@ -153,6 +153,11 @@ class Volunteer
      */
     private $communications;
 
+    /**
+     * @ORM\OneToOne(targetEntity="App\Entity\UserInformation", mappedBy="volunteer")
+     */
+    private $userInformation;
+
     public function __construct()
     {
         $this->tags       = new ArrayCollection();
@@ -679,6 +684,17 @@ class Volunteer
             }
         }
 
+        return $this;
+    }
+
+    public function getUserInformation()
+    {
+        return $this->userInformation;
+    }
+
+    public function setUserInformation($userInformation)
+    {
+        $this->userInformation = $userInformation;
         return $this;
     }
 }
