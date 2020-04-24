@@ -106,18 +106,18 @@ button.modal-button {
     -webkit-appearance: none;
 }
 
-.btn-primary:active,
-.btn-primary:focus,
-.btn-primary:hover,
-.btn-primary {
+.btn-primary:active:not(disabled),
+.btn-primary:focus:not(disabled),
+.btn-primary:hover:not(disabled),
+.btn-primary:not(disabled) {
     background-color: #00AFF5;
     border-color: #00AFF5;
 }
 
-.btn-secondary:active,
-.btn-secondary:focus,
-.btn-secondary:hover,
-.btn-secondary {
+.btn-secondary:active:not(disabled),
+.btn-secondary:focus:not(disabled),
+.btn-secondary:hover:not(disabled),
+.btn-secondary:not(disabled) {
     border: 1px solid #00AFF5 !important;
     background-color: #FFFFFF !important;
     color: #00AFF5 !important;

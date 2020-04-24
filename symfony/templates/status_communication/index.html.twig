@@ -364,11 +364,12 @@
 
                         {# Download CSV #}
                         <div class="col-md-3 col-12 skip-line">
-                            <a href="#"
+                            <button
                                class="btn btn-primary download-csv-button"
-                               data-communication-id="{{ communication.id }}" role="button">
+                               data-communication-id="{{ communication.id }}"
+                               data-timeout-disabled="30000">
                                 {{ 'campaign_status.selection.download_csv'|trans }}
-                            </a>
+                            </button>
                             <form id="selection-download-csv-form-{{ communication.id }}"
                                   action="{{ path('export_csv', {communicationId: communication.id}) }}"
                                   method="post" class="d-none">
@@ -380,11 +381,12 @@
 
                         {# Download portrait PDF #}
                         <div class="col-md-3 col-12 skip-line">
-                            <a href="#"
+                            <button
                                class="btn btn-primary download-portrait-pdf-button"
-                               data-communication-id="{{ communication.id }}" role="button">
+                               data-communication-id="{{ communication.id }}"
+                               data-timeout-disabled="30000">
                                 {{ 'campaign_status.selection.download_portrait_pdf'|trans }}
-                            </a>
+                            </button>
                             <form id="selection-download-portrait-pdf-form-{{ communication.id }}"
                                   action="{{ path('export_portrait_pdf', {communicationId: communication.id}) }}"
                                   method="post" class="d-none">
