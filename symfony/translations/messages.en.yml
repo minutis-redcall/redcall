@@ -417,7 +417,6 @@ label:
   to: "To"
   volunteers: "volunteers"
   structures: "structures"
-  annuler: "cancel"
 
 import:
   label: 'Import CSV file'

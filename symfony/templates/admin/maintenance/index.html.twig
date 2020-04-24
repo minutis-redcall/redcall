@@ -14,7 +14,6 @@
             {% endset %}
 
             {% set buttons %}
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ 'label.cancel'|trans | capitalize }}</button>
                 <a href="{{ path('admin_maintenance_refresh') }}" class="btn btn-primary">{{ 'maintenance.modal.refresh_button'|trans }}</a>
             {% endset %}
 
@@ -25,7 +24,6 @@
             <br/><br/>
 
             {% set buttons %}
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ 'label.cancel'|trans | capitalize }}</button>
                 <a href="{{ path('admin_maintenance_refresh_all') }}" class="btn btn-primary">{{ 'maintenance.modal.refresh_button'|trans }}</a>
             {% endset %}
 

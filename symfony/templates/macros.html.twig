@@ -51,10 +51,8 @@
                     <p>{{ body }}</p>
                 </div>
                 <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ 'base.modal.close'|trans }}</button>
                     {{ buttons }}
-                    {% if not buttons %}
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ 'base.modal.close'|trans }}</button>
-                    {% endif %}
                 </div>
             </div>
         </div>

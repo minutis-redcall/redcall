@@ -416,7 +416,6 @@ label:
   to: "Au"
   volunteers: "volontaires"
   structures: "structures"
-  cancel: "annuler"
 
 import:
   label: 'Importer un fichier CSV'
