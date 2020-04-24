@@ -376,6 +376,9 @@ maintenance:
   refresh_all: 'Synchronize RedCall and Pegass databases entirely'
   refresh_started: 'Synchronize launched, it will take a while.'
   refresh_error: 'You cannot synchronize more than once every hour.'
+  modal:
+    for_dev_only: 'This fonctionnality is for developer only.'
+    refresh_button: 'Refresh the datas'
   message:
     title: 'Set a message at the top of every page'
     type:
@@ -414,6 +417,7 @@ label:
   to: "To"
   volunteers: "volunteers"
   structures: "structures"
+  annuler: "cancel"
 
 import:
   label: 'Import CSV file'

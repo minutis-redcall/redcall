@@ -8,14 +8,51 @@
 
         {% if is_redcross %}
 
-            <a href="{{ path('admin_maintenance_refresh') }}"
-               class="text-lg-center large-button btn btn-secondary">{{ 'maintenance.refresh'|trans }}</a>
+            <button class="text-lg-center large-button btn btn-secondary" data-toggle="modal" data-target="#maintenanceRefreshModal">{{ 'maintenance.refresh'| trans }}</button>
+
+            <div class="modal fade" id="maintenanceRefreshModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">{{ 'maintenance.refresh'| trans }}</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <p>{{ 'maintenance.modal.for_dev_only'|trans }}</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ 'label.cancel'|trans | capitalize }}</button>
+                            <a href="{{ path('admin_maintenance_refresh') }}" class="btn btn-primary">{{ 'maintenance.modal.refresh_button'|trans }}</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <br/><br/>
 
-            <a href="{{ path('admin_maintenance_refresh_all') }}"
-               class="text-lg-center large-button btn btn-secondary">{{ 'maintenance.refresh_all'|trans }}</a>
+            <button class="text-lg-center large-button btn btn-secondary" data-toggle="modal" data-target="#maintenanceRefreshAllModal">{{ 'maintenance.refresh_all'| trans }}</button>
 
+            <div class="modal fade" id="maintenanceRefreshAllModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">{{ 'maintenance.refresh_all'| trans }}</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <p>{{ 'maintenance.modal.for_dev_only'|trans }}</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ 'label.cancel'|trans | capitalize }}</button>
+                            <a href="{{ path('admin_maintenance_refresh_all') }}" class="btn btn-primary">{{ 'maintenance.modal.refresh_button'|trans }}</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <br/><br/>
 
         {% endif %}

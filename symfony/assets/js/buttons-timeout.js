@@ -5,6 +5,7 @@ $(document).ready(function() {
     //Disables button that has data-timeout-disabled attribute. The value passed will be used for the duration of disable state
     $('input[type="submit"][data-timeout-disabled], button[data-timeout-disabled]').each(function(ind, element) {
         if(typeof $(element).data('timeout-disabled') !== 'undefined') {
+            var timeout = isNaN(parseInt($(element).data('timeout-disabled'))) ? parseInt($(element).data('timeout-disabled')) : 30000;
             $(element).click(function() {
                 var $el = $(this);
                 //Disable button
@@ -18,7 +19,7 @@ $(document).ready(function() {
                 setTimeout(function() {
                     $el.prop('disabled', false);
                     $el.removeClass('disabled');
-                }, 30000);
+                }, timeout);
             })
         }
     });
