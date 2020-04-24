@@ -52,7 +52,9 @@
                 </div>
                 <div class="modal-footer">
                     {{ buttons }}
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ 'base.modal.close'|trans }}</button>
+                    {% if not buttons %}
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ 'base.modal.close'|trans }}</button>
+                    {% endif %}
                 </div>
             </div>
         </div>
