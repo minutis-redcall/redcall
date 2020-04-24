@@ -162,7 +162,11 @@
     {% endif %}
 
     <div class="text-center">
-        <a href="{{ path('management_home') }}" class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+        {% if structure %}
+            <a href="{{ path('management_structures_list') }}" class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+        {% else %}
+            <a href="{{ path('management_home') }}" class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+        {% endif %}
     </div>
 
     <br/><br/>

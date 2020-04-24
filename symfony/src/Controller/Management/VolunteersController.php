@@ -94,9 +94,9 @@ class VolunteersController extends BaseController
     }
 
     /**
-     * @Route(name="list")
+     * @Route(name="list", path="/{id}", requirements={"id" = "\d+"}, defaults={"id" = null})
      */
-    public function listAction(Request $request)
+    public function listAction(Request $request, Structure $structure = null)
     {
         // CSV import form.
         $violationList = new ConstraintViolationList();
@@ -108,6 +108,10 @@ class VolunteersController extends BaseController
             $violationList = $this->volunteerImporter->import($file);
         }
 
+        if ($structure && !$this->isGranted('STRUCTURE', $structure)) {
+            throw $this->createAccessDeniedException();
+        }
+
         $search = $this->createSearchForm($request);
 
         $criteria = null;
@@ -115,7 +119,9 @@ class VolunteersController extends BaseController
             $criteria = $search->get('criteria')->getData();
         }
 
-        if ($this->isGranted('ROLE_ADMIN')) {
+        if ($structure) {
+            $queryBuilder = $this->volunteerManager->searchInStructureQueryBuilder($structure, $criteria);
+        } else if ($this->isGranted('ROLE_ADMIN')) {
             $queryBuilder = $this->volunteerManager->searchAllQueryBuilder($criteria);
         } else {
             $queryBuilder = $this->volunteerManager->searchForCurrentUserQueryBuilder($criteria);
@@ -126,6 +132,7 @@ class VolunteersController extends BaseController
             'volunteers' => $this->paginationManager->getPager($queryBuilder),
             'importForm' => $importForm->createView(),
             'importViolationList' => $violationList,
+            'structure' => $structure,
         ]);
     }
 
