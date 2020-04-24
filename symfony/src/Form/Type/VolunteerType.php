@@ -95,6 +95,7 @@ class VolunteerType extends AbstractType
                 'label' => 'base.button.save',
                 'attr'  => [
                     'class' => 'btn btn-primary',
+                    'data-timeout-disabled' => '30000'
                 ],
             ]);
 

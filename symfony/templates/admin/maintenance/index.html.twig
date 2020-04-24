@@ -1,4 +1,5 @@
 {% extends 'base.html.twig' %}
+{% import 'macros.html.twig' as macros %}
 
 {% block menu %}{% endblock %}
 
@@ -8,13 +9,26 @@
 
         {% if is_redcross %}
 
-            <a href="{{ path('admin_maintenance_refresh') }}"
-               class="text-lg-center large-button btn btn-secondary">{{ 'maintenance.refresh'|trans }}</a>
+            {% set body %}
+                <p>{{ 'maintenance.modal.for_dev_only'|trans }}</p>
+            {% endset %}
+
+            {% set buttons %}
+                <a href="{{ path('admin_maintenance_refresh') }}" class="btn btn-primary">{{ 'maintenance.modal.refresh_button'|trans }}</a>
+            {% endset %}
+
+            {{ macros.modal('refresh-expired', 'maintenance.refresh'|trans, body, buttons) }}
+
+            <button class="text-lg-center large-button btn btn-secondary" data-toggle="modal" data-target="#refresh-expired">{{ 'maintenance.refresh'| trans }}</button>
 
             <br/><br/>
 
-            <a href="{{ path('admin_maintenance_refresh_all') }}"
-               class="text-lg-center large-button btn btn-secondary">{{ 'maintenance.refresh_all'|trans }}</a>
+            {% set buttons %}
+                <a href="{{ path('admin_maintenance_refresh_all') }}" class="btn btn-primary">{{ 'maintenance.modal.refresh_button'|trans }}</a>
+            {% endset %}
+
+            {{ macros.modal('refresh-all', 'maintenance.refresh_all'|trans, body, buttons) }}
+            <button class="text-lg-center large-button btn btn-secondary" data-toggle="modal" data-target="#refresh-all">{{ 'maintenance.refresh_all'| trans }}</button>
 
             <br/><br/>
 

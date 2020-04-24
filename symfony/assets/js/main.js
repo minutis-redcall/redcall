@@ -3,6 +3,7 @@
     Enables jQuery global variables
  */
 import $ from 'jquery';
+import './buttons-timeout';
 window.jQuery = $;
 window.$ = $;
 
