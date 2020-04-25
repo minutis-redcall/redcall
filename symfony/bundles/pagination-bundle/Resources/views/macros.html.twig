@@ -10,7 +10,7 @@
                 {{ pagerfanta(pager, 'bootstrap_light', {
                     'pageParameter': '[' ~ prefix ~ 'page]',
                     'routeName': master_request().get('_route'),
-                    'routeParams': master_request().query.all|merge(queryParams),
+                    'routeParams': master_request().get('_route_params')|merge(queryParams),
                     'proximity': 2,
                 }) }}
 
