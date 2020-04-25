@@ -8,21 +8,11 @@
         {{ 'manage_volunteers.title'|trans }}
     </h1>
 
-    {% if not importViolationList is empty %}
-        <ul>
-            {% for violation in importViolationList %}
-                <li>{{ violation.message }}</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
-
     <div class="text-right">
         <a href="{{ path('management_volunteers_create') }}" class="btn btn-secondary">
             {{ 'manage_volunteers.form.create'|trans }}
         </a>
     </div>
-
-    {{ form(search) }}
 
     <table class="table">
         <tbody>

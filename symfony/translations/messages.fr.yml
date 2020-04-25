@@ -433,10 +433,6 @@ label:
   volunteers: "volontaires"
   structures: "structures"
 
-import:
-  label: 'Importer un fichier CSV'
-  submit: 'Importer'
-
 structure:
   form:
     parent: "Structure parente (optionnelle)"

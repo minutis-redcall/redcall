@@ -4,7 +4,6 @@ namespace App\Controller\Management;
 
 use App\Base\BaseController;
 use App\Entity\Structure;
-use App\Form\Type\CSVImportType;
 use App\Form\Type\StructureType;
 use App\Import\StructureImporter;
 use App\Manager\StructureManager;
@@ -22,7 +21,6 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Validator\ConstraintViolationList;
 
 /**
  * @Route(path="management/structures", name="management_structures_")
@@ -49,30 +47,15 @@ class StructuresController extends BaseController
      */
     private $kernel;
 
-    /**
-     * @var StructureImporter
-     */
-    private $structureImporter;
-
-    /**
-     * @param StructureManager  $structureManager
-     * @param PaginationManager $paginationManager
-     * @param PegassManager     $pegassManager
-     * @param KernelInterface   $kernel
-     * @param StructureImporter $structureImporter
-     */
     public function __construct(StructureManager $structureManager,
         PaginationManager $paginationManager,
         PegassManager $pegassManager,
-        KernelInterface $kernel,
-        StructureImporter $structureImporter
-    )
-    {
+        KernelInterface $kernel
+    ) {
         $this->structureManager  = $structureManager;
         $this->paginationManager = $paginationManager;
         $this->pegassManager     = $pegassManager;
         $this->kernel            = $kernel;
-        $this->structureImporter = $structureImporter;
     }
 
     /**
@@ -84,16 +67,6 @@ class StructuresController extends BaseController
      */
     public function listAction(Request $request)
     {
-        // CSV import form.
-        $violationList = new ConstraintViolationList();
-        $importForm = $this->createForm(CSVImportType::class);
-        $importForm->handleRequest($request);
-        if ($this->isGranted('ROLE_ADMIN') && !getenv('IS_REDCROSS')
-            && $importForm->isSubmitted() && $importForm->isValid()) {
-            $file = $importForm->get('file')->getData();
-            $violationList = $this->structureImporter->import($file);
-        }
-
         // Search form.
         $search = $this->createSearchForm($request);
 
@@ -108,13 +81,9 @@ class StructuresController extends BaseController
             $queryBuilder = $this->structureManager->searchForCurrentUserQueryBuilder($criteria);
         }
 
-        $importForm = $this->createForm(CSVImportType::class);
-
         return $this->render('management/structures/list.html.twig', [
             'search'     => $search->createView(),
             'structures' => $this->paginationManager->getPager($queryBuilder),
-            'importForm' => $importForm->createView(),
-            'importViolationList' => $violationList,
         ]);
     }
 
