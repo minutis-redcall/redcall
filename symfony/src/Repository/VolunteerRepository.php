@@ -170,7 +170,7 @@ class VolunteerRepository extends BaseRepository
     {
         return $this->searchAllQueryBuilder($keyword)
             ->join('v.structures', 's')
-            ->where('s.id = :structure')
+            ->andWhere('s.id = :structure')
             ->setParameter('structure', $structure);
     }
 
