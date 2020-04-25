@@ -9,11 +9,12 @@
     </h1>
 
     {% if is_granted('ROLE_ADMIN') %}
-    <div class="text-right">
-        <a href="{{ path('management_structures_create') }}" class="btn btn-secondary">
-            {{ 'manage_structures.form.create'|trans }}
-        </a>
-    </div>
+        <div class="text-right">
+            <a href="{{ path('management_structures_create') }}" class="btn btn-secondary">
+                {{ 'manage_structures.form.create'|trans }}
+            </a>
+            <br/><br/>
+        </div>
     {% endif %}
 
     <table class="table">
