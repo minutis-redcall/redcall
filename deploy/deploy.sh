@@ -30,7 +30,6 @@ cp deploy/${ENV}/cron.yaml symfony/
 
 # Deploying
 cd symfony
-
 source .env > /dev/null
 
 GREENLIGHT=`wget -O- ${WEBSITE_URL}/deploy`
