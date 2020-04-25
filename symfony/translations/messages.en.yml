@@ -309,6 +309,9 @@ manage_volunteers:
     create: 'You will be able to set volunteer''s structures after creating it.'
     edit: 'Edit structures'
     structures: 'Structures update for %name%'
+  redcall:
+    redcall_user: 'Has access to RedCall'
+    action_structures: 'Structures that %name% can trigger'
 
 manage_structures:
   title: 'Manage structures'
