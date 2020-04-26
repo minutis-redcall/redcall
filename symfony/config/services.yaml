@@ -80,3 +80,8 @@ services:
     class: Twig\Extra\Intl\IntlExtension
     tags:
       - { name: twig.extension }
+
+  App\Logger\ContextProcessor:
+    arguments: ['@kernel', '@security.token_storage']
+    tags:
+      - { name: monolog.processor, handler: slack }

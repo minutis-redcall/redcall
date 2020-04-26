@@ -51,8 +51,8 @@ LOGO='croix_rouge_2.png'
 # Slack monitoring
 
 SLACK_TOKEN=''
-SLACK_CHANNEL='#monitoring'
-SLACK_EMOJI='🛠'
+SLACK_CHANNEL='#debugging'
+SLACK_EMOJI=':ghost:'
 
 # Red Cross specific
 
