@@ -5,7 +5,6 @@ namespace App\Controller\Management;
 use App\Base\BaseController;
 use App\Entity\Structure;
 use App\Entity\Volunteer;
-use App\Form\Type\CSVImportType;
 use App\Form\Type\VolunteerType;
 use App\Import\VolunteerImporter;
 use App\Manager\StructureManager;
@@ -24,7 +23,6 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Validator\ConstraintViolationList;
 
 /**
  * @Route(path="management/volunteers", name="management_volunteers_")
@@ -62,26 +60,19 @@ class VolunteersController extends BaseController
     private $kernel;
 
     /**
-     * @var VolunteerImporter
-     */
-    private $volunteerImporter;
-
-    /**
      * @param UserInformationManager $userInformationManager
      * @param VolunteerManager       $volunteerManager
      * @param StructureManager       $structureManager
      * @param PegassManager          $pegassManager
      * @param PaginationManager      $paginationManager
      * @param KernelInterface        $kernel
-     * @param VolunteerImporter      $volunteerImporter
      */
     public function __construct(UserInformationManager $userInformationManager,
         VolunteerManager $volunteerManager,
         StructureManager $structureManager,
         PegassManager $pegassManager,
         PaginationManager $paginationManager,
-        KernelInterface $kernel,
-        VolunteerImporter $volunteerImporter
+        KernelInterface $kernel
     )
     {
         $this->userInformationManager = $userInformationManager;
@@ -90,7 +81,6 @@ class VolunteersController extends BaseController
         $this->pegassManager          = $pegassManager;
         $this->paginationManager      = $paginationManager;
         $this->kernel                 = $kernel;
-        $this->volunteerImporter      = $volunteerImporter;
     }
 
     /**
@@ -98,16 +88,6 @@ class VolunteersController extends BaseController
      */
     public function listAction(Request $request, Structure $structure = null)
     {
-        // CSV import form.
-        $violationList = new ConstraintViolationList();
-        $importForm = $this->createForm(CSVImportType::class);
-        $importForm->handleRequest($request);
-        if ($this->isGranted('ROLE_ADMIN') && !getenv('IS_REDCROSS')
-            && $importForm->isSubmitted() && $importForm->isValid()) {
-            $file = $importForm->get('file')->getData();
-            $violationList = $this->volunteerImporter->import($file);
-        }
-
         if ($structure && !$this->isGranted('STRUCTURE', $structure)) {
             throw $this->createAccessDeniedException();
         }
@@ -130,8 +110,6 @@ class VolunteersController extends BaseController
         return $this->render('management/volunteers/list.html.twig', [
             'search'     => $search->createView(),
             'volunteers' => $this->paginationManager->getPager($queryBuilder),
-            'importForm' => $importForm->createView(),
-            'importViolationList' => $violationList,
             'structure' => $structure,
         ]);
     }

@@ -52,7 +52,7 @@ LOGO='croix_rouge_2.png'
 
 SLACK_TOKEN=''
 SLACK_CHANNEL='#monitoring'
-SLACK_EMOJI='🚀'
+SLACK_EMOJI=':fire:'
 
 # Red Cross specific
 

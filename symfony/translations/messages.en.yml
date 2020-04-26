@@ -110,6 +110,7 @@ base:
     placeholder: 'Search...'
     no_results: 'No results found for "{keyword}".'
   clear_selection: 'Clear selection'
+  select_all: 'Select all'
   wait: 'One moment...'
   actions: 'Actions'
   play: 'Play'
@@ -309,6 +310,9 @@ manage_volunteers:
     create: 'You will be able to set volunteer''s structures after creating it.'
     edit: 'Edit structures'
     structures: 'Structures update for %name%'
+  redcall:
+    redcall_user: 'Has access to RedCall'
+    action_structures: 'Structures that %name% can trigger'
 
 manage_structures:
   title: 'Manage structures'
@@ -429,10 +433,6 @@ label:
   to: "To"
   volunteers: "volunteers"
   structures: "structures"
-
-import:
-  label: 'Import CSV file'
-  submit: 'Import'
 
 structure:
   form:

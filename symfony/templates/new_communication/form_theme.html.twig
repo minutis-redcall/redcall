@@ -27,6 +27,8 @@
     {{ form_errors(form.volunteers) }}
     {{ form_widget(form.volunteers) }}
     <div class="text-right">
+        <a href="#" id="select-all">{{ 'base.select_all'|trans }}</a>
+        &nbsp;&nbsp;
         <a href="#" id="clear-selection">{{ 'base.clear_selection'|trans }}</a>
     </div>
 
@@ -111,6 +113,19 @@
 
             $('#{{ volunteerInput }}').val(selection.join(','));
             $('#selected-volunteers').html(selection.length);
+        });
+
+        {# Click on "Select all" link #}
+        $('#select-all').click(function(e) {
+            $('#checkbox-list').find('input').each(function() {
+                var that = $(this);
+                if (!that.prop('checked')) {
+                    that.click();
+                } else {
+                    that.click();
+                    that.click();
+                }
+            });
         });
 
         {# Click on "Clear selection" link #}

@@ -8,25 +8,14 @@
         {{ 'manage_structures.title'|trans }}
     </h1>
 
-    {% if not is_redcross %}
-        {% if not importViolationList is empty %}
-            <ul>
-                {% for violation in importViolationList %}
-                    <li>{{ violation.message }}</li>
-                {% endfor %}
-            </ul>
-        {% endif %}
-    {% endif %}
-
     {% if is_granted('ROLE_ADMIN') %}
-    <div class="text-right">
-        <a href="{{ path('management_structures_create') }}" class="btn btn-secondary">
-            {{ 'manage_structures.form.create'|trans }}
-        </a>
-    </div>
+        <div class="text-right">
+            <a href="{{ path('management_structures_create') }}" class="btn btn-secondary">
+                {{ 'manage_structures.form.create'|trans }}
+            </a>
+            <br/><br/>
+        </div>
     {% endif %}
-
-    {{ form(search) }}
 
     <table class="table">
         <tbody>
