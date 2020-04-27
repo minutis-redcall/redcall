@@ -225,6 +225,61 @@ If you want to enable voice calls, you need to enable the Text To Speech API.
 4. Click "Enable" button
 <br/>![](01/61.png)
 
+## Create a Cloud Storage bucket
+
+Voice calls generate several files that are exposed on Google Storage in order to limit the number of hits on the app.
+
+1. In the menu, go to Storage under the "Storage" category, and click "Browse".
+<br/>![](01/62.png)
+
+2. Click "Create new bucket"
+<br/>![](01/63.png)
+
+3. Select a name for the bucket
+<br/>![](01/64.png)
+
+4. Select "Multi Region" and "Europe"
+<br/>![](01/65.png)
+
+5. Choose "Standard" storage class
+<br/>![](01/66.png)
+
+6. Select "Uniform" access control
+<br/>![](01/67.png)
+
+7. Set a retention policy of 1 day (it's 7 on the screenshot, but don't mind, put 1, at that time I've mixed up with deletion rule)
+<br/>![](01/68.png)
+
+8. In the menu, got o "IAM & Admin" on Product section, and go to "IAM"
+<br/>![](01/69.png)
+
+9. Find the service account created for the RedCall app, and click "Edit"
+<br/>![](01/70.png)
+
+10. Add Storage Object Creator & Storage Object Viewer roles and click "Save"
+<br/>![](01/71.png)
+
+11. We now need to configure objects auto deletion: go back to the "Storage" section
+<br/>![](01/62.png)
+
+12. Click on the bucket you've just created to open it
+<br/>![](01/72.png)
+
+13. Click on "Bucket Lock" tab
+<br/>![](01/73.png)
+
+14. Click on "Add lifecycle rule"
+<br/>![](01/74.png)
+
+15. Tick "Age" and put 7 days
+<br/>![](01/75.png)
+
+16. Tick "Delete"
+<br/>![](01/76.png)
+
+17. Save
+<br/>![](01/77.png)
+
 ---
 
 [Go back](../../README.md)
