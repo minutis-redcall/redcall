@@ -5,7 +5,6 @@ namespace App\Services;
 use App\Entity\Message;
 use App\Manager\MediaManager;
 use App\Manager\MessageManager;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Translation\TranslatorInterface;
 use Twilio\TwiML\VoiceResponse;
@@ -53,16 +52,16 @@ class VoiceCalls
         $this->messageManager = $messageManager;
     }
 
-    public function establishCall(string $uuid, Message $message)
+    public function establishCall(string $uuid, Message $message): VoiceResponse
     {
         return $this->getVoiceResponse(
             $uuid,
             $this->formatter->formatCallContent($message, false),
-            $this->formatter->formatCallChoicesContent($message),
+            $this->formatter->formatCallChoicesContent($message)
         );
     }
 
-    public function handleKeyPress(string $uuid, Message $message, string $digit)
+    public function handleKeyPress(string $uuid, Message $message, string $digit): VoiceResponse
     {
         // #, *
         if (!is_numeric($digit)) {
@@ -94,7 +93,7 @@ class VoiceCalls
         return $this->getVoiceResponse($uuid, $text);
     }
 
-    private function getInvalidAnswerResponse(string $uuid, Message $message): RedirectResponse
+    private function getInvalidAnswerResponse(string $uuid, Message $message): VoiceResponse
     {
         return $this->getVoiceResponse(
             $uuid,
@@ -110,7 +109,7 @@ class VoiceCalls
         return $media->getUrl();
     }
 
-    private function getVoiceResponse(string $uuid, string $text, string $gather = null): RedirectResponse
+    private function getVoiceResponse(string $uuid, string $text, string $gather = null): VoiceResponse
     {
         $response = new VoiceResponse();
 
@@ -133,10 +132,6 @@ class VoiceCalls
             );
         }
 
-        $media = $this->mediaManager->createMedia('xml', $response->asXML());
-
-        return new RedirectResponse(
-            $media->getUrl()
-        );
+        return $response;
     }
 }

@@ -19,11 +19,11 @@ class TextToSpeech
     {
         $voice = (new VoiceSelectionParams())
             ->setLanguageCode('fr-FR')
-            ->setName(sprintf('fr-FR-Wavenet-%s', $male ? 'B' : 'A'));
+            ->setName(sprintf('fr-FR-Wavenet-%s', $male ? 'D' : 'E'));
 
         $audioConfig = (new AudioConfig())
             ->setAudioEncoding(AudioEncoding::MP3)
-            ->setSpeakingRate(0.8);
+            ->setSpeakingRate(1);
 
         $synthesisInputText = (new SynthesisInput())
             ->setText($text);

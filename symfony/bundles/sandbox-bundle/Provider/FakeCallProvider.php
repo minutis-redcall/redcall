@@ -69,11 +69,16 @@ class FakeCallProvider implements CallProvider
         $event = new TwilioCallEvent($call, $keyPressed);
         $this->dispatcher->dispatch($event, $eventType);
 
+        $domxml = new \DOMDocument('1.0');
+        $domxml->preserveWhiteSpace = false;
+        $domxml->formatOutput = true;
+        $domxml->loadXML($event->getResponse()->asXML());
+
         $fakeCall = new FakeCall();
         $fakeCall->setType($hookType);
         $fakeCall->setPhoneNumber($phoneNumber);
         $fakeCall->setMessageId($context['message_id']);
-        $fakeCall->setContent($event->getResponse()->getTargetUrl());
+        $fakeCall->setContent($domxml->saveXML());
         $fakeCall->setCreatedAt(new \DateTime());
 
         $this->fakeCallManager->save($fakeCall);
