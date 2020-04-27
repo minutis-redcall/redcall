@@ -10,6 +10,7 @@ use Bundles\TwilioBundle\TwilioEvents;
 use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
 use Twilio\Rest\Client;
 use Twilio\TwiML\VoiceResponse;
@@ -70,11 +71,11 @@ class TwilioCallManager
     /**
      * @param array $parameters
      *
-     * @return VoiceResponse|null
+     * @return VoiceResponse|Response|null
      *
      * @throws \Exception
      */
-    public function handleIncomingCall(array $parameters): ?VoiceResponse
+    public function handleIncomingCall(array $parameters)
     {
         $entity = new TwilioCall();
         $entity->setUuid(Uuid::uuid4());

@@ -31,6 +31,7 @@ MAPBOX_API_KEY=some key
 
 GCP_PROJECT_NAME=project-name
 GCP_BASTION_INSTANCE=bastion
+GCP_STORAGE_BUCKET=redcall-public-prod-assets
 
 TWILIO_ACCOUNT_SID=xxx
 TWILIO_AUTH_TOKEN=xxx

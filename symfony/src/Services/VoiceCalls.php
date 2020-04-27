@@ -97,15 +97,9 @@ class VoiceCalls
 
     private function getMediaUrl(string $text): string
     {
-        $uuid = $this->mediaManager->createMp3($text);
+        $media = $this->mediaManager->createMp3($text);
 
-        $relativeUrl = $this->router->generate('media_play', [
-            'uuid' => $uuid,
-        ]);
-
-        $absoluteUrl = sprintf('%s%s', trim(getenv('WEBSITE_URL'), '/'), $relativeUrl);
-
-        return $absoluteUrl;
+        return $media->getUrl();
     }
 
     private function getVoiceResponse(string $text): VoiceResponse

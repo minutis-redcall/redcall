@@ -286,14 +286,14 @@ class CommunicationController extends BaseController
         $message->setPrefix('X');
         $message->setCode('xxxxxxxx');
 
-        $uuid = $this->mediaManager->createMp3(
+        $media = $this->mediaManager->createMp3(
             $this->formatter->formatMessageContent($message)
         );
 
         return new JsonResponse([
             'success' => true,
             'player' => $this->renderView('new_communication/player.html.twig', [
-                'uuid' => $uuid,
+                'media' => $media,
             ])
         ]);
     }
