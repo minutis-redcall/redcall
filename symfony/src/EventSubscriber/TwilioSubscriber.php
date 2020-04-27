@@ -149,7 +149,7 @@ class TwilioSubscriber implements EventSubscriberInterface
         $message = $this->getMessageFromCall($event);
 
         $event->setResponse(
-            $this->voiceCalls->establishCall($message)
+            $this->voiceCalls->establishCall($event->getCall()->getUuid(), $message)
         );
     }
 
@@ -158,7 +158,7 @@ class TwilioSubscriber implements EventSubscriberInterface
         $message = $this->getMessageFromCall($event);
 
         $event->setResponse(
-            $this->voiceCalls->handleKeyPress($message, $event->getKeyPressed())
+            $this->voiceCalls->handleKeyPress($event->getCall()->getUuid(), $message, $event->getKeyPressed())
         );
     }
 

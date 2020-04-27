@@ -37,7 +37,30 @@ class MediaManager
         $this->storage = $storage;
     }
 
-    public function createMp3(string $text): Media
+    public function createMedia(string $extension, string $text): Media
+    {
+        $callback = function($text) {
+            return $text;
+        };
+
+        return $this->getMedia($extension, $text, $callback);
+    }
+
+    public function createMp3(string $text, bool $male = false): Media
+    {
+        $callback = function($text) use ($male) {
+            return $this->textToSpeech->textToSpeech($text, $male);
+        };
+
+        return $this->getMedia('mp3', $text, $callback);
+    }
+
+    public function clearExpired()
+    {
+        $this->mediaRepository->clearExpired();
+    }
+
+    private function getMedia(string $extension, string $text, callable $callback)
     {
         /** @var Media $media */
         if ($media = $this->findOneByText($text)) {
@@ -48,9 +71,9 @@ class MediaManager
         $media->setUuid(Uuid::uuid4());
         $media->setHash(hash('SHA256', $text));
 
-        $filename = sprintf('%s.mp3', $media->getUuid());
-        $mp3 = $this->textToSpeech->textToSpeech($text);
-        $url = $this->storage->store($filename, $mp3);
+        $filename = sprintf('%s.%s', $media->getUuid(), $extension);
+
+        $url = $this->storage->store($filename, $callback($text));
 
         $media->setUrl($url);
         $media->setCreatedAt(new \DateTime());
@@ -59,11 +82,6 @@ class MediaManager
         $this->mediaRepository->save($media);
 
         return $media;
-    }
-
-    public function clearExpired()
-    {
-        $this->mediaRepository->clearExpired();
     }
 
     private function findOneByText(string $text): ?Media

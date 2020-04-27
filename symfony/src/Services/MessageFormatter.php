@@ -90,7 +90,7 @@ class MessageFormatter
         return GSM::enforceGSMAlphabet(implode("\n", $contentParts));
     }
 
-    public function formatCallContent(Message $message): string
+    public function formatCallContent(Message $message, bool $withChoices = true): string
     {
         $communication = $message->getCommunication();
 
@@ -114,7 +114,9 @@ class MessageFormatter
 
         $contentParts[] = $communication->getBody();
 
-        $contentParts[] = $this->formatCallChoicesContent($message);
+        if ($withChoices) {
+            $contentParts[] = $this->formatCallChoicesContent($message);
+        }
 
         return implode("\n", $contentParts);
     }
