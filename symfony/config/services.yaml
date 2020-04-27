@@ -84,4 +84,4 @@ services:
   App\Logger\ContextProcessor:
     arguments: ['@kernel', '@security.token_storage']
     tags:
-      - { name: monolog.processor, handler: slack }
+      - { name: monolog.processor }

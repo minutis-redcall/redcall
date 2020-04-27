@@ -10,6 +10,8 @@ use Bundles\TwilioBundle\TwilioEvents;
 use Psr\Log\LoggerInterface;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
 use Twilio\Rest\Client;
 use Twilio\TwiML\VoiceResponse;
@@ -70,11 +72,11 @@ class TwilioCallManager
     /**
      * @param array $parameters
      *
-     * @return VoiceResponse|null
+     * @return VoiceResponse|Response|null
      *
      * @throws \Exception
      */
-    public function handleIncomingCall(array $parameters): ?VoiceResponse
+    public function handleIncomingCall(array $parameters)
     {
         $entity = new TwilioCall();
         $entity->setUuid(Uuid::uuid4());
@@ -109,20 +111,27 @@ class TwilioCallManager
         $entity->setContext($context);
 
         try {
+            $event = new TwilioCallEvent($entity);
+            $this->eventDispatcher->dispatch($event, TwilioEvents::CALL_ESTABLISHED);
+
+            $options = [];
+            $response = $event->getResponse();
+            if ($response instanceof RedirectResponse) {
+                $options['url'] = $response->getTargetUrl();
+            } else if ($response instanceof VoiceResponse) {
+                $options['Twiml'] = $response->asXML();
+            } else {
+                throw new \LogicException('Can\'t establish call, no responses were provided.');
+            }
+
             $outbound = $this->getClient()->calls->create(
                 sprintf('+%s', $phoneNumber),
                 sprintf('+%s', getenv('TWILIO_NUMBER')),
-                [
-                    'url' => trim(getenv('WEBSITE_URL'), '/').$this->router->generate('twilio_outgoing_call', [
-                        'uuid' => $entity->getUuid(),
-                    ])
-                ]
+                $options
             );
 
             $entity->setSid($outbound->sid);
             $entity->setStatus($outbound->status);
-
-            $this->eventDispatcher->dispatch(new TwilioCallEvent($entity), TwilioEvents::CALL_INITIALIZED);
         } catch (\Exception $e) {
             $entity->setStatus('error');
             $entity->setError($e->getMessage());
@@ -141,20 +150,22 @@ class TwilioCallManager
         return $entity;
     }
 
-    public function handleCallEstablished(TwilioCall $call): ?VoiceResponse
+    /**
+     * @param TwilioCall $call
+     *
+     * @return Response|VoiceResponse|null
+     */
+    public function handleCallEstablished(TwilioCall $call)
     {
         $event = new TwilioCallEvent($call);
 
         $this->eventDispatcher->dispatch($event, TwilioEvents::CALL_ESTABLISHED);
 
-        $response = $event->getResponse();
-        if ($response) {
-            $call->setMessage($response->asXML());
-        }
+        $this->storeMessage($event, $call);
 
         $this->callRepository->save($call);
 
-        return $response;
+        return $event->getResponse();
     }
 
     public function handleKeyPressed(TwilioCall $call, string $keyPressed): ?VoiceResponse
@@ -163,14 +174,11 @@ class TwilioCallManager
 
         $this->eventDispatcher->dispatch($event, TwilioEvents::CALL_KEY_PRESSED);
 
-        $response = $event->getResponse();
-        if ($response) {
-            $call->setMessage($response->asXML());
-        }
+        $this->storeMessage($event, $call);
 
         $this->callRepository->save($call);
 
-        return $response;
+        return $event->getResponse();
     }
 
     public function fetchPrices(int $retries)
@@ -219,6 +227,19 @@ class TwilioCallManager
     public function foreach(callable $callback)
     {
         $this->callRepository->foreach($callback);
+    }
+
+    private function storeMessage(TwilioCallEvent $event, TwilioCall $call)
+    {
+        $response = $event->getResponse();
+        if ($response) {
+            if ($response instanceof VoiceResponse) {
+                $call->setMessage($response->asXML());
+            }
+            if ($response instanceof RedirectResponse) {
+                $call->setMessage($response->getTargetUrl());
+            }
+        }
     }
 
     private function getClient(): Client

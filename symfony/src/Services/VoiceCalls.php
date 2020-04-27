@@ -36,6 +36,13 @@ class VoiceCalls
      */
     private $messageManager;
 
+    /**
+     * @param RouterInterface     $router
+     * @param TranslatorInterface $translator
+     * @param MessageFormatter    $formatter
+     * @param MediaManager        $mediaManager
+     * @param MessageManager      $messageManager
+     */
     public function __construct(RouterInterface $router, TranslatorInterface $translator, MessageFormatter $formatter, MediaManager $mediaManager, MessageManager $messageManager)
     {
         $this->router = $router;
@@ -45,25 +52,27 @@ class VoiceCalls
         $this->messageManager = $messageManager;
     }
 
-    public function establishCall(Message $message)
+    public function establishCall(string $uuid, Message $message): VoiceResponse
     {
         return $this->getVoiceResponse(
-            $this->formatter->formatCallContent($message)
+            $uuid,
+            $this->formatter->formatCallContent($message, false),
+            $this->formatter->formatCallChoicesContent($message)
         );
     }
 
-    public function handleKeyPress(Message $message, string $digit)
+    public function handleKeyPress(string $uuid, Message $message, string $digit): VoiceResponse
     {
         // #, *
         if (!is_numeric($digit)) {
-            return $this->getInvalidAnswerResponse($message);
+            return $this->getInvalidAnswerResponse($uuid, $message);
         }
 
         $digit = intval($digit);
 
         // Repeat
         if (0 === $digit) {
-            return $this->establishCall($message);
+            return $this->establishCall($uuid, $message);
         }
 
         $answer = sprintf('%s%s', $message->getPrefix(), $digit);
@@ -71,7 +80,7 @@ class VoiceCalls
 
         // Invalid answer
         if (!$choice) {
-            return $this->getInvalidAnswerResponse($message);
+            return $this->getInvalidAnswerResponse($uuid, $message);
         }
 
         $this->messageManager->addAnswer($message, $answer);
@@ -81,40 +90,47 @@ class VoiceCalls
             '%choice%' => $choice->getLabel(),
         ]);
 
-        return $this->getVoiceResponse($text);
+        return $this->getVoiceResponse($uuid, $text);
     }
 
-    private function getInvalidAnswerResponse(Message $message): VoiceResponse
+    private function getInvalidAnswerResponse(string $uuid, Message $message): VoiceResponse
     {
-        $text = sprintf(
-            '%s %s',
+        return $this->getVoiceResponse(
+            $uuid,
             $this->translator->trans('message.call.unknown'),
             $this->formatter->formatCallChoicesContent($message)
         );
-
-        return $this->getVoiceResponse($text);
     }
 
-    private function getMediaUrl(string $text): string
+    private function getMediaUrl(string $text, bool $male = false): string
     {
-        $uuid = $this->mediaManager->createMp3($text);
+        $media = $this->mediaManager->createMp3($text, $male);
 
-        $relativeUrl = $this->router->generate('media_play', [
-            'uuid' => $uuid,
-        ]);
-
-        $absoluteUrl = sprintf('%s%s', trim(getenv('WEBSITE_URL'), '/'), $relativeUrl);
-
-        return $absoluteUrl;
+        return $media->getUrl();
     }
 
-    private function getVoiceResponse(string $text): VoiceResponse
+    private function getVoiceResponse(string $uuid, string $text, string $gather = null): VoiceResponse
     {
-        $url = $this->getMediaUrl($text);
-
         $response = new VoiceResponse();
-        $gather = $response->gather(['numDigits' => 1]);
-        $gather->play($url);
+
+        $response->play(
+            $this->getMediaUrl($text)
+        );
+
+        if ($gather) {
+            $url = $this->router->generate('twilio_outgoing_call', [
+                'uuid' => $uuid,
+            ]);
+
+            $keypad = $response->gather([
+                'numDigits' => 1,
+                'action' => trim(getenv('WEBSITE_URL'), '/').$url,
+            ]);
+
+            $keypad->play(
+                $this->getMediaUrl($gather, true),
+            );
+        }
 
         return $response;
     }

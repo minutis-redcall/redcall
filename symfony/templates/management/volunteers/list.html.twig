@@ -12,8 +12,9 @@
         <a href="{{ path('management_volunteers_create') }}" class="btn btn-secondary">
             {{ 'manage_volunteers.form.create'|trans }}
         </a>
-        <br/><br/>
     </div>
+
+    {{ form(search) }}
 
     <table class="table">
         <tbody>
@@ -163,11 +164,6 @@
     {{ macros.pager(volunteers) }}
 
     <br/>
-
-    {% if not is_redcross and is_granted('ROLE_ADMIN') %}
-        {{ form(importForm) }}
-        <br/>
-    {% endif %}
 
     <div class="text-center">
         {% if structure %}

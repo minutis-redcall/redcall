@@ -9,7 +9,6 @@ class TwilioEvents
     const MESSAGE_PRICE_UPDATED = 'twilio.message_price_updated';
     const MESSAGE_ERROR         = 'twilio.message_error';
 
-    const CALL_INITIALIZED   = 'twilio.call_initialized';
     const CALL_ESTABLISHED   = 'twilio.call_established';
     const CALL_KEY_PRESSED   = 'twilio.call_key_pressed';
     const CALL_RECEIVED      = 'twilio.call_received';

@@ -3,6 +3,7 @@
 namespace Bundles\TwilioBundle\Event;
 
 use Bundles\TwilioBundle\Entity\TwilioCall;
+use Symfony\Component\HttpFoundation\Response;
 use Twilio\TwiML\VoiceResponse;
 
 class TwilioCallEvent
@@ -18,7 +19,7 @@ class TwilioCallEvent
     private $keyPressed;
 
     /**
-     * @var VoiceResponse|null
+     * @var VoiceResponse|Response|null
      */
     private $response;
 
@@ -38,12 +39,20 @@ class TwilioCallEvent
         return $this->keyPressed;
     }
 
-    public function getResponse(): ?VoiceResponse
+    /**
+     * @return VoiceResponse|Response|null
+     */
+    public function getResponse()
     {
         return $this->response;
     }
 
-    public function setResponse(VoiceResponse $response): TwilioCallEvent
+    /**
+     * @param VoiceResponse|Response $response
+     *
+     * @return TwilioCallEvent
+     */
+    public function setResponse($response): TwilioCallEvent
     {
         $this->response = $response;
 

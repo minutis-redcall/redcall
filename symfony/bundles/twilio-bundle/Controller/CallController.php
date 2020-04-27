@@ -53,6 +53,10 @@ class CallController extends BaseController
             return new Response();
         }
 
+        if ($response instanceof Response) {
+            return $response;
+        }
+
         return new XmlResponse($response->asXml());
     }
 
@@ -79,10 +83,15 @@ class CallController extends BaseController
             $response = $this->callManager->handleKeyPressed($call, $keys);
         }
 
-        if ($response) {
+        if (!$response) {
+            return new Response();
+        } else if ($response instanceof Response) {
+            return $response;
+        } else if ($response) {
             return new XmlResponse($response->asXml());
         }
 
+        // Repeat
         return $this->redirectToRoute('twilio_outgoing_call', [
             'uuid' => $uuid,
         ]);

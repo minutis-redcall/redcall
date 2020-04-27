@@ -11,6 +11,7 @@ services:
     class: 'Bundles\SandboxBundle\Provider\FakeCallProvider'
     arguments:
       - '@App\Manager\MessageManager'
+      - '@Bundles\TwilioBundle\Manager\TwilioCallManager'
       - '@Bundles\SandboxBundle\Manager\FakeCallManager'
       - '@event_dispatcher'
     public: true

@@ -58,7 +58,7 @@ class TwilioSubscriber implements EventSubscriberInterface
             TwilioEvents::MESSAGE_PRICE_UPDATED    => 'onMessagePriceUpdated',
             TwilioEvents::MESSAGE_RECEIVED => 'onMessageReceived',
             TwilioEvents::MESSAGE_ERROR => 'onMessageError',
-            TwilioEvents::CALL_PRICE_UPDATED    => 'onCallPriceUpdated',
+            TwilioEvents::CALL_PRICE_UPDATED => 'onCallPriceUpdated',
             TwilioEvents::CALL_RECEIVED => 'onCallReceived',
             TwilioEvents::CALL_ESTABLISHED => 'onCallEstablished',
             TwilioEvents::CALL_KEY_PRESSED => 'onCallKeyPressed',
@@ -149,7 +149,7 @@ class TwilioSubscriber implements EventSubscriberInterface
         $message = $this->getMessageFromCall($event);
 
         $event->setResponse(
-            $this->voiceCalls->establishCall($message)
+            $this->voiceCalls->establishCall($event->getCall()->getUuid(), $message)
         );
     }
 
@@ -158,7 +158,7 @@ class TwilioSubscriber implements EventSubscriberInterface
         $message = $this->getMessageFromCall($event);
 
         $event->setResponse(
-            $this->voiceCalls->handleKeyPress($message, $event->getKeyPressed())
+            $this->voiceCalls->handleKeyPress($event->getCall()->getUuid(), $message, $event->getKeyPressed())
         );
     }
 

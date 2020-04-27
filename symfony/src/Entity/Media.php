@@ -36,9 +36,9 @@ class Media
     private $hash;
 
     /**
-     * @ORM\Column(type="blob")
+     * @ORM\Column(type="string", length=1024)
      */
-    private $content;
+    private $url;
 
     /**
      * @ORM\Column(type="datetime")
@@ -79,14 +79,14 @@ class Media
         return $this;
     }
 
-    public function getContent()
+    public function getUrl(): string
     {
-        return $this->content;
+        return $this->url;
     }
 
-    public function setContent($content): self
+    public function setUrl(string $url): self
     {
-        $this->content = $content;
+        $this->url = $url;
 
         return $this;
     }

@@ -47,6 +47,7 @@ cat deploy/${ENV}/dotenv-migrate >> symfony/.env
     gcloud compute ssh ${USER}@${GCP_BASTION_INSTANCE} -- -L 3304:${DATABASE_HOST} -N -f
 
     # Run the migration
+    php bin/console cache:clear
     php bin/console doctrine:migration:migrate --no-interaction
 
     # Clear up everything

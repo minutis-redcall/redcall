@@ -15,15 +15,15 @@ class TextToSpeech
      */
     private $client;
 
-    public function textToSpeech(string $text): string
+    public function textToSpeech(string $text, bool $male): string
     {
         $voice = (new VoiceSelectionParams())
             ->setLanguageCode('fr-FR')
-            ->setName('fr-FR-Wavenet-A');
+            ->setName(sprintf('fr-FR-Wavenet-%s', $male ? 'D' : 'E'));
 
         $audioConfig = (new AudioConfig())
             ->setAudioEncoding(AudioEncoding::MP3)
-            ->setSpeakingRate(0.8);
+            ->setSpeakingRate(1);
 
         $synthesisInputText = (new SynthesisInput())
             ->setText($text);
