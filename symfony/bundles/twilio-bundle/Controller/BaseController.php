@@ -14,8 +14,8 @@ abstract class BaseController extends AbstractController
         $validator = new RequestValidator(getenv('TWILIO_AUTH_TOKEN'));
 
         $validated = $validator->validate(
-            $request->headers->get('X-Twilio-Signature'),
-            $request->getUri(),
+            $request->headers->get('X-Twilio-Signature') ?? '',
+            $request->getUri() ?? '',
             $request->request->all()
         );
 
