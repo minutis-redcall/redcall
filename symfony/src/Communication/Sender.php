@@ -76,25 +76,32 @@ class Sender
 
     /**
      * @param Message $message
+     * @param bool    $sleep
      *
      * @throws \Twig\Error\LoaderError
      * @throws \Twig\Error\RuntimeError
      * @throws \Twig\Error\SyntaxError
      */
-    public function sendMessage(Message $message)
+    public function sendMessage(Message $message, bool $sleep = true)
     {
         switch ($message->getCommunication()->getType()) {
             case Communication::TYPE_SMS:
                 $this->sendSms($message);
-                usleep(self::PAUSE_SMS);
+                if ($sleep) {
+                    usleep(self::PAUSE_SMS);
+                }
                 break;
             case Communication::TYPE_CALL:
                 $this->sendCall($message);
-                usleep(self::PAUSE_CALL);
+                if ($sleep) {
+                    usleep(self::PAUSE_CALL);
+                }
                 break;
             case Communication::TYPE_EMAIL:
                 $this->sendEmail($message);
-                usleep(self::PAUSE_EMAIL);
+                if ($sleep) {
+                    usleep(self::PAUSE_EMAIL);
+                }
                 break;
         }
     }

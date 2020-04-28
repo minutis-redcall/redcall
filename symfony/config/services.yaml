@@ -5,7 +5,8 @@ parameters:
   locale_list: ['fr', 'en']
   locale_matcher: 'fr|en'
   google_recaptcha_site_key: '%env(GOOGLE_RECAPTCHA_SITE_KEY)%'
-  communication.processor: 'App\Communication\Processor\ExecProcessor'
+  communication.processor: 'App\Communication\Processor\QueueProcessor'
+  #communication.processor: 'App\Communication\Processor\ExecProcessor'
 
 services:
   # default configuration for services in *this* file
