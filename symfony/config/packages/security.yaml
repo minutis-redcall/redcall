@@ -34,6 +34,7 @@ security:
     # Technical
     - { path: '^/_ah', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
     - { path: '^/cron', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
+    - { path: '^/task', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
     - { path: '^/deploy', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
 
     # Minutis authentication

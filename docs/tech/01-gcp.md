@@ -280,6 +280,61 @@ Voice calls generate several files that are exposed on Google Storage in order t
 17. Save
 <br/>![](01/77.png)
 
+## Create Cloud Task queues
+
+In order to delegate sending messages a secure way (with retry, rate limits etc), 
+we need several Cloud Task queues:
+
+Warning: do not copy/paste, the first command will prompt you to enable the API.
+
+```
+# We send 10 sms/second
+gcloud tasks queues create messages-sms
+gcloud tasks queues update messages-sms \
+    --max-dispatches-per-second=10 \
+    --max-concurrent-dispatches=30 \
+    --max-attempts=100 \
+    --min-backoff=1s
+
+# We send 5 calls/second (warning: Twilio's default is 1, check your Twilio Voice API CPS)
+gcloud tasks queues create messages-call
+gcloud tasks queues update messages-call \
+    --max-dispatches-per-second=5 \
+    --max-concurrent-dispatches=30 \
+    --max-attempts=100 \
+    --min-backoff=1s
+
+# We can send up to 600 emails/second but don't want to destroy the instance
+gcloud tasks queues create messages-email
+gcloud tasks queues update messages-email \
+    --max-dispatches-per-second=500 \
+    --max-concurrent-dispatches=30 \
+    --max-attempts=100 \
+    --min-backoff=1s
+```
+
+Add the following variables in your .env:
+
+```
+GCP_QUEUE_SMS=messages-sms
+GCP_QUEUE_CALL=messages-call
+GCP_QUEUE_EMAIL=messages-email
+```
+
+You now need to add few permissions in your service account.
+
+1. In the menu, got o "IAM & Admin" on Product section, and go to "IAM"
+<br/>![](01/78.png)
+
+2. Find your app service account, and click "Edit"
+<br/>![](01/79.png)
+
+3. Add "Cloud Tasks Enqueuer" and "App Engine Viewer" roles, the second one lets the app use an App Engine handler for the tasks. 
+<br/>![](01/80.png)
+
+If you don't want to use GCP, you can set another processor in config/services.yaml,
+see in `src/Communication/Processor` to see the list of available processors.
+
 ---
 
 [Go back](../../README.md)
