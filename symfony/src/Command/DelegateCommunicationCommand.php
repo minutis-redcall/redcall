@@ -3,14 +3,13 @@
 namespace App\Command;
 
 use App\Base\BaseCommand;
-use App\Communication\Sender;
+use App\Communication\Processor\QueueProcessor;
 use App\Manager\CommunicationManager;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class SendCommunicationCommand extends BaseCommand
+class DelegateCommunicationCommand extends BaseCommand
 {
     /**
      * @var CommunicationManager
@@ -18,19 +17,16 @@ class SendCommunicationCommand extends BaseCommand
     private $communicationManager;
 
     /**
-     * @var Sender
+     * @var QueueProcessor
      */
-    private $sender;
+    private $processor;
 
-    /**
-     * @param CommunicationManager $communicationManager
-     * @param Sender               $sender
-     */
-    public function __construct(CommunicationManager $communicationManager, Sender $sender)
+    public function __construct(CommunicationManager $communicationManager, QueueProcessor $processor)
     {
         parent::__construct();
+
         $this->communicationManager = $communicationManager;
-        $this->sender = $sender;
+        $this->processor = $processor;
     }
 
     /**
@@ -39,10 +35,9 @@ class SendCommunicationCommand extends BaseCommand
     protected function configure()
     {
         $this
-            ->setName('communication:send')
-            ->setDescription('Send messages of the given communication')
-            ->addArgument('communication-id', InputArgument::REQUIRED, 'Communication ID')
-            ->addOption('force', null, InputOption::VALUE_NONE, 'Send messages even though they have been sent already.');
+            ->setName('communication:task')
+            ->setDescription('Enqueue at Google messages of the given communication')
+            ->addArgument('communication-id', InputArgument::REQUIRED, 'Communication ID');
     }
 
     /**
@@ -60,8 +55,6 @@ class SendCommunicationCommand extends BaseCommand
             return 1;
         }
 
-        date_default_timezone_set('Europe/Paris');
-
-        $this->sender->sendCommunication($communication, $input->getOption('force'));
+        $this->processor->enqueue($communication);
     }
 }
