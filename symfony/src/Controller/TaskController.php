@@ -44,12 +44,12 @@ class TaskController extends BaseController
             throw $this->createAccessDeniedException();
         }
 
-        $body = json_decode($request->getContent(), true) ?? null;
-        if (!$body) {
+        $payload = json_decode($request->getContent(), true) ?? null;
+        if (!$payload) {
             return new Response();
         }
 
-        $message = $this->messageManager->find($body['message_id'] ?? 0);
+        $message = $this->messageManager->find($payload['message_id'] ?? 0);
         if (!$message) {
             return new Response('', Response::HTTP_BAD_REQUEST);
         }
