@@ -114,6 +114,16 @@
                     </div>
 
                     {# -------------------------------------------------------------------------------- #}
+                    {# Relaunch button for admins only #}
+                    {# -------------------------------------------------------------------------------- #}
+
+                    <div class="clearfix"></div>
+                    <div>
+                        <a href="{{ path('communication_relaunch', {communication: communication.id, campaign: campaign.id}) }}">
+                            {{ 'campaign_status.relaunch_communication'| trans }}
+                        </a>
+                    </div>
+                    {# -------------------------------------------------------------------------------- #}
                     {# Message (shorten and normal version) #}
                     {# -------------------------------------------------------------------------------- #}
                     <div id="limited-body-{{ communication.id }}">
