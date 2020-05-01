@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Base\BaseController;
+use App\Communication\Processor\ProcessorInterface;
 use App\Entity\Campaign;
 use App\Entity\Communication;
 use App\Entity\Message;
@@ -23,6 +24,7 @@ use App\Tools\Random;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -380,6 +382,20 @@ class CommunicationController extends BaseController
         return $this->redirect($this->generateUrl('communication_index', [
             'id' => $campaign->getId(),
         ]));
+    }
+
+    /**
+     * @Route("campaign/{campaign}/communication/{communication}/relaunch", name="relaunch")
+     * @Security("is_granted('ROLE_ADMIN')")
+     * @param Communication $communication
+     * @param ProcessorInterface $processor
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
+     */
+    public function relaunchCommunication(Campaign $campaign, Communication $communication, ProcessorInterface $processor)
+    {
+        $processor->process($communication);
+
+        return $this->redirectToRoute('communication_index', ['id' => $campaign->getId()]);
     }
 
     private function getCommunicationFromRequest(Request $request): CommunicationModel
