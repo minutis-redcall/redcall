@@ -114,17 +114,6 @@
                     </div>
 
                     {# -------------------------------------------------------------------------------- #}
-                    {# Relaunch button for admins only #}
-                    {# -------------------------------------------------------------------------------- #}
-                    {% if is_granted('ROLE_ADMIN') %}
-                    <div class="clearfix"></div>
-                    <div>
-                        <a href="{{ path('communication_relaunch', {communication: communication.id, campaign: campaign.id}) }}">
-                            {{ 'campaign_status.relaunch_communication'| trans }}
-                        </a>
-                    </div>
-                    {% endif %}
-                    {# -------------------------------------------------------------------------------- #}
                     {# Message (shorten and normal version) #}
                     {# -------------------------------------------------------------------------------- #}
                     <div id="limited-body-{{ communication.id }}">
@@ -132,8 +121,25 @@
                         {% if communication.canExpandBody %}
                             <a href="#" class="show-complete-body" data-communication-id="{{ communication.id }}">🔽️</a>
                         {% endif %}
-                        {% if communication.volunteer %}
-                            <div class="float-right color-grey" style="font-weight: normal;" title="{{ communication.volunteer.nivol }}">{{ 'campaign_status.by'|trans({'%name%': communication.volunteer.displayName}) }}</div>
+                        {% if communication.volunteer or is_granted('ROLE_ADMIN') %}
+                            <div class="float-right color-grey" style="font-weight: normal;" {% if communication.volunteer %}title="{{ communication.volunteer.nivol }}"{% endif %}>
+                                {% if communication.volunteer %}
+                                    {{ 'campaign_status.by'|trans({'%name%': communication.volunteer.displayName}) }}
+                                {% endif %}
+
+                                {% if communication.volunteer and is_granted('ROLE_ADMIN') %}
+                                    <span style="color:black;">/</span>
+                                {% endif %}
+
+                                {# -------------------------------------------------------------------------------- #}
+                                {# Relaunch button (for admins only) #}
+                                {# -------------------------------------------------------------------------------- #}
+                                {% if is_granted('ROLE_ADMIN') %}
+                                    <a href="{{ path('communication_relaunch', {communication: communication.id, campaign: campaign.id}) }}">
+                                        {{ 'campaign_status.relaunch_communication'| trans }}
+                                    </a>
+                                {% endif %}
+                            </div>
                         {% endif %}
                     </div>
                     <div id="complete-body-{{ communication.id }}" class="d-none">
