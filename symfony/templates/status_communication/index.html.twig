@@ -116,13 +116,14 @@
                     {# -------------------------------------------------------------------------------- #}
                     {# Relaunch button for admins only #}
                     {# -------------------------------------------------------------------------------- #}
-
+                    {% if is_granted('ROLE_ADMIN') %}
                     <div class="clearfix"></div>
                     <div>
                         <a href="{{ path('communication_relaunch', {communication: communication.id, campaign: campaign.id}) }}">
                             {{ 'campaign_status.relaunch_communication'| trans }}
                         </a>
                     </div>
+                    {% endif %}
                     {# -------------------------------------------------------------------------------- #}
                     {# Message (shorten and normal version) #}
                     {# -------------------------------------------------------------------------------- #}
