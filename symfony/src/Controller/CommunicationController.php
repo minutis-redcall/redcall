@@ -389,12 +389,13 @@ class CommunicationController extends BaseController
      * @Security("is_granted('ROLE_ADMIN')")
      * @param Communication $communication
      * @param ProcessorInterface $processor
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
-    public function relaunchCommunication(Communication $communication, ProcessorInterface $processor)
+    public function relaunchCommunication(Campaign $campaign, Communication $communication, ProcessorInterface $processor)
     {
         $processor->process($communication);
 
-        return $this->redirectToRoute('communication_index', ['id' => $communication->getId()]);
+        return $this->redirectToRoute('communication_index', ['id' => $campaign->getId()]);
     }
 
     private function getCommunicationFromRequest(Request $request): CommunicationModel
