@@ -150,7 +150,7 @@ class PegassManager
 
         // Create the first entity if it does not exist
         $area = $this->pegassRepository->getEntity(Pegass::TYPE_AREA, null, false);
-        if (null === $area) {
+        if (!$area) {
             $area = new Pegass();
             $area->setType(Pegass::TYPE_AREA);
             $area->setUpdatedAt(new DateTime('1984-07-10')); // Expired
@@ -182,7 +182,7 @@ class PegassManager
 
         foreach ($data as $row) {
             $department = $this->pegassRepository->getEntity(Pegass::TYPE_DEPARTMENT, $row['id'], false);
-            if (null === $department) {
+            if (!$department) {
                 $department = new Pegass();
                 $department->setType(Pegass::TYPE_DEPARTMENT);
                 $department->setIdentifier($row['id']);
@@ -226,7 +226,7 @@ class PegassManager
 
         foreach ($data['structuresFilles'] as $row) {
             $structure = $this->pegassRepository->getEntity(Pegass::TYPE_STRUCTURE, $row['id'], false);
-            if (null === $structure) {
+            if (!$structure) {
                 $structure = new Pegass();
                 $structure->setType(Pegass::TYPE_STRUCTURE);
                 $structure->setIdentifier($row['id']);
@@ -286,7 +286,7 @@ class PegassManager
 
             foreach ($page['list'] as $row) {
                 $volunteer = $this->pegassRepository->getEntity(Pegass::TYPE_VOLUNTEER, $row['id'], $entity->getIdentifier(), false);
-                if (null === $volunteer) {
+                if (!$volunteer) {
                     $volunteer = new Pegass();
                     $volunteer->setType(Pegass::TYPE_VOLUNTEER);
                     $volunteer->setIdentifier($row['id']);
