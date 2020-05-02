@@ -1,0 +1,56 @@
+openapi: 3.0.2
+info:
+  description: >-
+    This API describes the contract between Tasks and RedCall in the
+    following flow: Webhooks -> Cloud Functions -> Tasks -> RedCall
+  version: 0.0.1
+  title: Controlled RedCall inbound webhooks
+  termsOfService: ''
+  contact:
+    email: minutis@blablacar.com
+servers:
+  - url: 'https://dev.redcall.minutis.croix-rouge.fr'
+    description: Preproduction server
+components:
+  schemas:
+    WebhookRequest:
+      type: "object"
+      properties:
+        uri:
+          type: "string"
+          description: "Absolute Cloud Function request URI"
+        headers:
+          type: "array"
+          description: "Headers attached the the Cloud Function request"
+          items:
+            properties:
+              name:
+                type: "string"
+                description: "Header name"
+              value:
+                type: "string"
+                description: "Header value"
+            required:
+              - name
+              - value
+        body:
+          type: "string"
+          description: "JSON representation of the Cloud Function request body"
+tags:
+  - name: endpoints
+    description: Available endpoints
+paths:
+  '/task/webhooks':
+    post:
+      tags:
+        - endpoints
+      summary: 'Forward webhooks to RedCall'
+      description: ""
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebhookRequest'
+      responses:
+        '204':
+          description: "No Content"

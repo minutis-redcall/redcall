@@ -17,7 +17,7 @@ const parent = client.queuePath(PROJECT_ID, TASK_QUEUE_LOCATION, TASK_QUEUE_NAME
 
 // Google Permissions : https://cloud.google.com/tasks/docs/reference/rest/v2/projects.locations.queues.tasks#appenginehttprequest
 //
-exports.webHooksToTasks = (req, res) => {
+exports.¤CloudFunctioName¤ = (req, res) => {
 
   console.info("processing message", JSON.stringify(
     {
@@ -26,42 +26,44 @@ exports.webHooksToTasks = (req, res) => {
       TASK_QUEUE_NAME:TASK_QUEUE_NAME,
       HTTP_REQUEST:
         {
+          query:req.query,
           body:req.body,
-          headers:req.headers,
-          query:req.body
+          headers:req.headers
         }}));
 
   return new Promise((resolve, reject) => {
 
+    // the data structure for the AppEngine
+    const bodyForAppEngine = {
+      WebhookRequest:{
+        uri:Buffer.from(JSON.stringify(req.query)).toString('base64'),
+        headers:req.headers,
+        body:req.body
+      }
+    };
+
+    const jsonBodyForAppEngine = Buffer.from(JSON.stringify(bodyForAppEngine)).toString("base64");
+
+    //the data structure for the Cloud Task
     const task = {
       appEngineHttpRequest: {
         httpMethod: "POST",
-        relativeUri: '/connect',
-        body: Buffer.from(JSON.stringify(req.body)).toString("base64"),
+        relativeUri: '/task/webhook',
+        body: jsonBodyForAppEngine,
         headers: {
           "Content-Type": "application/json"
         }
       }
     };
 
-    console.info("task created");
-
-    //task.appEngineHttpRequest.headers = Buffer.from(req.headers).toString('base64');
-    //task.appEngineHttpRequest.query   = Buffer.from(req.query  ).toString('base64');
-
-    console.info("body set");
     const request = {parent, task};
 
-    console.info("creating task");
+    console.info("calling create task");
     client.createTask(request).then((response) =>{
       console.info("Task posted", JSON.stringify(response));
-      res.status(200).send(JSON.stringify(response));
-      console.info("response sent");
+      res.status(200).send();
       resolve();
     });
 
-  }).catch((err) =>{
-    console.error(err.message, JSON.stringify(err));
-    res.status(500).send(JSON.stringify(err));
   });
 };
