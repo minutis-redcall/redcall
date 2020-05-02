@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Base\BaseController;
 use App\Communication\Sender;
 use App\Manager\MessageManager;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -39,10 +40,7 @@ class TaskController extends BaseController
      */
     public function message(Request $request)
     {
-        // Checking that request comes from App Engine
-        if (!$request->headers->get('X-Appengine-Taskname')) {
-            throw $this->createAccessDeniedException();
-        }
+        $this->checkOrigin($request);
 
         $payload = json_decode($request->getContent(), true) ?? null;
         if (!$payload) {
@@ -57,5 +55,27 @@ class TaskController extends BaseController
         $this->sender->sendMessage($message, false);
 
         return new Response();
+    }
+
+    /**
+     * @Route("/webhook")
+     */
+    public function webhook(Request $request, LoggerInterface $logger)
+    {
+        //$this->checkOrigin($request);
+
+        $logger->info('Task webhook endpoint was hit', [
+            'payload' => $request->getContent(),
+        ]);
+
+        return new Response('Hello, world!');
+    }
+
+    private function checkOrigin(Request $request)
+    {
+        // Checking that request comes from App Engine
+        if (!$request->headers->get('X-Appengine-Taskname')) {
+            throw $this->createAccessDeniedException();
+        }
     }
 }
