@@ -269,6 +269,7 @@ class StructureRepository extends BaseRepository
     {
         return $this
             ->searchAllQueryBuilder($criteria)
+            ->andWhere('s.enabled = true')
             ->setMaxResults($maxResults)
             ->getQuery()
             ->getResult();
