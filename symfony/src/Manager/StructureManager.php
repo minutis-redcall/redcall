@@ -180,4 +180,17 @@ class StructureManager
     {
         $this->structureRepository->synchronizeWithPegass();
     }
+
+    /**
+     * @param string|null $criteria
+     * @param int         $maxResults
+     * @return array|Structure[]
+     */
+    public function searchForCurrentUser(?string $criteria, int $maxResults)
+    {
+        return $this->searchForCurrentUserQueryBuilder($criteria)
+            ->setMaxResults($maxResults)
+            ->getQuery()
+            ->getResult();
+    }
 }

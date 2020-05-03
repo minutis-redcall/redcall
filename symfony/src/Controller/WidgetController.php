@@ -211,7 +211,7 @@ class WidgetController extends BaseController
         $results = [];
         foreach ($structures as $structure) {
             /** @var Structure $structure */
-            $results[] = $structure->toSearchResults($this->translator);
+            $results[] = $structure->toSearchResults();
         }
 
         return $this->json($results);
