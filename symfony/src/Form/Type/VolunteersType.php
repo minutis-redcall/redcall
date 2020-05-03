@@ -137,7 +137,7 @@ class VolunteersType extends AbstractType
                     }
                 }, $structures)),
             ];
-        }, $this->volunteerManager->searchForCurrentUser(null, 0xFFFFFFFF));
+        }, $this->volunteerManager->searchForCurrentUser(null, 0xFFFFFFFF, true));
     }
 
     /**
