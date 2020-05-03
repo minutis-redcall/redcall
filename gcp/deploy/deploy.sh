@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+#This script deploys the cloud function twice, one per endpoint (sms status, sms response)
+
 #https://cloud.google.com/functions/docs/env-var
 
 mkdir -p /tmp/twilioWebhooks/

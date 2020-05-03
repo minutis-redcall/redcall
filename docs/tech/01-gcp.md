@@ -14,6 +14,10 @@ We need several things in order to make the project work and maintainable:
 
 - an App Engine, which will expose the app outside
 
+- Cloud Function to receive webhook from twilio (sms status/response)
+
+- Cloud Tasks queues to do flow control between twilio webhook and the app engine
+
 Do not mess up with any of the fields, **especially the "locations" (europe-west1 here)** as Google do not
 allow to update an app engine instance once it has been created. Yeah, you can have many Compute Engine
 instances, many Cloud SQL instances, but only one f*cking App Engine instance that is not modifiable.
@@ -336,5 +340,32 @@ If you don't want to use GCP, you can set another processor in config/services.y
 see in `src/Communication/Processor` to see the list of available processors.
 
 ---
+
+
+## Create Cloud Functions & Task queues to handle twilio webhook
+
+Run `gcp/deploy/init/init_api.sh` once per environment.
+
+This will perform the following :
+
+- Enable required APIs
+- create a service account and set the appropriate right to run the cloud functions
+- create the cloud tasks queues
+
+Then run `gcp/deploy/deploy.sh` to deploy the cloud functions
+
+This will perform the following : 
+
+- create a temporary directory and copy the sources of the cloud function in it
+- update the code with the cloud function name 'webHooksToTasksSMSStatus'
+- deploy
+- rename again the cloud function name to 'webHooksToTasksSMSResponse'
+
+This creates two endpoint for webhooks that will post on different queues depending it's a SMS status 
+or SMS response from twilio
+
+To run a test (using curl), you can run `gcp/test/cloudFunctions/twilioWebhooks/sendPost.sh`
+This will post sample message with headers to the cloud functions, that should forward this to the AppEngine via Cloud Tasks
+
 
 [Go back](../../README.md)

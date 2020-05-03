@@ -19,23 +19,22 @@ components:
         uri:
           type: "string"
           description: "Absolute Cloud Function request URI"
+        queryParams:
+          type: "object"
+          description: "The parameters passed in the URL"
+          additionalProperties:
+            type: string
         headers:
-          type: "array"
+          type: "object"
           description: "Headers attached the the Cloud Function request"
-          items:
-            properties:
-              name:
-                type: "string"
-                description: "Header name"
-              value:
-                type: "string"
-                description: "Header value"
-            required:
-              - name
-              - value
+          additionalProperties:
+            type: string
         body:
           type: "string"
           description: "JSON representation of the Cloud Function request body"
+        origin:
+          type: "string"
+          description: "The origin of the request (sms status: 'webhook-sms-status', sms response : 'webhook-sms-responses'"
 tags:
   - name: endpoints
     description: Available endpoints

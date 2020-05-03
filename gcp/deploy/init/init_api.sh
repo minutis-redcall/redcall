@@ -1,5 +1,11 @@
 #!/usr/bin/env bash
 
+#This scripts is to be run once per environments
+# * enables the required APIs
+# * create a service account and set the appropriate right to run the cloud functions
+# * create the cloud tasks queues
+
+
 #Cloud Functions
 echo "gcloud services enable cloudfunctions.googleapis.com"
 gcloud services enable cloudfunctions.googleapis.com
@@ -21,8 +27,6 @@ gcloud projects add-iam-policy-binding redcall-dev \
 gcloud projects add-iam-policy-binding redcall-dev \
   --member serviceAccount:cf-twilio-webhook@redcall-dev.iam.gserviceaccount.com \
   --role roles/appengine.appViewer
-
-
 
 #https://cloud.google.com/tasks/docs/configuring-queues
 gcloud tasks queues create webhook-sms-status \
