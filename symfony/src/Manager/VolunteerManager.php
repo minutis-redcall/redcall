@@ -89,25 +89,16 @@ class VolunteerManager
         return $this->volunteerRepository->searchAll($criteria, $limit);
     }
 
-    /**
-     * @param UserInformation $user
-     * @param string|null     $criteria
-     *
-     * @return Volunteer[]|array
-     */
-    public function searchForCurrentUser(?string $criteria, int $limit)
+    public function searchForCurrentUser(?string $criteria, int $limit, bool $onlyEnabled = false)
     {
         return $this->volunteerRepository->searchForUser(
             $this->userInformationManager->findForCurrentUser(),
             $criteria,
-            $limit
+            $limit,
+            $onlyEnabled
         );
     }
 
-    /**
-     * @param Structure $structure
-     * @param string    $criteria
-     */
     public function searchInStructureQueryBuilder(Structure $structure, ?string $criteria)
     {
         return $this->volunteerRepository->searchInStructureQueryBuilder($structure, $criteria);

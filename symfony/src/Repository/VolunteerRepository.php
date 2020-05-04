@@ -121,17 +121,17 @@ class VolunteerRepository extends BaseRepository
      *
      * @return Volunteer[]
      */
-    public function searchForUser(UserInformation $user, ?string $keyword, int $maxResults): array
+    public function searchForUser(UserInformation $user, ?string $keyword, int $maxResults, bool $onlyEnabled = false): array
     {
-        return $this->searchForUserQueryBuilder($user, $keyword)
+        return $this->searchForUserQueryBuilder($user, $keyword, $onlyEnabled)
                     ->getQuery()
                     ->setMaxResults($maxResults)
                     ->getResult();
     }
 
-    public function searchForUserQueryBuilder(UserInformation $user, ?string $keyword): QueryBuilder
+    public function searchForUserQueryBuilder(UserInformation $user, ?string $keyword, bool $onlyEnabled = false): QueryBuilder
     {
-        $qb = $this->createAccessibleVolunteersQueryBuilder($user, false);
+        $qb = $this->createAccessibleVolunteersQueryBuilder($user, $onlyEnabled);
 
         if ($keyword) {
             $qb
