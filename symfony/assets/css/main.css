@@ -232,6 +232,10 @@ input:checked + .slider {
     padding: 5px 5px;
 }
 
+.flexdatalist-multiple-value input {
+    height: 30px !important;
+}
+
 .flexdatalist-multiple li.value {
     line-height: 30px;
 }

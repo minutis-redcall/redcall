@@ -56,14 +56,14 @@
                 });
             });
 
-            $('#{{ volunteerInput }}').flexdatalist({
+            $('#{{ volunteerInput }}').flexdtalist({
                 data: filteredVolunteers,
                 minLength: 1,
                 focusFirstResult: true,
                 selectionRequired: true,
                 multiple: true,
                 searchIn: ['firstName', 'lastName'],
-                textProperty: '{firstName} {lastName} {tagLabels}',
+                textProperty: '{firstName} {lastName} {tags}',
                 valueProperty: 'id',
                 visibleProperties: ['firstName', 'lastName', 'tagLabels'],
                 noResultsText: '{{ 'base.search.no_results'|trans|e('js') }}'

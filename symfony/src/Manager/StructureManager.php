@@ -141,6 +141,13 @@ class StructureManager
         return $counts;
     }
 
+    public function getVolunteerCountByStructuresForCurrentUser(): array
+    {
+        return $this->structureRepository->getVolunteerCountByStructuresForUser(
+            $this->userInformationManager->findForCurrentUser()
+        );
+    }
+
     /**
      * @param string $criteria
      *
@@ -179,5 +186,15 @@ class StructureManager
     public function synchronizeWithPegass()
     {
         $this->structureRepository->synchronizeWithPegass();
+    }
+
+    public function getStructuresQueryBuilderForUser(UserInformation $user): QueryBuilder
+    {
+        return $this->structureRepository->searchForUserQueryBuilder($user, null, true);
+    }
+
+    public function getStructuresForUser(UserInformation $user): array
+    {
+        return $this->structureRepository->searchForUser($user, null, 0xFFFFFFFF, true);
     }
 }

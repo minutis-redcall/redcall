@@ -133,11 +133,13 @@ class UserInformation
     }
 
     /**
-     * @return Collection|Structure[]
+     * @return Collection
      */
     public function getStructures(): Collection
     {
-        return $this->structures;
+        return $this->structures->filter(function(Structure $structure) {
+            return $structure->isEnabled();
+        });
     }
 
     public function addStructure(Structure $structure): self

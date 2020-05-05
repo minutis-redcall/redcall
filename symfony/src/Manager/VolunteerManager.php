@@ -3,10 +3,12 @@
 namespace App\Manager;
 
 use App\Entity\Structure;
+use App\Entity\Tag;
 use App\Entity\UserInformation;
 use App\Entity\Volunteer;
 use App\Repository\VolunteerRepository;
 use Doctrine\ORM\QueryBuilder;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class VolunteerManager
 {
@@ -21,14 +23,27 @@ class VolunteerManager
     private $userInformationManager;
 
     /**
+     * @var TagManager
+     */
+    private $tagManager;
+
+    /**
+     * @var TranslatorInterface
+     */
+    private $translator;
+
+    /**
      * @param VolunteerRepository    $volunteerRepository
      * @param UserInformationManager $userInformationManager
+     * @param TagManager             $tagManager
+     * @param TranslatorInterface    $translator
      */
-    public function __construct(VolunteerRepository $volunteerRepository,
-        UserInformationManager $userInformationManager)
+    public function __construct(VolunteerRepository $volunteerRepository, UserInformationManager $userInformationManager, TagManager $tagManager, TranslatorInterface $translator)
     {
-        $this->volunteerRepository    = $volunteerRepository;
+        $this->volunteerRepository = $volunteerRepository;
         $this->userInformationManager = $userInformationManager;
+        $this->tagManager = $tagManager;
+        $this->translator = $translator;
     }
 
     /**
@@ -239,5 +254,47 @@ class VolunteerManager
             'inaccessible' => $inaccessibles,
             'valid' => $accessibles,
         ];
+    }
+
+    public function loadVolunteersAudience(Structure $structure, array $nivols): array
+    {
+        $rows = $this->volunteerRepository->loadVolunteersAudience($structure, $nivols);
+
+        return $this->populateDatalist($rows);
+    }
+
+    public function searchVolunteersAudience(Structure $structure, string $criteria): array
+    {
+        $rows = $this->volunteerRepository->searchVolunteersAudience($structure, $criteria);
+
+        return $this->populateDatalist($rows);
+    }
+
+    public function searchVolunteerAudienceByTag(Tag $tag, Structure $structure): array
+    {
+        return $this->volunteerRepository->searchVolunteerAudienceByTag($tag, $structure);
+    }
+
+    private function populateDatalist(array $rows) : array
+    {
+        $tags = $this->tagManager->findTagsForNivols(
+            array_unique(array_column($rows, 'nivol'))
+        );
+
+        $mapped = [];
+        foreach ($rows as $volunteer) {
+            $volunteer['tags'] = [];
+            $mapped[$volunteer['nivol']] = $volunteer;
+        }
+
+        foreach ($tags as $tag) {
+            $mapped[$tag['nivol']]['tags'][] = $this->translator->trans(sprintf('tag.shortcuts.%s', $tag['label']));
+        }
+
+        foreach ($mapped as $nivol => $volunteer) {
+            $mapped[$nivol]['tags'] = implode(', ', $volunteer['tags']);
+        }
+
+        return array_values($mapped);
     }
 }

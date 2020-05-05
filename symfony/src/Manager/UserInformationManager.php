@@ -139,6 +139,20 @@ class UserInformationManager
         $this->save($userInformation);
     }
 
+    public function getCurrentUserStructuresQueryBuilder(): QueryBuilder
+    {
+        return $this->structureManager->getStructuresQueryBuilderForUser(
+            $this->findForCurrentUser()
+        );
+    }
+
+    public function getCurrentUserStructures(): array
+    {
+        return $this->structureManager->getStructuresForUser(
+            $this->findForCurrentUser()
+        );
+    }
+
     /**
      * @param string|null $criteria
      *

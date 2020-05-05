@@ -214,6 +214,28 @@ class StructureRepository extends BaseRepository
                     ->getArrayResult();
     }
 
+    public function getVolunteerCountByStructuresForUser(UserInformation $user): array
+    {
+        $rows = $this->createQueryBuilder('s')
+            ->select('s.id as structure_id, COUNT(v.id) as count')
+            ->join('s.users', 'u')
+            ->join('s.volunteers', 'v')
+            ->where('u.id = :id')
+            ->andWhere('v.enabled = true')
+            ->andWhere('s.enabled = true')
+            ->setParameter('id', $user->getId())
+            ->groupBy('s.id')
+            ->getQuery()
+            ->getArrayResult();
+
+        $counts = [];
+        foreach ($rows as $row) {
+            $counts[$row['structure_id']] = $row['count'];
+        }
+
+        return $counts;
+    }
+
     /**
      * @param UserInformation $userInformation
      *
@@ -280,13 +302,17 @@ class StructureRepository extends BaseRepository
      *
      * @return QueryBuilder
      */
-    public function searchForUserQueryBuilder(UserInformation $user, ?string $criteria): QueryBuilder
+    public function searchForUserQueryBuilder(UserInformation $user, ?string $criteria, bool $onlyEnabled = false): QueryBuilder
     {
         $qb = $this->createQueryBuilder('s')
             ->join('s.users', 'u')
             ->where('u.id = :user_id')
             ->setParameter('user_id', $user->getId())
         ;
+
+        if ($onlyEnabled) {
+            $qb->andWhere('s.enabled = true');
+        }
 
         if ($criteria) {
             $qb->andWhere('s.identifier LIKE :criteria OR s.name LIKE :criteria')
@@ -298,17 +324,10 @@ class StructureRepository extends BaseRepository
         return $qb;
     }
 
-    /**
-     * @param UserInformation $user
-     * @param string|null     $criteria
-     * @param int             $maxResults
-     *
-     * @return array
-     */
-    public function searchForUser(UserInformation $user, ?string $criteria, int $maxResults): array
+    public function searchForUser(UserInformation $user, ?string $criteria, int $maxResults, bool $onlyEnabled = false): array
     {
         return $this
-            ->searchForUserQueryBuilder($user, $criteria)
+            ->searchForUserQueryBuilder($user, $criteria, $onlyEnabled)
             ->setMaxResults($maxResults)
             ->getQuery()
             ->getResult();

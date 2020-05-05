@@ -22,4 +22,7 @@ notes.txt
 archives.txt
 
 TestCommand.php
+TestController.php
+test.html.twig
+
 /gcp/cloudFunctions/twilioWebhooks/node_modules/

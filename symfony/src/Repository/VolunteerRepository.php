@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Base\BaseRepository;
 use App\Entity\Structure;
+use App\Entity\Tag;
 use App\Entity\UserInformation;
 use App\Entity\Volunteer;
 use Bundles\PegassCrawlerBundle\Entity\Pegass;
@@ -134,19 +135,7 @@ class VolunteerRepository extends BaseRepository
         $qb = $this->createAccessibleVolunteersQueryBuilder($user, $onlyEnabled);
 
         if ($keyword) {
-            $qb
-                ->andWhere(
-                    $qb->expr()->orX(
-                        'v.nivol LIKE :keyword',
-                        'v.firstName LIKE :keyword',
-                        'v.lastName LIKE :keyword',
-                        'v.phoneNumber LIKE :keyword',
-                        'v.email LIKE :keyword',
-                        'CONCAT(v.firstName, \' \', v.lastName) LIKE :keyword',
-                        'CONCAT(v.lastName, \' \', v.firstName) LIKE :keyword'
-                    )
-                )
-                ->setParameter('keyword', sprintf('%%%s%%', $keyword));
+            $this->addSearchCriteria($qb, $keyword);
         }
 
         return $qb;
@@ -166,32 +155,45 @@ class VolunteerRepository extends BaseRepository
                     ->getResult();
     }
 
-    public function searchInStructureQueryBuilder(Structure $structure, ?string $keyword): QueryBuilder
+    public function searchInStructureQueryBuilder(Structure $structure, ?string $keyword, bool $enabled = false): QueryBuilder
     {
-        return $this->searchAllQueryBuilder($keyword)
+        return $this->searchAllQueryBuilder($keyword, $enabled)
             ->join('v.structures', 's')
             ->andWhere('s.id = :structure')
             ->setParameter('structure', $structure);
     }
 
-    public function searchAllQueryBuilder(?string $keyword): QueryBuilder
+    public function findInStructureQueryBuilder(Structure $structure, bool $enabled = false): QueryBuilder
     {
-        $qb = $this->createVolunteersQueryBuilder(false);
+        return $this->createVolunteersQueryBuilder($enabled)
+            ->join('v.structures', 's')
+            ->andWhere('s.id = :structure')
+            ->setParameter('structure', $structure);
+    }
+
+    private function addSearchCriteria(QueryBuilder $qb, string $criteria)
+    {
+        $qb
+            ->andWhere(
+                $qb->expr()->orX(
+                    'v.nivol LIKE :criteria',
+                    'v.firstName LIKE :criteria',
+                    'v.lastName LIKE :criteria',
+                    'v.phoneNumber LIKE :criteria',
+                    'v.email LIKE :criteria',
+                    'CONCAT(v.firstName, \' \', v.lastName) LIKE :criteria',
+                    'CONCAT(v.lastName, \' \', v.firstName) LIKE :criteria'
+                )
+            )
+            ->setParameter('criteria', sprintf('%%%s%%', $criteria));
+    }
+
+    public function searchAllQueryBuilder(?string $keyword, bool $enabled = false): QueryBuilder
+    {
+        $qb = $this->createVolunteersQueryBuilder($enabled);
 
         if ($keyword) {
-            $qb
-                ->andWhere(
-                    $qb->expr()->orX(
-                        'v.nivol LIKE :keyword',
-                        'v.firstName LIKE :keyword',
-                        'v.lastName LIKE :keyword',
-                        'v.phoneNumber LIKE :keyword',
-                        'v.email LIKE :keyword',
-                        'CONCAT(v.firstName, \' \', v.lastName) LIKE :keyword',
-                        'CONCAT(v.lastName, \' \', v.firstName) LIKE :keyword'
-                    )
-                )
-                ->setParameter('keyword', sprintf('%%%s%%', $keyword));
+            $this->addSearchCriteria($qb, $keyword);
         }
 
         return $qb;
@@ -360,4 +362,42 @@ class VolunteerRepository extends BaseRepository
 
         return array_column($disabled, 'nivol');
     }
+
+    public function loadVolunteersAudience(Structure $structure, array $nivols): array
+    {
+        return $this->findInStructureQueryBuilder($structure, true)
+            ->select('v.firstName, v.lastName, v.nivol')
+            ->andWhere('v.nivol IN (:nivols)')
+            ->setParameter('nivols', $nivols)
+            ->addOrderBy('v.firstName', 'ASC')
+            ->getQuery()
+            ->getArrayResult();
+    }
+
+    public function searchVolunteersAudience(Structure $structure, string $criteria): array
+    {
+        return $this->searchInStructureQueryBuilder($structure, $criteria, true)
+            ->select('v.firstName, v.lastName, v.nivol')
+            ->addOrderBy('v.firstName', 'ASC')
+            ->setMaxResults(25)
+            ->getQuery()
+            ->getArrayResult();
+    }
+
+    public function searchVolunteerAudienceByTag(Tag $tag, Structure $structure): array
+    {
+        $rows = $this->createVolunteersQueryBuilder(true)
+            ->select('v.nivol')
+            ->join('v.structures', 's')
+            ->andWhere('s.id = :structure')
+            ->setParameter('structure', $structure)
+            ->join('v.tags', 't')
+            ->andWhere('t.id = :tag')
+            ->setParameter('tag', $tag)
+            ->getQuery()
+            ->getArrayResult();
+
+        return array_column($rows, 'nivol');
+    }
+
 }
