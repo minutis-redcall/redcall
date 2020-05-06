@@ -7,6 +7,7 @@ use App\Entity\Tag;
 use App\Manager\StructureManager;
 use App\Manager\TagManager;
 use App\Manager\UserInformationManager;
+use App\Manager\VolunteerManager;
 use App\Repository\TagRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
@@ -32,6 +33,11 @@ class AudienceType extends AbstractType
     private $structureManager;
 
     /**
+     * @var VolunteerManager
+     */
+    private $volunteerManager;
+
+    /**
      * @var TagManager
      */
     private $tagManager;
@@ -41,10 +47,18 @@ class AudienceType extends AbstractType
      */
     private $translator;
 
-    public function __construct(UserInformationManager $userInformationManager, StructureManager $structureManager, TagManager $tagManager, TranslatorInterface $translator)
+    /**
+     * @param UserInformationManager $userInformationManager
+     * @param StructureManager       $structureManager
+     * @param VolunteerManager       $volunteerManager
+     * @param TagManager             $tagManager
+     * @param TranslatorInterface    $translator
+     */
+    public function __construct(UserInformationManager $userInformationManager, StructureManager $structureManager, VolunteerManager $volunteerManager, TagManager $tagManager, TranslatorInterface $translator)
     {
         $this->userInformationManager = $userInformationManager;
         $this->structureManager = $structureManager;
+        $this->volunteerManager = $volunteerManager;
         $this->tagManager = $tagManager;
         $this->translator = $translator;
     }
@@ -81,20 +95,50 @@ class AudienceType extends AbstractType
         ;
 
         // Every structure has its own list of volunteers
+        $structuresById = [];
         foreach ($structures as $structure) {
             /** @var Structure $structure */
             $builder->add(sprintf('structure-%d', $structure->getId()), TextType::class, [
                 'required' => false,
             ]);
+
+            $structuresById[$structure->getId()] = $structure;
         }
 
         $builder->addModelTransformer(new CallbackTransformer(
-            function (?array $nivols) {
-                // map nivols into the form (organize nivols per structures)
+            function (?array $nivols) use ($structuresById) {
+                if (!$nivols) {
+                    return [];
+                }
 
+                $formData = [
+                    'structures' => [],
+                ];
 
+                $byStructure = $this->volunteerManager->organizeNivolsByStructures($structuresById, $nivols);
+                foreach ($byStructure as $structureId => $list) {
+                    // Populate nivols field
+                    if (!$structureId) {
+                        $formData['nivols'] = implode(',', $list);
+                    }
+
+                    // Populate structure datalist
+                    $key = sprintf('structure-%d', $structuresById);
+                    $formData[$key] = implode(',', $list);
+
+                    // Populate structure ticks
+                    if (!in_array($structuresById[$structureId], $formData['structures'])) {
+                        $formData['structures'][] = $structuresById[$structureId];
+                    }
+                }
+
+                return $formData;
             },
             function (?array $formData) {
+                if (!$formData) {
+                    return [];
+                }
+
                 $nivols = [];
 
                 if ($formData['nivols']) {

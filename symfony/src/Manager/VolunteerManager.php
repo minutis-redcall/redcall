@@ -274,6 +274,25 @@ class VolunteerManager
         return $this->volunteerRepository->searchVolunteerAudienceByTag($tag, $structure);
     }
 
+    public function organizeNivolsByStructures(array $structures, array $nivols) : array
+    {
+        $organized = [];
+
+        $rows = $this->volunteerRepository->getNivolsAndStructures($structures, $nivols);
+        foreach ($rows as $row) {
+            if (!isset($organized[$row['structure_id']])) {
+                $organized[$row['structure_id']] = [];
+            }
+            $organized[$row['structure_id']][] = $row['nivol'];
+        }
+
+        // All other nivols were set in the "nivol" field
+        $diff = call_user_func_array('array_diff', array_merge($nivols, array_values($organized)));
+        $organized[0] = $diff;
+
+        return $organized;
+    }
+
     private function populateDatalist(array $rows) : array
     {
         $tags = $this->tagManager->findTagsForNivols(
