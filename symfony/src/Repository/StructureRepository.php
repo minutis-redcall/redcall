@@ -217,9 +217,10 @@ class StructureRepository extends BaseRepository
     public function getVolunteerCountByStructuresForUser(UserInformation $user): array
     {
         $rows = $this->createQueryBuilder('s')
-            ->select('s.id as structure_id, COUNT(v.id) as count')
+            ->select('s.id as structure_id, COUNT(DISTINCT v.id) as count')
             ->join('s.users', 'u')
             ->join('s.volunteers', 'v')
+            ->join('v.tags', 't')
             ->where('u.id = :id')
             ->andWhere('v.enabled = true')
             ->andWhere('s.enabled = true')

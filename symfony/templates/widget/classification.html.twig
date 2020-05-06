@@ -1,0 +1,36 @@
+{% set uuid = uuid() %}
+
+<div id="class-{{ uuid }}">
+
+    {% if classified.invalid|length %}
+        <p>
+            {{ 'audience.classify.invalid'|trans({'%nbr%': classified.invalid|length}) }}
+            <span class="volunteers-toggle-details btn btn-link" data-target="class-{{ uuid }}-invalid">🔍</span>
+        </p>
+        <div id="class-{{ uuid }}-invalid" class="d-none">{{ classified.invalid|join(', ') }}</div>
+    {% endif %}
+
+    {% if classified.disabled|length %}
+        <p>
+            {{ 'audience.classify.disabled'|trans({'%nbr%': classified.disabled|length}) }}
+            <span class="volunteers-toggle-details btn btn-link" data-target="class-{{ uuid }}-disabled">🔍</span>
+        </p>
+        <div id="class-{{ uuid }}-disabled" class="d-none">{{ classified.disabled|join(', ') }}</div>
+    {% endif %}
+
+    {% if classified.inaccessible|length %}
+        <p>
+            {{ 'audience.classify.inaccessible'|trans({'%nbr%': classified.inaccessible|length}) }}
+            <span class="volunteers-toggle-details btn btn-link" data-target="class-{{ uuid }}-inaccessible">🔍</span>
+        </p>
+        <div id="class-{{ uuid }}-inaccessible" class="d-none">{{ classified.inaccessible|join(', ') }}</div>
+    {% endif %}
+
+</div>
+
+<script type="text/javascript">
+    $('.volunteers-toggle-details').click(function(e) {
+        e.preventDefault();
+        $('#' + $(this).data('target')).toggleClass('d-none');
+    });
+</script>

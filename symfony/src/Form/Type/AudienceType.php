@@ -10,6 +10,7 @@ use App\Manager\UserInformationManager;
 use App\Repository\TagRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -86,6 +87,28 @@ class AudienceType extends AbstractType
                 'required' => false,
             ]);
         }
+
+        $builder->addModelTransformer(new CallbackTransformer(
+            function (?array $nivols) {
+                // map nivols into the form (organize nivols per structures)
+
+
+            },
+            function (?array $formData) {
+                $nivols = [];
+
+                if ($formData['nivols']) {
+                    $nivols = array_merge($nivols, array_unique(array_filter(preg_split('/[^0-9a-z*]/ui', $formData['nivols']))));
+                }
+
+                foreach ($formData['structures'] as $structure) {
+                    /** @var Structure $nivols */
+                    $nivols = array_merge($nivols, explode(',', $formData[sprintf('structure-%d', $structure->getId())]));
+                }
+
+                return array_unique($nivols);
+            }
+        ));
     }
 
     public function buildView(FormView $view, FormInterface $form, array $options)
@@ -93,8 +116,6 @@ class AudienceType extends AbstractType
         $view->vars['structures'] = $this->userInformationManager->getCurrentUserStructures();
         $view->vars['volunteer_counts'] = $this->structureManager->getVolunteerCountByStructuresForCurrentUser();
         $view->vars['tag_counts'] = $this->structureManager->getTagCountByStructuresForCurrentUser();
-
-
     }
 
     /**

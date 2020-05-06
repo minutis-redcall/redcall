@@ -135,6 +135,9 @@
                                    name="{{ child.vars.full_name }}"
                                    value="{{ child.vars.value }}"
 
+                                   {# Structures are hidden when there is only 1 to trigger #}
+                                   {% if form.structures|length <= 1 %}checked{% endif %}
+
                                    {# Adding tag counts to propery fill them up in the tags filter #}
                                    {% for tagId, count in tag_counts[child.vars.value] %}
                                        data-tag-count-{{ tagId }}="{{ count }}"
@@ -172,6 +175,11 @@
                         </label>
                     </div>
                 {% endfor %}
+
+                <div class="col-12 text-right">
+                    <span class="select-all-tags btn btn-link">{{ 'audience.select_all'|trans }}</span>
+                    <span class="clear-all-tags btn btn-link">{{ 'audience.unselect_all'|trans }}</span>
+                </div>
             </div>
 
             {# Rendering sliders for every structure #}
@@ -182,7 +190,7 @@
                         <div class="card-header" id="{{ card }}-head">
                             <h2 class="mb-0">
                                 <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#{{ card }}" aria-expanded="false" aria-controls="{{ card }}">
-                                    {{ structure.displayName }} (<span class="volunteer-selection-count-{{ structure.id }}">--</span>)
+                                    {{ structure.displayName }} (<span class="volunteer-selection-count volunteer-selection-count-{{ structure.id }}">--</span>)
                                 </button>
                             </h2>
                         </div>
@@ -199,7 +207,6 @@
                     </div>
                 {% endfor %}
             </div>
-
 
         </div>
 
@@ -219,10 +226,7 @@
         </div>
 
         {# Classification of the selected audience #}
-        <div class="audience-classification">
-
-
-        </div>
+        <div class="audience-classification"></div>
     </div>
 
     <script type="text/javascript">
@@ -275,10 +279,22 @@
             };
             refreshStructureCards();
 
+            {# Clearing everything #}
+            var clearAllSelection = function() {
+                $('#{{ form.vars.id }} .tag').prop('checked', false);
+                $('#{{ form.vars.id }} .volunteer-selection').each(function() {
+                    $(this).val('');
+                });
+                $('#{{ form.vars.id }} .volunteer-selection-count').each(function() {
+                    $(this).val('');
+                });
+            };
+
             {# Actions made when ticking / unticking a structure #}
             $('#{{ form.vars.id }} .toggle-all-structures, #{{ form.vars.id }} .structure').click(function() {
                 refreshTagCountsByTickedStructures();
                 refreshStructureCards();
+                clearAllSelection();
             });
 
             var flexes = {};
@@ -326,16 +342,46 @@
                 }
                 flex.on('change:flexdatalist', function() {
                     refreshSelectionCount();
+                    refreshClassification();
                 });
                 flex.on('after:flexdatalist.data', function() {
                     setTimeout(function() {
                         refreshSelectionCount();
+                        refreshClassification();
                     }, 100);
                 });
+
                 refreshSelectionCount();
             });
 
+            {# Classify selection #}
+            var refreshClassification = function() {
+                var count = 0;
+                $.each(flexes, function(index, flex) {
+                    count += flex.flexdatalist('value').length;
+                });
+                if (!count && !$('#{{ form.nivols.vars.id }}').val()) {
+                    $('#{{ form.vars.id }} .audience-classification').html('');
+                } else {
+                    var serialized = $('#{{ form.vars.id }}').closest('form').serialize();
+                    $.post('{{ path('widget_audience_classify') }}', serialized, function(classification) {
+                        $('#{{ form.vars.id }} .audience-classification').html(classification);
+                    })
+                }
+            };
+            var timeout = null;
+            $('#{{ form.nivols.vars.id }}').keyup(function() {
+                if (timeout) {
+                    clearTimeout(timeout);
+                }
+                timeout = setTimeout(function() {
+                    refreshClassification();
+                }, 500);
+            });
+            refreshClassification();
+
             {# When clicking on a tag, we should toggle volunteers #}
+            var tagCache = {};
             $('#{{ form.vars.id }} .tag').click(function() {
                 var that = $(this);
 
@@ -350,10 +396,7 @@
                     return;
                 }
 
-                $.post('{{ path('widget_audience_toggle_tag') }}', {
-                    tag: that.data('tag-id'),
-                    structures: structures,
-                }, function(structures) {
+                var populateFlexToggleTag = function(structures) {
                     $.each(structures, function(structureId, nivols) {
                         var flex = flexes[structureId];
                         $('#{{ form.vars.id }} .structure').each(function() {
@@ -368,19 +411,46 @@
                             }
                         });
                     });
+                };
+
+                var input = {
+                    tag: that.data('tag-id'),
+                    structures: structures,
+                };
+
+                var cacheKey = JSON.stringify(input);
+
+                if ('undefined' !== typeof(tagCache[cacheKey])) {
+                    populateFlexToggleTag(tagCache[cacheKey]);
+                } else {
+                    $.post('{{ path('widget_audience_toggle_tag') }}', input, function(structures) {
+                        tagCache[cacheKey] = structures;
+                        populateFlexToggleTag(structures);
+                    });
+                }
+            });
+
+            {# Click on "Select all" link #}
+            $('#{{ form.vars.id }} .select-all-tags').click(function() {
+                var sleep = 0;
+                $('#{{ form.vars.id }} .tag').each(function() {
+                    var that = $(this);
+                    setTimeout(function() {
+                        if (that.is(':checked')) {
+                            that.click();
+                            that.click();
+                        } else {
+                            that.click();
+                        }
+                    }, sleep);
+                    sleep += 500;
                 });
             });
 
-
-            /*
-            todo: clear up selection if another structure gets selected
-
-            add a "select all" / "clear all" link below tags and below every structure
-
-            add classification
-
-             */
-
+            {# Click on "Clear all" #}
+            $('#{{ form.vars.id }} .clear-all-tags').click(function() {
+                clearAllSelection();
+            });
         });
 
     </script>

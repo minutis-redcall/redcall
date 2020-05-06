@@ -7,6 +7,7 @@ use App\Entity\Campaign;
 use App\Entity\Structure;
 use App\Entity\UserInformation;
 use App\Entity\Volunteer;
+use App\Form\Type\AudienceType;
 use App\Form\Type\StructureWidgetType;
 use App\Form\Type\VolunteerWidgetType;
 use App\Manager\CampaignManager;
@@ -20,6 +21,7 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Translation\TranslatorInterface;
 
@@ -300,9 +302,24 @@ class WidgetController extends BaseController
      */
     public function audienceClassify(Request $request)
     {
+        $form = $this->createFormBuilder()
+            ->add('audience', AudienceType::class)
+            ->getForm();
 
+        $form->handleRequest($request);
+
+        $classification = $this->volunteerManager->classifyNivols(
+            $form->get('audience')->getData()
+        );
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            return $this->render('widget/classification.html.twig', [
+                'classified' => $classification,
+            ]);
+        }
+
+        return new Response();
     }
-
 
     private function getStructure(int $id): Structure
     {
