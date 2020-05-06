@@ -42,17 +42,24 @@ class CommunicationManager
     private $userInformationManager;
 
     /**
+     * @var VolunteerManager
+     */
+    private $volunteerManager;
+
+    /**
      * @param MessageManager          $messageManager
      * @param CommunicationRepository $communicationRepository
      * @param ProcessorInterface      $processor
      * @param UserInformationManager  $userInformationManager
+     * @param VolunteerManager        $volunteerManager
      */
-    public function __construct(MessageManager $messageManager, CommunicationRepository $communicationRepository, ProcessorInterface $processor, UserInformationManager $userInformationManager)
+    public function __construct(MessageManager $messageManager, CommunicationRepository $communicationRepository, ProcessorInterface $processor, UserInformationManager $userInformationManager, VolunteerManager $volunteerManager)
     {
         $this->messageManager = $messageManager;
         $this->communicationRepository = $communicationRepository;
         $this->processor = $processor;
         $this->userInformationManager = $userInformationManager;
+        $this->volunteerManager = $volunteerManager;
     }
 
     /**
@@ -89,7 +96,7 @@ class CommunicationManager
         $communicationEntity = $this->createCommunication($communicationModel);
 
         $campaign->addCommunication($communicationEntity);
-        foreach ($communicationModel->structures as $structure) {
+        foreach ($this->userInformationManager->getCurrentUserStructures() as $structure) {
             $campaign->addStructure($structure);
         }
 
@@ -135,10 +142,11 @@ class CommunicationManager
             $choiceKey++;
         }
 
-        $volunteers = array_unique(array_merge($communicationModel->volunteers, $communicationModel->nivols));
+        $volunteers = $this->volunteerManager->filterByNivolAndAccess($communicationModel->audience);
         foreach ($volunteers as $volunteer) {
             /** @var Volunteer $volunteer */
             if (!$volunteer->isEnabled()) {
+                // Useless but keep it as a safeguard
                 continue;
             }
 

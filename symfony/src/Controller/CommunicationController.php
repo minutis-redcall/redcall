@@ -206,7 +206,7 @@ class CommunicationController extends BaseController
             foreach ($selection as $volunteerId) {
                 $volunteer = $this->volunteerManager->find($volunteerId);
                 if ($volunteer) {
-                    $volunteers[] = $volunteer;
+                    $volunteers[] = $volunteer->getNivol();
                 }
             }
         }
@@ -215,8 +215,7 @@ class CommunicationController extends BaseController
          * @var CommunicationModel
          */
         $communication             = new CommunicationModel();
-        $communication->structures = $userInformation->computeStructureList();;
-        $communication->volunteers = $volunteers;
+        $communication->audience = $volunteers;
         $communication->answers    = [];
 
         $form = $this

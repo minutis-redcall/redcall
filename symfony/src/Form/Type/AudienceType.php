@@ -120,10 +120,11 @@ class AudienceType extends AbstractType
                     // Populate nivols field
                     if (!$structureId) {
                         $formData['nivols'] = implode(',', $list);
+                        continue;
                     }
 
                     // Populate structure datalist
-                    $key = sprintf('structure-%d', $structuresById);
+                    $key = sprintf('structure-%d', $structureId);
                     $formData[$key] = implode(',', $list);
 
                     // Populate structure ticks
@@ -157,7 +158,14 @@ class AudienceType extends AbstractType
 
     public function buildView(FormView $view, FormInterface $form, array $options)
     {
-        $view->vars['structures'] = $this->userInformationManager->getCurrentUserStructures();
+        $structures = [];
+        $rows = $this->userInformationManager->getCurrentUserStructures();
+        foreach ($rows as $structure) {
+            /** @var Structure $structure */
+            $structures[$structure->getId()] = $structure;
+        }
+
+        $view->vars['structures'] = $structures;
         $view->vars['volunteer_counts'] = $this->structureManager->getVolunteerCountByStructuresForCurrentUser();
         $view->vars['tag_counts'] = $this->structureManager->getTagCountByStructuresForCurrentUser();
     }

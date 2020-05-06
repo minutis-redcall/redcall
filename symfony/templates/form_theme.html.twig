@@ -136,17 +136,21 @@
                                    value="{{ child.vars.value }}"
 
                                    {# Structures are hidden when there is only 1 to trigger #}
-                                   {% if form.structures|length <= 1 %}checked{% endif %}
+                                   {% if form.structures|length <= 1
+                                       or (
+                                            form.structures.vars.data
+                                            and structures[child.vars.value] in form.structures.vars.data
+                                       ) %}checked{% endif %}
 
                                    {# Adding tag counts to propery fill them up in the tags filter #}
-                                   {% for tagId, count in tag_counts[child.vars.value] %}
+                                   {% for tagId, count in tag_counts[child.vars.value]|default([]) %}
                                        data-tag-count-{{ tagId }}="{{ count }}"
                                    {% endfor %}
                             >
                             <span class="slider"></span>
                         </label>
                         <label for="{{ child.vars.id }}">
-                            {{ child.vars.label }} ({{ volunteer_counts[child.vars.name] }})
+                            {{ child.vars.label }} ({{ volunteer_counts[child.vars.name]|default(0) }})
                         </label>
                     </div>
 
@@ -250,7 +254,10 @@
                     structures.each(function() {
                         var thisStructure = $(this);
                         if (thisStructure.is(':checked')) {
-                            count += thisStructure.data('tag-count-' + thisTag.val());
+                            var key = 'tag-count-' + thisTag.val();
+                            if (thisStructure.data(key)) {
+                                count += thisStructure.data('tag-count-' + thisTag.val());
+                            }
                         }
                     });
                     thisTag.closest('.tag-container').find('.tag-count').html(count);
@@ -355,19 +362,27 @@
             });
 
             {# Classify selection #}
+            var classificationTimeout = null;
             var refreshClassification = function() {
-                var count = 0;
-                $.each(flexes, function(index, flex) {
-                    count += flex.flexdatalist('value').length;
+                $(function() {
+                    if (classificationTimeout) {
+                        clearTimeout(classificationTimeout);
+                    }
+                    classificationTimeout = setTimeout(function() {
+                        var count = 0;
+                        $.each(flexes, function(index, flex) {
+                            count += flex.flexdatalist('value').length;
+                        });
+                        if (!count && !$('#{{ form.nivols.vars.id }}').val()) {
+                            $('#{{ form.vars.id }} .audience-classification').html('');
+                        } else {
+                            var serialized = $('#{{ form.vars.id }}').closest('form').serialize();
+                            $.post('{{ path('widget_audience_classify') }}', serialized, function(classification) {
+                                $('#{{ form.vars.id }} .audience-classification').html(classification);
+                            })
+                        }
+                    }, 500);
                 });
-                if (!count && !$('#{{ form.nivols.vars.id }}').val()) {
-                    $('#{{ form.vars.id }} .audience-classification').html('');
-                } else {
-                    var serialized = $('#{{ form.vars.id }}').closest('form').serialize();
-                    $.post('{{ path('widget_audience_classify') }}', serialized, function(classification) {
-                        $('#{{ form.vars.id }} .audience-classification').html(classification);
-                    })
-                }
             };
             var timeout = null;
             $('#{{ form.nivols.vars.id }}').keyup(function() {
@@ -432,16 +447,12 @@
 
             {# Click on "Select all" link #}
             $('#{{ form.vars.id }} .select-all-tags').click(function() {
+                clearAllSelection();
                 var sleep = 0;
                 $('#{{ form.vars.id }} .tag').each(function() {
                     var that = $(this);
                     setTimeout(function() {
-                        if (that.is(':checked')) {
-                            that.click();
-                            that.click();
-                        } else {
-                            that.click();
-                        }
+                        that.click();
                     }, sleep);
                     sleep += 500;
                 });

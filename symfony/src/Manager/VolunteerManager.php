@@ -287,7 +287,7 @@ class VolunteerManager
         }
 
         // All other nivols were set in the "nivol" field
-        $diff = call_user_func_array('array_diff', array_merge($nivols, array_values($organized)));
+        $diff = call_user_func_array('array_diff', array_merge([$nivols], array_values($organized)));
         $organized[0] = $diff;
 
         return $organized;

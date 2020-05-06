@@ -403,7 +403,7 @@ class VolunteerRepository extends BaseRepository
     public function getNivolsAndStructures(array $structures, array $nivols): array
     {
         return $this->createVolunteersQueryBuilder(true)
-            ->select('v.nivol. s.id as structure_id')
+            ->select('v.nivol, s.id as structure_id')
             ->join('v.structures', 's')
             ->andWhere('s.id IN (:structures)')
             ->setParameter('structures', $structures)

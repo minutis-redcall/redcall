@@ -224,23 +224,6 @@ class WidgetController extends BaseController
     }
 
     /**
-     * @Route(path="/nivols", name="nivols")
-     */
-    public function nivols(Request $request)
-    {
-        $nivols = array_unique(array_filter(preg_split('/[^0-9a-z*]/ui', $request->get('nivols'))));
-
-        $view = $this->renderView('widget/nivols.html.twig', [
-            'classified' => $this->volunteerManager->classifyNivols($nivols),
-        ]);
-
-        return new JsonResponse([
-            'success' => true,
-            'view' => $view,
-        ]);
-    }
-
-    /**
      * @Route(path="/audience/search", name="audience_search")
      */
     public function audienceSearch(Request $request)
@@ -308,11 +291,11 @@ class WidgetController extends BaseController
 
         $form->handleRequest($request);
 
-        $classification = $this->volunteerManager->classifyNivols(
-            $form->get('audience')->getData()
-        );
-
         if ($form->isSubmitted() && $form->isValid()) {
+            $classification = $this->volunteerManager->classifyNivols(
+                $form->get('audience')->getData()
+            );
+
             return $this->render('widget/classification.html.twig', [
                 'classified' => $classification,
             ]);
