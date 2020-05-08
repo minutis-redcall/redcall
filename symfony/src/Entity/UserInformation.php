@@ -142,11 +142,6 @@ class UserInformation
         });
     }
 
-    public function getEnabledStructures(): Collection
-    {
-        return $this->structures->filter(function($structure) {return $structure->isEnabled();});
-    }
-
     public function addStructure(Structure $structure): self
     {
         if (!$this->structures->contains($structure)) {
