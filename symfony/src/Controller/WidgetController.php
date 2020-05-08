@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Base\BaseController;
 use App\Entity\Campaign;
+use App\Entity\PrefilledAnswers;
 use App\Entity\Structure;
 use App\Entity\UserInformation;
 use App\Entity\Volunteer;
@@ -23,7 +24,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * @Route(path="/widget", name="widget_")
@@ -101,6 +102,7 @@ class WidgetController extends BaseController
         $prefilledAnswers = $this->prefilledAnswersManager->findByUserForStructureAndGlobal($userInformation);
 
         $choices = [];
+        /** @var PrefilledAnswers $prefilledAnswer */
         foreach ($prefilledAnswers as $prefilledAnswer) {
             foreach (Campaign::TYPES as $color) {
                 if (in_array($color, $prefilledAnswer->getColors())) {
@@ -217,7 +219,7 @@ class WidgetController extends BaseController
         $results = [];
         foreach ($structures as $structure) {
             /** @var Structure $structure */
-            $results[] = $structure->toSearchResults($this->translator);
+            $results[] = $structure->toSearchResults();
         }
 
         return $this->json($results);
