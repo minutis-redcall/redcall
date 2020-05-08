@@ -3,12 +3,9 @@
 namespace App\Form\Type;
 
 use App\Entity\Communication;
-use App\Entity\Structure;
 use App\Form\Model\Communication as CommunicationModel;
 use App\Manager\StructureManager;
 use App\Manager\UserInformationManager;
-use App\Repository\StructureRepository;
-use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -73,31 +70,7 @@ class CommunicationType extends AbstractType
                 'label'    => 'form.communication.fields.multiple_answer',
                 'required' => false,
             ])
-            ->add('structures', EntityType::class, [
-                'label'         => false,
-                'class'         => Structure::class,
-                'query_builder' => function (StructureRepository $er) use ($currentUser) {
-                    if ($this->security->isGranted('ROLE_ADMIN')) {
-                        return $er->getStructuresForAdminQueryBuilder($currentUser);
-                    } else {
-                        return $er->getStructuresForUserQueryBuilder($currentUser);
-                    }
-                },
-                'choice_label'  => function (Structure $structure) use ($volunteerCounts) {
-                    return sprintf('%s (%s)', $structure->getName(), $volunteerCounts[$structure->getId()] ?? 0);
-                },
-                'multiple'      => true,
-                'expanded'      => true,
-            ])
-            ->add('volunteers', VolunteersType::class, [
-                'error_mapping' => [
-                    '.' => 'volunteers',
-                ],
-            ])
-            ->add('nivols', NivolsWidgetType::class, [
-                'label' => 'form.communication.nivols_separator',
-                'required' => false
-            ])
+            ->add('audience', AudienceType::class)
             ->add('subject', TextType::class, [
                 'label'    => 'form.communication.fields.subject',
                 'required' => false,

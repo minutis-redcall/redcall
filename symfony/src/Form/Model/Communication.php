@@ -3,7 +3,6 @@
 namespace App\Form\Model;
 
 use App\Entity\Message;
-use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
@@ -28,21 +27,9 @@ class Communication
     public $type = \App\Entity\Communication::TYPE_SMS;
 
     /**
-     * @var Collection
-     *
-     * @Assert\Count(min="1", minMessage="form.campaign.errors.volunteers.min")
+     * @var array
      */
-    public $structures;
-
-    /**
-     * @var Collection
-     */
-    public $volunteers;
-
-    /**
-     * @var Collection
-     */
-    public $nivols;
+    public $audience;
 
     /**
      * @var string
@@ -119,7 +106,7 @@ class Communication
             }
         }
 
-        if (0 === count($this->nivols) && 0 === count($this->volunteers)) {
+        if (0 === count($this->audience)) {
             $context->buildViolation('form.campaign.errors.volunteers.min')
                     ->addViolation();
         }

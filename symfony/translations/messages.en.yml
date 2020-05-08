@@ -439,3 +439,17 @@ structure:
   form:
     parent: 'Optional parent structure'
     name: 'Structure name'
+
+audience:
+  structures: 'Structure(s) to trigger'
+  audience: 'Audience'
+  filter_input: 'Back to filters selection'
+  select_all: 'Select all'
+  unselect_all: 'Unselect all'
+  nivol_title: 'Copy/paste a list of nivols'
+  nivol_input: 'Provide a list of nivols'
+  classify:
+    invalid: '%nbr% nivols do not exist'
+    disabled: '%nbr% nivols are bound to disabled volunteers'
+    inaccessible: '%nbr% nivols are bound to volunteers that are not in your perimeter'
+    valid: '%nbr% nivols are valid'

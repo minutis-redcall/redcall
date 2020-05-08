@@ -3,10 +3,12 @@
 namespace App\Manager;
 
 use App\Entity\Structure;
+use App\Entity\Tag;
 use App\Entity\UserInformation;
 use App\Entity\Volunteer;
 use App\Repository\VolunteerRepository;
 use Doctrine\ORM\QueryBuilder;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class VolunteerManager
 {
@@ -21,14 +23,27 @@ class VolunteerManager
     private $userInformationManager;
 
     /**
+     * @var TagManager
+     */
+    private $tagManager;
+
+    /**
+     * @var TranslatorInterface
+     */
+    private $translator;
+
+    /**
      * @param VolunteerRepository    $volunteerRepository
      * @param UserInformationManager $userInformationManager
+     * @param TagManager             $tagManager
+     * @param TranslatorInterface    $translator
      */
-    public function __construct(VolunteerRepository $volunteerRepository,
-        UserInformationManager $userInformationManager)
+    public function __construct(VolunteerRepository $volunteerRepository, UserInformationManager $userInformationManager, TagManager $tagManager, TranslatorInterface $translator)
     {
-        $this->volunteerRepository    = $volunteerRepository;
+        $this->volunteerRepository = $volunteerRepository;
         $this->userInformationManager = $userInformationManager;
+        $this->tagManager = $tagManager;
+        $this->translator = $translator;
     }
 
     /**
@@ -89,25 +104,16 @@ class VolunteerManager
         return $this->volunteerRepository->searchAll($criteria, $limit);
     }
 
-    /**
-     * @param UserInformation $user
-     * @param string|null     $criteria
-     *
-     * @return Volunteer[]|array
-     */
-    public function searchForCurrentUser(?string $criteria, int $limit)
+    public function searchForCurrentUser(?string $criteria, int $limit, bool $onlyEnabled = false)
     {
         return $this->volunteerRepository->searchForUser(
             $this->userInformationManager->findForCurrentUser(),
             $criteria,
-            $limit
+            $limit,
+            $onlyEnabled
         );
     }
 
-    /**
-     * @param Structure $structure
-     * @param string    $criteria
-     */
     public function searchInStructureQueryBuilder(Structure $structure, ?string $criteria)
     {
         return $this->volunteerRepository->searchInStructureQueryBuilder($structure, $criteria);
@@ -246,7 +252,67 @@ class VolunteerManager
             'invalid' => $this->volunteerRepository->filterInvalidNivols($nivols),
             'disabled' => $this->volunteerRepository->filterDisabledNivols($nivols),
             'inaccessible' => $inaccessibles,
-            'valid' => $accessibles,
         ];
+    }
+
+    public function loadVolunteersAudience(Structure $structure, array $nivols): array
+    {
+        $rows = $this->volunteerRepository->loadVolunteersAudience($structure, $nivols);
+
+        return $this->populateDatalist($rows);
+    }
+
+    public function searchVolunteersAudience(Structure $structure, string $criteria): array
+    {
+        $rows = $this->volunteerRepository->searchVolunteersAudience($structure, $criteria);
+
+        return $this->populateDatalist($rows);
+    }
+
+    public function searchVolunteerAudienceByTag(Tag $tag, Structure $structure): array
+    {
+        return $this->volunteerRepository->searchVolunteerAudienceByTag($tag, $structure);
+    }
+
+    public function organizeNivolsByStructures(array $structures, array $nivols) : array
+    {
+        $organized = [];
+
+        $rows = $this->volunteerRepository->getNivolsAndStructures($structures, $nivols);
+        foreach ($rows as $row) {
+            if (!isset($organized[$row['structure_id']])) {
+                $organized[$row['structure_id']] = [];
+            }
+            $organized[$row['structure_id']][] = $row['nivol'];
+        }
+
+        // All other nivols were set in the "nivol" field
+        $diff = call_user_func_array('array_diff', array_merge([$nivols], array_values($organized)));
+        $organized[0] = $diff;
+
+        return $organized;
+    }
+
+    private function populateDatalist(array $rows) : array
+    {
+        $tags = $this->tagManager->findTagsForNivols(
+            array_unique(array_column($rows, 'nivol'))
+        );
+
+        $mapped = [];
+        foreach ($rows as $volunteer) {
+            $volunteer['tags'] = [];
+            $mapped[$volunteer['nivol']] = $volunteer;
+        }
+
+        foreach ($tags as $tag) {
+            $mapped[$tag['nivol']]['tags'][] = $this->translator->trans(sprintf('tag.shortcuts.%s', $tag['label']));
+        }
+
+        foreach ($mapped as $nivol => $volunteer) {
+            $mapped[$nivol]['tags'] = implode(', ', $volunteer['tags']);
+        }
+
+        return array_values($mapped);
     }
 }
