@@ -19,9 +19,9 @@
         <div class="text-left">
             <p>{{ 'management.current_structures'|trans }}</p>
 
-            {% for structure in user.enabledStructures %}
-                    <p>{{ structure.name }}</p>
-                {% endfor %}
+            {% for structure in user.structures %}
+                <p>{{ structure.name }}</p>
+            {% endfor %}
 
             {% if is_redcross %}
                 <p>{{ 'management.support_email'|trans({'%email%': email}) }}</p>
