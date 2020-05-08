@@ -287,16 +287,24 @@ class WidgetController extends BaseController
      */
     public function audienceClassify(Request $request)
     {
-        $form = $this->createFormBuilder()
-            ->add('audience', AudienceType::class)
-            ->getForm();
+        // Audience type can be located anywhere in the main form, so we need to seek for the
+        // audience data following the path created using its full name.
+        $name = trim(str_replace(['[', ']'], '.', $request->query->get('name')), '.');
+        $data = $request->request->all();
+        $path = array_filter(explode('.', $name));
+        foreach ($path as $node) {
+            $data = $data[$node];
+        }
 
-        $form->handleRequest($request);
+        // Recovering structures
+        foreach ($data['structures'] as $key => $structureId) {
+            $data['structures'][$key] = $this->structureManager->find($structureId);
+        }
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $classification = $this->volunteerManager->classifyNivols(
-                $form->get('audience')->getData()
-            );
+        // Classifying nivols
+        $nivols = AudienceType::getNivolsFromFormData($data);
+        if ($nivols) {
+            $classification = $this->volunteerManager->classifyNivols($nivols);
 
             return $this->render('widget/classification.html.twig', [
                 'classified' => $classification,
