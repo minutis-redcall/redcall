@@ -8,7 +8,7 @@
     {# -------------------------------------------------------------------------------- #}
     <br/>
     <div class="row skip-line">
-        <div class="col-12 h1" {% if campaign.active %}onclick="$('#change-campaign-label').modal();"{% endif %}>
+        <div class="col-12 h1" {% if campaign.active %}onclick="$('#change-campaign-label').modal();"{% endif %} style="cursor: pointer;">
             {% if not campaign.active %}
                 <strike>{{ campaign.label }}</strike>
             {% else %}
