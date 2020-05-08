@@ -20,6 +20,11 @@ class TagManager
         $this->tagRepository = $tagRepository;
     }
 
+    public function find(int $tagId): ?Tag
+    {
+        return $this->tagRepository->find($tagId);
+    }
+
     /**
      * @return array
      */
@@ -46,5 +51,10 @@ class TagManager
         if (!$this->tagRepository->findByLabel($tag->getLabel())) {
             $this->tagRepository->save($tag);
         }
+    }
+
+    public function findTagsForNivols(array $nivols): array
+    {
+        return $this->tagRepository->findTagsByNivol($nivols);
     }
 }

@@ -5,7 +5,7 @@ namespace App\Repository;
 use App\Base\BaseRepository;
 use App\Entity\Tag;
 use Doctrine\Bundle\DoctrineBundle\Registry;
-use Symfony\Bridge\Doctrine\RegistryInterface;
+use Doctrine\ORM\QueryBuilder;
 
 /**
  * @method Tag|null find($id, $lockMode = null, $lockVersion = null)
@@ -14,19 +14,11 @@ use Symfony\Bridge\Doctrine\RegistryInterface;
  */
 class TagRepository extends BaseRepository
 {
-    /**
-     * TagRepository constructor.
-     *
-     * @param RegistryInterface $registry
-     */
     public function __construct(Registry $registry)
     {
         parent::__construct($registry, Tag::class);
     }
 
-    /**
-     * @return array
-     */
     public function findAll()
     {
         $tags = [];
@@ -35,5 +27,23 @@ class TagRepository extends BaseRepository
         }
 
         return $tags;
+    }
+
+    public function findAllQueryBuilder(): QueryBuilder
+    {
+        return $this->createQueryBuilder('t')
+            ->orderBy('t.id', 'asc');
+    }
+
+    public function findTagsByNivol(array $nivols): array
+    {
+        return $this->createQueryBuilder('t')
+            ->select('v.nivol, t.label')
+            ->join('t.volunteers', 'v')
+            ->where('v.nivol IN (:nivols)')
+            ->setParameter('nivols', $nivols)
+            ->orderBy('t.id', 'ASC')
+            ->getQuery()
+            ->getArrayResult();
     }
 }

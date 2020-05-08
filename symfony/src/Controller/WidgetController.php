@@ -7,11 +7,13 @@ use App\Entity\Campaign;
 use App\Entity\Structure;
 use App\Entity\UserInformation;
 use App\Entity\Volunteer;
+use App\Form\Type\AudienceType;
 use App\Form\Type\StructureWidgetType;
 use App\Form\Type\VolunteerWidgetType;
 use App\Manager\CampaignManager;
 use App\Manager\PrefilledAnswersManager;
 use App\Manager\StructureManager;
+use App\Manager\TagManager;
 use App\Manager\UserInformationManager;
 use App\Manager\VolunteerManager;
 use Ramsey\Uuid\Uuid;
@@ -19,6 +21,7 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Translation\TranslatorInterface;
 
@@ -54,7 +57,12 @@ class WidgetController extends BaseController
     /**
      * @var UserInformationManager
      */
-    private $informationManager;
+    private $userInformationManager;
+
+    /**
+     * @var TagManager
+     */
+    private $tagManager;
 
     /**
      * @param CampaignManager         $campaignManager
@@ -62,20 +70,18 @@ class WidgetController extends BaseController
      * @param VolunteerManager        $volunteerManager
      * @param StructureManager        $structureManager
      * @param TranslatorInterface     $translator
+     * @param UserInformationManager  $userInformationManager
+     * @param TagManager              $tagManager
      */
-    public function __construct(CampaignManager $campaignManager,
-        PrefilledAnswersManager $prefilledAnswersManager,
-        VolunteerManager $volunteerManager,
-        StructureManager $structureManager,
-        TranslatorInterface $translator,
-        UserInformationManager $informationManager)
+    public function __construct(CampaignManager $campaignManager, PrefilledAnswersManager $prefilledAnswersManager, VolunteerManager $volunteerManager, StructureManager $structureManager, TranslatorInterface $translator, UserInformationManager $userInformationManager, TagManager $tagManager)
     {
-        $this->campaignManager         = $campaignManager;
+        $this->campaignManager = $campaignManager;
         $this->prefilledAnswersManager = $prefilledAnswersManager;
-        $this->volunteerManager        = $volunteerManager;
-        $this->structureManager        = $structureManager;
-        $this->translator              = $translator;
-        $this->informationManager      = $informationManager;
+        $this->volunteerManager = $volunteerManager;
+        $this->structureManager = $structureManager;
+        $this->translator = $translator;
+        $this->userInformationManager = $userInformationManager;
+        $this->tagManager = $tagManager;
     }
 
     public function prefilledAnswers(?int $campaignId = null)
@@ -91,7 +97,7 @@ class WidgetController extends BaseController
             $currentColor = $campaign->getType();
         }
 
-        $userInformation = $this->informationManager->findForCurrentUser();
+        $userInformation = $this->userInformationManager->findForCurrentUser();
         $prefilledAnswers = $this->prefilledAnswersManager->findByUserForStructureAndGlobal($userInformation);
 
         $choices = [];
@@ -218,19 +224,98 @@ class WidgetController extends BaseController
     }
 
     /**
-     * @Route(path="/nivols", name="nivols")
+     * @Route(path="/audience/search", name="audience_search")
      */
-    public function nivols(Request $request)
+    public function audienceSearch(Request $request)
     {
-        $nivols = array_unique(array_filter(preg_split('/[^0-9a-z*]/ui', $request->get('nivols'))));
+        $structure = $this->getStructure(
+            $request->get('structureId')
+        );
 
-        $view = $this->renderView('widget/nivols.html.twig', [
-            'classified' => $this->volunteerManager->classifyNivols($nivols),
-        ]);
+        $load = $request->get('load');
+        if ($load) {
+            if (!is_array($request->get('load'))) {
+                throw $this->createNotFoundException();
+            }
+
+            $results = $this->volunteerManager->loadVolunteersAudience($structure, $request->get('load'));
+        } else {
+            if (!$request->get('keyword')) {
+                throw $this->createNotFoundException();
+            }
+
+            $results = $this->volunteerManager->searchVolunteersAudience($structure, $request->get('keyword'));
+        }
 
         return new JsonResponse([
-            'success' => true,
-            'view' => $view,
+            'results' => $results,
+            'options' => [],
         ]);
+    }
+
+    /**
+     * @Route(path="/audience/toggle-tag", name="audience_toggle_tag")
+     */
+    public function audienceToggleTag(Request $request)
+    {
+        $tag = $this->tagManager->find(
+            $request->get('tag')
+        );
+
+        if (!$tag) {
+            throw $this->createNotFoundException();
+        }
+
+        $structures = [];
+        foreach ($request->get('structures') as $structure) {
+            $structures[] = $this->getStructure($structure);
+        }
+
+        $view = [];
+        foreach ($structures as $structure) {
+            /** @var Structure $structure */
+            $view[$structure->getId()] = $this->volunteerManager->searchVolunteerAudienceByTag($tag, $structure);
+        }
+
+        return new JsonResponse($view);
+    }
+
+    /**
+     * @Route(path="/audience/classify", name="audience_classify")
+     */
+    public function audienceClassify(Request $request)
+    {
+        $form = $this->createFormBuilder()
+            ->add('audience', AudienceType::class)
+            ->getForm();
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $classification = $this->volunteerManager->classifyNivols(
+                $form->get('audience')->getData()
+            );
+
+            return $this->render('widget/classification.html.twig', [
+                'classified' => $classification,
+            ]);
+        }
+
+        return new Response();
+    }
+
+    private function getStructure(int $id): Structure
+    {
+        $structure = $this->structureManager->find($id);
+
+        if (!$structure) {
+            throw $this->createNotFoundException();
+        }
+
+        if (!$this->isGranted('STRUCTURE', $structure)) {
+            throw $this->createAccessDeniedException();
+        }
+
+        return $structure;
     }
 }
