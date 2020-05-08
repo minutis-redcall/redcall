@@ -29,6 +29,9 @@ components:
           description: "Headers attached the the Cloud Function request"
           additionalProperties:
             type: string
+        method:
+          type: "string"
+          description: "the http method used by twilio to call the CF"
         body:
           type: "string"
           description: "JSON representation of the Cloud Function request body"
