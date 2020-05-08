@@ -80,11 +80,6 @@
 
     <br/>
 
-    {% if not is_redcross and is_granted('ROLE_ADMIN') %}
-        {{ form(importForm) }}
-        <br/>
-    {% endif %}
-
     <div class="text-center">
         <a href="{{ path('management_home') }}" class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
     </div>
