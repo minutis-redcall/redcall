@@ -53,11 +53,6 @@ cd ..
 # Cron jobs
 gcloud app deploy --quiet symfony/cron.yaml
 
-#Cloud Functions
-cd gcp/deploy/ || exit
-./deploy.sh
-cd --          || exit
-
 # Restoring current context
 cp deploying/.env symfony/.env
 cp deploying/google-service-account.json symfony/config/keys/google-service-account.json

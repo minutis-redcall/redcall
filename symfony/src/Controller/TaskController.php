@@ -68,6 +68,18 @@ class TaskController extends BaseController
             'payload' => $request->getContent(),
         ]);
 
+        $data = json_decode($request->getContent(), true);
+
+
+        // create($uri,
+        // $method = 'GET',
+        // $parameters = array(),
+        // $cookies = array(),
+        // $files = array(),
+        // $server = array(),
+        // $content = null)
+        $forward = Request::create();
+
         return new Response('Hello, world!');
     }
 
