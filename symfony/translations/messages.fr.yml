@@ -395,6 +395,14 @@ maintenance:
   modal:
     for_dev_only: 'Cette fonctionnalité est destinée aux développeurs uniquement, car cette action n''aura aucun effet sans changement dans la logique d''import Pegass. La resynchronisation Pegass est faite lorsqu''il y a un changement important dans le code qui change la manière d''importer un bénévole, par exemple si l''on souhaite importer de nouvelles compétences.'
     refresh_button: 'Rafraichir les données'
+  search:
+    title: 'Recherche avancée de nivols dans Pegass'
+    description: 'Cet outil vous aide à créer la bonne syntaxe XPath de recherche de nivols.'
+    nivol: 'Entrez un nivol pour voir son contenu en XML'
+    expression: 'Entrez l''expression XPath à tester'
+    match: 'L''expression match avec ce document: %data%'
+    notmatch: 'L''expression ne match pas avec ce document.'
+    invalid: 'L''expression n''est pas valide: %error%.'
   message:
     title: 'Mettre un message en haut de toutes les pages'
     type:

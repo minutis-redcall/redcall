@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+
+{% block menu %}{% endblock %}
+
+{% block body %}
+
+    <div class="jumbotron">
+
+        <h2>{{ 'maintenance.search.title'|trans }}</h2>
+
+        <p>{{ 'maintenance.search.description'|trans }}</p>
+
+        <br/>
+
+        <div class="row">
+            <div class="col-6">
+                {{ form(form) }}
+                <div id="result"></div>
+            </div>
+            <div class="col-6">
+                <textarea id="xml" style="width:90%" rows="30"></textarea>
+            </div>
+        </div>
+
+        <br/>
+
+        <a href="{{ path('admin_maintenance_index') }}"
+           class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+
+    </div>
+
+    <script type="text/javascript">
+
+        $('#{{ form.nivol.vars.id }}').change(function() {
+            $.post('{{ path('admin_maintenance_search_change_nivol') }}', $('#{{ form.nivol.vars.id }}').closest('form').serialize(), function (data) {
+                $('#xml').html(data.content);
+            });
+        });
+
+        var timeout = null;
+        $('#{{ form.expression.vars.id }}').keyup(function() {
+            if (timeout) {
+                clearTimeout(timeout);
+            }
+            timeout = setTimeout(function() {
+                $.post('{{ path('admin_maintenance_search_change_expression') }}', $('#{{ form.expression.vars.id }}').closest('form').serialize(), function (data) {
+                    $('#result').html(data.content);
+                });
+            }, 200);
+        });
+
+    </script>
+
+{% endblock %}

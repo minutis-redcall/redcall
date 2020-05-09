@@ -232,6 +232,8 @@ class VolunteerRepository extends BaseRepository
                 }
 
                 $this->_em->persist($entity);
+                $this->_em->detach($entity);
+                unset($entity);
             }
 
             $this->_em->flush();

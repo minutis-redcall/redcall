@@ -158,6 +158,182 @@ class Pegass
         }
     }
 
+    public function getXml() : string
+    {
+        $xml = sprintf('<%s>%s</%s>', $this->type, $this->toXml($this->getContent()), $this->type);
+
+        $dom = new \DOMDocument('1.0', 'UTF-8');
+        $dom->preserveWhiteSpace = false;
+        $dom->formatOutput = true;
+        $dom->loadXML($xml);
+
+        return $dom->saveXML();
+    }
+
+    public function xpath(string $template, array $parameters = [])
+    {
+        // Covers DOMDocument memory leaks
+        static $dom;
+        static $xpath;
+
+        // Builds the expression
+        foreach ($parameters as $index => $parameter) {
+            $template = str_replace(sprintf('{%d}', $index), $this->xpathQuote($parameter), $template);
+        }
+
+        $xml = sprintf('<%s>%s</%s>', $this->type, $this->toXml($this->getContent()), $this->type);
+
+        if (!$dom) {
+            $dom = new \DOMDocument();
+        }
+        $dom->loadXML($xml);
+
+        if (!$xpath) {
+            $xpath = new \DOMXPath($dom);
+        }
+
+        $xpath = new \DOMXPath($dom);
+        $values = [];
+        foreach ($xpath->query($template) as $match) {
+            /** @var \DOMElement $match */
+            $values[] = [$match->nodeName => $match->nodeValue];
+        }
+
+        return $values;
+    }
+
+    /**
+     * Credits:
+     * https://stackoverflow.com/a/1352556/1067003
+     *
+     * @param string $value
+     *
+     * @return string
+     */
+    public function xpathQuote(string $value) : string
+    {
+        if (false === strpos($value, '"')) {
+            return '"' . $value . '"';
+        }
+        if (false === strpos($value, '\'')) {
+            return '\'' . $value . '\'';
+        }
+
+        // if the value contains both single and double quotes, construct an
+        // expression that concatenates all non-double-quote substrings with
+        // the quotes, e.g.:
+        //
+        // concat("'foo'", '"', "bar")
+        $sb = 'concat(';
+        $substrings = explode('"', $value);
+        for($i = 0; $i < count($substrings); ++ $i) {
+            $needComma = ($i > 0);
+            if ($substrings [$i] !== '') {
+                if ($i > 0) {
+                    $sb .= ', ';
+                }
+                $sb .= '"' . $substrings [$i] . '"';
+                $needComma = true;
+            }
+            if ($i < (count($substrings) - 1)) {
+                if ($needComma) {
+                    $sb .= ', ';
+                }
+                $sb .= "'\"'";
+            }
+        }
+        $sb .= ')';
+
+        return $sb;
+    }
+
+    /**
+     * Credits:
+     * https://stackoverflow.com/a/45905136/731138
+     *
+     * @param array  $arr
+     * @param string $name_for_numeric_keys
+     * @param int    $nest
+     *
+     * @return string
+     */
+    private function toXml(array $arr, string $name_for_numeric_keys = 'val', int $nest = 0): string
+    {
+        // Covers DOMDocument memory leaks
+        static $tmpDom = [];
+
+        if (empty($arr)) {
+            // avoid having a special case for <root/> and <root></root> i guess
+            return '';
+        }
+
+        $is_iterable_compat = function($v): bool {
+            // php 7.0 compat for php7.1+'s is_itrable
+            return is_array($v) ||($v instanceof \Traversable);
+        };
+
+        $isAssoc = function(array $arr): bool {
+            // thanks to Mark Amery for this
+            if (array() === $arr)
+                return false;
+
+            return array_keys($arr) !== range(0, count($arr) - 1);
+        };
+
+        $endsWith = function(string $haystack, string $needle): bool {
+            // thanks to MrHus
+            $length = strlen($needle);
+            if ($length == 0) {
+                return true;
+            }
+
+            return (substr($haystack, - $length) === $needle);
+        };
+
+        // $arr = new RecursiveArrayIterator ( $arr );
+        // $iterator = new RecursiveIteratorIterator ( $arr, RecursiveIteratorIterator::SELF_FIRST );
+        $iterator = $arr;
+        $domd = new \DOMDocument();
+        $root = $domd->createElement('root');
+        foreach ($iterator as $key => $val) {
+            $ele = $domd->createElement(is_int($key) ? $name_for_numeric_keys : $key);
+            if (!empty($val) || $val === '0') {
+                if ($is_iterable_compat($val)) {
+                    $asoc = $isAssoc($val);
+                    $tmp = $this->toXml($val, is_int($key) ? $name_for_numeric_keys : $key, $nest + 1);
+                    if (!($tmpDom[$nest] ?? false)) {
+                        $tmpDom[$nest] = @\DOMDocument::loadXML('<root>' . $tmp . '</root>');
+                    } else {
+                        $tmpDom[$nest]->loadXML('<root>' . $tmp . '</root>');
+                    }
+                    foreach ($tmpDom[$nest]->getElementsByTagName("root")->item(0)->childNodes ?? [] as $tmp2) {
+                        $tmp3 = $domd->importNode($tmp2, true);
+                        if ($asoc) {
+                            $ele->appendChild($tmp3);
+                        } else {
+                            $root->appendChild($tmp3);
+                        }
+                    }
+                    unset($tmp, $tmp2, $tmp3);
+                    if (!$asoc) {
+                        continue;
+                    }
+                } else {
+                    $ele->textContent = $val;
+                }
+            }
+            $root->appendChild($ele);
+            unset($ele);
+        }
+
+        $domd->preserveWhiteSpace = false;
+        $domd->formatOutput = true;
+        $ret = trim($domd->saveXML($root));
+        $ret = trim(substr($ret, strlen('<root>'), -strlen('</root>')));
+
+        return $ret;
+    }
+
     public function getContent(): ?array
     {
         if ($this->content) {

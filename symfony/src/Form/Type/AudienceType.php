@@ -179,6 +179,10 @@ class AudienceType extends AbstractType
             $nivols = array_merge($nivols, explode(',', $formData[sprintf('structure-%d', $structure->getId())]));
         }
 
+        $nivols = array_map(function(string $nivol) {
+            return ltrim($nivol, '0');
+        });
+
         return array_unique($nivols);
     }
 
