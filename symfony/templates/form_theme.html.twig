@@ -380,7 +380,7 @@
                             $('#{{ form.vars.id }} .audience-classification').html('');
                         } else {
                             var serialized = $('#{{ form.vars.id }}').closest('form').serialize();
-                            $.post('{{ path('widget_audience_classify') }}', serialized, function(classification) {
+                            $.post('{{ path('widget_audience_classify') }}?name={{ form.vars.full_name }}', serialized, function(classification) {
                                 $('#{{ form.vars.id }} .audience-classification').html(classification);
                             })
                         }

@@ -136,22 +136,7 @@ class AudienceType extends AbstractType
                 return $formData;
             },
             function (?array $formData) {
-                if (!$formData) {
-                    return [];
-                }
-
-                $nivols = [];
-
-                if ($formData['nivols']) {
-                    $nivols = array_merge($nivols, array_unique(array_filter(preg_split('/[^0-9a-z*]/ui', $formData['nivols']))));
-                }
-
-                foreach ($formData['structures'] as $structure) {
-                    /** @var Structure $nivols */
-                    $nivols = array_merge($nivols, explode(',', $formData[sprintf('structure-%d', $structure->getId())]));
-                }
-
-                return array_unique($nivols);
+                return self::getNivolsFromFormData($formData);
             }
         ));
     }
@@ -168,6 +153,33 @@ class AudienceType extends AbstractType
         $view->vars['structures'] = $structures;
         $view->vars['volunteer_counts'] = $this->structureManager->getVolunteerCountByStructuresForCurrentUser();
         $view->vars['tag_counts'] = $this->structureManager->getTagCountByStructuresForCurrentUser();
+    }
+
+    /**
+     * This transformer is also used in the audience widget
+     *
+     * @param array|null $formData
+     *
+     * @return array
+     */
+    static public function getNivolsFromFormData(?array $formData)
+    {
+        if (!$formData) {
+            return [];
+        }
+
+        $nivols = [];
+
+        if ($formData['nivols']) {
+            $nivols = array_merge($nivols, array_unique(array_filter(preg_split('/[^0-9a-z*]/ui', $formData['nivols']))));
+        }
+
+        foreach ($formData['structures'] as $structure) {
+            /** @var Structure $nivols */
+            $nivols = array_merge($nivols, explode(',', $formData[sprintf('structure-%d', $structure->getId())]));
+        }
+
+        return array_unique($nivols);
     }
 
     /**

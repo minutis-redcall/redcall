@@ -8,7 +8,7 @@
     {# -------------------------------------------------------------------------------- #}
     <br/>
     <div class="row skip-line">
-        <div class="col-12 h1" {% if campaign.active %}onclick="$('#change-campaign-label').modal();"{% endif %}>
+        <div class="col-12 h1" {% if campaign.active %}onclick="$('#change-campaign-label').modal();"{% endif %} style="cursor: pointer;">
             {% if not campaign.active %}
                 <strike>{{ campaign.label }}</strike>
             {% else %}
@@ -17,10 +17,10 @@
             {% if not campaign.active %}
                 <em>({{ 'campaign.statuses.finished'|trans|lower }})</em>
             {% else %}
-                <span class="float-right badge badge-light">✏️</span>
+                <span class="float-right badge badge-light" style="cursor:pointer;">✏️</span>
             {% endif %}
         </div>
-        <div class="col-12" {% if campaign.active %}onclick="$('#change-color').modal();"{% endif %}>
+        <div class="col-12" {% if campaign.active %}onclick="$('#change-color').modal();"{% endif %} style="cursor:pointer;">
             {% set hexColor = constant('App\\Entity\\Campaign::COLORS')[campaign.type] %}
             <div id="current-color" class="w-100 text-center text-white badge" style="background-color:{{ hexColor }};">
                 {{ ('campaign.types.' ~ campaign.type)|trans|title }}
@@ -72,7 +72,7 @@
                     {# -------------------------------------------------------------------------------- #}
                     {# Communication title #}
                     {# -------------------------------------------------------------------------------- #}
-                    <h3 onclick="$('#change-communication-label-{{ communication.id }}').modal();">
+                    <h3 onclick="$('#change-communication-label-{{ communication.id }}').modal();" style="cursor:pointer;">
                         {{ macros.communicationIcon(communication) }}
                         {% if communication.label %}
                             {{ communication.label }}
@@ -318,7 +318,7 @@
                                         {% if answerCount and campaign.active %}
                                             <span id="open-message-{{ suffix }}"
                                                   data-message-id="{{ message.id }}"
-                                                  class="badge badge-light open-message">✏️</span>
+                                                  class="badge badge-light open-message" style="cursor:pointer;">✏️</span>
                                         {% endif %}
                                     </div>
 
