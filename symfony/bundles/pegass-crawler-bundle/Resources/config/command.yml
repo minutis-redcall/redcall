@@ -9,5 +9,6 @@ services:
   Bundles\PegassCrawlerBundle\Command\PegassSearchCommand:
     arguments:
       - '@Bundles\PegassCrawlerBundle\Manager\PegassManager'
+      - '@logger'
     tags:
       - { name: console.command }

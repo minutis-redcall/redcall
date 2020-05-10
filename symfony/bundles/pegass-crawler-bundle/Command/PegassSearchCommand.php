@@ -4,12 +4,24 @@ namespace Bundles\PegassCrawlerBundle\Command;
 
 use Bundles\PegassCrawlerBundle\Entity\Pegass;
 use Bundles\PegassCrawlerBundle\Manager\PegassManager;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
+/**
+ * Search all DLUS:
+ * php bin/console pegass:search '/volunteer/nominations/libelleCourt[text()="DLUS"]' --type=volunteer
+ *
+ * Search all DLUS in Paris:
+ * php bin/console pegass:search '/volunteer[user/structure/parent/id[.="80"]]/nominations/libelleCourt[.="DLUS"]' --type=volunteer
+ *
+ * Search all *DLUS* in Paris:
+ * php bin/console pegass:search '/volunteer[user/structure/parent/id[contains(.,"80")]]/nominations/libelleCourt[contains(., "DLUS")]' --type=volunteer
+ */
 class PegassSearchCommand extends Command
 {
     /**
@@ -17,11 +29,17 @@ class PegassSearchCommand extends Command
      */
     private $pegassManager;
 
-    public function __construct(PegassManager $pegassManager)
+    /**
+     * @var LoggerInterface|null
+     */
+    private $logger;
+
+    public function __construct(PegassManager $pegassManager, LoggerInterface $logger = null)
     {
         parent::__construct();
 
         $this->pegassManager = $pegassManager;
+        $this->logger = $logger ?: new NullLogger();
     }
 
     /**
@@ -43,18 +61,27 @@ class PegassSearchCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $start = microtime(true);
         $identifiers = [];
 
         $hashes = [];
         $count  = 0;
+        $values = [];
         foreach ($input->getOption('type') as $type) {
-            $this->pegassManager->foreach($type, function (Pegass $pegass) use ($input, &$hashes, &$count, &$identifiers) {
+            $this->pegassManager->foreach($type, function (Pegass $pegass) use ($input, &$hashes, &$count, &$identifiers, &$values) {
                 $match = $pegass->xpath($input->getArgument('template'), $input->getOption('parameter'));
                 if (!$match) {
                     return;
                 }
 
-                $identifiers[$pegass->getType()][] = $pegass->getIdentifier();
+                $this->logger->debug(sprintf('Found %s %s', $pegass->getType(), $pegass->getIdentifier()));
+                $identifiers[$pegass->getType()][] = ltrim($pegass->getIdentifier(), '0');
+
+                foreach ($match as $elem) {
+                    if (!in_array($elem, $values)) {
+                        $values[] = $elem;
+                    }
+                }
 
                 $count++;
                 if ($input->getOption('limit') && $count == $input->getOption('limit')) {
@@ -63,8 +90,13 @@ class PegassSearchCommand extends Command
             }, true);
         }
 
+        $output->writeln(sprintf('Values: %s', implode(', ', $values)));
         foreach ($identifiers as $type => $list) {
-            echo $type, ': ', implode(',', $list), PHP_EOL;
+            $output->writeln(sprintf('%s: %s', $type, implode(' ', $list)));
         }
+
+        $end = microtime(true);
+
+        $output->writeln(sprintf('Elapsed time: %.2f seconds', $end - $start));
     }
 }

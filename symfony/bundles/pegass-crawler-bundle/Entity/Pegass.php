@@ -302,10 +302,9 @@ class Pegass
                     $asoc = $isAssoc($val);
                     $tmp = $this->toXml($val, is_int($key) ? $name_for_numeric_keys : $key, $nest + 1);
                     if (!($tmpDom[$nest] ?? false)) {
-                        $tmpDom[$nest] = @\DOMDocument::loadXML('<root>' . $tmp . '</root>');
-                    } else {
-                        $tmpDom[$nest]->loadXML('<root>' . $tmp . '</root>');
+                        $tmpDom[$nest] = new \DOMDocument();
                     }
+                    @$tmpDom[$nest]->loadXML('<root>' . $tmp . '</root>');
                     foreach ($tmpDom[$nest]->getElementsByTagName("root")->item(0)->childNodes ?? [] as $tmp2) {
                         $tmp3 = $domd->importNode($tmp2, true);
                         if ($asoc) {
