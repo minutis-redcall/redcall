@@ -162,7 +162,7 @@ class WidgetController extends BaseController
             throw $this->createAccessDeniedException();
         }
 
-        $criteria = $request->query->get('keyword');
+        $criteria = trim($request->query->get('keyword'));
 
         if ($searchAll) {
             $volunteers = $this->volunteerManager->searchAll($criteria, 20);
@@ -208,7 +208,7 @@ class WidgetController extends BaseController
             throw $this->createAccessDeniedException();
         }
 
-        $criteria = $request->query->get('keyword');
+        $criteria = trim($request->query->get('keyword'));
 
         if ($searchAll) {
             $structures = $this->structureManager->searchAll($criteria, 20);
@@ -232,7 +232,7 @@ class WidgetController extends BaseController
     public function audienceSearch(Request $request)
     {
         $structure = $this->getStructure(
-            $request->get('structureId')
+            trim($request->get('structureId'))
         );
 
         $load = $request->get('load');
@@ -262,7 +262,7 @@ class WidgetController extends BaseController
     public function audienceToggleTag(Request $request)
     {
         $tag = $this->tagManager->find(
-            $request->get('tag')
+            trim($request->get('tag'))
         );
 
         if (!$tag) {
@@ -290,7 +290,7 @@ class WidgetController extends BaseController
     {
         // Audience type can be located anywhere in the main form, so we need to seek for the
         // audience data following the path created using its full name.
-        $name = trim(str_replace(['[', ']'], '.', $request->query->get('name')), '.');
+        $name = trim(str_replace(['[', ']'], '.', trim($request->query->get('name'))), '.');
         $data = $request->request->all();
         $path = array_filter(explode('.', $name));
         foreach ($path as $node) {
