@@ -7,17 +7,24 @@ parameters:
 
 doctrine:
     dbal:
-        # configure these for your database server
         driver: 'pdo_mysql'
         server_version: '5.7'
         charset: utf8mb4
         default_table_options:
             charset: utf8mb4
             collate: utf8mb4_unicode_ci
-        url: '%env(resolve:DATABASE_URL)%'
+        dbname: '%env(resolve:DATABASE_NAME)%'
+        host: '%env(resolve:DATABASE_HOST)%'
+        port: '%env(resolve:DATABASE_PORT)%'
+        user: '%env(resolve:DATABASE_USER)%'
+        password: '%env(resolve:DATABASE_PASSWORD)%'
         schema_filter: ~^(?!session)~
         logging: false
         profiling: false
+        wrapper_class: 'Facile\DoctrineMySQLComeBack\Doctrine\DBAL\Connection'
+        driver_class: 'Facile\DoctrineMySQLComeBack\Doctrine\DBAL\Driver\PDOMySql\Driver'
+        options:
+            x_reconnect_attempts: 3
     orm:
         auto_generate_proxy_classes: '%kernel.debug%'
         naming_strategy: doctrine.orm.naming_strategy.underscore

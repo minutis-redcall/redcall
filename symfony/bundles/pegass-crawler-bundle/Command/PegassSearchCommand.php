@@ -78,8 +78,9 @@ class PegassSearchCommand extends Command
                 $identifiers[$pegass->getType()][] = ltrim($pegass->getIdentifier(), '0');
 
                 foreach ($match as $elem) {
-                    if (!in_array($elem, $values)) {
-                        $values[] = $elem;
+                    $value = reset($elem);
+                    if (!in_array($value, $values)) {
+                        $values[] = $value;
                     }
                 }
 

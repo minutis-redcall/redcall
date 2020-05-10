@@ -1,2 +1,6 @@
 # Should contain the database URL from your local computer (host will most probably contain your db ip address)
-DATABASE_URL=mysql://<user>:<password>@<host>:3306/<database>
+DATABASE_NAME=redcall_preprod
+DATABASE_HOST=127.0.0.1
+DATABASE_PORT=3304
+DATABASE_USER=redcall_preprod
+DATABASE_PASSWORD=password
