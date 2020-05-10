@@ -144,6 +144,7 @@ class WidgetController extends BaseController
             )
             ->add('nivol', VolunteerWidgetType::class, [
                 'data' => $userInformation ? $userInformation->getNivol() : null,
+                'label' => false,
             ])
             ->getForm();
 

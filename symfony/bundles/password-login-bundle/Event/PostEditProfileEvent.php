@@ -2,22 +2,22 @@
 
 namespace Bundles\PasswordLoginBundle\Event;
 
-use Bundles\PasswordLoginBundle\Entity\User;
+use Bundles\PasswordLoginBundle\Entity\AbstractUser;
 
 class PostEditProfileEvent extends AbstractEvent
 {
     /**
-     * @var User
+     * @var AbstractUser
      */
     protected $oldUser;
 
     /**
      * PostEditProfileEvent constructor.
      *
-     * @param User $user
-     * @param User $oldUser
+     * @param AbstractUser $user
+     * @param AbstractUser $oldUser
      */
-    public function __construct(User $user, User $oldUser)
+    public function __construct(AbstractUser $user, AbstractUser $oldUser)
     {
         parent::__construct($user);
 
@@ -25,7 +25,7 @@ class PostEditProfileEvent extends AbstractEvent
     }
 
     /**
-     * @return User
+     * @return AbstractUser
      */
     public function getOldUser()
     {

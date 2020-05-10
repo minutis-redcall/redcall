@@ -56,5 +56,7 @@ class DelegateCommunicationCommand extends BaseCommand
         }
 
         $this->processor->enqueue($communication);
+
+        return 0;
     }
 }

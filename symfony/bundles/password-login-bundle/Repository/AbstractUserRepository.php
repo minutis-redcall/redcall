@@ -2,31 +2,30 @@
 
 namespace Bundles\PasswordLoginBundle\Repository;
 
-use Bundles\PasswordLoginBundle\Entity\User;
-use Doctrine\ORM\EntityRepository;
+use Bundles\PasswordLoginBundle\Base\BaseRepository;
+use Bundles\PasswordLoginBundle\Entity\AbstractUser;
 use Doctrine\ORM\QueryBuilder;
 
-class UserRepository extends EntityRepository
+abstract class AbstractUserRepository extends BaseRepository
 {
-    public function searchAll(?string $criteria)
+    public function findOneByUsername(string $username): ?AbstractUser
+    {
+        return parent::findOneByUsername($username);
+    }
+
+    public function searchAll(?string $criteria): array
     {
         return $this->searchAllQueryBuilder($criteria)
                     ->getQuery()
                     ->getResult();
     }
 
-    public function searchAllQueryBuilder(?string $criteria): QueryBuilder
+    private function searchAllQueryBuilder(?string $criteria): QueryBuilder
     {
         return $this->createQueryBuilder('u')
                     ->where('u.username LIKE :criteria')
                     ->setParameter('criteria', sprintf('%%%s%%', $criteria))
                     ->addOrderBy('u.registeredAt', 'DESC')
                     ->addOrderBy('u.username', 'ASC');
-    }
-
-    public function save(User $user)
-    {
-        $this->_em->persist($user);
-        $this->_em->flush($user);
     }
 }

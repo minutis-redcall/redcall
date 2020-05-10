@@ -51,5 +51,7 @@ class RefreshCommand extends BaseCommand
         $this->refreshManager->refresh(
             $input->getOption('force')
         );
+
+        return 0;
     }
 }

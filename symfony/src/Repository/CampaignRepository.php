@@ -4,7 +4,7 @@ namespace App\Repository;
 
 use App\Base\BaseRepository;
 use App\Entity\Campaign;
-use Bundles\PasswordLoginBundle\Entity\User;
+use Bundles\PasswordLoginBundle\Entity\AbstractUser;
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\ORM\QueryBuilder;
 
@@ -39,11 +39,11 @@ class CampaignRepository extends BaseRepository
     }
 
     /**
-     * @param User $user
+     * @param AbstractUser $user
      *
      * @return QueryBuilder
      */
-    public function getActiveCampaignsForAdminQueryBuilder(User $user): QueryBuilder
+    public function getActiveCampaignsForAdminQueryBuilder(AbstractUser $user): QueryBuilder
     {
         return $this
             ->createQueryBuilder('c')
@@ -55,21 +55,21 @@ class CampaignRepository extends BaseRepository
     }
 
     /**
-     * @param User $user
+     * @param AbstractUser $user
      *
      * @return QueryBuilder
      */
-    public function getActiveCampaignsForUserQueryBuilder(User $user): QueryBuilder
+    public function getActiveCampaignsForUserQueryBuilder(AbstractUser $user): QueryBuilder
     {
         return $this->getActiveCampaignsForAdminQueryBuilder($user);
     }
 
     /**
-     * @param User $user
+     * @param AbstractUser $user
      *
      * @return QueryBuilder
      */
-    public function getInactiveCampaignsForAdminQueryBuilder(User $user): QueryBuilder
+    public function getInactiveCampaignsForAdminQueryBuilder(AbstractUser $user): QueryBuilder
     {
         return $this
             ->createQueryBuilder('c')
@@ -81,11 +81,11 @@ class CampaignRepository extends BaseRepository
     }
 
     /**
-     * @param User $user
+     * @param AbstractUser $user
      *
      * @return QueryBuilder
      */
-    public function getInactiveCampaignsForUserQueryBuilder(User $user): QueryBuilder
+    public function getInactiveCampaignsForUserQueryBuilder(AbstractUser $user): QueryBuilder
     {
         return $this->getInactiveCampaignsForAdminQueryBuilder($user);
     }

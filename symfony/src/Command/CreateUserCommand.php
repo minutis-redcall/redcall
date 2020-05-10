@@ -6,7 +6,7 @@ use App\Base\BaseCommand;
 use App\Entity\UserInformation;
 use App\Manager\UserInformationManager;
 use App\Manager\VolunteerManager;
-use Bundles\PasswordLoginBundle\Entity\User;
+use Bundles\PasswordLoginBundle\Entity\AbstractUser;
 use Bundles\PasswordLoginBundle\Manager\UserManager;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Console\Input\InputArgument;
@@ -74,7 +74,7 @@ class CreateUserCommand extends BaseCommand
                 continue;
             }
 
-            if ($this->userManager->findByUsername($volunteer->getEmail())) {
+            if ($this->userManager->findOneByUsername($volunteer->getEmail())) {
                 $output->writeln(sprintf('KO %s: user having this email already exist', $nivol));
                 continue;
             }
@@ -84,7 +84,7 @@ class CreateUserCommand extends BaseCommand
                 continue;
             }
 
-            $user = new User();
+            $user = new AbstractUser();
             $user->setUsername($volunteer->getEmail());
             $user->setPassword(Uuid::uuid4());
             $user->setIsVerified(true);
@@ -100,5 +100,7 @@ class CreateUserCommand extends BaseCommand
 
             $output->writeln(sprintf('OK %s: user created', $nivol));
         }
+
+        return 0;
     }
 }

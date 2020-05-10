@@ -2,14 +2,19 @@
 
 namespace Bundles\PasswordLoginBundle\Repository;
 
+use Bundles\PasswordLoginBundle\Base\BaseRepository;
 use Bundles\PasswordLoginBundle\Entity\Captcha;
-use Doctrine\ORM\EntityRepository;
+use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
-use Doctrine\ORM\UnitOfWork;
 
-class CaptchaRepository extends EntityRepository
+class CaptchaRepository extends BaseRepository
 {
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, Captcha::class);
+    }
+
     public function clearExpired(): void
     {
         $this->_em->createQuery('
@@ -76,22 +81,5 @@ class CaptchaRepository extends EntityRepository
         $captcha->setTimestamp(time());
 
         $this->save($captcha);
-    }
-
-    /**
-     * @param Captcha $captcha
-     *
-     * @throws ORMException
-     * @throws OptimisticLockException
-     */
-    private function save(Captcha $captcha): void
-    {
-        if (UnitOfWork::STATE_MANAGED === $this->_em->getUnitOfWork()->getEntityState($captcha)) {
-            $this->_em->merge($captcha);
-        } else {
-            $this->_em->persist($captcha);
-        }
-
-        $this->_em->flush($captcha);
     }
 }

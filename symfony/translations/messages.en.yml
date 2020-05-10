@@ -15,6 +15,10 @@ admin:
     locked_details: 'Structures of a frozen user are not updated when Pegass is updating its bound volunteer.'
     lock: 'Lock'
     unlock: 'Unlock'
+    developered: 'Developer'
+    developered_details: 'A developer can integrate RedCall APIs and access technical features.'
+    developer: 'Grant developer access'
+    undeveloper: 'Remove developer access'
   dashboard:
     title: 'Statistics'
   statistics:

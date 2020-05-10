@@ -7,7 +7,7 @@ use App\Entity\Campaign as CampaignEntity;
 use App\Entity\Communication;
 use App\Form\Model\Campaign as CampaignModel;
 use App\Repository\CampaignRepository;
-use Bundles\PasswordLoginBundle\Entity\User;
+use Bundles\PasswordLoginBundle\Entity\AbstractUser;
 use DateTime;
 use Doctrine\ORM\QueryBuilder;
 use Exception;
@@ -134,41 +134,41 @@ class CampaignManager
     }
 
     /**
-     * @param User $user
+     * @param AbstractUser $user
      *
      * @return QueryBuilder
      */
-    public function getActiveCampaignsForUserQueryBuilder(User $user): QueryBuilder
+    public function getActiveCampaignsForUserQueryBuilder(AbstractUser $user): QueryBuilder
     {
         return $this->campaignRepository->getActiveCampaignsForUserQueryBuilder($user);
     }
 
     /**
-     * @param User $user
+     * @param AbstractUser $user
      *
      * @return QueryBuilder
      */
-    public function getInactiveCampaignsForUserQueryBuilder(User $user): QueryBuilder
+    public function getInactiveCampaignsForUserQueryBuilder(AbstractUser $user): QueryBuilder
     {
         return $this->campaignRepository->getInactiveCampaignsForUserQueryBuilder($user);
     }
 
     /**
-     * @param User $user
+     * @param AbstractUser $user
      *
      * @return QueryBuilder
      */
-    public function getActiveCampaignsForAdminQueryBuilder(User $user): QueryBuilder
+    public function getActiveCampaignsForAdminQueryBuilder(AbstractUser $user): QueryBuilder
     {
         return $this->campaignRepository->getActiveCampaignsForAdminQueryBuilder($user);
     }
 
     /**
-     * @param User $user
+     * @param AbstractUser $user
      *
      * @return QueryBuilder
      */
-    public function getInactiveCampaignsForAdminQueryBuilder(User $user): QueryBuilder
+    public function getInactiveCampaignsForAdminQueryBuilder(AbstractUser $user): QueryBuilder
     {
         return $this->campaignRepository->getInactiveCampaignsForAdminQueryBuilder($user);
     }

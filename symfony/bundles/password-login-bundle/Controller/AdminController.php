@@ -2,23 +2,92 @@
 
 namespace Bundles\PasswordLoginBundle\Controller;
 
-use Bundles\PaginationBundle\Manager\PaginationManager;
-use Bundles\PaginationBundle\PaginationBundle;
 use Bundles\PasswordLoginBundle\Base\BaseController;
-use Bundles\PasswordLoginBundle\Entity\EmailVerification;
-use Bundles\PasswordLoginBundle\Entity\PasswordRecovery;
-use Bundles\PasswordLoginBundle\Entity\User;
+use Bundles\PasswordLoginBundle\Entity\AbstractUser;
+use Bundles\PasswordLoginBundle\Manager\CaptchaManager;
+use Bundles\PasswordLoginBundle\Manager\EmailVerificationManager;
+use Bundles\PasswordLoginBundle\Manager\PasswordRecoveryManager;
+use Bundles\PasswordLoginBundle\Manager\UserManager;
+use Bundles\PasswordLoginBundle\Services\Mail;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 /**
  * @Route("/admin/users", name="password_login_admin_")
  */
 class AdminController extends BaseController
 {
+    /**
+     * @var CaptchaManager
+     */
+    private $captchaManager;
+
+    /**
+     * @var EmailVerificationManager
+     */
+    private $emailVerificationManager;
+
+    /**
+     * @var PasswordRecoveryManager
+     */
+    private $passwordRecoveryManager;
+
+    /**
+     * @var UserManager
+     */
+    private $userManager;
+
+    /**
+     * @var EventDispatcherInterface
+     */
+    private $dispatcher;
+
+    /**
+     * @var Mail
+     */
+    private $mail;
+
+    /**
+     * @var UserPasswordEncoderInterface
+     */
+    private $encoder;
+
+    /**
+     * @var TokenStorageInterface
+     */
+    private $tokenStorage;
+
+    /**
+     * @var Session
+     */
+    private $session;
+
+    /**
+     * @var string
+     */
+    private $homeRoute;
+
+    public function __construct(CaptchaManager $captchaManager, EmailVerificationManager $emailVerificationManager, PasswordRecoveryManager $passwordRecoveryManager, UserManager $userManager, EventDispatcherInterface $dispatcher, Mail $mail, UserPasswordEncoderInterface $encoder, TokenStorageInterface $tokenStorage, Session $session, string $homeRoute)
+    {
+        $this->captchaManager = $captchaManager;
+        $this->emailVerificationManager = $emailVerificationManager;
+        $this->passwordRecoveryManager = $passwordRecoveryManager;
+        $this->userManager = $userManager;
+        $this->dispatcher = $dispatcher;
+        $this->mail = $mail;
+        $this->encoder = $encoder;
+        $this->tokenStorage = $tokenStorage;
+        $this->session = $session;
+        $this->homeRoute = $homeRoute;
+    }
+
     /**
      * @Route("/", name="list")
      * @Template()
@@ -32,20 +101,10 @@ class AdminController extends BaseController
             $criteria = $search->get('criteria')->getData();
         }
 
-        if (class_exists(PaginationBundle::class)) {
-            return [
-                'pager'  => true,
-                'search' => $search->createView(),
-                'users'  => $this->get(PaginationManager::class)->getPager(
-                    $this->getManager(User::class)->searchAllQueryBuilder($criteria)
-                ),
-            ];
-        }
-
         return [
-            'pager'  => false,
             'search' => $search->createView(),
-            'users'  => $this->getManager(User::class)->searchAll($criteria),
+            'users'  => $this->userManager->searchAll($criteria),
+            'homeRoute' => $this->homeRoute
         ];
     }
 
@@ -57,13 +116,11 @@ class AdminController extends BaseController
         $user = $this->checkCsrfAndUser($username, $csrf);
 
         $user->setIsVerified(1 - $user->isVerified());
-        $this->getManager()->persist($user);
-        $this->getManager()->flush($user);
+        $this->userManager->save($user);
 
-        $emailVerification = $this->getManager(EmailVerification::class)->find($username);
+        $emailVerification = $this->emailVerificationManager->find($username);
         if ($emailVerification) {
-            $this->getManager()->remove($emailVerification);
-            $this->getManager()->flush($emailVerification);
+            $this->emailVerificationManager->remove($emailVerification);
         }
 
         return $this->redirectToRoute('password_login_admin_list');
@@ -77,8 +134,7 @@ class AdminController extends BaseController
         $user = $this->checkCsrfAndUser($username, $csrf);
 
         $user->setIsTrusted(1 - $user->isTrusted());
-        $this->getManager()->persist($user);
-        $this->getManager()->flush($user);
+        $this->userManager->save($user);
 
         return $this->redirectToRoute('password_login_admin_list');
     }
@@ -91,8 +147,7 @@ class AdminController extends BaseController
         $user = $this->checkCsrfAndUser($username, $csrf);
 
         $user->setIsAdmin(1 - $user->isAdmin());
-        $this->getManager()->persist($user);
-        $this->getManager()->flush($user);
+        $this->userManager->save($user);
 
         return $this->redirectToRoute('password_login_admin_list');
     }
@@ -104,28 +159,26 @@ class AdminController extends BaseController
     {
         $user = $this->checkCsrfAndUser($username, $csrf);
 
-        $this->getManager()->remove($user);
+        $this->userManager->remove($user);
 
-        if ($passwordRecovery = $this->getManager(PasswordRecovery::class)->find($username)) {
-            $this->getManager()->remove($passwordRecovery);
+        if ($passwordRecovery = $this->passwordRecoveryManager->find($username)) {
+            $this->passwordRecoveryManager->remove($passwordRecovery);
         }
 
-        if ($emailVerification = $this->getManager(EmailVerification::class)->find($username)) {
-            $this->getManager()->remove($emailVerification);
+        if ($emailVerification = $this->emailVerificationManager->find($username)) {
+            $this->emailVerificationManager->remove($emailVerification);
         }
-
-        $this->getManager()->flush();
 
         return $this->redirectToRoute('password_login_admin_list');
     }
 
-    private function checkCsrfAndUser($username, $csrf): User
+    private function checkCsrfAndUser($username, $csrf): AbstractUser
     {
         if (!$this->isCsrfTokenValid('password_login', $csrf)) {
             throw $this->createNotFoundException();
         }
 
-        $user = $this->getManager(User::class)->findOneByUsername($username);
+        $user = $this->userManager->findOneByUsername($username);
         if (is_null($user)) {
             throw $this->createNotFoundException();
         }

@@ -1,0 +1,20 @@
+services:
+
+  Bundles\PasswordLoginBundle\Repository\CaptchaRepository:
+    arguments:
+      - '@Doctrine\Common\Persistence\ManagerRegistry'
+    tags:
+      - 'doctrine.repository_service'
+
+  Bundles\PasswordLoginBundle\Repository\EmailVerificationRepository:
+    arguments:
+      - '@Doctrine\Common\Persistence\ManagerRegistry'
+    tags:
+      - 'doctrine.repository_service'
+
+  Bundles\PasswordLoginBundle\Repository\PasswordRecoveryRepository:
+    arguments:
+      - '@Doctrine\Common\Persistence\ManagerRegistry'
+    tags:
+      - 'doctrine.repository_service'
+

@@ -61,5 +61,7 @@ class PriceCommand extends Command
         $this->callManager->fetchPrices(
             $input->getArgument('retry')
         );
+
+        return 0;
     }
 }

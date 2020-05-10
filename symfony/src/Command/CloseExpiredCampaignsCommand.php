@@ -52,5 +52,7 @@ class CloseExpiredCampaignsCommand extends BaseCommand
             $output->writeln(sprintf('Closing #%d', $campaign->getId()));
             $this->campaignManager->closeCampaign($campaign);
         }
+
+        return 0;
     }
 }

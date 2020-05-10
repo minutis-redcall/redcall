@@ -1,13 +1,13 @@
 security:
 
   encoders:
-    Bundles\PasswordLoginBundle\Entity\User:
+    App\Entity\User:
       algorithm: bcrypt
 
   providers:
     user_provider:
       entity:
-        class: Bundles\PasswordLoginBundle\Entity\User
+        class: App\Entity\User
         property: username
 
   firewalls:
@@ -26,7 +26,7 @@ security:
       guard:
         authenticators:
           - App\Security\Authenticator\MinutisAuthenticator
-          - password_login.authenticator.form_login
+          - Bundles\PasswordLoginBundle\Security\Authenticator\FormLoginAuthenticator
         entry_point: App\Security\Authenticator\MinutisAuthenticator
 
   access_control:

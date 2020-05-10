@@ -7,6 +7,7 @@ use Bundles\PegassCrawlerBundle\Manager\PegassManager;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Helper\Table;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -66,7 +67,6 @@ class PegassSearchCommand extends Command
 
         $hashes = [];
         $count  = 0;
-        $values = [];
         foreach ($input->getOption('type') as $type) {
             $this->pegassManager->foreach($type, function (Pegass $pegass) use ($input, &$hashes, &$count, &$identifiers, &$values) {
                 $match = $pegass->xpath($input->getArgument('template'), $input->getOption('parameter'));
@@ -75,14 +75,13 @@ class PegassSearchCommand extends Command
                 }
 
                 $this->logger->debug(sprintf('Found %s %s', $pegass->getType(), $pegass->getIdentifier()));
-                $identifiers[$pegass->getType()][] = ltrim($pegass->getIdentifier(), '0');
 
-                foreach ($match as $elem) {
-                    $value = reset($elem);
-                    if (!in_array($value, $values)) {
-                        $values[] = $value;
-                    }
-                }
+                $identifiers[$pegass->getType()][] = [
+                    'nivol' => ltrim($pegass->getIdentifier(), '0'),
+                    'firstname' => $pegass->evaluate('user.prenom'),
+                    'lastname' => $pegass->evaluate('user.nom'),
+                    'values' => implode(',', array_map('reset', array_values($match))),
+                ];
 
                 $count++;
                 if ($input->getOption('limit') && $count == $input->getOption('limit')) {
@@ -91,13 +90,17 @@ class PegassSearchCommand extends Command
             }, true);
         }
 
-        $output->writeln(sprintf('Values: %s', implode(', ', $values)));
         foreach ($identifiers as $type => $list) {
-            $output->writeln(sprintf('%s: %s', $type, implode(' ', $list)));
+            (new Table($output))
+                ->setHeaders(['Nivol', 'First name', 'Last name', 'Value(s)'])
+                ->setRows($list)
+                ->render();
         }
 
         $end = microtime(true);
 
         $output->writeln(sprintf('Elapsed time: %.2f seconds', $end - $start));
+
+        return 0;
     }
 }

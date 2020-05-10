@@ -1,3 +1,13 @@
 services:
+
+  Bundles\PasswordLoginBundle\Manager\CaptchaManager:
+    arguments: ['@Bundles\PasswordLoginBundle\Repository\CaptchaRepository']
+
+  Bundles\PasswordLoginBundle\Manager\EmailVerificationManager:
+    arguments: ['@Bundles\PasswordLoginBundle\Repository\EmailVerificationRepository']
+
+  Bundles\PasswordLoginBundle\Manager\PasswordRecoveryManager:
+    arguments: ['@Bundles\PasswordLoginBundle\Repository\PasswordRecoveryRepository']
+
   Bundles\PasswordLoginBundle\Manager\UserManager:
-    parent: password_login.base.service
+    arguments: ['@Bundles\PasswordLoginBundle\Repository\UserRepositoryInterface']

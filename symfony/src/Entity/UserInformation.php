@@ -2,7 +2,7 @@
 
 namespace App\Entity;
 
-use Bundles\PasswordLoginBundle\Entity\User;
+use Bundles\PasswordLoginBundle\Entity\AbstractUser;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -24,7 +24,7 @@ class UserInformation
     private $id;
 
     /**
-     * @ORM\OneToOne(targetEntity="Bundles\PasswordLoginBundle\Entity\User", cascade={"all"})
+     * @ORM\OneToOne(targetEntity="App\Entity\User", cascade={"all"})
      * @ORM\JoinColumn(referencedColumnName="id", nullable=false, onDelete="cascade")
      */
     private $user;
@@ -38,6 +38,11 @@ class UserInformation
      * @ORM\Column(type="string", length=80, nullable=true)
      */
     private $nivol;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $isDeveloper = false;
 
     /**
      * @ORM\OneToOne(targetEntity="App\Entity\Volunteer")
@@ -60,47 +65,28 @@ class UserInformation
         $this->structures = new ArrayCollection();
     }
 
-    /**
-     * @return int|null
-     */
     public function getId(): ?int
     {
         return $this->id;
     }
 
-    /**
-     * @return User|null
-     */
-    public function getUser(): ?User
+    public function getUser(): ?AbstractUser
     {
         return $this->user;
     }
 
-    /**
-     * @param User|null $user
-     *
-     * @return UserInformation
-     */
-    public function setUser(?User $user): self
+    public function setUser(?AbstractUser $user): self
     {
         $this->user = $user;
 
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getLocale(): ?string
     {
         return $this->locale;
     }
 
-    /**
-     * @param string|null $locale
-     *
-     * @return UserInformation
-     */
     public function setLocale(?string $locale): self
     {
         $this->locale = $locale;
@@ -120,6 +106,18 @@ class UserInformation
         return $this;
     }
 
+    public function isDeveloper(): bool
+    {
+        return $this->isDeveloper;
+    }
+
+    public function setIsDeveloper(bool $isDeveloper): UserInformation
+    {
+        $this->isDeveloper = $isDeveloper;
+
+        return $this;
+    }
+
     public function getVolunteer(): ?Volunteer
     {
         return $this->volunteer;
@@ -132,9 +130,6 @@ class UserInformation
         return $this;
     }
 
-    /**
-     * @return Collection
-     */
     public function getStructures(): Collection
     {
         return $this->structures->filter(function(Structure $structure) {
@@ -160,9 +155,6 @@ class UserInformation
         return $this;
     }
 
-    /**
-     * @param Structure[] $structures
-     */
     public function updateStructures(array $structures)
     {
         foreach ($structures as $structure) {
@@ -170,9 +162,6 @@ class UserInformation
         }
     }
 
-    /**
-     * @return array|ArrayCollection
-     */
     public function computeStructureList()
     {
         return $this->structures;
@@ -183,9 +172,6 @@ class UserInformation
         return $this->user->isAdmin();
     }
 
-    /**
-     * @return bool
-     */
     public function isLocked(): ?bool
     {
         if (0 === getenv('IS_REDCROSS')) {
@@ -195,11 +181,6 @@ class UserInformation
         return $this->locked;
     }
 
-    /**
-     * @param bool $locked
-     *
-     * @return UserInformation
-     */
     public function setLocked(bool $locked): UserInformation
     {
         $this->locked = $locked;

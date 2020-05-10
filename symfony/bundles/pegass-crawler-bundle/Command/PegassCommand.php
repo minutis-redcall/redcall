@@ -84,5 +84,7 @@ class PegassCommand extends Command
                 }
             }
         }
+
+        return 0;
     }
 }

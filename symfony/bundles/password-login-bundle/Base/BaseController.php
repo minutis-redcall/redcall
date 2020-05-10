@@ -7,7 +7,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 class BaseController extends Controller
 {
-    use ServiceTrait;
+    public function trans(string $template, array $parameters = [])
+    {
+        return $this->get('translator')->trans($template, $parameters);
+    }
 
     public function info($message, array $parameters = [])
     {

@@ -63,5 +63,7 @@ class SendCommunicationCommand extends BaseCommand
         date_default_timezone_set('Europe/Paris');
 
         $this->sender->sendCommunication($communication, $input->getOption('force'));
+
+        return 0;
     }
 }

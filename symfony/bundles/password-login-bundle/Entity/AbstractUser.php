@@ -9,12 +9,9 @@ use Symfony\Component\Security\Core\User\EquatableInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
- * @ORM\Table()
- * @ORM\Entity(repositoryClass="Bundles\PasswordLoginBundle\Repository\UserRepository")
- * @ORM\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
- * @ORM\HasLifecycleCallbacks
+ * @ORM\MappedSuperclass()
  */
-class User implements UserInterface, EquatableInterface
+class AbstractUser implements UserInterface, EquatableInterface
 {
     /**
      * @ORM\Column(name="id", type="string", length=36)
@@ -80,7 +77,7 @@ class User implements UserInterface, EquatableInterface
      *
      * @return $this
      */
-    public function setUsername(string $username): User
+    public function setUsername(string $username): AbstractUser
     {
         $this->username = $username;
 
@@ -92,7 +89,7 @@ class User implements UserInterface, EquatableInterface
         return $this->password;
     }
 
-    public function setPassword(string $password): User
+    public function setPassword(string $password): AbstractUser
     {
         $this->password = $password;
 
@@ -104,7 +101,7 @@ class User implements UserInterface, EquatableInterface
         return $this->isVerified;
     }
 
-    public function setIsVerified(bool $isVerified): User
+    public function setIsVerified(bool $isVerified): AbstractUser
     {
         $this->isVerified = $isVerified;
 
@@ -116,7 +113,7 @@ class User implements UserInterface, EquatableInterface
         return $this->isTrusted;
     }
 
-    public function setIsTrusted(bool $isTrusted): User
+    public function setIsTrusted(bool $isTrusted): AbstractUser
     {
         $this->isTrusted = $isTrusted;
 
@@ -128,7 +125,7 @@ class User implements UserInterface, EquatableInterface
         return $this->isAdmin;
     }
 
-    public function setIsAdmin(bool $isAdmin): User
+    public function setIsAdmin(bool $isAdmin): AbstractUser
     {
         $this->isAdmin = $isAdmin;
 
@@ -140,7 +137,7 @@ class User implements UserInterface, EquatableInterface
         return $this->registeredAt;
     }
 
-    public function setRegisteredAt($registeredAt): User
+    public function setRegisteredAt($registeredAt): AbstractUser
     {
         $this->registeredAt = $registeredAt;
 
@@ -179,20 +176,6 @@ class User implements UserInterface, EquatableInterface
         return $roles;
     }
 
-    public function addRole(string $role)
-    {
-        if (!in_array($role, $this->roles)) {
-            $this->roles[] = $role;
-        }
-    }
-
-    public function removeRole(string $role)
-    {
-        if (in_array($role, $this->roles)) {
-            unset($this->roles[array_search($role, $this->roles)]);
-        }
-    }
-
     public function getSalt()
     {
         return null;
@@ -200,11 +183,11 @@ class User implements UserInterface, EquatableInterface
 
     public function isEqualTo(UserInterface $user): bool
     {
-        return $user instanceof User
-               && $user->getUsername() === $this->getUsername()
-               && $user->getPassword() === $this->getPassword()
-               && $user->isVerified() === $this->isVerified()
-               && $user->isTrusted() === $this->isTrusted()
-               && $user->isAdmin() === $this->isAdmin();
+        return $user instanceof AbstractUser
+            && $user->getUsername() === $this->getUsername()
+            && $user->getPassword() === $this->getPassword()
+            && $user->isVerified() === $this->isVerified()
+            && $user->isTrusted() === $this->isTrusted()
+            && $user->isAdmin() === $this->isAdmin();
     }
 }
