@@ -3,15 +3,33 @@
 namespace Bundles\PasswordLoginBundle\Form\Type;
 
 use Bundles\PasswordLoginBundle\Base\BaseType;
-use Bundles\PasswordLoginBundle\Entity\Captcha;
+use Bundles\PasswordLoginBundle\Manager\CaptchaManager;
 use EWZ\Bundle\RecaptchaBundle\Form\Type\EWZRecaptchaType;
 use EWZ\Bundle\RecaptchaBundle\Validator\Constraints\IsTrue as RecaptchaTrue;
+use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Validator\Constraints;
 
-class ForgotPasswordType extends BaseType
+class ForgotPasswordType extends AbstractType
 {
+    /**
+     * @var CaptchaManager
+     */
+    private $captchaManager;
+
+    /**
+     * @var RequestStack
+     */
+    private $requestStack;
+
+    public function __construct(CaptchaManager $captchaManager, RequestStack $requestStack)
+    {
+        $this->captchaManager = $captchaManager;
+        $this->requestStack = $requestStack;
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
@@ -24,8 +42,9 @@ class ForgotPasswordType extends BaseType
                 ],
             ]);
 
-        $ip = $this->get('request_stack')->getMasterRequest()->getClientIp();
-        if (!$this->getManager(Captcha::class)->isAllowed($ip)) {
+        $ip = $this->requestStack->getMasterRequest()->getClientIp();
+
+        if (!$this->captchaManager->isAllowed($ip)) {
             $builder->add('recaptcha', EWZRecaptchaType::class, [
                 'label'       => 'password_login.forgot_password.captcha',
                 'constraints' => [

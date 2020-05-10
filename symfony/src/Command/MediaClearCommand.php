@@ -40,5 +40,7 @@ class MediaClearCommand extends BaseCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->mediaManager->clearExpired();
+
+        return 0;
     }
 }

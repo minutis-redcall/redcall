@@ -1,0 +1,28 @@
+services:
+
+  Bundles\PasswordLoginBundle\Command\UserAdminCommand:
+    arguments:
+      - '@Bundles\PasswordLoginBundle\Manager\UserManager'
+    tags:
+      - { name: console.command }
+
+  Bundles\PasswordLoginBundle\Command\UserVerifyCommand:
+    arguments:
+      - '@Bundles\PasswordLoginBundle\Manager\UserManager'
+    tags:
+      - { name: console.command }
+
+  Bundles\PasswordLoginBundle\Command\UserListCommand:
+    arguments:
+      - '@Bundles\PasswordLoginBundle\Manager\UserManager'
+    tags:
+      - { name: console.command }
+
+  Bundles\PasswordLoginBundle\Command\UserCronCommand:
+    arguments:
+      - '@Bundles\PasswordLoginBundle\Manager\CaptchaManager'
+      - '@Bundles\PasswordLoginBundle\Manager\PasswordRecoveryManager'
+      - '@Bundles\PasswordLoginBundle\Manager\EmailVerificationManager'
+      - '@Bundles\PasswordLoginBundle\Manager\UserManager'
+    tags:
+      - { name: console.command }

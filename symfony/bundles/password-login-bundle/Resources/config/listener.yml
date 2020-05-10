@@ -7,6 +7,8 @@ services:
 
   password_login.listener.exception:
     class: '%password_login.listener.exception.class%'
-    arguments: ['@twig']
+    arguments:
+      - '@twig'
+      - '%home_route%'
     tags:
-    - { name: kernel.event_listener, event: kernel.exception }
+      - { name: kernel.event_listener, event: kernel.exception }

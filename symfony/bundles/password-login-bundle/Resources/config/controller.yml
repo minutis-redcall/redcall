@@ -1,0 +1,33 @@
+services:
+
+  Bundles\PasswordLoginBundle\Controller\AdminController:
+    arguments:
+      - '@Bundles\PasswordLoginBundle\Manager\CaptchaManager'
+      - '@Bundles\PasswordLoginBundle\Manager\EmailVerificationManager'
+      - '@Bundles\PasswordLoginBundle\Manager\PasswordRecoveryManager'
+      - '@Bundles\PasswordLoginBundle\Manager\UserManager'
+      - '@event_dispatcher'
+      - '@Bundles\PasswordLoginBundle\Services\Mail'
+      - '@security.password_encoder'
+      - '@security.token_storage'
+      - '@session'
+      - '%home_route%'
+    tags:
+      - controller.service_arguments
+
+  Bundles\PasswordLoginBundle\Controller\SecurityController:
+    arguments:
+      - '@Bundles\PasswordLoginBundle\Manager\CaptchaManager'
+      - '@Bundles\PasswordLoginBundle\Manager\EmailVerificationManager'
+      - '@Bundles\PasswordLoginBundle\Manager\PasswordRecoveryManager'
+      - '@Bundles\PasswordLoginBundle\Manager\UserManager'
+      - '@event_dispatcher'
+      - '@Bundles\PasswordLoginBundle\Services\Mail'
+      - '@security.password_encoder'
+      - '@security.token_storage'
+      - '@session'
+      - '@request_stack'
+      - '%user_entity%'
+      - '%home_route%'
+    tags:
+      - controller.service_arguments

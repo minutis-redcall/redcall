@@ -4,7 +4,7 @@ namespace App\Manager;
 
 use App\Entity\UserInformation;
 use App\Repository\UserInformationRepository;
-use Bundles\PasswordLoginBundle\Entity\User;
+use Bundles\PasswordLoginBundle\Entity\AbstractUser;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
@@ -70,9 +70,6 @@ class UserInformationManager
         return $this->userInformationRepository->findAll();
     }
 
-    /**
-     * @return UserInformation|null
-     */
     public function findForCurrentUser(): ?UserInformation
     {
         return $this->findOneByUser(
@@ -80,38 +77,31 @@ class UserInformationManager
         );
     }
 
-    /**
-     * @param User $user
-     *
-     * @return UserInformation|null
-     */
-    public function findOneByUser(User $user): ?UserInformation
+    public function findOneByUser(AbstractUser $user): ?UserInformation
     {
         return $this->userInformationRepository->findOneByUser($user);
     }
 
-    /**
-     * @param UserInformation $userInformation
-     */
+    public function removeForUser(AbstractUser $user)
+    {
+        $this->userInformationRepository->removeForUser($user);
+    }
+
     public function save(UserInformation $userInformation)
     {
         $this->userInformationRepository->save($userInformation);
     }
 
-    /**
-     * @param string $nivol
-     *
-     * @return UserInformation|null
-     */
     public function findOneByNivol(string $nivol): ?UserInformation
     {
         return $this->userInformationRepository->findOneByNivol($nivol);
     }
 
-    /**
-     * @param UserInformation $userInformation
-     * @param string          $nivol
-     */
+    public function changeLocale(AbstractUser $user, string $locale)
+    {
+        $this->userInformationRepository->changeLocale($user, $locale);
+    }
+
     public function updateNivol(UserInformation $userInformation, string $nivol)
     {
         $volunteer = $this->volunteerManager->findOneByNivol($nivol);
@@ -153,11 +143,6 @@ class UserInformationManager
         );
     }
 
-    /**
-     * @param string|null $criteria
-     *
-     * @return QueryBuilder
-     */
     public function searchQueryBuilder(?string $criteria): QueryBuilder
     {
         return $this->userInformationRepository->searchQueryBuilder($criteria);

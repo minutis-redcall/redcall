@@ -6,7 +6,8 @@ parameters:
   locale_matcher: 'fr|en'
   google_recaptcha_site_key: '%env(GOOGLE_RECAPTCHA_SITE_KEY)%'
   communication.processor: 'App\Communication\Processor\QueueProcessor'
-  #communication.processor: 'App\Communication\Processor\ExecProcessor'
+  user_entity: 'App\Entity\User'
+  home_route: 'home'
 
 services:
   # default configuration for services in *this* file
@@ -70,13 +71,6 @@ services:
   App\Services\Pegass:
     public: true
 
-  password_login.mail.service:
-    autowire: false
-    autoconfigure: false
-    public: true
-    class: App\Services\Mail
-    parent: password_login.base.service
-
   twig.extension.intl:
     class: Twig\Extra\Intl\IntlExtension
     tags:
@@ -86,3 +80,16 @@ services:
     arguments: ['@kernel', '@security.token_storage']
     tags:
       - { name: monolog.processor }
+
+  Bundles\PasswordLoginBundle\Repository\UserRepositoryInterface:
+    class: App\Repository\UserRepository
+    arguments: ['@Doctrine\Common\Persistence\ManagerRegistry']
+
+  Bundles\PasswordLoginBundle\Services\Mail:
+    class: App\Services\Mail
+    arguments:
+      - '@translator'
+      - '@twig'
+      - '@mailer'
+      - '@Bundles\PasswordLoginBundle\Manager\UserManager'
+      - '@App\Manager\UserInformationManager'

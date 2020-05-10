@@ -2,24 +2,95 @@
 
 namespace Bundles\PasswordLoginBundle\Security\Authenticator;
 
-use Bundles\PasswordLoginBundle\Entity\Captcha;
-use Bundles\PasswordLoginBundle\Entity\User;
+use Bundles\PasswordLoginBundle\Entity\AbstractUser;
 use Bundles\PasswordLoginBundle\Form\Type\ConnectType;
+use Bundles\PasswordLoginBundle\Manager\CaptchaManager;
 use Bundles\PasswordLoginBundle\Traits\ServiceTrait;
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Symfony\Component\DependencyInjection\ContainerAwareTrait;
+use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Guard\Authenticator\AbstractFormLoginAuthenticator;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
-class FormLoginAuthenticator extends AbstractFormLoginAuthenticator implements ContainerAwareInterface
+class FormLoginAuthenticator extends AbstractFormLoginAuthenticator
 {
-    use ContainerAwareTrait;
-    use ServiceTrait;
+    /**
+     * @var CaptchaManager
+     */
+    private $captchaManager;
+
+    /**
+     * @var FormFactoryInterface
+     */
+    private $formFactory;
+
+    /**
+     * @var UserPasswordEncoderInterface
+     */
+    private $encoder;
+
+    /**
+     * @var Session
+     */
+    private $session;
+
+    /**
+     * @var TokenStorageInterface
+     */
+    private $tokenStorage;
+
+    /**
+     * @var TranslatorInterface
+     */
+    private $translator;
+
+    /**
+     * @var RequestStack
+     */
+    private $requestStack;
+
+    /**
+     * @var RouterInterface
+     */
+    private $router;
+
+    /**
+     * @var string
+     */
+    private $homeRoute;
+
+    /**
+     * @param CaptchaManager               $captchaManager
+     * @param FormFactoryInterface         $formFactory
+     * @param UserPasswordEncoderInterface $encoder
+     * @param Session                      $session
+     * @param TokenStorageInterface        $tokenStorage
+     * @param TranslatorInterface          $translator
+     * @param RequestStack                 $requestStack
+     * @param RouterInterface              $router
+     * @param string                       $homeRoute
+     */
+    public function __construct(CaptchaManager $captchaManager, FormFactoryInterface $formFactory, UserPasswordEncoderInterface $encoder, Session $session, TokenStorageInterface $tokenStorage, TranslatorInterface $translator, RequestStack $requestStack, RouterInterface $router, string $homeRoute)
+    {
+        $this->captchaManager = $captchaManager;
+        $this->formFactory = $formFactory;
+        $this->encoder = $encoder;
+        $this->session = $session;
+        $this->tokenStorage = $tokenStorage;
+        $this->translator = $translator;
+        $this->requestStack = $requestStack;
+        $this->router = $router;
+        $this->homeRoute = $homeRoute;
+    }
 
     public function supports(Request $request)
     {
@@ -28,7 +99,7 @@ class FormLoginAuthenticator extends AbstractFormLoginAuthenticator implements C
         }
 
         $connectForm = $this
-            ->get('form.factory')
+            ->formFactory
             ->create(ConnectType::class)
             ->handleRequest($request);
 
@@ -48,7 +119,7 @@ class FormLoginAuthenticator extends AbstractFormLoginAuthenticator implements C
     public function getCredentials(Request $request)
     {
         $connectForm = $this
-            ->get('form.factory')
+            ->formFactory
             ->create(ConnectType::class)
             ->handleRequest($request);
 
@@ -68,7 +139,7 @@ class FormLoginAuthenticator extends AbstractFormLoginAuthenticator implements C
     public function checkCredentials($credentials, UserInterface $user)
     {
         $isValid = $this
-            ->get('security.password_encoder')
+            ->encoder
             ->isPasswordValid($user, $credentials['password']);
 
         if (!$isValid) {
@@ -83,42 +154,42 @@ class FormLoginAuthenticator extends AbstractFormLoginAuthenticator implements C
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)
     {
         /**
-         * @var User $user
+         * @var AbstractUser $user
          */
         $user = $token->getUser();
 
         if (!$user->isVerified()) {
-            $this->get('session')->getFlashBag()->add('alert', $this->trans('password_login.verify_email.failure'));
-            $this->get('security.token_storage')->setToken(null);
+            $this->session->getFlashBag()->add('alert', $this->translator->trans('password_login.verify_email.failure'));
+            $this->tokenStorage->setToken(null);
 
             return new RedirectResponse($this->getLoginUrl());
         }
 
         if ($user->isTrusted()) {
             $ip = $this
-                ->get('request_stack')
+                ->requestStack
                 ->getMasterRequest()
                 ->getClientIp();
 
             $this
-                ->getManager(Captcha::class)
+                ->captchaManager
                 ->whitelistNow($ip);
         }
 
         return new RedirectResponse(
-            $this->get('router')->generate('home')
+            $this->router->generate($this->homeRoute)
         );
     }
 
     protected function getLoginUrl()
     {
-        return $this->get('router')->generate('password_login_connect');
+        return $this->router->generate('password_login_connect');
     }
 
     private function decreaseGrace()
     {
-        $this->getManager(Captcha::class)->decreaseGrace(
-            $this->get('request_stack')->getMasterRequest()->getClientIp()
+        $this->captchaManager->decreaseGrace(
+            $this->requestStack->getMasterRequest()->getClientIp()
         );
     }
 }

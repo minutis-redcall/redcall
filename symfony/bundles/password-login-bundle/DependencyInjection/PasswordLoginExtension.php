@@ -17,10 +17,12 @@ class PasswordLoginExtension extends Extension
         $container->setParameter('password_login.config', $config);
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
-        $loader->load('commands.yml');
+        $loader->load('command.yml');
+        $loader->load('controller.yml');
         $loader->load('forms.yml');
-        $loader->load('listeners.yml');
+        $loader->load('listener.yml');
         $loader->load('manager.yml');
-        $loader->load('services.yml');
+        $loader->load('repository.yml');
+        $loader->load('service.yml');
     }
 }

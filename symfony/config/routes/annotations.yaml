@@ -1,3 +1,7 @@
+api:
+  resource: '@ApiBundle/Controller/'
+  type: annotation
+
 controllers:
   resource: ../../src/Controller/
   type: annotation

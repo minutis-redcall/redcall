@@ -4,7 +4,7 @@ namespace App\Twig\Extension;
 
 use App\Entity\UserInformation;
 use App\Manager\UserInformationManager;
-use Bundles\PasswordLoginBundle\Entity\User;
+use Bundles\PasswordLoginBundle\Entity\AbstractUser;
 use Twig\Extension\AbstractExtension;
 use Twig\TwigFunction;
 
@@ -34,7 +34,7 @@ class UserInformationExtension extends AbstractExtension
     }
 
     /**
-     * @param User $user
+     * @param AbstractUser $user
      *
      * @return UserInformation
      */

@@ -160,6 +160,7 @@ class PegassRepository extends ServiceEntityRepository
                       ->getSingleScalarResult();
 
         $offset = 0;
+        $stop = false;
         while ($offset < $count) {
             $qb = $this->createQueryBuilder('p')
                        ->where('p.type = :type')
@@ -184,6 +185,7 @@ class PegassRepository extends ServiceEntityRepository
                 }
 
                 if (false === $callback($entity)) {
+                    $stop = true;
                     break;
                 }
 
@@ -193,6 +195,10 @@ class PegassRepository extends ServiceEntityRepository
 
             $this->_em->flush();
             $this->_em->clear();
+
+            if ($stop) {
+                break;
+            }
 
             $offset += 1000;
         }

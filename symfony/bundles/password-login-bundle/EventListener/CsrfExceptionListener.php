@@ -6,15 +6,24 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\Security\Core\Exception\InvalidCsrfTokenException;
 use Symfony\Component\Security\Core\Exception\LogoutException;
-use Twig_Environment;
+use Twig\Environment;
 
 class CsrfExceptionListener
 {
-    private $templating;
+    /**
+     * @var Environment
+     */
+    private $twig;
 
-    public function __construct(Twig_Environment $templating)
+    /**
+     * @var string
+     */
+    private $homeRoute;
+
+    public function __construct(Environment $twig, string $homeRoute)
     {
-        $this->templating = $templating;
+        $this->twig = $twig;
+        $this->homeRoute = $homeRoute;
     }
 
     public function onKernelException(GetResponseForExceptionEvent $event)
@@ -25,7 +34,9 @@ class CsrfExceptionListener
             $response = new Response();
 
             $response->setContent(
-                $this->templating->render('@PasswordLogin/error/csrf.html.twig')
+                $this->twig->render('@PasswordLogin/error/csrf.html.twig', [
+                    'homeRoute' => $this->homeRoute,
+                ])
             );
 
             $event->setResponse($response);

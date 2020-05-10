@@ -15,6 +15,10 @@ admin:
     locked_details: 'Les structures d''un utilisateur gelé ne seront pas mises à jour avec la mise à jour Pegass de son volontaire attaché.'
     lock: 'Geler'
     unlock: 'Dégeler'
+    developered: 'Développeur'
+    developered_details: 'Un développeur peut intégrer les APIs de RedCall et accéder à des fonctionnalités techniques.'
+    developer: 'Donner l''accès développeur'
+    undeveloper: 'Retirer l''accès développeur'
   dashboard:
     title: 'Statistiques'
   statistics:

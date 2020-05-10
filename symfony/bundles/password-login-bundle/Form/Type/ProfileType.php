@@ -3,18 +3,72 @@
 namespace Bundles\PasswordLoginBundle\Form\Type;
 
 use Bundles\PasswordLoginBundle\Base\BaseType;
-use Bundles\PasswordLoginBundle\Entity\Captcha;
-use Bundles\PasswordLoginBundle\Entity\User;
+use Bundles\PasswordLoginBundle\Manager\CaptchaManager;
+use Bundles\PasswordLoginBundle\Manager\UserManager;
 use EWZ\Bundle\RecaptchaBundle\Form\Type\EWZRecaptchaType;
 use EWZ\Bundle\RecaptchaBundle\Validator\Constraints\IsTrue as RecaptchaTrue;
+use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Encoder\BCryptPasswordEncoder;
+use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
-class ProfileType extends BaseType
+class ProfileType extends AbstractType
 {
+    /**
+     * @var CaptchaManager
+     */
+    private $captchaManager;
+
+    /**
+     * @var UserManager
+     */
+    private $userManager;
+
+    /**
+     * @var RequestStack
+     */
+    private $requestStack;
+
+    /**
+     * @var TranslatorInterface
+     */
+    private $translator;
+
+    /**
+     * @var UserPasswordEncoderInterface
+     */
+    private $encoder;
+
+    /**
+     * @var TokenStorageInterface
+     */
+    private $tokenStorage;
+
+    /**
+     * @param CaptchaManager               $captchaManager
+     * @param UserManager                  $userManager
+     * @param RequestStack                 $requestStack
+     * @param TranslatorInterface          $translator
+     * @param UserPasswordEncoderInterface $encoder
+     * @param TokenStorageInterface        $tokenStorage
+     */
+    public function __construct(CaptchaManager $captchaManager, UserManager $userManager, RequestStack $requestStack, TranslatorInterface $translator, UserPasswordEncoderInterface $encoder, TokenStorageInterface $tokenStorage)
+    {
+        $this->captchaManager = $captchaManager;
+        $this->userManager = $userManager;
+        $this->requestStack = $requestStack;
+        $this->translator = $translator;
+        $this->encoder = $encoder;
+        $this->tokenStorage = $tokenStorage;
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
@@ -28,9 +82,9 @@ class ProfileType extends BaseType
                     ]),
                     new Constraints\Callback([
                         'callback' => function ($object, ExecutionContextInterface $context, $payload) {
-                            if (!$this->get('security.password_encoder')->isPasswordValid($this->getUser(), $object)) {
+                            if (!$this->encoder->isPasswordValid($this->getUser(), $object)) {
                                 $context
-                                    ->buildViolation($this->trans('password_login.profile.invalid_current_password'))
+                                    ->buildViolation($this->translator->trans('password_login.profile.invalid_current_password'))
                                     ->atPath('current_password')
                                     ->addViolation();
                             }
@@ -49,9 +103,9 @@ class ProfileType extends BaseType
                     new Constraints\Callback([
                         'callback' => function ($object, ExecutionContextInterface $context, $payload) {
                             if ($object !== $this->getUser()->getUsername()
-                                && $this->getManager(User::class)->findOneByUsername($object)) {
+                                && $this->userManager->findOneByUsername($object)) {
                                 $context
-                                    ->buildViolation($this->trans('password_login.profile.already_exists'))
+                                    ->buildViolation($this->translator->trans('password_login.profile.already_exists'))
                                     ->atPath('username')
                                     ->addViolation();
                             }
@@ -61,7 +115,7 @@ class ProfileType extends BaseType
             ])
             ->add('password', Type\RepeatedType::class, [
                 'type'            => Type\PasswordType::class,
-                'invalid_message' => $this->trans('password_login.profile.password_should_match'),
+                'invalid_message' => $this->translator->trans('password_login.profile.password_should_match'),
                 'required'        => false,
                 'first_options'   => [
                     'label'       => 'password_login.profile.password',
@@ -73,8 +127,9 @@ class ProfileType extends BaseType
                 'second_options'  => ['label' => 'password_login.register.repeat_password'],
             ]);
 
-        $ip = $this->get('request_stack')->getMasterRequest()->getClientIp();
-        if (!$this->getManager(Captcha::class)->isGracePeriod($ip)) {
+        $ip = $this->requestStack->getMasterRequest()->getClientIp();
+
+        if (!$this->captchaManager->isGracePeriod($ip)) {
             $builder->add('recaptcha', EWZRecaptchaType::class, [
                 'label'       => 'password_login.profile.captcha',
                 'constraints' => [
@@ -87,5 +142,10 @@ class ProfileType extends BaseType
         $builder->add('submit', Type\SubmitType::class, [
             'label' => 'password_login.profile.submit',
         ]);
+    }
+
+    private function getUser(): UserInterface
+    {
+        return $this->tokenStorage->getToken()->getUser();
     }
 }

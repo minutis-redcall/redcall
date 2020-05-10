@@ -1,0 +1,23 @@
+parameters:
+#  password_login.provider.user.class: 'Bundles\PasswordLoginBundle\Security\Provider\UserProvider'
+
+services:
+
+  Bundles\PasswordLoginBundle\Security\Authenticator\FormLoginAuthenticator:
+    arguments:
+      - '@Bundles\PasswordLoginBundle\Manager\CaptchaManager'
+      - '@form.factory'
+      - '@security.password_encoder'
+      - '@session'
+      - '@security.token_storage'
+      - '@translator'
+      - '@request_stack'
+      - '@router'
+      - '%home_route%'
+
+  Bundles\PasswordLoginBundle\Services\Mail:
+    arguments:
+      - '@translator'
+      - '@twig'
+      - '@mailer'
+

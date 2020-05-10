@@ -39,5 +39,7 @@ class SmsCommand extends Command
             $input->getArgument('phoneNumber'),
             implode(' ', $input->getArgument('message'))
         );
+
+        return 0;
     }
 }

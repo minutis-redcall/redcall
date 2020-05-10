@@ -3,18 +3,49 @@
 namespace Bundles\PasswordLoginBundle\Form\Type;
 
 use Bundles\PasswordLoginBundle\Base\BaseType;
-use Bundles\PasswordLoginBundle\Entity\Captcha;
-use Bundles\PasswordLoginBundle\Entity\User;
+use Bundles\PasswordLoginBundle\Manager\CaptchaManager;
+use Bundles\PasswordLoginBundle\Manager\UserManager;
 use EWZ\Bundle\RecaptchaBundle\Form\Type\EWZRecaptchaType;
 use EWZ\Bundle\RecaptchaBundle\Validator\Constraints\IsTrue as RecaptchaTrue;
+use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\Encoder\BCryptPasswordEncoder;
 use Symfony\Component\Validator\Constraints;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
-class RegistrationType extends BaseType
+class RegistrationType extends AbstractType
 {
+    /**
+     * @var CaptchaManager
+     */
+    private $captchaManager;
+
+    /**
+     * @var UserManager
+     */
+    private $userManager;
+
+    /**
+     * @var RequestStack
+     */
+    private $requestStack;
+
+    /**
+     * @var TranslatorInterface
+     */
+    private $translator;
+
+    public function __construct(CaptchaManager $captchaManager, UserManager $userManager, RequestStack $requestStack, TranslatorInterface $translator)
+    {
+        $this->captchaManager = $captchaManager;
+        $this->userManager = $userManager;
+        $this->requestStack = $requestStack;
+        $this->translator = $translator;
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
@@ -27,9 +58,9 @@ class RegistrationType extends BaseType
                     new Constraints\Length(['min' => 8]),
                     new Constraints\Callback([
                         'callback' => function ($object, ExecutionContextInterface $context, $payload) {
-                            if ($this->getManager(User::class)->findOneByUsername($object)) {
+                            if ($this->userManager->findOneByUsername($object)) {
                                 $context
-                                    ->buildViolation($this->trans('password_login.register.already_exists'))
+                                    ->buildViolation($this->translator->trans('password_login.register.already_exists'))
                                     ->atPath('username')
                                     ->addViolation();
                             }
@@ -39,7 +70,7 @@ class RegistrationType extends BaseType
             ])
             ->add('password', Type\RepeatedType::class, [
                 'type'            => Type\PasswordType::class,
-                'invalid_message' => $this->trans('password_login.register.password_should_match'),
+                'invalid_message' => $this->translator->trans('password_login.register.password_should_match'),
                 'required'        => true,
                 'first_options'   => [
                     'label'       => 'password_login.register.password',
@@ -51,8 +82,9 @@ class RegistrationType extends BaseType
                 'second_options'  => ['label' => 'password_login.register.repeat_password'],
             ]);
 
-        $ip = $this->get('request_stack')->getMasterRequest()->getClientIp();
-        if (!$this->getManager(Captcha::class)->isAllowed($ip)) {
+        $ip = $this->requestStack->getMasterRequest()->getClientIp();
+
+        if (!$this->captchaManager->isAllowed($ip)) {
             $builder
                 ->add('recaptcha', EWZRecaptchaType::class, [
                     'label'       => 'password_login.register.captcha',

@@ -48,5 +48,7 @@ class AnonymizeCommand extends BaseCommand
         } else {
             $this->anonymizeManager->anonymizeDatabase();
         }
+
+        return 0;
     }
 }

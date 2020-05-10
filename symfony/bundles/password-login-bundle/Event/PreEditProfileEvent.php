@@ -2,22 +2,22 @@
 
 namespace Bundles\PasswordLoginBundle\Event;
 
-use Bundles\PasswordLoginBundle\Entity\User;
+use Bundles\PasswordLoginBundle\Entity\AbstractUser;
 
 class PreEditProfileEvent extends AbstractEvent
 {
     /**
-     * @var User
+     * @var AbstractUser
      */
     protected $newUser;
 
     /**
      * PreEditProfileEvent constructor.
      *
-     * @param User $user
-     * @param User $newUser
+     * @param AbstractUser $user
+     * @param AbstractUser $newUser
      */
-    public function __construct(User $user, User $newUser)
+    public function __construct(AbstractUser $user, AbstractUser $newUser)
     {
         parent::__construct($user);
 
@@ -25,7 +25,7 @@ class PreEditProfileEvent extends AbstractEvent
     }
 
     /**
-     * @return User
+     * @return AbstractUser
      */
     public function getNewUser()
     {

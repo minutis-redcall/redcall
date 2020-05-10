@@ -2,28 +2,28 @@
 
 namespace Bundles\PasswordLoginBundle\Event;
 
-use Bundles\PasswordLoginBundle\Entity\User;
+use Bundles\PasswordLoginBundle\Entity\AbstractUser;
 use Symfony\Component\EventDispatcher\Event;
 
 abstract class AbstractEvent extends Event
 {
     /**
-     * @var User
+     * @var AbstractUser
      */
     protected $user;
 
     /**
-     * @param User $user
+     * @param AbstractUser $user
      */
-    public function __construct(User $user)
+    public function __construct(AbstractUser $user)
     {
         $this->user = $user;
     }
 
     /**
-     * @param User $user
+     * @param AbstractUser $user
      *
-     * @return User
+     * @return AbstractUser
      */
     public function getUser()
     {

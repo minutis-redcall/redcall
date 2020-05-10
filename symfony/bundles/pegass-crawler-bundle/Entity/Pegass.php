@@ -335,16 +335,12 @@ class Pegass
 
     public function getContent(): ?array
     {
-        if ($this->content) {
-            return json_decode($this->content, true);
-        }
-
-        return null;
+        return $this->content ? json_decode($this->content, true) : null;
     }
 
     public function setContent(?array $content): self
     {
-        $this->content = json_encode($content, JSON_PRETTY_PRINT);
+        $this->content = $content ? json_encode($content, JSON_PRETTY_PRINT) : null;
 
         return $this;
     }

@@ -66,6 +66,9 @@ class PegassController extends BaseController
         $this->requestStack = $requestStack;
     }
 
+    /**
+     * @Route(name="index")
+     */
     public function index()
     {
         $request = $this->requestStack->getMasterRequest();
@@ -230,6 +233,21 @@ class PegassController extends BaseController
         $this->validateCsrfOrThrowNotFoundException('pegass', $csrf);
 
         $userInformation->setLocked(1 - $userInformation->isLocked());
+        $this->userInformationManager->save($userInformation);
+
+        return $this->redirectToRoute('password_login_admin_list', [
+            'form[criteria]' => $userInformation->getNivol(),
+        ]);
+    }
+
+    /**
+     * @Route("/toggle-developer/{csrf}/{id}", name="toggle_developer")
+     */
+    public function toggleDeveloperAction(UserInformation $userInformation, $csrf)
+    {
+        $this->validateCsrfOrThrowNotFoundException('pegass', $csrf);
+
+        $userInformation->setIsDeveloper(1 - $userInformation->isDeveloper());
         $this->userInformationManager->save($userInformation);
 
         return $this->redirectToRoute('password_login_admin_list', [

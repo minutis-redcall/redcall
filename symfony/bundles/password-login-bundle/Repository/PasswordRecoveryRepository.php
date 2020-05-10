@@ -2,12 +2,18 @@
 
 namespace Bundles\PasswordLoginBundle\Repository;
 
+use Bundles\PasswordLoginBundle\Base\BaseRepository;
 use Bundles\PasswordLoginBundle\Entity\PasswordRecovery;
-use Doctrine\ORM\EntityRepository;
+use Doctrine\Common\Persistence\ManagerRegistry;
 use Ramsey\Uuid\Uuid;
 
-class PasswordRecoveryRepository extends EntityRepository
+class PasswordRecoveryRepository extends BaseRepository
 {
+    public function __construct(ManagerRegistry $registry)
+    {
+        parent::__construct($registry, PasswordRecovery::class);
+    }
+
     public function clearExpired(): void
     {
         $this->_em->createQuery('
@@ -18,7 +24,7 @@ class PasswordRecoveryRepository extends EntityRepository
         ]);
     }
 
-    public function generateToken($username)
+    public function generateToken(string $username)
     {
         $passwordRecovery = $this->find($username);
         if ($passwordRecovery && !$passwordRecovery->hasExpired()) {
@@ -33,20 +39,19 @@ class PasswordRecoveryRepository extends EntityRepository
         $passwordRecovery->setUuid($uuid = Uuid::uuid4());
         $passwordRecovery->setTimestamp(time());
 
-        $this->_em->persist($passwordRecovery);
-        $this->_em->flush($passwordRecovery);
+        $this->save($passwordRecovery);
 
         return $uuid;
     }
 
-    public function getUsernameByToken($token)
+    public function getByToken(string $token): ?PasswordRecovery
     {
         if (!$passwordRecovery = $this->findOneByUuid($token)) {
-            return;
+            return null;
         }
 
         if ($token !== $passwordRecovery->getUuid() || $passwordRecovery->hasExpired()) {
-            return;
+            return null;
         }
 
         return $passwordRecovery;

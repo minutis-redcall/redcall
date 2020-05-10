@@ -3,15 +3,53 @@
 namespace Bundles\PasswordLoginBundle\Command;
 
 use Bundles\PasswordLoginBundle\Base\BaseCommand;
-use Bundles\PasswordLoginBundle\Entity\Captcha;
-use Bundles\PasswordLoginBundle\Entity\EmailVerification;
-use Bundles\PasswordLoginBundle\Entity\PasswordRecovery;
-use Bundles\PasswordLoginBundle\Entity\User;
+use Bundles\PasswordLoginBundle\Entity\AbstractUser;
+use Bundles\PasswordLoginBundle\Manager\CaptchaManager;
+use Bundles\PasswordLoginBundle\Manager\EmailVerificationManager;
+use Bundles\PasswordLoginBundle\Manager\PasswordRecoveryManager;
+use Bundles\PasswordLoginBundle\Manager\UserManager;
+use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class UserCronCommand extends BaseCommand
+class UserCronCommand extends Command
 {
+    /**
+     * @var CaptchaManager
+     */
+    private $captchaManager;
+
+    /**
+     * @var PasswordRecoveryManager
+     */
+    private $passwordRecoveryManager;
+
+    /**
+     * @var EmailVerificationManager
+     */
+    private $emailVerificationManager;
+
+    /**
+     * @var UserManager
+     */
+    private $userManager;
+
+    /**
+     * @param CaptchaManager           $captchaManager
+     * @param PasswordRecoveryManager  $passwordRecoveryManager
+     * @param EmailVerificationManager $emailVerificationManager
+     * @param UserManager              $userManager
+     */
+    public function __construct(CaptchaManager $captchaManager, PasswordRecoveryManager $passwordRecoveryManager, EmailVerificationManager $emailVerificationManager, UserManager $userManager)
+    {
+        parent::__construct();
+
+        $this->captchaManager = $captchaManager;
+        $this->passwordRecoveryManager = $passwordRecoveryManager;
+        $this->emailVerificationManager = $emailVerificationManager;
+        $this->userManager = $userManager;
+    }
+
     protected function configure()
     {
         parent::configure();
@@ -23,20 +61,19 @@ class UserCronCommand extends BaseCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->getManager(Captcha::class)->clearExpired();
-        $this->getManager(PasswordRecovery::class)->clearExpired();
+        $this->captchaManager->clearExpired();
+        $this->passwordRecoveryManager->clearExpired();
 
-        foreach ($this->getManager(EmailVerification::class)->getExpiredUsernames() as $username) {
-            /** @var User $user */
-            $user = $this->getManager(User::class)->findOneByUsername($username);
+        foreach ($this->emailVerificationManager->getExpiredUsernames() as $username) {
+            /** @var AbstractUser $user */
+            $user = $this->userManager->findOneByUsername($username);
 
             if ($user && !$user->isTrusted() && !$user->isAdmin()) {
-                $this->getManager()->remove($user);
+                $this->userManager->remove($user);
             }
         }
-        $this->getManager()->flush();
 
-        $this->getManager(EmailVerification::class)->clearExpired();
+        $this->emailVerificationManager->clearExpired();
 
         return 0;
     }
