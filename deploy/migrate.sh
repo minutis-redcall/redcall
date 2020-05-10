@@ -21,7 +21,6 @@ cp symfony/.env deploying/
 
 # Copying configuration files
 cat deploy/${ENV}/dotenv | grep -v DATABASE_URL > symfony/.env
-cat deploy/${ENV}/dotenv-migrate >> symfony/.env
 
 # Migrating
 (
@@ -44,7 +43,11 @@ cat deploy/${ENV}/dotenv-migrate >> symfony/.env
     sleep 30
 
     # Start MySQL tunneling
-    gcloud compute ssh ${USER}@${GCP_BASTION_INSTANCE} -- -L 3304:${DATABASE_HOST} -N -f
+    gcloud compute ssh ${USER}@${GCP_BASTION_INSTANCE} -- -L 3304:${DATABASE_HOST}:${DATABASE_PORT} -N -f
+
+    # Change the db information
+    cat ../deploy/${ENV}/dotenv-migrate >> .env
+    source .env > /dev/null
 
     # Run the migration
     php bin/console cache:clear
