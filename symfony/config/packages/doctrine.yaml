@@ -16,6 +16,8 @@ doctrine:
             collate: utf8mb4_unicode_ci
         url: '%env(resolve:DATABASE_URL)%'
         schema_filter: ~^(?!session)~
+        logging: false
+        profiling: false
     orm:
         auto_generate_proxy_classes: '%kernel.debug%'
         naming_strategy: doctrine.orm.naming_strategy.underscore

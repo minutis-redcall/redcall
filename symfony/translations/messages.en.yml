@@ -391,6 +391,11 @@ maintenance:
   modal:
     for_dev_only: 'This fonctionnality is for developer only.'
     refresh_button: 'Refresh the datas'
+  search:
+    title: 'Advanced nivols search in Pegass'
+    description: 'This tool is made to help you build the right xpath search expression.'
+    nivol: 'Enter a nivol to render its XML content and test your expression.'
+    expression: 'Enter the XPath expression to match your nivol data.'
   message:
     title: 'Set a message at the top of every page'
     type:

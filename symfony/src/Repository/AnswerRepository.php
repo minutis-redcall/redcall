@@ -39,7 +39,7 @@ class AnswerRepository extends BaseRepository
                            ->orderBy('a.updatedAt', 'DESC')
                            ->setMaxResults(1)
                            ->getQuery()
-                           ->useResultCache(false)
+                           ->disableResultCache()
                            ->getOneOrNullResult();
 
         if ($lastAnswer) {
