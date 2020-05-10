@@ -139,7 +139,7 @@ class Volunteer
     /**
      * @var array
      *
-     * @ORM\Column(type="json_array", nullable=true)
+     * @ORM\Column(type="text", nullable=true)
      */
     private $report;
 
@@ -495,11 +495,11 @@ class Volunteer
     }
 
     /**
-     * @return array
+     * @return array|null
      */
-    public function getReport(): array
+    public function getReport(): ?array
     {
-        return $this->report;
+        return $this->report ? json_decode($this->report, true) : null;
     }
 
     /**
@@ -509,7 +509,7 @@ class Volunteer
      */
     public function setReport(array $report): Volunteer
     {
-        $this->report = $report;
+        $this->report = json_encode($report, JSON_PRETTY_PRINT);
 
         return $this;
     }
@@ -527,9 +527,9 @@ class Volunteer
      */
     public function addReport(string $message)
     {
-        $report       = $this->report ?? [];
+        $report       = $this->getReport() ?? [];
         $report[]     = $message;
-        $this->report = $report;
+        $this->setReport($report);
     }
 
     /**

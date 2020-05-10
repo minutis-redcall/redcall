@@ -64,7 +64,7 @@ class Pegass
     private $type;
 
     /**
-     * @ORM\Column(type="json_array", nullable=true)
+     * @ORM\Column(type="text", nullable=true)
      */
     private $content;
 
@@ -335,12 +335,12 @@ class Pegass
 
     public function getContent(): ?array
     {
-        return $this->content;
+        return $this->content ? json_decode($this->content, true) : null;
     }
 
     public function setContent(?array $content): self
     {
-        $this->content = $content;
+        $this->content = $content ? json_encode($content, JSON_PRETTY_PRINT) : null;
 
         return $this;
     }
