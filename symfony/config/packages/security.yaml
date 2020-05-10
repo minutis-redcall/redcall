@@ -67,6 +67,7 @@ security:
 
     # Website administration
     - { path: '^/admin', roles: ['ROLE_ADMIN'] }
+    - { path: '^/developer', roles: ['ROLE_DEVELOPER'] }
 
     # Requires an activated account for other pages
     - { path: '^/', roles: ['ROLE_TRUSTED'] }

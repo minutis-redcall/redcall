@@ -179,6 +179,20 @@ class User implements UserInterface, EquatableInterface
         return $roles;
     }
 
+    public function addRole(string $role)
+    {
+        if (!in_array($role, $this->roles)) {
+            $this->roles[] = $role;
+        }
+    }
+
+    public function removeRole(string $role)
+    {
+        if (in_array($role, $this->roles)) {
+            unset($this->roles[array_search($role, $this->roles)]);
+        }
+    }
+
     public function getSalt()
     {
         return null;
