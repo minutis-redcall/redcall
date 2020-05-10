@@ -33,13 +33,18 @@ exports.¤CloudFunctioName¤ = (req, res) => {
 
   return new Promise((resolve, reject) => {
 
+    let rawBody;
+    if(req.rawBody)
+      rawBody=req.rawBody.toString();
+
     // the data structure for the AppEngine
     const bodyForAppEngine = {
       WebhookRequest:{
         uri:req.originalUrl,
         queryParams:req.query,
         headers:req.headers,
-        body:req.body,
+        method:req.method,
+        body:rawBody,
         origin:TASK_QUEUE_NAME
       }
     };
