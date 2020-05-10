@@ -5,14 +5,14 @@ admin:
     list: Liste d'utilisateurs
     pegass: Connexions à Pegass
   pegass:
-    title: 'Connexions entre les utilisateurs de RedCall et la base de données volontaire'
+    title: 'Connexions entre les utilisateurs de RedCall et la base de données bénévole'
     structures: 'Mise à jour des structures pour %name%'
     list_users: 'Envoyer un message à tous les utilisateurs'
     list_users_explain: 'Afin de contacter tous les utilisateurs, copiez/collez cette liste de nivols dans un nouveau déclenchement.'
     create_user: 'Ajouter un nouvel utilisateur'
-    bound_volunteer: 'Volontaire associé : %name%'
+    bound_volunteer: 'Bénévole associé : %name%'
     locked: 'Gelé'
-    locked_details: 'Les structures d''un utilisateur gelé ne seront pas mises à jour avec la mise à jour Pegass de son volontaire attaché.'
+    locked_details: 'Les structures d''un utilisateur gelé ne seront pas mises à jour avec la mise à jour Pegass de son bénévole attaché.'
     lock: 'Geler'
     unlock: 'Dégeler'
     developered: 'Développeur'
@@ -38,7 +38,7 @@ admin:
       received: "pour la réception"
       sent: "pour l'envoi"
     volunteers:
-      title: "Volontaires"
+      title: "Bénévoles"
       description: "Toutes les données ne sont pas filtrées par une période."
       summary: "La base de données RedCall contient <b>%total_number% (%total_percent%%)</b> bénévoles qui ne sont pas forcément joignables"
       email: "<b>%email_number% (%email_percent%%)</b> qui n’ont pas d’email"
@@ -101,7 +101,7 @@ base:
     back: Retour
     delete: Effacer
     update: Editer
-    create: Ajouter une nouvelle entréee
+    create: Ajouter une nouvelle entrée
     save: Sauvegarder
   crud:
     create_title: 'Ajouter une entrée'
@@ -145,7 +145,7 @@ campaign:
     label: Intitulé
     type: Couleur
     created_at: Date de création
-  cannot_reopen: 'Impossible de réouvrir le déclenchement : depuis sa fermeure, un ou plusieurs volontaires ont été déclenchés et le préfixe associé à leur réponse a été réuilisé.'
+  cannot_reopen: 'Impossible de réouvrir le déclenchement : depuis sa fermeure, un ou plusieurs bénévoles ont été déclenchés et le préfixe associé à leur réponse a été réuilisé.'
 
 modal:
   change_color: Changer de couleur...
@@ -192,7 +192,7 @@ campaign_status:
     prefix: 'Préfix de la réponse: %prefix%'
   legend:
     sms_sent: '"SMS envoyé" indique si le message a bien été envoyé au volonaire. Si cette colonne reste vide, il y a probablement un problème technique.'
-    sms_received: '"SMS reçu" indique si le message a bien été délivré au volontaire. Elle peut rester blanche si le volontaire a éteint son téléphone.'
+    sms_received: '"SMS reçu" indique si le message a bien été délivré au bénévole. Elle peut rester blanche si le bénévole a éteint son téléphone.'
   progress: 'Envoi: %sent% / %total% (%progress%%).'
   relaunch_communication: 'Relancer la communication'
   finish: 'Envoi terminé.'
@@ -206,7 +206,7 @@ new_communication:
   subtitle: 'Dans le cadre du déclenchement "%label%"'
   classify:
     invalid: '%nbr% nivols n''existent pas'
-    disabled: '%nbr% nivols sont rattachés à des volontaires desactivés'
+    disabled: '%nbr% nivols sont rattachés à des bénévoles desactivés'
     inaccessible: '%nbr% nivols appartiennent à des structures auxquelles vous n''êtes pas rattaché(e)'
     valid: '%nbr% nivols sont valides'
 
@@ -243,7 +243,7 @@ form:
       structures: 'Structure(s) à déclencher'
       volunteers: Audience
       selection: 'Sélection:'
-      selection_count: volontaires
+      selection_count: bénévoles
       message: Message
       subject: Sujet
       body: Contenu
@@ -278,10 +278,10 @@ prefilled_answers:
     answers: 'Réponses à créer'
 
 manage_volunteers:
-  title: 'Gestion des volontaires'
+  title: 'Gestion des bénévoles'
   others: 'et %count% autre(s)'
   search:
-    label: 'Rechercher un volontaire'
+    label: 'Rechercher un bénévole'
     button: 'Rechercher'
   action:
     title: 'Actions'
@@ -295,8 +295,8 @@ manage_volunteers:
     update: MàJ le %date%
     never_updated: Pas encore importé
   form:
-    create: Ajouter un nouveau volontaire
-    update: Mettre à jour un volontaire
+    create: Ajouter un nouveau bénévole
+    update: Mettre à jour un bénévole
     nivol: Nivol
     first_name: Prénom
     last_name: Nom de famille
@@ -305,8 +305,8 @@ manage_volunteers:
     minor: Mineur(e) (-18 ans)
     enabled: Déclenchable
     tags: Compétences
-    added: Le volontaire a correctement été ajouté.
-    updated: Le volontaire a correctement été modifié.
+    added: Le bénévole a correctement été ajouté.
+    updated: Le bénévole a correctement été modifié.
     structures: Structure(s) de rattachement
   contact:
     mail_subject: '⚠️ %brand%: Vous avez un message RedCall'
@@ -324,7 +324,7 @@ manage_structures:
     label: 'Rechercher une structure'
     button: 'Rechercher'
   president: 'Président : %president%'
-  volunteers: 'Nombre de volontaires : %count%'
+  volunteers: 'Nombre de bénévoles : %count%'
   users: 'Nombre d''utilisateurs RedCall : %count%'
   last_update: 'Dernière synchro avec Pegass : %last_update% UTC'
   next_update: 'Prochaine synchro avec Pegass : %next_update% UTC'
@@ -381,13 +381,13 @@ geolocation:
   last_data: 'Position reçue à %time% (à %accuracy% près)'
 
 import_report:
-  update_locked: 'Impossible de mettre à jour un volontaire gelé.'
-  disable_locked: 'Impossible de desactiver un volontaire gelé.'
-  no_contact: 'Le volontaire ne possède ni numéro de téléphone ni email.'
-  no_phone: 'Le volontaire ne possède pas de numéro de téléphone.'
-  no_email: 'Le volontaire ne possède pas d''email.'
-  minor: 'Le volontaire est mineur.'
-  disabled: 'Le volontaire est desactivé sur Pegass.'
+  update_locked: 'Impossible de mettre à jour un bénévole gelé.'
+  disable_locked: 'Impossible de desactiver un bénévole gelé.'
+  no_contact: 'Le bénévole ne possède ni numéro de téléphone ni email.'
+  no_phone: 'Le bénévole ne possède pas de numéro de téléphone.'
+  no_email: 'Le bénévole ne possède pas d''email.'
+  minor: 'Le bénévole est mineur.'
+  disabled: 'Le bénévole est desactivé sur Pegass.'
   failed: 'La synchronisation avec Pegass a échoué.'
 
 maintenance:
@@ -419,13 +419,13 @@ maintenance:
 
 infos:
   hello_name: 'Bievenue %firstName%,'
-  hello_anonymous: 'Bienvene,'
+  hello_anonymous: 'Bienvenue,'
   context_1: 'La Croix-Rouge Française possède un peu plus d''un millier de structures ayant des fonctions diverses, notamment dans l''action sociale et le secourisme.'
   context_2: 'Si par exemple un grave accident a lieu dans un immeuble et des dizaines de personnes se retrouvent à la rue, l''Action Sociale va les prendre en charge, les réchauffer/nourrir si besoin, et trouver des solutions d''urgence.'
   context_3: 'Ou si par exemple une manifestation déborde et que le SAMU est trop sollicité, ils peuvent faire appel à nous afin qu''on vienne leur donner un coup de main avec nos ambulances.'
-  context_4: 'Pour réunir les effectifs dont une intervention a besoin, les responsables de chaque unité locale doivent efficacement faire appel à leurs volontaires.'
+  context_4: 'Pour réunir les effectifs dont une intervention a besoin, les responsables de chaque unité locale doivent efficacement faire appel à leurs bénévoles.'
   context_5: 'C''est là que RedCall intervient : elle permet à ces responsables de contacter les ressources dont ils ont besoin par SMS ou email.'
-  context_6: 'Ce que le volontaire voit:'
+  context_6: 'Ce que le bénévole voit:'
   context_7: 'Ce que le responsable voit:'
   context_8: 'Une fois que les équipages sont formés, le responsable peut envoyer un PDF contenant toutes les bonnes informations à sa direction territoriale.'
   context_9: 'RedCall est actif par défaut pour les DLUS, DTUS et PDT, qui peuvent déclencher leurs structures de rattachement et d''action. S’il y a besoin de droits supplémentaires, la demande peut se faire par email au support Minutis en précisant les éléments suivants :'
@@ -443,7 +443,7 @@ label:
   and: "et"
   from: "Du"
   to: "Au"
-  volunteers: "volontaires"
+  volunteers: "bénévoles"
   structures: "structures"
 
 structure:
@@ -461,6 +461,6 @@ audience:
   nivol_title: 'Copier/coller une liste de nivols'
   classify:
     invalid: '%nbr% nivols n''existent pas'
-    disabled: '%nbr% nivols sont reliés à des volontaires desactivés'
-    inaccessible: '%nbr% nivols sont reliés à des volontaires ne faisant pas partie de votre périmètre'
+    disabled: '%nbr% nivols sont reliés à des bénévoles desactivés'
+    inaccessible: '%nbr% nivols sont reliés à des bénévoles ne faisant pas partie de votre périmètre'
     valid: '%nbr% nivols sont valides'
