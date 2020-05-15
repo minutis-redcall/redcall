@@ -18,9 +18,6 @@ class StructureType extends AbstractType
      */
     private $structureManager;
 
-    /**
-     * @param StructureManager $structureManager
-     */
     public function __construct(StructureManager $structureManager)
     {
         $this->structureManager = $structureManager;

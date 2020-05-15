@@ -35,10 +35,10 @@
                                 {% if volunteer.minor %}
                                     <span title="{{ 'manage_volunteers.form.minor'|trans }}">🐻</span>
                                 {% endif %}
-                                {% if volunteer.userInformation %}
+                                {% if volunteer.user %}
                                     {% set body %}
                                         <div style="font-size: 18px;">
-                                            {% for structure in volunteer.userInformation.structures %}
+                                            {% for structure in volunteer.user.structures %}
                                                 <p>{{ structure.getDisplayName }}</p>
                                             {% endfor %}
                                         </div>

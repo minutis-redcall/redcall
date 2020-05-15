@@ -25,5 +25,5 @@ services:
       - '@App\Manager\StructureManager'
       - '@App\Manager\VolunteerManager'
       - '@App\Manager\TagManager'
-      - '@App\Manager\UserInformationManager'
+      - '@App\Manager\UserManager'
       - '@Bundles\SandboxBundle\Manager\AnonymizeManager'

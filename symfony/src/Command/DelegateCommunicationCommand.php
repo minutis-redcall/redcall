@@ -29,9 +29,6 @@ class DelegateCommunicationCommand extends BaseCommand
         $this->processor = $processor;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function configure()
     {
         $this
@@ -40,9 +37,6 @@ class DelegateCommunicationCommand extends BaseCommand
             ->addArgument('communication-id', InputArgument::REQUIRED, 'Communication ID');
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         date_default_timezone_set('Europe/Paris');

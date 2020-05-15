@@ -2,16 +2,11 @@
 
 namespace App\Manager;
 
-use App\Repository\UserInformationRepository;
+use App\Entity\User;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
-use Symfony\Component\Security\Core\User\UserInterface;
-use function in_array;
-use function strpos;
-use function strtolower;
-use function substr;
 
 class LocaleManager
 {
@@ -41,31 +36,18 @@ class LocaleManager
     private $tokenStorage;
 
     /**
-     * @var UserInformationRepository
+     * @var UserManager
      */
-    private $userPreferenceRepository;
+    private $userManager;
 
-    /**
-     * Locale constructor.
-     *
-     * @param RequestStack              $requestStack
-     * @param SessionInterface          $session
-     * @param ParameterBagInterface     $parameterBag
-     * @param UserInformationRepository $userPreferenceRepository
-     * @param TokenStorageInterface     $tokenStorage
-     */
-    public function __construct(RequestStack $requestStack,
-        SessionInterface $session,
-        ParameterBagInterface $parameterBag,
-        UserInformationRepository $userPreferenceRepository,
-        TokenStorageInterface $tokenStorage)
+    public function __construct(RequestStack $requestStack, SessionInterface $session, ParameterBagInterface $parameterBag, TokenStorageInterface $tokenStorage, UserManager $userManager)
     {
-        $this->requestStack             = $requestStack;
-        $this->session                  = $session;
-        $this->defaultLocale            = $parameterBag->get('locale');
-        $this->availableLocales         = $parameterBag->get('locale_list');
-        $this->userPreferenceRepository = $userPreferenceRepository;
-        $this->tokenStorage             = $tokenStorage;
+        $this->requestStack = $requestStack;
+        $this->session = $session;
+        $this->defaultLocale = $parameterBag->get('locale');
+        $this->availableLocales = $parameterBag->get('locale_list');
+        $this->tokenStorage = $tokenStorage;
+        $this->userManager = $userManager;
     }
 
     /**
@@ -76,7 +58,8 @@ class LocaleManager
         $this->changeLocale($locale);
 
         if ($user = $this->getUser()) {
-            $this->userPreferenceRepository->changeLocale($user, $locale);
+            $user->setLocale($locale);
+            $this->userManager->save($user);
         }
     }
 
@@ -102,27 +85,24 @@ class LocaleManager
         $request->setLocale($this->defaultLocale);
     }
 
-    public function restoreFromDatabase()
+    public function restoreFromUser()
     {
         // Set locale from user preferences
-        if ($this->getUser()) {
-            $preferences = $this->userPreferenceRepository->getByUser($this->getUser());
-            if ($preferences->getLocale()) {
-                $this->changeLocale($preferences->getLocale());
-            } else {
-                $this->userPreferenceRepository->changeLocale($this->getUser(), $this->requestStack->getMasterRequest()->getLocale());
-            }
+        $user = $this->getUser();
+
+        if ($user) {
+            $this->changeLocale($user->getLocale());
         }
     }
 
     /**
-     * @return null|UserInterface
+     * @return null|User
      */
-    private function getUser(): ?UserInterface
+    private function getUser(): ?User
     {
         $token = $this->tokenStorage->getToken();
 
-        if ($token && $token->getUser() && is_object($token->getUser()) && $token->getUser() instanceof UserInterface) {
+        if ($token && $token->getUser() && is_object($token->getUser()) && $token->getUser() instanceof User) {
             return $token->getUser();
         }
 

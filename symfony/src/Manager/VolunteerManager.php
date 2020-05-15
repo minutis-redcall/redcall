@@ -4,7 +4,6 @@ namespace App\Manager;
 
 use App\Entity\Structure;
 use App\Entity\Tag;
-use App\Entity\UserInformation;
 use App\Entity\Volunteer;
 use App\Repository\VolunteerRepository;
 use Doctrine\ORM\QueryBuilder;
@@ -18,9 +17,9 @@ class VolunteerManager
     private $volunteerRepository;
 
     /**
-     * @var UserInformationManager
+     * @var UserManager
      */
-    private $userInformationManager;
+    private $userManager;
 
     /**
      * @var TagManager
@@ -32,18 +31,19 @@ class VolunteerManager
      */
     private $translator;
 
-    /**
-     * @param VolunteerRepository    $volunteerRepository
-     * @param UserInformationManager $userInformationManager
-     * @param TagManager             $tagManager
-     * @param TranslatorInterface    $translator
-     */
-    public function __construct(VolunteerRepository $volunteerRepository, UserInformationManager $userInformationManager, TagManager $tagManager, TranslatorInterface $translator)
+    public function __construct(VolunteerRepository $volunteerRepository, TagManager $tagManager, TranslatorInterface $translator)
     {
         $this->volunteerRepository = $volunteerRepository;
-        $this->userInformationManager = $userInformationManager;
         $this->tagManager = $tagManager;
         $this->translator = $translator;
+    }
+
+    /**
+     * @required
+     */
+    public function setUserManager(UserManager $userManager)
+    {
+        $this->userManager = $userManager;
     }
 
     /**
@@ -107,7 +107,7 @@ class VolunteerManager
     public function searchForCurrentUser(?string $criteria, int $limit, bool $onlyEnabled = false)
     {
         return $this->volunteerRepository->searchForUser(
-            $this->userInformationManager->findForCurrentUser(),
+            $this->userManager->findForCurrentUser(),
             $criteria,
             $limit,
             $onlyEnabled
@@ -119,50 +119,28 @@ class VolunteerManager
         return $this->volunteerRepository->searchInStructureQueryBuilder($structure, $criteria);
     }
 
-    /**
-     * @param string $criteria
-     *
-     * @return QueryBuilder
-     */
     public function searchAllQueryBuilder(?string $criteria): QueryBuilder
     {
         return $this->volunteerRepository->searchAllQueryBuilder($criteria);
     }
 
-    /**
-     * @param UserInformation $user
-     * @param string          $criteria
-     *
-     * @return QueryBuilder
-     */
     public function searchForCurrentUserQueryBuilder(?string $criteria): QueryBuilder
     {
         return $this->volunteerRepository->searchForUserQueryBuilder(
-            $this->userInformationManager->findForCurrentUser(),
+            $this->userManager->findForCurrentUser(),
             $criteria
         );
     }
 
-    /**
-     * @param callable $callback
-     * @param bool     $onlyEnabled
-     *
-     * @throws \Doctrine\Common\Persistence\Mapping\MappingException
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     */
     public function foreach(callable $callback, bool $onlyEnabled = true)
     {
         $this->volunteerRepository->foreach($callback, $onlyEnabled);
     }
 
-    /**
-     * @return array
-     */
     public function findIssues(): array
     {
         $volunteers = $this->volunteerRepository->getIssues(
-            $this->userInformationManager->findForCurrentUser()
+            $this->userManager->findForCurrentUser()
         );
 
         $issues = [
@@ -189,7 +167,7 @@ class VolunteerManager
     public function getIssues(): array
     {
         return $this->volunteerRepository->getIssues(
-            $this->userInformationManager->findForCurrentUser()
+            $this->userManager->findForCurrentUser()
         );
     }
 
@@ -205,7 +183,7 @@ class VolunteerManager
      */
     public function filterByNivolAndAccess(array $nivols): array
     {
-       $user = $this->userInformationManager->findForCurrentUser();
+       $user = $this->userManager->findForCurrentUser();
 
        if ($user->isAdmin()) {
            return $this->volunteerRepository->filterByNivols($nivols);
@@ -221,7 +199,7 @@ class VolunteerManager
      */
     public function filterByIdAndAccess(array $ids): array
     {
-        $user = $this->userInformationManager->findForCurrentUser();
+        $user = $this->userManager->findForCurrentUser();
 
         if ($user->isAdmin()) {
             return $this->volunteerRepository->filterByIds($ids);
@@ -232,7 +210,7 @@ class VolunteerManager
 
     public function classifyNivols(array $nivols): array
     {
-        $user = $this->userInformationManager->findForCurrentUser();
+        $user = $this->userManager->findForCurrentUser();
 
         $accessibles = array_map(function(Volunteer $volunteer) {
             return $volunteer->getNivol();

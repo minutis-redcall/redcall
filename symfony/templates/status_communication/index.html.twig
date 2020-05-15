@@ -388,7 +388,7 @@
                                 {{ 'campaign_status.selection.download_csv'|trans }}
                             </button>
                             <form id="selection-download-csv-form-{{ communication.id }}"
-                                  action="{{ path('export_csv', {communicationId: communication.id}) }}"
+                                  action="{{ path('export_csv', {id: communication.id}) }}"
                                   method="post" class="d-none">
                                 <input type="hidden" name="csrf" value="{{ csrf_token('communication') }}"/>
                                 <input type="hidden" name="volunteers"
@@ -396,20 +396,20 @@
                             </form>
                         </div>
 
-                        {# Download portrait PDF #}
+                        {# Download PDF #}
                         <div class="col-md-3 col-12 skip-line">
                             <button
-                               class="btn btn-primary download-portrait-pdf-button"
+                               class="btn btn-primary download-pdf-button"
                                data-communication-id="{{ communication.id }}"
                                data-timeout-disabled="30000">
                                 {{ 'campaign_status.selection.download_portrait_pdf'|trans }}
                             </button>
-                            <form id="selection-download-portrait-pdf-form-{{ communication.id }}"
-                                  action="{{ path('export_portrait_pdf', {communicationId: communication.id}) }}"
+                            <form id="selection-download-pdf-form-{{ communication.id }}"
+                                  action="{{ path('export_pdf', {id: communication.id}) }}"
                                   method="post" class="d-none">
                                 <input type="hidden" name="csrf" value="{{ csrf_token('communication') }}"/>
                                 <input type="hidden" name="volunteers"
-                                       id="selection-download-portrait-pdf-field-{{ communication.id }}" value=""/>
+                                       id="selection-download-pdf-field-{{ communication.id }}" value=""/>
                             </form>
                         </div>
 
@@ -916,13 +916,13 @@
             $('#selection-download-csv-form-' + communicationId).submit();
         });
 
-        $('.download-portrait-pdf-button').click(function (e) {
+        $('.download-pdf-button').click(function (e) {
             e.preventDefault();
             var communicationId = $(this).data('communication-id');
-            $('#selection-download-portrait-pdf-field-' + communicationId).val(
+            $('#selection-download-pdf-field-' + communicationId).val(
                 JSON.stringify(getSelectedVolunteers(communicationId))
             );
-            $('#selection-download-portrait-pdf-form-' + communicationId).submit();
+            $('#selection-download-pdf-form-' + communicationId).submit();
         });
 
         {# -------------------------------------------------------------------------------- #}

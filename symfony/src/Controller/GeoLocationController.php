@@ -6,14 +6,12 @@ use App\Base\BaseController;
 use App\Entity\GeoLocation;
 use App\Entity\Message;
 use App\Form\Type\GeoLocationType;
-use App\Repository\GeoLocationRepository;
-use App\Repository\MessageRepository;
+use App\Manager\GeoLocationManager;
+use App\Manager\MessageManager;
 use DateTime;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -26,75 +24,47 @@ use Symfony\Component\Routing\Annotation\Route;
 class GeoLocationController extends BaseController
 {
     /**
-     * @var MessageRepository
+     * @var GeoLocationManager
      */
-    protected $messageRepository;
+    private $geoLocationManager;
 
     /**
-     * @var GeoLocationRepository
+     * @var MessageManager
      */
-    protected $geoLocationRepository;
+    private $messageManager;
 
     /**
-     * GeoLocationController constructor.
-     *
-     * @param MessageRepository     $messageRepository
-     * @param GeoLocationRepository $geoLocationRepository
+     * @param GeoLocationManager $geoLocationManager
+     * @param MessageManager     $messageManager
      */
-    public function __construct(MessageRepository $messageRepository, GeoLocationRepository $geoLocationRepository)
+    public function __construct(GeoLocationManager $geoLocationManager, MessageManager $messageManager)
     {
-        $this->messageRepository     = $messageRepository;
-        $this->geoLocationRepository = $geoLocationRepository;
+        $this->geoLocationManager = $geoLocationManager;
+        $this->messageManager = $messageManager;
     }
 
     /**
-     * @Route(path="{code}", name="open")
-     * @Method({"GET"})
-     *
-     * @param string $code
-     *
-     * @return Response
+     * @Route(path="{code}", name="open", methods={"GET"})
      */
-    public function openAction(string $code)
+    public function openAction(Message $message)
     {
-        /* @var Message $message */
-        $message = $this->getMessageByCode($code);
-
-        return $this->render('geo_location/index.html.twig', [
-            'code'    => $code,
-            'message' => $message,
-        ]);
-    }
-
-    public function content(string $code)
-    {
-        /* @var Message $message */
-        $message       = $this->getMessageByCode($code);
         $communication = $message->getCommunication();
 
-        return $this->render('geo_location/content.html.twig', [
-            'code'          => $code,
+        return $this->render('geo_location/index.html.twig', [
+            'code'          => $message->getCode(),
             'communication' => $communication,
             'message'       => $message,
             'form'          => $this->createForm(GeoLocationType::class)->createView(),
             'api_key'       => getenv('MAPBOX_API_KEY'),
-            'status'        => $this->geoLocationRepository->getLastGeoLocationUpdateTimestamp($communication),
+            'status'        => $this->geoLocationManager->getLastGeoLocationUpdateTimestamp($communication),
         ]);
     }
 
     /**
-     * @Route(path="{code}/update", name="update")
-     * @Method({"POST"})
-     *
-     * @param string $code
-     *
-     * @return Response
+     * @Route(path="{code}/update", name="update", methods={"POST"})
      */
-    public function updateAction(Request $request, string $code)
+    public function updateAction(Request $request, Message $message)
     {
-        /* @var Message $message */
-        $message = $this->getMessageByCode($code);
-
         $geolocation = new GeoLocation();
 
         $form = $this
@@ -102,7 +72,6 @@ class GeoLocationController extends BaseController
             ->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
             if ($message->getGeoLocation()) {
                 $message->getGeoLocation()->setLatitude($geolocation->getLatitude());
                 $message->getGeoLocation()->setLongitude($geolocation->getLongitude());
@@ -112,12 +81,10 @@ class GeoLocationController extends BaseController
             }
 
             $message->setGeoLocation($geolocation);
-            $geolocation->setMessage($message);
             $geolocation->setDatetime(new DateTime());
 
-            $this->getManager()->persist($message);
-            $this->getManager()->persist($geolocation);
-            $this->getManager()->flush();
+            $this->messageManager->save($message);
+            $this->geoLocationManager->save($geolocation);
         }
 
         return new Response();
@@ -125,27 +92,15 @@ class GeoLocationController extends BaseController
 
     /**
      * @Route(path="{code}/poll", name="poll")
-     *
-     * @param string $code
-     *
-     * @return Response
      */
-    public function pollAction(string $code)
+    public function pollAction(Message $message)
     {
-        /* @var Message $message */
-        $message = $this->getMessageByCode($code);
-
         return new JsonResponse(
             $this->getGeolocationInformation($message)
         );
     }
 
-    /**
-     * @param Message $message
-     *
-     * @return array
-     */
-    private function getGeolocationInformation(Message $myMessage): array
+    private function getGeolocationInformation(Message $myMessage) : array
     {
         $data = [];
         foreach ($myMessage->getCommunication()->getMessages() as $message) {
@@ -165,25 +120,5 @@ class GeoLocationController extends BaseController
         }
 
         return $data;
-    }
-
-    /**
-     * @param string $code
-     *
-     * @return Message
-     *
-     * @throws NotFoundHttpException
-     */
-    private function getMessageByCode(string $code): Message
-    {
-        $message = $this->messageRepository->findOneBy([
-            'code' => $code,
-        ]);
-
-        if (null === $message) {
-            throw $this->createNotFoundException();
-        }
-
-        return $message;
     }
 }

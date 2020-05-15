@@ -7,7 +7,7 @@ use App\Entity\Tag;
 use App\Entity\Volunteer;
 use App\Manager\StructureManager;
 use App\Manager\TagManager;
-use App\Manager\UserInformationManager;
+use App\Manager\UserManager;
 use App\Manager\VolunteerManager;
 use App\Tools\Random;
 
@@ -29,9 +29,9 @@ class FixturesManager
     private $tagManager;
 
     /**
-     * @var UserInformationManager
+     * @var UserManager
      */
-    private $userInformationManager;
+    private $userManager;
 
     /**
      * @var AnonymizeManager
@@ -42,14 +42,15 @@ class FixturesManager
      * @param StructureManager $structureManager
      * @param VolunteerManager $volunteerManager
      * @param TagManager       $tagManager
+     * @param UserManager      $userManager
      * @param AnonymizeManager $anonymizeManager
      */
-    public function __construct(StructureManager $structureManager, VolunteerManager $volunteerManager, TagManager $tagManager, UserInformationManager $userInformationManager, AnonymizeManager $anonymizeManager)
+    public function __construct(StructureManager $structureManager, VolunteerManager $volunteerManager, TagManager $tagManager, UserManager $userManager, AnonymizeManager $anonymizeManager)
     {
         $this->structureManager = $structureManager;
         $this->volunteerManager = $volunteerManager;
         $this->tagManager = $tagManager;
-        $this->userInformationManager = $userInformationManager;
+        $this->userManager = $userManager;
         $this->anonymizeManager = $anonymizeManager;
     }
 
@@ -90,9 +91,9 @@ class FixturesManager
         $this->createVolunteers($numberOfVolunteers, $structure->getId());
 
         if ($bindToUser) {
-            $me = $this->userInformationManager->findForCurrentUser();
+            $me = $this->userManager->findForCurrentUser();
             $me->addStructure($structure);
-            $this->userInformationManager->save($me);
+            $this->userManager->save($me);
         }
 
         return $structure;

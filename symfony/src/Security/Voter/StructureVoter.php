@@ -3,8 +3,7 @@
 namespace App\Security\Voter;
 
 use App\Entity\Structure;
-use App\Entity\UserInformation;
-use App\Manager\UserInformationManager;
+use App\Entity\User;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 use Symfony\Component\Security\Core\Security;
@@ -16,19 +15,9 @@ class StructureVoter extends Voter
      */
     private $security;
 
-    /**
-     * @var UserInformationManager
-     */
-    private $userInformationManager;
-
-    /**
-     * @param Security               $security
-     * @param UserInformationManager $userInformationManager
-     */
-    public function __construct(Security $security, UserInformationManager $userInformationManager)
+    public function __construct(Security $security)
     {
-        $this->security               = $security;
-        $this->userInformationManager = $userInformationManager;
+        $this->security = $security;
     }
 
     /**
@@ -52,9 +41,9 @@ class StructureVoter extends Voter
             return true;
         }
 
-        /** @var UserInformation $userInformation */
-        $userInformation = $this->userInformationManager->findOneByUser($token->getUser());
-        if (!$userInformation) {
+        /** @var User $user */
+        $user = $this->security->getUser();
+        if (!$user) {
             return false;
         }
 
@@ -64,6 +53,6 @@ class StructureVoter extends Voter
             return false;
         }
 
-        return $userInformation->getStructures()->contains($structure);
+        return $user->getStructures()->contains($structure);
     }
 }

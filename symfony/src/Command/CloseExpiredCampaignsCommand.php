@@ -16,9 +16,6 @@ class CloseExpiredCampaignsCommand extends BaseCommand
      */
     private $campaignManager;
 
-    /**
-     * @param CampaignManager $campaignManager
-     */
     public function __construct(CampaignManager $campaignManager)
     {
         parent::__construct();
@@ -26,9 +23,6 @@ class CloseExpiredCampaignsCommand extends BaseCommand
         $this->campaignManager = $campaignManager;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function configure()
     {
         $this
@@ -38,9 +32,6 @@ class CloseExpiredCampaignsCommand extends BaseCommand
         ;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $campaigns = $this->campaignManager->findInactiveCampaignsSince(

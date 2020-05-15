@@ -25,9 +25,7 @@
 
         <table class="table">
             <tbody>
-            {% for userInformation in userInformations %}
-                {% set user = userInformation.user %}
-
+            {% for user in users %}
                 <tr>
                     <td>
                         <div class="row">
@@ -37,8 +35,8 @@
                                     <div class="text-small">
                                         {{ 'password_login.user_list.registered_at'|trans({'%date%': user.registeredAt|date('d/m/Y H:i')}) }}
                                     </div>
-                                    {% if userInformation.volunteer %}
-                                        <div>{{ 'admin.pegass.bound_volunteer'|trans({'%name%': userInformation.volunteer.displayName}) }}</div>
+                                    {% if user.volunteer %}
+                                        <div>{{ 'admin.pegass.bound_volunteer'|trans({'%name%': user.volunteer.displayName}) }}</div>
                                     {% endif %}
                                 </div>
                             </div>
@@ -72,7 +70,7 @@
                                         {{ 'password_login.user_list.is_admin'|trans }} <sup>(3)</sup>
                                     </div>
                                     <div class="text-small">
-                                        {% if userInformation.developer %}
+                                        {% if user.developer %}
                                             <span class="h4">✅</span>
                                         {% else %}
                                             <span class="h4">❌</span>
@@ -81,7 +79,7 @@
                                     </div>
                                     {% if is_redcross %}
                                         <div class="text-small">
-                                            {% if userInformation.locked %}
+                                            {% if user.locked %}
                                                 <span class="h4">✅</span>
                                             {% else %}
                                                 <span class="h4">❌</span>
@@ -98,22 +96,22 @@
                             <div class="col-md-4">
                                 <div class="nivol"
                                      data-id="{{ user.id }}"
-                                     data-uri="{{ path('admin_pegass_update', {csrf: csrf_token('pegass'), id: userInformation.id}) }}">
-                                    {% if userInformation.locked %}
-                                        <strong>{{ userInformation.nivol }}</strong>
+                                     data-uri="{{ path('admin_pegass_update', {csrf: csrf_token('pegass'), id: user.id}) }}">
+                                    {% if user.locked %}
+                                        <strong>{{ user.nivol }}</strong>
                                     {% else %}
                                         {{ render(controller('\\App\\Controller\\WidgetController::nivolEditor', {
-                                            userInformation: userInformation
+                                            user: user
                                         })) }}
                                     {% endif %}
                                 </div>
                                 <div id="structures-{{ user.id }}">
-                                    {% for structure in userInformation.structures %}
+                                    {% for structure in user.structures %}
                                         <div>{{ structure.name }}</div>
                                     {% endfor %}
                                 </div>
 
-                                <a href="{{ path('admin_pegass_update_structures', {id: userInformation.id}) }}">{{ 'management.update_structures'|trans }}</a>
+                                <a href="{{ path('admin_pegass_update_structures', {id: user.id}) }}">{{ 'management.update_structures'|trans }}</a>
                             </div>
                             <div class="col-md-1">
                                 {% if not user.isEqualTo(app.user) %}
@@ -123,60 +121,60 @@
                                     </button>
                                     <div class="dropdown-menu">
                                         {% if user.verified %}
-                                            <a class="dropdown-item text-danger" href="{{ path('password_login_admin_toggle_verify', {username: user.username, csrf: csrf_token('password_login')}) }}">
+                                            <a class="dropdown-item text-danger" href="{{ path('admin_pegass_toggle_verify', {id: user.id, csrf: csrf_token('pegass')}) }}">
                                                 {{ 'password_login.user_list.unverify'|trans }}
                                             </a>
                                         {% else %}
-                                            <a class="dropdown-item text-success" href="{{ path('password_login_admin_toggle_verify', {username: user.username, csrf: csrf_token('password_login')}) }}">
+                                            <a class="dropdown-item text-success" href="{{ path('admin_pegass_toggle_verify', {id: user.id, csrf: csrf_token('pegass')}) }}">
                                                 {{ 'password_login.user_list.verify'|trans }}
                                             </a>
                                         {% endif %}
 
                                         {% if user.trusted %}
-                                            <a class="dropdown-item text-danger" href="{{ path('password_login_admin_toggle_trust', {username: user.username, csrf: csrf_token('password_login')}) }}">
+                                            <a class="dropdown-item text-danger" href="{{ path('admin_pegass_toggle_trust', {id: user.id, csrf: csrf_token('pegass')}) }}">
                                                 {{ 'password_login.user_list.untrust'|trans }}
                                             </a>
                                         {% else %}
-                                            <a class="dropdown-item text-success" href="{{ path('password_login_admin_toggle_trust', {username: user.username, csrf: csrf_token('password_login')}) }}">
+                                            <a class="dropdown-item text-success" href="{{ path('admin_pegass_toggle_trust', {id: user.id, csrf: csrf_token('pegass')}) }}">
                                                 {{ 'password_login.user_list.trust'|trans }}
                                             </a>
                                         {% endif %}
 
                                         {% if user.admin %}
-                                            <a class="dropdown-item text-danger" href="{{ path('password_login_admin_toggle_admin', {username: user.username, csrf: csrf_token('password_login')}) }}">
+                                            <a class="dropdown-item text-danger" href="{{ path('admin_pegass_toggle_admin', {id: user.id, csrf: csrf_token('pegass')}) }}">
                                                 {{ 'password_login.user_list.unadmin'|trans }}
                                             </a>
                                         {% else %}
-                                            <a class="dropdown-item text-success" href="{{ path('password_login_admin_toggle_admin', {username: user.username, csrf: csrf_token('password_login')}) }}">
+                                            <a class="dropdown-item text-success" href="{{ path('admin_pegass_toggle_admin', {id: user.id, csrf: csrf_token('pegass')}) }}">
                                                 {{ 'password_login.user_list.admin'|trans }}
                                             </a>
                                         {% endif %}
 
-                                        {% if userInformation.developer %}
-                                            <a class="dropdown-item text-danger" href="{{ path('admin_pegass_toggle_developer', {id: userInformation.id, csrf: csrf_token('pegass')}) }}">
+                                        {% if user.developer %}
+                                            <a class="dropdown-item text-danger" href="{{ path('admin_pegass_toggle_developer', {id: user.id, csrf: csrf_token('pegass')}) }}">
                                                 {{ 'admin.pegass.undeveloper'|trans }}
                                             </a>
                                         {% else %}
-                                            <a class="dropdown-item text-success" href="{{ path('admin_pegass_toggle_developer', {id: userInformation.id, csrf: csrf_token('pegass')}) }}">
+                                            <a class="dropdown-item text-success" href="{{ path('admin_pegass_toggle_developer', {id: user.id, csrf: csrf_token('pegass')}) }}">
                                                 {{ 'admin.pegass.developer'|trans }}
                                             </a>
                                         {% endif %}
 
                                         <div class="dropdown-divider"></div>
 
-                                        {% if userInformation.locked %}
-                                            <a class="dropdown-item text-danger" href="{{ path('admin_pegass_toggle_lock', {id: userInformation.id, csrf: csrf_token('pegass')}) }}">
+                                        {% if user.locked %}
+                                            <a class="dropdown-item text-danger" href="{{ path('admin_pegass_toggle_lock', {id: user.id, csrf: csrf_token('pegass')}) }}">
                                                 {{ 'admin.pegass.unlock'|trans }}
                                             </a>
                                         {% else %}
-                                            <a class="dropdown-item text-success" href="{{ path('admin_pegass_toggle_lock', {id: userInformation.id, csrf: csrf_token('pegass')}) }}">
+                                            <a class="dropdown-item text-success" href="{{ path('admin_pegass_toggle_lock', {id: user.id, csrf: csrf_token('pegass')}) }}">
                                                 {{ 'admin.pegass.lock'|trans }}
                                             </a>
                                         {% endif %}
 
                                         <div class="dropdown-divider"></div>
 
-                                        <a class="dropdown-item text-danger" href="{{ path('password_login_admin_delete', {username: user.username, csrf: csrf_token('password_login')}) }}">
+                                        <a class="dropdown-item text-danger" href="{{ path('admin_pegass_delete', {id: user.id, csrf: csrf_token('pegass')}) }}">
                                             {{ 'password_login.user_list.delete'|trans }}
                                         </a>
                                     </div>
@@ -190,7 +188,7 @@
             </tbody>
         </table>
 
-        {{ macros.pager(userInformations) }}
+        {{ macros.pager(users) }}
 
         <div class="text-left">
             <sup>(1)</sup> {{ 'password_login.user_list.description_verified'|trans }}

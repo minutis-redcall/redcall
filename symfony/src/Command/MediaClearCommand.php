@@ -14,9 +14,6 @@ class MediaClearCommand extends BaseCommand
      */
     private $mediaManager;
 
-    /**
-     * @param MediaManager $mediaManager
-     */
     public function __construct(MediaManager $mediaManager)
     {
         parent::__construct();
@@ -24,9 +21,6 @@ class MediaClearCommand extends BaseCommand
         $this->mediaManager = $mediaManager;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function configure()
     {
         $this
@@ -34,9 +28,6 @@ class MediaClearCommand extends BaseCommand
             ->setDescription('Clear expired medias');
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->mediaManager->clearExpired();

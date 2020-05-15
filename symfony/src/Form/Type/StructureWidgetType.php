@@ -14,25 +14,16 @@ class StructureWidgetType extends TextType
      */
     private $structureManager;
 
-    /**
-     * @param StructureManager $structureManager
-     */
     public function __construct(StructureManager $structureManager)
     {
         $this->structureManager = $structureManager;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function getBlockPrefix()
     {
         return 'structure_widget';
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function buildView(FormView $view, FormInterface $form, array $options)
     {
         if ($view->vars['value']) {

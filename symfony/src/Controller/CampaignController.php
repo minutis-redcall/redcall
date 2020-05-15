@@ -8,7 +8,7 @@ use App\Form\Model\Campaign as CampaignModel;
 use App\Form\Type\CampaignType;
 use App\Manager\CampaignManager;
 use App\Manager\CommunicationManager;
-use App\Manager\UserInformationManager;
+use App\Manager\UserManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -27,22 +27,15 @@ class CampaignController extends BaseController
     private $communicationManager;
 
     /**
-     * @var UserInformationManager
+     * @var UserManager
      */
-    private $userInformationManager;
+    private $userManager;
 
-    /**
-     * @param CampaignManager        $campaignManager
-     * @param CommunicationManager   $communicationManager
-     * @param UserInformationManager $userInformationManager
-     */
-    public function __construct(CampaignManager $campaignManager,
-        CommunicationManager $communicationManager,
-        UserInformationManager $userInformationManager)
+     public function __construct(CampaignManager $campaignManager, CommunicationManager $communicationManager, UserManager $userManager)
     {
-        $this->campaignManager        = $campaignManager;
-        $this->communicationManager   = $communicationManager;
-        $this->userInformationManager = $userInformationManager;
+        $this->campaignManager = $campaignManager;
+        $this->communicationManager = $communicationManager;
+        $this->userManager = $userManager;
     }
 
     /**
@@ -82,14 +75,14 @@ class CampaignController extends BaseController
      */
     public function createCampaign(Request $request)
     {
-        $userInformation = $this->userInformationManager->findForCurrentUser();
+        $user = $this->getUser();
 
-        if (!$userInformation->getVolunteer() || !$userInformation->getStructures()->count()) {
+        if (!$user->getVolunteer() || !$user->getStructures()->count()) {
             return $this->redirectToRoute('home');
         }
 
         $campaignModel                            = new CampaignModel();
-        $campaignModel->communication->structures = $userInformation->computeStructureList();
+        $campaignModel->communication->structures = $user->computeStructureList();
 
         $form = $this
             ->createForm(CampaignType::class, $campaignModel)

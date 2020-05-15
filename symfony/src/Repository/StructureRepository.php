@@ -4,12 +4,10 @@ namespace App\Repository;
 
 use App\Base\BaseRepository;
 use App\Entity\Structure;
-use App\Entity\UserInformation;
+use App\Entity\User;
 use App\Entity\Volunteer;
 use Bundles\PegassCrawlerBundle\Entity\Pegass;
 use Doctrine\Bundle\DoctrineBundle\Registry;
-use Doctrine\ORM\NonUniqueResultException;
-use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\QueryBuilder;
 
 /**
@@ -23,42 +21,6 @@ class StructureRepository extends BaseRepository
     public function __construct(Registry $registry)
     {
         parent::__construct($registry, Structure::class);
-    }
-
-    /**
-     * @param string $identifier
-     *
-     * @throws NoResultException
-     * @throws NonUniqueResultException
-     */
-    public function disableByIdentifier(string $identifier)
-    {
-        $this->createQueryBuilder('s')
-             ->update()
-             ->set('s.enabled', ':enabled')
-             ->setParameter('enabled', false)
-             ->where('s.identifier = :identifier')
-             ->setParameter('identifier', $identifier)
-             ->getQuery()
-             ->execute();
-    }
-
-    /**
-     * @param string $identifier
-     *
-     * @throws NoResultException
-     * @throws NonUniqueResultException
-     */
-    public function enableByIdentifier(string $identifier)
-    {
-        $this->createQueryBuilder('s')
-            ->update()
-            ->set('s.enabled', ':enabled')
-            ->setParameter('enabled', true)
-            ->where('s.identifier = :identifier')
-            ->setParameter('identifier', $identifier)
-            ->getQuery()
-            ->execute();
     }
 
     /**
@@ -164,40 +126,7 @@ class StructureRepository extends BaseRepository
             ->getResult();
     }
 
-    /**
-     * @param array $structures
-     *
-     * @return array
-     */
-    public function countVolunteersInStructures(array $structures): array
-    {
-        $ids = array_map(function (Structure $structure) {
-            return $structure->getId();
-        }, $structures);
-
-        $rows = $this->createQueryBuilder('s')
-                     ->select('s.id as structure_id, COUNT(v.id) as count')
-                     ->join('s.volunteers', 'v')
-                     ->where('s.id IN (:ids)')
-                     ->andWhere('s.enabled = true')
-                     ->setParameter('ids', $ids)
-                     ->andWhere('v.enabled = true')
-                     ->groupBy('s.id')
-                     ->getQuery()
-                     ->getArrayResult();
-
-        return array_combine(
-            array_column($rows, 'structure_id'),
-            array_column($rows, 'count')
-        );
-    }
-
-    /**
-     * @param UserInformation $user
-     *
-     * @return array
-     */
-    public function getTagCountByStructuresForUser(UserInformation $user): array
+    public function getTagCountByStructuresForUser(User $user): array
     {
         return $this->createQueryBuilder('s')
                     ->select('s.id as structure_id, t.id as tag_id, COUNT(v.id) as count')
@@ -214,7 +143,7 @@ class StructureRepository extends BaseRepository
                     ->getArrayResult();
     }
 
-    public function getVolunteerCountByStructuresForUser(UserInformation $user): array
+    public function getVolunteerCountByStructuresForUser(User $user): array
     {
         $rows = $this->createQueryBuilder('s')
             ->select('s.id as structure_id, COUNT(DISTINCT v.id) as count')
@@ -237,36 +166,21 @@ class StructureRepository extends BaseRepository
         return $counts;
     }
 
-    /**
-     * @param UserInformation $userInformation
-     *
-     * @return QueryBuilder
-     */
-    public function getStructuresForAdminQueryBuilder(UserInformation $userInformation): QueryBuilder
+    public function getStructuresForAdminQueryBuilder(User $user): QueryBuilder
     {
         return $this->createQueryBuilder('s')
                     ->join('s.users', 'u')
                     ->where('u.id = :id')
-                    ->setParameter('id', $userInformation->getId())
+                    ->setParameter('id', $user->getId())
                     ->andWhere('s.enabled = true')
                     ->orderBy('s.identifier', 'asc');
     }
 
-    /**
-     * @param UserInformation $userInformation
-     *
-     * @return QueryBuilder
-     */
-    public function getStructuresForUserQueryBuilder(UserInformation $userInformation): QueryBuilder
+    public function getStructuresForUserQueryBuilder(User $user): QueryBuilder
     {
-        return $this->getStructuresForAdminQueryBuilder($userInformation);
+        return $this->getStructuresForAdminQueryBuilder($user);
     }
 
-    /**
-     * @param string $criteria
-     *
-     * @return QueryBuilder
-     */
     public function searchAllQueryBuilder(?string $criteria): QueryBuilder
     {
         $qb = $this
@@ -282,12 +196,6 @@ class StructureRepository extends BaseRepository
         return $qb;
     }
 
-    /**
-     * @param string|null $criteria
-     * @param int         $maxResults
-     *
-     * @return array
-     */
     public function searchAll(?string $criteria, int $maxResults): array
     {
         return $this
@@ -298,13 +206,7 @@ class StructureRepository extends BaseRepository
             ->getResult();
     }
 
-    /**
-     * @param UserInformation $user
-     * @param string|null     $criteria
-     *
-     * @return QueryBuilder
-     */
-    public function searchForUserQueryBuilder(UserInformation $user, ?string $criteria, bool $onlyEnabled = false): QueryBuilder
+    public function searchForUserQueryBuilder(User $user, ?string $criteria, bool $onlyEnabled = false): QueryBuilder
     {
         $qb = $this->createQueryBuilder('s')
             ->join('s.users', 'u')
@@ -326,7 +228,7 @@ class StructureRepository extends BaseRepository
         return $qb;
     }
 
-    public function searchForUser(UserInformation $user, ?string $criteria, int $maxResults, bool $onlyEnabled = false): array
+    public function searchForUser(User $user, ?string $criteria, int $maxResults, bool $onlyEnabled = false): array
     {
         return $this
             ->searchForUserQueryBuilder($user, $criteria, $onlyEnabled)

@@ -14,9 +14,6 @@ class RecoverCostsCommand extends BaseCommand
      */
     private $costManager;
 
-    /**
-     * @param CostManager $costManager
-     */
     public function __construct(CostManager $costManager)
     {
         parent::__construct();
@@ -24,9 +21,6 @@ class RecoverCostsCommand extends BaseCommand
         $this->costManager = $costManager;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function configure()
     {
         $this
@@ -34,9 +28,6 @@ class RecoverCostsCommand extends BaseCommand
             ->setDescription('Reconcile messages & call costs');
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->costManager->recoverCosts();

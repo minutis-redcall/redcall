@@ -6,7 +6,7 @@ use App\Entity\Structure;
 use App\Entity\Tag;
 use App\Manager\StructureManager;
 use App\Manager\TagManager;
-use App\Manager\UserInformationManager;
+use App\Manager\UserManager;
 use App\Manager\VolunteerManager;
 use App\Repository\TagRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -23,9 +23,9 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class AudienceType extends AbstractType
 {
     /**
-     * @var UserInformationManager
+     * @var UserManager
      */
-    private $userInformationManager;
+    private $userManager;
 
     /**
      * @var StructureManager
@@ -47,16 +47,9 @@ class AudienceType extends AbstractType
      */
     private $translator;
 
-    /**
-     * @param UserInformationManager $userInformationManager
-     * @param StructureManager       $structureManager
-     * @param VolunteerManager       $volunteerManager
-     * @param TagManager             $tagManager
-     * @param TranslatorInterface    $translator
-     */
-    public function __construct(UserInformationManager $userInformationManager, StructureManager $structureManager, VolunteerManager $volunteerManager, TagManager $tagManager, TranslatorInterface $translator)
+    public function __construct(UserManager $userManager, StructureManager $structureManager, VolunteerManager $volunteerManager, TagManager $tagManager, TranslatorInterface $translator)
     {
-        $this->userInformationManager = $userInformationManager;
+        $this->userManager = $userManager;
         $this->structureManager = $structureManager;
         $this->volunteerManager = $volunteerManager;
         $this->tagManager = $tagManager;
@@ -65,12 +58,12 @@ class AudienceType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $structures = $this->userInformationManager->findForCurrentUser()->getStructures()->toArray();
+        $structures = $this->userManager->findForCurrentUser()->getStructures()->toArray();
 
         $builder
             ->add('structures', EntityType::class, [
                 'class' => Structure::class,
-                'query_builder' => $this->userInformationManager->getCurrentUserStructuresQueryBuilder(),
+                'query_builder' => $this->userManager->getCurrentUserStructuresQueryBuilder(),
                 'choice_label' => function (Structure $structure) {
                     return $structure->getDisplayName();
                 },
@@ -144,7 +137,7 @@ class AudienceType extends AbstractType
     public function buildView(FormView $view, FormInterface $form, array $options)
     {
         $structures = [];
-        $rows = $this->userInformationManager->getCurrentUserStructures();
+        $rows = $this->userManager->getCurrentUserStructures();
         foreach ($rows as $structure) {
             /** @var Structure $structure */
             $structures[$structure->getId()] = $structure;
@@ -197,7 +190,7 @@ class AudienceType extends AbstractType
     }
 
 
-    public function getBlockPrefix(): string
+    public function getBlockPrefix() : string
     {
         return 'audience';
     }

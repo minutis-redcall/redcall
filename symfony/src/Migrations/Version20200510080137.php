@@ -22,6 +22,7 @@ final class Version20200510080137 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
+        $this->addSql('TRUNCATE TABLE sessions');
         $this->addSql('ALTER TABLE user_information ADD is_developer TINYINT(1) NOT NULL DEFAULT 0');
     }
 
@@ -30,6 +31,7 @@ final class Version20200510080137 extends AbstractMigration
         // this down() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
+        $this->addSql('TRUNCATE TABLE sessions');
         $this->addSql('ALTER TABLE user_information DROP is_developer');
     }
 }

@@ -8,7 +8,6 @@ use App\Entity\Volunteer;
 use App\Form\Type\VolunteerType;
 use App\Import\VolunteerImporter;
 use App\Manager\StructureManager;
-use App\Manager\UserInformationManager;
 use App\Manager\VolunteerManager;
 use Bundles\PaginationBundle\Manager\PaginationManager;
 use Bundles\PegassCrawlerBundle\Entity\Pegass;
@@ -29,10 +28,6 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class VolunteersController extends BaseController
 {
-    /**
-     * @var UserInformationManager
-     */
-    private $userInformationManager;
 
     /**
      * @var VolunteerManager
@@ -59,28 +54,13 @@ class VolunteersController extends BaseController
      */
     private $kernel;
 
-    /**
-     * @param UserInformationManager $userInformationManager
-     * @param VolunteerManager       $volunteerManager
-     * @param StructureManager       $structureManager
-     * @param PegassManager          $pegassManager
-     * @param PaginationManager      $paginationManager
-     * @param KernelInterface        $kernel
-     */
-    public function __construct(UserInformationManager $userInformationManager,
-        VolunteerManager $volunteerManager,
-        StructureManager $structureManager,
-        PegassManager $pegassManager,
-        PaginationManager $paginationManager,
-        KernelInterface $kernel
-    )
+    public function __construct(VolunteerManager $volunteerManager, StructureManager $structureManager, PegassManager $pegassManager, PaginationManager $paginationManager, KernelInterface $kernel)
     {
-        $this->userInformationManager = $userInformationManager;
-        $this->volunteerManager       = $volunteerManager;
-        $this->structureManager       = $structureManager;
-        $this->pegassManager          = $pegassManager;
-        $this->paginationManager      = $paginationManager;
-        $this->kernel                 = $kernel;
+        $this->volunteerManager = $volunteerManager;
+        $this->structureManager = $structureManager;
+        $this->pegassManager = $pegassManager;
+        $this->paginationManager = $paginationManager;
+        $this->kernel = $kernel;
     }
 
     /**

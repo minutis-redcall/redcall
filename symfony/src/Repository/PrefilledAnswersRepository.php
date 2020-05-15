@@ -5,8 +5,8 @@ namespace App\Repository;
 use App\Base\BaseRepository;
 use App\Entity\PrefilledAnswers;
 use App\Entity\Structure;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Registry;
-use Doctrine\ORM\QueryBuilder;
 
 /**
  * @method PrefilledAnswers|null find($id, $lockMode = null, $lockVersion = null)
@@ -21,39 +21,6 @@ class PrefilledAnswersRepository extends BaseRepository
         parent::__construct($registry, PrefilledAnswers::class);
     }
 
-    //    /**
-    //     * @return PrefilledAnswers[] Returns an array of PrefilledAnswers objects
-    //     */
-    /*
-    public function findByExampleField($value)
-    {
-        return $this->createQueryBuilder('p')
-            ->andWhere('p.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('p.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
-
-    /*
-    public function findOneBySomeField($value): ?PrefilledAnswers
-    {
-        return $this->createQueryBuilder('p')
-            ->andWhere('p.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
-
-    /**
-     * Return all prefilled answers for a structure
-     * @return QueryBuilder
-     */
     public function getPrefilledAnswersByStructure(Structure $structure)
     {
         $qb = $this->createQueryBuilder('pa');
@@ -64,21 +31,16 @@ class PrefilledAnswersRepository extends BaseRepository
         return $qb;
     }
 
-    public function findByUserForStructureAndGlobal(\App\Entity\UserInformation $userInformation)
+    public function findByUserForStructureAndGlobal(User $user)
     {
         $qb = $this->createQueryBuilder('pa')
             ->where('pa.structure is null')
-            ->orWhere('pa.structure in(:ids)')
-            ->setParameter('ids', $userInformation->getStructures());
+            ->orWhere('pa.structure in (:ids)')
+            ->setParameter('ids', $user->getStructures());
 
         return $qb->getQuery()->getResult();
     }
 
-    /**
-     * Return query builder of all global prefilled answers (all without structure)
-     *
-     * @return QueryBuilder
-     */
     public function getGlobalPrefilledAnswers()
     {
         return $this->createQueryBuilder('pa')->where('pa.structure is null');

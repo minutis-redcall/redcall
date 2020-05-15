@@ -20,10 +20,6 @@ class VolunteerWidgetType extends TextType
      */
     private $translator;
 
-    /**
-     * @param VolunteerManager    $volunteerManager
-     * @param TranslatorInterface $translator
-     */
     public function __construct(VolunteerManager $volunteerManager, TranslatorInterface $translator)
     {
         $this->volunteerManager = $volunteerManager;

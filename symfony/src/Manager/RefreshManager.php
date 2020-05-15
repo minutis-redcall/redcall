@@ -9,7 +9,6 @@ use App\Tools\PhoneNumberParser;
 use Bundles\PegassCrawlerBundle\Entity\Pegass;
 use Bundles\PegassCrawlerBundle\Manager\PegassManager;
 use Psr\Log\LoggerInterface;
-use Psr\Log\NullLogger;
 
 /**
  * Refreshes Redcall database based on Pegass cache
@@ -50,28 +49,23 @@ class RefreshManager
     private $tagManager;
 
     /**
-     * @var UserInformationManager
+     * @var UserManager
      */
-    private $userInformationManager;
+    private $userManager;
 
     /**
-     * @var LoggerInterface
+     * @var LoggerInterface|null
      */
     private $logger;
 
-    public function __construct(PegassManager $pegassManager,
-        StructureManager $structureManager,
-        VolunteerManager $volunteerManager,
-        TagManager $tagManager,
-        UserInformationManager $userInformationManager,
-        LoggerInterface $logger = null)
+    public function __construct(PegassManager $pegassManager, StructureManager $structureManager, VolunteerManager $volunteerManager, TagManager $tagManager, UserManager $userManager, LoggerInterface $logger = null)
     {
-        $this->pegassManager          = $pegassManager;
-        $this->structureManager       = $structureManager;
-        $this->volunteerManager       = $volunteerManager;
-        $this->tagManager             = $tagManager;
-        $this->userInformationManager = $userInformationManager;
-        $this->logger                 = $logger ?: new NullLogger();
+        $this->pegassManager = $pegassManager;
+        $this->structureManager = $structureManager;
+        $this->volunteerManager = $volunteerManager;
+        $this->tagManager = $tagManager;
+        $this->userManager = $userManager;
+        $this->logger = $logger ?: new NullLogger();
     }
 
     public function refresh(bool $force)
@@ -205,9 +199,9 @@ class RefreshManager
             $this->volunteerManager->save($volunteer);
 
             // If volunteer is bound to a RedCall user, update its structures
-            $userInformation = $this->userInformationManager->findOneByNivol($volunteer->getNivol());
-            if ($userInformation) {
-                $this->userInformationManager->updateNivol($userInformation, $volunteer->getNivol());
+            $user = $this->userManager->findOneByNivol($volunteer->getNivol());
+            if ($user) {
+                $this->userManager->updateNivol($user, $volunteer->getNivol());
             }
 
             return;
@@ -280,9 +274,9 @@ class RefreshManager
         $this->volunteerManager->save($volunteer);
 
         // If volunteer is bound to a RedCall user, update its structures
-        $userInformation = $this->userInformationManager->findOneByNivol($volunteer->getNivol());
-        if ($userInformation) {
-            $this->userInformationManager->updateNivol($userInformation, $volunteer->getNivol());
+        $user = $this->userManager->findOneByNivol($volunteer->getNivol());
+        if ($user) {
+            $this->userManager->updateNivol($user, $volunteer->getNivol());
         }
     }
 

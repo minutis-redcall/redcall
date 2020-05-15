@@ -17,39 +17,39 @@ class AbstractUser implements UserInterface, EquatableInterface
      * @ORM\Column(name="id", type="string", length=36)
      * @ORM\Id
      */
-    private $id;
+    protected $id;
 
     /**
      * @ORM\Column(name="username", type="string", length=64, unique=true)
      */
-    private $username;
+    protected $username;
 
     /**
      * @ORM\Column(name="password", type="string", length=72)
      */
-    private $password;
+    protected $password;
 
     /**
      * @ORM\Column(name="is_verified", type="boolean")
      */
-    private $isVerified = false;
+    protected $isVerified = false;
 
     /**
      * @ORM\Column(name="is_trusted", type="boolean")
      */
-    private $isTrusted = false;
+    protected $isTrusted = false;
 
     /**
      * @ORM\Column(name="is_admin", type="boolean")
      */
-    private $isAdmin = false;
+    protected $isAdmin = false;
 
     /**
      * @ORM\Column(type="datetime")
      */
-    private $registeredAt;
+    protected $registeredAt;
 
-    private $roles = ['ROLE_USER'];
+    protected $roles = ['ROLE_USER'];
 
     public function __construct()
     {
@@ -59,7 +59,7 @@ class AbstractUser implements UserInterface, EquatableInterface
     /**
      * @return string
      */
-    public function getId(): string
+    public function getId() : string
     {
         return $this->id;
     }
@@ -67,7 +67,7 @@ class AbstractUser implements UserInterface, EquatableInterface
     /**
      * @return string
      */
-    public function getUsername(): ?string
+    public function getUsername() : ?string
     {
         return $this->username;
     }
@@ -77,55 +77,55 @@ class AbstractUser implements UserInterface, EquatableInterface
      *
      * @return $this
      */
-    public function setUsername(string $username): AbstractUser
+    public function setUsername(string $username) : AbstractUser
     {
         $this->username = $username;
 
         return $this;
     }
 
-    public function getPassword(): ?string
+    public function getPassword() : ?string
     {
         return $this->password;
     }
 
-    public function setPassword(string $password): AbstractUser
+    public function setPassword(string $password) : AbstractUser
     {
         $this->password = $password;
 
         return $this;
     }
 
-    public function isVerified(): bool
+    public function isVerified() : bool
     {
         return $this->isVerified;
     }
 
-    public function setIsVerified(bool $isVerified): AbstractUser
+    public function setIsVerified(bool $isVerified) : AbstractUser
     {
         $this->isVerified = $isVerified;
 
         return $this;
     }
 
-    public function isTrusted(): bool
+    public function isTrusted() : bool
     {
         return $this->isTrusted;
     }
 
-    public function setIsTrusted(bool $isTrusted): AbstractUser
+    public function setIsTrusted(bool $isTrusted) : AbstractUser
     {
         $this->isTrusted = $isTrusted;
 
         return $this;
     }
 
-    public function isAdmin(): bool
+    public function isAdmin() : bool
     {
         return $this->isAdmin;
     }
 
-    public function setIsAdmin(bool $isAdmin): AbstractUser
+    public function setIsAdmin(bool $isAdmin) : AbstractUser
     {
         $this->isAdmin = $isAdmin;
 
@@ -137,7 +137,7 @@ class AbstractUser implements UserInterface, EquatableInterface
         return $this->registeredAt;
     }
 
-    public function setRegisteredAt($registeredAt): AbstractUser
+    public function setRegisteredAt($registeredAt) : AbstractUser
     {
         $this->registeredAt = $registeredAt;
 
@@ -152,16 +152,16 @@ class AbstractUser implements UserInterface, EquatableInterface
         $this->setRegisteredAt(new DateTime());
     }
 
-    public function eraseCredentials(): void
+    public function eraseCredentials() : void
     {
     }
 
-    public function hasRole($role): bool
+    public function hasRole($role) : bool
     {
         return in_array($role, $this->roles);
     }
 
-    public function getRoles(): array
+    public function getRoles() : array
     {
         $roles = $this->roles;
 
@@ -181,7 +181,7 @@ class AbstractUser implements UserInterface, EquatableInterface
         return null;
     }
 
-    public function isEqualTo(UserInterface $user): bool
+    public function isEqualTo(UserInterface $user) : bool
     {
         return $user instanceof AbstractUser
             && $user->getUsername() === $this->getUsername()

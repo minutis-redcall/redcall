@@ -37,28 +37,21 @@ class CommunicationManager
     private $processor;
 
     /**
-     * @var UserInformationManager
+     * @var UserManager
      */
-    private $userInformationManager;
+    private $userManager;
 
     /**
      * @var VolunteerManager
      */
     private $volunteerManager;
 
-    /**
-     * @param MessageManager          $messageManager
-     * @param CommunicationRepository $communicationRepository
-     * @param ProcessorInterface      $processor
-     * @param UserInformationManager  $userInformationManager
-     * @param VolunteerManager        $volunteerManager
-     */
-    public function __construct(MessageManager $messageManager, CommunicationRepository $communicationRepository, ProcessorInterface $processor, UserInformationManager $userInformationManager, VolunteerManager $volunteerManager)
+    public function __construct(MessageManager $messageManager, CommunicationRepository $communicationRepository, ProcessorInterface $processor, UserManager $userManager, VolunteerManager $volunteerManager)
     {
         $this->messageManager = $messageManager;
         $this->communicationRepository = $communicationRepository;
         $this->processor = $processor;
-        $this->userInformationManager = $userInformationManager;
+        $this->userManager = $userManager;
         $this->volunteerManager = $volunteerManager;
     }
 
@@ -82,21 +75,13 @@ class CommunicationManager
         return $this->communicationRepository->find($communicationId);
     }
 
-    /**
-     * @param Campaign           $campaign
-     * @param CommunicationModel $communicationModel
-     *
-     * @return CommunicationEntity
-     * @throws Exception
-     *
-     */
     public function launchNewCommunication(Campaign $campaign,
         CommunicationModel $communicationModel): CommunicationEntity
     {
         $communicationEntity = $this->createCommunication($communicationModel);
 
         $campaign->addCommunication($communicationEntity);
-        foreach ($this->userInformationManager->getCurrentUserStructures() as $structure) {
+        foreach ($this->userManager->getCurrentUserStructures() as $structure) {
             $campaign->addStructure($structure);
         }
 
@@ -121,7 +106,7 @@ class CommunicationManager
         $communicationEntity = new CommunicationEntity();
         $communicationEntity
             ->setVolunteer(
-                $this->userInformationManager->findForCurrentUser()->getVolunteer()
+                $this->userManager->findForCurrentUser()->getVolunteer()
             )
             ->setType($communicationModel->type)
             ->setBody($communicationModel->message)
