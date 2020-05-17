@@ -34,13 +34,13 @@ final class Version20200510160632 extends AbstractMigration
         $this->addSql('
             INSERT IGNORE INTO user_structure
             SELECT u.id, uis.structure_id
-            FROM user u 
+            FROM user u
             JOIN user_information ui ON ui.user_id = u.id
             JOIN user_information_structure uis ON uis.user_information_id = ui.id
         ');
 
         $this->addSql('
-            UPDATE user u
+            UPDATE IGNORE user u
             JOIN user_information ui ON ui.user_id = u.id
             SET u.volunteer_id = ui.volunteer_id,
                 u.locale = ui.locale,
