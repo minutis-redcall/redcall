@@ -15,6 +15,7 @@ sandbox:
     your_message: 'Your message'
     send: 'Send'
     clear: 'Remove all messages'
+    geo: 'Open geolocation for "%text"'
 
   fake_call:
     button: 'Calls Simulator'

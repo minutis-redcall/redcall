@@ -10,6 +10,7 @@ use App\Settings;
 use Bundles\PegassCrawlerBundle\Entity\Pegass;
 use Bundles\PegassCrawlerBundle\Manager\PegassManager;
 use Bundles\SettingsBundle\Manager\SettingManager;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -24,6 +25,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * @Route(path="admin/maintenance", name="admin_maintenance_")
+ * @IsGranted("ROLE_DEVELOPER")
  */
 class MaintenanceController extends BaseController
 {
@@ -127,7 +129,7 @@ class MaintenanceController extends BaseController
     }
 
     /**
-     * @Route(name="search_change_nivol", path="search/change-nivol")
+     * @Route(name="search_change_nivol", path="/search/change-nivol")
      */
     public function searchChangeNivol(Request $request)
     {
@@ -137,7 +139,7 @@ class MaintenanceController extends BaseController
     }
 
     /**
-     * @Route(name="search_change_expression", path="search/change-expression")
+     * @Route(name="search_change_expression", path="/search/change-expression")
      */
     public function searchChangeExpression(Request $request)
     {

@@ -212,14 +212,13 @@ class PegassController extends BaseController
 
         $application->run($input, new NullOutput());
 
-        return $this->redirectToRoute('password_login_admin_list', [
-            'type' => 'pegass',
+        return $this->redirectToRoute('admin_pegass_index', [
             'form[criteria]' => $volunteer->getNivol(),
         ]);
     }
 
     /**
-     * @Route(path="/toggle-verify/{csrf}/{id}", name="toggle_verify")
+     * @Route(name="toggle_verify", path="/toggle-verify/{csrf}/{id}")
      */
     public function toggleVerifyAction(User $user, string $csrf)
     {
@@ -234,7 +233,7 @@ class PegassController extends BaseController
     }
 
     /**
-     * @Route(path="/toggle-trust/{csrf}/{id}", name="toggle_trust")
+     * @Route(name="toggle_trust", path="/toggle-trust/{csrf}/{id}")
      */
     public function toggleTrustAction(User $user, string $csrf)
     {
@@ -249,7 +248,7 @@ class PegassController extends BaseController
     }
 
     /**
-     * @Route(path="/toggle-admin/{csrf}/{id}", name="toggle_admin")
+     * @Route(name="toggle_admin", path="/toggle-admin/{csrf}/{id}")
      */
     public function toggleAdminAction(User $user, string $csrf)
     {
@@ -264,7 +263,7 @@ class PegassController extends BaseController
     }
 
     /**
-     * @Route(path="/toggle-lock/{csrf}/{id}", name="toggle_lock")
+     * @Route(name="toggle_lock", path="/toggle-lock/{csrf}/{id}")
      */
     public function toggleLockAction(User $user, string $csrf)
     {
@@ -279,7 +278,7 @@ class PegassController extends BaseController
     }
 
     /**
-     * @Route(path="/toggle-developer/{csrf}/{id}", name="toggle_developer")
+     * @Route(name="toggle_developer", path="/toggle-developer/{csrf}/{id}")
      */
     public function toggleDeveloperAction(User $user, $csrf)
     {
@@ -294,7 +293,7 @@ class PegassController extends BaseController
     }
 
     /**
-     * @Route(path="/delete/{csrf}/{id}", name="delete")
+     * @Route(name="delete", path="/delete/{csrf}/{id}")
      */
     public function deleteAction(User $user, $csrf)
     {

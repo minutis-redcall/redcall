@@ -53,6 +53,9 @@ class StructureVoter extends Voter
             return false;
         }
 
+        var_dump($user->getStructures()->contains($structure));
+        die();
+
         return $user->getStructures()->contains($structure);
     }
 }

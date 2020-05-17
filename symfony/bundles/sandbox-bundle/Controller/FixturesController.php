@@ -156,7 +156,7 @@ class FixturesController  extends BaseController
                 ],
             ])
             ->add('structure', StructureWidgetType::class, [
-                'label' => 'sandbox.fixtures.volunteer.structure',
+                'label' => false,
                 'required' => false,
             ])
             ->add('submit', SubmitType::class, [

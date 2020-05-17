@@ -3,9 +3,9 @@
 namespace App\Command;
 
 use App\Base\BaseCommand;
+use App\Entity\User;
+use App\Manager\UserManager;
 use App\Manager\VolunteerManager;
-use Bundles\PasswordLoginBundle\Entity\AbstractUser;
-use Bundles\PasswordLoginBundle\Manager\UserManager;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -71,7 +71,7 @@ class CreateUserCommand extends BaseCommand
                 continue;
             }
 
-            $user = new AbstractUser();
+            $user = new User();
             $user->setUsername($volunteer->getEmail());
             $user->setPassword(Uuid::uuid4());
             $user->setIsVerified(true);

@@ -90,7 +90,7 @@ class LocaleManager
         // Set locale from user preferences
         $user = $this->getUser();
 
-        if ($user) {
+        if ($user && $user->getLocale()) {
             $this->changeLocale($user->getLocale());
         }
     }
