@@ -3,7 +3,7 @@
 namespace App\Manager;
 
 use App\Entity\PrefilledAnswers;
-use App\Entity\UserInformation;
+use App\Entity\User;
 use App\Repository\PrefilledAnswersRepository;
 use Doctrine\ORM\QueryBuilder;
 
@@ -51,12 +51,9 @@ class PrefilledAnswersManager
         return $this->prefilledAnswersRepository->find($id);
     }
 
-    /**
-     * Return all prefilled answers for a given userInformation AND all global (no structure relations).
-     */
-    public function findByUserForStructureAndGlobal(UserInformation $userInformation)
+    public function findByUserForStructureAndGlobal(User $user)
     {
-        return $this->prefilledAnswersRepository->findByUserForStructureAndGlobal($userInformation);
+        return $this->prefilledAnswersRepository->findByUserForStructureAndGlobal($user);
     }
 
     public function save(PrefilledAnswers $prefilledAnswers)

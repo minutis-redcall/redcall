@@ -6,7 +6,7 @@ use App\Base\BaseController;
 use App\Entity\Campaign;
 use App\Entity\PrefilledAnswers;
 use App\Entity\Structure;
-use App\Entity\UserInformation;
+use App\Entity\User;
 use App\Entity\Volunteer;
 use App\Form\Type\AudienceType;
 use App\Form\Type\StructureWidgetType;
@@ -15,7 +15,7 @@ use App\Manager\CampaignManager;
 use App\Manager\PrefilledAnswersManager;
 use App\Manager\StructureManager;
 use App\Manager\TagManager;
-use App\Manager\UserInformationManager;
+use App\Manager\UserManager;
 use App\Manager\VolunteerManager;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -56,9 +56,9 @@ class WidgetController extends BaseController
      */
     private $translator;
     /**
-     * @var UserInformationManager
+     * @var UserManager
      */
-    private $userInformationManager;
+    private $userManager;
 
     /**
      * @var TagManager
@@ -71,17 +71,17 @@ class WidgetController extends BaseController
      * @param VolunteerManager        $volunteerManager
      * @param StructureManager        $structureManager
      * @param TranslatorInterface     $translator
-     * @param UserInformationManager  $userInformationManager
+     * @param UserManager             $userManager
      * @param TagManager              $tagManager
      */
-    public function __construct(CampaignManager $campaignManager, PrefilledAnswersManager $prefilledAnswersManager, VolunteerManager $volunteerManager, StructureManager $structureManager, TranslatorInterface $translator, UserInformationManager $userInformationManager, TagManager $tagManager)
+    public function __construct(CampaignManager $campaignManager, PrefilledAnswersManager $prefilledAnswersManager, VolunteerManager $volunteerManager, StructureManager $structureManager, TranslatorInterface $translator, UserManager $userManager, TagManager $tagManager)
     {
         $this->campaignManager = $campaignManager;
         $this->prefilledAnswersManager = $prefilledAnswersManager;
         $this->volunteerManager = $volunteerManager;
         $this->structureManager = $structureManager;
         $this->translator = $translator;
-        $this->userInformationManager = $userInformationManager;
+        $this->userManager = $userManager;
         $this->tagManager = $tagManager;
     }
 
@@ -98,8 +98,9 @@ class WidgetController extends BaseController
             $currentColor = $campaign->getType();
         }
 
-        $userInformation = $this->userInformationManager->findForCurrentUser();
-        $prefilledAnswers = $this->prefilledAnswersManager->findByUserForStructureAndGlobal($userInformation);
+        $prefilledAnswers = $this->prefilledAnswersManager->findByUserForStructureAndGlobal(
+            $this->getUser()
+        );
 
         $choices = [];
         /** @var PrefilledAnswers $prefilledAnswer */
@@ -135,7 +136,7 @@ class WidgetController extends BaseController
         ]);
     }
 
-    public function nivolEditor(UserInformation $userInformation = null)
+    public function nivolEditor(User $user = null)
     {
         $form = $this
             ->createNamedFormBuilder(
@@ -143,7 +144,7 @@ class WidgetController extends BaseController
                 FormType::class
             )
             ->add('nivol', VolunteerWidgetType::class, [
-                'data' => $userInformation ? $userInformation->getNivol() : null,
+                'data' => $user ? $user->getNivol() : null,
                 'label' => false,
             ])
             ->getForm();
@@ -162,7 +163,7 @@ class WidgetController extends BaseController
             throw $this->createAccessDeniedException();
         }
 
-        $criteria = $request->query->get('keyword');
+        $criteria = trim($request->query->get('keyword'));
 
         if ($searchAll) {
             $volunteers = $this->volunteerManager->searchAll($criteria, 20);
@@ -208,7 +209,7 @@ class WidgetController extends BaseController
             throw $this->createAccessDeniedException();
         }
 
-        $criteria = $request->query->get('keyword');
+        $criteria = trim($request->query->get('keyword'));
 
         if ($searchAll) {
             $structures = $this->structureManager->searchAll($criteria, 20);
@@ -232,7 +233,7 @@ class WidgetController extends BaseController
     public function audienceSearch(Request $request)
     {
         $structure = $this->getStructure(
-            $request->get('structureId')
+            trim($request->get('structureId'))
         );
 
         $load = $request->get('load');
@@ -262,7 +263,7 @@ class WidgetController extends BaseController
     public function audienceToggleTag(Request $request)
     {
         $tag = $this->tagManager->find(
-            $request->get('tag')
+            trim($request->get('tag'))
         );
 
         if (!$tag) {
@@ -290,7 +291,7 @@ class WidgetController extends BaseController
     {
         // Audience type can be located anywhere in the main form, so we need to seek for the
         // audience data following the path created using its full name.
-        $name = trim(str_replace(['[', ']'], '.', $request->query->get('name')), '.');
+        $name = trim(str_replace(['[', ']'], '.', trim($request->query->get('name'))), '.');
         $data = $request->request->all();
         $path = array_filter(explode('.', $name));
         foreach ($path as $node) {

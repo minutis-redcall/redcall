@@ -13,19 +13,11 @@ class LocaleSubscriber implements EventSubscriberInterface
 {
     private $locale;
 
-    /**
-     * LocaleSubscriber constructor.
-     *
-     * @param LocaleManager $locale
-     */
     public function __construct(LocaleManager $locale)
     {
         $this->locale = $locale;
     }
 
-    /**
-     * @return array
-     */
     public static function getSubscribedEvents()
     {
         return [
@@ -34,9 +26,6 @@ class LocaleSubscriber implements EventSubscriberInterface
         ];
     }
 
-    /**
-     * @param GetResponseEvent $event
-     */
     public function onKernelRequest(GetResponseEvent $event)
     {
         $this->locale->restoreFromSession();
@@ -44,6 +33,6 @@ class LocaleSubscriber implements EventSubscriberInterface
 
     public function onInteractiveLogin(InteractiveLoginEvent $event)
     {
-        $this->locale->restoreFromDatabase();
+        $this->locale->restoreFromUser();
     }
 }

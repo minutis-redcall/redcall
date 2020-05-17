@@ -26,7 +26,7 @@ class DeployController extends AbstractController
     }
 
     /**
-     * @Route(path="/")
+     * @Route()
      */
     public function check()
     {

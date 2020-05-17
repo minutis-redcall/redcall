@@ -6,8 +6,6 @@ use App\Base\BaseRepository;
 use App\Entity\Communication;
 use App\Entity\GeoLocation;
 use Doctrine\Bundle\DoctrineBundle\Registry;
-use Doctrine\ORM\NonUniqueResultException;
-use Symfony\Bridge\Doctrine\RegistryInterface;
 
 /**
  * @method GeoLocation|null find($id, $lockMode = null, $lockVersion = null)
@@ -17,22 +15,11 @@ use Symfony\Bridge\Doctrine\RegistryInterface;
  */
 class GeoLocationRepository extends BaseRepository
 {
-    /**
-     * GeoLocationRepository constructor.
-     *
-     * @param RegistryInterface $registry
-     */
     public function __construct(Registry $registry)
     {
         parent::__construct($registry, GeoLocation::class);
     }
 
-    /**
-     * @param Communication $communication
-     *
-     * @return int|null
-     * @throws NonUniqueResultException
-     */
     public function getLastGeoLocationUpdateTimestamp(Communication $communication): ?int
     {
         /* @var GeoLocation $lastGeolocation */

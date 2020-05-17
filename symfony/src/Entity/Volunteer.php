@@ -154,9 +154,9 @@ class Volunteer
     private $communications;
 
     /**
-     * @ORM\OneToOne(targetEntity="App\Entity\UserInformation", mappedBy="volunteer")
+     * @ORM\OneToOne(targetEntity="App\Entity\User", mappedBy="volunteer")
      */
-    private $userInformation;
+    private $user;
 
     public function __construct()
     {
@@ -687,14 +687,15 @@ class Volunteer
         return $this;
     }
 
-    public function getUserInformation()
+    public function getUser() : ?User
     {
-        return $this->userInformation;
+        return $this->user;
     }
 
-    public function setUserInformation($userInformation)
+    public function setUser(User $user)
     {
-        $this->userInformation = $userInformation;
+        $this->user = $user;
+
         return $this;
     }
 }

@@ -3,7 +3,6 @@
 namespace App\Controller\Management;
 
 use App\Base\BaseController;
-use App\Manager\UserInformationManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 
 /**
@@ -12,26 +11,12 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 class HomeController extends BaseController
 {
     /**
-     * @var UserInformationManager
-     */
-    private $userInformationManager;
-
-    /**
-     * @param UserInformationManager $userInformationManager
-     */
-    public function __construct(UserInformationManager $userInformationManager)
-    {
-        $this->userInformationManager = $userInformationManager;
-    }
-
-    /**
      * @Route(name="home")
      */
     public function indexAction()
     {
         return $this->render('management/home.html.twig', [
             'email' => getenv('MINUTIS_SUPPORT'),
-            'user' => $this->userInformationManager->findForCurrentUser(),
         ]);
     }
 }

@@ -31,17 +31,17 @@ class BaseController extends Controller
             throw new LogicException("Class '$class' not found.");
         }
 
-        $column = $request->get($prefix.'order-by', $defaultColumn);
+        $column = $request->get($prefix . 'order-by', $defaultColumn);
         if (!property_exists($class, $column)) {
             $column = $defaultColumn;
         }
 
-        $direction = strtoupper($request->get($prefix.'order-by-direction', $defaultDirection));
+        $direction = strtoupper($request->get($prefix . 'order-by-direction', $defaultDirection));
         if ($direction !== 'ASC' && $direction !== 'DESC') {
             $direction = $defaultDirection;
         }
 
-        $qb->orderBy($qbPrefix.'.'.$column, $direction);
+        $qb->orderBy($qbPrefix . '.' . $column, $direction);
 
         return [
             'prefix'    => $prefix,
@@ -50,22 +50,9 @@ class BaseController extends Controller
         ];
     }
 
-    public function getPager($data, $prefix = '', $hasJoins = false): Pagerfanta
+    public function getPager($data, $prefix = '', $hasJoins = false) : Pagerfanta
     {
         return $this->get(PaginationManager::class)->getPager($data, $prefix, $hasJoins);
-    }
-
-    public function getManager($manager = null)
-    {
-        $em = $this
-            ->get('doctrine')
-            ->getManager();
-
-        if (!is_null($manager)) {
-            return $em->getRepository($manager);
-        }
-
-        return $em;
     }
 
     /**
@@ -81,7 +68,7 @@ class BaseController extends Controller
         return $this->container->get('form.factory')->createNamedBuilder($name, $type, $data, $options);
     }
 
-    public function validateCsrfOrThrowNotFoundException(string $id, ?string $token): void
+    public function validateCsrfOrThrowNotFoundException(string $id, ?string $token) : void
     {
         if (!$token || !is_scalar($token) || !$this->isCsrfTokenValid($id, $token)) {
             throw $this->createNotFoundException();

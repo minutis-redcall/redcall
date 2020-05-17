@@ -4,9 +4,9 @@ sandbox:
     link: 'Sandbox'
 
   volunteer_generator:
-    button: 'Générateur de volontaires'
-    title: 'Générer de faux volontaires'
-    label: 'Nombre de volontaires à créer'
+    button: 'Générateur de bénévoles'
+    title: 'Générer de faux bénévoles'
+    label: 'Nombre de bénévoles à créer'
 
   fake_sms:
     button: 'Simulateur de SMS'
@@ -15,6 +15,7 @@ sandbox:
     your_message: 'Votre message'
     send: 'Envoyer'
     clear: 'Effacer tous les messages'
+    geo: 'Ouvrir la géolocalisation pour "%text"'
 
   fake_call:
     button: 'Simulateur d''appels'
@@ -34,17 +35,17 @@ sandbox:
     button: 'Anonymiser la base de données'
 
   fixtures:
-    title: 'Créer des compétences, structures & volontaires'
+    title: 'Créer des compétences, structures & bénévoles'
     tags: 'Générer les compétences'
     structure:
       title: 'Générer une structure'
       name: 'Nom de la structure'
       parent: 'Structure parente (optionnelle)'
-      number_volunteers: 'Nombre de volontaires dans la structure'
+      number_volunteers: 'Nombre de bénévoles dans la structure'
       bind_to_user: 'Relier la structure à votre compte'
       created: 'Structure créée'
     volunteer:
-      title: 'Générer des volontaires'
-      number_volunteers: 'Nombre de volontaires à générer'
+      title: 'Générer des bénévoles'
+      number_volunteers: 'Nombre de bénévoles à générer'
       structure: 'Structure de rattachement'
-      created: '%nbr% volontaires créés'
+      created: '%nbr% bénévoles créés'

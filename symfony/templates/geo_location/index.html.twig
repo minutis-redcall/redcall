@@ -3,5 +3,330 @@
 {% block title %}{{ 'geolocation.title'|trans }}{% endblock %}
 
 {% block content %}
-    {{ render(controller('App\\Controller\\GeoLocationController::content', {code: code})) }}
+
+    <div class="h3">{{ 'geolocation.subtitle'|trans }}</div>
+
+    <hr/><br/>
+
+    <a id="geolocation" href="#" class="btn btn-primary" style="width: 100%;white-space: normal;">
+        <span id="geolocation-title" class="h4">{{ 'geolocation.share'|trans }}</span>
+        <br/>
+        <span id="geolocation-body">{{ 'geolocation.share_explains'|trans }}</span>
+    </a>
+    <div class="text-center">
+        <a id="geolocation-stop" href="#" class="d-none">
+            {{ 'geolocation.stop'|trans }}
+        </a>
+    </div>
+
+    <div class="d-none">
+        {{ form(form) }}
+    </div>
+
+    <br/><br/>
+
+    <div id="map" style="width:100%;height:300px;"></div>
+
+    <br/><br/>
+
+    <table class="table">
+        <tbody>
+        {% for msg in communication.messages %}
+            <tr id="message-{{ msg.id }}" class="volunteer"
+                data-msg-id="{{ msg.id }}"
+                data-latitude="{{ msg.geoLocation.latitude|default(false) }}"
+                data-longitude="{{ msg.geoLocation.longitude|default(false) }}"
+                data-accuracy="{{ msg.geoLocation.accuracy|default(false) }}">
+                <td>
+                    <div class="float-right">
+                    <span id="distance-{{ msg.id }}" class="badge badge-primary">
+                        {% if message.geoLocation and msg.geoLocation %}
+                            {{ msg.geoLocation.distance(message.geoLocation) }}
+                        {% else %}
+                            {{ 'geolocation.na'|trans }}
+                        {% endif %}
+                    </span>
+                    </div>
+
+                    <div class="h4">{{ msg.volunteer.displayName }}</div>
+
+                    <div class="text-small">
+                        {% for skill in msg.volunteer.tagsView %}
+                            {{ ('tag.shortcuts.' ~ skill)|trans }}{% if not loop.last %},{% endif %}
+                        {% endfor %}
+                    </div>
+
+                    <div>
+                        <a href="tel:{{ msg.volunteer.formattedPhoneNumber }}">{{ msg.volunteer.formattedPhoneNumber }}</a>
+                    </div>
+
+                    <div id="last-data-{{ msg.id }}" class="text-small">
+                        {% if msg.geoLocation %}
+                            {{ 'geolocation.last_data'|trans({'%time%': msg.geoLocation.datetime|date('H:i'), '%accuracy%': msg.geoLocation.readableAccuracy}) }}
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <script type="text/javascript">
+
+        {# ------------------------------------------------------ #}
+        {# Geo localize user #}
+        {# ------------------------------------------------------ #}
+
+        var watchId = null;
+        var compass = null;
+        var compassId = null;
+        $('#geolocation').click(function (e) {
+            e.preventDefault();
+
+            // Geolocalization not supported
+            if (!navigator.geolocation) {
+                $('#geolocation').html('{{ 'geolocation.not_supported'|trans|e('js') }}');
+                return;
+            }
+
+            $('#geolocation').addClass('disabled');
+            $('#geolocation-title').html('{{ 'geolocation.waiting'|trans|e('js') }}');
+            $('#geolocation-body').html('');
+
+            var onGeoSuccess = function (position) {
+                var today = new Date();
+
+                if (compass === null) {
+                    compassId = Compass.watch(function (heading) {
+                        compass = heading;
+                        $('#compass-{{ message.id }}').css('transform', 'rotate(' + heading + 'deg)');
+                    });
+                }
+
+                $('#geolocation-title').html('{{ 'geolocation.started'|trans|e('js') }}');
+                $('#geolocation-body').html(
+                    '{{ 'geolocation.last_update'|trans|e('js') }} '
+                    + today.getHours() + ':'
+                    + (today.getMinutes() < 10 ? '0' + today.getMinutes() : today.getMinutes()) + ':'
+                    + (today.getSeconds() < 10 ? '0' + today.getSeconds() : today.getSeconds())
+                );
+
+                $('#{{ form.latitude.vars.id }}').val(position.coords.latitude);
+                $('#{{ form.longitude.vars.id }}').val(position.coords.longitude);
+                $('#{{ form.accuracy.vars.id }}').val(position.coords.accuracy.toString());
+                $('#{{ form.heading.vars.id }}').val(compass);
+
+                var form = $('#{{ form.latitude.vars.id }}').closest('form');
+
+                $.ajax({
+                    type: "POST",
+                    url: '{{ path('geo_update', {code: code})|e('js') }}',
+                    data: form.serialize()
+                });
+            };
+
+            var onGeoFailure = function (error) {
+                $('#geolocation').removeClass('disabled');
+                $('#geolocation-title').html('{{ 'geolocation.error'|trans|e('js') }}')
+
+                switch (error.code) {
+                    case error.PERMISSION_DENIED:
+                        $('#geolocation-body').html('{{ 'geolocation.error_permission'|trans|e('js') }}');
+                        break;
+                    case error.POSITION_UNAVAILABLE:
+                        $('#geolocation-body').html('{{ 'geolocation.error_unavailable'|trans|e('js') }}');
+                        break;
+                    case error.TIMEOUT:
+                        $('#geolocation-body').html('{{ 'geolocation.error_timeout'|trans|e('js') }}');
+                        break;
+                    default:
+                        $('#geolocation-body').html('');
+                }
+            };
+
+            watchId = navigator.geolocation.watchPosition(onGeoSuccess, onGeoFailure, {
+                enableHighAccuracy: true,
+            });
+
+            $('#geolocation-stop').removeClass('d-none');
+        });
+
+        $('#geolocation-stop').click(function (e) {
+            e.preventDefault();
+            navigator.geolocation.clearWatch(watchId);
+            if (compassId) {
+                Compass.unwatch(compassId);
+            }
+            $('#geolocation').removeClass('disabled');
+            $('#geolocation-title').html('{{ 'geolocation.share'|trans|e('js') }}');
+            $('#geolocation-body').html('{{ 'geolocation.share_explains'|trans|e('js') }}');
+            $(this).addClass('d-none');
+        });
+
+        {# ------------------------------------------------------ #}
+        {# Rendering volunteers on OpenStreets Map #}
+        {# ------------------------------------------------------ #}
+
+        {% if message.geoLocation %}
+
+        var map = L.map('map', {
+            center: [{{ message.geoLocation.latitude }}, {{ message.geoLocation.longitude }}],
+            zoom: 15
+        });
+
+        {% else %}
+
+        var map = L.map('map', {
+            center: [48.856613, 2.352222], {# Paris #}
+            zoom: 11
+        });
+
+        {% endif %}
+
+        var markerIcon = L.icon({
+            iconUrl: '{{ asset('build/images/marker-icon.png') }}',
+            shadowUrl: '{{ asset('build/images/marker-shadow.png') }}',
+        });
+
+        L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
+            attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+            maxZoom: 18,
+            id: 'mapbox.streets',
+            accessToken: '{{ api_key|e('js') }}'
+        }).addTo(map);
+
+        var markers = {};
+        var circles = {};
+        {% for msg in communication.messages %}
+
+        {% if msg.geoLocation %}
+
+        markers[{{ msg.id }}] = L.marker([{{ msg.geoLocation.latitude }}, {{ msg.geoLocation.longitude }}], {icon: markerIcon}).addTo(map);
+        markers[{{ msg.id }}].bindPopup(
+            "{{ msg.volunteer.displayName|e('js') }}"
+            + "<br/>"
+            + '<a href="tel:{{ msg.volunteer.formattedPhoneNumber|e('js') }}">{{ msg.volunteer.formattedPhoneNumber|e('js') }}</a>'
+            + '<div id="compass-{{ msg.id }}" style="width:100%;text-align:center;transform: rotate({{ msg.geoLocation.heading }}deg)">⬆</div>'
+        );
+
+        circles[{{ msg.id }}] = L.circle([{{ msg.geoLocation.latitude }}, {{ msg.geoLocation.longitude }}], {
+            color: '#888',
+            radius: {{ msg.geoLocation.accuracy }},
+        });
+
+        {% else %}
+
+        markers[{{ msg.id }}] = L.marker([0, 0], {icon: markerIcon}).addTo(map);
+        markers[{{ msg.id }}].bindPopup(
+            "{{ msg.volunteer.displayName|e('js') }}"
+            + "<br/>"
+            + '<a href="tel:{{ msg.volunteer.formattedPhoneNumber|e('js') }}">{{ msg.volunteer.formattedPhoneNumber|e('js') }}</a>'
+            + '<div id="compass-{{ msg.id }}" style="width:100%;text-align:center;">⬆</div>'
+        );
+
+        circles[{{ msg.id }}] = L.circle([0, 0], {
+            color: '#888',
+            radius: 0,
+        });
+
+        {% endif %}
+        {% endfor %}
+
+        {# ------------------------------------------------------ #}
+        {# Focus on someone #}
+        {# ------------------------------------------------------ #}
+
+        $('.volunteer').mouseenter(function () {
+            var that = $(this);
+            if (that.data('latitude') && !that.data('selected')) {
+                that.css('background-color', '#eeeeee');
+            }
+        }).mouseleave(function () {
+            var that = $(this);
+            if (!that.data('selected')) {
+                that.css('background-color', '#ffffff');
+            }
+        }).click(function () {
+            var that = $(this);
+            if (that.data('latitude')) {
+                var isHide = false;
+                if (that.data('selected')) {
+                    isHide = true;
+                }
+
+                $.each(circles, function (key, value) {
+                    value.removeFrom(map);
+                });
+                $('.volunteer').css('background-color', '#ffffff').data('selected', false);
+
+                if (isHide) {
+                    that.css('background-color', '#eeeeee');
+                } else {
+                    that.css('background-color', '#dddddd').data('selected', true);
+                    map.panTo([that.data('latitude'), that.data('longitude')]);
+                    markers[that.data('msg-id')].openPopup();
+                    circles[that.data('msg-id')].addTo(map);
+                }
+            }
+        });
+
+        {# -------------------------------------------------------------------------------- #}
+        {# Auto refresh of values (Poll or SSE) #}
+        {# -------------------------------------------------------------------------------- #}
+
+        function refreshGeoData(data) {
+            $('.volunteer').each(function () {
+                var that = $(this);
+                var msgId = that.data('msg-id');
+
+                if (data[msgId] === undefined) {
+                    return true;
+                }
+
+                var selectMe = null;
+                if (msgId === {{ message.id }} && !that.data('latitude')) {
+                    selectMe = that;
+                }
+
+                if (data[msgId].distance !== null) {
+                    $('#distance-' + msgId).html(data[msgId].distance);
+                } else {
+                    $('#distance-' + msgId).html('{{ 'geolocation.na'|trans|e('js') }}');
+                }
+
+                if (data[msgId].heading > 0) {
+                    $('#compass-' + msgId).css('transform', 'rotate(' + data[msgId].heading + 'deg)');
+                }
+
+                $('#last-data-' + msgId).html(data[msgId].last_data);
+
+                that.data('latitude', data[msgId].latitude);
+                that.data('longitude', data[msgId].longitude);
+                that.data('accuracy', data[msgId].accuracy);
+
+                markers[msgId].setLatLng([data[msgId].latitude, data[msgId].longitude]);
+                circles[msgId].setLatLng([data[msgId].latitude, data[msgId].longitude]).setRadius(data[msgId].accuracy);
+
+                if (selectMe) {
+                    map.setZoom(15);
+                    selectMe.click();
+                }
+
+                if ($('#message-' + msgId).data('selected')) {
+                    map.panTo([data[msgId].latitude, data[msgId].longitude]);
+                }
+            });
+        }
+
+        setInterval(function () {
+            $.ajax('{{ path('geo_poll', {code: code}) }}', {
+                type: 'POST',
+                statusCode: {
+                    200: refreshGeoData
+                }
+            });
+        }, 5000);
+
+    </script>
+
 {% endblock %}

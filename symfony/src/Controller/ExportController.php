@@ -13,10 +13,7 @@ use App\Entity\Tag;
 use App\Entity\Volunteer;
 use DateTime;
 use Mpdf\Mpdf;
-use Mpdf\MpdfException;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -25,19 +22,11 @@ use Symfony\Component\Routing\Annotation\Route;
 class ExportController extends BaseController
 {
     /**
-     * @Route(path="{communicationId}/csv", name="csv", requirements={"communicationId" = "\d+"})
-     * @Method("POST")
-     *
-     * @param Request $request
-     * @param int     $communicationId
-     *
-     * @return Response
+     * @Route(path="{id}/csv", name="csv", requirements={"id" = "\d+"}, methods={"POST"})
      */
-    public function csvAction(Request $request, int $communicationId)
+    public function csvAction(Request $request, Communication $communication)
     {
         $this->validateCsrfOrThrowNotFoundException('communication', $request->request->get('csrf'));
-
-        $communication = $this->getCommunication($communicationId);
 
         $selection = json_decode($request->request->get('volunteers'), true);
         if (!$selection && $communication->getMessages()) {
@@ -91,21 +80,12 @@ class ExportController extends BaseController
     }
 
     /**
-     * @Route(path="{communicationId}/portrait-pdf", name="portrait_pdf", requirements={"communicationId" = "\d+"})
-     * @Method("POST")
-     *
-     * @param Request $request
-     * @param int     $communicationId
-     *
-     * @return MpdfResponse
-     *
-     * @throws MpdfException
+     * @Route(path="{id}/pdf", name="pdf", requirements={"id" = "\d+"}, methods={"POST"})
      */
-    public function portraitPdfAction(Request $request, int $communicationId)
+    public function pdfAction(Request $request, Communication $communication)
     {
         $this->validateCsrfOrThrowNotFoundException('communication', $request->request->get('csrf'));
 
-        $communication = $this->getCommunication($communicationId);
         $selection     = $this->getSelection($request, $communication);
         $campaign      = $communication->getCampaign();
 
@@ -179,31 +159,14 @@ class ExportController extends BaseController
             'margin_bottom' => 25,
         ]);
 
-        $mpdf->SetHTMLHeader($this->renderView('export/portrait_pdf/header.html.twig', $context));
-        $mpdf->SetHTMLFooter($this->renderView('export/portrait_pdf/footer.html.twig', $context));
-        $mpdf->WriteHTML($this->renderView('export/portrait_pdf/body.html.twig', $context));
+        $mpdf->SetHTMLHeader($this->renderView('export/pdf/header.html.twig', $context));
+        $mpdf->SetHTMLFooter($this->renderView('export/pdf/footer.html.twig', $context));
+        $mpdf->WriteHTML($this->renderView('export/pdf/body.html.twig', $context));
 
         return new MpdfResponse(
             $mpdf,
-            sprintf('export-portrait-%s.pdf', date('Y-m-d'))
+            sprintf('export-%s.pdf', date('Y-m-d'))
         );
-    }
-
-    /**
-     * @param $communicationId
-     *
-     * @return Communication
-     */
-    private function getCommunication($communicationId): Communication
-    {
-        /* @var Communication $communication */
-        $communication = $this->getManager(Communication::class)->find($communicationId);
-
-        if (!$communication) {
-            throw $this->createNotFoundException();
-        }
-
-        return $communication;
     }
 
     /**
@@ -212,7 +175,7 @@ class ExportController extends BaseController
      *
      * @return array
      */
-    private function getSelection(Request $request, Communication $communication): array
+    private function getSelection(Request $request, Communication $communication) : array
     {
         $selection = json_decode($request->request->get('volunteers'), true);
         if (!$selection && $communication->getMessages()) {

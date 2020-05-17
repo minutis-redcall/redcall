@@ -4,9 +4,9 @@ namespace App\Controller\Admin;
 
 use App\Base\BaseController;
 use App\Entity\Structure;
-use App\Entity\UserInformation;
+use App\Entity\User;
 use App\Manager\StructureManager;
-use App\Manager\UserInformationManager;
+use App\Manager\UserManager;
 use App\Manager\VolunteerManager;
 use Bundles\PaginationBundle\Manager\PaginationManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
@@ -21,14 +21,14 @@ use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @Route(path="admin/pegass/", name="admin_pegass_")
+ * @Route(path="admin/pegass", name="admin_pegass_")
  */
 class PegassController extends BaseController
 {
     /**
-     * @var UserInformationManager
+     * @var UserManager
      */
-    private $userInformationManager;
+    private $userManager;
 
     /**
      * @var StructureManager
@@ -50,16 +50,9 @@ class PegassController extends BaseController
      */
     private $requestStack;
 
-    /**
-     * @param UserInformationManager $userInformationManager
-     * @param StructureManager       $structureManager
-     * @param VolunteerManager       $volunteerManager
-     * @param PaginationManager      $paginationManager
-     * @param RequestStack           $requestStack
-     */
-    public function __construct(UserInformationManager $userInformationManager, StructureManager $structureManager, VolunteerManager $volunteerManager, PaginationManager $paginationManager, RequestStack $requestStack)
+    public function __construct(UserManager $userManager, StructureManager $structureManager, VolunteerManager $volunteerManager, PaginationManager $paginationManager, RequestStack $requestStack)
     {
-        $this->userInformationManager = $userInformationManager;
+        $this->userManager = $userManager;
         $this->structureManager = $structureManager;
         $this->volunteerManager = $volunteerManager;
         $this->paginationManager = $paginationManager;
@@ -82,20 +75,20 @@ class PegassController extends BaseController
         return $this->render('admin/pegass/index.html.twig', [
             'search'           => $search->createView(),
             'type'             => $request->get('type'),
-            'userInformations' => $this->paginationManager->getPager(
-                $this->userInformationManager->searchQueryBuilder($criteria)
+            'users' => $this->paginationManager->getPager(
+                $this->userManager->searchQueryBuilder($criteria)
             ),
         ]);
     }
 
     /**
-     * @Route(name="list_users", path="list-users")
+     * @Route(name="list_users", path="/list-users")
      */
     public function userList()
     {
-        $users = $this->userInformationManager->findAll();
+        $users = $this->userManager->findAll();
 
-        $list = array_filter(array_map(function(UserInformation $user) {
+        $list = array_filter(array_map(function(User $user) {
             return $user->getNivol();
         }, $users));
 
@@ -105,21 +98,21 @@ class PegassController extends BaseController
     }
 
     /**
-     * @Route(name="update", path="update/{csrf}/{id}")
+     * @Route(name="update", path="/update/{csrf}/{id}")
      */
-    public function updateNivol(Request $request, string $csrf, UserInformation $userInformation)
+    public function updateNivol(Request $request, string $csrf, User $user)
     {
         $this->validateCsrfOrThrowNotFoundException('pegass', $csrf);
 
         $nivol = $request->request->get('nivol');
 
-        if (!$userInformation->isLocked()) {
-            $this->userInformationManager->updateNivol($userInformation, $nivol);
+        if (!$user->isLocked()) {
+            $this->userManager->updateNivol($user, $nivol);
         }
 
         $structureNames = array_filter(array_map(function (Structure $structure) {
             return $structure->getName();
-        }, $userInformation->getStructures()->toArray()));
+        }, $user->getStructures()->toArray()));
 
         return $this->json([
             'structures' => array_map('htmlentities', $structureNames),
@@ -127,19 +120,19 @@ class PegassController extends BaseController
     }
 
     /**
-     * @Route(name="update_structures", path="update-structures/{id}")
+     * @Route(name="update_structures", path="/update-structures/{id}")
      */
-    public function updateStructures(UserInformation $userInformation)
+    public function updateStructures(User $user)
     {
         return $this->render('admin/pegass/structures.html.twig', [
-            'user' => $userInformation,
+            'user' => $user,
         ]);
     }
 
     /**
-     * @Route(name="add_structure", path="add-structure/{csrf}/{id}")
+     * @Route(name="add_structure", path="/add-structure/{csrf}/{id}")
      */
-    public function addStructure(Request $request, string $csrf, UserInformation $userInformation)
+    public function addStructure(Request $request, string $csrf, User $user)
     {
         $this->validateCsrfOrThrowNotFoundException('pegass', $csrf);
 
@@ -155,42 +148,42 @@ class PegassController extends BaseController
 
         $structures = $this->structureManager->findCallableStructuresForStructure($parentStructure);
         foreach ($structures as $structure) {
-            $userInformation->addStructure($structure);
+            $user->addStructure($structure);
         }
 
         // Freeze user to keep prevent Pegass from overwriting the change
-        $userInformation->setLocked(true);
+        $user->setLocked(true);
 
-        $this->userInformationManager->save($userInformation);
+        $this->userManager->save($user);
 
         return $this->redirectToRoute('admin_pegass_update_structures', [
-            'id' => $userInformation->getId(),
+            'id' => $user->getId(),
         ]);
     }
 
     /**
-     * @Route(name="delete_structure", path="delete-structure/{csrf}/{userInformationId}/{structureId}")
-     * @Entity("userInformation", expr="repository.find(userInformationId)")
+     * @Route(name="delete_structure", path="/delete-structure/{csrf}/{userId}/{structureId}")
+     * @Entity("user", expr="repository.find(userId)")
      * @Entity("structure", expr="repository.find(structureId)")
      */
-    public function deleteStructure(Request $request, string $csrf, UserInformation $userInformation, Structure $structure)
+    public function deleteStructure(string $csrf, User $user, Structure $structure)
     {
         $this->validateCsrfOrThrowNotFoundException('pegass', $csrf);
 
-        $userInformation->removeStructure($structure);
+        $user->removeStructure($structure);
 
         // Freeze user to keep prevent Pegass from overwriting the change
-        $userInformation->setLocked(true);
+        $user->setLocked(true);
 
-        $this->userInformationManager->save($userInformation);
+        $this->userManager->save($user);
 
         return $this->redirectToRoute('admin_pegass_update_structures', [
-            'id' => $userInformation->getId(),
+            'id' => $user->getId(),
         ]);
     }
 
     /**
-     * @Route(name="create_user", path="create-user")
+     * @Route(name="create_user", path="/create-user")
      */
     public function createUser()
     {
@@ -198,7 +191,7 @@ class PegassController extends BaseController
     }
 
     /**
-     * @Route(name="submit_user", path="submit-user/{csrf}")
+     * @Route(name="submit_user", path="/submit-user/{csrf}")
      */
     public function submitUser(Request $request, KernelInterface $kernel, string $csrf)
     {
@@ -219,40 +212,96 @@ class PegassController extends BaseController
 
         $application->run($input, new NullOutput());
 
-        return $this->redirectToRoute('password_login_admin_list', [
-            'type' => 'pegass',
+        return $this->redirectToRoute('admin_pegass_index', [
             'form[criteria]' => $volunteer->getNivol(),
         ]);
     }
 
     /**
-     * @Route("/toggle-lock/{csrf}/{id}", name="toggle_lock")
+     * @Route(name="toggle_verify", path="/toggle-verify/{csrf}/{id}")
      */
-    public function toggleLockAction(UserInformation $userInformation, string $csrf)
+    public function toggleVerifyAction(User $user, string $csrf)
     {
         $this->validateCsrfOrThrowNotFoundException('pegass', $csrf);
 
-        $userInformation->setLocked(1 - $userInformation->isLocked());
-        $this->userInformationManager->save($userInformation);
+        $user->setIsVerified(1 - $user->isVerified());
+        $this->userManager->save($user);
 
-        return $this->redirectToRoute('password_login_admin_list', [
-            'form[criteria]' => $userInformation->getNivol(),
+        return $this->redirectToRoute('admin_pegass_index', [
+            'form[criteria]' => $user->getNivol(),
         ]);
     }
 
     /**
-     * @Route("/toggle-developer/{csrf}/{id}", name="toggle_developer")
+     * @Route(name="toggle_trust", path="/toggle-trust/{csrf}/{id}")
      */
-    public function toggleDeveloperAction(UserInformation $userInformation, $csrf)
+    public function toggleTrustAction(User $user, string $csrf)
     {
         $this->validateCsrfOrThrowNotFoundException('pegass', $csrf);
 
-        $userInformation->setIsDeveloper(1 - $userInformation->isDeveloper());
-        $this->userInformationManager->save($userInformation);
+        $user->setIsTrusted(1 - $user->isTrusted());
+        $this->userManager->save($user);
 
-        return $this->redirectToRoute('password_login_admin_list', [
-            'form[criteria]' => $userInformation->getNivol(),
+        return $this->redirectToRoute('admin_pegass_index', [
+            'form[criteria]' => $user->getNivol(),
         ]);
+    }
+
+    /**
+     * @Route(name="toggle_admin", path="/toggle-admin/{csrf}/{id}")
+     */
+    public function toggleAdminAction(User $user, string $csrf)
+    {
+        $this->validateCsrfOrThrowNotFoundException('pegass', $csrf);
+
+        $user->setIsAdmin(1 - $user->isAdmin());
+        $this->userManager->save($user);
+
+        return $this->redirectToRoute('admin_pegass_index', [
+            'form[criteria]' => $user->getNivol(),
+        ]);
+    }
+
+    /**
+     * @Route(name="toggle_lock", path="/toggle-lock/{csrf}/{id}")
+     */
+    public function toggleLockAction(User $user, string $csrf)
+    {
+        $this->validateCsrfOrThrowNotFoundException('pegass', $csrf);
+
+        $user->setLocked(1 - $user->isLocked());
+        $this->userManager->save($user);
+
+        return $this->redirectToRoute('admin_pegass_index', [
+            'form[criteria]' => $user->getNivol(),
+        ]);
+    }
+
+    /**
+     * @Route(name="toggle_developer", path="/toggle-developer/{csrf}/{id}")
+     */
+    public function toggleDeveloperAction(User $user, $csrf)
+    {
+        $this->validateCsrfOrThrowNotFoundException('pegass', $csrf);
+
+        $user->setIsDeveloper(1 - $user->isDeveloper());
+        $this->userManager->save($user);
+
+        return $this->redirectToRoute('admin_pegass_index', [
+            'form[criteria]' => $user->getNivol(),
+        ]);
+    }
+
+    /**
+     * @Route(name="delete", path="/delete/{csrf}/{id}")
+     */
+    public function deleteAction(User $user, $csrf)
+    {
+        $this->validateCsrfOrThrowNotFoundException('pegass', $csrf);
+
+        $this->userManager->remove($user);
+
+        return $this->redirectToRoute('admin_pegass_index');
     }
 
     private function createSearchForm(Request $request)

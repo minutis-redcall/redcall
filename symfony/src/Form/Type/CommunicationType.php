@@ -4,8 +4,6 @@ namespace App\Form\Type;
 
 use App\Entity\Communication;
 use App\Form\Model\Communication as CommunicationModel;
-use App\Manager\StructureManager;
-use App\Manager\UserInformationManager;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -15,46 +13,12 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Security\Core\Security;
 
 class CommunicationType extends AbstractType
 {
-    /**
-     * @var StructureManager
-     */
-    private $structureManager;
-
-    /**
-     * @var UserInformationManager
-     */
-    private $userInformationManager;
-
-    /**
-     * @var Security
-     */
-    private $security;
-
-    /**
-     * @param StructureManager       $structureManager
-     * @param UserInformationManager $userInformationManager
-     * @param Security               $security
-     */
-    public function __construct(StructureManager $structureManager, UserInformationManager $userInformationManager, Security $security)
-    {
-        $this->structureManager = $structureManager;
-        $this->userInformationManager = $userInformationManager;
-        $this->security = $security;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         parent::buildForm($builder, $options);
-
-        $currentUser     = $this->userInformationManager->findForCurrentUser();
-        $volunteerCounts = $this->structureManager->countVolunteersInStructures($currentUser->getStructures()->toArray());
 
         $builder
             ->add('type', ChoiceType::class, [

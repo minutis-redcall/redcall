@@ -15,9 +15,6 @@ class RefreshCommand extends BaseCommand
      */
     private $refreshManager;
 
-    /**
-     * @param RefreshManager $refreshManager
-     */
     public function __construct(RefreshManager $refreshManager)
     {
         parent::__construct();
@@ -25,9 +22,6 @@ class RefreshCommand extends BaseCommand
         $this->refreshManager = $refreshManager;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function configure()
     {
         $this
@@ -36,9 +30,6 @@ class RefreshCommand extends BaseCommand
             ->setDescription('Refresh structures and volunteers based on Pegass cache');
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         date_default_timezone_set('UTC');

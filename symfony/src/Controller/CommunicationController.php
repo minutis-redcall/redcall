@@ -16,7 +16,7 @@ use App\Manager\CommunicationManager;
 use App\Manager\MediaManager;
 use App\Manager\MessageManager;
 use App\Manager\TagManager;
-use App\Manager\UserInformationManager;
+use App\Manager\UserManager;
 use App\Manager\VolunteerManager;
 use App\Services\MessageFormatter;
 use App\Tools\GSM;
@@ -73,27 +73,16 @@ class CommunicationController extends BaseController
     private $answerManager;
 
     /**
-     * @var UserInformationManager
+     * @var UserManager
      */
-    private $userInformationManager;
+    private $userManager;
 
     /**
      * @var MediaManager
      */
     private $mediaManager;
 
-    /**
-     * @param CampaignManager        $campaignManager
-     * @param CommunicationManager   $communicationManager
-     * @param MessageFormatter       $formatter
-     * @param TagManager             $tagManager
-     * @param VolunteerManager       $volunteerManager
-     * @param MessageManager         $messageManager
-     * @param AnswerManager          $answerManager
-     * @param UserInformationManager $userInformationManager
-     * @param MediaManager           $mediaManager
-     */
-    public function __construct(CampaignManager $campaignManager, CommunicationManager $communicationManager, MessageFormatter $formatter, TagManager $tagManager, VolunteerManager $volunteerManager, MessageManager $messageManager, AnswerManager $answerManager, UserInformationManager $userInformationManager, MediaManager $mediaManager)
+    public function __construct(CampaignManager $campaignManager, CommunicationManager $communicationManager, MessageFormatter $formatter, TagManager $tagManager, VolunteerManager $volunteerManager, MessageManager $messageManager, AnswerManager $answerManager, UserManager $userManager, MediaManager $mediaManager)
     {
         $this->campaignManager = $campaignManager;
         $this->communicationManager = $communicationManager;
@@ -102,7 +91,7 @@ class CommunicationController extends BaseController
         $this->volunteerManager = $volunteerManager;
         $this->messageManager = $messageManager;
         $this->answerManager = $answerManager;
-        $this->userInformationManager = $userInformationManager;
+        $this->userManager = $userManager;
         $this->mediaManager = $mediaManager;
     }
 
@@ -145,9 +134,9 @@ class CommunicationController extends BaseController
      */
     public function addCommunicationAction(Request $request, Campaign $campaign)
     {
-        $userInformation = $this->userInformationManager->findForCurrentUser();
+        $user = $this->getUser();
 
-        if (!$userInformation->getVolunteer() || !$userInformation->getStructures()->count()) {
+        if (!$user->getVolunteer() || !$user->getStructures()->count()) {
             return $this->redirectToRoute('home');
         }
 
@@ -192,9 +181,9 @@ class CommunicationController extends BaseController
      */
     public function newCommunicationAction(Request $request, Campaign $campaign, ?string $key)
     {
-        $userInformation = $this->userInformationManager->findForCurrentUser();
+        $user = $this->getUser();
 
-        if (!$userInformation->getVolunteer() || !$userInformation->getStructures()->count()) {
+        if (!$user->getVolunteer() || !$user->getStructures()->count()) {
             return $this->redirectToRoute('home');
         }
 

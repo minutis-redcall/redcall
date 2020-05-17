@@ -22,10 +22,6 @@ class SendCommunicationCommand extends BaseCommand
      */
     private $sender;
 
-    /**
-     * @param CommunicationManager $communicationManager
-     * @param Sender               $sender
-     */
     public function __construct(CommunicationManager $communicationManager, Sender $sender)
     {
         parent::__construct();
@@ -33,9 +29,6 @@ class SendCommunicationCommand extends BaseCommand
         $this->sender = $sender;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function configure()
     {
         $this
@@ -45,9 +38,6 @@ class SendCommunicationCommand extends BaseCommand
             ->addOption('force', null, InputOption::VALUE_NONE, 'Send messages even though they have been sent already.');
     }
 
-    /**
-     * {@inheritdoc}
-     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         date_default_timezone_set('Europe/Paris');

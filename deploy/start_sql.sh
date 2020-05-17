@@ -21,7 +21,6 @@ cp symfony/.env deploying/
 
 # Copying configuration files
 cat deploy/${ENV}/dotenv | grep -v DATABASE_URL > symfony/.env
-cat deploy/${ENV}/dotenv-migrate >> symfony/.env
 
 # Migrating
 (

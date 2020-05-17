@@ -92,4 +92,4 @@ services:
       - '@twig'
       - '@mailer'
       - '@Bundles\PasswordLoginBundle\Manager\UserManager'
-      - '@App\Manager\UserInformationManager'
+      - '@App\Manager\UserManager'

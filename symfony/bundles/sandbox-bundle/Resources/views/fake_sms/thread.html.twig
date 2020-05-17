@@ -11,10 +11,29 @@
 
     <h1>{{ block('title') }}</h1>
 
-    <div class="iphone">
-        <div class="border">
-            <div class="responsive-html5-chat">
+    <div class="row">
+        <div class="col-8">
+            <div class="iphone">
+                <div class="border">
+                    <div class="responsive-html5-chat">
+                    </div>
+                </div>
             </div>
+        </div>
+        <div class="col-4">
+            {% for message in messages %}
+                <div>
+                    {% if message.direction == 'you' %}
+                        <span class="badge badge-secondary">IN</span>
+                    {% else %}
+                        <span class="badge badge-info">OUT</span>
+                    {% endif %}
+
+                    {{ message.createdAt|date('d/m/Y H:i') }}
+                    {{ message.content }}
+                    <br/><br/>
+                </div>
+            {% endfor %}
         </div>
     </div>
 

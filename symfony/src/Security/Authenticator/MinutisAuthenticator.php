@@ -3,7 +3,7 @@
 namespace App\Security\Authenticator;
 
 use App\Entity\Volunteer;
-use App\Manager\UserInformationManager;
+use App\Manager\UserManager;
 use App\Manager\VolunteerManager;
 use Exception;
 use Firebase\JWT\JWT;
@@ -29,9 +29,9 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
     private $volunteerManager;
 
     /**
-     * @var UserInformationManager
+     * @var UserManager
      */
-    private $userInformationManager;
+    private $userManager;
 
     /**
      * @var RouterInterface
@@ -53,24 +53,17 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
      */
     private $volunteer;
 
-    /**
-     * @param VolunteerManager       $volunteerManager
-     * @param UserInformationManager $userInformationManager
-     * @param RouterInterface        $router
-     * @param KernelInterface        $kernel
-     * @param LoggerInterface|null   $logger
-     */
     public function __construct(VolunteerManager $volunteerManager,
-        UserInformationManager $userInformationManager,
+        UserManager $userManager,
         RouterInterface $router,
         KernelInterface $kernel,
         LoggerInterface $logger = null)
     {
-        $this->volunteerManager       = $volunteerManager;
-        $this->userInformationManager = $userInformationManager;
-        $this->router                 = $router;
-        $this->kernel                 = $kernel;
-        $this->logger                 = $logger ?? new NullLogger();
+        $this->volunteerManager = $volunteerManager;
+        $this->userManager      = $userManager;
+        $this->router           = $router;
+        $this->kernel           = $kernel;
+        $this->logger           = $logger ?? new NullLogger();
     }
 
     public function supports(Request $request)
@@ -152,8 +145,8 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
         $this->volunteer = $volunteer;
 
         // Seek for a RedCall user attached to that volunteer
-        $userInformation = $this->userInformationManager->findOneByNivol($nivol);
-        if (null === $userInformation) {
+        $user = $this->userManager->findOneByNivol($nivol);
+        if (null === $user) {
             $this->logger->info('Minutis authenticator: a volunteer without RedCall access clicked on Minutis link', [
                 'nivol' => $nivol,
             ]);
@@ -162,10 +155,10 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
         }
 
         $this->logger->info('Minutis authenticator: successfully connected user', [
-            'user' => $userInformation->getUser()->getUsername(),
+            'user' => $user->getUsername(),
         ]);
 
-        return $userInformation->getUser();
+        return $user;
     }
 
     public function checkCredentials($credentials, UserInterface $user)

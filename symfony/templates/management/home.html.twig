@@ -19,7 +19,7 @@
         <div class="text-left">
             <p>{{ 'management.current_structures'|trans }}</p>
 
-            {% for structure in user.structures %}
+            {% for structure in app.user.structures %}
                 <p>{{ structure.name }}</p>
             {% endfor %}
 

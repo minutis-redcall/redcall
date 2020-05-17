@@ -49,7 +49,7 @@ class CampaignRepository extends BaseRepository
             ->createQueryBuilder('c')
             ->innerJoin('c.structures', 's')
             ->innerJoin('s.users', 'u')
-            ->where('u.user = :user')
+            ->where('u.id = :user')
             ->setParameter('user', $user)
             ->andWhere('c.active = true');
     }
@@ -75,7 +75,7 @@ class CampaignRepository extends BaseRepository
             ->createQueryBuilder('c')
             ->innerJoin('c.structures', 's')
             ->innerJoin('s.users', 'u')
-            ->where('u.user = :user')
+            ->where('u.id = :user')
             ->setParameter('user', $user)
             ->andWhere('c.active = false');
     }

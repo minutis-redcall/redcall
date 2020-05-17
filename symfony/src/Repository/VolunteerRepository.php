@@ -5,13 +5,11 @@ namespace App\Repository;
 use App\Base\BaseRepository;
 use App\Entity\Structure;
 use App\Entity\Tag;
-use App\Entity\UserInformation;
+use App\Entity\User;
 use App\Entity\Volunteer;
 use Bundles\PegassCrawlerBundle\Entity\Pegass;
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\DBAL\Connection;
-use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\ORMException;
 use Doctrine\ORM\QueryBuilder;
 
 /**
@@ -38,7 +36,7 @@ class VolunteerRepository extends BaseRepository
         return $qb;
     }
 
-    private function createAccessibleVolunteersQueryBuilder(UserInformation $user, bool $enabled = true): QueryBuilder
+    private function createAccessibleVolunteersQueryBuilder(User $user, bool $enabled = true): QueryBuilder
     {
         return $this->createVolunteersQueryBuilder($enabled)
             ->join('v.structures', 's')
@@ -47,12 +45,6 @@ class VolunteerRepository extends BaseRepository
             ->setParameter('user', $user);
     }
 
-    /**
-     * @param Volunteer $volunteer
-     *
-     * @throws ORMException
-     * @throws OptimisticLockException
-     */
     public function disable(Volunteer $volunteer)
     {
         if ($volunteer->isEnabled()) {
@@ -61,12 +53,6 @@ class VolunteerRepository extends BaseRepository
         }
     }
 
-    /**
-     * @param Volunteer $volunteer
-     *
-     * @throws ORMException
-     * @throws OptimisticLockException
-     */
     public function enable(Volunteer $volunteer)
     {
         if (!$volunteer->isEnabled()) {
@@ -75,12 +61,6 @@ class VolunteerRepository extends BaseRepository
         }
     }
 
-    /**
-     * @param Volunteer $volunteer
-     *
-     * @throws ORMException
-     * @throws OptimisticLockException
-     */
     public function lock(Volunteer $volunteer)
     {
         if (!$volunteer->isLocked()) {
@@ -89,12 +69,6 @@ class VolunteerRepository extends BaseRepository
         }
     }
 
-    /**
-     * @param Volunteer $volunteer
-     *
-     * @throws ORMException
-     * @throws OptimisticLockException
-     */
     public function unlock(Volunteer $volunteer)
     {
         if ($volunteer->isLocked()) {
@@ -103,11 +77,6 @@ class VolunteerRepository extends BaseRepository
         }
     }
 
-    /**
-     * @param $nivol
-     *
-     * @return Volunteer|null
-     */
     public function findOneByNivol($nivol): ?Volunteer
     {
         return $this->findOneBy([
@@ -118,11 +87,11 @@ class VolunteerRepository extends BaseRepository
     /**
      * @param string          $keyword
      * @param int             $maxResults
-     * @param UserInformation $user
+     * @param User $user
      *
      * @return Volunteer[]
      */
-    public function searchForUser(UserInformation $user, ?string $keyword, int $maxResults, bool $onlyEnabled = false): array
+    public function searchForUser(User $user, ?string $keyword, int $maxResults, bool $onlyEnabled = false): array
     {
         return $this->searchForUserQueryBuilder($user, $keyword, $onlyEnabled)
                     ->getQuery()
@@ -130,7 +99,7 @@ class VolunteerRepository extends BaseRepository
                     ->getResult();
     }
 
-    public function searchForUserQueryBuilder(UserInformation $user, ?string $keyword, bool $onlyEnabled = false): QueryBuilder
+    public function searchForUserQueryBuilder(User $user, ?string $keyword, bool $onlyEnabled = false): QueryBuilder
     {
         $qb = $this->createAccessibleVolunteersQueryBuilder($user, $onlyEnabled);
 
@@ -207,6 +176,7 @@ class VolunteerRepository extends BaseRepository
                       ->getSingleScalarResult();
 
         $offset = 0;
+        $stop = false;
         while ($offset < $count) {
             $qb = $this->createQueryBuilder('v');
 
@@ -224,6 +194,7 @@ class VolunteerRepository extends BaseRepository
                 $entity = reset($row);
 
                 if (false === $return = $callback($entity)) {
+                    $stop = true;
                     break;
                 }
 
@@ -232,18 +203,21 @@ class VolunteerRepository extends BaseRepository
                 }
 
                 $this->_em->persist($entity);
-                $this->_em->detach($entity);
                 unset($entity);
             }
 
             $this->_em->flush();
             $this->_em->clear();
 
+            if ($stop) {
+                break;
+            }
+
             $offset += 1000;
         }
     }
 
-    public function getIssues(UserInformation $user): array
+    public function getIssues(User $user): array
     {
         $qb = $this->createAccessibleVolunteersQueryBuilder($user);
 
@@ -298,11 +272,11 @@ class VolunteerRepository extends BaseRepository
 
     /**
      * @param array           $nivols
-     * @param UserInformation $user
+     * @param User $user
      *
      * @return Volunteer[]
      */
-    public function filterByNivolsAndAccess(array $nivols, UserInformation $user): array
+    public function filterByNivolsAndAccess(array $nivols, User $user): array
     {
         return $this->createAccessibleVolunteersQueryBuilder($user)
             ->andWhere('v.nivol IN (:nivols)')
@@ -312,7 +286,7 @@ class VolunteerRepository extends BaseRepository
     }
 
     /**
-     * @param array $nivols
+     * @param array $ids
      *
      * @return Volunteer[]
      */
@@ -326,12 +300,12 @@ class VolunteerRepository extends BaseRepository
     }
 
     /**
-     * @param array           $ids
-     * @param UserInformation $user
+     * @param array $ids
+     * @param User $user
      *
      * @return Volunteer[]
      */
-    public function filterByIdsAndAccess(array $ids, UserInformation $user): array
+    public function filterByIdsAndAccess(array $ids, User $user): array
     {
         return $this->createAccessibleVolunteersQueryBuilder($user)
             ->andWhere('v.id IN (:ids)')

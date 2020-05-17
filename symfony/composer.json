@@ -64,7 +64,10 @@
     "platform": {
       "php": "7.2"
     },
-    "sort-packages": true
+    "sort-packages": true,
+    "optimize-autoloader": true,
+    "classmap-authoritative": true,
+    "apcu-autoloader": true
   },
   "autoload": {
     "psr-4": {

@@ -72,7 +72,7 @@ class Structure
     private $lastPegassUpdate;
 
     /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\UserInformation", mappedBy="structures")
+     * @ORM\ManyToMany(targetEntity="App\Entity\User", mappedBy="structures")
      */
     private $users;
 
@@ -98,7 +98,7 @@ class Structure
     /**
      * @return int|null
      */
-    public function getId(): ?int
+    public function getId() : ?int
     {
         return $this->id;
     }
@@ -106,7 +106,7 @@ class Structure
     /**
      * @return int|null
      */
-    public function getIdentifier(): ?int
+    public function getIdentifier() : ?int
     {
         return $this->identifier;
     }
@@ -116,7 +116,7 @@ class Structure
      *
      * @return Structure
      */
-    public function setIdentifier(int $identifier): self
+    public function setIdentifier(int $identifier) : self
     {
         $this->identifier = $identifier;
 
@@ -126,7 +126,7 @@ class Structure
     /**
      * @return null|string
      */
-    public function getName(): ?string
+    public function getName() : ?string
     {
         return $this->name;
     }
@@ -136,7 +136,7 @@ class Structure
      *
      * @return Structure
      */
-    public function setName(string $name): self
+    public function setName(string $name) : self
     {
         $this->name = $name;
 
@@ -146,7 +146,7 @@ class Structure
     /**
      * @return string|null
      */
-    public function getPresident(): ?string
+    public function getPresident() : ?string
     {
         return $this->president;
     }
@@ -156,7 +156,7 @@ class Structure
      *
      * @return Structure
      */
-    public function setPresident(?string $president): self
+    public function setPresident(?string $president) : self
     {
         $this->president = $president;
 
@@ -166,7 +166,7 @@ class Structure
     /**
      * @return bool|null
      */
-    public function isEnabled(): bool
+    public function isEnabled() : bool
     {
         return $this->enabled;
     }
@@ -176,7 +176,7 @@ class Structure
      *
      * @return Structure
      */
-    public function setEnabled(bool $enabled): self
+    public function setEnabled(bool $enabled) : self
     {
         $this->enabled = $enabled;
 
@@ -186,7 +186,7 @@ class Structure
     /**
      * @return Collection|Volunteer[]
      */
-    public function getVolunteers(): Collection
+    public function getVolunteers() : Collection
     {
         return $this->volunteers;
     }
@@ -196,7 +196,7 @@ class Structure
      *
      * @return Structure
      */
-    public function addVolunteer(Volunteer $volunteer): self
+    public function addVolunteer(Volunteer $volunteer) : self
     {
         if (!$this->volunteers->contains($volunteer)) {
             $this->volunteers[] = $volunteer;
@@ -211,7 +211,7 @@ class Structure
      *
      * @return Structure
      */
-    public function removeVolunteer(Volunteer $volunteer): self
+    public function removeVolunteer(Volunteer $volunteer) : self
     {
         if ($this->volunteers->contains($volunteer)) {
             $this->volunteers->removeElement($volunteer);
@@ -224,7 +224,7 @@ class Structure
     /**
      * @return Structure|null
      */
-    public function getParentStructure(): ?self
+    public function getParentStructure() : ?self
     {
         return $this->parentStructure;
     }
@@ -234,7 +234,7 @@ class Structure
      *
      * @return Structure
      */
-    public function setParentStructure(?self $parentStructure): self
+    public function setParentStructure(?self $parentStructure) : self
     {
         $this->parentStructure = $parentStructure;
 
@@ -244,7 +244,7 @@ class Structure
     /**
      * @return Collection|self[]
      */
-    public function getChildrenStructures(): Collection
+    public function getChildrenStructures() : Collection
     {
         return $this->childrenStructures;
     }
@@ -254,7 +254,7 @@ class Structure
      *
      * @return Structure
      */
-    public function addChildrenStructure(self $childrenStructure): self
+    public function addChildrenStructure(self $childrenStructure) : self
     {
         if (!$this->childrenStructures->contains($childrenStructure)) {
             $this->childrenStructures[] = $childrenStructure;
@@ -269,7 +269,7 @@ class Structure
      *
      * @return Structure
      */
-    public function removeChildrenStructure(self $childrenStructure): self
+    public function removeChildrenStructure(self $childrenStructure) : self
     {
         if ($this->childrenStructures->contains($childrenStructure)) {
             $this->childrenStructures->removeElement($childrenStructure);
@@ -285,7 +285,7 @@ class Structure
     /**
      * @return DateTimeInterface|null
      */
-    public function getLastPegassUpdate(): ?DateTimeInterface
+    public function getLastPegassUpdate() : ?DateTimeInterface
     {
         return $this->lastPegassUpdate;
     }
@@ -295,7 +295,7 @@ class Structure
      *
      * @return Structure
      */
-    public function setLastPegassUpdate(?DateTimeInterface $lastPegassUpdate): self
+    public function setLastPegassUpdate(?DateTimeInterface $lastPegassUpdate) : self
     {
         $this->lastPegassUpdate = $lastPegassUpdate;
 
@@ -303,14 +303,14 @@ class Structure
     }
 
     /**
-     * @return Collection|UserInformation[]
+     * @return Collection|User[]
      */
-    public function getUsers(): Collection
+    public function getUsers() : Collection
     {
         return $this->users;
     }
 
-    public function addUser(UserInformation $user): self
+    public function addUser(User $user) : self
     {
         if (!$this->users->contains($user)) {
             $this->users[] = $user;
@@ -320,7 +320,7 @@ class Structure
         return $this;
     }
 
-    public function removeUser(UserInformation $user): self
+    public function removeUser(User $user) : self
     {
         if ($this->users->contains($user)) {
             $this->users->removeElement($user);
@@ -333,12 +333,12 @@ class Structure
     /**
      * @return Collection|Campaign[]
      */
-    public function getCampaigns(): Collection
+    public function getCampaigns() : Collection
     {
         return $this->campaigns;
     }
 
-    public function addCampaign(Campaign $campaign): self
+    public function addCampaign(Campaign $campaign) : self
     {
         if (!$this->campaigns->contains($campaign)) {
             $this->campaigns[] = $campaign;
@@ -348,7 +348,7 @@ class Structure
         return $this;
     }
 
-    public function removeCampaign(Campaign $campaign): self
+    public function removeCampaign(Campaign $campaign) : self
     {
         if ($this->campaigns->contains($campaign)) {
             $this->campaigns->removeElement($campaign);
@@ -361,12 +361,12 @@ class Structure
     /**
      * @return Collection|PrefilledAnswers[]
      */
-    public function getPrefilledAnswers(): Collection
+    public function getPrefilledAnswers() : Collection
     {
         return $this->prefilledAnswers;
     }
 
-    public function addPrefilledAnswer(PrefilledAnswers $prefilledAnswer): self
+    public function addPrefilledAnswer(PrefilledAnswers $prefilledAnswer) : self
     {
         if(!$this->prefilledAnswers->contains($prefilledAnswer))
         {
@@ -377,7 +377,7 @@ class Structure
         return $this;
     }
 
-    public function removePrefilledAnswer(PrefilledAnswers $prefilledAnswers): self
+    public function removePrefilledAnswer(PrefilledAnswers $prefilledAnswers) : self
     {
         if($this->prefilledAnswers->contains($prefilledAnswers))
         {
@@ -392,7 +392,7 @@ class Structure
     /**
      * @return Volunteer|null
      */
-    public function getPresidentVolunteer(): ?Volunteer
+    public function getPresidentVolunteer() : ?Volunteer
     {
         foreach ($this->getVolunteers() as $volunteer) {
             if ($volunteer->getNivol() === $this->getPresident()) {
@@ -414,11 +414,11 @@ class Structure
     }
 
     /**
+     * @throws Exception
      * @return DateTime|null
      *
-     * @throws Exception
      */
-    public function getNextPegassUpdate(): ?DateTime
+    public function getNextPegassUpdate() : ?DateTime
     {
         if (!$this->lastPegassUpdate) {
             return null;
@@ -437,7 +437,7 @@ class Structure
     /**
      * @return bool
      */
-    public function canForcePegassUpdate(): bool
+    public function canForcePegassUpdate() : bool
     {
         if (!$this->lastPegassUpdate) {
             return true;
@@ -456,7 +456,7 @@ class Structure
         return time() - $utc->getTimestamp() > 3600;
     }
 
-    public function getDisplayName(): string
+    public function getDisplayName() : string
     {
         return mb_strtoupper($this->name);
     }
@@ -464,7 +464,7 @@ class Structure
     /**
      * @return array
      */
-    public function toSearchResults(): array
+    public function toSearchResults() : array
     {
         return [
             'id' => $this->getId(),

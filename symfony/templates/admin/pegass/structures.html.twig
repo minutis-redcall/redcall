@@ -8,7 +8,7 @@
 
     <div class="col-md-12 jumbotron">
 
-        <h3>{{ 'admin.pegass.structures'|trans({'%name%': user.user.username}) }}</h3>
+        <h3>{{ 'admin.pegass.structures'|trans({'%name%': user.username}) }}</h3>
 
         <table class="table">
             <tbody>
@@ -16,7 +16,7 @@
                     <tr>
                         <td>{{ structure.displayName }}</td>
                         <td>
-                            <a href="{{ path('admin_pegass_delete_structure', {userInformationId: user.id, structureId: structure.id, csrf: csrf_token('pegass')}) }}" class="btn btn-danger">
+                            <a href="{{ path('admin_pegass_delete_structure', {userId: user.id, structureId: structure.id, csrf: csrf_token('pegass')}) }}" class="btn btn-danger">
                                 {{ 'base.button.delete'|trans }}
                             </a>
                         </td>
@@ -31,7 +31,7 @@
 
         <br/>
 
-        <a href="{{ path('password_login_admin_list') }}"
+        <a href="{{ path('admin_pegass_index') }}"
            class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
 
     </div>

@@ -5,8 +5,6 @@ namespace App\Form\Type;
 use App\Entity\Structure;
 use App\Entity\Tag;
 use App\Entity\Volunteer;
-use App\Manager\StructureManager;
-use App\Manager\UserInformationManager;
 use App\Repository\StructureRepository;
 use App\Tools\PhoneNumberParser;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -24,35 +22,15 @@ use Symfony\Component\Security\Core\Security;
 class VolunteerType extends AbstractType
 {
     /**
-     * @var UserInformationManager
-     */
-    private $userInformationManager;
-
-    /**
-     * @var StructureManager
-     */
-    private $structureManager;
-
-    /**
      * @var Security
      */
     private $security;
 
-    /**
-     * @param UserInformationManager $userInformationManager
-     * @param StructureManager       $structureManager
-     * @param Security               $security
-     */
-    public function __construct(UserInformationManager $userInformationManager, StructureManager $structureManager, Security $security)
+    public function __construct(Security $security)
     {
-        $this->userInformationManager = $userInformationManager;
-        $this->structureManager = $structureManager;
         $this->security = $security;
     }
 
-    /**
-     * {@inheritdoc}
-     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         parent::buildForm($builder, $options);
@@ -112,7 +90,7 @@ class VolunteerType extends AbstractType
             $builder   = $event->getForm();
 
             if (!$this->security->isGranted('ROLE_ADMIN')) {
-                $currentUser = $this->userInformationManager->findForCurrentUser();
+                $currentUser = $this->security->getUser();
 
                 $builder
                     ->add('structures', EntityType::class, [
