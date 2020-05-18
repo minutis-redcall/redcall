@@ -533,11 +533,23 @@ class Volunteer
     }
 
     /**
-     * @return Collection|Structure[]
+     * @return Collection
      */
     public function getStructures(): Collection
     {
-        return $this->structures;
+        return $this->structures->filter(function(Structure $structure) {
+            return $structure->isEnabled();
+        });
+    }
+
+    /**
+     * @return array
+     */
+    public function getStructureIds(): array
+    {
+        return array_map(function(Structure $structure) {
+            return $structure->getId();
+        }, $this->getStructures()->toArray());
     }
 
     public function addStructure(Structure $structure): self
