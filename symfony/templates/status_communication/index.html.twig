@@ -193,6 +193,10 @@
                     <div class="skip-line text-small">
                         {{ 'campaign_status.filter.title'|trans }}
                         <a href="#"
+                           id="link-filter-structure-{{ communication.id }}"
+                           onclick="$('#filter-structure-{{ communication.id }}').modal(); return false;">{{ 'campaign_status.filter.by_structure'|trans }}</a>
+                        {{ 'campaign_status.filter.or'|trans }}
+                        <a href="#"
                            id="link-filter-response-{{ communication.id }}"
                            onclick="$('#filter-response-{{ communication.id }}').modal(); return false;">{{ 'campaign_status.filter.by_response'|trans }}</a>
                         {{ 'campaign_status.filter.or'|trans }}
@@ -225,6 +229,7 @@
                             <tr id="row-{{ suffix|e('html_attr') }}"
                                 class="row-{{ communication.id }}"
                                 data-volunteer-id="{{ message.volunteer.id }}"
+                                data-structures="{{ message.volunteer.structureIds|join(',') }}"
                                 data-is-reachable="{{ message.reachable }}">
 
                                 {# Selection #}
@@ -503,6 +508,32 @@
             {{ macros.modal('change-communication-label-' ~ communication.id, 'modal.change_campaign_label'|trans, body, buttons) }}
         {% endif %}
 
+        {# -------------------------------------------------------------------------------- #}
+        {# Filter volunteers by their structures #}
+        {# -------------------------------------------------------------------------------- #}
+
+        {% set body %}
+
+            {% for structure in app.user.structures %}
+                <div class="form-check">
+                    <label class="switch">
+                        <input type="checkbox"
+                               data-toggle="toggle" data-onstyle="primary"
+                               class="form-check-input filter-action filter-structure-{{ communication.id }} filter-action-{{ communication.id }}"
+                               id="filter-structure-{{ structure.id }}-{{ communication.id }}"
+                               value="{{ structure.id }}" />
+                        <span class="slider"></span>
+                    </label>
+                    <label class="form-check-label"
+                           for="filter-structure-{{ structure.id }}-{{ communication.id }}">
+                        {{ structure.displayName }}
+                    </label>
+                </div>
+            {% endfor %}
+
+        {% endset %}
+
+        {{ macros.modal('filter-structure-' ~ communication.id, 'campaign_status.filter.title'|trans ~ ' ' ~ 'campaign_status.filter.by_structure'|trans, body) }}
 
         {# -------------------------------------------------------------------------------- #}
         {# Filter volunteers by their response #}
@@ -691,6 +722,11 @@
 
         function refreshVisibility() {
 
+            var structures = [];
+            {% for structure in app.user.structures %}
+                structures.push("structure-{{ structure.id|e('js') }}");
+            {% endfor %}
+
             var actions = [];
             {% for communication in campaign.communications %}
             actions["{{ communication.id|e('js') }}"] = [
@@ -720,6 +756,12 @@
              #}
             $.each(communicationIds, function (key, communicationId) {
                 {# counting number of filters ticked #}
+
+                var structure = 0;
+                $('.filter-structure-' + communicationId).each(function () {
+                    structure += $(this).is(':checked');
+                });
+
                 var response = 0;
                 $('.filter-response-' + communicationId).each(function () {
                     response += $(this).is(':checked');
@@ -733,6 +775,11 @@
                 var unreachable = $('#link-filter-unreachable-' + communicationId).data('value');
 
                 {# change links color to understand which filters are enabled #}
+                if (structure) {
+                    $('#link-filter-structure-' + communicationId).css('color', 'red');
+                } else {
+                    $('#link-filter-structure-' + communicationId).css('color', '');
+                }
                 if (response) {
                     $('#link-filter-response-' + communicationId).css('color', 'red');
                 } else {
@@ -750,7 +797,7 @@
                 }
 
                 {# if no filter used, everything is visible #}
-                if (response + skill + unreachable === 0) {
+                if (structure + response + skill + unreachable === 0) {
                     $('.row-' + communicationId).fadeIn();
                     return true;
                 }
@@ -758,6 +805,16 @@
                 {# if some checkbox ticked, visible if at least one value is 1 #}
                 $('.row-' + communicationId).each(function () {
                     var row = $(this);
+
+                    {# is visible if structure ticked and volunteer in structure #}
+                    var structureVisible = false;
+                    $.each(structures, function (index, action) {
+                        var suffix = action + '-' + communicationId;
+                        var filter = $('#filter-' + suffix);
+                        if (filter.is(':checked') && !$.inArray(filter.val(), row.data('structures').toString().split(','))) {
+                            structureVisible = true;
+                        }
+                    });
 
                     {# is visible if answer ticked and volunteer answered OR if no answer selected #}
                     var actionVisible = false;
@@ -793,8 +850,8 @@
                         unreachableVisible = !row.data('is-reachable');
                     }
 
-                    {# displays the row only if the 2 conditions above are true #}
-                    if (actionVisible && skillVisible && unreachableVisible) {
+                    {# displays the row only if all conditions above are true #}
+                    if (structureVisible && actionVisible && skillVisible && unreachableVisible) {
                         row.fadeIn();
                     } else {
                         row.fadeOut();

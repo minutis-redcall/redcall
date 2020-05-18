@@ -34,7 +34,7 @@ class User extends AbstractUser
     private $isDeveloper = false;
 
     /**
-     * @ORM\OneToOne(targetEntity="App\Entity\Volunteer")
+     * @ORM\OneToOne(targetEntity="App\Entity\Volunteer", inversedBy="user")
      */
     private $volunteer;
 

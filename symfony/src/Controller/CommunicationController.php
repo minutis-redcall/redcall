@@ -192,12 +192,15 @@ class CommunicationController extends BaseController
         $volunteers = [];
         if (!is_null($key)) {
             $selection = $this->get('session')->get('add-communication', [])[$campaign->getId()][$key] ?? [];
+
             foreach ($selection as $volunteerId) {
                 $volunteer = $this->volunteerManager->find($volunteerId);
                 if ($volunteer) {
                     $volunteers[] = $volunteer->getNivol();
                 }
             }
+
+            $this->get('session')->remove('add-communication');
         }
 
         /**

@@ -172,6 +172,7 @@ campaign_status:
   message: 'Votre message :'
   filter:
     title: Filtrer
+    by_structure: par structure
     by_response: par réponse
     by_skill: par compétence
     by_unreachable: les personnes injoignables

@@ -65,7 +65,7 @@
             <li>
                 <b>{{ stats.costs.types.received | format_currency(stats.costs.currency) }}</b> {{ 'admin.statistics.costs.received' | trans }}
             </li>
-            <li><b>{{ stats.costs.types.sent | format_currency(stats.costs.currency) }}</b> pour l'envoi.</li>
+            <li><b>{{ stats.costs.types.sent | format_currency(stats.costs.currency) }}</b> {{ 'admin.statistics.costs.sent' | trans }}</li>
         </ul>
     {% else %}
         <p>{{ 'admin.statistics.no_stats' | trans }}</p>
