@@ -192,10 +192,12 @@
                     {# -------------------------------------------------------------------------------- #}
                     <div class="skip-line text-small">
                         {{ 'campaign_status.filter.title'|trans }}
-                        <a href="#"
-                           id="link-filter-structure-{{ communication.id }}"
-                           onclick="$('#filter-structure-{{ communication.id }}').modal(); return false;">{{ 'campaign_status.filter.by_structure'|trans }}</a>
-                        {{ 'campaign_status.filter.or'|trans }}
+                        {% if campaign.structures|length > 1 %}
+                            <a href="#"
+                               id="link-filter-structure-{{ communication.id }}"
+                               onclick="$('#filter-structure-{{ communication.id }}').modal(); return false;">{{ 'campaign_status.filter.by_structure'|trans }}</a>
+                            {{ 'campaign_status.filter.or'|trans }}
+                        {% endif %}
                         <a href="#"
                            id="link-filter-response-{{ communication.id }}"
                            onclick="$('#filter-response-{{ communication.id }}').modal(); return false;">{{ 'campaign_status.filter.by_response'|trans }}</a>
@@ -514,7 +516,7 @@
 
         {% set body %}
 
-            {% for structure in app.user.structures %}
+            {% for structure in campaign.structures %}
                 <div class="form-check">
                     <label class="switch">
                         <input type="checkbox"
@@ -723,7 +725,7 @@
         function refreshVisibility() {
 
             var structures = [];
-            {% for structure in app.user.structures %}
+            {% for structure in campaign.structures %}
                 structures.push("structure-{{ structure.id|e('js') }}");
             {% endfor %}
 
@@ -808,13 +810,19 @@
 
                     {# is visible if structure ticked and volunteer in structure #}
                     var structureVisible = false;
+                    var structureCount = 0;
                     $.each(structures, function (index, action) {
                         var suffix = action + '-' + communicationId;
                         var filter = $('#filter-' + suffix);
                         if (filter.is(':checked') && !$.inArray(filter.val(), row.data('structures').toString().split(','))) {
                             structureVisible = true;
                         }
+
+                        structureCount += filter.is(':checked');
                     });
+                    if (structureCount === 0) {
+                        structureVisible = true;
+                    }
 
                     {# is visible if answer ticked and volunteer answered OR if no answer selected #}
                     var actionVisible = false;
