@@ -163,7 +163,7 @@ class WidgetController extends BaseController
             throw $this->createAccessDeniedException();
         }
 
-        $criteria = trim($request->query->get('keyword'));
+        $criteria = ltrim(trim($request->query->get('keyword')), '0');
 
         if ($searchAll) {
             $volunteers = $this->volunteerManager->searchAll($criteria, 20);
