@@ -33,6 +33,10 @@ class QueueProcessor implements ProcessorInterface
         $queueName = $client->queueName(getenv('GCP_PROJECT_NAME'), getenv('GCP_PROJECT_LOCATION'), $queueId);
 
         foreach ($communication->getMessages() as $message) {
+            if ($message->isSent()) {
+                continue ;
+            }
+
             $payload = json_encode(['message_id' => $message->getId()]);
 
             $httpRequest = new AppEngineHttpRequest();

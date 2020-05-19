@@ -196,6 +196,7 @@ campaign_status:
     sms_received: '"SMS reçu" indique si le message a bien été délivré au bénévole. Elle peut rester blanche si le bénévole a éteint son téléphone.'
   progress: 'Envoi: %sent% / %total% (%progress%%).'
   relaunch_communication: 'Relancer la communication'
+  relaunch_communication_confirm: 'Voulez-vous vraiment relancer la communication ?'
   finish: 'Envoi terminé.'
   warning:
     no_phone: 'Pas de numéro de téléphone'

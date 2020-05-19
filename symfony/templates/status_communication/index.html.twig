@@ -135,7 +135,7 @@
                                 {# Relaunch button (for admins only) #}
                                 {# -------------------------------------------------------------------------------- #}
                                 {% if is_granted('ROLE_ADMIN') %}
-                                    <a href="{{ path('communication_relaunch', {communication: communication.id, campaign: campaign.id}) }}">
+                                    <a href="{{ path('communication_relaunch', {communication: communication.id, campaign: campaign.id}) }}" onclick="return confirm('{{ 'campaign_status.relaunch_communication_confirm'| trans }}');">
                                         {{ 'campaign_status.relaunch_communication'| trans }}
                                     </a>
                                 {% endif %}
