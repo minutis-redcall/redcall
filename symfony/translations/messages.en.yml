@@ -197,6 +197,7 @@ campaign_status:
     sms_received: '"SMS received" indicates wether message has been received by the volunteer. If blank, volunteer may have turned off his phone number.'
   progress: 'Sending: %sent% / %total% (%progress%%).'
   relaunch_communication: 'Relaunch communication'
+  relaunch_communication_confirm: 'Are you sure you wish to relaunch the communication?'
   finish: 'Sent all messages.'
   warning:
     no_phone: 'No phone number'

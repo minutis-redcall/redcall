@@ -5,6 +5,7 @@ namespace App\Controller\Admin;
 use App\Base\BaseController;
 use App\Entity\Structure;
 use App\Entity\User;
+use App\Form\Type\VolunteerWidgetType;
 use App\Manager\StructureManager;
 use App\Manager\UserManager;
 use App\Manager\VolunteerManager;
@@ -185,9 +186,42 @@ class PegassController extends BaseController
     /**
      * @Route(name="create_user", path="/create-user")
      */
-    public function createUser()
+    public function createUser(Request $request, KernelInterface $kernel)
     {
-        return $this->render('admin/pegass/create_user.html.twig');
+        $form = $this->createFormBuilder()
+            ->add('nivol', VolunteerWidgetType::class, [
+                'label' => false,
+            ])
+            ->add('submit', SubmitType::class, [
+                'label' => 'base.button.create',
+            ])
+            ->getForm()
+            ->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $volunteer = $this->volunteerManager->findOneByNivol($form->get('nivol')->getData());
+            if (!$volunteer) {
+                throw $this->createNotFoundException();
+            }
+
+            $application = new Application($kernel);
+            $application->setAutoExit(false);
+
+            $input = new ArrayInput([
+                'command' => 'user:create',
+                'nivol' => [$volunteer->getNivol()],
+            ]);
+
+            $application->run($input, new NullOutput());
+
+            return $this->redirectToRoute('admin_pegass_index', [
+                'form[criteria]' => $volunteer->getNivol(),
+            ]);
+        }
+
+        return $this->render('admin/pegass/create_user.html.twig', [
+            'form' => $form->createView(),
+        ]);
     }
 
     /**
