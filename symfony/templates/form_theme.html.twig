@@ -203,12 +203,13 @@
                     <div class="card audience-card d-none" data-structure-id="{{ structure.id }}">
                         <div class="card-header" id="{{ card }}-head">
                             <h2 class="mb-0">
-                                <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#{{ card }}" aria-expanded="false" aria-controls="{{ card }}">
+                                <button class="btn btn-secondary btn-sm" type="button" data-toggle="collapse" data-target="#{{ card }}" aria-expanded="false" aria-controls="{{ card }}" style="width:100%;">
                                     {{ structure.displayName }} (<span class="volunteer-selection-count volunteer-selection-count-{{ structure.id }}">--</span>)
+                                    <div style="font-size:12px;color:grey;">{{ 'audience.see_selection'|trans }}</div>
                                 </button>
                             </h2>
                         </div>
-                        <div id="{{ card }}" class="collapse show" aria-labelledby="{{ card }}-head">
+                        <div id="{{ card }}" class="collapse" aria-labelledby="{{ card }}-head">
                             <div class="card-body">
                                 {{ form_widget(form['structure-' ~ structure.id], {
                                     attr: form['structure-' ~ structure.id].vars.attr|merge({
@@ -423,7 +424,7 @@
                 }
 
                 {# Disable ticks while flexdatalists are loading #}
-                $('#{{ form.vars.id }} .tag')
+                $('#{{ form.vars.id }} .tag, input[type="submit"], button[type="submit"]')
                     .prop('disabled', 'disabled')
                     .closest('div')
                     .css('color', 'grey');
@@ -445,7 +446,7 @@
                     });
 
                     {# Enable ticks once fledatalists are loaded #}
-                    $('#{{ form.vars.id }} .tag')
+                    $('#{{ form.vars.id }} .tag, input[type="submit"], button[type="submit"]')
                         .prop('disabled', false)
                         .closest('div')
                         .css('color', '#212529');

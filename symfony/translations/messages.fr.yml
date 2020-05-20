@@ -454,6 +454,7 @@ audience:
   filter_input: 'Revenir aux filtres de sélection'
   select_all: 'Tout sélectionner'
   unselect_all: 'Effacer la sélection'
+  see_selection: 'Cliquez pour voir la sélection'
   nivol_input: 'Saisir une liste de nivols'
   nivol_title: 'Copier/coller une liste de nivols'
   classify:
