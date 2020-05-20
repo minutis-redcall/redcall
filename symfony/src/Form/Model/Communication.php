@@ -116,11 +116,4 @@ class Communication implements \JsonSerializable
     {
         return get_object_vars($this);
     }
-
-    public function jsonUnserialize(string $json)
-    {
-        foreach (json_decode($json, true) as $prop => $value) {
-            $this->{$prop} = $value;
-        }
-    }
 }
