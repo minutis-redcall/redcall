@@ -6,7 +6,7 @@ use App\Entity\Message;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
-class Communication
+class Communication implements \JsonSerializable
 {
     /**
      * @var string
@@ -109,6 +109,18 @@ class Communication
         if (0 === count($this->audience)) {
             $context->buildViolation('form.campaign.errors.volunteers.min')
                     ->addViolation();
+        }
+    }
+
+    public function jsonSerialize(): string
+    {
+        return get_object_vars($this);
+    }
+
+    public function jsonUnserialize(string $json)
+    {
+        foreach (json_decode($json, true) as $prop => $value) {
+            $this->{$prop} = $value;
         }
     }
 }

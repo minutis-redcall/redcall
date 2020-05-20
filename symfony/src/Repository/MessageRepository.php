@@ -10,7 +10,6 @@ use App\Entity\Choice;
 use App\Entity\Message;
 use App\Entity\Selection;
 use App\Entity\Volunteer;
-use App\Tools\Random;
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\ORM\NonUniqueResultException;
@@ -140,22 +139,16 @@ class MessageRepository extends BaseRepository
                     ->getSingleScalarResult();
     }
 
-    /**
-     * Infinite loop risk?
-     * POW(62, 8) = 218 340 105 584 896
-     * we're safe.
-     */
-    public function generateCode(string $column = 'code'): string
+    public function findUsedCodes(array $codes)
     {
-        do {
-            $code = Random::generate(self::CODE_SIZE);
+        $rows = $this->createQueryBuilder('m')
+            ->select('m.code')
+            ->where('m.code IN (:codes)')
+            ->setParameter('codes', $codes)
+            ->getQuery()
+            ->getArrayResult();
 
-            if (null === $this->findOneBy([$column => $code])) {
-                break;
-            }
-        } while (true);
-
-        return $code;
+        return array_column($rows, 'code');
     }
 
     /**

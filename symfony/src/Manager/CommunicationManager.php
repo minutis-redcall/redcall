@@ -168,6 +168,8 @@ class CommunicationManager
         }
 
         $volunteers = $this->volunteerManager->filterByNivolAndAccess($communicationModel->audience);
+        $codes = $this->messageManager->generateCodes(count($volunteers));
+
         foreach ($volunteers as $volunteer) {
             /** @var Volunteer $volunteer */
             if (!$volunteer->isEnabled()) {
@@ -183,11 +185,12 @@ class CommunicationManager
                 );
             }
 
-            $message->setCode(
-                $this->messageManager->generateCode()
-            );
+            $code = array_pop($codes);
 
-            $communicationEntity->addMessage($message->setVolunteer($volunteer));
+            $message->setCode($code);
+            $message->setVolunteer($volunteer);
+
+            $communicationEntity->addMessage($message);
         }
 
         return $communicationEntity;
