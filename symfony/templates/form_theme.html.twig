@@ -415,6 +415,12 @@
                     return;
                 }
 
+                {# Disable ticks while flexdatalists are loading #}
+                $('#{{ form.vars.id }} .tag')
+                    .prop('disabled', 'disabled')
+                    .closest('div')
+                    .css('color', 'grey');
+
                 var populateFlexToggleTag = function(structures) {
                     $.each(structures, function(structureId, nivols) {
                         var flex = flexes[structureId];
@@ -430,6 +436,12 @@
                             }
                         });
                     });
+
+                    {# Enable ticks once fledatalists are loaded #}
+                    $('#{{ form.vars.id }} .tag')
+                        .prop('disabled', false)
+                        .closest('div')
+                        .css('color', '#212529');
                 };
 
                 var input = {
