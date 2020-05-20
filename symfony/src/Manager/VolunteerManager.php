@@ -227,6 +227,7 @@ class VolunteerManager
         }
 
         return [
+            'valid' => $accessibles,
             'invalid' => $this->volunteerRepository->filterInvalidNivols($nivols),
             'disabled' => $this->volunteerRepository->filterDisabledNivols($nivols),
             'inaccessible' => $inaccessibles,

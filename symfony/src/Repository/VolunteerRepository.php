@@ -323,7 +323,7 @@ class VolunteerRepository extends BaseRepository
             ->getQuery()
             ->getArrayResult();
 
-        return array_diff($nivols, array_column($valid, 'nivol'));
+        return array_filter(array_diff($nivols, array_column($valid, 'nivol')));
     }
 
     public function filterDisabledNivols(array $nivols): array

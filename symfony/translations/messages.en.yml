@@ -458,4 +458,4 @@ audience:
     invalid: '%nbr% nivols do not exist'
     disabled: '%nbr% nivols are bound to disabled volunteers'
     inaccessible: '%nbr% nivols are bound to volunteers that are not in your perimeter'
-    valid: '%nbr% nivols are valid'
+    valid: '%nbr% nivols will be triggered'

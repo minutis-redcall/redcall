@@ -176,7 +176,7 @@ class AudienceType extends AbstractType
             return ltrim($nivol, '0');
         }, $nivols);
 
-        return array_unique($nivols);
+        return array_filter(array_unique($nivols));
     }
 
     /**
