@@ -112,7 +112,7 @@ class Communication implements \JsonSerializable
         }
     }
 
-    public function jsonSerialize(): string
+    public function jsonSerialize()
     {
         return get_object_vars($this);
     }

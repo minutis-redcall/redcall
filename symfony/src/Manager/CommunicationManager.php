@@ -14,7 +14,6 @@ use App\Repository\CommunicationRepository;
 use DateTime;
 use Exception;
 use Psr\Log\LoggerInterface;
-use Psr\Log\NullLogger;
 use Symfony\Component\Routing\RouterInterface;
 
 class CommunicationManager
@@ -55,9 +54,14 @@ class CommunicationManager
     private $router;
 
     /**
-     * @var LoggerInterface|null
+     * @var LoggerInterface
      */
     private $slackLogger;
+
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
 
     /**
      * @param MessageManager          $messageManager
@@ -66,9 +70,10 @@ class CommunicationManager
      * @param UserManager             $userManager
      * @param VolunteerManager        $volunteerManager
      * @param RouterInterface         $router
-     * @param LoggerInterface|null    $slackLogger
+     * @param LoggerInterface         $slackLogger
+     * @param LoggerInterface         $logger
      */
-    public function __construct(MessageManager $messageManager, CommunicationRepository $communicationRepository, ProcessorInterface $processor, UserManager $userManager, VolunteerManager $volunteerManager, RouterInterface $router, ?LoggerInterface $slackLogger = null)
+    public function __construct(MessageManager $messageManager, CommunicationRepository $communicationRepository, ProcessorInterface $processor, UserManager $userManager, VolunteerManager $volunteerManager, RouterInterface $router, LoggerInterface $slackLogger, LoggerInterface $logger)
     {
         $this->messageManager = $messageManager;
         $this->communicationRepository = $communicationRepository;
@@ -76,7 +81,8 @@ class CommunicationManager
         $this->userManager = $userManager;
         $this->volunteerManager = $volunteerManager;
         $this->router = $router;
-        $this->slackLogger = $slackLogger ?? new NullLogger();
+        $this->slackLogger = $slackLogger;
+        $this->logger = $logger;
     }
 
     /**
@@ -102,6 +108,10 @@ class CommunicationManager
     public function launchNewCommunication(Campaign $campaign,
         CommunicationModel $communicationModel): CommunicationEntity
     {
+        $this->logger->info('Launching a new communication', [
+            'model' => $communicationModel,
+        ]);
+
         $communicationEntity = $this->createCommunication($communicationModel);
 
         $campaign->addCommunication($communicationEntity);
