@@ -4,15 +4,15 @@
     {{ 'campaign.titles.list_admin'|trans }}
 </h1>
 
-{{ macros.orderBy(ongoing.orderBy, {
+{{ macros.orderBy(all.orderBy, {
     'type': 'campaign.order.type'|trans,
     'createdAt': 'campaign.order.created_at'|trans,
     'label': 'campaign.order.label'|trans,
 }, 'nav') }}
 
-    {% for index, campaign in ongoing.pager.currentPageResults %}
+    {% for index, campaign in all.pager.currentPageResults %}
         <div class="row separated" style="background-color: {{ cycle(['#eeeeee', '#ffffff'], index) }};">
-            <div class="col-3" style="display:flex;align-items:center;">
+            <div class="col-3" style="display:flex;align-items:center;{% if not campaign.active %}opacity:60%;{% endif %}">
                 {{ macros.typeBadge(campaign.type) }}
             </div>
             <div class="col-9">
@@ -39,7 +39,7 @@
         <br/>
     {% endfor %}
 
-    {{ macros.pager(ongoing.pager, 'ongoing', {type: 'ongoing'}) }}
+    {{ macros.pager(all.pager) }}
 
 <script type="text/javascript">
 
