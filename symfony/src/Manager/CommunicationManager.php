@@ -13,6 +13,9 @@ use App\Form\Model\Communication as CommunicationModel;
 use App\Repository\CommunicationRepository;
 use DateTime;
 use Exception;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
+use Symfony\Component\Routing\RouterInterface;
 
 class CommunicationManager
 {
@@ -46,13 +49,34 @@ class CommunicationManager
      */
     private $volunteerManager;
 
-    public function __construct(MessageManager $messageManager, CommunicationRepository $communicationRepository, ProcessorInterface $processor, UserManager $userManager, VolunteerManager $volunteerManager)
+    /**
+     * @var RouterInterface
+     */
+    private $router;
+
+    /**
+     * @var LoggerInterface|null
+     */
+    private $slackLogger;
+
+    /**
+     * @param MessageManager          $messageManager
+     * @param CommunicationRepository $communicationRepository
+     * @param ProcessorInterface      $processor
+     * @param UserManager             $userManager
+     * @param VolunteerManager        $volunteerManager
+     * @param RouterInterface         $router
+     * @param LoggerInterface|null    $slackLogger
+     */
+    public function __construct(MessageManager $messageManager, CommunicationRepository $communicationRepository, ProcessorInterface $processor, UserManager $userManager, VolunteerManager $volunteerManager, RouterInterface $router, ?LoggerInterface $slackLogger = null)
     {
         $this->messageManager = $messageManager;
         $this->communicationRepository = $communicationRepository;
         $this->processor = $processor;
         $this->userManager = $userManager;
         $this->volunteerManager = $volunteerManager;
+        $this->router = $router;
+        $this->slackLogger = $slackLogger ?? new NullLogger();
     }
 
     /**
@@ -90,6 +114,22 @@ class CommunicationManager
         $this->processor->process($communicationEntity);
 
         $this->communicationRepository->save($communicationEntity);
+
+        $this->slackLogger->info(
+            sprintf(
+                'New %s trigger by %s on %d volunteers from %d structures.%s%s%sLink: %s',
+                strtoupper($communicationEntity->getType()),
+                $communicationEntity->getVolunteer()->getDisplayName(),
+                count($communicationEntity->getMessages()),
+                $campaign->getStructures()->count(),
+                PHP_EOL,
+                $campaign->getLabel(),
+                PHP_EOL,
+                sprintf('%s%s', getenv('WEBSITE_URL'), $this->router->generate('communication_index', [
+                    'id' => $campaign->getId(),
+                ]))
+            )
+        );
 
         return $communicationEntity;
     }

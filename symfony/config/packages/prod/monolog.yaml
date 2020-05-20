@@ -20,16 +20,21 @@ monolog:
       id: monolog_psr_batch_logger
     slack_no_404:
       type: fingers_crossed
-      handler: slack
+      handler: slack_errors
       action_level: error
       excluded_404s:
         - ^/
-    slack:
+    slack_errors:
       type: slack
       token: '%env(SLACK_TOKEN)%'
       channel: '%env(SLACK_CHANNEL)%'
       level: 'ERROR'
       include_extra: true
+    slack:
+      type: slack
+      token: '%env(SLACK_TOKEN)%'
+      channel: '%env(SLACK_CHANNEL)%'
+      channels: ['slack']
 
 services:
 
