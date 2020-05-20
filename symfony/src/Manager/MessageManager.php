@@ -86,25 +86,18 @@ class MessageManager
         return $this->messageRepository->getNumberOfSentMessages($campaign);
     }
 
-    /**
-     * @param Volunteer $volunteer
-     *
-     * @return string
-     */
-    public function generatePrefix(Volunteer $volunteer): string
+    public function generatePrefixes(array $volunteers): array
     {
-        $prefix = 'A';
+        $usedPrefixes = $this->messageRepository->getUsedPrefixes($volunteers);
 
-        do {
-            $message = $this->messageRepository->getMessageFromVolunteer($volunteer, $prefix);
-            if (!$message) {
-                break;
-            }
+        $prefixes = [];
+        foreach ($volunteers as $volunteer) {
+            /** @var Volunteer $volunteer */
+            for ($prefix = 'A'; in_array($prefix, $usedPrefixes[$volunteer->getId()]); $prefix++);
+            $prefixes[$volunteer->getId()] = $prefix;
+        }
 
-            $prefix++;
-        } while (true);
-
-        return $prefix;
+        return $prefixes;
     }
 
     /**

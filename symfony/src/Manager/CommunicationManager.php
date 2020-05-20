@@ -170,6 +170,11 @@ class CommunicationManager
         $volunteers = $this->volunteerManager->filterByNivolAndAccess($communicationModel->audience);
         $codes = $this->messageManager->generateCodes(count($volunteers));
 
+        $prefixes = [];
+        if (1 !== $choiceKey) {
+            $prefixes = $this->messageManager->generatePrefixes($volunteers);
+        }
+
         foreach ($volunteers as $volunteer) {
             /** @var Volunteer $volunteer */
             if (!$volunteer->isEnabled()) {
@@ -180,9 +185,7 @@ class CommunicationManager
             $message = new Message();
 
             if (1 !== $choiceKey) {
-                $message->setPrefix(
-                    $this->messageManager->generatePrefix($volunteer)
-                );
+                $message->setPrefix($prefixes[$volunteer->getId()]);
             }
 
             $code = array_pop($codes);
