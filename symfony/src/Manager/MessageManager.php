@@ -9,6 +9,7 @@ use App\Entity\Communication;
 use App\Entity\Message;
 use App\Entity\Volunteer;
 use App\Repository\MessageRepository;
+use App\Tools\Random;
 use DateTime;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\OptimisticLockException;
@@ -48,12 +49,21 @@ class MessageManager
         $this->tokenStorage      = $tokenStorage;
     }
 
-    /**
-     * @return string
-     */
-    public function generateCode(): string
+    public function generateCodes(int $numberOfCodes)
     {
-        return $this->messageRepository->generateCode();
+        $codes = [];
+        do {
+            while ($numberOfCodes != count($codes)) {
+                $code = Random::generate(MessageRepository::CODE_SIZE);
+                $codes[] = $code;
+            }
+
+            foreach ($this->messageRepository->findUsedCodes($codes) as $alreadyUsed) {
+                unset($codes[$alreadyUsed]);
+            }
+        } while ($numberOfCodes != count($codes));
+
+        return array_values($codes);
     }
 
     /**
@@ -76,25 +86,18 @@ class MessageManager
         return $this->messageRepository->getNumberOfSentMessages($campaign);
     }
 
-    /**
-     * @param Volunteer $volunteer
-     *
-     * @return string
-     */
-    public function generatePrefix(Volunteer $volunteer): string
+    public function generatePrefixes(array $volunteers): array
     {
-        $prefix = 'A';
+        $usedPrefixes = $this->messageRepository->getUsedPrefixes($volunteers);
 
-        do {
-            $message = $this->messageRepository->getMessageFromVolunteer($volunteer, $prefix);
-            if (!$message) {
-                break;
-            }
+        $prefixes = [];
+        foreach ($volunteers as $volunteer) {
+            /** @var Volunteer $volunteer */
+            for ($prefix = 'A'; in_array($prefix, $usedPrefixes[$volunteer->getId()]); $prefix++);
+            $prefixes[$volunteer->getId()] = $prefix;
+        }
 
-            $prefix++;
-        } while (true);
-
-        return $prefix;
+        return $prefixes;
     }
 
     /**

@@ -206,11 +206,6 @@ campaign_status:
 new_communication:
   title: Ecrire un nouveau message
   subtitle: 'Dans le cadre du déclenchement "%label%"'
-  classify:
-    invalid: '%nbr% nivols n''existent pas'
-    disabled: '%nbr% nivols sont rattachés à des bénévoles desactivés'
-    inaccessible: '%nbr% nivols appartiennent à des structures auxquelles vous n''êtes pas rattaché(e)'
-    valid: '%nbr% nivols sont valides'
 
 message:
   sms:
@@ -459,10 +454,11 @@ audience:
   filter_input: 'Revenir aux filtres de sélection'
   select_all: 'Tout sélectionner'
   unselect_all: 'Effacer la sélection'
+  see_selection: 'Cliquez pour voir la sélection'
   nivol_input: 'Saisir une liste de nivols'
   nivol_title: 'Copier/coller une liste de nivols'
   classify:
     invalid: '%nbr% nivols n''existent pas'
     disabled: '%nbr% nivols sont reliés à des bénévoles desactivés'
     inaccessible: '%nbr% nivols sont reliés à des bénévoles ne faisant pas partie de votre périmètre'
-    valid: '%nbr% nivols sont valides'
+    valid: '%nbr% nivols seront déclenchés'

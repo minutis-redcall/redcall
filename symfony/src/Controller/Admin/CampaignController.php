@@ -42,12 +42,12 @@ class CampaignController extends BaseController
      */
     public function renderCampaignsTable(): array
     {
-        $ongoing = $this->campaignManager->getAllOpenCampaignsQueryBuilder();
+        $all = $this->campaignManager->getAllCampaignsQueryBuilder();
 
         return [
-            'ongoing' => [
-                'orderBy' => $this->orderBy($ongoing, Campaign::class, 'c.createdAt', 'DESC', 'ongoing'),
-                'pager' => $this->getPager($ongoing, 'ongoing'),
+            'all' => [
+                'orderBy' => $this->orderBy($all, Campaign::class, 'c.createdAt', 'DESC', 'all'),
+                'pager' => $this->getPager($all),
 
             ]];
     }

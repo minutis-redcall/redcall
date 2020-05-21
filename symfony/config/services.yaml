@@ -15,14 +15,13 @@ services:
     autowire: true      # Automatically injects dependencies in your services.
     autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
     public: false       # Allows optimizing the container by removing unused services; this also means
-    # fetching services directly from the container via $container->get() won't work.
-    # The best practice is to be explicit about your dependencies anyway.
 
   # configures session storage on the database
   Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler:
     arguments:
       - '@Doctrine\DBAL\Driver\PDOConnection'
       - { lock_mode: 1 }
+
   Doctrine\DBAL\Driver\PDOConnection:
     factory: 'doctrine.dbal.default_connection:getWrappedConnection'
 
@@ -50,31 +49,11 @@ services:
     class: App\Provider\Email\Sendgrid
     public: true
 
-  App\Communication\Formatter:
-    public: true
-
-  App\Communication\Sender:
-    public: true
-
   App\Communication\Processor\ProcessorInterface:
     class: '%communication.processor%'
 
-  App\Form\Type\CommunicationType:
-    tags: ['form.type']
-
-  App\Form\Type\VolunteersType:
-    tags: ['form.type']
-
   App\Repository\MessageRepository:
     arguments: ['@doctrine', '@translator', '@security.token_storage']
-
-  App\Services\Pegass:
-    public: true
-
-  twig.extension.intl:
-    class: Twig\Extra\Intl\IntlExtension
-    tags:
-      - { name: twig.extension }
 
   App\Logger\ContextProcessor:
     arguments: ['@kernel', '@security.token_storage']
@@ -93,3 +72,8 @@ services:
       - '@mailer'
       - '@Bundles\PasswordLoginBundle\Manager\UserManager'
       - '@App\Manager\UserManager'
+
+  twig.extension.intl:
+    class: Twig\Extra\Intl\IntlExtension
+    tags:
+      - { name: twig.extension }

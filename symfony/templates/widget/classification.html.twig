@@ -26,6 +26,12 @@
         <div id="class-{{ uuid }}-inaccessible" class="d-none">{{ classified.inaccessible|join(', ') }}</div>
     {% endif %}
 
+    {% if classified.valid|length %}
+        <p>
+            {{ 'audience.classify.valid'|trans({'%nbr%': classified.valid|length}) }}
+        </p>
+    {% endif %}
+
 </div>
 
 <script type="text/javascript">

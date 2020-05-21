@@ -164,6 +164,15 @@
 
             {# Rendering tags ticks #}
             <div class="row audience-tags">
+
+                <div class="col-12">
+                    <label class="switch">
+                        <input type="checkbox"
+                               class="toggle-all-tags"/>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
                 {% for child in form.tags.children %}
                     <div class="col-lg-3 col-md-4 col-6 col-12 tag-container">
                         <label class="switch">
@@ -181,11 +190,8 @@
                     </div>
                 {% endfor %}
 
-                <div class="col-12 text-right">
-                    {#
-                    See: #287
+                <div class="d-none">
                     <span class="select-all-tags btn btn-link">{{ 'audience.select_all'|trans }}</span>
-                    #}
                     <span class="clear-all-tags btn btn-link">{{ 'audience.unselect_all'|trans }}</span>
                 </div>
             </div>
@@ -197,8 +203,9 @@
                     <div class="card audience-card d-none" data-structure-id="{{ structure.id }}">
                         <div class="card-header" id="{{ card }}-head">
                             <h2 class="mb-0">
-                                <button class="btn btn-link" type="button" data-toggle="collapse" data-target="#{{ card }}" aria-expanded="false" aria-controls="{{ card }}">
+                                <button class="btn btn-secondary btn-sm" type="button" data-toggle="collapse" data-target="#{{ card }}" aria-expanded="false" aria-controls="{{ card }}" style="width:100%;">
                                     {{ structure.displayName }} (<span class="volunteer-selection-count volunteer-selection-count-{{ structure.id }}">--</span>)
+                                    <div style="font-size:12px;color:grey;">{{ 'audience.see_selection'|trans }}</div>
                                 </button>
                             </h2>
                         </div>
@@ -292,6 +299,7 @@
 
             {# Clearing everything #}
             var clearAllSelection = function() {
+                $('#{{ form.vars.id }} .toggle-all-tags').prop('checked', false);
                 $('#{{ form.vars.id }} .tag').prop('checked', false);
                 $('#{{ form.vars.id }} .volunteer-selection').each(function() {
                     $(this).val('');
@@ -415,6 +423,12 @@
                     return;
                 }
 
+                {# Disable ticks while flexdatalists are loading #}
+                $('#{{ form.vars.id }} .tag, input[type="submit"], button[type="submit"]')
+                    .prop('disabled', 'disabled')
+                    .closest('div')
+                    .css('color', 'grey');
+
                 var populateFlexToggleTag = function(structures) {
                     $.each(structures, function(structureId, nivols) {
                         var flex = flexes[structureId];
@@ -430,6 +444,12 @@
                             }
                         });
                     });
+
+                    {# Enable ticks once fledatalists are loaded #}
+                    $('#{{ form.vars.id }} .tag, input[type="submit"], button[type="submit"]')
+                        .prop('disabled', false)
+                        .closest('div')
+                        .css('color', '#212529');
                 };
 
                 var input = {
@@ -449,17 +469,49 @@
                 }
             });
 
+            {# Click on "Toggle all tags" link #}
+            $('#{{ form.vars.id }} .toggle-all-tags').click(function() {
+                if ($(this).is(':checked')) {
+                    $('#{{ form.vars.id }} .select-all-tags').click();
+                } else {
+                    $('#{{ form.vars.id }} .clear-all-tags').click();
+                }
+            });
+
             {# Click on "Select all" link #}
             $('#{{ form.vars.id }} .select-all-tags').click(function() {
                 clearAllSelection();
-                var sleep = 0;
-                $('#{{ form.vars.id }} .tag').each(function() {
-                    var that = $(this);
-                    setTimeout(function() {
+                $('#{{ form.vars.id }} .toggle-all-tags').prop('checked', 'checked');
+                var tags = $('#{{ form.vars.id }} .tag');
+                var countTicks = tags.length;
+                var countTicked = 0;
+
+                var waitAndClick = function() {
+                    tags.each(function() {
+                        var that = $(this);
+
+                        if (that.is(':checked')) {
+                            countTicked++;
+                            return true;
+                        }
+
+                        if (that.is(':disabled')) {
+                            // Loading in progress
+                            return false;
+                        }
+
                         that.click();
-                    }, sleep);
-                    sleep += 1000;
-                });
+                        return false;
+                    });
+
+                    // Try again in 100ms if other ticks should be ticked
+                    if (countTicked < countTicks) {
+                        countTicked = 0;
+                        setTimeout(waitAndClick, 50);
+                    }
+                };
+
+                waitAndClick();
             });
 
             {# Click on "Clear all" #}
@@ -469,8 +521,5 @@
         });
 
     </script>
-
-
-
 
 {% endblock %}

@@ -145,6 +145,11 @@ class CampaignRepository extends BaseRepository
             ->setParameter('active', true);
     }
 
+    public function getAllCampaignsQueryBuilder(): QueryBuilder
+    {
+        return $this->createQueryBuilder('c');
+    }
+
     /**
      * @return int
      *

@@ -209,6 +209,11 @@ class CampaignManager
         return $this->campaignRepository->getActiveCampaignsQueryBuilder();
     }
 
+    public function getAllCampaignsQueryBuilder() : QueryBuilder
+    {
+        return $this->campaignRepository->getAllCampaignsQueryBuilder();
+    }
+
     /**
      * @return int
      *
