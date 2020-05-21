@@ -108,6 +108,7 @@ class Communication implements \JsonSerializable
 
         if (0 === count($this->audience)) {
             $context->buildViolation('form.campaign.errors.volunteers.min')
+                    ->atPath('audience')
                     ->addViolation();
         }
     }
