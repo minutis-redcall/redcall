@@ -190,7 +190,6 @@ class AudienceType extends AbstractType
         ]);
     }
 
-
     public function getBlockPrefix() : string
     {
         return 'audience';

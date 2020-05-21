@@ -113,6 +113,7 @@ class CommunicationManager
         ]);
 
         $communicationEntity = $this->createCommunication($communicationModel);
+        $communicationEntity->setRaw(json_encode($communicationModel));
 
         $campaign->addCommunication($communicationEntity);
         foreach ($this->userManager->getCurrentUserStructures() as $structure) {
