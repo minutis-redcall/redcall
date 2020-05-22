@@ -13,10 +13,6 @@ class Random
      */
     static public function generate($size, $base = self::BASE): string
     {
-        [$usec, $sec] = explode(' ', microtime());
-        $seed = (float)$sec + ((float)$usec * 100000);
-        mt_srand($seed);
-
         $code = '';
 
         for ($i = 0; $i < $size; $i++) {

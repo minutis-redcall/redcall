@@ -186,9 +186,9 @@ class AudienceType extends AbstractType
     {
         $resolver->setDefaults([
             'label' => false,
+            'error_bubbling' => false,
         ]);
     }
-
 
     public function getBlockPrefix() : string
     {

@@ -101,6 +101,11 @@ class Communication
     private $volunteer;
 
     /**
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private $raw;
+
+    /**
      * @return mixed
      */
     public function getId()
@@ -528,5 +533,17 @@ class Communication
         }
 
         return $estimated;
+    }
+
+    public function getRaw(): ?string
+    {
+        return $this->raw;
+    }
+
+    public function setRaw(?string $raw): self
+    {
+        $this->raw = $raw;
+
+        return $this;
     }
 }
