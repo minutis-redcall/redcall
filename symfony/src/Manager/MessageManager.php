@@ -93,7 +93,7 @@ class MessageManager
         $prefixes = [];
         foreach ($volunteers as $volunteer) {
             /** @var Volunteer $volunteer */
-            for ($prefix = 'A'; in_array($prefix, $usedPrefixes[$volunteer->getId()]); $prefix++);
+            for ($prefix = 'A'; in_array($prefix, $usedPrefixes[$volunteer->getId()] ?? []); $prefix++);
             $prefixes[$volunteer->getId()] = $prefix;
         }
 

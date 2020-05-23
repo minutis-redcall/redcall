@@ -196,6 +196,12 @@
                 </div>
             </div>
 
+            {% if form.vars.errors|length %}
+                <br/>
+                {{ form_errors(form) }}
+                <br/>
+            {% endif %}
+
             {# Rendering sliders for every structure #}
             <div class="audience-sliders">
                 {% for structure in structures %}

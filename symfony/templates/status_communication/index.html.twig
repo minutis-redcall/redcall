@@ -448,6 +448,15 @@
                         </div>
                     </div>
 
+                    {% if communication.raw %}
+                        <br/>
+                        <div class="debug text-center" data-target="debug-{{ communication.id }}">🔧</div>
+                        <div id="debug-{{ communication.id }}" class="d-none">
+                            <pre>{{ communication.raw }}</pre>
+                        </div>
+                        <br/>
+                    {% endif %}
+
                 </div>
             {% endfor %}
 
@@ -1042,6 +1051,13 @@
             var communicationId = that.data('communication-id');
             $('#complete-body-' + communicationId).addClass('d-none');
             $('#limited-body-' + communicationId).removeClass('d-none');
+        });
+
+        {# -------------------------------------------------------------------------------- #}
+        {# Debugging #}
+        {# -------------------------------------------------------------------------------- #}
+        $('.debug').click(function() {
+            $('#' + $(this).data('target')).toggleClass('d-none');
         });
 
     </script>
