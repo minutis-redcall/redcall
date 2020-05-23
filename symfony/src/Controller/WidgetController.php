@@ -262,13 +262,13 @@ class WidgetController extends BaseController
      */
     public function audienceToggleTag(Request $request)
     {
-        $tag = $this->tagManager->find(
-            trim($request->get('tag'))
-        );
+        $tags = array_map(function(int $tag) {
+            if (!$entity = $this->tagManager->find($tag)) {
+                throw $this->createNotFoundException();
+            }
 
-        if (!$tag) {
-            throw $this->createNotFoundException();
-        }
+            return $entity;
+        }, $request->get('tags', []));
 
         $structures = [];
         foreach ($request->get('structures') as $structure) {
@@ -278,7 +278,7 @@ class WidgetController extends BaseController
         $view = [];
         foreach ($structures as $structure) {
             /** @var Structure $structure */
-            $view[$structure->getId()] = $this->volunteerManager->searchVolunteerAudienceByTag($tag, $structure);
+            $view[$structure->getId()] = $this->volunteerManager->searchVolunteerAudienceByTags($tags, $structure);
         }
 
         return new JsonResponse($view);

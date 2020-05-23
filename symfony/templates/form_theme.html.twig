@@ -432,17 +432,18 @@
                 var populateFlexToggleTag = function(structures) {
                     $.each(structures, function(structureId, nivols) {
                         var flex = flexes[structureId];
-                        $('#{{ form.vars.id }} .structure').each(function() {
-                            if (that.is(':checked')) {
-                                flex.flexdatalist('add', nivols.join(','));
-                            } else {
-                                var selection = flex.flexdatalist('value');
-                                $.each(nivols, function(index, nivol) {
-                                    selection.splice($.inArray(nivol, selection), 1);
-                                });
-                                flex.val(selection.join(','));
-                            }
-                        });
+                        if (that.is(':checked')) {
+                            flex.flexdatalist('add', nivols.join(','));
+                        } else {
+                            var oldSelection = flex.flexdatalist('value');
+                            var newSelection = [];
+                            $.each(oldSelection, function(index, nivol) {
+                                if (nivols.includes(nivol)) {
+                                    newSelection.push(nivol);
+                                }
+                            });
+                            flex.val(newSelection.join(','));
+                        }
                     });
 
                     {# Enable ticks once fledatalists are loaded #}
@@ -452,8 +453,15 @@
                         .css('color', '#212529');
                 };
 
+                var tags = [];
+                $('#{{ form.vars.id }} .tag').each(function() {
+                    if ($(this).is(':checked')) {
+                        tags.push($(this).data('tag-id'));
+                    }
+                });
+
                 var input = {
-                    tag: that.data('tag-id'),
+                    tags: tags,
                     structures: structures,
                 };
 
