@@ -3,7 +3,6 @@
 namespace App\Manager;
 
 use App\Entity\Structure;
-use App\Entity\Tag;
 use App\Entity\Volunteer;
 use App\Repository\VolunteerRepository;
 use Doctrine\ORM\QueryBuilder;
@@ -248,9 +247,9 @@ class VolunteerManager
         return $this->populateDatalist($rows);
     }
 
-    public function searchVolunteerAudienceByTag(Tag $tag, Structure $structure): array
+    public function searchVolunteerAudienceByTags(array $tags, Structure $structure): array
     {
-        return $this->volunteerRepository->searchVolunteerAudienceByTag($tag, $structure);
+        return $this->volunteerRepository->searchVolunteerAudienceByTags($tags, $structure);
     }
 
     public function organizeNivolsByStructures(array $structures, array $nivols) : array

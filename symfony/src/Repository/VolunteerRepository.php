@@ -4,7 +4,6 @@ namespace App\Repository;
 
 use App\Base\BaseRepository;
 use App\Entity\Structure;
-use App\Entity\Tag;
 use App\Entity\User;
 use App\Entity\Volunteer;
 use Bundles\PegassCrawlerBundle\Entity\Pegass;
@@ -360,7 +359,7 @@ class VolunteerRepository extends BaseRepository
             ->getArrayResult();
     }
 
-    public function searchVolunteerAudienceByTag(Tag $tag, Structure $structure): array
+    public function searchVolunteerAudienceByTags(array $tags, Structure $structure): array
     {
         $rows = $this->createVolunteersQueryBuilder(true)
             ->select('v.nivol')
@@ -368,8 +367,8 @@ class VolunteerRepository extends BaseRepository
             ->andWhere('s.id = :structure')
             ->setParameter('structure', $structure)
             ->join('v.tags', 't')
-            ->andWhere('t.id = :tag')
-            ->setParameter('tag', $tag)
+            ->andWhere('t.id IN (:tags)')
+            ->setParameter('tags', $tags)
             ->getQuery()
             ->getArrayResult();
 

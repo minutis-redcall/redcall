@@ -153,39 +153,50 @@
                     </div>
                     <br/>
 
-                    {% if answerCount %}
-                        {# -------------------------------------------------------------------------------- #}
-                        {# Table containing message and answers #}
-                        {# -------------------------------------------------------------------------------- #}
-                        <table class="table">
-                            <thead>
-                            <tr>
+                    {# -------------------------------------------------------------------------------- #}
+                    {# Table containing message and answers #}
+                    {# -------------------------------------------------------------------------------- #}
+                    <table class="table">
+                        <thead>
+                        <tr>
+                            {% if answerCount %}
                                 {% for choice in communication.choices %}
-                                    <th width="{{ (100/answerCount) }}%">
+                                    <th width="{{ (100 / (answerCount + 1)) }}%">
                                         {{ 'campaign_status.answer_no'|trans({'%choice%': choice.code}) }}
                                     </th>
                                 {% endfor %}
-                            </tr>
-                            </thead>
-                            <tbody>
-                            <tr>
-                                {% for choice in communication.choices %}
-                                    <td>
-                                        <div id="choice-{{ choice.id }}">
-                                            <a href="#"
-                                               class="filter-response"
-                                               data-communication-id="{{ communication.id }}"
-                                               data-target="filter-is-choice-{{ choice.id }}-{{ communication.id }}">
-                                                {{ choice.label }}
-                                            </a>
-                                            <span id="choice-count-{{ choice.id }}">({{ choice.count }})</span>
-                                        </div>
-                                    </td>
-                                {% endfor %}
-                            </tr>
-                            </tbody>
-                        </table>
-                    {% endif %}
+                                <th>{{ 'campaign_status.answer_invalid'|trans }}</th>
+                            {% else %}
+                                <th>{{ 'campaign_status.answer'|trans }}</th>
+                            {% endif %}
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            {% for choice in communication.choices %}
+                                <td>
+                                    <div id="choice-{{ choice.id }}">
+                                        <a href="#"
+                                           class="filter-response"
+                                           data-communication-id="{{ communication.id }}"
+                                           data-target="filter-is-choice-{{ choice.id }}-{{ communication.id }}">
+                                            {{ choice.label }}
+                                        </a>
+                                        <span id="choice-count-{{ choice.id }}">({{ choice.count }})</span>
+                                    </div>
+                                </td>
+                            {% endfor %}
+                            <td>
+                                <a href="#"
+                                   class="filter-response"
+                                   data-communication-id="{{ communication.id }}"
+                                   data-target="filter-has-invalid-answer-{{ communication.id }}">
+                                    {{ communication.invalidAnswersCount }}
+                                </a>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
 
                     {# -------------------------------------------------------------------------------- #}
                     {# Filter by responses or skills... #}

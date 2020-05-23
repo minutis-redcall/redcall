@@ -185,6 +185,8 @@ campaign_status:
     download_csv: Download CSV
     download_portrait_pdf: Download PDF
   answer_no: 'Answer %choice%'
+  answer_invalid: 'Other rep.'
+  answer: 'Responses'
   answers:
     change: 'Change answers'
     history: 'History'
