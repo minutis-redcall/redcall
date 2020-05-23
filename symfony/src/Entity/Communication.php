@@ -529,4 +529,17 @@ class Communication
 
         return $estimated;
     }
+
+    public function getInvalidAnswersCount() : int
+    {
+        $count = 0;
+        foreach ($this->messages as $message) {
+            /** @var Message $message */
+            if ($message->getInvalidAnswer()) {
+                $count++;
+            }
+        }
+
+        return $count;
+    }
 }

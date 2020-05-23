@@ -184,6 +184,8 @@ campaign_status:
     download_csv: Téléchager en CSV
     download_portrait_pdf: Téléchager en PDF
   answer_no: 'Réponse %choice%'
+  answer_invalid: 'Autres Rép.'
+  answer: 'Réponses libres'
   answers:
     change: 'Changer les réponses'
     history: 'Historique'
