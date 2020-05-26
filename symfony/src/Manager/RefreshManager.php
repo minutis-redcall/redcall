@@ -239,8 +239,14 @@ class RefreshManager
         // Update basic information
         $volunteer->setFirstName($this->normalizeName($pegass->evaluate('user.prenom')));
         $volunteer->setLastName($this->normalizeName($pegass->evaluate('user.nom')));
-        $volunteer->setPhoneNumber($this->fetchPhoneNumber($pegass->evaluate('contact')));
-        $volunteer->setEmail($this->fetchEmail($pegass->evaluate('infos'), $pegass->evaluate('contact')));
+
+        if (!$volunteer->isPhoneNumberLocked()) {
+            $volunteer->setPhoneNumber($this->fetchPhoneNumber($pegass->evaluate('contact')));
+        }
+
+        if (!$volunteer->isEmailLocked()) {
+            $volunteer->setEmail($this->fetchEmail($pegass->evaluate('infos'), $pegass->evaluate('contact')));
+        }
 
         // Update volunteer skills
         $skills = $this->fetchSkills($pegass);

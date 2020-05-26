@@ -300,13 +300,16 @@ manage_volunteers:
     first_name: Prénom
     last_name: Nom de famille
     phone_number: Téléphone
+    phone_number_locked: 'Geler le nᵒ de téléphone *'
     email: Email
+    email_locked: 'Geler l''email *'
     minor: Mineur(e) (-18 ans)
     enabled: Déclenchable
     tags: Compétences
     added: Le bénévole a correctement été ajouté.
     updated: Le bénévole a correctement été modifié.
     structures: Structure(s) de rattachement
+    lock_info: '* Les nᵒˢ de téléphone et emails gelés ne sont plus mis à jour automatiquement par Pegass.'
   contact:
     mail_subject: '⚠️ %brand%: Vous avez un message RedCall'
   admin_structures:

@@ -301,13 +301,16 @@ manage_volunteers:
     first_name: First name
     last_name: Last name
     phone_number: Phone number
+    phone_number_locked: 'Locked phone number *'
     email: Email
+    email_locked: 'Locked email *'
     minor: Minor (under 18)
     enabled: Callable
     tags: Skills
     added: Volunteer has properly been added.
     updated: Volunteer has properly been updated.
     structures: Affiliate structure(s)
+    lock_info: '* Locked phones and emails are not automatically refreshed by Pegass updates.'
   contact:
     mail_subject: '⚠️ %brand%: You have a RedCall Message'
   admin_structures:
