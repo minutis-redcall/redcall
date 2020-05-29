@@ -23,7 +23,21 @@ class HomeController extends BaseController
         // todo
 
         return $this->render('space/home/index.html.twig', [
-            'volunteer' => $session->getVolunteer(),
+            'session' => $session,
+        ]);
+    }
+
+    /**
+     * @Route(path="/infos", name="infos")
+     */
+    public function infos(VolunteerSession $session)
+    {
+
+
+        // todo
+
+        return $this->render('space/home/infos.html.twig', [
+            'session' => $session,
         ]);
     }
 

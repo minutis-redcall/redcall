@@ -39,7 +39,9 @@ security:
 
     # Minutis authentication
     - { path: '^/auth$', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
-    - { path: '^/infos/', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
+
+    # Volunteer space
+    - { path: '^/space', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
 
     # Webhooks (sms response received)
     - { path: '^/twilio', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }

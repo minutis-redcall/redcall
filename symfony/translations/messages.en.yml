@@ -421,6 +421,7 @@ space:
   home:
     link: 'Volunteer space'
   infos:
+    title: 'RedCall, what''s that?'
     context_1: 'The French Red-Cross is composed of more than a thousand different structures, especially working on Social Action and First Aid.'
     context_2: 'For example, if a severe accident occurs in a given building and tens of people find themselves with no housing, the Social Action will take care of them, offering emergency solutions, and providing food and warm clothes if needed.'
     context_3: 'Or, if a strike gets out of hand and French Emergencies are overwhelmed, the French Red-Cross can assist them with ambulances and volunteers.'
