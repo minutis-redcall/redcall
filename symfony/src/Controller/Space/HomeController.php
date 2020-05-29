@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Space;
 
 use App\Base\BaseController;
 use App\Entity\VolunteerSession;
@@ -8,19 +8,21 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @Route(path="/infos/{sessionId}", name="infos_")
+ * @Route(path="/space/{sessionId}", name="space_")
  * @IsGranted("VOLUNTEER_SESSION", subject="session")
  */
-class InfosController extends BaseController
+class HomeController extends BaseController
 {
     /**
-     * @Route(path="/", name="home")
+     * @Route(name="home")
      */
-    public function infos(VolunteerSession $session)
+    public function index(VolunteerSession $session)
     {
+
+
         // todo
 
-        return $this->render('infos.html.twig', [
+        return $this->render('space/home/index.html.twig', [
             'volunteer' => $session->getVolunteer(),
         ]);
     }

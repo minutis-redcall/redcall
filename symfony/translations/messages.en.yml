@@ -417,22 +417,23 @@ maintenance:
       danger: 'Red (danger)'
     content: 'Message content (newlines allowed)'
 
-infos:
-  hello_name: 'Welcome %firstName%,'
-  hello_anonymous: 'Welcome,'
-  context_1: 'The French Red-Cross is composed of more than a thousand different structures, especially working on Social Action and First Aid.'
-  context_2: 'For example, if a severe accident occurs in a given building and tens of people find themselves with no housing, the Social Action will take care of them, offering emergency solutions, and providing food and warm clothes if needed.'
-  context_3: 'Or, if a strike gets out of hand and French Emergencies are overwhelmed, the French Red-Cross can assist them with ambulances and volunteers.'
-  context_4: 'Since members are all civilians and volunteers from all parts of France, it is a great challenge to trigger and mobilise them efficiently.'
-  context_5: 'RedCall address this matter and allows local Red-Cross coordinators to contact volunteers by SMS and emails.'
-  context_6: 'What the volunteer sees:'
-  context_7: 'What the coordinator sees:'
-  context_8: 'Once teams are complete, the coordinator can send a PDF containing all relevant information to his territorial direction.'
-  context_9: 'RedCall is by default enabled for DLUS, DTUS and PDT, which can trigger their affiliate and action structures. If more permissions are required, you can request them to the Minutis support, with the following information attached:'
-  context_10: '- First name'
-  context_11: '- Last name'
-  context_12: '- Nivol'
-  context_13: 'Structures on which permissions are required'
+space:
+  home:
+    link: 'Volunteer space'
+  infos:
+    context_1: 'The French Red-Cross is composed of more than a thousand different structures, especially working on Social Action and First Aid.'
+    context_2: 'For example, if a severe accident occurs in a given building and tens of people find themselves with no housing, the Social Action will take care of them, offering emergency solutions, and providing food and warm clothes if needed.'
+    context_3: 'Or, if a strike gets out of hand and French Emergencies are overwhelmed, the French Red-Cross can assist them with ambulances and volunteers.'
+    context_4: 'Since members are all civilians and volunteers from all parts of France, it is a great challenge to trigger and mobilise them efficiently.'
+    context_5: 'RedCall address this matter and allows local Red-Cross coordinators to contact volunteers by SMS and emails.'
+    context_6: 'What the volunteer sees:'
+    context_7: 'What the coordinator sees:'
+    context_8: 'Once teams are complete, the coordinator can send a PDF containing all relevant information to his territorial direction.'
+    context_9: 'RedCall is by default enabled for DLUS, DTUS and PDT, which can trigger their affiliate and action structures. If more permissions are required, you can request them to the Minutis support, with the following information attached:'
+    context_10: '- First name'
+    context_11: '- Last name'
+    context_12: '- Nivol'
+    context_13: 'Structures on which permissions are required'
 
 title:
   costs: "Costs"

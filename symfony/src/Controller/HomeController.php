@@ -2,8 +2,10 @@
 
 namespace App\Controller;
 
+use App\Entity\Volunteer;
 use App\Manager\LocaleManager;
 use App\Manager\VolunteerManager;
+use App\Manager\VolunteerSessionManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -20,15 +22,20 @@ class HomeController extends Controller
     private $volunteerManager;
 
     /**
-     * HomeController constructor.
-     *
-     * @param LocaleManager $locale
-     * @param VolunteerManager $volunteerManager
+     * @var VolunteerSessionManager
      */
-    public function __construct(LocaleManager $locale, VolunteerManager $volunteerManager)
+    private $volunteerSessionManager;
+
+    /**
+     * @param LocaleManager           $locale
+     * @param VolunteerManager        $volunteerManager
+     * @param VolunteerSessionManager $volunteerSessionManager
+     */
+    public function __construct(LocaleManager $locale, VolunteerManager $volunteerManager, VolunteerSessionManager $volunteerSessionManager)
     {
         $this->locale = $locale;
         $this->volunteerManager = $volunteerManager;
+        $this->volunteerSessionManager = $volunteerSessionManager;
     }
 
     /**
@@ -61,5 +68,21 @@ class HomeController extends Controller
     public function auth()
     {
         return $this->redirectToRoute('home');
+    }
+
+    /**
+     * @Route("/go-to-space", name="go_to_space")
+     */
+    public function space()
+    {
+        /** @var Volunteer|null $volunteer */
+        $volunteer = $this->getUser()->getVolunteer();
+        if (!$volunteer) {
+            throw $this->createNotFoundException();
+        }
+
+        return $this->redirectToRoute('space_home', [
+            'sessionId' => $this->volunteerSessionManager->createSession($volunteer)
+        ]);
     }
 }

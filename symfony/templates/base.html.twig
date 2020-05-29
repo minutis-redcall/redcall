@@ -121,6 +121,13 @@
                 &nbsp;&nbsp;
             {% endif %}
 
+            {% if app.user|default(false) and app.user.volunteer %}
+
+                <a href="{{ path('go_to_space') }}" class="btn btn-secondary">{{ 'space.home.link'|trans }}</a>
+                &nbsp;&nbsp;
+
+            {% endif %}
+
             {% if app.user|default(false) and (is_granted('ROLE_ADMIN') or app.user.structures.count) %}
 
                 <a href="{{ path('management_home') }}" class="btn btn-secondary">{{ 'management.home.link'|trans }}</a>
