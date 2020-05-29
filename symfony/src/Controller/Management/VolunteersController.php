@@ -131,17 +131,29 @@ class VolunteersController extends BaseController
     {
         $isCreate = !$volunteer->getId();
 
+        $oldVolunteer = clone $volunteer;
+
         $form = $this
             ->createForm(VolunteerType::class, $volunteer)
             ->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             // Locks volunteer from being removed at next Pegass sync
-            $volunteer->setLocked(true);
+            if ($volunteer->shouldBeLocked($oldVolunteer)) {
+                $volunteer->setLocked(true);
+            }
 
             // We should not trigger Pegass updates on a volunteer not taken from Pegass
             if (!$volunteer->getId()) {
                 $volunteer->setLastPegassUpdate(new \DateTime('2100-12-31'));
+            }
+
+            // Automatically lock phone & email if necessary
+            if ($oldVolunteer->getPhoneNumber() !== $volunteer->getPhoneNumber()) {
+                $volunteer->setPhoneNumberLocked(true);
+            }
+            if ($oldVolunteer->getEmail() !== $volunteer->getEmail()) {
+                $volunteer->setEmailLocked(true);
             }
 
             $this->volunteerManager->save($volunteer);

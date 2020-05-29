@@ -42,7 +42,12 @@
     {% endif %}
     {{ form_end(form) }}
 
-    <br/>
+    {% if is_redcross %}
+        {{ 'manage_volunteers.form.lock_info'|trans }}
+        <br/><br/>
+    {% else %}
+        <br/>
+    {% endif %}
 
     <div class="text-center">
         <a href="{{ path('management_volunteers_list', app.request.query.all) }}" class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>

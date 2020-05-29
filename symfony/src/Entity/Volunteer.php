@@ -158,6 +158,16 @@ class Volunteer
      */
     private $user;
 
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $phoneNumberLocked;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $emailLocked;
+
     public function __construct()
     {
         $this->tags       = new ArrayCollection();
@@ -709,5 +719,47 @@ class Volunteer
         $this->user = $user;
 
         return $this;
+    }
+
+    public function isPhoneNumberLocked(): ?bool
+    {
+        return $this->phoneNumberLocked;
+    }
+
+    public function setPhoneNumberLocked(bool $phoneNumberLocked): self
+    {
+        $this->phoneNumberLocked = $phoneNumberLocked;
+
+        return $this;
+    }
+
+    public function isEmailLocked(): ?bool
+    {
+        return $this->emailLocked;
+    }
+
+    public function setEmailLocked(bool $emailLocked): self
+    {
+        $this->emailLocked = $emailLocked;
+
+        return $this;
+    }
+
+    public function shouldBeLocked(Volunteer $volunteer) : bool
+    {
+        $old = get_object_vars($volunteer);
+        $new = get_object_vars($this);
+
+        foreach ($old as $key => $value) {
+            if ('phoneNumber' === $key || 'email' === $key || 'communications' === $key || 'structures' === $key || 'user' === $key) {
+                continue;
+            }
+
+            if ($old[$key] !== $new[$key]) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
