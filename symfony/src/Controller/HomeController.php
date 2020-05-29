@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\Entity\Volunteer;
 use App\Manager\LocaleManager;
 use App\Manager\VolunteerManager;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -43,20 +42,6 @@ class HomeController extends Controller
 
         return $this->render('home.html.twig', [
             'issues' => $this->volunteerManager->findIssues(),
-        ]);
-    }
-
-    /**
-     * @Route("/infos/{nivol}", name="infos")
-     */
-    public function infos(Volunteer $volunteer)
-    {
-        if (!getenv('IS_REDCROSS')) {
-            throw $this->createNotFoundException();
-        }
-
-        return $this->render('infos.html.twig', [
-            'volunteer' => $volunteer,
         ]);
     }
 
