@@ -420,6 +420,18 @@ maintenance:
 space:
   home:
     link: 'Volunteer space'
+    contact: 'Contact preferences'
+    update_phone: 'Update my phone number, currently:'
+    add_phone: 'Specify a phone number in order to be triggered through SMS or voice calls'
+    update_email: 'Update my email, currently:'
+    add_email: 'Specify an email in order to be triggered through that way'
+    toggle_callable: 'Change my trigger preferences (I am currently'
+    callable: 'triggerable'
+    not_callable: 'not available'
+    data: 'Personal data'
+    data_access: 'Access or download my data'
+    data_delete: 'Ask the complete deletion of my data'
+    no_tracking: 'There are no trackers on this website.'
   infos:
     title: 'RedCall, what''s that?'
     context_1: 'The French Red-Cross is composed of more than a thousand different structures, especially working on Social Action and First Aid.'
@@ -436,6 +448,13 @@ space:
     context_12: '- Nivol'
     context_13: 'Structures on which permissions are required'
   logout: 'Sign out'
+  phone:
+    title: 'Edit my phone number'
+    details_1: 'You may be contacted by your local unit through SMS or voice calls in case of emergency.'
+    details_2: 'All messages and calls are coming from the following number: +%from%'
+    details_3: 'You can already add it to your contacts, and assign it a recognizable ringtone..'
+    details_4: 'When you receive a message and an answer is required, directly answer to the message by giving, if possible, only the codes that match your choice.'
+    details_5: 'Example: if you''re asked "Are you available?" and possible answers are "A1: Yes" and "A2: No", answer using A1 or A2, this will help processing your message automatically, and ease trigger responsible''s job.'
 
 title:
   costs: "Costs"

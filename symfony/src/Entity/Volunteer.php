@@ -23,6 +23,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  *     @ORM\Index(name="enabledx", columns={"id", "enabled"})
  * })
  * @ORM\Entity(repositoryClass="App\Repository\VolunteerRepository")
+ * @ORM\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
  * @UniqueEntity("nivol")
  * @UniqueEntity("phoneNumber")
  * @UniqueEntity("email")
@@ -761,5 +762,26 @@ class Volunteer
         }
 
         return false;
+    }
+
+    public function getHiddenPhone() : ?string
+    {
+        if (null === $this->phoneNumber) {
+            return null;
+        }
+
+        return sprintf('+%s****%s', substr($this->phoneNumber, 0, 6), substr($this->phoneNumber, 10));
+    }
+
+    public function getHiddenEmail() : ?string
+    {
+        if (null === $this->email) {
+            return null;
+        }
+
+        $username = substr($this->email, 0, strrpos($this->email, '@'));
+        $domain = substr($this->email, strrpos($this->email, '@') + 1);
+
+        return substr($username, 0, 1).str_repeat('*', max(strlen($username) - 2, 0)).substr($username, -1).'@'.$domain;
     }
 }

@@ -422,6 +422,18 @@ maintenance:
 space:
   home:
     link: 'Espace bénévole'
+    contact: 'Préférences de contact'
+    update_phone: 'Mettre à jour mon numéro de téléphone, actuellement :'
+    add_phone: 'Préciser un numéro de téléphone afin d''être déclenché par SMS ou appel vocal'
+    update_email: 'Mettre à jour mon email, actuellement :'
+    add_email: 'Préciser un email afin d''être déclenché par ce biais'
+    toggle_callable: 'Changer mes préférences de déclenchement (je suis actuellement'
+    callable: 'déclenchable'
+    not_callable: 'indisponible'
+    data: 'Données personnelles'
+    data_access: 'Consulter ou télécharger mes données'
+    data_delete: 'Demander la suppression complète de mes données'
+    no_tracking: 'Votre navigation n''est pas tracée sur ce site.'
   infos:
     title: 'RedCall, c''est quoi ?'
     context_1: 'La Croix-Rouge Française possède un peu plus d''un millier de structures ayant des fonctions diverses, notamment dans l''action sociale et le secourisme.'
@@ -438,6 +450,13 @@ space:
     context_12: '- Nivol'
     context_13: 'Structures sur lesquels les droits RedCall sont nécessaires.'
   logout: 'Me déconnecter de l''espace bénévole'
+  phone:
+    title: 'Editer mon numéro de téléphone'
+    details_1: 'Vous pourrez être contacté par votre unité locale par SMS ou par appel vocaux en cas d''urgence.'
+    details_2: 'Tous les messages et appels proviennent du numéro: +%from%'
+    details_3: 'Vous pouvez dès à présent l''ajouter à vos contacts, et lui assigner une sonnerie reconnaissable.'
+    details_4: 'Lorsque vous recevez un message et qu''une réponse est demandée, répondez directement au message en ne saisissant, si possible, que le ou les codes des réponses qui correspondent à votre choix.'
+    details_5: 'Exemple : si on vous demande "Êtes-vous disponible ?" et que les réponses possibles sont "A1: Oui" ou "A2: Non", répondez le code A1 ou A2, cela permet un traitement automatique de votre choix et aide le responsable du déclenchement.'
 
 title:
   costs: "Coûts"

@@ -109,7 +109,7 @@
 
             {% block security %}
 
-                {% if is_redcross %}
+                {% if is_redcross and (app.user|default(false) or session.volunteer|default(false)) %}
                     <a href="{{ minutis_url }}">{{ 'minutis.back'|trans }}</a>
 
                     <br/><br/>

@@ -1,0 +1,30 @@
+
+{% extends 'base.html.twig' %}
+
+{% block menu %}{% endblock %}
+
+{% block body %}
+
+    <br/>
+    <div class="jumbotron">
+
+        <div class="h3">{{ 'space.phone.title'|trans }}</div>
+
+        <p>{{ 'space.phone.details_1'|trans }}</p>
+        <br/>
+
+        {{ form(form) }}
+
+        <p>{{ 'space.phone.details_2'|trans({'%from%': from}) }}</p>
+        <p>{{ 'space.phone.details_3'|trans({'%from%': from}) }}</p>
+        <br/>
+        <p>{{ 'space.phone.details_4'|trans }} {{ 'space.phone.details_5'|trans }}</p>
+
+    </div>
+
+    <a href="{{ path('space_home', {sessionId: session.sessionId}) }}"
+       class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+
+    <br/><br/>
+
+{% endblock %}

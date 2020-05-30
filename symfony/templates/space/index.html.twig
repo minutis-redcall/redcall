@@ -1,0 +1,84 @@
+
+{% extends 'base.html.twig' %}
+
+{% block menu %}{% endblock %}
+
+{% block body %}
+
+    <div class="jumbotron text-center">
+
+        <div>
+            <img src="{{ asset('apple-touch-icon.png') }}" style="max-height: 50px;"/>
+        </div>
+        <br/>
+
+        <a href="{{ path('space_infos', {sessionId: session.sessionId}) }}"
+           class="text-lg-center large-button btn btn-secondary">{{ 'space.infos.title'|trans }}</a>
+
+        <br/><hr/>
+
+        <div class="h4 text-left">{{ 'space.home.contact'|trans }}</div>
+        <br/>
+
+        <a href="{{ path('space_phone', {sessionId: session.sessionId}) }}"
+           class="text-lg-left large-button btn btn-secondary">
+            {% if session.volunteer.phoneNumber %}
+                ☎️ &nbsp; {{ 'space.home.update_phone'|trans }} <span style="color:black;">{{ session.volunteer.hiddenPhone }}</span>
+            {% else %}
+                ☎️ &nbsp; {{ 'space.home.add_phone'|trans }}
+            {% endif %}
+        </a>
+
+        <br/><br/>
+
+        <a href="{{ path('space_infos', {sessionId: session.sessionId}) }}"
+           class="text-lg-left large-button btn btn-secondary">
+            {% if session.volunteer.email %}
+                📧 &nbsp; {{ 'space.home.update_email'|trans }} <span style="color:black">{{ session.volunteer.hiddenEmail }}</span>
+            {% else %}
+                📧 &nbsp; {{ 'space.home.add_email'|trans }}
+            {% endif %}
+        </a>
+
+        <br/><br/>
+
+        <a href="{{ path('space_infos', {sessionId: session.sessionId}) }}"
+           class="text-lg-left large-button btn btn-secondary">
+            {% if session.volunteer.callable %}
+                ❤️ &nbsp; {{ 'space.home.toggle_callable'|trans }} <span style="color:green;">{{ 'space.home.callable'|trans }}</span>)
+            {% else %}
+                ❤️ &nbsp; {{ 'space.home.toggle_callable'|trans }} <span style="color:red;">{{ 'space.home.not_callable'|trans }}</span>)
+            {% endif %}
+        </a>
+
+        <br/><hr/>
+
+        <div class="h4 text-left">{{ 'space.home.data'|trans }}</div>
+        <br/>
+
+        <a href="{{ path('space_infos', {sessionId: session.sessionId}) }}"
+           class="text-lg-left large-button btn btn-secondary">
+            💾 &nbsp; {{ 'space.home.data_access'|trans }}
+        </a>
+
+        <br/><br/>
+
+        <a href="{{ path('space_infos', {sessionId: session.sessionId}) }}"
+           class="text-lg-left large-button btn btn-secondary">
+            🔥 &nbsp; {{ 'space.home.data_delete'|trans }}
+        </a>
+
+        <br/><br/>
+
+        <div class="text-left">
+            <p>🍪 &nbsp; {{ 'space.home.no_tracking'|trans }}</p>
+        </div>
+
+        <hr/>
+
+        <a href="{{ path('space_logout', {sessionId: session.sessionId}) }}"
+           class="text-lg-center large-button btn btn-secondary">{{ 'space.logout'|trans }}</a>
+
+    </div>
+
+{% endblock %}
