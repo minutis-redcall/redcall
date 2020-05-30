@@ -80,6 +80,15 @@
 
             {% endblock %}
 
+            {% if session.volunteer|default(false) %}
+                <div class="text-right h4">
+                    <span class="badge-pill badge-dark">
+                        {{ session.volunteer.firstName }}
+                        {{ session.volunteer.lastName[:1] }}.
+                    </span>
+                </div>
+            {% endif %}
+
         </div>
     {% endblock %}
 

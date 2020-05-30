@@ -435,6 +435,7 @@ space:
     context_11: '- Last name'
     context_12: '- Nivol'
     context_13: 'Structures on which permissions are required'
+  logout: 'Sign out'
 
 title:
   costs: "Costs"

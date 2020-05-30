@@ -437,6 +437,7 @@ space:
     context_11: '- Prénom'
     context_12: '- Nivol'
     context_13: 'Structures sur lesquels les droits RedCall sont nécessaires.'
+  logout: 'Me déconnecter de l''espace bénévole'
 
 title:
   costs: "Coûts"

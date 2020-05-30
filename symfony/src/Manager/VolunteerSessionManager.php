@@ -35,6 +35,10 @@ class VolunteerSessionManager
      */
     public function createSession(Volunteer $volunteer) : string
     {
+        if ($this->session->get('volunteer-session')) {
+            return $this->session->get('volunteer-session');
+        }
+
         $session = new VolunteerSession();
         $session->setVolunteer($volunteer);
         $session->setSessionId(Uuid::uuid4());
@@ -45,6 +49,13 @@ class VolunteerSessionManager
         $this->volunteerSessionRepository->save($session);
 
         return $session->getSessionId();
+    }
+
+    public function removeSession(VolunteerSession $session)
+    {
+        $this->session->remove('volunteer-session');
+
+        $this->volunteerSessionRepository->remove($session);
     }
 
     public function clearExpired()

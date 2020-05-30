@@ -10,6 +10,13 @@
         <a href="{{ path('space_infos', {sessionId: session.sessionId}) }}"
            class="text-lg-center large-button btn btn-secondary">{{ 'space.infos.title'|trans }}</a>
 
+        <br/>
+
+        <hr/>
+
+        <a href="{{ path('space_logout', {sessionId: session.sessionId}) }}"
+           class="text-lg-center large-button btn btn-secondary">{{ 'space.logout'|trans }}</a>
+
         <br/><br/>
 
     </div>
