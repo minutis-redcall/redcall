@@ -24,3 +24,8 @@ cron:
   - description: "Remove epxired medias"
     url: /cron/media-clear
     schedule: every 24 hours
+
+  # * * * * * <path/to/the/project>/symfony/bin/console space:clear
+  - description: "Remove epxired volunteer space sessions"
+    url: /cron/space-clear
+    schedule: every 24 hours

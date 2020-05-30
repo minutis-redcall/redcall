@@ -18,6 +18,7 @@ class HomeController extends BaseController
      */
     public function index(VolunteerSession $session)
     {
+        // todo add at the top of all pages the name of the volunteer (just like on /msg)
 
 
         // todo
@@ -32,10 +33,6 @@ class HomeController extends BaseController
      */
     public function infos(VolunteerSession $session)
     {
-
-
-        // todo
-
         return $this->render('space/home/infos.html.twig', [
             'session' => $session,
         ]);

@@ -19,6 +19,18 @@ class VolunteerSessionRepository extends BaseRepository
         parent::__construct($registry, VolunteerSession::class);
     }
 
+    public function clearExpired(int $expirationTtl)
+    {
+        $oldestValidCreatedAt = (new \DateTime())->sub(new \DateInterval(sprintf('PT%dS', $expirationTtl)));
+
+        $this->createQueryBuilder('s')
+            ->delete(VolunteerSession::class, 's')
+            ->where('s.createdAt < :oldestValidCreatedAt')
+            ->setParameter('oldestValidCreatedAt', $oldestValidCreatedAt)
+            ->getQuery()
+            ->execute();
+    }
+
     // /**
     //  * @return VolunteerSession[] Returns an array of VolunteerSession objects
     //  */

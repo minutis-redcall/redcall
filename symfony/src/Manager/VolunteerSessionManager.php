@@ -46,4 +46,9 @@ class VolunteerSessionManager
 
         return $session->getSessionId();
     }
+
+    public function clearExpired()
+    {
+        $this->volunteerSessionRepository->clearExpired(86400);
+    }
 }
