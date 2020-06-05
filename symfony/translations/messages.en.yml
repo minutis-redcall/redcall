@@ -452,9 +452,15 @@ space:
     title: 'Edit my phone number'
     details_1: 'You may be contacted by your local unit through SMS or voice calls in case of emergency.'
     details_2: 'All messages and calls are coming from the following number: +%from%'
-    details_3: 'You can already add it to your contacts, and assign it a recognizable ringtone..'
+    details_3: 'You can already add it to your contacts, and assign it a recognizable ringtone.'
     details_4: 'When you receive a message and an answer is required, directly answer to the message by giving, if possible, only the codes that match your choice.'
     details_5: 'Example: if you''re asked "Are you available?" and possible answers are "A1: Yes" and "A2: No", answer using A1 or A2, this will help processing your message automatically, and ease trigger responsible''s job.'
+  email:
+    title: 'Edit my email'
+    details_1: 'You may be contacted by your local unit through email when they need to give you some information or gather your availability for the coming days.'
+    details_2: 'All emails are coming from the following email: %from%'
+    details_3: 'When one or several answers are required, you should click on the buttons located below the message.'
+    details_4: 'Direct replies to the email cannot be taken into account; if you need further details please contact your supervisors.'
 
 title:
   costs: "Costs"

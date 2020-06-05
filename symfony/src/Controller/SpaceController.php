@@ -7,6 +7,7 @@ use App\Entity\VolunteerSession;
 use App\Manager\VolunteerManager;
 use App\Manager\VolunteerSessionManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
@@ -87,6 +88,39 @@ class SpaceController extends BaseController
             'from' => getenv('TWILIO_NUMBER'),
         ]);
     }
+
+    /**
+     * @Route(path="/email", name="email")
+     */
+    public function email(VolunteerSession $session, Request $request)
+    {
+        $form = $this->createFormBuilder($session->getVolunteer())
+            ->add('email', EmailType::class, [
+                'label' => 'manage_volunteers.form.email',
+                'required' => false,
+            ])
+            ->add('submit', SubmitType::class, [
+                'label' => 'base.button.save',
+            ])
+            ->getForm()
+            ->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $session->getVolunteer()->setEmailLocked(true);
+            $this->volunteerManager->save($session->getVolunteer());
+
+            return $this->redirectToRoute('space_home', [
+                'sessionId' => $session->getSessionId(),
+            ]);
+        }
+
+        return $this->render('space/email.html.twig', [
+            'session' => $session,
+            'form' => $form->createView(),
+            'from' => getenv('MAILER_FROM'),
+        ]);
+    }
+
 
     /**
      * @Route(path="/logout", name="logout")

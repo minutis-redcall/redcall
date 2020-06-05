@@ -31,7 +31,7 @@
 
         <br/><br/>
 
-        <a href="{{ path('space_infos', {sessionId: session.sessionId}) }}"
+        <a href="{{ path('space_email', {sessionId: session.sessionId}) }}"
            class="text-lg-left large-button btn btn-secondary">
             {% if session.volunteer.email %}
                 📧 &nbsp; {{ 'space.home.update_email'|trans }} <span style="color:black">{{ session.volunteer.hiddenEmail }}</span>
