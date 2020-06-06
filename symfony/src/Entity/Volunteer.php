@@ -20,7 +20,9 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  *     @ORM\Index(name="nivolx", columns={"nivol"}),
  *     @ORM\Index(name="phone_numberx", columns={"phone_number"}),
  *     @ORM\Index(name="emailx", columns={"email"}),
- *     @ORM\Index(name="enabledx", columns={"id", "enabled"})
+ *     @ORM\Index(name="enabledx", columns={"enabled"}),
+ *     @ORM\Index(name="phone_number_optinx", columns={"phone_number_optin"}),
+ *     @ORM\Index(name="email_optinx", columns={"email_optin"})
  * })
  * @ORM\Entity(repositoryClass="App\Repository\VolunteerRepository")
  * @ORM\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
@@ -160,14 +162,32 @@ class Volunteer
     private $user;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @var bool
+     *
+     * @ORM\Column(type="boolean", options={"default" : 0})
      */
-    private $phoneNumberLocked;
+    private $phoneNumberLocked = false;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @var bool
+     *
+     * @ORM\Column(type="boolean", options={"default" : 0})
      */
-    private $emailLocked;
+    private $emailLocked = false;
+
+    /**
+     * @var bool
+     *
+     * @ORM\Column(type="boolean", options={"default" : 1})
+     */
+    private $phoneNumberOptin = true;
+
+    /**
+     * @var bool
+     *
+     * @ORM\Column(type="boolean", options={"default" : 1})
+     */
+    private $emailOptin = true;
 
     public function __construct()
     {
@@ -530,7 +550,11 @@ class Volunteer
      */
     public function isCallable(): bool
     {
-        return $this->enabled && ($this->phoneNumber || $this->email);
+        return $this->enabled && (
+            $this->phoneNumber && $this->phoneNumberOptin
+                ||
+            $this->email && $this->emailOptin
+        );
     }
 
     /**
@@ -783,5 +807,29 @@ class Volunteer
         $domain = substr($this->email, strrpos($this->email, '@') + 1);
 
         return substr($username, 0, 1).str_repeat('*', max(strlen($username) - 2, 0)).substr($username, -1).'@'.$domain;
+    }
+
+    public function isPhoneNumberOptin(): ?bool
+    {
+        return $this->phoneNumberOptin;
+    }
+
+    public function setPhoneNumberOptin(bool $phoneNumberOptin): self
+    {
+        $this->phoneNumberOptin = $phoneNumberOptin;
+
+        return $this;
+    }
+
+    public function isEmailOptin(): ?bool
+    {
+        return $this->emailOptin;
+    }
+
+    public function setEmailOptin(bool $emailOptin): self
+    {
+        $this->emailOptin = $emailOptin;
+
+        return $this;
     }
 }

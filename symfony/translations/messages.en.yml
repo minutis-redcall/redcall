@@ -204,6 +204,8 @@ campaign_status:
   warning:
     no_phone: 'No phone number'
     no_email: "No email"
+    no_phone_optin: 'Do not want to be triggered through phone.'
+    no_email_optin: "Do not want to be triggered through email."
   by: 'Sent by %name%'
 
 new_communication:
@@ -302,8 +304,10 @@ manage_volunteers:
     last_name: Last name
     phone_number: Phone number
     phone_number_locked: 'Locked phone number *'
+    phone_number_optin: 'Available by phone number'
     email: Email
     email_locked: 'Locked email *'
+    email_optin: 'Available by email'
     minor: Minor (under 18)
     enabled: Callable
     tags: Skills
@@ -461,6 +465,10 @@ space:
     details_2: 'All emails are coming from the following email: %from%'
     details_3: 'When one or several answers are required, you should click on the buttons located below the message.'
     details_4: 'Direct replies to the email cannot be taken into account; if you need further details please contact your supervisors.'
+  enabled:
+    title: 'Edit my availability'
+    details_1: 'Use ticks below to stop receiving communications from your local unit.'
+    details_2: 'You will be able to come back here anytime to change them again.'
 
 title:
   costs: "Costs"

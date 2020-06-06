@@ -22,7 +22,7 @@ class VolunteerSession
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Volunteer::class)
+     * @ORM\ManyToOne(targetEntity=Volunteer::class, fetch="EAGER")
      * @ORM\JoinColumn(nullable=false)
      */
     private $volunteer;

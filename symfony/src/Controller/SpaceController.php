@@ -6,7 +6,9 @@ use App\Base\BaseController;
 use App\Entity\VolunteerSession;
 use App\Manager\VolunteerManager;
 use App\Manager\VolunteerSessionManager;
+use App\Tools\PhoneNumberParser;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -62,7 +64,9 @@ class SpaceController extends BaseController
      */
     public function phone(VolunteerSession $session, Request $request)
     {
-        $form = $this->createFormBuilder($session->getVolunteer())
+        $volunteer = $session->getVolunteer();
+
+        $form = $this->createFormBuilder($volunteer)
             ->add('phoneNumber', TextType::class, [
                 'label' => 'manage_volunteers.form.phone_number',
                 'required' => false,
@@ -74,7 +78,13 @@ class SpaceController extends BaseController
             ->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $session->getVolunteer()->setPhoneNumberLocked(true);
+            if ($volunteer->getPhoneNumber()) {
+                $volunteer->setPhoneNumber(
+                    PhoneNumberParser::parse($volunteer->getPhoneNumber())
+                );
+            }
+            $volunteer->setPhoneNumberLocked(true);
+
             $this->volunteerManager->save($session->getVolunteer());
 
             return $this->redirectToRoute('space_home', [
@@ -94,7 +104,9 @@ class SpaceController extends BaseController
      */
     public function email(VolunteerSession $session, Request $request)
     {
-        $form = $this->createFormBuilder($session->getVolunteer())
+        $volunteer = $session->getVolunteer();
+
+        $form = $this->createFormBuilder($volunteer)
             ->add('email', EmailType::class, [
                 'label' => 'manage_volunteers.form.email',
                 'required' => false,
@@ -107,7 +119,8 @@ class SpaceController extends BaseController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $session->getVolunteer()->setEmailLocked(true);
-            $this->volunteerManager->save($session->getVolunteer());
+
+            $this->volunteerManager->save($volunteer);
 
             return $this->redirectToRoute('space_home', [
                 'sessionId' => $session->getSessionId(),
@@ -121,6 +134,41 @@ class SpaceController extends BaseController
         ]);
     }
 
+    /**
+     * @Route(path="/enabled", name="enabled")
+     */
+    public function enabled(VolunteerSession $session, Request $request)
+    {
+        $volunteer = $session->getVolunteer();
+
+        $form = $this->createFormBuilder($volunteer)
+            ->add('phoneNumberOptin', CheckboxType::class, [
+                'label' => 'manage_volunteers.form.phone_number_optin',
+                'required' => false,
+            ])
+            ->add('emailOptin', CheckboxType::class, [
+                'label' => 'manage_volunteers.form.email_optin',
+                'required' => false,
+            ])
+            ->add('submit', SubmitType::class, [
+                'label' => 'base.button.save',
+            ])
+            ->getForm()
+            ->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->volunteerManager->save($volunteer);
+
+            return $this->redirectToRoute('space_home', [
+                'sessionId' => $session->getSessionId(),
+            ]);
+        }
+
+        return $this->render('space/enabled.html.twig', [
+            'session' => $session,
+            'form' => $form->createView(),
+        ]);
+    }
 
     /**
      * @Route(path="/logout", name="logout")

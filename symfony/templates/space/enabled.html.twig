@@ -1,0 +1,30 @@
+
+{% extends 'base.html.twig' %}
+
+{% block menu %}{% endblock %}
+
+{% block body %}
+
+    <br/>
+    <div class="jumbotron">
+
+        <div class="h3">{{ 'space.enabled.title'|trans }}</div>
+
+        <p>{{ 'space.enabled.details_1'|trans }}</p>
+
+        <br/>
+
+        {{ form(form) }}
+
+        <br/>
+
+        <p>{{ 'space.enabled.details_2'|trans }}</p>
+
+    </div>
+
+    <a href="{{ path('space_home', {sessionId: session.sessionId}) }}"
+       class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+
+    <br/><br/>
+
+{% endblock %}

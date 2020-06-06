@@ -42,7 +42,7 @@
 
         <br/><br/>
 
-        <a href="{{ path('space_infos', {sessionId: session.sessionId}) }}"
+        <a href="{{ path('space_enabled', {sessionId: session.sessionId}) }}"
            class="text-lg-left large-button btn btn-secondary">
             {% if session.volunteer.callable %}
                 ❤️ &nbsp; {{ 'space.home.toggle_callable'|trans }} <span style="color:green;">{{ 'space.home.callable'|trans }}</span>)
