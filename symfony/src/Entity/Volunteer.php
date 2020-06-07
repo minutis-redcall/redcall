@@ -189,11 +189,18 @@ class Volunteer
      */
     private $emailOptin = true;
 
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Message", mappedBy="volunteer", cascade={"persist"})
+     * @ORM\OrderBy({"communication" = "DESC"})
+     */
+    private $messages;
+
     public function __construct()
     {
         $this->tags       = new ArrayCollection();
         $this->structures = new ArrayCollection();
         $this->communications = new ArrayCollection();
+        $this->messages = new ArrayCollection();
     }
 
     /**
@@ -831,5 +838,10 @@ class Volunteer
         $this->emailOptin = $emailOptin;
 
         return $this;
+    }
+
+    public function getMessages(): Collection
+    {
+        return $this->messages;
     }
 }

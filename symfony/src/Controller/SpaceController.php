@@ -3,7 +3,9 @@
 namespace App\Controller;
 
 use App\Base\BaseController;
+use App\Entity\Message;
 use App\Entity\VolunteerSession;
+use App\Manager\MessageManager;
 use App\Manager\VolunteerManager;
 use App\Manager\VolunteerSessionManager;
 use App\Tools\PhoneNumberParser;
@@ -32,11 +34,20 @@ class SpaceController extends BaseController
     private $volunteerManager;
 
     /**
-     * @param VolunteerManager $volunteerManager
+     * @var MessageManager
      */
-    public function __construct(VolunteerManager $volunteerManager)
+    private $messageManager;
+
+    /**
+     * @param VolunteerSessionManager $volunteerSessionManager
+     * @param VolunteerManager        $volunteerManager
+     * @param MessageManager          $messageManager
+     */
+    public function __construct(VolunteerSessionManager $volunteerSessionManager, VolunteerManager $volunteerManager, MessageManager $messageManager)
     {
+        $this->volunteerSessionManager = $volunteerSessionManager;
         $this->volunteerManager = $volunteerManager;
+        $this->messageManager = $messageManager;
     }
 
     /**
@@ -167,6 +178,27 @@ class SpaceController extends BaseController
         return $this->render('space/enabled.html.twig', [
             'session' => $session,
             'form' => $form->createView(),
+        ]);
+    }
+
+    /**
+     * @Route(path="/consult-data", name="consult_data")
+     */
+    public function consultData(VolunteerSession $session, Request $request)
+    {
+        $communications = [];
+        foreach ($session->getVolunteer()->getMessages() as $message) {
+            /** @var Message $message */
+            if (!isset($communications[$message->getCommunication()->getId()])) {
+                $communications[$message->getCommunication()->getId()] = [];
+            }
+
+            $communications[$message->getCommunication()->getId()][] = $message;
+        }
+
+        return $this->render('space/consult_data.html.twig', [
+            'session' => $session,
+            'communications' => $communications,
         ]);
     }
 
