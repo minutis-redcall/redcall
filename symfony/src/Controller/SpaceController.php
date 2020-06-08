@@ -3,12 +3,14 @@
 namespace App\Controller;
 
 use App\Base\BaseController;
+use App\Component\HttpFoundation\MpdfResponse;
 use App\Entity\Message;
 use App\Entity\VolunteerSession;
 use App\Manager\MessageManager;
 use App\Manager\VolunteerManager;
 use App\Manager\VolunteerSessionManager;
 use App\Tools\PhoneNumberParser;
+use Mpdf\Mpdf;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
@@ -184,7 +186,46 @@ class SpaceController extends BaseController
     /**
      * @Route(path="/consult-data", name="consult_data")
      */
-    public function consultData(VolunteerSession $session, Request $request)
+    public function consultData(VolunteerSession $session)
+    {
+        return $this->render('space/consult_data.html.twig', [
+            'session' => $session,
+            'communications' => $this->getSessionCommunications($session),
+        ]);
+    }
+
+    /**
+     * @Route(path="/download-data", name="download_data")
+     */
+    public function downloadData(VolunteerSession $session)
+    {
+        $mpdf = new Mpdf([
+            'tempDir'       => sys_get_temp_dir(),
+            'margin_bottom' => 25,
+        ]);
+
+        $mpdf->WriteHTML($this->renderView('space/data.html.twig', [
+            'session' => $session,
+            'communications' => $this->getSessionCommunications($session),
+        ]));
+
+        return new MpdfResponse(
+            $mpdf,
+            sprintf('data-%s-%s.pdf', $session->getVolunteer()->getNivol(), date('Y-m-d'))
+        );
+    }
+
+    /**
+     * @Route(path="/logout", name="logout")
+     */
+    public function logout(VolunteerSession $session)
+    {
+        $this->volunteerSessionManager->removeSession($session);
+
+        return $this->redirectToRoute('home');
+    }
+
+    private function getSessionCommunications(VolunteerSession $session) : array
     {
         $communications = [];
         foreach ($session->getVolunteer()->getMessages() as $message) {
@@ -196,19 +237,6 @@ class SpaceController extends BaseController
             $communications[$message->getCommunication()->getId()][] = $message;
         }
 
-        return $this->render('space/consult_data.html.twig', [
-            'session' => $session,
-            'communications' => $communications,
-        ]);
-    }
-
-    /**
-     * @Route(path="/logout", name="logout")
-     */
-    public function logout(VolunteerSession $session)
-    {
-        $this->volunteerSessionManager->removeSession($session);
-
-        return $this->redirectToRoute('home');
+        return $communications;
     }
 }

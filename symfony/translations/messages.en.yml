@@ -470,7 +470,8 @@ space:
     details_1: 'Use ticks below to stop receiving communications from your local unit.'
     details_2: 'You will be able to come back here anytime to change them again.'
   consult_data:
-    title: 'My personal data'
+    download: 'Download as PDF'
+    title: 'My personal RedCall data'
     identity_main: 'Volunteer record'
     identity_sync: 'Pegass Synchronization'
     identity_id: 'RedCall ID'
@@ -493,6 +494,7 @@ space:
     identity_skills: 'Interests & Skills'
     identity_user: 'RedCall user'
     identity_user_locale: 'Plateform language'
+    identity_user_access: 'User access'
     identity_user_developer: 'Developper access'
     identity_user_admin: 'Administrator access'
     identity_user_structures: 'Action structures'

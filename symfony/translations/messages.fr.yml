@@ -472,7 +472,8 @@ space:
     details_1: 'Utilisez les coches ci-dessous pour ne pas recevoir de communications de la part de votre unité locale.'
     details_2: 'Vous pourrez revenir sur cette page à tout moment pour changer vos préférences.'
   consult_data:
-    title: 'Mes données personnelles'
+    title: 'Mes données personnelles sur RedCall'
+    download: 'Télécharger au format PDF'
     identity_main: 'Fiche bénévole'
     identity_sync: 'Synchronization avec la base de données Pegass'
     identity_id: 'ID RedCall'
@@ -495,6 +496,7 @@ space:
     identity_skills: 'Intérêts et compétences'
     identity_user: 'Utilisateur sur RedCall'
     identity_user_locale: 'Langue de la plateforme'
+    identity_user_access: 'Accès utilistaeur'
     identity_user_developer: 'Accès développeur'
     identity_user_admin: 'Accès administrateur'
     identity_user_structures: 'Structure(s) d''action'

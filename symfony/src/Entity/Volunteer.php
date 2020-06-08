@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Tools\PhoneNumberParser;
+use Bundles\PegassCrawlerBundle\Entity\Pegass;
 use DateInterval;
 use DateTime;
 use DateTimeZone;
@@ -649,7 +650,7 @@ class Volunteer
 
         // Doctrine loaded an UTC-saved date using the default timezone (Europe/Paris)
         $utc      = (new DateTime($this->lastPegassUpdate->format('Y-m-d H:i:s'), new DateTimeZone('UTC')));
-        $interval = new DateInterval(sprintf('PT%dS', Pegass::TTL[Pegass::TYPE_STRUCTURE]));
+        $interval = new DateInterval(sprintf('PT%dS', Pegass::TTL[Pegass::TYPE_VOLUNTEER]));
 
         $nextPegassUpdate = clone $utc;
         $nextPegassUpdate->add($interval);
