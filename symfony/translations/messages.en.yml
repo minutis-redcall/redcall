@@ -436,6 +436,8 @@ space:
     data_access: 'Access or download my data'
     data_delete: 'Ask the complete deletion of my data'
     no_tracking: 'There are no trackers on this website.'
+    user_title: 'You have an access to RedCall trigger features.'
+    user_details: 'When a volunteer connects to RedCall without that access, he lands by default to this page, which allows him to update his contact preferences and manage his personal data. Do not hesitate to invite volunteers in your structures to check that those information are correct.'
   infos:
     title: 'RedCall, what''s that?'
     context_1: 'The French Red-Cross is composed of more than a thousand different structures, especially working on Social Action and First Aid.'
@@ -510,6 +512,15 @@ space:
     geo_latitude: 'Latitude'
     geo_accuracy: 'Accuracy (m)'
     geo_heading: 'Heading'
+  delete_data:
+    title: 'Deletion of my personal data'
+    details_1: 'In accordance with the Data Protection Act and General Data Protection Regulations (GDPR), you have the right to access, modify, delete and object to the processing of your personal data.'
+    details_2: 'By clicking on the button below, all your information will be anonymzed, but will be kept to comply with accounting obligations (because of fees implicated while sending communications).'
+    details_3: 'Your external identifier (NIVOL) is the only information that will be kept untouched, in order to block any data update coming from external databases and/or other external services.'
+    details_4: 'If you wish to anonymize your data, your volunteer space will become unreachable and you won''t be triggered anymore. You will need to contact your local representatives in order to access the RedCall services again.'
+    delete_button: 'Remove my data'
+    confirm: 'Confirm'
+    cancel: 'Cancel'
 
 title:
   costs: "Costs"

@@ -10,12 +10,27 @@
         <div>
             <img src="{{ asset('apple-touch-icon.png') }}" style="max-height: 50px;"/>
         </div>
+
         <br/>
 
-        <a href="{{ path('space_infos', {sessionId: session.sessionId}) }}"
-           class="text-lg-center large-button btn btn-secondary">{{ 'space.infos.title'|trans }}</a>
+        {% if session.volunteer.user %}
 
-        <br/><hr/>
+            <div class="alert alert-info">
+                <p>💡</p>
+                <div>{{ 'space.home.user_title'|trans }}</div>
+                <p>{{ 'space.home.user_details'|trans }}</p>
+            </div>
+
+        {% else %}
+
+            <a href="{{ path('space_infos', {sessionId: session.sessionId}) }}"
+               class="text-lg-center large-button btn btn-secondary">{{ 'space.infos.title'|trans }}</a>
+
+            <br/>
+
+        {% endif %}
+
+        <hr/>
 
         <div class="h4 text-left">{{ 'space.home.contact'|trans }}</div>
         <br/>
@@ -63,7 +78,7 @@
 
         <br/><br/>
 
-        <a href="{{ path('space_infos', {sessionId: session.sessionId}) }}"
+        <a href="{{ path('space_delete_data', {sessionId: session.sessionId}) }}"
            class="text-lg-left large-button btn btn-secondary">
             🔥 &nbsp; {{ 'space.home.data_delete'|trans }}
         </a>

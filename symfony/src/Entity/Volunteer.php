@@ -747,7 +747,7 @@ class Volunteer
         return $this->user;
     }
 
-    public function setUser(User $user)
+    public function setUser(?User $user)
     {
         $this->user = $user;
 

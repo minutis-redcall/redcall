@@ -303,10 +303,10 @@ manage_volunteers:
     last_name: Nom de famille
     phone_number: Téléphone
     phone_number_locked: 'Geler le nᵒ de téléphone *'
-    phone_number_optin: 'Je suis disponible par téléphone et SMS'
+    phone_number_optin: 'Disponible par téléphone et SMS'
     email: Email
     email_locked: 'Geler l''email *'
-    email_optin: 'Je suis disponible par email'
+    email_optin: 'Disponible par email'
     minor: Mineur(e) (-18 ans)
     enabled: Déclenchable
     tags: Compétences
@@ -438,6 +438,8 @@ space:
     data_access: 'Consulter ou télécharger mes données'
     data_delete: 'Demander la suppression complète de mes données'
     no_tracking: 'Votre navigation n''est pas tracée sur ce site.'
+    user_title: 'Vous avez un accès aux fonctionnalités de déclenchement de RedCall.'
+    user_details: 'Lorsqu''un bénévole se connecte à RedCall mais n''y a pas accès, il tombe par défaut sur cette page qui lui permet de mettre à jour ses préférences de contact et de gérer ses données personnelles. N''hésitez-pas à communiquer au sein de vos structures d''action afin que les bénévoles sous votre responsabilité mettent correctement ces informations à jour.'
   infos:
     title: 'RedCall, c''est quoi ?'
     context_1: 'La Croix-Rouge Française possède un peu plus d''un millier de structures ayant des fonctions diverses, notamment dans l''action sociale et le secourisme.'
@@ -512,6 +514,15 @@ space:
     geo_latitude: 'Latitude'
     geo_accuracy: 'Précision (m)'
     geo_heading: 'Direction'
+  delete_data:
+    title: 'Suppression de mes données'
+    details_1: 'Conformément à la Loi Informatique et Libertés et Règlement général sur la protection des données (RGPD), vous disposez d’un droit d’accès, de modification, de suppression et d’opposition au traitement de vos données à caractère personnel.'
+    details_2: 'En cliquant sur le bouton ci-dessous, l''ensemble des informations vous concernant seront anonymisées, mais seront conservées pour obéir à des obligations relatives à la comptabilité (des frais incombant à l''envoi de communications).'
+    details_3: 'Votre identifiant externe (NIVOL) est la seule information qui sera conservée intègre, afin de bloquer les mises à jour de vos données auprès des bases de données et autres services externes.'
+    details_4: 'Si vous souhaitez anonymiser vos données, votre espace bénévole deviendra inaccessible et vous ne serez plus déclenchable. Vous devrez contacter votre unité locale de rattachement afin de demander la réouverture du service.'
+    delete_button: 'Supprimer mes données'
+    confirm: 'Confirmer'
+    cancel: 'Annuler'
 
 title:
   costs: "Coûts"

@@ -2,6 +2,9 @@
 
 namespace App\Manager;
 
+use App\Entity\Answer;
+use App\Entity\GeoLocation;
+use App\Entity\Message;
 use App\Entity\Structure;
 use App\Entity\Volunteer;
 use App\Repository\VolunteerRepository;
@@ -26,14 +29,26 @@ class VolunteerManager
     private $tagManager;
 
     /**
+     * @var AnswerManager
+     */
+    private $answerManager;
+
+    /**
+     * @var GeoLocationManager
+     */
+    private $geoLocationManager;
+
+    /**
      * @var TranslatorInterface
      */
     private $translator;
 
-    public function __construct(VolunteerRepository $volunteerRepository, TagManager $tagManager, TranslatorInterface $translator)
+    public function __construct(VolunteerRepository $volunteerRepository, TagManager $tagManager, AnswerManager $answerManager, GeoLocationManager $geoLocationManager, TranslatorInterface $translator)
     {
         $this->volunteerRepository = $volunteerRepository;
         $this->tagManager = $tagManager;
+        $this->answerManager = $answerManager;
+        $this->geoLocationManager = $geoLocationManager;
         $this->translator = $translator;
     }
 
@@ -292,5 +307,52 @@ class VolunteerManager
         }
 
         return array_values($mapped);
+    }
+
+    public function anonymize(Volunteer $volunteer)
+    {
+        foreach ($volunteer->getMessages() as $message) {
+            /** @var Message $message */
+            foreach ($message->getAnswers() as $answer) {
+                /** @var Answer $answer */
+                if (!$answer->getByAdmin()) {
+                    $answer->setRaw('');
+                    $answer->setUnclear(false);
+                    $answer->getChoices()->clear();
+                    $this->answerManager->save($answer);
+                }
+            }
+
+            if ($geo = $message->getGeoLocation()) {
+                /** @var GeoLocation $geo */
+                $geo->setLongitude('0.0');
+                $geo->setLatitude('0.0');
+                $geo->setAccuracy(0);
+                $geo->setHeading(0);
+                $this->geoLocationManager->save($geo);
+            }
+        }
+
+        if ($user = $volunteer->getUser()) {
+            $this->userManager->remove($user);
+        }
+
+        $volunteer->setFirstName('-');
+        $volunteer->setLastName('-');
+        $volunteer->setPhoneNumber(null);
+        $volunteer->setEmail(null);
+        $volunteer->setEnabled(false);
+        $volunteer->setLocked(true);
+        $volunteer->getTags()->clear();
+        $volunteer->setLastPegassUpdate(new \DateTime('2000-01-01'));
+        $volunteer->setReport([]);
+        $volunteer->getStructures()->clear();
+        $volunteer->setUser(null);
+        $volunteer->setPhoneNumberOptin(true);
+        $volunteer->setPhoneNumberLocked(false);
+        $volunteer->setEmailOptin(true);
+        $volunteer->setEmailLocked(false);
+
+        $this->save($volunteer);
     }
 }

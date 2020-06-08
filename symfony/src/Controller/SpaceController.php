@@ -216,6 +216,39 @@ class SpaceController extends BaseController
     }
 
     /**
+     * @Route(path="/delete-data", name="delete_data")
+     */
+    public function deleteData(VolunteerSession $session, Request $request)
+    {
+        $form = $this->createFormBuilder()
+            ->add('cancel', SubmitType::class, [
+                'label' => 'space.delete_data.cancel',
+                'attr' => [
+                    'class' => 'btn btn-success',
+                ]
+            ])
+            ->add('confirm', SubmitType::class, [
+                'label' => 'space.delete_data.confirm',
+                'attr' => [
+                    'class' => 'btn btn-danger',
+                ]
+            ])
+            ->getForm()
+            ->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->volunteerManager->anonymize($session->getVolunteer());
+
+            return $this->redirectToRoute('home');
+        }
+
+        return $this->render('space/delete_data.html.twig', [
+            'form' => $form->createView(),
+            'session' => $session,
+        ]);
+    }
+
+    /**
      * @Route(path="/logout", name="logout")
      */
     public function logout(VolunteerSession $session)

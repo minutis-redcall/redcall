@@ -48,7 +48,12 @@ class VolunteerType extends AbstractType
             ->add('phoneNumber', TextType::class, [
                 'label' => 'manage_volunteers.form.phone_number',
                 'required' => false,
-            ]);
+            ])
+            ->add('phoneNumberOptin', CheckboxType::class, [
+                'label' => 'manage_volunteers.form.phone_number_optin',
+                'required' => false,
+            ])
+        ;
 
         if (getenv('IS_REDCROSS')) {
             $builder
@@ -62,7 +67,12 @@ class VolunteerType extends AbstractType
             ->add('email', TextType::class, [
                 'label' => 'manage_volunteers.form.email',
                 'required' => false,
-            ]);
+            ])
+            ->add('emailOptin', CheckboxType::class, [
+                'label' => 'manage_volunteers.form.email_optin',
+                'required' => false,
+            ])
+        ;
 
         if (getenv('IS_REDCROSS')) {
             $builder

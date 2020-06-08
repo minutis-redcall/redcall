@@ -176,7 +176,7 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
     {
-        if ($this->volunteer) {
+        if ($this->volunteer && $this->volunteer->isEnabled()) {
             $sessionId = $this->volunteerSessionManager->createSession($this->volunteer);
 
             return new RedirectResponse(
