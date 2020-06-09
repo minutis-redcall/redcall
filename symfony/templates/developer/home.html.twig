@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block menu %}{% endblock %}
+
+{% block body %}
+
+    <div class="jumbotron text-center">
+
+        <a href="{{ path('admin_pegass_index') }}"
+           class="text-lg-center large-button btn btn-secondary">{{ 'password_login.user_list.button'|trans }}</a>
+
+        <br/><br/>
+
+        bla
+
+        <br/><br/><br/>
+
+        <a href="{{ path('home') }}"
+           class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+
+    </div>
+
+{% endblock %}

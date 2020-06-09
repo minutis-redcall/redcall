@@ -553,3 +553,7 @@ audience:
     disabled: '%nbr% nivols are bound to disabled volunteers'
     inaccessible: '%nbr% nivols are bound to volunteers that are not in your perimeter'
     valid: '%nbr% nivols will be triggered'
+
+developer:
+  home:
+    link: 'Developer space'

@@ -555,3 +555,7 @@ audience:
     disabled: '%nbr% nivols sont reliés à des bénévoles desactivés'
     inaccessible: '%nbr% nivols sont reliés à des bénévoles ne faisant pas partie de votre périmètre'
     valid: '%nbr% nivols seront déclenchés'
+
+developer:
+  home:
+    link: 'Espace développeur'
