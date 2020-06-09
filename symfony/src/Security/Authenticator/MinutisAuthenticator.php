@@ -181,7 +181,7 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
 
             return new RedirectResponse(
                 $this->router->generate('space_home', [
-                    'session_id' => $sessionId,
+                    'sessionId' => $sessionId,
                 ])
             );
         }
