@@ -220,6 +220,8 @@ class SpaceController extends BaseController
      */
     public function deleteData(VolunteerSession $session, Request $request)
     {
+        throw $this->createNotFoundException();
+
         $form = $this->createFormBuilder()
             ->add('cancel', SubmitType::class, [
                 'label' => 'space.delete_data.cancel',
