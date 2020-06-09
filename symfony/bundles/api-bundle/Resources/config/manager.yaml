@@ -1,0 +1,9 @@
+services:
+
+  Bundles\ApiBundle\Manager\TokenManager:
+    arguments:
+      - '@Bundles\ApiBundle\Repository\TokenRepository'
+
+  Bundles\ApiBundle\Manager\TokenLogManager:
+    arguments:
+      - '@Bundles\ApiBundle\Repository\TokenLogRepository'

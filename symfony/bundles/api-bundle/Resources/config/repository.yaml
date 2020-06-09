@@ -1,0 +1,13 @@
+services:
+
+  Bundles\ApiBundle\Repository\TokenRepository:
+    arguments:
+      - '@Doctrine\Common\Persistence\ManagerRegistry'
+    tags:
+      - 'doctrine.repository_service'
+
+  Bundles\ApiBundle\Repository\TokenLogRepository:
+    arguments:
+      - '@Doctrine\Common\Persistence\ManagerRegistry'
+    tags:
+      - 'doctrine.repository_service'

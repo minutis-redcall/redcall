@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use Bundles\ApiBundle\Entity\Token;
 use Bundles\PasswordLoginBundle\Entity\AbstractUser;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -49,11 +50,17 @@ class User extends AbstractUser
      */
     private $locked = false;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Token::class, mappedBy="user", orphanRemoval=true)
+     */
+    private $tokens;
+
     public function __construct()
     {
         parent::__construct();
 
         $this->structures = new ArrayCollection();
+        $this->tokens = new ArrayCollection();
     }
 
     public function getLocale() : ?string
@@ -166,5 +173,36 @@ class User extends AbstractUser
         }
 
         return $roles;
+    }
+
+    /**
+     * @return Collection|Token[]
+     */
+    public function getTokens(): Collection
+    {
+        return $this->tokens;
+    }
+
+    public function addToken(Token $token): self
+    {
+        if (!$this->tokens->contains($token)) {
+            $this->tokens[] = $token;
+            $token->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeToken(Token $token): self
+    {
+        if ($this->tokens->contains($token)) {
+            $this->tokens->removeElement($token);
+            // set the owning side to null (unless already changed)
+            if ($token->getUser() === $this) {
+                $token->setUser(null);
+            }
+        }
+
+        return $this;
     }
 }
