@@ -5,6 +5,7 @@ namespace App\Security\Authenticator;
 use App\Entity\Volunteer;
 use App\Manager\UserManager;
 use App\Manager\VolunteerManager;
+use App\Manager\VolunteerSessionManager;
 use Exception;
 use Firebase\JWT\JWT;
 use Goutte\Client;
@@ -27,6 +28,11 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
      * @var VolunteerManager
      */
     private $volunteerManager;
+
+    /**
+     * @var VolunteerSessionManager
+     */
+    private $volunteerSessionManager;
 
     /**
      * @var UserManager
@@ -54,16 +60,18 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
     private $volunteer;
 
     public function __construct(VolunteerManager $volunteerManager,
-        UserManager $userManager,
-        RouterInterface $router,
-        KernelInterface $kernel,
-        LoggerInterface $logger = null)
+                                VolunteerSessionManager $volunteerSessionManager,
+                                UserManager $userManager,
+                                RouterInterface $router,
+                                KernelInterface $kernel,
+                                LoggerInterface $logger = null)
     {
         $this->volunteerManager = $volunteerManager;
-        $this->userManager      = $userManager;
-        $this->router           = $router;
-        $this->kernel           = $kernel;
-        $this->logger           = $logger ?? new NullLogger();
+        $this->volunteerSessionManager = $volunteerSessionManager;
+        $this->userManager = $userManager;
+        $this->router = $router;
+        $this->kernel = $kernel;
+        $this->logger = $logger ?? new NullLogger();
     }
 
     public function supports(Request $request)
@@ -168,10 +176,12 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
     {
-        if ($this->volunteer) {
+        if ($this->volunteer && $this->volunteer->isEnabled()) {
+            $sessionId = $this->volunteerSessionManager->createSession($this->volunteer);
+
             return new RedirectResponse(
-                $this->router->generate('infos', [
-                    'nivol' => $this->volunteer->getNivol(),
+                $this->router->generate('space_home', [
+                    'session_id' => $sessionId,
                 ])
             );
         }

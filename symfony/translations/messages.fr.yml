@@ -203,6 +203,8 @@ campaign_status:
   warning:
     no_phone: 'Pas de numéro de téléphone'
     no_email: "Pas d'email"
+    no_phone_optin: 'Ne souhaites pas recevoir de SMS/appels.'
+    no_email_optin: "Ne souhaites pas recevoir d'emails."
   by: 'Envoyée par %name%'
 
 new_communication:
@@ -301,8 +303,10 @@ manage_volunteers:
     last_name: Nom de famille
     phone_number: Téléphone
     phone_number_locked: 'Geler le nᵒ de téléphone *'
+    phone_number_optin: 'Disponible par téléphone et SMS'
     email: Email
     email_locked: 'Geler l''email *'
+    email_optin: 'Disponible par email'
     minor: Mineur(e) (-18 ans)
     enabled: Déclenchable
     tags: Compétences
@@ -371,7 +375,7 @@ geolocation:
   share: Partager ma position
   share_explains: Cela va permettre aux autres membres de l'équipe de vous localiser.
   not_supported: La géolocalisation n'est pas supportée par votre navigateur.
-  last_update: Dernière mise à jour:
+  last_update: 'Dernière mise à jour:'
   waiting: En attente...
   error: Une erreur est survenue.
   error_permission: Vous avez refusé (ou un paramètre de votre appareil) de partager votre position.
@@ -419,22 +423,106 @@ maintenance:
       danger: 'Rouge (danger)'
     content: 'Contenu du message (sauts de lignes acceptés)'
 
-infos:
-  hello_name: 'Bievenue %firstName%,'
-  hello_anonymous: 'Bienvenue,'
-  context_1: 'La Croix-Rouge Française possède un peu plus d''un millier de structures ayant des fonctions diverses, notamment dans l''action sociale et le secourisme.'
-  context_2: 'Si par exemple un grave accident a lieu dans un immeuble et des dizaines de personnes se retrouvent à la rue, l''Action Sociale va les prendre en charge, les réchauffer/nourrir si besoin, et trouver des solutions d''urgence.'
-  context_3: 'Ou si par exemple une manifestation déborde et que le SAMU est trop sollicité, ils peuvent faire appel à nous afin qu''on vienne leur donner un coup de main avec nos ambulances.'
-  context_4: 'Pour réunir les effectifs dont une intervention a besoin, les responsables de chaque unité locale doivent efficacement faire appel à leurs bénévoles.'
-  context_5: 'C''est là que RedCall intervient : elle permet à ces responsables de contacter les ressources dont ils ont besoin par SMS ou email.'
-  context_6: 'Ce que le bénévole voit:'
-  context_7: 'Ce que le responsable voit:'
-  context_8: 'Une fois que les équipages sont formés, le responsable peut envoyer un PDF contenant toutes les bonnes informations à sa direction territoriale.'
-  context_9: 'RedCall est actif par défaut pour les DLUS, DTUS et PDT, qui peuvent déclencher leurs structures de rattachement et d''action. S’il y a besoin de droits supplémentaires, la demande peut se faire par email au support Minutis en précisant les éléments suivants :'
-  context_10: '- Nom'
-  context_11: '- Prénom'
-  context_12: '- Nivol'
-  context_13: 'Structures sur lesquels les droits RedCall sont nécessaires.'
+space:
+  home:
+    link: 'Espace bénévole'
+    contact: 'Préférences de contact'
+    update_phone: 'Mettre à jour mon numéro de téléphone, actuellement :'
+    add_phone: 'Préciser un numéro de téléphone afin d''être déclenché par SMS ou appel vocal'
+    update_email: 'Mettre à jour mon email, actuellement :'
+    add_email: 'Préciser un email afin d''être déclenché par ce biais'
+    toggle_callable: 'Changer mes préférences de déclenchement (je suis actuellement'
+    callable: 'déclenchable'
+    not_callable: 'indisponible'
+    data: 'Données personnelles'
+    data_access: 'Consulter ou télécharger mes données'
+    data_delete: 'Demander la suppression complète de mes données'
+    no_tracking: 'Votre navigation n''est pas tracée sur ce site.'
+    user_title: 'Vous avez un accès aux fonctionnalités de déclenchement de RedCall.'
+    user_details: 'Lorsqu''un bénévole se connecte à RedCall mais n''y a pas accès, il tombe par défaut sur cette page qui lui permet de mettre à jour ses préférences de contact et de gérer ses données personnelles. N''hésitez-pas à communiquer au sein de vos structures d''action afin que les bénévoles sous votre responsabilité mettent correctement ces informations à jour.'
+  infos:
+    title: 'RedCall, c''est quoi ?'
+    context_1: 'La Croix-Rouge Française possède un peu plus d''un millier de structures ayant des fonctions diverses, notamment dans l''action sociale et le secourisme.'
+    context_2: 'Si par exemple un grave accident a lieu dans un immeuble et des dizaines de personnes se retrouvent à la rue, l''Action Sociale va les prendre en charge, les réchauffer/nourrir si besoin, et trouver des solutions d''urgence.'
+    context_3: 'Ou si par exemple une manifestation déborde et que le SAMU est trop sollicité, ils peuvent faire appel à nous afin qu''on vienne leur donner un coup de main avec nos ambulances.'
+    context_4: 'Pour réunir les effectifs dont une intervention a besoin, les responsables de chaque unité locale doivent efficacement faire appel à leurs bénévoles.'
+    context_5: 'C''est là que RedCall intervient : elle permet à ces responsables de contacter les ressources dont ils ont besoin par SMS ou email.'
+    context_6: 'Ce que le bénévole voit:'
+    context_7: 'Ce que le responsable voit:'
+    context_8: 'Une fois que les équipages sont formés, le responsable peut envoyer un PDF contenant toutes les bonnes informations à sa direction territoriale.'
+    context_9: 'RedCall est actif par défaut pour les DLUS, DTUS et PDT, qui peuvent déclencher leurs structures de rattachement et d''action. S’il y a besoin de droits supplémentaires, la demande peut se faire par email au support Minutis en précisant les éléments suivants :'
+    context_10: '- Nom'
+    context_11: '- Prénom'
+    context_12: '- Nivol'
+    context_13: 'Structures sur lesquels les droits RedCall sont nécessaires.'
+  logout: 'Me déconnecter de l''espace bénévole'
+  phone:
+    title: 'Editer mon numéro de téléphone'
+    details_1: 'Vous pourrez être contacté par votre unité locale ou DT par SMS ou par appel vocaux en cas d''urgence.'
+    details_2: 'Tous les messages et appels proviennent du numéro: +%from%'
+    details_3: 'Vous pouvez dès à présent l''ajouter à vos contacts, et lui assigner une sonnerie reconnaissable.'
+    details_4: 'Lorsque vous recevez un message et qu''une réponse est demandée, répondez directement au message en ne saisissant, si possible, que le ou les codes des réponses qui correspondent à votre choix.'
+    details_5: 'Exemple : si on vous demande "Êtes-vous disponible ?" et que les réponses possibles sont "A1: Oui" ou "A2: Non", répondez le code A1 ou A2, cela permet un traitement automatique de votre choix et aide le responsable du déclenchement.'
+  email:
+    title: 'Editer mon email'
+    details_1: 'Vous pourrez être contacté par votre unité locale ou DT par email lorsque ils doivent vous transmettre des informations ou pour un recensement de vos disponibilité dans les jours à venir.'
+    details_2: 'Tous les emails auront pour origine: %from%'
+    details_3: 'Lorsque une ou plusieurs réponses sont demandées, vous devrez cliquer sur les boutons situés sous le message.'
+    details_4: 'Les réponses envoyées directement par email ne seront pas prises en compte; pour plus de renseignements vous devrez contacter vos responsables.'
+  enabled:
+    title: 'Changer ma disponibilité'
+    details_1: 'Utilisez les coches ci-dessous pour ne pas recevoir de communications de la part de votre unité locale.'
+    details_2: 'Vous pourrez revenir sur cette page à tout moment pour changer vos préférences.'
+  consult_data:
+    title: 'Mes données personnelles sur RedCall'
+    download: 'Télécharger au format PDF'
+    identity_main: 'Fiche bénévole'
+    identity_sync: 'Synchronization avec la base de données Pegass'
+    identity_id: 'ID RedCall'
+    identity_identifier: 'ID de synchronisation'
+    identity_external: 'ID externe'
+    identity_firstname: 'Prénom'
+    identity_lastname: 'Nom'
+    identity_minor: 'Mineur(e)'
+    identity_phone: 'Numéro de téléphone'
+    identity_phone_locked: 'Téléphone gelé'
+    identity_phone_optin: 'Contacts par téléphone/SMS autorisé'
+    identity_email: 'Email'
+    identity_email_locked: 'Email gelé'
+    identity_email_optin: 'Contacts par email autorisé'
+    identity_locked: 'Synchronisation active'
+    identity_last_update: 'Dernière synchronisation'
+    identity_next_update: 'Prochaine synchronisation'
+    identity_report_update: 'Dernier rapport de synchronisation'
+    identity_structures: 'Structure(s) de rattachement'
+    identity_skills: 'Intérêts et compétences'
+    identity_user: 'Utilisateur sur RedCall'
+    identity_user_locale: 'Langue de la plateforme'
+    identity_user_access: 'Accès utilistaeur'
+    identity_user_developer: 'Accès développeur'
+    identity_user_admin: 'Accès administrateur'
+    identity_user_structures: 'Structure(s) d''action'
+    communications: 'Communications et déclenchements'
+    announcement_sms: '📱 Message envoyé par SMS le %day%/%month%/%year% à %hours%h%mins%'
+    announcement_voice: '📞 Message envoyé par appel vocal le %day%/%month%/%year% à %hours%h%mins%'
+    announcement_email: '📧 Message envoyé par email le %day%/%month%/%year% à %hours%h%mins%'
+    choices: 'Choix possibles'
+    answers: 'Réponse(s) reçue(s)'
+    geo: 'Données de géolocalisation'
+    geo_date: 'Date'
+    geo_longitude: 'Longitude'
+    geo_latitude: 'Latitude'
+    geo_accuracy: 'Précision (m)'
+    geo_heading: 'Direction'
+  delete_data:
+    title: 'Suppression de mes données'
+    details_1: 'Conformément à la Loi Informatique et Libertés et Règlement général sur la protection des données (RGPD), vous disposez d’un droit d’accès, de modification, de suppression et d’opposition au traitement de vos données à caractère personnel.'
+    details_2: 'En cliquant sur le bouton ci-dessous, l''ensemble des informations vous concernant seront anonymisées, mais seront conservées pour obéir à des obligations relatives à la comptabilité (des frais incombant à l''envoi de communications).'
+    details_3: 'Votre identifiant externe (NIVOL) est la seule information qui sera conservée intègre, afin de bloquer les mises à jour de vos données auprès des bases de données et autres services externes.'
+    details_4: 'Si vous souhaitez anonymiser vos données, votre espace bénévole deviendra inaccessible et vous ne serez plus déclenchable. Vous devrez contacter votre unité locale de rattachement afin de demander la réouverture du service.'
+    delete_button: 'Supprimer mes données'
+    confirm: 'Confirmer'
+    cancel: 'Annuler'
 
 title:
   costs: "Coûts"

@@ -113,7 +113,7 @@ class Sender
     {
         $volunteer = $message->getVolunteer();
 
-        if (!$volunteer->getPhoneNumber()) {
+        if (!$volunteer->getPhoneNumber() || !$volunteer->isPhoneNumberOptin()) {
             return;
         }
 
@@ -143,7 +143,7 @@ class Sender
     {
         $volunteer = $message->getVolunteer();
 
-        if (!$volunteer->getPhoneNumber()) {
+        if (!$volunteer->getPhoneNumber() || !$volunteer->isPhoneNumberOptin()) {
             return;
         }
 
@@ -174,7 +174,7 @@ class Sender
      */
     public function sendEmail(Message $message)
     {
-        if (!$message->getVolunteer()->getEmail()) {
+        if (!$message->getVolunteer()->getEmail() || !$message->getVolunteer()->isEmailOptin()) {
             return;
         }
 

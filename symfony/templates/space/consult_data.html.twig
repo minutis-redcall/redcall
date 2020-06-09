@@ -1,0 +1,25 @@
+
+{% extends 'base.html.twig' %}
+
+{% block menu %}{% endblock %}
+
+{% block body %}
+
+    <br/>
+
+    <div class="jumbotron">
+
+        <div class="text-right">
+            <a href="{{ path('space_download_data', {sessionId: session.sessionId}) }}">{{ 'space.consult_data.download'|trans }}</a>
+        </div>
+
+        {{ include('space/data.html.twig') }}
+
+    </div>
+
+    <a href="{{ path('space_home', {sessionId: session.sessionId}) }}"
+       class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+
+    <br/><br/>
+
+{% endblock %}

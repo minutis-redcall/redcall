@@ -2,14 +2,14 @@
     {% spaceless %}
 
     {# Header #}
-    <div {% if is_redcross %}style="margin-left:60px;margin-right:60px;border:1px solid {{ lightgrey }};"{% endif %}>
-        {% if is_redcross %}
-            <div style="text-align:left;position:relative;left:-30px;">
-                <img height="30" src="{{ asset('build/images/corner_topleft.png')[1:] }}"/>
-            </div>
-        {% endif %}
-        <div style="margin-left:50px;">
-            <b>
+        <div {% if is_redcross %}style="margin-left:60px;margin-right:60px;border:1px solid {{ lightgrey }};"{% endif %}>
+            {% if is_redcross %}
+                <div style="text-align:left;position:relative;left:-30px;">
+                    <img height="30" src="{{ asset('build/images/corner_topleft.png')[1:] }}"/>
+                </div>
+            {% endif %}
+            <div style="margin-left:50px;">
+                <b>
                 <span style="font-size:30px;font-family:Arial Black;color:{{ red }};">
                     {{ campaign.structures.get(0).name }}
                     {% if campaign.structures.count > 1 %}
@@ -18,21 +18,21 @@
                         </span>
                     {% endif %}
                 </span>
-                <br/>
-                <span style="font-size:20px;font-family:Arial Black;color:{{ red }};">
+                    <br/>
+                    <span style="font-size:20px;font-family:Arial Black;color:{{ red }};">
                 {{ 'pdf_export.generated'|trans({
                     '%date%': current_date|date('d/m/Y'),
                     '%time%': current_date|date('H:i'),
                 }) }}
                 </span>
-            </b>
-        </div>
-        {% if is_redcross %}
-            <div style="text-align:right;">
-                <img height="30" src="{{ asset('build/images/corner_bottomright.png')[1:] }}"/>
+                </b>
             </div>
-        {% endif %}
-    </div>
+            {% if is_redcross %}
+                <div style="text-align:right;">
+                    <img height="30" src="{{ asset('build/images/corner_bottomright.png')[1:] }}"/>
+                </div>
+            {% endif %}
+        </div>
 
     <br/><br/>
 

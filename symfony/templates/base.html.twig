@@ -80,6 +80,15 @@
 
             {% endblock %}
 
+            {% if session.volunteer|default(false) %}
+                <div class="text-right h4">
+                    <span class="badge-pill badge-dark">
+                        {{ session.volunteer.firstName }}
+                        {{ session.volunteer.lastName[:1] }}.
+                    </span>
+                </div>
+            {% endif %}
+
         </div>
     {% endblock %}
 
@@ -100,7 +109,7 @@
 
             {% block security %}
 
-                {% if is_redcross %}
+                {% if is_redcross and (app.user|default(false) or session.volunteer|default(false)) %}
                     <a href="{{ minutis_url }}">{{ 'minutis.back'|trans }}</a>
 
                     <br/><br/>
@@ -119,6 +128,13 @@
 
                 <a href="{{ path('sandbox_home') }}" class="btn btn-secondary">{{ 'sandbox.home.link'|trans }}</a>
                 &nbsp;&nbsp;
+            {% endif %}
+
+            {% if app.user|default(false) and app.user.volunteer %}
+
+                <a href="{{ path('go_to_space') }}" class="btn btn-secondary">{{ 'space.home.link'|trans }}</a>
+                &nbsp;&nbsp;
+
             {% endif %}
 
             {% if app.user|default(false) and (is_granted('ROLE_ADMIN') or app.user.structures.count) %}

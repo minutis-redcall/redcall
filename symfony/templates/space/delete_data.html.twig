@@ -1,0 +1,55 @@
+
+{% extends 'base.html.twig' %}
+
+{% block menu %}{% endblock %}
+
+{% block body %}
+
+    <br/>
+
+    <div class="jumbotron">
+
+        <h3>{{ 'space.delete_data.title'|trans }}</h3>
+
+        <hr/>
+
+        <p>{{ 'space.delete_data.details_1'|trans }}</p>
+        <br/>
+        <p>{{ 'space.delete_data.details_2'|trans }}</p>
+        <br/>
+        <p>{{ 'space.delete_data.details_3'|trans }}</p>
+        <br/>
+        <p>{{ 'space.delete_data.details_4'|trans }}</p>
+
+        <br/>
+
+        <div id="delete-buttons" class="d-none">
+            {{ form(form) }}
+        </div>
+
+        <a href="#" class="btn btn-primary" id="ask-deletion">{{ 'space.delete_data.delete_button'|trans }}</a>
+
+    </div>
+
+    <a href="{{ path('space_home', {sessionId: session.sessionId}) }}"
+       class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+
+    <br/><br/>
+
+    <script type="text/javascript">
+
+        $('#ask-deletion').click(function(e) {
+            e.preventDefault();
+            $(this).addClass('d-none');
+            $('#delete-buttons').removeClass('d-none');
+        });
+
+        $('#{{ form.cancel.vars.id }}').click(function(e) {
+            e.preventDefault();
+            $('#ask-deletion').removeClass('d-none');
+            $('#delete-buttons').addClass('d-none');
+        });
+
+    </script>
+
+{% endblock %}

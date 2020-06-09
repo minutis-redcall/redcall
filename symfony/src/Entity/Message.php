@@ -525,9 +525,9 @@ class Message
         switch ($this->communication->getType()) {
             case Communication::TYPE_SMS:
             case Communication::TYPE_CALL:
-                return boolval($this->volunteer->getPhoneNumber());
+                return boolval($this->volunteer->getPhoneNumber()) && $this->volunteer->isPhoneNumberOptin();
             case Communication::TYPE_EMAIL:
-                return boolval($this->volunteer->getEmail());
+                return boolval($this->volunteer->getEmail()) && $this->volunteer->isEmailOptin();
             default:
                 return false;
         }

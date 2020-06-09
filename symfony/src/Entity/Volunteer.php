@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Tools\PhoneNumberParser;
+use Bundles\PegassCrawlerBundle\Entity\Pegass;
 use DateInterval;
 use DateTime;
 use DateTimeZone;
@@ -20,9 +21,12 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  *     @ORM\Index(name="nivolx", columns={"nivol"}),
  *     @ORM\Index(name="phone_numberx", columns={"phone_number"}),
  *     @ORM\Index(name="emailx", columns={"email"}),
- *     @ORM\Index(name="enabledx", columns={"id", "enabled"})
+ *     @ORM\Index(name="enabledx", columns={"enabled"}),
+ *     @ORM\Index(name="phone_number_optinx", columns={"phone_number_optin"}),
+ *     @ORM\Index(name="email_optinx", columns={"email_optin"})
  * })
  * @ORM\Entity(repositoryClass="App\Repository\VolunteerRepository")
+ * @ORM\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
  * @UniqueEntity("nivol")
  * @UniqueEntity("phoneNumber")
  * @UniqueEntity("email")
@@ -159,20 +163,45 @@ class Volunteer
     private $user;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @var bool
+     *
+     * @ORM\Column(type="boolean", options={"default" : 0})
      */
-    private $phoneNumberLocked;
+    private $phoneNumberLocked = false;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @var bool
+     *
+     * @ORM\Column(type="boolean", options={"default" : 0})
      */
-    private $emailLocked;
+    private $emailLocked = false;
+
+    /**
+     * @var bool
+     *
+     * @ORM\Column(type="boolean", options={"default" : 1})
+     */
+    private $phoneNumberOptin = true;
+
+    /**
+     * @var bool
+     *
+     * @ORM\Column(type="boolean", options={"default" : 1})
+     */
+    private $emailOptin = true;
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Message", mappedBy="volunteer", cascade={"persist"})
+     * @ORM\OrderBy({"communication" = "DESC"})
+     */
+    private $messages;
 
     public function __construct()
     {
         $this->tags       = new ArrayCollection();
         $this->structures = new ArrayCollection();
         $this->communications = new ArrayCollection();
+        $this->messages = new ArrayCollection();
     }
 
     /**
@@ -529,7 +558,11 @@ class Volunteer
      */
     public function isCallable(): bool
     {
-        return $this->enabled && ($this->phoneNumber || $this->email);
+        return $this->enabled && (
+            $this->phoneNumber && $this->phoneNumberOptin
+                ||
+            $this->email && $this->emailOptin
+        );
     }
 
     /**
@@ -617,7 +650,7 @@ class Volunteer
 
         // Doctrine loaded an UTC-saved date using the default timezone (Europe/Paris)
         $utc      = (new DateTime($this->lastPegassUpdate->format('Y-m-d H:i:s'), new DateTimeZone('UTC')));
-        $interval = new DateInterval(sprintf('PT%dS', Pegass::TTL[Pegass::TYPE_STRUCTURE]));
+        $interval = new DateInterval(sprintf('PT%dS', Pegass::TTL[Pegass::TYPE_VOLUNTEER]));
 
         $nextPegassUpdate = clone $utc;
         $nextPegassUpdate->add($interval);
@@ -714,7 +747,7 @@ class Volunteer
         return $this->user;
     }
 
-    public function setUser(User $user)
+    public function setUser(?User $user)
     {
         $this->user = $user;
 
@@ -761,5 +794,55 @@ class Volunteer
         }
 
         return false;
+    }
+
+    public function getHiddenPhone() : ?string
+    {
+        if (null === $this->phoneNumber) {
+            return null;
+        }
+
+        return sprintf('+%s****%s', substr($this->phoneNumber, 0, 6), substr($this->phoneNumber, 10));
+    }
+
+    public function getHiddenEmail() : ?string
+    {
+        if (null === $this->email) {
+            return null;
+        }
+
+        $username = substr($this->email, 0, strrpos($this->email, '@'));
+        $domain = substr($this->email, strrpos($this->email, '@') + 1);
+
+        return substr($username, 0, 1).str_repeat('*', max(strlen($username) - 2, 0)).substr($username, -1).'@'.$domain;
+    }
+
+    public function isPhoneNumberOptin(): ?bool
+    {
+        return $this->phoneNumberOptin;
+    }
+
+    public function setPhoneNumberOptin(bool $phoneNumberOptin): self
+    {
+        $this->phoneNumberOptin = $phoneNumberOptin;
+
+        return $this;
+    }
+
+    public function isEmailOptin(): ?bool
+    {
+        return $this->emailOptin;
+    }
+
+    public function setEmailOptin(bool $emailOptin): self
+    {
+        $this->emailOptin = $emailOptin;
+
+        return $this;
+    }
+
+    public function getMessages(): Collection
+    {
+        return $this->messages;
     }
 }

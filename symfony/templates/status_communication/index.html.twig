@@ -354,12 +354,22 @@
                                     </span>
 
                                     {# Warnings #}
-                                    {% if not message.volunteer.phoneNumber %}
-                                        <div style="color:red;">{{ 'campaign_status.warning.no_phone'|trans }}</div>
+                                    {% if communication.type in [constant('App\\Entity\\Communication::TYPE_SMS'), constant('App\\Entity\\Communication::TYPE_CALL')] %}
+                                        {% if not message.volunteer.phoneNumber %}
+                                            <div style="color:red;">{{ 'campaign_status.warning.no_phone'|trans }}</div>
+                                        {% elseif not message.volunteer.phoneNumberOptin %}
+                                            <div style="color:red;">{{ 'campaign_status.warning.no_phone_optin'|trans }}</div>
+                                        {% endif %}
+                                    {% elseif communication.type in [constant('App\\Entity\\Communication::TYPE_EMAIL')] %}
+                                        {% if not message.volunteer.email %}
+                                            <div style="color:red;">{{ 'campaign_status.warning.no_email'|trans }}</div>
+                                        {% endif %}
+                                        {% if not message.volunteer.emailOptin %}
+                                            <div style="color:red;">{{ 'campaign_status.warning.no_email_optin'|trans }}</div>
+                                        {% endif %}
                                     {% endif %}
-                                    {% if not message.volunteer.email %}
-                                        <div style="color:red;">{{ 'campaign_status.warning.no_email'|trans }}</div>
-                                    {% endif %}
+
+                                    {# Unexpected error #}
                                     <div id="error-{{ suffix }}" style="color:red;">
                                         {{ message.error }}
                                     </div>
