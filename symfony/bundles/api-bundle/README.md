@@ -7,6 +7,27 @@ Provides tools:
 
 ...
 
+## Requirements
+
+You should make sure users that need to access API management
+pages have a ROLE_DEVELOPER role. The implementation of the admin
+side that will let you set users as developers are at your discretion.
+
+Sample:
+
+```
+    public function getRoles() : array
+    {
+        $roles = ['ROLE_USER'];
+
+        if ($this->isDeveloper) {
+            $roles[] = 'ROLE_DEVELOPER';
+        }
+
+        return $roles;
+    }
+```
+
 ## Installation
 
 In `config/bundles.php`:
@@ -40,4 +61,6 @@ api:
  resource: '@ApiBundle/Controller/'
    type: annotation
 ```
+
+## Usage
 

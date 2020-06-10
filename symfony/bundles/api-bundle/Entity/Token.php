@@ -2,7 +2,6 @@
 
 namespace Bundles\ApiBundle\Entity;
 
-use App\Entity\User;
 use Bundles\ApiBundle\Repository\TokenRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -21,10 +20,9 @@ class Token
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity=User::class, inversedBy="tokens")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\Column(type="string", length=36)
      */
-    private $user;
+    private $userId;
 
     /**
      * @ORM\Column(type="string", length=36)
@@ -66,14 +64,14 @@ class Token
         return $this->id;
     }
 
-    public function getUser(): ?User
+    public function getUserId(): ?string
     {
-        return $this->user;
+        return $this->userId;
     }
 
-    public function setUser(?User $user): self
+    public function setUserId(?string $userId): self
     {
-        $this->user = $user;
+        $this->userId = $userId;
 
         return $this;
     }

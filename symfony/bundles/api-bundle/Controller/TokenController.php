@@ -12,5 +12,15 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class TokenController extends AbstractController
 {
+    /**
+     * @Route(path="/", name="index")
+     */
+    public function index()
+    {
+        return $this->render('ApiBundle:token:index.html.twig', [
+
+        ]);
+    }
+
 
 }
