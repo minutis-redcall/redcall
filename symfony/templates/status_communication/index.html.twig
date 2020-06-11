@@ -189,7 +189,7 @@
                                            data-target="filter-is-choice-{{ choice.id }}-{{ communication.id }}">
                                             {{ choice.label }}
                                         </a>
-                                        <span id="choice-count-{{ choice.id }}">({{ choice.count }})</span>
+                                        (<span id="choice-count-{{ choice.id }}" data-count="{{ choice.count }}">{{ choice.count }}</span>)
                                     </div>
                                 </td>
                             {% endfor %}
@@ -243,14 +243,15 @@
                             <th width="95%">&nbsp;</th>
                         </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="top-{{ communication.id }}">
                         {% for message in communication.messages %}
                             {% set suffix = communication.id ~ '-' ~ message.id %}
                             <tr id="row-{{ suffix|e('html_attr') }}"
                                 class="row-{{ communication.id }}"
                                 data-volunteer-id="{{ message.volunteer.id }}"
                                 data-structures="{{ message.volunteer.structureIds|join(',') }}"
-                                data-is-reachable="{{ message.reachable }}">
+                                data-is-reachable="{{ message.reachable }}"
+                                data-has-answer="{{ message.answers.count }}">
 
                                 {# Selection #}
                                 <td id="message-selected-{{ suffix|e('html_attr') }}"
@@ -664,6 +665,7 @@
             $.each(data, function (communicationId, communication) {
                 $.each(communication.msg, function (messageId, messageStatus) {
                     var suffix = communicationId + '-' + messageId;
+                    var row = $('#row-' + suffix);
 
                     {# Message is sent #}
                     if (messageStatus.sent) {
@@ -687,6 +689,12 @@
                         $('#message-is-unclear-' + suffix).removeClass('d-none');
                     } else {
                         $('#message-is-unclear-' + suffix).addClass('d-none');
+                    }
+
+                    {# Message has a new answer #}
+                    if (messageStatus['has-answer'] !== row.data('has-answer')) {
+                        row.prependTo($('#top-' + communicationId));
+                        row.data('has-answer', messageStatus['has-answer']);
                     }
 
                     {# an error occured while sending message #}
@@ -732,7 +740,12 @@
                 }
 
                 $.each(communication.choices, function (choiceId, count) {
-                    $('#choice-count-' + choiceId).html('(' + count + ')');
+                    var choice = $('#choice-count-' + choiceId);
+                    if (count !== choice.data('count')) {
+                        choice.html(count);
+                        choice.animate({fontSize: '50px'}, 500).animate({fontSize: '1rem'}, 500);
+                        choice.data('count', count);
+                    }
                 });
             });
 

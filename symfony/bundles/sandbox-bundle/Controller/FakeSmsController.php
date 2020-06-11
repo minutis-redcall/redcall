@@ -113,8 +113,6 @@ class FakeSmsController extends BaseController
             throw $this->createNotFoundException();
         }
 
-        date_default_timezone_set('UTC');
-
         $this->messageManager->handleAnswer($volunteer->getPhoneNumber(), $body);
 
         $this->fakeSmsManager->save($volunteer, $body, FakeSms::DIRECTION_SENT);

@@ -268,6 +268,7 @@ class Campaign
                 $data[$communication->getId()]['msg'][$message->getId()] = [
                     'sent'               => $message->isSent(),
                     'error'              => $message->getError(),
+                    'has-answer'         => $message->getAnswers()->count(),
                     'choices'            => $choices,
                     'is-unclear'         => $message->isUnclear(),
                     'has-invalid-answer' => [

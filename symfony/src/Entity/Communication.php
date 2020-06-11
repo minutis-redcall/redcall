@@ -71,6 +71,7 @@ class Communication
      * @var array
      *
      * @ORM\OneToMany(targetEntity="App\Entity\Message", mappedBy="communication", cascade={"persist"})
+     * @ORM\OrderBy({"updatedAt" = "DESC"})
      */
     private $messages = [];
 
