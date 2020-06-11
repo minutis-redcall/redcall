@@ -278,13 +278,7 @@ class Campaign
             }
 
             // Progression
-            $count                                     = count($communication->getMessages());
-            $data[$communication->getId()]['progress'] = [
-                'sent'    => $msgsSent,
-                'total'   => $count,
-                'percent' => $count ? round($msgsSent * 100 / $count, 2) : 0,
-                'cost'    => $communication->getCost(),
-            ];
+            $data[$communication->getId()]['progress'] = $communication->getProgression();
 
             // Choice counts
             foreach ($communication->getChoices() as $choice) {
@@ -319,19 +313,7 @@ class Campaign
     {
         $data = [];
         foreach ($this->getCommunications() as $communication) {
-            $msgsSent = 0;
-            foreach ($communication->getMessages() as $message) {
-                if ($message->getMessageId()) {
-                    $msgsSent++;
-                }
-            }
-
-            $data[$communication->getId()] = [
-                'sent'    => $msgsSent,
-                'total'   => $count = count($communication->getMessages()),
-                'percent' => $count ? round($msgsSent * 100 / $count, 2) : 0,
-                'cost'    => $communication->getCost(),
-            ];
+            $data[$communication->getId()] = $communication->getProgression();
         }
 
         return $data;

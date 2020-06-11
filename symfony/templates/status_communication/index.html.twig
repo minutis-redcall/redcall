@@ -91,7 +91,7 @@
                     {# -------------------------------------------------------------------------------- #}
                     <div class="progress position-relative" style="background-color:darkgray;height:18px;">
                         <div id="progress-bar-{{ communication.id }}"
-                             class="progress-bar {% if progress[communication.id].percent == 100 %}bg-success{% endif %}"
+                             class="progress-bar {% if progress[communication.id].sent == progress[communication.id].reachable %}bg-success{% endif %}"
                              role="progressbar"
                              style="width: {{ progress[communication.id].percent }}%;"
                              aria-valuenow="{{ progress[communication.id].percent }}"
@@ -99,8 +99,12 @@
                              aria-valuemax="100"></div>
                         <span id="progress-text-{{ communication.id }}"
                               class="justify-content-center d-flex position-absolute w-100 text-white">
-                            {% if progress[communication.id].percent == 100 %}
-                                {{ 'campaign_status.finish'|trans }}
+                            {% if progress[communication.id].sent == progress[communication.id].reachable %}
+                                {{ 'campaign_status.finish'|trans({
+                                    '%sent%': progress[communication.id].sent,
+                                    '%replies%': progress[communication.id].replies,
+                                    '%replies_pct%': progress[communication.id]['replies-percent'],
+                                }) }}
                             {% else %}
                                 {{ 'campaign_status.progress'|trans({
                                     '%sent%': progress[communication.id].sent,
@@ -701,16 +705,18 @@
 
                 {# Refresh the SMS sending progress bar #}
                 var progressBar = $('#progress-bar-' + communicationId);
-                if (communication.progress.percent == 100 && !progressBar.hasClass('bg-success')) {
+                if (communication.progress.sent == communication.progress.reachable && !progressBar.hasClass('bg-success')) {
                     progressBar.addClass('bg-success');
                 }
                 progressBar.attr('aria-valuenow', communication.progress.percent);
                 progressBar.css('width', communication.progress.percent + '%');
 
-                if (communication.progress.percent == 100) {
+                if (communication.progress.sent == communication.progress.reachable) {
                     $('#progress-text-' + communicationId).html(
                         '{{ 'campaign_status.finish'|trans|e('js') }}'
-                            .replace('%cost%', communication.progress.cost)
+                            .replace('%sent%', communication.progress.sent)
+                            .replace('%replies%', communication.progress.replies)
+                            .replace('%replies_pct%', communication.progress['replies-percent'])
                     );
                 } else {
                     $('#progress-text-' + communicationId).html(
