@@ -613,6 +613,21 @@ class Volunteer
         return $this;
     }
 
+    public function getMainStructure(): ?Structure
+    {
+        /** @var Structure|null $mainStructure */
+        $mainStructure = null;
+
+        foreach ($this->structures as $structure) {
+            /** @var Structure $structure */
+            if (!$mainStructure || $structure->getIdentifier() < $mainStructure->getIdentifier()) {
+                $mainStructure = $structure;
+            }
+        }
+
+        return $mainStructure;
+    }
+
     /**
      * @param TranslatorInterface $translator
      *

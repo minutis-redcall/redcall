@@ -200,13 +200,13 @@ campaign_status:
   progress: 'Sending: %sent% / %total% (%progress%%).'
   relaunch_communication: 'Relaunch communication'
   relaunch_communication_confirm: 'Are you sure you wish to relaunch the communication?'
-  finish: 'Sent all messages.'
+  finish: 'Sent all %sent% messages (%replies% answers received, %replies_pct%%)'
   warning:
     no_phone: 'No phone number'
     no_email: "No email"
     no_phone_optin: 'Do not want to be triggered through phone.'
     no_email_optin: "Do not want to be triggered through email."
-  by: 'Sent by %name%'
+  by: 'Sent by %name% (%structure%)'
 
 new_communication:
   title: Write a new message

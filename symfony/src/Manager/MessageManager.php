@@ -208,7 +208,6 @@ class MessageManager
 
         // Storing the new answer
         $answer = new Answer();
-        $message->addAnswser($answer);
         $answer->setMessage($message);
         $answer->setRaw($body);
         $answer->setReceivedAt(new DateTime());
@@ -221,6 +220,9 @@ class MessageManager
         foreach ($choices as $choice) {
             $answer->addChoice($choice);
         }
+
+        $message->addAnswser($answer);
+        $message->setUpdatedAt(new \DateTime());
 
         $this->answerManager->save($answer);
         $this->messageRepository->save($message);

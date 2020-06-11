@@ -71,6 +71,7 @@ class Communication
      * @var array
      *
      * @ORM\OneToMany(targetEntity="App\Entity\Message", mappedBy="communication", cascade={"persist"})
+     * @ORM\OrderBy({"updatedAt" = "DESC"})
      */
     private $messages = [];
 
@@ -426,20 +427,6 @@ class Communication
     }
 
     /**
-     * @return float
-     */
-    public function getCost(): float
-    {
-        $cost = 0.0;
-
-        foreach ($this->getMessages() as $message) {
-            $cost += $message->getCost();
-        }
-
-        return $cost;
-    }
-
-    /**
      * Returns true if message body doesn't exactly match expected choices.
      *
      * @param string|null $prefix
@@ -558,5 +545,61 @@ class Communication
         $this->raw = $raw;
 
         return $this;
+    }
+
+    /**
+     * A volunteer is reachable if:
+     * - he has a phone number (for sms/calls) or an email (for emails)
+     * - he is opted-in
+     *
+     * @return int
+     */
+    public function countReachables() : int
+    {
+        $count = 0;
+
+        foreach ($this->getMessages() as $message) {
+            switch ($this->type) {
+                case self::TYPE_SMS:
+                case self::TYPE_CALL:
+                    if ($message->getVolunteer()->isPhoneNumberOptin() && $message->getVolunteer()->getPhoneNumber()) {
+                        $count++;
+                    }
+
+                    break;
+                case self::TYPE_EMAIL:
+                    if ($message->getVolunteer()->isEmailOptin() && $message->getVolunteer()->getEmail()) {
+                        $count++;
+                    }
+
+                    break;
+            }
+        }
+
+        return $count;
+    }
+
+    public function getProgression() : array
+    {
+        $msgsSent = 0;
+        $replies = 0;
+
+        foreach ($this->getMessages() as $message) {
+            if ($message->getMessageId()) {
+                $msgsSent++;
+            }
+            if ($message->getAnswers()->count()) {
+                $replies++;
+            }
+        }
+
+        return [
+            'sent'      => $msgsSent,
+            'total'     => $count = count($this->getMessages()),
+            'reachable' => $this->countReachables(),
+            'percent'   => $count ? round($msgsSent * 100 / $count, 2) : 0,
+            'replies' => $replies,
+            'replies-percent' => $msgsSent ? round($replies * 100 / $msgsSent, 2) : 0,
+        ];
     }
 }

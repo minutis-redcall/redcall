@@ -199,13 +199,13 @@ campaign_status:
   progress: 'Envoi: %sent% / %total% (%progress%%).'
   relaunch_communication: 'Relancer la communication'
   relaunch_communication_confirm: 'Voulez-vous vraiment relancer la communication ?'
-  finish: 'Envoi terminé.'
+  finish: 'Envoi terminé: %sent% messages envoyés (%replies% réponses reçues, %replies_pct%%)'
   warning:
     no_phone: 'Pas de numéro de téléphone'
     no_email: "Pas d'email"
     no_phone_optin: 'Ne souhaites pas recevoir de SMS/appels.'
     no_email_optin: "Ne souhaites pas recevoir d'emails."
-  by: 'Envoyée par %name%'
+  by: 'Envoyée par %name% (%structure%)'
 
 new_communication:
   title: Ecrire un nouveau message
