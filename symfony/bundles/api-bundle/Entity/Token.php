@@ -20,14 +20,9 @@ class Token
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=36)
+     * @ORM\Column(type="string", length=64)
      */
-    private $userId;
-
-    /**
-     * @ORM\Column(type="string", length=36)
-     */
-    private $token;
+    private $username;
 
     /**
      * @ORM\Column(type="string", length=64)
@@ -64,26 +59,14 @@ class Token
         return $this->id;
     }
 
-    public function getUserId(): ?string
+    public function getUsername(): ?string
     {
-        return $this->userId;
+        return $this->username;
     }
 
-    public function setUserId(?string $userId): self
+    public function setUsername(?string $username): Token
     {
-        $this->userId = $userId;
-
-        return $this;
-    }
-
-    public function getToken(): ?string
-    {
-        return $this->token;
-    }
-
-    public function setToken(string $token): self
-    {
-        $this->token = $token;
+        $this->username = $username;
 
         return $this;
     }

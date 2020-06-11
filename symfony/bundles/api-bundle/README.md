@@ -1,9 +1,16 @@
 # api-bundle
 
-Provides tools:
-- ux to manage api keys tied to users
-- ux to manage webhooks configuration
-- authentication
+Provides useful tools:
+- authentication using existing symfony users
+- api keys management
+- api calls debugger
+- webhooks configuration management
+- webhooks debuggger
+
+Request & response model objects framework:
+- no transformations thanks to the request param converter & response subscriber
+- payloads auto-validated
+- self documented through native & symfony docblocks & annotations
 
 ...
 
@@ -18,13 +25,10 @@ Sample:
 ```
     public function getRoles() : array
     {
-        $roles = ['ROLE_USER'];
-
-        if ($this->isDeveloper) {
-            $roles[] = 'ROLE_DEVELOPER';
-        }
-
-        return $roles;
+        return [
+            'ROLE_USER',
+            'ROLE_DEVELOPER',
+        ];
     }
 ```
 
