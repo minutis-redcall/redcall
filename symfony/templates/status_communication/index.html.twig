@@ -128,7 +128,10 @@
                         {% if communication.volunteer or is_granted('ROLE_ADMIN') %}
                             <div class="float-right color-grey" style="font-weight: normal;" {% if communication.volunteer %}title="{{ communication.volunteer.nivol }}"{% endif %}>
                                 {% if communication.volunteer %}
-                                    {{ 'campaign_status.by'|trans({'%name%': communication.volunteer.displayName}) }}
+                                    {{ 'campaign_status.by'|trans({
+                                        '%name%': communication.volunteer.displayName,
+                                        '%structure%': communication.volunteer.mainStructure,
+                                    }) }}
                                 {% endif %}
 
                                 {% if communication.volunteer and is_granted('ROLE_ADMIN') %}

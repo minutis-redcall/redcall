@@ -205,7 +205,7 @@ campaign_status:
     no_email: "Pas d'email"
     no_phone_optin: 'Ne souhaites pas recevoir de SMS/appels.'
     no_email_optin: "Ne souhaites pas recevoir d'emails."
-  by: 'Envoyée par %name%'
+  by: 'Envoyée par %name% (%structure%)'
 
 new_communication:
   title: Ecrire un nouveau message
