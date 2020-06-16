@@ -42,7 +42,7 @@ class Message
     /**
      * @var Volunteer
      *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Volunteer")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Volunteer", inversedBy="messages")
      */
     private $volunteer;
 

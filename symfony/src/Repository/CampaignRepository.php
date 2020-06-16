@@ -43,10 +43,11 @@ class CampaignRepository extends BaseRepository
      *
      * @return QueryBuilder
      */
-    public function getActiveCampaignsForAdminQueryBuilder(AbstractUser $user): QueryBuilder
+    public function getActiveCampaignsForUserQueryBuilder(AbstractUser $user): QueryBuilder
     {
         return $this
             ->createQueryBuilder('c')
+            ->distinct()
             ->innerJoin('c.structures', 's')
             ->innerJoin('s.users', 'u')
             ->where('u.id = :user')
@@ -59,35 +60,16 @@ class CampaignRepository extends BaseRepository
      *
      * @return QueryBuilder
      */
-    public function getActiveCampaignsForUserQueryBuilder(AbstractUser $user): QueryBuilder
-    {
-        return $this->getActiveCampaignsForAdminQueryBuilder($user);
-    }
-
-    /**
-     * @param AbstractUser $user
-     *
-     * @return QueryBuilder
-     */
-    public function getInactiveCampaignsForAdminQueryBuilder(AbstractUser $user): QueryBuilder
+    public function getInactiveCampaignsForUserQueryBuilder(AbstractUser $user): QueryBuilder
     {
         return $this
             ->createQueryBuilder('c')
+            ->distinct()
             ->innerJoin('c.structures', 's')
             ->innerJoin('s.users', 'u')
             ->where('u.id = :user')
             ->setParameter('user', $user)
             ->andWhere('c.active = false');
-    }
-
-    /**
-     * @param AbstractUser $user
-     *
-     * @return QueryBuilder
-     */
-    public function getInactiveCampaignsForUserQueryBuilder(AbstractUser $user): QueryBuilder
-    {
-        return $this->getInactiveCampaignsForAdminQueryBuilder($user);
     }
 
     /**

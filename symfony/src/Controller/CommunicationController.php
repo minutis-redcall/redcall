@@ -384,6 +384,11 @@ class CommunicationController extends BaseController
      */
     public function relaunchCommunication(Campaign $campaign, Communication $communication, ProcessorInterface $processor)
     {
+        foreach ($communication->getMessages() as $message) {
+            $message->setSent(false);
+            $this->messageManager->save($message);
+        }
+
         $processor->process($communication);
 
         return $this->redirectToRoute('communication_index', ['id' => $campaign->getId()]);
