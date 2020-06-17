@@ -15,3 +15,6 @@ form:
       prefix_already_used: 'Le préfixe "{{ string }}" est déjà utilisé dans une communication d''un déclenchement en cours.'
       no_subject: 'Vous devez définir un sujet au mail'
       call_multiple: 'Les réponses multiples ne sont pas possibles par téléphone.'
+  volunteer:
+    errors:
+      redcall_user: 'Ce bénévole est rattaché à un utilisateur RedCall, supprimez d''abord l''utilisateur afin de pouvoir désactiver le bénévole.'

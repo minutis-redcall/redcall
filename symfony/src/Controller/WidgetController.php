@@ -299,8 +299,10 @@ class WidgetController extends BaseController
         }
 
         // Recovering structures
-        foreach ($data['structures'] as $key => $structureId) {
-            $data['structures'][$key] = $this->structureManager->find($structureId);
+        if ($data['structures'] ?? false) {
+            foreach ($data['structures'] as $key => $structureId) {
+                $data['structures'][$key] = $this->structureManager->find($structureId);
+            }
         }
 
         // Classifying nivols

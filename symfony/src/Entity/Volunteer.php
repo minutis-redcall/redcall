@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use App\Tools\PhoneNumberParser;
 use Bundles\PegassCrawlerBundle\Entity\Pegass;
 use DateInterval;
 use DateTime;
@@ -322,20 +321,6 @@ class Volunteer
         $this->phoneNumber = $phoneNumber;
 
         return $this;
-    }
-
-    /**
-     * @param ExecutionContextInterface $context
-     * @param                           $payload
-     * @Assert\Callback()
-     */
-    public function validatePhoneNumber(ExecutionContextInterface $context, $payload)
-    {
-        if (null === PhoneNumberParser::parse($this->phoneNumber)) {
-            $context->buildViolation('This value is not valid.')
-                    ->atPath('phoneNumber')
-                    ->addViolation();
-        }
     }
 
     /**
@@ -859,5 +844,19 @@ class Volunteer
     public function getMessages(): Collection
     {
         return $this->messages;
+    }
+
+    /**
+     * @param ExecutionContextInterface $context
+     * @param                           $payload
+     * @Assert\Callback()
+     */
+    public function doNotDisableRedCallUsers(ExecutionContextInterface $context, $payload)
+    {
+        if ($this->user && !$this->enabled) {
+            $context->buildViolation('form.volunteer.errors.redcall_user')
+                ->atPath('enabled')
+                ->addViolation();
+        }
     }
 }

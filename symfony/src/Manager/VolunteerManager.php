@@ -226,25 +226,15 @@ class VolunteerManager
     {
         $user = $this->userManager->findForCurrentUser();
 
-        $accessibles = array_map(function(Volunteer $volunteer) {
-            return $volunteer->getNivol();
-        }, $this->filterByNivolAndAccess($nivols));
-
-        if ($user->isAdmin()) {
-            $inaccessibles = [];
-        } else {
-            $all = array_map(function(Volunteer $volunteer) {
-                return $volunteer->getNivol();
-            }, $this->volunteerRepository->filterByNivols($nivols));
-
-            $inaccessibles = array_diff($all, $accessibles);
-        }
-
         return [
-            'valid' => $accessibles,
+            'reachable' => $this->volunteerRepository->filterReachableNivols($nivols, $user),
             'invalid' => $this->volunteerRepository->filterInvalidNivols($nivols),
             'disabled' => $this->volunteerRepository->filterDisabledNivols($nivols),
-            'inaccessible' => $inaccessibles,
+            'inaccessible' => $user->isAdmin() ? [] : $this->volunteerRepository->filterInaccessibleNivols($nivols, $user),
+            'no_phone' => $this->volunteerRepository->filterNoPhoneNivols($nivols, $user),
+            'phone_optout' => $this->volunteerRepository->filterPhoneOptOutNivols($nivols, $user),
+            'no_email' => $this->volunteerRepository->filterNoEmailNivols($nivols, $user),
+            'email_optout' => $this->volunteerRepository->filterEmailOptOutNivols($nivols, $user),
         ];
     }
 

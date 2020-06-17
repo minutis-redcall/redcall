@@ -224,6 +224,11 @@ class VolunteersController extends BaseController
     {
         $this->validateCsrfOrThrowNotFoundException('volunteers', $csrf);
 
+        // Do not disable volunteers tied to RedCall users
+        if ($volunteer->getUser()) {
+            throw $this->createNotFoundException();
+        }
+
         $volunteer->setEnabled(false);
         $volunteer->setLocked(true);
         $this->volunteerManager->save($volunteer);
@@ -238,6 +243,11 @@ class VolunteersController extends BaseController
     public function enableAction(Volunteer $volunteer, string $csrf)
     {
         $this->validateCsrfOrThrowNotFoundException('volunteers', $csrf);
+
+        // Do not disable volunteers tied to RedCall users
+        if ($volunteer->getUser()) {
+            throw $this->createNotFoundException();
+        }
 
         $volunteer->setEnabled(true);
         $volunteer->setLocked(true);

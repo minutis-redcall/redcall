@@ -30,7 +30,7 @@
                                 {% if volunteer.enabled %}
                                     {{ volunteer.displayName }}
                                 {% else %}
-                                    <span style="color:grey;">{{ volunteer.displayName }}</span>
+                                    <span style="color:grey;">{{ volunteer.displayName }}</span> 🚫
                                 {% endif %}
                                 {% if volunteer.minor %}
                                     <span title="{{ 'manage_volunteers.form.minor'|trans }}">🐻</span>
@@ -85,11 +85,15 @@
                             #{{ volunteer.nivol }}
                             <br/>
                             {% if volunteer.email %}
+                                {% if not volunteer.emailOptin %}<strike>{% endif %}
                                 <a href="mailto:{{ volunteer.email }}?subject={{ 'manage_volunteers.contact.mail_subject'|trans({'%brand%': brand|upper})|e('html_attr') }}">{{ volunteer.email }}</a>
+                                {% if not volunteer.emailOptin %}</strike>{% endif %}
                                 <br/>
                             {% endif %}
                             {% if volunteer.phoneNumber %}
+                                {% if not volunteer.phoneNumberOptin %}<strike>{% endif %}
                                 <a href="tel:+{{ volunteer.phoneNumber }}">+{{ volunteer.phoneNumber }}</a>
+                                {% if not volunteer.phoneNumberOptin %}</strike>{% endif %}
                             {% endif %}
                         </div>
 
@@ -130,14 +134,16 @@
                                     {% endif %}
 
                                     {# Disable volunteer #}
-                                    {% if volunteer.enabled %}
-                                        <a class="dropdown-item text-danger" href="{{ path('management_volunteers_disable', app.request.query.all|merge({id: volunteer.id, csrf: csrf_token('volunteers')})) }}">
-                                            {{ 'manage_volunteers.action.disable'|trans }}
-                                        </a>
-                                    {% else %}
-                                        <a class="dropdown-item text-success" href="{{ path('management_volunteers_enable', app.request.query.all|merge({id: volunteer.id, csrf: csrf_token('volunteers')})) }}">
-                                            {{ 'manage_volunteers.action.enable'|trans }}
-                                        </a>
+                                    {% if not volunteer.user %}
+                                        {% if volunteer.enabled %}
+                                            <a class="dropdown-item text-danger" href="{{ path('management_volunteers_disable', app.request.query.all|merge({id: volunteer.id, csrf: csrf_token('volunteers')})) }}">
+                                                {{ 'manage_volunteers.action.disable'|trans }}
+                                            </a>
+                                        {% else %}
+                                            <a class="dropdown-item text-success" href="{{ path('management_volunteers_enable', app.request.query.all|merge({id: volunteer.id, csrf: csrf_token('volunteers')})) }}">
+                                                {{ 'manage_volunteers.action.enable'|trans }}
+                                            </a>
+                                        {% endif %}
                                     {% endif %}
 
                                 </div>
