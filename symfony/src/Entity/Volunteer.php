@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use App\Tools\PhoneNumberParser;
 use Bundles\PegassCrawlerBundle\Entity\Pegass;
 use DateInterval;
 use DateTime;
@@ -13,7 +12,6 @@ use Doctrine\ORM\Mapping as ORM;
 use Exception;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
@@ -322,20 +320,6 @@ class Volunteer
         $this->phoneNumber = $phoneNumber;
 
         return $this;
-    }
-
-    /**
-     * @param ExecutionContextInterface $context
-     * @param                           $payload
-     * @Assert\Callback()
-     */
-    public function validatePhoneNumber(ExecutionContextInterface $context, $payload)
-    {
-        if (null === PhoneNumberParser::parse($this->phoneNumber)) {
-            $context->buildViolation('This value is not valid.')
-                    ->atPath('phoneNumber')
-                    ->addViolation();
-        }
     }
 
     /**

@@ -1,34 +1,32 @@
 {% set uuid = uuid() %}
 
+{% macro classify(uuid, classified, index) %}
+
+    {% if classified[index]|length %}
+        <p>
+            {{ ('audience.classify.' ~ index)|trans({'%nbr%': classified[index]|length}) }}
+            <span class="volunteers-toggle-details btn btn-link" data-target="class-{{ uuid }}-{{ index }}">🔍</span>
+        </p>
+        <div id="class-{{ uuid }}-{{ index }}" class="d-none">{{ classified[index]|join(', ') }}</div>
+    {% endif %}
+
+{% endmacro %}
+
+{% import _self as macros %}
+
 <div id="class-{{ uuid }}">
 
-    {% if classified.invalid|length %}
-        <p>
-            {{ 'audience.classify.invalid'|trans({'%nbr%': classified.invalid|length}) }}
-            <span class="volunteers-toggle-details btn btn-link" data-target="class-{{ uuid }}-invalid">🔍</span>
-        </p>
-        <div id="class-{{ uuid }}-invalid" class="d-none">{{ classified.invalid|join(', ') }}</div>
-    {% endif %}
+    {{ macros.classify(uuid, classified, 'invalid') }}
+    {{ macros.classify(uuid, classified, 'disabled') }}
+    {{ macros.classify(uuid, classified, 'inaccessible') }}
+    {{ macros.classify(uuid, classified, 'no_phone') }}
+    {{ macros.classify(uuid, classified, 'phone_optout') }}
+    {{ macros.classify(uuid, classified, 'no_email') }}
+    {{ macros.classify(uuid, classified, 'email_optout') }}
 
-    {% if classified.disabled|length %}
+    {% if classified.reachable|length %}
         <p>
-            {{ 'audience.classify.disabled'|trans({'%nbr%': classified.disabled|length}) }}
-            <span class="volunteers-toggle-details btn btn-link" data-target="class-{{ uuid }}-disabled">🔍</span>
-        </p>
-        <div id="class-{{ uuid }}-disabled" class="d-none">{{ classified.disabled|join(', ') }}</div>
-    {% endif %}
-
-    {% if classified.inaccessible|length %}
-        <p>
-            {{ 'audience.classify.inaccessible'|trans({'%nbr%': classified.inaccessible|length}) }}
-            <span class="volunteers-toggle-details btn btn-link" data-target="class-{{ uuid }}-inaccessible">🔍</span>
-        </p>
-        <div id="class-{{ uuid }}-inaccessible" class="d-none">{{ classified.inaccessible|join(', ') }}</div>
-    {% endif %}
-
-    {% if classified.valid|length %}
-        <p>
-            {{ 'audience.classify.valid'|trans({'%nbr%': classified.valid|length}) }}
+            {{ 'audience.classify.reachable'|trans({'%nbr%': classified.valid|length}) }}
         </p>
     {% endif %}
 

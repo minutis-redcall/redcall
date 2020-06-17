@@ -85,11 +85,15 @@
                             #{{ volunteer.nivol }}
                             <br/>
                             {% if volunteer.email %}
+                                {% if not volunteer.emailOptin %}<strike>{% endif %}
                                 <a href="mailto:{{ volunteer.email }}?subject={{ 'manage_volunteers.contact.mail_subject'|trans({'%brand%': brand|upper})|e('html_attr') }}">{{ volunteer.email }}</a>
+                                {% if not volunteer.emailOptin %}</strike>{% endif %}
                                 <br/>
                             {% endif %}
                             {% if volunteer.phoneNumber %}
+                                {% if not volunteer.phoneNumberOptin %}<strike>{% endif %}
                                 <a href="tel:+{{ volunteer.phoneNumber }}">+{{ volunteer.phoneNumber }}</a>
+                                {% if not volunteer.phoneNumberOptin %}</strike>{% endif %}
                             {% endif %}
                         </div>
 

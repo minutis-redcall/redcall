@@ -76,7 +76,7 @@ class VolunteerRepository extends BaseRepository
         }
     }
 
-    public function findOneByNivol($nivol): ?Volunteer
+    public function findOneByNivol(string $nivol): ?Volunteer
     {
         return $this->findOneBy([
             'nivol' => ltrim($nivol, '0'),
@@ -313,6 +313,36 @@ class VolunteerRepository extends BaseRepository
             ->getResult();
     }
 
+    public function createAcessibleNivolsFilterQueryBuilder(array $nivols, User $user) : QueryBuilder
+    {
+        return $this->createAccessibleVolunteersQueryBuilder($user)
+            ->select('v.nivol')
+            ->andWhere('v.nivol IN (:nivols)')
+            ->setParameter('nivols', $nivols, Connection::PARAM_STR_ARRAY);
+    }
+
+    public function filterReachableNivols(array $nivols, User $user): array
+    {
+        $valid = $this->createAcessibleNivolsFilterQueryBuilder($nivols, $user)
+            ->andWhere('v.phoneNumber IS NOT NULL')
+            ->andWhere('v.phoneNumberOptin = true')
+            ->andWhere('v.email IS NOT NULL')
+            ->andWhere('v.emailOptin = true')
+            ->getQuery()
+            ->getArrayResult();
+
+        return array_column($valid, 'nivol');
+    }
+
+    public function filterInaccessibleNivols(array $nivols, User $user): array
+    {
+        $accessible = $this->createAcessibleNivolsFilterQueryBuilder($nivols, $user)
+            ->getQuery()
+            ->getArrayResult();
+
+        return array_filter(array_diff($nivols, array_column($accessible, 'nivol')));
+    }
+
     public function filterInvalidNivols(array $nivols): array
     {
         $valid = $this->createVolunteersQueryBuilder(false)
@@ -336,6 +366,48 @@ class VolunteerRepository extends BaseRepository
             ->getArrayResult();
 
         return array_column($disabled, 'nivol');
+    }
+
+    public function filterNoPhoneNivols(array $nivols, User $user): array
+    {
+        $filtered = $this->createAcessibleNivolsFilterQueryBuilder($nivols, $user)
+            ->andWhere('v.phoneNumber IS NULL')
+            ->getQuery()
+            ->getArrayResult();
+
+        return array_column($filtered, 'nivol');
+    }
+
+    public function filterPhoneOptOutNivols(array $nivols, User $user): array
+    {
+        $filtered = $this->createAcessibleNivolsFilterQueryBuilder($nivols, $user)
+            ->andWhere('v.phoneNumber IS NOT NULL')
+            ->andWhere('v.phoneNumberOptin = false')
+            ->getQuery()
+            ->getArrayResult();
+
+        return array_column($filtered, 'nivol');
+    }
+
+    public function filterNoEmailNivols(array $nivols, User $user): array
+    {
+        $filtered = $this->createAcessibleNivolsFilterQueryBuilder($nivols, $user)
+            ->andWhere('v.email IS NULL')
+            ->getQuery()
+            ->getArrayResult();
+
+        return array_column($filtered, 'nivol');
+    }
+
+    public function filterEmailOptOutNivols(array $nivols, User $user): array
+    {
+        $filtered = $this->createAcessibleNivolsFilterQueryBuilder($nivols, $user)
+            ->andWhere('v.email IS NOT NULL')
+            ->andWhere('v.emailOptin = false')
+            ->getQuery()
+            ->getArrayResult();
+
+        return array_column($filtered, 'nivol');
     }
 
     public function loadVolunteersAudience(Structure $structure, array $nivols): array
