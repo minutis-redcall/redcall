@@ -12,6 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Exception;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
@@ -843,5 +844,19 @@ class Volunteer
     public function getMessages(): Collection
     {
         return $this->messages;
+    }
+
+    /**
+     * @param ExecutionContextInterface $context
+     * @param                           $payload
+     * @Assert\Callback()
+     */
+    public function doNotDisableRedCallUsers(ExecutionContextInterface $context, $payload)
+    {
+        if ($this->user && !$this->enabled) {
+            $context->buildViolation('form.volunteer.errors.redcall_user')
+                ->atPath('enabled')
+                ->addViolation();
+        }
     }
 }
