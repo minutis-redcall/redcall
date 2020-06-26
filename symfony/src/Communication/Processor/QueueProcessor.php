@@ -33,7 +33,7 @@ class QueueProcessor implements ProcessorInterface
         $queueName = $client->queueName(getenv('GCP_PROJECT_NAME'), getenv('GCP_PROJECT_LOCATION'), $queueId);
 
         foreach ($communication->getMessages() as $message) {
-            if ($message->isSent()) {
+            if (!$message->canBeSent()) {
                 continue ;
             }
 

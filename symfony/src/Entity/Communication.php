@@ -585,7 +585,7 @@ class Communication
         $replies = 0;
 
         foreach ($this->getMessages() as $message) {
-            if ($message->getMessageId()) {
+            if ($message->isSent()) {
                 $msgsSent++;
             }
             if ($message->getAnswers()->count()) {

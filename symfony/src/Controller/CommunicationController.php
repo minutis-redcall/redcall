@@ -378,9 +378,6 @@ class CommunicationController extends BaseController
     /**
      * @Route("campaign/{campaign}/communication/{communication}/relaunch", name="relaunch")
      * @Security("is_granted('ROLE_ADMIN')")
-     * @param Communication $communication
-     * @param ProcessorInterface $processor
-     * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function relaunchCommunication(Campaign $campaign, Communication $communication, ProcessorInterface $processor)
     {

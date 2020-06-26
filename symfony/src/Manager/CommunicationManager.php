@@ -128,9 +128,10 @@ class CommunicationManager
 
         $this->slackLogger->info(
             sprintf(
-                'New %s trigger by %s on %d volunteers from %d structures.%s%s%sLink: %s',
+                'New %s trigger by %s (%s) on %d volunteers from %d structures.%s%s%sLink: %s',
                 strtoupper($communicationEntity->getType()),
                 $communicationEntity->getVolunteer()->getDisplayName(),
+                $communicationEntity->getVolunteer()->getMainStructure()->getDisplayName(),
                 count($communicationEntity->getMessages()),
                 $campaign->getStructures()->count(),
                 PHP_EOL,

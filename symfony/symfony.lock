@@ -224,6 +224,9 @@
     "setasign/fpdi": {
         "version": "1.6.2"
     },
+    "starkbank/ecdsa": {
+        "version": "0.0.4"
+    },
     "swiftmailer/swiftmailer": {
         "version": "v6.0.2"
     },
@@ -280,6 +283,9 @@
     },
     "symfony/dependency-injection": {
         "version": "v4.1.0"
+    },
+    "symfony/deprecation-contracts": {
+        "version": "v2.1.2"
     },
     "symfony/doctrine-bridge": {
         "version": "v4.1.0"
