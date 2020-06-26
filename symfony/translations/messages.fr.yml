@@ -203,8 +203,8 @@ campaign_status:
   warning:
     no_phone: 'Pas de numéro de téléphone'
     no_email: "Pas d'email"
-    no_phone_optin: 'Ne souhaites pas recevoir de SMS/appels.'
-    no_email_optin: "Ne souhaites pas recevoir d'emails."
+    no_phone_optin: 'Ne souhaite pas recevoir de SMS/appels.'
+    no_email_optin: "Ne souhaite pas recevoir d'emails."
   by: 'Envoyée par %name% (%structure%)'
 
 new_communication:
