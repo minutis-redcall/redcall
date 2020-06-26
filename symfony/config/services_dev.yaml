@@ -1,5 +1,5 @@
 parameters:
-  communication.processor: 'App\Communication\Processor\SimpleProcessor'
+  communication.processor: 'App\Communication\Processor\ExecProcessor'
 
 services:
   App\Provider\SMS\SMSProvider:

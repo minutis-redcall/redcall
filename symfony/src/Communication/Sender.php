@@ -68,7 +68,7 @@ class Sender
     public function sendCommunication(Communication $communication, bool $force = false)
     {
         foreach ($communication->getMessages() as $message) {
-            if ($force || $message->canBeSent()) {
+            if ($message->isReachable() && ($force || $message->canBeSent())) {
                 $this->sendMessage($message);
             }
         }
@@ -111,11 +111,11 @@ class Sender
      */
     public function sendSms(Message $message)
     {
-        $volunteer = $message->getVolunteer();
-
-        if (!$volunteer->getPhoneNumber() || !$volunteer->isPhoneNumberOptin()) {
+        if (!$message->canBeSent()) {
             return;
         }
+
+        $volunteer = $message->getVolunteer();
 
         try {
             $messageId = $this->SMSProvider->send(
@@ -141,11 +141,11 @@ class Sender
      */
     public function sendCall(Message $message)
     {
-        $volunteer = $message->getVolunteer();
-
-        if (!$volunteer->getPhoneNumber() || !$volunteer->isPhoneNumberOptin()) {
+        if (!$message->canBeSent()) {
             return;
         }
+
+        $volunteer = $message->getVolunteer();
 
         try {
             $messageId = $this->callProvider->send(
@@ -174,7 +174,7 @@ class Sender
      */
     public function sendEmail(Message $message)
     {
-        if (!$message->getVolunteer()->getEmail() || !$message->getVolunteer()->isEmailOptin()) {
+        if (!$message->canBeSent()) {
             return;
         }
 

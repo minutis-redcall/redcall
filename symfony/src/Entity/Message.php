@@ -197,11 +197,7 @@ class Message
      */
     public function canBeSent(): bool
     {
-        return !$this->sent && (
-                Communication::TYPE_SMS === $this->communication->getType() && $this->volunteer->getPhoneNumber() ||
-                Communication::TYPE_CALL === $this->communication->getType() && $this->volunteer->getPhoneNumber() ||
-                Communication::TYPE_EMAIL === $this->communication->getType() && $this->volunteer->getEmail()
-            );
+        return !$this->sent && $this->isReachable();
     }
 
     /**
