@@ -307,18 +307,16 @@ La page de gestion des structures vous permet de:
 
 ### Volontaires
 
-Il faut savoir que les bénévoles sont importés de Pegass, mais cela peut avoir plusieurs effets de bords :
+Il faut savoir que les bénévoles sont importés de Pegass.
 
-Si un bénévole possède plusieurs numéros de téléphone, on récupère le premier numéro disponible dans l'ordre suivant:
+Pegass n'a pas l'information 'téléphone favori' défini dans Gaia.
+RedCall choisi le téléphone, en prenant le premier qui est renseigné dans l'ordre suivant:
 - téléphone portable personnel
 - téléphone fixe personnel (si c'est un n* de mobile)
 - téléphone portable pro
 - téléphone fixe pro (si c'est un n* de mobile)
 
-Si un bénévole possède plusieurs emails, on récupère le premier email disponible dans l'ordre suivant:
-- email personnel
-- email professionel
-- email croix-rouge
+L'email favori défini dans Gaia est bien reporté dans Pegass et c'est cet email qui est utilisé par RedCall.
 
 La page de gestion de volontaires vous permet donc de vérifier et/ou corriger d'éventuelles erreurs.
 
