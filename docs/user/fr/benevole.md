@@ -34,8 +34,8 @@ Pour ce faire, connectez-vous à RedCall (via [minutis](https://minutis.croix-ro
 (Pour les opérateurs RedCall, cette page est accessible par le bouton "Espace Bénévole" en bas de page)
 
 #### Ajouter le numéro de RedCall en favori dans votre téléphone
-
-RedCall utilise le numéro [+33 7 57 90 69 62](tel:+33 7 57 90 69 62) pour émettre les appels téléphoniques et les SMS
+                                                      `
+RedCall utilise le numéro `+33 7 57 90 69 62` pour émettre les appels téléphoniques et les SMS
 et [minutis-no-reply@croix-rouge.fr](mailto:minutis-no-reply@croix-rouge.fr) pour les mails.
 
 Il est impératif d'ajouter ces informations dans une fiche contact, mettre celle-ci en favoris et autoriser les contacts favoris quand votre téléphone est ne mode "ne pas déranger".
