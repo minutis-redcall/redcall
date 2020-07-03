@@ -24,9 +24,9 @@ Vous pouvez également recevoir des emails, pour d'autres communications moins u
 
 RedCall s’appuie sur Gaia pour obtenir vos coordonnées et compétences.
 
-Rendez-vous sur [Gaia](https://gaia.croix-rouge.fr) pour vérifier et éventuellement mettre à jours vos coordonnées et compétences.
+Rendez-vous sur [Gaia](https://gaia.croix-rouge.fr) pour vérifier et éventuellement mettre à jour vos coordonnées et compétences.
 
-RedCall se synchronise avec Gaia tous les 30 jours. Vous pouvez demander la mise à jour immediate de RedCall en contactant le support : [support.minutis@croix-rouge.fr](support.minutis@croix-rouge.fr) (un bouton vous permettra prochainement de le faire vous-même depuis l'espace bénévole)
+RedCall se synchronise avec Gaia tous les 30 jours. Vous pouvez demander la mise à jour immédiate de RedCall en contactant le support : [support.minutis@croix-rouge.fr](support.minutis@croix-rouge.fr) (un bouton vous permettra prochainement de le faire vous-même depuis l'espace bénévole)
 
 Si vous avez plusieurs numéros de téléphone, il est possible que RedCall n'utilise pas le bon, car RedCall ne sait pas quel téléphone est défini en favori dans Gaia.
 
@@ -34,13 +34,13 @@ Pour ce faire, connectez-vous à RedCall (via [minutis](https://minutis.croix-ro
 (Pour les opérateurs RedCall, cette page est accessible par le bouton "Espace Bénévole" en bas de page)
 
 #### Ajouter le numéro de RedCall en favori dans votre téléphone
-                                                      `
+
 RedCall utilise le numéro `+33 7 57 90 69 62` pour émettre les appels téléphoniques et les SMS
 et [minutis-no-reply@croix-rouge.fr](mailto:minutis-no-reply@croix-rouge.fr) pour les mails.
 
-Il est impératif d'ajouter ces informations dans une fiche contact, mettre celle-ci en favoris et autoriser les contacts favoris quand votre téléphone est ne mode "ne pas déranger".
+Il est impératif d'ajouter ces informations dans une fiche contact, mettre celle-ci en favori et autoriser les contacts favoris quand votre téléphone est en mode "ne pas déranger".
 
-Créez un nouveau contact dans votre téléphone, nommé "Déclenchement Operex”, société : "Croix Rouge", avec les coordonnées ci-dessus.
+Créez un nouveau contact dans votre téléphone nommé "Déclenchement Operex”, société : "Croix Rouge", avec les coordonnées ci-dessus.
 
 ![Fiche Contact RedCall](10-fiche-contact-redcall.jpg)
 
@@ -59,7 +59,8 @@ Créez un nouveau contact dans votre téléphone, nommé "Déclenchement Operex�
 
 #### Autorisez les Appels & SMS des contacts favoris
 
- * Android: Paramètres -> Notifications -> Ne Pas Déranger -> Authorisation d'exceptions 
+ * Android: Paramètres -> Notifications -> Ne Pas Déranger -> Autorisation d'exceptions. 
+ 
     Vérifiez que "Contacts favoris uniquement" est bien affiché pour "Appels de" et "Expédit. des messages"
 
 <details>
@@ -88,10 +89,10 @@ Créez un nouveau contact dans votre téléphone, nommé "Déclenchement Operex�
 
 ## Rappels sur les déclenchements
 
-* Votre téléphone doit rester connecté au réseau et avoir un bon niveau de batterie. N'utilisez pas le "mode avion", utiliser plutôt le mode "ne pas déranger" et le paramétrage décrit dans le chapitre précédent qui permet à vos contacts favoris de vous joindre dans ce mode.
+* Votre téléphone doit rester connecté au réseau et avoir un bon niveau de batterie. N'utilisez pas le "mode avion" (la nuit par exemple), utilisez plutôt le mode "ne pas déranger" et le paramétrage décrit dans le chapitre précédent qui ne permet qu'à vos contacts favoris de vous joindre.
 * Si on vous demande le temps qu'il vous faut pour être disponible : il s'agit du temps qu'il vous faut pour arriver à votre point de rassemblement (normalement votre Unité Locale)
 * Ne partez pas sans l'ordre explicite de votre cadre
-* Lorsque vous rejoignez votre point de rassemblement, pour votre sécurité, il est impératif d'être habillé en civile sans signe distinctif et votre uniforme dans un sac.
+* Lorsque vous rejoignez votre point de rassemblement, pour votre sécurité, il est impératif d'être habillé en civil sans signe distinctif et votre uniforme dans un sac.
 * Ne pas solliciter vos cadres inutilement pendant la phase de déclenchement.
 
 # Les différents messages envoyés par RedCall
