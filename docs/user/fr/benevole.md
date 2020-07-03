@@ -20,7 +20,7 @@ Il est impératif de répondre dans les plus brefs délais, même pour remonter 
  
 Vous pouvez également recevoir des emails, pour d'autres communications moins urgentes.
 
-#### Vérifiez vos coordonnées sur Gaia
+### Vérifiez vos coordonnées sur Gaia
 
 RedCall s’appuie sur Gaia pour obtenir vos coordonnées et compétences.
 
@@ -33,7 +33,7 @@ Si vous avez plusieurs numéros de téléphone, il est possible que RedCall n'ut
 Pour ce faire, connectez-vous à RedCall (via [minutis](https://minutis.croix-rouge.fr), puis l'icône gyrophare), vous arrivez sur l'espace bénévole, ou vous pouvez consulter/modifier vos informations.
 (Pour les opérateurs RedCall, cette page est accessible par le bouton "Espace Bénévole" en bas de page)
 
-####Ajouter le numéro de RedCall en favori dans votre téléphone
+###Ajouter le numéro de RedCall en favori dans votre téléphone
 
 RedCall utilise le numéro [+33 7 57 90 69 62](tel:+33 7 57 90 69 62) pour émettre les appels téléphoniques et les SMS
 et [minutis-no-reply@croix-rouge.fr](mailto:minutis-no-reply@croix-rouge.fr) pour les mails.
@@ -44,7 +44,7 @@ Créez un nouveau contact dans votre téléphone, nommé "Déclenchement Operex�
 
 ![Fiche Contact RedCall](10-fiche-contact-redcall.jpg)
 
-####Ajouter ensuite ce contact dans vos favoris :
+###Ajouter ensuite ce contact dans vos favoris :
  * Android : cliquez sur l’étoile à droite du nom
  * iPhone : en bas de la fiche contact, cliquez sur “Ajouter aux favoris”, cliquez sur “Message”, puis sélectionnez le numéro. Re-cliquez sur “Ajouter aux favoris”, cliquez sur “Appeler”
 
@@ -57,7 +57,7 @@ Créez un nouveau contact dans votre téléphone, nommé "Déclenchement Operex�
 
 </details>
 
-####Autorisez les Appels & SMS des contacts favoris
+###Autorisez les Appels & SMS des contacts favoris
 
  * Android: Paramètres -> Notifications -> Ne Pas Déranger -> Authorisation d'exceptions 
     Vérifiez que "Contacts favoris uniquement" est bien affiché pour "Appels de" et "Expédit. des messages"
