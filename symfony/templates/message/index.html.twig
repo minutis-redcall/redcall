@@ -2,7 +2,15 @@
 
 {% block content %}
 
-    <p>{% block title %}{{ message.communication.body|nl2br }}{% endblock %}</p>
+    {% block title %}
+        {% if communication.label %}
+            {{ communication.label }}
+        {% else %}
+            {{ 'campaign_status.communication_short_title'|trans({'%date%': communication.createdAt|date('d/m/Y'), '%time%': communication.createdAt|date('H:i')}) }}
+        {% endif %}
+    {% endblock %}
+
+    <p>{{ message.communication.body|nl2br }}</p>
 
     <hr/><br/>
 
