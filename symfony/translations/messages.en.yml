@@ -270,6 +270,8 @@ form:
   campaign:
     fields:
       label: 'Campaign name'
+      notes_title: Notes
+      notes: 'Optional notes rendered to other RedCall users'
       submit: Send
 
 prefilled_answers:

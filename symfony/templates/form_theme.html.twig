@@ -14,10 +14,10 @@
 {% block types_row %}
     <div class="form-group">
         {{ form_label(form) }}
-        <div style="padding-left:15px;padding-right:15px;">
+        <div class="row" style="padding-left:15px;padding-right:15px;">
             {% for child in form.children %}
                 {% set color = constant('App\\Entity\\Campaign::COLORS')[child.vars.value] %}
-                <div style="font-weight:bold;color:{{ color|e('html_attr') }};">
+                <div class="col-md-3" style="font-weight:bold;color:{{ color|e('html_attr') }};">
 
                     {{ form_widget(child, {
                         attr: form.vars.attr|merge({

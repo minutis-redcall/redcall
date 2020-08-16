@@ -269,6 +269,8 @@ form:
   campaign:
     fields:
       label: 'Nom du déclenchement'
+      notes_title: Notes
+      notes: 'Notes facultatives adressées aux autres cadres utilisant RedCall'
       submit: Envoyer
 
 prefilled_answers:

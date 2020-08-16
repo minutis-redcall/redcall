@@ -82,6 +82,16 @@ class Campaign
      */
     private $structures;
 
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private $notes;
+
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    private $notesUpdatedAt;
+
     public function __construct()
     {
         $this->structures = new ArrayCollection();
@@ -356,6 +366,30 @@ class Campaign
         if ($this->structures->contains($structure)) {
             $this->structures->removeElement($structure);
         }
+
+        return $this;
+    }
+
+    public function getNotes(): ?string
+    {
+        return $this->notes;
+    }
+
+    public function setNotes(?string $notes): self
+    {
+        $this->notes = $notes;
+
+        return $this;
+    }
+
+    public function getNotesUpdatedAt(): ?\DateTimeInterface
+    {
+        return $this->notesUpdatedAt;
+    }
+
+    public function setNotesUpdatedAt(\DateTimeInterface $notesUpdatedAt): self
+    {
+        $this->notesUpdatedAt = $notesUpdatedAt;
 
         return $this;
     }

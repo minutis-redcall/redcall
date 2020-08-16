@@ -20,6 +20,10 @@
 
                 {{ include('new_communication/form.html.twig', _context|merge({form: form.communication})) }}
 
+                <hr/>
+                <div class="h4">{{ 'form.campaign.fields.notes_title'|trans }}</div>
+                {{ form_row(form.notes) }}
+
                 {{ form_end(form) }}
 
             </div>
