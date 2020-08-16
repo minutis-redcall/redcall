@@ -209,6 +209,7 @@ campaign_status:
     no_email_optin: "Do not want to be triggered through email."
   by: 'Sent by %name% (%structure%)'
   notes_updated_at: 'Last notes updates on %date% at %time%'
+  no_notes_yet: 'This trigger does not contain any notes yet.'
 
 new_communication:
   title: Write a new message

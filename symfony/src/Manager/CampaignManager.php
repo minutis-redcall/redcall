@@ -77,7 +77,7 @@ class CampaignManager
             ->setLabel($campaignModel->label)
             ->setType($campaignModel->type)
             ->setNotes($campaignModel->notes)
-            ->setNotesUpdatedAt(new \DateTime())
+            ->setNotesUpdatedAt($campaignModel->notes ? new \DateTime() : null)
             ->setActive(true)
             ->setCreatedAt(new \DateTime());
 

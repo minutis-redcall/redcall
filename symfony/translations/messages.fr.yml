@@ -208,6 +208,7 @@ campaign_status:
     no_email_optin: "Ne souhaite pas recevoir d'emails."
   by: 'Envoyée par %name% (%structure%)'
   notes_updated_at: 'Dernière mise à jour des notes le %date% à %time%'
+  no_notes_yet: 'Ce déclenchement ne contient aucune note pour le moment.'
 
 new_communication:
   title: Ecrire un nouveau message

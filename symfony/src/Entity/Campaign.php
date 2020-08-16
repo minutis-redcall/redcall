@@ -88,7 +88,7 @@ class Campaign
     private $notes;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="datetime", nullable=true)
      */
     private $notesUpdatedAt;
 
@@ -253,7 +253,15 @@ class Campaign
      */
     public function getCampaignStatus(): array
     {
-        $data = [];
+        $data = [
+            'notes' => [
+                'content' => $this->notes,
+                'notes-updated-timestamp' => $this->notesUpdatedAt ? $this->notesUpdatedAt->getTimestamp() : null,
+                'notes-updated-date' => $this->notesUpdatedAt ? $this->notesUpdatedAt->format('d/m/Y') : null,
+                'notes-updated-time' => $this->notesUpdatedAt ? $this->notesUpdatedAt->format('H:i') : null,
+            ],
+            'communications' => [],
+        ];
         foreach ($this->getCommunications() as $communication) {
             $msgsSent = 0;
 
@@ -275,7 +283,7 @@ class Campaign
 
                 $invalidAnswer = $message->getInvalidAnswer();
 
-                $data[$communication->getId()]['msg'][$message->getId()] = [
+                $data['communications'][$communication->getId()]['msg'][$message->getId()] = [
                     'sent'               => $message->isSent(),
                     'error'              => $message->getError(),
                     'has-answer'         => $message->getAnswers()->count(),
@@ -289,19 +297,19 @@ class Campaign
             }
 
             // Progression
-            $data[$communication->getId()]['progress'] = $communication->getProgression();
+            $data['communications'][$communication->getId()]['progress'] = $communication->getProgression();
 
             // Choice counts
             foreach ($communication->getChoices() as $choice) {
-                $data[$communication->getId()]['choices'][$choice->getId()] = $choice->getCount();
+                $data['communications'][$communication->getId()]['choices'][$choice->getId()] = $choice->getCount();
             }
 
             // Geolocation
-            $data[$communication->getId()]['geo'] = [];
+            $data['communications'][$communication->getId()]['geo'] = [];
             if ($communication->hasGeoLocation()) {
                 foreach ($communication->getMessages() as $message) {
                     if ($message->getGeoLocation()) {
-                        $data[$communication->getId()]['geo'][$message->getId()] = [
+                        $data['communications'][$communication->getId()]['geo'][$message->getId()] = [
                             'display-name' => $message->getVolunteer()->getDisplayName(),
                             'phone-number' => $message->getVolunteer()->getPhoneNumber(),
                             'longitude'    => $message->getGeoLocation()->getLongitude(),
@@ -387,7 +395,7 @@ class Campaign
         return $this->notesUpdatedAt;
     }
 
-    public function setNotesUpdatedAt(\DateTimeInterface $notesUpdatedAt): self
+    public function setNotesUpdatedAt(?\DateTimeInterface $notesUpdatedAt): self
     {
         $this->notesUpdatedAt = $notesUpdatedAt;
 
