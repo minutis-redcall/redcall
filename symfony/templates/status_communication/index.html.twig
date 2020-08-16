@@ -31,6 +31,24 @@
         </div>
     </div>
 
+    {# -------------------------------------------------------------------------------- #}
+    {# Notes associated with the campaign #}
+    {# -------------------------------------------------------------------------------- #}
+    <div class="col-12 skip-line" {% if campaign.active %}onclick="$('#change-notes').modal();"{% endif %} id="campaign-notes" data-notes-update="{{ campaign.notesUpdatedAt|date('d/m/Y H:i') }}">
+        <div style="padding: 5px; margin: 0px -10px; border: 1px solid black;background-color:#eeeeee;" class="{% if not campaign.notes %}d-none{% endif %}">
+            <span class="float-right badge" style="cursor:pointer;padding-bottom:3px;">✏️</span>
+            {{ campaign.notes|nl2br }}
+            <div class="text-right" style="padding-top:5px;">
+                <em>
+                    {{ 'campaign_status.notes_updated_at'|trans({
+                        '%date%': campaign.notesUpdatedAt|date('d/m/Y'),
+                        '%time%': campaign.notesUpdatedAt|date('H:i'),
+                    }) }}
+                </em>
+            </div>
+        </div>
+    </div>
+
     <div class="row justify-content-md-center">
 
         {# -------------------------------------------------------------------------------- #}

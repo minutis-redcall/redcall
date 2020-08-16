@@ -207,6 +207,7 @@ campaign_status:
     no_phone_optin: 'Do not want to be triggered through phone.'
     no_email_optin: "Do not want to be triggered through email."
   by: 'Sent by %name% (%structure%)'
+  notes_updated_at: 'Last notes updates on %date% at %time%'
 
 new_communication:
   title: Write a new message
