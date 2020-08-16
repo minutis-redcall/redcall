@@ -226,15 +226,24 @@ class VolunteerManager
     {
         $user = $this->userManager->findForCurrentUser();
 
+        $reachable = $this->volunteerRepository->filterReachableNivols($nivols, $user);
+        $invalid = $this->volunteerRepository->filterInvalidNivols($nivols);
+        $disabled = $this->volunteerRepository->filterDisabledNivols($nivols);
+        $noPhone = $this->volunteerRepository->filterNoPhoneNivols($nivols, $user);
+        $phoneOptout = $this->volunteerRepository->filterPhoneOptOutNivols($nivols, $user);
+        $noEmail = $this->volunteerRepository->filterNoEmailNivols($nivols, $user);
+        $emailOptout = $this->volunteerRepository->filterEmailOptOutNivols($nivols, $user);
+        $inaccessible = array_diff($nivols, $reachable, $invalid, $disabled, $noPhone, $phoneOptout, $noEmail, $emailOptout);
+
         return [
-            'reachable' => $this->volunteerRepository->filterReachableNivols($nivols, $user),
-            'invalid' => $this->volunteerRepository->filterInvalidNivols($nivols),
-            'disabled' => $this->volunteerRepository->filterDisabledNivols($nivols),
-            'inaccessible' => $user->isAdmin() ? [] : $this->volunteerRepository->filterInaccessibleNivols($nivols, $user),
-            'no_phone' => $this->volunteerRepository->filterNoPhoneNivols($nivols, $user),
-            'phone_optout' => $this->volunteerRepository->filterPhoneOptOutNivols($nivols, $user),
-            'no_email' => $this->volunteerRepository->filterNoEmailNivols($nivols, $user),
-            'email_optout' => $this->volunteerRepository->filterEmailOptOutNivols($nivols, $user),
+            'reachable' => $reachable,
+            'invalid' => $invalid,
+            'disabled' => $disabled,
+            'inaccessible' => $user->isAdmin() ? [] : $inaccessible,
+            'no_phone' => $noPhone,
+            'phone_optout' => $phoneOptout,
+            'no_email' => $noEmail,
+            'email_optout' => $emailOptout,
         ];
     }
 

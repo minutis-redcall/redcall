@@ -317,7 +317,7 @@ class VolunteerRepository extends BaseRepository
     {
         return $this->createAccessibleVolunteersQueryBuilder($user)
             ->select('v.nivol')
-            ->andWhere('TRIM(LEADING "0" FROM v.nivol) IN (:nivols)')
+            ->andWhere("TRIM(LEADING '0' FROM v.nivol) IN (:nivols)")
             ->setParameter('nivols', $nivols, Connection::PARAM_STR_ARRAY);
     }
 
@@ -332,15 +332,6 @@ class VolunteerRepository extends BaseRepository
             ->getArrayResult();
 
         return array_column($valid, 'nivol');
-    }
-
-    public function filterInaccessibleNivols(array $nivols, User $user) : array
-    {
-        $accessible = $this->createAcessibleNivolsFilterQueryBuilder($nivols, $user)
-            ->getQuery()
-            ->getArrayResult();
-
-        return array_filter(array_diff($nivols, array_column($accessible, 'nivol')));
     }
 
     public function filterInvalidNivols(array $nivols) : array
