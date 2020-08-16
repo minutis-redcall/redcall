@@ -216,9 +216,9 @@ new_communication:
 
 message:
   sms:
-    announcement: '%brand% à %hours%h%mins%.'
-    how_to_answer_simple: Pour répondre, saisir le code de votre choix.
-    how_to_answer_multiple: Pour répondre, saisir le(s) code(s) de votre choix, séparés par un espace.
+    announcement: '%brand% %hours%h%mins%'
+    how_to_answer_simple: Répondez avec le code de votre choix
+    how_to_answer_multiple: Répondez avec les codes de votre choix séparés par un espace
     geo_location: 'Géolocalisation de votre équipe: %url%'
   call:
     announcement: '%brand% à %hours% heure %mins%.'
