@@ -150,6 +150,7 @@ campaign:
 modal:
   change_color: Changer de couleur...
   change_campaign_label: Changer de nom...
+  change_campaign_notes: Changer les notes...
   answers: Réponses
 
 issues:
@@ -206,6 +207,8 @@ campaign_status:
     no_phone_optin: 'Ne souhaite pas recevoir de SMS/appels.'
     no_email_optin: "Ne souhaite pas recevoir d'emails."
   by: 'Envoyée par %name% (%structure%)'
+  notes_updated_at: 'Dernière mise à jour des notes le %date% à %time%'
+  no_notes_yet: 'Ce déclenchement ne contient aucune note pour le moment.'
 
 new_communication:
   title: Ecrire un nouveau message
@@ -213,9 +216,9 @@ new_communication:
 
 message:
   sms:
-    announcement: '%brand% à %hours%h%mins%.'
-    how_to_answer_simple: Pour répondre, saisir le code de votre choix.
-    how_to_answer_multiple: Pour répondre, saisir le(s) code(s) de votre choix, séparés par un espace.
+    announcement: '%brand% %hours%h%mins%'
+    how_to_answer_simple: Répondez avec le code de votre choix
+    how_to_answer_multiple: Répondez avec les codes de votre choix séparés par un espace
     geo_location: 'Géolocalisation de votre équipe: %url%'
   call:
     announcement: '%brand% à %hours% heure %mins%.'
@@ -269,6 +272,8 @@ form:
   campaign:
     fields:
       label: 'Nom du déclenchement'
+      notes_title: Notes
+      notes: 'Notes facultatives adressées aux autres cadres utilisant RedCall'
       submit: Envoyer
 
 prefilled_answers:

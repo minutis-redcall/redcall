@@ -107,6 +107,15 @@ class VolunteerType extends AbstractType
                 ],
             ]);
 
+        $builder->get('nivol')->addModelTransformer(new CallbackTransformer(
+            function ($fromBase) {
+                return $fromBase;
+            },
+            function ($fromForm) {
+                return strtoupper(ltrim($fromForm, '0'));
+            }
+        ));
+
         $builder->get('phoneNumber')->addModelTransformer(new CallbackTransformer(
             function ($fromBase) {
                 return $fromBase;

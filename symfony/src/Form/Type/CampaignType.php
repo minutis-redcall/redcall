@@ -4,6 +4,8 @@ namespace App\Form\Type;
 
 use App\Form\Model\Campaign as CampaignModel;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\CallbackTransformer;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -22,7 +24,21 @@ class CampaignType extends AbstractType
             ->add('type', TypesType::class)
             ->add('communication', CommunicationType::class, [
                 'label' => false,
-            ]);
+            ])
+            ->add('notes', TextareaType::class, [
+                'label'    => 'form.campaign.fields.notes',
+                'required' => false,
+            ])
+        ;
+
+        $builder->get('notes')->addModelTransformer(new CallbackTransformer(
+            function (?string $fromData) {
+                return $fromData;
+            },
+            function (?string $fromForm) {
+                return $fromForm ? strip_tags($fromForm) : null;
+            }
+        ));
     }
 
     public function configureOptions(OptionsResolver $resolver)

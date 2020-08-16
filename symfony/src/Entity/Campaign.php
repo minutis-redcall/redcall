@@ -82,6 +82,16 @@ class Campaign
      */
     private $structures;
 
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private $notes;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $notesUpdatedAt;
+
     public function __construct()
     {
         $this->structures = new ArrayCollection();
@@ -243,7 +253,15 @@ class Campaign
      */
     public function getCampaignStatus(): array
     {
-        $data = [];
+        $data = [
+            'notes' => [
+                'content' => $this->notes,
+                'notes-updated-timestamp' => $this->notesUpdatedAt ? $this->notesUpdatedAt->getTimestamp() : null,
+                'notes-updated-date' => $this->notesUpdatedAt ? $this->notesUpdatedAt->format('d/m/Y') : null,
+                'notes-updated-time' => $this->notesUpdatedAt ? $this->notesUpdatedAt->format('H:i') : null,
+            ],
+            'communications' => [],
+        ];
         foreach ($this->getCommunications() as $communication) {
             $msgsSent = 0;
 
@@ -265,7 +283,7 @@ class Campaign
 
                 $invalidAnswer = $message->getInvalidAnswer();
 
-                $data[$communication->getId()]['msg'][$message->getId()] = [
+                $data['communications'][$communication->getId()]['msg'][$message->getId()] = [
                     'sent'               => $message->isSent(),
                     'error'              => $message->getError(),
                     'has-answer'         => $message->getAnswers()->count(),
@@ -279,19 +297,19 @@ class Campaign
             }
 
             // Progression
-            $data[$communication->getId()]['progress'] = $communication->getProgression();
+            $data['communications'][$communication->getId()]['progress'] = $communication->getProgression();
 
             // Choice counts
             foreach ($communication->getChoices() as $choice) {
-                $data[$communication->getId()]['choices'][$choice->getId()] = $choice->getCount();
+                $data['communications'][$communication->getId()]['choices'][$choice->getId()] = $choice->getCount();
             }
 
             // Geolocation
-            $data[$communication->getId()]['geo'] = [];
+            $data['communications'][$communication->getId()]['geo'] = [];
             if ($communication->hasGeoLocation()) {
                 foreach ($communication->getMessages() as $message) {
                     if ($message->getGeoLocation()) {
-                        $data[$communication->getId()]['geo'][$message->getId()] = [
+                        $data['communications'][$communication->getId()]['geo'][$message->getId()] = [
                             'display-name' => $message->getVolunteer()->getDisplayName(),
                             'phone-number' => $message->getVolunteer()->getPhoneNumber(),
                             'longitude'    => $message->getGeoLocation()->getLongitude(),
@@ -356,6 +374,30 @@ class Campaign
         if ($this->structures->contains($structure)) {
             $this->structures->removeElement($structure);
         }
+
+        return $this;
+    }
+
+    public function getNotes(): ?string
+    {
+        return $this->notes;
+    }
+
+    public function setNotes(?string $notes): self
+    {
+        $this->notes = $notes;
+
+        return $this;
+    }
+
+    public function getNotesUpdatedAt(): ?\DateTimeInterface
+    {
+        return $this->notesUpdatedAt;
+    }
+
+    public function setNotesUpdatedAt(?\DateTimeInterface $notesUpdatedAt): self
+    {
+        $this->notesUpdatedAt = $notesUpdatedAt;
 
         return $this;
     }

@@ -122,6 +122,7 @@ base:
 modal:
   change_color: Change color...
   change_campaign_label: Change name...
+  change_campaign_notes: Change notes...
   answers: Answers
 
 campaign:
@@ -207,6 +208,8 @@ campaign_status:
     no_phone_optin: 'Do not want to be triggered through phone.'
     no_email_optin: "Do not want to be triggered through email."
   by: 'Sent by %name% (%structure%)'
+  notes_updated_at: 'Last notes updates on %date% at %time%'
+  no_notes_yet: 'This trigger does not contain any notes yet.'
 
 new_communication:
   title: Write a new message
@@ -250,7 +253,7 @@ form:
       subject: Subject
       body: Body
       answers: Possible responses
-      answer: Enter response
+      answer: Enter responsef
       add: Add
       add_answer: Add an answer
       remove: Delete
@@ -270,6 +273,8 @@ form:
   campaign:
     fields:
       label: 'Campaign name'
+      notes_title: Notes
+      notes: 'Optional notes rendered to other RedCall users'
       submit: Send
 
 prefilled_answers:

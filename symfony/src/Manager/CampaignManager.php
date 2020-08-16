@@ -8,7 +8,6 @@ use App\Entity\Communication;
 use App\Form\Model\Campaign as CampaignModel;
 use App\Repository\CampaignRepository;
 use Bundles\PasswordLoginBundle\Entity\AbstractUser;
-use DateTime;
 use Doctrine\ORM\QueryBuilder;
 use Exception;
 use LogicException;
@@ -77,8 +76,10 @@ class CampaignManager
         $campaignEntity
             ->setLabel($campaignModel->label)
             ->setType($campaignModel->type)
+            ->setNotes($campaignModel->notes)
+            ->setNotesUpdatedAt($campaignModel->notes ? new \DateTime() : null)
             ->setActive(true)
-            ->setCreatedAt(new DateTime());
+            ->setCreatedAt(new \DateTime());
 
         $this->campaignRepository->save($campaignEntity);
 
@@ -116,13 +117,14 @@ class CampaignManager
         $this->campaignRepository->changeColor($campaign, $color);
     }
 
-    /**
-     * @param Campaign $campaign
-     * @param string   $newName
-     */
     public function changeName(Campaign $campaign, string $newName): void
     {
         $this->campaignRepository->changeName($campaign, $newName);
+    }
+
+    public function changeNotes(Campaign $campaign, string $notes): void
+    {
+        $this->campaignRepository->changeNotes($campaign, $notes);
     }
 
     /**

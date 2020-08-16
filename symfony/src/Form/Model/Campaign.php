@@ -36,6 +36,11 @@ class Campaign
     public $communication;
 
     /**
+     * @var string
+     */
+    public $notes;
+
+    /**
      * Campaign constructor.
      */
     public function __construct()

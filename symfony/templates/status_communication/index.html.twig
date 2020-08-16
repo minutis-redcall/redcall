@@ -31,6 +31,35 @@
         </div>
     </div>
 
+    {# -------------------------------------------------------------------------------- #}
+    {# Notes associated with the campaign #}
+    {# -------------------------------------------------------------------------------- #}
+    <div class="col-12 skip-line" id="campaign-notes" data-notes-updated-timestamp="{{ campaign.notesUpdatedAt|date('U') }}">
+        <div id="campaign-notes-border" style="padding: 5px; margin: 0px -10px; border: 1px solid black;background-color:#eeeeee;">
+            {% if campaign.active %}
+                <span class="float-right badge" onclick="$('#change-notes').modal();" style="cursor:pointer;padding-bottom:3px;">✏️</span>
+            {% endif %}
+            <div id="campaign-notes-content" class="text-to-hypertext">
+                {% if not campaign.notes %}
+                    {{ 'campaign_status.no_notes_yet'|trans }}
+                {% else %}
+                    {{ campaign.notes|nl2br }}
+                {% endif %}
+            </div>
+            <div class="text-right" style="padding-top:5px;">
+                <em id="campaign-notes-last-update">
+                    {% if campaign.notesUpdatedAt %}
+                        {{ 'campaign_status.notes_updated_at'|trans({
+                            '%date%': campaign.notesUpdatedAt|date('d/m/Y'),
+                            '%time%': campaign.notesUpdatedAt|date('H:i'),
+                        }) }}
+                    {% endif %}
+                </em>
+                <a href="#" id="campaign-notes-ack" class="btn btn-sm btn-danger d-none">OK</a>
+            </div>
+        </div>
+    </div>
+
     <div class="row justify-content-md-center">
 
         {# -------------------------------------------------------------------------------- #}
@@ -524,6 +553,25 @@
         {{ macros.modal('change-color', 'modal.change_color'|trans, body) }}
     {% endif %}
 
+    {# -------------------------------------------------------------------------------- #}
+    {# Change campaign notes #}
+    {# -------------------------------------------------------------------------------- #}
+    {% if campaign.active %}
+        {% set body %}
+            <form id="change-notes-form" action="{{ path('notes_campaign', {id: campaign.id}) }}" method="post">
+                <textarea class="form-control" name="notes">{{ campaign.notes }}</textarea>
+                <input type="hidden" name="csrf" value="{{ csrf_token('campaign') }}"/>
+            </form>
+        {% endset %}
+
+        {% set buttons %}
+            <button type="button" class="btn btn-primary"
+                    onclick="$('#change-notes-form').submit();">{{ 'base.form.change'|trans }}</button>
+        {% endset %}
+
+        {{ macros.modal('change-notes', 'modal.change_campaign_notes'|trans, body, buttons) }}
+    {% endif %}
+
     {% for key, communication in campaign.communications %}
         {% set answerCount = communication.choices|length %}
 
@@ -662,7 +710,33 @@
         {# -------------------------------------------------------------------------------- #}
 
         function refreshStatuses(data) {
-            $.each(data, function (communicationId, communication) {
+
+            if ($('#campaign-notes').data('notes-updated-timestamp') !== data['notes']['notes-updated-timestamp']) {
+                {# Replace note contents #}
+                if (data['notes']['content'].length > 0) {
+                    $('#campaign-notes-content').html(data['notes']['content']);
+                } else {
+                    $('#campaign-notes-content').html('{{ 'campaign_status.no_notes_yet'|trans|e('js') }}');
+                }
+
+                {# Replace last update date #}
+                $('#campaign-notes-last-update').html(
+                    '{{ 'campaign_status.notes_updated_at'|trans|e('js') }}'
+                        .replace('%date%', data['notes']['notes-updated-date'])
+                        .replace('%time%', data['notes']['notes-updated-time'])
+                );
+
+                $('#campaign-notes').data('notes-updated-timestamp', data['notes']['notes-updated-timestamp']);
+
+                refreshTextToHypertext();
+
+                {# Applying visual effects to notice the note updates #}
+                $('#campaign-notes-border').css('border', '5px solid red');
+                $('#campaign-notes-last-update').css('color', 'red');
+                $('#campaign-notes-ack').removeClass('d-none');
+            }
+
+            $.each(data['communications'], function (communicationId, communication) {
                 $.each(communication.msg, function (messageId, messageStatus) {
                     var suffix = communicationId + '-' + messageId;
                     var row = $('#row-' + suffix);
@@ -1090,6 +1164,29 @@
         {# -------------------------------------------------------------------------------- #}
         $('.debug').click(function() {
             $('#' + $(this).data('target')).toggleClass('d-none');
+        });
+
+        {# -------------------------------------------------------------------------------- #}
+        {# Transform text links into clickable links #}
+        {# -------------------------------------------------------------------------------- #}
+        function refreshTextToHypertext() {
+            $('.text-to-hypertext').each(function() {
+                var str = $(this).html();
+                var regex = /(https?:\/\/([-\w\.]+)+(:\d+)?(\/([\w\/_\.]*(\?\S+)?)?)?)/ig
+                var replaced_text = str.replace(regex, "<a href='$1' target='_blank'>$1</a>");
+                $(this).html(replaced_text);
+            });
+        }
+        refreshTextToHypertext();
+
+        {# -------------------------------------------------------------------------------- #}
+        {# Acknowledge notes updates #}
+        {# -------------------------------------------------------------------------------- #}
+        $('#campaign-notes-ack').click(function(e) {
+            e.preventDefault();
+            $('#campaign-notes-ack').addClass('d-none');
+            $('#campaign-notes-border').css('border', '1px solid black');
+            $('#campaign-notes-last-update').css('color', '');
         });
 
     </script>

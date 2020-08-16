@@ -182,4 +182,21 @@ class CampaignController extends BaseController
             'id' => $campaignEntity->getId(),
         ]));
     }
+
+    /**
+     * @Route(path="campaign/{id}/notes", name="notes_campaign")
+     * @IsGranted("CAMPAIGN", subject="campaignEntity")
+     */
+    public function notes(Request $request, Campaign $campaignEntity): Response
+    {
+        $this->validateCsrfOrThrowNotFoundException('campaign', $request->request->get('csrf'));
+
+        $notes = strip_tags($request->request->get('notes'));
+
+        $this->campaignManager->changeNotes($campaignEntity, $notes);
+
+        return $this->redirect($this->generateUrl('communication_index', [
+            'id' => $campaignEntity->getId(),
+        ]));
+    }
 }
