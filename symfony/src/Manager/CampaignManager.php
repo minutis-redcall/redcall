@@ -117,13 +117,14 @@ class CampaignManager
         $this->campaignRepository->changeColor($campaign, $color);
     }
 
-    /**
-     * @param Campaign $campaign
-     * @param string   $newName
-     */
     public function changeName(Campaign $campaign, string $newName): void
     {
         $this->campaignRepository->changeName($campaign, $newName);
+    }
+
+    public function changeNotes(Campaign $campaign, string $notes): void
+    {
+        $this->campaignRepository->changeNotes($campaign, $notes);
     }
 
     /**

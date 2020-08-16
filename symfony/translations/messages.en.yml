@@ -122,6 +122,7 @@ base:
 modal:
   change_color: Change color...
   change_campaign_label: Change name...
+  change_campaign_notes: Change notes...
   answers: Answers
 
 campaign:
@@ -251,7 +252,7 @@ form:
       subject: Subject
       body: Body
       answers: Possible responses
-      answer: Enter response
+      answer: Enter responsef
       add: Add
       add_answer: Add an answer
       remove: Delete

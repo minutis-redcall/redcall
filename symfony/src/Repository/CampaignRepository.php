@@ -104,13 +104,17 @@ class CampaignRepository extends BaseRepository
         $this->save($campaign);
     }
 
-    /**
-     * @param Campaign $campaign
-     * @param string   $newName
-     */
     public function changeName(Campaign $campaign, string $newName)
     {
         $campaign->setLabel($newName);
+
+        $this->save($campaign);
+    }
+
+    public function changeNotes(Campaign $campaign, string $notes)
+    {
+        $campaign->setNotes($notes);
+        $campaign->setNotesUpdatedAt(new \DateTime());
 
         $this->save($campaign);
     }

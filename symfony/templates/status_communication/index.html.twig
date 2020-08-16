@@ -542,6 +542,25 @@
         {{ macros.modal('change-color', 'modal.change_color'|trans, body) }}
     {% endif %}
 
+    {# -------------------------------------------------------------------------------- #}
+    {# Change campaign notes #}
+    {# -------------------------------------------------------------------------------- #}
+    {% if campaign.active %}
+        {% set body %}
+            <form id="change-notes-form" action="{{ path('notes_campaign', {id: campaign.id}) }}" method="post">
+                <textarea class="form-control" name="notes">{{ campaign.notes }}</textarea>
+                <input type="hidden" name="csrf" value="{{ csrf_token('campaign') }}"/>
+            </form>
+        {% endset %}
+
+        {% set buttons %}
+            <button type="button" class="btn btn-primary"
+                    onclick="$('#change-notes-form').submit();">{{ 'base.form.change'|trans }}</button>
+        {% endset %}
+
+        {{ macros.modal('change-notes', 'modal.change_campaign_notes'|trans, body, buttons) }}
+    {% endif %}
+
     {% for key, communication in campaign.communications %}
         {% set answerCount = communication.choices|length %}
 
