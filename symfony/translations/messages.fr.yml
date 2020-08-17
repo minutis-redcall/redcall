@@ -197,10 +197,10 @@ campaign_status:
   legend:
     sms_sent: '"SMS envoyé" indique si le message a bien été envoyé au volonaire. Si cette colonne reste vide, il y a probablement un problème technique.'
     sms_received: '"SMS reçu" indique si le message a bien été délivré au bénévole. Elle peut rester blanche si le bénévole a éteint son téléphone.'
-  progress: 'Envoi: %sent% / %total% (%progress%%).'
+  progress: 'Envoi: %sent% %type% / %total% (%progress%%).'
   relaunch_communication: 'Relancer la communication'
   relaunch_communication_confirm: 'Voulez-vous vraiment relancer la communication ?'
-  finish: 'Envoi terminé: %sent% messages envoyés (%replies% réponses reçues, %replies_pct%%)'
+  finish: 'Envoi terminé: %sent% %type% envoyé(s) (%replies% réponse(s) reçue(s), %replies_pct%%)'
   warning:
     no_phone: 'Pas de numéro de téléphone'
     no_email: "Pas d'email"
@@ -216,17 +216,20 @@ new_communication:
 
 message:
   sms:
+    type: 'message(s)'
     announcement: '%brand% %hours%h%mins%'
     how_to_answer_simple: Répondez avec le code de votre choix
     how_to_answer_multiple: Répondez avec les codes de votre choix séparés par un espace
     geo_location: 'Géolocalisation de votre équipe: %url%'
   call:
+    type: 'appel(s)'
     announcement: '%brand% à %hours% heure %mins%.'
     choices: 'Pour répondre "%answer%", tapez %code%.'
     repeat: 'Pour réécouter le message, tapez 0.'
     unknown: 'Réponse invalide.'
     answer: 'Vous avez répondu : "%choice%". Merci pour votre participation.'
   email:
+    type: 'email(s)'
     announcement: '%brand% le %day%/%month%/%year% à %hours%h%mins%'
     how_to_answer_simple: 'Afin de donner votre réponse, veuillez cliquer sur le lien suivant : %url%'
     how_to_answer_multiple: 'Afin de donner votre ou vos réponses, veuillez cliquer sur le lien suivant : %url%'

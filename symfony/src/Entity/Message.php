@@ -411,6 +411,22 @@ class Message
         return false;
     }
 
+    public function getUnclear(): ?Answer
+    {
+        if ($this->getInvalidAnswer()) {
+            return null;
+        }
+
+        foreach ($this->answers ?? [] as $answer) {
+            /* @var Answer $answer */
+            if ($answer->isUnclear()) {
+                return $answer;
+            }
+        }
+
+        return null;
+    }
+
     /**
      * @return Choice[]
      */

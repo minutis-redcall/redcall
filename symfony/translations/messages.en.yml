@@ -198,10 +198,10 @@ campaign_status:
   legend:
     sms_sent: '"SMS sent" indicates whether message has been sent to the volunteer. May be blank if there is a technical issue.'
     sms_received: '"SMS received" indicates wether message has been received by the volunteer. If blank, volunteer may have turned off his phone number.'
-  progress: 'Sending: %sent% / %total% (%progress%%).'
+  progress: 'Sending: %sent% %type% / %total% (%progress%%).'
   relaunch_communication: 'Relaunch communication'
   relaunch_communication_confirm: 'Are you sure you wish to relaunch the communication?'
-  finish: 'Sent all %sent% messages (%replies% answers received, %replies_pct%%)'
+  finish: 'Sent all %sent% %type% (%replies% answers received, %replies_pct%%)'
   warning:
     no_phone: 'No phone number'
     no_email: "No email"
@@ -217,17 +217,20 @@ new_communication:
 
 message:
   sms:
+    type: 'message(s)'
     announcement: '%brand% at %hours%h%mins%:'
     how_to_answer_simple: Reply by giving your choice code.
     how_to_answer_multiple: Reply by giving your choice(s) code(s), separated by a space.
     geo_location: 'Geolocation of your crew: %url%'
   call:
+    type: 'call(s)'
     announcement: '%brand% at %hours% hours %mins%.'
     choices: 'To answer "%answer%", press %code%.'
     repeat: 'To repeat this message, press 0.'
     unknown: 'Invalid answer.'
     answer: 'You answered: "%choice%". Thank you for your participation.'
   email:
+    type: 'email(s)'
     announcement: '%brand% on %year%-%month%-%day% at %hours%h%mins%:'
     how_to_answer_simple: 'To give your answer, please click on the following link: %url%'
     how_to_answer_multiple: 'To give your answer(s), please click on the following link: %url%'

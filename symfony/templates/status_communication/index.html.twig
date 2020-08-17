@@ -34,7 +34,7 @@
     {# -------------------------------------------------------------------------------- #}
     {# Notes associated with the campaign #}
     {# -------------------------------------------------------------------------------- #}
-    <div class="col-12 skip-line" id="campaign-notes" data-notes-updated-timestamp="{{ campaign.notesUpdatedAt|date('U') }}">
+    <div class="col-12 skip-line" id="campaign-notes" data-notes-updated-timestamp="{{ campaign.notesUpdatedAt ? campaign.notesUpdatedAt|date('U') : 0 }}">
         <div id="campaign-notes-border" style="padding: 5px; margin: 0px -10px; border: 1px solid black;background-color:#eeeeee;">
             {% if campaign.active %}
                 <span class="float-right badge" onclick="$('#change-notes').modal();" style="cursor:pointer;padding-bottom:3px;">✏️</span>
@@ -130,12 +130,14 @@
                               class="justify-content-center d-flex position-absolute w-100 text-white">
                             {% if progress[communication.id].sent == progress[communication.id].reachable %}
                                 {{ 'campaign_status.finish'|trans({
+                                    '%type%': ('message.' ~ communication.type ~ '.type')|trans,
                                     '%sent%': progress[communication.id].sent,
                                     '%replies%': progress[communication.id].replies,
                                     '%replies_pct%': progress[communication.id]['replies-percent'],
                                 }) }}
                             {% else %}
                                 {{ 'campaign_status.progress'|trans({
+                                    '%type%': ('message.' ~ communication.type ~ '.type')|trans,
                                     '%sent%': progress[communication.id].sent,
                                     '%total%': progress[communication.id].total,
                                     '%progress%': progress[communication.id].percent
@@ -224,8 +226,10 @@
                             {% endfor %}
                             <td>
                                 <a href="#"
+                                   id="has-invalid-answer-{{ communication.id }}"
                                    class="filter-response"
                                    data-communication-id="{{ communication.id }}"
+                                   data-count="{{ communication.invalidAnswersCount }}"
                                    data-target="filter-has-invalid-answer-{{ communication.id }}">
                                     {{ communication.invalidAnswersCount }}
                                 </a>
@@ -351,19 +355,19 @@
                                             <a class="btn btn-default"
                                             {% if communication.type == constant('App\\Entity\\Communication::TYPE_SMS') %}
                                                 {% if message.volunteer.phoneNumber %}
-                                                    href="{{ path('sandbox_fake_sms_thread', {phoneNumber: message.volunteer.phoneNumber, campaignId: campaign.id}) }}">{{ macros.communicationIcon(communication) }}</a>
+                                                    target="_blank" href="{{ path('sandbox_fake_sms_thread', {phoneNumber: message.volunteer.phoneNumber, campaignId: campaign.id}) }}">{{ macros.communicationIcon(communication) }}</a>
                                                 {% else %}
                                                     href="#">&nbsp;</a>
                                                 {% endif %}
                                             {% elseif communication.type == constant('App\\Entity\\Communication::TYPE_CALL') %}
                                                 {% if message.volunteer.phoneNumber %}
-                                                    href="{{ path('sandbox_fake_call_read', {phoneNumber: message.volunteer.phoneNumber, campaignId: campaign.id}) }}">{{ macros.communicationIcon(communication) }}️</a>
+                                                    target="_blank" href="{{ path('sandbox_fake_call_read', {phoneNumber: message.volunteer.phoneNumber, campaignId: campaign.id}) }}">{{ macros.communicationIcon(communication) }}️</a>
                                                 {% else %}
                                                     href="#">&nbsp;</a>
                                                 {% endif %}
                                             {% else %}
                                                 {% if message.volunteer.email %}
-                                                    href="{{ path('sandbox_fake_email_read', {email: message.volunteer.email, campaignId: campaign.id}) }}">{{ macros.communicationIcon(communication) }}️</a>
+                                                    target="_blank" href="{{ path('sandbox_fake_email_read', {email: message.volunteer.email, campaignId: campaign.id}) }}">{{ macros.communicationIcon(communication) }}️</a>
                                                 {% else %}
                                                     href="#">&nbsp;</a>
                                                 {% endif %}
@@ -413,6 +417,9 @@
                                     <div id="invalid-answer-raw-{{ suffix }}" style="font-size:10px;">
                                         {% if message.invalidAnswer %}
                                             {{ message.invalidAnswer.raw }}
+                                        {% endif %}
+                                        {% if message.isUnclear %}
+                                            {{ message.unclear.raw }}
                                         {% endif %}
                                     </div>
                                 </td>
@@ -559,7 +566,7 @@
     {% if campaign.active %}
         {% set body %}
             <form id="change-notes-form" action="{{ path('notes_campaign', {id: campaign.id}) }}" method="post">
-                <textarea class="form-control" name="notes">{{ campaign.notes }}</textarea>
+                <textarea class="form-control" style="width:100%" rows=15 name="notes">{{ campaign.notes }}</textarea>
                 <input type="hidden" name="csrf" value="{{ csrf_token('campaign') }}"/>
             </form>
         {% endset %}
@@ -709,11 +716,17 @@
         {# Auto refresh information
         {# -------------------------------------------------------------------------------- #}
 
+        var types = {
+            sms: '{{ 'message.sms.type'|trans }}',
+            call: '{{ 'message.call.type'|trans }}',
+            email: '{{ 'message.email.type'|trans }}',
+        };
         function refreshStatuses(data) {
 
-            if ($('#campaign-notes').data('notes-updated-timestamp') !== data['notes']['notes-updated-timestamp']) {
+            if ($('#campaign-notes').data('notes-updated-timestamp') != data['notes']['notes-updated-timestamp']) {
+
                 {# Replace note contents #}
-                if (data['notes']['content'].length > 0) {
+                if (data['notes']['content'] && data['notes']['content'].length > 0) {
                     $('#campaign-notes-content').html(data['notes']['content']);
                 } else {
                     $('#campaign-notes-content').html('{{ 'campaign_status.no_notes_yet'|trans|e('js') }}');
@@ -737,6 +750,7 @@
             }
 
             $.each(data['communications'], function (communicationId, communication) {
+                var hasInvalidAnswers = 0;
                 $.each(communication.msg, function (messageId, messageStatus) {
                     var suffix = communicationId + '-' + messageId;
                     var row = $('#row-' + suffix);
@@ -759,8 +773,9 @@
                     });
 
                     {# Message has ambiguous answer #}
-                    if (messageStatus['is-unclear']) {
+                    if (messageStatus['has-unclear-answer']['raw']) {
                         $('#message-is-unclear-' + suffix).removeClass('d-none');
+                        $('#invalid-answer-raw-' + suffix).html(messageStatus['has-unclear-answer']['raw']).removeClass('d-none');
                     } else {
                         $('#message-is-unclear-' + suffix).addClass('d-none');
                     }
@@ -781,9 +796,12 @@
                         $('#message-has-invalid-answer-' + suffix).removeClass('d-none');
                         $('#message-has-invalid-answer-time-' + suffix).html(messageStatus['has-invalid-answer']['time']);
                         $('#invalid-answer-raw-' + suffix).html(messageStatus['has-invalid-answer']['raw']).removeClass('d-none');
+                        hasInvalidAnswers++;
                     } else {
-                        $('#message-has-invalid-answer-' + suffix).addClass('d-none');
-                        $('#invalid-answer-raw-' + suffix).addClass('d-none');
+                        if (!messageStatus['has-unclear-answer']['raw']) {
+                            $('#message-has-invalid-answer-' + suffix).addClass('d-none');
+                            $('#invalid-answer-raw-' + suffix).addClass('d-none');
+                        }
                     }
                     $('#message-has-invalid-answer-' + suffix).data('value', messageStatus['has-invalid-answer']['raw'] ? 1 : 0);
                 });
@@ -802,6 +820,7 @@
                             .replace('%sent%', communication.progress.sent)
                             .replace('%replies%', communication.progress.replies)
                             .replace('%replies_pct%', communication.progress['replies-percent'])
+                            .replace('%type%', types[communication.progress.type])
                     );
                 } else {
                     $('#progress-text-' + communicationId).html(
@@ -810,6 +829,7 @@
                             .replace('%total%', communication.progress.total)
                             .replace('%progress%', communication.progress.percent)
                             .replace('%cost%', communication.progress.cost)
+                            .replace('%type%', types[communication.progress.type])
                     );
                 }
 
@@ -821,6 +841,13 @@
                         choice.data('count', count);
                     }
                 });
+
+                var invalid = $('#has-invalid-answer-' + communicationId);
+                if (hasInvalidAnswers !== invalid.data('count')) {
+                    invalid.html(hasInvalidAnswers);
+                    invalid.animate({fontSize: '50px'}, 500).animate({fontSize: '1rem'}, 500);
+                    invalid.data('count', hasInvalidAnswers);
+                }
             });
 
             refreshVisibility();
@@ -1172,7 +1199,7 @@
         function refreshTextToHypertext() {
             $('.text-to-hypertext').each(function() {
                 var str = $(this).html();
-                var regex = /(https?:\/\/([-\w\.]+)+(:\d+)?(\/([\w\/_\.]*(\?\S+)?)?)?)/ig
+                var regex = /(https?:\/\/([^\s]+))/ig
                 var replaced_text = str.replace(regex, "<a href='$1' target='_blank'>$1</a>");
                 $(this).html(replaced_text);
             });

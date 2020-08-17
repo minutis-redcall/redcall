@@ -255,8 +255,8 @@ class Campaign
     {
         $data = [
             'notes' => [
-                'content' => $this->notes,
-                'notes-updated-timestamp' => $this->notesUpdatedAt ? $this->notesUpdatedAt->getTimestamp() : null,
+                'content' => nl2br($this->notes),
+                'notes-updated-timestamp' => $this->notesUpdatedAt ? $this->notesUpdatedAt->getTimestamp() : 0,
                 'notes-updated-date' => $this->notesUpdatedAt ? $this->notesUpdatedAt->format('d/m/Y') : null,
                 'notes-updated-time' => $this->notesUpdatedAt ? $this->notesUpdatedAt->format('H:i') : null,
             ],
@@ -281,6 +281,7 @@ class Campaign
                     }
                 }
 
+                $unclearAnswer = $message->getUnclear();
                 $invalidAnswer = $message->getInvalidAnswer();
 
                 $data['communications'][$communication->getId()]['msg'][$message->getId()] = [
@@ -288,10 +289,13 @@ class Campaign
                     'error'              => $message->getError(),
                     'has-answer'         => $message->getAnswers()->count(),
                     'choices'            => $choices,
-                    'is-unclear'         => $message->isUnclear(),
                     'has-invalid-answer' => [
                         'raw'  => $invalidAnswer ? $invalidAnswer->getSafeRaw() : null,
                         'time' => $invalidAnswer ? $invalidAnswer->getReceivedAt()->format('H:i') : null,
+                    ],
+                    'has-unclear-answer' => [
+                        'raw'  => $unclearAnswer ? $unclearAnswer->getSafeRaw() : null,
+                        'time' => $unclearAnswer ? $unclearAnswer->getReceivedAt()->format('H:i') : null,
                     ],
                 ];
             }
