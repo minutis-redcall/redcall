@@ -34,7 +34,7 @@
     {# -------------------------------------------------------------------------------- #}
     {# Notes associated with the campaign #}
     {# -------------------------------------------------------------------------------- #}
-    <div class="col-12 skip-line" id="campaign-notes" data-notes-updated-timestamp="{{ campaign.notesUpdatedAt|date('U') }}">
+    <div class="col-12 skip-line" id="campaign-notes" data-notes-updated-timestamp="{{ campaign.notesUpdatedAt ? campaign.notesUpdatedAt|date('U') : 0 }}">
         <div id="campaign-notes-border" style="padding: 5px; margin: 0px -10px; border: 1px solid black;background-color:#eeeeee;">
             {% if campaign.active %}
                 <span class="float-right badge" onclick="$('#change-notes').modal();" style="cursor:pointer;padding-bottom:3px;">✏️</span>
@@ -351,19 +351,19 @@
                                             <a class="btn btn-default"
                                             {% if communication.type == constant('App\\Entity\\Communication::TYPE_SMS') %}
                                                 {% if message.volunteer.phoneNumber %}
-                                                    href="{{ path('sandbox_fake_sms_thread', {phoneNumber: message.volunteer.phoneNumber, campaignId: campaign.id}) }}">{{ macros.communicationIcon(communication) }}</a>
+                                                    target="_blank" href="{{ path('sandbox_fake_sms_thread', {phoneNumber: message.volunteer.phoneNumber, campaignId: campaign.id}) }}">{{ macros.communicationIcon(communication) }}</a>
                                                 {% else %}
                                                     href="#">&nbsp;</a>
                                                 {% endif %}
                                             {% elseif communication.type == constant('App\\Entity\\Communication::TYPE_CALL') %}
                                                 {% if message.volunteer.phoneNumber %}
-                                                    href="{{ path('sandbox_fake_call_read', {phoneNumber: message.volunteer.phoneNumber, campaignId: campaign.id}) }}">{{ macros.communicationIcon(communication) }}️</a>
+                                                    target="_blank" href="{{ path('sandbox_fake_call_read', {phoneNumber: message.volunteer.phoneNumber, campaignId: campaign.id}) }}">{{ macros.communicationIcon(communication) }}️</a>
                                                 {% else %}
                                                     href="#">&nbsp;</a>
                                                 {% endif %}
                                             {% else %}
                                                 {% if message.volunteer.email %}
-                                                    href="{{ path('sandbox_fake_email_read', {email: message.volunteer.email, campaignId: campaign.id}) }}">{{ macros.communicationIcon(communication) }}️</a>
+                                                    target="_blank" href="{{ path('sandbox_fake_email_read', {email: message.volunteer.email, campaignId: campaign.id}) }}">{{ macros.communicationIcon(communication) }}️</a>
                                                 {% else %}
                                                     href="#">&nbsp;</a>
                                                 {% endif %}
@@ -413,6 +413,9 @@
                                     <div id="invalid-answer-raw-{{ suffix }}" style="font-size:10px;">
                                         {% if message.invalidAnswer %}
                                             {{ message.invalidAnswer.raw }}
+                                        {% endif %}
+                                        {% if message.isUnclear %}
+                                            {{ message.unclear.raw }}
                                         {% endif %}
                                     </div>
                                 </td>
@@ -711,9 +714,10 @@
 
         function refreshStatuses(data) {
 
-            if ($('#campaign-notes').data('notes-updated-timestamp') !== data['notes']['notes-updated-timestamp']) {
+            if ($('#campaign-notes').data('notes-updated-timestamp') != data['notes']['notes-updated-timestamp']) {
+
                 {# Replace note contents #}
-                if (data['notes']['content'].length > 0) {
+                if (data['notes']['content'] && data['notes']['content'].length > 0) {
                     $('#campaign-notes-content').html(data['notes']['content']);
                 } else {
                     $('#campaign-notes-content').html('{{ 'campaign_status.no_notes_yet'|trans|e('js') }}');
@@ -759,8 +763,9 @@
                     });
 
                     {# Message has ambiguous answer #}
-                    if (messageStatus['is-unclear']) {
+                    if (messageStatus['has-unclear-answer']['raw']) {
                         $('#message-is-unclear-' + suffix).removeClass('d-none');
+                        $('#invalid-answer-raw-' + suffix).html(messageStatus['has-unclear-answer']['raw']).removeClass('d-none');
                     } else {
                         $('#message-is-unclear-' + suffix).addClass('d-none');
                     }
@@ -782,8 +787,10 @@
                         $('#message-has-invalid-answer-time-' + suffix).html(messageStatus['has-invalid-answer']['time']);
                         $('#invalid-answer-raw-' + suffix).html(messageStatus['has-invalid-answer']['raw']).removeClass('d-none');
                     } else {
-                        $('#message-has-invalid-answer-' + suffix).addClass('d-none');
-                        $('#invalid-answer-raw-' + suffix).addClass('d-none');
+                        if (!messageStatus['has-unclear-answer']['raw']) {
+                            $('#message-has-invalid-answer-' + suffix).addClass('d-none');
+                            $('#invalid-answer-raw-' + suffix).addClass('d-none');
+                        }
                     }
                     $('#message-has-invalid-answer-' + suffix).data('value', messageStatus['has-invalid-answer']['raw'] ? 1 : 0);
                 });
