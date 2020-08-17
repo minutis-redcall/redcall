@@ -562,7 +562,7 @@
     {% if campaign.active %}
         {% set body %}
             <form id="change-notes-form" action="{{ path('notes_campaign', {id: campaign.id}) }}" method="post">
-                <textarea class="form-control" name="notes">{{ campaign.notes }}</textarea>
+                <textarea class="form-control" style="width:100%" rows=15 name="notes">{{ campaign.notes }}</textarea>
                 <input type="hidden" name="csrf" value="{{ csrf_token('campaign') }}"/>
             </form>
         {% endset %}
@@ -1179,7 +1179,7 @@
         function refreshTextToHypertext() {
             $('.text-to-hypertext').each(function() {
                 var str = $(this).html();
-                var regex = /(https?:\/\/([-\w\.]+)+(:\d+)?(\/([\w\/_\.]*(\?\S+)?)?)?)/ig
+                var regex = /(https?:\/\/([^\s]+))/ig
                 var replaced_text = str.replace(regex, "<a href='$1' target='_blank'>$1</a>");
                 $(this).html(replaced_text);
             });

@@ -255,7 +255,7 @@ class Campaign
     {
         $data = [
             'notes' => [
-                'content' => $this->notes,
+                'content' => nl2br($this->notes),
                 'notes-updated-timestamp' => $this->notesUpdatedAt ? $this->notesUpdatedAt->getTimestamp() : 0,
                 'notes-updated-date' => $this->notesUpdatedAt ? $this->notesUpdatedAt->format('d/m/Y') : null,
                 'notes-updated-time' => $this->notesUpdatedAt ? $this->notesUpdatedAt->format('H:i') : null,
