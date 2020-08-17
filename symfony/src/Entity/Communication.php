@@ -598,8 +598,9 @@ class Communication
             'total'     => $count = count($this->getMessages()),
             'reachable' => $this->countReachables(),
             'percent'   => $count ? round($msgsSent * 100 / $count, 2) : 0,
-            'replies' => $replies,
+            'replies'   => $replies,
             'replies-percent' => $msgsSent ? round($replies * 100 / $msgsSent, 2) : 0,
+            'type'      => $this->type,
         ];
     }
 }

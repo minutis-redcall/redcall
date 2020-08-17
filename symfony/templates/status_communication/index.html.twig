@@ -130,12 +130,14 @@
                               class="justify-content-center d-flex position-absolute w-100 text-white">
                             {% if progress[communication.id].sent == progress[communication.id].reachable %}
                                 {{ 'campaign_status.finish'|trans({
+                                    '%type%': ('message.' ~ communication.type ~ '.type')|trans,
                                     '%sent%': progress[communication.id].sent,
                                     '%replies%': progress[communication.id].replies,
                                     '%replies_pct%': progress[communication.id]['replies-percent'],
                                 }) }}
                             {% else %}
                                 {{ 'campaign_status.progress'|trans({
+                                    '%type%': ('message.' ~ communication.type ~ '.type')|trans,
                                     '%sent%': progress[communication.id].sent,
                                     '%total%': progress[communication.id].total,
                                     '%progress%': progress[communication.id].percent
@@ -712,6 +714,11 @@
         {# Auto refresh information
         {# -------------------------------------------------------------------------------- #}
 
+        var types = {
+            sms: '{{ 'message.sms.type'|trans }}',
+            call: '{{ 'message.call.type'|trans }}',
+            email: '{{ 'message.email.type'|trans }}',
+        };
         function refreshStatuses(data) {
 
             if ($('#campaign-notes').data('notes-updated-timestamp') != data['notes']['notes-updated-timestamp']) {
@@ -809,6 +816,7 @@
                             .replace('%sent%', communication.progress.sent)
                             .replace('%replies%', communication.progress.replies)
                             .replace('%replies_pct%', communication.progress['replies-percent'])
+                            .replace('%type%', types[communication.progress.type])
                     );
                 } else {
                     $('#progress-text-' + communicationId).html(
@@ -817,6 +825,7 @@
                             .replace('%total%', communication.progress.total)
                             .replace('%progress%', communication.progress.percent)
                             .replace('%cost%', communication.progress.cost)
+                            .replace('%type%', types[communication.progress.type])
                     );
                 }
 
