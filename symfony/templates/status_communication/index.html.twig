@@ -226,8 +226,10 @@
                             {% endfor %}
                             <td>
                                 <a href="#"
+                                   id="has-invalid-answer-{{ communication.id }}"
                                    class="filter-response"
                                    data-communication-id="{{ communication.id }}"
+                                   data-count="{{ communication.invalidAnswersCount }}"
                                    data-target="filter-has-invalid-answer-{{ communication.id }}">
                                     {{ communication.invalidAnswersCount }}
                                 </a>
@@ -748,6 +750,7 @@
             }
 
             $.each(data['communications'], function (communicationId, communication) {
+                var hasInvalidAnswers = 0;
                 $.each(communication.msg, function (messageId, messageStatus) {
                     var suffix = communicationId + '-' + messageId;
                     var row = $('#row-' + suffix);
@@ -793,6 +796,7 @@
                         $('#message-has-invalid-answer-' + suffix).removeClass('d-none');
                         $('#message-has-invalid-answer-time-' + suffix).html(messageStatus['has-invalid-answer']['time']);
                         $('#invalid-answer-raw-' + suffix).html(messageStatus['has-invalid-answer']['raw']).removeClass('d-none');
+                        hasInvalidAnswers++;
                     } else {
                         if (!messageStatus['has-unclear-answer']['raw']) {
                             $('#message-has-invalid-answer-' + suffix).addClass('d-none');
@@ -837,6 +841,13 @@
                         choice.data('count', count);
                     }
                 });
+
+                var invalid = $('#has-invalid-answer-' + communicationId);
+                if (hasInvalidAnswers !== invalid.data('count')) {
+                    invalid.html(hasInvalidAnswers);
+                    invalid.animate({fontSize: '50px'}, 500).animate({fontSize: '1rem'}, 500);
+                    invalid.data('count', hasInvalidAnswers);
+                }
             });
 
             refreshVisibility();
