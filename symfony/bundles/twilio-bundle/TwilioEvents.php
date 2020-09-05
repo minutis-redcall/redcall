@@ -9,11 +9,12 @@ class TwilioEvents
     const MESSAGE_PRICE_UPDATED = 'twilio.message_price_updated';
     const MESSAGE_ERROR         = 'twilio.message_error';
 
-    const CALL_ESTABLISHED   = 'twilio.call_established';
-    const CALL_KEY_PRESSED   = 'twilio.call_key_pressed';
-    const CALL_RECEIVED      = 'twilio.call_received';
-    const CALL_PRICE_UPDATED = 'twilio.call_price_updated';
-    const CALL_ERROR         = 'twilio.call_error';
+    const CALL_ESTABLISHED       = 'twilio.call_established';
+    const CALL_KEY_PRESSED       = 'twilio.call_key_pressed';
+    const CALL_RECEIVED          = 'twilio.call_received';
+    const CALL_PRICE_UPDATED     = 'twilio.call_price_updated';
+    const CALL_ERROR             = 'twilio.call_error';
+    const CALL_ANSWERING_MACHINE = 'twilio.call_answering_machine';
 
     const STATUS_UPDATED = 'twilio.status_updated';
 }

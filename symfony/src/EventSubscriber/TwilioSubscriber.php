@@ -2,6 +2,7 @@
 
 namespace App\EventSubscriber;
 
+use App\Communication\Sender;
 use App\Entity\Message;
 use App\Manager\CostManager;
 use App\Manager\MessageManager;
@@ -31,21 +32,21 @@ class TwilioSubscriber implements EventSubscriberInterface
     private $voiceCalls;
 
     /**
+     * @var Sender
+     */
+    private $sender;
+
+    /**
      * @var TranslatorInterface
      */
     private $translator;
 
-    /**
-     * @param CostManager         $costManager
-     * @param MessageManager      $messageManager
-     * @param VoiceCalls          $voiceCalls
-     * @param TranslatorInterface $translator
-     */
-    public function __construct(CostManager $costManager, MessageManager $messageManager, VoiceCalls $voiceCalls, TranslatorInterface $translator)
+    public function __construct(CostManager $costManager, MessageManager $messageManager, VoiceCalls $voiceCalls, Sender $sender, TranslatorInterface $translator)
     {
         $this->costManager = $costManager;
         $this->messageManager = $messageManager;
         $this->voiceCalls = $voiceCalls;
+        $this->sender = $sender;
         $this->translator = $translator;
     }
 
@@ -63,6 +64,7 @@ class TwilioSubscriber implements EventSubscriberInterface
             TwilioEvents::CALL_ESTABLISHED => 'onCallEstablished',
             TwilioEvents::CALL_KEY_PRESSED => 'onCallKeyPressed',
             TwilioEvents::CALL_ERROR => 'onCallError',
+            TwilioEvents::CALL_ANSWERING_MACHINE => 'onAnsweringMachine',
         ];
     }
 
@@ -169,6 +171,15 @@ class TwilioSubscriber implements EventSubscriberInterface
         $message->setError($event->getCall()->getError());
 
         $this->messageManager->save($message);
+    }
+
+    public function onAnsweringMachine(TwilioCallEvent $event)
+    {
+        $message = $this->getMessageFromCall($event);
+
+        $message->setSent(false);
+
+        $this->sender->sendSms($message);
     }
 
     private function getMessageFromSms(TwilioMessageEvent $event): ?Message

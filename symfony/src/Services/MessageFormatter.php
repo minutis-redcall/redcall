@@ -112,7 +112,7 @@ class MessageFormatter
             '%mins%'  => $mins,
         ]);
 
-        $contentParts[] = $communication->getBody();
+        $contentParts[] = sprintf('%s.', $communication->getBody());
 
         if ($withChoices) {
             $contentParts[] = $this->formatCallChoicesContent($message);

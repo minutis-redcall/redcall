@@ -96,4 +96,27 @@ class CallController extends BaseController
             'uuid' => $uuid,
         ]);
     }
+
+    /**
+     * @Route(name="answering_machine", path="answering-machine/{uuid}")
+     */
+    public function answeringMachine(Request $request, string $uuid)
+    {
+        $this->validateRequestSignature($request);
+
+        $this->logger->info('Twilio webhooks - answering machine hook', [
+            'payload' => $request->request->all(),
+        ]);
+
+        $call = $this->callManager->get($uuid);
+        if (!$call) {
+            throw $this->createNotFoundException();
+        }
+
+        if ('machine_start' === $request->get('AnsweredBy')) {
+            $this->callManager->handleAnsweringMachine($call);
+        }
+
+        return new Response();
+    }
 }
