@@ -125,23 +125,35 @@ class TwilioSubscriber implements EventSubscriberInterface
 
     public function onCallReceived(TwilioCallEvent $event)
     {
+        $message = $this->messageManager->getMessageFromPhoneNumber(
+            ltrim($event->getCall()->getFromNumber(), '+')
+        );
+
+        if ($message) {
+            $event->getCall()->setContext([
+                'message_id' => $message->getId(),
+            ]);
+
+            $event->setResponse(
+                $this->voiceCalls->establishCall($event->getCall()->getUuid(), $message)
+            );
+
+            return;
+        }
+
         $response = new VoiceResponse();
 
-        $response->say(
-            sprintf('%s bonjour, ce numéro ne prend pas d\'appels, merci de contacter votre unité locale afin de poser vos questions.', getenv('BRAND')), [
-                'voice' => 'alice',
-                'language' => 'fr-FR',
-            ]
-        );
+        $response->say('Votre numéro de téléphone n\'est sur aucun déclenchement actif pour le moment.', [
+            'voice' => 'alice',
+            'language' => 'fr-FR',
+        ]);
 
         $response->pause(['length' => 1]);
 
-        $response->say(
-            sprintf('%s greetings, this phone number does not take any calls, please contact your local unit if you have any questions.', getenv('BRAND')), [
-                'voice' => 'alice',
-                'language' => 'en-GB',
-            ]
-        );
+        $response->say('Your phone number is not currently on any active triggers.', [
+            'voice' => 'alice',
+            'language' => 'en-GB',
+        ]);
 
         $event->setResponse($response);
     }
