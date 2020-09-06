@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Base\BaseController;
 use App\Communication\Processor\ProcessorInterface;
-use App\Component\HttpFoundation\EventStreamResponse;
 use App\Entity\Campaign;
 use App\Entity\Communication;
 use App\Entity\Message;
@@ -108,7 +107,6 @@ class CommunicationController extends BaseController
             'campaign'   => $campaign,
             'skills'     => $this->tagManager->findAll(),
             'progress'   => $campaign->getCampaignProgression(),
-            'statusHash' => sha1(json_encode($campaign->getCampaignStatus())),
         ]);
     }
 
@@ -123,30 +121,6 @@ class CommunicationController extends BaseController
         return new JsonResponse(
             $campaign->getCampaignStatus()
         );
-    }
-
-
-    /**
-     * @Route(path="declenchement/{id}/sse/{status}", name="sse", requirements={"id" = "\d+", "status" = "[0-9a-f]*"})
-     * @IsGranted("CAMPAIGN", subject="campaign")
-     */
-    public function sseAction(Campaign $campaign, ?string $status = null)
-    {
-        $this->get('session')->save();
-
-        $prevUpdate = $status;
-        $response   = new EventStreamResponse(function () use ($campaign, &$prevUpdate) {
-            $newUpdate = sha1(json_encode($campaign->getCampaignStatus()));
-
-            if ($newUpdate !== $prevUpdate) {
-                $prevUpdate = $newUpdate;
-                $campaign   = $this->campaignManager->refresh($campaign);
-
-                return json_encode($campaign->getCampaignStatus());
-            }
-        });
-
-        return $response;
     }
 
     /**

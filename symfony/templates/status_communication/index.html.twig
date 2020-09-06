@@ -853,28 +853,6 @@
             refreshVisibility();
         }
 
-
-        if (typeof(EventSource) !== "undefined" && '{{ app.environment == 'dev' }}' !== '1') {
-            var source = new EventSource('{{ path('communication_sse', {id: campaign.id, status: statusHash}) }}');
-            source.onmessage = function (e) {
-                refreshStatuses(JSON.parse(e.data));
-            }
-        } else {
-            setInterval(function () {
-                $.ajax('{{ path('communication_poll', {id: campaign.id}) }}', {
-                    type: 'POST',
-                    statusCode: {
-                        200: refreshStatuses,
-                        403: function () {
-                            document.location = '{{ path('home') }}';
-                        },
-                    }
-                });
-            }, 5000);
-        }
-
-        {# SSE does not work on GAE #}
-        {#
         setInterval(function () {
             $.ajax('{{ path('communication_poll', {id: campaign.id}) }}', {
                 type: 'POST',
@@ -886,7 +864,6 @@
                 }
             });
         }, 5000);
-        #}
 
         var communicationIds = [];
         {% for communication in campaign.communications %}
