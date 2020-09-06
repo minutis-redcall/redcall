@@ -26,6 +26,7 @@ class EventStreamResponse extends StreamedResponse
         }, $status, array_merge($headers, [
             'Content-Type'  => 'text/event-stream',
             'Cache-Control' => 'no-cache',
+            'X-Accel-Buffering' => 'no',
         ]));
     }
 }
