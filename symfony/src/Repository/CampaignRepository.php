@@ -34,7 +34,7 @@ class CampaignRepository extends BaseRepository
                     ->where('c.id = :id')
                     ->setParameter('id', $campaignId)
                     ->getQuery()
-                    ->useResultCache(false)
+                    ->disableResultCache()
                     ->getOneOrNullResult();
     }
 
@@ -43,7 +43,7 @@ class CampaignRepository extends BaseRepository
      *
      * @return QueryBuilder
      */
-    public function getActiveCampaignsForUserQueryBuilder(AbstractUser $user): QueryBuilder
+    public function getActiveCampaignsForUserQueryBuilder(AbstractUser $user) : QueryBuilder
     {
         return $this
             ->createQueryBuilder('c')
@@ -60,7 +60,7 @@ class CampaignRepository extends BaseRepository
      *
      * @return QueryBuilder
      */
-    public function getInactiveCampaignsForUserQueryBuilder(AbstractUser $user): QueryBuilder
+    public function getInactiveCampaignsForUserQueryBuilder(AbstractUser $user) : QueryBuilder
     {
         return $this
             ->createQueryBuilder('c')
@@ -124,25 +124,25 @@ class CampaignRepository extends BaseRepository
      *
      * @return QueryBuilder
      */
-    public function getActiveCampaignsQueryBuilder(): QueryBuilder
+    public function getActiveCampaignsQueryBuilder() : QueryBuilder
     {
         return $this->createQueryBuilder('c')
             ->where('c.active = :active')
             ->setParameter('active', true);
     }
 
-    public function getAllCampaignsQueryBuilder(): QueryBuilder
+    public function getAllCampaignsQueryBuilder() : QueryBuilder
     {
         return $this->createQueryBuilder('c');
     }
 
     /**
-     * @return int
-     *
      * @throws \Doctrine\ORM\NoResultException
      * @throws \Doctrine\ORM\NonUniqueResultException
+     * @return int
+     *
      */
-    public function countAllOpenCampaigns(): int
+    public function countAllOpenCampaigns() : int
     {
         return $this->getActiveCampaignsQueryBuilder()
             ->select('COUNT(c.id)')
@@ -153,11 +153,11 @@ class CampaignRepository extends BaseRepository
     /**
      * @param int $days
      *
+     * @throws \Exception
      * @return array
      *
-     * @throws \Exception
      */
-    public function findInactiveCampaignsSince(int $days): array
+    public function findInactiveCampaignsSince(int $days) : array
     {
         return $this->getActiveCampaignsQueryBuilder()
             ->join('c.communications', 'co')
@@ -165,5 +165,78 @@ class CampaignRepository extends BaseRepository
             ->setParameter('limit', (new \DateTime('now'))->sub(new \DateInterval(sprintf('P%dD', $days))))
             ->getQuery()
             ->getResult();
+    }
+
+    public function getNoteUpdateTimestamp(int $campaignId) : int
+    {
+        $row = $this->createQueryBuilder('c')
+            ->select('c.notesUpdatedAt')
+            ->where('c.id = :campaignId')
+            ->setParameter('campaignId', $campaignId)
+            ->getQuery()
+            ->disableResultCache()
+            ->getOneOrNullResult();
+
+        return $row && $row['notesUpdatedAt'] ? $row['notesUpdatedAt']->getTimestamp() : 0;
+    }
+
+    public function countNumberOfMessagesSent(int $campaignId) : int
+    {
+        return $this->createQueryBuilder('c')
+            ->select('COUNT(m.id)')
+            ->join('c.communications', 'co')
+            ->join('co.messages', 'm')
+            ->where('c.id = :campaignId')
+            ->setParameter('campaignId', $campaignId)
+            ->andWhere('m.sent = 1')
+            ->getQuery()
+            ->disableResultCache()
+            ->getSingleScalarResult();
+    }
+
+    public function countNumberOfAnswersReceived(int $campaignId) : int
+    {
+        return $this->createQueryBuilder('c')
+            ->select('COUNT(a.id)')
+            ->join('c.communications', 'co')
+            ->join('co.messages', 'm')
+            ->join('m.answers', 'a')
+            ->where('c.id = :campaignId')
+            ->setParameter('campaignId', $campaignId)
+            ->getQuery()
+            ->disableResultCache()
+            ->getSingleScalarResult();
+    }
+
+    public function countNumberOfGeoLocationReceived(int $campaignId) : int
+    {
+        return $this->createQueryBuilder('c')
+            ->select('COUNT(g.id)')
+            ->join('c.communications', 'co')
+            ->join('co.messages', 'm')
+            ->join('m.geoLocation', 'g')
+            ->where('c.id = :campaignId')
+            ->setParameter('campaignId', $campaignId)
+            ->getQuery()
+            ->disableResultCache()
+            ->getSingleScalarResult();
+    }
+
+    public function getLastGeoLocationUpdated(int $campaignId) : int
+    {
+        $row = $this->createQueryBuilder('c')
+            ->select('g.datetime')
+            ->join('c.communications', 'co')
+            ->join('co.messages', 'm')
+            ->join('m.geoLocation', 'g')
+            ->where('c.id = :campaignId')
+            ->setParameter('campaignId', $campaignId)
+            ->orderBy('g.datetime', 'DESC')
+            ->setMaxResults(1)
+            ->getQuery()
+            ->disableResultCache()
+            ->getOneOrNullResult();
+
+        return $row && $row['datetime'] ? $row['datetime']->getTimestamp() : 0;
     }
 }

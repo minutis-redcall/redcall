@@ -853,17 +853,49 @@
             refreshVisibility();
         }
 
-        setInterval(function () {
-            $.ajax('{{ path('communication_poll', {id: campaign.id}) }}', {
-                type: 'POST',
-                statusCode: {
-                    200: refreshStatuses,
-                    403: function () {
-                        document.location = '{{ path('home') }}';
-                    },
-                }
-            });
-        }, 5000);
+        if ('{{ app.environment == 'dev' }}' !== '1') {
+            var errorCount = 0;
+            var hash = '{{ hash }}';
+            var longPolling = function() {
+                setTimeout(function() {
+                    $.ajax('{{ path('communication_long_polling', {id: campaign.id}) }}', {
+                        type: 'POST',
+                        data: {
+                            hash: hash,
+                        },
+                        success: function(result) {
+                            errorCount = 0;
+                            if (result) {
+                                hash = result.hash;
+                                refreshStatuses(result);
+                            }
+                            longPolling();
+                        },
+                        error: function() {
+                            errorCount++;
+                            if (100 === errorCount) {
+                                window.location = '{{ path('home') }}';
+                            } else {
+                                longPolling();
+                            }
+                        }
+                    });
+                }, 1000);
+            };
+            longPolling();
+        } else {
+            setInterval(function () {
+                $.ajax('{{ path('communication_short_polling', {id: campaign.id}) }}', {
+                    type: 'POST',
+                    statusCode: {
+                        200: refreshStatuses,
+                        401: function () {
+                            document.location = '{{ path('home') }}';
+                        },
+                    }
+                });
+            }, 5000);
+        }
 
         var communicationIds = [];
         {% for communication in campaign.communications %}
