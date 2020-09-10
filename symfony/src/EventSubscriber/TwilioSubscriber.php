@@ -2,6 +2,7 @@
 
 namespace App\EventSubscriber;
 
+use App\Communication\Sender;
 use App\Entity\Message;
 use App\Manager\CostManager;
 use App\Manager\MessageManager;
@@ -31,21 +32,21 @@ class TwilioSubscriber implements EventSubscriberInterface
     private $voiceCalls;
 
     /**
+     * @var Sender
+     */
+    private $sender;
+
+    /**
      * @var TranslatorInterface
      */
     private $translator;
 
-    /**
-     * @param CostManager         $costManager
-     * @param MessageManager      $messageManager
-     * @param VoiceCalls          $voiceCalls
-     * @param TranslatorInterface $translator
-     */
-    public function __construct(CostManager $costManager, MessageManager $messageManager, VoiceCalls $voiceCalls, TranslatorInterface $translator)
+    public function __construct(CostManager $costManager, MessageManager $messageManager, VoiceCalls $voiceCalls, Sender $sender, TranslatorInterface $translator)
     {
         $this->costManager = $costManager;
         $this->messageManager = $messageManager;
         $this->voiceCalls = $voiceCalls;
+        $this->sender = $sender;
         $this->translator = $translator;
     }
 
@@ -63,6 +64,7 @@ class TwilioSubscriber implements EventSubscriberInterface
             TwilioEvents::CALL_ESTABLISHED => 'onCallEstablished',
             TwilioEvents::CALL_KEY_PRESSED => 'onCallKeyPressed',
             TwilioEvents::CALL_ERROR => 'onCallError',
+            TwilioEvents::CALL_ANSWERING_MACHINE => 'onAnsweringMachine',
         ];
     }
 
@@ -123,23 +125,35 @@ class TwilioSubscriber implements EventSubscriberInterface
 
     public function onCallReceived(TwilioCallEvent $event)
     {
+        $message = $this->messageManager->getMessageFromPhoneNumber(
+            ltrim($event->getCall()->getFromNumber(), '+')
+        );
+
+        if ($message) {
+            $event->getCall()->setContext([
+                'message_id' => $message->getId(),
+            ]);
+
+            $event->setResponse(
+                $this->voiceCalls->establishCall($event->getCall()->getUuid(), $message)
+            );
+
+            return;
+        }
+
         $response = new VoiceResponse();
 
-        $response->say(
-            sprintf('%s bonjour, ce numéro ne prend pas d\'appels, merci de contacter votre unité locale afin de poser vos questions.', getenv('BRAND')), [
-                'voice' => 'alice',
-                'language' => 'fr-FR',
-            ]
-        );
+        $response->say('Votre numéro de téléphone n\'est sur aucun déclenchement actif pour le moment.', [
+            'voice' => 'alice',
+            'language' => 'fr-FR',
+        ]);
 
         $response->pause(['length' => 1]);
 
-        $response->say(
-            sprintf('%s greetings, this phone number does not take any calls, please contact your local unit if you have any questions.', getenv('BRAND')), [
-                'voice' => 'alice',
-                'language' => 'en-GB',
-            ]
-        );
+        $response->say('Your phone number is not currently on any active triggers.', [
+            'voice' => 'alice',
+            'language' => 'en-GB',
+        ]);
 
         $event->setResponse($response);
     }
@@ -169,6 +183,15 @@ class TwilioSubscriber implements EventSubscriberInterface
         $message->setError($event->getCall()->getError());
 
         $this->messageManager->save($message);
+    }
+
+    public function onAnsweringMachine(TwilioCallEvent $event)
+    {
+        $message = $this->getMessageFromCall($event);
+
+        $message->setSent(false);
+
+        $this->sender->sendSms($message);
     }
 
     private function getMessageFromSms(TwilioMessageEvent $event): ?Message

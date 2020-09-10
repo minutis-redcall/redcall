@@ -101,7 +101,7 @@ class TwilioCallManager
         return $event->getResponse();
     }
 
-    public function sendCall(string $phoneNumber, array $context = []): TwilioCall
+    public function sendCall(string $phoneNumber, bool $handleAnsweringMachines = false, array $context = []): TwilioCall
     {
         $entity = new TwilioCall();
         $entity->setUuid(Uuid::uuid4());
@@ -122,6 +122,14 @@ class TwilioCallManager
                 $options['Twiml'] = $response->asXML();
             } else {
                 throw new \LogicException('Can\'t establish call, no responses were provided.');
+            }
+
+            if ($handleAnsweringMachines) {
+                $options['MachineDetection'] = 'Enable';
+                $options['AsyncAMD'] = true;
+                $options['AsyncAmdStatusCallback'] = sprintf('%s%s',  trim(getenv('WEBSITE_URL'), '/'), $this->router->generate('twilio_answering_machine', [
+                    'uuid' => $entity->getUuid(),
+                ]));
             }
 
             $outbound = $this->getClient()->calls->create(
@@ -179,6 +187,15 @@ class TwilioCallManager
         $this->callRepository->save($call);
 
         return $event->getResponse();
+    }
+
+    public function handleAnsweringMachine(TwilioCall $call)
+    {
+        $event = new TwilioCallEvent($call);
+
+        $this->eventDispatcher->dispatch($event, TwilioEvents::CALL_ANSWERING_MACHINE);
+
+        $this->callRepository->save($call);
     }
 
     public function fetchPrices(int $retries)
