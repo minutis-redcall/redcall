@@ -107,20 +107,51 @@ class CommunicationController extends BaseController
             'campaign'   => $campaign,
             'skills'     => $this->tagManager->findAll(),
             'progress'   => $campaign->getCampaignProgression(),
+            'hash'       => $this->campaignManager->getHash($campaign->getId()),
         ]);
     }
 
     /**
-     * @Route(path="campaign/{id}/poll", name="poll", requirements={"id" = "\d+"})
+     * @Route(path="campaign/{id}/short-polling", name="short_polling", requirements={"id" = "\d+"})
      * @IsGranted("CAMPAIGN", subject="campaign")
      */
-    public function pollAction(Campaign $campaign)
+    public function shortPolling(Campaign $campaign)
     {
         $this->get('session')->save();
 
         return new JsonResponse(
             $campaign->getCampaignStatus()
         );
+    }
+
+    /**
+     * @Route(path="campaign/{id}/long-polling", name="long_polling", requirements={"id" = "\d+", "olHash" = "[0-9a-f]{40}"})
+     * @IsGranted("CAMPAIGN", subject="campaign")
+     */
+    public function longPolling(Campaign $campaign, Request $request)
+    {
+        // Always close the session to prevent against session locks
+        $this->get('session')->save();
+
+        $secs = 0;
+        while ($secs < 60) {
+            $hash = $this->campaignManager->getHash($campaign->getId());
+
+            if ($request->get('hash') !== $hash) {
+                $this->campaignManager->refresh($campaign);
+
+                return new JsonResponse(
+                    array_merge($campaign->getCampaignStatus(), [
+                        'hash' => $hash,
+                    ])
+                );
+            }
+
+            sleep(1);
+            $secs++;
+        }
+
+        return new Response();
     }
 
     /**

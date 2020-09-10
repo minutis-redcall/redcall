@@ -2,7 +2,6 @@
 
 namespace App\Manager;
 
-use App\Entity\Campaign;
 use App\Entity\Campaign as CampaignEntity;
 use App\Entity\Communication;
 use App\Form\Model\Campaign as CampaignModel;
@@ -72,7 +71,7 @@ class CampaignManager
      */
     public function launchNewCampaign(CampaignModel $campaignModel): CampaignEntity
     {
-        $campaignEntity = new Campaign();
+        $campaignEntity = new CampaignEntity();
         $campaignEntity
             ->setLabel($campaignModel->label)
             ->setType($campaignModel->type)
@@ -93,7 +92,7 @@ class CampaignManager
      *
      * @throws LogicException
      */
-    public function closeCampaign(Campaign $campaign)
+    public function closeCampaign(CampaignEntity $campaign)
     {
         $this->campaignRepository->closeCampaign($campaign);
     }
@@ -103,34 +102,27 @@ class CampaignManager
      *
      * @throws LogicException
      */
-    public function openCampaign(Campaign $campaign)
+    public function openCampaign(CampaignEntity $campaign)
     {
         $this->campaignRepository->openCampaign($campaign);
     }
 
-    /**
-     * @param Campaign $campaign
-     * @param string   $color
-     */
-    public function changeColor(Campaign $campaign, string $color): void
+    public function changeColor(CampaignEntity $campaign, string $color): void
     {
         $this->campaignRepository->changeColor($campaign, $color);
     }
 
-    public function changeName(Campaign $campaign, string $newName): void
+    public function changeName(CampaignEntity $campaign, string $newName): void
     {
         $this->campaignRepository->changeName($campaign, $newName);
     }
 
-    public function changeNotes(Campaign $campaign, string $notes): void
+    public function changeNotes(CampaignEntity $campaign, string $notes): void
     {
         $this->campaignRepository->changeNotes($campaign, $notes);
     }
 
-    /**
-     * @param Campaign $campaign
-     */
-    public function refresh(Campaign $campaign)
+    public function refresh(CampaignEntity $campaign)
     {
         return $this->campaignRepository->findOneByIdNoCache($campaign->getId());
     }
@@ -215,5 +207,46 @@ class CampaignManager
     public function findInactiveCampaignsSince(int $days): array
     {
         return $this->campaignRepository->findInactiveCampaignsSince($days);
+    }
+
+    /**
+     * We want the data to be refreshed on the frontend side only when the
+     * campaign changes, so hash should contain all information that can
+     * change (eg. messages sent, answers, note etc), in order to break
+     * the long polling only when main information are updated.
+     *
+     * We could use the CampaignEntity object directly (iterating it in
+     * order to count messages received etc) but it would lazily load
+     * everything related to the campaign from the db, which is too heavy.
+     *
+     * We should also take care to explicitly disable Doctrine caching in
+     * all queries, because Doctrine will usually return the same result
+     * for the same query.
+     *
+     * @param int $campaignId
+     *
+     * @return string
+     */
+    public function getHash(int $campaignId) : string
+    {
+        $criteria = [
+            // trigger note has been updated
+            $this->campaignRepository->getNoteUpdateTimestamp($campaignId),
+
+            // number of messages sent changed
+            $this->campaignRepository->countNumberOfMessagesSent($campaignId),
+
+            // number of answers to any of the trigger's communication increased
+            // note: we don't need to take care of "answers that changed" because answers are immutable
+            $this->campaignRepository->countNumberOfAnswersReceived($campaignId),
+
+            // number of geolocation data increased
+            $this->campaignRepository->countNumberOfGeoLocationReceived($campaignId),
+
+            // geolocalisation data of any volunteer has been updated
+            $this->campaignRepository->getLastGeoLocationUpdated($campaignId),
+        ];
+
+        return sha1(implode('|', $criteria));
     }
 }
