@@ -31,6 +31,10 @@
 
         <env name="WEBSITE_URL" value=""/>
         <env name="GOOGLE_SHEETS_VOLUNTEERS_ID" value=""/>
+
+        <!-- ###+ symfony/mailer ### -->
+        <!-- MAILER_DSN=smtp://localhost -->
+        <!-- ###- symfony/mailer ### -->
     </php>
 
     <testsuites>

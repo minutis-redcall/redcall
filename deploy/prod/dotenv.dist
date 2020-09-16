@@ -6,7 +6,7 @@ APP_SECRET='some secret'
 ###> symfony/swiftmailer-bundle ###
 MAILER_FROM=contact@redcall.io
 MAILER_NAME=Croix-Rouge
-MAILER_URL='smtp://auto@redcall.io:password@mail.provider.com:465?encryption=ssl'
+MAILER_DSN='smtp://auto@redcall.io:password@mail.provider.com:465?encryption=ssl'
 ###< symfony/swiftmailer-bundle ###
 
 ###> doctrine/doctrine-bundle ###

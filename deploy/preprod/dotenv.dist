@@ -3,11 +3,9 @@ APP_ENV=prod
 APP_SECRET='some secret'
 ###< symfony/framework-bundle ###
 
-###> symfony/swiftmailer-bundle ###
 MAILER_FROM=preprod@redcall.io
 MAILER_NAME=Croix-Rouge
-MAILER_URL='smtp://auto@redcall.io:password@mail.provider.com:465?encryption=ssl'
-###< symfony/swiftmailer-bundle ###
+MAILER_DSN='smtp://auto@redcall.io:password@mail.provider.com:465?encryption=ssl'
 
 ###> doctrine/doctrine-bundle ###
 DATABASE_NAME=redcall_preprod
