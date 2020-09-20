@@ -4,7 +4,11 @@
  # - For a cross-email client compatibility, we are using MJML framework (https://mjml.io)
  # - This MJML file generates Twig code at build time or by running generate:mjml  command
  # - That Twig code is then used to render cross-compatible emails
+ #
  # To edit this template visually, use: https://mjml.io/try-it-live/H1V8LNyBP
+ #
+ # Once done, generate the Twig file with:
+ # php bin/console generate:mjml templates/message/email.html.twig.mjml
  #}
 -->
 <mjml>
