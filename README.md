@@ -37,6 +37,7 @@ by following the next sections.
 - [Setting up Twilio](docs/tech/10-configure-twilio.md)
 - [Setting up Sendgrid](docs/tech/10-configure-sendgrid.md)
 - [Setting up Slack](docs/tech/13-configure-slack.md)
+- [Setting up MJML](docs/tech/14-configure-mjml.md)
 
 RedCross only:
 - [Setting up Pegass](docs/tech/11-configure-pegass.md)

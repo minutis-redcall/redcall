@@ -1,0 +1,51 @@
+<!--
+{#
+ # This is the email template used when sending email communications.
+ # - For a cross-email client compatibility, we are using MJML framework (https://mjml.io)
+ # - This MJML file generates Twig code at build time or by running generate:mjml  command
+ # - That Twig code is then used to render cross-compatible emails
+ #
+ # To edit this template visually, use: https://mjml.io/try-it-live/H1V8LNyBP
+ #
+ # Once done, generate the Twig file with:
+ # php bin/console generate:mjml templates/message/email.html.twig.mjml
+ #}
+-->
+<mjml>
+  <mj-body>
+    <mj-section background-color="white"></mj-section>
+    <mj-section border="1px solid #667385" padding="0 0">
+      <mj-column>
+        <mj-image src="cid:logo"></mj-image>
+      </mj-column>
+      <mj-section background-color="#667385" padding-top="10px;">&nbsp;</mj-section>
+      <mj-section background-color="#e30613" padding-right="50px;" padding-left="50px;" padding-top="10px" padding-bottom="10px;">
+        <mj-text color="white">{{ 'message.email.announcement'|trans({
+            '%brand%': brand|upper,
+            '%day%':'now'|date('d'),
+            '%month%':'now'|date('m'),
+            '%year%':'now'|date('Y'),
+            '%hours%':'now'|date('H'),
+            '%mins%':'now'|date('i'),
+          }) }}
+        </mj-text>
+      </mj-section>
+      <mj-section background-color="#667385" padding-right="50px;" padding-left="50px;">
+        <mj-text color="white" font-size="18px;" font-weight="bold">{{ communication.subject }}</mj-text>
+      </mj-section>
+      <mj-section background-color="white" padding-right="50px;" padding-left="50px;">
+        <mj-text color="black" font-size="14px;">{{ communication.body|nl2br }}</mj-text>
+      </mj-section>
+      <mj-raw>{% if communication.choices|length %}</mj-raw>
+        <mj-section background-color="white" padding-right="50px;" padding-left="50px;">
+          <mj-text color="black" font-size="12px;" align="center">{{ 'message.email.answer_here'|trans }}</mj-text>
+          <mj-column width="100%">
+            <mj-raw>{% for choice in communication.choices %}</mj-raw>
+              <mj-button width="100%" align="center" background-color="e30613" color="white" href="{{ website_url }}{{ path('message_action', {code: message.code, action: choice.code, signature: message.signature}) }}">{{ choice.label }}</mj-button>
+            <mj-raw>{% endfor %}</mj-raw>
+          </mj-column>
+        </mj-section>
+      <mj-raw>{% endif %}</mj-raw>
+    </mj-section>
+  </mj-body>
+</mjml>

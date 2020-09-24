@@ -6,7 +6,7 @@ APP_SECRET='some secret'
 ###> symfony/swiftmailer-bundle ###
 MAILER_FROM=contact@redcall.io
 MAILER_NAME=Croix-Rouge
-MAILER_URL='smtp://auto@redcall.io:password@mail.provider.com:465?encryption=ssl'
+MAILER_DSN='smtp://auto@redcall.io:password@mail.provider.com:465?encryption=ssl'
 ###< symfony/swiftmailer-bundle ###
 
 ###> doctrine/doctrine-bundle ###
@@ -75,3 +75,6 @@ MINUTIS_JWT_PUBLIC_KEY_URL=xxx
 MINUTIS_SUPPORT=support.minutis@croix-rouge.fr
 MINUTIS_URL=xxx
 
+MJML_APPLICATION_ID=xxx
+MJML_PUBLIC_KEY=xxx
+MJML_PRIVATE_KEY=xxx

@@ -16,6 +16,8 @@ class Sendgrid implements EmailProvider
         $email->addTo($to);
         $email->addContent("text/plain", $textBody);
         $email->addContent("text/html", $htmlBody);
+        $email->addAttachment(base64_encode(file_get_contents(__DIR__.'/../../../public/email.png')), null, 'logo.png', 'inline', 'logo');
+
         $sendgrid = new \SendGrid(getenv('SENDGRID_API_KEY'));
         $sendgrid->send($email);
     }

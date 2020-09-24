@@ -178,9 +178,11 @@ class Sender
             return;
         }
 
+        $volunteer = $message->getVolunteer();
+
         try {
             $this->emailProvider->send(
-                $message->getVolunteer()->getEmail(),
+                $volunteer->getEmail(),
                 $message->getCommunication()->getSubject(),
                 $this->formatter->formatTextEmailContent($message),
                 $this->formatter->formatHtmlEmailContent($message)
