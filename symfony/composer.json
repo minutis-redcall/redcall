@@ -97,6 +97,9 @@
       "cache:clear": "symfony-cmd",
       "doctrine:migration:migrate -n --all-or-nothing": "symfony-cmd"
     },
+    "gcp-build": [
+      "composer install"
+    ],
     "post-install-cmd": [
     ],
     "post-update-cmd": [

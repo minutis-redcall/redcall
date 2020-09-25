@@ -1,6 +1,7 @@
 #!/bin/bash
 
 #
+# Cleans all deployed versions of your app engine except last 10
 # Credits: https://gist.github.com/vonNiklasson/b9d3c64ec8beb6a13a42e647012d4815
 #
 

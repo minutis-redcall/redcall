@@ -177,7 +177,11 @@ class CampaignRepository extends BaseRepository
             ->disableResultCache()
             ->getOneOrNullResult();
 
-        return $row && $row['notesUpdatedAt'] ? $row['notesUpdatedAt']->getTimestamp() : 0;
+        if ($row && $row['notesUpdatedAt'] && $row['notesUpdatedAt'] instanceof \DateTime) {
+            return $row['notesUpdatedAt']->getTimestamp();
+        }
+
+        return 0;
     }
 
     public function countNumberOfMessagesSent(int $campaignId) : int

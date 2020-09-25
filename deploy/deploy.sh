@@ -36,7 +36,7 @@ cd symfony
 source .env > /dev/null
 
 GREENLIGHT=`wget -O- ${WEBSITE_URL}/deploy`
-if [[ "${GREENLIGHT}" != "0" ]]
+if [[ "${GREENLIGHT}" != "0"]]
 then
   echo "A communication has recently been triggered, cannot deploy before ${GREENLIGHT} seconds"
   cp deploying/.env symfony/.env
@@ -50,7 +50,7 @@ fi
 gcloud config set project ${GCP_PROJECT_NAME}
 gcloud config set app/cloud_build_timeout 3600
 yarn encore production
-gcloud beta app deploy --verbosity debug --quiet
+gcloud beta app deploy --verbosity debug --quiet --no-cache
 cd ..
 
 # Cron jobs

@@ -57,7 +57,7 @@ class GenerateMjmlCommand extends Command
         $olderHash = $this->getOlderHash($mjmlPath);
         if ($currentHash === $olderHash) {
             $this->io->comment(sprintf('%s is already up to date', $mjmlPath));
-            return 1;
+            return 0;
         }
 
         $this->io->text(sprintf('Generating Twig file for %s...', $mjmlPath));
