@@ -36,7 +36,7 @@ cd symfony
 source .env > /dev/null
 
 GREENLIGHT=`wget -O- ${WEBSITE_URL}/deploy`
-if [[ "${GREENLIGHT}" != "0"]]
+if [[ "${GREENLIGHT}" != "0" ]]
 then
   echo "A communication has recently been triggered, cannot deploy before ${GREENLIGHT} seconds"
   cp deploying/.env symfony/.env
