@@ -1,3 +1,7 @@
-body {
-    background-color: lightgray;
-}
+@import 'bootstrap.min.css';
+@import 'jquery.flexdatalist.min.css';
+@import 'leaflet.css';
+@import 'main.css';
+@import '~quill/dist/quill.core.css';
+@import '~quill/dist/quill.bubble.css';
+@import '~quill/dist/quill.snow.css';

@@ -2,7 +2,7 @@
 
 namespace App\Form\Type;
 
-use App\Entity\Communication;
+use App\Entity\Communication as CommunicationEntity;
 use App\Form\Model\Communication as CommunicationModel;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -24,9 +24,9 @@ class CommunicationType extends AbstractType
             ->add('type', ChoiceType::class, [
                 'label'    => false,
                 'choices'  => [
-                    'form.communication.fields.type_sms'   => Communication::TYPE_SMS,
-                    'form.communication.fields.type_call'   => Communication::TYPE_CALL,
-                    'form.communication.fields.type_email' => Communication::TYPE_EMAIL,
+                    'form.communication.fields.type_sms'   => CommunicationEntity::TYPE_SMS,
+                    'form.communication.fields.type_call'   => CommunicationEntity::TYPE_CALL,
+                    'form.communication.fields.type_email' => CommunicationEntity::TYPE_EMAIL,
                 ],
                 'expanded' => true,
             ])
@@ -39,8 +39,13 @@ class CommunicationType extends AbstractType
                 'label'    => 'form.communication.fields.subject',
                 'required' => false,
             ])
-            ->add('message', TextareaType::class, [
+            ->add('textMessage', TextareaType::class, [
                 'label' => 'form.communication.fields.body',
+                'required' => false,
+            ])
+            ->add('htmlMessage', TextareaType::class, [
+                'label' => 'form.communication.fields.body',
+                'required' => false,
             ])
             ->add('answers', CollectionType::class, [
                 'label'         => 'form.communication.fields.answers',
@@ -76,7 +81,7 @@ class CommunicationType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => CommunicationModel::class,
-            'type'       => Communication::TYPE_SMS,
+            'type'       => CommunicationEntity::TYPE_SMS,
             'submit'     => true,
         ]);
     }

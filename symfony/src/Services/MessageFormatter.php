@@ -167,7 +167,7 @@ class MessageFormatter
         ]);
         $contentParts[] = '';
 
-        $contentParts[] = $communication->getBody();
+        $contentParts[] = strip_tags($communication->getBody());
         $contentParts[] = '';
 
         $choices = $communication->getChoices();

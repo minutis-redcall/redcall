@@ -1,11 +1,15 @@
-
 /*
     Enables jQuery global variables
  */
 import $ from 'jquery';
 import './buttons-timeout';
+
+import Quill from 'quill';
+
 window.jQuery = $;
 window.$ = $;
+
+window.Quill = Quill;
 
 /*
     Code taken from https://stackoverflow.com/a/7732379/731138

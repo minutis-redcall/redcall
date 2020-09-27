@@ -1,14 +1,7 @@
-
-// CSS
-require('../css/bootstrap.min.css');
-require('../css/jquery.flexdatalist.min.css');
-require('../css/leaflet.css');
-require('../css/main.css');
-
-// JS
+require('./bootstrap.min.js');
+require('./compass.js');
+require('./jquery.flexdatalist.min.js')
+require('./main.js');
+require('./leaflet.js');
 require('popper.js');
-require('../js/bootstrap.min.js');
-require('../js/jquery.flexdatalist.min.js')
-require('../js/compass.js');
-require('../js/leaflet.js');
-require('../js/main.js');
+require('./quill.js');

@@ -161,7 +161,10 @@ class CommunicationManager
                 $this->userManager->findForCurrentUser()->getVolunteer()
             )
             ->setType($communicationModel->type)
-            ->setBody($communicationModel->message)
+            ->setBody(
+                CommunicationEntity::TYPE_EMAIL === $communicationModel->type
+                    ? $communicationModel->htmlMessage : $communicationModel->textMessage
+            )
             ->setGeoLocation($communicationModel->geoLocation)
             ->setCreatedAt(new DateTime())
             ->setMultipleAnswer($communicationModel->multipleAnswer)

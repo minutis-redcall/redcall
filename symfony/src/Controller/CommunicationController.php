@@ -268,7 +268,7 @@ class CommunicationController extends BaseController
     {
         $communicationModel = $this->getCommunicationFromRequest($request);
 
-        if (!$communicationModel->message) {
+        if (!$communicationModel->htmlMessage && !$communicationModel->textMessage) {
             return new JsonResponse(['success' => false]);
         }
 

@@ -41,10 +41,14 @@ class Communication implements \JsonSerializable
     /**
      * @var string
      *
-     * @Assert\NotNull(message="form.campaign.errors.message.empty")
      * @Assert\Length(min=Message::MIN_LENGTH)
      */
-    public $message;
+    public $textMessage;
+
+    /**
+     * @var string
+     */
+    public $htmlMessage;
 
     /**
      * @var array
@@ -68,7 +72,19 @@ class Communication implements \JsonSerializable
      */
     public function validate(ExecutionContextInterface $context, $payload)
     {
-        if ($this->type !== \App\Entity\Communication::TYPE_SMS) {
+        if (null === $this->textMessage && null === $this->htmlMessage) {
+            if (\App\Entity\Communication::TYPE_EMAIL === $this->type) {
+                $context->buildViolation('form.campaign.errors.message.empty')
+                    ->atPath('htmlMessage')
+                    ->addViolation();
+            } else {
+                $context->buildViolation('form.campaign.errors.message.empty')
+                    ->atPath('textMessage')
+                    ->addViolation();
+            }
+        }
+
+        if (\App\Entity\Communication::TYPE_SMS !== $this->type) {
             if ($this->geoLocation) {
                 $context->buildViolation('form.communication.errors.email_geolocation')
                     ->atPath('geoLocation')
@@ -76,7 +92,7 @@ class Communication implements \JsonSerializable
             }
         }
 
-        if ($this->type === \App\Entity\Communication::TYPE_CALL) {
+        if (\App\Entity\Communication::TYPE_CALL !== $this->type) {
             if ($this->multipleAnswer) {
                 $context->buildViolation('form.communication.errors.call_multiple')
                     ->atPath('multipleAnswer')
@@ -84,22 +100,22 @@ class Communication implements \JsonSerializable
             }
         }
 
-        if ($this->type === \App\Entity\Communication::TYPE_SMS) {
-            if (mb_strlen($this->message) > Message::MAX_LENGTH_SMS) {
+        if (\App\Entity\Communication::TYPE_SMS === $this->type) {
+            if (mb_strlen($this->textMessage) > Message::MAX_LENGTH_SMS) {
                 $context->buildViolation('form.communication.errors.too_large_sms')
                     ->atPath('message')
                     ->addViolation();
             }
         }
 
-        if ($this->type === \App\Entity\Communication::TYPE_EMAIL) {
+        if (\App\Entity\Communication::TYPE_EMAIL === $this->type) {
             if (!$this->subject) {
                 $context->buildViolation('form.communication.errors.no_subject')
                     ->atPath('subject')
                     ->addViolation();
             }
 
-            if (mb_strlen($this->message) > Message::MAX_LENGTH_EMAIL) {
+            if (mb_strlen($this->textMessage) > Message::MAX_LENGTH_EMAIL) {
                 $context->buildViolation('form.communication.errors.too_large_email')
                         ->atPath('message')
                         ->addViolation();
