@@ -15,8 +15,10 @@
         {% for message in messages %}
 
             <h3>{{ message.createdAt|date('d/m/Y H:i') }}</h3>
-            <div style="padding:10px;background-color: #eeeeee;">
-                <pre>{{ message.body }}</pre>
+
+            <div style="padding:10px;" class="email-body">
+                {% set body = message.body|replace({'cid:logo':asset('email.png')}) %}
+                {{ body|purify }}
             </div>
 
             {% if not loop.last %}

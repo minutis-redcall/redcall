@@ -264,11 +264,11 @@ class CommunicationController extends BaseController
     /**
      * @Route(path="campaign/preview", name="preview")
      */
-    public function previewCommunicationAction(Request $request)
+    public function previewCommunicationAction(Request $request, \HTMLPurifier $purifier)
     {
         $communicationModel = $this->getCommunicationFromRequest($request);
 
-        if (!$communicationModel->message) {
+        if (!$communicationModel->htmlMessage && !$communicationModel->textMessage) {
             return new JsonResponse(['success' => false]);
         }
 
@@ -285,7 +285,8 @@ class CommunicationController extends BaseController
 
         return new JsonResponse([
             'success' => true,
-            'message' => htmlentities($content),
+            'type' => $communicationEntity->getType(),
+            'message' => $communicationEntity->isEmail() ? $purifier->purify($content) : htmlentities($content),
             'cost'    => count($parts),
             'price'   => round($estimated, 2),
             'length'  => array_sum(array_map('mb_strlen', $parts)),

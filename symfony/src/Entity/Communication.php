@@ -174,6 +174,21 @@ class Communication
         return $this->type;
     }
 
+    public function isSms(): bool
+    {
+        return self::TYPE_SMS === $this->type;
+    }
+
+    public function isCall(): bool
+    {
+        return self::TYPE_CALL === $this->type;
+    }
+
+    public function isEmail(): bool
+    {
+        return self::TYPE_EMAIL === $this->type;
+    }
+
     /**
      * @param string $type
      *
@@ -207,9 +222,9 @@ class Communication
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getBody(): string
+    public function getBody(): ?string
     {
         return $this->body;
     }
@@ -225,7 +240,7 @@ class Communication
 
     public function canExpandBody(): string
     {
-        return $this->body !== $this->getLimitedBody();
+        return self::TYPE_EMAIL === $this->type || $this->body !== $this->getLimitedBody();
     }
 
     /**

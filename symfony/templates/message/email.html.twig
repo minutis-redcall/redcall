@@ -380,7 +380,7 @@
             
       <div
          style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:14px;;line-height:1;text-align:left;color:black;"
-      >{{ communication.body|nl2br }}</div>
+      >{{ communication.body|purify }}</div>
     
           <!--[if mso | IE]>
             </td>
@@ -468,7 +468,7 @@
       >
         <tr>
           <td
-             align="center" bgcolor="e30613" role="presentation" style="border:none;border-radius:3px;cursor:auto;mso-padding-alt:10px 25px;background:e30613;" valign="middle"
+             align="center" bgcolor="e30613" role="presentation" style="border:none;border-radius:3px;cursor:auto;height:35px;;mso-padding-alt:10px 25px;background:e30613;" valign="middle"
           >
             <a
                href="{{ website_url }}{{ path('message_action', {code: message.code, action: choice.code, signature: message.signature}) }}" style="display:inline-block;background:e30613;color:white;font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:13px;font-weight:normal;line-height:120%;margin:0;text-decoration:none;text-transform:none;padding:10px 25px;mso-padding-alt:0px;border-radius:3px;" target="_blank"

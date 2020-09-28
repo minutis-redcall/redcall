@@ -10,6 +10,7 @@
     "ext-mbstring": "*",
     "doctrine/doctrine-bundle": "^1",
     "excelwebzone/recaptcha-bundle": "^1.5",
+    "exercise/htmlpurifier-bundle": "^3.0",
     "fabpot/goutte": "^4",
     "firebase/php-jwt": "^5.0",
     "google/apiclient": "^2.0",

@@ -17,6 +17,7 @@ services:
     public: true
 
   App\Provider\Email\EmailProvider:
-    class: 'Bundles\SandboxBundle\Provider\FakeEmailProvider'
-    arguments: ['@doctrine']
-    public: true
+      class: 'Bundles\SandboxBundle\Provider\FakeEmailProvider'
+      arguments: ['@doctrine']
+      public: true
+
