@@ -34,14 +34,14 @@
         <mj-text color="white" font-size="18px;" font-weight="bold">{{ communication.subject }}</mj-text>
       </mj-section>
       <mj-section background-color="white" padding-right="50px;" padding-left="50px;">
-        <mj-text color="black" font-size="14px;">{{ communication.body|raw }}</mj-text>
+        <mj-text color="black" font-size="14px;">{{ communication.body|purify }}</mj-text>
       </mj-section>
       <mj-raw>{% if communication.choices|length %}</mj-raw>
         <mj-section background-color="white" padding-right="50px;" padding-left="50px;">
           <mj-text color="black" font-size="12px;" align="center">{{ 'message.email.answer_here'|trans }}</mj-text>
           <mj-column width="100%">
             <mj-raw>{% for choice in communication.choices %}</mj-raw>
-              <mj-button width="100%" align="center" background-color="e30613" color="white" href="{{ website_url }}{{ path('message_action', {code: message.code, action: choice.code, signature: message.signature}) }}">{{ choice.label }}</mj-button>
+              <mj-button width="100%" height="35px;" align="center" background-color="e30613" color="white" href="{{ website_url }}{{ path('message_action', {code: message.code, action: choice.code, signature: message.signature}) }}">{{ choice.label }}</mj-button>
             <mj-raw>{% endfor %}</mj-raw>
           </mj-column>
         </mj-section>

@@ -239,3 +239,7 @@ input:checked + .slider {
 .flexdatalist-multiple li.value {
     line-height: 30px;
 }
+
+.email-body p {
+    color: black;
+}

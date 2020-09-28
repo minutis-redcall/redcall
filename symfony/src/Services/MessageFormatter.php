@@ -46,7 +46,7 @@ class MessageFormatter
             case Communication::TYPE_CALL:
                 return $this->formatCallContent($message);
             case Communication::TYPE_EMAIL:
-                return $this->formatTextEmailContent($message);
+                return $this->formatHtmlEmailContent($message);
         }
     }
 
@@ -213,7 +213,6 @@ class MessageFormatter
             'website_url' => getenv('WEBSITE_URL'),
             'message' => $message,
             'communication' => $message->getCommunication(),
-            'campaign' => $message->getCommunication()->getCampaign(),
         ]);
     }
 }
