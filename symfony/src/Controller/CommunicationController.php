@@ -134,7 +134,7 @@ class CommunicationController extends BaseController
         $this->get('session')->save();
 
         $secs = 0;
-        while ($secs < 60) {
+        while ($secs < 10) {
             $hash = $this->campaignManager->getHash($campaign->getId());
 
             if ($request->get('hash') !== $hash) {
@@ -300,7 +300,7 @@ class CommunicationController extends BaseController
     {
         $communicationModel = $this->getCommunicationFromRequest($request);
 
-        if (!$communicationModel->message) {
+        if (!$communicationModel->textMessage) {
             return new JsonResponse(['success' => false]);
         }
 
