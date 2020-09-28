@@ -231,6 +231,7 @@
         },
         bounds: document.body,
     });
+    editor.root.innerHTML = '{{ form.htmlMessage.vars.value|purify }}';
 
     var BackgroundStyle = Quill.import('attributors/style/background');
     Quill.register(BackgroundStyle, true);

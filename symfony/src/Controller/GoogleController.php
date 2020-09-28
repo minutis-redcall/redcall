@@ -3,7 +3,11 @@
 namespace App\Controller;
 
 use App\Base\BaseController;
+use Symfony\Bundle\FrameworkBundle\Console\Application;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -32,6 +36,25 @@ class GoogleController extends BaseController
      */
     public function stop()
     {
+        return new Response();
+    }
+
+    /**
+     * @Route("/warmup")
+     */
+    public function warmup(KernelInterface $kernel)
+    {
+        $application = new Application($kernel);
+        $application->setAutoExit(false);
+
+        $input = new ArrayInput([
+            'command' => 'cache:warmup',
+            '--env' => 'prod',
+        ]);
+
+        $output = new NullOutput();
+        $application->run($input, $output);
+
         return new Response();
     }
 }

@@ -33,3 +33,6 @@ instance_class: F4
 
 automatic_scaling:
   max_concurrent_requests: 50
+
+inbound_services:
+  - warmup
