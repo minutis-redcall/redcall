@@ -6,9 +6,9 @@ use App\Communication\Processor\ProcessorInterface;
 use App\Entity\Campaign;
 use App\Entity\Choice;
 use App\Entity\Communication;
-use App\Entity\Communication as CommunicationEntity;
 use App\Entity\Message;
 use App\Entity\Volunteer;
+use App\Form\Model\BaseTrigger;
 use App\Form\Model\Communication as CommunicationModel;
 use App\Repository\CommunicationRepository;
 use DateTime;
@@ -98,41 +98,41 @@ class CommunicationManager
     /**
      * @param int $communicationId
      *
-     * @return CommunicationEntity|null
+     * @return Communication|null
      */
-    public function find(int $communicationId): ?CommunicationEntity
+    public function find(int $communicationId): ?Communication
     {
         return $this->communicationRepository->find($communicationId);
     }
 
     public function launchNewCommunication(Campaign $campaign,
-        CommunicationModel $communicationModel): CommunicationEntity
+        CommunicationModel $communicationModel): Communication
     {
         $this->logger->info('Launching a new communication', [
             'model' => $communicationModel,
         ]);
 
-        $communicationEntity = $this->createCommunication($communicationModel);
-        $communicationEntity->setRaw(json_encode($communicationModel, JSON_PRETTY_PRINT));
+        $Communication = $this->createCommunication($communicationModel);
+        $Communication->setRaw(json_encode($communicationModel, JSON_PRETTY_PRINT));
 
-        $campaign->addCommunication($communicationEntity);
+        $campaign->addCommunication($Communication);
         foreach ($this->userManager->getCurrentUserStructures() as $structure) {
             $campaign->addStructure($structure);
         }
 
         $this->campaignManager->save($campaign);
 
-        $this->processor->process($communicationEntity);
+        $this->processor->process($Communication);
 
-        $this->communicationRepository->save($communicationEntity);
+        $this->communicationRepository->save($Communication);
 
         $this->slackLogger->info(
             sprintf(
                 'New %s trigger by %s (%s) on %d volunteers from %d structures.%s%s%sLink: %s',
-                strtoupper($communicationEntity->getType()),
-                $communicationEntity->getVolunteer()->getDisplayName(),
-                $communicationEntity->getVolunteer()->getMainStructure()->getDisplayName(),
-                count($communicationEntity->getMessages()),
+                strtoupper($Communication->getType()),
+                $Communication->getVolunteer()->getDisplayName(),
+                $Communication->getVolunteer()->getMainStructure()->getDisplayName(),
+                count($Communication->getMessages()),
                 $campaign->getStructures()->count(),
                 PHP_EOL,
                 $campaign->getLabel(),
@@ -143,46 +143,43 @@ class CommunicationManager
             )
         );
 
-        return $communicationEntity;
+        return $Communication;
     }
 
     /**
-     * @param CommunicationModel $communicationModel
+     * @param BaseTrigger $trigger
      *
-     * @return CommunicationEntity
+     * @return Communication
      *
      * @throws Exception
      */
-    public function createCommunication(CommunicationModel $communicationModel): CommunicationEntity
+    public function createCommunication(BaseTrigger $trigger): Communication
     {
-        $communicationEntity = new CommunicationEntity();
-        $communicationEntity
+        $communication = new Communication();
+        $communication
             ->setVolunteer(
                 $this->userManager->findForCurrentUser()->getVolunteer()
             )
-            ->setType($communicationModel->type)
-            ->setBody(
-                CommunicationEntity::TYPE_EMAIL === $communicationModel->type
-                    ? $communicationModel->htmlMessage : $communicationModel->textMessage
-            )
-            ->setGeoLocation($communicationModel->geoLocation)
+            ->setType($trigger->getType())
+            ->setBody($trigger->getMessage())
+            ->setGeoLocation($trigger->isGeoLocation())
             ->setCreatedAt(new DateTime())
-            ->setMultipleAnswer($communicationModel->multipleAnswer)
-            ->setSubject($communicationModel->subject);
+            ->setMultipleAnswer($trigger->isMultipleAnswer())
+            ->setSubject($trigger->getSubject());
 
         // The first choice key is always "1"
         $choiceKey = 1;
-        foreach (array_unique($communicationModel->answers) as $choiceValue) {
+        foreach (array_unique($trigger->getAnswers()) as $choiceValue) {
             $choice = new Choice();
             $choice
                 ->setCode($choiceKey)
                 ->setLabel($choiceValue);
 
-            $communicationEntity->addChoice($choice);
+            $communication->addChoice($choice);
             $choiceKey++;
         }
 
-        $volunteers = $this->volunteerManager->filterByNivolAndAccess($communicationModel->audience);
+        $volunteers = $this->volunteerManager->filterByNivolAndAccess($trigger->getAudience());
         $codes = $this->messageManager->generateCodes(count($volunteers));
 
         $prefixes = [];
@@ -208,10 +205,10 @@ class CommunicationManager
             $message->setCode($code);
             $message->setVolunteer($volunteer);
 
-            $communicationEntity->addMessage($message);
+            $communication->addMessage($message);
         }
 
-        return $communicationEntity;
+        return $communication;
     }
 
     /**

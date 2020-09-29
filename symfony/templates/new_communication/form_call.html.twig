@@ -1,0 +1,62 @@
+
+{{ form_row(form.audience) }}
+
+<hr/>
+
+{% set max_length_call = constant('App\\Entity\\Message::MAX_LENGTH_CALL') %}
+
+<div id="message-container">
+    <div class="h4">{{ 'form.communication.fields.message'|trans }}</div>
+
+    <div id="textarea-wrapper" class="textarea-wrapper">
+        {{ form_widget(form.message) }}
+
+        <div class="message-length float-right">
+            <span id="message-size">0</span>
+            /
+            <span id="message-max">{{ max_length_call }}</span>
+        </div>
+    </div>
+</div>
+
+<div class="clearfix"></div>
+
+<div class="h4">{{ 'form.communication.fields.response_title'|trans }}</div>
+
+{{ form_label(form.answers) }}
+
+{{ render(controller('\\App\\Controller\\WidgetController::prefilledAnswers', {campaignId: campaign.id|default(null)})) }}
+
+{{ include('widget/prefilled_answers_editor.html.twig', {answers: form.answers}) }}
+
+<div class="h4">{{ 'form.communication.fields.preview'|trans }}</div>
+
+<div id="message-preview-audio">
+    <a href="#" id="message-play" class="btn btn-sm btn-secondary">{{ 'base.play'|trans }}</a>
+    <div id="message-player" class="d-none"></div>
+    <br/><br/>
+</div>
+
+{{ include('new_communication/preview.html.twig') }}
+
+{{ include('new_communication/common.html.twig') }}
+
+<script type="text/javascript">
+
+    {# Preview voice calls #}
+    $('#message-play').click(function(e) {
+        e.preventDefault();
+        $('#message-play').prop('disabled', 'disabled');
+        $('#message-play').css('cursor', 'not-allowed');
+        $('#message-play').html("{{ 'base.wait'|trans }}");
+        $.post('{{ path('communication_play') }}', $('form').serialize(), function (data) {
+            if (data.success) {
+                $('#message-player').html(data.player);
+            }
+            $('#message-play').removeProp('disabled');
+            $('#message-play').html("{{ 'base.play'|trans }}");
+            $('#message-play').css('cursor', '');
+        });
+    });
+
+</script>

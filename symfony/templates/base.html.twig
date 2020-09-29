@@ -68,8 +68,12 @@
                         <a href="{{ path('home') }}"
                            class="btn btn-secondary text-sm-center">{{ 'base.home'|trans }}</a>
 
-                        <a href="{{ path('create_campaign') }}"
-                           class="btn btn-secondary text-sm-center">{{ 'campaign.titles.create_full'|trans }}</a>
+                        <a href="{{ path('create_campaign', {type: 'sms'}) }}"
+                           class="btn btn-secondary text-sm-center">📱 {{ 'campaign.titles.sms'|trans }}</a>
+                        <a href="{{ path('create_campaign', {type: 'call'}) }}"
+                           class="btn btn-secondary text-sm-center">📞 {{ 'campaign.titles.call'|trans }}</a>
+                        <a href="{{ path('create_campaign', {type: 'email'}) }}"
+                           class="btn btn-secondary text-sm-center">✉️ {{ 'campaign.titles.email'|trans }}</a>
 
                         <a href="{{ path('list_campaigns') }}"
                            class="btn btn-secondary text-sm-center">{{ 'campaign.titles.list_full'|trans }}</a>

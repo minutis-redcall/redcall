@@ -1,0 +1,63 @@
+
+{% if constant('App\\Entity\\Communication::TYPE_EMAIL') == type %}
+
+    <div id="message-preview-email" style="padding:10px;" class="email-body d-none">
+    </div>
+
+{% else %}
+
+    <div id="message-preview" style="background-color:#eeeeee;padding:5px;margin-bottom:10px;">
+        &nbsp;
+    </div>
+
+{% endif %}
+
+<div id="message-calc-all" style="margin-bottom:10px;">
+    <div id="message-calc">
+        {{ 'form.communication.fields.length'|trans }}
+        <span id="message-length">--</span>
+        <br/>
+        {{ 'form.communication.fields.cost'|trans }}
+        <span id="message-cost">--</span>
+        <br/>
+    </div>
+    {{ 'form.communication.fields.price'|trans }}
+    <span id="message-price">--</span>&euro;
+</div>
+
+<script type="text/javascript">
+
+    {# Refresh preview if form is changed #}
+    var previewTimeout = null;
+
+    function refreshPreview() {
+        clearTimeout(previewTimeout);
+        previewTimeout = setTimeout(function () {
+            $.post('{{ path('communication_preview', {type: type}) }}', $('form').serialize(), function (data) {
+                if (data.success) {
+                    if ('{{ constant('App\\Entity\\Communication::TYPE_EMAIL') }}' === data.type) {
+                        var message = data.message.replaceAll('cid:logo', $('#message-preview-email').data('logo'));
+                        $('#message-preview-email').html(message);
+                    } else {
+                        $('#message-preview').html(nl2br(data.message));
+                    }
+                    $('#message-cost').html(data.cost);
+                    $('#message-price').html(data.price);
+                    $('#message-length').html(data.length);
+                } else {
+                    $('#message-preview').html('&nbsp;');
+                    $('#message-cost').html('--');
+                    $('#message-price').html('--');
+                    $('#message-length').html('--');
+                }
+            });
+        }, 1000);
+    }
+
+    $('body').on('change keyup', 'input, textarea, select', function () {
+        refreshPreview();
+    });
+
+    refreshPreview();
+
+</script>

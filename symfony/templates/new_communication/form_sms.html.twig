@@ -1,0 +1,49 @@
+
+{{ form_row(form.audience) }}
+
+<hr/>
+
+{% set max_length_sms = constant('App\\Entity\\Message::MAX_LENGTH_SMS') %}
+
+<div id="message-container">
+    <div class="h4">{{ 'form.communication.fields.message'|trans }}</div>
+
+    {{ form_label(form.message) }}
+
+    <div id="textarea-wrapper" class="textarea-wrapper">
+        {{ form_widget(form.message) }}
+
+        <div class="message-length float-right">
+            <span id="message-size">0</span>
+            /
+            <span id="message-max">{{ max_length_sms }}</span>
+        </div>
+    </div>
+
+</div>
+
+<div class="clearfix"></div>
+
+<div class="h4">{{ 'form.communication.fields.response_title'|trans }}</div>
+
+{{ form_label(form.answers) }}
+
+{{ render(controller('\\App\\Controller\\WidgetController::prefilledAnswers', {campaignId: campaign.id|default(null)})) }}
+
+{{ include('widget/prefilled_answers_editor.html.twig', {answers: form.answers}) }}
+
+<br/>
+
+{{ form_row(form.multipleAnswer) }}
+
+<div id="message-geo-location">
+    <div class="h4">{{ 'form.communication.fields.other_options'|trans }}</div>
+
+    {{ form_row(form.geoLocation) }}
+</div>
+
+<div class="h4">{{ 'form.communication.fields.preview'|trans }}</div>
+
+{{ include('new_communication/preview.html.twig') }}
+
+{{ include('new_communication/common.html.twig') }}

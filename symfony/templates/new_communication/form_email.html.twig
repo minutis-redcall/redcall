@@ -1,0 +1,113 @@
+
+{{ form_row(form.audience) }}
+
+<hr/>
+
+{% set max_length_email = constant('App\\Entity\\Message::MAX_LENGTH_EMAIL') %}
+
+<div id="message-container">
+    <div class="h4">{{ 'form.communication.fields.message'|trans }}</div>
+
+    {{ form_row(form.subject) }}
+
+    {{ form_label(form.message) }}
+
+    <div id="richtext-wrapper">
+        {{ include('widget/quill.html.twig', {
+            toolbar: 'toolbar-container',
+            editor: 'editor-container',
+        }) }}
+
+        <br/>
+
+        <div class="d-none">
+            {{ form_widget(form.message) }}
+        </div>
+
+        <div class="message-length float-right">
+            <span id="message-size">0</span>
+            /
+            <span id="message-max">{{ max_length_email }}</span>
+        </div>
+    </div>
+
+</div>
+
+<div class="clearfix"></div>
+
+<div class="h4">{{ 'form.communication.fields.response_title'|trans }}</div>
+
+{{ form_label(form.answers) }}
+
+{{ render(controller('\\App\\Controller\\WidgetController::prefilledAnswers', {campaignId: campaign.id|default(null)})) }}
+
+{{ include('widget/prefilled_answers_editor.html.twig', {answers: form.answers}) }}
+
+<br/>
+
+{{ form_row(form.multipleAnswer) }}
+
+<div class="h4">{{ 'form.communication.fields.preview'|trans }}</div>
+
+{{ include('new_communication/preview.html.twig') }}
+
+{{ include('new_communication/common.html.twig') }}
+
+<script type="text/javascript">
+
+    {# Richtext editor for emails #}
+    var editor = new Quill('#editor-container', {
+        theme: 'snow',
+        modules: {
+            toolbar: '#toolbar-container'
+        },
+        bounds: document.body,
+    });
+    editor.root.innerHTML = '{{ form.message.vars.value|purify }}';
+
+    var BackgroundStyle = Quill.import('attributors/style/background');
+    Quill.register(BackgroundStyle, true);
+
+    var ColorStyle = Quill.import('attributors/style/color');
+    Quill.register(ColorStyle, true);
+
+    var SizeStyle = Quill.import('attributors/style/size');
+    Quill.register(SizeStyle, true);
+
+    var FontStyle = Quill.import('attributors/style/font');
+    Quill.register(FontStyle, true);
+
+    var AlignStyle = Quill.import('attributors/style/align');
+    Quill.register(AlignStyle, true);
+
+    const Parchment = Quill.import("parchment")
+    const pixelLevels = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
+
+    const TAB_MULTIPLIER = 30;
+
+    class IndentAttributor extends Parchment.Attributor.Style {
+        add(node, value) {
+            return super.add(node, `${+value * TAB_MULTIPLIER}px`)
+        }
+
+        value(node) {
+            return parseFloat(super.value(node)) / TAB_MULTIPLIER || undefined // Don't return NaN
+        }
+    }
+
+    const IndentStyle = new IndentAttributor("indent", "margin-left", {
+        scope: Parchment.Scope.BLOCK,
+        whitelist: pixelLevels.map(value => `${value * TAB_MULTIPLIER}px`),
+    });
+
+    Quill.register({ "formats/indent": IndentStyle }, true);
+
+    editor.on('text-change', function() {
+        $('#{{ form.message.vars.id }}').val(
+            editor.root.innerHTML,
+        );
+        updateMessageSize();
+        refreshPreview();
+    });
+
+</script>

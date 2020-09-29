@@ -12,6 +12,7 @@ use Exception;
  */
 class Communication
 {
+    // TODO use an MyCLabs\Enum
     const TYPE_SMS   = 'sms';
     const TYPE_CALL = 'call';
     const TYPE_EMAIL = 'email';
@@ -240,7 +241,7 @@ class Communication
 
     public function canExpandBody(): string
     {
-        return self::TYPE_EMAIL === $this->type || $this->body !== $this->getLimitedBody();
+        return $this->isEmail() || $this->body !== $this->getLimitedBody();
     }
 
     /**
