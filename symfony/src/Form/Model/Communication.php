@@ -92,7 +92,7 @@ class Communication implements \JsonSerializable
             }
         }
 
-        if (\App\Entity\Communication::TYPE_CALL !== $this->type) {
+        if (\App\Entity\Communication::TYPE_CALL === $this->type) {
             if ($this->multipleAnswer) {
                 $context->buildViolation('form.communication.errors.call_multiple')
                     ->atPath('multipleAnswer')
