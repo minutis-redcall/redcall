@@ -1,0 +1,15 @@
+{% macro newMessage(campaign, communication, type) %}
+    <a class="dropdown-item new-message-button"
+       data-communication-id="{{ communication.id }}"
+       data-type="{{ type }}"
+       href="#">
+        {{ ('campaign_status.selection.' ~ type)|trans }}
+    </a>
+
+    <form id="selection-new-message-form-{{ communication.id }}-{{ type }}"
+          action="{{ path('communication_add', {id: campaign.id, type: type}) }}"
+          method="post" class="d-none">
+        <input type="hidden" name="volunteers"
+               id="selection-new-message-field-{{ communication.id }}-{{ type }}" value=""/>
+    </form>
+{% endmacro %}

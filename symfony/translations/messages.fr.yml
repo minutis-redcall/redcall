@@ -188,6 +188,9 @@ campaign_status:
     new_message: Ecrire un nouveau message
     download_csv: Téléchager en CSV
     download_portrait_pdf: Téléchager en PDF
+    sms: 📱 SMS
+    call: 📞 Appel vocal
+    email: ✉️ Email
   answer_no: 'Réponse %choice%'
   answer_invalid: 'Autres Rép.'
   answer: 'Réponses libres'
@@ -215,7 +218,9 @@ campaign_status:
   no_notes_yet: 'Ce déclenchement ne contient aucune note pour le moment.'
 
 new_communication:
-  title: Ecrire un nouveau message
+  title_sms: 'Ecrire un nouveau SMS'
+  title_call: 'Ecrire un nouveau message vocal'
+  title_email: 'Ecrire un nouvel email'
   subtitle: 'Dans le cadre du déclenchement "%label%"'
 
 message:

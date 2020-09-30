@@ -9,10 +9,9 @@ use App\Entity\Communication;
 use App\Entity\Message;
 use App\Enum\Type;
 use App\Form\Model\BaseTrigger;
-use App\Form\Model\Campaign as ModelCampaign;
-use App\Form\Model\Communication as CommunicationModel;
+use App\Form\Model\Campaign as CampaignModel;
+use App\Form\Model\SmsTrigger;
 use App\Form\Type\CampaignType;
-use App\Form\Type\EmailTriggerType;
 use App\Manager\AnswerManager;
 use App\Manager\CampaignManager;
 use App\Manager\CommunicationManager;
@@ -160,13 +159,13 @@ class CommunicationController extends BaseController
     /**
      * @Route(
      *     name="add",
-     *     path="campaign/{id}/add-communication",
+     *     path="campaign/{id}/add-communication/{type}",
      *     requirements={"id" = "\d+"}
      * )
      * @IsGranted("CAMPAIGN", subject="campaign")
      * @Method("POST")
      */
-    public function addCommunicationAction(Request $request, Campaign $campaign)
+    public function addCommunicationAction(Request $request, Campaign $campaign, Type $type)
     {
         $user = $this->getUser();
 
@@ -201,19 +200,20 @@ class CommunicationController extends BaseController
         return $this->redirectToRoute('communication_new', [
             'id'  => $campaign->getId(),
             'key' => $key,
+            'type' => $type,
         ]);
     }
 
     /**
      * @Route(
      *     name="new",
-     *     path="campaign/{id}/new-communication/{key}",
+     *     path="campaign/{id}/new-communication/{type}/{key}",
      *     defaults={"key" = null},
      *     requirements={"id" = "\d+"}
      * )
      * @IsGranted("CAMPAIGN", subject="campaign")
      */
-    public function newCommunicationAction(Request $request, Campaign $campaign, ?string $key)
+    public function newCommunicationAction(Request $request, Campaign $campaign, Type $type, ?string $key)
     {
         $user = $this->getUser();
 
@@ -233,19 +233,17 @@ class CommunicationController extends BaseController
                     $volunteers[] = $volunteer->getNivol();
                 }
             }
-
-            $this->get('session')->remove('add-communication');
         }
 
         /**
-         * @var CommunicationModel
+         * @var BaseTrigger
          */
-        $communication             = new CommunicationModel();
-        $communication->audience = $volunteers;
-        $communication->answers    = [];
+        $communication = $type->getFormData();
+        $communication->setAudience($volunteers);
+        $communication->setAnswers([]);
 
         $form = $this
-            ->createForm(EmailTriggerType::class, $communication)
+            ->createForm($type->getFormType(), $communication)
             ->handleRequest($request);
 
         // Creating the new communication is form has been submitted
@@ -261,6 +259,7 @@ class CommunicationController extends BaseController
             'campaign'   => $campaign,
             'volunteers' => $volunteers,
             'form'       => $form->createView(),
+            'type'       => $type,
         ]);
     }
 
@@ -270,6 +269,12 @@ class CommunicationController extends BaseController
     public function previewCommunicationAction(Request $request, Type $type, \HTMLPurifier $purifier)
     {
         $trigger = $this->getCommunicationFromRequest($request, $type);
+
+        if (!strip_tags($trigger->getMessage())) {
+            return new JsonResponse([
+                'success' => false,
+            ]);
+        }
 
         $communicationEntity = $this->communicationManager->createCommunication($trigger);
 
@@ -297,13 +302,13 @@ class CommunicationController extends BaseController
      */
     public function playCommunication(Request $request)
     {
-        $communicationModel = $this->getCommunicationFromRequest($request);
+        $trigger = $this->getCommunicationFromRequest($request, Type::CALL());
 
-        if (!$communicationModel->textMessage) {
+        if (!$trigger->getMessage()) {
             return new JsonResponse(['success' => false]);
         }
 
-        $communicationEntity = $this->communicationManager->createCommunication($communicationModel);
+        $communicationEntity = $this->communicationManager->createCommunication($trigger);
 
         $message = new Message();
         $message->setCommunication($communicationEntity);
@@ -386,19 +391,19 @@ class CommunicationController extends BaseController
      * @Entity("communicationEntity", expr="repository.find(communicationId)")
      * @IsGranted("CAMPAIGN", subject="campaign")
      */
-    public function rename(Request $request, Campaign $campaign, Communication $communicationEntity): Response
+    public function rename(Request $request, Campaign $campaign, Communication $communicationEntity) : Response
     {
         $this->validateCsrfOrThrowNotFoundException('communication', $request->request->get('csrf'));
 
-        $communication        = new CommunicationModel();
-        $communication->label = $request->request->get('new_name');
-        $errors               = $this->get('validator')->validate($communication, null, ['label_edition']);
+        $communication = new SmsTrigger();
+        $communication->setLabel($request->request->get('new_name'));
+        $errors = $this->get('validator')->validate($communication, null, ['label_edition']);
         if (count($errors) > 0) {
             foreach ($errors as $error) {
                 $this->addFlash('danger', $error->getMessage());
             }
         } else {
-            $this->communicationManager->changeName($communicationEntity, $communication->label);
+            $this->communicationManager->changeName($communicationEntity, $communication->getLabel());
         }
 
         return $this->redirect($this->generateUrl('communication_index', [
@@ -422,27 +427,27 @@ class CommunicationController extends BaseController
         return $this->redirectToRoute('communication_index', ['id' => $campaign->getId()]);
     }
 
-    private function getCommunicationFromRequest(Request $request, Type $type): BaseTrigger
+    private function getCommunicationFromRequest(Request $request, Type $type) : BaseTrigger
     {
         if ($request->request->get('campaign')) {
             // New campaign form
-            $campaignModel = new ModelCampaign($type->getFormData());
+            $campaign = new CampaignModel($type->getFormData());
 
             $this
-                ->createForm(CampaignType::class, $campaignModel, [
+                ->createForm(CampaignType::class, $campaign, [
                     'type' => $type,
                 ])
                 ->handleRequest($request);
 
-            $communicationModel = $campaignModel->trigger;
+            $trigger = $campaign->trigger;
         } else {
             // Add communication form
-            $communicationModel = new $type->getFormData();
+            $trigger = $type->getFormData();
             $this
-                ->createForm($type->getFormType(), $type->getFormData())
+                ->createForm($type->getFormType(), $trigger)
                 ->handleRequest($request);
         }
 
-        return $communicationModel;
+        return $trigger;
     }
 }

@@ -9,7 +9,6 @@ use App\Entity\Communication;
 use App\Entity\Message;
 use App\Entity\Volunteer;
 use App\Form\Model\BaseTrigger;
-use App\Form\Model\Communication as CommunicationModel;
 use App\Repository\CommunicationRepository;
 use DateTime;
 use Exception;
@@ -105,15 +104,14 @@ class CommunicationManager
         return $this->communicationRepository->find($communicationId);
     }
 
-    public function launchNewCommunication(Campaign $campaign,
-        CommunicationModel $communicationModel): Communication
+    public function launchNewCommunication(Campaign $campaign, BaseTrigger $trigger): Communication
     {
         $this->logger->info('Launching a new communication', [
-            'model' => $communicationModel,
+            'model' => $trigger,
         ]);
 
-        $Communication = $this->createCommunication($communicationModel);
-        $Communication->setRaw(json_encode($communicationModel, JSON_PRETTY_PRINT));
+        $Communication = $this->createCommunication($trigger);
+        $Communication->setRaw(json_encode($trigger, JSON_PRETTY_PRINT));
 
         $campaign->addCommunication($Communication);
         foreach ($this->userManager->getCurrentUserStructures() as $structure) {

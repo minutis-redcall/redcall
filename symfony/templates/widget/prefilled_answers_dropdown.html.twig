@@ -1,6 +1,6 @@
 {% for color, form in forms %}
 
-    <div id="pfa-selector-{{ color }}" class="pfa-selector {% if color != current_color %}d-none{% endif %}">
+    <div id="pfa-selector-{{ color }}" style="margin-bottom: 5px;" class="pfa-selector {% if color != current_color %}d-none{% endif %}">
         {{ form_widget(form) }}
     </div>
 

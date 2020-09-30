@@ -9,6 +9,7 @@ framework:
   session:
     handler_id: Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler
     save_path: '%kernel.cache_dir%/sessions'
+    cookie_lifetime: 43200
 
   #esi: true
   #fragments: true
