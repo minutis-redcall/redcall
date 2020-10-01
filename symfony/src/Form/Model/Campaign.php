@@ -29,24 +29,21 @@ class Campaign
     public $type;
 
     /**
-     * @var Communication
+     * @var BaseTrigger
      *
      * @Assert\Valid
      */
-    public $communication;
+    public $trigger;
 
     /**
      * @var string
      */
     public $notes;
 
-    /**
-     * Campaign constructor.
-     */
-    public function __construct()
+    public function __construct(BaseTrigger $trigger)
     {
-        $this->type          = CampaignEntity::TYPE_GREEN;
-        $this->label         = '';
-        $this->communication = new Communication();
+        $this->type = CampaignEntity::TYPE_GREEN;
+        $this->label = '';
+        $this->trigger = $trigger;
     }
 }

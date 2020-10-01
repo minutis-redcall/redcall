@@ -127,9 +127,13 @@ modal:
 
 campaign:
   titles:
-    create_full: 'Create a campaign'
-    list_full: 'List campaigns'
-    list_admin: 'List all campaigns'
+    create_full: 'Create a trigger'
+    new: 'Create a "%type%" trigger'
+    list_full: 'List triggers'
+    list_admin: 'List all triggers'
+    sms: 'SMS'
+    call: 'Voice call'
+    email: 'Email'
   no_nivol:
     title: 'No nivol bound'
     description: 'Your RedCall account is not bound to your Pegass account, please contact us in order to use the platform.'
@@ -185,6 +189,9 @@ campaign_status:
     new_message: Write new message
     download_csv: Download CSV
     download_portrait_pdf: Download PDF
+    sms: 📱 SMS
+    call: 📞 Voice call
+    email: ✉️ Email
   answer_no: 'Answer %choice%'
   answer_invalid: 'Other rep.'
   answer: 'Responses'
@@ -212,8 +219,10 @@ campaign_status:
   no_notes_yet: 'This trigger does not contain any notes yet.'
 
 new_communication:
-  title: Write a new message
-  subtitle: 'As part of campaign "%label%"'
+  title_sms: Write a new SMS
+  title_call: Write a new voice call
+  title_email: Write a new email
+  subtitle: 'As part of trigger "%label%"'
 
 message:
   sms:

@@ -16,6 +16,7 @@ class Campaign
     /**
      * Campaign types
      */
+    // TODO use a MyCLabs\Enum (Color)
     const TYPE_GREEN        = '1_green';
     const TYPE_LIGHT_ORANGE = '2_light_orange';
     const TYPE_DARK_ORANGE  = '3_dark_orange';
@@ -54,6 +55,7 @@ class Campaign
      *
      * @ORM\Column(type="string", length=80)
      */
+    // TODO rename to color
     private $type = self::TYPE_GREEN;
 
     /**

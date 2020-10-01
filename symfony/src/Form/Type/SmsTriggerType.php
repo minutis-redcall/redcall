@@ -2,48 +2,24 @@
 
 namespace App\Form\Type;
 
-use App\Entity\Communication as CommunicationEntity;
-use App\Form\Model\Communication as CommunicationModel;
+use App\Form\Model\SmsTrigger;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class CommunicationType extends AbstractType
+class SmsTriggerType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         parent::buildForm($builder, $options);
 
         $builder
-            ->add('type', ChoiceType::class, [
-                'label'    => false,
-                'choices'  => [
-                    'form.communication.fields.type_sms'   => CommunicationEntity::TYPE_SMS,
-                    'form.communication.fields.type_call'   => CommunicationEntity::TYPE_CALL,
-                    'form.communication.fields.type_email' => CommunicationEntity::TYPE_EMAIL,
-                ],
-                'expanded' => true,
-            ])
-            ->add('multipleAnswer', CheckboxType::class, [
-                'label'    => 'form.communication.fields.multiple_answer',
-                'required' => false,
-            ])
             ->add('audience', AudienceType::class)
-            ->add('subject', TextType::class, [
-                'label'    => 'form.communication.fields.subject',
-                'required' => false,
-            ])
-            ->add('textMessage', TextareaType::class, [
-                'label' => 'form.communication.fields.body',
-                'required' => false,
-            ])
-            ->add('htmlMessage', TextareaType::class, [
+            ->add('message', TextareaType::class, [
                 'label' => 'form.communication.fields.body',
                 'required' => false,
             ])
@@ -61,6 +37,10 @@ class CommunicationType extends AbstractType
                 'attr'          => [
                     'class' => 'collection',
                 ],
+            ])
+            ->add('multipleAnswer', CheckboxType::class, [
+                'label'    => 'form.communication.fields.multiple_answer',
+                'required' => false,
             ])
             ->add('geoLocation', CheckboxType::class, [
                 'label'    => 'form.communication.fields.geo_location',
@@ -80,8 +60,7 @@ class CommunicationType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => CommunicationModel::class,
-            'type'       => CommunicationEntity::TYPE_SMS,
+            'data_class' => SmsTrigger::class,
             'submit'     => true,
         ]);
     }

@@ -4,7 +4,7 @@
     <div class="row justify-content-md-center">
         <div class="col-md-12">
             <h1>
-                {{ 'campaign.titles.create_full'|trans }}
+                {{ 'campaign.titles.new'|trans({'%type%': ('campaign.titles.'~type)|trans}) }}
             </h1>
 
             <div id="form-container">
@@ -18,7 +18,7 @@
 
                 <hr/>
 
-                {{ include('new_communication/form.html.twig', _context|merge({form: form.communication})) }}
+                {{ include(type.formView, _context|merge({form: form.trigger})) }}
 
                 <hr/>
                 <div class="h4">{{ 'form.campaign.fields.notes_title'|trans }}</div>

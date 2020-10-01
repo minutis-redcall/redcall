@@ -3,15 +3,15 @@
 {% block body %}
 
     <h1>
-        {{ 'new_communication.title'|trans }}
+        {{ ('new_communication.title_' ~ type)|trans }}
         <br/>
         <div class="h3">{{ 'new_communication.subtitle'|trans({'%label%': campaign.label|lower}) }}</div>
     </h1>
 
     <div id="form-container">
 
-        {{ form_start(form, {attr: {'action': path('communication_new', {id: campaign.id})}}) }}
-        {{ include('new_communication/form.html.twig') }}
+        {{ form_start(form, {attr: {'action': path('communication_new', {id: campaign.id, type: type})}}) }}
+        {{ include(type.formView) }}
         {{ form_end(form) }}
 
         <a href="{{ path('communication_index', {id: campaign.id}) }}" class="btn btn-light">

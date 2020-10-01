@@ -2,6 +2,7 @@
 
 namespace App\Form\Type;
 
+use App\Enum\Type;
 use App\Form\Model\Campaign as CampaignModel;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\CallbackTransformer;
@@ -22,7 +23,7 @@ class CampaignType extends AbstractType
                 'required' => false,
             ])
             ->add('type', TypesType::class)
-            ->add('communication', CommunicationType::class, [
+            ->add('trigger', $options['type']->getFormType(), [
                 'label' => false,
             ])
             ->add('notes', TextareaType::class, [
@@ -45,6 +46,7 @@ class CampaignType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => CampaignModel::class,
+            'type' => Type::SMS(),
         ]);
     }
 }

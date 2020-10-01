@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Base\BaseController;
 use App\Entity\Campaign;
+use App\Enum\Type;
 use App\Form\Model\Campaign as CampaignModel;
 use App\Form\Type\CampaignType;
 use App\Manager\CampaignManager;
@@ -66,9 +67,9 @@ class CampaignController extends BaseController
     }
 
     /**
-     * @Route(path="campaign/new", name="create_campaign")
+     * @Route(path="campaign/new/{type}", name="create_campaign")
      */
-    public function createCampaign(Request $request)
+    public function createCampaign(Request $request, Type $type)
     {
         $user = $this->getUser();
 
@@ -76,11 +77,16 @@ class CampaignController extends BaseController
             return $this->redirectToRoute('home');
         }
 
-        $campaignModel                            = new CampaignModel();
-        $campaignModel->communication->structures = $user->computeStructureList();
+        $campaignModel = new CampaignModel(
+            $type->getFormData()
+        );
+
+        $campaignModel->trigger->structures = $user->computeStructureList();
 
         $form = $this
-            ->createForm(CampaignType::class, $campaignModel)
+            ->createForm(CampaignType::class, $campaignModel, [
+                'type' => $type,
+            ])
             ->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -93,6 +99,7 @@ class CampaignController extends BaseController
 
         return $this->render('campaign/new.html.twig', [
             'form' => $form->createView(),
+            'type' => $type,
         ]);
     }
 

@@ -27,13 +27,35 @@
 
         {% else %}
 
-            <a href="{{ path('create_campaign') }}"
-               class="text-lg-center large-button btn btn-secondary">{{ 'campaign.titles.create_full'|trans }}</a>
+            <div class="row">
+                <div class="col-12">
+                    <div class="h2" style="color:#708c91;">{{ 'campaign.titles.create_full'|trans }}</div>
+                    <br/>
+                </div>
+                <div class="col-4">
+                    <a href="{{ path('create_campaign', {type: 'sms'}) }}" class="btn btn-secondary" style="width:80%;padding:15px;">
+                        <div style="font-size:60px;">📱</div>
+                        <strong>{{ 'campaign.titles.sms'|trans }}</strong>
+                    </a>
+                </div>
+                <div class="col-4">
+                    <a href="{{ path('create_campaign', {type: 'call'}) }}" class="btn btn-secondary" style="width:80%;padding:15px;">
+                        <div style="font-size:60px;">📞</div>
+                        <strong>{{ 'campaign.titles.call'|trans }}</strong>
+                    </a>
+                </div>
+                <div class="col-4">
+                    <a href="{{ path('create_campaign', {type: 'email'}) }}" class="btn btn-secondary" style="width:80%;padding:15px;">
+                        <div style="font-size:60px;">✉️</div>
+                        <strong>{{ 'campaign.titles.email'|trans }}</strong>
+                    </a>
+                </div>
+            </div>
 
             <br/><br/><br/>
 
             <a href="{{ path('list_campaigns') }}"
-               class="text-lg-center large-button btn btn-secondary">{{ 'campaign.titles.list_full'|trans }}</a>
+               class="text-lg-center large-button btn btn-secondary" style="width:94%;">{{ 'campaign.titles.list_full'|trans }}</a>
 
             <br/><br/><br/>
 
@@ -55,7 +77,6 @@
                     </div>
                 </div>
             {% endif %}
-
 
         {% endif %}
 

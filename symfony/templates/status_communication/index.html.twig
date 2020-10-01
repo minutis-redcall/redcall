@@ -1,5 +1,6 @@
 {% extends 'base.html.twig' %}
 {% import 'macros.html.twig' as macros %}
+{% import 'status_communication/macros.html.twig' as specificMacros %}
 
 {% block body %}
 
@@ -439,19 +440,21 @@
 
                         {# New message to selection #}
                         {% if campaign.active %}
+
+
                             <div class="col-md-3 col-12 skip-line">
-                                <a href="#"
-                                   class="btn btn-primary new-message-button"
-                                   data-communication-id="{{ communication.id }}" role="button">
-                                    {{ 'campaign_status.selection.new_message'|trans }}
-                                </a>
-                                <form id="selection-new-message-form-{{ communication.id }}"
-                                      action="{{ path('communication_add', {id: campaign.id}) }}"
-                                      method="post" class="d-none">
-                                    <input type="hidden" name="volunteers"
-                                           id="selection-new-message-field-{{ communication.id }}" value=""/>
-                                </form>
+                                <div class="dropdown">
+                                    <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        {{ 'campaign_status.selection.new_message'|trans }}
+                                    </button>
+                                    <div class="dropdown-menu">
+                                        {{ specificMacros.newMessage(campaign, communication, constant('App\\Entity\\Communication::TYPE_SMS')) }}
+                                        {{ specificMacros.newMessage(campaign, communication, constant('App\\Entity\\Communication::TYPE_CALL')) }}
+                                        {{ specificMacros.newMessage(campaign, communication, constant('App\\Entity\\Communication::TYPE_EMAIL')) }}
+                                    </div>
+                                </div>
                             </div>
+
                         {% endif %}
 
                         {# Download CSV #}
@@ -1150,10 +1153,11 @@
         $('.new-message-button').click(function (e) {
             e.preventDefault();
             var communicationId = $(this).data('communication-id');
-            $('#selection-new-message-field-' + communicationId).val(
+            var type = $(this).data('type');
+            $('#selection-new-message-field-' + communicationId + '-' + type).val(
                 JSON.stringify(getSelectedVolunteers(communicationId))
             );
-            $('#selection-new-message-form-' + communicationId).submit();
+            $('#selection-new-message-form-' + communicationId + '-' + type).submit();
         });
 
         {# -------------------------------------------------------------------------------- #}
