@@ -57,4 +57,19 @@ final class Type extends Enum
                 return 'new_communication/form_email.html.twig';
         }
     }
+
+    public function isSms() : bool
+    {
+        return self::SMS === $this->value;
+    }
+
+    public function isCall() : bool
+    {
+        return self::CALL === $this->value;
+    }
+
+    public function isEmail() : bool
+    {
+        return self::EMAIL === $this->value;
+    }
 }

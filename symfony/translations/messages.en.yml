@@ -270,6 +270,7 @@ form:
       add_answer: Add an answer
       remove: Delete
       submit: Send
+      submit_to: Contact %nbr% volunteers
       back: Back
       other_options: Other options
       preview: Preview
@@ -282,6 +283,9 @@ form:
     toggle:
       by_nivol: 'Fill by nivols'
       by_filters: 'Back to filters selection'
+    sms: 'SMS'
+    call: 'voice call'
+    email: 'email'
   campaign:
     fields:
       label: 'Campaign name'

@@ -1,0 +1,443 @@
+
+{% block audience_row %}
+
+    <div id="{{ form.vars.id }}" class="audience-selection">
+
+        <div class="audience-filters">
+            <div class="text-right">
+                <span class="btn btn-link toggle-filters-nivols">{{ 'audience.nivol_input'|trans }}</span>
+            </div>
+
+            <div class="{{ structures|length <= 1 ? 'd-none' : '' }}">
+                <div class="h4">{{ 'audience.structures'|trans }}</div>
+
+                {# Toggle all structures #}
+                <div>
+                    <label class="switch">
+                        <input type="checkbox" class="toggle-all-structures">
+                        <span class="slider"></span>
+                    </label>
+                    <label></label>
+                </div>
+
+                {# Rendering all structure ticks #}
+                {% for child in form.structures %}
+
+                    <div>
+                        <label class="switch">
+                            <input type="checkbox"
+                                   class="structure structure-{{ child.vars.value }}"
+                                   id="{{ child.vars.id }}"
+                                   name="{{ child.vars.full_name }}"
+                                   value="{{ child.vars.value }}"
+
+                                    {# Structures are hidden when there is only 1 to trigger #}
+                                    {% if form.structures|length <= 1
+                                        or (
+                                        form.structures.vars.data
+                                        and structures[child.vars.value] in form.structures.vars.data
+                                        ) %}checked{% endif %}
+
+                                    {# Adding tag counts to propery fill them up in the tags filter #}
+                                    {% for tagId, count in tag_counts[child.vars.value]|default([]) %}
+                                        data-tag-count-{{ tagId }}="{{ count }}"
+                                    {% endfor %}
+                            >
+                            <span class="slider"></span>
+                        </label>
+                        <label for="{{ child.vars.id }}">
+                            {{ child.vars.label }} ({{ volunteer_counts[child.vars.name]|default(0) }})
+                        </label>
+                    </div>
+
+                {% endfor %}
+
+            </div>
+
+            <br/>
+            <div class="h4">{{ 'audience.audience'|trans }}</div>
+
+            {# Rendering tags ticks #}
+            <div class="row audience-tags">
+
+                <div class="col-12">
+                    <label class="switch">
+                        <input type="checkbox"
+                               class="toggle-all-tags"/>
+                        <span class="slider"></span>
+                    </label>
+                </div>
+
+                {% for child in form.tags.children %}
+                    <div class="col-lg-3 col-md-4 col-6 col-12 tag-container">
+                        <label class="switch">
+                            <input type="checkbox"
+                                   class="tag"
+                                   id="{{ child.vars.id }}"
+                                   name="{{ child.vars.full_name }}"
+                                   value="{{ child.vars.value }}"
+                                   data-tag-id="{{ child.vars.value }}">
+                            <span class="slider"></span>
+                        </label>
+                        <label for="{{ child.vars.id }}">
+                            {{ child.vars.label }} (<span class="tag-count">--</span>)
+                        </label>
+                    </div>
+                {% endfor %}
+
+                <div class="d-none">
+                    <span class="select-all-tags btn btn-link">{{ 'audience.select_all'|trans }}</span>
+                    <span class="clear-all-tags btn btn-link">{{ 'audience.unselect_all'|trans }}</span>
+                </div>
+            </div>
+
+            {% if form.vars.errors|length %}
+                <br/>
+                {{ form_errors(form) }}
+                <br/>
+            {% endif %}
+
+            {# Rendering sliders for every structure #}
+            <div class="audience-sliders">
+                {% for structure in structures %}
+                    {% set card = 'card-' ~ uuid() %}
+                    <div class="card audience-card d-none" data-structure-id="{{ structure.id }}">
+                        <div class="card-header" id="{{ card }}-head">
+                            <h2 class="mb-0">
+                                <button class="btn btn-secondary btn-sm" type="button" data-toggle="collapse" data-target="#{{ card }}" aria-expanded="false" aria-controls="{{ card }}" style="width:100%;">
+                                    {{ structure.displayName }} (<span class="volunteer-selection-count volunteer-selection-count-{{ structure.id }}">--</span>)
+                                    <div style="font-size:12px;color:grey;">{{ 'audience.see_selection'|trans }}</div>
+                                </button>
+                            </h2>
+                        </div>
+                        <div id="{{ card }}" class="collapse" aria-labelledby="{{ card }}-head">
+                            <div class="card-body">
+                                {{ form_widget(form['structure-' ~ structure.id], {
+                                    attr: form['structure-' ~ structure.id].vars.attr|merge({
+                                        'data-structure-id': structure.id,
+                                        'class': 'volunteer-selection',
+                                    })
+                                }) }}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+        </div>
+
+        {# Nivols selection #}
+        <div class="audience-nivols d-none">
+            <div class="text-right">
+                <span class="btn btn-link toggle-filters-nivols">{{ 'audience.filter_input'|trans }}</span>
+            </div>
+
+            <div class="h4">{{ 'audience.nivol_title'| trans }}</div>
+
+            {{ form_row(form.nivols, {
+                attr: form.nivols.vars.attr|merge({
+                    rows: 8,
+                })
+            }) }}
+        </div>
+
+        {# Classification of the selected audience #}
+        <div class="audience-classification"></div>
+    </div>
+
+    <script type="text/javascript">
+
+        $(function() {
+
+            {# Toggle all structures #}
+            $('#{{ form.vars.id }} .toggle-all-structures').click(function() {
+                var that = $(this);
+                var ticks = that.closest('.audience-selection').find('input[type=checkbox].structure');
+                ticks.prop('checked', that.is(':checked'));
+            });
+
+            {# Refreshing counts by tags according to structures selection #}
+            var refreshTagCountsByTickedStructures = function() {
+                var structures = $('#{{ form.vars.id }}').find('input[type=checkbox].structure');
+                var tags = $('#{{ form.vars.id }}').find('input[type=checkbox].tag');
+                tags.each(function() {
+                    var thisTag = $(this);
+                    var count = 0;
+                    structures.each(function() {
+                        var thisStructure = $(this);
+                        if (thisStructure.is(':checked')) {
+                            var key = 'tag-count-' + thisTag.val();
+                            if (thisStructure.data(key)) {
+                                count += thisStructure.data('tag-count-' + thisTag.val());
+                            }
+                        }
+                    });
+                    thisTag.closest('.tag-container').find('.tag-count').html(count);
+                });
+            };
+            refreshTagCountsByTickedStructures();
+
+            {# Switch to nivols / to filters #}
+            $('#{{ form.vars.id }} .toggle-filters-nivols').click(function() {
+                var audience = $(this).closest('.audience-selection');
+                audience.find('.audience-filters').toggleClass('d-none');
+                audience.find('.audience-nivols').toggleClass('d-none');
+            });
+
+            {# Rendering structure cards only if structures are ticked #}
+            var refreshStructureCards = function () {
+                $('#{{ form.vars.id }} .audience-card').each(function() {
+                    var that = $(this);
+                    var structureId = that.data('structure-id');
+                    if ($('#{{ form.vars.id }} .structure-' + structureId).is(':checked')) {
+                        that.removeClass('d-none');
+                    } else {
+                        that.addClass('d-none');
+                    }
+                });
+            };
+            refreshStructureCards();
+
+            {# Clearing everything #}
+            var clearAllSelection = function() {
+                $('#{{ form.vars.id }} .toggle-all-tags').prop('checked', false);
+                $('#{{ form.vars.id }} .tag').prop('checked', false);
+                $('#{{ form.vars.id }} .volunteer-selection').each(function() {
+                    $(this).val('');
+                });
+                $('#{{ form.vars.id }} .volunteer-selection-count').each(function() {
+                    $(this).val('');
+                });
+            };
+
+            {# Actions made when ticking / unticking a structure #}
+            $('#{{ form.vars.id }} .toggle-all-structures, #{{ form.vars.id }} .structure').click(function() {
+                refreshTagCountsByTickedStructures();
+                refreshStructureCards();
+                clearAllSelection();
+            });
+
+            var flexes = {};
+            $('#{{ form.vars.id }} .volunteer-selection').each(function() {
+                var that = $(this);
+                var structureId = that.data('structure-id');
+
+                {# Initiating volunteer search for each structure #}
+                var flex = that.flexdatalist({
+                    url: '{{ path('widget_audience_search') }}',
+                    data: {},
+                    requestType: 'post',
+                    params: {
+                        structureId: structureId,
+                    },
+                    minLength: 1,
+                    focusFirstResult: true,
+                    selectionRequired: true,
+                    multiple: true,
+                    cache: true,
+                    debug: false,
+                    textProperty: '{firstName} {lastName} ({tags})',
+                    valueProperty: 'nivol',
+                    visibleProperties: ['firstName', 'lastName', 'tags'],
+                    noResultsText: '{{ 'base.search.no_results'|trans|e('js') }}',
+                    searchIn: ['firstName', 'lastName'],
+                    searchContain: true,
+                });
+                flexes[structureId] = flex;
+
+                {# Hack used to disable auto-focus at the end of the list after removal #}
+                flex.on('after:flexdatalist.remove', function () {
+                    var datalist = $('#' + that.prop('id') + '-flexdatalist');
+                    datalist.prop('disabled', 'disabled');
+                    setTimeout(function () {
+                        datalist.prop('disabled', false);
+                    }, 0);
+                });
+
+                {# Refresh selection count #}
+                var refreshSelectionCount = function() {
+                    $('#{{ form.vars.id }} .volunteer-selection-count-' + structureId).html(
+                        flex.flexdatalist('value').length
+                    );
+                }
+                flex.on('change:flexdatalist', function() {
+                    refreshSelectionCount();
+                    refreshClassification();
+                });
+                flex.on('after:flexdatalist.data', function() {
+                    setTimeout(function() {
+                        refreshSelectionCount();
+                        refreshClassification();
+                    }, 100);
+                });
+
+                refreshSelectionCount();
+            });
+
+            {# Classify selection #}
+            var classificationTimeout = null;
+            var refreshClassification = function() {
+                $(function() {
+                    if (classificationTimeout) {
+                        clearTimeout(classificationTimeout);
+                    }
+                    classificationTimeout = setTimeout(function() {
+                        $('#{{ form.parent.vars.id }}').find('button[type="submit"]').html(
+                            $('#submit-button-reset').html()
+                        );
+                        var count = 0;
+                        $.each(flexes, function(index, flex) {
+                            count += flex.flexdatalist('value').length;
+                        });
+                        if (!count && !$('#{{ form.nivols.vars.id }}').val()) {
+                            $('#{{ form.vars.id }} .audience-classification').html('');
+                        } else {
+                            var serialized = $('#{{ form.vars.id }}').closest('form').serialize();
+                            $.post('{{ path('widget_audience_classify') }}?name={{ form.vars.full_name }}', serialized, function(classification) {
+                                if (classification.success) {
+                                    $('#{{ form.vars.id }} .audience-classification').html(classification.view);
+
+                                    $('#{{ form.parent.vars.id }}').find('button[type="submit"]').html(
+                                        $('#submit-button-audience').html().replace('%nbr%', classification.triggered)
+                                    );
+                                }
+                            })
+                        }
+                    }, 500);
+                });
+            };
+            var timeout = null;
+            $('#{{ form.nivols.vars.id }}').keyup(function() {
+                if (timeout) {
+                    clearTimeout(timeout);
+                }
+                timeout = setTimeout(function() {
+                    refreshClassification();
+                }, 500);
+            });
+            refreshClassification();
+
+            {# When clicking on a tag, we should toggle volunteers #}
+            var tagCache = {};
+            $('#{{ form.vars.id }} .tag').click(function() {
+                var that = $(this);
+
+                var structures = [];
+                $('#{{ form.vars.id }} .structure').each(function() {
+                    var tick = $(this);
+                    if (tick.is(':checked')) {
+                        structures.push(tick.val());
+                    }
+                });
+                if (!structures.length) {
+                    return;
+                }
+
+                {# Disable ticks while flexdatalists are loading #}
+                $('#{{ form.vars.id }} .tag, input[type="submit"], button[type="submit"]')
+                    .prop('disabled', 'disabled')
+                    .closest('div')
+                    .css('color', 'grey');
+
+                var populateFlexToggleTag = function(structures) {
+                    $.each(structures, function(structureId, nivols) {
+                        var flex = flexes[structureId];
+                        if (that.is(':checked')) {
+                            flex.flexdatalist('add', nivols.join(','));
+                        } else {
+                            var oldSelection = flex.flexdatalist('value');
+                            var newSelection = [];
+                            $.each(oldSelection, function(index, nivol) {
+                                if (nivols.includes(nivol)) {
+                                    newSelection.push(nivol);
+                                }
+                            });
+                            flex.val(newSelection.join(','));
+                        }
+                    });
+
+                    {# Enable ticks once fledatalists are loaded #}
+                    $('#{{ form.vars.id }} .tag, input[type="submit"], button[type="submit"]')
+                        .prop('disabled', false)
+                        .closest('div')
+                        .css('color', '#212529');
+                };
+
+                var tags = [];
+                $('#{{ form.vars.id }} .tag').each(function() {
+                    if ($(this).is(':checked')) {
+                        tags.push($(this).data('tag-id'));
+                    }
+                });
+
+                var input = {
+                    tags: tags,
+                    structures: structures,
+                };
+
+                var cacheKey = JSON.stringify(input);
+
+                if ('undefined' !== typeof(tagCache[cacheKey])) {
+                    populateFlexToggleTag(tagCache[cacheKey]);
+                } else {
+                    $.post('{{ path('widget_audience_toggle_tag') }}', input, function(structures) {
+                        tagCache[cacheKey] = structures;
+                        populateFlexToggleTag(structures);
+                    });
+                }
+            });
+
+            {# Click on "Toggle all tags" link #}
+            $('#{{ form.vars.id }} .toggle-all-tags').click(function() {
+                if ($(this).is(':checked')) {
+                    $('#{{ form.vars.id }} .select-all-tags').click();
+                } else {
+                    $('#{{ form.vars.id }} .clear-all-tags').click();
+                }
+            });
+
+            {# Click on "Select all" link #}
+            $('#{{ form.vars.id }} .select-all-tags').click(function() {
+                clearAllSelection();
+                $('#{{ form.vars.id }} .toggle-all-tags').prop('checked', 'checked');
+                var tags = $('#{{ form.vars.id }} .tag');
+                var countTicks = tags.length;
+                var countTicked = 0;
+
+                var waitAndClick = function() {
+                    tags.each(function() {
+                        var that = $(this);
+
+                        if (that.is(':checked')) {
+                            countTicked++;
+                            return true;
+                        }
+
+                        if (that.is(':disabled')) {
+                            // Loading in progress
+                            return false;
+                        }
+
+                        that.click();
+                        return false;
+                    });
+
+                    // Try again in 100ms if other ticks should be ticked
+                    if (countTicked < countTicks) {
+                        countTicked = 0;
+                        setTimeout(waitAndClick, 50);
+                    }
+                };
+
+                waitAndClick();
+            });
+
+            {# Click on "Clear all" #}
+            $('#{{ form.vars.id }} .clear-all-tags').click(function() {
+                clearAllSelection();
+            });
+        });
+
+    </script>
+
+{% endblock %}

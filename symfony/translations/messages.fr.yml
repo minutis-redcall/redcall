@@ -269,6 +269,7 @@ form:
       add_answer: Ajouter une réponse
       remove: X
       submit: Envoyer
+      submit_to: Envoyer un %type% à %nbr% bénévoles
       back: Retour
       other_options: Autres options
       preview: Prévisualisation
@@ -281,6 +282,9 @@ form:
     toggle:
       by_nivol: 'Saisir une liste de nivol'
       by_filters: 'Revenir aux filtres de sélection'
+    sms: 'SMS'
+    call: 'appel vocal'
+    email: 'email'
   campaign:
     fields:
       label: 'Nom du déclenchement'
