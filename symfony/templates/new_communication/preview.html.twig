@@ -1,5 +1,4 @@
-{% set isEmail = constant('App\\Entity\\Communication::TYPE_EMAIL') == type %}
-{% if isEmail %}
+{% if type.isEmail %}
 
     <div id="message-preview-email" style="padding:5px;margin-bottom:20px;" class="email-body">
     </div>
@@ -13,7 +12,7 @@
 {% endif %}
 
 <div id="message-calc-all" style="margin-bottom:10px;">
-    <div id="message-calc" class="{{ isEmail ? 'd-none' : '' }}">
+    <div id="message-calc" class="{{ not type.isSms ? 'd-none' : '' }}">
         {{ 'form.communication.fields.length'|trans }}
         <span id="message-length">--</span>
         <br/>

@@ -22,7 +22,6 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -310,12 +309,18 @@ class WidgetController extends BaseController
         if ($nivols) {
             $classification = $this->volunteerManager->classifyNivols($nivols);
 
-            return $this->render('widget/classification.html.twig', [
-                'classified' => $classification,
+            return new JsonResponse([
+                'success' => true,
+                'view' => $this->renderView('widget/classification.html.twig', [
+                    'classified' => $classification,
+                ]),
+                'triggered' => count($classification['reachable']),
             ]);
         }
 
-        return new Response();
+        return new JsonResponse([
+            'success' => false,
+        ]);
     }
 
     private function getStructure(int $id): Structure
