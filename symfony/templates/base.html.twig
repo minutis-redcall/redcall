@@ -68,12 +68,21 @@
                         <a href="{{ path('home') }}"
                            class="btn btn-secondary text-sm-center">{{ 'base.home'|trans }}</a>
 
-                        <a href="{{ path('create_campaign', {type: 'sms'}) }}"
-                           class="btn btn-secondary text-sm-center">📱 {{ 'campaign.titles.sms'|trans }}</a>
-                        <a href="{{ path('create_campaign', {type: 'call'}) }}"
-                           class="btn btn-secondary text-sm-center">📞 {{ 'campaign.titles.call'|trans }}</a>
-                        <a href="{{ path('create_campaign', {type: 'email'}) }}"
-                           class="btn btn-secondary text-sm-center">✉️ {{ 'campaign.titles.email'|trans }}</a>
+                        <span class="dropdown">
+                            <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                {{ 'campaign.titles.create_full'|trans }}
+                            </button>
+                            <span class="dropdown-menu">
+                                <a href="{{ path('create_campaign', {type: 'sms'}) }}"
+                                   class="dropdown-item">📱 &nbsp; {{ 'campaign.titles.sms'|trans }}</a>
+                                <div class="dropdown-divider"></div>
+                                <a href="{{ path('create_campaign', {type: 'call'}) }}"
+                                   class="dropdown-item">📞 &nbsp; {{ 'campaign.titles.call'|trans }}</a>
+                                <div class="dropdown-divider"></div>
+                                <a href="{{ path('create_campaign', {type: 'email'}) }}"
+                                   class="dropdown-item">✉️ &nbsp; {{ 'campaign.titles.email'|trans }}</a>
+                            </span>
+                        </span>
 
                         <a href="{{ path('list_campaigns') }}"
                            class="btn btn-secondary text-sm-center">{{ 'campaign.titles.list_full'|trans }}</a>

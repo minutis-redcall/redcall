@@ -319,7 +319,11 @@
                         <p class="h4">{{ message.communication.subject }}</p>
                     {% endif %}
 
-                    <div>{{ message.communication.body|nl2br }}</div>
+                    {% if constant('App\\Entity\\Communication::TYPE_EMAIL') == message.communication.type %}
+                        <div>{{ message.communication.body|purify }}</div>
+                    {% else %}
+                        <div>{{ message.communication.body|nl2br }}</div>
+                    {% endif %}
                 </td>
             </tr>
             <tr>

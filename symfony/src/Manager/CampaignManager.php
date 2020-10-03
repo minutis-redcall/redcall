@@ -82,7 +82,7 @@ class CampaignManager
 
         $this->campaignRepository->save($campaignEntity);
 
-        $this->communicationManager->launchNewCommunication($campaignEntity, $campaignModel->communication);
+        $this->communicationManager->launchNewCommunication($campaignEntity, $campaignModel->trigger);
 
         return $campaignEntity;
     }
