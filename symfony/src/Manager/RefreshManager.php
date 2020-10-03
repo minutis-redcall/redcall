@@ -176,9 +176,11 @@ class RefreshManager
         $volunteer->setReport([]);
 
         // Update structures based on where volunteer was found while crawling structures
+        $structureIdsVolunteerBelongsTo = [];
         foreach (array_filter(explode('|', $pegass->getParentIdentifier())) as $identifier) {
             if ($structure = $this->structureManager->findOneByIdentifier($identifier)) {
                 $volunteer->addStructure($structure);
+                $structureIdsVolunteerBelongsTo[] = $structure->getId();
             }
         }
 
@@ -188,6 +190,7 @@ class RefreshManager
             if (isset($action['structure']['id']) && !in_array($action['structure']['id'], $identifiers)) {
                 if ($structure = $this->structureManager->findOneByIdentifier($action['structure']['id'])) {
                     $volunteer->addStructure($structure);
+                    $structureIdsVolunteerBelongsTo[] = $structure->getId();
                 }
                 $identifiers[] = $action['structure']['id'];
             }
@@ -205,6 +208,17 @@ class RefreshManager
             }
 
             return;
+        }
+
+        // Remove volunteer from structures he does not belong to anymore
+        $structuresToRemove = [];
+        foreach ($volunteer->getStructures() as $structure) {
+            if (!in_array($structure->getId(), $structureIdsVolunteerBelongsTo)) {
+                $structuresToRemove[] = $structure;
+            }
+        }
+        foreach ($structuresToRemove as $structure) {
+            $volunteer->removeStructure($structure);
         }
 
         // Volunteer already up to date
