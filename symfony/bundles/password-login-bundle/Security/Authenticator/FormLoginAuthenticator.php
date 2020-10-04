@@ -7,6 +7,7 @@ use Bundles\PasswordLoginBundle\Form\Type\ConnectType;
 use Bundles\PasswordLoginBundle\Manager\CaptchaManager;
 use Bundles\PasswordLoginBundle\Traits\ServiceTrait;
 use Symfony\Component\Form\FormFactoryInterface;
+use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -176,9 +177,15 @@ class FormLoginAuthenticator extends AbstractFormLoginAuthenticator
                 ->whitelistNow($ip);
         }
 
-        return new RedirectResponse(
+        $response = new RedirectResponse(
             $this->router->generate($this->homeRoute)
         );
+
+        $response->headers->setCookie(
+            new Cookie('auth_method', 'password_login', strtotime('Sat, 10-Jul-2100 06:37:00 +0200'))
+        );
+
+        return $response;
     }
 
     protected function getLoginUrl()

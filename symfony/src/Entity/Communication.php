@@ -578,13 +578,13 @@ class Communication
             switch ($this->type) {
                 case self::TYPE_SMS:
                 case self::TYPE_CALL:
-                    if ($message->getVolunteer()->isPhoneNumberOptin() && $message->getVolunteer()->getPhoneNumber()) {
+                    if ($message->getVolunteer()->isPhoneNumberOptin() && $message->getVolunteer()->getPhoneNumber() && !$message->getError()) {
                         $count++;
                     }
 
                     break;
                 case self::TYPE_EMAIL:
-                    if ($message->getVolunteer()->isEmailOptin() && $message->getVolunteer()->getEmail()) {
+                    if ($message->getVolunteer()->isEmailOptin() && $message->getVolunteer()->getEmail() && !$message->getError()) {
                         $count++;
                     }
 
