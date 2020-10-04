@@ -3,142 +3,152 @@
 
     <div id="{{ form.vars.id }}" class="audience-selection">
 
-        <div class="audience-filters">
-            <div class="text-right">
-                <span class="btn btn-link toggle-filters-nivols">{{ 'audience.nivol_input'|trans }}</span>
-            </div>
-
-            <div class="{{ structures|length <= 1 ? 'd-none' : '' }}">
-                <div class="h4">{{ 'audience.structures'|trans }}</div>
-
-                {# Toggle all structures #}
-                <div>
-                    <label class="switch">
-                        <input type="checkbox" class="toggle-all-structures">
-                        <span class="slider"></span>
-                    </label>
-                    <label></label>
-                </div>
-
-                {# Rendering all structure ticks #}
-                {% for child in form.structures %}
-
-                    <div>
-                        <label class="switch">
-                            <input type="checkbox"
-                                   class="structure structure-{{ child.vars.value }}"
-                                   id="{{ child.vars.id }}"
-                                   name="{{ child.vars.full_name }}"
-                                   value="{{ child.vars.value }}"
-
-                                    {# Structures are hidden when there is only 1 to trigger #}
-                                    {% if form.structures|length <= 1
-                                        or (
-                                        form.structures.vars.data
-                                        and structures[child.vars.value] in form.structures.vars.data
-                                        ) %}checked{% endif %}
-
-                                    {# Adding tag counts to propery fill them up in the tags filter #}
-                                    {% for tagId, count in tag_counts[child.vars.value]|default([]) %}
-                                        data-tag-count-{{ tagId }}="{{ count }}"
-                                    {% endfor %}
-                            >
-                            <span class="slider"></span>
-                        </label>
-                        <label for="{{ child.vars.id }}">
-                            {{ child.vars.label }} ({{ volunteer_counts[child.vars.name]|default(0) }})
-                        </label>
-                    </div>
-
-                {% endfor %}
-
-            </div>
-
-            <br/>
-            <div class="h4">{{ 'audience.audience'|trans }}</div>
-
-            {# Rendering tags ticks #}
-            <div class="row audience-tags">
-
-                <div class="col-12">
-                    <label class="switch">
-                        <input type="checkbox"
-                               class="toggle-all-tags"/>
-                        <span class="slider"></span>
-                    </label>
-                </div>
-
-                {% for child in form.tags.children %}
-                    <div class="col-lg-3 col-md-4 col-6 col-12 tag-container">
-                        <label class="switch">
-                            <input type="checkbox"
-                                   class="tag"
-                                   id="{{ child.vars.id }}"
-                                   name="{{ child.vars.full_name }}"
-                                   value="{{ child.vars.value }}"
-                                   data-tag-id="{{ child.vars.value }}">
-                            <span class="slider"></span>
-                        </label>
-                        <label for="{{ child.vars.id }}">
-                            {{ child.vars.label }} (<span class="tag-count">--</span>)
-                        </label>
-                    </div>
-                {% endfor %}
-
-                <div class="d-none">
-                    <span class="select-all-tags btn btn-link">{{ 'audience.select_all'|trans }}</span>
-                    <span class="clear-all-tags btn btn-link">{{ 'audience.unselect_all'|trans }}</span>
-                </div>
-            </div>
-
-            {% if form.vars.errors|length %}
-                <br/>
-                {{ form_errors(form) }}
-                <br/>
-            {% endif %}
-
-            {# Rendering sliders for every structure #}
-            <div class="audience-sliders">
-                {% for structure in structures %}
-                    {% set card = 'card-' ~ uuid() %}
-                    <div class="card audience-card d-none" data-structure-id="{{ structure.id }}">
-                        <div class="card-header" id="{{ card }}-head">
-                            <h2 class="mb-0">
-                                <button class="btn btn-secondary btn-sm" type="button" data-toggle="collapse" data-target="#{{ card }}" aria-expanded="false" aria-controls="{{ card }}" style="width:100%;">
-                                    {{ structure.displayName }} (<span class="volunteer-selection-count volunteer-selection-count-{{ structure.id }}">--</span>)
-                                    <div style="font-size:12px;color:grey;">{{ 'audience.see_selection'|trans }}</div>
-                                </button>
-                            </h2>
-                        </div>
-                        <div id="{{ card }}" class="collapse" aria-labelledby="{{ card }}-head">
-                            <div class="card-body">
-                                {{ form_widget(form['structure-' ~ structure.id], {
-                                    attr: form['structure-' ~ structure.id].vars.attr|merge({
-                                        'data-structure-id': structure.id,
-                                        'class': 'volunteer-selection',
-                                    })
-                                }) }}
-                            </div>
-                        </div>
-                    </div>
-                {% endfor %}
-            </div>
-
+        {# Nivols selection #}
+        <div>
+            <a class="btn btn-secondary" data-toggle="collapse" href="#audience-nivols" role="button" style="width:100%;margin:5px;">
+                {{ 'audience.nivol_title'| trans }}
+            </a>
         </div>
 
-        {# Nivols selection #}
-        <div class="audience-nivols d-none">
-            <div class="text-right">
-                <span class="btn btn-link toggle-filters-nivols">{{ 'audience.filter_input'|trans }}</span>
+        <div id="audience-nivols" class="audience-nivols collapse">
+            <div class="card card-body">
+
+                <div class="h4">{{ 'audience.nivol_title'| trans }}</div>
+
+                {{ form_row(form.nivols, {
+                    attr: form.nivols.vars.attr|merge({
+                        rows: 8,
+                    })
+                }) }}
+            </div>
+        </div>
+
+        {# Filters selection #}
+        <div>
+            <a class="btn btn-secondary" data-toggle="collapse" href="#audience-filters" role="button" style="width:100%;margin:5px;">
+                {{ 'audience.filter_title'| trans }}
+            </a>
+        </div>
+        <div id="audience-filters" class="audience-filters collapse show">
+            <div class="card card-body">
+
+                <div class="{{ structures|length <= 1 ? 'd-none' : '' }}">
+                    <div class="h4">{{ 'audience.structures'|trans }}</div>
+
+                    {# Toggle all structures #}
+                    <div>
+                        <label class="switch">
+                            <input type="checkbox" class="toggle-all-structures">
+                            <span class="slider"></span>
+                        </label>
+                        <label></label>
+                    </div>
+
+                    {# Rendering all structure ticks #}
+                    {% for child in form.structures %}
+
+                        <div>
+                            <label class="switch">
+                                <input type="checkbox"
+                                       class="structure structure-{{ child.vars.value }}"
+                                       id="{{ child.vars.id }}"
+                                       name="{{ child.vars.full_name }}"
+                                       value="{{ child.vars.value }}"
+
+                                        {# Structures are hidden when there is only 1 to trigger #}
+                                        {% if form.structures|length <= 1
+                                            or (
+                                            form.structures.vars.data
+                                            and structures[child.vars.value] in form.structures.vars.data
+                                            ) %}checked{% endif %}
+
+                                        {# Adding tag counts to propery fill them up in the tags filter #}
+                                        {% for tagId, count in tag_counts[child.vars.value]|default([]) %}
+                                            data-tag-count-{{ tagId }}="{{ count }}"
+                                        {% endfor %}
+                                >
+                                <span class="slider"></span>
+                            </label>
+                            <label for="{{ child.vars.id }}">
+                                {{ child.vars.label }} ({{ volunteer_counts[child.vars.name]|default(0) }})
+                            </label>
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+                <br/>
+                <div class="h4">{{ 'audience.audience'|trans }}</div>
+
+                {# Rendering tags ticks #}
+                <div class="row audience-tags">
+
+                    <div class="col-12">
+                        <label class="switch">
+                            <input type="checkbox"
+                                   class="toggle-all-tags"/>
+                            <span class="slider"></span>
+                        </label>
+                    </div>
+
+                    {% for child in form.tags.children %}
+                        <div class="col-lg-3 col-md-4 col-6 col-12 tag-container">
+                            <label class="switch">
+                                <input type="checkbox"
+                                       class="tag"
+                                       id="{{ child.vars.id }}"
+                                       name="{{ child.vars.full_name }}"
+                                       value="{{ child.vars.value }}"
+                                       data-tag-id="{{ child.vars.value }}">
+                                <span class="slider"></span>
+                            </label>
+                            <label for="{{ child.vars.id }}">
+                                {{ child.vars.label }} (<span class="tag-count">--</span>)
+                            </label>
+                        </div>
+                    {% endfor %}
+
+                    <div class="d-none">
+                        <span class="select-all-tags btn btn-link">{{ 'audience.select_all'|trans }}</span>
+                        <span class="clear-all-tags btn btn-link">{{ 'audience.unselect_all'|trans }}</span>
+                    </div>
+                </div>
+
+                {% if form.vars.errors|length %}
+                    <br/>
+                    {{ form_errors(form) }}
+                    <br/>
+                {% endif %}
+
+                {# Rendering sliders for every structure #}
+                <div class="audience-sliders">
+                    {% for structure in structures %}
+                        {% set card = 'card-' ~ uuid() %}
+                        <div class="card audience-card d-none" data-structure-id="{{ structure.id }}">
+                            <div class="card-header" id="{{ card }}-head">
+                                <h2 class="mb-0">
+                                    <button class="btn btn-secondary btn-sm" type="button" data-toggle="collapse" data-target="#{{ card }}" aria-expanded="false" aria-controls="{{ card }}" style="width:100%;">
+                                        {{ structure.displayName }} (<span class="volunteer-selection-count volunteer-selection-count-{{ structure.id }}">--</span>)
+                                        <div style="font-size:12px;color:grey;">{{ 'audience.see_selection'|trans }}</div>
+                                    </button>
+                                </h2>
+                            </div>
+                            <div id="{{ card }}" class="collapse" aria-labelledby="{{ card }}-head">
+                                <div class="card-body">
+                                    {{ form_widget(form['structure-' ~ structure.id], {
+                                        attr: form['structure-' ~ structure.id].vars.attr|merge({
+                                            'data-structure-id': structure.id,
+                                            'class': 'volunteer-selection',
+                                        })
+                                    }) }}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
             </div>
 
-            <div class="h4">{{ 'audience.nivol_title'| trans }}</div>
-
-            {{ form_row(form.nivols, {
-                attr: form.nivols.vars.attr|merge({
-                    rows: 8,
-                })
-            }) }}
         </div>
 
         {# Classification of the selected audience #}
@@ -176,13 +186,6 @@
                 });
             };
             refreshTagCountsByTickedStructures();
-
-            {# Switch to nivols / to filters #}
-            $('#{{ form.vars.id }} .toggle-filters-nivols').click(function() {
-                var audience = $(this).closest('.audience-selection');
-                audience.find('.audience-filters').toggleClass('d-none');
-                audience.find('.audience-nivols').toggleClass('d-none');
-            });
 
             {# Rendering structure cards only if structures are ticked #}
             var refreshStructureCards = function () {
