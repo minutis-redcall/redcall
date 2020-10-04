@@ -121,7 +121,7 @@
                     {# -------------------------------------------------------------------------------- #}
                     <div class="progress position-relative" style="background-color:darkgray;height:18px;">
                         <div id="progress-bar-{{ communication.id }}"
-                             class="progress-bar {% if progress[communication.id].sent == progress[communication.id].reachable %}bg-success{% endif %}"
+                             class="progress-bar {% if progress[communication.id].sent >= progress[communication.id].reachable %}bg-success{% endif %}"
                              role="progressbar"
                              style="width: {{ progress[communication.id].percent }}%;"
                              aria-valuenow="{{ progress[communication.id].percent }}"
@@ -129,7 +129,7 @@
                              aria-valuemax="100"></div>
                         <span id="progress-text-{{ communication.id }}"
                               class="justify-content-center d-flex position-absolute w-100 text-white">
-                            {% if progress[communication.id].sent == progress[communication.id].reachable %}
+                            {% if progress[communication.id].sent >= progress[communication.id].reachable %}
                                 {{ 'campaign_status.finish'|trans({
                                     '%type%': ('message.' ~ communication.type ~ '.type')|trans,
                                     '%sent%': progress[communication.id].sent,
@@ -813,13 +813,13 @@
 
                 {# Refresh the SMS sending progress bar #}
                 var progressBar = $('#progress-bar-' + communicationId);
-                if (communication.progress.sent == communication.progress.reachable && !progressBar.hasClass('bg-success')) {
+                if (communication.progress.sent >= communication.progress.reachable && !progressBar.hasClass('bg-success')) {
                     progressBar.addClass('bg-success');
                 }
                 progressBar.attr('aria-valuenow', communication.progress.percent);
                 progressBar.css('width', communication.progress.percent + '%');
 
-                if (communication.progress.sent == communication.progress.reachable) {
+                if (communication.progress.sent >= communication.progress.reachable) {
                     $('#progress-text-' + communicationId).html(
                         '{{ 'campaign_status.finish'|trans|e('js') }}'
                             .replace('%sent%', communication.progress.sent)
