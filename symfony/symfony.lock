@@ -89,6 +89,9 @@
     "fabpot/goutte": {
         "version": "v3.2.3"
     },
+    "facile-it/doctrine-mysql-come-back": {
+        "version": "v1.8"
+    },
     "firebase/php-jwt": {
         "version": "v5.0.0"
     },
