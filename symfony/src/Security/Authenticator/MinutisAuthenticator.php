@@ -11,6 +11,7 @@ use Firebase\JWT\JWT;
 use Goutte\Client;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\KernelInterface;
@@ -189,16 +190,24 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)
     {
-        return new RedirectResponse(
+        $response = new RedirectResponse(
             $this->router->generate('home')
         );
+
+        $response->headers->setCookie(
+            new Cookie('auth_method', 'minutis', strtotime('Sat, 10-Jul-2100 06:37:00 +0200'))
+        );
+
+        return $response;
     }
 
     public function start(Request $request, AuthenticationException $authException = null)
     {
         $url = $this->router->generate('password_login_connect');
 
-        if (getenv('IS_REDCROSS') && 'dev' !== $this->kernel->getEnvironment()) {
+        if (getenv('IS_REDCROSS')
+            && 'dev' !== $this->kernel->getEnvironment()
+            && 'password_login' !== $request->cookies->get('auth_method')) {
             $url = getenv('MINUTIS_URL');
         }
 
