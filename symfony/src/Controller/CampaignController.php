@@ -6,6 +6,7 @@ use App\Base\BaseController;
 use App\Entity\Campaign;
 use App\Enum\Type;
 use App\Form\Model\Campaign as CampaignModel;
+use App\Form\Model\SmsTrigger;
 use App\Form\Type\CampaignType;
 use App\Manager\CampaignManager;
 use App\Manager\CommunicationManager;
@@ -174,7 +175,7 @@ class CampaignController extends BaseController
     {
         $this->validateCsrfOrThrowNotFoundException('campaign', $request->request->get('csrf'));
 
-        $campaign        = new CampaignModel();
+        $campaign        = new CampaignModel(new SmsTrigger());
         $campaign->label = $request->request->get('new_name');
         $errors          = $this->get('validator')->validate($campaign, null, ['label_edition']);
         if (count($errors) > 0) {
