@@ -641,6 +641,7 @@
                     <label class="switch">
                         <input type="checkbox"
                                data-toggle="toggle" data-onstyle="primary"
+                               data-choice-id="{{ choice.id }}"
                                class="form-check-input filter-action filter-response-{{ communication.id }} filter-response-{{ communication.id }} filter-action-{{ communication.id }}"
                                id="filter-is-choice-{{ choice.id }}-{{ communication.id }}"/>
                         <span class="slider"></span>
@@ -943,7 +944,6 @@
              #}
             $.each(communicationIds, function (key, communicationId) {
                 {# counting number of filters ticked #}
-
                 var structure = 0;
                 $('.filter-structure-' + communicationId).each(function () {
                     structure += $(this).is(':checked');
@@ -951,7 +951,16 @@
 
                 var response = 0;
                 $('.filter-response-' + communicationId).each(function () {
-                    response += $(this).is(':checked');
+                    var that = $(this);
+                    var checked = that.is(':checked');
+                    response += checked;
+
+                    // Response links
+                    if (checked) {
+                        $('#choice-' + that.data('choice-id') + ' a').css('color', 'red');
+                    } else {
+                        $('#choice-' + that.data('choice-id') + ' a').css('color', '');
+                    }
                 });
 
                 var skill = 0;
