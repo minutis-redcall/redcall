@@ -21,6 +21,18 @@ admin:
     undeveloper: 'Retirer l''accès développeur'
   dashboard:
     title: 'Statistiques'
+  answer_analysis:
+    title: 'Analyser les réponses'
+    search:
+      title: 'Cet outil permet de rechercher les bénévoles qui ont répondu qu''ils ne souhaitent plus être dérangés.'
+      details: 'Utilisez ensuite le bouton RGPD afin de supprimer le bénévole en lui envoyant un message.'
+      label: 'Critères à rechercher dans les réponses des bénévoles'
+      button: 'Rechercher'
+    table:
+      date: 'Date'
+      trigger: 'Déclenchement'
+      volunteer: 'Bénévole'
+      response: 'Réponse'
   statistics:
     no_stats: "Aucune statistique à afficher pour cette période."
     campaign:

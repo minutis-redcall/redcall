@@ -9,6 +9,7 @@ use App\Entity\Message;
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
+use Doctrine\ORM\QueryBuilder;
 
 /**
  * @method Answer|null find($id, $lockMode = null, $lockVersion = null)
@@ -87,4 +88,20 @@ class AnswerRepository extends BaseRepository
 
         $this->_em->flush();
     }
+
+    public function getSearchQueryBuilder(string $criteria) : QueryBuilder
+    {
+        $qb = $this->createQueryBuilder('a');
+
+        foreach (explode(' ', $criteria) as $index => $keyword) {
+            $qb
+                ->orWhere(sprintf('a.raw LIKE :keyword_%d', $index))
+                ->setParameter(sprintf('keyword_%d', $index), sprintf('%%%s%%', $keyword));
+        }
+
+        $qb->orderBy('a.id', 'DESC');
+
+        return $qb;
+    }
+
 }

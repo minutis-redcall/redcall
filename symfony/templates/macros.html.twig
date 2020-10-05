@@ -1,6 +1,8 @@
 {% macro pager(pager, prefix = '', queryParams = {}) %}
-    {% import '@Pagination/macros.html.twig' as macros %}
-    {{ macros.pager(pager, prefix, queryParams) }}
+    {% if pager %}
+        {% import '@Pagination/macros.html.twig' as macros %}
+        {{ macros.pager(pager, prefix, queryParams) }}
+    {% endif %}
 {% endmacro %}
 
 {% macro orderBy(order, columnsAndLabels, hash = '') %}

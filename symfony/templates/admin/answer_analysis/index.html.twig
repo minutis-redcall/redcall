@@ -1,0 +1,53 @@
+{% extends 'base.html.twig' %}
+
+{% import 'macros.html.twig' as macros %}
+
+{% block body %}
+
+    <div class="jumbotron text-center">
+        <div class="text-left">
+            <p>{{ 'admin.answer_analysis.search.title'|trans }}</p>
+            <p>{{ 'admin.answer_analysis.search.details'|trans }}</p>
+        </div>
+        <br/>
+
+        {{ form(form) }}
+    </div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>{{ 'admin.answer_analysis.table.date'|trans }}</th>
+                <th>{{ 'admin.answer_analysis.table.trigger'|trans }}</th>
+                <th>{{ 'admin.answer_analysis.table.volunteer'|trans }}</th>
+                <th>{{ 'admin.answer_analysis.table.response'|trans }}</th>
+            </tr>
+        </thead>
+
+        {% for answer in pager %}
+            {% set volunteer = answer.message.volunteer %}
+            <tr>
+                <td width="20%">
+                    {{ answer.receivedAt|date('d/m/Y H:i') }}
+                </td>
+                <td width="20%">
+                    <a target="_blank" href="{{ path('communication_index', {id: answer.message.communication.campaign.id}) }}">
+                        {{ answer.message.communication.campaign.label }}
+                    </a>
+                </td>
+                <td width="20%">
+                    <a target="_blank" href="{{ path('management_volunteers_manual_update', {'id': volunteer.id}) }}">
+                        {{ volunteer.displayName }}
+                    </a>
+                </td>
+                <td width="40%">
+                    <p>{{ answer.raw|nl2br }}</p>
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+
+    {# bug envoyer les parametres en get #}
+    {{ macros.pager(pager) }}
+
+{% endblock %}

@@ -34,7 +34,6 @@ class CampaignController extends BaseController
         return [];
     }
 
-
     /**
      * @Template("admin/campaign/table.html.twig")
      *

@@ -305,7 +305,8 @@
                                     {# Volunteer's name #}
                                     <div id="volunteer-name-{{ suffix }}"
                                           class="h4 {% if not message.sent %}text-black-50{% endif %}">
-                                        <span href="#" class="volunteer-info" onclick="$('#volunteer-info-{{ message.id }}').toggleClass('d-none');return false;">
+                                        <span href="#" class="volunteer-info" style="cursor:pointer;"
+                                              onclick="$('#volunteer-info-{{ message.id }}').toggleClass('d-none');return false;">
                                             {{ volunteer.displayName }}
                                             {% if volunteer.minor %}🐻{% endif %}
                                             👤

@@ -21,6 +21,18 @@ admin:
     undeveloper: 'Remove developer access'
   dashboard:
     title: 'Statistics'
+  answer_analysis:
+    title: 'Answers analysis'
+    search:
+      title: 'This tool aims to search for people that answered they don''t want to be disturbed anymore.'
+      details: 'Once you found someone, just use the GDPR button to remove him, and and him a message.'
+      label: 'Criteria to search for in volunteer answers'
+      button: 'Search'
+    table:
+      date: 'Date'
+      trigger: 'Trigger'
+      volunteer: 'Volunteer'
+      response: 'Response'
   statistics:
     no_stats: "No statistics for this section in the selected period."
     campaign:

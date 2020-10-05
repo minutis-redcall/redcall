@@ -8,6 +8,7 @@ use App\Entity\Message;
 use App\Repository\AnswerRepository;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
+use Doctrine\ORM\QueryBuilder;
 
 class AnswerManager
 {
@@ -63,5 +64,10 @@ class AnswerManager
     public function save(Answer $answer)
     {
         $this->answerRepository->save($answer);
+    }
+
+    public function getSearchQueryBuilder(string $criteria) : QueryBuilder
+    {
+        return $this->answerRepository->getSearchQueryBuilder($criteria);
     }
 }
