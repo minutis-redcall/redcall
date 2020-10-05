@@ -104,6 +104,8 @@ base:
     update: Edit
     create: Create new entry
     save: Save
+    open: Open
+    more: More...
   crud:
     create_title: 'Add a new entry'
     update_title: 'Update "%entity%"'

@@ -103,6 +103,8 @@ base:
     update: Editer
     create: Ajouter une nouvelle entrée
     save: Sauvegarder
+    open: Ouvrir
+    more: Plus...
   crud:
     create_title: 'Ajouter une entrée'
     update_title: 'Editer "%entity%"'

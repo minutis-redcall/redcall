@@ -279,10 +279,11 @@
                         <tbody id="top-{{ communication.id }}">
                         {% for message in communication.messages %}
                             {% set suffix = communication.id ~ '-' ~ message.id %}
+                            {% set volunteer = message.volunteer %}
                             <tr id="row-{{ suffix|e('html_attr') }}"
                                 class="row-{{ communication.id }}"
-                                data-volunteer-id="{{ message.volunteer.id }}"
-                                data-structures="{{ message.volunteer.structureIds|join(',') }}"
+                                data-volunteer-id="{{ volunteer.id }}"
+                                data-structures="{{ volunteer.structureIds|join(',') }}"
                                 data-is-reachable="{{ message.reachable }}"
                                 data-has-answer="{{ message.answers.count }}">
 
@@ -302,20 +303,59 @@
                                 <td id="volunteer-{{ suffix }}">
 
                                     {# Volunteer's name #}
-                                    <span id="volunteer-name-{{ suffix }}"
-                                          class="h4 {% if not message.sent %}text-black-50{% endif %}"
-                                          onclick="$('#select-{{ suffix }}').click();">
-                                    {{ message.volunteer.displayName }}
-                                    </span>
+                                    <div id="volunteer-name-{{ suffix }}"
+                                          class="h4 {% if not message.sent %}text-black-50{% endif %}">
+                                        <span href="#" class="volunteer-info" onclick="$('#volunteer-info-{{ message.id }}').toggleClass('d-none');return false;">
+                                            {{ volunteer.displayName }}
+                                            {% if volunteer.minor %}🐻{% endif %}
+                                            👤
+                                        </span>
+                                    </div>
+                                    <div id="volunteer-info-{{ message.id }}" class="d-none">
+                                        #{{ volunteer.nivol }}
+                                        <br/>
+                                        {% if volunteer.email %}
+                                            {% if not volunteer.emailOptin %}<strike>{% endif %}
+                                            <a href="mailto:{{ volunteer.email }}?subject={{ 'manage_volunteers.contact.mail_subject'|trans({'%brand%': brand|upper})|e('html_attr') }}">{{ volunteer.email }}</a>
+                                            {% if not volunteer.emailOptin %}</strike>{% endif %}
+                                            <br/>
+                                        {% endif %}
+                                        {% if volunteer.phoneNumber %}
+                                            {% if not volunteer.phoneNumberOptin %}<strike>{% endif %}
+                                            <a href="tel:+{{ volunteer.phoneNumber }}">+{{ volunteer.phoneNumber }}</a>
+                                            {% if not volunteer.phoneNumberOptin %}</strike>{% endif %}
+                                            <br/>
+                                        {% endif %}
+                                        <a target="_blank" href="{{ path('management_volunteers_manual_update', {'id': volunteer.id}) }}">{{ 'base.button.more'|trans|lower }}</a>
+                                    </div>
 
                                     <div class="float-right">
 
+                                        {% if app.environment == 'dev' %}
+                                            <a class="btn btn-default"
+                                            {% if communication.type == constant('App\\Entity\\Communication::TYPE_SMS') %}
+                                                {% if message.volunteer.phoneNumber %}
+                                                    target="_blank" href="{{ path('sandbox_fake_sms_thread', {phoneNumber: message.volunteer.phoneNumber, campaignId: campaign.id}) }}">{{ macros.communicationIcon(communication) }}</a>
+                                                {% else %}
+                                                    href="#">&nbsp;</a>
+                                                {% endif %}
+                                            {% elseif communication.type == constant('App\\Entity\\Communication::TYPE_CALL') %}
+                                                {% if message.volunteer.phoneNumber %}
+                                                    target="_blank" href="{{ path('sandbox_fake_call_read', {phoneNumber: message.volunteer.phoneNumber, campaignId: campaign.id}) }}">{{ macros.communicationIcon(communication) }}️</a>
+                                                {% else %}
+                                                    href="#">&nbsp;</a>
+                                                {% endif %}
+                                            {% else %}
+                                                {% if message.volunteer.email %}
+                                                    target="_blank" href="{{ path('sandbox_fake_email_read', {email: message.volunteer.email, campaignId: campaign.id}) }}">{{ macros.communicationIcon(communication) }}️</a>
+                                                {% else %}
+                                                    href="#">&nbsp;</a>
+                                                {% endif %}
+                                            {% endif %}
+                                        {% endif %}
+
                                         {# Answer codes when volunteer answered them #}
                                         {% if answerCount %}
-                                            <div id="message-is-unclear-{{ suffix }}" class="{{ message.isUnclear ? '' : 'd-none' }}" style="color:red;">
-                                                ⚠️ {{ 'campaign_status.answers.unclear'|trans }}
-                                            </div>
-
                                             {% for choice in communication.choices %}
                                                 {% set answer = message.getAnswerByChoice(choice) %}
                                                 <span class="{{ answer ? '' : 'd-none' }} badge badge-dark message-is-choice-{{ choice.id }}-{{ communication.id }}"
@@ -351,44 +391,19 @@
                                             </span>
                                         </span>
 
-                                        {% if app.environment == 'dev' %}
-                                            <a class="btn btn-default"
-                                            {% if communication.type == constant('App\\Entity\\Communication::TYPE_SMS') %}
-                                                {% if message.volunteer.phoneNumber %}
-                                                    target="_blank" href="{{ path('sandbox_fake_sms_thread', {phoneNumber: message.volunteer.phoneNumber, campaignId: campaign.id}) }}">{{ macros.communicationIcon(communication) }}</a>
-                                                {% else %}
-                                                    href="#">&nbsp;</a>
-                                                {% endif %}
-                                            {% elseif communication.type == constant('App\\Entity\\Communication::TYPE_CALL') %}
-                                                {% if message.volunteer.phoneNumber %}
-                                                    target="_blank" href="{{ path('sandbox_fake_call_read', {phoneNumber: message.volunteer.phoneNumber, campaignId: campaign.id}) }}">{{ macros.communicationIcon(communication) }}️</a>
-                                                {% else %}
-                                                    href="#">&nbsp;</a>
-                                                {% endif %}
-                                            {% else %}
-                                                {% if message.volunteer.email %}
-                                                    target="_blank" href="{{ path('sandbox_fake_email_read', {email: message.volunteer.email, campaignId: campaign.id}) }}">{{ macros.communicationIcon(communication) }}️</a>
-                                                {% else %}
-                                                    href="#">&nbsp;</a>
-                                                {% endif %}
-                                            {% endif %}
-                                        {% endif %}
-
                                         {% if answerCount and campaign.active %}
                                             <span id="open-message-{{ suffix }}"
                                                   data-message-id="{{ message.id }}"
-                                                  class="badge badge-light open-message" style="cursor:pointer;">✏️</span>
+                                                  class="open-message" style="cursor:pointer;">✏️</span>
                                         {% endif %}
                                     </div>
-
-                                    <br/>
 
                                     {# Volunteer's skills #}
                                     {% for skill in message.volunteer.tags %}
                                         <div class="d-none message-is-skill-{{ skill.id|e('html_attr') }}-{{ communication.id }}"
                                              data-value=1></div>
                                     {% endfor %}
-                                    <span class="text-small" onclick="$('#select-{{ suffix }}').click();">
+                                    <span class="text-small">
                                             {% for skill in message.volunteer.tagsView %}
                                                 {{ ('tag.shortcuts.' ~ skill)|trans }}{% if not loop.last %},{% endif %}
                                             {% endfor %}
@@ -414,13 +429,18 @@
                                     <div id="error-{{ suffix }}" style="color:red;">
                                         {{ message.error }}
                                     </div>
-                                    <div id="invalid-answer-raw-{{ suffix }}" style="font-size:10px;">
-                                        {% if message.invalidAnswer %}
-                                            {{ message.invalidAnswer.raw }}
-                                        {% endif %}
-                                        {% if message.isUnclear %}
-                                            {{ message.unclear.raw }}
-                                        {% endif %}
+                                    <div>
+                                        <span id="message-is-unclear-{{ suffix }}" class="{{ message.isUnclear ? '' : 'd-none' }}" style="color:red;font-size:10px;">
+                                            <strong>⚠️ {{ 'campaign_status.answers.unclear'|trans }}</strong>
+                                        </span>
+                                        <span id="invalid-answer-raw-{{ suffix }}" style="font-size:10px;">
+                                            {% if message.invalidAnswer %}
+                                                {{ message.invalidAnswer.raw }}
+                                            {% endif %}
+                                            {% if message.isUnclear %}
+                                                {{ message.unclear.raw }}
+                                            {% endif %}
+                                        </span>
                                     </div>
                                 </td>
                             </tr>
@@ -962,6 +982,12 @@
                         $('#choice-' + that.data('choice-id') + ' a').css('color', '');
                     }
                 });
+
+                if ($('#filter-has-invalid-answer-' + communicationId).is(':checked')) {
+                    $('#has-invalid-answer-' + communicationId).css('color', 'red');
+                } else {
+                    $('#has-invalid-answer-' + communicationId).css('color', '');
+                }
 
                 var skill = 0;
                 $('.filter-skill-' + communicationId).each(function () {
