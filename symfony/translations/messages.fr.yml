@@ -125,7 +125,7 @@ campaign:
     list_full: 'Liste des déclenchements'
     list_admin: 'Liste de tous les déclenchements'
     sms: 'SMS'
-    call: 'Appel vocal'
+    call: 'Appel'
     email: 'Email'
   no_nivol:
     title: 'Pas de Nivol relié'

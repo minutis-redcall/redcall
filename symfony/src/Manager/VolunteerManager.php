@@ -235,11 +235,16 @@ class VolunteerManager
         $emailOptout = $this->volunteerRepository->filterEmailOptOutNivols($nivols, $user);
         $inaccessible = array_diff($nivols, $reachable, $invalid, $disabled, $noPhone, $phoneOptout, $noEmail, $emailOptout);
 
+        if ($user->isAdmin()) {
+            $reachable = array_merge($reachable, $inaccessible);
+            $inaccessible = [];
+        }
+
         return [
             'reachable' => $reachable,
             'invalid' => $invalid,
             'disabled' => $disabled,
-            'inaccessible' => $user->isAdmin() ? [] : $inaccessible,
+            'inaccessible' => $inaccessible,
             'no_phone' => $noPhone,
             'phone_optout' => $phoneOptout,
             'no_email' => $noEmail,
@@ -276,6 +281,10 @@ class VolunteerManager
                 $organized[$row['structure_id']] = [];
             }
             $organized[$row['structure_id']][] = $row['nivol'];
+        }
+
+        if (!count($organized)) {
+            $organized[] = [];
         }
 
         // All other nivols were set in the "nivol" field

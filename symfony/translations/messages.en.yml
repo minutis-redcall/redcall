@@ -132,7 +132,7 @@ campaign:
     list_full: 'List triggers'
     list_admin: 'List all triggers'
     sms: 'SMS'
-    call: 'Voice call'
+    call: 'Call'
     email: 'Email'
   no_nivol:
     title: 'No nivol bound'

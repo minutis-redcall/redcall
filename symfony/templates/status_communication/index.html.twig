@@ -199,46 +199,42 @@
                     {# Table containing message and answers #}
                     {# -------------------------------------------------------------------------------- #}
                     <table class="table">
-                        <thead>
-                        <tr>
-                            {% if answerCount %}
-                                {% for choice in communication.choices %}
-                                    <th width="{{ (100 / (answerCount + 1)) }}%">
-                                        {{ 'campaign_status.answer_no'|trans({'%choice%': choice.code}) }}
-                                    </th>
-                                {% endfor %}
-                                <th>{{ 'campaign_status.answer_invalid'|trans }}</th>
-                            {% else %}
-                                <th>{{ 'campaign_status.answer'|trans }}</th>
-                            {% endif %}
-                        </tr>
-                        </thead>
                         <tbody>
-                        <tr>
                             {% for choice in communication.choices %}
-                                <td>
-                                    <div id="choice-{{ choice.id }}">
-                                        <a href="#"
-                                           class="filter-response"
-                                           data-communication-id="{{ communication.id }}"
-                                           data-target="filter-is-choice-{{ choice.id }}-{{ communication.id }}">
-                                            {{ choice.label }}
-                                        </a>
-                                        (<span id="choice-count-{{ choice.id }}" data-count="{{ choice.count }}">{{ choice.count }}</span>)
-                                    </div>
-                                </td>
+                                <tr>
+                                    <td>{{ 'campaign_status.answer_no'|trans({'%choice%': choice.code}) }}</td>
+                                    <td>
+                                        <div id="choice-{{ choice.id }}">
+                                            <a href="#"
+                                               class="filter-response"
+                                               data-communication-id="{{ communication.id }}"
+                                               data-target="filter-is-choice-{{ choice.id }}-{{ communication.id }}">
+                                                {{ choice.label }}
+                                            </a>
+                                            (<span id="choice-count-{{ choice.id }}" data-count="{{ choice.count }}">{{ choice.count }}</span>)
+                                        </div>
+                                    </td>
+                                </tr>
                             {% endfor %}
-                            <td>
-                                <a href="#"
-                                   id="has-invalid-answer-{{ communication.id }}"
-                                   class="filter-response"
-                                   data-communication-id="{{ communication.id }}"
-                                   data-count="{{ communication.invalidAnswersCount }}"
-                                   data-target="filter-has-invalid-answer-{{ communication.id }}">
-                                    {{ communication.invalidAnswersCount }}
-                                </a>
-                            </td>
-                        </tr>
+                            <tr>
+                                <td>
+                                    {% if answerCount %}
+                                        {{ 'campaign_status.answer_invalid'|trans }}
+                                    {% else %}
+                                        {{ 'campaign_status.answer'|trans }}
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <a href="#"
+                                       id="has-invalid-answer-{{ communication.id }}"
+                                       class="filter-response"
+                                       data-communication-id="{{ communication.id }}"
+                                       data-count="{{ communication.invalidAnswersCount }}"
+                                       data-target="filter-has-invalid-answer-{{ communication.id }}">
+                                        {{ communication.invalidAnswersCount }}
+                                    </a>
+                                </td>
+                            </tr>
                         </tbody>
                     </table>
 
