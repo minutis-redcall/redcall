@@ -300,7 +300,7 @@
                                 if (classification.success) {
                                     $('#{{ form.vars.id }} .audience-classification').html(classification.view);
 
-                                    $('#{{ form.parent.vars.id }}').find('button[type="submit"]').html(
+                                    $('#{{ form.vars.id }}').parent().find('button[type="submit"]').html(
                                         $('#submit-button-audience').html().replace('%nbr%', classification.triggered)
                                     );
                                 }

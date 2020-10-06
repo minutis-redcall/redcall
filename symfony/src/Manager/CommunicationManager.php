@@ -104,33 +104,37 @@ class CommunicationManager
         return $this->communicationRepository->find($communicationId);
     }
 
-    public function launchNewCommunication(Campaign $campaign, BaseTrigger $trigger): Communication
+    public function launchNewCommunication(Campaign $campaign, BaseTrigger $trigger, ProcessorInterface $processor = null): Communication
     {
         $this->logger->info('Launching a new communication', [
             'model' => $trigger,
         ]);
 
-        $Communication = $this->createCommunication($trigger);
-        $Communication->setRaw(json_encode($trigger, JSON_PRETTY_PRINT));
+        $communication = $this->createCommunication($trigger);
+        $communication->setRaw(json_encode($trigger, JSON_PRETTY_PRINT));
 
-        $campaign->addCommunication($Communication);
+        $campaign->addCommunication($communication);
         foreach ($this->userManager->getCurrentUserStructures() as $structure) {
             $campaign->addStructure($structure);
         }
 
         $this->campaignManager->save($campaign);
 
-        $this->processor->process($Communication);
+        if ($processor) {
+            $processor->process($communication);
+        } else {
+            $this->processor->process($communication);
+        }
 
-        $this->communicationRepository->save($Communication);
+        $this->communicationRepository->save($communication);
 
         $this->slackLogger->info(
             sprintf(
                 'New %s trigger by %s (%s) on %d volunteers from %d structures.%s%s%sLink: %s',
-                strtoupper($Communication->getType()),
-                $Communication->getVolunteer()->getDisplayName(),
-                $Communication->getVolunteer()->getMainStructure()->getDisplayName(),
-                count($Communication->getMessages()),
+                strtoupper($communication->getType()),
+                $communication->getVolunteer()->getDisplayName(),
+                $communication->getVolunteer()->getMainStructure()->getDisplayName(),
+                count($communication->getMessages()),
                 $campaign->getStructures()->count(),
                 PHP_EOL,
                 $campaign->getLabel(),
@@ -141,7 +145,7 @@ class CommunicationManager
             )
         );
 
-        return $Communication;
+        return $communication;
     }
 
     /**

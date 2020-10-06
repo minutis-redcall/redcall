@@ -58,7 +58,7 @@ class FakeCallController extends BaseController
     {
         $phones = $this->fakeCallManager->findAllPhones();
         foreach ($phones as $index => $phone) {
-            $phones[$index]['volunteer'] = $this->volunteerManager->findOneByPhone($phone['phone']);
+            $phones[$index]['volunteer'] = $this->volunteerManager->findOneByPhoneNumber($phone['phoneNumber']);
         }
 
         return [

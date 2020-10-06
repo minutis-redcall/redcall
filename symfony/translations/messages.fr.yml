@@ -21,6 +21,18 @@ admin:
     undeveloper: 'Retirer l''accès développeur'
   dashboard:
     title: 'Statistiques'
+  answer_analysis:
+    title: 'Analyser les réponses'
+    search:
+      title: 'Cet outil permet de rechercher les bénévoles qui ont répondu qu''ils ne souhaitent plus être dérangés.'
+      details: 'Utilisez ensuite le bouton RGPD afin de supprimer le bénévole en lui envoyant un message.'
+      label: 'Critères à rechercher dans les réponses des bénévoles'
+      button: 'Rechercher'
+    table:
+      date: 'Date'
+      trigger: 'Déclenchement'
+      volunteer: 'Bénévole'
+      response: 'Réponse'
   statistics:
     no_stats: "Aucune statistique à afficher pour cette période."
     campaign:
@@ -103,6 +115,8 @@ base:
     update: Editer
     create: Ajouter une nouvelle entrée
     save: Sauvegarder
+    open: Ouvrir
+    more: Plus...
   crud:
     create_title: 'Ajouter une entrée'
     update_title: 'Editer "%entity%"'
@@ -125,16 +139,16 @@ campaign:
     list_full: 'Liste des déclenchements'
     list_admin: 'Liste de tous les déclenchements'
     sms: 'SMS'
-    call: 'Appel vocal'
+    call: 'Appel'
     email: 'Email'
   no_nivol:
     title: 'Pas de Nivol relié'
     description: 'Votre compte RedCall n''est pas relié à votre compte Pegass, merci de nous contacter afin de pouvoir utiliser la plateforme.'
   types:
-    1_green: 'Vert'
-    2_light_orange: 'Orange 1'
-    3_dark_orange: 'Orange 2'
-    4_red: 'Rouge'
+    1_green: 'Information'
+    2_light_orange: 'Préparation (UL)'
+    3_dark_orange: 'Préparation (DT)'
+    4_red: 'Engagement'
   statuses:
     ongoing: 'En cours'
     finished: 'Terminé'
@@ -335,6 +349,34 @@ manage_volunteers:
     updated: Le bénévole a correctement été modifié.
     structures: Structure(s) de rattachement
     lock_info: '* Les nᵒˢ de téléphone et emails gelés ne sont plus mis à jour automatiquement par Pegass.'
+  anonymize:
+    rgpd: GDPR
+    volunteer_asked_for_it: 'Ce bénévole vous a demandé de supprimer ses données ?'
+    continue: 'Continuez ici'
+    title: 'Suppression des données de %name%'
+    details_1: 'Conformément à la Loi Informatique et Libertés et Règlement général sur la protection des données (RGPD), tout bénévole dispose d’un droit d’accès, de modification, de suppression et d’opposition au traitement de ses données à caractère personnel.'
+    details_2: 'En cliquant sur le bouton ci-dessous, l''ensemble des informations concernant ce bénévole seront anonymisées, mais seront conservées pour obéir à des obligations relatives à la comptabilité (des frais incombant à l''envoi de communications).'
+    details_3: 'Son identifiant externe (NIVOL) est la seule information qui sera conservée intègre, afin de bloquer les mises à jour de ses données auprès des bases de données et autres services externes.'
+    message: 'Merci de bien vouloir relire attentivement le message causant la suppression de données avant de continuer.'
+    delete_button: 'Supprimer ses données'
+    confirm: 'Confirmer'
+    cancel: 'Annuler'
+    campaign:
+      title: '[RGPD] Demande de suppression de données pour %nivol%'
+      sms_content: 'Bonjour, nous avons pris en compte votre demande. Vous ne recevrez plus de message de notre part. Toutes nos excuses pour la gêne occasionnée.'
+      email:
+        subject: '[RGPD] RedCall - Mettre à jour GAIA pour #%nivol%'
+        greetings: 'Bonjour,'
+        target: 'Ce message doit être transféré au secrétaire de l''unité local ou au président.'
+        content_1: 'RedCall a reçu de la part de la personne ci-dessous un message indiquant qu''il n''est pas/plus bénévole à la Croix Rouge. La Croix Rouge se doit de respecter la <a href="https://www.cnil.fr/fr/rgpd-de-quoi-parle-t-on">RGPD</a> et Il vous faut mettre à jour GAIA en ce sens.'
+        content_2: 'Du coté de RedCall, le nécessaire a été fait pour qu''il ne reçoive plus aucun déclenchement, et la personne a recu le message suivant :'
+        who: 'La personne concernée :'
+        firstname: 'Prénom : %firstname%'
+        lastname: 'Nom : %lastname%'
+        email: 'Email : %email%'
+        phone: 'Téléphone : %phone%'
+        nivol: 'NIVOL : %nivol%'
+        message_received: 'Message reçu ayant conduit à la suppression de ce bénévole le %date% à %time% sur le déclenchement <a href="%url%">%trigger%</a> :'
   contact:
     mail_subject: '⚠️ %brand%: Vous avez un message RedCall'
   admin_structures:
@@ -416,6 +458,7 @@ import_report:
   minor: 'Le bénévole est mineur.'
   disabled: 'Le bénévole est desactivé sur Pegass.'
   failed: 'La synchronisation avec Pegass a échoué.'
+  removed: 'Le bénévole a été anonymisé.'
 
 maintenance:
   title: 'Maintenance'

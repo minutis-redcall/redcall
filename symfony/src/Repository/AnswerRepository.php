@@ -9,6 +9,7 @@ use App\Entity\Message;
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
+use Doctrine\ORM\QueryBuilder;
 
 /**
  * @method Answer|null find($id, $lockMode = null, $lockVersion = null)
@@ -87,4 +88,27 @@ class AnswerRepository extends BaseRepository
 
         $this->_em->flush();
     }
+
+    public function getSearchQueryBuilder(string $criteria) : QueryBuilder
+    {
+        $qb = $this->createQueryBuilder('a')
+            ->join('a.message', 'm')
+            ->join('m.volunteer', 'v')
+            ->where('v.enabled = true');
+
+        $exprs = [];
+        foreach (explode(' ', $criteria) as $index => $keyword) {
+            $exprs[] = $qb->expr()->like('a.raw', sprintf(':keyword_%d', $index));
+            $qb->setParameter(sprintf('keyword_%d', $index), sprintf('%%%s%%', $keyword));
+        }
+
+        $qb->andWhere(
+            call_user_func_array([$qb->expr(), 'orX'], $exprs)
+        );
+
+        $qb->orderBy('a.id', 'DESC');
+
+        return $qb;
+    }
+
 }

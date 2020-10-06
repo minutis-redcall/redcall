@@ -306,6 +306,7 @@ class WidgetController extends BaseController
 
         // Classifying nivols
         $nivols = AudienceType::getNivolsFromFormData($data);
+
         if ($nivols) {
             $classification = $this->volunteerManager->classifyNivols($nivols);
 

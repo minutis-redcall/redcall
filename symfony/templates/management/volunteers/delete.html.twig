@@ -1,0 +1,72 @@
+
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    <br/>
+
+    <div class="jumbotron">
+
+        <h3>{{ 'manage_volunteers.anonymize.title'|trans({'%name%': volunteer.displayName}) }}</h3>
+
+        <hr/>
+
+        <p>{{ 'manage_volunteers.anonymize.details_1'|trans }}</p>
+        <br/>
+        <p>{{ 'manage_volunteers.anonymize.details_2'|trans }}</p>
+        <br/>
+        <p>{{ 'manage_volunteers.anonymize.details_3'|trans }}</p>
+
+        <br/>
+
+        {% if answer %}
+            <div style="color:red;">{{ 'manage_volunteers.anonymize.message'|trans }}</div>
+            <br/>
+
+            <blockquote class="quote-card">
+                <p>{{ answer.raw }}</p>
+                <cite>{{ answer.receivedAt|date('d/m/Y H:i') }}</cite>
+            </blockquote>
+        {% endif %}
+
+        <br/>
+
+        <div id="delete-buttons" class="d-none">
+            {{ form_start(form) }}
+                <div class="row">
+                    <div class="col-6 text-center">
+                        {{ form_row(form.cancel) }}
+                    </div>
+                    <div class="col-6 text-center">
+                        {{ form_row(form.confirm) }}
+                    </div>
+                </div>
+            {{ form_end(form) }}
+        </div>
+
+        <a href="#" class="btn btn-primary" id="ask-deletion">{{ 'manage_volunteers.anonymize.delete_button'|trans }}</a>
+
+    </div>
+
+    <a href="{{ path('management_volunteers_manual_update', {id: volunteer.id}) }}"
+       class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+
+    <br/><br/>
+
+    <script type="text/javascript">
+
+        $('#ask-deletion').click(function(e) {
+            e.preventDefault();
+            $(this).addClass('d-none');
+            $('#delete-buttons').removeClass('d-none');
+        });
+
+        $('#{{ form.cancel.vars.id }}').click(function(e) {
+            e.preventDefault();
+            $('#ask-deletion').removeClass('d-none');
+            $('#delete-buttons').addClass('d-none');
+        });
+
+    </script>
+
+{% endblock %}

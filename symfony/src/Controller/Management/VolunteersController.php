@@ -3,10 +3,18 @@
 namespace App\Controller\Management;
 
 use App\Base\BaseController;
+use App\Communication\Processor\SimpleProcessor;
+use App\Entity\Answer;
 use App\Entity\Structure;
+use App\Entity\User;
 use App\Entity\Volunteer;
+use App\Form\Model\Campaign;
+use App\Form\Model\EmailTrigger;
+use App\Form\Model\SmsTrigger;
 use App\Form\Type\VolunteerType;
 use App\Import\VolunteerImporter;
+use App\Manager\CampaignManager;
+use App\Manager\CommunicationManager;
 use App\Manager\StructureManager;
 use App\Manager\VolunteerManager;
 use Bundles\PaginationBundle\Manager\PaginationManager;
@@ -16,12 +24,15 @@ use DateTime;
 use DateTimeZone;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
+use Twig\Environment;
 
 /**
  * @Route(path="management/volunteers", name="management_volunteers_")
@@ -45,6 +56,16 @@ class VolunteersController extends BaseController
     private $pegassManager;
 
     /**
+     * @var CampaignManager
+     */
+    private $campaignManager;
+
+    /**
+     * @var CommunicationManager
+     */
+    private $communicationManager;
+
+    /**
      * @var PaginationManager
      */
     private $paginationManager;
@@ -54,13 +75,27 @@ class VolunteersController extends BaseController
      */
     private $kernel;
 
-    public function __construct(VolunteerManager $volunteerManager, StructureManager $structureManager, PegassManager $pegassManager, PaginationManager $paginationManager, KernelInterface $kernel)
+    /**
+     * @var TranslatorInterface
+     */
+    private $translator;
+
+    /**
+     * @var Environment
+     */
+    private $templating;
+
+    public function __construct(VolunteerManager $volunteerManager, StructureManager $structureManager, PegassManager $pegassManager, CampaignManager $campaignManager, CommunicationManager $communicationManager, PaginationManager $paginationManager, KernelInterface $kernel, TranslatorInterface $translator, Environment $templating)
     {
         $this->volunteerManager = $volunteerManager;
         $this->structureManager = $structureManager;
         $this->pegassManager = $pegassManager;
+        $this->campaignManager = $campaignManager;
+        $this->communicationManager = $communicationManager;
         $this->paginationManager = $paginationManager;
         $this->kernel = $kernel;
+        $this->translator = $translator;
+        $this->templating = $templating;
     }
 
     /**
@@ -177,6 +212,7 @@ class VolunteersController extends BaseController
             'form'      => $form->createView(),
             'isCreate'  => $isCreate,
             'volunteer' => $volunteer,
+            'answerId' => $request->get('answerId'),
         ]);
     }
 
@@ -334,6 +370,99 @@ class VolunteersController extends BaseController
         return $this->redirectToRoute('management_volunteers_edit_structures', [
             'id' => $volunteer->getId(),
         ]);
+    }
+
+    /**
+     * @Route(path="/delete/{volunteerId}/{answerId}", name="delete", defaults={"answerId": null})
+     * @Entity("volunteer", expr="repository.find(volunteerId)")
+     * @Entity("answer", expr="answerId ? repository.find(answerId) : null")
+     * @Template("management/volunteers/delete.html.twig")
+     */
+    public function deleteAction(Request $request, SimpleProcessor $processor, Volunteer $volunteer, ?Answer $answer)
+    {
+        if ($volunteer->getUser()) {
+            throw $this->createNotFoundException();
+        }
+
+        $form = $this->createFormBuilder()
+            ->add('cancel', SubmitType::class, [
+                'label' => 'manage_volunteers.anonymize.cancel',
+                'attr' => [
+                    'class' => 'btn btn-success',
+                ]
+            ])
+            ->add('confirm', SubmitType::class, [
+                'label' => 'manage_volunteers.anonymize.confirm',
+                'attr' => [
+                    'class' => 'btn btn-danger',
+                ]
+            ])
+            ->getForm()
+            ->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $trigger = $this->deleteVolunteer($volunteer, $answer, $processor);
+
+            return $this->redirectToRoute('communication_index', [
+                'id' => $trigger->getId(),
+            ]);
+        }
+
+        return [
+            'volunteer' => $volunteer,
+            'answer' => $answer,
+            'form' => $form->createView(),
+        ];
+    }
+
+    private function deleteVolunteer(Volunteer $volunteer, ?Answer $answer, SimpleProcessor $processor) : \App\Entity\Campaign
+    {
+        // Sending a message to the volunteer to let him know he is now removed
+        $sms = new SmsTrigger();
+        $campaign = new Campaign($sms);
+
+        $campaign->label = $this->translator->trans('manage_volunteers.anonymize.campaign.title', [
+            '%nivol%' => $volunteer->getNivol(),
+        ]);
+
+        $sms->setAudience([$volunteer->getNivol()]);
+
+        $sms->setMessage(
+            $this->translator->trans('manage_volunteers.anonymize.campaign.sms_content')
+        );
+
+        $trigger = $this->campaignManager->launchNewCampaign($campaign, $processor);
+
+        // Sending a message inviting redcall users managing volunteer's structure to complete data deletion
+        $email = new EmailTrigger();
+
+        $audience = [];
+        foreach ($volunteer->getStructures() as $structure) {
+            /** @var Structure $structure */
+            foreach ($structure->getUsers() as $user) {
+                /** @var User $user */
+                if ($user->getVolunteer()) {
+                    $audience[] = $user->getVolunteer()->getNivol();
+                }
+            }
+        }
+        $email->setAudience(array_unique($audience));
+
+        $email->setSubject($this->translator->trans('manage_volunteers.anonymize.campaign.email.subject', [
+            '%nivol%' => $volunteer->getNivol(),
+        ]));
+
+        $email->setMessage($this->templating->render('management/volunteers/delete_email.html.twig', [
+            'volunteer' => $volunteer,
+            'answer' => $answer,
+            'website_url' => getenv('WEBSITE_URL'),
+        ]));
+
+        $this->communicationManager->launchNewCommunication($trigger, $email);
+
+        $this->volunteerManager->anonymize($volunteer);
+
+        return $trigger;
     }
 
     /**

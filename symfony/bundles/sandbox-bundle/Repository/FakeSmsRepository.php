@@ -33,6 +33,7 @@ class FakeSmsRepository extends ServiceEntityRepository
                         COUNT(s.phoneNumber) as countMsg
                     ')
                     ->groupBy('s.phoneNumber')
+                    ->orderBy('s.id', 'DESC')
                     ->getQuery()
                     ->getArrayResult();
 
