@@ -42,11 +42,19 @@
     {% endif %}
     {{ form_end(form) }}
 
-    {% if is_redcross %}
+    <div>
         {{ 'manage_volunteers.form.lock_info'|trans }}
         <br/><br/>
-    {% else %}
-        <br/>
+    </div>
+
+    {% if not volunteer.user %}
+        <div>
+            <strong>{{ 'manage_volunteers.anonymize.rgpd'|trans }}</strong>: {{ 'manage_volunteers.anonymize.volunteer_asked_for_it'|trans }}
+            <a href="{{ path('management_volunteers_delete', {volunteerId: volunteer.id, answerId: answerId}) }}">
+                {{ 'manage_volunteers.anonymize.continue'|trans }}
+            </a>
+            <br/><br>
+        </div>
     {% endif %}
 
     <div class="text-center">

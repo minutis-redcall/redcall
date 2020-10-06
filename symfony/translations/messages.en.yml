@@ -350,6 +350,34 @@ manage_volunteers:
     updated: Volunteer has properly been updated.
     structures: Affiliate structure(s)
     lock_info: '* Locked phones and emails are not automatically refreshed by Pegass updates.'
+  anonymize:
+    rgpd: RGPD
+    volunteer_asked_for_it: 'This volunteer asked you to remove his personal data?'
+    continue: 'Continue here'
+    title: 'Data deletion for %name%'
+    details_1: 'In accordance with the Data Protection Act and General Data Protection Regulations (GDPR), volunteers have the right to access, modify, delete and object to the processing of their personal data.'
+    details_2: 'By clicking on the button below, all his/her information will be anonymzed, but will be kept to comply with accounting obligations (because of fees implicated while sending communications).'
+    details_3: 'His/her external identifier (NIVOL) is the only information that will be kept untouched, in order to block any data update coming from external databases and/or other external services.'
+    message: 'Please review the message causing the data deletion.'
+    delete_button: 'Delete his/her data'
+    confirm: 'Confirm'
+    cancel: 'Cancel'
+    campaign:
+      title: '[GDPR] Data deletion request for %nivol%'
+      sms_content: 'Hello, we taken your request into account. You won''t receive messages from us. Sorry for the inconvenience.'
+      email:
+        subject: '[GDPR] RedCall - Update GAIA for #%nivol%'
+        greetings: 'Greetings,'
+        target: 'This message should be forwarded to the Local Unit secretary or its president.'
+        content_1: 'RedCall received from the following person a message indicating that he/she doesn''t belong to the Red Cross anymore. The Red Cross must comply with <a href="https://gdpr.eu/what-is-gdpr/">GDPR</a> and you should update GAIA as a consequence.'
+        content_2: 'From RedCall, required actions have been performed in order to opt him/her out from all upcoming triggers, and this person also received the following message:'
+        who: 'Involved person:'
+        firstname: 'First name : %firstname%'
+        lastname: 'Last name : %lastname%'
+        email: 'Email : %email%'
+        phone: 'Phone number : %phone%'
+        nivol: 'NIVOL : %nivol%'
+        message_received: 'Message received that conducted the volunteer data deletion received on %date% at %time% on trigger <a href="%url%">%trigger%</a>:'
   contact:
     mail_subject: '⚠️ %brand%: You have a RedCall Message'
   admin_structures:
@@ -431,6 +459,7 @@ import_report:
   minor: 'Volunteer is minor.'
   disabled: 'Volunteer is disabled on Pegass.'
   failed: 'Volunteer is broken on Pegass.'
+  removed: 'Volunteer has been anonymized.'
 
 maintenance:
   title: 'Maintenance'

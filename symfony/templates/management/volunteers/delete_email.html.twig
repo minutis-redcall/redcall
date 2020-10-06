@@ -1,0 +1,41 @@
+<p>{{ 'manage_volunteers.anonymize.campaign.email.greetings'|trans }}</p>
+
+<br/>
+
+<p><strong>{{ 'manage_volunteers.anonymize.campaign.email.target'|trans|purify }}</strong></p>
+
+<br/>
+
+<p>
+    {{ 'manage_volunteers.anonymize.campaign.email.content_1'|trans|purify }}
+    <br/>
+    {{ 'manage_volunteers.anonymize.campaign.email.content_2'|trans|purify }}
+    <br/>
+    <span style="color:darkgray"><em>"{{ 'manage_volunteers.anonymize.campaign.sms_content'|trans }}"</em></span>
+</p>
+
+<br/>
+
+<p>
+    {{ 'manage_volunteers.anonymize.campaign.email.who'|trans }}
+    <ul>
+        <li>{{ 'manage_volunteers.anonymize.campaign.email.firstname'|trans({'%firstname%': volunteer.firstName}) }}</li>
+        <li>{{ 'manage_volunteers.anonymize.campaign.email.lastname'|trans({'%lastname%': volunteer.lastName}) }}</li>
+        <li>{{ 'manage_volunteers.anonymize.campaign.email.email'|trans({'%email%': volunteer.email}) }}</li>
+        <li>{{ 'manage_volunteers.anonymize.campaign.email.phone'|trans({'%phone%': volunteer.phoneNumber}) }}</li>
+        <li>{{ 'manage_volunteers.anonymize.campaign.email.nivol'|trans({'%nivol%': volunteer.nivol}) }}</li>
+    </ul>
+</p>
+
+{% if answer %}
+    <p>
+        {{ 'manage_volunteers.anonymize.campaign.email.message_received'|trans({
+            '%date%': answer.receivedAt|date('d/m/Y'),
+            '%time%': answer.receivedAt|date('H:i'),
+            '%trigger%': answer.message.communication.campaign.label,
+            '%url%': website_url ~ path('communication_index', {id: answer.message.communication.campaign.id}),
+        })|purify }}
+        <br/>
+        "{{ answer.raw }}"
+    </p>
+{% endif %}

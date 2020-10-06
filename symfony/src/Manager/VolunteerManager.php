@@ -321,7 +321,7 @@ class VolunteerManager
     {
         foreach ($volunteer->getMessages() as $message) {
             /** @var Message $message */
-            foreach ($message->getAnswers() as $answer) {
+            foreach ($message->getAnswers() ?? [] as $answer) {
                 /** @var Answer $answer */
                 if (!$answer->getByAdmin()) {
                     $answer->setRaw('');

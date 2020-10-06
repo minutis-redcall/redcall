@@ -2,6 +2,7 @@
 
 namespace App\Manager;
 
+use App\Communication\Processor\ProcessorInterface;
 use App\Entity\Campaign as CampaignEntity;
 use App\Entity\Communication;
 use App\Form\Model\Campaign as CampaignModel;
@@ -69,7 +70,7 @@ class CampaignManager
      *
      * @throws Exception
      */
-    public function launchNewCampaign(CampaignModel $campaignModel): CampaignEntity
+    public function launchNewCampaign(CampaignModel $campaignModel, ProcessorInterface $processor = null): CampaignEntity
     {
         $campaignEntity = new CampaignEntity();
         $campaignEntity
@@ -82,7 +83,7 @@ class CampaignManager
 
         $this->campaignRepository->save($campaignEntity);
 
-        $this->communicationManager->launchNewCommunication($campaignEntity, $campaignModel->trigger);
+        $this->communicationManager->launchNewCommunication($campaignEntity, $campaignModel->trigger, $processor);
 
         return $campaignEntity;
     }

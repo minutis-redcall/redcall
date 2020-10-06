@@ -91,13 +91,20 @@ class AnswerRepository extends BaseRepository
 
     public function getSearchQueryBuilder(string $criteria) : QueryBuilder
     {
-        $qb = $this->createQueryBuilder('a');
+        $qb = $this->createQueryBuilder('a')
+            ->join('a.message', 'm')
+            ->join('m.volunteer', 'v')
+            ->where('v.enabled = true');
 
+        $exprs = [];
         foreach (explode(' ', $criteria) as $index => $keyword) {
-            $qb
-                ->orWhere(sprintf('a.raw LIKE :keyword_%d', $index))
-                ->setParameter(sprintf('keyword_%d', $index), sprintf('%%%s%%', $keyword));
+            $exprs[] = $qb->expr()->like('a.raw', sprintf(':keyword_%d', $index));
+            $qb->setParameter(sprintf('keyword_%d', $index), sprintf('%%%s%%', $keyword));
         }
+
+        $qb->andWhere(
+            call_user_func_array([$qb->expr(), 'orX'], $exprs)
+        );
 
         $qb->orderBy('a.id', 'DESC');
 

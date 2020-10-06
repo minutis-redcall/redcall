@@ -36,7 +36,7 @@
                     </a>
                 </td>
                 <td width="20%">
-                    <a target="_blank" href="{{ path('management_volunteers_manual_update', {'id': volunteer.id}) }}">
+                    <a target="_blank" href="{{ path('management_volunteers_manual_update', {'id': volunteer.id, 'answerId': answer.id}) }}">
                         {{ volunteer.displayName }}
                     </a>
                 </td>
@@ -47,7 +47,6 @@
         {% endfor %}
     </table>
 
-    {# bug envoyer les parametres en get #}
-    {{ macros.pager(pager) }}
+    {{ macros.pager(pager, '', app.request.query.all) }}
 
 {% endblock %}
