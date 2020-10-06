@@ -145,10 +145,10 @@ campaign:
     title: 'Pas de Nivol relié'
     description: 'Votre compte RedCall n''est pas relié à votre compte Pegass, merci de nous contacter afin de pouvoir utiliser la plateforme.'
   types:
-    1_green: 'Vert'
-    2_light_orange: 'Orange 1'
-    3_dark_orange: 'Orange 2'
-    4_red: 'Rouge'
+    1_green: 'Information'
+    2_light_orange: 'Préparation (UL)'
+    3_dark_orange: 'Préparation (DT)'
+    4_red: 'Engagement'
   statuses:
     ongoing: 'En cours'
     finished: 'Terminé'

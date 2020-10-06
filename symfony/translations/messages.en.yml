@@ -152,10 +152,10 @@ campaign:
     title: 'No nivol bound'
     description: 'Your RedCall account is not bound to your Pegass account, please contact us in order to use the platform.'
   types:
-    1_green: 'Green'
-    2_light_orange: 'Orange 1'
-    3_dark_orange: 'Orange 2'
-    4_red: 'Red'
+    1_green: 'Information'
+    2_light_orange: 'Preparation (UL)'
+    3_dark_orange: 'Preparation (DT)'
+    4_red: 'Engagement'
   statuses:
     ongoing: 'Ongoing'
     finished: 'Finished'
