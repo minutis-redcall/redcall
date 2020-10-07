@@ -151,7 +151,7 @@ class CampaignController extends BaseController
     {
         $this->validateCsrfOrThrowNotFoundException('campaign', $csrf);
 
-        $campaign       = new CampaignModel();
+        $campaign       = new CampaignModel(new SmsTrigger());
         $campaign->type = $color;
         $errors         = $this->get('validator')->validate($campaign, null, ['color_edition']);
         if (count($errors) > 0) {
