@@ -35,6 +35,12 @@ class Campaign
         self::TYPE_DARK_ORANGE  => '#ff6600',
         self::TYPE_RED          => '#ff3300',
     ];
+    const BACKGROUNDS = [
+        self::TYPE_GREEN        => '#d7f5e1',
+        self::TYPE_LIGHT_ORANGE => '#faf0e1',
+        self::TYPE_DARK_ORANGE  => '#faebe1',
+        self::TYPE_RED          => '#fce4de',
+    ];
 
     /**
      * @ORM\Id()
