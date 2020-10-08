@@ -133,10 +133,6 @@ class VolunteersController extends BaseController
     {
         $this->validateCsrfOrThrowNotFoundException('volunteers', $csrf);
 
-        if (!getenv('IS_REDCROSS')) {
-            throw $this->createNotFoundException();
-        }
-
         if (!$volunteer->canForcePegassUpdate()) {
             return $this->redirectToRoute('management_volunteers_list');
         }
@@ -298,10 +294,6 @@ class VolunteersController extends BaseController
      */
     public function pegass(Volunteer $volunteer)
     {
-        if (!getenv('IS_REDCROSS')) {
-            throw $this->createNotFoundException();
-        }
-
         $entity = $this->pegassManager->getEntity(Pegass::TYPE_VOLUNTEER, $volunteer->getIdentifier(), false);
         if (!$entity) {
             throw $this->createNotFoundException();

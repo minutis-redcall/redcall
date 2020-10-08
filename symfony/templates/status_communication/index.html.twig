@@ -308,8 +308,13 @@
                                         <span href="#" class="volunteer-info" style="cursor:pointer;"
                                               onclick="$('#volunteer-info-{{ message.id }}').toggleClass('d-none');return false;">
                                             {{ volunteer.displayName }}
-                                            {% if volunteer.minor %}🐻{% endif %}
-                                            👤
+                                            {% if volunteer.minor %}
+                                                🐻
+                                            {% elseif volunteer.user %}
+                                                <img src="{{ asset('minutis.png') }}" />
+                                            {% else %}
+                                                👤
+                                            {% endif %}
                                         </span>
                                     </div>
                                     <div id="volunteer-info-{{ message.id }}" class="d-none">

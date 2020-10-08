@@ -143,10 +143,6 @@ class User extends AbstractUser
 
     public function isLocked() : ?bool
     {
-        if (0 === getenv('IS_REDCROSS')) {
-            return false;
-        }
-
         return $this->locked;
     }
 

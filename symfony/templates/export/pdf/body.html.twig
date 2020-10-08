@@ -2,12 +2,10 @@
     {% spaceless %}
 
     {# Header #}
-        <div {% if is_redcross %}style="margin-left:60px;margin-right:60px;border:1px solid {{ lightgrey }};"{% endif %}>
-            {% if is_redcross %}
-                <div style="text-align:left;position:relative;left:-30px;">
-                    <img height="30" src="{{ asset('build/images/corner_topleft.png')[1:] }}"/>
-                </div>
-            {% endif %}
+        <div style="margin-left:60px;margin-right:60px;border:1px solid {{ lightgrey }};">
+            <div style="text-align:left;position:relative;left:-30px;">
+                <img height="30" src="{{ asset('build/images/corner_topleft.png')[1:] }}"/>
+            </div>
             <div style="margin-left:50px;">
                 <b>
                 <span style="font-size:30px;font-family:Arial Black;color:{{ red }};">
@@ -27,11 +25,9 @@
                 </span>
                 </b>
             </div>
-            {% if is_redcross %}
-                <div style="text-align:right;">
-                    <img height="30" src="{{ asset('build/images/corner_bottomright.png')[1:] }}"/>
-                </div>
-            {% endif %}
+            <div style="text-align:right;">
+                <img height="30" src="{{ asset('build/images/corner_bottomright.png')[1:] }}"/>
+            </div>
         </div>
 
     <br/><br/>
