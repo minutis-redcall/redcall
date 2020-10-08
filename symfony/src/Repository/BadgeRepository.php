@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Base\BaseRepository;
 use App\Entity\Badge;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -19,32 +20,39 @@ class BadgeRepository extends BaseRepository
         parent::__construct($registry, Badge::class);
     }
 
-    // /**
-    //  * @return Badge[] Returns an array of Badge objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    public function getSearchInPublicBadgesQueryBuilder(?string $criteria) : QueryBuilder
     {
-        return $this->createQueryBuilder('b')
-            ->andWhere('b.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('b.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
+        $qb = $this->createQueryBuilder('b')
+                   ->leftJoin('b.category', 'c')
+                   ->where('b.restricted = false')
+                   ->orderBy('c.priority', 'DESC')
+                   ->addOrderBy('b.priority', 'DESC')
+                   ->addOrderBy('b.name', 'ASC');
 
-    /*
-    public function findOneBySomeField($value): ?Badge
-    {
-        return $this->createQueryBuilder('b')
-            ->andWhere('b.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
+        if ($criteria) {
+            $this->addSearchCriteria($qb, $criteria);
+        }
+
+        return $qb;
     }
-    */
+
+    public function search(?string $criteria, int $limit) : array
+    {
+        return $this->getSearchInPublicBadgesQueryBuilder($criteria)
+                    ->setMaxResults($limit)
+                    ->getQuery()
+                    ->getResult();
+    }
+
+    private function addSearchCriteria(QueryBuilder $qb, string $criteria)
+    {
+        $qb->andWhere(
+            $qb->expr()->orX(
+                'b.name LIKE :criteria',
+                'b.description LIKE :criteria',
+                'c.name LIKE :criteria'
+            )
+        )
+           ->setParameter('criteria', sprintf('%%%s%%', str_replace(' ', '%', $criteria)));
+    }
 }

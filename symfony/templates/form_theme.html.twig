@@ -101,7 +101,56 @@
             }
         }) }}
     </div>
+{% endblock %}
 
+{% block badge_widget_row %}
+    <div class="form-group">
+        {{ form_errors(form) }}
+
+        {{ form_label(form) }}
+
+        {{ form_widget(form, {
+            attr: {
+                'class': 'flexdatalist',
+                'placeholder': 'base.search.placeholder'|trans,
+                'data-data': data ? data|json_encode : '[]',
+                'data-url': path('widget_badge_search'),
+                'data-search-disabled': true,
+                'data-min-length': 1,
+                'data-visible-properties': '["name"]',
+                'data-no-results-text': 'base.search.no_results'|trans,
+                'data-focus-first-result': true,
+                'data-selection-required': true,
+                'data-text-property': 'name',
+                'data-value-property': 'id',
+            }
+        }) }}
+    </div>
+{% endblock %}
+
+{% block category_widget_row %}
+    <div class="form-group">
+        {{ form_errors(form) }}
+
+        {{ form_label(form) }}
+
+        {{ form_widget(form, {
+            attr: {
+                'class': 'flexdatalist',
+                'placeholder': 'base.search.placeholder'|trans,
+                'data-data': data ? data|json_encode : '[]',
+                'data-url': path('widget_category_search'),
+                'data-search-disabled': true,
+                'data-min-length': 0,
+                'data-visible-properties': '["name"]',
+                'data-no-results-text': 'base.search.no_results'|trans,
+                'data-focus-first-result': true,
+                'data-selection-required': true,
+                'data-text-property': 'name',
+                'data-value-property': 'id',
+            }
+        }) }}
+    </div>
 {% endblock %}
 
 {% block phone_row %}

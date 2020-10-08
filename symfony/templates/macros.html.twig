@@ -77,3 +77,7 @@
         <div class="iti__flag iti__{{ phone.countryCode|lower }}" style="float:left;"></div>&nbsp; {{ phone.national }}
     </a>
 {% endmacro %}
+
+{% macro badge(badge) %}
+    <span alt="{{ badge.description }}">{{ badge.name }}</span>
+{% endmacro %}

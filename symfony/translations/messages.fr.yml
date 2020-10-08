@@ -47,6 +47,7 @@ admin:
       to_volunteers: 'à <b>%volunteers%</b> bénévoles.'
     no_stats: 'Aucune statistique à afficher pour cette période.'
     pegass:
+<<<<<<< HEAD
       newest_update: 'Mise à jour la plus récente'
       oldest_update: 'Mise à jour la plus ancienne'
       title: 'Mise à jour Pegass'
@@ -83,6 +84,83 @@ backlinks:
   phpstorm: 'Développé avec'
   phrase: 'Traductions grâce à'
   redcross: 'de Minutis'
+=======
+      title: "Mise à jour Pegass"
+      oldest_update: "Mise à jour la plus ancienne"
+      newest_update: "Mise à jour la plus récente"
+  badge:
+    title: 'Gestion des badges'
+    search: 'Chercher un badge'
+    description:
+      1: 'Les badges permettent de filtrer les bénévoles à déclencher.'
+      2: 'Le nom du badge doit-être petit car il est affiché partout où le bénévole est affiché (ex: US pour Urgence Secours).'
+      3: 'La description du badge doit permettre de comprendre à quoi il correspond.'
+      4: 'Un badge (REC-PSE1) peut avoir un synonyme (PSE1), ainsi tout bénévole possédant REC-PSE1 affichera PSE1.'
+      5: 'Un badge (PSE2) peut avoir un parent (PSE1), ainsi tout bénévole possédant PSE2 aura implicitement PSE1 aussi.'
+      6: 'Un badge peut-être catégorisé (ex: VL et VPSP sont des compétences liées aux véhicules; PSC, PSE, CI liées au secourisme).'
+      7: 'Un badge peut-être priorisé (cela change son ordre d''apparition dans la liste des compétences).'
+      8: 'Vous pouvez choisir quels badges sont visibles par défaut sur la plateforme. Les structures pourront en faire apparaître d''autres si besoin.'
+  category:
+    title: 'Gestion des catégories de badge'
+    description: 'Les catégories permettent de regrouper et d''organiser l''affichage des badges.'
+    search: 'Rechercher une catégorie'
+    create: 'Créer une nouvelle catégorie'
+    edit: 'Editer une catégorie'
+    form:
+      name: 'Nom de la catégorie'
+      priority: 'Priorité d''affichage'
+    card:
+      priority: 'Priorité : %priority%'
+      badge_count: 'Nombre de badges: %badge_count%'
+      badges: 'Modifier les badges'
+    delete: 'Voulez-vous vraiment supprimer la catégorie %name% ?'
+    badges: 'Badges'
+    badges_list: 'Liste des badges dans %name%'
+    badges_add: 'Ajouter un badge'
+    badges_delete: 'Vraiment supprimer le badge %name% de cette catégorie ?'
+
+management:
+  current_structures: 'Vous pouvez actuellement déclencher les structures suivantes :'
+  support_email: 'Si cette information est erronée, merci de contacter l''équipe à %email%'
+  update_structures: 'Modifier les structures'
+  home:
+    link: Gestion des effectifs
+
+tag:
+  emergency_assistance: Urg. Sec.
+  social_assistance: Ass. Soc.
+  psc_1: PSC 1
+  pse_1: PSE 1
+  pse_2: PSE 2
+  drvr_vl: Chauf. VL
+  drvr_vpsp: Chauf. VPSP
+  ci: Chef Int.
+  tcau: TCAU
+  tceo: TCEO
+  dlas: DLAS
+  dlus: DLUS
+  cem: Chef Maraude
+  mar: Maraudeur
+  shortcuts:
+    emergency_assistance: US
+    social_assistance: AS
+    psc_1: PSC1
+    pse_1: PSE1
+    pse_2: PSE2
+    drvr_vl: VL
+    drvr_vpsp: VPSP
+    ci: CI
+    tcau: TCAU
+    dlas: DLAS
+    dlus: DLUS
+    tceo: TCEO
+    cem: CEM
+    mar: MAR
+
+minutis:
+  back: Retourner sur Minutis
+
+>>>>>>> Add new Category and Badge entities
 base:
   actions: Actions
   button:
@@ -90,11 +168,15 @@ base:
     create: 'Ajouter une nouvelle entrée'
     delete: Effacer
     details: Détails
+<<<<<<< HEAD
     more: Plus...
     open: Ouvrir
     save: Sauvegarder
     update: Editer
   clear_selection: 'Effacer la sélection'
+=======
+    search: Rechercher
+>>>>>>> Add new Category and Badge entities
   crud:
     create_title: 'Ajouter une entrée'
     delete_confirm: 'Souhaitez-vous vraiment supprimer "%entity%" ?'

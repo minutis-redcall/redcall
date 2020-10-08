@@ -1,0 +1,37 @@
+<div class="card">
+    <div class="card-header">
+        <div class="card-title h3">{{ badge.name }}</div>
+    </div>
+    <div class="card-body">
+        <strong>{{ badge.description }}</strong>
+
+        <p>Utilisé par {{ badge.volunteers|length }} bénévoles</p>
+
+        {% if badge.synonym %}
+            <div>Synonyme : {{ badge.synonym.name }}</div>
+        {% endif %}
+
+        {% if badge.parent %}
+            <div>Parent : {{ badge.parent.name }}</div>
+        {% endif %}
+
+
+        <div class="text-right">
+            <a href="#" class="btn btn-small btn-secondary open-category-form"
+               data-uri="">
+                ✏️ {{ 'base.button.update'|trans }}
+            </a>
+
+            <a href="#"
+               class="btn btn-small btn-secondary delete-category"
+               data-id="{{ badge.id }}"
+               data-name="{{ badge.name|e('js') }}"
+               data-uri="#">
+                🔥️ {{ 'base.button.delete'|trans }}
+            </a>
+
+        </div>
+
+    </div>
+</div>
+

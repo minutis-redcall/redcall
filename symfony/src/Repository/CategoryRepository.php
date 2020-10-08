@@ -4,12 +4,12 @@ namespace App\Repository;
 
 use App\Base\BaseRepository;
 use App\Entity\Category;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @method Category|null find($id, $lockMode = null, $lockVersion = null)
  * @method Category|null findOneBy(array $criteria, array $orderBy = null)
- * @method Category[]    findAll()
  * @method Category[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class CategoryRepository extends BaseRepository
@@ -19,32 +19,33 @@ class CategoryRepository extends BaseRepository
         parent::__construct($registry, Category::class);
     }
 
-    // /**
-    //  * @return Category[] Returns an array of Category objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    public function getSearchInCategoriesQueryBuilder(?string $criteria) : QueryBuilder
     {
-        return $this->createQueryBuilder('c')
-            ->andWhere('c.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('c.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
+        $qb = $this->createQueryBuilder('c')
+                   ->orderBy('c.priority', 'DESC');
 
-    /*
-    public function findOneBySomeField($value): ?Category
-    {
-        return $this->createQueryBuilder('c')
-            ->andWhere('c.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
+        if ($criteria) {
+            $this->addSearchCriteria($qb, $criteria);
+        }
+
+        return $qb;
     }
-    */
+
+    public function search(?string $criteria, int $limit) : array
+    {
+        return $this->getSearchInCategoriesQueryBuilder($criteria)
+                    ->setMaxResults($limit)
+                    ->getQuery()
+                    ->getResult();
+    }
+
+    private function addSearchCriteria(QueryBuilder $qb, string $criteria)
+    {
+        $qb->andWhere(
+            $qb->expr()->orX(
+                'c.name LIKE :criteria'
+            )
+        )
+           ->setParameter('criteria', sprintf('%%%s%%', str_replace(' ', '%', $criteria)));
+    }
 }

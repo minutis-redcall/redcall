@@ -2,6 +2,7 @@
 
 namespace App\Manager;
 
+use App\Entity\Badge;
 use App\Entity\Phone;
 use App\Entity\Structure;
 use App\Entity\Tag;
@@ -57,6 +58,16 @@ class RefreshManager
     private $tagManager;
 
     /**
+     * @var BadgeManager
+     */
+    private $badgeManager;
+
+    /**
+     * @var CategoryManager
+     */
+    private $categoryManager;
+
+    /**
      * @var UserManager
      */
     private $userManager;
@@ -80,6 +91,8 @@ class RefreshManager
         StructureManager $structureManager,
         VolunteerManager $volunteerManager,
         TagManager $tagManager,
+        BadgeManager $badgeManager,
+        CategoryManager $categoryManager,
         UserManager $userManager,
         PhoneManager $phoneManager,
         TaskSender $async,
@@ -89,6 +102,8 @@ class RefreshManager
         $this->structureManager = $structureManager;
         $this->volunteerManager = $volunteerManager;
         $this->tagManager       = $tagManager;
+        $this->badgeManager     = $badgeManager;
+        $this->categoryManager  = $categoryManager;
         $this->userManager      = $userManager;
         $this->phoneManager     = $phoneManager;
         $this->async            = $async;
@@ -326,6 +341,11 @@ class RefreshManager
             $volunteer->setEmail($this->fetchEmail($pegass->evaluate('infos'), $pegass->evaluate('contact')));
         }
 
+        // Update volunteer badges
+        $volunteer->setExternalBadges(
+            $this->fetchBadges($pegass)
+        );
+
         // Update volunteer skills
         $skills = $this->fetchSkills($pegass);
         foreach ($skills as $skill) {
@@ -470,6 +490,129 @@ class RefreshManager
         }
 
         return reset($contact)['libelle'];
+    }
+
+    private function fetchBadges(Pegass $pegass)
+    {
+        return array_merge(
+            $this->fetchActionBadges($pegass->evaluate('actions')),
+            $this->fetchSkillBadges($pegass->evaluate('skills')),
+            $this->fetchTrainingBadges($pegass->evaluate('trainings')),
+            $this->fetchNominationBadges($pegass->evaluate('nominations'))
+        );
+    }
+
+    private function fetchActionBadges(array $data) : array
+    {
+        $badges = [];
+
+        foreach (['action', 'groupeAction'] as $type) {
+            foreach ($data as $action) {
+                if (!is_array($action)) {
+                    continue;
+                }
+
+                $externalId = sprintf('%s-%d', $type, $action[$type]['id']);
+                $badge      = $this->badgeManager->findOneByExternalId($externalId);
+
+                if (!$badge) {
+                    $badge = $this->createBadge($externalId, $action[$type]['libelle']);
+                }
+
+                $badges[] = $badge;
+            }
+        }
+
+        return $badges;
+    }
+
+    private function fetchSkillBadges(array $data) : array
+    {
+        $badges = [];
+
+        foreach ($data as $skill) {
+            if (!is_array($skill)) {
+                continue;
+            }
+
+            $externalId = sprintf('skill-%d', $skill['id']);
+            $badge      = $this->badgeManager->findOneByExternalId($externalId);
+
+            if (!$badge) {
+                $badge = $this->createBadge($externalId, $skill['libelle']);
+            }
+
+            $badges[] = $badge;
+        }
+
+        return $badges;
+    }
+
+    private function fetchTrainingBadges(array $data) : array
+    {
+        $badges = [];
+
+        foreach ($data as $training) {
+            if (!is_array($training)) {
+                continue;
+            }
+
+            // Ignore trainings that should be retrained since more than 6 months
+            if (isset($training['dateRecyclage']) && preg_match('/^\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}$/', $training['dateRecyclage'])) {
+                $expiration = (new \DateTime($training['dateRecyclage']))->add(new \DateInterval('P6M'));
+                if (time() > $expiration->getTimestamp()) {
+                    continue;
+                }
+            }
+
+            $externalId = sprintf('training-%d', $training['formation']['id']);
+            $badge      = $this->badgeManager->findOneByExternalId($externalId);
+
+            if (!$badge) {
+                $badge = $this->createBadge($externalId, $training['formation']['code'], $training['formation']['libelle']);
+            }
+
+            $badges[] = $badge;
+        }
+
+        return $badges;
+    }
+
+    private function fetchNominationBadges(array $data) : array
+    {
+        $badges = [];
+
+        foreach ($data as $nomination) {
+            if (!is_array($nomination)) {
+                continue;
+            }
+
+            $externalId = sprintf('nomination-%d', $nomination['id']);
+            $badge      = $this->badgeManager->findOneByExternalId($externalId);
+
+            if (!$badge) {
+                $badge = $this->createBadge($externalId, $nomination['libelleCourt'], $nomination['libelleLong']);
+            }
+
+            $badges[] = $badge;
+        }
+
+        return $badges;
+    }
+
+    private function createBadge(string $externalId, string $name, ?string $description = null) : Badge
+    {
+        if (!$description) {
+            $description = $name;
+        }
+
+        $badge = new Badge();
+        $badge->setExternalId($externalId);
+        $badge->setName(substr($name, 0, 64));
+        $badge->setDescription(substr($description, 0, 255));
+        $this->badgeManager->save($badge);
+
+        return $badge;
     }
 
     private function fetchSkills(Pegass $pegass)

@@ -1,0 +1,38 @@
+{% extends 'base.html.twig' %}
+
+{% import 'macros.html.twig' as macros %}
+
+{% block body %}
+
+    <h1>{{ 'admin.badge.title'|trans }}</h1>
+
+    <div>
+        {{ 'admin.badge.description.1'|trans }}
+        <ul>
+            {% for i in 2..8 %}
+                <li>{{ ('admin.badge.description.' ~ i)|trans }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div class="text-right">
+        <a class="btn btn-secondary" href="{{ path('admin_category_index') }}">
+            {{ 'admin.category.title'|trans }}
+        </a>
+    </div>
+
+    {{ form(search) }}
+
+    <div class="row">
+        {% for badge in badges %}
+            <div class="col-6" id="badge-{{ badge.id }}" style="padding:5px;">
+                {{ include('admin/badge/badge.html.twig', {badge: badge}) }}
+            </div>
+        {% endfor %}
+    </div>
+
+    <br/>
+    {{ macros.pager(badges) }}
+    <br/>
+
+{% endblock %}

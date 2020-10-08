@@ -47,6 +47,7 @@ admin:
       to_volunteers: 'to <b>%volunteers%</b> volunteers.'
     no_stats: 'No statistics for this section in the selected period.'
     pegass:
+<<<<<<< HEAD
       newest_update: 'Newest update'
       oldest_update: 'Oldest update'
       title: 'Pegass updates'
@@ -83,6 +84,84 @@ backlinks:
   phpstorm: 'Developed with'
   phrase: 'Translated with'
   redcross: 'French Red Cross'
+=======
+      title: "Pegass updates"
+      oldest_update: "Oldest update"
+      newest_update: "Newest update"
+  badge:
+    title: 'Manage badges'
+    search: 'Search for a badge'
+    description:
+      1: 'Badges aim to filter out people to trigger.'
+      2: 'Badge name should be small because it will be shown everywhere where volunteers are rendered (ex: FA for First Aider)'
+      3: 'Badge description should let anyone understand what it means.'
+      4: 'A badge (first-aider-renewed) may have a synonym (first-aider), so all volunteers having first-aider-renewd will be rendered first-aider.'
+      5: 'A badge (first-aider-lvl-2) may have a parent (first-aider-lvl-1), so all volunteers having first-aider-lvl-2 will implicitely have first-aider-lvl-1.'
+      6: 'A badge can be categorized (ex: ambulance driver and light vehicle driver are skills bound to vehicles).'
+      7: 'A badge can be prioritized, sorting it on someone''s badge list.'
+      8: 'You may choose which badges are visible by default in the platform. Structures will still be able to change this behavior according to their needs.'
+
+  category:
+    title: 'Manage badge categories'
+    description: 'Categories are used to regroup and sort out how badges are rendered in the platform.'
+    search: 'Search for a category'
+    create: 'Create a new category'
+    edit: 'Edit a category'
+    form:
+      name: 'Category name'
+      priority: 'Rendering priority'
+    card:
+      priority: 'Priority: %priority%'
+      badge_count: 'Badges count: %badge_count%'
+      badges: 'Manage badges'
+    delete: 'Do you really want to remove %name% name?'
+    badges: 'Badges'
+    badges_list: 'Badge list in %name%'
+    badges_add: 'Add a badge'
+    badges_delete: 'Really remove "%name%" badge from this category?'
+
+management:
+  current_structures: 'You are currently able to trigger the following structures:'
+  support_email: 'If there is a mistake, please contact support team at %email%'
+  update_structures: 'Update structures'
+  home:
+    link: Workforce Management
+
+tag:
+  emergency_assistance: Emergency Help
+  social_assistance: Social Assistance
+  psc_1: PSC 1
+  pse_1: PSE 1
+  pse_2: PSE 2
+  drvr_vl: VL driver
+  drvr_vpsp: VPSP driver
+  ci: Inter. chief
+  tcau: TCAU
+  tceo: TCEO
+  dlus: DLUS
+  dlas: DLAS
+  cem: Roam Leader
+  mar: Roamer
+  shortcuts:
+    emergency_assistance: US
+    social_assistance: AS
+    psc_1: PSC1
+    pse_1: PSE1
+    pse_2: PSE2
+    drvr_vl: VL
+    drvr_vpsp: VPSP
+    ci: CI
+    tcau: TCAU
+    tceo: TCEO
+    dlus: DLUS
+    dlas: DLAS
+    cem: CE
+    mar: ROAM
+
+minutis:
+  back: Go back to Minutis
+
+>>>>>>> Add new Category and Badge entities
 base:
   actions: Actions
   button:
@@ -90,11 +169,15 @@ base:
     create: 'Create new entry'
     delete: Delete
     details: Details
+<<<<<<< HEAD
     more: More...
     open: Open
     save: Save
     update: Edit
   clear_selection: 'Clear selection'
+=======
+    search: Search
+>>>>>>> Add new Category and Badge entities
   crud:
     create_title: 'Add a new entry'
     delete_confirm: 'Are you sure you wish to remove "%entity%"?'

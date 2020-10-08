@@ -1,0 +1,44 @@
+{% import 'macros.html.twig' as macros %}
+
+{% if category.badges|length %}
+    <div class="row">
+        {% for badge in category.badges %}
+            <div class="col-9 category-badge-{{ badge.id }}" style="padding:5px;">
+                {{ macros.badge(badge) }}
+            </div>
+            <div class="col-3 category-badge-{{ badge.id }} text-right" style="padding:5px;">
+                <a href="#"
+                   data-confirm="{{ 'admin.category.badges_delete'|trans({'%name%': badge.name}) }}"
+                   data-uri="{{ path('admin_category_delete_badge', {categoryId: category.id, badgeId: badge.id, token: csrf_token('token')}) }}"
+                   data-row="category-badge-{{ badge.id }}"
+                   class="btn btn-secondary delete-badge-from-category" style="border:1px solid red !important;">❌</a>
+            </div>
+        {% endfor %}
+    </div>
+
+    <hr/>
+{% endif %}
+
+<div class="text-center">
+    <p>{{ 'admin.category.badges_add'|trans }}</p>
+    <div id="badge-to-add">
+        {{ render(controller('\\App\\Controller\\WidgetController::badgeEditor')) }}
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $('body')
+        .off('change', '#badge-to-add input.flexdatalist')
+        .on('change', '#badge-to-add input.flexdatalist', function () {
+            if ($(this).val()) {
+                $.post('{{ path('admin_category_add_badge', {id: category.id, token: csrf_token('token')}) }}', {
+                    badge: $(this).val(),
+                }, function (response) {
+                    $('#category-badges .modal-body').html(response.body);
+                    $('#category-badges .modal-body .flexdatalist').flexdatalist();
+                });
+            }
+        });
+
+</script>

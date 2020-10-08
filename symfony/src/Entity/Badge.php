@@ -64,6 +64,11 @@ class Badge
     private $isVisibleFor;
 
     /**
+     * @ORM\Column(type="boolean")
+     */
+    private $restricted = false;
+
+    /**
      * @ORM\ManyToMany(targetEntity=Structure::class, inversedBy="customBadges")
      * @ORM\JoinTable(
      *  name="badge_restriction",
@@ -219,6 +224,18 @@ class Badge
         return $this;
     }
 
+    public function isRestricted() : bool
+    {
+        return $this->restricted;
+    }
+
+    public function setRestricted(bool $restricted) : Badge
+    {
+        $this->restricted = $restricted;
+
+        return $this;
+    }
+
     /**
      * @return Collection|Structure[]
      */
@@ -333,6 +350,17 @@ class Badge
         }
 
         return $this->name;
+    }
+
+    /**
+     * @return array
+     */
+    public function toSearchResults() : array
+    {
+        return [
+            'id'   => $this->getId(),
+            'name' => $this->getFullName(),
+        ];
     }
 
     public function __toString()

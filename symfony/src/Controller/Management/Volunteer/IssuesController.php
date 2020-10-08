@@ -1,12 +1,11 @@
 <?php
 
-namespace App\Controller\Management;
+namespace App\Controller\Management\Volunteer;
 
 use App\Base\BaseController;
 use App\Manager\VolunteerManager;
 use App\Tools\PhoneNumberParser;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 /**
  * @Route(path="management/issues", name="management_issues_")
@@ -18,19 +17,9 @@ class IssuesController extends BaseController
      */
     private $volunteerManager;
 
-    /**
-     * @var ValidatorInterface
-     */
-    private $validator;
-
-    /**
-     * @param VolunteerManager   $volunteerManager
-     * @param ValidatorInterface $validator
-     */
-    public function __construct(VolunteerManager $volunteerManager, ValidatorInterface $validator)
+    public function __construct(VolunteerManager $volunteerManager)
     {
         $this->volunteerManager = $volunteerManager;
-        $this->validator        = $validator;
     }
 
     /**
