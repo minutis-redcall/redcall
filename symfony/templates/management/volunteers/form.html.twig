@@ -49,7 +49,7 @@
 
     {% if not volunteer.user %}
         <div>
-            <strong>{{ 'manage_volunteers.anonymize.rgpd'|trans }}</strong>: {{ 'manage_volunteers.anonymize.volunteer_asked_for_it'|trans }}
+            <strong>{{ 'manage_volunteers.anonymize.gdpr'|trans }}</strong>: {{ 'manage_volunteers.anonymize.volunteer_asked_for_it'|trans }}
             <a href="{{ path('management_volunteers_delete', {volunteerId: volunteer.id, answerId: answerId}) }}">
                 {{ 'manage_volunteers.anonymize.continue'|trans }}
             </a>

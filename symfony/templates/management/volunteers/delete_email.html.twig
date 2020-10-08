@@ -8,10 +8,14 @@
 
 <p>
     {{ 'manage_volunteers.anonymize.campaign.email.content_1'|trans|purify }}
-    <br/>
+</p>
+
+<br/>
+
+<p>
     {{ 'manage_volunteers.anonymize.campaign.email.content_2'|trans|purify }}
     <br/>
-    <span style="color:darkgray"><em>"{{ 'manage_volunteers.anonymize.campaign.sms_content'|trans }}"</em></span>
+    <em>"{{ 'manage_volunteers.anonymize.campaign.sms_content'|trans }}"</em>
 </p>
 
 <br/>
@@ -36,6 +40,6 @@
             '%url%': website_url ~ path('communication_index', {id: answer.message.communication.campaign.id}),
         })|purify }}
         <br/>
-        "{{ answer.raw }}"
+        <em>"{{ answer.raw }}"</em>
     </p>
 {% endif %}

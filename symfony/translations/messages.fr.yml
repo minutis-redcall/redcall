@@ -200,8 +200,8 @@ campaign_status:
     other: Autre réponse
   selection:
     new_message: Ecrire un nouveau message
-    download_csv: Téléchager en CSV
-    download_portrait_pdf: Téléchager en PDF
+    download_csv: Télécharger en CSV
+    download_portrait_pdf: Télécharger en PDF
     sms: 📱 SMS
     call: 📞 Appel vocal
     email: ✉️ Email
@@ -350,7 +350,7 @@ manage_volunteers:
     structures: Structure(s) de rattachement
     lock_info: '* Les nᵒˢ de téléphone et emails gelés ne sont plus mis à jour automatiquement par Pegass.'
   anonymize:
-    rgpd: GDPR
+    gdpr: RGPD
     volunteer_asked_for_it: 'Ce bénévole vous a demandé de supprimer ses données ?'
     continue: 'Continuez ici'
     title: 'Suppression des données de %name%'
@@ -367,9 +367,9 @@ manage_volunteers:
       email:
         subject: '[RGPD] RedCall - Mettre à jour GAIA pour #%nivol%'
         greetings: 'Bonjour,'
-        target: 'Ce message doit être transféré au secrétaire de l''unité local ou au président.'
+        target: 'Ce message doit être transféré au secrétaire de l''unité locale ou au président.'
         content_1: 'RedCall a reçu de la part de la personne ci-dessous un message indiquant qu''il n''est pas/plus bénévole à la Croix Rouge. La Croix Rouge se doit de respecter la <a href="https://www.cnil.fr/fr/rgpd-de-quoi-parle-t-on">RGPD</a> et Il vous faut mettre à jour GAIA en ce sens.'
-        content_2: 'Du coté de RedCall, le nécessaire a été fait pour qu''il ne reçoive plus aucun déclenchement, et la personne a recu le message suivant :'
+        content_2: 'Du coté de RedCall, le nécessaire a été fait pour qu''elle ne reçoive plus aucun déclenchement, et la personne a reçu le message suivant :'
         who: 'La personne concernée :'
         firstname: 'Prénom : %firstname%'
         lastname: 'Nom : %lastname%'

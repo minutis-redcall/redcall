@@ -351,7 +351,7 @@ manage_volunteers:
     structures: Affiliate structure(s)
     lock_info: '* Locked phones and emails are not automatically refreshed by Pegass updates.'
   anonymize:
-    rgpd: RGPD
+    gdpr: GDPR
     volunteer_asked_for_it: 'This volunteer asked you to remove his personal data?'
     continue: 'Continue here'
     title: 'Data deletion for %name%'

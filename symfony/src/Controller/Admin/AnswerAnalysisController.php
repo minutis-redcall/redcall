@@ -54,7 +54,7 @@ class AnswerAnalysisController extends BaseController
             ->add('criteria', TextType::class, [
                 'label'    => 'admin.answer_analysis.search.label',
                 'required' => false,
-                'data' => 'parti quit vir plus stop'
+                'data' => 'parti quit vir plus stop crf croix retir'
             ])
             ->add('submit', SubmitType::class, [
                 'label' => 'admin.answer_analysis.search.button',
