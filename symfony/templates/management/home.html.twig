@@ -23,9 +23,7 @@
                 <p>{{ structure.name }}</p>
             {% endfor %}
 
-            {% if is_redcross %}
-                <p>{{ 'management.support_email'|trans({'%email%': email}) }}</p>
-            {% endif %}
+            <p>{{ 'management.support_email'|trans({'%email%': email}) }}</p>
         </div>
 
         <br/><br/><br/>

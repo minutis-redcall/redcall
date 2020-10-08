@@ -62,8 +62,6 @@ SLACK_EMOJI=':ghost:'
 
 # Red Cross specific
 
-IS_REDCROSS=0
-
 MINUTIS_JWT_PUBLIC_KEY_URL=xxx
 MINUTIS_SUPPORT=support.minutis@croix-rouge.fr
 MINUTIS_URL=xxx

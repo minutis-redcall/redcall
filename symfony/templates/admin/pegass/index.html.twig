@@ -76,16 +76,14 @@
                                         {% endif %}
                                         {{ 'admin.pegass.developered'|trans }} <sup>(4)</sup>
                                     </div>
-                                    {% if is_redcross %}
-                                        <div class="text-small">
-                                            {% if user.locked %}
-                                                <span class="h4">✅</span>
-                                            {% else %}
-                                                <span class="h4">❌</span>
-                                            {% endif %}
-                                            {{ 'admin.pegass.locked'|trans }} <sup>(5)</sup>
-                                        </div>
-                                    {% endif %}
+                                    <div class="text-small">
+                                        {% if user.locked %}
+                                            <span class="h4">✅</span>
+                                        {% else %}
+                                            <span class="h4">❌</span>
+                                        {% endif %}
+                                        {{ 'admin.pegass.locked'|trans }} <sup>(5)</sup>
+                                    </div>
                                 {% else %}
                                     <div class="text-small">&nbsp;</div>
                                     <div class="text-small">&nbsp;</div>
@@ -202,11 +200,9 @@
             <sup>(4)</sup> {{ 'admin.pegass.developered_details'|trans }}
         </div>
 
-        {% if is_redcross %}
-            <div class="text-left">
-                <sup>(5)</sup> {{ 'admin.pegass.locked_details'|trans }}
-            </div>
-        {% endif %}
+        <div class="text-left">
+            <sup>(5)</sup> {{ 'admin.pegass.locked_details'|trans }}
+        </div>
 
         <br/>
 

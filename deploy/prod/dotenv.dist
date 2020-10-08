@@ -64,8 +64,6 @@ SLACK_EMOJI=':fire:'
 
 # Red Cross specific
 
-IS_REDCROSS=0
-
 GAIA_URL='https://gaia.croix-rouge.fr/crf-benevoles/#contact/NIVOL/%nivol%'
 
 PEGASS_LOGIN=yourlogin

@@ -77,8 +77,7 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
 
     public function supports(Request $request)
     {
-        $support = getenv('IS_REDCROSS')
-            && getenv('MINUTIS_JWT_PUBLIC_KEY_URL')
+        $support = getenv('MINUTIS_JWT_PUBLIC_KEY_URL')
             && '/auth' === $request->getPathInfo()
             && 'POST' === $request->getMethod();
 
@@ -205,8 +204,7 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
     {
         $url = $this->router->generate('password_login_connect');
 
-        if (getenv('IS_REDCROSS')
-            && 'dev' !== $this->kernel->getEnvironment()
+        if ('dev' !== $this->kernel->getEnvironment()
             && 'password_login' !== $request->cookies->get('auth_method')) {
             $url = getenv('MINUTIS_URL');
         }

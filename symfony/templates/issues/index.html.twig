@@ -9,13 +9,11 @@
         {{ 'issues.details.info2'|trans }}
     </p>
 
-    {% if is_redcross %}
-        <br/>
-        <p>
-            {{ 'issues.details.info3'|trans }}
-            {{ 'issues.details.info4'|trans }}
-        </p>
-    {% endif %}
+    <br/>
+    <p>
+        {{ 'issues.details.info3'|trans }}
+        {{ 'issues.details.info4'|trans }}
+    </p>
 
     <br/>
 
@@ -52,9 +50,7 @@
                         </div>
                         <div class="col-md-6">
                             #{{ volunteer.nivol }}
-                            {% if is_redcross %}
-                                (<a target="_blank" href="{{ gaia|replace({'%nivol%': volunteer.identifier}) }}">{{ 'issues.details.open'|trans }}</a>)
-                            {% endif %}
+                            (<a target="_blank" href="{{ gaia|replace({'%nivol%': volunteer.identifier}) }}">{{ 'issues.details.open'|trans }}</a>)
                             <br/>
                             <p>
                                 ☎️ <input id="phone-{{ volunteer.nivol }}" type="text" style="width: 80%;" value="{{ volunteer.phoneNumber }}" />

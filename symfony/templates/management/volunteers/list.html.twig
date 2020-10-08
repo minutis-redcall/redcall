@@ -52,7 +52,7 @@
                                         <img src="{{ asset('minutis.png') }}" />
                                     </a>
                                 {% endif %}
-                                {% if is_redcross and is_granted('ROLE_ADMIN') and volunteer.identifier %}
+                                {% if is_granted('ROLE_ADMIN') and volunteer.identifier %}
                                     <a href="{{ path('management_volunteers_pegass', {id: volunteer.id}) }}" target="_blank">🛠</a>
                                 {% endif %}
                             </div>
@@ -72,12 +72,10 @@
                             </div>
                             <div class="text-small">
                                 {# Last volunteer update #}
-                                {% if is_redcross %}
-                                    {% if volunteer.lastPegassUpdate and volunteer.lastPegassUpdate|date('Y') != 2000 %}
-                                        {{ 'manage_volunteers.columns.update'|trans({'%date%': volunteer.lastPegassUpdate|date('d/m/Y')}) }}
-                                    {% else %}
-                                        {{ 'manage_volunteers.columns.never_updated'|trans }}
-                                    {% endif %}
+                                {% if volunteer.lastPegassUpdate and volunteer.lastPegassUpdate|date('Y') != 2000 %}
+                                    {{ 'manage_volunteers.columns.update'|trans({'%date%': volunteer.lastPegassUpdate|date('d/m/Y')}) }}
+                                {% else %}
+                                    {{ 'manage_volunteers.columns.never_updated'|trans }}
                                 {% endif %}
                             </div>
                         </div>
@@ -107,7 +105,7 @@
                                     {% if not volunteer.locked %}
 
                                         {# Pegass update #}
-                                        {% if is_redcross and volunteer.canForcePegassUpdate %}
+                                        {% if volunteer.canForcePegassUpdate %}
                                             <a class="dropdown-item" href="{{ path('management_volunteers_pegass_update', app.request.query.all|merge({id: volunteer.id, csrf: csrf_token('volunteers')})) }}" onclick="$(this).addClass('disabled');">
                                                 {{ 'manage_volunteers.action.pegass_update'|trans }}
                                             </a>

@@ -117,10 +117,6 @@ class StructuresController extends BaseController
     {
         $this->validateCsrfOrThrowNotFoundException('structures', $csrf);
 
-        if (!getenv('IS_REDCROSS')) {
-            throw $this->createNotFoundException();
-        }
-
         if (!$structure->canForcePegassUpdate()) {
             return $this->redirectToRoute('management_structures_list', $request->query->all());
         }
@@ -148,10 +144,6 @@ class StructuresController extends BaseController
      */
     public function pegass(Structure $structure, Request $request)
     {
-        if (!getenv('IS_REDCROSS')) {
-            throw $this->createNotFoundException();
-        }
-
         $entity = $this->pegassManager->getEntity(Pegass::TYPE_STRUCTURE, $structure->getIdentifier(), false);
         if (!$entity) {
             throw $this->createNotFoundException();
