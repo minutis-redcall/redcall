@@ -32,7 +32,7 @@
         <div id="audience-filters" class="audience-filters collapse show">
             <div class="card card-body">
 
-                <div class="{{ structures|length <= 1 ? 'd-none' : '' }}">
+                <div id="audience-tree" class="{{ structures|length <= 1 ? 'd-none' : '' }}">
                     <div class="h4">{{ 'audience.structures'|trans }}</div>
 
                     {# Toggle all structures #}
@@ -44,37 +44,93 @@
                         <label></label>
                     </div>
 
-                    {# Rendering all structure ticks #}
-                    {% for child in form.structures %}
+                    {# All structure ticks, in the tree view #}
+                    {% macro renderSlider(structure, volunteer_counts, parents = []) %}
 
+                        {# Slider header #}
                         <div>
                             <label class="switch">
-                                <input type="checkbox"
-                                       class="structure structure-{{ child.vars.value }}"
-                                       id="{{ child.vars.id }}"
-                                       name="{{ child.vars.full_name }}"
-                                       value="{{ child.vars.value }}"
-
-                                        {# Structures are hidden when there is only 1 to trigger #}
-                                        {% if form.structures|length <= 1
-                                            or (
-                                            form.structures.vars.data
-                                            and structures[child.vars.value] in form.structures.vars.data
-                                            ) %}checked{% endif %}
-
-                                        {# Adding tag counts to propery fill them up in the tags filter #}
-                                        {% for tagId, count in tag_counts[child.vars.value]|default([]) %}
-                                            data-tag-count-{{ tagId }}="{{ count }}"
-                                        {% endfor %}
-                                >
+                                <input id="parent-structure-{{ structure.id }}"
+                                       type="checkbox"
+                                       class="global-structure-toggle {% for parent in parents %}child-of-{{ parent }} {% endfor %}"
+                                       data-parents="{{ parents|join(' ') }}"
+                                       data-structure-id="{{ structure.id }}" />
                                 <span class="slider"></span>
                             </label>
-                            <label for="{{ child.vars.id }}">
-                                {{ child.vars.label }} ({{ volunteer_counts[child.vars.name]|default(0) }})
-                            </label>
+                            <a data-toggle="collapse" href="#audience-structure-{{ structure.id }}">
+                                <label for="parent-structure-{{ structure.id }}">
+                                    {{ structure.name }} ({{ volunteer_counts[structure.id].global|default(0) }})
+                                </label>
+                            </a>
                         </div>
 
+                        {# Slider body #}
+                        <div id="audience-structure-{{ structure.id }}" class="collapse">
+                            <div class="card card-body">
+                                <div>
+                                    <label class="switch">
+                                        <input id="children-structure-{{ structure.id }}"
+                                               type="checkbox"
+                                               class="local-structure-toggle {% for parent in parents %}child-of-{{ parent }} {% endfor %}"
+                                               data-parents="{{ parents|join(' ') }}"
+                                               data-structure-id="{{ structure.id }}"/>
+                                        <span class="slider"></span>
+                                    </label>
+                                    <label for="children-structure-{{ structure.id }}">
+                                        {{ structure.name }} ({{ volunteer_counts[structure.id].local|default(0) }})
+                                    </label>
+                                </div>
+
+                                {% for children in structure.childrenStructures %}
+                                    {% if children.children %}
+                                        {{  _self.renderSlider(children, volunteer_counts, parents|merge([children.id])) }}
+                                    {% else %}
+                                        <div>
+                                            <label class="switch">
+                                                <input id="children-structure-{{ children.id }}"
+                                                       type="checkbox"
+                                                       class="local-structure-toggle child-of-{{ structure.id }} {% for parent in parents %}child-of-{{ parent }} {% endfor %}"
+                                                       data-parents="{{ parents|join(' ') }}"
+                                                       data-structure-id="{{ children.id }}"/>
+                                                <span class="slider"></span>
+                                            </label>
+                                            <label for="children-structure-{{ children.id }}">
+                                                {{ children.name }} ({{ volunteer_counts[children.id].local|default(0) }})
+                                            </label>
+                                        </div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </div>
+                    {% endmacro %}
+
+                    {% for structure in root_structures %}
+                        {{ _self.renderSlider(structure, volunteer_counts, [structure.id]) }}
                     {% endfor %}
+
+                    {# All structure ticks, without the tree view #}
+                    <div class="d-none">
+                        {% for child in form.structures %}
+                            <input type="checkbox"
+                                   class="structure structure-{{ child.vars.value }}"
+                                   id="{{ child.vars.id }}"
+                                   name="{{ child.vars.full_name }}"
+                                   value="{{ child.vars.value }}"
+
+                                    {# Structures are hidden when there is only 1 to trigger #}
+                                    {% if form.structures|length <= 1
+                                        or (
+                                        form.structures.vars.data
+                                        and structures[child.vars.value] in form.structures.vars.data
+                                        ) %}checked{% endif %}
+
+                                    {# Adding tag counts to propery fill them up in the tags filter #}
+                                    {% for tagId, count in tag_counts[child.vars.value]|default([]) %}
+                                        data-tag-count-{{ tagId }}="{{ count }}"
+                                    {% endfor %}
+                            >
+                        {% endfor %}
+                    </div>
 
                 </div>
 
@@ -166,6 +222,28 @@
                 ticks.prop('checked', that.is(':checked'));
             });
 
+            {# Toggle globally a parent structure #}
+            $('#{{ form.vars.id }} .global-structure-toggle').click(function() {
+                var rootStructure = $(this);
+                var rootStructureId = rootStructure.data('structure-id');
+                $('.child-of-' + rootStructureId).each(function() {
+                    var structure = $(this);
+                    var structureId = structure.data('structure-id');
+                    structure.prop('checked', rootStructure.is(':checked'));
+                    $('.structure-' + structureId).prop('checked', rootStructure.is(':checked'));
+
+                    if (structure !== rootStructure && structure.hasClass('global-structure-toggle')) {
+                        structure.collapse();
+                        $('#audience-structure-' + structureId).collapse();
+                    }
+                });
+            });
+
+            {# Toggle a structure #}
+            $('#{{ form.vars.id }} .local-structure-toggle').click(function() {
+                $('.structure-' + $(this).data('structure-id')).click();
+            });
+
             {# Refreshing counts by tags according to structures selection #}
             var refreshTagCountsByTickedStructures = function() {
                 var structures = $('#{{ form.vars.id }}').find('input[type=checkbox].structure');
@@ -201,6 +279,25 @@
             };
             refreshStructureCards();
 
+            // When creating a new communication with selected volunteers, we should
+            // report ticked structures into the structure tree
+            var refreshTreeTicks = function () {
+                $('#{{ form.vars.id }} .structure').each(function () {
+                    var that = $(this);
+                    var structureId = that.val();
+                    var child = $('#children-structure-' + structureId);
+
+                    if (that.is(':checked')) {
+                        child.prop('checked', true);
+
+                        $.each((child.data('parents') + '').split(' '), function(index, parentId) {
+                            $('#audience-structure-' + parentId).collapse();
+                        });
+                    }
+                });
+            };
+            refreshTreeTicks();
+
             {# Clearing everything #}
             var clearAllSelection = function() {
                 $('#{{ form.vars.id }} .toggle-all-tags').prop('checked', false);
@@ -214,7 +311,7 @@
             };
 
             {# Actions made when ticking / unticking a structure #}
-            $('#{{ form.vars.id }} .toggle-all-structures, #{{ form.vars.id }} .structure').click(function() {
+            $('#{{ form.vars.id }} .toggle-all-structures, #{{ form.vars.id }} .structure, #{{ form.vars.id }} .global-structure-toggle').click(function() {
                 refreshTagCountsByTickedStructures();
                 refreshStructureCards();
                 clearAllSelection();

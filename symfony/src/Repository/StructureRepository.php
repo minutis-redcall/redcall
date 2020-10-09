@@ -146,10 +146,10 @@ class StructureRepository extends BaseRepository
     public function getVolunteerCountByStructuresForUser(User $user): array
     {
         $rows = $this->createQueryBuilder('s')
-            ->select('s.id as structure_id, COUNT(DISTINCT v.id) as count')
+            ->select('s.id as structure_id, p.id as parent_id, COUNT(DISTINCT v.id) as count')
             ->join('s.users', 'u')
             ->join('s.volunteers', 'v')
-            ->join('v.tags', 't')
+            ->leftJoin('s.parentStructure', 'p')
             ->where('u.id = :id')
             ->andWhere('v.enabled = true')
             ->andWhere('s.enabled = true')
@@ -160,7 +160,18 @@ class StructureRepository extends BaseRepository
 
         $counts = [];
         foreach ($rows as $row) {
-            $counts[$row['structure_id']] = $row['count'];
+            $counts[$row['structure_id']]['local'] = $row['count'];
+            if (!isset($counts[$row['structure_id']]['global'])) {
+                $counts[$row['structure_id']]['global'] = 0;
+            }
+            $counts[$row['structure_id']]['global'] += $row['count'];
+
+            if ($row['parent_id']) {
+                if (!isset($counts[$row['parent_id']]['global'])) {
+                    $counts[$row['parent_id']]['global'] = 0;
+                }
+                $counts[$row['parent_id']]['global'] += $row['count'];
+            }
         }
 
         return $counts;
