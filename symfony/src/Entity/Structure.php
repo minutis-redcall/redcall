@@ -242,6 +242,18 @@ class Structure
     }
 
     /**
+     * @return Structure[]
+     */
+    public function getAncestors() : array
+    {
+        if (!$this->parentStructure) {
+            return [];
+        }
+
+        return array_merge([$this->parentStructure], $this->parentStructure->getAncestors());
+    }
+
+    /**
      * @return Collection|self[]
      */
     public function getChildrenStructures() : Collection
@@ -280,6 +292,11 @@ class Structure
         }
 
         return $this;
+    }
+
+    public function hasChildren() : bool
+    {
+        return (bool) $this->childrenStructures->count();
     }
 
     /**

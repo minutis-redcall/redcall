@@ -137,13 +137,13 @@ class AudienceType extends AbstractType
     public function buildView(FormView $view, FormInterface $form, array $options)
     {
         $structures = [];
-        $rows = $this->userManager->getCurrentUserStructures();
-        foreach ($rows as $structure) {
+        foreach ($this->userManager->getCurrentUserStructures() as $structure) {
             /** @var Structure $structure */
             $structures[$structure->getId()] = $structure;
         }
 
         $view->vars['structures'] = $structures;
+        $view->vars['root_structures'] = $this->userManager->findForCurrentUser()->getRootStructures();
         $view->vars['volunteer_counts'] = $this->structureManager->getVolunteerCountByStructuresForCurrentUser();
         $view->vars['tag_counts'] = $this->structureManager->getTagCountByStructuresForCurrentUser();
     }

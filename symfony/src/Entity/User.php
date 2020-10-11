@@ -136,6 +136,30 @@ class User extends AbstractUser
         }
     }
 
+    /**
+     * @return Structure[]
+     */
+    public function getRootStructures() : array
+    {
+        $roots = [];
+        foreach ($this->structures as $structure) {
+            /** @var Structure $structure*/
+            if (!$structure->getParentStructure()) {
+                $roots[] = $structure;
+                continue ;
+            }
+
+            // Structure disappear if any of its ancestor is in the list
+            foreach ($structure->getAncestors() as $ancestor) {
+                if (!$this->structures->contains($ancestor)) {
+                    $roots[] = $structure;
+                }
+            }
+        }
+
+        return $roots;
+    }
+
     public function computeStructureList()
     {
         return $this->structures;
