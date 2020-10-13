@@ -315,6 +315,7 @@ prefilled_answers:
     answers: 'Responses to crate'
 
 manage_volunteers:
+  access_denied: 'Cannot edit this volunteer details, (s)he does not belong to any structure you are managing.'
   title: 'Manage volunteers'
   others: 'and %count% other(s)'
   search:

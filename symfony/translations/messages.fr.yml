@@ -314,6 +314,7 @@ prefilled_answers:
     answers: 'Réponses à créer'
 
 manage_volunteers:
+  access_denied: 'Vous ne pouvez pas ouvrir le profil d''un(e) bénévole ne faisant pas partie des structures que vous pouvez déclencher.'
   title: 'Gestion des bénévoles'
   others: 'et %count% autre(s)'
   search:

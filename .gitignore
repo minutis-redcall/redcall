@@ -24,3 +24,6 @@ archives.txt
 TestCommand.php
 
 /gcp/cloudFunctions/twilioWebhooks/node_modules/
+
+.php_cs.cache
+
