@@ -45,23 +45,13 @@ class MaintenanceManager
         $this->settingManager   = $settingManager;
     }
 
-    public function refreshAll(): bool
+    public function refreshAll()
     {
-        if (!$this->canRefresh()) {
-            return false;
-        }
-
         $this->refresh(true);
-
-        return true;
     }
 
-    public function refresh($force = false): bool
+    public function refresh($force = false)
     {
-        if (!$this->canRefresh()) {
-            return false;
-        }
-
         $force = $force ? '--force' : '';
 
         $this->settingManager->set(Settings::MAINTENANCE_LAST_REFRESH, time());
@@ -70,15 +60,5 @@ class MaintenanceManager
         $console = sprintf('%s/../bin/console', $this->kernel->getRootDir());
         $command = sprintf('%s refresh %s', escapeshellarg($console), $force);
         exec(sprintf('%s > /dev/null 2>&1 & echo -n \$!', $command));
-
-        return true;
-    }
-
-    /**
-     * @return bool
-     */
-    private function canRefresh(): bool
-    {
-        return time() - $this->settingManager->get(Settings::MAINTENANCE_LAST_REFRESH, 0) > 3600;
     }
 }
