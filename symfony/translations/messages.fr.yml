@@ -77,6 +77,7 @@ tag:
   drvr_vl: Chauf. VL
   drvr_vpsp: Chauf. VPSP
   ci: Chef Int.
+  tcau: TCAU
   shortcuts:
     emergency_assistance: US
     social_assistance: AS
@@ -86,6 +87,7 @@ tag:
     drvr_vl: VL
     drvr_vpsp: VPSP
     ci: CI
+    tcau: TCAU
 
 minutis:
   back: Retourner sur Minutis

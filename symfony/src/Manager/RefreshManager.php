@@ -58,14 +58,19 @@ class RefreshManager
      */
     private $logger;
 
-    public function __construct(PegassManager $pegassManager, StructureManager $structureManager, VolunteerManager $volunteerManager, TagManager $tagManager, UserManager $userManager, LoggerInterface $logger = null)
+    public function __construct(PegassManager $pegassManager,
+        StructureManager $structureManager,
+        VolunteerManager $volunteerManager,
+        TagManager $tagManager,
+        UserManager $userManager,
+        LoggerInterface $logger = null)
     {
-        $this->pegassManager = $pegassManager;
+        $this->pegassManager    = $pegassManager;
         $this->structureManager = $structureManager;
         $this->volunteerManager = $volunteerManager;
-        $this->tagManager = $tagManager;
-        $this->userManager = $userManager;
-        $this->logger = $logger ?: new NullLogger();
+        $this->tagManager       = $tagManager;
+        $this->userManager      = $userManager;
+        $this->logger           = $logger ?: new NullLogger();
     }
 
     public function refresh(bool $force)
@@ -193,6 +198,18 @@ class RefreshManager
                     $structureIdsVolunteerBelongsTo[] = $structure->getId();
                 }
                 $identifiers[] = $action['structure']['id'];
+            }
+        }
+
+        if ($force) {
+            // TCAU integration should bypass lock
+            $skills = $this->fetchSkills($pegass);
+            foreach ($skills as $skill) {
+                if (Tag::TAG_TCAU === $skill) {
+                    $volunteer->addTag(
+                        $this->tagManager->findOneByLabel($skill)
+                    );
+                }
             }
         }
 
@@ -337,7 +354,7 @@ class RefreshManager
         // Filter out keys that are not emails
         $contact = array_filter($contact, function ($data) use ($emailKeys) {
             return in_array($data['moyenComId'] ?? [], $emailKeys)
-                && preg_match('/^.+\@.+\..+$/', $data['libelle'] ?? false);
+                   && preg_match('/^.+\@.+\..+$/', $data['libelle'] ?? false);
         });
 
         // If volunteer has a favorite email, we return it
@@ -398,7 +415,7 @@ class RefreshManager
             }
         }
 
-        // PSC1, PSE1, PSE2, CI
+        // PSC1, PSE1, PSE2, CI, TCAU
         foreach ($pegass->evaluate('trainings') as $training) {
             // Check skill expiration (expiration date + 6 months)
             if (isset($training['dateRecyclage']) && preg_match('/^\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}$/', $training['dateRecyclage'])) {
@@ -422,6 +439,10 @@ class RefreshManager
 
             if (in_array($training['formation']['code'] ?? false, ['RECPSC1', 'PSC1'])) {
                 $skills[] = Tag::TAG_PSC_1;
+            }
+
+            if (in_array($training['formation']['code'] ?? false, ['TCAU'])) {
+                $skills[] = Tag::TAG_TCAU;
             }
         }
 

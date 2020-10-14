@@ -18,6 +18,7 @@ class Tag
     const TAG_CI                   = 'ci';
     const TAG_DRVR_VL              = 'drvr_vl';
     const TAG_DRVR_VPSP            = 'drvr_vpsp';
+    const TAG_TCAU                 = 'tcau';
 
     const TAGS = [
         self::TAG_SOCIAL_ASSISTANCE,
@@ -36,9 +37,10 @@ class Tag
         self::TAG_PSC_1,
         self::TAG_PSE_1,
         self::TAG_PSE_2,
+        self::TAG_CI,
+        self::TAG_TCAU,
         self::TAG_DRVR_VL,
         self::TAG_DRVR_VPSP,
-        self::TAG_CI,
     ];
 
     const HIERARCHY = [
