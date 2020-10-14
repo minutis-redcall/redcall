@@ -75,7 +75,7 @@ class RefreshManager
 
     public function refresh(bool $force)
     {
-        $this->refreshStructures($force);
+        //$this->refreshStructures($force);
         $this->refreshVolunteers($force);
     }
 

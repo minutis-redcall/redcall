@@ -61,13 +61,17 @@ class MaintenanceController extends BaseController
      * @param PegassManager       $pegassManager
      * @param TranslatorInterface $translator
      */
-    public function __construct(MaintenanceManager $maintenanceManager, SettingManager $settingManager, VolunteerManager $volunteerManager, PegassManager $pegassManager, TranslatorInterface $translator)
+    public function __construct(MaintenanceManager $maintenanceManager,
+        SettingManager $settingManager,
+        VolunteerManager $volunteerManager,
+        PegassManager $pegassManager,
+        TranslatorInterface $translator)
     {
         $this->maintenanceManager = $maintenanceManager;
-        $this->settingManager = $settingManager;
-        $this->volunteerManager = $volunteerManager;
-        $this->pegassManager = $pegassManager;
-        $this->translator = $translator;
+        $this->settingManager     = $settingManager;
+        $this->volunteerManager   = $volunteerManager;
+        $this->pegassManager      = $pegassManager;
+        $this->translator         = $translator;
     }
 
     /**
@@ -83,11 +87,9 @@ class MaintenanceController extends BaseController
      */
     public function refresh()
     {
-        if ($this->maintenanceManager->refresh()) {
-            $this->success('maintenance.refresh_started');
-        } else {
-            $this->alert('maintenance.refresh_error');
-        }
+        $this->maintenanceManager->refresh();
+
+        $this->success('maintenance.refresh_started');
 
         return $this->redirectToRoute('admin_maintenance_index');
     }
@@ -97,11 +99,9 @@ class MaintenanceController extends BaseController
      */
     public function refreshAll()
     {
-        if ($this->maintenanceManager->refreshAll()) {
-            $this->success('maintenance.refresh_started');
-        } else {
-            $this->alert('maintenance.refresh_error');
-        }
+        $this->maintenanceManager->refreshAll();
+
+        $this->success('maintenance.refresh_started');
 
         return $this->redirectToRoute('admin_maintenance_index');
     }
@@ -131,7 +131,7 @@ class MaintenanceController extends BaseController
      */
     public function searchChangeExpression(Request $request)
     {
-        $entity = $this->getPegassEntity($request);
+        $entity     = $this->getPegassEntity($request);
         $expression = $this->createSearchForm($request)->get('expression')->getData();
 
         try {
@@ -139,57 +139,20 @@ class MaintenanceController extends BaseController
                 return new JsonResponse([
                     'content' => $this->translator->trans('maintenance.search.match', [
                         '%data%' => json_encode($data),
-                    ])
+                    ]),
                 ]);
             } else {
                 return new JsonResponse([
-                    'content' => $this->translator->trans('maintenance.search.notmatch')
+                    'content' => $this->translator->trans('maintenance.search.notmatch'),
                 ]);
             }
         } catch (\Exception $e) {
             return new JsonResponse([
                 'content' => $this->translator->trans('maintenance.search.invalid', [
                     '%error%' => $e->getMessage(),
-                ])
+                ]),
             ]);
         }
-    }
-
-    private function getPegassEntity(Request $request): Pegass
-    {
-        $nivol = $this->createSearchForm($request)->get('nivol')->getData();
-        if (!$nivol) {
-            return new Response('', Response::HTTP_BAD_REQUEST);
-        }
-
-        $volunteer = $this->volunteerManager->findOneByNivol($nivol);
-        if (!$volunteer) {
-            throw $this->createNotFoundException();
-        }
-
-        $entity = $this->pegassManager->getEntity(Pegass::TYPE_VOLUNTEER, $volunteer->getIdentifier());
-        if (!$entity) {
-            throw $this->createNotFoundException();
-        }
-
-        return $entity;
-    }
-
-    private function createSearchForm(Request $request)
-    {
-        return $this->createFormBuilder()
-            ->add('nivol', VolunteerWidgetType::class, [
-                'label' => 'maintenance.search.nivol',
-            ])
-            ->add('expression', TextareaType::class, [
-                'label' => 'maintenance.search.expression',
-                'attr' => [
-                    'rows' => '10',
-                    'placeholder' => '/volunteer/nominations/libelleCourt[text()="DLUS"]',
-                ],
-            ])
-            ->getForm()
-            ->handleRequest($request);
     }
 
     /**
@@ -254,5 +217,42 @@ class MaintenanceController extends BaseController
         return $this->render('admin/maintenance/message.html.twig', [
             'form' => $form->createView(),
         ]);
+    }
+
+    private function getPegassEntity(Request $request): Pegass
+    {
+        $nivol = $this->createSearchForm($request)->get('nivol')->getData();
+        if (!$nivol) {
+            return new Response('', Response::HTTP_BAD_REQUEST);
+        }
+
+        $volunteer = $this->volunteerManager->findOneByNivol($nivol);
+        if (!$volunteer) {
+            throw $this->createNotFoundException();
+        }
+
+        $entity = $this->pegassManager->getEntity(Pegass::TYPE_VOLUNTEER, $volunteer->getIdentifier());
+        if (!$entity) {
+            throw $this->createNotFoundException();
+        }
+
+        return $entity;
+    }
+
+    private function createSearchForm(Request $request)
+    {
+        return $this->createFormBuilder()
+                    ->add('nivol', VolunteerWidgetType::class, [
+                        'label' => 'maintenance.search.nivol',
+                    ])
+                    ->add('expression', TextareaType::class, [
+                        'label' => 'maintenance.search.expression',
+                        'attr'  => [
+                            'rows'        => '10',
+                            'placeholder' => '/volunteer/nominations/libelleCourt[text()="DLUS"]',
+                        ],
+                    ])
+                    ->getForm()
+                    ->handleRequest($request);
     }
 }
