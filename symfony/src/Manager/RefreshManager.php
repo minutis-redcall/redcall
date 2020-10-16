@@ -9,6 +9,7 @@ use App\Tools\PhoneNumberParser;
 use Bundles\PegassCrawlerBundle\Entity\Pegass;
 use Bundles\PegassCrawlerBundle\Manager\PegassManager;
 use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 
 /**
  * Refreshes Redcall database based on Pegass cache
@@ -75,7 +76,7 @@ class RefreshManager
 
     public function refresh(bool $force)
     {
-        //$this->refreshStructures($force);
+        $this->refreshStructures($force);
         $this->refreshVolunteers($force);
     }
 
