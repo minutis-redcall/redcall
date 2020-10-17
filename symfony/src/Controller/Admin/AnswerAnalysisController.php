@@ -37,12 +37,12 @@ class AnswerAnalysisController extends BaseController
         $queryBuilder = null;
         if ($form->isSubmitted() && $form->isValid()) {
             $queryBuilder = $this->answerManager->getSearchQueryBuilder(
-                $form->get('criteria')->getData()
+                $form->get('criteria')->getData() ?? ''
             );
         }
 
         return [
-            'form' => $form->createView(),
+            'form'  => $form->createView(),
             'pager' => $queryBuilder ? $this->getPager($queryBuilder) : null,
         ];
     }
@@ -50,19 +50,19 @@ class AnswerAnalysisController extends BaseController
     private function createSearchForm(Request $request): FormInterface
     {
         return $this->createFormBuilder()
-            ->setMethod('GET')
-            ->add('criteria', TextType::class, [
-                'label'    => 'admin.answer_analysis.search.label',
-                'required' => false,
-                'data' => 'parti quit vir plus stop crf croix retir'
-            ])
-            ->add('submit', SubmitType::class, [
-                'label' => 'admin.answer_analysis.search.button',
-                'attr' => [
-                    'class' => 'btn btn-secondary',
-                ],
-            ])
-            ->getForm()
-            ->handleRequest($request);
+                    ->setMethod('GET')
+                    ->add('criteria', TextType::class, [
+                        'label'    => 'admin.answer_analysis.search.label',
+                        'required' => false,
+                        'data'     => 'parti quit vir plus stop crf croix retir',
+                    ])
+                    ->add('submit', SubmitType::class, [
+                        'label' => 'admin.answer_analysis.search.button',
+                        'attr'  => [
+                            'class' => 'btn btn-secondary',
+                        ],
+                    ])
+                    ->getForm()
+                    ->handleRequest($request);
     }
 }
