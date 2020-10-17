@@ -22,7 +22,7 @@ class CsrfExceptionListener
 
     public function __construct(Environment $twig, string $homeRoute)
     {
-        $this->twig = $twig;
+        $this->twig      = $twig;
         $this->homeRoute = $homeRoute;
     }
 

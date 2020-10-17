@@ -32,7 +32,7 @@ class TaskController extends BaseController
     public function __construct(MessageManager $messageManager, Sender $sender)
     {
         $this->messageManager = $messageManager;
-        $this->sender = $sender;
+        $this->sender         = $sender;
     }
 
     /**
@@ -69,7 +69,6 @@ class TaskController extends BaseController
         ]);
 
         $data = json_decode($request->getContent(), true);
-
 
         // create($uri,
         // $method = 'GET',

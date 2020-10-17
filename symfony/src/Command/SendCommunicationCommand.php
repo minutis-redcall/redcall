@@ -26,7 +26,7 @@ class SendCommunicationCommand extends BaseCommand
     {
         parent::__construct();
         $this->communicationManager = $communicationManager;
-        $this->sender = $sender;
+        $this->sender               = $sender;
     }
 
     protected function configure()
@@ -43,7 +43,7 @@ class SendCommunicationCommand extends BaseCommand
         date_default_timezone_set('Europe/Paris');
 
         $communicationId = $input->getArgument('communication-id');
-        $communication = $this->communicationManager->find($communicationId);
+        $communication   = $this->communicationManager->find($communicationId);
         if (!$communication) {
             $output->writeln(sprintf('<error>Communication "%d" not found.</error>', $communicationId));
 

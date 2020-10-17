@@ -24,16 +24,18 @@ class StatisticsManager
     public function __construct(StatisticsRepository $statisticsRepository, CampaignManager $campaignManager)
     {
         $this->statisticsRepository = $statisticsRepository;
-        $this->campaignManager = $campaignManager;
+        $this->campaignManager      = $campaignManager;
     }
 
     /**
      * Returns all statistics for the dashboard
-     * If structure is filled, all stats returned will be filter by the structure. Otherwise the statistics will be global
+     * If structure is filled, all stats returned will be filter by the structure. Otherwise the statistics will be
+     * global
      *
-     * @param \DateTime $from
-     * @param \DateTime $to
+     * @param \DateTime      $from
+     * @param \DateTime      $to
      * @param Structure|null $structure
+     *
      * @return array
      * @throws \Doctrine\ORM\NoResultException
      * @throws \Doctrine\ORM\NonUniqueResultException
@@ -43,7 +45,7 @@ class StatisticsManager
         $statistics = [];
 
         //Campaign section
-        $statistics['openCampaigns'] = $this->campaignManager->countAllOpenCampaigns();
+        $statistics['openCampaigns']   = $this->campaignManager->countAllOpenCampaigns();
         $statistics['campaignsPeriod'] = $this->statisticsRepository->getNumberOfCampaigns($from, $to);
 
         //Messages section
@@ -52,10 +54,9 @@ class StatisticsManager
         $totalCount = 0;
         foreach ($countMessages as $countByType) {
             $statistics['messagesSent']['types'][$countByType['type']] = $countByType['count'];
-            $totalCount += $countByType['count'];
+            $totalCount                                                += $countByType['count'];
         }
         $statistics['messagesSent']['totalCount'] = $totalCount;
-
 
         $statistics['triggeredVolounteers'] = $this->statisticsRepository->getNumberOfTriggeredVolounteers($from, $to)['volounteers'];
 
@@ -67,32 +68,32 @@ class StatisticsManager
             // TODO Wrong, currencies are mixed
             $totalCost = 0;
             foreach ($costsByDirection as $cost) {
-                $totalCost += abs($cost['cost']);
+                $totalCost                                        += abs($cost['cost']);
                 $statistics['costs']['types'][$cost['direction']] = abs($cost['cost']);
             }
-            $statistics['costs']['total'] = $totalCost;
+            $statistics['costs']['total']    = $totalCost;
             $statistics['costs']['currency'] = $costsByDirection[0]['currency'];
         }
 
         //Volunteers Section
-        $volunteersStats = $this->statisticsRepository->getEmailAndPhoneNumberMissings();
-        $array = [
+        $volunteersStats          = $this->statisticsRepository->getEmailAndPhoneNumberMissings();
+        $array                    = [
             'total' => [
-                'number' => $volunteersStats['one_is_null'],
-                'percent' => $volunteersStats['one_is_null'] / $volunteersStats['total'] * 100
+                'number'  => $volunteersStats['one_is_null'],
+                'percent' => $volunteersStats['one_is_null'] / $volunteersStats['total'] * 100,
             ],
             'email' => [
-                'number' => $volunteersStats['email_null'],
-                'percent' => $volunteersStats['email_null'] / $volunteersStats['total'] * 100
+                'number'  => $volunteersStats['email_null'],
+                'percent' => $volunteersStats['email_null'] / $volunteersStats['total'] * 100,
             ],
             'phone' => [
-                'number' => $volunteersStats['phone_null'],
-                'percent' => $volunteersStats['phone_null'] / $volunteersStats['total'] * 100
+                'number'  => $volunteersStats['phone_null'],
+                'percent' => $volunteersStats['phone_null'] / $volunteersStats['total'] * 100,
             ],
-            'both' => [
-                'number' => $volunteersStats['both_null'],
-                'percent' => $volunteersStats['both_null'] / $volunteersStats['total'] * 100
-            ]
+            'both'  => [
+                'number'  => $volunteersStats['both_null'],
+                'percent' => $volunteersStats['both_null'] / $volunteersStats['total'] * 100,
+            ],
         ];
         $statistics['volunteers'] = $array;
 

@@ -15,17 +15,15 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  */
 class GenerateMjmlCommand extends Command
 {
+    protected static $defaultName = 'generate:mjml';
     /**
      * @var Mjml
      */
     private $mjmlClient;
-
     /**
      * @var SymfonyStyle
      */
     private $io;
-
-    protected static $defaultName = 'generate:mjml';
 
     /**
      * @param Mjml $mjmlClient
@@ -41,8 +39,7 @@ class GenerateMjmlCommand extends Command
     {
         $this
             ->setDescription('Generate the HTML template from an MJML file if it has changed')
-            ->addArgument('path', InputArgument::REQUIRED, 'Path to the MJML file')
-        ;
+            ->addArgument('path', InputArgument::REQUIRED, 'Path to the MJML file');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -57,6 +54,7 @@ class GenerateMjmlCommand extends Command
         $olderHash = $this->getOlderHash($mjmlPath);
         if ($currentHash === $olderHash) {
             $this->io->comment(sprintf('%s is already up to date', $mjmlPath));
+
             return 0;
         }
 
@@ -77,7 +75,7 @@ class GenerateMjmlCommand extends Command
         return 0;
     }
 
-    private function getCurrentHash(string $mjmlPath) : ?string
+    private function getCurrentHash(string $mjmlPath): ?string
     {
         if (!file_exists($mjmlPath) || !is_readable($mjmlPath)) {
             $this->io->error(sprintf('File %s not found or not readable', $mjmlPath));
@@ -92,7 +90,7 @@ class GenerateMjmlCommand extends Command
         return $currentHash;
     }
 
-    private function getOlderHash(string $mjmlPath) : ?string
+    private function getOlderHash(string $mjmlPath): ?string
     {
         $hashPath = sprintf('%s.sha1', $mjmlPath);
         if (!is_file($hashPath) || !is_readable($hashPath)) {

@@ -197,10 +197,10 @@ class Volunteer
 
     public function __construct()
     {
-        $this->tags       = new ArrayCollection();
-        $this->structures = new ArrayCollection();
+        $this->tags           = new ArrayCollection();
+        $this->structures     = new ArrayCollection();
         $this->communications = new ArrayCollection();
-        $this->messages = new ArrayCollection();
+        $this->messages       = new ArrayCollection();
     }
 
     /**
@@ -544,10 +544,10 @@ class Volunteer
     public function isCallable(): bool
     {
         return $this->enabled && (
-            $this->phoneNumber && $this->phoneNumberOptin
+                $this->phoneNumber && $this->phoneNumberOptin
                 ||
-            $this->email && $this->emailOptin
-        );
+                $this->email && $this->emailOptin
+            );
     }
 
     /**
@@ -555,8 +555,8 @@ class Volunteer
      */
     public function addReport(string $message)
     {
-        $report       = $this->getReport() ?? [];
-        $report[]     = $message;
+        $report   = $this->getReport() ?? [];
+        $report[] = $message;
         $this->setReport($report);
     }
 
@@ -565,7 +565,7 @@ class Volunteer
      */
     public function getStructures(): Collection
     {
-        return $this->structures->filter(function(Structure $structure) {
+        return $this->structures->filter(function (Structure $structure) {
             return $structure->isEnabled();
         });
     }
@@ -575,7 +575,7 @@ class Volunteer
      */
     public function getStructureIds(): array
     {
-        return array_map(function(Structure $structure) {
+        return array_map(function (Structure $structure) {
             return $structure->getId();
         }, $this->getStructures()->toArray());
     }
@@ -700,18 +700,6 @@ class Volunteer
     }
 
     /**
-     * @param string $name
-     *
-     * @return string
-     */
-    private function toName(string $name): string
-    {
-        return preg_replace_callback('/[^\\s\-]+/ui', function (array $match) {
-            return sprintf("%s%s", mb_strtoupper(mb_substr($match[0], 0, 1)), mb_strtolower(mb_substr($match[0], 1)));
-        }, $name);
-    }
-
-    /**
      * @return Collection|Communication[]
      */
     public function getCommunications(): Collection
@@ -742,7 +730,7 @@ class Volunteer
         return $this;
     }
 
-    public function getUser() : ?User
+    public function getUser(): ?User
     {
         return $this->user;
     }
@@ -778,7 +766,7 @@ class Volunteer
         return $this;
     }
 
-    public function shouldBeLocked(Volunteer $volunteer) : bool
+    public function shouldBeLocked(Volunteer $volunteer): bool
     {
         $old = get_object_vars($volunteer);
         $new = get_object_vars($this);
@@ -796,7 +784,7 @@ class Volunteer
         return false;
     }
 
-    public function getHiddenPhone() : ?string
+    public function getHiddenPhone(): ?string
     {
         if (null === $this->phoneNumber) {
             return null;
@@ -805,14 +793,14 @@ class Volunteer
         return sprintf('+%s****%s', substr($this->phoneNumber, 0, 6), substr($this->phoneNumber, 10));
     }
 
-    public function getHiddenEmail() : ?string
+    public function getHiddenEmail(): ?string
     {
         if (null === $this->email) {
             return null;
         }
 
         $username = substr($this->email, 0, strrpos($this->email, '@'));
-        $domain = substr($this->email, strrpos($this->email, '@') + 1);
+        $domain   = substr($this->email, strrpos($this->email, '@') + 1);
 
         return substr($username, 0, 1).str_repeat('*', max(strlen($username) - 2, 0)).substr($username, -1).'@'.$domain;
     }
@@ -855,8 +843,20 @@ class Volunteer
     {
         if ($this->user && !$this->enabled) {
             $context->buildViolation('form.volunteer.errors.redcall_user')
-                ->atPath('enabled')
-                ->addViolation();
+                    ->atPath('enabled')
+                    ->addViolation();
         }
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return string
+     */
+    private function toName(string $name): string
+    {
+        return preg_replace_callback('/[^\\s\-]+/ui', function (array $match) {
+            return sprintf("%s%s", mb_strtoupper(mb_substr($match[0], 0, 1)), mb_strtolower(mb_substr($match[0], 1)));
+        }, $name);
     }
 }

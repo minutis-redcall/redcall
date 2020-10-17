@@ -46,12 +46,15 @@ class StatusController extends BaseController
      * @param EventDispatcherInterface $eventDispatcher
      * @param LoggerInterface|null     $logger
      */
-    public function __construct(TwilioMessageManager $messageManager, TwilioStatusManager $statusManager, EventDispatcherInterface $eventDispatcher, LoggerInterface $logger = null)
+    public function __construct(TwilioMessageManager $messageManager,
+        TwilioStatusManager $statusManager,
+        EventDispatcherInterface $eventDispatcher,
+        LoggerInterface $logger = null)
     {
-        $this->messageManager = $messageManager;
-        $this->statusManager = $statusManager;
+        $this->messageManager  = $messageManager;
+        $this->statusManager   = $statusManager;
         $this->eventDispatcher = $eventDispatcher;
-        $this->logger = $logger ?? new NullLogger();
+        $this->logger          = $logger ?? new NullLogger();
     }
 
     /**
@@ -64,7 +67,7 @@ class StatusController extends BaseController
 
         $this->logger->info('Twilio webhooks - message delivery status', [
             'headers' => $request->headers->all(),
-            'query' => $request->query->all(),
+            'query'   => $request->query->all(),
             'request' => $request->request->all(),
         ]);
 

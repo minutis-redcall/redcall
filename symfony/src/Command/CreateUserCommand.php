@@ -27,7 +27,7 @@ class CreateUserCommand extends BaseCommand
     {
         parent::__construct();
 
-        $this->userManager = $userManager;
+        $this->userManager      = $userManager;
         $this->volunteerManager = $volunteerManager;
     }
 
@@ -39,8 +39,7 @@ class CreateUserCommand extends BaseCommand
         $this
             ->setName('user:create')
             ->setDescription('Create users based on volunteer nivols')
-            ->addArgument('nivol', InputArgument::REQUIRED|InputArgument::IS_ARRAY, 'Nivol from which to create a new user')
-        ;
+            ->addArgument('nivol', InputArgument::REQUIRED | InputArgument::IS_ARRAY, 'Nivol from which to create a new user');
     }
 
     /**

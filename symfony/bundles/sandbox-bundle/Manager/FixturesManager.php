@@ -45,12 +45,16 @@ class FixturesManager
      * @param UserManager      $userManager
      * @param AnonymizeManager $anonymizeManager
      */
-    public function __construct(StructureManager $structureManager, VolunteerManager $volunteerManager, TagManager $tagManager, UserManager $userManager, AnonymizeManager $anonymizeManager)
+    public function __construct(StructureManager $structureManager,
+        VolunteerManager $volunteerManager,
+        TagManager $tagManager,
+        UserManager $userManager,
+        AnonymizeManager $anonymizeManager)
     {
         $this->structureManager = $structureManager;
         $this->volunteerManager = $volunteerManager;
-        $this->tagManager = $tagManager;
-        $this->userManager = $userManager;
+        $this->tagManager       = $tagManager;
+        $this->userManager      = $userManager;
         $this->anonymizeManager = $anonymizeManager;
     }
 
@@ -131,7 +135,7 @@ class FixturesManager
      */
     private function createVolunteer(): Volunteer
     {
-        $nivol = $this->generateNivol();
+        $nivol   = $this->generateNivol();
         $allTags = $this->tagManager->findAll();
 
         $volunteer = new Volunteer();

@@ -14,7 +14,7 @@ class Communication
 {
     // TODO use an MyCLabs\Enum
     const TYPE_SMS   = 'sms';
-    const TYPE_CALL = 'call';
+    const TYPE_CALL  = 'call';
     const TYPE_EMAIL = 'email';
 
     /**
@@ -175,6 +175,18 @@ class Communication
         return $this->type;
     }
 
+    /**
+     * @param string $type
+     *
+     * @return $this
+     */
+    public function setType($type): self
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
     public function isSms(): bool
     {
         return self::TYPE_SMS === $this->type;
@@ -188,18 +200,6 @@ class Communication
     public function isEmail(): bool
     {
         return self::TYPE_EMAIL === $this->type;
-    }
-
-    /**
-     * @param string $type
-     *
-     * @return $this
-     */
-    public function setType($type): self
-    {
-        $this->type = $type;
-
-        return $this;
     }
 
     /**
@@ -230,6 +230,18 @@ class Communication
         return $this->body;
     }
 
+    /**
+     * @param string $body
+     *
+     * @return $this
+     */
+    public function setBody($body): self
+    {
+        $this->body = $body;
+
+        return $this;
+    }
+
     public function getLimitedBody(int $limit = 300): string
     {
         if (mb_strlen($this->body) > $limit) {
@@ -242,18 +254,6 @@ class Communication
     public function canExpandBody(): string
     {
         return $this->isEmail() || $this->body !== $this->getLimitedBody();
-    }
-
-    /**
-     * @param string $body
-     *
-     * @return $this
-     */
-    public function setBody($body): self
-    {
-        $this->body = $body;
-
-        return $this;
     }
 
     /**
@@ -538,7 +538,7 @@ class Communication
         return $estimated;
     }
 
-    public function getInvalidAnswersCount() : int
+    public function getInvalidAnswersCount(): int
     {
         $count = 0;
         foreach ($this->messages as $message) {
@@ -570,7 +570,7 @@ class Communication
      *
      * @return int
      */
-    public function countReachables() : int
+    public function countReachables(): int
     {
         $count = 0;
 
@@ -595,10 +595,10 @@ class Communication
         return $count;
     }
 
-    public function getProgression() : array
+    public function getProgression(): array
     {
         $msgsSent = 0;
-        $replies = 0;
+        $replies  = 0;
 
         foreach ($this->getMessages() as $message) {
             if ($message->isSent()) {
@@ -610,13 +610,13 @@ class Communication
         }
 
         return [
-            'sent'      => $msgsSent,
-            'total'     => $count = count($this->getMessages()),
-            'reachable' => $this->countReachables(),
-            'percent'   => $count ? round($msgsSent * 100 / $count, 2) : 0,
-            'replies'   => $replies,
+            'sent'            => $msgsSent,
+            'total'           => $count = count($this->getMessages()),
+            'reachable'       => $this->countReachables(),
+            'percent'         => $count ? round($msgsSent * 100 / $count, 2) : 0,
+            'replies'         => $replies,
             'replies-percent' => $msgsSent ? round($replies * 100 / $msgsSent, 2) : 0,
-            'type'      => $this->type,
+            'type'            => $this->type,
         ];
     }
 }

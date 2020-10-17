@@ -43,13 +43,17 @@ class VolunteerManager
      */
     private $translator;
 
-    public function __construct(VolunteerRepository $volunteerRepository, TagManager $tagManager, AnswerManager $answerManager, GeoLocationManager $geoLocationManager, TranslatorInterface $translator)
+    public function __construct(VolunteerRepository $volunteerRepository,
+        TagManager $tagManager,
+        AnswerManager $answerManager,
+        GeoLocationManager $geoLocationManager,
+        TranslatorInterface $translator)
     {
         $this->volunteerRepository = $volunteerRepository;
-        $this->tagManager = $tagManager;
-        $this->answerManager = $answerManager;
-        $this->geoLocationManager = $geoLocationManager;
-        $this->translator = $translator;
+        $this->tagManager          = $tagManager;
+        $this->answerManager       = $answerManager;
+        $this->geoLocationManager  = $geoLocationManager;
+        $this->translator          = $translator;
     }
 
     /**
@@ -197,11 +201,11 @@ class VolunteerManager
      */
     public function filterByNivolAndAccess(array $nivols): array
     {
-       $user = $this->userManager->findForCurrentUser();
+        $user = $this->userManager->findForCurrentUser();
 
-       if ($user->isAdmin()) {
-           return $this->volunteerRepository->filterByNivols($nivols);
-       }
+        if ($user->isAdmin()) {
+            return $this->volunteerRepository->filterByNivols($nivols);
+        }
 
         return $this->volunteerRepository->filterByNivolsAndAccess($nivols, $user);
     }
@@ -226,28 +230,28 @@ class VolunteerManager
     {
         $user = $this->userManager->findForCurrentUser();
 
-        $reachable = $this->volunteerRepository->filterReachableNivols($nivols, $user);
-        $invalid = $this->volunteerRepository->filterInvalidNivols($nivols);
-        $disabled = $this->volunteerRepository->filterDisabledNivols($nivols);
-        $noPhone = $this->volunteerRepository->filterNoPhoneNivols($nivols, $user);
-        $phoneOptout = $this->volunteerRepository->filterPhoneOptOutNivols($nivols, $user);
-        $noEmail = $this->volunteerRepository->filterNoEmailNivols($nivols, $user);
-        $emailOptout = $this->volunteerRepository->filterEmailOptOutNivols($nivols, $user);
+        $reachable    = $this->volunteerRepository->filterReachableNivols($nivols, $user);
+        $invalid      = $this->volunteerRepository->filterInvalidNivols($nivols);
+        $disabled     = $this->volunteerRepository->filterDisabledNivols($nivols);
+        $noPhone      = $this->volunteerRepository->filterNoPhoneNivols($nivols, $user);
+        $phoneOptout  = $this->volunteerRepository->filterPhoneOptOutNivols($nivols, $user);
+        $noEmail      = $this->volunteerRepository->filterNoEmailNivols($nivols, $user);
+        $emailOptout  = $this->volunteerRepository->filterEmailOptOutNivols($nivols, $user);
         $inaccessible = array_diff($nivols, $reachable, $invalid, $disabled, $noPhone, $phoneOptout, $noEmail, $emailOptout);
 
         if ($user->isAdmin()) {
-            $reachable = array_merge($reachable, $inaccessible);
+            $reachable    = array_merge($reachable, $inaccessible);
             $inaccessible = [];
         }
 
         return [
-            'reachable' => $reachable,
-            'invalid' => $invalid,
-            'disabled' => $disabled,
+            'reachable'    => $reachable,
+            'invalid'      => $invalid,
+            'disabled'     => $disabled,
             'inaccessible' => $inaccessible,
-            'no_phone' => $noPhone,
+            'no_phone'     => $noPhone,
             'phone_optout' => $phoneOptout,
-            'no_email' => $noEmail,
+            'no_email'     => $noEmail,
             'email_optout' => $emailOptout,
         ];
     }
@@ -271,7 +275,7 @@ class VolunteerManager
         return $this->volunteerRepository->searchVolunteerAudienceByTags($tags, $structure);
     }
 
-    public function organizeNivolsByStructures(array $structures, array $nivols) : array
+    public function organizeNivolsByStructures(array $structures, array $nivols): array
     {
         $organized = [];
 
@@ -288,33 +292,10 @@ class VolunteerManager
         }
 
         // All other nivols were set in the "nivol" field
-        $diff = call_user_func_array('array_diff', array_merge([$nivols], array_values($organized)));
+        $diff         = call_user_func_array('array_diff', array_merge([$nivols], array_values($organized)));
         $organized[0] = $diff;
 
         return $organized;
-    }
-
-    private function populateDatalist(array $rows) : array
-    {
-        $tags = $this->tagManager->findTagsForNivols(
-            array_unique(array_column($rows, 'nivol'))
-        );
-
-        $mapped = [];
-        foreach ($rows as $volunteer) {
-            $volunteer['tags'] = [];
-            $mapped[$volunteer['nivol']] = $volunteer;
-        }
-
-        foreach ($tags as $tag) {
-            $mapped[$tag['nivol']]['tags'][] = $this->translator->trans(sprintf('tag.shortcuts.%s', $tag['label']));
-        }
-
-        foreach ($mapped as $nivol => $volunteer) {
-            $mapped[$nivol]['tags'] = implode(', ', $volunteer['tags']);
-        }
-
-        return array_values($mapped);
     }
 
     public function anonymize(Volunteer $volunteer)
@@ -362,5 +343,28 @@ class VolunteerManager
         $volunteer->setEmailLocked(false);
 
         $this->save($volunteer);
+    }
+
+    private function populateDatalist(array $rows): array
+    {
+        $tags = $this->tagManager->findTagsForNivols(
+            array_unique(array_column($rows, 'nivol'))
+        );
+
+        $mapped = [];
+        foreach ($rows as $volunteer) {
+            $volunteer['tags']           = [];
+            $mapped[$volunteer['nivol']] = $volunteer;
+        }
+
+        foreach ($tags as $tag) {
+            $mapped[$tag['nivol']]['tags'][] = $this->translator->trans(sprintf('tag.shortcuts.%s', $tag['label']));
+        }
+
+        foreach ($mapped as $nivol => $volunteer) {
+            $mapped[$nivol]['tags'] = implode(', ', $volunteer['tags']);
+        }
+
+        return array_values($mapped);
     }
 }

@@ -86,6 +86,7 @@ class PrefilledAnswersController extends BaseController
         $this->validateCsrfOrThrowNotFoundException('prefilled_answers', $csrf);
 
         $this->prefilledAnswersManager->remove($prefilledAnswers);
+
         return $this->redirectToRoute('admin_prefilled_answers_list');
     }
 }

@@ -33,7 +33,7 @@ class IssuesController extends BaseController
     public function __construct(VolunteerManager $volunteerManager, ValidatorInterface $validator)
     {
         $this->volunteerManager = $volunteerManager;
-        $this->validator = $validator;
+        $this->validator        = $validator;
     }
 
     /**
@@ -43,7 +43,7 @@ class IssuesController extends BaseController
     {
         return $this->render('issues/index.html.twig', [
             'issues' => $this->volunteerManager->getIssues(),
-            'gaia' => getenv('GAIA_URL'),
+            'gaia'   => getenv('GAIA_URL'),
         ]);
     }
 

@@ -59,14 +59,19 @@ class ProfileType extends AbstractType
      * @param UserPasswordEncoderInterface $encoder
      * @param TokenStorageInterface        $tokenStorage
      */
-    public function __construct(CaptchaManager $captchaManager, UserManager $userManager, RequestStack $requestStack, TranslatorInterface $translator, UserPasswordEncoderInterface $encoder, TokenStorageInterface $tokenStorage)
+    public function __construct(CaptchaManager $captchaManager,
+        UserManager $userManager,
+        RequestStack $requestStack,
+        TranslatorInterface $translator,
+        UserPasswordEncoderInterface $encoder,
+        TokenStorageInterface $tokenStorage)
     {
         $this->captchaManager = $captchaManager;
-        $this->userManager = $userManager;
-        $this->requestStack = $requestStack;
-        $this->translator = $translator;
-        $this->encoder = $encoder;
-        $this->tokenStorage = $tokenStorage;
+        $this->userManager    = $userManager;
+        $this->requestStack   = $requestStack;
+        $this->translator     = $translator;
+        $this->encoder        = $encoder;
+        $this->tokenStorage   = $tokenStorage;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)

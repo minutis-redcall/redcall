@@ -24,11 +24,11 @@ class VolunteerSessionRepository extends BaseRepository
         $oldestValidCreatedAt = (new \DateTime())->sub(new \DateInterval(sprintf('PT%dS', $expirationTtl)));
 
         $this->createQueryBuilder('s')
-            ->delete(VolunteerSession::class, 's')
-            ->where('s.createdAt < :oldestValidCreatedAt')
-            ->setParameter('oldestValidCreatedAt', $oldestValidCreatedAt)
-            ->getQuery()
-            ->execute();
+             ->delete(VolunteerSession::class, 's')
+             ->where('s.createdAt < :oldestValidCreatedAt')
+             ->setParameter('oldestValidCreatedAt', $oldestValidCreatedAt)
+             ->getQuery()
+             ->execute();
     }
 
     // /**

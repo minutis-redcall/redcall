@@ -84,17 +84,25 @@ class CommunicationController extends BaseController
      */
     private $mediaManager;
 
-    public function __construct(CampaignManager $campaignManager, CommunicationManager $communicationManager, MessageFormatter $formatter, TagManager $tagManager, VolunteerManager $volunteerManager, MessageManager $messageManager, AnswerManager $answerManager, UserManager $userManager, MediaManager $mediaManager)
+    public function __construct(CampaignManager $campaignManager,
+        CommunicationManager $communicationManager,
+        MessageFormatter $formatter,
+        TagManager $tagManager,
+        VolunteerManager $volunteerManager,
+        MessageManager $messageManager,
+        AnswerManager $answerManager,
+        UserManager $userManager,
+        MediaManager $mediaManager)
     {
-        $this->campaignManager = $campaignManager;
+        $this->campaignManager      = $campaignManager;
         $this->communicationManager = $communicationManager;
-        $this->formatter = $formatter;
-        $this->tagManager = $tagManager;
-        $this->volunteerManager = $volunteerManager;
-        $this->messageManager = $messageManager;
-        $this->answerManager = $answerManager;
-        $this->userManager = $userManager;
-        $this->mediaManager = $mediaManager;
+        $this->formatter            = $formatter;
+        $this->tagManager           = $tagManager;
+        $this->volunteerManager     = $volunteerManager;
+        $this->messageManager       = $messageManager;
+        $this->answerManager        = $answerManager;
+        $this->userManager          = $userManager;
+        $this->mediaManager         = $mediaManager;
     }
 
     /**
@@ -106,10 +114,10 @@ class CommunicationController extends BaseController
         $this->get('session')->save();
 
         return $this->render('status_communication/index.html.twig', [
-            'campaign'   => $campaign,
-            'skills'     => $this->tagManager->findAll(),
-            'progress'   => $campaign->getCampaignProgression(),
-            'hash'       => $this->campaignManager->getHash($campaign->getId()),
+            'campaign' => $campaign,
+            'skills'   => $this->tagManager->findAll(),
+            'progress' => $campaign->getCampaignProgression(),
+            'hash'     => $this->campaignManager->getHash($campaign->getId()),
         ]);
     }
 
@@ -127,7 +135,8 @@ class CommunicationController extends BaseController
     }
 
     /**
-     * @Route(path="campaign/{id}/long-polling", name="long_polling", requirements={"id" = "\d+", "olHash" = "[0-9a-f]{40}"})
+     * @Route(path="campaign/{id}/long-polling", name="long_polling", requirements={"id" = "\d+", "olHash" =
+     *                                           "[0-9a-f]{40}"})
      * @IsGranted("CAMPAIGN", subject="campaign")
      */
     public function longPolling(Campaign $campaign, Request $request)
@@ -198,8 +207,8 @@ class CommunicationController extends BaseController
         $this->get('session')->set('add-communication', $selections);
 
         return $this->redirectToRoute('communication_new', [
-            'id'  => $campaign->getId(),
-            'key' => $key,
+            'id'   => $campaign->getId(),
+            'key'  => $key,
             'type' => $type,
         ]);
     }
@@ -283,13 +292,13 @@ class CommunicationController extends BaseController
         $message->setPrefix('X');
         $message->setCode('xxxxxxxx');
 
-        $content = $this->formatter->formatMessageContent($message);
-        $parts   = GSM::getSMSParts($content);
+        $content   = $this->formatter->formatMessageContent($message);
+        $parts     = GSM::getSMSParts($content);
         $estimated = $communicationEntity->getEstimatedCost($content);
 
         return new JsonResponse([
             'success' => true,
-            'type' => $communicationEntity->getType(),
+            'type'    => $communicationEntity->getType(),
             'message' => $communicationEntity->isEmail() ? $purifier->purify($content) : htmlentities($content),
             'cost'    => count($parts),
             'price'   => round($estimated, 2),
@@ -321,9 +330,9 @@ class CommunicationController extends BaseController
 
         return new JsonResponse([
             'success' => true,
-            'player' => $this->renderView('new_communication/player.html.twig', [
+            'player'  => $this->renderView('new_communication/player.html.twig', [
                 'media' => $media,
-            ])
+            ]),
         ]);
     }
 
@@ -391,7 +400,7 @@ class CommunicationController extends BaseController
      * @Entity("communicationEntity", expr="repository.find(communicationId)")
      * @IsGranted("CAMPAIGN", subject="campaign")
      */
-    public function rename(Request $request, Campaign $campaign, Communication $communicationEntity) : Response
+    public function rename(Request $request, Campaign $campaign, Communication $communicationEntity): Response
     {
         $this->validateCsrfOrThrowNotFoundException('communication', $request->request->get('csrf'));
 
@@ -415,7 +424,9 @@ class CommunicationController extends BaseController
      * @Route("campaign/{campaign}/communication/{communication}/relaunch", name="relaunch")
      * @Security("is_granted('ROLE_ADMIN')")
      */
-    public function relaunchCommunication(Campaign $campaign, Communication $communication, ProcessorInterface $processor)
+    public function relaunchCommunication(Campaign $campaign,
+        Communication $communication,
+        ProcessorInterface $processor)
     {
         foreach ($communication->getMessages() as $message) {
             $message->setSent(false);
@@ -427,7 +438,7 @@ class CommunicationController extends BaseController
         return $this->redirectToRoute('communication_index', ['id' => $campaign->getId()]);
     }
 
-    private function getCommunicationFromRequest(Request $request, Type $type) : BaseTrigger
+    private function getCommunicationFromRequest(Request $request, Type $type): BaseTrigger
     {
         if ($request->request->get('campaign')) {
             // New campaign form

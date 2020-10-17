@@ -15,12 +15,15 @@ class Mail extends BaseMail
     private $userManager;
 
     /**
-     * @param TranslatorInterface    $translator
-     * @param Environment            $twig
-     * @param \Swift_Mailer          $mailer
-     * @param UserManager            $userManager
+     * @param TranslatorInterface $translator
+     * @param Environment         $twig
+     * @param \Swift_Mailer       $mailer
+     * @param UserManager         $userManager
      */
-    public function __construct(TranslatorInterface $translator, Environment $twig, \Swift_Mailer $mailer, UserManager $userManager)
+    public function __construct(TranslatorInterface $translator,
+        Environment $twig,
+        \Swift_Mailer $mailer,
+        UserManager $userManager)
     {
         parent::__construct($translator, $twig, $mailer);
 

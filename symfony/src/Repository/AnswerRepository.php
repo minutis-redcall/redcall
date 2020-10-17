@@ -89,12 +89,12 @@ class AnswerRepository extends BaseRepository
         $this->_em->flush();
     }
 
-    public function getSearchQueryBuilder(string $criteria) : QueryBuilder
+    public function getSearchQueryBuilder(string $criteria): QueryBuilder
     {
         $qb = $this->createQueryBuilder('a')
-            ->join('a.message', 'm')
-            ->join('m.volunteer', 'v')
-            ->where('v.enabled = true');
+                   ->join('a.message', 'm')
+                   ->join('m.volunteer', 'v')
+                   ->where('v.enabled = true');
 
         $exprs = [];
         foreach (explode(' ', $criteria) as $index => $keyword) {

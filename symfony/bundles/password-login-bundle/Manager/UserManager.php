@@ -24,12 +24,12 @@ class UserManager
     /**
      * @return AbstractUser[]
      */
-    public function findAll() : array
+    public function findAll(): array
     {
         return $this->userRepository->findAll();
     }
 
-    public function findAdmins() : array
+    public function findAdmins(): array
     {
         return $this->userRepository->findBy([
             'isVerified' => true,
@@ -38,7 +38,7 @@ class UserManager
         ]);
     }
 
-    public function findOneByUsername(string $email) : ?AbstractUser
+    public function findOneByUsername(string $email): ?AbstractUser
     {
         return $this->userRepository->findOneByUsername($email);
     }
@@ -53,7 +53,7 @@ class UserManager
         $this->userRepository->remove($user);
     }
 
-    public function searchAll(?string $criteria) : array
+    public function searchAll(?string $criteria): array
     {
         return $this->userRepository->searchAll($criteria);
     }

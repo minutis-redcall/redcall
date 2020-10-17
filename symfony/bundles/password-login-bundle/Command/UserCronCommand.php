@@ -40,14 +40,17 @@ class UserCronCommand extends Command
      * @param EmailVerificationManager $emailVerificationManager
      * @param UserManager              $userManager
      */
-    public function __construct(CaptchaManager $captchaManager, PasswordRecoveryManager $passwordRecoveryManager, EmailVerificationManager $emailVerificationManager, UserManager $userManager)
+    public function __construct(CaptchaManager $captchaManager,
+        PasswordRecoveryManager $passwordRecoveryManager,
+        EmailVerificationManager $emailVerificationManager,
+        UserManager $userManager)
     {
         parent::__construct();
 
-        $this->captchaManager = $captchaManager;
-        $this->passwordRecoveryManager = $passwordRecoveryManager;
+        $this->captchaManager           = $captchaManager;
+        $this->passwordRecoveryManager  = $passwordRecoveryManager;
         $this->emailVerificationManager = $emailVerificationManager;
-        $this->userManager = $userManager;
+        $this->userManager              = $userManager;
     }
 
     protected function configure()

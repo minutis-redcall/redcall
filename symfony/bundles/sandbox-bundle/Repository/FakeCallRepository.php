@@ -42,11 +42,11 @@ class FakeCallRepository extends ServiceEntityRepository
     public function findMessagesForPhone(string $phoneNumber)
     {
         return $this->createQueryBuilder('c')
-            ->where('c.phoneNumber = :phoneNumber')
-            ->setParameter('phoneNumber', $phoneNumber)
-            ->orderBy('c.id', 'DESC')
-            ->getQuery()
-            ->getResult();
+                    ->where('c.phoneNumber = :phoneNumber')
+                    ->setParameter('phoneNumber', $phoneNumber)
+                    ->orderBy('c.id', 'DESC')
+                    ->getQuery()
+                    ->getResult();
     }
 
     public function truncate()

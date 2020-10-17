@@ -62,7 +62,7 @@ class FakeCall
         return $this;
     }
 
-     public function getMessageId()
+    public function getMessageId()
     {
         return $this->messageId;
     }

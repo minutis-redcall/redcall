@@ -32,6 +32,7 @@ class PrefilledAnswersManager
 
     /**
      * Return all prefilled answers for a specific structure
+     *
      * @param \App\Entity\Structure $structure
      *
      * @return QueryBuilder
@@ -43,7 +44,9 @@ class PrefilledAnswersManager
 
     /**
      * Return prefilled answers by Id
+     *
      * @param $id
+     *
      * @return PrefilledAnswers|null
      */
     public function findById($id)

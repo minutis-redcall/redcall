@@ -80,7 +80,7 @@ class PegassManager
         } catch (\Throwable $e) {
             $this->logger->warning('Failed to update a Pegass entity', [
                 'exception' => $e->getMessage(),
-                'entity' => strval($entity),
+                'entity'    => strval($entity),
             ]);
         }
     }

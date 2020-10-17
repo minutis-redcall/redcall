@@ -30,7 +30,7 @@ class PriceCommand extends Command
         parent::__construct();
 
         $this->messageManager = $messageManager;
-        $this->callManager = $callManager;
+        $this->callManager    = $callManager;
     }
 
     protected function configure()

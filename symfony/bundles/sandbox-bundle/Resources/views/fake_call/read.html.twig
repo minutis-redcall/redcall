@@ -16,7 +16,8 @@
     <div id="messages">
         {% for message in messages %}
 
-            <div><span class="h3">{{ message.createdAt|date('d/m/Y H:i') }}</span> <strong>{{ message.type|upper }}</strong></div>
+            <div><span class="h3">{{ message.createdAt|date('d/m/Y H:i') }}</span>
+                <strong>{{ message.type|upper }}</strong></div>
             <div style="padding:10px;background-color: #eeeeee;">
                 <pre>{{ message.content }}</pre>
             </div>

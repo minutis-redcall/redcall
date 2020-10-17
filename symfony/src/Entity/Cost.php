@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Cost
 {
-    const DIRECTION_INBOUND = 'received';
+    const DIRECTION_INBOUND  = 'received';
     const DIRECTION_OUTBOUND = 'sent';
 
     /**

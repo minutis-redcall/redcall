@@ -1,41 +1,41 @@
 services:
 
-    Bundles\PasswordLoginBundle\Form\Type\ConnectType:
-        arguments:
-            - '@Bundles\PasswordLoginBundle\Manager\CaptchaManager'
-            - '@request_stack'
-        tags:
-            - { name: form.type }
+  Bundles\PasswordLoginBundle\Form\Type\ConnectType:
+    arguments:
+      - '@Bundles\PasswordLoginBundle\Manager\CaptchaManager'
+      - '@request_stack'
+    tags:
+      - { name: form.type }
 
-    Bundles\PasswordLoginBundle\Form\Type\ForgotPasswordType:
-        arguments:
-            - '@Bundles\PasswordLoginBundle\Manager\CaptchaManager'
-            - '@request_stack'
-        tags:
-            - { name: form.type }
+  Bundles\PasswordLoginBundle\Form\Type\ForgotPasswordType:
+    arguments:
+      - '@Bundles\PasswordLoginBundle\Manager\CaptchaManager'
+      - '@request_stack'
+    tags:
+      - { name: form.type }
 
-    Bundles\PasswordLoginBundle\Form\Type\ChangePasswordType:
-        arguments:
-            - '@translator'
-        tags:
-            - { name: form.type }
+  Bundles\PasswordLoginBundle\Form\Type\ChangePasswordType:
+    arguments:
+      - '@translator'
+    tags:
+      - { name: form.type }
 
-    Bundles\PasswordLoginBundle\Form\Type\RegistrationType:
-        arguments:
-            - '@Bundles\PasswordLoginBundle\Manager\CaptchaManager'
-            - '@Bundles\PasswordLoginBundle\Manager\UserManager'
-            - '@request_stack'
-            - '@translator'
-        tags:
-            - { name: form.type }
+  Bundles\PasswordLoginBundle\Form\Type\RegistrationType:
+    arguments:
+      - '@Bundles\PasswordLoginBundle\Manager\CaptchaManager'
+      - '@Bundles\PasswordLoginBundle\Manager\UserManager'
+      - '@request_stack'
+      - '@translator'
+    tags:
+      - { name: form.type }
 
-    Bundles\PasswordLoginBundle\Form\Type\ProfileType:
-        arguments:
-            - '@Bundles\PasswordLoginBundle\Manager\CaptchaManager'
-            - '@Bundles\PasswordLoginBundle\Manager\UserManager'
-            - '@request_stack'
-            - '@translator'
-            - '@security.password_encoder'
-            - '@security.token_storage'
-        tags:
-            - { name: form.type }
+  Bundles\PasswordLoginBundle\Form\Type\ProfileType:
+    arguments:
+      - '@Bundles\PasswordLoginBundle\Manager\CaptchaManager'
+      - '@Bundles\PasswordLoginBundle\Manager\UserManager'
+      - '@request_stack'
+      - '@translator'
+      - '@security.password_encoder'
+      - '@security.token_storage'
+    tags:
+      - { name: form.type }

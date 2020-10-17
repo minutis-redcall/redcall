@@ -53,7 +53,7 @@ class MessageManager
         $codes = [];
         do {
             while ($numberOfCodes != count($codes)) {
-                $code = Random::generate(MessageRepository::CODE_SIZE);
+                $code    = Random::generate(MessageRepository::CODE_SIZE);
                 $codes[] = $code;
             }
 
@@ -70,7 +70,7 @@ class MessageManager
      *
      * @return Message|null
      */
-    public function find(int $messageId) : ?Message
+    public function find(int $messageId): ?Message
     {
         return $this->messageRepository->find($messageId);
     }
@@ -80,19 +80,21 @@ class MessageManager
      *
      * @return int
      */
-    public function getNumberOfSentMessages(Campaign $campaign) : int
+    public function getNumberOfSentMessages(Campaign $campaign): int
     {
         return $this->messageRepository->getNumberOfSentMessages($campaign);
     }
 
-    public function generatePrefixes(array $volunteers) : array
+    public function generatePrefixes(array $volunteers): array
     {
         $usedPrefixes = $this->messageRepository->getUsedPrefixes($volunteers);
 
         $prefixes = [];
         foreach ($volunteers as $volunteer) {
             /** @var Volunteer $volunteer */
-            for ($prefix = 'A'; in_array($prefix, $usedPrefixes[$volunteer->getId()] ?? []); $prefix++);
+            for ($prefix = 'A'; in_array($prefix, $usedPrefixes[$volunteer->getId()] ?? []); $prefix++) {
+                ;
+            }
             $prefixes[$volunteer->getId()] = $prefix;
         }
 
@@ -103,13 +105,13 @@ class MessageManager
      * @param string $phoneNumber
      * @param string $body
      *
-     * @throws NonUniqueResultException
-     * @throws ORMException
-     * @throws OptimisticLockException
      * @return int|null
      *
+     * @throws ORMException
+     * @throws OptimisticLockException
+     * @throws NonUniqueResultException
      */
-    public function handleAnswer(string $phoneNumber, string $body) : ?int
+    public function handleAnswer(string $phoneNumber, string $body): ?int
     {
         // In case of multiple calls, we should handle the "A1 B2" body case.
         $messages = [];
@@ -146,14 +148,14 @@ class MessageManager
     }
 
     /**
-     * @param string $phoneNumber
+     * @param string      $phoneNumber
      * @param string|null $body
      *
-     * @throws NonUniqueResultException
      * @return Message|null
      *
+     * @throws NonUniqueResultException
      */
-    public function getMessageFromPhoneNumber(string $phoneNumber, ?string $body = null) : ?Message
+    public function getMessageFromPhoneNumber(string $phoneNumber, ?string $body = null): ?Message
     {
         if ($body) {
             $matches = [];
@@ -182,7 +184,7 @@ class MessageManager
      * @throws ORMException
      * @throws OptimisticLockException
      */
-    public function addAnswer(Message $message, string $body, bool $byAdmin = false) : void
+    public function addAnswer(Message $message, string $body, bool $byAdmin = false): void
     {
         $choices = [];
         if (0 !== count($message->getCommunication()->getChoices())) {
@@ -254,7 +256,7 @@ class MessageManager
      * @throws ORMException
      * @throws OptimisticLockException
      */
-    public function cancelAnswerByChoice(Message $message, Choice $choice) : void
+    public function cancelAnswerByChoice(Message $message, Choice $choice): void
     {
         $this->messageRepository->cancelAnswerByChoice($message, $choice);
     }
@@ -264,7 +266,7 @@ class MessageManager
      *
      * @return bool
      */
-    public function canUsePrefixesForEveryone(array $volunteersTakenPrefixes) : bool
+    public function canUsePrefixesForEveryone(array $volunteersTakenPrefixes): bool
     {
         return $this->messageRepository->canUsePrefixesForEveryone($volunteersTakenPrefixes);
     }
@@ -288,7 +290,7 @@ class MessageManager
      *
      * @return int
      */
-    public function getDeployGreenlight() : int
+    public function getDeployGreenlight(): int
     {
         /** @var Message $message */
         $message = $this->messageRepository->getLatestMessageUpdated();

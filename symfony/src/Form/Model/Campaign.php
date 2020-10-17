@@ -43,8 +43,8 @@ class Campaign
 
     public function __construct(BaseTrigger $trigger)
     {
-        $this->type = CampaignEntity::TYPE_GREEN;
-        $this->label = '';
+        $this->type    = CampaignEntity::TYPE_GREEN;
+        $this->label   = '';
         $this->trigger = $trigger;
     }
 }

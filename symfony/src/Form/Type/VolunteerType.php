@@ -46,35 +46,33 @@ class VolunteerType extends AbstractType
                 'label' => 'manage_volunteers.form.last_name',
             ])
             ->add('phoneNumber', TextType::class, [
-                'label' => 'manage_volunteers.form.phone_number',
+                'label'    => 'manage_volunteers.form.phone_number',
                 'required' => false,
             ])
             ->add('phoneNumberOptin', CheckboxType::class, [
-                'label' => 'manage_volunteers.form.phone_number_optin',
+                'label'    => 'manage_volunteers.form.phone_number_optin',
                 'required' => false,
-            ])
-        ;
+            ]);
 
         $builder
             ->add('phoneNumberLocked', CheckboxType::class, [
-                'label' => 'manage_volunteers.form.phone_number_locked',
+                'label'    => 'manage_volunteers.form.phone_number_locked',
                 'required' => false,
             ]);
 
         $builder
             ->add('email', TextType::class, [
-                'label' => 'manage_volunteers.form.email',
+                'label'    => 'manage_volunteers.form.email',
                 'required' => false,
             ])
             ->add('emailOptin', CheckboxType::class, [
-                'label' => 'manage_volunteers.form.email_optin',
+                'label'    => 'manage_volunteers.form.email_optin',
                 'required' => false,
-            ])
-        ;
+            ]);
 
         $builder
             ->add('emailLocked', CheckboxType::class, [
-                'label' => 'manage_volunteers.form.email_locked',
+                'label'    => 'manage_volunteers.form.email_locked',
                 'required' => false,
             ]);
 
@@ -98,8 +96,8 @@ class VolunteerType extends AbstractType
             ->add('submit', SubmitType::class, [
                 'label' => 'base.button.save',
                 'attr'  => [
-                    'class' => 'btn btn-primary',
-                    'data-timeout-disabled' => '30000'
+                    'class'                 => 'btn btn-primary',
+                    'data-timeout-disabled' => '30000',
                 ],
             ]);
 
@@ -122,7 +120,7 @@ class VolunteerType extends AbstractType
         ));
 
         $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
-            $builder   = $event->getForm();
+            $builder = $event->getForm();
 
             if (!$this->security->isGranted('ROLE_ADMIN')) {
                 $currentUser = $this->security->getUser();

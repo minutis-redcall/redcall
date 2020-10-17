@@ -32,7 +32,7 @@ class StatisticsRepository
             WHERE c.created_at BETWEEN :from AND :to
         ', [
             'from' => $from->format('Y-m-d 00:00:00'),
-            'to' => $to->format('Y-m-d 23:59:59'),
+            'to'   => $to->format('Y-m-d 23:59:59'),
         ]);
     }
 
@@ -108,6 +108,7 @@ class StatisticsRepository
      *
      * @param \DateTime $from
      * @param \DateTime $to
+     *
      * @return array
      */
     public function getNumberOfSentMessagesByKind(\DateTime $from, \DateTime $to)
@@ -132,8 +133,10 @@ class StatisticsRepository
 
     /**
      * Return all triggered volounteers
+     *
      * @param \DateTime $from
      * @param \DateTime $to
+     *
      * @return array
      * @throws NonUniqueResultException
      * @throws \Doctrine\ORM\NoResultException
@@ -187,6 +190,7 @@ class StatisticsRepository
      *
      * @param \DateTime $from
      * @param \DateTime $to
+     *
      * @return QueryBuilder
      * @throws \Exception
      */
@@ -204,8 +208,8 @@ class StatisticsRepository
             ->addScalarResult('currency', 'currency');
 
         return $this->entityManager->createNativeQuery($sql, $rsm)
-            ->setParameter('fromDate', $from)
-            ->setParameter('toDate', $to)
-            ->getResult();
+                                   ->setParameter('fromDate', $from)
+                                   ->setParameter('toDate', $to)
+                                   ->getResult();
     }
 }

@@ -14,8 +14,8 @@ class Sender
 {
     // We should not send too many messages at the same time
     // to prevent Twilio reaching GAE quotas (200 qpm/ip)
-    const PAUSE_SMS = 500000; // 2 sms / second
-    const PAUSE_CALL = 200000; // 5 calls / second
+    const PAUSE_SMS   = 500000; // 2 sms / second
+    const PAUSE_CALL  = 200000; // 5 calls / second
     const PAUSE_EMAIL = 100000; // 10 emails / second
 
     /**

@@ -29,12 +29,12 @@ class QueueProcessor implements ProcessorInterface
     {
         $queueId = $this->getQueueId($communication);
 
-        $client = new CloudTasksClient();
+        $client    = new CloudTasksClient();
         $queueName = $client->queueName(getenv('GCP_PROJECT_NAME'), getenv('GCP_PROJECT_LOCATION'), $queueId);
 
         foreach ($communication->getMessages() as $message) {
             if (!$message->canBeSent()) {
-                continue ;
+                continue;
             }
 
             $payload = json_encode(['message_id' => $message->getId()]);

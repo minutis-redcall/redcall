@@ -43,7 +43,7 @@ class CampaignRepository extends BaseRepository
      *
      * @return QueryBuilder
      */
-    public function getActiveCampaignsForUserQueryBuilder(AbstractUser $user) : QueryBuilder
+    public function getActiveCampaignsForUserQueryBuilder(AbstractUser $user): QueryBuilder
     {
         return $this
             ->createQueryBuilder('c')
@@ -60,7 +60,7 @@ class CampaignRepository extends BaseRepository
      *
      * @return QueryBuilder
      */
-    public function getInactiveCampaignsForUserQueryBuilder(AbstractUser $user) : QueryBuilder
+    public function getInactiveCampaignsForUserQueryBuilder(AbstractUser $user): QueryBuilder
     {
         return $this
             ->createQueryBuilder('c')
@@ -124,58 +124,58 @@ class CampaignRepository extends BaseRepository
      *
      * @return QueryBuilder
      */
-    public function getActiveCampaignsQueryBuilder() : QueryBuilder
+    public function getActiveCampaignsQueryBuilder(): QueryBuilder
     {
         return $this->createQueryBuilder('c')
-            ->where('c.active = :active')
-            ->setParameter('active', true);
+                    ->where('c.active = :active')
+                    ->setParameter('active', true);
     }
 
-    public function getAllCampaignsQueryBuilder() : QueryBuilder
+    public function getAllCampaignsQueryBuilder(): QueryBuilder
     {
         return $this->createQueryBuilder('c');
     }
 
     /**
-     * @throws \Doctrine\ORM\NoResultException
-     * @throws \Doctrine\ORM\NonUniqueResultException
      * @return int
      *
+     * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws \Doctrine\ORM\NoResultException
      */
-    public function countAllOpenCampaigns() : int
+    public function countAllOpenCampaigns(): int
     {
         return $this->getActiveCampaignsQueryBuilder()
-            ->select('COUNT(c.id)')
-            ->getQuery()
-            ->getSingleScalarResult();
+                    ->select('COUNT(c.id)')
+                    ->getQuery()
+                    ->getSingleScalarResult();
     }
 
     /**
      * @param int $days
      *
-     * @throws \Exception
      * @return array
      *
+     * @throws \Exception
      */
-    public function findInactiveCampaignsSince(int $days) : array
+    public function findInactiveCampaignsSince(int $days): array
     {
         return $this->getActiveCampaignsQueryBuilder()
-            ->join('c.communications', 'co')
-            ->andWhere('co.createdAt < :limit')
-            ->setParameter('limit', (new \DateTime('now'))->sub(new \DateInterval(sprintf('P%dD', $days))))
-            ->getQuery()
-            ->getResult();
+                    ->join('c.communications', 'co')
+                    ->andWhere('co.createdAt < :limit')
+                    ->setParameter('limit', (new \DateTime('now'))->sub(new \DateInterval(sprintf('P%dD', $days))))
+                    ->getQuery()
+                    ->getResult();
     }
 
-    public function getNoteUpdateTimestamp(int $campaignId) : int
+    public function getNoteUpdateTimestamp(int $campaignId): int
     {
         $row = $this->createQueryBuilder('c')
-            ->select('c.notesUpdatedAt')
-            ->where('c.id = :campaignId')
-            ->setParameter('campaignId', $campaignId)
-            ->getQuery()
-            ->disableResultCache()
-            ->getOneOrNullResult();
+                    ->select('c.notesUpdatedAt')
+                    ->where('c.id = :campaignId')
+                    ->setParameter('campaignId', $campaignId)
+                    ->getQuery()
+                    ->disableResultCache()
+                    ->getOneOrNullResult();
 
         if ($row && $row['notesUpdatedAt'] && $row['notesUpdatedAt'] instanceof \DateTime) {
             return $row['notesUpdatedAt']->getTimestamp();
@@ -184,62 +184,62 @@ class CampaignRepository extends BaseRepository
         return 0;
     }
 
-    public function countNumberOfMessagesSent(int $campaignId) : int
+    public function countNumberOfMessagesSent(int $campaignId): int
     {
         return $this->createQueryBuilder('c')
-            ->select('COUNT(m.id)')
-            ->join('c.communications', 'co')
-            ->join('co.messages', 'm')
-            ->where('c.id = :campaignId')
-            ->setParameter('campaignId', $campaignId)
-            ->andWhere('m.sent = 1')
-            ->getQuery()
-            ->disableResultCache()
-            ->getSingleScalarResult();
+                    ->select('COUNT(m.id)')
+                    ->join('c.communications', 'co')
+                    ->join('co.messages', 'm')
+                    ->where('c.id = :campaignId')
+                    ->setParameter('campaignId', $campaignId)
+                    ->andWhere('m.sent = 1')
+                    ->getQuery()
+                    ->disableResultCache()
+                    ->getSingleScalarResult();
     }
 
-    public function countNumberOfAnswersReceived(int $campaignId) : int
+    public function countNumberOfAnswersReceived(int $campaignId): int
     {
         return $this->createQueryBuilder('c')
-            ->select('COUNT(a.id)')
-            ->join('c.communications', 'co')
-            ->join('co.messages', 'm')
-            ->join('m.answers', 'a')
-            ->where('c.id = :campaignId')
-            ->setParameter('campaignId', $campaignId)
-            ->getQuery()
-            ->disableResultCache()
-            ->getSingleScalarResult();
+                    ->select('COUNT(a.id)')
+                    ->join('c.communications', 'co')
+                    ->join('co.messages', 'm')
+                    ->join('m.answers', 'a')
+                    ->where('c.id = :campaignId')
+                    ->setParameter('campaignId', $campaignId)
+                    ->getQuery()
+                    ->disableResultCache()
+                    ->getSingleScalarResult();
     }
 
-    public function countNumberOfGeoLocationReceived(int $campaignId) : int
+    public function countNumberOfGeoLocationReceived(int $campaignId): int
     {
         return $this->createQueryBuilder('c')
-            ->select('COUNT(g.id)')
-            ->join('c.communications', 'co')
-            ->join('co.messages', 'm')
-            ->join('m.geoLocation', 'g')
-            ->where('c.id = :campaignId')
-            ->setParameter('campaignId', $campaignId)
-            ->getQuery()
-            ->disableResultCache()
-            ->getSingleScalarResult();
+                    ->select('COUNT(g.id)')
+                    ->join('c.communications', 'co')
+                    ->join('co.messages', 'm')
+                    ->join('m.geoLocation', 'g')
+                    ->where('c.id = :campaignId')
+                    ->setParameter('campaignId', $campaignId)
+                    ->getQuery()
+                    ->disableResultCache()
+                    ->getSingleScalarResult();
     }
 
-    public function getLastGeoLocationUpdated(int $campaignId) : int
+    public function getLastGeoLocationUpdated(int $campaignId): int
     {
         $row = $this->createQueryBuilder('c')
-            ->select('g.datetime')
-            ->join('c.communications', 'co')
-            ->join('co.messages', 'm')
-            ->join('m.geoLocation', 'g')
-            ->where('c.id = :campaignId')
-            ->setParameter('campaignId', $campaignId)
-            ->orderBy('g.datetime', 'DESC')
-            ->setMaxResults(1)
-            ->getQuery()
-            ->disableResultCache()
-            ->getOneOrNullResult();
+                    ->select('g.datetime')
+                    ->join('c.communications', 'co')
+                    ->join('co.messages', 'm')
+                    ->join('m.geoLocation', 'g')
+                    ->where('c.id = :campaignId')
+                    ->setParameter('campaignId', $campaignId)
+                    ->orderBy('g.datetime', 'DESC')
+                    ->setMaxResults(1)
+                    ->getQuery()
+                    ->disableResultCache()
+                    ->getOneOrNullResult();
 
         return $row && $row['datetime'] ? $row['datetime']->getTimestamp() : 0;
     }

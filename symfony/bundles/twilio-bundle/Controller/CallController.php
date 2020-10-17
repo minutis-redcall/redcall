@@ -31,7 +31,7 @@ class CallController extends BaseController
     public function __construct(TwilioCallManager $callManager, LoggerInterface $logger = null)
     {
         $this->callManager = $callManager;
-        $this->logger = $logger ?? new NullLogger();
+        $this->logger      = $logger ?? new NullLogger();
     }
 
     /**
@@ -85,9 +85,9 @@ class CallController extends BaseController
 
         if (!$response) {
             return new Response();
-        } else if ($response instanceof Response) {
+        } elseif ($response instanceof Response) {
             return $response;
-        } else if ($response) {
+        } elseif ($response) {
             return new XmlResponse($response->asXml());
         }
 

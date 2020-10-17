@@ -38,12 +38,15 @@ class CostManager
      * @param TwilioMessageManager $twilioMessageManager
      * @param TwilioCallManager    $twilioCallManager
      */
-    public function __construct(CostRepository $costRepository, MessageManager $messageManager, TwilioMessageManager $twilioMessageManager, TwilioCallManager $twilioCallManager)
+    public function __construct(CostRepository $costRepository,
+        MessageManager $messageManager,
+        TwilioMessageManager $twilioMessageManager,
+        TwilioCallManager $twilioCallManager)
     {
-        $this->costRepository = $costRepository;
-        $this->messageManager = $messageManager;
+        $this->costRepository       = $costRepository;
+        $this->messageManager       = $messageManager;
         $this->twilioMessageManager = $twilioMessageManager;
-        $this->twilioCallManager = $twilioCallManager;
+        $this->twilioCallManager    = $twilioCallManager;
     }
 
     public function saveMessageCost(TwilioMessage $twilioMessage, Message $message = null)
@@ -79,7 +82,13 @@ class CostManager
         $this->recoverCallCosts();
     }
 
-    private function saveCost(string $direction, string $fromNumber, string $toNumber, string $body, string $price, string $currency, Message $message = null)
+    private function saveCost(string $direction,
+        string $fromNumber,
+        string $toNumber,
+        string $body,
+        string $price,
+        string $currency,
+        Message $message = null)
     {
         $cost = new Cost();
         $cost->setDirection($direction);
@@ -103,7 +112,7 @@ class CostManager
 
     private function recoverMessageCosts()
     {
-        $this->twilioMessageManager->foreach(function(TwilioMessage $twilioMessage) {
+        $this->twilioMessageManager->foreach(function (TwilioMessage $twilioMessage) {
             if (!$twilioMessage->getPrice()) {
                 return;
             }
@@ -126,7 +135,7 @@ class CostManager
 
     private function recoverCallCosts()
     {
-        $this->twilioCallManager->foreach(function(TwilioCall $twilioCall) {
+        $this->twilioCallManager->foreach(function (TwilioCall $twilioCall) {
             if (!$twilioCall->getPrice()) {
                 return;
             }

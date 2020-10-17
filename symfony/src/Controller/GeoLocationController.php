@@ -40,7 +40,7 @@ class GeoLocationController extends BaseController
     public function __construct(GeoLocationManager $geoLocationManager, MessageManager $messageManager)
     {
         $this->geoLocationManager = $geoLocationManager;
-        $this->messageManager = $messageManager;
+        $this->messageManager     = $messageManager;
     }
 
     /**
@@ -100,7 +100,7 @@ class GeoLocationController extends BaseController
         );
     }
 
-    private function getGeolocationInformation(Message $myMessage) : array
+    private function getGeolocationInformation(Message $myMessage): array
     {
         $data = [];
         foreach ($myMessage->getCommunication()->getMessages() as $message) {

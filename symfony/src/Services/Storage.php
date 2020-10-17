@@ -17,7 +17,7 @@ class Storage
             getenv('GCP_STORAGE_BUCKET')
         );
 
-        $stream = fopen('data://text/plain;base64,' . base64_encode($content),'r');
+        $stream = fopen('data://text/plain;base64,'.base64_encode($content), 'r');
 
         $object = $bucket->upload(
             $stream,

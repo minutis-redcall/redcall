@@ -45,11 +45,13 @@ class SpaceController extends BaseController
      * @param VolunteerManager        $volunteerManager
      * @param MessageManager          $messageManager
      */
-    public function __construct(VolunteerSessionManager $volunteerSessionManager, VolunteerManager $volunteerManager, MessageManager $messageManager)
+    public function __construct(VolunteerSessionManager $volunteerSessionManager,
+        VolunteerManager $volunteerManager,
+        MessageManager $messageManager)
     {
         $this->volunteerSessionManager = $volunteerSessionManager;
-        $this->volunteerManager = $volunteerManager;
-        $this->messageManager = $messageManager;
+        $this->volunteerManager        = $volunteerManager;
+        $this->messageManager          = $messageManager;
     }
 
     /**
@@ -80,15 +82,15 @@ class SpaceController extends BaseController
         $volunteer = $session->getVolunteer();
 
         $form = $this->createFormBuilder($volunteer)
-            ->add('phoneNumber', TextType::class, [
-                'label' => 'manage_volunteers.form.phone_number',
-                'required' => false,
-            ])
-            ->add('submit', SubmitType::class, [
-                'label' => 'base.button.save',
-            ])
-            ->getForm()
-            ->handleRequest($request);
+                     ->add('phoneNumber', TextType::class, [
+                         'label'    => 'manage_volunteers.form.phone_number',
+                         'required' => false,
+                     ])
+                     ->add('submit', SubmitType::class, [
+                         'label' => 'base.button.save',
+                     ])
+                     ->getForm()
+                     ->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             if ($volunteer->getPhoneNumber()) {
@@ -107,8 +109,8 @@ class SpaceController extends BaseController
 
         return $this->render('space/phone.html.twig', [
             'session' => $session,
-            'form' => $form->createView(),
-            'from' => getenv('TWILIO_NUMBER'),
+            'form'    => $form->createView(),
+            'from'    => getenv('TWILIO_NUMBER'),
         ]);
     }
 
@@ -120,15 +122,15 @@ class SpaceController extends BaseController
         $volunteer = $session->getVolunteer();
 
         $form = $this->createFormBuilder($volunteer)
-            ->add('email', EmailType::class, [
-                'label' => 'manage_volunteers.form.email',
-                'required' => false,
-            ])
-            ->add('submit', SubmitType::class, [
-                'label' => 'base.button.save',
-            ])
-            ->getForm()
-            ->handleRequest($request);
+                     ->add('email', EmailType::class, [
+                         'label'    => 'manage_volunteers.form.email',
+                         'required' => false,
+                     ])
+                     ->add('submit', SubmitType::class, [
+                         'label' => 'base.button.save',
+                     ])
+                     ->getForm()
+                     ->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $session->getVolunteer()->setEmailLocked(true);
@@ -142,8 +144,8 @@ class SpaceController extends BaseController
 
         return $this->render('space/email.html.twig', [
             'session' => $session,
-            'form' => $form->createView(),
-            'from' => getenv('MAILER_FROM'),
+            'form'    => $form->createView(),
+            'from'    => getenv('MAILER_FROM'),
         ]);
     }
 
@@ -155,19 +157,19 @@ class SpaceController extends BaseController
         $volunteer = $session->getVolunteer();
 
         $form = $this->createFormBuilder($volunteer)
-            ->add('phoneNumberOptin', CheckboxType::class, [
-                'label' => 'manage_volunteers.form.phone_number_optin',
-                'required' => false,
-            ])
-            ->add('emailOptin', CheckboxType::class, [
-                'label' => 'manage_volunteers.form.email_optin',
-                'required' => false,
-            ])
-            ->add('submit', SubmitType::class, [
-                'label' => 'base.button.save',
-            ])
-            ->getForm()
-            ->handleRequest($request);
+                     ->add('phoneNumberOptin', CheckboxType::class, [
+                         'label'    => 'manage_volunteers.form.phone_number_optin',
+                         'required' => false,
+                     ])
+                     ->add('emailOptin', CheckboxType::class, [
+                         'label'    => 'manage_volunteers.form.email_optin',
+                         'required' => false,
+                     ])
+                     ->add('submit', SubmitType::class, [
+                         'label' => 'base.button.save',
+                     ])
+                     ->getForm()
+                     ->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $this->volunteerManager->save($volunteer);
@@ -179,7 +181,7 @@ class SpaceController extends BaseController
 
         return $this->render('space/enabled.html.twig', [
             'session' => $session,
-            'form' => $form->createView(),
+            'form'    => $form->createView(),
         ]);
     }
 
@@ -189,7 +191,7 @@ class SpaceController extends BaseController
     public function consultData(VolunteerSession $session)
     {
         return $this->render('space/consult_data.html.twig', [
-            'session' => $session,
+            'session'        => $session,
             'communications' => $this->getSessionCommunications($session),
         ]);
     }
@@ -205,7 +207,7 @@ class SpaceController extends BaseController
         ]);
 
         $mpdf->WriteHTML($this->renderView('space/data.html.twig', [
-            'session' => $session,
+            'session'        => $session,
             'communications' => $this->getSessionCommunications($session),
         ]));
 
@@ -223,20 +225,20 @@ class SpaceController extends BaseController
         throw $this->createNotFoundException();
 
         $form = $this->createFormBuilder()
-            ->add('cancel', SubmitType::class, [
-                'label' => 'space.delete_data.cancel',
-                'attr' => [
-                    'class' => 'btn btn-success',
-                ]
-            ])
-            ->add('confirm', SubmitType::class, [
-                'label' => 'space.delete_data.confirm',
-                'attr' => [
-                    'class' => 'btn btn-danger',
-                ]
-            ])
-            ->getForm()
-            ->handleRequest($request);
+                     ->add('cancel', SubmitType::class, [
+                         'label' => 'space.delete_data.cancel',
+                         'attr'  => [
+                             'class' => 'btn btn-success',
+                         ],
+                     ])
+                     ->add('confirm', SubmitType::class, [
+                         'label' => 'space.delete_data.confirm',
+                         'attr'  => [
+                             'class' => 'btn btn-danger',
+                         ],
+                     ])
+                     ->getForm()
+                     ->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $this->volunteerManager->anonymize($session->getVolunteer());
@@ -245,7 +247,7 @@ class SpaceController extends BaseController
         }
 
         return $this->render('space/delete_data.html.twig', [
-            'form' => $form->createView(),
+            'form'    => $form->createView(),
             'session' => $session,
         ]);
     }
@@ -260,7 +262,7 @@ class SpaceController extends BaseController
         return $this->redirectToRoute('home');
     }
 
-    private function getSessionCommunications(VolunteerSession $session) : array
+    private function getSessionCommunications(VolunteerSession $session): array
     {
         $communications = [];
         foreach ($session->getVolunteer()->getMessages() as $message) {

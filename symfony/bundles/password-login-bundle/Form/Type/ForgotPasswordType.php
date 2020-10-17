@@ -27,7 +27,7 @@ class ForgotPasswordType extends AbstractType
     public function __construct(CaptchaManager $captchaManager, RequestStack $requestStack)
     {
         $this->captchaManager = $captchaManager;
-        $this->requestStack = $requestStack;
+        $this->requestStack   = $requestStack;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)

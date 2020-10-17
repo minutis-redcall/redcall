@@ -18,10 +18,13 @@ use Symfony\Component\Console\Output\OutputInterface;
  * php bin/console pegass:search '/volunteer/nominations/libelleCourt[text()="DLUS"]' --type=volunteer
  *
  * Search all DLUS in Paris:
- * php bin/console pegass:search '/volunteer[user/structure/parent/id[.="80"]]/nominations/libelleCourt[.="DLUS"]' --type=volunteer
+ * php bin/console pegass:search '/volunteer[user/structure/parent/id[.="80"]]/nominations/libelleCourt[.="DLUS"]'
+ * --type=volunteer
  *
  * Search all *DLUS* in Paris:
- * php bin/console pegass:search '/volunteer[user/structure/parent/id[contains(.,"80")]]/nominations/libelleCourt[contains(., "DLUS")]' --type=volunteer
+ * php bin/console pegass:search
+ * '/volunteer[user/structure/parent/id[contains(.,"80")]]/nominations/libelleCourt[contains(., "DLUS")]'
+ * --type=volunteer
  */
 class PegassSearchCommand extends Command
 {
@@ -40,7 +43,7 @@ class PegassSearchCommand extends Command
         parent::__construct();
 
         $this->pegassManager = $pegassManager;
-        $this->logger = $logger ?: new NullLogger();
+        $this->logger        = $logger ?: new NullLogger();
     }
 
     /**
@@ -62,13 +65,20 @@ class PegassSearchCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $start = microtime(true);
+        $start       = microtime(true);
         $identifiers = [];
 
         $hashes = [];
         $count  = 0;
         foreach ($input->getOption('type') as $type) {
-            $this->pegassManager->foreach($type, function (Pegass $pegass) use ($input, &$hashes, &$count, &$identifiers, &$values) {
+            $this->pegassManager->foreach($type, function (Pegass $pegass) use (
+                $input,
+                &$hashes,
+                &$count,
+                &
+                $identifiers,
+                &$values
+            ) {
                 $match = $pegass->xpath($input->getArgument('template'), $input->getOption('parameter'));
                 if (!$match) {
                     return;
@@ -77,10 +87,10 @@ class PegassSearchCommand extends Command
                 $this->logger->debug(sprintf('Found %s %s', $pegass->getType(), $pegass->getIdentifier()));
 
                 $identifiers[$pegass->getType()][] = [
-                    'nivol' => ltrim($pegass->getIdentifier(), '0'),
+                    'nivol'     => ltrim($pegass->getIdentifier(), '0'),
                     'firstname' => $pegass->evaluate('user.prenom'),
-                    'lastname' => $pegass->evaluate('user.nom'),
-                    'values' => implode(',', array_map('reset', array_values($match))),
+                    'lastname'  => $pegass->evaluate('user.nom'),
+                    'values'    => implode(',', array_map('reset', array_values($match))),
                 ];
 
                 $count++;

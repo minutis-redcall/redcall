@@ -27,14 +27,14 @@ class StructureType extends AbstractType
     {
         $builder
             ->add('name', TextType::class, [
-                'label' => 'structure.form.name'
+                'label' => 'structure.form.name',
             ])
             ->add('parentStructure', StructureWidgetType::class, [
                 'required' => false,
-                'label' => 'structure.form.parent'
+                'label'    => 'structure.form.parent',
             ])
             ->add('submit', SubmitType::class, [
-                'label' => 'button.submit'
+                'label' => 'button.submit',
             ]);
 
         $builder->get('parentStructure')->addModelTransformer(new CallbackTransformer(

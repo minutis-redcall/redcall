@@ -28,11 +28,11 @@ class MessageRepository extends BaseRepository
      * @param string $phoneNumber
      * @param string $prefix
      *
-     * @throws NonUniqueResultException
      * @return Message|null
      *
+     * @throws NonUniqueResultException
      */
-    public function getMessageFromPhoneNumber(string $phoneNumber) : ?Message
+    public function getMessageFromPhoneNumber(string $phoneNumber): ?Message
     {
         return $this->createQueryBuilder('m')
                     ->join('m.volunteer', 'v')
@@ -51,11 +51,11 @@ class MessageRepository extends BaseRepository
      * @param string $phoneNumber
      * @param string $prefix
      *
-     * @throws NonUniqueResultException
      * @return Message|null
      *
+     * @throws NonUniqueResultException
      */
-    public function getMessageFromPhoneNumberAndPrefix(string $phoneNumber, string $prefix) : ?Message
+    public function getMessageFromPhoneNumberAndPrefix(string $phoneNumber, string $prefix): ?Message
     {
         return $this->createQueryBuilder('m')
                     ->join('m.volunteer', 'v')
@@ -79,7 +79,7 @@ class MessageRepository extends BaseRepository
      * @throws ORMException
      * @throws OptimisticLockException
      */
-    public function cancelAnswerByChoice(Message $message, Choice $choice) : void
+    public function cancelAnswerByChoice(Message $message, Choice $choice): void
     {
         foreach ($message->getAnswers() as $answer) {
             /* @var Answer $answer */
@@ -96,7 +96,7 @@ class MessageRepository extends BaseRepository
      *
      * @return Message|null
      */
-    public function findOneByIdNoCache(int $messageId) : ?Message
+    public function findOneByIdNoCache(int $messageId): ?Message
     {
         return $this->createQueryBuilder('m')
                     ->where('m.id = :id')
@@ -109,10 +109,10 @@ class MessageRepository extends BaseRepository
     /**
      * @param Message $message
      *
-     * @throws MappingException
      * @return Message|null
+     * @throws MappingException
      */
-    public function refresh(Message $message) : Message
+    public function refresh(Message $message): Message
     {
         $this->_em->clear();
 
@@ -124,7 +124,7 @@ class MessageRepository extends BaseRepository
      *
      * @return int
      */
-    public function getNumberOfSentMessages(Campaign $campaign) : int
+    public function getNumberOfSentMessages(Campaign $campaign): int
     {
         return $this->createQueryBuilder('m')
                     ->select('COUNT(m.id)')
@@ -141,27 +141,27 @@ class MessageRepository extends BaseRepository
     public function findUsedCodes(array $codes)
     {
         $rows = $this->createQueryBuilder('m')
-            ->select('m.code')
-            ->where('m.code IN (:codes)')
-            ->setParameter('codes', $codes)
-            ->getQuery()
-            ->getArrayResult();
+                     ->select('m.code')
+                     ->where('m.code IN (:codes)')
+                     ->setParameter('codes', $codes)
+                     ->getQuery()
+                     ->getArrayResult();
 
         return array_column($rows, 'code');
     }
 
-    public function getUsedPrefixes(array $volunteers) : array
+    public function getUsedPrefixes(array $volunteers): array
     {
         $rows = $this->createQueryBuilder('m')
-            ->select('v.id, m.prefix')
-            ->join('m.communication', 'co')
-            ->join('co.campaign', 'ca')
-            ->join('m.volunteer', 'v')
-            ->where('ca.active = true')
-            ->andWhere('v.id IN (:volunteers)')
-            ->setParameter('volunteers', $volunteers)
-            ->getQuery()
-            ->getArrayResult();
+                     ->select('v.id, m.prefix')
+                     ->join('m.communication', 'co')
+                     ->join('co.campaign', 'ca')
+                     ->join('m.volunteer', 'v')
+                     ->where('ca.active = true')
+                     ->andWhere('v.id IN (:volunteers)')
+                     ->setParameter('volunteers', $volunteers)
+                     ->getQuery()
+                     ->getArrayResult();
 
         $prefixes = [];
         foreach ($rows as $row) {
@@ -179,7 +179,7 @@ class MessageRepository extends BaseRepository
      *
      * @return bool
      */
-    public function canUsePrefixesForEveryone(array $volunteersTakenPrefixes) : bool
+    public function canUsePrefixesForEveryone(array $volunteersTakenPrefixes): bool
     {
         if (!$volunteersTakenPrefixes) {
             return true;
@@ -211,18 +211,18 @@ class MessageRepository extends BaseRepository
     }
 
     /**
-     * @throws NonUniqueResultException
-     * @throws \Doctrine\ORM\NoResultException
      * @return Message|null
+     * @throws \Doctrine\ORM\NoResultException
+     * @throws NonUniqueResultException
      */
-    public function getLatestMessageUpdated() : ?Message
+    public function getLatestMessageUpdated(): ?Message
     {
         try {
             return $this->createQueryBuilder('m')
-                ->orderBy('m.updatedAt', 'DESC')
-                ->setMaxResults(1)
-                ->getQuery()
-                ->getSingleResult();
+                        ->orderBy('m.updatedAt', 'DESC')
+                        ->setMaxResults(1)
+                        ->getQuery()
+                        ->getSingleResult();
         } catch (NoResultException $e) {
             return null;
         }

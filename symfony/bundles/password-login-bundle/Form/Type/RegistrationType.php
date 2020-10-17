@@ -38,12 +38,15 @@ class RegistrationType extends AbstractType
      */
     private $translator;
 
-    public function __construct(CaptchaManager $captchaManager, UserManager $userManager, RequestStack $requestStack, TranslatorInterface $translator)
+    public function __construct(CaptchaManager $captchaManager,
+        UserManager $userManager,
+        RequestStack $requestStack,
+        TranslatorInterface $translator)
     {
         $this->captchaManager = $captchaManager;
-        $this->userManager = $userManager;
-        $this->requestStack = $requestStack;
-        $this->translator = $translator;
+        $this->userManager    = $userManager;
+        $this->requestStack   = $requestStack;
+        $this->translator     = $translator;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)

@@ -27,13 +27,13 @@ class VolunteerSessionManager
     public function __construct(VolunteerSessionRepository $volunteerSessionRepository, SessionInterface $session)
     {
         $this->volunteerSessionRepository = $volunteerSessionRepository;
-        $this->session = $session;
+        $this->session                    = $session;
     }
 
     /**
      * @param Volunteer $volunteer
      */
-    public function createSession(Volunteer $volunteer) : string
+    public function createSession(Volunteer $volunteer): string
     {
         if ($this->session->get('volunteer-session')) {
             return $this->session->get('volunteer-session');

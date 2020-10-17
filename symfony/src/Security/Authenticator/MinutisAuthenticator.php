@@ -61,31 +61,31 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
     private $volunteer;
 
     public function __construct(VolunteerManager $volunteerManager,
-                                VolunteerSessionManager $volunteerSessionManager,
-                                UserManager $userManager,
-                                RouterInterface $router,
-                                KernelInterface $kernel,
-                                LoggerInterface $logger = null)
+        VolunteerSessionManager $volunteerSessionManager,
+        UserManager $userManager,
+        RouterInterface $router,
+        KernelInterface $kernel,
+        LoggerInterface $logger = null)
     {
-        $this->volunteerManager = $volunteerManager;
+        $this->volunteerManager        = $volunteerManager;
         $this->volunteerSessionManager = $volunteerSessionManager;
-        $this->userManager = $userManager;
-        $this->router = $router;
-        $this->kernel = $kernel;
-        $this->logger = $logger ?? new NullLogger();
+        $this->userManager             = $userManager;
+        $this->router                  = $router;
+        $this->kernel                  = $kernel;
+        $this->logger                  = $logger ?? new NullLogger();
     }
 
     public function supports(Request $request)
     {
         $support = getenv('MINUTIS_JWT_PUBLIC_KEY_URL')
-            && '/auth' === $request->getPathInfo()
-            && 'POST' === $request->getMethod();
+                   && '/auth' === $request->getPathInfo()
+                   && 'POST' === $request->getMethod();
 
         if (!$support) {
             $this->logger->debug('Minutis authenticator: request not supported.', [
                 'public_key' => getenv('MINUTIS_JWT_PUBLIC_KEY_URL'),
-                'path_info' => $request->getPathInfo(),
-                'method' => $request->getMethod(),
+                'path_info'  => $request->getPathInfo(),
+                'method'     => $request->getMethod(),
             ]);
         }
 

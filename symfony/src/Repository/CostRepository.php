@@ -22,7 +22,7 @@ class CostRepository extends BaseRepository
     public function truncate()
     {
         // Credits: https://stackoverflow.com/a/9710383/731138
-        $cmd = $this->_em->getClassMetadata(Cost::class);
+        $cmd        = $this->_em->getClassMetadata(Cost::class);
         $connection = $this->_em->getConnection();
         $dbPlatform = $connection->getDatabasePlatform();
         $connection->beginTransaction();

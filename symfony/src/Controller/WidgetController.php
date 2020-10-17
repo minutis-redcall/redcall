@@ -73,15 +73,21 @@ class WidgetController extends BaseController
      * @param UserManager             $userManager
      * @param TagManager              $tagManager
      */
-    public function __construct(CampaignManager $campaignManager, PrefilledAnswersManager $prefilledAnswersManager, VolunteerManager $volunteerManager, StructureManager $structureManager, TranslatorInterface $translator, UserManager $userManager, TagManager $tagManager)
+    public function __construct(CampaignManager $campaignManager,
+        PrefilledAnswersManager $prefilledAnswersManager,
+        VolunteerManager $volunteerManager,
+        StructureManager $structureManager,
+        TranslatorInterface $translator,
+        UserManager $userManager,
+        TagManager $tagManager)
     {
-        $this->campaignManager = $campaignManager;
+        $this->campaignManager         = $campaignManager;
         $this->prefilledAnswersManager = $prefilledAnswersManager;
-        $this->volunteerManager = $volunteerManager;
-        $this->structureManager = $structureManager;
-        $this->translator = $translator;
-        $this->userManager = $userManager;
-        $this->tagManager = $tagManager;
+        $this->volunteerManager        = $volunteerManager;
+        $this->structureManager        = $structureManager;
+        $this->translator              = $translator;
+        $this->userManager             = $userManager;
+        $this->tagManager              = $tagManager;
     }
 
     public function prefilledAnswers(?int $campaignId = null)
@@ -143,7 +149,7 @@ class WidgetController extends BaseController
                 FormType::class
             )
             ->add('nivol', VolunteerWidgetType::class, [
-                'data' => $user ? $user->getNivol() : null,
+                'data'  => $user ? $user->getNivol() : null,
                 'label' => false,
             ])
             ->getForm();
@@ -261,7 +267,7 @@ class WidgetController extends BaseController
      */
     public function audienceToggleTag(Request $request)
     {
-        $tags = array_map(function(int $tag) {
+        $tags = array_map(function (int $tag) {
             if (!$entity = $this->tagManager->find($tag)) {
                 throw $this->createNotFoundException();
             }
@@ -311,8 +317,8 @@ class WidgetController extends BaseController
             $classification = $this->volunteerManager->classifyNivols($nivols);
 
             return new JsonResponse([
-                'success' => true,
-                'view' => $this->renderView('widget/classification.html.twig', [
+                'success'   => true,
+                'view'      => $this->renderView('widget/classification.html.twig', [
                     'classified' => $classification,
                 ]),
                 'triggered' => count($classification['reachable']),

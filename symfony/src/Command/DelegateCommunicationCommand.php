@@ -26,7 +26,7 @@ class DelegateCommunicationCommand extends BaseCommand
         parent::__construct();
 
         $this->communicationManager = $communicationManager;
-        $this->processor = $processor;
+        $this->processor            = $processor;
     }
 
     protected function configure()
@@ -42,7 +42,7 @@ class DelegateCommunicationCommand extends BaseCommand
         date_default_timezone_set('Europe/Paris');
 
         $communicationId = $input->getArgument('communication-id');
-        $communication = $this->communicationManager->find($communicationId);
+        $communication   = $this->communicationManager->find($communicationId);
         if (!$communication) {
             $output->writeln(sprintf('<error>Communication "%d" not found.</error>', $communicationId));
 

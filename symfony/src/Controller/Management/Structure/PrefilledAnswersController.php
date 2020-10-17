@@ -56,7 +56,7 @@ class PrefilledAnswersController extends BaseController
      */
     public function editorPrefilledAnswers(Request $request, Structure $structure)
     {
-        if($request->get('prefilledAnswers') === null) {
+        if ($request->get('prefilledAnswers') === null) {
             $prefilledAnswers = new PrefilledAnswers();
             $prefilledAnswers->setStructure($structure);
         } else {
@@ -72,9 +72,9 @@ class PrefilledAnswersController extends BaseController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $this->prefilledAnswersManager->save($prefilledAnswers);
+
             return $this->redirectToRoute('management_structures_prefilled_answers_list', ['structure' => $structure->getId()]);
         }
-
 
         return ['form' => $form->createView(), 'structure' => $structure];
     }

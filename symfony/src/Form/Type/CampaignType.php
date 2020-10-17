@@ -29,8 +29,7 @@ class CampaignType extends AbstractType
             ->add('notes', TextareaType::class, [
                 'label'    => 'form.campaign.fields.notes',
                 'required' => false,
-            ])
-        ;
+            ]);
 
         $builder->get('notes')->addModelTransformer(new CallbackTransformer(
             function (?string $fromData) {
@@ -46,7 +45,7 @@ class CampaignType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => CampaignModel::class,
-            'type' => Type::SMS(),
+            'type'       => Type::SMS(),
         ]);
     }
 }

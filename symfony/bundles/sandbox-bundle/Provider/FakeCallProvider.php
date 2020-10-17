@@ -41,12 +41,15 @@ class FakeCallProvider implements CallProvider
      * @param FakeCallManager          $fakeCallManager
      * @param EventDispatcherInterface $dispatcher
      */
-    public function __construct(MessageManager $messageManager, TwilioCallManager $twilioCallManager, FakeCallManager $fakeCallManager, EventDispatcherInterface $dispatcher)
+    public function __construct(MessageManager $messageManager,
+        TwilioCallManager $twilioCallManager,
+        FakeCallManager $fakeCallManager,
+        EventDispatcherInterface $dispatcher)
     {
-        $this->messageManager = $messageManager;
+        $this->messageManager    = $messageManager;
         $this->twilioCallManager = $twilioCallManager;
-        $this->fakeCallManager = $fakeCallManager;
-        $this->dispatcher = $dispatcher;
+        $this->fakeCallManager   = $fakeCallManager;
+        $this->dispatcher        = $dispatcher;
     }
 
     public function send(string $phoneNumber, array $context = []): ?string
@@ -56,7 +59,11 @@ class FakeCallProvider implements CallProvider
         return 'ok';
     }
 
-    public function triggerHook(string $phoneNumber, array $context, string $eventType, string $hookType, string $keyPressed = null)
+    public function triggerHook(string $phoneNumber,
+        array $context,
+        string $eventType,
+        string $hookType,
+        string $keyPressed = null)
     {
         $call = new TwilioCall();
         $call->setUuid(Uuid::uuid4());
@@ -69,9 +76,9 @@ class FakeCallProvider implements CallProvider
         $event = new TwilioCallEvent($call, $keyPressed);
         $this->dispatcher->dispatch($event, $eventType);
 
-        $domxml = new \DOMDocument('1.0');
+        $domxml                     = new \DOMDocument('1.0');
         $domxml->preserveWhiteSpace = false;
-        $domxml->formatOutput = true;
+        $domxml->formatOutput       = true;
         $domxml->loadXML($event->getResponse()->asXML());
 
         $fakeCall = new FakeCall();

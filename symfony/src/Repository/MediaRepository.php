@@ -28,10 +28,10 @@ class MediaRepository extends ServiceEntityRepository
     public function clearExpired()
     {
         $this->createQueryBuilder('m')
-            ->delete(Media::class, 'm')
-            ->where('m.expiresAt < :now')
-            ->setParameter('now', new \DateTime())
-            ->getQuery()
-            ->execute();
+             ->delete(Media::class, 'm')
+             ->where('m.expiresAt < :now')
+             ->setParameter('now', new \DateTime())
+             ->getQuery()
+             ->execute();
     }
 }

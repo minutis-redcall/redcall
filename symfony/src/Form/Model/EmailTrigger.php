@@ -21,14 +21,14 @@ class EmailTrigger extends BaseTrigger
     {
         if (mb_strlen($this->getMessage()) > Message::MAX_LENGTH_EMAIL) {
             $context->buildViolation('form.communication.errors.too_large_sms')
-                ->atPath('message')
-                ->addViolation();
+                    ->atPath('message')
+                    ->addViolation();
         }
 
         if (!$this->getSubject()) {
             $context->buildViolation('form.communication.errors.no_subject')
-                ->atPath('subject')
-                ->addViolation();
+                    ->atPath('subject')
+                    ->addViolation();
         }
     }
 }

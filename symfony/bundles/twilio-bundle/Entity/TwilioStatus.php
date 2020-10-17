@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
 class TwilioStatus
 {
     const TYPE_MESSAGE = 'message';
-    const TYPE_CALL = 'call';
+    const TYPE_CALL    = 'call';
 
     /**
      * @ORM\Id()

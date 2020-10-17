@@ -46,8 +46,9 @@ class CampaignController extends BaseController
         return [
             'all' => [
                 'orderBy' => $this->orderBy($all, Campaign::class, 'c.createdAt', 'DESC', 'all'),
-                'pager' => $this->getPager($all),
+                'pager'   => $this->getPager($all),
 
-            ]];
+            ],
+        ];
     }
 }

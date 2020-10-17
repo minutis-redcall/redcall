@@ -19,7 +19,7 @@ class CallTriggerType extends AbstractType
         $builder
             ->add('audience', AudienceType::class)
             ->add('message', TextareaType::class, [
-                'label' => 'form.communication.fields.body',
+                'label'    => 'form.communication.fields.body',
                 'required' => false,
             ])
             ->add('answers', CollectionType::class, [

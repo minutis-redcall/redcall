@@ -32,10 +32,10 @@ class MessageController extends BaseController
     public function openAction(Message $message)
     {
         return $this->render('message/index.html.twig', [
-            'campaign' => $message->getCommunication()->getCampaign(),
+            'campaign'      => $message->getCommunication()->getCampaign(),
             'communication' => $message->getCommunication(),
-            'message' => $message,
-            'website_url' => getenv('WEBSITE_URL'),
+            'message'       => $message,
+            'website_url'   => getenv('WEBSITE_URL'),
         ]);
     }
 
@@ -63,7 +63,8 @@ class MessageController extends BaseController
     }
 
     /**
-     * @Route(path="{code}/annuler/{signature}/{action}", name="cancel", requirements={"action" = "\d+"}, methods={"GET"})
+     * @Route(path="{code}/annuler/{signature}/{action}", name="cancel", requirements={"action" = "\d+"},
+     *                                                    methods={"GET"})
      */
     public function cancelAction(Message $message, int $action, string $signature)
     {

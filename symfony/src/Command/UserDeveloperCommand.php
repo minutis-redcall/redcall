@@ -38,7 +38,7 @@ class UserDeveloperCommand extends Command
         $username = $input->getArgument('email');
 
         /** @var User $user */
-        $user     = $this->userManager->findOneByUsername($username);
+        $user = $this->userManager->findOneByUsername($username);
 
         if (is_null($user)) {
             $output->writeln("<error>User {$username} not found.</error>");

@@ -102,20 +102,31 @@ class SecurityController extends BaseController
      */
     private $homeRoute;
 
-    public function __construct(CaptchaManager $captchaManager, EmailVerificationManager $emailVerificationManager, PasswordRecoveryManager $passwordRecoveryManager, UserManager $userManager, EventDispatcherInterface $dispatcher, Mail $mail, UserPasswordEncoderInterface $encoder, TokenStorageInterface $tokenStorage, Session $session, RequestStack $requestStack, string $userClass, string $homeRoute)
+    public function __construct(CaptchaManager $captchaManager,
+        EmailVerificationManager $emailVerificationManager,
+        PasswordRecoveryManager $passwordRecoveryManager,
+        UserManager $userManager,
+        EventDispatcherInterface $dispatcher,
+        Mail $mail,
+        UserPasswordEncoderInterface $encoder,
+        TokenStorageInterface $tokenStorage,
+        Session $session,
+        RequestStack $requestStack,
+        string $userClass,
+        string $homeRoute)
     {
-        $this->captchaManager = $captchaManager;
+        $this->captchaManager           = $captchaManager;
         $this->emailVerificationManager = $emailVerificationManager;
-        $this->passwordRecoveryManager = $passwordRecoveryManager;
-        $this->userManager = $userManager;
-        $this->dispatcher = $dispatcher;
-        $this->mail = $mail;
-        $this->encoder = $encoder;
-        $this->tokenStorage = $tokenStorage;
-        $this->session = $session;
-        $this->requestStack = $requestStack;
-        $this->userClass = $userClass;
-        $this->homeRoute = $homeRoute;
+        $this->passwordRecoveryManager  = $passwordRecoveryManager;
+        $this->userManager              = $userManager;
+        $this->dispatcher               = $dispatcher;
+        $this->mail                     = $mail;
+        $this->encoder                  = $encoder;
+        $this->tokenStorage             = $tokenStorage;
+        $this->session                  = $session;
+        $this->requestStack             = $requestStack;
+        $this->userClass                = $userClass;
+        $this->homeRoute                = $homeRoute;
     }
 
     /**
@@ -297,7 +308,7 @@ class SecurityController extends BaseController
         }
 
         return [
-            'profile' => $profileForm->createView(),
+            'profile'   => $profileForm->createView(),
             'homeRoute' => $this->homeRoute,
         ];
     }

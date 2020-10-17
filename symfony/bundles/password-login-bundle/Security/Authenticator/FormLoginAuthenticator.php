@@ -80,17 +80,25 @@ class FormLoginAuthenticator extends AbstractFormLoginAuthenticator
      * @param RouterInterface              $router
      * @param string                       $homeRoute
      */
-    public function __construct(CaptchaManager $captchaManager, FormFactoryInterface $formFactory, UserPasswordEncoderInterface $encoder, Session $session, TokenStorageInterface $tokenStorage, TranslatorInterface $translator, RequestStack $requestStack, RouterInterface $router, string $homeRoute)
+    public function __construct(CaptchaManager $captchaManager,
+        FormFactoryInterface $formFactory,
+        UserPasswordEncoderInterface $encoder,
+        Session $session,
+        TokenStorageInterface $tokenStorage,
+        TranslatorInterface $translator,
+        RequestStack $requestStack,
+        RouterInterface $router,
+        string $homeRoute)
     {
         $this->captchaManager = $captchaManager;
-        $this->formFactory = $formFactory;
-        $this->encoder = $encoder;
-        $this->session = $session;
-        $this->tokenStorage = $tokenStorage;
-        $this->translator = $translator;
-        $this->requestStack = $requestStack;
-        $this->router = $router;
-        $this->homeRoute = $homeRoute;
+        $this->formFactory    = $formFactory;
+        $this->encoder        = $encoder;
+        $this->session        = $session;
+        $this->tokenStorage   = $tokenStorage;
+        $this->translator     = $translator;
+        $this->requestStack   = $requestStack;
+        $this->router         = $router;
+        $this->homeRoute      = $homeRoute;
     }
 
     public function supports(Request $request)

@@ -80,21 +80,18 @@ abstract class BaseTwilio
      * @ORM\Column(type="text", nullable=true)
      */
     protected $context;
-
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
-    private $error;
-
     /**
      * @ORM\Column(type="datetime")
      */
     protected $createdAt;
-
     /**
      * @ORM\Column(type="datetime")
      */
     protected $updatedAt;
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $error;
 
     public function getId(): ?int
     {

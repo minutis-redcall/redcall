@@ -31,7 +31,7 @@ class MessageController extends BaseController
     public function __construct(TwilioMessageManager $messageManager, LoggerInterface $logger = null)
     {
         $this->messageManager = $messageManager;
-        $this->logger = $logger ?? new NullLogger();
+        $this->logger         = $logger ?? new NullLogger();
     }
 
     /**

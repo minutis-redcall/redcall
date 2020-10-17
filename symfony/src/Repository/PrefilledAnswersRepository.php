@@ -25,8 +25,7 @@ class PrefilledAnswersRepository extends BaseRepository
     {
         $qb = $this->createQueryBuilder('pa');
         $qb->where($qb->expr()->eq('pa.structure', ':structure'))
-            ->setParameter('structure', $structure)
-        ;
+           ->setParameter('structure', $structure);
 
         return $qb;
     }
@@ -34,9 +33,9 @@ class PrefilledAnswersRepository extends BaseRepository
     public function findByUserForStructureAndGlobal(User $user)
     {
         $qb = $this->createQueryBuilder('pa')
-            ->where('pa.structure is null')
-            ->orWhere('pa.structure in (:ids)')
-            ->setParameter('ids', $user->getStructures());
+                   ->where('pa.structure is null')
+                   ->orWhere('pa.structure in (:ids)')
+                   ->setParameter('ids', $user->getStructures());
 
         return $qb->getQuery()->getResult();
     }

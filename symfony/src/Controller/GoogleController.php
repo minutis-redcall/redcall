@@ -49,7 +49,7 @@ class GoogleController extends BaseController
 
         $input = new ArrayInput([
             'command' => 'cache:warmup',
-            '--env' => 'prod',
+            '--env'   => 'prod',
         ]);
 
         $output = new NullOutput();

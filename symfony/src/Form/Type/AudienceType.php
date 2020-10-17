@@ -47,13 +47,48 @@ class AudienceType extends AbstractType
      */
     private $translator;
 
-    public function __construct(UserManager $userManager, StructureManager $structureManager, VolunteerManager $volunteerManager, TagManager $tagManager, TranslatorInterface $translator)
+    public function __construct(UserManager $userManager,
+        StructureManager $structureManager,
+        VolunteerManager $volunteerManager,
+        TagManager $tagManager,
+        TranslatorInterface $translator)
     {
-        $this->userManager = $userManager;
+        $this->userManager      = $userManager;
         $this->structureManager = $structureManager;
         $this->volunteerManager = $volunteerManager;
-        $this->tagManager = $tagManager;
-        $this->translator = $translator;
+        $this->tagManager       = $tagManager;
+        $this->translator       = $translator;
+    }
+
+    /**
+     * This transformer is also used in the audience widget
+     *
+     * @param array|null $formData
+     *
+     * @return array
+     */
+    static public function getNivolsFromFormData(?array $formData)
+    {
+        if (!$formData) {
+            return [];
+        }
+
+        $nivols = [];
+
+        if ($formData['nivols'] ?? false) {
+            $nivols = array_merge($nivols, array_unique(array_filter(preg_split('/[^0-9a-z*]/ui', $formData['nivols']))));
+        }
+
+        foreach ($formData['structures'] ?? [] as $structure) {
+            /** @var Structure $nivols */
+            $nivols = array_merge($nivols, explode(',', $formData[sprintf('structure-%d', $structure->getId())]));
+        }
+
+        $nivols = array_map(function (string $nivol) {
+            return strtoupper(ltrim($nivol, '0'));
+        }, $nivols);
+
+        return array_filter(array_unique($nivols));
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -62,30 +97,29 @@ class AudienceType extends AbstractType
 
         $builder
             ->add('structures', EntityType::class, [
-                'class' => Structure::class,
+                'class'         => Structure::class,
                 'query_builder' => $this->userManager->getCurrentUserStructuresQueryBuilder(),
-                'choice_label' => function (Structure $structure) {
+                'choice_label'  => function (Structure $structure) {
                     return $structure->getDisplayName();
                 },
-                'multiple' => true,
-                'expanded' => true,
+                'multiple'      => true,
+                'expanded'      => true,
             ])
             ->add('tags', EntityType::class, [
-                'class' => Tag::class,
+                'class'         => Tag::class,
                 'query_builder' => function (TagRepository $tagRepository) {
                     return $tagRepository->findAllQueryBuilder();
                 },
-                'choice_label' => function (Tag $tag) {
+                'choice_label'  => function (Tag $tag) {
                     return $this->translator->trans(sprintf('tag.%s', $tag->getLabel()));
                 },
-                'multiple' => true,
-                'expanded' => true,
+                'multiple'      => true,
+                'expanded'      => true,
             ])
             ->add('nivols', TextareaType::class, [
-                'label' => false,
+                'label'    => false,
                 'required' => false,
-            ]);
-        ;
+            ]);;
 
         // Every structure has its own list of volunteers
         $structuresById = [];
@@ -117,7 +151,7 @@ class AudienceType extends AbstractType
                     }
 
                     // Populate structure datalist
-                    $key = sprintf('structure-%d', $structureId);
+                    $key            = sprintf('structure-%d', $structureId);
                     $formData[$key] = implode(',', $list);
 
                     // Populate structure ticks
@@ -142,41 +176,10 @@ class AudienceType extends AbstractType
             $structures[$structure->getId()] = $structure;
         }
 
-        $view->vars['structures'] = $structures;
-        $view->vars['root_structures'] = $this->userManager->findForCurrentUser()->getRootStructures();
+        $view->vars['structures']       = $structures;
+        $view->vars['root_structures']  = $this->userManager->findForCurrentUser()->getRootStructures();
         $view->vars['volunteer_counts'] = $this->structureManager->getVolunteerCountByStructuresForCurrentUser();
-        $view->vars['tag_counts'] = $this->structureManager->getTagCountByStructuresForCurrentUser();
-    }
-
-    /**
-     * This transformer is also used in the audience widget
-     *
-     * @param array|null $formData
-     *
-     * @return array
-     */
-    static public function getNivolsFromFormData(?array $formData)
-    {
-        if (!$formData) {
-            return [];
-        }
-
-        $nivols = [];
-
-        if ($formData['nivols'] ?? false) {
-            $nivols = array_merge($nivols, array_unique(array_filter(preg_split('/[^0-9a-z*]/ui', $formData['nivols']))));
-        }
-
-        foreach ($formData['structures'] ?? [] as $structure) {
-            /** @var Structure $nivols */
-            $nivols = array_merge($nivols, explode(',', $formData[sprintf('structure-%d', $structure->getId())]));
-        }
-
-        $nivols = array_map(function(string $nivol) {
-            return strtoupper(ltrim($nivol, '0'));
-        }, $nivols);
-
-        return array_filter(array_unique($nivols));
+        $view->vars['tag_counts']       = $this->structureManager->getTagCountByStructuresForCurrentUser();
     }
 
     /**
@@ -185,12 +188,12 @@ class AudienceType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'label' => false,
+            'label'          => false,
             'error_bubbling' => false,
         ]);
     }
 
-    public function getBlockPrefix() : string
+    public function getBlockPrefix(): string
     {
         return 'audience';
     }

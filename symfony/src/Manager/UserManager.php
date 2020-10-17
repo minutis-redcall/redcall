@@ -26,17 +26,20 @@ class UserManager extends BaseUserManager
     private $tokenStorage;
 
     /**
-     * @param VolunteerManager      $volunteerManager
-     * @param StructureManager      $structureManager
+     * @param VolunteerManager $volunteerManager
+     * @param StructureManager $structureManager
      * @param TokenStorageInterface $tokenStorage
      */
-    public function __construct(UserRepository $userRepository, VolunteerManager $volunteerManager, StructureManager $structureManager, TokenStorageInterface $tokenStorage)
+    public function __construct(UserRepository $userRepository,
+        VolunteerManager $volunteerManager,
+        StructureManager $structureManager,
+        TokenStorageInterface $tokenStorage)
     {
         parent::__construct($userRepository);
 
         $this->volunteerManager = $volunteerManager;
         $this->structureManager = $structureManager;
-        $this->tokenStorage = $tokenStorage;
+        $this->tokenStorage     = $tokenStorage;
     }
 
     /**

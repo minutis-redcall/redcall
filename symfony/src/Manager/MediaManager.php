@@ -33,13 +33,13 @@ class MediaManager
     public function __construct(MediaRepository $mediaRepository, TextToSpeech $textToSpeech, Storage $storage)
     {
         $this->mediaRepository = $mediaRepository;
-        $this->textToSpeech = $textToSpeech;
-        $this->storage = $storage;
+        $this->textToSpeech    = $textToSpeech;
+        $this->storage         = $storage;
     }
 
     public function createMedia(string $extension, string $text): Media
     {
-        $callback = function($text) {
+        $callback = function ($text) {
             return $text;
         };
 
@@ -48,7 +48,7 @@ class MediaManager
 
     public function createMp3(string $text, bool $male = false): Media
     {
-        $callback = function($text) use ($male) {
+        $callback = function ($text) use ($male) {
             return $this->textToSpeech->textToSpeech($text, $male);
         };
 

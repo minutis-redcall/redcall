@@ -40,14 +40,18 @@ class LocaleManager
      */
     private $userManager;
 
-    public function __construct(RequestStack $requestStack, SessionInterface $session, ParameterBagInterface $parameterBag, TokenStorageInterface $tokenStorage, UserManager $userManager)
+    public function __construct(RequestStack $requestStack,
+        SessionInterface $session,
+        ParameterBagInterface $parameterBag,
+        TokenStorageInterface $tokenStorage,
+        UserManager $userManager)
     {
-        $this->requestStack = $requestStack;
-        $this->session = $session;
-        $this->defaultLocale = $parameterBag->get('locale');
+        $this->requestStack     = $requestStack;
+        $this->session          = $session;
+        $this->defaultLocale    = $parameterBag->get('locale');
         $this->availableLocales = $parameterBag->get('locale_list');
-        $this->tokenStorage = $tokenStorage;
-        $this->userManager = $userManager;
+        $this->tokenStorage     = $tokenStorage;
+        $this->userManager      = $userManager;
     }
 
     /**

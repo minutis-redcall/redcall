@@ -74,18 +74,27 @@ class AdminController extends BaseController
      */
     private $homeRoute;
 
-    public function __construct(CaptchaManager $captchaManager, EmailVerificationManager $emailVerificationManager, PasswordRecoveryManager $passwordRecoveryManager, UserManager $userManager, EventDispatcherInterface $dispatcher, Mail $mail, UserPasswordEncoderInterface $encoder, TokenStorageInterface $tokenStorage, Session $session, string $homeRoute)
+    public function __construct(CaptchaManager $captchaManager,
+        EmailVerificationManager $emailVerificationManager,
+        PasswordRecoveryManager $passwordRecoveryManager,
+        UserManager $userManager,
+        EventDispatcherInterface $dispatcher,
+        Mail $mail,
+        UserPasswordEncoderInterface $encoder,
+        TokenStorageInterface $tokenStorage,
+        Session $session,
+        string $homeRoute)
     {
-        $this->captchaManager = $captchaManager;
+        $this->captchaManager           = $captchaManager;
         $this->emailVerificationManager = $emailVerificationManager;
-        $this->passwordRecoveryManager = $passwordRecoveryManager;
-        $this->userManager = $userManager;
-        $this->dispatcher = $dispatcher;
-        $this->mail = $mail;
-        $this->encoder = $encoder;
-        $this->tokenStorage = $tokenStorage;
-        $this->session = $session;
-        $this->homeRoute = $homeRoute;
+        $this->passwordRecoveryManager  = $passwordRecoveryManager;
+        $this->userManager              = $userManager;
+        $this->dispatcher               = $dispatcher;
+        $this->mail                     = $mail;
+        $this->encoder                  = $encoder;
+        $this->tokenStorage             = $tokenStorage;
+        $this->session                  = $session;
+        $this->homeRoute                = $homeRoute;
     }
 
     /**
@@ -102,9 +111,9 @@ class AdminController extends BaseController
         }
 
         return [
-            'search' => $search->createView(),
-            'users'  => $this->userManager->searchAll($criteria),
-            'homeRoute' => $this->homeRoute
+            'search'    => $search->createView(),
+            'users'     => $this->userManager->searchAll($criteria),
+            'homeRoute' => $this->homeRoute,
         ];
     }
 

@@ -43,9 +43,11 @@ class FakeCallController extends BaseController
      * @param FakeCallProvider $fakeCallProvider
      * @param VolunteerManager $volunteerManager
      */
-    public function __construct(FakeCallManager $fakeCallManager, FakeCallProvider $fakeCallProvider, VolunteerManager $volunteerManager)
+    public function __construct(FakeCallManager $fakeCallManager,
+        FakeCallProvider $fakeCallProvider,
+        VolunteerManager $volunteerManager)
     {
-        $this->fakeCallManager = $fakeCallManager;
+        $this->fakeCallManager  = $fakeCallManager;
         $this->fakeCallProvider = $fakeCallProvider;
         $this->volunteerManager = $volunteerManager;
     }
@@ -88,19 +90,18 @@ class FakeCallController extends BaseController
         $messages = $this->fakeCallManager->findMessagesForPhone($volunteer->getPhoneNumber());
 
         $form = $this->createFormBuilder()
-            ->add('digit', NumberType::class, [
-                'label' => 'sandbox.fake_call.your_message',
-                'constraints' => [
-                    new NotBlank(),
-                    new Length(['min' => 1, 'max' => 1]),
-                ],
-            ])
-            ->add('submit', SubmitType::class, [
-                'label' => 'sandbox.fake_call.send',
-            ])
-            ->getForm()
-            ->handleRequest($request)
-        ;
+                     ->add('digit', NumberType::class, [
+                         'label'       => 'sandbox.fake_call.your_message',
+                         'constraints' => [
+                             new NotBlank(),
+                             new Length(['min' => 1, 'max' => 1]),
+                         ],
+                     ])
+                     ->add('submit', SubmitType::class, [
+                         'label' => 'sandbox.fake_call.send',
+                     ])
+                     ->getForm()
+                     ->handleRequest($request);
 
         if ($messages && $form->isSubmitted() && $form->isValid()) {
             /** @var FakeCall $last */
@@ -116,7 +117,7 @@ class FakeCallController extends BaseController
 
             return $this->redirectToRoute('sandbox_fake_call_read', [
                 'phoneNumber' => $volunteer->getPhoneNumber(),
-                'campaignId' => $campaignId,
+                'campaignId'  => $campaignId,
             ]);
         }
 

@@ -28,8 +28,7 @@ class CloseExpiredCampaignsCommand extends BaseCommand
         $this
             ->setName('campaign:expired')
             ->setDescription('Close campaigns inactive since X days')
-            ->addArgument('days', InputArgument::OPTIONAL, 'Number of days before closing an inactive campaign', 7)
-        ;
+            ->addArgument('days', InputArgument::OPTIONAL, 'Number of days before closing an inactive campaign', 7);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)

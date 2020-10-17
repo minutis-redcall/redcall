@@ -33,11 +33,13 @@ class CampaignController extends BaseController
      */
     private $userManager;
 
-     public function __construct(CampaignManager $campaignManager, CommunicationManager $communicationManager, UserManager $userManager)
+    public function __construct(CampaignManager $campaignManager,
+        CommunicationManager $communicationManager,
+        UserManager $userManager)
     {
-        $this->campaignManager = $campaignManager;
+        $this->campaignManager      = $campaignManager;
         $this->communicationManager = $communicationManager;
-        $this->userManager = $userManager;
+        $this->userManager          = $userManager;
     }
 
     /**

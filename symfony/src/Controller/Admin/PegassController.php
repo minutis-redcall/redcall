@@ -51,13 +51,17 @@ class PegassController extends BaseController
      */
     private $requestStack;
 
-    public function __construct(UserManager $userManager, StructureManager $structureManager, VolunteerManager $volunteerManager, PaginationManager $paginationManager, RequestStack $requestStack)
+    public function __construct(UserManager $userManager,
+        StructureManager $structureManager,
+        VolunteerManager $volunteerManager,
+        PaginationManager $paginationManager,
+        RequestStack $requestStack)
     {
-        $this->userManager = $userManager;
-        $this->structureManager = $structureManager;
-        $this->volunteerManager = $volunteerManager;
+        $this->userManager       = $userManager;
+        $this->structureManager  = $structureManager;
+        $this->volunteerManager  = $volunteerManager;
         $this->paginationManager = $paginationManager;
-        $this->requestStack = $requestStack;
+        $this->requestStack      = $requestStack;
     }
 
     /**
@@ -74,9 +78,9 @@ class PegassController extends BaseController
         }
 
         return $this->render('admin/pegass/index.html.twig', [
-            'search'           => $search->createView(),
-            'type'             => $request->get('type'),
-            'users' => $this->paginationManager->getPager(
+            'search' => $search->createView(),
+            'type'   => $request->get('type'),
+            'users'  => $this->paginationManager->getPager(
                 $this->userManager->searchQueryBuilder($criteria)
             ),
         ]);
@@ -89,7 +93,7 @@ class PegassController extends BaseController
     {
         $users = $this->userManager->findAll();
 
-        $list = array_filter(array_map(function(User $user) {
+        $list = array_filter(array_map(function (User $user) {
             return $user->getNivol();
         }, $users));
 
@@ -189,14 +193,14 @@ class PegassController extends BaseController
     public function createUser(Request $request, KernelInterface $kernel)
     {
         $form = $this->createFormBuilder()
-            ->add('nivol', VolunteerWidgetType::class, [
-                'label' => false,
-            ])
-            ->add('submit', SubmitType::class, [
-                'label' => 'base.button.create',
-            ])
-            ->getForm()
-            ->handleRequest($request);
+                     ->add('nivol', VolunteerWidgetType::class, [
+                         'label' => false,
+                     ])
+                     ->add('submit', SubmitType::class, [
+                         'label' => 'base.button.create',
+                     ])
+                     ->getForm()
+                     ->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $volunteer = $this->volunteerManager->findOneByNivol($form->get('nivol')->getData());
@@ -209,7 +213,7 @@ class PegassController extends BaseController
 
             $input = new ArrayInput([
                 'command' => 'user:create',
-                'nivol' => [$volunteer->getNivol()],
+                'nivol'   => [$volunteer->getNivol()],
             ]);
 
             $application->run($input, new NullOutput());
@@ -241,7 +245,7 @@ class PegassController extends BaseController
 
         $input = new ArrayInput([
             'command' => 'user:create',
-            'nivol' => [$volunteer->getNivol()],
+            'nivol'   => [$volunteer->getNivol()],
         ]);
 
         $application->run($input, new NullOutput());

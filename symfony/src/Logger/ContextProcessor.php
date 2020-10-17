@@ -24,16 +24,18 @@ class ContextProcessor
      */
     private $requestStack;
 
-    public function __construct(KernelInterface $kernel, TokenStorageInterface $tokenStorage, RequestStack $requestStack)
+    public function __construct(KernelInterface $kernel,
+        TokenStorageInterface $tokenStorage,
+        RequestStack $requestStack)
     {
-        $this->kernel = $kernel;
+        $this->kernel       = $kernel;
         $this->tokenStorage = $tokenStorage;
         $this->requestStack = $requestStack;
     }
 
     public function __invoke(array $record)
     {
-        $record['extra']['env'] = $this->kernel->getEnvironment();
+        $record['extra']['env']      = $this->kernel->getEnvironment();
         $record['extra']['platform'] = php_sapi_name();
         if ($request = $this->requestStack->getMasterRequest()) {
             $record['extra']['uri'] = $this->requestStack->getMasterRequest()->getUri();

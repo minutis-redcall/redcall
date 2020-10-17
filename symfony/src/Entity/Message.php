@@ -19,13 +19,13 @@ class Message
     const MIN_LENGTH = 1;
 
     // TODO move to Enum\Type
-    const MAX_LENGTH_SMS = 300;
-    const MAX_LENGTH_CALL = 1000;
+    const MAX_LENGTH_SMS   = 300;
+    const MAX_LENGTH_CALL  = 1000;
     const MAX_LENGTH_EMAIL = 50000;
 
     // TODO move to Enum\Type
-    const SMS_COST = 0.05052;
-    const CALL_COST = 0.033;
+    const SMS_COST   = 0.05052;
+    const CALL_COST  = 0.033;
     const EMAIL_COST = 0.000375;
 
     /**
@@ -110,8 +110,8 @@ class Message
      */
     public function __construct()
     {
-        $this->sent = false;
-        $this->costs = new ArrayCollection();
+        $this->sent      = false;
+        $this->costs     = new ArrayCollection();
         $this->updatedAt = new \DateTime();
     }
 

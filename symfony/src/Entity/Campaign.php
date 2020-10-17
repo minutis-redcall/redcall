@@ -29,7 +29,7 @@ class Campaign
         self::TYPE_RED,
     ];
 
-    const COLORS = [
+    const COLORS      = [
         self::TYPE_GREEN        => '#009933',
         self::TYPE_LIGHT_ORANGE => '#ff9900',
         self::TYPE_DARK_ORANGE  => '#ff6600',
@@ -262,11 +262,11 @@ class Campaign
     public function getCampaignStatus(): array
     {
         $data = [
-            'notes' => [
-                'content' => nl2br($this->notes),
+            'notes'          => [
+                'content'                 => nl2br($this->notes),
                 'notes-updated-timestamp' => $this->notesUpdatedAt ? $this->notesUpdatedAt->getTimestamp() : 0,
-                'notes-updated-date' => $this->notesUpdatedAt ? $this->notesUpdatedAt->format('d/m/Y') : null,
-                'notes-updated-time' => $this->notesUpdatedAt ? $this->notesUpdatedAt->format('H:i') : null,
+                'notes-updated-date'      => $this->notesUpdatedAt ? $this->notesUpdatedAt->format('d/m/Y') : null,
+                'notes-updated-time'      => $this->notesUpdatedAt ? $this->notesUpdatedAt->format('H:i') : null,
             ],
             'communications' => [],
         ];

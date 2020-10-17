@@ -85,17 +85,25 @@ class VolunteersController extends BaseController
      */
     private $templating;
 
-    public function __construct(VolunteerManager $volunteerManager, StructureManager $structureManager, PegassManager $pegassManager, CampaignManager $campaignManager, CommunicationManager $communicationManager, PaginationManager $paginationManager, KernelInterface $kernel, TranslatorInterface $translator, Environment $templating)
+    public function __construct(VolunteerManager $volunteerManager,
+        StructureManager $structureManager,
+        PegassManager $pegassManager,
+        CampaignManager $campaignManager,
+        CommunicationManager $communicationManager,
+        PaginationManager $paginationManager,
+        KernelInterface $kernel,
+        TranslatorInterface $translator,
+        Environment $templating)
     {
-        $this->volunteerManager = $volunteerManager;
-        $this->structureManager = $structureManager;
-        $this->pegassManager = $pegassManager;
-        $this->campaignManager = $campaignManager;
+        $this->volunteerManager     = $volunteerManager;
+        $this->structureManager     = $structureManager;
+        $this->pegassManager        = $pegassManager;
+        $this->campaignManager      = $campaignManager;
         $this->communicationManager = $communicationManager;
-        $this->paginationManager = $paginationManager;
-        $this->kernel = $kernel;
-        $this->translator = $translator;
-        $this->templating = $templating;
+        $this->paginationManager    = $paginationManager;
+        $this->kernel               = $kernel;
+        $this->translator           = $translator;
+        $this->templating           = $templating;
     }
 
     /**
@@ -112,7 +120,7 @@ class VolunteersController extends BaseController
 
         if ($structure) {
             $queryBuilder = $this->volunteerManager->searchInStructureQueryBuilder($structure, $criteria);
-        } else if ($this->isGranted('ROLE_ADMIN')) {
+        } elseif ($this->isGranted('ROLE_ADMIN')) {
             $queryBuilder = $this->volunteerManager->searchAllQueryBuilder($criteria);
         } else {
             $queryBuilder = $this->volunteerManager->searchForCurrentUserQueryBuilder($criteria);
@@ -121,7 +129,7 @@ class VolunteersController extends BaseController
         return $this->render('management/volunteers/list.html.twig', [
             'search'     => $search->createView(),
             'volunteers' => $this->paginationManager->getPager($queryBuilder),
-            'structure' => $structure,
+            'structure'  => $structure,
         ]);
     }
 
@@ -208,7 +216,7 @@ class VolunteersController extends BaseController
             'form'      => $form->createView(),
             'isCreate'  => $isCreate,
             'volunteer' => $volunteer,
-            'answerId' => $request->get('answerId'),
+            'answerId'  => $request->get('answerId'),
         ]);
     }
 
@@ -377,20 +385,20 @@ class VolunteersController extends BaseController
         }
 
         $form = $this->createFormBuilder()
-            ->add('cancel', SubmitType::class, [
-                'label' => 'manage_volunteers.anonymize.cancel',
-                'attr' => [
-                    'class' => 'btn btn-success',
-                ]
-            ])
-            ->add('confirm', SubmitType::class, [
-                'label' => 'manage_volunteers.anonymize.confirm',
-                'attr' => [
-                    'class' => 'btn btn-danger',
-                ]
-            ])
-            ->getForm()
-            ->handleRequest($request);
+                     ->add('cancel', SubmitType::class, [
+                         'label' => 'manage_volunteers.anonymize.cancel',
+                         'attr'  => [
+                             'class' => 'btn btn-success',
+                         ],
+                     ])
+                     ->add('confirm', SubmitType::class, [
+                         'label' => 'manage_volunteers.anonymize.confirm',
+                         'attr'  => [
+                             'class' => 'btn btn-danger',
+                         ],
+                     ])
+                     ->getForm()
+                     ->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $trigger = $this->deleteVolunteer($volunteer, $answer, $processor);
@@ -402,15 +410,17 @@ class VolunteersController extends BaseController
 
         return [
             'volunteer' => $volunteer,
-            'answer' => $answer,
-            'form' => $form->createView(),
+            'answer'    => $answer,
+            'form'      => $form->createView(),
         ];
     }
 
-    private function deleteVolunteer(Volunteer $volunteer, ?Answer $answer, SimpleProcessor $processor) : \App\Entity\Campaign
+    private function deleteVolunteer(Volunteer $volunteer,
+        ?Answer $answer,
+        SimpleProcessor $processor): \App\Entity\Campaign
     {
         // Sending a message to the volunteer to let him know he is now removed
-        $sms = new SmsTrigger();
+        $sms      = new SmsTrigger();
         $campaign = new Campaign($sms);
 
         $campaign->label = $this->translator->trans('manage_volunteers.anonymize.campaign.title', [
@@ -445,8 +455,8 @@ class VolunteersController extends BaseController
         ]));
 
         $email->setMessage($this->templating->render('management/volunteers/delete_email.html.twig', [
-            'volunteer' => $volunteer,
-            'answer' => $answer,
+            'volunteer'   => $volunteer,
+            'answer'      => $answer,
             'website_url' => getenv('WEBSITE_URL'),
         ]));
 

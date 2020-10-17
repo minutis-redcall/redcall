@@ -50,13 +50,17 @@ class TwilioCallManager
      * @param RouterInterface          $router
      * @param LoggerInterface|null     $logger
      */
-    public function __construct(TwilioCallRepository $callRepository, Twilio $twilio, EventDispatcherInterface $eventDispatcher, RouterInterface $router, LoggerInterface $logger = null)
+    public function __construct(TwilioCallRepository $callRepository,
+        Twilio $twilio,
+        EventDispatcherInterface $eventDispatcher,
+        RouterInterface $router,
+        LoggerInterface $logger = null)
     {
-        $this->callRepository = $callRepository;
-        $this->twilio = $twilio;
+        $this->callRepository  = $callRepository;
+        $this->twilio          = $twilio;
         $this->eventDispatcher = $eventDispatcher;
-        $this->router = $router;
-        $this->logger = $logger ?: new NullLogger();
+        $this->router          = $router;
+        $this->logger          = $logger ?: new NullLogger();
     }
 
     public function get(string $uuid): ?TwilioCall
@@ -101,7 +105,9 @@ class TwilioCallManager
         return $event->getResponse();
     }
 
-    public function sendCall(string $phoneNumber, bool $handleAnsweringMachines = false, array $context = []): TwilioCall
+    public function sendCall(string $phoneNumber,
+        bool $handleAnsweringMachines = false,
+        array $context = []): TwilioCall
     {
         $entity = new TwilioCall();
         $entity->setUuid(Uuid::uuid4());
@@ -114,20 +120,20 @@ class TwilioCallManager
             $event = new TwilioCallEvent($entity);
             $this->eventDispatcher->dispatch($event, TwilioEvents::CALL_ESTABLISHED);
 
-            $options = [];
+            $options  = [];
             $response = $event->getResponse();
             if ($response instanceof RedirectResponse) {
                 $options['url'] = $response->getTargetUrl();
-            } else if ($response instanceof VoiceResponse) {
+            } elseif ($response instanceof VoiceResponse) {
                 $options['Twiml'] = $response->asXML();
             } else {
                 throw new \LogicException('Can\'t establish call, no responses were provided.');
             }
 
             if ($handleAnsweringMachines) {
-                $options['MachineDetection'] = 'Enable';
-                $options['AsyncAMD'] = true;
-                $options['AsyncAmdStatusCallback'] = sprintf('%s%s',  trim(getenv('WEBSITE_URL'), '/'), $this->router->generate('twilio_answering_machine', [
+                $options['MachineDetection']       = 'Enable';
+                $options['AsyncAMD']               = true;
+                $options['AsyncAmdStatusCallback'] = sprintf('%s%s', trim(getenv('WEBSITE_URL'), '/'), $this->router->generate('twilio_answering_machine', [
                     'uuid' => $entity->getUuid(),
                 ]));
             }
@@ -148,8 +154,8 @@ class TwilioCallManager
 
             $this->logger->error('Unable to send call', [
                 'phoneNumber' => $entity->getToNumber(),
-                'context' => $context,
-                'exception' => $e->getMessage(),
+                'context'     => $context,
+                'exception'   => $e->getMessage(),
             ]);
         }
 
@@ -208,8 +214,8 @@ class TwilioCallManager
                 $call = $this->getClient()->calls($entity->getSid())->fetch();
             } catch (\Exception $e) {
                 $this->logger->error('Unable to fetch Twilio call', [
-                    'id' => $entity->getId(),
-                    'sid' => $entity->getSid(),
+                    'id'        => $entity->getId(),
+                    'sid'       => $entity->getSid(),
                     'exception' => $e->getMessage(),
                 ]);
 

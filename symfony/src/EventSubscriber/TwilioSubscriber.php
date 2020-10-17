@@ -41,13 +41,17 @@ class TwilioSubscriber implements EventSubscriberInterface
      */
     private $translator;
 
-    public function __construct(CostManager $costManager, MessageManager $messageManager, VoiceCalls $voiceCalls, Sender $sender, TranslatorInterface $translator)
+    public function __construct(CostManager $costManager,
+        MessageManager $messageManager,
+        VoiceCalls $voiceCalls,
+        Sender $sender,
+        TranslatorInterface $translator)
     {
-        $this->costManager = $costManager;
+        $this->costManager    = $costManager;
         $this->messageManager = $messageManager;
-        $this->voiceCalls = $voiceCalls;
-        $this->sender = $sender;
-        $this->translator = $translator;
+        $this->voiceCalls     = $voiceCalls;
+        $this->sender         = $sender;
+        $this->translator     = $translator;
     }
 
     /**
@@ -56,14 +60,14 @@ class TwilioSubscriber implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            TwilioEvents::MESSAGE_PRICE_UPDATED    => 'onMessagePriceUpdated',
-            TwilioEvents::MESSAGE_RECEIVED => 'onMessageReceived',
-            TwilioEvents::MESSAGE_ERROR => 'onMessageError',
-            TwilioEvents::CALL_PRICE_UPDATED => 'onCallPriceUpdated',
-            TwilioEvents::CALL_RECEIVED => 'onCallReceived',
-            TwilioEvents::CALL_ESTABLISHED => 'onCallEstablished',
-            TwilioEvents::CALL_KEY_PRESSED => 'onCallKeyPressed',
-            TwilioEvents::CALL_ERROR => 'onCallError',
+            TwilioEvents::MESSAGE_PRICE_UPDATED  => 'onMessagePriceUpdated',
+            TwilioEvents::MESSAGE_RECEIVED       => 'onMessageReceived',
+            TwilioEvents::MESSAGE_ERROR          => 'onMessageError',
+            TwilioEvents::CALL_PRICE_UPDATED     => 'onCallPriceUpdated',
+            TwilioEvents::CALL_RECEIVED          => 'onCallReceived',
+            TwilioEvents::CALL_ESTABLISHED       => 'onCallEstablished',
+            TwilioEvents::CALL_KEY_PRESSED       => 'onCallKeyPressed',
+            TwilioEvents::CALL_ERROR             => 'onCallError',
             TwilioEvents::CALL_ANSWERING_MACHINE => 'onAnsweringMachine',
         ];
     }
@@ -144,14 +148,14 @@ class TwilioSubscriber implements EventSubscriberInterface
         $response = new VoiceResponse();
 
         $response->say('Votre numéro de téléphone n\'est sur aucun déclenchement actif pour le moment.', [
-            'voice' => 'alice',
+            'voice'    => 'alice',
             'language' => 'fr-FR',
         ]);
 
         $response->pause(['length' => 1]);
 
         $response->say('Your phone number is not currently on any active triggers.', [
-            'voice' => 'alice',
+            'voice'    => 'alice',
             'language' => 'en-GB',
         ]);
 

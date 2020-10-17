@@ -70,7 +70,8 @@ class CampaignManager
      *
      * @throws Exception
      */
-    public function launchNewCampaign(CampaignModel $campaignModel, ProcessorInterface $processor = null): CampaignEntity
+    public function launchNewCampaign(CampaignModel $campaignModel,
+        ProcessorInterface $processor = null): CampaignEntity
     {
         $campaignEntity = new CampaignEntity();
         $campaignEntity
@@ -184,7 +185,7 @@ class CampaignManager
         return $this->campaignRepository->getActiveCampaignsQueryBuilder();
     }
 
-    public function getAllCampaignsQueryBuilder() : QueryBuilder
+    public function getAllCampaignsQueryBuilder(): QueryBuilder
     {
         return $this->campaignRepository->getAllCampaignsQueryBuilder();
     }
@@ -228,7 +229,7 @@ class CampaignManager
      *
      * @return string
      */
-    public function getHash(int $campaignId) : string
+    public function getHash(int $campaignId): string
     {
         $criteria = [
             // trigger note has been updated

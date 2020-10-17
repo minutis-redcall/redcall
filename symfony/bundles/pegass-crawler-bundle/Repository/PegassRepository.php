@@ -113,7 +113,7 @@ class PegassRepository extends ServiceEntityRepository
 
         if ($parentIdentifier) {
             $qb->andWhere('p.parentIdentifier = :parentIdentifier')
-                ->setParameter('parentIdentifier', $parentIdentifier);
+               ->setParameter('parentIdentifier', $parentIdentifier);
         }
 
         return $qb
@@ -160,7 +160,7 @@ class PegassRepository extends ServiceEntityRepository
                       ->getSingleScalarResult();
 
         $offset = 0;
-        $stop = false;
+        $stop   = false;
         while ($offset < $count) {
             $qb = $this->createQueryBuilder('p')
                        ->where('p.type = :type')

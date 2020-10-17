@@ -31,10 +31,12 @@ class HomeController extends Controller
      * @param VolunteerManager        $volunteerManager
      * @param VolunteerSessionManager $volunteerSessionManager
      */
-    public function __construct(LocaleManager $locale, VolunteerManager $volunteerManager, VolunteerSessionManager $volunteerSessionManager)
+    public function __construct(LocaleManager $locale,
+        VolunteerManager $volunteerManager,
+        VolunteerSessionManager $volunteerSessionManager)
     {
-        $this->locale = $locale;
-        $this->volunteerManager = $volunteerManager;
+        $this->locale                  = $locale;
+        $this->volunteerManager        = $volunteerManager;
         $this->volunteerSessionManager = $volunteerSessionManager;
     }
 
@@ -82,7 +84,7 @@ class HomeController extends Controller
         }
 
         return $this->redirectToRoute('space_home', [
-            'sessionId' => $this->volunteerSessionManager->createSession($volunteer)
+            'sessionId' => $this->volunteerSessionManager->createSession($volunteer),
         ]);
     }
 }

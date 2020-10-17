@@ -66,7 +66,7 @@ class AnswerManager
         $this->answerRepository->save($answer);
     }
 
-    public function getSearchQueryBuilder(string $criteria) : QueryBuilder
+    public function getSearchQueryBuilder(string $criteria): QueryBuilder
     {
         return $this->answerRepository->getSearchQueryBuilder($criteria);
     }

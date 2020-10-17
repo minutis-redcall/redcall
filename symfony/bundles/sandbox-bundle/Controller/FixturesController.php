@@ -22,7 +22,7 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 /**
  * @Route("/fixtures", name="fixtures_")
  */
-class FixturesController  extends BaseController
+class FixturesController extends BaseController
 {
     /**
      * @var FixturesManager
@@ -44,11 +44,13 @@ class FixturesController  extends BaseController
      * @param TagManager          $tagManager
      * @param TranslatorInterface $translator
      */
-    public function __construct(FixturesManager $fixturesManager, TagManager $tagManager, TranslatorInterface $translator)
+    public function __construct(FixturesManager $fixturesManager,
+        TagManager $tagManager,
+        TranslatorInterface $translator)
     {
         $this->fixturesManager = $fixturesManager;
-        $this->tagManager = $tagManager;
-        $this->translator = $translator;
+        $this->tagManager      = $tagManager;
+        $this->translator      = $translator;
     }
 
     /**
@@ -111,33 +113,33 @@ class FixturesController  extends BaseController
     private function getStructureForm(Request $request): FormInterface
     {
         return $this->createFormBuilder()
-            ->add('name', TextType::class, [
-                'label' => 'sandbox.fixtures.structure.name',
-                'constraints' => [
-                    new NotBlank(),
-                    new Length(['min' => 3]),
-                ]
-            ])
-            ->add('parent', StructureWidgetType::class, [
-                'required' => false,
-                'label' => 'sandbox.fixtures.structure.parent'
-            ])
-            ->add('number_volunteers', NumberType::class, [
-                'label' => 'sandbox.fixtures.structure.number_volunteers',
-                'constraints' => [
-                    new NotBlank(),
-                    new Length(['min' => 0]),
-                ],
-            ])
-            ->add('bind_to_user', CheckboxType::class, [
-                'label' => 'sandbox.fixtures.structure.bind_to_user',
-                'required' => false,
-            ])
-            ->add('submit', SubmitType::class, [
-                'label' => 'base.button.create',
-            ])
-            ->getForm()
-            ->handleRequest($request);
+                    ->add('name', TextType::class, [
+                        'label'       => 'sandbox.fixtures.structure.name',
+                        'constraints' => [
+                            new NotBlank(),
+                            new Length(['min' => 3]),
+                        ],
+                    ])
+                    ->add('parent', StructureWidgetType::class, [
+                        'required' => false,
+                        'label'    => 'sandbox.fixtures.structure.parent',
+                    ])
+                    ->add('number_volunteers', NumberType::class, [
+                        'label'       => 'sandbox.fixtures.structure.number_volunteers',
+                        'constraints' => [
+                            new NotBlank(),
+                            new Length(['min' => 0]),
+                        ],
+                    ])
+                    ->add('bind_to_user', CheckboxType::class, [
+                        'label'    => 'sandbox.fixtures.structure.bind_to_user',
+                        'required' => false,
+                    ])
+                    ->add('submit', SubmitType::class, [
+                        'label' => 'base.button.create',
+                    ])
+                    ->getForm()
+                    ->handleRequest($request);
     }
 
     /**
@@ -148,22 +150,22 @@ class FixturesController  extends BaseController
     private function getVolunteerForm(Request $request): FormInterface
     {
         return $this->createFormBuilder()
-            ->add('number_volunteers', NumberType::class, [
-                'label' => 'sandbox.fixtures.volunteer.number_volunteers',
-                'constraints' => [
-                    new NotBlank(),
-                    new Length(['min' => 0]),
-                ],
-            ])
-            ->add('structure', StructureWidgetType::class, [
-                'label' => false,
-                'required' => false,
-            ])
-            ->add('submit', SubmitType::class, [
-                'label' => 'base.button.create',
-            ])
-            ->getForm()
-            ->handleRequest($request);
+                    ->add('number_volunteers', NumberType::class, [
+                        'label'       => 'sandbox.fixtures.volunteer.number_volunteers',
+                        'constraints' => [
+                            new NotBlank(),
+                            new Length(['min' => 0]),
+                        ],
+                    ])
+                    ->add('structure', StructureWidgetType::class, [
+                        'label'    => false,
+                        'required' => false,
+                    ])
+                    ->add('submit', SubmitType::class, [
+                        'label' => 'base.button.create',
+                    ])
+                    ->getForm()
+                    ->handleRequest($request);
     }
 
 }

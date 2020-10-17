@@ -4,37 +4,38 @@
 
 {% block body %}
 
-<div class="jumbotron text-center">
+    <div class="jumbotron text-center">
 
-    {% if tags %}
+        {% if tags %}
 
-        <a href="{{ path('sandbox_fixtures_tags') }}"
-           class="text-lg-center large-button btn btn-secondary">{{ 'sandbox.fixtures.tags'|trans }}</a>
+            <a href="{{ path('sandbox_fixtures_tags') }}"
+               class="text-lg-center large-button btn btn-secondary">{{ 'sandbox.fixtures.tags'|trans }}</a>
 
-    {% else %}
+        {% else %}
 
-        <h3>{{ 'sandbox.fixtures.structure.title'|trans }}</h3>
+            <h3>{{ 'sandbox.fixtures.structure.title'|trans }}</h3>
 
-        <div class="text-left">
-            {{ form(structure) }}
-        </div>
-
-        <br/><hr/><br/>
-
-        <h3>{{ 'sandbox.fixtures.volunteer.title'|trans }}</h3>
-
-        <div class="text-left">
-            {{ form_start(volunteer) }}
-            {{ form_row(volunteer.number_volunteers) }}
-            <div class="form-group">
-            <label for="{{ volunteer.structure.vars.id }}">{{ 'sandbox.fixtures.volunteer.structure'|trans }}</label>
-                {{ form_row(volunteer.structure) }}
+            <div class="text-left">
+                {{ form(structure) }}
             </div>
-            {{ form_end(volunteer) }}
-        </div>
 
-    {% endif %}
+            <br/>
+            <hr/><br/>
 
-</div>
+            <h3>{{ 'sandbox.fixtures.volunteer.title'|trans }}</h3>
+
+            <div class="text-left">
+                {{ form_start(volunteer) }}
+                {{ form_row(volunteer.number_volunteers) }}
+                <div class="form-group">
+                    <label for="{{ volunteer.structure.vars.id }}">{{ 'sandbox.fixtures.volunteer.structure'|trans }}</label>
+                    {{ form_row(volunteer.structure) }}
+                </div>
+                {{ form_end(volunteer) }}
+            </div>
+
+        {% endif %}
+
+    </div>
 
 {% endblock %}

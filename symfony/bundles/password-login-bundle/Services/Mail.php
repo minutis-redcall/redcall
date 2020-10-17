@@ -26,8 +26,8 @@ class Mail
     public function __construct(TranslatorInterface $translator, Environment $twig, \Swift_Mailer $mailer)
     {
         $this->translator = $translator;
-        $this->twig = $twig;
-        $this->mailer = $mailer;
+        $this->twig       = $twig;
+        $this->mailer     = $mailer;
     }
 
     public function send(string $to, string $subject, string $template, array $parameters = [], string $locale = null)

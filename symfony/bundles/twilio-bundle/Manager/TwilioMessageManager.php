@@ -48,13 +48,17 @@ class TwilioMessageManager
      * @param RouterInterface          $router
      * @param LoggerInterface|null     $logger
      */
-    public function __construct(TwilioMessageRepository $messageRepository, Twilio $twilio, EventDispatcherInterface $eventDispatcher, RouterInterface $router, LoggerInterface $logger = null)
+    public function __construct(TwilioMessageRepository $messageRepository,
+        Twilio $twilio,
+        EventDispatcherInterface $eventDispatcher,
+        RouterInterface $router,
+        LoggerInterface $logger = null)
     {
         $this->messageRepository = $messageRepository;
-        $this->twilio = $twilio;
-        $this->eventDispatcher = $eventDispatcher;
-        $this->router = $router;
-        $this->logger = $logger ?: new NullLogger();
+        $this->twilio            = $twilio;
+        $this->eventDispatcher   = $eventDispatcher;
+        $this->router            = $router;
+        $this->logger            = $logger ?: new NullLogger();
     }
 
     public function get(string $uuid): ?TwilioMessage
@@ -133,8 +137,8 @@ class TwilioMessageManager
 
             $this->logger->error('Unable to send SMS', [
                 'phoneNumber' => $entity->getToNumber(),
-                'context' => $context,
-                'exception' => $e->getMessage(),
+                'context'     => $context,
+                'exception'   => $e->getMessage(),
             ]);
         }
 
@@ -152,8 +156,8 @@ class TwilioMessageManager
                 $message = $this->getClient()->messages($entity->getSid())->fetch();
             } catch (\Exception $e) {
                 $this->logger->error('Unable to fetch Twilio message', [
-                    'id' => $entity->getId(),
-                    'sid' => $entity->getSid(),
+                    'id'        => $entity->getId(),
+                    'sid'       => $entity->getSid(),
                     'exception' => $e->getMessage(),
                 ]);
 

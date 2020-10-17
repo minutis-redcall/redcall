@@ -72,16 +72,23 @@ class CommunicationManager
      * @param LoggerInterface         $slackLogger
      * @param LoggerInterface         $logger
      */
-    public function __construct(MessageManager $messageManager, CommunicationRepository $communicationRepository, ProcessorInterface $processor, UserManager $userManager, VolunteerManager $volunteerManager, RouterInterface $router, LoggerInterface $slackLogger, LoggerInterface $logger)
+    public function __construct(MessageManager $messageManager,
+        CommunicationRepository $communicationRepository,
+        ProcessorInterface $processor,
+        UserManager $userManager,
+        VolunteerManager $volunteerManager,
+        RouterInterface $router,
+        LoggerInterface $slackLogger,
+        LoggerInterface $logger)
     {
-        $this->messageManager = $messageManager;
+        $this->messageManager          = $messageManager;
         $this->communicationRepository = $communicationRepository;
-        $this->processor = $processor;
-        $this->userManager = $userManager;
-        $this->volunteerManager = $volunteerManager;
-        $this->router = $router;
-        $this->slackLogger = $slackLogger;
-        $this->logger = $logger;
+        $this->processor               = $processor;
+        $this->userManager             = $userManager;
+        $this->volunteerManager        = $volunteerManager;
+        $this->router                  = $router;
+        $this->slackLogger             = $slackLogger;
+        $this->logger                  = $logger;
     }
 
     /**
@@ -104,7 +111,9 @@ class CommunicationManager
         return $this->communicationRepository->find($communicationId);
     }
 
-    public function launchNewCommunication(Campaign $campaign, BaseTrigger $trigger, ProcessorInterface $processor = null): Communication
+    public function launchNewCommunication(Campaign $campaign,
+        BaseTrigger $trigger,
+        ProcessorInterface $processor = null): Communication
     {
         $this->logger->info('Launching a new communication', [
             'model' => $trigger,
@@ -182,7 +191,7 @@ class CommunicationManager
         }
 
         $volunteers = $this->volunteerManager->filterByNivolAndAccess($trigger->getAudience());
-        $codes = $this->messageManager->generateCodes(count($volunteers));
+        $codes      = $this->messageManager->generateCodes(count($volunteers));
 
         $prefixes = [];
         if (1 !== $choiceKey) {

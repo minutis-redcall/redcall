@@ -43,12 +43,16 @@ class VoiceCalls
      * @param MediaManager        $mediaManager
      * @param MessageManager      $messageManager
      */
-    public function __construct(RouterInterface $router, TranslatorInterface $translator, MessageFormatter $formatter, MediaManager $mediaManager, MessageManager $messageManager)
+    public function __construct(RouterInterface $router,
+        TranslatorInterface $translator,
+        MessageFormatter $formatter,
+        MediaManager $mediaManager,
+        MessageManager $messageManager)
     {
-        $this->router = $router;
-        $this->translator = $translator;
-        $this->formatter = $formatter;
-        $this->mediaManager = $mediaManager;
+        $this->router         = $router;
+        $this->translator     = $translator;
+        $this->formatter      = $formatter;
+        $this->mediaManager   = $mediaManager;
         $this->messageManager = $messageManager;
     }
 
@@ -124,7 +128,7 @@ class VoiceCalls
 
             $keypad = $response->gather([
                 'numDigits' => 1,
-                'action' => trim(getenv('WEBSITE_URL'), '/').$url,
+                'action'    => trim(getenv('WEBSITE_URL'), '/').$url,
             ]);
 
             $keypad->play(

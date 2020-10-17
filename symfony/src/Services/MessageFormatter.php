@@ -33,7 +33,7 @@ class MessageFormatter
      */
     public function __construct(RouterInterface $router, TranslatorInterface $translator, Environment $templating)
     {
-        $this->router = $router;
+        $this->router     = $router;
         $this->translator = $translator;
         $this->templating = $templating;
     }
@@ -94,7 +94,7 @@ class MessageFormatter
     {
         $communication = $message->getCommunication();
 
-        $contentParts  = [];
+        $contentParts = [];
 
         $hours = ltrim($message->getCommunication()->getCreatedAt()->format('H'), 0);
         if (!$hours) {
@@ -136,7 +136,7 @@ class MessageFormatter
             foreach ($choices as $choice) {
                 $contentParts[] = $this->translator->trans('message.call.choices', [
                     '%answer%' => $choice->getLabel(),
-                    '%code%' => $choice->getCode(),
+                    '%code%'   => $choice->getCode(),
                 ]);
             }
         }
@@ -210,8 +210,8 @@ class MessageFormatter
     public function formatHtmlEmailContent(Message $message): string
     {
         return $this->templating->render('message/email.html.twig', [
-            'website_url' => getenv('WEBSITE_URL'),
-            'message' => $message,
+            'website_url'   => getenv('WEBSITE_URL'),
+            'message'       => $message,
             'communication' => $message->getCommunication(),
         ]);
     }

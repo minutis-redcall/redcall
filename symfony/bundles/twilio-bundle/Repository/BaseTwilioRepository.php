@@ -14,12 +14,12 @@ class BaseTwilioRepository extends BaseRepository
     public function findEntitiesWithoutPrice(int $retries): array
     {
         return $this->createQueryBuilder('t')
-            ->where('t.price IS NULL')
-            ->andWhere('t.sid IS NOT NULL')
-            ->andWhere('t.retry < :retries')
-            ->setParameter('retries', $retries)
-            ->getQuery()
-            ->getResult();
+                    ->where('t.price IS NULL')
+                    ->andWhere('t.sid IS NOT NULL')
+                    ->andWhere('t.retry < :retries')
+                    ->setParameter('retries', $retries)
+                    ->getQuery()
+                    ->getResult();
     }
 
     /**
@@ -34,15 +34,15 @@ class BaseTwilioRepository extends BaseRepository
     public function foreach(callable $callback)
     {
         $count = $this->createQueryBuilder('t')
-            ->select('COUNT(t.id)')
-            ->getQuery()
-            ->getSingleScalarResult();
+                      ->select('COUNT(t.id)')
+                      ->getQuery()
+                      ->getSingleScalarResult();
 
         $offset = 0;
         while ($offset < $count) {
             $qb = $this->createQueryBuilder('t')
-                ->setFirstResult($offset)
-                ->setMaxResults(100);
+                       ->setFirstResult($offset)
+                       ->setMaxResults(100);
 
             $iterator = $qb->getQuery()->iterate();
 

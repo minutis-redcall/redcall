@@ -86,8 +86,8 @@ class ExportController extends BaseController
     {
         $this->validateCsrfOrThrowNotFoundException('communication', $request->request->get('csrf'));
 
-        $selection     = $this->getSelection($request, $communication);
-        $campaign      = $communication->getCampaign();
+        $selection = $this->getSelection($request, $communication);
+        $campaign  = $communication->getCampaign();
 
         $tables   = [];
         $messages = $communication->getMessages()->toArray();
@@ -175,7 +175,7 @@ class ExportController extends BaseController
      *
      * @return array
      */
-    private function getSelection(Request $request, Communication $communication) : array
+    private function getSelection(Request $request, Communication $communication): array
     {
         $selection = json_decode($request->request->get('volunteers'), true);
         if (!$selection && $communication->getMessages()) {

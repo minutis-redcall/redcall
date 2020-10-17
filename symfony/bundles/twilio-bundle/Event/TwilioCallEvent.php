@@ -25,7 +25,7 @@ class TwilioCallEvent
 
     public function __construct(TwilioCall $call, string $keyPressed = null)
     {
-        $this->call = $call;
+        $this->call       = $call;
         $this->keyPressed = $keyPressed;
     }
 
