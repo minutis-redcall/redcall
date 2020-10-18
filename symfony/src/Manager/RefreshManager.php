@@ -262,11 +262,16 @@ class RefreshManager
             return;
         }
 
+        // Volunteer disabled on Pegass side
         $enabled = $pegass->evaluate('user.actif');
         if (!$enabled) {
             $volunteer->addReport('import_report.disabled');
+            $volunteer->setEnabled(false);
+            $this->volunteerManager->save($volunteer);
+
+            return;
         }
-        $volunteer->setEnabled($enabled ?? false);
+        $volunteer->setEnabled(true);
 
         // Update basic information
         $volunteer->setFirstName($this->normalizeName($pegass->evaluate('user.prenom')));
@@ -307,6 +312,9 @@ class RefreshManager
         if ($volunteer->isMinor()) {
             $volunteer->addReport('import_report.minor');
             $volunteer->setEnabled(false);
+            $this->volunteerManager->save($volunteer);
+
+            return;
         }
 
         $this->volunteerManager->save($volunteer);
