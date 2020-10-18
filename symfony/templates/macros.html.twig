@@ -35,7 +35,7 @@
 {% macro typeBadge(color) %}
     {% set hexColor = constant('App\\Entity\\Campaign::COLORS')[color] %}
     <span class="badge text-white" style="background-color:{{ hexColor }};">
-        {{ ('campaign.types.' ~ color)|trans|title }}
+        {{ ('campaign.types.' ~ color)|trans }}
     </span>
 {% endmacro %}
 

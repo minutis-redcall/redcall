@@ -413,7 +413,7 @@ class RefreshManager
             }
         }
 
-        // VL, VPSP
+        // VL, VPSP, MAR, CEM
         foreach ($pegass->evaluate('skills') as $skill) {
             if (9 == ($skill['id'] ?? false)) {
                 $skills[] = Tag::TAG_DRVR_VL;
@@ -422,9 +422,30 @@ class RefreshManager
             if (10 == ($skill['id'] ?? false)) {
                 $skills[] = Tag::TAG_DRVR_VPSP;
             }
+
+            if (15 == ($skill['id'] ?? false)) {
+                $skills[] = Tag::TAG_MAR;
+            }
+
+            if (8 == ($skill['id'] ?? false)) {
+                $skills[] = Tag::TAG_CEM;
+            }
         }
 
-        // PSC1, PSE1, PSE2, CI, TCAU
+        // DLAS, DLUS, CEM
+        foreach ($pegass->evaluate('nominations') as $nomination) {
+            if (309 == ($nomination['id'] ?? false)) {
+                $skills[] = Tag::TAG_DLAS;
+            }
+            if (40 == ($nomination['id'] ?? false)) {
+                $skills[] = Tag::TAG_DLUS;
+            }
+            if (331 == ($nomination['id'] ?? false)) {
+                $skills[] = Tag::TAG_CEM;
+            }
+        }
+
+        // PSC1, PSE1, PSE2, CI, TCAU, TCEO
         foreach ($pegass->evaluate('trainings') as $training) {
             // Check skill expiration (expiration date + 6 months)
             if (isset($training['dateRecyclage']) && preg_match('/^\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}$/', $training['dateRecyclage'])) {
@@ -452,6 +473,10 @@ class RefreshManager
 
             if (in_array($training['formation']['code'] ?? false, ['TCAU'])) {
                 $skills[] = Tag::TAG_TCAU;
+            }
+
+            if (in_array($training['formation']['code'] ?? false, ['TCEO'])) {
+                $skills[] = Tag::TAG_TCEO;
             }
         }
 

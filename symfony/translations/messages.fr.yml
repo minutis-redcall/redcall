@@ -78,6 +78,11 @@ tag:
   drvr_vpsp: Chauf. VPSP
   ci: Chef Int.
   tcau: TCAU
+  tceo: TCEO
+  dlas: DLAS
+  dlus: DLUS
+  cem: Chef Maraude
+  mar: Maraudeur
   shortcuts:
     emergency_assistance: US
     social_assistance: AS
@@ -88,6 +93,11 @@ tag:
     drvr_vpsp: VPSP
     ci: CI
     tcau: TCAU
+    dlas: DLAS
+    dlus: DLUS
+    tceo: TCEO
+    cem: CEM
+    mar: MAR
 
 minutis:
   back: Retourner sur Minutis
