@@ -23,7 +23,7 @@ final class Version20201018154114 extends AbstractMigration
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql("
-            INSERT INTO tag ( id , label )
+            INSERT IGNORE INTO tag ( id , label )
             VALUES
                 ( 12 , 'tceo' ),
                 ( 13 , 'dlas' ),
