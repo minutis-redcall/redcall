@@ -18,7 +18,12 @@ class Tag
     const TAG_CI                   = 'ci';
     const TAG_DRVR_VL              = 'drvr_vl';
     const TAG_DRVR_VPSP            = 'drvr_vpsp';
-    const TAG_TCAU                 = 'tcau';
+    const TAG_TCAU                 = 'tcau'; // Tronc Commun Acteurs Urgence
+    const TAG_TCEO                 = 'tceo'; // Tronc Commun Encadrants Operationnels
+    const TAG_DLAS                 = 'dlas'; // Directeur Local Action Social
+    const TAG_DLUS                 = 'dlus'; // Directeur Local Urgence Secours
+    const TAG_CEM                  = 'cem';  // Team lead
+    const TAG_MAR                  = 'mar';  // Maraudeur
 
     const TAGS = [
         self::TAG_SOCIAL_ASSISTANCE,
@@ -29,6 +34,12 @@ class Tag
         self::TAG_CI,
         self::TAG_DRVR_VL,
         self::TAG_DRVR_VPSP,
+        self::TAG_TCAU,
+        self::TAG_TCEO,
+        self::TAG_DLAS,
+        self::TAG_DLUS,
+        self::TAG_MAR,
+        self::TAG_CEM,
     ];
 
     const PRIORITY = [
@@ -38,7 +49,12 @@ class Tag
         self::TAG_PSE_1,
         self::TAG_PSE_2,
         self::TAG_CI,
+        self::TAG_MAR,
+        self::TAG_CEM,
         self::TAG_TCAU,
+        self::TAG_TCEO,
+        self::TAG_DLAS,
+        self::TAG_DLUS,
         self::TAG_DRVR_VL,
         self::TAG_DRVR_VPSP,
     ];
@@ -49,6 +65,8 @@ class Tag
         self::TAG_PSE_1 => [self::TAG_PSC_1],
 
         self::TAG_DRVR_VPSP => [self::TAG_DRVR_VL],
+
+        self::TAG_CEM => [self::TAG_MAR],
     ];
 
     /**

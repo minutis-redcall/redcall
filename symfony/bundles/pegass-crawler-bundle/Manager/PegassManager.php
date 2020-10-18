@@ -265,7 +265,8 @@ class PegassManager
 
         $identifiers = [];
         foreach ($pages as $page) {
-            $identifiers = array_merge($identifiers, array_column($page['list'], 'id'));
+            $list        = $page['list'] ?? $page['content'] ?? [];
+            $identifiers = array_merge($identifiers, array_column($list, 'id'));
         }
         if ($identifiers) {
             $missingEntities = $this->pegassRepository->findMissingEntities(Pegass::TYPE_VOLUNTEER, $identifiers, $parentIdentifier);
@@ -280,11 +281,8 @@ class PegassManager
         }
 
         foreach ($pages as $page) {
-            if (!isset($page['list'])) {
-                continue;
-            }
-
-            foreach ($page['list'] as $row) {
+            $list = $page['list'] ?? $page['content'] ?? [];
+            foreach ($list as $row) {
                 $volunteer = $this->pegassRepository->getEntity(Pegass::TYPE_VOLUNTEER, $row['id'], $entity->getIdentifier(), false);
                 if (!$volunteer) {
                     $volunteer = new Pegass();

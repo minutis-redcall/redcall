@@ -78,6 +78,11 @@ tag:
   drvr_vpsp: VPSP driver
   ci: Inter. chief
   tcau: TCAU
+  tceo: TCEO
+  dlus: DLUS
+  dlas: DLAS
+  cem: Roam Leader
+  mar: Roamer
   shortcuts:
     emergency_assistance: US
     social_assistance: AS
@@ -88,6 +93,11 @@ tag:
     drvr_vpsp: VPSP
     ci: CI
     tcau: TCAU
+    tceo: TCEO
+    dlus: DLUS
+    dlas: DLAS
+    cem: CE
+    mar: ROAM
 
 minutis:
   back: Go back to Minutis
