@@ -69,7 +69,7 @@ class VolunteerManager
      *
      * @return Volunteer|null
      */
-    public function find(int $volunteerId): ?Volunteer
+    public function find(int $volunteerId) : ?Volunteer
     {
         return $this->volunteerRepository->find($volunteerId);
     }
@@ -79,7 +79,7 @@ class VolunteerManager
      *
      * @return Volunteer|null
      */
-    public function findOneByNivol(string $nivol): ?Volunteer
+    public function findOneByNivol(string $nivol) : ?Volunteer
     {
         return $this->volunteerRepository->findOneByNivol($nivol);
     }
@@ -89,7 +89,7 @@ class VolunteerManager
      *
      * @return Volunteer|null
      */
-    public function findOneByPhoneNumber(string $phoneNumber): ?Volunteer
+    public function findOneByPhoneNumber(string $phoneNumber) : ?Volunteer
     {
         return $this->volunteerRepository->findOneByPhoneNumber($phoneNumber);
     }
@@ -99,7 +99,7 @@ class VolunteerManager
      *
      * @return Volunteer|null
      */
-    public function findOneByEmail(string $email): ?Volunteer
+    public function findOneByEmail(string $email) : ?Volunteer
     {
         return $this->volunteerRepository->findOneByEmail($email);
     }
@@ -132,21 +132,28 @@ class VolunteerManager
         );
     }
 
-    public function searchInStructureQueryBuilder(Structure $structure, ?string $criteria)
+    public function searchInStructureQueryBuilder(Structure $structure,
+        ?string $criteria,
+        bool $onlyEnabled,
+        bool $onlyUsers)
     {
-        return $this->volunteerRepository->searchInStructureQueryBuilder($structure, $criteria);
+        return $this->volunteerRepository->searchInStructureQueryBuilder($structure, $criteria, $onlyEnabled, $onlyUsers);
     }
 
-    public function searchAllQueryBuilder(?string $criteria): QueryBuilder
+    public function searchAllQueryBuilder(?string $criteria, bool $onlyEnabled, bool $onlyUsers) : QueryBuilder
     {
-        return $this->volunteerRepository->searchAllQueryBuilder($criteria);
+        return $this->volunteerRepository->searchAllWithFiltersQueryBuilder($criteria, $onlyEnabled, $onlyUsers);
     }
 
-    public function searchForCurrentUserQueryBuilder(?string $criteria): QueryBuilder
+    public function searchForCurrentUserQueryBuilder(?string $criteria,
+        bool $onlyEnabled,
+        bool $onlyUsers) : QueryBuilder
     {
         return $this->volunteerRepository->searchForUserQueryBuilder(
             $this->userManager->findForCurrentUser(),
-            $criteria
+            $criteria,
+            $onlyEnabled,
+            $onlyUsers
         );
     }
 
@@ -155,7 +162,7 @@ class VolunteerManager
         $this->volunteerRepository->foreach($callback, $onlyEnabled);
     }
 
-    public function findIssues(): array
+    public function findIssues() : array
     {
         $volunteers = $this->volunteerRepository->getIssues(
             $this->userManager->findForCurrentUser()
@@ -182,7 +189,7 @@ class VolunteerManager
     /**
      * @return array
      */
-    public function getIssues(): array
+    public function getIssues() : array
     {
         return $this->volunteerRepository->getIssues(
             $this->userManager->findForCurrentUser()
@@ -199,7 +206,7 @@ class VolunteerManager
      *
      * @return Volunteer[]
      */
-    public function filterByNivolAndAccess(array $nivols): array
+    public function filterByNivolAndAccess(array $nivols) : array
     {
         $user = $this->userManager->findForCurrentUser();
 
@@ -215,7 +222,7 @@ class VolunteerManager
      *
      * @return Volunteer[]
      */
-    public function filterByIdAndAccess(array $ids): array
+    public function filterByIdAndAccess(array $ids) : array
     {
         $user = $this->userManager->findForCurrentUser();
 
@@ -226,7 +233,7 @@ class VolunteerManager
         return $this->volunteerRepository->filterByIdsAndAccess($ids, $user);
     }
 
-    public function classifyNivols(array $nivols): array
+    public function classifyNivols(array $nivols) : array
     {
         $user = $this->userManager->findForCurrentUser();
 
@@ -256,26 +263,26 @@ class VolunteerManager
         ];
     }
 
-    public function loadVolunteersAudience(Structure $structure, array $nivols): array
+    public function loadVolunteersAudience(Structure $structure, array $nivols) : array
     {
         $rows = $this->volunteerRepository->loadVolunteersAudience($structure, $nivols);
 
         return $this->populateDatalist($rows);
     }
 
-    public function searchVolunteersAudience(Structure $structure, string $criteria): array
+    public function searchVolunteersAudience(Structure $structure, string $criteria) : array
     {
         $rows = $this->volunteerRepository->searchVolunteersAudience($structure, $criteria);
 
         return $this->populateDatalist($rows);
     }
 
-    public function searchVolunteerAudienceByTags(array $tags, Structure $structure): array
+    public function searchVolunteerAudienceByTags(array $tags, Structure $structure) : array
     {
         return $this->volunteerRepository->searchVolunteerAudienceByTags($tags, $structure);
     }
 
-    public function organizeNivolsByStructures(array $structures, array $nivols): array
+    public function organizeNivolsByStructures(array $structures, array $nivols) : array
     {
         $organized = [];
 
@@ -345,7 +352,7 @@ class VolunteerManager
         $this->save($volunteer);
     }
 
-    private function populateDatalist(array $rows): array
+    private function populateDatalist(array $rows) : array
     {
         $tags = $this->tagManager->findTagsForNivols(
             array_unique(array_column($rows, 'nivol'))

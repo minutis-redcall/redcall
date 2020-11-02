@@ -55,7 +55,7 @@ class VolunteerRepository extends BaseRepository
         }
     }
 
-    public function findOneByNivol(string $nivol): ?Volunteer
+    public function findOneByNivol(string $nivol) : ?Volunteer
     {
         return $this->findOneBy([
             'nivol' => ltrim($nivol, '0'),
@@ -69,7 +69,7 @@ class VolunteerRepository extends BaseRepository
      *
      * @return Volunteer[]
      */
-    public function searchForUser(User $user, ?string $keyword, int $maxResults, bool $onlyEnabled = false): array
+    public function searchForUser(User $user, ?string $keyword, int $maxResults, bool $onlyEnabled = false) : array
     {
         return $this->searchForUserQueryBuilder($user, $keyword, $onlyEnabled)
                     ->getQuery()
@@ -77,12 +77,19 @@ class VolunteerRepository extends BaseRepository
                     ->getResult();
     }
 
-    public function searchForUserQueryBuilder(User $user, ?string $keyword, bool $onlyEnabled = false): QueryBuilder
+    public function searchForUserQueryBuilder(User $user,
+        ?string $keyword,
+        bool $onlyEnabled = false,
+        bool $onlyUsers = true) : QueryBuilder
     {
         $qb = $this->createAccessibleVolunteersQueryBuilder($user, $onlyEnabled);
 
         if ($keyword) {
             $this->addSearchCriteria($qb, $keyword);
+        }
+
+        if ($onlyUsers) {
+            $this->addUserCriteria($qb);
         }
 
         return $qb;
@@ -94,7 +101,7 @@ class VolunteerRepository extends BaseRepository
      *
      * @return Volunteer[]
      */
-    public function searchAll(?string $keyword, int $maxResults): array
+    public function searchAll(?string $keyword, int $maxResults) : array
     {
         return $this->searchAllQueryBuilder($keyword)
                     ->getQuery()
@@ -104,15 +111,22 @@ class VolunteerRepository extends BaseRepository
 
     public function searchInStructureQueryBuilder(Structure $structure,
         ?string $keyword,
-        bool $enabled = false): QueryBuilder
+        bool $onlyEnabled = true,
+        bool $onlyUsers = false) : QueryBuilder
     {
-        return $this->searchAllQueryBuilder($keyword, $enabled)
-                    ->join('v.structures', 's')
-                    ->andWhere('s.id = :structure')
-                    ->setParameter('structure', $structure);
+        $qb = $this->searchAllQueryBuilder($keyword, $onlyEnabled)
+                   ->join('v.structures', 's')
+                   ->andWhere('s.id = :structure')
+                   ->setParameter('structure', $structure);
+
+        if ($onlyUsers) {
+            $this->addUserCriteria($qb);
+        }
+
+        return $qb;
     }
 
-    public function findInStructureQueryBuilder(Structure $structure, bool $enabled = false): QueryBuilder
+    public function findInStructureQueryBuilder(Structure $structure, bool $enabled = false) : QueryBuilder
     {
         return $this->createVolunteersQueryBuilder($enabled)
                     ->join('v.structures', 's')
@@ -120,12 +134,25 @@ class VolunteerRepository extends BaseRepository
                     ->setParameter('structure', $structure);
     }
 
-    public function searchAllQueryBuilder(?string $keyword, bool $enabled = false): QueryBuilder
+    public function searchAllQueryBuilder(?string $keyword, bool $enabled = false) : QueryBuilder
     {
         $qb = $this->createVolunteersQueryBuilder($enabled);
 
         if ($keyword) {
             $this->addSearchCriteria($qb, $keyword);
+        }
+
+        return $qb;
+    }
+
+    public function searchAllWithFiltersQueryBuilder(?string $criteria,
+        bool $onlyEnabled,
+        bool $onlyUsers) : QueryBuilder
+    {
+        $qb = $this->searchAllQueryBuilder($criteria, $onlyEnabled);
+
+        if ($onlyUsers) {
+            $this->addUserCriteria($qb);
         }
 
         return $qb;
@@ -180,7 +207,7 @@ class VolunteerRepository extends BaseRepository
         }
     }
 
-    public function getIssues(User $user): array
+    public function getIssues(User $user) : array
     {
         $qb = $this->createAccessibleVolunteersQueryBuilder($user);
 
@@ -224,7 +251,7 @@ class VolunteerRepository extends BaseRepository
      *
      * @return Volunteer[]
      */
-    public function filterByNivols(array $nivols): array
+    public function filterByNivols(array $nivols) : array
     {
         return $this->createVolunteersQueryBuilder()
                     ->andWhere('v.nivol IN (:nivols)')
@@ -239,7 +266,7 @@ class VolunteerRepository extends BaseRepository
      *
      * @return Volunteer[]
      */
-    public function filterByNivolsAndAccess(array $nivols, User $user): array
+    public function filterByNivolsAndAccess(array $nivols, User $user) : array
     {
         return $this->createAccessibleVolunteersQueryBuilder($user)
                     ->andWhere('v.nivol IN (:nivols)')
@@ -253,7 +280,7 @@ class VolunteerRepository extends BaseRepository
      *
      * @return Volunteer[]
      */
-    public function filterByIds(array $ids): array
+    public function filterByIds(array $ids) : array
     {
         return $this->createVolunteersQueryBuilder()
                     ->andWhere('v.id IN (:ids)')
@@ -268,7 +295,7 @@ class VolunteerRepository extends BaseRepository
      *
      * @return Volunteer[]
      */
-    public function filterByIdsAndAccess(array $ids, User $user): array
+    public function filterByIdsAndAccess(array $ids, User $user) : array
     {
         return $this->createAccessibleVolunteersQueryBuilder($user)
                     ->andWhere('v.id IN (:ids)')
@@ -277,7 +304,7 @@ class VolunteerRepository extends BaseRepository
                     ->getResult();
     }
 
-    public function createAcessibleNivolsFilterQueryBuilder(array $nivols, User $user): QueryBuilder
+    public function createAcessibleNivolsFilterQueryBuilder(array $nivols, User $user) : QueryBuilder
     {
         return $this->createAccessibleVolunteersQueryBuilder($user)
                     ->select('v.nivol')
@@ -285,7 +312,7 @@ class VolunteerRepository extends BaseRepository
                     ->setParameter('nivols', $nivols, Connection::PARAM_STR_ARRAY);
     }
 
-    public function filterReachableNivols(array $nivols, User $user): array
+    public function filterReachableNivols(array $nivols, User $user) : array
     {
         $valid = $this->createAcessibleNivolsFilterQueryBuilder($nivols, $user)
                       ->andWhere('v.phoneNumber IS NOT NULL')
@@ -298,7 +325,7 @@ class VolunteerRepository extends BaseRepository
         return array_column($valid, 'nivol');
     }
 
-    public function filterInvalidNivols(array $nivols): array
+    public function filterInvalidNivols(array $nivols) : array
     {
         $valid = $this->createVolunteersQueryBuilder(false)
                       ->select('v.nivol')
@@ -310,7 +337,7 @@ class VolunteerRepository extends BaseRepository
         return array_filter(array_diff($nivols, array_column($valid, 'nivol')));
     }
 
-    public function filterDisabledNivols(array $nivols): array
+    public function filterDisabledNivols(array $nivols) : array
     {
         $disabled = $this->createVolunteersQueryBuilder(false)
                          ->select('v.nivol')
@@ -323,7 +350,7 @@ class VolunteerRepository extends BaseRepository
         return array_column($disabled, 'nivol');
     }
 
-    public function filterNoPhoneNivols(array $nivols, User $user): array
+    public function filterNoPhoneNivols(array $nivols, User $user) : array
     {
         $filtered = $this->createAcessibleNivolsFilterQueryBuilder($nivols, $user)
                          ->andWhere('v.phoneNumber IS NULL')
@@ -333,7 +360,7 @@ class VolunteerRepository extends BaseRepository
         return array_column($filtered, 'nivol');
     }
 
-    public function filterPhoneOptOutNivols(array $nivols, User $user): array
+    public function filterPhoneOptOutNivols(array $nivols, User $user) : array
     {
         $filtered = $this->createAcessibleNivolsFilterQueryBuilder($nivols, $user)
                          ->andWhere('v.phoneNumber IS NOT NULL')
@@ -344,7 +371,7 @@ class VolunteerRepository extends BaseRepository
         return array_column($filtered, 'nivol');
     }
 
-    public function filterNoEmailNivols(array $nivols, User $user): array
+    public function filterNoEmailNivols(array $nivols, User $user) : array
     {
         $filtered = $this->createAcessibleNivolsFilterQueryBuilder($nivols, $user)
                          ->andWhere('v.email IS NULL')
@@ -354,7 +381,7 @@ class VolunteerRepository extends BaseRepository
         return array_column($filtered, 'nivol');
     }
 
-    public function filterEmailOptOutNivols(array $nivols, User $user): array
+    public function filterEmailOptOutNivols(array $nivols, User $user) : array
     {
         $filtered = $this->createAcessibleNivolsFilterQueryBuilder($nivols, $user)
                          ->andWhere('v.email IS NOT NULL')
@@ -365,7 +392,7 @@ class VolunteerRepository extends BaseRepository
         return array_column($filtered, 'nivol');
     }
 
-    public function loadVolunteersAudience(Structure $structure, array $nivols): array
+    public function loadVolunteersAudience(Structure $structure, array $nivols) : array
     {
         return $this->findInStructureQueryBuilder($structure, true)
                     ->select('v.firstName, v.lastName, v.nivol')
@@ -376,7 +403,7 @@ class VolunteerRepository extends BaseRepository
                     ->getArrayResult();
     }
 
-    public function searchVolunteersAudience(Structure $structure, string $criteria): array
+    public function searchVolunteersAudience(Structure $structure, string $criteria) : array
     {
         return $this->searchInStructureQueryBuilder($structure, $criteria, true)
                     ->select('v.firstName, v.lastName, v.nivol')
@@ -386,7 +413,7 @@ class VolunteerRepository extends BaseRepository
                     ->getArrayResult();
     }
 
-    public function searchVolunteerAudienceByTags(array $tags, Structure $structure): array
+    public function searchVolunteerAudienceByTags(array $tags, Structure $structure) : array
     {
         $rows = $this->createVolunteersQueryBuilder(true)
                      ->select('v.nivol')
@@ -402,7 +429,7 @@ class VolunteerRepository extends BaseRepository
         return array_column($rows, 'nivol');
     }
 
-    public function getNivolsAndStructures(array $structures, array $nivols): array
+    public function getNivolsAndStructures(array $structures, array $nivols) : array
     {
         return $this->createVolunteersQueryBuilder(true)
                     ->select('v.nivol, s.id as structure_id')
@@ -415,7 +442,7 @@ class VolunteerRepository extends BaseRepository
                     ->getArrayResult();
     }
 
-    private function createVolunteersQueryBuilder(bool $enabled = true): QueryBuilder
+    private function createVolunteersQueryBuilder(bool $enabled = true) : QueryBuilder
     {
         $qb = $this->createQueryBuilder('v')
                    ->distinct();
@@ -427,7 +454,7 @@ class VolunteerRepository extends BaseRepository
         return $qb;
     }
 
-    private function createAccessibleVolunteersQueryBuilder(User $user, bool $enabled = true): QueryBuilder
+    private function createAccessibleVolunteersQueryBuilder(User $user, bool $enabled = true) : QueryBuilder
     {
         return $this->createVolunteersQueryBuilder($enabled)
                     ->join('v.structures', 's')
@@ -451,5 +478,11 @@ class VolunteerRepository extends BaseRepository
                 )
             )
             ->setParameter('criteria', sprintf('%%%s%%', $criteria));
+    }
+
+    private function addUserCriteria(QueryBuilder $qb)
+    {
+        $qb
+            ->join('v.user', 'vu');
     }
 }
