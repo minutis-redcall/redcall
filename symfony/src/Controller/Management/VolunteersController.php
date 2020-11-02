@@ -25,6 +25,7 @@ use DateTimeZone;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormInterface;
@@ -113,17 +114,21 @@ class VolunteersController extends BaseController
     {
         $search = $this->createSearchForm($request);
 
-        $criteria = null;
+        $criteria     = null;
+        $hideDisabled = true;
+        $filterUsers  = false;
         if ($search->isSubmitted() && $search->isValid()) {
-            $criteria = $search->get('criteria')->getData();
+            $criteria     = $search->get('criteria')->getData();
+            $hideDisabled = $search->get('only_enabled')->getData();
+            $filterUsers  = $search->get('only_users')->getData();
         }
 
         if ($structure) {
-            $queryBuilder = $this->volunteerManager->searchInStructureQueryBuilder($structure, $criteria);
+            $queryBuilder = $this->volunteerManager->searchInStructureQueryBuilder($structure, $criteria, $hideDisabled, $filterUsers);
         } elseif ($this->isGranted('ROLE_ADMIN')) {
-            $queryBuilder = $this->volunteerManager->searchAllQueryBuilder($criteria);
+            $queryBuilder = $this->volunteerManager->searchAllQueryBuilder($criteria, $hideDisabled, $filterUsers);
         } else {
-            $queryBuilder = $this->volunteerManager->searchForCurrentUserQueryBuilder($criteria);
+            $queryBuilder = $this->volunteerManager->searchForCurrentUserQueryBuilder($criteria, $hideDisabled, $filterUsers);
         }
 
         return $this->render('management/volunteers/list.html.twig', [
@@ -137,17 +142,17 @@ class VolunteersController extends BaseController
      * @Route(path="/pegass-update/{csrf}/{id}", name="pegass_update")
      * @IsGranted("VOLUNTEER", subject="volunteer")
      */
-    public function pegassUpdate(Volunteer $volunteer, string $csrf)
+    public function pegassUpdate(Request $request, Volunteer $volunteer, string $csrf)
     {
         $this->validateCsrfOrThrowNotFoundException('volunteers', $csrf);
 
         if (!$volunteer->canForcePegassUpdate()) {
-            return $this->redirectToRoute('management_volunteers_list');
+            return $this->redirectToRoute('management_volunteers_list', $request->query->all());
         }
 
         // Just in case Pegass database would contain some RCE?
         if (!preg_match('/^[a-zA-Z0-9]+$/', $volunteer->getIdentifier())) {
-            return $this->redirectToRoute('management_volunteers_list');
+            return $this->redirectToRoute('management_volunteers_list', $request->query->all());
         }
 
         // Prevents multiple clicks
@@ -159,7 +164,7 @@ class VolunteersController extends BaseController
         $command = sprintf('%s pegass --volunteer %s', escapeshellarg($console), $volunteer->getIdentifier());
         exec(sprintf('%s > /dev/null 2>&1 & echo -n \$!', $command));
 
-        return $this->redirectToRoute('management_volunteers_list');
+        return $this->redirectToRoute('management_volunteers_list', $request->query->all());
     }
 
     /**
@@ -209,7 +214,7 @@ class VolunteersController extends BaseController
                 ]);
             }
 
-            return $this->redirectToRoute('management_volunteers_list');
+            return $this->redirectToRoute('management_volunteers_list', $request->query->all());
         }
 
         return $this->render('management/volunteers/form.html.twig', [
@@ -232,35 +237,35 @@ class VolunteersController extends BaseController
      * @Route(path="/lock/{csrf}/{id}", name="lock")
      * @IsGranted("VOLUNTEER", subject="volunteer")
      */
-    public function lockAction(Volunteer $volunteer, string $csrf)
+    public function lockAction(Request $request, Volunteer $volunteer, string $csrf)
     {
         $this->validateCsrfOrThrowNotFoundException('volunteers', $csrf);
 
         $volunteer->setLocked(true);
         $this->volunteerManager->save($volunteer);
 
-        return $this->redirectToRoute('management_volunteers_list');
+        return $this->redirectToRoute('management_volunteers_list', $request->query->all());
     }
 
     /**
      * @Route(path="/unlock/{csrf}/{id}", name="unlock")
      * @IsGranted("VOLUNTEER", subject="volunteer")
      */
-    public function unlockAction(Volunteer $volunteer, string $csrf)
+    public function unlockAction(Request $request, Volunteer $volunteer, string $csrf)
     {
         $this->validateCsrfOrThrowNotFoundException('volunteers', $csrf);
 
         $volunteer->setLocked(false);
         $this->volunteerManager->save($volunteer);
 
-        return $this->redirectToRoute('management_volunteers_list');
+        return $this->redirectToRoute('management_volunteers_list', $request->query->all());
     }
 
     /**
      * @Route(path="/disable/{csrf}/{id}", name="disable")
      * @IsGranted("VOLUNTEER", subject="volunteer")
      */
-    public function disableAction(Volunteer $volunteer, string $csrf)
+    public function disableAction(Request $request, Volunteer $volunteer, string $csrf)
     {
         $this->validateCsrfOrThrowNotFoundException('volunteers', $csrf);
 
@@ -273,14 +278,14 @@ class VolunteersController extends BaseController
         $volunteer->setLocked(true);
         $this->volunteerManager->save($volunteer);
 
-        return $this->redirectToRoute('management_volunteers_list');
+        return $this->redirectToRoute('management_volunteers_list', $request->query->all());
     }
 
     /**
      * @Route(path="/enable/{csrf}/{id}", name="enable")
      * @IsGranted("VOLUNTEER", subject="volunteer")
      */
-    public function enableAction(Volunteer $volunteer, string $csrf)
+    public function enableAction(Request $request, Volunteer $volunteer, string $csrf)
     {
         $this->validateCsrfOrThrowNotFoundException('volunteers', $csrf);
 
@@ -293,7 +298,7 @@ class VolunteersController extends BaseController
         $volunteer->setLocked(true);
         $this->volunteerManager->save($volunteer);
 
-        return $this->redirectToRoute('management_volunteers_list');
+        return $this->redirectToRoute('management_volunteers_list', $request->query->all());
     }
 
     /**
@@ -417,7 +422,7 @@ class VolunteersController extends BaseController
 
     private function deleteVolunteer(Volunteer $volunteer,
         ?Answer $answer,
-        SimpleProcessor $processor): \App\Entity\Campaign
+        SimpleProcessor $processor) : \App\Entity\Campaign
     {
         // Sending a message to the volunteer to let him know he is now removed
         $sms      = new SmsTrigger();
@@ -472,12 +477,22 @@ class VolunteersController extends BaseController
      *
      * @return FormInterface
      */
-    private function createSearchForm(Request $request): FormInterface
+    private function createSearchForm(Request $request) : FormInterface
     {
-        return $this->createFormBuilder(null, ['csrf_protection' => false])
+        return $this->createFormBuilder([
+            'only_enabled' => true,
+        ], ['csrf_protection' => false])
                     ->setMethod('GET')
                     ->add('criteria', TextType::class, [
                         'label'    => 'manage_volunteers.search.label',
+                        'required' => false,
+                    ])
+                    ->add('only_enabled', CheckboxType::class, [
+                        'label'    => 'manage_volunteers.search.only_enabled',
+                        'required' => false,
+                    ])
+                    ->add('only_users', CheckboxType::class, [
+                        'label'    => 'manage_volunteers.search.only_users',
                         'required' => false,
                     ])
                     ->add('submit', SubmitType::class, [

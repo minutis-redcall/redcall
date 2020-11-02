@@ -157,6 +157,8 @@ class Volunteer
     private $communications;
 
     /**
+     * @var User
+     *
      * @ORM\OneToOne(targetEntity="App\Entity\User", mappedBy="volunteer")
      */
     private $user;
@@ -226,7 +228,7 @@ class Volunteer
     /**
      * @return string
      */
-    public function getIdentifier(): ?string
+    public function getIdentifier() : ?string
     {
         return $this->identifier;
     }
@@ -236,7 +238,7 @@ class Volunteer
      *
      * @return Volunteer
      */
-    public function setIdentifier(string $identifier): self
+    public function setIdentifier(string $identifier) : self
     {
         $this->identifier = $identifier;
 
@@ -246,7 +248,7 @@ class Volunteer
     /**
      * @return string
      */
-    public function getNivol(): ?string
+    public function getNivol() : ?string
     {
         return $this->nivol;
     }
@@ -256,7 +258,7 @@ class Volunteer
      *
      * @return Volunteer
      */
-    public function setNivol(string $nivol): self
+    public function setNivol(string $nivol) : self
     {
         $this->nivol = $nivol;
 
@@ -266,7 +268,7 @@ class Volunteer
     /**
      * @return string
      */
-    public function getFirstName(): ?string
+    public function getFirstName() : ?string
     {
         return $this->firstName;
     }
@@ -286,7 +288,7 @@ class Volunteer
     /**
      * @return string
      */
-    public function getLastName(): ?string
+    public function getLastName() : ?string
     {
         return $this->lastName;
     }
@@ -306,7 +308,7 @@ class Volunteer
     /**
      * @return string|null
      */
-    public function getPhoneNumber(): ?string
+    public function getPhoneNumber() : ?string
     {
         return $this->phoneNumber;
     }
@@ -326,7 +328,7 @@ class Volunteer
     /**
      * @return string
      */
-    public function getEmail(): ?string
+    public function getEmail() : ?string
     {
         return $this->email;
     }
@@ -336,7 +338,7 @@ class Volunteer
      *
      * @return Volunteer
      */
-    public function setEmail(?string $email): Volunteer
+    public function setEmail(?string $email) : Volunteer
     {
         $this->email = $email;
 
@@ -346,7 +348,7 @@ class Volunteer
     /**
      * @return bool
      */
-    public function isEnabled(): ?bool
+    public function isEnabled() : ?bool
     {
         return $this->enabled;
     }
@@ -356,7 +358,7 @@ class Volunteer
      *
      * @return Volunteer
      */
-    public function setEnabled(bool $enabled): Volunteer
+    public function setEnabled(bool $enabled) : Volunteer
     {
         $this->enabled = $enabled;
 
@@ -366,7 +368,7 @@ class Volunteer
     /**
      * @return bool
      */
-    public function isLocked(): ?bool
+    public function isLocked() : ?bool
     {
         return $this->locked;
     }
@@ -376,7 +378,7 @@ class Volunteer
      *
      * @return Volunteer
      */
-    public function setLocked(bool $locked): Volunteer
+    public function setLocked(bool $locked) : Volunteer
     {
         $this->locked = $locked;
 
@@ -386,7 +388,7 @@ class Volunteer
     /**
      * @return bool
      */
-    public function isMinor(): ?bool
+    public function isMinor() : ?bool
     {
         return $this->minor;
     }
@@ -396,7 +398,7 @@ class Volunteer
      *
      * @return Volunteer
      */
-    public function setMinor(bool $minor): Volunteer
+    public function setMinor(bool $minor) : Volunteer
     {
         $this->minor = $minor;
 
@@ -406,7 +408,7 @@ class Volunteer
     /**
      * @return ArrayCollection
      */
-    public function getTags(): Collection
+    public function getTags() : Collection
     {
         return $this->tags;
     }
@@ -432,7 +434,7 @@ class Volunteer
     /**
      * @return array
      */
-    public function getTagsView(): array
+    public function getTagsView() : array
     {
         if ($this->tagsView) {
             return $this->tagsView;
@@ -463,7 +465,7 @@ class Volunteer
      *
      * @return bool
      */
-    public function hasTag(string $tagToSearch): bool
+    public function hasTag(string $tagToSearch) : bool
     {
         foreach ($this->tags as $tag) {
             if ($tag->getLabel() == $tagToSearch) {
@@ -477,7 +479,7 @@ class Volunteer
     /**
      * @return string
      */
-    public function getFormattedPhoneNumber(): string
+    public function getFormattedPhoneNumber() : string
     {
         return chunk_split(sprintf('0%s', substr($this->getPhoneNumber(), 2)), 2, ' ');
     }
@@ -485,7 +487,7 @@ class Volunteer
     /**
      * @return int
      */
-    public function getTagPriority(): int
+    public function getTagPriority() : int
     {
         $highest = -1;
         foreach ($this->getTags() as $tag) {
@@ -501,7 +503,7 @@ class Volunteer
     /**
      * @return DateTime
      */
-    public function getLastPegassUpdate(): ?DateTime
+    public function getLastPegassUpdate() : ?DateTime
     {
         return $this->lastPegassUpdate;
     }
@@ -511,7 +513,7 @@ class Volunteer
      *
      * @return Volunteer
      */
-    public function setLastPegassUpdate(DateTime $lastPegassUpdate): Volunteer
+    public function setLastPegassUpdate(DateTime $lastPegassUpdate) : Volunteer
     {
         $this->lastPegassUpdate = $lastPegassUpdate;
 
@@ -521,7 +523,7 @@ class Volunteer
     /**
      * @return array|null
      */
-    public function getReport(): ?array
+    public function getReport() : ?array
     {
         return $this->report ? json_decode($this->report, true) : null;
     }
@@ -531,7 +533,7 @@ class Volunteer
      *
      * @return Volunteer
      */
-    public function setReport(array $report): Volunteer
+    public function setReport(array $report) : Volunteer
     {
         $this->report = json_encode($report, JSON_PRETTY_PRINT);
 
@@ -541,7 +543,7 @@ class Volunteer
     /**
      * @return bool
      */
-    public function isCallable(): bool
+    public function isCallable() : bool
     {
         return $this->enabled && (
                 $this->phoneNumber && $this->phoneNumberOptin
@@ -563,7 +565,7 @@ class Volunteer
     /**
      * @return Collection
      */
-    public function getStructures(): Collection
+    public function getStructures() : Collection
     {
         return $this->structures->filter(function (Structure $structure) {
             return $structure->isEnabled();
@@ -573,14 +575,14 @@ class Volunteer
     /**
      * @return array
      */
-    public function getStructureIds(): array
+    public function getStructureIds() : array
     {
         return array_map(function (Structure $structure) {
             return $structure->getId();
         }, $this->getStructures()->toArray());
     }
 
-    public function addStructure(Structure $structure): self
+    public function addStructure(Structure $structure) : self
     {
         if (!$this->structures->contains($structure)) {
             $this->structures[] = $structure;
@@ -589,7 +591,7 @@ class Volunteer
         return $this;
     }
 
-    public function removeStructure(Structure $structure): self
+    public function removeStructure(Structure $structure) : self
     {
         if ($this->structures->contains($structure)) {
             $this->structures->removeElement($structure);
@@ -598,7 +600,7 @@ class Volunteer
         return $this;
     }
 
-    public function getMainStructure(): ?Structure
+    public function getMainStructure() : ?Structure
     {
         /** @var Structure|null $mainStructure */
         $mainStructure = null;
@@ -642,7 +644,7 @@ class Volunteer
      *
      * @throws Exception
      */
-    public function getNextPegassUpdate(): ?DateTime
+    public function getNextPegassUpdate() : ?DateTime
     {
         if (!$this->lastPegassUpdate) {
             return null;
@@ -663,7 +665,7 @@ class Volunteer
      *
      * @throws Exception
      */
-    public function canForcePegassUpdate(): bool
+    public function canForcePegassUpdate() : bool
     {
         if (!$this->lastPegassUpdate) {
             return true;
@@ -702,12 +704,12 @@ class Volunteer
     /**
      * @return Collection|Communication[]
      */
-    public function getCommunications(): Collection
+    public function getCommunications() : Collection
     {
         return $this->communications;
     }
 
-    public function addCommunication(Communication $communication): self
+    public function addCommunication(Communication $communication) : self
     {
         if (!$this->communications->contains($communication)) {
             $this->communications[] = $communication;
@@ -717,7 +719,7 @@ class Volunteer
         return $this;
     }
 
-    public function removeCommunication(Communication $communication): self
+    public function removeCommunication(Communication $communication) : self
     {
         if ($this->communications->contains($communication)) {
             $this->communications->removeElement($communication);
@@ -730,9 +732,13 @@ class Volunteer
         return $this;
     }
 
-    public function getUser(): ?User
+    public function getUser() : ?User
     {
-        return $this->user;
+        if ($this->user && $this->user->isTrusted()) {
+            return $this->user;
+        }
+
+        return null;
     }
 
     public function setUser(?User $user)
@@ -742,31 +748,31 @@ class Volunteer
         return $this;
     }
 
-    public function isPhoneNumberLocked(): ?bool
+    public function isPhoneNumberLocked() : ?bool
     {
         return $this->phoneNumberLocked;
     }
 
-    public function setPhoneNumberLocked(bool $phoneNumberLocked): self
+    public function setPhoneNumberLocked(bool $phoneNumberLocked) : self
     {
         $this->phoneNumberLocked = $phoneNumberLocked;
 
         return $this;
     }
 
-    public function isEmailLocked(): ?bool
+    public function isEmailLocked() : ?bool
     {
         return $this->emailLocked;
     }
 
-    public function setEmailLocked(bool $emailLocked): self
+    public function setEmailLocked(bool $emailLocked) : self
     {
         $this->emailLocked = $emailLocked;
 
         return $this;
     }
 
-    public function shouldBeLocked(Volunteer $volunteer): bool
+    public function shouldBeLocked(Volunteer $volunteer) : bool
     {
         $old = get_object_vars($volunteer);
         $new = get_object_vars($this);
@@ -784,7 +790,7 @@ class Volunteer
         return false;
     }
 
-    public function getHiddenPhone(): ?string
+    public function getHiddenPhone() : ?string
     {
         if (null === $this->phoneNumber) {
             return null;
@@ -793,7 +799,7 @@ class Volunteer
         return sprintf('+%s****%s', substr($this->phoneNumber, 0, 6), substr($this->phoneNumber, 10));
     }
 
-    public function getHiddenEmail(): ?string
+    public function getHiddenEmail() : ?string
     {
         if (null === $this->email) {
             return null;
@@ -805,31 +811,31 @@ class Volunteer
         return substr($username, 0, 1).str_repeat('*', max(strlen($username) - 2, 0)).substr($username, -1).'@'.$domain;
     }
 
-    public function isPhoneNumberOptin(): ?bool
+    public function isPhoneNumberOptin() : ?bool
     {
         return $this->phoneNumberOptin;
     }
 
-    public function setPhoneNumberOptin(bool $phoneNumberOptin): self
+    public function setPhoneNumberOptin(bool $phoneNumberOptin) : self
     {
         $this->phoneNumberOptin = $phoneNumberOptin;
 
         return $this;
     }
 
-    public function isEmailOptin(): ?bool
+    public function isEmailOptin() : ?bool
     {
         return $this->emailOptin;
     }
 
-    public function setEmailOptin(bool $emailOptin): self
+    public function setEmailOptin(bool $emailOptin) : self
     {
         $this->emailOptin = $emailOptin;
 
         return $this;
     }
 
-    public function getMessages(): Collection
+    public function getMessages() : Collection
     {
         return $this->messages;
     }
@@ -853,7 +859,7 @@ class Volunteer
      *
      * @return string
      */
-    private function toName(string $name): string
+    private function toName(string $name) : string
     {
         return preg_replace_callback('/[^\\s\-]+/ui', function (array $match) {
             return sprintf("%s%s", mb_strtoupper(mb_substr($match[0], 0, 1)), mb_strtolower(mb_substr($match[0], 1)));
