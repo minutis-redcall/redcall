@@ -497,6 +497,9 @@ class VolunteersController extends BaseController
                     ])
                     ->add('submit', SubmitType::class, [
                         'label' => 'manage_volunteers.search.button',
+                        'attr'  => [
+                            'class ' => 'd-none',
+                        ],
                     ])
                     ->getForm()
                     ->handleRequest($request);

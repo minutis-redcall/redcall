@@ -331,7 +331,7 @@ manage_volunteers:
   title: 'Manage volunteers'
   others: 'and %count% other(s)'
   search:
-    label: 'Search for a volunteer'
+    label: 'Search for a volunteer (press Enter to continue)'
     only_enabled: 'Hide disabled volunteers'
     only_users: 'Only show volunteers having RedCall access'
     button: 'Rechercher'

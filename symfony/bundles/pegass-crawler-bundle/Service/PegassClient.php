@@ -34,31 +34,31 @@ class PegassClient
     private $authenticated = false;
     private $mode          = self::MODE_FAST;
 
-    public function getMode(): string
+    public function getMode() : string
     {
         return $this->mode;
     }
 
-    public function setMode(string $mode): PegassClient
+    public function setMode(string $mode) : PegassClient
     {
         $this->mode = $mode;
 
         return $this;
     }
 
-    public function getArea(): array
+    public function getArea() : array
     {
         return $this->get(self::ENDPOINTS[Pegass::TYPE_AREA]);
     }
 
-    public function getDepartment(string $identifier): array
+    public function getDepartment(string $identifier) : array
     {
         $endpoint = str_replace('%identifier%', $identifier, self::ENDPOINTS[Pegass::TYPE_DEPARTMENT]);
 
         return $this->get($endpoint);
     }
 
-    public function getStructure(string $identifier): array
+    public function getStructure(string $identifier) : array
     {
         $structure = [];
         foreach (self::ENDPOINTS[Pegass::TYPE_STRUCTURE] as $key => $endpoint) {
@@ -87,7 +87,7 @@ class PegassClient
         return $structure;
     }
 
-    public function getVolunteer(string $identifier): array
+    public function getVolunteer(string $identifier) : array
     {
         $data = [];
         foreach (self::ENDPOINTS[Pegass::TYPE_VOLUNTEER] as $key => $endpoint) {
@@ -98,7 +98,7 @@ class PegassClient
         return $data;
     }
 
-    private function isAuthenticated(): bool
+    private function isAuthenticated() : bool
     {
         return $this->authenticated;
     }
@@ -127,7 +127,7 @@ class PegassClient
         $this->authenticated = true;
     }
 
-    private function get(string $url): array
+    private function get(string $url) : array
     {
         $this->authenticate();
 
@@ -141,11 +141,12 @@ class PegassClient
         return json_decode($this->getClient()->getResponse()->getContent(), true);
     }
 
-    private function getClient(): Client
+    private function getClient() : Client
     {
         if (!$this->client) {
             $this->client = new Client(HttpClient::create([
                 'max_redirects' => 10,
+                'timeout'       => 10,
             ]));
         }
 
