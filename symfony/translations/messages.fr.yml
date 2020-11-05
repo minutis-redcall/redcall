@@ -330,7 +330,7 @@ manage_volunteers:
   title: 'Gestion des bénévoles'
   others: 'et %count% autre(s)'
   search:
-    label: 'Rechercher un bénévole'
+    label: 'Rechercher un bénévole (appuyez sur Entrée pour continuer)'
     only_enabled: 'Masquer les bénévoles desactivés'
     only_users: 'Afficher seulement les bénévoles pouvant utiliser RedCall'
     button: 'Rechercher'

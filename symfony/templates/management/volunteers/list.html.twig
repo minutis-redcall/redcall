@@ -179,4 +179,12 @@
 
     <br/><br/>
 
+    <script type="text/javascript">
+
+        $('#{{ search.only_enabled.vars.id }}, #{{ search.only_users.vars.id }}').change(function () {
+            $(this).closest('form').submit();
+        });
+
+    </script>
+
 {% endblock %}
