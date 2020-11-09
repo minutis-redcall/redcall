@@ -224,26 +224,24 @@ class VolunteerRepository extends BaseRepository
 
     public function synchronizeWithPegass()
     {
-        foreach ([false, true] as $enabled) {
-            $qb = $this->createQueryBuilder('v');
+        $qb = $this->createQueryBuilder('v');
 
-            $sub = $this->_em->createQueryBuilder()
-                             ->select('p.identifier')
-                             ->from(Pegass::class, 'p')
-                             ->where('p.type = :type')
-                             ->andWhere('p.enabled = :enabled');
+        $sub = $this->_em->createQueryBuilder()
+                         ->select('p.identifier')
+                         ->from(Pegass::class, 'p')
+                         ->where('p.type = :type')
+                         ->andWhere('p.enabled = :enabled');
 
-            $qb
-                ->setParameter('type', Pegass::TYPE_VOLUNTEER)
-                ->setParameter('enabled', $enabled);
+        $qb
+            ->setParameter('type', Pegass::TYPE_VOLUNTEER)
+            ->setParameter('enabled', false);
 
-            $qb
-                ->update()
-                ->set('v.enabled', ':enabled')
-                ->where($qb->expr()->in('v.identifier', $sub->getDQL()))
-                ->getQuery()
-                ->execute();
-        }
+        $qb
+            ->update()
+            ->set('v.enabled', ':enabled')
+            ->where($qb->expr()->in('v.identifier', $sub->getDQL()))
+            ->getQuery()
+            ->execute();
     }
 
     /**

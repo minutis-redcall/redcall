@@ -35,7 +35,7 @@ class StructureRepository extends BaseRepository
      *
      * @return array
      */
-    public function findCallableStructuresForVolunteer(Volunteer $volunteer): array
+    public function findCallableStructuresForVolunteer(Volunteer $volunteer) : array
     {
         $structures = $this->createQueryBuilder('s')
                            ->select('
@@ -87,7 +87,7 @@ class StructureRepository extends BaseRepository
      *
      * @return array
      */
-    public function findCallableStructuresForStructure(Structure $structure): array
+    public function findCallableStructuresForStructure(Structure $structure) : array
     {
         $structures = $this->createQueryBuilder('s')
                            ->select('
@@ -126,7 +126,7 @@ class StructureRepository extends BaseRepository
                     ->getResult();
     }
 
-    public function getTagCountByStructuresForUser(User $user): array
+    public function getTagCountByStructuresForUser(User $user) : array
     {
         return $this->createQueryBuilder('s')
                     ->select('s.id as structure_id, t.id as tag_id, COUNT(v.id) as count')
@@ -143,7 +143,7 @@ class StructureRepository extends BaseRepository
                     ->getArrayResult();
     }
 
-    public function getVolunteerCountByStructuresForUser(User $user): array
+    public function getVolunteerCountByStructuresForUser(User $user) : array
     {
         $rows = $this->createQueryBuilder('s')
                      ->select('s.id as structure_id, p.id as parent_id, COUNT(DISTINCT v.id) as count')
@@ -177,7 +177,7 @@ class StructureRepository extends BaseRepository
         return $counts;
     }
 
-    public function getStructuresForAdminQueryBuilder(User $user): QueryBuilder
+    public function getStructuresForAdminQueryBuilder(User $user) : QueryBuilder
     {
         return $this->createQueryBuilder('s')
                     ->join('s.users', 'u')
@@ -187,12 +187,12 @@ class StructureRepository extends BaseRepository
                     ->orderBy('s.identifier', 'asc');
     }
 
-    public function getStructuresForUserQueryBuilder(User $user): QueryBuilder
+    public function getStructuresForUserQueryBuilder(User $user) : QueryBuilder
     {
         return $this->getStructuresForAdminQueryBuilder($user);
     }
 
-    public function searchAllQueryBuilder(?string $criteria): QueryBuilder
+    public function searchAllQueryBuilder(?string $criteria) : QueryBuilder
     {
         $qb = $this
             ->createQueryBuilder('s');
@@ -207,7 +207,7 @@ class StructureRepository extends BaseRepository
         return $qb;
     }
 
-    public function searchAll(?string $criteria, int $maxResults): array
+    public function searchAll(?string $criteria, int $maxResults) : array
     {
         return $this
             ->searchAllQueryBuilder($criteria)
@@ -217,7 +217,7 @@ class StructureRepository extends BaseRepository
             ->getResult();
     }
 
-    public function searchForUserQueryBuilder(User $user, ?string $criteria, bool $onlyEnabled = false): QueryBuilder
+    public function searchForUserQueryBuilder(User $user, ?string $criteria, bool $onlyEnabled = false) : QueryBuilder
     {
         $qb = $this->createQueryBuilder('s')
                    ->join('s.users', 'u')
@@ -238,7 +238,7 @@ class StructureRepository extends BaseRepository
         return $qb;
     }
 
-    public function searchForUser(User $user, ?string $criteria, int $maxResults, bool $onlyEnabled = false): array
+    public function searchForUser(User $user, ?string $criteria, int $maxResults, bool $onlyEnabled = false) : array
     {
         return $this
             ->searchForUserQueryBuilder($user, $criteria, $onlyEnabled)
@@ -249,25 +249,23 @@ class StructureRepository extends BaseRepository
 
     public function synchronizeWithPegass()
     {
-        foreach ([false, true] as $enabled) {
-            $qb = $this->createQueryBuilder('s');
+        $qb = $this->createQueryBuilder('s');
 
-            $sub = $this->_em->createQueryBuilder()
-                             ->select('p.identifier')
-                             ->from(Pegass::class, 'p')
-                             ->where('p.type = :type')
-                             ->andWhere('p.enabled = :enabled');
+        $sub = $this->_em->createQueryBuilder()
+                         ->select('p.identifier')
+                         ->from(Pegass::class, 'p')
+                         ->where('p.type = :type')
+                         ->andWhere('p.enabled = :enabled');
 
-            $qb
-                ->setParameter('type', Pegass::TYPE_STRUCTURE)
-                ->setParameter('enabled', $enabled);
+        $qb
+            ->setParameter('type', Pegass::TYPE_STRUCTURE)
+            ->setParameter('enabled', false);
 
-            $qb
-                ->update()
-                ->set('s.enabled', ':enabled')
-                ->where($qb->expr()->in('s.identifier', $sub->getDQL()))
-                ->getQuery()
-                ->execute();
-        }
+        $qb
+            ->update()
+            ->set('s.enabled', ':enabled')
+            ->where($qb->expr()->in('s.identifier', $sub->getDQL()))
+            ->getQuery()
+            ->execute();
     }
 }

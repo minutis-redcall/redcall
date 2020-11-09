@@ -10,7 +10,12 @@
         {% endif %}
     {% endblock %}
 
-    <p>{{ message.communication.body|nl2br }}</p>
+    <style>
+        p {
+            color: black;
+        }
+    </style>
+    <div>{{ message.communication.body|purify }}</div>
 
     <hr/><br/>
 
