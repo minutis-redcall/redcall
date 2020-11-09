@@ -202,18 +202,6 @@ class RefreshManager
             }
         }
 
-        if ($force) {
-            // TCAU integration should bypass lock
-            $skills = $this->fetchSkills($pegass);
-            foreach ($skills as $skill) {
-                if (Tag::TAG_TCAU === $skill) {
-                    $volunteer->addTag(
-                        $this->tagManager->findOneByLabel($skill)
-                    );
-                }
-            }
-        }
-
         // Volunteer is locked
         if ($volunteer->isLocked()) {
             $volunteer->addReport('import_report.update_locked');
@@ -239,6 +227,16 @@ class RefreshManager
             $volunteer->removeStructure($structure);
         }
 
+        // Volunteer disabled on Pegass side
+        $enabled = $pegass->evaluate('user.actif');
+        if (!$enabled) {
+            $volunteer->addReport('import_report.disabled');
+            $volunteer->setEnabled(false);
+            $this->volunteerManager->save($volunteer);
+
+            return;
+        }
+
         // Volunteer already up to date
         if (!$force && $volunteer->getLastPegassUpdate()
             && $volunteer->getLastPegassUpdate()->getTimestamp() === $pegass->getUpdatedAt()->getTimestamp()) {
@@ -262,15 +260,6 @@ class RefreshManager
             return;
         }
 
-        // Volunteer disabled on Pegass side
-        $enabled = $pegass->evaluate('user.actif');
-        if (!$enabled) {
-            $volunteer->addReport('import_report.disabled');
-            $volunteer->setEnabled(false);
-            $this->volunteerManager->save($volunteer);
-
-            return;
-        }
         $volunteer->setEnabled(true);
 
         // Update basic information
@@ -326,7 +315,7 @@ class RefreshManager
         }
     }
 
-    private function normalizeName(string $name): string
+    private function normalizeName(string $name) : string
     {
         return sprintf('%s%s',
             mb_strtoupper(mb_substr($name, 0, 1)),
@@ -334,7 +323,7 @@ class RefreshManager
         );
     }
 
-    private function fetchPhoneNumber(array $contact): ?string
+    private function fetchPhoneNumber(array $contact) : ?string
     {
         $phoneKeys = ['POR', 'PORT', 'TELDOM', 'TELTRAV', 'PORE'];
 
@@ -356,7 +345,7 @@ class RefreshManager
         return PhoneNumberParser::parse(reset($contact)['libelle']);
     }
 
-    private function fetchEmail(array $infos, array $contact): ?string
+    private function fetchEmail(array $infos, array $contact) : ?string
     {
         $emailKeys = ['MAIL', 'MAILDOM', 'MAILTRAV'];
 
