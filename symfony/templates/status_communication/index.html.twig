@@ -304,14 +304,14 @@
 
                                     {# Volunteer's name #}
                                     <div id="volunteer-name-{{ suffix }}"
-                                          class="h4 {% if not message.sent %}text-black-50{% endif %}">
+                                         class="h4 {% if not message.sent %}text-black-50{% endif %}">
                                         <span href="#" class="volunteer-info" style="cursor:pointer;"
                                               onclick="$('#volunteer-info-{{ message.id }}').toggleClass('d-none');return false;">
                                             {{ volunteer.displayName }}
                                             {% if volunteer.minor %}
                                                 🐻
                                             {% elseif volunteer.user %}
-                                                <img src="{{ asset('minutis.png') }}" />
+                                                <img src="{{ asset('minutis.png') }}"/>
                                             {% else %}
                                                 👤
                                             {% endif %}
@@ -647,7 +647,7 @@
                                data-toggle="toggle" data-onstyle="primary"
                                class="form-check-input filter-action filter-structure-{{ communication.id }} filter-action-{{ communication.id }}"
                                id="filter-structure-{{ structure.id }}-{{ communication.id }}"
-                               value="{{ structure.id }}" />
+                               value="{{ structure.id }}"/>
                         <span class="slider"></span>
                     </label>
                     <label class="form-check-label"
@@ -888,14 +888,14 @@
         if ('{{ app.environment == 'dev' }}' !== '1') {
             var errorCount = 0;
             var hash = '{{ hash }}';
-            var longPolling = function() {
-                setTimeout(function() {
+            var longPolling = function () {
+                setTimeout(function () {
                     $.ajax('{{ path('communication_long_polling', {id: campaign.id}) }}', {
                         type: 'POST',
                         data: {
                             hash: hash,
                         },
-                        success: function(result) {
+                        success: function (result) {
                             errorCount = 0;
                             if (result) {
                                 hash = result.hash;
@@ -903,7 +903,7 @@
                             }
                             longPolling();
                         },
-                        error: function() {
+                        error: function () {
                             errorCount++;
                             if (100 === errorCount) {
                                 window.location = '{{ path('home') }}';
@@ -963,15 +963,15 @@
             {% endfor %}
 
             {#
-             # Controlling each checkboxes:
-             #
-             # Each filter is inclusive on its category (if you select "Yes" and "No" in the response category,
-             # you will get all volunteers who answered "Yes" --or-- "No").
-             #
-             # But, filter categories are exclusive each other (if you select "Yes" in the response category
-             # and "Driver" in the skills category, you will get all volunteers that are drivers --and-- who
-             # answered "Yes")
-             #}
+            # Controlling each checkboxes:
+            #
+            # Each filter is inclusive on its category (if you select "Yes" and "No" in the response category,
+            # you will get all volunteers who answered "Yes" --or-- "No").
+            #
+            # But, filter categories are exclusive each other (if you select "Yes" in the response category
+            # and "Driver" in the skills category, you will get all volunteers that are drivers --and-- who
+            # answered "Yes")
+            #}
             $.each(communicationIds, function (key, communicationId) {
                 {# counting number of filters ticked #}
                 var structure = 0;
@@ -1104,7 +1104,7 @@
         });
         refreshVisibility();
 
-        $('.filter-unreachable').click(function(e) {
+        $('.filter-unreachable').click(function (e) {
             e.preventDefault();
             var that = $(this);
             that.data('value', 1 - that.data('value'));
@@ -1144,6 +1144,11 @@
                     volunteerIds.push(row.data('volunteer-id'));
                 }
             });
+            if (!volunteerIds.length) {
+                $('.row-' + communicationId + ':visible').each(function () {
+                    volunteerIds.push($(this).data('volunteer-id'));
+                });
+            }
             return volunteerIds;
         }
 
@@ -1248,7 +1253,7 @@
         {# -------------------------------------------------------------------------------- #}
         {# Toggle the message if it is large #}
         {# -------------------------------------------------------------------------------- #}
-        $('.show-complete-body').click(function(e) {
+        $('.show-complete-body').click(function (e) {
             e.preventDefault();
             var that = $(this);
             var communicationId = that.data('communication-id');
@@ -1256,7 +1261,7 @@
             $('#limited-body-' + communicationId).addClass('d-none');
         });
 
-        $('.show-limited-body').click(function(e) {
+        $('.show-limited-body').click(function (e) {
             e.preventDefault();
             var that = $(this);
             var communicationId = that.data('communication-id');
@@ -1267,7 +1272,7 @@
         {# -------------------------------------------------------------------------------- #}
         {# Debugging #}
         {# -------------------------------------------------------------------------------- #}
-        $('.debug').click(function() {
+        $('.debug').click(function () {
             $('#' + $(this).data('target')).toggleClass('d-none');
         });
 
@@ -1275,19 +1280,20 @@
         {# Transform text links into clickable links #}
         {# -------------------------------------------------------------------------------- #}
         function refreshTextToHypertext() {
-            $('.text-to-hypertext').each(function() {
+            $('.text-to-hypertext').each(function () {
                 var str = $(this).html();
                 var regex = /(https?:\/\/([^\s]+))/ig
                 var replaced_text = str.replace(regex, "<a href='$1' target='_blank'>$1</a>");
                 $(this).html(replaced_text);
             });
         }
+
         refreshTextToHypertext();
 
         {# -------------------------------------------------------------------------------- #}
         {# Acknowledge notes updates #}
         {# -------------------------------------------------------------------------------- #}
-        $('#campaign-notes-ack').click(function(e) {
+        $('#campaign-notes-ack').click(function (e) {
             e.preventDefault();
             $('#campaign-notes-ack').addClass('d-none');
             $('#campaign-notes-border').css('border', '1px solid black');

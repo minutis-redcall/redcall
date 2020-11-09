@@ -175,9 +175,9 @@ class ExportController extends BaseController
      *
      * @return array
      */
-    private function getSelection(Request $request, Communication $communication): array
+    private function getSelection(Request $request, Communication $communication) : array
     {
-        $selection = json_decode($request->request->get('volunteers'), true);
+        $selection = json_decode($request->get('volunteers'), true);
         if (!$selection && $communication->getMessages()) {
             $selection = array_map(function (Message $message) {
                 return $message->getVolunteer()->getId();
