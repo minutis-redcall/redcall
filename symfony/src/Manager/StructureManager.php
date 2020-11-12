@@ -33,17 +33,17 @@ class StructureManager
         $this->userManager = $userManager;
     }
 
-    public function find(int $id): ?Structure
+    public function find(int $id) : ?Structure
     {
         return $this->structureRepository->find($id);
     }
 
-    public function findOneByName(string $name): ?Structure
+    public function findOneByName(string $name) : ?Structure
     {
         return $this->structureRepository->findOneByName($name);
     }
 
-    public function findOneByIdentifier(string $identifier): ?Structure
+    public function findOneByIdentifier(string $identifier) : ?Structure
     {
         return $this->structureRepository->findOneByIdentifier($identifier);
     }
@@ -53,17 +53,17 @@ class StructureManager
         $this->structureRepository->save($structure);
     }
 
-    public function findCallableStructuresForVolunteer(Volunteer $volunteer): array
+    public function findCallableStructuresForVolunteer(Volunteer $volunteer) : array
     {
         return $this->structureRepository->findCallableStructuresForVolunteer($volunteer);
     }
 
-    public function findCallableStructuresForStructure(Structure $structure): array
+    public function findCallableStructuresForStructure(Structure $structure) : array
     {
         return $this->structureRepository->findCallableStructuresForStructure($structure);
     }
 
-    public function getTagCountByStructuresForCurrentUser(): array
+    public function getTagCountByStructuresForCurrentUser() : array
     {
         $rows = $this->structureRepository->getTagCountByStructuresForUser(
             $this->userManager->findForCurrentUser()
@@ -77,28 +77,29 @@ class StructureManager
         return $counts;
     }
 
-    public function getVolunteerCountByStructuresForCurrentUser(): array
+    public function getVolunteerCountByStructuresForCurrentUser() : array
     {
         return $this->structureRepository->getVolunteerCountByStructuresForUser(
             $this->userManager->findForCurrentUser()
         );
     }
 
-    public function searchAllQueryBuilder(?string $criteria): QueryBuilder
+    public function searchAllQueryBuilder(?string $criteria) : QueryBuilder
     {
         return $this->structureRepository->searchAllQueryBuilder($criteria);
     }
 
-    public function searchAll(?string $criteria, int $maxResults): array
+    public function searchAll(?string $criteria, int $maxResults) : array
     {
         return $this->structureRepository->searchAll($criteria, $maxResults);
     }
 
-    public function searchForCurrentUserQueryBuilder(?string $criteria): QueryBuilder
+    public function searchForCurrentUserQueryBuilder(?string $criteria) : QueryBuilder
     {
         return $this->structureRepository->searchForUserQueryBuilder(
             $this->userManager->findForCurrentUser(),
-            $criteria
+            $criteria,
+            true
         );
     }
 
@@ -107,12 +108,12 @@ class StructureManager
         $this->structureRepository->synchronizeWithPegass();
     }
 
-    public function getStructuresQueryBuilderForUser(User $user): QueryBuilder
+    public function getStructuresQueryBuilderForUser(User $user) : QueryBuilder
     {
         return $this->structureRepository->searchForUserQueryBuilder($user, null, true);
     }
 
-    public function getStructuresForUser(User $user): array
+    public function getStructuresForUser(User $user) : array
     {
         return $this->structureRepository->searchForUser($user, null, 0xFFFFFFFF, true);
     }
