@@ -195,7 +195,8 @@ class StructureRepository extends BaseRepository
     public function searchAllQueryBuilder(?string $criteria) : QueryBuilder
     {
         $qb = $this
-            ->createQueryBuilder('s');
+            ->createQueryBuilder('s')
+            ->andWhere('s.enabled = true');
 
         if ($criteria) {
             $qb->andWhere('s.identifier LIKE :criteria OR s.name LIKE :criteria')
