@@ -3,11 +3,15 @@
 const {CloudTasksClient} = require('@google-cloud/tasks');
 const client = new CloudTasksClient();
 
-const PROJECT_ID          = process.env.PROJECT_ID          || null; //
+const PROJECT_ID = process.env.PROJECT_ID || null; //
 const TASK_QUEUE_LOCATION = process.env.TASK_QUEUE_LOCATION || null; //europe-west1
-const TASK_QUEUE_NAME     = process.env.TASK_QUEUE_NAME     || null; //messages-sms
+const TASK_QUEUE_NAME = process.env.TASK_QUEUE_NAME || null; //messages-sms
 
-console.info("setting up cloud function", JSON.stringify({PROJECT_ID:PROJECT_ID, TASK_QUEUE_LOCATION:TASK_QUEUE_LOCATION,TASK_QUEUE_NAME:TASK_QUEUE_NAME}));
+console.info("setting up cloud function", JSON.stringify({
+    PROJECT_ID: PROJECT_ID,
+    TASK_QUEUE_LOCATION: TASK_QUEUE_LOCATION,
+    TASK_QUEUE_NAME: TASK_QUEUE_NAME
+}));
 
 const parent = client.queuePath(PROJECT_ID, TASK_QUEUE_LOCATION, TASK_QUEUE_NAME);
 //http request : https://expressjs.com/en/4x/api.html#req
@@ -19,53 +23,54 @@ const parent = client.queuePath(PROJECT_ID, TASK_QUEUE_LOCATION, TASK_QUEUE_NAME
 //
 exports.¤CloudFunctioName¤ = (req, res) => {
 
-  console.info("processing message", JSON.stringify(
-    {
-      PROJECT_ID:PROJECT_ID,
-      TASK_QUEUE_LOCATION:TASK_QUEUE_LOCATION,
-      TASK_QUEUE_NAME:TASK_QUEUE_NAME,
-      HTTP_REQUEST:
+    console.info("processing message", JSON.stringify(
         {
-          query:req.query,
-          body:req.body,
-          headers:req.headers
-        }}));
+            PROJECT_ID: PROJECT_ID,
+            TASK_QUEUE_LOCATION: TASK_QUEUE_LOCATION,
+            TASK_QUEUE_NAME: TASK_QUEUE_NAME,
+            HTTP_REQUEST:
+                {
+                    query: req.query,
+                    body: req.body,
+                    headers: req.headers
+                }
+        }));
 
-  return new Promise((resolve, reject) => {
+    return new Promise((resolve, reject) => {
 
-    // the data structure for the AppEngine
-    const bodyForAppEngine = {
-      WebhookRequest:{
-        uri:req.originalUrl,
-        queryParams:req.query,
-        headers:req.headers,
-        body:req.body,
-        origin:TASK_QUEUE_NAME
-      }
-    };
+        // the data structure for the AppEngine
+        const bodyForAppEngine = {
+            WebhookRequest: {
+                uri: req.baseUrl,
+                queryParams: req.query,
+                headers: req.headers,
+                body: req.body,
+                origin: TASK_QUEUE_NAME
+            }
+        };
 
-    const jsonBodyForAppEngine = Buffer.from(JSON.stringify(bodyForAppEngine)).toString("base64");
+        const jsonBodyForAppEngine = Buffer.from(JSON.stringify(bodyForAppEngine)).toString("base64");
 
-    //the data structure for the Cloud Task
-    const task = {
-      appEngineHttpRequest: {
-        httpMethod: "POST",
-        relativeUri: '/task/webhook',
-        body: jsonBodyForAppEngine,
-        headers: {
-          "Content-Type": "application/json"
-        }
-      }
-    };
+        //the data structure for the Cloud Task
+        const task = {
+            appEngineHttpRequest: {
+                httpMethod: "POST",
+                relativeUri: '/task/webhook',
+                body: jsonBodyForAppEngine,
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            }
+        };
 
-    const request = {parent, task};
+        const request = {parent, task};
 
-    console.info("calling create task");
-    client.createTask(request).then((response) =>{
-      console.info("Task posted", JSON.stringify(response));
-      res.status(200).send();
-      resolve();
+        console.info("calling create task");
+        client.createTask(request).then((response) => {
+            console.info("Task posted", JSON.stringify(response));
+            res.status(200).send();
+            resolve();
+        });
+
     });
-
-  });
 };

@@ -8,6 +8,7 @@ use App\Manager\MessageManager;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -26,13 +27,15 @@ class TaskController extends BaseController
     private $sender;
 
     /**
-     * @param MessageManager $messageManager
-     * @param Sender         $sender
+     * @var HttpKernelInterface
      */
-    public function __construct(MessageManager $messageManager, Sender $sender)
+    private $httpKernel;
+
+    public function __construct(MessageManager $messageManager, Sender $sender, HttpKernelInterface $httpKernel)
     {
         $this->messageManager = $messageManager;
         $this->sender         = $sender;
+        $this->httpKernel     = $httpKernel;
     }
 
     /**
@@ -69,22 +72,59 @@ class TaskController extends BaseController
         ]);
 
         $data = json_decode($request->getContent(), true);
+        if ($data['WebhookRequest'] ?? null) {
+            throw $this->createNotFoundException();
+        }
+        $params = $data['WebhookRequest'];
 
-        // create($uri,
-        // $method = 'GET',
-        // $parameters = array(),
-        // $cookies = array(),
-        // $files = array(),
-        // $server = array(),
-        // $content = null)
-        $forward = Request::create();
+        switch ($params['origin']) {
+            case getenv('GCP_QUEUE_WEBHOOK_RESPONSE'):
+                $uri = '/twilio/incoming-message';
+                break;
+            case getenv('GCP_QUEUE_WEBHOOK_STATUS'):
+                $uri = sprintf('/twilio/status%s', $params['uri']);
+                break;
 
-        return new Response('Hello, world!');
+            case 'test':
+                $uri = '/task/test';
+                break;
+
+            default:
+                throw $this->createNotFoundException();
+        }
+
+        $server = [];
+        foreach ($params['headers'] ?? [] as $key => $value) {
+            $server[strtoupper(str_replace('-', '_', $key))] = $value;
+        }
+
+        $subRequest = Request::create(
+            $uri,
+            $params['method'] ?? 'GET',
+            $params['queryParams'] ?? [],
+            [],
+            [],
+            $server,
+            $params['body'] ?? ''
+        );
+
+        return $this->httpKernel->handle($subRequest, HttpKernelInterface::SUB_REQUEST);
+    }
+
+    /**
+     * @Route("/test")
+     */
+    public function test(Request $request, LoggerInterface $slackLogger)
+    {
+        $slackLogger->info('Webhook test controller reached out!', [
+            'headers' => json_encode($request->headers->all()),
+            'query'   => json_encode($request->query->all()),
+            'body'    => $request->getContent(),
+        ]);
     }
 
     private function checkOrigin(Request $request)
     {
-        // Checking that request comes from App Engine
         if (!$request->headers->get('X-Appengine-Taskname')) {
             throw $this->createAccessDeniedException();
         }
