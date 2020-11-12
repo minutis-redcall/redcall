@@ -36,7 +36,7 @@ class Pegass
 
     const TTL = [
         self::TYPE_AREA       => 365 * 24 * 60 * 60, // 1 year
-        self::TYPE_DEPARTMENT => 90 * 24 * 60 * 60, // 3 months
+        self::TYPE_DEPARTMENT => 7 * 24 * 60 * 60, // 1 week
         self::TYPE_STRUCTURE  => 7 * 24 * 60 * 60, // 1 week
         self::TYPE_VOLUNTEER  => 30 * 24 * 60 * 60, // 1 month
     ];
@@ -78,53 +78,53 @@ class Pegass
      */
     private $enabled = true;
 
-    public function getId(): ?int
+    public function getId() : ?int
     {
         return $this->id;
     }
 
-    public function getIdentifier(): ?string
+    public function getIdentifier() : ?string
     {
         return $this->identifier;
     }
 
-    public function setIdentifier(string $identifier): self
+    public function setIdentifier(string $identifier) : self
     {
         $this->identifier = $identifier;
 
         return $this;
     }
 
-    public function getParentIdentifier(): ?string
+    public function getParentIdentifier() : ?string
     {
         return $this->parentIdentifier;
     }
 
-    public function setParentIdentifier(?string $parentIdentifier): self
+    public function setParentIdentifier(?string $parentIdentifier) : self
     {
         $this->parentIdentifier = $parentIdentifier;
 
         return $this;
     }
 
-    public function getType(): ?string
+    public function getType() : ?string
     {
         return $this->type;
     }
 
-    public function setType(string $type): self
+    public function setType(string $type) : self
     {
         $this->type = $type;
 
         return $this;
     }
 
-    public function getUpdatedAt(): ?DateTimeInterface
+    public function getUpdatedAt() : ?DateTimeInterface
     {
         return $this->updatedAt;
     }
 
-    public function setUpdatedAt(DateTimeInterface $updatedAt): self
+    public function setUpdatedAt(DateTimeInterface $updatedAt) : self
     {
         $this->updatedAt = $updatedAt;
 
@@ -158,7 +158,7 @@ class Pegass
         }
     }
 
-    public function getXml(): string
+    public function getXml() : string
     {
         $xml = sprintf('<%s>%s</%s>', $this->type, $this->toXml($this->getContent()), $this->type);
 
@@ -210,7 +210,7 @@ class Pegass
      *
      * @return string
      */
-    public function xpathQuote(string $value): string
+    public function xpathQuote(string $value) : string
     {
         if (false === strpos($value, '"')) {
             return '"'.$value.'"';
@@ -247,24 +247,24 @@ class Pegass
         return $sb;
     }
 
-    public function getContent(): ?array
+    public function getContent() : ?array
     {
         return $this->content ? json_decode($this->content, true) : null;
     }
 
-    public function setContent(?array $content): self
+    public function setContent(?array $content) : self
     {
         $this->content = $content ? json_encode($content, JSON_PRETTY_PRINT) : null;
 
         return $this;
     }
 
-    public function getEnabled(): ?bool
+    public function getEnabled() : ?bool
     {
         return $this->enabled;
     }
 
-    public function setEnabled(bool $enabled): self
+    public function setEnabled(bool $enabled) : self
     {
         $this->enabled = $enabled;
 
@@ -286,7 +286,7 @@ class Pegass
      *
      * @return string
      */
-    private function toXml(array $arr, string $name_for_numeric_keys = 'val', int $nest = 0): string
+    private function toXml(array $arr, string $name_for_numeric_keys = 'val', int $nest = 0) : string
     {
         // Covers DOMDocument memory leaks
         static $tmpDom = [];
@@ -296,12 +296,12 @@ class Pegass
             return '';
         }
 
-        $is_iterable_compat = function ($v): bool {
+        $is_iterable_compat = function ($v) : bool {
             // php 7.0 compat for php7.1+'s is_itrable
             return is_array($v) || ($v instanceof \Traversable);
         };
 
-        $isAssoc = function (array $arr): bool {
+        $isAssoc = function (array $arr) : bool {
             // thanks to Mark Amery for this
             if ([] === $arr) {
                 return false;
@@ -310,7 +310,7 @@ class Pegass
             return array_keys($arr) !== range(0, count($arr) - 1);
         };
 
-        $endsWith = function (string $haystack, string $needle): bool {
+        $endsWith = function (string $haystack, string $needle) : bool {
             // thanks to MrHus
             $length = strlen($needle);
             if ($length == 0) {

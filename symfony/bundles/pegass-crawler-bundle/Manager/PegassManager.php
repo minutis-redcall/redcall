@@ -14,7 +14,6 @@ use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Exception;
 use Psr\Log\LoggerInterface;
-use Psr\Log\NullLogger;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class PegassManager
@@ -37,22 +36,24 @@ class PegassManager
     /**
      * @var LoggerInterface
      */
-    private $logger;
+    private $slackLogger;
 
     /**
-     * @param EventDispatcherInterface $eventDispatcher
-     * @param PegassRepository         $pegassRepository
-     * @param PegassClient             $pegassClient
+     * @var LoggerInterface
      */
+    private $logger;
+
     public function __construct(EventDispatcherInterface $eventDispatcher,
         PegassRepository $pegassRepository,
         PegassClient $pegassClient,
-        LoggerInterface $logger = null)
+        LoggerInterface $slackLogger,
+        LoggerInterface $logger)
     {
         $this->eventDispatcher  = $eventDispatcher;
         $this->pegassRepository = $pegassRepository;
         $this->pegassClient     = $pegassClient;
-        $this->logger           = $logger ?: new NullLogger();
+        $this->slackLogger      = $slackLogger;
+        $this->logger           = $logger;
     }
 
     /**
@@ -135,7 +136,7 @@ class PegassManager
      *
      * @return Pegass|null
      */
-    public function getEntity(string $type, string $identifier, bool $onlyEnabled = true): ?Pegass
+    public function getEntity(string $type, string $identifier, bool $onlyEnabled = true) : ?Pegass
     {
         return $this->pegassRepository->getEntity($type, $identifier, $onlyEnabled);
     }
@@ -190,6 +191,8 @@ class PegassManager
                 $department->setUpdatedAt(new DateTime('1984-07-10')); // Expired
                 $this->debug($department, 'Creating department');
                 $this->pegassRepository->save($department);
+
+                $this->slackLogger->info(sprintf('New department created: %s', $department->getIdentifier()));
             }
         }
     }
@@ -234,6 +237,14 @@ class PegassManager
                 $structure->setUpdatedAt(new DateTime('1984-07-10')); // Expired
                 $this->debug($structure, 'Creating structure');
                 $this->pegassRepository->save($structure);
+
+                $this->slackLogger->warning(sprintf(
+                    'New structure created in %s/%s: %s (%s)',
+                    $data['id'],
+                    $data['nom'],
+                    $row['libelle'],
+                    $structure->getIdentifier()
+                ));
             }
         }
     }
