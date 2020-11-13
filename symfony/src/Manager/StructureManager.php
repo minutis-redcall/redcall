@@ -84,9 +84,9 @@ class StructureManager
         );
     }
 
-    public function searchAllQueryBuilder(?string $criteria) : QueryBuilder
+    public function searchAllQueryBuilder(?string $criteria, bool $enabled) : QueryBuilder
     {
-        return $this->structureRepository->searchAllQueryBuilder($criteria);
+        return $this->structureRepository->searchAllQueryBuilder($criteria, $enabled);
     }
 
     public function searchAll(?string $criteria, int $maxResults) : array
@@ -94,12 +94,12 @@ class StructureManager
         return $this->structureRepository->searchAll($criteria, $maxResults);
     }
 
-    public function searchForCurrentUserQueryBuilder(?string $criteria) : QueryBuilder
+    public function searchForCurrentUserQueryBuilder(?string $criteria, bool $enabled) : QueryBuilder
     {
         return $this->structureRepository->searchForUserQueryBuilder(
             $this->userManager->findForCurrentUser(),
             $criteria,
-            true
+            $enabled
         );
     }
 

@@ -416,6 +416,8 @@ manage_structures:
   force_update: 'Force update now'
   manage_prefilled_answers: 'Manage prefilled answers'
   form:
+    enabled: 'Show enabled structures'
+    disabled: 'Show disabled structures'
     create: "Create new structure"
   prefilled_answers:
     form:

@@ -59,13 +59,9 @@ class StructuresController extends BaseController
     }
 
     /**
-     * @Route(name="list")
-     * @param Request $request
-     *
-     * @return \Symfony\Component\HttpFoundation\Response
-     * @throws \Doctrine\DBAL\DBALException
+     * @Route("/{enabled}", name="list", defaults={"enabled" = true}, requirements={"enabled" = "^\d?$"})
      */
-    public function listAction(Request $request)
+    public function listAction(Request $request, bool $enabled)
     {
         // Search form.
         $search = $this->createSearchForm($request);
@@ -76,14 +72,15 @@ class StructuresController extends BaseController
         }
 
         if ($this->isGranted('ROLE_ADMIN')) {
-            $queryBuilder = $this->structureManager->searchAllQueryBuilder($criteria);
+            $queryBuilder = $this->structureManager->searchAllQueryBuilder($criteria, $enabled);
         } else {
-            $queryBuilder = $this->structureManager->searchForCurrentUserQueryBuilder($criteria);
+            $queryBuilder = $this->structureManager->searchForCurrentUserQueryBuilder($criteria, $enabled);
         }
 
         return $this->render('management/structures/list.html.twig', [
             'search'     => $search->createView(),
             'structures' => $this->paginationManager->getPager($queryBuilder),
+            'enabled'    => $enabled,
         ]);
     }
 
@@ -160,7 +157,7 @@ class StructuresController extends BaseController
      *
      * @return FormInterface
      */
-    private function createSearchForm(Request $request): FormInterface
+    private function createSearchForm(Request $request) : FormInterface
     {
         return $this->createFormBuilder(null, ['csrf_protection' => false])
                     ->setMethod('GET')
