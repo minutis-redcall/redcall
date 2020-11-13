@@ -70,6 +70,11 @@
                                 </a>
                             {% endif %}
 
+                            <br/>
+                            <a href="{{ path('management_structures_export', {id: structure.id} ) }}">
+                                {{ 'manage_structures.export'|trans }}
+                            </a>
+
                             <br>
 
                             <a href="{{ path('management_structures_prefilled_answers_list', {structure: structure.id}) }}">

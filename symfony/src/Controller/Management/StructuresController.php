@@ -3,7 +3,9 @@
 namespace App\Controller\Management;
 
 use App\Base\BaseController;
+use App\Component\HttpFoundation\ArrayToCsvResponse;
 use App\Entity\Structure;
+use App\Entity\Volunteer;
 use App\Form\Type\StructureType;
 use App\Import\StructureImporter;
 use App\Manager\StructureManager;
@@ -150,6 +152,27 @@ class StructuresController extends BaseController
             'structure' => $structure,
             'pegass'    => json_encode($entity->getContent(), JSON_PRETTY_PRINT),
         ]);
+    }
+
+    /**
+     * @Route(name="export", path="/export/{id}")
+     * @IsGranted("STRUCTURE", subject="structure")
+     */
+    public function export(Structure $structure)
+    {
+        $rows = [];
+        foreach ($structure->getVolunteers() as $volunteer) {
+            /** @var Volunteer $volunteer */
+            $rows[] = [
+                'nivol'     => $volunteer->getNivol(),
+                'firstname' => $volunteer->getFirstName(),
+                'lastname'  => $volunteer->getLastName(),
+                'phone'     => $volunteer->getPhoneNumber() ? sprintf('+%s', $volunteer->getPhoneNumber()) : null,
+                'email'     => $volunteer->getEmail(),
+            ];
+        }
+
+        return new ArrayToCsvResponse($rows, sprintf('%s.%s.csv', date('Y-m-d'), $structure->getName()));
     }
 
     /**
