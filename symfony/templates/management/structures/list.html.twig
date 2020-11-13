@@ -8,13 +8,22 @@
         {{ 'manage_structures.title'|trans }}
     </h1>
 
-    {% if is_granted('ROLE_ADMIN') %}
-        <div class="text-right">
+    <div class="text-right">
+        {% if enabled %}
+            <a href="{{ path('management_structures_list', {enabled: 0}) }}" class="btn btn-secondary">
+                {{ 'manage_structures.form.disabled'|trans }}
+            </a>
+        {% else %}
+            <a href="{{ path('management_structures_list', {enabled: 1}) }}" class="btn btn-secondary">
+                {{ 'manage_structures.form.enabled'|trans }}
+            </a>
+        {% endif %}
+        {% if is_granted('ROLE_ADMIN') %}
             <a href="{{ path('management_structures_create') }}" class="btn btn-secondary">
                 {{ 'manage_structures.form.create'|trans }}
             </a>
-        </div>
-    {% endif %}
+        {% endif %}
+    </div>
 
     {{ form(search) }}
 
@@ -28,6 +37,7 @@
                             <div>
                                 <div class="h4 {% if not structure.enabled %}text-black-50{% endif %}">
                                     <a href="{{ path('management_volunteers_list', {id: structure.id}) }}">{{ structure.name }}</a>
+                                    {% if not structure.enabled %}🚫{% endif %}
                                     {% if is_granted('ROLE_ADMIN') %}
                                         <a href="{{ path('management_structures_pegass', {id: structure.id}) }}" target="_blank">🛠</a>
                                     {% endif %}
@@ -59,6 +69,11 @@
                                     {{ 'manage_structures.force_update'|trans }}
                                 </a>
                             {% endif %}
+
+                            <br/>
+                            <a href="{{ path('management_structures_export', {id: structure.id} ) }}">
+                                {{ 'manage_structures.export'|trans }}
+                            </a>
 
                             <br>
 

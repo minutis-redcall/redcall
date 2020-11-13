@@ -414,8 +414,11 @@ manage_structures:
   last_update: 'Last Pegass synchro on: %last_update% UTC'
   next_update: 'Next Pegass synchro on: %next_update% UTC'
   force_update: 'Force update now'
+  export: 'Export volunteers contact information'
   manage_prefilled_answers: 'Manage prefilled answers'
   form:
+    enabled: 'Show enabled structures'
+    disabled: 'Show disabled structures'
     create: "Create new structure"
   prefilled_answers:
     form:

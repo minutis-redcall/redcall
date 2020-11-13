@@ -72,7 +72,7 @@ class TaskController extends BaseController
         ]);
 
         $data = json_decode($request->getContent(), true);
-        if ($data['WebhookRequest'] ?? null) {
+        if (!($data['WebhookRequest'] ?? null)) {
             throw $this->createNotFoundException();
         }
         $params = $data['WebhookRequest'];
@@ -99,9 +99,9 @@ class TaskController extends BaseController
         }
 
         $subRequest = Request::create(
-            $uri,
+            $uri.(($params['queryParams'] ?? false) ? '?'.http_build_query($params['queryParams']) : ''),
             $params['method'] ?? 'GET',
-            $params['queryParams'] ?? [],
+            [],
             [],
             [],
             $server,
@@ -116,11 +116,13 @@ class TaskController extends BaseController
      */
     public function test(Request $request, LoggerInterface $slackLogger)
     {
-        $slackLogger->info('Webhook test controller reached out!', [
-            'headers' => json_encode($request->headers->all()),
-            'query'   => json_encode($request->query->all()),
-            'body'    => $request->getContent(),
-        ]);
+        $slackLogger->info(sprintf("Webhook test controller reached out!\n- headers: %s\n- query: %s\n- body: %s\n",
+            json_encode($request->headers->all()),
+            json_encode($request->query->all()),
+            $request->getContent()
+        ));
+
+        return new Response();
     }
 
     private function checkOrigin(Request $request)

@@ -192,11 +192,12 @@ class StructureRepository extends BaseRepository
         return $this->getStructuresForAdminQueryBuilder($user);
     }
 
-    public function searchAllQueryBuilder(?string $criteria) : QueryBuilder
+    public function searchAllQueryBuilder(?string $criteria, bool $enabled = true) : QueryBuilder
     {
         $qb = $this
             ->createQueryBuilder('s')
-            ->andWhere('s.enabled = true');
+            ->andWhere('s.enabled = :enabled')
+            ->setParameter('enabled', $enabled);
 
         if ($criteria) {
             $qb->andWhere('s.identifier LIKE :criteria OR s.name LIKE :criteria')
@@ -212,21 +213,21 @@ class StructureRepository extends BaseRepository
     {
         return $this
             ->searchAllQueryBuilder($criteria)
-            ->andWhere('s.enabled = true')
             ->setMaxResults($maxResults)
             ->getQuery()
             ->getResult();
     }
 
-    public function searchForUserQueryBuilder(User $user, ?string $criteria, bool $onlyEnabled = false) : QueryBuilder
+    public function searchForUserQueryBuilder(User $user, ?string $criteria, ?bool $enabled = null) : QueryBuilder
     {
         $qb = $this->createQueryBuilder('s')
                    ->join('s.users', 'u')
                    ->where('u.id = :user_id')
                    ->setParameter('user_id', $user->getId());
 
-        if ($onlyEnabled) {
-            $qb->andWhere('s.enabled = true');
+        if (null !== $enabled) {
+            $qb->andWhere('s.enabled = :enabled')
+               ->setParameter('enabled', $enabled);
         }
 
         if ($criteria) {
@@ -239,10 +240,10 @@ class StructureRepository extends BaseRepository
         return $qb;
     }
 
-    public function searchForUser(User $user, ?string $criteria, int $maxResults, bool $onlyEnabled = false) : array
+    public function searchForUser(User $user, ?string $criteria, int $maxResults, ?bool $enabled = null) : array
     {
         return $this
-            ->searchForUserQueryBuilder($user, $criteria, $onlyEnabled)
+            ->searchForUserQueryBuilder($user, $criteria, $enabled)
             ->setMaxResults($maxResults)
             ->getQuery()
             ->getResult();
