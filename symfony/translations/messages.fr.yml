@@ -129,6 +129,7 @@ base:
     save: Sauvegarder
     open: Ouvrir
     more: Plus...
+    details: Détails
   crud:
     create_title: 'Ajouter une entrée'
     update_title: 'Editer "%entity%"'
@@ -150,6 +151,7 @@ campaign:
     new: 'Créer un déclenchement: %type%'
     list_full: 'Liste des déclenchements'
     list_admin: 'Liste de tous les déclenchements'
+    structures: '%nbr% structures impliquées'
     sms: 'SMS'
     call: 'Appel'
     email: 'Email'

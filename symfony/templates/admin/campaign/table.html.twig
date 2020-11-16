@@ -28,11 +28,18 @@
 
                 <em>
                     <span class="text-sm-left color-grey">
-                    {% for structure in campaign.structures %}
-                        <div>{{ structure.name }}</div>
-                    {% endfor %}
+                        {{ 'campaign.titles.structures'|trans({'%nbr%': campaign.structures|length}) }}
+                        (<a href="#" data-target="#structures-in-{{ campaign.id }}" class="toggle-structure-list">{{ 'base.button.details'|trans }}</a>)
+                        <br/>
                         {{ campaign.createdAt|date("d/m/y H:i") }}
                     </span>
+
+                    <div class="d-none" id="structures-in-{{ campaign.id }}">
+                        {% for structure in campaign.structures %}
+                            <div>{{ structure.name }}</div>
+                        {% endfor %}
+                    </div>
+
                 </em>
             </div>
         </div>
@@ -53,5 +60,10 @@
     }
 
     $("a[href='" + anchor + "']").tab("show");
+
+    $('.toggle-structure-list').click(function (e) {
+        e.preventDefault();
+        $($(this).data('target')).toggleClass('d-none');
+    });
 
 </script>

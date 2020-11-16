@@ -128,7 +128,7 @@ class Campaign
     /**
      * @return string
      */
-    public function getLabel(): string
+    public function getLabel() : string
     {
         return $this->label;
     }
@@ -148,7 +148,7 @@ class Campaign
     /**
      * @return string
      */
-    public function getType(): string
+    public function getType() : string
     {
         return $this->type;
     }
@@ -169,7 +169,7 @@ class Campaign
     /**
      * @return DateTime
      */
-    public function getCreatedAt(): DateTime
+    public function getCreatedAt() : DateTime
     {
         return $this->createdAt;
     }
@@ -189,7 +189,7 @@ class Campaign
     /**
      * @return int
      */
-    public function isActive(): int
+    public function isActive() : int
     {
         return $this->active;
     }
@@ -231,7 +231,7 @@ class Campaign
      *
      * @return Communication|null
      */
-    public function getCommunicationByType(string $type): ?Communication
+    public function getCommunicationByType(string $type) : ?Communication
     {
         /** @var Communication $communication */
         foreach ($this->communications as $communication) {
@@ -259,7 +259,7 @@ class Campaign
     /**
      * @return array
      */
-    public function getCampaignStatus(): array
+    public function getCampaignStatus() : array
     {
         $data = [
             'notes'          => [
@@ -340,7 +340,7 @@ class Campaign
     /**
      * @return array
      */
-    public function getCampaignProgression(): array
+    public function getCampaignProgression() : array
     {
         $data = [];
         foreach ($this->getCommunications() as $communication) {
@@ -353,7 +353,7 @@ class Campaign
     /**
      * @return float
      */
-    public function getCost(): float
+    public function getCost() : float
     {
         $cost = 0.0;
 
@@ -367,12 +367,12 @@ class Campaign
     /**
      * @return Collection|Structure[]
      */
-    public function getStructures(): Collection
+    public function getStructures() : Collection
     {
         return $this->structures;
     }
 
-    public function addStructure(Structure $structure): self
+    public function addStructure(Structure $structure) : self
     {
         if (!$this->structures->contains($structure)) {
             $this->structures[] = $structure;
@@ -381,7 +381,7 @@ class Campaign
         return $this;
     }
 
-    public function removeStructure(Structure $structure): self
+    public function removeStructure(Structure $structure) : self
     {
         if ($this->structures->contains($structure)) {
             $this->structures->removeElement($structure);
@@ -390,27 +390,39 @@ class Campaign
         return $this;
     }
 
-    public function getNotes(): ?string
+    public function getNotes() : ?string
     {
         return $this->notes;
     }
 
-    public function setNotes(?string $notes): self
+    public function setNotes(?string $notes) : self
     {
         $this->notes = $notes;
 
         return $this;
     }
 
-    public function getNotesUpdatedAt(): ?\DateTimeInterface
+    public function getNotesUpdatedAt() : ?\DateTimeInterface
     {
         return $this->notesUpdatedAt;
     }
 
-    public function setNotesUpdatedAt(?\DateTimeInterface $notesUpdatedAt): self
+    public function setNotesUpdatedAt(?\DateTimeInterface $notesUpdatedAt) : self
     {
         $this->notesUpdatedAt = $notesUpdatedAt;
 
         return $this;
+    }
+
+    public function getStructuresForUser(User $user) : array
+    {
+        $structures = [];
+        foreach ($this->structures as $structure) {
+            if ($user->getStructures()->contains($structure)) {
+                $structures[] = $structure;
+            }
+        }
+
+        return $structures;
     }
 }

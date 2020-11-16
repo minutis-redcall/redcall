@@ -130,6 +130,7 @@ base:
     save: Save
     open: Open
     more: More...
+    details: Details
   crud:
     create_title: 'Add a new entry'
     update_title: 'Update "%entity%"'
@@ -157,6 +158,7 @@ campaign:
     new: 'Create a "%type%" trigger'
     list_full: 'List triggers'
     list_admin: 'List all triggers'
+    structures: '%nbr% implicated structures'
     sms: 'SMS'
     call: 'Call'
     email: 'Email'

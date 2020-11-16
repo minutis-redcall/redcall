@@ -52,7 +52,7 @@
                         <div class="card-text">
                             <em>
                                 <span class="text-sm-left color-grey">
-                                    {% for structure in campaign.structures %}
+                                    {% for structure in campaign.structuresForUser(app.user) %}
                                         <div>{{ structure.name }}</div>
                                     {% endfor %}
                                 </span>
