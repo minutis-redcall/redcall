@@ -106,14 +106,14 @@ class CommunicationManager
      *
      * @return Communication|null
      */
-    public function find(int $communicationId): ?Communication
+    public function find(int $communicationId) : ?Communication
     {
         return $this->communicationRepository->find($communicationId);
     }
 
     public function launchNewCommunication(Campaign $campaign,
         BaseTrigger $trigger,
-        ProcessorInterface $processor = null): Communication
+        ProcessorInterface $processor = null) : Communication
     {
         $this->logger->info('Launching a new communication', [
             'model' => $trigger,
@@ -123,8 +123,11 @@ class CommunicationManager
         $communication->setRaw(json_encode($trigger, JSON_PRETTY_PRINT));
 
         $campaign->addCommunication($communication);
-        foreach ($this->userManager->getCurrentUserStructures() as $structure) {
-            $campaign->addStructure($structure);
+
+        foreach ($communication->getMessages() as $message) {
+            foreach ($message->getVolunteer()->getStructures() as $structure) {
+                $campaign->addStructure($structure);
+            }
         }
 
         $this->campaignManager->save($campaign);
@@ -164,7 +167,7 @@ class CommunicationManager
      *
      * @throws Exception
      */
-    public function createCommunication(BaseTrigger $trigger): Communication
+    public function createCommunication(BaseTrigger $trigger) : Communication
     {
         $communication = new Communication();
         $communication
@@ -225,7 +228,7 @@ class CommunicationManager
     /**
      * @return array
      */
-    public function getTakenPrefixes(): array
+    public function getTakenPrefixes() : array
     {
         return $this->communicationRepository->getTakenPrefixes();
     }
