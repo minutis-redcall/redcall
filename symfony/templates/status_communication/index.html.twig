@@ -24,7 +24,7 @@
         <div class="col-12" {% if campaign.active %}onclick="$('#change-color').modal();"{% endif %} style="cursor:pointer;">
             {% set hexColor = constant('App\\Entity\\Campaign::COLORS')[campaign.type] %}
             <div id="current-color" class="w-100 text-center text-white badge" style="background-color:{{ hexColor }};">
-                {{ ('campaign.types.' ~ campaign.type)|trans|title }}
+                {{ ('campaign.types.' ~ campaign.type)|trans }}
                 {% if campaign.active %}
                     <span>✏️</span>
                 {% endif %}
@@ -200,41 +200,41 @@
                     {# -------------------------------------------------------------------------------- #}
                     <table class="table">
                         <tbody>
-                            {% for choice in communication.choices %}
-                                <tr>
-                                    <td>{{ 'campaign_status.answer_no'|trans({'%choice%': choice.code}) }}</td>
-                                    <td>
-                                        <div id="choice-{{ choice.id }}">
-                                            <a href="#"
-                                               class="filter-response"
-                                               data-communication-id="{{ communication.id }}"
-                                               data-target="filter-is-choice-{{ choice.id }}-{{ communication.id }}">
-                                                {{ choice.label }}
-                                            </a>
-                                            (<span id="choice-count-{{ choice.id }}" data-count="{{ choice.count }}">{{ choice.count }}</span>)
-                                        </div>
-                                    </td>
-                                </tr>
-                            {% endfor %}
+                        {% for choice in communication.choices %}
                             <tr>
+                                <td>{{ 'campaign_status.answer_no'|trans({'%choice%': choice.code}) }}</td>
                                 <td>
-                                    {% if answerCount %}
-                                        {{ 'campaign_status.answer_invalid'|trans }}
-                                    {% else %}
-                                        {{ 'campaign_status.answer'|trans }}
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    <a href="#"
-                                       id="has-invalid-answer-{{ communication.id }}"
-                                       class="filter-response"
-                                       data-communication-id="{{ communication.id }}"
-                                       data-count="{{ communication.invalidAnswersCount }}"
-                                       data-target="filter-has-invalid-answer-{{ communication.id }}">
-                                        {{ communication.invalidAnswersCount }}
-                                    </a>
+                                    <div id="choice-{{ choice.id }}">
+                                        <a href="#"
+                                           class="filter-response"
+                                           data-communication-id="{{ communication.id }}"
+                                           data-target="filter-is-choice-{{ choice.id }}-{{ communication.id }}">
+                                            {{ choice.label }}
+                                        </a>
+                                        (<span id="choice-count-{{ choice.id }}" data-count="{{ choice.count }}">{{ choice.count }}</span>)
+                                    </div>
                                 </td>
                             </tr>
+                        {% endfor %}
+                        <tr>
+                            <td>
+                                {% if answerCount %}
+                                    {{ 'campaign_status.answer_invalid'|trans }}
+                                {% else %}
+                                    {{ 'campaign_status.answer'|trans }}
+                                {% endif %}
+                            </td>
+                            <td>
+                                <a href="#"
+                                   id="has-invalid-answer-{{ communication.id }}"
+                                   class="filter-response"
+                                   data-communication-id="{{ communication.id }}"
+                                   data-count="{{ communication.invalidAnswersCount }}"
+                                   data-target="filter-has-invalid-answer-{{ communication.id }}">
+                                    {{ communication.invalidAnswersCount }}
+                                </a>
+                            </td>
+                        </tr>
                         </tbody>
                     </table>
 
@@ -485,9 +485,9 @@
                         {# Download CSV #}
                         <div class="col-md-3 col-12 skip-line">
                             <button
-                               class="btn btn-primary download-csv-button"
-                               data-communication-id="{{ communication.id }}"
-                               data-timeout-disabled="30000">
+                                    class="btn btn-primary download-csv-button"
+                                    data-communication-id="{{ communication.id }}"
+                                    data-timeout-disabled="30000">
                                 {{ 'campaign_status.selection.download_csv'|trans }}
                             </button>
                             <form id="selection-download-csv-form-{{ communication.id }}"
@@ -502,9 +502,9 @@
                         {# Download PDF #}
                         <div class="col-md-3 col-12 skip-line">
                             <button
-                               class="btn btn-primary download-pdf-button"
-                               data-communication-id="{{ communication.id }}"
-                               data-timeout-disabled="30000">
+                                    class="btn btn-primary download-pdf-button"
+                                    data-communication-id="{{ communication.id }}"
+                                    data-timeout-disabled="30000">
                                 {{ 'campaign_status.selection.download_portrait_pdf'|trans }}
                             </button>
                             <form id="selection-download-pdf-form-{{ communication.id }}"
@@ -581,7 +581,7 @@
                 <a href="{{ path('color_campaign', app.request.query.all|merge({id: campaign.id, color: color, csrf: csrf_token('campaign')})) }}"
                    class="btn btn-primary text-white border-0 w-100"
                    style="background-color:{{ hexColor }};">
-                    {{ ('campaign.types.' ~ color)|trans|title }}
+                    {{ ('campaign.types.' ~ color)|trans }}
                 </a>
 
                 <br/><br/>
@@ -753,6 +753,7 @@
             call: '{{ 'message.call.type'|trans }}',
             email: '{{ 'message.email.type'|trans }}',
         };
+
         function refreshStatuses(data) {
 
             if ($('#campaign-notes').data('notes-updated-timestamp') != data['notes']['notes-updated-timestamp']) {
@@ -942,16 +943,16 @@
 
             var structures = [];
             {% for structure in campaign.structures %}
-                structures.push("structure-{{ structure.id|e('js') }}");
+            structures.push("structure-{{ structure.id|e('js') }}");
             {% endfor %}
 
             var actions = [];
             {% for communication in campaign.communications %}
             actions["{{ communication.id|e('js') }}"] = [
                 {% if communication.choices|length %}
-                    {% for choice in communication.choices %}
-                        "is-choice-{{ choice.id|e('js') }}",
-                    {% endfor %}
+                {% for choice in communication.choices %}
+                "is-choice-{{ choice.id|e('js') }}",
+                {% endfor %}
                 {% endif %}
                 "has-invalid-answer",
             ];

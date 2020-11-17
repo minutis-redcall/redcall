@@ -37,7 +37,8 @@
             {% for index, campaign in table.pager.currentPageResults %}
                 <div class="card">
                     <div class="card-header text-center" style="background-color: {{ constant('App\\Entity\\Campaign::BACKGROUNDS')[campaign.type] }}; color: {{ constant('App\\Entity\\Campaign::COLORS')[campaign.type] }};">
-                        <strong>{{ ('campaign.types.' ~ campaign.type)|trans|title }}</strong> <span style="color:red;">✚</span> {{ campaign.createdAt|date("d/m/Y H:i") }}
+                        <strong>{{ ('campaign.types.' ~ campaign.type)|trans }}</strong>
+                        <span style="color:red;">✚</span> {{ campaign.createdAt|date("d/m/Y H:i") }}
                     </div>
                     <div class="card-body">
                         <div class="card-title">
