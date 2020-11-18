@@ -13,3 +13,7 @@ password_login:
 twilio:
   resource: '@TwilioBundle/Controller/'
   type: annotation
+
+google_task:
+  resource: '@GoogleTaskBundle/Controller/'
+  type: annotation

@@ -1,0 +1,11 @@
+services:
+
+  Bundles\GoogleTaskBundle\Service\TaskSender:
+    arguments:
+      - '@router'
+      - '@kernel'
+      - '@Bundles\GoogleTaskBundle\Bag\TaskBag'
+
+  Bundles\GoogleTaskBundle\Service\TaskReceiver:
+    arguments:
+      - '@Bundles\GoogleTaskBundle\Bag\TaskBag'
