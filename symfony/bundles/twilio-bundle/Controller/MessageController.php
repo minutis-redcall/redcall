@@ -48,7 +48,10 @@ class MessageController extends BaseController
         ]);
 
         $response = $this->messageManager->handleInboundMessage(
-            $request->request->all()
+            array_merge(
+                $request->query->all(),
+                $request->request->all()
+            )
         );
 
         if (!$response) {

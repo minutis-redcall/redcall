@@ -113,11 +113,7 @@ class TaskController extends BaseController
 
     private function checkOrigin(Request $request)
     {
-        if (!$name = $request->headers->get('X-Appengine-Taskname')) {
-            throw $this->createAccessDeniedException();
-        }
-
-        if (!in_array($name, [getenv('GCP_QUEUE_WEBHOOK_STATUS'), getenv('GCP_QUEUE_WEBHOOK_RESPONSE')])) {
+        if (!$name = $request->headers->get('X-Appengine-QueueName')) {
             throw $this->createAccessDeniedException();
         }
     }

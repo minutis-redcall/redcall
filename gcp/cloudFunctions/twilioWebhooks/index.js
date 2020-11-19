@@ -46,6 +46,7 @@ exports.¤CloudFunctioName¤ = (req, res) => {
                 queryParams: req.query,
                 headers: req.headers,
                 body: req.body,
+                rawBody: req.rawBody,
                 origin: TASK_QUEUE_NAME
             }
         };
