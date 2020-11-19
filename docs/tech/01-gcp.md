@@ -298,7 +298,8 @@ gcloud tasks queues update messages-sms \
     --max-dispatches-per-second=10 \
     --max-concurrent-dispatches=30 \
     --max-attempts=100 \
-    --min-backoff=1s
+    --min-backoff=1s \
+    --max-backoff=4s
 
 # We send 5 calls/second (warning: Twilio's default is 1, check your Twilio Voice API CPS)
 gcloud tasks queues create messages-call
@@ -306,7 +307,8 @@ gcloud tasks queues update messages-call \
     --max-dispatches-per-second=5 \
     --max-concurrent-dispatches=30 \
     --max-attempts=100 \
-    --min-backoff=1s
+    --min-backoff=1s \
+    --max-backoff=4s
 
 # We can send up to 600 emails/second but don't want to destroy the instance
 gcloud tasks queues create messages-email
@@ -314,7 +316,8 @@ gcloud tasks queues update messages-email \
     --max-dispatches-per-second=500 \
     --max-concurrent-dispatches=30 \
     --max-attempts=100 \
-    --min-backoff=1s
+    --min-backoff=1s \
+    --max-backoff=4s
 ```
 
 Add the following variables in your .env:

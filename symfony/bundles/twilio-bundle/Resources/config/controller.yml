@@ -2,6 +2,7 @@ services:
 
   Bundles\TwilioBundle\Controller\CallController:
     arguments:
+      - '@request_stack'
       - '@Bundles\TwilioBundle\Manager\TwilioCallManager'
       - '@logger'
     tags:
@@ -9,6 +10,7 @@ services:
 
   Bundles\TwilioBundle\Controller\MessageController:
     arguments:
+      - '@request_stack'
       - '@Bundles\TwilioBundle\Manager\TwilioMessageManager'
       - '@logger'
     tags:
@@ -16,6 +18,7 @@ services:
 
   Bundles\TwilioBundle\Controller\StatusController:
     arguments:
+      - '@request_stack'
       - '@Bundles\TwilioBundle\Manager\TwilioMessageManager'
       - '@Bundles\TwilioBundle\Manager\TwilioStatusManager'
       - '@event_dispatcher'

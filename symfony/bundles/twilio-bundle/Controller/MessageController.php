@@ -5,7 +5,9 @@ namespace Bundles\TwilioBundle\Controller;
 use Bundles\TwilioBundle\Component\HttpFoundation\XmlResponse;
 use Bundles\TwilioBundle\Manager\TwilioMessageManager;
 use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -24,12 +26,12 @@ class MessageController extends BaseController
      */
     private $logger;
 
-    /**
-     * @param TwilioMessageManager $messageManager
-     * @param LoggerInterface|null $logger
-     */
-    public function __construct(TwilioMessageManager $messageManager, LoggerInterface $logger = null)
+    public function __construct(RequestStack $requestStack,
+        TwilioMessageManager $messageManager,
+        LoggerInterface $logger = null)
     {
+        parent::__construct($requestStack);
+
         $this->messageManager = $messageManager;
         $this->logger         = $logger ?? new NullLogger();
     }

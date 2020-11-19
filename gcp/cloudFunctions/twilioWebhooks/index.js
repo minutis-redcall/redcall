@@ -41,7 +41,8 @@ exports.¤CloudFunctioName¤ = (req, res) => {
         // the data structure for the AppEngine
         const bodyForAppEngine = {
             WebhookRequest: {
-                uri: req.baseUrl,
+                absoluteUri: req.protocol + '://' + req.hostname + '/¤CloudFunctioName¤' + req.originalUrl,
+                relativeUri: req.originalUrl,
                 queryParams: req.query,
                 headers: req.headers,
                 body: req.body,
