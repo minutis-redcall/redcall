@@ -61,7 +61,7 @@ class TwilioMessageManager
         $this->logger            = $logger ?: new NullLogger();
     }
 
-    public function get(string $uuid): ?TwilioMessage
+    public function get(string $uuid) : ?TwilioMessage
     {
         return $this->messageRepository->findOneByUuid($uuid);
     }
@@ -74,7 +74,7 @@ class TwilioMessageManager
         $this->messageRepository->save($outbound);
     }
 
-    public function handleInboundMessage(array $parameters): ?MessagingResponse
+    public function handleInboundMessage(array $parameters) : ?MessagingResponse
     {
         $entity = new TwilioMessage();
         $entity->setUuid(Uuid::uuid4());
@@ -106,12 +106,27 @@ class TwilioMessageManager
      *
      * @throws \Exception
      */
-    public function sendMessage(string $phoneNumber, string $message, array $context = []): TwilioMessage
+    public function sendMessage(string $phoneNumber,
+        string $message,
+        array $context = [],
+        array $options = []) : TwilioMessage
     {
+        if (!array_key_exists('messageUuid', $options)) {
+            $options['messageUuid'] = Uuid::uuid4();
+        }
+
+        if (!array_key_exists('statusCallback', $options)) {
+            $options['statusCallback'] = sprintf(
+                '%s%s',
+                trim(getenv('WEBSITE_URL'), '/'),
+                $this->router->generate('twilio_status', ['uuid' => $options['messageUuid']])
+            );
+        }
+
         $phoneNumber = ltrim($phoneNumber, '+');
 
         $entity = new TwilioMessage();
-        $entity->setUuid(Uuid::uuid4());
+        $entity->setUuid($options['messageUuid']);
         $entity->setDirection(TwilioMessage::DIRECTION_OUTBOUND);
         $entity->setMessage($message);
         $entity->setFromNumber(getenv('TWILIO_NUMBER'));
@@ -122,7 +137,7 @@ class TwilioMessageManager
             $outbound = $this->getClient()->messages->create(sprintf('+%s', $phoneNumber), [
                 'from'           => sprintf('+%s', getenv('TWILIO_NUMBER')),
                 'body'           => $message,
-                'statusCallback' => trim(getenv('WEBSITE_URL'), '/').$this->router->generate('twilio_status', ['uuid' => $entity->getUuid()]),
+                'statusCallback' => $options['statusCallback'],
             ]);
 
             $entity->setSid($outbound->sid);
@@ -187,7 +202,7 @@ class TwilioMessageManager
         $this->messageRepository->foreach($callback);
     }
 
-    private function getClient(): Client
+    private function getClient() : Client
     {
         return $this->twilio->getClient();
     }

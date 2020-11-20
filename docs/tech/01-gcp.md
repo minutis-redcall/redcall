@@ -298,7 +298,8 @@ gcloud tasks queues update messages-sms \
     --max-dispatches-per-second=10 \
     --max-concurrent-dispatches=30 \
     --max-attempts=100 \
-    --min-backoff=1s
+    --min-backoff=1s \
+    --max-backoff=5s
 
 # We send 5 calls/second (warning: Twilio's default is 1, check your Twilio Voice API CPS)
 gcloud tasks queues create messages-call
@@ -306,7 +307,8 @@ gcloud tasks queues update messages-call \
     --max-dispatches-per-second=5 \
     --max-concurrent-dispatches=30 \
     --max-attempts=100 \
-    --min-backoff=1s
+    --min-backoff=1s \
+    --max-backoff=5s
 
 # We can send up to 600 emails/second but don't want to destroy the instance
 gcloud tasks queues create messages-email
@@ -314,7 +316,21 @@ gcloud tasks queues update messages-email \
     --max-dispatches-per-second=500 \
     --max-concurrent-dispatches=30 \
     --max-attempts=100 \
+    --min-backoff=1s \
+    --max-backoff=5s
+
+gcloud tasks queues create webhook-sms-status \
+    --max-dispatches-per-second=10 \
+    --max-concurrent-dispatches=30 \
+    --max-attempts=100 \
     --min-backoff=1s
+
+gcloud tasks queues create webhook-sms-responses \
+    --max-dispatches-per-second=10 \
+    --max-concurrent-dispatches=30 \
+    --max-attempts=100 \
+    --min-backoff=1s \
+    --max-backoff=5s
 ```
 
 Add the following variables in your .env:
@@ -323,6 +339,10 @@ Add the following variables in your .env:
 GCP_QUEUE_SMS=messages-sms
 GCP_QUEUE_CALL=messages-call
 GCP_QUEUE_EMAIL=messages-email
+GCP_QUEUE_WEBHOOK_RESPONSE='webhook-sms-responses'
+GCP_QUEUE_WEBHOOK_STATUS='webhook-sms-status'
+GCP_FUNCTION_TWILIO_STATUS=webHooksToTasksSMSStatus
+GCP_FUNCTION_TWILIO_RESPONSE=webHooksToTasksSMSResponse
 ```
 
 You now need to add few permissions in your service account.

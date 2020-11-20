@@ -50,4 +50,5 @@ gcloud tasks queues create webhook-sms-responses \
     --max-dispatches-per-second=10 \
     --max-concurrent-dispatches=30 \
     --max-attempts=100 \
-    --min-backoff=1s
+    --min-backoff=1s \
+    --max-backoff=5s

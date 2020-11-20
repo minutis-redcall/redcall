@@ -11,6 +11,7 @@ use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
@@ -40,17 +41,14 @@ class StatusController extends BaseController
      */
     private $logger;
 
-    /**
-     * @param TwilioMessageManager     $messageManager
-     * @param TwilioStatusManager      $statusManager
-     * @param EventDispatcherInterface $eventDispatcher
-     * @param LoggerInterface|null     $logger
-     */
-    public function __construct(TwilioMessageManager $messageManager,
+    public function __construct(RequestStack $requestStack,
+        TwilioMessageManager $messageManager,
         TwilioStatusManager $statusManager,
         EventDispatcherInterface $eventDispatcher,
         LoggerInterface $logger = null)
     {
+        parent::__construct($requestStack);
+
         $this->messageManager  = $messageManager;
         $this->statusManager   = $statusManager;
         $this->eventDispatcher = $eventDispatcher;

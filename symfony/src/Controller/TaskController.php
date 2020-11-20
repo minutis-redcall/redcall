@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\RouterInterface;
 
 /**
  * @Route(path="task")
@@ -31,11 +32,20 @@ class TaskController extends BaseController
      */
     private $httpKernel;
 
-    public function __construct(MessageManager $messageManager, Sender $sender, HttpKernelInterface $httpKernel)
+    /**
+     * @var RouterInterface
+     */
+    private $router;
+
+    public function __construct(MessageManager $messageManager,
+        Sender $sender,
+        HttpKernelInterface $httpKernel,
+        RouterInterface $router)
     {
         $this->messageManager = $messageManager;
         $this->sender         = $sender;
         $this->httpKernel     = $httpKernel;
+        $this->router         = $router;
     }
 
     /**
@@ -65,7 +75,7 @@ class TaskController extends BaseController
      */
     public function webhook(Request $request, LoggerInterface $logger)
     {
-        //$this->checkOrigin($request);
+        $this->checkOrigin($request);
 
         $logger->info('Task webhook endpoint was hit', [
             'payload' => $request->getContent(),
@@ -79,55 +89,31 @@ class TaskController extends BaseController
 
         switch ($params['origin']) {
             case getenv('GCP_QUEUE_WEBHOOK_RESPONSE'):
-                $uri = '/twilio/incoming-message';
+                $uri = $this->router->generate('twilio_incoming_message', array_merge($params['queryParams'], [
+                    'absoluteUri' => $params['absoluteUri'],
+                ]), RouterInterface::ABSOLUTE_URL);
                 break;
             case getenv('GCP_QUEUE_WEBHOOK_STATUS'):
-                $uri = sprintf('/twilio/status%s', $params['uri']);
+                $uri = $this->router->generate('twilio_status', array_merge($params['queryParams'], [
+                    'uuid'        => ltrim($params['relativeUri'], '/'),
+                    'absoluteUri' => $params['absoluteUri'],
+                ]), RouterInterface::ABSOLUTE_URL);
                 break;
-
-            case 'test':
-                $uri = '/task/test';
-                break;
-
             default:
                 throw $this->createNotFoundException();
         }
 
-        $server = [];
-        foreach ($params['headers'] ?? [] as $key => $value) {
-            $server[strtoupper(str_replace('-', '_', $key))] = $value;
-        }
-
-        $subRequest = Request::create(
-            $uri.(($params['queryParams'] ?? false) ? '?'.http_build_query($params['queryParams']) : ''),
-            $params['method'] ?? 'GET',
-            [],
-            [],
-            [],
-            $server,
-            $params['body'] ?? ''
-        );
+        $subRequest = Request::create($uri);
+        $subRequest->query->add($params['queryParams']);
+        $subRequest->request->add($params['body']);
+        $subRequest->headers->add($params['headers']);
 
         return $this->httpKernel->handle($subRequest, HttpKernelInterface::SUB_REQUEST);
     }
 
-    /**
-     * @Route("/test")
-     */
-    public function test(Request $request, LoggerInterface $slackLogger)
-    {
-        $slackLogger->info(sprintf("Webhook test controller reached out!\n- headers: %s\n- query: %s\n- body: %s\n",
-            json_encode($request->headers->all()),
-            json_encode($request->query->all()),
-            $request->getContent()
-        ));
-
-        return new Response();
-    }
-
     private function checkOrigin(Request $request)
     {
-        if (!$request->headers->get('X-Appengine-Taskname')) {
+        if (!$name = $request->headers->get('X-Appengine-QueueName')) {
             throw $this->createAccessDeniedException();
         }
     }

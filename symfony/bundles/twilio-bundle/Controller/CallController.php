@@ -5,7 +5,9 @@ namespace Bundles\TwilioBundle\Controller;
 use Bundles\TwilioBundle\Component\HttpFoundation\XmlResponse;
 use Bundles\TwilioBundle\Manager\TwilioCallManager;
 use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -24,12 +26,12 @@ class CallController extends BaseController
      */
     private $logger;
 
-    /**
-     * @param TwilioCallManager    $callManager
-     * @param LoggerInterface|null $logger
-     */
-    public function __construct(TwilioCallManager $callManager, LoggerInterface $logger = null)
+    public function __construct(RequestStack $requestStack,
+        TwilioCallManager $callManager,
+        LoggerInterface $logger = null)
     {
+        parent::__construct($requestStack);
+
         $this->callManager = $callManager;
         $this->logger      = $logger ?? new NullLogger();
     }
