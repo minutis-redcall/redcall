@@ -72,7 +72,7 @@ class TaskSender
         }
 
         $this->getClient()->createTask(
-            $this->taskBag->getTask($name)->getQueueName(),
+            $this->getQueueName($name),
             $cloudTask
         );
     }
@@ -116,5 +116,14 @@ class TaskSender
         }
 
         return $this->taskClient;
+    }
+
+    private function getQueueName(string $name) : string
+    {
+        return $this->getClient()->queueName(
+            getenv('GCP_PROJECT_NAME'),
+            getenv('GCP_PROJECT_LOCATION'),
+            $this->taskBag->getTask($name)->getQueueName()
+        );
     }
 }

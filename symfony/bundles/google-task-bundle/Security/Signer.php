@@ -22,6 +22,6 @@ class Signer
             }
         }
 
-        return $payload['signature'] === self::sign($payload['name'], $payload['signature']);
+        return $payload['signature'] === self::sign($payload['name'], $payload['context']);
     }
 }
