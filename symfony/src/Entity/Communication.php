@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use App\Task\SendEmailTask;
+use App\Task\SendSmsTask;
 use App\Tools\GSM;
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
@@ -130,7 +132,7 @@ class Communication
     /**
      * @return Campaign
      */
-    public function getCampaign(): Campaign
+    public function getCampaign() : Campaign
     {
         return $this->campaign;
     }
@@ -140,7 +142,7 @@ class Communication
      *
      * @return $this
      */
-    public function setCampaign($campaign): self
+    public function setCampaign($campaign) : self
     {
         $this->campaign = $campaign;
 
@@ -150,7 +152,7 @@ class Communication
     /**
      * @return string
      */
-    public function getLabel(): ?string
+    public function getLabel() : ?string
     {
         return $this->label;
     }
@@ -160,7 +162,7 @@ class Communication
      *
      * @return $this
      */
-    public function setLabel(?string $label): self
+    public function setLabel(?string $label) : self
     {
         $this->label = $label;
 
@@ -170,7 +172,7 @@ class Communication
     /**
      * @return string
      */
-    public function getType(): string
+    public function getType() : string
     {
         return $this->type;
     }
@@ -180,24 +182,24 @@ class Communication
      *
      * @return $this
      */
-    public function setType($type): self
+    public function setType($type) : self
     {
         $this->type = $type;
 
         return $this;
     }
 
-    public function isSms(): bool
+    public function isSms() : bool
     {
         return self::TYPE_SMS === $this->type;
     }
 
-    public function isCall(): bool
+    public function isCall() : bool
     {
         return self::TYPE_CALL === $this->type;
     }
 
-    public function isEmail(): bool
+    public function isEmail() : bool
     {
         return self::TYPE_EMAIL === $this->type;
     }
@@ -205,7 +207,7 @@ class Communication
     /**
      * @return string|null
      */
-    public function getSubject(): ?string
+    public function getSubject() : ?string
     {
         return $this->subject;
     }
@@ -215,7 +217,7 @@ class Communication
      *
      * @return Communication
      */
-    public function setSubject(?string $subject): Communication
+    public function setSubject(?string $subject) : Communication
     {
         $this->subject = $subject;
 
@@ -225,7 +227,7 @@ class Communication
     /**
      * @return string|null
      */
-    public function getBody(): ?string
+    public function getBody() : ?string
     {
         return $this->body;
     }
@@ -235,14 +237,14 @@ class Communication
      *
      * @return $this
      */
-    public function setBody($body): self
+    public function setBody($body) : self
     {
         $this->body = $body;
 
         return $this;
     }
 
-    public function getLimitedBody(int $limit = 300): string
+    public function getLimitedBody(int $limit = 300) : string
     {
         if (mb_strlen($this->body) > $limit) {
             return sprintf('%s...', mb_substr($this->body, 0, $limit - 3));
@@ -251,7 +253,7 @@ class Communication
         return $this->body;
     }
 
-    public function canExpandBody(): string
+    public function canExpandBody() : string
     {
         return $this->isEmail() || $this->body !== $this->getLimitedBody();
     }
@@ -269,7 +271,7 @@ class Communication
      *
      * @return $this
      */
-    public function setMessages($messages): self
+    public function setMessages($messages) : self
     {
         $this->messages = $messages;
 
@@ -281,7 +283,7 @@ class Communication
      *
      * @return $this
      */
-    public function addMessage(Message $message): self
+    public function addMessage(Message $message) : self
     {
         $this->messages[] = $message;
         $message->setCommunication($this);
@@ -292,7 +294,7 @@ class Communication
     /**
      * @return DateTime
      */
-    public function getCreatedAt(): DateTime
+    public function getCreatedAt() : DateTime
     {
         return $this->createdAt;
     }
@@ -302,7 +304,7 @@ class Communication
      *
      * @return $this
      */
-    public function setCreatedAt($createdAt): self
+    public function setCreatedAt($createdAt) : self
     {
         $this->createdAt = $createdAt;
 
@@ -322,7 +324,7 @@ class Communication
      *
      * @return $this
      */
-    public function setChoices($choices): self
+    public function setChoices($choices) : self
     {
         $this->choices = $choices;
 
@@ -348,7 +350,7 @@ class Communication
      *
      * @return Choice|null
      */
-    public function getChoiceByCode(?string $prefix, string $code): ?Choice
+    public function getChoiceByCode(?string $prefix, string $code) : ?Choice
     {
         if (!$prefix) {
             return null;
@@ -387,7 +389,7 @@ class Communication
      *
      * @return array
      */
-    public function getAllChoicesInText(?string $prefix, string $raw): array
+    public function getAllChoicesInText(?string $prefix, string $raw) : array
     {
         if (!$prefix) {
             return [];
@@ -405,7 +407,7 @@ class Communication
     /**
      * @return bool
      */
-    public function hasGeoLocation(): bool
+    public function hasGeoLocation() : bool
     {
         return $this->geoLocation;
     }
@@ -415,7 +417,7 @@ class Communication
      *
      * @return Communication
      */
-    public function setGeoLocation(bool $geoLocation): Communication
+    public function setGeoLocation(bool $geoLocation) : Communication
     {
         $this->geoLocation = $geoLocation;
 
@@ -425,7 +427,7 @@ class Communication
     /**
      * @return bool
      */
-    public function isMultipleAnswer(): bool
+    public function isMultipleAnswer() : bool
     {
         return $this->multipleAnswer;
     }
@@ -435,7 +437,7 @@ class Communication
      *
      * @return Communication
      */
-    public function setMultipleAnswer(bool $multipleAnswer): Communication
+    public function setMultipleAnswer(bool $multipleAnswer) : Communication
     {
         $this->multipleAnswer = $multipleAnswer;
 
@@ -452,7 +454,7 @@ class Communication
      *
      * @throws Exception
      */
-    public function isUnclear(?string $prefix, string $message): bool
+    public function isUnclear(?string $prefix, string $message) : bool
     {
         if (!$prefix) {
             return false;
@@ -501,12 +503,12 @@ class Communication
         return false;
     }
 
-    public function getVolunteer(): ?Volunteer
+    public function getVolunteer() : ?Volunteer
     {
         return $this->volunteer;
     }
 
-    public function setVolunteer(?Volunteer $volunteer): self
+    public function setVolunteer(?Volunteer $volunteer) : self
     {
         $this->volunteer = $volunteer;
 
@@ -518,7 +520,7 @@ class Communication
      *
      * @return float
      */
-    public function getEstimatedCost(string $body): float
+    public function getEstimatedCost(string $body) : float
     {
         $parts = GSM::getSMSParts($body);
 
@@ -538,7 +540,7 @@ class Communication
         return $estimated;
     }
 
-    public function getInvalidAnswersCount(): int
+    public function getInvalidAnswersCount() : int
     {
         $count = 0;
         foreach ($this->messages as $message) {
@@ -551,12 +553,12 @@ class Communication
         return $count;
     }
 
-    public function getRaw(): ?string
+    public function getRaw() : ?string
     {
         return $this->raw;
     }
 
-    public function setRaw(?string $raw): self
+    public function setRaw(?string $raw) : self
     {
         $this->raw = $raw;
 
@@ -570,7 +572,7 @@ class Communication
      *
      * @return int
      */
-    public function countReachables(): int
+    public function countReachables() : int
     {
         $count = 0;
 
@@ -595,7 +597,19 @@ class Communication
         return $count;
     }
 
-    public function getProgression(): array
+    public function getSendTaskName() : string
+    {
+        switch ($this->type) {
+            case self::TYPE_SMS:
+                return SendSmsTask::class;
+            case self::TYPE_CALL:
+                return SendCallTask::class;
+            case self::TYPE_EMAIL:
+                return SendEmailTask::class;
+        }
+    }
+
+    public function getProgression() : array
     {
         $msgsSent = 0;
         $replies  = 0;

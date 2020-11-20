@@ -318,19 +318,6 @@ gcloud tasks queues update messages-email \
     --max-attempts=100 \
     --min-backoff=1s \
     --max-backoff=5s
-
-gcloud tasks queues create webhook-sms-status \
-    --max-dispatches-per-second=10 \
-    --max-concurrent-dispatches=30 \
-    --max-attempts=100 \
-    --min-backoff=1s
-
-gcloud tasks queues create webhook-sms-responses \
-    --max-dispatches-per-second=10 \
-    --max-concurrent-dispatches=30 \
-    --max-attempts=100 \
-    --min-backoff=1s \
-    --max-backoff=5s
 ```
 
 Add the following variables in your .env:
@@ -339,10 +326,6 @@ Add the following variables in your .env:
 GCP_QUEUE_SMS=messages-sms
 GCP_QUEUE_CALL=messages-call
 GCP_QUEUE_EMAIL=messages-email
-GCP_QUEUE_WEBHOOK_RESPONSE='webhook-sms-responses'
-GCP_QUEUE_WEBHOOK_STATUS='webhook-sms-status'
-GCP_FUNCTION_TWILIO_STATUS=webHooksToTasksSMSStatus
-GCP_FUNCTION_TWILIO_RESPONSE=webHooksToTasksSMSResponse
 ```
 
 You now need to add few permissions in your service account.
@@ -363,6 +346,15 @@ see in `src/Communication/Processor` to see the list of available processors.
 
 
 ## Create Cloud Functions & Task queues to handle twilio webhook
+
+Add the following variables in your .env:
+
+```
+GCP_QUEUE_WEBHOOK_RESPONSE='webhook-sms-responses'
+GCP_QUEUE_WEBHOOK_STATUS='webhook-sms-status'
+GCP_FUNCTION_TWILIO_STATUS=webHooksToTasksSMSStatus
+GCP_FUNCTION_TWILIO_RESPONSE=webHooksToTasksSMSResponse
+```
 
 Run `gcp/deploy/init/init_api.sh` once per environment.
 
@@ -386,6 +378,5 @@ or SMS response from twilio
 
 To run a test (using curl), you can run `gcp/test/cloudFunctions/twilioWebhooks/sendPost.sh`
 This will post sample message with headers to the cloud functions, that should forward this to the AppEngine via Cloud Tasks
-
 
 [Go back](../../README.md)

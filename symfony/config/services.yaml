@@ -5,7 +5,7 @@ parameters:
   locale_list: [ 'fr', 'en' ]
   locale_matcher: 'fr|en'
   google_recaptcha_site_key: '%env(GOOGLE_RECAPTCHA_SITE_KEY)%'
-  communication.processor: 'App\Communication\Processor\QueueProcessor'
+  communication.processor: 'App\Communication\Processor\TaskProcessor'
   user_entity: 'App\Entity\User'
   home_route: 'home'
 
@@ -15,6 +15,10 @@ services:
     autowire: true      # Automatically injects dependencies in your services.
     autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
     public: false       # Allows optimizing the container by removing unused services; this also means
+
+  _instanceof:
+    Bundles\GoogleTaskBundle\Api\TaskInterface:
+      tags: [ 'google_task' ]
 
   # configures session storage on the database
   Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler:
@@ -77,3 +81,4 @@ services:
     class: Twig\Extra\Intl\IntlExtension
     tags:
       - { name: twig.extension }
+

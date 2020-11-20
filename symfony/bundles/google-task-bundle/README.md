@@ -36,7 +36,7 @@ class SendSmsTask implements TaskInterface
 
     public function getQueueName() : string
     {
-        return getenv('GCP_QUEUE_ASYNC');
+        return getenv('GCP_QUEUE_GENERIC');
     }
 }
 ```
@@ -46,8 +46,8 @@ class SendSmsTask implements TaskInterface
 Create a queue on Google Cloud Task
 
 ```
-gcloud tasks queues create generic-fast
-gcloud tasks queues update generic-fast \
+gcloud tasks queues create generic
+gcloud tasks queues update generic \
     --max-dispatches-per-second=100 \
     --max-concurrent-dispatches=500 \
     --max-attempts=100 \

@@ -39,6 +39,7 @@ GCP_STORAGE_BUCKET=redcall-public-prod-assets
 GCP_QUEUE_SMS=messages-sms
 GCP_QUEUE_CALL=messages-call
 GCP_QUEUE_EMAIL=messages-email
+GCP_QUEUE_GENERIC=generic
 GCP_QUEUE_WEBHOOK_RESPONSE='webhook-sms-responses'
 GCP_QUEUE_WEBHOOK_STATUS='webhook-sms-status'
 GCP_FUNCTION_TWILIO_STATUS=cloudFunction

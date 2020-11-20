@@ -46,19 +46,21 @@ class TaskSender
 
     public function fire(string $name, array $context = [], ?Process $process = null)
     {
-        if (null === $process) {
-            if ('prod' === $this->kernel->getEnvironment()) {
-                $process = Process::APP_ENGINE();
-            } else {
-                $process = Process::HTTP();
-            }
+        if ('prod' !== $this->kernel->getEnvironment()) {
+            $this->taskBag->getTask($name)->execute($context);
+
+            return;
         }
 
-        $payload = [
+        if (null === $process) {
+            $process = Process::APP_ENGINE();
+        }
+
+        $payload = json_encode([
             'name'      => $name,
             'context'   => $context,
             'signature' => Signer::sign($name, $context),
-        ];
+        ]);
 
         switch ($process) {
             case Process::APP_ENGINE():
@@ -75,7 +77,7 @@ class TaskSender
         );
     }
 
-    private function createAppEngineTask(array $payload) : Task
+    private function createAppEngineTask(string $payload) : Task
     {
         $httpRequest = new AppEngineHttpRequest();
 
@@ -91,7 +93,7 @@ class TaskSender
         return $task;
     }
 
-    private function createHttpTask(array $payload) : Task
+    private function createHttpTask(string $payload) : Task
     {
         $httpRequest = new HttpRequest();
 

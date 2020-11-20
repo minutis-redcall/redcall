@@ -6,7 +6,7 @@ use Bundles\GoogleTaskBundle\Api\TaskInterface;
 
 class TaskBag
 {
-    private $tasks;
+    private $tasks = [];
 
     public function addTask(TaskInterface $task)
     {

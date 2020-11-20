@@ -1,10 +1,7 @@
-parameters:
-  communication.processor: 'App\Communication\Processor\ExecProcessor'
-
 services:
   App\Provider\SMS\SMSProvider:
     class: 'Bundles\SandboxBundle\Provider\FakeSmsProvider'
-    arguments: ['@doctrine']
+    arguments: [ '@doctrine' ]
     public: true
 
   App\Provider\Call\CallProvider:
@@ -17,7 +14,7 @@ services:
     public: true
 
   App\Provider\Email\EmailProvider:
-      class: 'Bundles\SandboxBundle\Provider\FakeEmailProvider'
-      arguments: ['@doctrine']
-      public: true
+    class: 'Bundles\SandboxBundle\Provider\FakeEmailProvider'
+    arguments: [ '@doctrine' ]
+    public: true
 
