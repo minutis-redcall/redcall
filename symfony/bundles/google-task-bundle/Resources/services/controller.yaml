@@ -1,0 +1,8 @@
+services:
+
+  Bundles\GoogleTaskBundle\Controller\TaskController:
+    arguments:
+      - '@Bundles\GoogleTaskBundle\Service\TaskReceiver'
+    tags:
+      - controller.service_arguments
+

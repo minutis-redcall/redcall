@@ -20,7 +20,7 @@ security:
       provider: user_provider
       anonymous: ~
       logout:
-        path:   /logout
+        path: /logout
         target: /
         csrf_token_generator: security.csrf.token_manager
       guard:
@@ -65,11 +65,14 @@ security:
     - { path: '^/logout', role: 'ROLE_USER' }
     - { path: '^/profile', role: 'ROLE_USER' }
     - { path: '^/guest', role: 'ROLE_USER' }
-    - { path: '^/$', roles: ['ROLE_USER'] }
+    - { path: '^/$', roles: [ 'ROLE_USER' ] }
 
     # Website administration
-    - { path: '^/admin', roles: ['ROLE_ADMIN'] }
-    - { path: '^/developer', roles: ['ROLE_DEVELOPER'] }
+    - { path: '^/admin', roles: [ 'ROLE_ADMIN' ] }
+    - { path: '^/developer', roles: [ 'ROLE_DEVELOPER' ] }
+
+    # Google Cloud Tasks
+    - { path: '^/cloud-task$', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
 
     # Requires an activated account for other pages
-    - { path: '^/', roles: ['ROLE_TRUSTED'] }
+    - { path: '^/', roles: [ 'ROLE_TRUSTED' ] }
