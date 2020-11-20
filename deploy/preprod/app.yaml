@@ -17,13 +17,16 @@ handlers:
   - url: /build
     secure: always
     static_dir: public/build
+    expiration: 1d
   - url: /bundles
     secure: always
     static_dir: public/bundles
+    expiration: 1d
   - url: /(.*\.(ico|txt|gif|png|jpg))$
     secure: always
     static_files: public/\1
     upload: public/.*\.(ico|txt|gif|png|jpg)$
+    expiration: 1d
   - url: /.*
     secure: always
     script: auto

@@ -20,7 +20,7 @@ mkdir -p /tmp/twilioWebhooks/
 rm -rf /tmp/twilioWebhooks/*
 cp -r ../cloudFunctions/twilioWebhooks/* /tmp/twilioWebhooks/
 
-sed -i '' -e "s/¤CloudFunctioName¤/webHooksToTasksSMSStatus/g"  /tmp/twilioWebhooks/index.js
+sed -i '' -e "s/¤CloudFunctioName¤/${GCP_FUNCTION_TWILIO_STATUS}/g"  /tmp/twilioWebhooks/index.js
 
 cd /tmp/twilioWebhooks/ || exit
 
@@ -30,14 +30,14 @@ gcloud functions deploy webHooksToTasksSMSStatus \
   --allow-unauthenticated \
   --runtime nodejs10 \
   --region europe-west1 \
-  --set-env-vars "TASK_QUEUE_LOCATION=europe-west1,TASK_QUEUE_NAME=webhook-sms-status,PROJECT_ID=${GCP_PROJECT_NAME}"
+  --set-env-vars "TASK_QUEUE_LOCATION=${GCP_PROJECT_LOCATION},TASK_QUEUE_NAME=${GCP_QUEUE_WEBHOOK_STATUS},PROJECT_ID=${GCP_PROJECT_NAME}"
 
 cd - || exit
 rm -rf /tmp/twilioWebhooks/*
 cp -r ../cloudFunctions/twilioWebhooks/* /tmp/twilioWebhooks/
 cd /tmp/twilioWebhooks/ || exit
 
-sed -i '' -e "s/¤CloudFunctioName¤/webHooksToTasksSMSResponse/g"  /tmp/twilioWebhooks/index.js
+sed -i '' -e "s/¤CloudFunctioName¤/${GCP_FUNCTION_TWILIO_RESPONSE}/g"  /tmp/twilioWebhooks/index.js
 
 gcloud functions deploy webHooksToTasksSMSResponse \
   --service-account "cf-twilio-webhook@${GCP_PROJECT_NAME}.iam.gserviceaccount.com" \
@@ -45,7 +45,7 @@ gcloud functions deploy webHooksToTasksSMSResponse \
   --allow-unauthenticated \
   --runtime nodejs10 \
   --region europe-west1 \
-  --set-env-vars "TASK_QUEUE_LOCATION=europe-west1,TASK_QUEUE_NAME=webhook-sms-responses,PROJECT_ID=${GCP_PROJECT_NAME}"
+  --set-env-vars "TASK_QUEUE_LOCATION=${GCP_PROJECT_LOCATION},TASK_QUEUE_NAME=${GCP_QUEUE_WEBHOOK_RESPONSE},PROJECT_ID=${GCP_PROJECT_NAME}"
 
 cd - || exit
 
