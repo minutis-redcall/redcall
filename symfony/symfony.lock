@@ -95,6 +95,12 @@
     "firebase/php-jwt": {
         "version": "v5.0.0"
     },
+    "giggsey/libphonenumber-for-php": {
+        "version": "8.12.13"
+    },
+    "giggsey/locale": {
+        "version": "1.9"
+    },
     "google/apiclient": {
         "version": "2.0",
         "recipe": {

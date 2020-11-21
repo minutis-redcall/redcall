@@ -13,6 +13,7 @@
         "build": "encore production --progress"
     },
     "dependencies": {
+        "intl-tel-input": "^17.0.8",
         "jquery": "^3.5.0",
         "popper.js": "^1.15.0",
         "quill": "^1.3.7"
