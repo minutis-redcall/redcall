@@ -476,6 +476,8 @@ class RefreshManager
     {
         $this->logger->info($message, $params);
 
-        echo sprintf('%s %s (%s)', date('d/m/Y H:i:s'), $message, json_encode($params)), PHP_EOL;
+        if ('cli' === php_sapi_name()) {
+            echo sprintf('%s %s (%s)', date('d/m/Y H:i:s'), $message, json_encode($params)), PHP_EOL;
+        }
     }
 }

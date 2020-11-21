@@ -46,7 +46,9 @@ class TaskSender
 
     public function fire(string $name, array $context = [], ?Process $process = null)
     {
-        if ('prod' !== $this->kernel->getEnvironment()) {
+        // If you want to test your task through Cloud Tasks using ngrok on development environment,
+        // pass Process::HTTP() in $process.
+        if (null === $process && 'prod' !== $this->kernel->getEnvironment()) {
             $this->taskBag->getTask($name)->execute($context);
 
             return;

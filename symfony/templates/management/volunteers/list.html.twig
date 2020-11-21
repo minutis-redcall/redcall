@@ -5,7 +5,11 @@
 {% block body %}
 
     <h1>
-        {{ 'manage_volunteers.title'|trans }}
+        {% if structure %}
+            {{ 'manage_volunteers.title_with_structure'|trans({'%name%': structure.name}) }}
+        {% else %}
+            {{ 'manage_volunteers.title'|trans }}
+        {% endif %}
     </h1>
 
     <div class="text-right">

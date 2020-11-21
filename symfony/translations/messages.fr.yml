@@ -330,6 +330,7 @@ prefilled_answers:
 manage_volunteers:
   access_denied: 'Vous ne pouvez pas ouvrir le profil d''un(e) bénévole ne faisant pas partie des structures que vous pouvez déclencher.'
   title: 'Gestion des bénévoles'
+  title_with_structure: 'Gestion des bénévoles de %name%'
   others: 'et %count% autre(s)'
   search:
     label: 'Rechercher un bénévole (appuyez sur Entrée pour continuer)'
@@ -482,8 +483,7 @@ import_report:
 
 maintenance:
   title: 'Maintenance'
-  refresh: 'Synchroniser les entités expirées entre la base de données RedCall et celle de Pegass'
-  refresh_all: 'Synchroniser entièrement la base de données RedCall avec celle de Pegass'
+  refresh: 'Synchroniser entièrement la base de données RedCall avec celle de Pegass'
   refresh_started: 'Synchronisation lancée, cela va prendre du temps.'
   modal:
     for_dev_only: 'Cette fonctionnalité est destinée aux développeurs uniquement, car cette action n''aura aucun effet sans changement dans la logique d''import Pegass. La resynchronisation Pegass est faite lorsqu''il y a un changement important dans le code qui change la manière d''importer un bénévole, par exemple si l''on souhaite importer de nouvelles compétences.'

@@ -331,6 +331,7 @@ prefilled_answers:
 manage_volunteers:
   access_denied: 'Cannot edit this volunteer details, (s)he does not belong to any structure you are managing.'
   title: 'Manage volunteers'
+  title_with_structure: 'Manage volunteers from %name%'
   others: 'and %count% other(s)'
   search:
     label: 'Search for a volunteer (press Enter to continue)'
@@ -483,8 +484,7 @@ import_report:
 
 maintenance:
   title: 'Maintenance'
-  refresh: 'Synchronize expired entities from RedCall and Pegass database'
-  refresh_all: 'Synchronize RedCall and Pegass databases entirely'
+  refresh: 'Synchronize RedCall and Pegass databases entirely'
   refresh_started: 'Synchronize launched, it will take a while.'
   modal:
     for_dev_only: 'This fonctionnality is for developer only.'
