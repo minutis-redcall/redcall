@@ -95,18 +95,6 @@ class MaintenanceController extends BaseController
     }
 
     /**
-     * @Route(name="refresh_all", path="/refresh-all")
-     */
-    public function refreshAll()
-    {
-        $this->maintenanceManager->refreshAll();
-
-        $this->success('maintenance.refresh_started');
-
-        return $this->redirectToRoute('admin_maintenance_index');
-    }
-
-    /**
      * @Route(name="search", path="/search")
      */
     public function search(Request $request)
@@ -219,7 +207,7 @@ class MaintenanceController extends BaseController
         ]);
     }
 
-    private function getPegassEntity(Request $request): Pegass
+    private function getPegassEntity(Request $request) : Pegass
     {
         $nivol = $this->createSearchForm($request)->get('nivol')->getData();
         if (!$nivol) {

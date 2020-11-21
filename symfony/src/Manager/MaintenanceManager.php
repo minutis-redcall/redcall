@@ -3,6 +3,8 @@
 namespace App\Manager;
 
 use App\Settings;
+use App\Task\SyncWithPegassTask;
+use Bundles\GoogleTaskBundle\Service\TaskSender;
 use Bundles\SettingsBundle\Manager\SettingManager;
 use Symfony\Component\HttpKernel\KernelInterface;
 
@@ -29,36 +31,27 @@ class MaintenanceManager
     private $settingManager;
 
     /**
-     * @param KernelInterface  $kernel
-     * @param StructureManager $structureManager
-     * @param VolunteerManager $volunteerManager
-     * @param SettingManager   $settingManager
+     * @var TaskSender
      */
+    private $async;
+
     public function __construct(KernelInterface $kernel,
         StructureManager $structureManager,
         VolunteerManager $volunteerManager,
-        SettingManager $settingManager)
+        SettingManager $settingManager,
+        TaskSender $async)
     {
         $this->kernel           = $kernel;
         $this->structureManager = $structureManager;
         $this->volunteerManager = $volunteerManager;
         $this->settingManager   = $settingManager;
+        $this->async            = $async;
     }
 
-    public function refreshAll()
+    public function refresh()
     {
-        $this->refresh(true);
-    }
-
-    public function refresh($force = false)
-    {
-        $force = $force ? '--force' : '';
+        $this->async->fire(SyncWithPegassTask::class);
 
         $this->settingManager->set(Settings::MAINTENANCE_LAST_REFRESH, time());
-
-        // Executing asynchronous task to prevent against interruptions
-        $console = sprintf('%s/../bin/console', $this->kernel->getRootDir());
-        $command = sprintf('%s refresh %s', escapeshellarg($console), $force);
-        exec(sprintf('%s > /dev/null 2>&1 & echo -n \$!', $command));
     }
 }

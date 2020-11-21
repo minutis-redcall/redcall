@@ -484,8 +484,7 @@ import_report:
 
 maintenance:
   title: 'Maintenance'
-  refresh: 'Synchronize expired entities from RedCall and Pegass database'
-  refresh_all: 'Synchronize RedCall and Pegass databases entirely'
+  refresh: 'Synchronize RedCall and Pegass databases entirely'
   refresh_started: 'Synchronize launched, it will take a while.'
   modal:
     for_dev_only: 'This fonctionnality is for developer only.'
