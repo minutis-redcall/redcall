@@ -18,6 +18,7 @@ class GoogleTaskExtension extends Extension
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources'));
         $loader->load('services/bag.yaml');
+        $loader->load('services/controller.yaml');
         $loader->load('services/service.yaml');
     }
 }
