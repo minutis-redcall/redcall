@@ -330,6 +330,7 @@ prefilled_answers:
 manage_volunteers:
   access_denied: 'Vous ne pouvez pas ouvrir le profil d''un(e) bénévole ne faisant pas partie des structures que vous pouvez déclencher.'
   title: 'Gestion des bénévoles'
+  title_with_structure: 'Gestion des bénévoles de %name%'
   others: 'et %count% autre(s)'
   search:
     label: 'Rechercher un bénévole (appuyez sur Entrée pour continuer)'
