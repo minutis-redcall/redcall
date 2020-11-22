@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Task\SendCallTask;
 use App\Task\SendEmailTask;
 use App\Task\SendSmsTask;
 use App\Tools\GSM;
