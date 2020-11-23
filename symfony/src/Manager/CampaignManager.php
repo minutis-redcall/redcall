@@ -5,6 +5,9 @@ namespace App\Manager;
 use App\Communication\Processor\ProcessorInterface;
 use App\Entity\Campaign as CampaignEntity;
 use App\Entity\Communication;
+use App\Entity\Volunteer;
+use App\Enum\Type;
+use App\Form\Model\Campaign;
 use App\Form\Model\Campaign as CampaignModel;
 use App\Repository\CampaignRepository;
 use Bundles\PasswordLoginBundle\Entity\AbstractUser;
@@ -48,7 +51,7 @@ class CampaignManager
      *
      * @return CampaignEntity|null
      */
-    public function find(int $campaignId): ?CampaignEntity
+    public function find(int $campaignId) : ?CampaignEntity
     {
         return $this->campaignRepository->find($campaignId);
     }
@@ -71,7 +74,7 @@ class CampaignManager
      * @throws Exception
      */
     public function launchNewCampaign(CampaignModel $campaignModel,
-        ProcessorInterface $processor = null): CampaignEntity
+        ProcessorInterface $processor = null) : CampaignEntity
     {
         $campaignEntity = new CampaignEntity();
         $campaignEntity
@@ -109,17 +112,17 @@ class CampaignManager
         $this->campaignRepository->openCampaign($campaign);
     }
 
-    public function changeColor(CampaignEntity $campaign, string $color): void
+    public function changeColor(CampaignEntity $campaign, string $color) : void
     {
         $this->campaignRepository->changeColor($campaign, $color);
     }
 
-    public function changeName(CampaignEntity $campaign, string $newName): void
+    public function changeName(CampaignEntity $campaign, string $newName) : void
     {
         $this->campaignRepository->changeName($campaign, $newName);
     }
 
-    public function changeNotes(CampaignEntity $campaign, string $notes): void
+    public function changeNotes(CampaignEntity $campaign, string $notes) : void
     {
         $this->campaignRepository->changeNotes($campaign, $notes);
     }
@@ -134,7 +137,7 @@ class CampaignManager
      *
      * @return QueryBuilder
      */
-    public function getActiveCampaignsForUserQueryBuilder(AbstractUser $user): QueryBuilder
+    public function getActiveCampaignsForUserQueryBuilder(AbstractUser $user) : QueryBuilder
     {
         return $this->campaignRepository->getActiveCampaignsForUserQueryBuilder($user);
     }
@@ -144,7 +147,7 @@ class CampaignManager
      *
      * @return QueryBuilder
      */
-    public function getInactiveCampaignsForUserQueryBuilder(AbstractUser $user): QueryBuilder
+    public function getInactiveCampaignsForUserQueryBuilder(AbstractUser $user) : QueryBuilder
     {
         return $this->campaignRepository->getInactiveCampaignsForUserQueryBuilder($user);
     }
@@ -157,7 +160,7 @@ class CampaignManager
      *
      * @return bool
      */
-    public function canReopenCampaign(CampaignEntity $campaign): bool
+    public function canReopenCampaign(CampaignEntity $campaign) : bool
     {
         // Fetch all taken prefixes for all called volunteers
         $volunteersTakenPrefixes = [];
@@ -185,7 +188,7 @@ class CampaignManager
         return $this->campaignRepository->getActiveCampaignsQueryBuilder();
     }
 
-    public function getAllCampaignsQueryBuilder(): QueryBuilder
+    public function getAllCampaignsQueryBuilder() : QueryBuilder
     {
         return $this->campaignRepository->getAllCampaignsQueryBuilder();
     }
@@ -196,7 +199,7 @@ class CampaignManager
      * @throws \Doctrine\ORM\NoResultException
      * @throws \Doctrine\ORM\NonUniqueResultException
      */
-    public function countAllOpenCampaigns(): int
+    public function countAllOpenCampaigns() : int
     {
         return $this->campaignRepository->countAllOpenCampaigns();
     }
@@ -206,7 +209,7 @@ class CampaignManager
      *
      * @return array
      */
-    public function findInactiveCampaignsSince(int $days): array
+    public function findInactiveCampaignsSince(int $days) : array
     {
         return $this->campaignRepository->findInactiveCampaignsSince($days);
     }
@@ -229,7 +232,7 @@ class CampaignManager
      *
      * @return string
      */
-    public function getHash(int $campaignId): string
+    public function getHash(int $campaignId) : string
     {
         $criteria = [
             // trigger note has been updated
@@ -250,5 +253,17 @@ class CampaignManager
         ];
 
         return sha1(implode('|', $criteria));
+    }
+
+    public function contact(Volunteer $volunteer, Type $type, string $title, string $message) : CampaignEntity
+    {
+        $communication = $type->getFormData();
+        $communication->setAudience([$volunteer->getNivol()]);
+        $communication->setMessage($message);
+
+        $campaign        = new CampaignModel($communication);
+        $campaign->label = $title;
+
+        return $this->launchNewCampaign($campaign);
     }
 }

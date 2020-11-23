@@ -22,7 +22,7 @@ final class Type extends Enum
     private const CALL  = 'call';
     private const EMAIL = 'email';
 
-    public function getFormType(): string
+    public function getFormType() : string
     {
         switch ($this->value) {
             case self::SMS:
@@ -34,7 +34,7 @@ final class Type extends Enum
         }
     }
 
-    public function getFormData(): BaseTrigger
+    public function getFormData() : BaseTrigger
     {
         switch ($this->value) {
             case self::SMS:
@@ -46,7 +46,7 @@ final class Type extends Enum
         }
     }
 
-    public function getFormView(): string
+    public function getFormView() : string
     {
         switch ($this->value) {
             case self::SMS:
@@ -58,17 +58,17 @@ final class Type extends Enum
         }
     }
 
-    public function isSms(): bool
+    public function isSms() : bool
     {
         return self::SMS === $this->value;
     }
 
-    public function isCall(): bool
+    public function isCall() : bool
     {
         return self::CALL === $this->value;
     }
 
-    public function isEmail(): bool
+    public function isEmail() : bool
     {
         return self::EMAIL === $this->value;
     }

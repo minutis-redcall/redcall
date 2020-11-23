@@ -84,7 +84,7 @@ class Communication
      *
      * @ORM\OneToMany(targetEntity="App\Entity\Choice", mappedBy="communication", cascade={"persist"})
      */
-    private $choices;
+    private $choices = [];
 
     /**
      * @var boolean

@@ -639,3 +639,7 @@ audience:
     phone_optout: '%nbr% nivols are bound to volunteers that don''t want to receive calls/SMS'
     no_email: '%nbr% nivols are bound to volunteers without any emails'
     email_optout: '%nbr% nivols are bound to volunteers that don''t want to receive emails'
+
+special_answers:
+  title: 'Keyword "%keyword%" received from a volunteer'
+  stop: 'You have successfully unsubscribed to RedCall messages. Manage your preferences at https://rcl.re using your Pegass credentials and clicking the small RedCall icon at the top left.'

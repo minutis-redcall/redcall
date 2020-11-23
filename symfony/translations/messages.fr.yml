@@ -641,3 +641,7 @@ audience:
     phone_optout: '%nbr% nivols sont reliés à des bénévoles ne souhaitant pas recevoir d''appels/SMS'
     no_email: '%nbr% nivols sont reliés à des bénévoles n''ayant pas d''email'
     email_optout: '%nbr% nivols sont reliés à des bénévoles ne souhaitant pas recevoir d''emails'
+
+special_answers:
+  title: 'Mot clef "%keyword%" reçu d''un bénévole'
+  stop: 'Vous êtes désormais désabonné(e) des SMS envoyés par RedCall. Gérez vos préférences sur https://rcl.re à l''aide de vos identifiants Pegass, puis en cliquant sur l''icône RedCall en haut à gauche.'
