@@ -7,7 +7,6 @@ use App\Communication\Sender;
 use App\Manager\MessageManager;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\RouterInterface;
@@ -46,28 +45,6 @@ class TaskController extends BaseController
         $this->sender         = $sender;
         $this->httpKernel     = $httpKernel;
         $this->router         = $router;
-    }
-
-    /**
-     * @Route("/message")
-     */
-    public function message(Request $request)
-    {
-        $this->checkOrigin($request);
-
-        $payload = json_decode($request->getContent(), true) ?? null;
-        if (!$payload) {
-            return new Response();
-        }
-
-        $message = $this->messageManager->find($payload['message_id'] ?? 0);
-        if (!$message) {
-            return new Response('', Response::HTTP_BAD_REQUEST);
-        }
-
-        $this->sender->sendMessage($message, false);
-
-        return new Response();
     }
 
     /**
