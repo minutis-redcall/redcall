@@ -89,7 +89,7 @@ class AnswerManager
     {
         if (Stop::isValid($body)) {
             $volunteer = $this->volunteerManager->findOneByPhoneNumber($phoneNumber);
-            if (!$volunteer) {
+            if (!$volunteer || !$volunteer->isPhoneNumberOptin()) {
                 return;
             }
 
