@@ -110,7 +110,7 @@ class SpaceController extends BaseController
         return $this->render('space/phone.html.twig', [
             'session' => $session,
             'form'    => $form->createView(),
-            'from'    => getenv('TWILIO_NUMBER'),
+            'from'    => sprintf('%s / %s', getenv('TWILIO_SMS'), getenv('TWILIO_CALL')),
         ]);
     }
 
@@ -262,7 +262,7 @@ class SpaceController extends BaseController
         return $this->redirectToRoute('home');
     }
 
-    private function getSessionCommunications(VolunteerSession $session): array
+    private function getSessionCommunications(VolunteerSession $session) : array
     {
         $communications = [];
         foreach ($session->getVolunteer()->getMessages() as $message) {
