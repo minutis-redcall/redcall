@@ -16,7 +16,8 @@ Set the following environment variables:
 WEBSITE_URL=your website base url, used to generate absolute urls without possible host injections
 TWILIO_ACCOUNT_SID=your account sid
 TWILIO_AUTH_TOKEN=your auth token
-TWILIO_NUMBER=the phone number to send and receive messages
+TWILIO_CALL=the phone number to send and receive phone calls
+TWILIO_SMS=the phone number to send and receive text messages
 ```
 
 Add the bundle in the project:

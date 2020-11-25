@@ -3,6 +3,7 @@
 namespace App\Manager;
 
 use App\Communication\Processor\ProcessorInterface;
+use App\Communication\Processor\SimpleProcessor;
 use App\Entity\Campaign as CampaignEntity;
 use App\Entity\Communication;
 use App\Entity\Volunteer;
@@ -33,17 +34,19 @@ class CampaignManager
     private $messageManager;
 
     /**
-     * @param CampaignRepository   $campaignRepository
-     * @param CommunicationManager $communicationManager
-     * @param MessageManager       $messageManager
+     * @var SimpleProcessor
      */
+    private $processor;
+
     public function __construct(CampaignRepository $campaignRepository,
         CommunicationManager $communicationManager,
-        MessageManager $messageManager)
+        MessageManager $messageManager,
+        SimpleProcessor $processor)
     {
         $this->campaignRepository   = $campaignRepository;
         $this->communicationManager = $communicationManager;
         $this->messageManager       = $messageManager;
+        $this->processor            = $processor;
     }
 
     /**
@@ -264,6 +267,6 @@ class CampaignManager
         $campaign        = new CampaignModel($communication);
         $campaign->label = $title;
 
-        return $this->launchNewCampaign($campaign);
+        return $this->launchNewCampaign($campaign, $this->processor);
     }
 }

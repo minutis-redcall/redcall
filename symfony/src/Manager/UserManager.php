@@ -26,8 +26,8 @@ class UserManager extends BaseUserManager
     private $tokenStorage;
 
     /**
-     * @param VolunteerManager $volunteerManager
-     * @param StructureManager $structureManager
+     * @param VolunteerManager      $volunteerManager
+     * @param StructureManager      $structureManager
      * @param TokenStorageInterface $tokenStorage
      */
     public function __construct(UserRepository $userRepository,
@@ -65,17 +65,23 @@ class UserManager extends BaseUserManager
     /**
      * @return User[]
      */
-    public function findAll(): array
+    public function findAll() : array
     {
         return $this->userRepository->findAll();
     }
 
-    public function findForCurrentUser(): ?User
+    public function findForCurrentUser() : ?User
     {
-        return $this->tokenStorage->getToken()->getUser();
+        $user = $this->tokenStorage->getToken()->getUser();
+
+        if (!$user || is_scalar($user)) {
+            return null;
+        }
+
+        return $user;
     }
 
-    public function findOneByNivol(string $nivol): ?User
+    public function findOneByNivol(string $nivol) : ?User
     {
         return $this->userRepository->findOneByNivol($nivol);
     }
@@ -114,21 +120,21 @@ class UserManager extends BaseUserManager
         $this->save($user);
     }
 
-    public function getCurrentUserStructuresQueryBuilder(): QueryBuilder
+    public function getCurrentUserStructuresQueryBuilder() : QueryBuilder
     {
         return $this->structureManager->getStructuresQueryBuilderForUser(
             $this->findForCurrentUser()
         );
     }
 
-    public function getCurrentUserStructures(): array
+    public function getCurrentUserStructures() : array
     {
         return $this->structureManager->getStructuresForUser(
             $this->findForCurrentUser()
         );
     }
 
-    public function searchQueryBuilder(?string $criteria): QueryBuilder
+    public function searchQueryBuilder(?string $criteria) : QueryBuilder
     {
         return $this->userRepository->searchQueryBuilder($criteria);
     }

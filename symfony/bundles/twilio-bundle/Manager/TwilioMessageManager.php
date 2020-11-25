@@ -129,13 +129,19 @@ class TwilioMessageManager
         $entity->setUuid($options['messageUuid']);
         $entity->setDirection(TwilioMessage::DIRECTION_OUTBOUND);
         $entity->setMessage($message);
-        $entity->setFromNumber(getenv('TWILIO_NUMBER'));
+        $entity->setFromNumber(getenv('TWILIO_SMS'));
         $entity->setToNumber($phoneNumber);
         $entity->setContext($context);
 
         try {
+            if (strlen(getenv('TWILIO_SMS')) > 6) {
+                $from = sprintf('+%s', getenv('TWILIO_SMS'));
+            } else {
+                $from = getenv('TWILIO_SMS');
+            }
+
             $outbound = $this->getClient()->messages->create(sprintf('+%s', $phoneNumber), [
-                'from'           => sprintf('+%s', getenv('TWILIO_NUMBER')),
+                'from'           => $from,
                 'body'           => $message,
                 'statusCallback' => $options['statusCallback'],
             ]);

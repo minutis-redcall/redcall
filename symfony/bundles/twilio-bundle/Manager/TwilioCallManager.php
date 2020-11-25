@@ -63,7 +63,7 @@ class TwilioCallManager
         $this->logger          = $logger ?: new NullLogger();
     }
 
-    public function get(string $uuid): ?TwilioCall
+    public function get(string $uuid) : ?TwilioCall
     {
         return $this->callRepository->findOneByUuid($uuid);
     }
@@ -107,12 +107,12 @@ class TwilioCallManager
 
     public function sendCall(string $phoneNumber,
         bool $handleAnsweringMachines = false,
-        array $context = []): TwilioCall
+        array $context = []) : TwilioCall
     {
         $entity = new TwilioCall();
         $entity->setUuid(Uuid::uuid4());
         $entity->setDirection(TwilioCall::DIRECTION_OUTBOUND);
-        $entity->setFromNumber(getenv('TWILIO_NUMBER'));
+        $entity->setFromNumber(getenv('TWILIO_CALL'));
         $entity->setToNumber($phoneNumber);
         $entity->setContext($context);
 
@@ -140,7 +140,7 @@ class TwilioCallManager
 
             $outbound = $this->getClient()->calls->create(
                 sprintf('+%s', $phoneNumber),
-                sprintf('+%s', getenv('TWILIO_NUMBER')),
+                sprintf('+%s', getenv('TWILIO_CALL')),
                 $options
             );
 
@@ -182,7 +182,7 @@ class TwilioCallManager
         return $event->getResponse();
     }
 
-    public function handleKeyPressed(TwilioCall $call, string $keyPressed): ?VoiceResponse
+    public function handleKeyPressed(TwilioCall $call, string $keyPressed) : ?VoiceResponse
     {
         $event = new TwilioCallEvent($call, $keyPressed);
 
@@ -265,7 +265,7 @@ class TwilioCallManager
         }
     }
 
-    private function getClient(): Client
+    private function getClient() : Client
     {
         return $this->twilio->getClient();
     }
