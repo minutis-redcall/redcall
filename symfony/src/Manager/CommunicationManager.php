@@ -169,11 +169,19 @@ class CommunicationManager
      */
     public function createCommunication(BaseTrigger $trigger) : Communication
     {
+        $volunteer = null;
+        if ($user = $this->userManager->findForCurrentUser()) {
+            $nivol     = null;
+            $volunteer = $user->getVolunteer();
+        } else {
+            // Triggers ran through the Campaign::contact() method only contain 1 volunteer
+            $nivol     = implode(' ', $trigger->getAudience());
+            $volunteer = $this->volunteerManager->findOneByNivol($nivol);
+        }
+
         $communication = new Communication();
         $communication
-            ->setVolunteer(
-                $this->userManager->findForCurrentUser()->getVolunteer()
-            )
+            ->setVolunteer($volunteer)
             ->setType($trigger->getType())
             ->setBody($trigger->getMessage())
             ->setGeoLocation($trigger->isGeoLocation())
@@ -193,8 +201,13 @@ class CommunicationManager
             $choiceKey++;
         }
 
-        $volunteers = $this->volunteerManager->filterByNivolAndAccess($trigger->getAudience());
-        $codes      = $this->messageManager->generateCodes(count($volunteers));
+        if ($nivol) {
+            $volunteers = [$volunteer];
+        } else {
+            $volunteers = $this->volunteerManager->filterByNivolAndAccess($trigger->getAudience());
+        }
+
+        $codes = $this->messageManager->generateCodes(count($volunteers));
 
         $prefixes = [];
         if (1 !== $choiceKey) {
