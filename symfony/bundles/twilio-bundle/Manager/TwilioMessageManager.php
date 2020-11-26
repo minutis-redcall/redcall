@@ -8,6 +8,7 @@ use Bundles\TwilioBundle\Repository\TwilioMessageRepository;
 use Bundles\TwilioBundle\Service\Twilio;
 use Bundles\TwilioBundle\TwilioEvents;
 use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
@@ -41,13 +42,6 @@ class TwilioMessageManager
      */
     private $logger;
 
-    /**
-     * @param TwilioMessageRepository  $messageRepository
-     * @param Twilio                   $twilio
-     * @param EventDispatcherInterface $eventDispatcher
-     * @param RouterInterface          $router
-     * @param LoggerInterface|null     $logger
-     */
     public function __construct(TwilioMessageRepository $messageRepository,
         Twilio $twilio,
         EventDispatcherInterface $eventDispatcher,
@@ -80,8 +74,8 @@ class TwilioMessageManager
         $entity->setUuid(Uuid::uuid4());
         $entity->setDirection(TwilioMessage::DIRECTION_INBOUND);
         $entity->setMessage($parameters['Body']);
-        $entity->setFromNumber(ltrim($parameters['From'], '+'));
-        $entity->setToNumber(ltrim($parameters['To'], '+'));
+        $entity->setFromNumber($parameters['From']);
+        $entity->setToNumber($parameters['To']);
         $entity->setSid($parameters['MessageSid']);
 
         // Required to create the TwilioMessage id
@@ -94,19 +88,8 @@ class TwilioMessageManager
         return $event->getResponse();
     }
 
-    /**
-     * Send an SMS to the given phone number and store outbound information
-     * on the database for further tracking.
-     *
-     * @param string $phoneNumber
-     * @param string $message
-     * @param array  $context
-     *
-     * @return TwilioMessage
-     *
-     * @throws \Exception
-     */
-    public function sendMessage(string $phoneNumber,
+    public function sendMessage(string $from,
+        string $to,
         string $message,
         array $context = [],
         array $options = []) : TwilioMessage
@@ -123,24 +106,16 @@ class TwilioMessageManager
             );
         }
 
-        $phoneNumber = ltrim($phoneNumber, '+');
-
         $entity = new TwilioMessage();
         $entity->setUuid($options['messageUuid']);
         $entity->setDirection(TwilioMessage::DIRECTION_OUTBOUND);
         $entity->setMessage($message);
-        $entity->setFromNumber(getenv('TWILIO_SMS'));
-        $entity->setToNumber($phoneNumber);
+        $entity->setFromNumber($from);
+        $entity->setToNumber($to);
         $entity->setContext($context);
 
         try {
-            if (strlen(getenv('TWILIO_SMS')) > 6) {
-                $from = sprintf('+%s', getenv('TWILIO_SMS'));
-            } else {
-                $from = getenv('TWILIO_SMS');
-            }
-
-            $outbound = $this->getClient()->messages->create(sprintf('+%s', $phoneNumber), [
+            $outbound = $this->getClient()->messages->create($to, [
                 'from'           => $from,
                 'body'           => $message,
                 'statusCallback' => $options['statusCallback'],

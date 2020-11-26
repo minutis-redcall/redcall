@@ -345,13 +345,13 @@
                                             <a class="btn btn-default"
                                             {% if communication.type == constant('App\\Entity\\Communication::TYPE_SMS') %}
                                                 {% if message.volunteer.phoneNumber %}
-                                                    target="_blank" href="{{ path('sandbox_fake_sms_thread', {phoneNumber: message.volunteer.phoneNumber, campaignId: campaign.id}) }}">{{ macros.communicationIcon(communication) }}</a>
+                                                    target="_blank" href="{{ path('sandbox_fake_sms_thread', {e164: message.volunteer.phoneNumber, campaignId: campaign.id}) }}">{{ macros.communicationIcon(communication) }}</a>
                                                 {% else %}
                                                     href="#">&nbsp;</a>
                                                 {% endif %}
                                             {% elseif communication.type == constant('App\\Entity\\Communication::TYPE_CALL') %}
                                                 {% if message.volunteer.phoneNumber %}
-                                                    target="_blank" href="{{ path('sandbox_fake_call_read', {phoneNumber: message.volunteer.phoneNumber, campaignId: campaign.id}) }}">{{ macros.communicationIcon(communication) }}️</a>
+                                                    target="_blank" href="{{ path('sandbox_fake_call_read', {e164: message.volunteer.phoneNumber, campaignId: campaign.id}) }}">{{ macros.communicationIcon(communication) }}️</a>
                                                 {% else %}
                                                     href="#">&nbsp;</a>
                                                 {% endif %}

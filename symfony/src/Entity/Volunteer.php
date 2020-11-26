@@ -9,7 +9,6 @@ use DateTimeZone;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Exception;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
@@ -26,7 +25,6 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  * @ORM\Entity(repositoryClass="App\Repository\VolunteerRepository")
  * @ORM\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
  * @UniqueEntity("nivol")
- * @UniqueEntity("phoneNumber")
  * @UniqueEntity("email")
  */
 class Volunteer
@@ -222,19 +220,11 @@ class Volunteer
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getIdentifier() : ?string
     {
         return $this->identifier;
     }
 
-    /**
-     * @param string $identifier
-     *
-     * @return Volunteer
-     */
     public function setIdentifier(string $identifier) : self
     {
         $this->identifier = $identifier;
@@ -242,19 +232,11 @@ class Volunteer
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getNivol() : ?string
     {
         return $this->nivol;
     }
 
-    /**
-     * @param string $nivol
-     *
-     * @return Volunteer
-     */
     public function setNivol(string $nivol) : self
     {
         $this->nivol = $nivol;
@@ -262,19 +244,11 @@ class Volunteer
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getFirstName() : ?string
     {
         return $this->firstName;
     }
 
-    /**
-     * @param string $firstName
-     *
-     * @return $this
-     */
     public function setFirstName($firstName)
     {
         $this->firstName = $firstName;
@@ -282,19 +256,11 @@ class Volunteer
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getLastName() : ?string
     {
         return $this->lastName;
     }
 
-    /**
-     * @param string $lastName
-     *
-     * @return $this
-     */
     public function setLastName($lastName)
     {
         $this->lastName = $lastName;
@@ -302,33 +268,18 @@ class Volunteer
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getPhoneNumber() : ?string
     {
-        foreach ($this->getPhones() as $phone) {
-            if ($phone->isPreferred()) {
-                return $phone->getE164();
-            }
-        }
+        $phone = $this->getPhone();
 
-        return null;
+        return $phone ? $phone->getE164() : null;
     }
 
-    /**
-     * @return string
-     */
     public function getEmail() : ?string
     {
         return $this->email;
     }
 
-    /**
-     * @param string $email
-     *
-     * @return Volunteer
-     */
     public function setEmail(?string $email) : Volunteer
     {
         $this->email = $email;
@@ -336,19 +287,11 @@ class Volunteer
         return $this;
     }
 
-    /**
-     * @return bool
-     */
     public function isEnabled() : ?bool
     {
         return $this->enabled;
     }
 
-    /**
-     * @param bool $enabled
-     *
-     * @return Volunteer
-     */
     public function setEnabled(bool $enabled) : Volunteer
     {
         $this->enabled = $enabled;
@@ -356,19 +299,11 @@ class Volunteer
         return $this;
     }
 
-    /**
-     * @return bool
-     */
     public function isLocked() : ?bool
     {
         return $this->locked;
     }
 
-    /**
-     * @param bool $locked
-     *
-     * @return Volunteer
-     */
     public function setLocked(bool $locked) : Volunteer
     {
         $this->locked = $locked;
@@ -376,19 +311,11 @@ class Volunteer
         return $this;
     }
 
-    /**
-     * @return bool
-     */
     public function isMinor() : ?bool
     {
         return $this->minor;
     }
 
-    /**
-     * @param bool $minor
-     *
-     * @return Volunteer
-     */
     public function setMinor(bool $minor) : Volunteer
     {
         $this->minor = $minor;
@@ -396,17 +323,11 @@ class Volunteer
         return $this;
     }
 
-    /**
-     * @return ArrayCollection
-     */
     public function getTags() : Collection
     {
         return $this->tags;
     }
 
-    /**
-     * @param Tag $tag
-     */
     public function addTag(Tag $tag)
     {
         if (!$this->hasTag($tag)) {
@@ -414,17 +335,11 @@ class Volunteer
         }
     }
 
-    /**
-     * @param Tag $tag
-     */
     public function removeTag(Tag $tag)
     {
         $this->tags->removeElement($tag);
     }
 
-    /**
-     * @return array
-     */
     public function getTagsView() : array
     {
         if ($this->tagsView) {
@@ -451,11 +366,6 @@ class Volunteer
         return $this->tagsView;
     }
 
-    /**
-     * @param string $tag
-     *
-     * @return bool
-     */
     public function hasTag(string $tagToSearch) : bool
     {
         foreach ($this->tags as $tag) {
@@ -467,17 +377,11 @@ class Volunteer
         return false;
     }
 
-    /**
-     * @return string
-     */
     public function getFormattedPhoneNumber() : string
     {
-        return chunk_split(sprintf('0%s', substr($this->getPhoneNumber(), 2)), 2, ' ');
+        return $this->getPhone()->getNational();
     }
 
-    /**
-     * @return int
-     */
     public function getTagPriority() : int
     {
         $highest = -1;
@@ -491,19 +395,11 @@ class Volunteer
         return $highest;
     }
 
-    /**
-     * @return DateTime
-     */
     public function getLastPegassUpdate() : ?DateTime
     {
         return $this->lastPegassUpdate;
     }
 
-    /**
-     * @param DateTime $lastPegassUpdate
-     *
-     * @return Volunteer
-     */
     public function setLastPegassUpdate(DateTime $lastPegassUpdate) : Volunteer
     {
         $this->lastPegassUpdate = $lastPegassUpdate;
@@ -511,19 +407,11 @@ class Volunteer
         return $this;
     }
 
-    /**
-     * @return array|null
-     */
     public function getReport() : ?array
     {
         return $this->report ? json_decode($this->report, true) : null;
     }
 
-    /**
-     * @param array $report
-     *
-     * @return Volunteer
-     */
     public function setReport(array $report) : Volunteer
     {
         $this->report = json_encode($report, JSON_PRETTY_PRINT);
@@ -531,21 +419,15 @@ class Volunteer
         return $this;
     }
 
-    /**
-     * @return bool
-     */
     public function isCallable() : bool
     {
         return $this->enabled && (
-                $this->phoneNumber && $this->phoneNumberOptin
+                $this->getPhone() && $this->phoneNumberOptin
                 ||
                 $this->email && $this->emailOptin
             );
     }
 
-    /**
-     * @param string $message
-     */
     public function addReport(string $message)
     {
         $report   = $this->getReport() ?? [];
@@ -553,9 +435,6 @@ class Volunteer
         $this->setReport($report);
     }
 
-    /**
-     * @return Collection
-     */
     public function getStructures() : Collection
     {
         return $this->structures->filter(function (Structure $structure) {
@@ -563,9 +442,6 @@ class Volunteer
         });
     }
 
-    /**
-     * @return array
-     */
     public function getStructureIds() : array
     {
         return array_map(function (Structure $structure) {
@@ -606,11 +482,6 @@ class Volunteer
         return $mainStructure;
     }
 
-    /**
-     * @param TranslatorInterface $translator
-     *
-     * @return array
-     */
     public function toSearchResults(TranslatorInterface $translator)
     {
         return [
@@ -630,11 +501,6 @@ class Volunteer
         ];
     }
 
-    /**
-     * @return DateTime|null
-     *
-     * @throws Exception
-     */
     public function getNextPegassUpdate() : ?DateTime
     {
         if (!$this->lastPegassUpdate) {
@@ -651,11 +517,6 @@ class Volunteer
         return $nextPegassUpdate;
     }
 
-    /**
-     * @return bool
-     *
-     * @throws Exception
-     */
     public function canForcePegassUpdate() : bool
     {
         if (!$this->lastPegassUpdate) {
@@ -684,17 +545,11 @@ class Volunteer
         return sprintf('#%s', mb_strtoupper($this->nivol));
     }
 
-    /**
-     * @return string
-     */
     public function __toString()
     {
         return $this->getDisplayName();
     }
 
-    /**
-     * @return Collection|Communication[]
-     */
     public function getCommunications() : Collection
     {
         return $this->communications;
@@ -769,7 +624,7 @@ class Volunteer
         $new = get_object_vars($this);
 
         foreach ($old as $key => $value) {
-            if ('phoneNumber' === $key || 'email' === $key || 'communications' === $key || 'structures' === $key || 'user' === $key) {
+            if ('phone' === $key || 'email' === $key || 'communications' === $key || 'structures' === $key || 'user' === $key) {
                 continue;
             }
 
@@ -783,11 +638,11 @@ class Volunteer
 
     public function getHiddenPhone() : ?string
     {
-        if (null === $this->phoneNumber) {
+        if (null === ($phone = $this->getPhone())) {
             return null;
         }
 
-        return sprintf('+%s****%s', substr($this->phoneNumber, 0, 6), substr($this->phoneNumber, 10));
+        return $phone->getHidden();
     }
 
     public function getHiddenEmail() : ?string
@@ -832,8 +687,6 @@ class Volunteer
     }
 
     /**
-     * @param ExecutionContextInterface $context
-     * @param                           $payload
      * @Assert\Callback()
      */
     public function doNotDisableRedCallUsers(ExecutionContextInterface $context, $payload)
@@ -845,9 +698,6 @@ class Volunteer
         }
     }
 
-    /**
-     * @return Collection|Phone[]
-     */
     public function getPhones() : Collection
     {
         return $this->phones;
@@ -875,11 +725,17 @@ class Volunteer
         return $this;
     }
 
-    /**
-     * @param string $name
-     *
-     * @return string
-     */
+    public function getPhone() : ?Phone
+    {
+        foreach ($this->getPhones() as $phone) {
+            if ($phone->isPreferred()) {
+                return $phone;
+            }
+        }
+
+        return null;
+    }
+
     private function toName(string $name) : string
     {
         return preg_replace_callback('/[^\\s\-]+/ui', function (array $match) {

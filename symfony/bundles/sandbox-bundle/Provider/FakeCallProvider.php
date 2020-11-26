@@ -35,12 +35,6 @@ class FakeCallProvider implements CallProvider
      */
     private $dispatcher;
 
-    /**
-     * @param MessageManager           $messageManager
-     * @param TwilioCallManager        $twilioCallManager
-     * @param FakeCallManager          $fakeCallManager
-     * @param EventDispatcherInterface $dispatcher
-     */
     public function __construct(MessageManager $messageManager,
         TwilioCallManager $twilioCallManager,
         FakeCallManager $fakeCallManager,
@@ -52,14 +46,16 @@ class FakeCallProvider implements CallProvider
         $this->dispatcher        = $dispatcher;
     }
 
-    public function send(string $phoneNumber, array $context = []): ?string
+    public function send(string $from, string $to, array $context = []) : ?string
     {
-        $this->triggerHook($phoneNumber, $context, TwilioEvents::CALL_ESTABLISHED, FakeCall::TYPE_ESTABLISH);
+        $this->triggerHook($from, $to, $context, TwilioEvents::CALL_ESTABLISHED, FakeCall::TYPE_ESTABLISH);
 
         return 'ok';
     }
 
-    public function triggerHook(string $phoneNumber,
+    public function triggerHook(
+        string $from,
+        string $to,
         array $context,
         string $eventType,
         string $hookType,
@@ -68,8 +64,8 @@ class FakeCallProvider implements CallProvider
         $call = new TwilioCall();
         $call->setUuid(Uuid::uuid4());
         $call->setDirection(TwilioCall::DIRECTION_OUTBOUND);
-        $call->setFromNumber($phoneNumber);
-        $call->setToNumber($phoneNumber);
+        $call->setFromNumber($from);
+        $call->setToNumber($to);
         $call->setContext($context);
         $this->twilioCallManager->save($call);
 
@@ -83,7 +79,7 @@ class FakeCallProvider implements CallProvider
 
         $fakeCall = new FakeCall();
         $fakeCall->setType($hookType);
-        $fakeCall->setPhoneNumber($phoneNumber);
+        $fakeCall->setPhoneNumber($to);
         $fakeCall->setMessageId($context['message_id']);
         $fakeCall->setContent($domxml->saveXML());
         $fakeCall->setCreatedAt(new \DateTime());

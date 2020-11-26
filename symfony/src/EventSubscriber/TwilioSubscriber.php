@@ -130,7 +130,7 @@ class TwilioSubscriber implements EventSubscriberInterface
     public function onCallReceived(TwilioCallEvent $event)
     {
         $message = $this->messageManager->getMessageFromPhoneNumber(
-            ltrim($event->getCall()->getFromNumber(), '+')
+            $event->getCall()->getFromNumber()
         );
 
         if ($message) {
@@ -198,7 +198,7 @@ class TwilioSubscriber implements EventSubscriberInterface
         $this->sender->sendSms($message);
     }
 
-    private function getMessageFromSms(TwilioMessageEvent $event): ?Message
+    private function getMessageFromSms(TwilioMessageEvent $event) : ?Message
     {
         $twilioMessage = $event->getMessage();
 
@@ -210,7 +210,7 @@ class TwilioSubscriber implements EventSubscriberInterface
         return $message;
     }
 
-    private function getMessageFromCall(TwilioCallEvent $event): Message
+    private function getMessageFromCall(TwilioCallEvent $event) : Message
     {
         $call = $event->getCall();
 

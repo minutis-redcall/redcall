@@ -9,6 +9,7 @@ use App\Entity\VolunteerSession;
 use App\Manager\MessageManager;
 use App\Manager\VolunteerManager;
 use App\Manager\VolunteerSessionManager;
+use App\Tools\PhoneNumber;
 use App\Tools\PhoneNumberParser;
 use Mpdf\Mpdf;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
@@ -110,7 +111,7 @@ class SpaceController extends BaseController
         return $this->render('space/phone.html.twig', [
             'session' => $session,
             'form'    => $form->createView(),
-            'from'    => sprintf('%s / %s', getenv('TWILIO_SMS'), getenv('TWILIO_CALL')),
+            'from'    => implode(' / ', PhoneNumber::listAllNumbers()),
         ]);
     }
 

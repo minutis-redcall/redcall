@@ -212,10 +212,11 @@ class VolunteerRepository extends BaseRepository
         $qb = $this->createAccessibleVolunteersQueryBuilder($user);
 
         return $qb
+            ->leftJoin('v.phones', 'p')
             ->andWhere(
                 $qb->expr()->orX(
                     'v.email IS NULL or v.email = \'\'',
-                    'v.phoneNumber IS NULL or v.phoneNumber = \'\''
+                    'p.id is null'
                 )
             )
             ->getQuery()
@@ -313,7 +314,8 @@ class VolunteerRepository extends BaseRepository
     public function filterReachableNivols(array $nivols, User $user) : array
     {
         $valid = $this->createAcessibleNivolsFilterQueryBuilder($nivols, $user)
-                      ->andWhere('v.phoneNumber IS NOT NULL')
+                      ->leftJoin('v.phones', 'p')
+                      ->andWhere('p.id IS NOT NULL')
                       ->andWhere('v.phoneNumberOptin = true')
                       ->andWhere('v.email IS NOT NULL')
                       ->andWhere('v.emailOptin = true')
@@ -351,7 +353,8 @@ class VolunteerRepository extends BaseRepository
     public function filterNoPhoneNivols(array $nivols, User $user) : array
     {
         $filtered = $this->createAcessibleNivolsFilterQueryBuilder($nivols, $user)
-                         ->andWhere('v.phoneNumber IS NULL')
+                         ->leftJoin('v.phones', 'p')
+                         ->andWhere('p.id IS NULL')
                          ->getQuery()
                          ->getArrayResult();
 
@@ -361,7 +364,8 @@ class VolunteerRepository extends BaseRepository
     public function filterPhoneOptOutNivols(array $nivols, User $user) : array
     {
         $filtered = $this->createAcessibleNivolsFilterQueryBuilder($nivols, $user)
-                         ->andWhere('v.phoneNumber IS NOT NULL')
+                         ->leftJoin('v.phones', 'p')
+                         ->andWhere('p.id IS NOT NULL')
                          ->andWhere('v.phoneNumberOptin = false')
                          ->getQuery()
                          ->getArrayResult();
@@ -464,12 +468,15 @@ class VolunteerRepository extends BaseRepository
     private function addSearchCriteria(QueryBuilder $qb, string $criteria)
     {
         $qb
+            ->leftJoin('v.phones', 'p')
             ->andWhere(
                 $qb->expr()->orX(
                     'v.nivol LIKE :criteria',
                     'v.firstName LIKE :criteria',
                     'v.lastName LIKE :criteria',
-                    'v.phoneNumber LIKE :criteria',
+                    'p.e164 LIKE :criteria',
+                    'p.national LIKE :criteria',
+                    'p.international LIKE :criteria',
                     'v.email LIKE :criteria',
                     'CONCAT(v.firstName, \' \', v.lastName) LIKE :criteria',
                     'CONCAT(v.lastName, \' \', v.firstName) LIKE :criteria'

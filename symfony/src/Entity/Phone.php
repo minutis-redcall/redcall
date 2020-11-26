@@ -7,6 +7,10 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=PhoneRepository::class)
+ * @ORM\Table(indexes={
+ *     @ORM\Index(name="nationalx", columns={"national"}),
+ *     @ORM\Index(name="internationalx", columns={"international"})
+ * })
  */
 class Phone
 {
@@ -39,7 +43,7 @@ class Phone
     private $prefix;
 
     /**
-     * @ORM\Column(type="string", length=32)
+     * @ORM\Column(type="string", length=32, unique=true)
      */
     private $e164;
 
@@ -138,5 +142,12 @@ class Phone
         $this->international = $international;
 
         return $this;
+    }
+
+    public function getHidden() : string
+    {
+        $nationalNumber = $this->national;
+
+        return substr($nationalNumber, 0, 4).str_repeat('*', strlen($nationalNumber) - 8).substr($nationalNumber, -4);
     }
 }

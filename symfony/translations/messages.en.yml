@@ -540,7 +540,7 @@ space:
   phone:
     title: 'Edit my phone number'
     details_1: 'You may be contacted by your local unit through SMS or voice calls in case of emergency.'
-    details_2: 'All messages and calls are coming from the following number: +%from%'
+    details_2: 'All messages and calls are coming from the following number(s): %from%'
     details_3: 'You can already add it to your contacts, and assign it a recognizable ringtone.'
     details_4: 'When you receive a message and an answer is required, directly answer to the message by giving, if possible, only the codes that match your choice.'
     details_5: 'Example: if you''re asked "Are you available?" and possible answers are "A1: Yes" and "A2: No", answer using A1 or A2, this will help processing your message automatically, and ease trigger responsible''s job.'

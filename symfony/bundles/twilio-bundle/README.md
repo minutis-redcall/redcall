@@ -16,8 +16,6 @@ Set the following environment variables:
 WEBSITE_URL=your website base url, used to generate absolute urls without possible host injections
 TWILIO_ACCOUNT_SID=your account sid
 TWILIO_AUTH_TOKEN=your auth token
-TWILIO_CALL=the phone number to send and receive phone calls
-TWILIO_SMS=the phone number to send and receive text messages
 ```
 
 Add the bundle in the project:
@@ -98,6 +96,9 @@ class DemoController
     {
         /** @var TwilioMessage $twilioMessage */
         $twilioMessage = $this->messageManager->sendMessage(
+            // Sender ID or phone number from which to send the message
+            '+33600000000',
+
             // Message recipient
             '+33600000000',
 
@@ -206,8 +207,12 @@ class DemoController
     public function initializeCall()
     {
         $this->callManager->sendCall(
+            // Call sender
+            '33600000000',
+
             // Call recipient
             '33600000000',
+
             // Your application context (to bind this call to your app logic,
             // will be sent back in events)
             [

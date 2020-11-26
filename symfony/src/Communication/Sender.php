@@ -8,6 +8,7 @@ use App\Provider\Call\CallProvider;
 use App\Provider\Email\EmailProvider;
 use App\Provider\SMS\SMSProvider;
 use App\Services\MessageFormatter;
+use App\Tools\PhoneNumber;
 use Doctrine\ORM\EntityManagerInterface;
 
 class Sender
@@ -116,9 +117,11 @@ class Sender
         }
 
         $volunteer = $message->getVolunteer();
+        $sender    = PhoneNumber::getSmsSender($volunteer->getPhone());
 
         try {
             $messageId = $this->SMSProvider->send(
+                $sender,
                 $volunteer->getPhoneNumber(),
                 $this->formatter->formatSMSContent($message),
                 ['message_id' => $message->getId()]
@@ -136,9 +139,6 @@ class Sender
         $this->entityManager->flush();
     }
 
-    /**
-     * @param Message $message
-     */
     public function sendCall(Message $message)
     {
         if (!$message->canBeSent()) {
@@ -146,9 +146,11 @@ class Sender
         }
 
         $volunteer = $message->getVolunteer();
+        $sender    = PhoneNumber::getCallSender($volunteer->getPhone());
 
         try {
             $messageId = $this->callProvider->send(
+                $sender,
                 $volunteer->getPhoneNumber(),
                 ['message_id' => $message->getId()]
             );

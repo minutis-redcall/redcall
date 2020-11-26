@@ -167,7 +167,7 @@ class StructuresController extends BaseController
                 'nivol'     => $volunteer->getNivol(),
                 'firstname' => $volunteer->getFirstName(),
                 'lastname'  => $volunteer->getLastName(),
-                'phone'     => $volunteer->getPhoneNumber() ? sprintf('+%s', $volunteer->getPhoneNumber()) : null,
+                'phone'     => $volunteer->getPhoneNumber() ?: null,
                 'email'     => $volunteer->getEmail(),
             ];
         }

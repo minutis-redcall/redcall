@@ -542,7 +542,7 @@ space:
   phone:
     title: 'Editer mon numéro de téléphone'
     details_1: 'Vous pourrez être contacté par votre unité locale ou DT par SMS ou par appel vocaux en cas d''urgence.'
-    details_2: 'Tous les messages et appels proviennent du numéro: +%from%'
+    details_2: 'Tous les messages et appels proviennent du ou des numéro(s): %from%'
     details_3: 'Vous pouvez dès à présent l''ajouter à vos contacts, et lui assigner une sonnerie reconnaissable.'
     details_4: 'Lorsque vous recevez un message et qu''une réponse est demandée, répondez directement au message en ne saisissant, si possible, que le ou les codes des réponses qui correspondent à votre choix.'
     details_5: 'Exemple : si on vous demande "Êtes-vous disponible ?" et que les réponses possibles sont "A1: Oui" ou "A2: Non", répondez le code A1 ou A2, cela permet un traitement automatique de votre choix et aide le responsable du déclenchement.'
