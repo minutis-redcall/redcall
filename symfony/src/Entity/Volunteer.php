@@ -18,7 +18,6 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 /**
  * @ORM\Table(indexes={
  *     @ORM\Index(name="nivolx", columns={"nivol"}),
- *     @ORM\Index(name="phone_numberx", columns={"phone_number"}),
  *     @ORM\Index(name="emailx", columns={"email"}),
  *     @ORM\Index(name="enabledx", columns={"enabled"}),
  *     @ORM\Index(name="phone_number_optinx", columns={"phone_number_optin"}),
@@ -308,7 +307,13 @@ class Volunteer
      */
     public function getPhoneNumber() : ?string
     {
-        // todo
+        foreach ($this->getPhones() as $phone) {
+            if ($phone->isPreferred()) {
+                return $phone->getE164();
+            }
+        }
+
+        return null;
     }
 
     /**

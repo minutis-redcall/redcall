@@ -26,7 +26,7 @@ class Phone
     /**
      * @ORM\Column(type="boolean")
      */
-    private $isPreferred;
+    private $preferred = false;
 
     /**
      * @ORM\Column(type="string", length=2)
@@ -53,89 +53,87 @@ class Phone
      */
     private $international;
 
-    public function getId(): ?int
+    public function getId() : ?int
     {
         return $this->id;
     }
 
-    public function getVolunteer(): ?Volunteer
+    public function getVolunteer() : ?Volunteer
     {
         return $this->volunteer;
     }
 
-    public function setVolunteer(?Volunteer $volunteer): self
+    public function setVolunteer(?Volunteer $volunteer) : self
     {
         $this->volunteer = $volunteer;
 
         return $this;
     }
 
-    public function getIsPreferred(): ?bool
+    public function isPreferred() : bool
     {
-        return $this->isPreferred;
+        return $this->preferred;
     }
 
-    public function setIsPreferred(bool $isPreferred): self
+    public function setPreferred(bool $preferred) : void
     {
-        $this->isPreferred = $isPreferred;
-
-        return $this;
+        $this->preferred = $preferred;
     }
 
-    public function getCountryCode(): ?string
+    public function getCountryCode() : ?string
     {
         return $this->countryCode;
     }
 
-    public function setCountryCode(string $countryCode): self
+    public function setCountryCode(string $countryCode) : self
     {
         $this->countryCode = $countryCode;
 
         return $this;
     }
 
-    public function getPrefix(): ?int
+    public function getPrefix() : ?int
     {
         return $this->prefix;
     }
 
-    public function setPrefix(int $prefix): self
+    public function setPrefix(int $prefix) : self
     {
         $this->prefix = $prefix;
 
         return $this;
     }
 
-    public function getE164(): ?string
+    public function getE164() : ?string
     {
         return $this->e164;
     }
 
-    public function setE164(string $e164): self
+    public function setE164(string $e164) : self
     {
         $this->e164 = $e164;
 
         return $this;
     }
 
-    public function getNational(): ?string
+    public function getNational() : ?string
     {
         return $this->national;
     }
 
-    public function setNational(string $national): self
+    public function setNational(string $national) : self
     {
         $this->national = $national;
 
         return $this;
     }
 
-    public function getInternational(): ?string
+    public function getInternational() : ?string
     {
         return $this->international;
     }
 
-    public function setInternational(string $international): self
+    public function setInternational(string $international) : self
     {
         $this->international = $international;
 
