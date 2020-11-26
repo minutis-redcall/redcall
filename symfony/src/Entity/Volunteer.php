@@ -81,14 +81,6 @@ class Volunteer
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=20, nullable=true)
-     * @Assert\Length(max=20)
-     */
-    private $phoneNumber;
-
-    /**
-     * @var string
-     *
      * @ORM\Column(type="string", length=80, nullable=true)
      * @Assert\Length(max=80)
      * @Assert\Email
@@ -197,12 +189,18 @@ class Volunteer
      */
     private $messages;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Phone::class, mappedBy="volunteer", orphanRemoval=true)
+     */
+    private $phones;
+
     public function __construct()
     {
         $this->tags           = new ArrayCollection();
         $this->structures     = new ArrayCollection();
         $this->communications = new ArrayCollection();
         $this->messages       = new ArrayCollection();
+        $this->phones         = new ArrayCollection();
     }
 
     /**
@@ -310,19 +308,7 @@ class Volunteer
      */
     public function getPhoneNumber() : ?string
     {
-        return $this->phoneNumber;
-    }
-
-    /**
-     * @param string|null $phoneNumber
-     *
-     * @return $this
-     */
-    public function setPhoneNumber(?string $phoneNumber)
-    {
-        $this->phoneNumber = $phoneNumber;
-
-        return $this;
+        // todo
     }
 
     /**
@@ -852,6 +838,36 @@ class Volunteer
                     ->atPath('enabled')
                     ->addViolation();
         }
+    }
+
+    /**
+     * @return Collection|Phone[]
+     */
+    public function getPhones() : Collection
+    {
+        return $this->phones;
+    }
+
+    public function addPhone(Phone $phone) : self
+    {
+        if (!$this->phones->contains($phone)) {
+            $this->phones[] = $phone;
+            $phone->setVolunteer($this);
+        }
+
+        return $this;
+    }
+
+    public function removePhone(Phone $phone) : self
+    {
+        if ($this->phones->removeElement($phone)) {
+            // set the owning side to null (unless already changed)
+            if ($phone->getVolunteer() === $this) {
+                $phone->setVolunteer(null);
+            }
+        }
+
+        return $this;
     }
 
     /**
