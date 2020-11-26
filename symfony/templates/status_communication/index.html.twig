@@ -640,7 +640,7 @@
 
         {% set body %}
 
-            {% for structure in campaign.structures %}
+            {% for structure in campaign.getStructuresForUser(app.user) %}
                 <div class="form-check">
                     <label class="switch">
                         <input type="checkbox"

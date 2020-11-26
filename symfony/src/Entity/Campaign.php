@@ -416,6 +416,10 @@ class Campaign
 
     public function getStructuresForUser(User $user) : array
     {
+        if ($user->isAdmin()) {
+            return $this->structures;
+        }
+
         $structures = [];
         foreach ($this->structures as $structure) {
             if ($user->getStructures()->contains($structure)) {
