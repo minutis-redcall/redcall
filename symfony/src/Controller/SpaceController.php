@@ -6,6 +6,7 @@ use App\Base\BaseController;
 use App\Component\HttpFoundation\MpdfResponse;
 use App\Entity\Message;
 use App\Entity\VolunteerSession;
+use App\Form\Type\PhoneType;
 use App\Manager\MessageManager;
 use App\Manager\VolunteerManager;
 use App\Manager\VolunteerSessionManager;
@@ -16,7 +17,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -83,7 +83,7 @@ class SpaceController extends BaseController
         $volunteer = $session->getVolunteer();
 
         $form = $this->createFormBuilder($volunteer)
-                     ->add('phoneNumber', TextType::class, [
+                     ->add('phoneNumber', PhoneType::class, [
                          'label'    => 'manage_volunteers.form.phone_number',
                          'required' => false,
                      ])

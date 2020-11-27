@@ -106,11 +106,7 @@ class RefreshManager
     {
         $this->structureManager->synchronizeWithPegass();
 
-        $this->pegassManager->foreach(Pegass::TYPE_STRUCTURE, function (Pegass $pegass) use ($force) {
-            $this->debug('Walking through a structure', [
-                'identifier' => $pegass->getIdentifier(),
-            ]);
-
+        $this->pegassManager->foreach(Pegass::TYPE_STRUCTURE, function (Pegass $pegass) {
             $this->async->fire(SyncOneWithPegass::class, [
                 'type'       => Pegass::TYPE_STRUCTURE,
                 'identifier' => $pegass->getIdentifier(),
@@ -124,7 +120,7 @@ class RefreshManager
 
         $this->volunteerManager->synchronizeWithPegass();
 
-        $this->pegassManager->foreach(Pegass::TYPE_VOLUNTEER, function (Pegass $pegass) use ($force) {
+        $this->pegassManager->foreach(Pegass::TYPE_VOLUNTEER, function (Pegass $pegass) {
             // Volunteer is invalid (ex: 00000048004C)
             if (!$pegass->evaluate('user.id')) {
                 return;

@@ -28,15 +28,16 @@ class SyncOneWithPegass extends AbstractTask
 
     public function execute(array $context)
     {
-        $pegass = $this->pegassManager->getEntity($context['type'], $context['identifier']);
         switch ($context['type']) {
             case Pegass::TYPE_STRUCTURE:
+                $pegass = $this->pegassManager->getEntity($context['type'], $context['identifier']);
                 $this->refreshManager->refreshStructure($pegass, true);
                 break;
             case self::PARENT_STRUCUTRES:
                 $this->refreshManager->refreshParentStructures();
                 break;
             case Pegass::TYPE_VOLUNTEER:
+                $pegass = $this->pegassManager->getEntity($context['type'], $context['identifier']);
                 $this->refreshManager->refreshVolunteer($pegass, true);
                 break;
         }
