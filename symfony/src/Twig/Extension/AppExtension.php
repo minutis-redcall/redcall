@@ -23,15 +23,16 @@ class AppExtension extends AbstractExtension
             new Twig_SimpleFunction('http_build_query', 'http_build_query', ['is_safe' => ['html', 'html_attr']]),
             new Twig_SimpleFunction('random', [$this, 'random']),
             new Twig_SimpleFunction('uuid', [$this, 'uuid']),
+            new Twig_SimpleFunction('intval', 'intval'),
         ];
     }
 
-    public function uuid(): string
+    public function uuid() : string
     {
         return Uuid::uuid4();
     }
 
-    public function random(int $size = 16): string
+    public function random(int $size = 16) : string
     {
         return Random::generate($size);
     }

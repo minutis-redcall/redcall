@@ -6,7 +6,7 @@ use App\Base\BaseController;
 use App\Component\HttpFoundation\MpdfResponse;
 use App\Entity\Message;
 use App\Entity\VolunteerSession;
-use App\Form\Type\PhoneType;
+use App\Form\Type\PhonesType;
 use App\Manager\MessageManager;
 use App\Manager\VolunteerManager;
 use App\Manager\VolunteerSessionManager;
@@ -83,9 +83,8 @@ class SpaceController extends BaseController
         $volunteer = $session->getVolunteer();
 
         $form = $this->createFormBuilder($volunteer)
-                     ->add('phoneNumber', PhoneType::class, [
-                         'label'    => 'manage_volunteers.form.phone_number',
-                         'required' => false,
+                     ->add('phones', PhonesType::class, [
+                         'label' => false,
                      ])
                      ->add('submit', SubmitType::class, [
                          'label' => 'base.button.save',

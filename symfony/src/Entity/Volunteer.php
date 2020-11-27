@@ -188,6 +188,7 @@ class Volunteer
 
     /**
      * @ORM\OneToMany(targetEntity=Phone::class, mappedBy="volunteer", orphanRemoval=true, cascade={"all"})
+     * @ORM\OrderBy({"preferred" = "DESC"})
      */
     private $phones;
 

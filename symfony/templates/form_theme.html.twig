@@ -113,7 +113,54 @@
         document.querySelector('#{{ form.vars.id }}');
         intlTelInput({{ input }}, {
             nationalMode: true,
+            defaultCountry: 'FR',
+            preferredCountries: ['FR', 'GF', 'PF'],
         });
     </script>
+
+{% endblock %}
+
+{% block phone_card_row %}
+
+    <div class="col-4">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title h3">
+                    Téléphone #{{ intval(name) + 1 }}
+                </div>
+            </div>
+            <div class="card-body">
+
+                {{ form_row(form.e164) }}
+
+                <div class="d-none">
+                    {{ form_row(form.preferred) }}
+                </div>
+
+                <div class="float-left">
+                    <a href="#"
+                       class="btn btn-success">Utiliser</a>
+                </div>
+
+                <div class="float-right">
+                    <a href="#"
+                       class="btn btn-small btn-secondary delete-phone"
+                       style="border: 1px solid red!important;">
+                        ❌
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block phones_row %}
+
+    {{ form_widget(form) }}
+
+    <br/>
+
+    ajouter un numéro
 
 {% endblock %}

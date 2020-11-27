@@ -150,4 +150,9 @@ class Phone
 
         return substr($nationalNumber, 0, 4).str_repeat('*', strlen($nationalNumber) - 8).substr($nationalNumber, -4);
     }
+
+    public function __toString() : string
+    {
+        return $this->e164;
+    }
 }
