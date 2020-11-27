@@ -46,7 +46,7 @@ final class Version20201126110518 extends AbstractMigration
                        SUBSTRING(phone_number, 10, 2)
                    ) as national,
                    CONCAT(
-                       "+33", 
+                       "+33 ", 
                        SUBSTRING(phone_number, 3, 1), 
                        " ", 
                        SUBSTRING(phone_number, 4, 2), 

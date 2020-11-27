@@ -18,6 +18,6 @@ class SyncWithPegassTask extends AbstractTask
 
     public function execute(array $context)
     {
-        $this->refreshManager->refresh(true);
+        $this->refreshManager->refreshAsync();
     }
 }

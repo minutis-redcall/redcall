@@ -187,7 +187,7 @@ class Volunteer
     private $messages;
 
     /**
-     * @ORM\OneToMany(targetEntity=Phone::class, mappedBy="volunteer", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity=Phone::class, mappedBy="volunteer", orphanRemoval=true, cascade={"all"})
      */
     private $phones;
 
@@ -273,6 +273,18 @@ class Volunteer
         $phone = $this->getPhone();
 
         return $phone ? $phone->getE164() : null;
+    }
+
+    public function hasPhoneNumber(string $phoneNumber) : bool
+    {
+        foreach ($this->phones as $phone) {
+            /** @var Phone $phone */
+            if ($phoneNumber === $phone->getE164()) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function getEmail() : ?string
