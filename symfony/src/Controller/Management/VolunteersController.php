@@ -15,6 +15,7 @@ use App\Form\Type\VolunteerType;
 use App\Import\VolunteerImporter;
 use App\Manager\CampaignManager;
 use App\Manager\CommunicationManager;
+use App\Manager\PhoneManager;
 use App\Manager\StructureManager;
 use App\Manager\VolunteerManager;
 use Bundles\PaginationBundle\Manager\PaginationManager;
@@ -22,6 +23,7 @@ use Bundles\PegassCrawlerBundle\Entity\Pegass;
 use Bundles\PegassCrawlerBundle\Manager\PegassManager;
 use DateTime;
 use DateTimeZone;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -67,6 +69,11 @@ class VolunteersController extends BaseController
     private $communicationManager;
 
     /**
+     * @var PhoneManager
+     */
+    private $phoneManager;
+
+    /**
      * @var PaginationManager
      */
     private $paginationManager;
@@ -91,6 +98,7 @@ class VolunteersController extends BaseController
         PegassManager $pegassManager,
         CampaignManager $campaignManager,
         CommunicationManager $communicationManager,
+        PhoneManager $phoneManager,
         PaginationManager $paginationManager,
         KernelInterface $kernel,
         TranslatorInterface $translator,
@@ -101,6 +109,7 @@ class VolunteersController extends BaseController
         $this->pegassManager        = $pegassManager;
         $this->campaignManager      = $campaignManager;
         $this->communicationManager = $communicationManager;
+        $this->phoneManager         = $phoneManager;
         $this->paginationManager    = $paginationManager;
         $this->kernel               = $kernel;
         $this->translator           = $translator;
@@ -176,6 +185,7 @@ class VolunteersController extends BaseController
         $isCreate = !$volunteer->getId();
 
         $oldVolunteer = clone $volunteer;
+        $oldPhone     = $volunteer->getPhone() ? clone $volunteer->getPhone() : null;
 
         $form = $this
             ->createForm(VolunteerType::class, $volunteer)
@@ -193,14 +203,24 @@ class VolunteersController extends BaseController
             }
 
             // Automatically lock phone & email if necessary
-            if ($oldVolunteer->getPhoneNumber() !== $volunteer->getPhoneNumber()) {
+            if ($oldPhone !== $volunteer->getPhone()) {
                 $volunteer->setPhoneNumberLocked(true);
             }
             if ($oldVolunteer->getEmail() !== $volunteer->getEmail()) {
                 $volunteer->setEmailLocked(true);
             }
 
-            $this->volunteerManager->save($volunteer);
+            try {
+                $this->volunteerManager->save($volunteer);
+                foreach ($volunteer->getPhones() as $phone) {
+                    $this->phoneManager->save($phone);
+                }
+            } catch (UniqueConstraintViolationException $e) {
+                // See SpaceController::phone
+                $this->alert('base.error');
+
+                return $this->redirectToRoute('management_volunteers_list', $request->query->all());
+            }
 
             if ($isCreate) {
                 $this->success('manage_volunteers.form.added');

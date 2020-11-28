@@ -36,6 +36,7 @@
     <br/>
 
     {{ form_start(form) }}
+    {{ form_errors(form) }}
     {{ form_row(form.nivol) }}
     {% if form.structures|default(false) %}
         {{ form_row(form.structures) }}

@@ -765,6 +765,10 @@ class Volunteer
      */
     public function validate(ExecutionContextInterface $context, $payload)
     {
+        if (!$this->getPhones()->count()) {
+            return;
+        }
+
         $main = 0;
         foreach ($this->getPhones() as $phone) {
             /** @var Phone $phone */
@@ -774,15 +778,33 @@ class Volunteer
         }
 
         if (0 === $main) {
-            $context->buildViolation('form.phone_card.error_no_preferred')
-                    ->atPath('phones')
-                    ->addViolation();
+            if (1 === $this->getPhones()->count()) {
+                foreach ($this->getPhones() as $phone) {
+                    $phone->setPreferred(true);
+                }
+            } else {
+                $context->buildViolation('form.phone_card.error_no_preferred')
+                        ->atPath('phones')
+                        ->addViolation();
+            }
         }
 
         if ($main > 1) {
             $context->buildViolation('form.phone_card.error_multi_preferred')
                     ->atPath('phones')
                     ->addViolation();
+        }
+
+        $phones = [];
+        foreach ($this->getPhones() as $phone) {
+            $phones[$phone->getE164()] = ($phones[$phone->getE164()] ?? 0) + 1;
+        }
+        foreach ($phones as $count) {
+            if ($count > 1) {
+                $context->buildViolation('form.phone_card.error_duplicate')
+                        ->atPath('phones')
+                        ->addViolation();
+            }
         }
     }
 

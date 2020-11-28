@@ -145,6 +145,7 @@ base:
   wait: 'One moment...'
   actions: 'Actions'
   play: 'Play'
+  error: 'An error has occured, please try again.'
 
 modal:
   change_color: Change color...
@@ -651,4 +652,4 @@ phone_card:
   add: 'Add a phone number'
   error_taken: 'This phone number is already taken by %truncated_name% (%nivol%).'
   error_invalid: 'This phone number format is invalid.'
-
+  error_duplicate: 'You entered the same number several times.'

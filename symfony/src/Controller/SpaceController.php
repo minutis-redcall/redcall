@@ -12,7 +12,7 @@ use App\Manager\PhoneManager;
 use App\Manager\VolunteerManager;
 use App\Manager\VolunteerSessionManager;
 use App\Tools\PhoneNumber;
-use App\Tools\PhoneNumberParser;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Mpdf\Mpdf;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -96,11 +96,20 @@ class SpaceController extends BaseController
                      ->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            foreach ($volunteer->getPhones() as $phone) {
-                $this->phoneManager->save($phone);
-            }
 
-            $this->volunteerManager->save($volunteer);
+            try {
+                foreach ($volunteer->getPhones() as $phone) {
+                    $this->phoneManager->save($phone);
+                }
+
+                $this->volunteerManager->save($volunteer);
+            } catch (UniqueConstraintViolationException $e) {
+                // If a user removes his phone and put the same, Doctrine will insert
+                // the new one before removing the other. As a result, an exception
+                // is thrown because of the unique constraint. I was not able to manage
+                // correctly that behavior, so I just render a generic error message.
+                $this->alert('base.error');
+            }
 
             return $this->redirectToRoute('space_home', [
                 'sessionId' => $session->getSessionId(),

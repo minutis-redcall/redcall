@@ -53,9 +53,11 @@ class PhoneValidator extends ConstraintValidator
             return;
         }
 
-        // This phone number is already taken by someone else
         $phone = $this->phoneManager->findOneByPhoneNumber($value);
-        if ($phone && $phone->getId() !== $value->getId()) {
+
+        // This phone number is already taken by someone else
+        if ($phone && $phone->getVolunteer() && $value->getVolunteer()
+            && $phone->getVolunteer()->getId() !== $value->getVolunteer()->getId()) {
             $this->context
                 ->buildViolation(
                     $this->translator->trans('phone_card.error_taken', [
