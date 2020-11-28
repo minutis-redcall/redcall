@@ -127,7 +127,7 @@
             <div class="card-header">
                 <div class="card-title h3">
                     {{ 'phone_card.title'|trans({'%index%': intval(name) + 1}) }}
-                    <div class="float-right {% if not form.preferred.vars.data %}d-none{% endif %}">
+                    <div class="float-right phone-main {% if not form.preferred.vars.data %}d-none{% endif %}">
                         <div class="badge badge-success" style="background-color:#48C765;">
                             {{ 'phone_card.main'|trans }}
                         </div>
@@ -142,7 +142,8 @@
                     {{ form_row(form.preferred) }}
                 </div>
 
-                <div class="float-left {% if form.preferred.vars.data %}d-none{% endif %}">
+                <div class="float-left phone-use {% if form.preferred.vars.data %}d-none{% endif %}"
+                     data-target="#form-row-{{ form.vars.id }}">
                     <a href="#"
                        class="btn btn-success">
                         {{ 'phone_card.use'|trans }}
@@ -218,7 +219,23 @@
             container.data('index', index - 1);
 
             $('.add-phone-container').removeClass('d-none');
-        })
+        });
+
+        $('body').on('click', '.phone-use', function (e) {
+            e.preventDefault();
+
+            var that = $(this);
+            $('.phone-use').removeClass('d-none');
+            $('.phone-main').addClass('d-none');
+            that.addClass('d-none');
+            $(that.data('target') + ' .phone-main').removeClass('d-none');
+
+            $('#{{ form.vars.id }} input[type="checkbox"]').each(function () {
+                $(this).prop('checked', false);
+            });
+
+            $(that.data('target') + ' input[type="checkbox"]').click();
+        });
 
     </script>
 
