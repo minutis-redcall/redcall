@@ -2,6 +2,7 @@
 
 namespace App\Manager;
 
+use App\Entity\Phone;
 use App\Repository\PhoneRepository;
 
 class PhoneManager
@@ -21,4 +22,8 @@ class PhoneManager
         return $this->phoneRepository->findOneByE164($phoneNumber);
     }
 
+    public function save(Phone $phone)
+    {
+        $this->phoneRepository->save($phone);
+    }
 }

@@ -3,7 +3,10 @@
 namespace App\Entity;
 
 use App\Repository\PhoneRepository;
+use App\Validator\Constraints as CustomAssert;
 use Doctrine\ORM\Mapping as ORM;
+use libphonenumber\PhoneNumberFormat;
+use libphonenumber\PhoneNumberUtil;
 
 /**
  * @ORM\Entity(repositoryClass=PhoneRepository::class)
@@ -11,9 +14,15 @@ use Doctrine\ORM\Mapping as ORM;
  *     @ORM\Index(name="nationalx", columns={"national"}),
  *     @ORM\Index(name="internationalx", columns={"international"})
  * })
+ * @ORM\HasLifecycleCallbacks()
+ * @ORM\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
+ *
+ * @CustomAssert\Phone
  */
 class Phone
 {
+    public const DEFAULT_LANG = 'FR';
+
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -154,5 +163,20 @@ class Phone
     public function __toString() : string
     {
         return $this->e164;
+    }
+
+    /**
+     * @ORM\PrePersist
+     * @ORM\PreUpdate
+     */
+    public function onChange()
+    {
+        $phoneUtil = PhoneNumberUtil::getInstance();
+        $parsed    = $phoneUtil->parse($this->e164, self::DEFAULT_LANG);
+
+        $this->setCountryCode($phoneUtil->getRegionCodeForCountryCode($parsed->getCountryCode()));
+        $this->setPrefix($parsed->getCountryCode());
+        $this->setNational($phoneUtil->format($parsed, PhoneNumberFormat::NATIONAL));
+        $this->setInternational($phoneUtil->format($parsed, PhoneNumberFormat::INTERNATIONAL));
     }
 }

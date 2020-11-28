@@ -189,6 +189,8 @@ class Volunteer
     /**
      * @ORM\OneToMany(targetEntity=Phone::class, mappedBy="volunteer", orphanRemoval=true, cascade={"all"})
      * @ORM\OrderBy({"preferred" = "DESC"})
+     *
+     * @Assert\Valid
      */
     private $phones;
 
@@ -558,6 +560,15 @@ class Volunteer
         return sprintf('#%s', mb_strtoupper($this->nivol));
     }
 
+    public function getTruncatedName() : string
+    {
+        if ($this->firstName && $this->lastName) {
+            return sprintf('%s %s', $this->toName($this->firstName), strtoupper(substr($this->lastName, 0, 1)));
+        }
+
+        return sprintf('#%s', mb_strtoupper($this->nivol));
+    }
+
     public function __toString()
     {
         return $this->getDisplayName();
@@ -747,6 +758,32 @@ class Volunteer
         }
 
         return null;
+    }
+
+    /**
+     * @Assert\Callback
+     */
+    public function validate(ExecutionContextInterface $context, $payload)
+    {
+        $main = 0;
+        foreach ($this->getPhones() as $phone) {
+            /** @var Phone $phone */
+            if ($phone->isPreferred()) {
+                $main++;
+            }
+        }
+
+        if (0 === $main) {
+            $context->buildViolation('form.phone_card.error_no_preferred')
+                    ->atPath('phones')
+                    ->addViolation();
+        }
+
+        if ($main > 1) {
+            $context->buildViolation('form.phone_card.error_multi_preferred')
+                    ->atPath('phones')
+                    ->addViolation();
+        }
     }
 
     private function toName(string $name) : string

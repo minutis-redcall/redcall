@@ -31,8 +31,6 @@ use Psr\Log\NullLogger;
  */
 class RefreshManager
 {
-    private const DEFAULT_LANG = 'FR';
-
     private const RED_CROSS_DOMAINS = [
         'croix-rouge.fr',
     ];
@@ -398,16 +396,12 @@ class RefreshManager
         foreach ($contact as $key => $row) {
             try {
                 /** @var PhoneNumber $parsed */
-                $parsed = $phoneUtil->parse($row['libelle'], self::DEFAULT_LANG);
+                $parsed = $phoneUtil->parse($row['libelle'], Phone::DEFAULT_LANG);
                 $e164   = $phoneUtil->format($parsed, PhoneNumberFormat::E164);
                 if (!$volunteer->hasPhoneNumber($e164) && !$this->phoneManager->findOneByPhoneNumber($e164)) {
                     $phone = new Phone();
                     $phone->setPreferred(0 === $volunteer->getPhones()->count());
-                    $phone->setCountryCode($phoneUtil->getRegionCodeForCountryCode($parsed->getCountryCode()));
-                    $phone->setPrefix($parsed->getCountryCode());
                     $phone->setE164($e164);
-                    $phone->setNational($phoneUtil->format($parsed, PhoneNumberFormat::NATIONAL));
-                    $phone->setInternational($phoneUtil->format($parsed, PhoneNumberFormat::INTERNATIONAL));
                     $volunteer->addPhone($phone);
                 }
             } catch (NumberParseException $e) {

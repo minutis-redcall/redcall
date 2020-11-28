@@ -32,6 +32,7 @@ class PhonesType extends AbstractType
             'delete_empty'  => true,
             'prototype'     => true,
             'required'      => false,
+            'by_reference'  => false,
         ]);
     }
 }

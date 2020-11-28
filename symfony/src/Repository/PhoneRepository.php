@@ -2,8 +2,8 @@
 
 namespace App\Repository;
 
+use App\Base\BaseRepository;
 use App\Entity\Phone;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -12,7 +12,7 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Phone[]    findAll()
  * @method Phone[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class PhoneRepository extends ServiceEntityRepository
+class PhoneRepository extends BaseRepository
 {
     public function __construct(ManagerRegistry $registry)
     {

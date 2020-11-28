@@ -651,3 +651,5 @@ phone_card:
   main: 'Principal'
   use: 'Définir comme principal'
   add: 'Ajouter un numéro'
+  error_taken: 'Ce numéro de téléphone est déjà utilisé par %truncated_name% (%nivol%).'
+  error_invalid: 'Le format de ce numéro de téléphone n''est pas valide.'

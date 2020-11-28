@@ -8,6 +8,7 @@ use App\Entity\Message;
 use App\Entity\VolunteerSession;
 use App\Form\Type\PhonesType;
 use App\Manager\MessageManager;
+use App\Manager\PhoneManager;
 use App\Manager\VolunteerManager;
 use App\Manager\VolunteerSessionManager;
 use App\Tools\PhoneNumber;
@@ -42,17 +43,19 @@ class SpaceController extends BaseController
     private $messageManager;
 
     /**
-     * @param VolunteerSessionManager $volunteerSessionManager
-     * @param VolunteerManager        $volunteerManager
-     * @param MessageManager          $messageManager
+     * @var PhoneManager
      */
+    private $phoneManager;
+
     public function __construct(VolunteerSessionManager $volunteerSessionManager,
         VolunteerManager $volunteerManager,
-        MessageManager $messageManager)
+        MessageManager $messageManager,
+        PhoneManager $phoneManager)
     {
         $this->volunteerSessionManager = $volunteerSessionManager;
         $this->volunteerManager        = $volunteerManager;
         $this->messageManager          = $messageManager;
+        $this->phoneManager            = $phoneManager;
     }
 
     /**
@@ -93,14 +96,11 @@ class SpaceController extends BaseController
                      ->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            if ($volunteer->getPhoneNumber()) {
-                $volunteer->setPhoneNumber(
-                    PhoneNumberParser::parse($volunteer->getPhoneNumber())
-                );
+            foreach ($volunteer->getPhones() as $phone) {
+                $this->phoneManager->save($phone);
             }
-            $volunteer->setPhoneNumberLocked(true);
 
-            $this->volunteerManager->save($session->getVolunteer());
+            $this->volunteerManager->save($volunteer);
 
             return $this->redirectToRoute('space_home', [
                 'sessionId' => $session->getSessionId(),

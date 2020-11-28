@@ -19,3 +19,6 @@ form:
   volunteer:
     errors:
       redcall_user: 'This volunteer is bound to a RedCall user, remove first the user and then remove this volunteer.'
+  phone_card:
+    error_no_preferred: 'You didn''t choose any main phone number.'
+    error_multi_preferred: 'You can only have one main phone number.'

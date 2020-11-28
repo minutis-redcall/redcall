@@ -108,13 +108,23 @@
     {{ form_row(form) }}
 
     <script type="text/javascript">
-        {% set input = 'tel_' ~ form.vars.id ~ '_' ~ random() %}
-        var {{ input }} =
-        document.querySelector('#{{ form.vars.id }}');
-        intlTelInput({{ input }}, {
-            nationalMode: true,
-            defaultCountry: 'FR',
-            preferredCountries: ['FR', 'GF', 'PF'],
+        $(function () {
+            var tel = document.querySelector('#{{ form.vars.id }}');
+            var iti = intlTelInput(tel, {
+                nationalMode: true,
+                defaultCountry: 'FR',
+                preferredCountries: ['FR', 'GF', 'PF'],
+            });
+            var handleChange = function () {
+                if (iti.isValidNumber()) {
+                    var e164 = $('#{{ form.vars.id }}').data('e164');
+                    $(e164).val(
+                        iti.getNumber()
+                    );
+                }
+            }
+            tel.addEventListener('change', handleChange);
+            tel.addEventListener('keyup', handleChange);
         });
     </script>
 
@@ -135,7 +145,11 @@
                 </div>
             </div>
             <div class="card-body">
-
+                {{ form_row(form.editor, {
+                    attr: {
+                        'data-e164': '#' ~ form.e164.vars.id
+                    }
+                }) }}
                 {{ form_row(form.e164) }}
 
                 <div class="d-none">
