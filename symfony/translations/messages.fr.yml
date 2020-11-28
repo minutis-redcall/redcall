@@ -198,6 +198,8 @@ issues:
     info3: 'Attention, même si un bénévole possède un numéro et un email, rien ne garantit qu''ils soient à jour sur la base de données Gaia.'
     info4: 'Dès que vous le pourrez, invitez les membres de votre structure à consulter leurs informations de contact sur Gaia, notamment leur "email préféré" et "numéro de téléphone préféré" afin d''augmenter vos chances de déclencher un maximum de monde.'
     open: 'ouvrir dans Gaia'
+  missing_phone: 'Pas de téléphone'
+  missing_email: 'Pas d''email'
 
 campaign_status:
   communication_tabs: Communications
@@ -651,6 +653,6 @@ phone_card:
   title: 'Téléphone #%index%'
   main: 'Principal'
   use: 'Définir comme principal'
-  add: 'Ajouter un numéro'
+  add: 'Ajouter un numéro de téléphone'
   error_taken: 'Ce numéro de téléphone est déjà utilisé par %truncated_name% (%nivol%).'
   error_invalid: 'Le format de ce numéro de téléphone n''est pas valide.'

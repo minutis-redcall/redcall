@@ -328,7 +328,7 @@
                                         {% endif %}
                                         {% if volunteer.phoneNumber %}
                                             {% if not volunteer.phoneNumberOptin %}<strike>{% endif %}
-                                            <a href="tel:+{{ volunteer.phoneNumber }}">+{{ volunteer.phoneNumber }}</a>
+                                            {{ macros.phone(volunteer.phone) }}
                                             {% if not volunteer.phoneNumberOptin %}</strike>{% endif %}
                                             <br/>
                                         {% endif %}

@@ -199,6 +199,8 @@ issues:
     info3: 'Warning, even though a volunteer has both a phone number and an email, nothing guarantees that they are valid on the Gaia database.'
     info4: 'As soon as you can, invite your structure members to check their contact information on Gaia (most importantly their "favorite phone number" and "favorite email") to have better chances of reaching out a maximum of people.'
     open: 'open in Gaia'
+  missing_phone: 'No phone number'
+  missing_email: 'No email'
 
 campaign_status:
   communication_tabs: Communications

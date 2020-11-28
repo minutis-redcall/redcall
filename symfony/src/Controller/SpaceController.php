@@ -96,7 +96,6 @@ class SpaceController extends BaseController
                      ->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
             try {
                 foreach ($volunteer->getPhones() as $phone) {
                     $this->phoneManager->save($phone);
