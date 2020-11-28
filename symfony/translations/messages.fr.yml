@@ -645,3 +645,9 @@ audience:
 special_answers:
   title: 'Mot clef "%keyword%" reçu d''un bénévole'
   stop: 'Vous êtes désormais désabonné(e) des SMS envoyés par RedCall. Gérez vos préférences sur https://rcl.re à l''aide de vos identifiants Pegass, puis en cliquant sur l''icône RedCall en haut à gauche.'
+
+phone_card:
+  title: 'Téléphone #%index%'
+  main: 'Principal'
+  use: 'Définir comme principal'
+  add: 'Ajouter un numéro'

@@ -108,7 +108,7 @@
     {{ form_row(form) }}
 
     <script type="text/javascript">
-        {% set input = 'tel_' ~ random() %}
+        {% set input = 'tel_' ~ form.vars.id ~ '_' ~ random() %}
         var {{ input }} =
         document.querySelector('#{{ form.vars.id }}');
         intlTelInput({{ input }}, {
@@ -122,11 +122,16 @@
 
 {% block phone_card_row %}
 
-    <div class="col-4">
+    <div class="col-4 phone-row" id="form-row-{{ form.vars.id }}">
         <div class="card">
             <div class="card-header">
                 <div class="card-title h3">
-                    Téléphone #{{ intval(name) + 1 }}
+                    {{ 'phone_card.title'|trans({'%index%': intval(name) + 1}) }}
+                    <div class="float-right {% if not form.preferred.vars.data %}d-none{% endif %}">
+                        <div class="badge badge-success" style="background-color:#48C765;">
+                            {{ 'phone_card.main'|trans }}
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="card-body">
@@ -137,15 +142,18 @@
                     {{ form_row(form.preferred) }}
                 </div>
 
-                <div class="float-left">
+                <div class="float-left {% if form.preferred.vars.data %}d-none{% endif %}">
                     <a href="#"
-                       class="btn btn-success">Utiliser</a>
+                       class="btn btn-success">
+                        {{ 'phone_card.use'|trans }}
+                    </a>
                 </div>
 
                 <div class="float-right">
                     <a href="#"
                        class="btn btn-small btn-secondary delete-phone"
-                       style="border: 1px solid red!important;">
+                       style="border: 1px solid red!important;"
+                       data-target="#form-row-{{ form.vars.id }}">
                         ❌
                     </a>
                 </div>
@@ -157,10 +165,62 @@
 
 {% block phones_row %}
 
-    {{ form_widget(form) }}
+    <div class="phone-collection" data-index="{{ form.children|length }}">
+        {{ form_widget(form, {
+            attr: {
+                'class': 'row',
+            }
+        }) }}
+    </div>
 
     <br/>
 
-    ajouter un numéro
+    <div class="add-phone-container">
+        <a href="#"
+           class="btn btn-secondary add-phone">
+            {{ 'phone_card.add'|trans }}
+        </a>
+    </div>
+
+    <br/>
+
+    <script type="text/javascript">
+
+        $('.add-phone').click(function (e) {
+            e.preventDefault();
+
+            if ($('.phone-row').length >= 9) {
+                return;
+            }
+
+            var container = $('#{{ form.vars.id }}').parent();
+            var index = container.data('index');
+
+            var collection = $('#{{ form.vars.id }}');
+            var prototype = collection.data('prototype').replace('#1', '#' + (index + 1));
+
+            collection.append(prototype.replace(/__name__/g, index));
+            container.data('index', index + 1);
+
+            if ($('.phone-row').length >= 9) {
+                $('.add-phone-container').addClass('d-none');
+            }
+        });
+
+        $('body').on('click', '.delete-phone', function (e) {
+            e.preventDefault();
+
+            var that = $(this);
+            $(that.data('target')).remove();
+
+            var container = $('.phone-collection #{{ form.vars.id }}');
+            var index = container.data('index');
+            container.data('index', index - 1);
+
+            $('.add-phone-container').removeClass('d-none');
+        })
+
+    </script>
 
 {% endblock %}
+

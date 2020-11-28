@@ -643,3 +643,9 @@ audience:
 special_answers:
   title: 'Keyword "%keyword%" received from a volunteer'
   stop: 'You have successfully unsubscribed to RedCall messages. Manage your preferences at https://rcl.re using your Pegass credentials and clicking the small RedCall icon at the top left.'
+
+phone_card:
+  title: 'Phone #%index%'
+  main: 'Main'
+  use: 'Set as main'
+  add: 'Add a phone number'
