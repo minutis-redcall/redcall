@@ -76,11 +76,11 @@ class PegassClient
                 '%page%',
             ], [
                 $identifier,
-                ($data['page'] ?? -1) + 1,
+                ($data['number'] ?? -1) + 1,
             ], self::ENDPOINTS[Pegass::TYPE_STRUCTURE]['volunteers']);
 
             $pages[] = $data = $this->get($endpoint);
-        } while (count($data['list']) && $data['page'] < $data['pages']);
+        } while (count($data['list'] ?? $data['content'] ?? []) && !$data['last']);
 
         $structure['volunteers'] = $pages;
 
@@ -146,7 +146,7 @@ class PegassClient
         if (!$this->client) {
             $this->client = new Client(HttpClient::create([
                 'max_redirects' => 10,
-                'timeout'       => 10,
+                'timeout'       => 300,
             ]));
         }
 
