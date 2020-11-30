@@ -30,20 +30,23 @@ class UserRepository extends AbstractUserRepository implements UserRepositoryInt
      *
      * @return QueryBuilder
      */
-    public function searchQueryBuilder(?string $criteria): QueryBuilder
+    public function searchQueryBuilder(?string $criteria) : QueryBuilder
     {
         $qb = $this->createQueryBuilder('u');
 
         return $qb
             ->leftJoin('u.volunteer', 'v')
+            ->leftJoin('v.phones', 'p')
             ->where(
                 $qb->expr()->orX(
                     'u.username LIKE :criteria',
                     'v.nivol LIKE :criteria',
                     'v.firstName LIKE :criteria',
                     'v.lastName LIKE :criteria',
-                    'v.phoneNumber LIKE :criteria',
                     'v.email LIKE :criteria',
+                    'p.e164 LIKE :criteria',
+                    'p.national LIKE :criteria',
+                    'p.international LIKE :criteria',
                     'CONCAT(v.firstName, \' \', v.lastName) LIKE :criteria',
                     'CONCAT(v.lastName, \' \', v.firstName) LIKE :criteria'
                 )
