@@ -259,8 +259,9 @@ message:
   sms:
     type: 'message(s)'
     announcement: '%brand% at %hours%h%mins%:'
-    how_to_answer_simple: Reply by giving your choice code.
-    how_to_answer_multiple: Reply by giving your choice(s) code(s), separated by a space.
+    how_to_answer_simple: 'Reply by giving your choice code.'
+    how_to_answer_multiple: 'Reply by giving your choice(s) code(s), separated by a space.'
+    how_to_answer_url: 'Answer by following %url% or by calling %number%'
     geo_location: 'Geolocation of your crew: %url%'
   call:
     type: 'call(s)'

@@ -279,7 +279,8 @@ class CommunicationController extends BaseController
     {
         $trigger = $this->getCommunicationFromRequest($request, $type);
 
-        if (!strip_tags($trigger->getMessage())) {
+        if (!strip_tags($trigger->getMessage())
+            || !$this->getUser()->getVolunteer() || !$this->getUser()->getVolunteer()->getPhone()) {
             return new JsonResponse([
                 'success' => false,
             ]);
@@ -291,6 +292,9 @@ class CommunicationController extends BaseController
         $message->setCommunication($communicationEntity);
         $message->setPrefix('X');
         $message->setCode('xxxxxxxx');
+        $message->setVolunteer(
+            $this->getUser()->getVolunteer()
+        );
 
         $content   = $this->formatter->formatMessageContent($message);
         $parts     = GSM::getSMSParts($content);
@@ -400,7 +404,7 @@ class CommunicationController extends BaseController
      * @Entity("communicationEntity", expr="repository.find(communicationId)")
      * @IsGranted("CAMPAIGN", subject="campaign")
      */
-    public function rename(Request $request, Campaign $campaign, Communication $communicationEntity): Response
+    public function rename(Request $request, Campaign $campaign, Communication $communicationEntity) : Response
     {
         $this->validateCsrfOrThrowNotFoundException('communication', $request->request->get('csrf'));
 
@@ -438,7 +442,7 @@ class CommunicationController extends BaseController
         return $this->redirectToRoute('communication_index', ['id' => $campaign->getId()]);
     }
 
-    private function getCommunicationFromRequest(Request $request, Type $type): BaseTrigger
+    private function getCommunicationFromRequest(Request $request, Type $type) : BaseTrigger
     {
         if ($request->request->get('campaign')) {
             // New campaign form

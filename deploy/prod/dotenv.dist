@@ -49,6 +49,7 @@ TWILIO_ACCOUNT_SID=xxx
 TWILIO_AUTH_TOKEN=xxx
 SENDER_CALL='{"FR":"+3361234568","default":"..."}'
 SENDER_SMS='{"FR":"+3361234568","default":"..."}'
+TWO_WAYS_SMS='["FR"]'
 
 SENDGRID_API_KEY=bla
 

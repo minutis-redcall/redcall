@@ -258,8 +258,9 @@ message:
   sms:
     type: 'message(s)'
     announcement: '%brand% %hours%h%mins%'
-    how_to_answer_simple: Répondez avec le code de votre choix
-    how_to_answer_multiple: Répondez avec les codes de votre choix séparés par un espace
+    how_to_answer_simple: 'Répondez avec le code de votre choix'
+    how_to_answer_multiple: 'Répondez avec les codes de votre choix séparés par un espace'
+    how_to_answer_url: 'Répondez en suivant %url% ou en appelant le %number%'
     geo_location: 'Géolocalisation de votre équipe: %url%'
   call:
     type: 'appel(s)'

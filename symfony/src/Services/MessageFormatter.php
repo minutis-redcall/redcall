@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Entity\Communication;
 use App\Entity\Message;
 use App\Tools\GSM;
+use App\Tools\PhoneNumber;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Translation\TranslatorInterface;
 use Twig\Environment;
@@ -38,7 +39,7 @@ class MessageFormatter
         $this->templating = $templating;
     }
 
-    public function formatMessageContent(Message $message): string
+    public function formatMessageContent(Message $message) : string
     {
         switch ($message->getCommunication()->getType()) {
             case Communication::TYPE_SMS:
@@ -50,7 +51,7 @@ class MessageFormatter
         }
     }
 
-    public function formatSMSContent(Message $message): string
+    public function formatSMSContent(Message $message) : string
     {
         $contentParts  = [];
         $communication = $message->getCommunication();
@@ -73,24 +74,35 @@ class MessageFormatter
             foreach ($choices as $choice) {
                 $contentParts[] = sprintf('%s%s: %s', $message->getPrefix(), $choice->getCode(), $choice->getLabel());
             }
-            if (!$message->getCommunication()->isMultipleAnswer()) {
-                $contentParts[] = $this->translator->trans('message.sms.how_to_answer_simple');
-            } else {
-                $contentParts[] = $this->translator->trans('message.sms.how_to_answer_multiple');
-            }
-        }
 
-        // Enabled geo location
-        if ($message->getCommunication()->hasGeoLocation()) {
-            $contentParts[] = $this->translator->trans('message.sms.geo_location', [
-                '%url%' => trim(getenv('WEBSITE_URL'), '/').$this->router->generate('geo_open', ['code' => $message->getCode()]),
-            ]);
+            // Twilio does not support two way SMS (reply by sms) in all countries, thus we need to use
+            // an URL instead of simple answer codes where needed.
+            if (in_array($message->getVolunteer()->getPhone()->getCountryCode(), json_decode(getenv('TWO_WAYS_SMS'), true))) {
+                // How to answer
+                if (!$message->getCommunication()->isMultipleAnswer()) {
+                    $contentParts[] = $this->translator->trans('message.sms.how_to_answer_simple');
+                } else {
+                    $contentParts[] = $this->translator->trans('message.sms.how_to_answer_multiple');
+                }
+
+                // Enabled geo location
+                if ($message->getCommunication()->hasGeoLocation()) {
+                    $contentParts[] = $this->translator->trans('message.sms.geo_location', [
+                        '%url%' => trim(getenv('WEBSITE_URL'), '/').$this->router->generate('geo_open', ['code' => $message->getCode()]),
+                    ]);
+                }
+            } else {
+                $contentParts[] = $this->translator->trans('message.sms.how_to_answer_url', [
+                    '%url%'    => trim(getenv('WEBSITE_URL'), '/').$this->router->generate('message_open', ['code' => $message->getCode()]),
+                    '%number%' => PhoneNumber::getSmsSender($message->getVolunteer()->getPhone()),
+                ]);
+            }
         }
 
         return GSM::enforceGSMAlphabet(implode("\n", $contentParts));
     }
 
-    public function formatCallContent(Message $message, bool $withChoices = true): string
+    public function formatCallContent(Message $message, bool $withChoices = true) : string
     {
         $communication = $message->getCommunication();
 
@@ -121,7 +133,7 @@ class MessageFormatter
         return implode("\n", $contentParts);
     }
 
-    public function formatCallChoicesContent(Message $message): string
+    public function formatCallChoicesContent(Message $message) : string
     {
         $contentParts = [];
 
@@ -146,7 +158,7 @@ class MessageFormatter
         return implode("\n", $contentParts);
     }
 
-    public function formatTextEmailContent(Message $message): string
+    public function formatTextEmailContent(Message $message) : string
     {
         $contentParts  = [];
         $communication = $message->getCommunication();
@@ -207,7 +219,7 @@ class MessageFormatter
      * @throws \Twig\Error\RuntimeError
      * @throws \Twig\Error\SyntaxError
      */
-    public function formatHtmlEmailContent(Message $message): string
+    public function formatHtmlEmailContent(Message $message) : string
     {
         return $this->templating->render('message/email.html.twig', [
             'website_url'   => getenv('WEBSITE_URL'),
