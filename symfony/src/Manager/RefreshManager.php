@@ -2,12 +2,18 @@
 
 namespace App\Manager;
 
+use App\Entity\Phone;
 use App\Entity\Structure;
 use App\Entity\Tag;
 use App\Entity\Volunteer;
-use App\Tools\PhoneNumberParser;
+use App\Task\SyncOneWithPegass;
+use Bundles\GoogleTaskBundle\Service\TaskSender;
 use Bundles\PegassCrawlerBundle\Entity\Pegass;
 use Bundles\PegassCrawlerBundle\Manager\PegassManager;
+use libphonenumber\NumberParseException;
+use libphonenumber\PhoneNumber;
+use libphonenumber\PhoneNumberFormat;
+use libphonenumber\PhoneNumberUtil;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
@@ -25,7 +31,7 @@ use Psr\Log\NullLogger;
  */
 class RefreshManager
 {
-    const RED_CROSS_DOMAINS = [
+    private const RED_CROSS_DOMAINS = [
         'croix-rouge.fr',
     ];
 
@@ -55,6 +61,16 @@ class RefreshManager
     private $userManager;
 
     /**
+     * @var PhoneManager
+     */
+    private $phoneManager;
+
+    /**
+     * @var TaskSender
+     */
+    private $async;
+
+    /**
      * @var LoggerInterface|null
      */
     private $logger;
@@ -64,6 +80,8 @@ class RefreshManager
         VolunteerManager $volunteerManager,
         TagManager $tagManager,
         UserManager $userManager,
+        PhoneManager $phoneManager,
+        TaskSender $async,
         LoggerInterface $logger = null)
     {
         $this->pegassManager    = $pegassManager;
@@ -71,6 +89,8 @@ class RefreshManager
         $this->volunteerManager = $volunteerManager;
         $this->tagManager       = $tagManager;
         $this->userManager      = $userManager;
+        $this->phoneManager     = $phoneManager;
+        $this->async            = $async;
         $this->logger           = $logger ?: new NullLogger();
     }
 
@@ -78,6 +98,37 @@ class RefreshManager
     {
         $this->refreshStructures($force);
         $this->refreshVolunteers($force);
+    }
+
+    public function refreshAsync()
+    {
+        $this->structureManager->synchronizeWithPegass();
+
+        $this->pegassManager->foreach(Pegass::TYPE_STRUCTURE, function (Pegass $pegass) {
+            $this->async->fire(SyncOneWithPegass::class, [
+                'type'       => Pegass::TYPE_STRUCTURE,
+                'identifier' => $pegass->getIdentifier(),
+            ]);
+        });
+
+        $this->async->fire(SyncOneWithPegass::class, [
+            'type'       => SyncOneWithPegass::PARENT_STRUCUTRES,
+            'identifier' => null,
+        ]);
+
+        $this->volunteerManager->synchronizeWithPegass();
+
+        $this->pegassManager->foreach(Pegass::TYPE_VOLUNTEER, function (Pegass $pegass) {
+            // Volunteer is invalid (ex: 00000048004C)
+            if (!$pegass->evaluate('user.id')) {
+                return;
+            }
+
+            $this->async->fire(SyncOneWithPegass::class, [
+                'type'       => Pegass::TYPE_VOLUNTEER,
+                'identifier' => $pegass->getIdentifier(),
+            ]);
+        });
     }
 
     public function refreshStructures(bool $force)
@@ -267,7 +318,7 @@ class RefreshManager
         $volunteer->setLastName($this->normalizeName($pegass->evaluate('user.nom')));
 
         if (!$volunteer->isPhoneNumberLocked()) {
-            $volunteer->setPhoneNumber($this->fetchPhoneNumber($pegass->evaluate('contact')));
+            $this->fetchPhoneNumber($volunteer, $pegass->evaluate('contact'));
         }
 
         if (!$volunteer->isEmailLocked()) {
@@ -323,14 +374,13 @@ class RefreshManager
         );
     }
 
-    private function fetchPhoneNumber(array $contact) : ?string
+    private function fetchPhoneNumber(Volunteer $volunteer, array $contact)
     {
         $phoneKeys = ['POR', 'PORT', 'TELDOM', 'TELTRAV', 'PORE'];
 
         // Filter out keys that are not phones
         $contact = array_filter($contact, function ($data) use ($phoneKeys) {
-            return in_array($data['moyenComId'] ?? [], $phoneKeys)
-                   && PhoneNumberParser::parse($data['libelle'] ?? false);
+            return in_array($data['moyenComId'] ?? [], $phoneKeys);
         });
 
         // Order phones in order to take work phone last
@@ -339,10 +389,25 @@ class RefreshManager
         });
 
         if (!$contact) {
-            return null;
+            return;
         }
 
-        return PhoneNumberParser::parse(reset($contact)['libelle']);
+        $phoneUtil = PhoneNumberUtil::getInstance();
+        foreach ($contact as $key => $row) {
+            try {
+                /** @var PhoneNumber $parsed */
+                $parsed = $phoneUtil->parse($row['libelle'], Phone::DEFAULT_LANG);
+                $e164   = $phoneUtil->format($parsed, PhoneNumberFormat::E164);
+                if (!$volunteer->hasPhoneNumber($e164) && !$this->phoneManager->findOneByPhoneNumber($e164)) {
+                    $phone = new Phone();
+                    $phone->setPreferred(0 === $volunteer->getPhones()->count());
+                    $phone->setE164($e164);
+                    $volunteer->addPhone($phone);
+                }
+            } catch (NumberParseException $e) {
+                continue;
+            }
+        }
     }
 
     private function fetchEmail(array $infos, array $contact) : ?string

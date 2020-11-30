@@ -6,7 +6,6 @@ use App\Entity\Structure;
 use App\Entity\Tag;
 use App\Entity\Volunteer;
 use App\Repository\StructureRepository;
-use App\Tools\PhoneNumberParser;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\CallbackTransformer;
@@ -45,9 +44,8 @@ class VolunteerType extends AbstractType
             ->add('lastName', TextType::class, [
                 'label' => 'manage_volunteers.form.last_name',
             ])
-            ->add('phoneNumber', TextType::class, [
-                'label'    => 'manage_volunteers.form.phone_number',
-                'required' => false,
+            ->add('phones', PhonesType::class, [
+                'label' => false,
             ])
             ->add('phoneNumberOptin', CheckboxType::class, [
                 'label'    => 'manage_volunteers.form.phone_number_optin',
@@ -110,15 +108,6 @@ class VolunteerType extends AbstractType
             }
         ));
 
-        $builder->get('phoneNumber')->addModelTransformer(new CallbackTransformer(
-            function ($fromBase) {
-                return $fromBase;
-            },
-            function ($fromForm) {
-                return PhoneNumberParser::parse($fromForm);
-            }
-        ));
-
         $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
             $builder = $event->getForm();
 
@@ -152,4 +141,3 @@ class VolunteerType extends AbstractType
         ]);
     }
 }
-

@@ -6,16 +6,18 @@ use App\Base\BaseController;
 use App\Component\HttpFoundation\MpdfResponse;
 use App\Entity\Message;
 use App\Entity\VolunteerSession;
+use App\Form\Type\PhonesType;
 use App\Manager\MessageManager;
+use App\Manager\PhoneManager;
 use App\Manager\VolunteerManager;
 use App\Manager\VolunteerSessionManager;
-use App\Tools\PhoneNumberParser;
+use App\Tools\PhoneNumber;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Mpdf\Mpdf;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -41,17 +43,19 @@ class SpaceController extends BaseController
     private $messageManager;
 
     /**
-     * @param VolunteerSessionManager $volunteerSessionManager
-     * @param VolunteerManager        $volunteerManager
-     * @param MessageManager          $messageManager
+     * @var PhoneManager
      */
+    private $phoneManager;
+
     public function __construct(VolunteerSessionManager $volunteerSessionManager,
         VolunteerManager $volunteerManager,
-        MessageManager $messageManager)
+        MessageManager $messageManager,
+        PhoneManager $phoneManager)
     {
         $this->volunteerSessionManager = $volunteerSessionManager;
         $this->volunteerManager        = $volunteerManager;
         $this->messageManager          = $messageManager;
+        $this->phoneManager            = $phoneManager;
     }
 
     /**
@@ -82,9 +86,8 @@ class SpaceController extends BaseController
         $volunteer = $session->getVolunteer();
 
         $form = $this->createFormBuilder($volunteer)
-                     ->add('phoneNumber', TextType::class, [
-                         'label'    => 'manage_volunteers.form.phone_number',
-                         'required' => false,
+                     ->add('phones', PhonesType::class, [
+                         'label' => false,
                      ])
                      ->add('submit', SubmitType::class, [
                          'label' => 'base.button.save',
@@ -93,14 +96,19 @@ class SpaceController extends BaseController
                      ->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            if ($volunteer->getPhoneNumber()) {
-                $volunteer->setPhoneNumber(
-                    PhoneNumberParser::parse($volunteer->getPhoneNumber())
-                );
-            }
-            $volunteer->setPhoneNumberLocked(true);
+            try {
+                foreach ($volunteer->getPhones() as $phone) {
+                    $this->phoneManager->save($phone);
+                }
 
-            $this->volunteerManager->save($session->getVolunteer());
+                $this->volunteerManager->save($volunteer);
+            } catch (UniqueConstraintViolationException $e) {
+                // If a user removes his phone and put the same, Doctrine will insert
+                // the new one before removing the other. As a result, an exception
+                // is thrown because of the unique constraint. I was not able to manage
+                // correctly that behavior, so I just render a generic error message.
+                $this->alert('base.error');
+            }
 
             return $this->redirectToRoute('space_home', [
                 'sessionId' => $session->getSessionId(),
@@ -110,7 +118,7 @@ class SpaceController extends BaseController
         return $this->render('space/phone.html.twig', [
             'session' => $session,
             'form'    => $form->createView(),
-            'from'    => sprintf('%s / %s', getenv('TWILIO_SMS'), getenv('TWILIO_CALL')),
+            'from'    => implode(' / ', PhoneNumber::listAllNumbers()),
         ]);
     }
 

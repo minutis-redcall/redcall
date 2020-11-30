@@ -145,6 +145,7 @@ base:
   wait: 'One moment...'
   actions: 'Actions'
   play: 'Play'
+  error: 'An error has occured, please try again.'
 
 modal:
   change_color: Change color...
@@ -198,6 +199,8 @@ issues:
     info3: 'Warning, even though a volunteer has both a phone number and an email, nothing guarantees that they are valid on the Gaia database.'
     info4: 'As soon as you can, invite your structure members to check their contact information on Gaia (most importantly their "favorite phone number" and "favorite email") to have better chances of reaching out a maximum of people.'
     open: 'open in Gaia'
+  missing_phone: 'No phone number'
+  missing_email: 'No email'
 
 campaign_status:
   communication_tabs: Communications
@@ -256,8 +259,9 @@ message:
   sms:
     type: 'message(s)'
     announcement: '%brand% at %hours%h%mins%:'
-    how_to_answer_simple: Reply by giving your choice code.
-    how_to_answer_multiple: Reply by giving your choice(s) code(s), separated by a space.
+    how_to_answer_simple: 'Reply by giving your choice code.'
+    how_to_answer_multiple: 'Reply by giving your choice(s) code(s), separated by a space.'
+    how_to_answer_url: 'Answer by following %url% or by calling %number%'
     geo_location: 'Geolocation of your crew: %url%'
   call:
     type: 'call(s)'
@@ -540,7 +544,7 @@ space:
   phone:
     title: 'Edit my phone number'
     details_1: 'You may be contacted by your local unit through SMS or voice calls in case of emergency.'
-    details_2: 'All messages and calls are coming from the following number: +%from%'
+    details_2: 'All messages and calls are coming from the following number(s): %from%'
     details_3: 'You can already add it to your contacts, and assign it a recognizable ringtone.'
     details_4: 'When you receive a message and an answer is required, directly answer to the message by giving, if possible, only the codes that match your choice.'
     details_5: 'Example: if you''re asked "Are you available?" and possible answers are "A1: Yes" and "A2: No", answer using A1 or A2, this will help processing your message automatically, and ease trigger responsible''s job.'
@@ -643,3 +647,12 @@ audience:
 special_answers:
   title: 'Keyword "%keyword%" received from a volunteer'
   stop: 'You have successfully unsubscribed to RedCall messages. Manage your preferences at https://rcl.re using your Pegass credentials and clicking the small RedCall icon at the top left.'
+
+phone_card:
+  title: 'Phone #%index%'
+  main: 'Main'
+  use: 'Set as main'
+  add: 'Add a phone number'
+  error_taken: 'This phone number is already taken by %truncated_name% (%nivol%).'
+  error_invalid: 'This phone number format is invalid.'
+  error_duplicate: 'You entered the same number several times.'

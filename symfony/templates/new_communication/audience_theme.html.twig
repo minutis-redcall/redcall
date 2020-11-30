@@ -1,4 +1,3 @@
-
 {% block audience_row %}
 
     <div id="{{ form.vars.id }}" class="audience-selection">
@@ -54,7 +53,7 @@
                                        type="checkbox"
                                        class="global-structure-toggle {% for parent in parents %}child-of-{{ parent }} {% endfor %}"
                                        data-parents="{{ parents|join(' ') }}"
-                                       data-structure-id="{{ structure.id }}" />
+                                       data-structure-id="{{ structure.id }}"/>
                                 <span class="slider"></span>
                             </label>
                             <a data-toggle="collapse" href="#audience-structure-{{ structure.id }}">
@@ -83,7 +82,7 @@
 
                                 {% for children in structure.childrenStructures %}
                                     {% if children.children %}
-                                        {{  _self.renderSlider(children, volunteer_counts, parents|merge([children.id])) }}
+                                        {{ _self.renderSlider(children, volunteer_counts, parents|merge([children.id])) }}
                                     {% else %}
                                         <div>
                                             <label class="switch">
@@ -95,7 +94,8 @@
                                                 <span class="slider"></span>
                                             </label>
                                             <label for="children-structure-{{ children.id }}">
-                                                {{ children.name }} ({{ volunteer_counts[children.id].local|default(0) }})
+                                                {{ children.name }}
+                                                ({{ volunteer_counts[children.id].local|default(0) }})
                                             </label>
                                         </div>
                                     {% endif %}
@@ -185,7 +185,8 @@
                             <div class="card-header" id="{{ card }}-head">
                                 <h2 class="mb-0">
                                     <button class="btn btn-secondary btn-sm" type="button" data-toggle="collapse" data-target="#{{ card }}" aria-expanded="false" aria-controls="{{ card }}" style="width:100%;">
-                                        {{ structure.displayName }} (<span class="volunteer-selection-count volunteer-selection-count-{{ structure.id }}">--</span>)
+                                        {{ structure.displayName }}
+                                        (<span class="volunteer-selection-count volunteer-selection-count-{{ structure.id }}">--</span>)
                                         <div style="font-size:12px;color:grey;">{{ 'audience.see_selection'|trans }}</div>
                                     </button>
                                 </h2>
@@ -213,20 +214,20 @@
 
     <script type="text/javascript">
 
-        $(function() {
+        $(function () {
 
             {# Toggle all structures #}
-            $('#{{ form.vars.id }} .toggle-all-structures').click(function() {
+            $('#{{ form.vars.id }} .toggle-all-structures').click(function () {
                 var that = $(this);
                 var ticks = that.closest('.audience-selection').find('input[type=checkbox].structure');
                 ticks.prop('checked', that.is(':checked'));
             });
 
             {# Toggle globally a parent structure #}
-            $('#{{ form.vars.id }} .global-structure-toggle').click(function() {
+            $('#{{ form.vars.id }} .global-structure-toggle').click(function () {
                 var rootStructure = $(this);
                 var rootStructureId = rootStructure.data('structure-id');
-                $('.child-of-' + rootStructureId).each(function() {
+                $('.child-of-' + rootStructureId).each(function () {
                     var structure = $(this);
                     var structureId = structure.data('structure-id');
                     structure.prop('checked', rootStructure.is(':checked'));
@@ -240,18 +241,18 @@
             });
 
             {# Toggle a structure #}
-            $('#{{ form.vars.id }} .local-structure-toggle').click(function() {
+            $('#{{ form.vars.id }} .local-structure-toggle').click(function () {
                 $('.structure-' + $(this).data('structure-id')).click();
             });
 
             {# Refreshing counts by tags according to structures selection #}
-            var refreshTagCountsByTickedStructures = function() {
+            var refreshTagCountsByTickedStructures = function () {
                 var structures = $('#{{ form.vars.id }}').find('input[type=checkbox].structure');
                 var tags = $('#{{ form.vars.id }}').find('input[type=checkbox].tag');
-                tags.each(function() {
+                tags.each(function () {
                     var thisTag = $(this);
                     var count = 0;
-                    structures.each(function() {
+                    structures.each(function () {
                         var thisStructure = $(this);
                         if (thisStructure.is(':checked')) {
                             var key = 'tag-count-' + thisTag.val();
@@ -267,7 +268,7 @@
 
             {# Rendering structure cards only if structures are ticked #}
             var refreshStructureCards = function () {
-                $('#{{ form.vars.id }} .audience-card').each(function() {
+                $('#{{ form.vars.id }} .audience-card').each(function () {
                     var that = $(this);
                     var structureId = that.data('structure-id');
                     if ($('#{{ form.vars.id }} .structure-' + structureId).is(':checked')) {
@@ -290,7 +291,7 @@
                     if (that.is(':checked')) {
                         child.prop('checked', true);
 
-                        $.each((child.data('parents') + '').split(' '), function(index, parentId) {
+                        $.each((child.data('parents') + '').split(' '), function (index, parentId) {
                             $('#audience-structure-' + parentId).collapse();
                         });
                     }
@@ -299,26 +300,26 @@
             refreshTreeTicks();
 
             {# Clearing everything #}
-            var clearAllSelection = function() {
+            var clearAllSelection = function () {
                 $('#{{ form.vars.id }} .toggle-all-tags').prop('checked', false);
                 $('#{{ form.vars.id }} .tag').prop('checked', false);
-                $('#{{ form.vars.id }} .volunteer-selection').each(function() {
+                $('#{{ form.vars.id }} .volunteer-selection').each(function () {
                     $(this).val('');
                 });
-                $('#{{ form.vars.id }} .volunteer-selection-count').each(function() {
+                $('#{{ form.vars.id }} .volunteer-selection-count').each(function () {
                     $(this).val('');
                 });
             };
 
             {# Actions made when ticking / unticking a structure #}
-            $('#{{ form.vars.id }} .toggle-all-structures, #{{ form.vars.id }} .structure, #{{ form.vars.id }} .global-structure-toggle').click(function() {
+            $('#{{ form.vars.id }} .toggle-all-structures, #{{ form.vars.id }} .structure, #{{ form.vars.id }} .global-structure-toggle').click(function () {
                 refreshTagCountsByTickedStructures();
                 refreshStructureCards();
                 clearAllSelection();
             });
 
             var flexes = {};
-            $('#{{ form.vars.id }} .volunteer-selection').each(function() {
+            $('#{{ form.vars.id }} .volunteer-selection').each(function () {
                 var that = $(this);
                 var structureId = that.data('structure-id');
 
@@ -340,7 +341,7 @@
                     valueProperty: 'nivol',
                     visibleProperties: ['firstName', 'lastName', 'tags'],
                     noResultsText: '{{ 'base.search.no_results'|trans|e('js') }}',
-                    searchIn: ['firstName', 'lastName'],
+                    searchIn: ['nivol', 'firstName', 'lastName', 'firstLast', 'lastFirst'],
                     searchContain: true,
                 });
                 flexes[structureId] = flex;
@@ -355,17 +356,17 @@
                 });
 
                 {# Refresh selection count #}
-                var refreshSelectionCount = function() {
+                var refreshSelectionCount = function () {
                     $('#{{ form.vars.id }} .volunteer-selection-count-' + structureId).html(
                         flex.flexdatalist('value').length
                     );
                 }
-                flex.on('change:flexdatalist', function() {
+                flex.on('change:flexdatalist', function () {
                     refreshSelectionCount();
                     refreshClassification();
                 });
-                flex.on('after:flexdatalist.data', function() {
-                    setTimeout(function() {
+                flex.on('after:flexdatalist.data', function () {
+                    setTimeout(function () {
                         refreshSelectionCount();
                         refreshClassification();
                     }, 100);
@@ -376,24 +377,24 @@
 
             {# Classify selection #}
             var classificationTimeout = null;
-            var refreshClassification = function() {
-                $(function() {
+            var refreshClassification = function () {
+                $(function () {
                     if (classificationTimeout) {
                         clearTimeout(classificationTimeout);
                     }
-                    classificationTimeout = setTimeout(function() {
+                    classificationTimeout = setTimeout(function () {
                         $('#{{ form.parent.vars.id }}').find('button[type="submit"]').html(
                             $('#submit-button-reset').html()
                         );
                         var count = 0;
-                        $.each(flexes, function(index, flex) {
+                        $.each(flexes, function (index, flex) {
                             count += flex.flexdatalist('value').length;
                         });
                         if (!count && !$('#{{ form.nivols.vars.id }}').val()) {
                             $('#{{ form.vars.id }} .audience-classification').html('');
                         } else {
                             var serialized = $('#{{ form.vars.id }}').closest('form').serialize();
-                            $.post('{{ path('widget_audience_classify') }}?name={{ form.vars.full_name }}', serialized, function(classification) {
+                            $.post('{{ path('widget_audience_classify') }}?name={{ form.vars.full_name }}', serialized, function (classification) {
                                 if (classification.success) {
                                     $('#{{ form.vars.id }} .audience-classification').html(classification.view);
 
@@ -407,11 +408,11 @@
                 });
             };
             var timeout = null;
-            $('#{{ form.nivols.vars.id }}').keyup(function() {
+            $('#{{ form.nivols.vars.id }}').keyup(function () {
                 if (timeout) {
                     clearTimeout(timeout);
                 }
-                timeout = setTimeout(function() {
+                timeout = setTimeout(function () {
                     refreshClassification();
                 }, 500);
             });
@@ -419,11 +420,11 @@
 
             {# When clicking on a tag, we should toggle volunteers #}
             var tagCache = {};
-            $('#{{ form.vars.id }} .tag').click(function() {
+            $('#{{ form.vars.id }} .tag').click(function () {
                 var that = $(this);
 
                 var structures = [];
-                $('#{{ form.vars.id }} .structure').each(function() {
+                $('#{{ form.vars.id }} .structure').each(function () {
                     var tick = $(this);
                     if (tick.is(':checked')) {
                         structures.push(tick.val());
@@ -439,15 +440,15 @@
                     .closest('div')
                     .css('color', 'grey');
 
-                var populateFlexToggleTag = function(structures) {
-                    $.each(structures, function(structureId, nivols) {
+                var populateFlexToggleTag = function (structures) {
+                    $.each(structures, function (structureId, nivols) {
                         var flex = flexes[structureId];
                         if (that.is(':checked')) {
                             flex.flexdatalist('add', nivols.join(','));
                         } else {
                             var oldSelection = flex.flexdatalist('value');
                             var newSelection = [];
-                            $.each(oldSelection, function(index, nivol) {
+                            $.each(oldSelection, function (index, nivol) {
                                 if (nivols.includes(nivol)) {
                                     newSelection.push(nivol);
                                 }
@@ -464,7 +465,7 @@
                 };
 
                 var tags = [];
-                $('#{{ form.vars.id }} .tag').each(function() {
+                $('#{{ form.vars.id }} .tag').each(function () {
                     if ($(this).is(':checked')) {
                         tags.push($(this).data('tag-id'));
                     }
@@ -477,10 +478,10 @@
 
                 var cacheKey = JSON.stringify(input);
 
-                if ('undefined' !== typeof(tagCache[cacheKey])) {
+                if ('undefined' !== typeof (tagCache[cacheKey])) {
                     populateFlexToggleTag(tagCache[cacheKey]);
                 } else {
-                    $.post('{{ path('widget_audience_toggle_tag') }}', input, function(structures) {
+                    $.post('{{ path('widget_audience_toggle_tag') }}', input, function (structures) {
                         tagCache[cacheKey] = structures;
                         populateFlexToggleTag(structures);
                     });
@@ -488,7 +489,7 @@
             });
 
             {# Click on "Toggle all tags" link #}
-            $('#{{ form.vars.id }} .toggle-all-tags').click(function() {
+            $('#{{ form.vars.id }} .toggle-all-tags').click(function () {
                 if ($(this).is(':checked')) {
                     $('#{{ form.vars.id }} .select-all-tags').click();
                 } else {
@@ -497,15 +498,15 @@
             });
 
             {# Click on "Select all" link #}
-            $('#{{ form.vars.id }} .select-all-tags').click(function() {
+            $('#{{ form.vars.id }} .select-all-tags').click(function () {
                 clearAllSelection();
                 $('#{{ form.vars.id }} .toggle-all-tags').prop('checked', 'checked');
                 var tags = $('#{{ form.vars.id }} .tag');
                 var countTicks = tags.length;
                 var countTicked = 0;
 
-                var waitAndClick = function() {
-                    tags.each(function() {
+                var waitAndClick = function () {
+                    tags.each(function () {
                         var that = $(this);
 
                         if (that.is(':checked')) {
@@ -533,7 +534,7 @@
             });
 
             {# Click on "Clear all" #}
-            $('#{{ form.vars.id }} .clear-all-tags').click(function() {
+            $('#{{ form.vars.id }} .clear-all-tags').click(function () {
                 clearAllSelection();
             });
         });

@@ -9,7 +9,6 @@ use DateTimeZone;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Exception;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
@@ -18,7 +17,6 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 /**
  * @ORM\Table(indexes={
  *     @ORM\Index(name="nivolx", columns={"nivol"}),
- *     @ORM\Index(name="phone_numberx", columns={"phone_number"}),
  *     @ORM\Index(name="emailx", columns={"email"}),
  *     @ORM\Index(name="enabledx", columns={"enabled"}),
  *     @ORM\Index(name="phone_number_optinx", columns={"phone_number_optin"}),
@@ -27,7 +25,6 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  * @ORM\Entity(repositoryClass="App\Repository\VolunteerRepository")
  * @ORM\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
  * @UniqueEntity("nivol")
- * @UniqueEntity("phoneNumber")
  * @UniqueEntity("email")
  */
 class Volunteer
@@ -77,14 +74,6 @@ class Volunteer
      * @Assert\Length(max=80)
      */
     private $lastName;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(type="string", length=20, nullable=true)
-     * @Assert\Length(max=20)
-     */
-    private $phoneNumber;
 
     /**
      * @var string
@@ -197,12 +186,21 @@ class Volunteer
      */
     private $messages;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Phone::class, mappedBy="volunteer", orphanRemoval=true, cascade={"all"})
+     * @ORM\OrderBy({"preferred" = "DESC"})
+     *
+     * @Assert\Valid
+     */
+    private $phones;
+
     public function __construct()
     {
         $this->tags           = new ArrayCollection();
         $this->structures     = new ArrayCollection();
         $this->communications = new ArrayCollection();
         $this->messages       = new ArrayCollection();
+        $this->phones         = new ArrayCollection();
     }
 
     /**
@@ -225,19 +223,11 @@ class Volunteer
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getIdentifier() : ?string
     {
         return $this->identifier;
     }
 
-    /**
-     * @param string $identifier
-     *
-     * @return Volunteer
-     */
     public function setIdentifier(string $identifier) : self
     {
         $this->identifier = $identifier;
@@ -245,19 +235,11 @@ class Volunteer
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getNivol() : ?string
     {
         return $this->nivol;
     }
 
-    /**
-     * @param string $nivol
-     *
-     * @return Volunteer
-     */
     public function setNivol(string $nivol) : self
     {
         $this->nivol = $nivol;
@@ -265,19 +247,11 @@ class Volunteer
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getFirstName() : ?string
     {
         return $this->firstName;
     }
 
-    /**
-     * @param string $firstName
-     *
-     * @return $this
-     */
     public function setFirstName($firstName)
     {
         $this->firstName = $firstName;
@@ -285,19 +259,11 @@ class Volunteer
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getLastName() : ?string
     {
         return $this->lastName;
     }
 
-    /**
-     * @param string $lastName
-     *
-     * @return $this
-     */
     public function setLastName($lastName)
     {
         $this->lastName = $lastName;
@@ -305,39 +271,30 @@ class Volunteer
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
     public function getPhoneNumber() : ?string
     {
-        return $this->phoneNumber;
+        $phone = $this->getPhone();
+
+        return $phone ? $phone->getE164() : null;
     }
 
-    /**
-     * @param string|null $phoneNumber
-     *
-     * @return $this
-     */
-    public function setPhoneNumber(?string $phoneNumber)
+    public function hasPhoneNumber(string $phoneNumber) : bool
     {
-        $this->phoneNumber = $phoneNumber;
+        foreach ($this->phones as $phone) {
+            /** @var Phone $phone */
+            if ($phoneNumber === $phone->getE164()) {
+                return true;
+            }
+        }
 
-        return $this;
+        return false;
     }
 
-    /**
-     * @return string
-     */
     public function getEmail() : ?string
     {
         return $this->email;
     }
 
-    /**
-     * @param string $email
-     *
-     * @return Volunteer
-     */
     public function setEmail(?string $email) : Volunteer
     {
         $this->email = $email;
@@ -345,19 +302,11 @@ class Volunteer
         return $this;
     }
 
-    /**
-     * @return bool
-     */
     public function isEnabled() : ?bool
     {
         return $this->enabled;
     }
 
-    /**
-     * @param bool $enabled
-     *
-     * @return Volunteer
-     */
     public function setEnabled(bool $enabled) : Volunteer
     {
         $this->enabled = $enabled;
@@ -365,19 +314,11 @@ class Volunteer
         return $this;
     }
 
-    /**
-     * @return bool
-     */
     public function isLocked() : ?bool
     {
         return $this->locked;
     }
 
-    /**
-     * @param bool $locked
-     *
-     * @return Volunteer
-     */
     public function setLocked(bool $locked) : Volunteer
     {
         $this->locked = $locked;
@@ -385,19 +326,11 @@ class Volunteer
         return $this;
     }
 
-    /**
-     * @return bool
-     */
     public function isMinor() : ?bool
     {
         return $this->minor;
     }
 
-    /**
-     * @param bool $minor
-     *
-     * @return Volunteer
-     */
     public function setMinor(bool $minor) : Volunteer
     {
         $this->minor = $minor;
@@ -405,17 +338,11 @@ class Volunteer
         return $this;
     }
 
-    /**
-     * @return ArrayCollection
-     */
     public function getTags() : Collection
     {
         return $this->tags;
     }
 
-    /**
-     * @param Tag $tag
-     */
     public function addTag(Tag $tag)
     {
         if (!$this->hasTag($tag)) {
@@ -423,17 +350,11 @@ class Volunteer
         }
     }
 
-    /**
-     * @param Tag $tag
-     */
     public function removeTag(Tag $tag)
     {
         $this->tags->removeElement($tag);
     }
 
-    /**
-     * @return array
-     */
     public function getTagsView() : array
     {
         if ($this->tagsView) {
@@ -460,11 +381,6 @@ class Volunteer
         return $this->tagsView;
     }
 
-    /**
-     * @param string $tag
-     *
-     * @return bool
-     */
     public function hasTag(string $tagToSearch) : bool
     {
         foreach ($this->tags as $tag) {
@@ -476,17 +392,11 @@ class Volunteer
         return false;
     }
 
-    /**
-     * @return string
-     */
     public function getFormattedPhoneNumber() : string
     {
-        return chunk_split(sprintf('0%s', substr($this->getPhoneNumber(), 2)), 2, ' ');
+        return $this->getPhone()->getNational();
     }
 
-    /**
-     * @return int
-     */
     public function getTagPriority() : int
     {
         $highest = -1;
@@ -500,19 +410,11 @@ class Volunteer
         return $highest;
     }
 
-    /**
-     * @return DateTime
-     */
     public function getLastPegassUpdate() : ?DateTime
     {
         return $this->lastPegassUpdate;
     }
 
-    /**
-     * @param DateTime $lastPegassUpdate
-     *
-     * @return Volunteer
-     */
     public function setLastPegassUpdate(DateTime $lastPegassUpdate) : Volunteer
     {
         $this->lastPegassUpdate = $lastPegassUpdate;
@@ -520,19 +422,11 @@ class Volunteer
         return $this;
     }
 
-    /**
-     * @return array|null
-     */
     public function getReport() : ?array
     {
         return $this->report ? json_decode($this->report, true) : null;
     }
 
-    /**
-     * @param array $report
-     *
-     * @return Volunteer
-     */
     public function setReport(array $report) : Volunteer
     {
         $this->report = json_encode($report, JSON_PRETTY_PRINT);
@@ -540,21 +434,15 @@ class Volunteer
         return $this;
     }
 
-    /**
-     * @return bool
-     */
     public function isCallable() : bool
     {
         return $this->enabled && (
-                $this->phoneNumber && $this->phoneNumberOptin
+                $this->getPhone() && $this->phoneNumberOptin
                 ||
                 $this->email && $this->emailOptin
             );
     }
 
-    /**
-     * @param string $message
-     */
     public function addReport(string $message)
     {
         $report   = $this->getReport() ?? [];
@@ -562,9 +450,6 @@ class Volunteer
         $this->setReport($report);
     }
 
-    /**
-     * @return Collection
-     */
     public function getStructures() : Collection
     {
         return $this->structures->filter(function (Structure $structure) {
@@ -572,9 +457,6 @@ class Volunteer
         });
     }
 
-    /**
-     * @return array
-     */
     public function getStructureIds() : array
     {
         return array_map(function (Structure $structure) {
@@ -615,17 +497,14 @@ class Volunteer
         return $mainStructure;
     }
 
-    /**
-     * @param TranslatorInterface $translator
-     *
-     * @return array
-     */
     public function toSearchResults(TranslatorInterface $translator)
     {
         return [
             'nivol'      => strval($this->getNivol()),
             'firstName'  => $this->getFirstName(),
             'lastName'   => $this->getLastName(),
+            'firstLast'  => sprintf('%s %s', $this->firstName, $this->lastName),
+            'lastFirst'  => sprintf('%s %s', $this->lastName, $this->firstName),
             'tags'       => $this->getTagsView() ? sprintf('(%s)', implode(', ', array_map(function (Tag $tag) use (
                 $translator
             ) {
@@ -639,11 +518,6 @@ class Volunteer
         ];
     }
 
-    /**
-     * @return DateTime|null
-     *
-     * @throws Exception
-     */
     public function getNextPegassUpdate() : ?DateTime
     {
         if (!$this->lastPegassUpdate) {
@@ -660,11 +534,6 @@ class Volunteer
         return $nextPegassUpdate;
     }
 
-    /**
-     * @return bool
-     *
-     * @throws Exception
-     */
     public function canForcePegassUpdate() : bool
     {
         if (!$this->lastPegassUpdate) {
@@ -693,17 +562,20 @@ class Volunteer
         return sprintf('#%s', mb_strtoupper($this->nivol));
     }
 
-    /**
-     * @return string
-     */
+    public function getTruncatedName() : string
+    {
+        if ($this->firstName && $this->lastName) {
+            return sprintf('%s %s', $this->toName($this->firstName), strtoupper(substr($this->lastName, 0, 1)));
+        }
+
+        return sprintf('#%s', mb_strtoupper($this->nivol));
+    }
+
     public function __toString()
     {
         return $this->getDisplayName();
     }
 
-    /**
-     * @return Collection|Communication[]
-     */
     public function getCommunications() : Collection
     {
         return $this->communications;
@@ -778,7 +650,7 @@ class Volunteer
         $new = get_object_vars($this);
 
         foreach ($old as $key => $value) {
-            if ('phoneNumber' === $key || 'email' === $key || 'communications' === $key || 'structures' === $key || 'user' === $key) {
+            if ('phone' === $key || 'email' === $key || 'communications' === $key || 'structures' === $key || 'user' === $key) {
                 continue;
             }
 
@@ -792,11 +664,11 @@ class Volunteer
 
     public function getHiddenPhone() : ?string
     {
-        if (null === $this->phoneNumber) {
+        if (null === ($phone = $this->getPhone())) {
             return null;
         }
 
-        return sprintf('+%s****%s', substr($this->phoneNumber, 0, 6), substr($this->phoneNumber, 10));
+        return $phone->getHidden();
     }
 
     public function getHiddenEmail() : ?string
@@ -841,8 +713,6 @@ class Volunteer
     }
 
     /**
-     * @param ExecutionContextInterface $context
-     * @param                           $payload
      * @Assert\Callback()
      */
     public function doNotDisableRedCallUsers(ExecutionContextInterface $context, $payload)
@@ -854,11 +724,92 @@ class Volunteer
         }
     }
 
+    public function getPhones() : Collection
+    {
+        return $this->phones;
+    }
+
+    public function addPhone(Phone $phone) : self
+    {
+        if (!$this->phones->contains($phone)) {
+            $this->phones[] = $phone;
+            $phone->setVolunteer($this);
+        }
+
+        return $this;
+    }
+
+    public function removePhone(Phone $phone) : self
+    {
+        if ($this->phones->removeElement($phone)) {
+            // set the owning side to null (unless already changed)
+            if ($phone->getVolunteer() === $this) {
+                $phone->setVolunteer(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getPhone() : ?Phone
+    {
+        foreach ($this->getPhones() as $phone) {
+            if ($phone->isPreferred()) {
+                return $phone;
+            }
+        }
+
+        return null;
+    }
+
     /**
-     * @param string $name
-     *
-     * @return string
+     * @Assert\Callback
      */
+    public function validate(ExecutionContextInterface $context, $payload)
+    {
+        if (!$this->getPhones()->count()) {
+            return;
+        }
+
+        $main = 0;
+        foreach ($this->getPhones() as $phone) {
+            /** @var Phone $phone */
+            if ($phone->isPreferred()) {
+                $main++;
+            }
+        }
+
+        if (0 === $main) {
+            if (1 === $this->getPhones()->count()) {
+                foreach ($this->getPhones() as $phone) {
+                    $phone->setPreferred(true);
+                }
+            } else {
+                $context->buildViolation('form.phone_card.error_no_preferred')
+                        ->atPath('phones')
+                        ->addViolation();
+            }
+        }
+
+        if ($main > 1) {
+            $context->buildViolation('form.phone_card.error_multi_preferred')
+                    ->atPath('phones')
+                    ->addViolation();
+        }
+
+        $phones = [];
+        foreach ($this->getPhones() as $phone) {
+            $phones[$phone->getE164()] = ($phones[$phone->getE164()] ?? 0) + 1;
+        }
+        foreach ($phones as $count) {
+            if ($count > 1) {
+                $context->buildViolation('form.phone_card.error_duplicate')
+                        ->atPath('phones')
+                        ->addViolation();
+            }
+        }
+    }
+
     private function toName(string $name) : string
     {
         return preg_replace_callback('/[^\\s\-]+/ui', function (array $match) {

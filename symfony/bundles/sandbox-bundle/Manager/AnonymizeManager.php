@@ -2,11 +2,13 @@
 
 namespace Bundles\SandboxBundle\Manager;
 
+use App\Entity\Phone;
 use App\Entity\Volunteer;
 use App\Manager\VolunteerManager;
 use App\Settings;
-use App\Tools\PhoneNumberParser;
 use Bundles\SettingsBundle\Manager\SettingManager;
+use libphonenumber\PhoneNumberFormat;
+use libphonenumber\PhoneNumberUtil;
 use Symfony\Component\HttpKernel\KernelInterface;
 
 class AnonymizeManager
@@ -99,7 +101,11 @@ class AnonymizeManager
     {
         $volunteer->setFirstName($this->generateFirstname());
         $volunteer->setLastName($this->generateLastname());
-        $volunteer->setPhoneNumber($this->generatePhoneNumber());
+
+        $phone = new Phone();
+        $phone->setE164($this->generatePhoneNumber());
+        $volunteer->addPhone($phone);
+
         $volunteer->setEmail($this->generateEmail($volunteer->getFirstName(), $volunteer->getLastName()));
 
         $this->volunteerManager->save($volunteer);
@@ -108,7 +114,7 @@ class AnonymizeManager
     /**
      * @return string
      */
-    private function generateFirstname(): string
+    private function generateFirstname() : string
     {
         $names = [
             'Marie',
@@ -311,7 +317,7 @@ class AnonymizeManager
     /**
      * @return string
      */
-    private function generateLastname(): string
+    private function generateLastname() : string
     {
         $names = [
             'ADAM',
@@ -522,7 +528,7 @@ class AnonymizeManager
     /**
      * @return string
      */
-    private function generatePhoneNumber(): string
+    private function generatePhoneNumber() : string
     {
         $phone = sprintf(
             '0%d %d%d %d%d %d%d %d%d',
@@ -533,7 +539,10 @@ class AnonymizeManager
             rand() % 10, rand() % 10
         );
 
-        return PhoneNumberParser::parse($phone);
+        $phoneUtil = PhoneNumberUtil::getInstance();
+        $parsed    = $phoneUtil->parse($phone, 'FR');
+
+        return $phoneUtil->format($parsed, PhoneNumberFormat::E164);
     }
 
     /**
@@ -542,7 +551,7 @@ class AnonymizeManager
      *
      * @return string
      */
-    private function generateEmail(string $firstname, string $lastname): string
+    private function generateEmail(string $firstname, string $lastname) : string
     {
         $providers = [
             'gmail.com',

@@ -39,6 +39,11 @@ class VolunteerManager
     private $geoLocationManager;
 
     /**
+     * @var PhoneManager
+     */
+    private $phoneManager;
+
+    /**
      * @var TranslatorInterface
      */
     private $translator;
@@ -47,12 +52,14 @@ class VolunteerManager
         TagManager $tagManager,
         AnswerManager $answerManager,
         GeoLocationManager $geoLocationManager,
+        PhoneManager $phoneManager,
         TranslatorInterface $translator)
     {
         $this->volunteerRepository = $volunteerRepository;
         $this->tagManager          = $tagManager;
         $this->answerManager       = $answerManager;
         $this->geoLocationManager  = $geoLocationManager;
+        $this->phoneManager        = $phoneManager;
         $this->translator          = $translator;
     }
 
@@ -91,7 +98,9 @@ class VolunteerManager
      */
     public function findOneByPhoneNumber(string $phoneNumber) : ?Volunteer
     {
-        return $this->volunteerRepository->findOneByPhoneNumber($phoneNumber);
+        $phone = $this->phoneManager->findOneByPhoneNumber($phoneNumber);
+
+        return $phone ? $phone->getVolunteer() : null;
     }
 
     /**

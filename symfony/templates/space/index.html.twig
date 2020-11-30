@@ -1,4 +1,3 @@
-
 {% extends 'base.html.twig' %}
 
 {% block menu %}{% endblock %}
@@ -37,8 +36,9 @@
 
         <a href="{{ path('space_phone', {sessionId: session.sessionId}) }}"
            class="text-lg-left large-button btn btn-secondary">
-            {% if session.volunteer.phoneNumber %}
-                ☎️ &nbsp; {{ 'space.home.update_phone'|trans }} <span style="color:black;">{{ session.volunteer.hiddenPhone }}</span>
+            {% if session.volunteer.phone %}
+                ☎️ &nbsp; {{ 'space.home.update_phone'|trans }}
+                <span style="color:black;">{{ session.volunteer.hiddenPhone }}</span>
             {% else %}
                 ☎️ &nbsp; {{ 'space.home.add_phone'|trans }}
             {% endif %}
@@ -49,7 +49,8 @@
         <a href="{{ path('space_email', {sessionId: session.sessionId}) }}"
            class="text-lg-left large-button btn btn-secondary">
             {% if session.volunteer.email %}
-                📧 &nbsp; {{ 'space.home.update_email'|trans }} <span style="color:black">{{ session.volunteer.hiddenEmail }}</span>
+                📧 &nbsp; {{ 'space.home.update_email'|trans }}
+                <span style="color:black">{{ session.volunteer.hiddenEmail }}</span>
             {% else %}
                 📧 &nbsp; {{ 'space.home.add_email'|trans }}
             {% endif %}
@@ -60,13 +61,16 @@
         <a href="{{ path('space_enabled', {sessionId: session.sessionId}) }}"
            class="text-lg-left large-button btn btn-secondary">
             {% if session.volunteer.callable %}
-                ❤️ &nbsp; {{ 'space.home.toggle_callable'|trans }} <span style="color:green;">{{ 'space.home.callable'|trans }}</span>)
+                ❤️ &nbsp; {{ 'space.home.toggle_callable'|trans }}
+                <span style="color:green;">{{ 'space.home.callable'|trans }}</span>)
             {% else %}
-                ❤️ &nbsp; {{ 'space.home.toggle_callable'|trans }} <span style="color:red;">{{ 'space.home.not_callable'|trans }}</span>)
+                ❤️ &nbsp; {{ 'space.home.toggle_callable'|trans }}
+                <span style="color:red;">{{ 'space.home.not_callable'|trans }}</span>)
             {% endif %}
         </a>
 
-        <br/><hr/>
+        <br/>
+        <hr/>
 
         <div class="h4 text-left">{{ 'space.home.data'|trans }}</div>
         <br/>

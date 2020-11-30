@@ -11,7 +11,7 @@ sandbox:
   fake_sms:
     button: 'SMS Simulator'
     title: 'SMS Simulator - List of recipients'
-    thread: '+%phoneNumber% inbox (%name%)'
+    thread: '%phoneNumber% inbox (%name%)'
     your_message: 'Your message'
     send: 'Send'
     clear: 'Remove all messages'
@@ -20,7 +20,7 @@ sandbox:
   fake_call:
     button: 'Calls Simulator'
     title: 'Calls Simulator - List of recipients'
-    read: '+%phoneNumber% calls (%name%)'
+    read: '%phoneNumber% calls (%name%)'
     your_message: 'Digit'
     send: 'Send'
     clear: 'Remove all calls'

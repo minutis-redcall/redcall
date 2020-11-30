@@ -3,7 +3,7 @@
 namespace Bundles\SandboxBundle\Controller;
 
 use App\Base\BaseController;
-use App\Entity\Volunteer;
+use App\Entity\Phone;
 use App\Manager\VolunteerManager;
 use App\Provider\Call\CallProvider;
 use Bundles\SandboxBundle\Entity\FakeCall;
@@ -82,11 +82,13 @@ class FakeCallController extends BaseController
     }
 
     /**
-     * @Route("/read/{phoneNumber}/{campaignId}", name="read", defaults={"campaignId"=null})
+     * @Route("/read/{e164}/{campaignId}", name="read", defaults={"campaignId"=null})
      * @Template()
      */
-    public function readAction(Request $request, Volunteer $volunteer, ?int $campaignId)
+    public function readAction(Request $request, Phone $phone, ?int $campaignId)
     {
+        $volunteer = $phone->getVolunteer();
+
         $messages = $this->fakeCallManager->findMessagesForPhone($volunteer->getPhoneNumber());
 
         $form = $this->createFormBuilder()
@@ -109,6 +111,7 @@ class FakeCallController extends BaseController
 
             $this->fakeCallProvider->triggerHook(
                 $last->getPhoneNumber(),
+                $last->getPhoneNumber(),
                 ['message_id' => $last->getMessageId()],
                 TwilioEvents::CALL_KEY_PRESSED,
                 FakeCall::TYPE_KEY_PRESS,
@@ -116,8 +119,8 @@ class FakeCallController extends BaseController
             );
 
             return $this->redirectToRoute('sandbox_fake_call_read', [
-                'phoneNumber' => $volunteer->getPhoneNumber(),
-                'campaignId'  => $campaignId,
+                'e164'       => $phone->getE164(),
+                'campaignId' => $campaignId,
             ]);
         }
 
@@ -127,6 +130,7 @@ class FakeCallController extends BaseController
             'messages'   => $messages,
             'campaignId' => $campaignId,
             'form'       => $form->createView(),
+            'phone'      => $phone,
         ];
     }
 }

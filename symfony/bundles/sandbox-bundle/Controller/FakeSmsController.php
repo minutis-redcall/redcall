@@ -3,7 +3,7 @@
 namespace Bundles\SandboxBundle\Controller;
 
 use App\Base\BaseController;
-use App\Entity\Volunteer;
+use App\Entity\Phone;
 use App\Manager\MessageManager;
 use App\Manager\VolunteerManager;
 use Bundles\SandboxBundle\Entity\FakeSms;
@@ -79,12 +79,13 @@ class FakeSmsController extends BaseController
     }
 
     /**
-     * @Route("/thread/{phoneNumber}/{campaignId}", name="thread", defaults={"campaignId"=null})
+     * @Route("/thread/{e164}/{campaignId}", name="thread", defaults={"campaignId"=null})
      * @Template()
      */
-    public function threadAction(Volunteer $volunteer, ?int $campaignId)
+    public function threadAction(Phone $phone, ?int $campaignId)
     {
-        $messages = $this->fakeSmsManager->findMessagesForPhoneNumber($volunteer->getPhoneNumber());
+        $volunteer = $phone->getVolunteer();
+        $messages  = $this->fakeSmsManager->findMessagesForPhoneNumber($volunteer->getPhoneNumber());
 
         $lastMessageId = null;
         if ($messages) {
@@ -97,16 +98,19 @@ class FakeSmsController extends BaseController
             'messages'      => $messages,
             'lastMessageId' => $lastMessageId,
             'campaignId'    => $campaignId,
+            'phone'         => $phone,
         ];
     }
 
     /**
-     * @Route("/send/{phoneNumber}/{csrf}", name="send")
+     * @Route("/send/{e164}/{csrf}", name="send")
      * @Method("POST")
      */
-    public function sendAction(Request $request, Volunteer $volunteer, string $csrf)
+    public function sendAction(Request $request, Phone $phone, string $csrf)
     {
         $this->validateCsrfOrThrowNotFoundException('fake_sms', $csrf);
+
+        $volunteer = $phone->getVolunteer();
 
         $body = $request->request->get('message');
         if (!$body) {

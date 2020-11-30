@@ -8,8 +8,8 @@ class TwilioBundle extends Bundle
 {
     public function boot()
     {
-        if (!getenv('TWILIO_ACCOUNT_SID') || !getenv('TWILIO_AUTH_TOKEN') || !getenv('TWILIO_SMS') || !getenv('TWILIO_CALL')) {
-            throw new \LogicException('You should set TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_SMS & TWILIO_CALL in order to use TwilioBundle.');
+        if (!getenv('TWILIO_ACCOUNT_SID') || !getenv('TWILIO_AUTH_TOKEN')) {
+            throw new \LogicException('You should set TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN in order to use TwilioBundle.');
         }
     }
 }

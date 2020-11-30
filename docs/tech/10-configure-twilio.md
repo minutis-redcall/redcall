@@ -24,6 +24,4 @@ Once you created your account:
 
 - Set `TWILIO_AUTH_TOKEN` with your api token
 
-- Set `TWILIO_NUMBER` with your phone number(s), without leading "+", and separated by a comma.
-
 [Go back](../../README.md)

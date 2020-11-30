@@ -71,3 +71,9 @@
         📧
     {% endif %}
 {% endmacro %}
+
+{% macro phone(phone) %}
+    <a href="tel:{{ phone.e164 }}">
+        <div class="iti__flag iti__{{ phone.countryCode|lower }}" style="float:left;"></div>&nbsp; {{ phone.national }}
+    </a>
+{% endmacro %}

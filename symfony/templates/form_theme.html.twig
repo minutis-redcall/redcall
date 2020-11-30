@@ -72,6 +72,7 @@
             'data-selection-required': true,
             'data-text-property': 'nivol',
             'data-value-property': 'nivol',
+            'data-search-in': '["nivol", "firstName", "lastName", "firstLast", "lastFirst"]',
         }
     }) }}
 
@@ -102,3 +103,156 @@
     </div>
 
 {% endblock %}
+
+{% block phone_row %}
+
+    {{ form_row(form) }}
+
+    <script type="text/javascript">
+        $(function () {
+            var tel = document.querySelector('#{{ form.vars.id }}');
+            var iti = intlTelInput(tel, {
+                nationalMode: true,
+                defaultCountry: 'FR',
+                preferredCountries: ['FR', 'GP', 'GF', 'MQ', 'YT', 'PF', 'RE', 'NC', 'PM', 'BL', 'MF', 'WF'],
+            });
+            var handleChange = function () {
+                if (iti.isValidNumber()) {
+                    var e164 = $('#{{ form.vars.id }}').data('e164');
+                    $(e164).val(
+                        iti.getNumber()
+                    );
+                }
+            }
+            tel.addEventListener('change', handleChange);
+            tel.addEventListener('keyup', handleChange);
+        });
+    </script>
+
+{% endblock %}
+
+{% block phone_card_row %}
+
+    <div class="col-4 phone-row" id="form-row-{{ form.vars.id }}">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title h3">
+                    {{ 'phone_card.title'|trans({'%index%': intval(name) + 1}) }}
+                    <div class="float-right phone-main {% if not form.preferred.vars.data %}d-none{% endif %}">
+                        <div class="badge badge-success" style="background-color:#48C765;">
+                            {{ 'phone_card.main'|trans }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-body">
+                {{ form_row(form.editor, {
+                    attr: {
+                        'data-e164': '#' ~ form.e164.vars.id
+                    }
+                }) }}
+                {{ form_row(form.e164) }}
+
+                <div class="d-none">
+                    {{ form_row(form.preferred) }}
+                </div>
+
+                <div class="float-left phone-use {% if form.preferred.vars.data %}d-none{% endif %}"
+                     data-target="#form-row-{{ form.vars.id }}">
+                    <a href="#"
+                       class="btn btn-success">
+                        {{ 'phone_card.use'|trans }}
+                    </a>
+                </div>
+
+                <div class="float-right">
+                    <a href="#"
+                       class="btn btn-small btn-secondary delete-phone"
+                       style="border: 1px solid red!important;"
+                       data-target="#form-row-{{ form.vars.id }}">
+                        ❌
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block phones_row %}
+
+    <div class="phone-collection" data-index="{{ form.children|length }}">
+        {{ form_widget(form, {
+            attr: {
+                'class': 'row',
+            }
+        }) }}
+    </div>
+
+    <br/>
+
+    <div class="add-phone-container">
+        <a href="#"
+           class="btn btn-secondary add-phone">
+            {{ 'phone_card.add'|trans }}
+        </a>
+    </div>
+
+    <br/>
+
+    <script type="text/javascript">
+
+        $('.add-phone').click(function (e) {
+            e.preventDefault();
+
+            if ($('.phone-row').length >= 9) {
+                return;
+            }
+
+            var container = $('#{{ form.vars.id }}').parent();
+            var index = container.data('index');
+
+            var collection = $('#{{ form.vars.id }}');
+            var prototype = collection.data('prototype').replace('#1', '#' + (index + 1));
+
+            collection.append(prototype.replace(/__name__/g, index));
+            container.data('index', index + 1);
+
+            if ($('.phone-row').length >= 9) {
+                $('.add-phone-container').addClass('d-none');
+            }
+        });
+
+        $('body').on('click', '.delete-phone', function (e) {
+            e.preventDefault();
+
+            var that = $(this);
+            $(that.data('target')).remove();
+
+            var container = $('.phone-collection #{{ form.vars.id }}');
+            var index = container.data('index');
+            container.data('index', index - 1);
+
+            $('.add-phone-container').removeClass('d-none');
+        });
+
+        $('body').on('click', '.phone-use', function (e) {
+            e.preventDefault();
+
+            var that = $(this);
+            $('.phone-use').removeClass('d-none');
+            $('.phone-main').addClass('d-none');
+            that.addClass('d-none');
+            $(that.data('target') + ' .phone-main').removeClass('d-none');
+
+            $('#{{ form.vars.id }} input[type="checkbox"]').each(function () {
+                $(this).prop('checked', false);
+            });
+
+            $(that.data('target') + ' input[type="checkbox"]').click();
+        });
+
+    </script>
+
+{% endblock %}
+

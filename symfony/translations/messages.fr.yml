@@ -144,6 +144,7 @@ base:
   wait: 'Un petit instant...'
   actions: 'Actions'
   play: 'Ecouter'
+  error: 'Une erreur s''est produite, merci de bien vouloir réessayer.'
 
 campaign:
   titles:
@@ -197,6 +198,8 @@ issues:
     info3: 'Attention, même si un bénévole possède un numéro et un email, rien ne garantit qu''ils soient à jour sur la base de données Gaia.'
     info4: 'Dès que vous le pourrez, invitez les membres de votre structure à consulter leurs informations de contact sur Gaia, notamment leur "email préféré" et "numéro de téléphone préféré" afin d''augmenter vos chances de déclencher un maximum de monde.'
     open: 'ouvrir dans Gaia'
+  missing_phone: 'Pas de téléphone'
+  missing_email: 'Pas d''email'
 
 campaign_status:
   communication_tabs: Communications
@@ -255,8 +258,9 @@ message:
   sms:
     type: 'message(s)'
     announcement: '%brand% %hours%h%mins%'
-    how_to_answer_simple: Répondez avec le code de votre choix
-    how_to_answer_multiple: Répondez avec les codes de votre choix séparés par un espace
+    how_to_answer_simple: 'Répondez avec le code de votre choix'
+    how_to_answer_multiple: 'Répondez avec les codes de votre choix séparés par un espace'
+    how_to_answer_url: 'Répondez en suivant %url% ou en appelant le %number%'
     geo_location: 'Géolocalisation de votre équipe: %url%'
   call:
     type: 'appel(s)'
@@ -542,7 +546,7 @@ space:
   phone:
     title: 'Editer mon numéro de téléphone'
     details_1: 'Vous pourrez être contacté par votre unité locale ou DT par SMS ou par appel vocaux en cas d''urgence.'
-    details_2: 'Tous les messages et appels proviennent du numéro: +%from%'
+    details_2: 'Tous les messages et appels proviennent du ou des numéro(s): %from%'
     details_3: 'Vous pouvez dès à présent l''ajouter à vos contacts, et lui assigner une sonnerie reconnaissable.'
     details_4: 'Lorsque vous recevez un message et qu''une réponse est demandée, répondez directement au message en ne saisissant, si possible, que le ou les codes des réponses qui correspondent à votre choix.'
     details_5: 'Exemple : si on vous demande "Êtes-vous disponible ?" et que les réponses possibles sont "A1: Oui" ou "A2: Non", répondez le code A1 ou A2, cela permet un traitement automatique de votre choix et aide le responsable du déclenchement.'
@@ -645,3 +649,11 @@ audience:
 special_answers:
   title: 'Mot clef "%keyword%" reçu d''un bénévole'
   stop: 'Vous êtes désormais désabonné(e) des SMS envoyés par RedCall. Gérez vos préférences sur https://rcl.re à l''aide de vos identifiants Pegass, puis en cliquant sur l''icône RedCall en haut à gauche.'
+
+phone_card:
+  title: 'Téléphone #%index%'
+  main: 'Principal'
+  use: 'Définir comme principal'
+  add: 'Ajouter un numéro de téléphone'
+  error_taken: 'Ce numéro de téléphone est déjà utilisé par %truncated_name% (%nivol%).'
+  error_invalid: 'Le format de ce numéro de téléphone n''est pas valide.'

@@ -56,7 +56,6 @@
     <script type="text/javascript">
 
         {#
-
         --- Credits ---
 
         Name    : Responsive HTML5 Chat
@@ -73,7 +72,6 @@
         --- End of Credits ---
 
         Please take care, this version has been updated for the redcall.io purposes.
-
         #}
 
         function showLatestMessage(element) {
@@ -96,7 +94,7 @@
                 var message = $(element + ' input[type="text"]').val();
                 $(element + ' input[type="text"]').val("");
 
-                $.post('{{ path('sandbox_fake_sms_send', {phoneNumber: phoneNumber, csrf: csrf_token('fake_sms')}) }}', {
+                $.post('{{ path('sandbox_fake_sms_send', {e164: phone.e164, csrf: csrf_token('fake_sms')}) }}', {
                     message: message,
                 });
             });
@@ -136,7 +134,7 @@
         {# Rendering incoming messages (quick & dirty poll) #}
         {# -------------------------------------------------------------------------------- #}
 
-        var lastMessageId = {{ lastMessageId }};
+        var lastMessageId = "{{ lastMessageId }}";
         var addNewMessages = function (data) {
             if (typeof data === 'undefined') {
                 return;

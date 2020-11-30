@@ -10,10 +10,6 @@ use App\Entity\Choice;
 use App\Entity\Message;
 use App\Entity\Selection;
 use Doctrine\Bundle\DoctrineBundle\Registry;
-use Doctrine\Common\Persistence\Mapping\MappingException;
-use Doctrine\ORM\NonUniqueResultException;
-use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\ORMException;
 
 class MessageRepository extends BaseRepository
 {
@@ -24,21 +20,14 @@ class MessageRepository extends BaseRepository
         parent::__construct($registry, Message::class);
     }
 
-    /**
-     * @param string $phoneNumber
-     * @param string $prefix
-     *
-     * @return Message|null
-     *
-     * @throws NonUniqueResultException
-     */
-    public function getMessageFromPhoneNumber(string $phoneNumber): ?Message
+    public function getMessageFromPhoneNumber(string $phoneNumber) : ?Message
     {
         return $this->createQueryBuilder('m')
                     ->join('m.volunteer', 'v')
                     ->join('m.communication', 'co')
                     ->join('co.campaign', 'ca')
-                    ->where('v.phoneNumber = :phoneNumber')
+                    ->join('v.phones', 'p')
+                    ->where('p.e164 = :phoneNumber')
                     ->andWhere('ca.active = true')
                     ->orderBy('m.id', 'DESC')
                     ->setMaxResults(1)
@@ -47,21 +36,14 @@ class MessageRepository extends BaseRepository
                     ->getOneOrNullResult();
     }
 
-    /**
-     * @param string $phoneNumber
-     * @param string $prefix
-     *
-     * @return Message|null
-     *
-     * @throws NonUniqueResultException
-     */
-    public function getMessageFromPhoneNumberAndPrefix(string $phoneNumber, string $prefix): ?Message
+    public function getMessageFromPhoneNumberAndPrefix(string $phoneNumber, string $prefix) : ?Message
     {
         return $this->createQueryBuilder('m')
                     ->join('m.volunteer', 'v')
                     ->join('m.communication', 'co')
                     ->join('co.campaign', 'ca')
-                    ->where('v.phoneNumber = :phoneNumber')
+                    ->join('v.phones', 'p')
+                    ->where('p.e164 = :phoneNumber')
                     ->setParameter('phoneNumber', $phoneNumber)
                     ->andWhere('m.prefix = :prefix')
                     ->setParameter('prefix', $prefix)
@@ -72,14 +54,7 @@ class MessageRepository extends BaseRepository
                     ->getOneOrNullResult();
     }
 
-    /**
-     * @param Message $message
-     * @param Choice  $choice
-     *
-     * @throws ORMException
-     * @throws OptimisticLockException
-     */
-    public function cancelAnswerByChoice(Message $message, Choice $choice): void
+    public function cancelAnswerByChoice(Message $message, Choice $choice) : void
     {
         foreach ($message->getAnswers() as $answer) {
             /* @var Answer $answer */
@@ -91,12 +66,7 @@ class MessageRepository extends BaseRepository
         $this->_em->flush();
     }
 
-    /**
-     * @param int $messageId
-     *
-     * @return Message|null
-     */
-    public function findOneByIdNoCache(int $messageId): ?Message
+    public function findOneByIdNoCache(int $messageId) : ?Message
     {
         return $this->createQueryBuilder('m')
                     ->where('m.id = :id')
@@ -106,25 +76,14 @@ class MessageRepository extends BaseRepository
                     ->getOneOrNullResult();
     }
 
-    /**
-     * @param Message $message
-     *
-     * @return Message|null
-     * @throws MappingException
-     */
-    public function refresh(Message $message): Message
+    public function refresh(Message $message) : Message
     {
         $this->_em->clear();
 
         return $this->findOneByIdNoCache($message->getId());
     }
 
-    /**
-     * @param Campaign $campaign
-     *
-     * @return int
-     */
-    public function getNumberOfSentMessages(Campaign $campaign): int
+    public function getNumberOfSentMessages(Campaign $campaign) : int
     {
         return $this->createQueryBuilder('m')
                     ->select('COUNT(m.id)')
@@ -150,7 +109,7 @@ class MessageRepository extends BaseRepository
         return array_column($rows, 'code');
     }
 
-    public function getUsedPrefixes(array $volunteers): array
+    public function getUsedPrefixes(array $volunteers) : array
     {
         $rows = $this->createQueryBuilder('m')
                      ->select('v.id, m.prefix')
@@ -174,12 +133,7 @@ class MessageRepository extends BaseRepository
         return $prefixes;
     }
 
-    /**
-     * @param array $volunteersTakenPrefixes
-     *
-     * @return bool
-     */
-    public function canUsePrefixesForEveryone(array $volunteersTakenPrefixes): bool
+    public function canUsePrefixesForEveryone(array $volunteersTakenPrefixes) : bool
     {
         if (!$volunteersTakenPrefixes) {
             return true;
@@ -202,7 +156,7 @@ class MessageRepository extends BaseRepository
             $qb->setParameter(sprintf('p_%d', $volunteerId), $prefixes);
         }
 
-        $result = (bool)$qb
+        $result = (bool) $qb
             ->andWhere(call_user_func_array([$qb->expr(), 'orX'], $orXs))
             ->getQuery()
             ->getSingleScalarResult();
@@ -210,12 +164,8 @@ class MessageRepository extends BaseRepository
         return !$result;
     }
 
-    /**
-     * @return Message|null
-     * @throws \Doctrine\ORM\NoResultException
-     * @throws NonUniqueResultException
-     */
-    public function getLatestMessageUpdated(): ?Message
+
+    public function getLatestMessageUpdated() : ?Message
     {
         try {
             return $this->createQueryBuilder('m')

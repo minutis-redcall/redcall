@@ -1,5 +1,7 @@
 {% extends 'base.html.twig' %}
 
+{% import 'macros.html.twig' as macros %}
+
 {% block body %}
 
     <h1>{{ 'issues.details.title'|trans }}</h1>
@@ -23,7 +25,7 @@
             <tr>
                 <td>
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-5">
                             <div class="h4">
                                 {% if volunteer.enabled %}
                                     {{ volunteer.displayName }}
@@ -48,24 +50,28 @@
                                 {% endfor %}
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-5">
                             #{{ volunteer.nivol }}
                             (<a target="_blank" href="{{ gaia|replace({'%nivol%': volunteer.identifier}) }}">{{ 'issues.details.open'|trans }}</a>)
                             <br/>
                             <p>
-                                ☎️ <input id="phone-{{ volunteer.nivol }}" type="text" style="width: 80%;" value="{{ volunteer.phoneNumber }}" />
+                                {% if volunteer.phone %}
+                                    {{ macros.phone(volunteer.phone) }}
+                                {% else %}
+                                    ☎️ {{ 'issues.missing_phone'|trans }}
+                                {% endif %}
                             </p>
                             <p>
-                                📧️ <input id="email-{{ volunteer.nivol }}" type="text" style="width: 80%;" value="{{ volunteer.email }}" />
+                                {% if volunteer.email %}
+                                    📧 {{ volunteer.email }}
+                                {% else %}
+                                    📧 {{ 'issues.missing_email'|trans }}
+                                {% endif %}
                             </p>
-                            <p class="text-center">
-                                <a href="#"
-                                   data-href="{{ path('management_issues_save', {csrf: csrf_token('issues'), nivol: volunteer.nivol}) }}"
-                                   data-nivol="{{ volunteer.nivol }}"
-                                   class="save-now btn btn-sm btn-secondary">{{ 'base.button.save'|trans }}</a>
-                                &nbsp;
-                                <span id="result-{{ volunteer.nivol }}"></span>
-                            </p>
+                        </div>
+                        <div class="col-md-2">
+                            <a href="{{ path('management_volunteers_manual_update', {id: volunteer.id}) }}"
+                               target="_blank" class="btn btn-secondary">{{ 'base.button.open'|trans }}</a>
                         </div>
                     </div>
                 </td>
@@ -82,28 +88,5 @@
 
         <br/><br/>
     </div>
-
-    <script type="text/javascript">
-
-        $('.save-now').click(function(e) {
-            e.preventDefault();
-
-            var that = $(this);
-            var nivol = that.data('nivol');
-            var href = that.data('href');
-
-            $.post(href, {
-                phone: $('#phone-' + nivol).val(),
-                email: $('#email-' + nivol).val(),
-            }, function (data) {
-                if (data.success) {
-                    $('#result-' + nivol).html('✅');
-                } else {
-                    $('#result-' + nivol).html('❌');
-                }
-            });
-        });
-
-    </script>
 
 {% endblock %}

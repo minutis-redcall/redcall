@@ -73,20 +73,13 @@ class TwilioCallManager
         $this->callRepository->save($call);
     }
 
-    /**
-     * @param array $parameters
-     *
-     * @return VoiceResponse|Response|null
-     *
-     * @throws \Exception
-     */
     public function handleIncomingCall(array $parameters)
     {
         $entity = new TwilioCall();
         $entity->setUuid(Uuid::uuid4());
         $entity->setDirection(TwilioCall::DIRECTION_INBOUND);
-        $entity->setFromNumber(ltrim($parameters['From'], '+'));
-        $entity->setToNumber(ltrim($parameters['To'], '+'));
+        $entity->setFromNumber($parameters['From']);
+        $entity->setToNumber($parameters['To']);
         $entity->setSid($parameters['CallSid']);
         $entity->setStatus($parameters['CallStatus']);
 
@@ -105,15 +98,16 @@ class TwilioCallManager
         return $event->getResponse();
     }
 
-    public function sendCall(string $phoneNumber,
+    public function sendCall(string $from,
+        string $to,
         bool $handleAnsweringMachines = false,
         array $context = []) : TwilioCall
     {
         $entity = new TwilioCall();
         $entity->setUuid(Uuid::uuid4());
         $entity->setDirection(TwilioCall::DIRECTION_OUTBOUND);
-        $entity->setFromNumber(getenv('TWILIO_CALL'));
-        $entity->setToNumber($phoneNumber);
+        $entity->setFromNumber($from);
+        $entity->setToNumber($to);
         $entity->setContext($context);
 
         try {
@@ -138,11 +132,7 @@ class TwilioCallManager
                 ]));
             }
 
-            $outbound = $this->getClient()->calls->create(
-                sprintf('+%s', $phoneNumber),
-                sprintf('+%s', getenv('TWILIO_CALL')),
-                $options
-            );
+            $outbound = $this->getClient()->calls->create($to, $from, $options);
 
             $entity->setSid($outbound->sid);
             $entity->setStatus($outbound->status);
