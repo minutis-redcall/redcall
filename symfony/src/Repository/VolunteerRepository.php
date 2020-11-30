@@ -408,7 +408,7 @@ class VolunteerRepository extends BaseRepository
     public function searchVolunteersAudience(Structure $structure, string $criteria) : array
     {
         return $this->searchInStructureQueryBuilder($structure, $criteria, true)
-                    ->select('v.firstName, v.lastName, v.nivol')
+                    ->select('v.firstName, v.lastName, concat(v.firstName, \' \', v.lastName) as firstLast, concat(v.lastName, \' \', v.firstName) as lastFirst, v.nivol')
                     ->addOrderBy('v.firstName', 'ASC')
                     ->setMaxResults(25)
                     ->getQuery()

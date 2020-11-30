@@ -503,6 +503,8 @@ class Volunteer
             'nivol'      => strval($this->getNivol()),
             'firstName'  => $this->getFirstName(),
             'lastName'   => $this->getLastName(),
+            'firstLast'  => sprintf('%s %s', $this->firstName, $this->lastName),
+            'lastFirst'  => sprintf('%s %s', $this->lastName, $this->firstName),
             'tags'       => $this->getTagsView() ? sprintf('(%s)', implode(', ', array_map(function (Tag $tag) use (
                 $translator
             ) {
