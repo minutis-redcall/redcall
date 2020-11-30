@@ -100,7 +100,7 @@ class GeoLocationController extends BaseController
         );
     }
 
-    private function getGeolocationInformation(Message $myMessage): array
+    private function getGeolocationInformation(Message $myMessage) : array
     {
         $data = [];
         foreach ($myMessage->getCommunication()->getMessages() as $message) {

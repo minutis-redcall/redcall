@@ -330,7 +330,7 @@ class WidgetController extends BaseController
         ]);
     }
 
-    private function getStructure(int $id): Structure
+    private function getStructure(int $id) : Structure
     {
         $structure = $this->structureManager->find($id);
 

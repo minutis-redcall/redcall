@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
  */
 final class Version20181104213106 extends AbstractMigration
 {
-    public function up(Schema $schema): void
+    public function up(Schema $schema) : void
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
@@ -21,7 +21,7 @@ final class Version20181104213106 extends AbstractMigration
         $this->addSql('CREATE UNIQUE INDEX UNIQ_5140DEDB5013C841 ON volunteer (nivol)');
     }
 
-    public function down(Schema $schema): void
+    public function down(Schema $schema) : void
     {
         // this down() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');

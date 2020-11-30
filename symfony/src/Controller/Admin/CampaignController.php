@@ -29,7 +29,7 @@ class CampaignController extends BaseController
      *
      * @return array
      */
-    public function index(): array
+    public function index() : array
     {
         return [];
     }
@@ -39,7 +39,7 @@ class CampaignController extends BaseController
      *
      * @return array
      */
-    public function renderCampaignsTable(): array
+    public function renderCampaignsTable() : array
     {
         $all = $this->campaignManager->getAllCampaignsQueryBuilder();
 

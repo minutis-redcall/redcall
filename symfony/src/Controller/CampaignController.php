@@ -50,7 +50,7 @@ class CampaignController extends BaseController
         return $this->render('campaign/list.html.twig');
     }
 
-    public function renderCampaignsTable(): Response
+    public function renderCampaignsTable() : Response
     {
         $ongoing  = $this->campaignManager->getActiveCampaignsForUserQueryBuilder($this->getUser());
         $finished = $this->campaignManager->getInactiveCampaignsForUserQueryBuilder($this->getUser());
@@ -110,7 +110,7 @@ class CampaignController extends BaseController
      * @Route(path="campaign/{id}/close/{csrf}", name="close_campaign")
      * @IsGranted("CAMPAIGN", subject="campaign")
      */
-    public function closeCampaign(Campaign $campaign, string $csrf): Response
+    public function closeCampaign(Campaign $campaign, string $csrf) : Response
     {
         $this->validateCsrfOrThrowNotFoundException('campaign', $csrf);
 
@@ -128,7 +128,7 @@ class CampaignController extends BaseController
      * @Route(path="campaign/{id}/open/{csrf}", name="open_campaign")
      * @IsGranted("CAMPAIGN", subject="campaign")
      */
-    public function openCampaign(Campaign $campaign, string $csrf): Response
+    public function openCampaign(Campaign $campaign, string $csrf) : Response
     {
         $this->validateCsrfOrThrowNotFoundException('campaign', $csrf);
 
@@ -149,7 +149,7 @@ class CampaignController extends BaseController
      * @Route(path="campaign/{id}/change-color/{color}/{csrf}", name="color_campaign")
      * @IsGranted("CAMPAIGN", subject="campaignEntity")
      */
-    public function changeColor(Campaign $campaignEntity, string $color, string $csrf): Response
+    public function changeColor(Campaign $campaignEntity, string $color, string $csrf) : Response
     {
         $this->validateCsrfOrThrowNotFoundException('campaign', $csrf);
 
@@ -173,7 +173,7 @@ class CampaignController extends BaseController
      * @Route(path="campaign/{id}/rename", name="rename_campaign")
      * @IsGranted("CAMPAIGN", subject="campaignEntity")
      */
-    public function rename(Request $request, Campaign $campaignEntity): Response
+    public function rename(Request $request, Campaign $campaignEntity) : Response
     {
         $this->validateCsrfOrThrowNotFoundException('campaign', $request->request->get('csrf'));
 
@@ -197,7 +197,7 @@ class CampaignController extends BaseController
      * @Route(path="campaign/{id}/notes", name="notes_campaign")
      * @IsGranted("CAMPAIGN", subject="campaignEntity")
      */
-    public function notes(Request $request, Campaign $campaignEntity): Response
+    public function notes(Request $request, Campaign $campaignEntity) : Response
     {
         $this->validateCsrfOrThrowNotFoundException('campaign', $request->request->get('csrf'));
 

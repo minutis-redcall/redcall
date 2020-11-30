@@ -30,7 +30,7 @@ class AnswerAnalysisController extends BaseController
      * @Route(name="index")
      * @Template("admin/answer_analysis/index.html.twig")
      */
-    public function index(Request $request): array
+    public function index(Request $request) : array
     {
         $form = $this->createSearchForm($request);
 
@@ -47,7 +47,7 @@ class AnswerAnalysisController extends BaseController
         ];
     }
 
-    private function createSearchForm(Request $request): FormInterface
+    private function createSearchForm(Request $request) : FormInterface
     {
         return $this->createFormBuilder()
                     ->setMethod('GET')
