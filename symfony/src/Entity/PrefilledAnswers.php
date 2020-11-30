@@ -58,7 +58,7 @@ class PrefilledAnswers
     /**
      * @return int|null
      */
-    public function getId(): ?int
+    public function getId() : ?int
     {
         return $this->id;
     }
@@ -66,7 +66,7 @@ class PrefilledAnswers
     /**
      * @return string|null
      */
-    public function getLabel(): ?string
+    public function getLabel() : ?string
     {
         return $this->label;
     }
@@ -76,7 +76,7 @@ class PrefilledAnswers
      *
      * @return PrefilledAnswers
      */
-    public function setLabel(string $label): self
+    public function setLabel(string $label) : self
     {
         $this->label = $label;
 
@@ -86,7 +86,7 @@ class PrefilledAnswers
     /**
      * @return array|null
      */
-    public function getColors(): ?array
+    public function getColors() : ?array
     {
         return $this->colors;
     }
@@ -96,7 +96,7 @@ class PrefilledAnswers
      *
      * @return PrefilledAnswers
      */
-    public function setColors(?array $colors): self
+    public function setColors(?array $colors) : self
     {
         $this->colors = $colors;
 
@@ -106,7 +106,7 @@ class PrefilledAnswers
     /**
      * @return array|null
      */
-    public function getAnswers(): ?array
+    public function getAnswers() : ?array
     {
         return $this->answers;
     }
@@ -116,7 +116,7 @@ class PrefilledAnswers
      *
      * @return PrefilledAnswers
      */
-    public function setAnswers(array $answers): self
+    public function setAnswers(array $answers) : self
     {
         $this->answers = $answers;
 
@@ -126,7 +126,7 @@ class PrefilledAnswers
     /**
      * @return Structure|null
      */
-    public function getStructure(): ?Structure
+    public function getStructure() : ?Structure
     {
         return $this->structure;
     }
@@ -134,7 +134,7 @@ class PrefilledAnswers
     /**
      * @param Structure|null $structure
      */
-    public function setStructure(?Structure $structure): void
+    public function setStructure(?Structure $structure) : void
     {
         $this->structure = $structure;
     }

@@ -118,7 +118,7 @@ class Message
     /**
      * @return int
      */
-    public function getId(): int
+    public function getId() : int
     {
         return $this->id;
     }
@@ -128,7 +128,7 @@ class Message
      *
      * @return $this
      */
-    public function setId($id): Message
+    public function setId($id) : Message
     {
         $this->id = $id;
 
@@ -138,7 +138,7 @@ class Message
     /**
      * @return string|null
      */
-    public function getMessageId(): ?string
+    public function getMessageId() : ?string
     {
         return $this->messageId;
     }
@@ -148,7 +148,7 @@ class Message
      *
      * @return $this
      */
-    public function setMessageId(string $messageId): Message
+    public function setMessageId(string $messageId) : Message
     {
         $this->messageId = $messageId;
 
@@ -158,7 +158,7 @@ class Message
     /**
      * @return Volunteer
      */
-    public function getVolunteer(): Volunteer
+    public function getVolunteer() : Volunteer
     {
         return $this->volunteer;
     }
@@ -168,7 +168,7 @@ class Message
      *
      * @return $this
      */
-    public function setVolunteer($volunteer): Message
+    public function setVolunteer($volunteer) : Message
     {
         $this->volunteer = $volunteer;
 
@@ -178,7 +178,7 @@ class Message
     /**
      * @return bool
      */
-    public function isSent(): bool
+    public function isSent() : bool
     {
         return $this->sent;
     }
@@ -188,7 +188,7 @@ class Message
      *
      * @return $this
      */
-    public function setSent($sent): Message
+    public function setSent($sent) : Message
     {
         $this->sent = $sent;
 
@@ -198,7 +198,7 @@ class Message
     /**
      * @return bool
      */
-    public function canBeSent(): bool
+    public function canBeSent() : bool
     {
         return !$this->sent && $this->isReachable();
     }
@@ -212,7 +212,7 @@ class Message
      *
      * @return float
      */
-    public function getCost(): float
+    public function getCost() : float
     {
         $price = 0.0;
         foreach ($this->costs as $cost) {
@@ -236,7 +236,7 @@ class Message
      *
      * @return $this
      */
-    public function setAnswers($answers): Message
+    public function setAnswers($answers) : Message
     {
         $this->answers = $answers;
 
@@ -248,7 +248,7 @@ class Message
      *
      * @return Message
      */
-    public function addAnswser(Answer $answer): Message
+    public function addAnswser(Answer $answer) : Message
     {
         $this->answers[] = $answer;
 
@@ -258,7 +258,7 @@ class Message
     /**
      * @param Answer $answer
      */
-    public function removeAnswer(Answer $answer): void
+    public function removeAnswer(Answer $answer) : void
     {
         foreach ($this->answers as $key => $object) {
             if ($object->getId() === $answer->getId()) {
@@ -270,7 +270,7 @@ class Message
     /**
      * @return Communication
      */
-    public function getCommunication(): Communication
+    public function getCommunication() : Communication
     {
         return $this->communication;
     }
@@ -280,7 +280,7 @@ class Message
      *
      * @return $this
      */
-    public function setCommunication($communication): Message
+    public function setCommunication($communication) : Message
     {
         $this->communication = $communication;
 
@@ -290,7 +290,7 @@ class Message
     /**
      * @return string
      */
-    public function getCode(): string
+    public function getCode() : string
     {
         if (gettype($this->code) === 'resource') {
             $this->code = stream_get_contents($this->code);
@@ -302,7 +302,7 @@ class Message
     /**
      * @param string|resource $code
      */
-    public function setCode($code): void
+    public function setCode($code) : void
     {
         $this->code = $code;
     }
@@ -310,7 +310,7 @@ class Message
     /**
      * @return GeoLocation|null
      */
-    public function getGeoLocation(): ?GeoLocation
+    public function getGeoLocation() : ?GeoLocation
     {
         return $this->geoLocation;
     }
@@ -320,7 +320,7 @@ class Message
      *
      * @return Message
      */
-    public function setGeoLocation(?GeoLocation $geoLocation): self
+    public function setGeoLocation(?GeoLocation $geoLocation) : self
     {
         $this->geoLocation = $geoLocation;
 
@@ -338,7 +338,7 @@ class Message
      *
      * @return Answer
      */
-    public function getAnswerByChoice(Choice $choice): ?Answer
+    public function getAnswerByChoice(Choice $choice) : ?Answer
     {
         foreach ($this->answers ?? [] as $answer) {
             if ($answer->hasChoice($choice)) {
@@ -352,7 +352,7 @@ class Message
     /**
      * @return Answer|null
      */
-    public function getLastAnswer(): ?Answer
+    public function getLastAnswer() : ?Answer
     {
         if ($this->answers) {
             $answers = $this->answers->toArray();
@@ -368,7 +368,7 @@ class Message
      *
      * @return null|Answer
      */
-    public function getInvalidAnswer(): ?Answer
+    public function getInvalidAnswer() : ?Answer
     {
         if ($this->hasValidAnswer()) {
             return null;
@@ -380,7 +380,7 @@ class Message
     /**
      * @return bool
      */
-    public function hasValidAnswer(): bool
+    public function hasValidAnswer() : bool
     {
         foreach ($this->answers as $answer) {
             if ($answer->isValid()) {
@@ -398,7 +398,7 @@ class Message
      *
      * @return bool
      */
-    public function isUnclear(): bool
+    public function isUnclear() : bool
     {
         if ($this->getInvalidAnswer()) {
             return false;
@@ -414,7 +414,7 @@ class Message
         return false;
     }
 
-    public function getUnclear(): ?Answer
+    public function getUnclear() : ?Answer
     {
         if ($this->getInvalidAnswer()) {
             return null;
@@ -433,7 +433,7 @@ class Message
     /**
      * @return Choice[]
      */
-    public function getChoices(): array
+    public function getChoices() : array
     {
         $choices = [];
 
@@ -449,7 +449,7 @@ class Message
     /**
      * @return string|null
      */
-    public function getPrefix(): ?string
+    public function getPrefix() : ?string
     {
         return $this->prefix;
     }
@@ -459,7 +459,7 @@ class Message
      *
      * @return Message
      */
-    public function setPrefix(string $prefix): self
+    public function setPrefix(string $prefix) : self
     {
         $this->prefix = $prefix;
 
@@ -469,12 +469,12 @@ class Message
     /**
      * @return Collection|Cost[]
      */
-    public function getCosts(): Collection
+    public function getCosts() : Collection
     {
         return $this->costs;
     }
 
-    public function addCost(Cost $cost): self
+    public function addCost(Cost $cost) : self
     {
         if (!$this->costs->contains($cost)) {
             $this->costs[] = $cost;
@@ -484,7 +484,7 @@ class Message
         return $this;
     }
 
-    public function removeCost(Cost $cost): self
+    public function removeCost(Cost $cost) : self
     {
         if ($this->costs->contains($cost)) {
             $this->costs->removeElement($cost);
@@ -497,24 +497,24 @@ class Message
         return $this;
     }
 
-    public function getError(): ?string
+    public function getError() : ?string
     {
         return $this->error;
     }
 
-    public function setError(?string $error): self
+    public function setError(?string $error) : self
     {
         $this->error = $error;
 
         return $this;
     }
 
-    public function getUpdatedAt(): \DateTimeInterface
+    public function getUpdatedAt() : \DateTimeInterface
     {
         return $this->updatedAt;
     }
 
-    public function setUpdatedAt(\DateTimeInterface $updatedAt): self
+    public function setUpdatedAt(\DateTimeInterface $updatedAt) : self
     {
         $this->updatedAt = $updatedAt;
 
@@ -526,12 +526,12 @@ class Message
      *
      * @return string
      */
-    public function getSignature(): string
+    public function getSignature() : string
     {
         return sha1(sprintf('%s%s', $this->getCode(), getenv('APP_SECRET')));
     }
 
-    public function isReachable(): bool
+    public function isReachable() : bool
     {
         if ($this->error) {
             return false;

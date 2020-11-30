@@ -42,7 +42,7 @@ class GenerateMjmlCommand extends Command
             ->addArgument('path', InputArgument::REQUIRED, 'Path to the MJML file');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output): int
+    protected function execute(InputInterface $input, OutputInterface $output) : int
     {
         $this->io = new SymfonyStyle($input, $output);
         $mjmlPath = $input->getArgument('path');
@@ -75,7 +75,7 @@ class GenerateMjmlCommand extends Command
         return 0;
     }
 
-    private function getCurrentHash(string $mjmlPath): ?string
+    private function getCurrentHash(string $mjmlPath) : ?string
     {
         if (!file_exists($mjmlPath) || !is_readable($mjmlPath)) {
             $this->io->error(sprintf('File %s not found or not readable', $mjmlPath));
@@ -90,7 +90,7 @@ class GenerateMjmlCommand extends Command
         return $currentHash;
     }
 
-    private function getOlderHash(string $mjmlPath): ?string
+    private function getOlderHash(string $mjmlPath) : ?string
     {
         $hashPath = sprintf('%s.sha1', $mjmlPath);
         if (!is_file($hashPath) || !is_readable($hashPath)) {

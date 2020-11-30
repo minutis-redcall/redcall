@@ -60,7 +60,7 @@ class Choice
     /**
      * @return string
      */
-    public function getCode(): string
+    public function getCode() : string
     {
         return $this->code;
     }
@@ -80,7 +80,7 @@ class Choice
     /**
      * @return string
      */
-    public function getLabel(): string
+    public function getLabel() : string
     {
         return $this->label;
     }
@@ -100,7 +100,7 @@ class Choice
     /**
      * @return Communication
      */
-    public function getCommunication(): Communication
+    public function getCommunication() : Communication
     {
         return $this->communication;
     }
@@ -120,7 +120,7 @@ class Choice
     /**
      * @return int
      */
-    public function getCount(): int
+    public function getCount() : int
     {
         $count = 0;
 

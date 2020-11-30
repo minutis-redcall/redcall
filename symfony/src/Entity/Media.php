@@ -50,65 +50,65 @@ class Media
      */
     private $expiresAt;
 
-    public function getId(): ?int
+    public function getId() : ?int
     {
         return $this->id;
     }
 
-    public function getUuid(): ?string
+    public function getUuid() : ?string
     {
         return $this->uuid;
     }
 
-    public function setUuid(string $uuid): self
+    public function setUuid(string $uuid) : self
     {
         $this->uuid = $uuid;
 
         return $this;
     }
 
-    public function getHash(): ?string
+    public function getHash() : ?string
     {
         return $this->hash;
     }
 
-    public function setHash(string $hash): self
+    public function setHash(string $hash) : self
     {
         $this->hash = $hash;
 
         return $this;
     }
 
-    public function getUrl(): string
+    public function getUrl() : string
     {
         return $this->url;
     }
 
-    public function setUrl(string $url): self
+    public function setUrl(string $url) : self
     {
         $this->url = $url;
 
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeInterface
+    public function getCreatedAt() : ?\DateTimeInterface
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeInterface $createdAt): self
+    public function setCreatedAt(\DateTimeInterface $createdAt) : self
     {
         $this->createdAt = $createdAt;
 
         return $this;
     }
 
-    public function getExpiresAt(): ?\DateTimeInterface
+    public function getExpiresAt() : ?\DateTimeInterface
     {
         return $this->expiresAt;
     }
 
-    public function setExpiresAt(?\DateTimeInterface $expiresAt): self
+    public function setExpiresAt(?\DateTimeInterface $expiresAt) : self
     {
         $this->expiresAt = $expiresAt;
 

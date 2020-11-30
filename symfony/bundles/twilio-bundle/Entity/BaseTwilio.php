@@ -2,6 +2,7 @@
 
 namespace Bundles\TwilioBundle\Entity;
 
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -93,113 +94,113 @@ abstract class BaseTwilio
      */
     private $error;
 
-    public function getId(): ?int
+    public function getId() : ?int
     {
         return $this->id;
     }
 
-    public function getUuid(): ?string
+    public function getUuid() : ?string
     {
         return $this->uuid;
     }
 
-    public function setUuid(string $uuid): self
+    public function setUuid(string $uuid) : self
     {
         $this->uuid = $uuid;
 
         return $this;
     }
 
-    public function getDirection(): ?string
+    public function getDirection() : ?string
     {
         return $this->direction;
     }
 
-    public function setDirection(string $direction): self
+    public function setDirection(string $direction) : self
     {
         $this->direction = $direction;
 
         return $this;
     }
 
-    public function getMessage(): ?string
+    public function getMessage() : ?string
     {
         return $this->message;
     }
 
-    public function setMessage(string $message): self
+    public function setMessage(string $message) : self
     {
         $this->message = $message;
 
         return $this;
     }
 
-    public function getFromNumber(): ?string
+    public function getFromNumber() : ?string
     {
         return $this->fromNumber;
     }
 
-    public function setFromNumber(string $fromNumber): self
+    public function setFromNumber(string $fromNumber) : self
     {
         $this->fromNumber = $fromNumber;
 
         return $this;
     }
 
-    public function getToNumber(): ?string
+    public function getToNumber() : ?string
     {
         return $this->toNumber;
     }
 
-    public function setToNumber(string $toNumber): self
+    public function setToNumber(string $toNumber) : self
     {
         $this->toNumber = $toNumber;
 
         return $this;
     }
 
-    public function getSid(): ?string
+    public function getSid() : ?string
     {
         return $this->sid;
     }
 
-    public function setSid(string $sid): self
+    public function setSid(string $sid) : self
     {
         $this->sid = $sid;
 
         return $this;
     }
 
-    public function getStatus(): ?string
+    public function getStatus() : ?string
     {
         return $this->status;
     }
 
-    public function setStatus(?string $status): self
+    public function setStatus(?string $status) : self
     {
         $this->status = $status;
 
         return $this;
     }
 
-    public function getPrice(): ?string
+    public function getPrice() : ?string
     {
         return $this->price;
     }
 
-    public function setPrice(?string $price): self
+    public function setPrice(?string $price) : self
     {
         $this->price = $price;
 
         return $this;
     }
 
-    public function getUnit(): ?string
+    public function getUnit() : ?string
     {
         return $this->unit;
     }
 
-    public function setUnit(?string $unit): self
+    public function setUnit(?string $unit) : self
     {
         $this->unit = $unit;
 
@@ -209,7 +210,7 @@ abstract class BaseTwilio
     /**
      * @return int
      */
-    public function getRetry(): int
+    public function getRetry() : int
     {
         return $this->retry;
     }
@@ -219,7 +220,7 @@ abstract class BaseTwilio
      *
      * @return TwilioMessage
      */
-    public function setRetry(int $retry): self
+    public function setRetry(int $retry) : self
     {
         $this->retry = $retry;
 
@@ -231,43 +232,43 @@ abstract class BaseTwilio
         return $this->context ? json_decode($this->context, true) : null;
     }
 
-    public function setContext($context): self
+    public function setContext($context) : self
     {
         $this->context = json_encode($context);
 
         return $this;
     }
 
-    public function getError(): ?string
+    public function getError() : ?string
     {
         return $this->error;
     }
 
-    public function setError(?string $error): self
+    public function setError(?string $error) : self
     {
         $this->error = mb_substr($error, 0, 255);
 
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTime
+    public function getCreatedAt() : ?DateTime
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTime $createdAt): self
+    public function setCreatedAt(DateTime $createdAt) : self
     {
         $this->createdAt = $createdAt;
 
         return $this;
     }
 
-    public function getUpdatedAt(): ?\DateTime
+    public function getUpdatedAt() : ?DateTime
     {
         return $this->updatedAt;
     }
 
-    public function setUpdatedAt(\DateTime $updatedAt): self
+    public function setUpdatedAt(DateTime $updatedAt) : self
     {
         $this->updatedAt = $updatedAt;
 
@@ -279,8 +280,8 @@ abstract class BaseTwilio
      */
     public function onPrePersist()
     {
-        $this->setCreatedAt(new \DateTime());
-        $this->setUpdatedAt(new \DateTime());
+        $this->setCreatedAt(new DateTime());
+        $this->setUpdatedAt(new DateTime());
     }
 
     /**
@@ -288,6 +289,6 @@ abstract class BaseTwilio
      */
     public function onPreUpdate()
     {
-        $this->setUpdatedAt(new \DateTime());
+        $this->setUpdatedAt(new DateTime());
     }
 }

@@ -18,7 +18,7 @@ class GeoLocationManager
         $this->geoLocationRepository = $geoLocationRepository;
     }
 
-    public function getLastGeoLocationUpdateTimestamp(Communication $communication): ?int
+    public function getLastGeoLocationUpdateTimestamp(Communication $communication) : ?int
     {
         return $this->geoLocationRepository->getLastGeoLocationUpdateTimestamp($communication);
     }

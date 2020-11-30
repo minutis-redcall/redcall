@@ -15,7 +15,7 @@ class TextToSpeech
      */
     private $client;
 
-    public function textToSpeech(string $text, bool $male): string
+    public function textToSpeech(string $text, bool $male) : string
     {
         $voice = (new VoiceSelectionParams())
             ->setLanguageCode('fr-FR')
@@ -33,7 +33,7 @@ class TextToSpeech
         return $response->getAudioContent();
     }
 
-    private function getClient(): TextToSpeechClient
+    private function getClient() : TextToSpeechClient
     {
         if (!$this->client) {
             $this->client = new TextToSpeechClient();

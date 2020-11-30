@@ -20,7 +20,7 @@ class TagManager
         $this->tagRepository = $tagRepository;
     }
 
-    public function find(int $tagId): ?Tag
+    public function find(int $tagId) : ?Tag
     {
         return $this->tagRepository->find($tagId);
     }
@@ -28,7 +28,7 @@ class TagManager
     /**
      * @return array
      */
-    public function findAll(): array
+    public function findAll() : array
     {
         return $this->tagRepository->findAll();
     }
@@ -38,7 +38,7 @@ class TagManager
      *
      * @return Tag|null
      */
-    public function findOneByLabel(string $label): ?Tag
+    public function findOneByLabel(string $label) : ?Tag
     {
         return $this->tagRepository->findOneByLabel($label);
     }
@@ -53,7 +53,7 @@ class TagManager
         }
     }
 
-    public function findTagsForNivols(array $nivols): array
+    public function findTagsForNivols(array $nivols) : array
     {
         return $this->tagRepository->findTagsByNivol($nivols);
     }

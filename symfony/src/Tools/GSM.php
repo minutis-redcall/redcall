@@ -273,7 +273,7 @@ class GSM
      *
      * @return string
      */
-    public static function isGSMCompatible(string $message): string
+    public static function isGSMCompatible(string $message) : string
     {
         foreach (preg_split('//u', $message, null, PREG_SPLIT_NO_EMPTY) as $letter) {
             if (!in_array($letter, self::ALPHABET)) {
@@ -289,7 +289,7 @@ class GSM
      *
      * @return string
      */
-    public static function transliterate(string $message): string
+    public static function transliterate(string $message) : string
     {
         return trim(preg_replace(
             array_keys(self::TRANSLITERATION),
@@ -303,7 +303,7 @@ class GSM
      *
      * @return string
      */
-    public static function enforceGSMAlphabet(string $message): string
+    public static function enforceGSMAlphabet(string $message) : string
     {
         $sanitized = '';
         foreach (preg_split('//u', self::transliterate($message), null, PREG_SPLIT_NO_EMPTY) as $letter) {
@@ -322,7 +322,7 @@ class GSM
      *
      * @return array
      */
-    public static function getSMSParts(string $message): array
+    public static function getSMSParts(string $message) : array
     {
         $unicode = false;
         if (!self::isGSMCompatible($message)) {

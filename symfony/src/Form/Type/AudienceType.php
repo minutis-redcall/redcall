@@ -119,7 +119,7 @@ class AudienceType extends AbstractType
             ->add('nivols', TextareaType::class, [
                 'label'    => false,
                 'required' => false,
-            ]);;
+            ]);
 
         // Every structure has its own list of volunteers
         $structuresById = [];
@@ -193,7 +193,7 @@ class AudienceType extends AbstractType
         ]);
     }
 
-    public function getBlockPrefix(): string
+    public function getBlockPrefix() : string
     {
         return 'audience';
     }

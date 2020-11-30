@@ -56,7 +56,7 @@ class VoiceCalls
         $this->messageManager = $messageManager;
     }
 
-    public function establishCall(string $uuid, Message $message): VoiceResponse
+    public function establishCall(string $uuid, Message $message) : VoiceResponse
     {
         return $this->getVoiceResponse(
             $uuid,
@@ -65,7 +65,7 @@ class VoiceCalls
         );
     }
 
-    public function handleKeyPress(string $uuid, Message $message, string $digit): VoiceResponse
+    public function handleKeyPress(string $uuid, Message $message, string $digit) : VoiceResponse
     {
         // #, *
         if (!is_numeric($digit)) {
@@ -97,7 +97,7 @@ class VoiceCalls
         return $this->getVoiceResponse($uuid, $text);
     }
 
-    private function getInvalidAnswerResponse(string $uuid, Message $message): VoiceResponse
+    private function getInvalidAnswerResponse(string $uuid, Message $message) : VoiceResponse
     {
         return $this->getVoiceResponse(
             $uuid,
@@ -106,14 +106,14 @@ class VoiceCalls
         );
     }
 
-    private function getMediaUrl(string $text, bool $male = false): string
+    private function getMediaUrl(string $text, bool $male = false) : string
     {
         $media = $this->mediaManager->createMp3($text, $male);
 
         return $media->getUrl();
     }
 
-    private function getVoiceResponse(string $uuid, string $text, string $gather = null): VoiceResponse
+    private function getVoiceResponse(string $uuid, string $text, string $gather = null) : VoiceResponse
     {
         $response = new VoiceResponse();
 

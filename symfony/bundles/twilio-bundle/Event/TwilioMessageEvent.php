@@ -22,17 +22,17 @@ class TwilioMessageEvent
         $this->message = $message;
     }
 
-    public function getMessage(): TwilioMessage
+    public function getMessage() : TwilioMessage
     {
         return $this->message;
     }
 
-    public function getResponse(): ?MessagingResponse
+    public function getResponse() : ?MessagingResponse
     {
         return $this->response;
     }
 
-    public function setResponse(?MessagingResponse $response): TwilioMessageEvent
+    public function setResponse(?MessagingResponse $response) : TwilioMessageEvent
     {
         $this->response = $response;
 

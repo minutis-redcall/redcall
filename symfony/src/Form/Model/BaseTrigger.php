@@ -63,7 +63,7 @@ abstract class BaseTrigger implements \JsonSerializable
     /**
      * @return string
      */
-    public function getLabel(): string
+    public function getLabel() : string
     {
         return $this->label;
     }
@@ -73,7 +73,7 @@ abstract class BaseTrigger implements \JsonSerializable
      *
      * @return BaseTrigger
      */
-    public function setLabel(string $label): BaseTrigger
+    public function setLabel(string $label) : BaseTrigger
     {
         $this->label = $label;
 
@@ -83,7 +83,7 @@ abstract class BaseTrigger implements \JsonSerializable
     /**
      * @return string
      */
-    public function getType(): string
+    public function getType() : string
     {
         return $this->type;
     }
@@ -93,7 +93,7 @@ abstract class BaseTrigger implements \JsonSerializable
      *
      * @return BaseTrigger
      */
-    public function setType(string $type): BaseTrigger
+    public function setType(string $type) : BaseTrigger
     {
         $this->type = $type;
 
@@ -103,7 +103,7 @@ abstract class BaseTrigger implements \JsonSerializable
     /**
      * @return array
      */
-    public function getAudience(): array
+    public function getAudience() : array
     {
         return $this->audience;
     }
@@ -113,7 +113,7 @@ abstract class BaseTrigger implements \JsonSerializable
      *
      * @return BaseTrigger
      */
-    public function setAudience(array $audience): BaseTrigger
+    public function setAudience(array $audience) : BaseTrigger
     {
         $this->audience = $audience;
 
@@ -123,7 +123,7 @@ abstract class BaseTrigger implements \JsonSerializable
     /**
      * @return string|null
      */
-    public function getSubject(): ?string
+    public function getSubject() : ?string
     {
         return $this->subject;
     }
@@ -133,7 +133,7 @@ abstract class BaseTrigger implements \JsonSerializable
      *
      * @return BaseTrigger
      */
-    public function setSubject(?string $subject): BaseTrigger
+    public function setSubject(?string $subject) : BaseTrigger
     {
         $this->subject = $subject;
 
@@ -143,7 +143,7 @@ abstract class BaseTrigger implements \JsonSerializable
     /**
      * @return string|null
      */
-    public function getMessage(): ?string
+    public function getMessage() : ?string
     {
         return $this->message;
     }
@@ -153,7 +153,7 @@ abstract class BaseTrigger implements \JsonSerializable
      *
      * @return BaseTrigger
      */
-    public function setMessage(?string $message): BaseTrigger
+    public function setMessage(?string $message) : BaseTrigger
     {
         $this->message = $message;
 
@@ -163,7 +163,7 @@ abstract class BaseTrigger implements \JsonSerializable
     /**
      * @return array
      */
-    public function getAnswers(): array
+    public function getAnswers() : array
     {
         return $this->answers;
     }
@@ -173,7 +173,7 @@ abstract class BaseTrigger implements \JsonSerializable
      *
      * @return BaseTrigger
      */
-    public function setAnswers(array $answers): BaseTrigger
+    public function setAnswers(array $answers) : BaseTrigger
     {
         $this->answers = $answers;
 
@@ -183,7 +183,7 @@ abstract class BaseTrigger implements \JsonSerializable
     /**
      * @return bool
      */
-    public function isGeoLocation(): bool
+    public function isGeoLocation() : bool
     {
         return $this->geoLocation;
     }
@@ -193,7 +193,7 @@ abstract class BaseTrigger implements \JsonSerializable
      *
      * @return BaseTrigger
      */
-    public function setGeoLocation(bool $geoLocation): BaseTrigger
+    public function setGeoLocation(bool $geoLocation) : BaseTrigger
     {
         $this->geoLocation = $geoLocation;
 
@@ -203,7 +203,7 @@ abstract class BaseTrigger implements \JsonSerializable
     /**
      * @return bool
      */
-    public function isMultipleAnswer(): bool
+    public function isMultipleAnswer() : bool
     {
         return $this->multipleAnswer;
     }
@@ -213,7 +213,7 @@ abstract class BaseTrigger implements \JsonSerializable
      *
      * @return BaseTrigger
      */
-    public function setMultipleAnswer(bool $multipleAnswer): BaseTrigger
+    public function setMultipleAnswer(bool $multipleAnswer) : BaseTrigger
     {
         $this->multipleAnswer = $multipleAnswer;
 

@@ -37,7 +37,7 @@ class MediaManager
         $this->storage         = $storage;
     }
 
-    public function createMedia(string $extension, string $text): Media
+    public function createMedia(string $extension, string $text) : Media
     {
         $callback = function ($text) {
             return $text;
@@ -46,7 +46,7 @@ class MediaManager
         return $this->getMedia($extension, $text, $callback);
     }
 
-    public function createMp3(string $text, bool $male = false): Media
+    public function createMp3(string $text, bool $male = false) : Media
     {
         $callback = function ($text) use ($male) {
             return $this->textToSpeech->textToSpeech($text, $male);
@@ -84,7 +84,7 @@ class MediaManager
         return $media;
     }
 
-    private function findOneByText(string $text): ?Media
+    private function findOneByText(string $text) : ?Media
     {
         /** @var Media|null $media */
         $media = $this->mediaRepository->findOneByHash(

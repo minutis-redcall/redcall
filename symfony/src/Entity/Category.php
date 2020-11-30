@@ -39,29 +39,29 @@ class Category
         $this->badges = new ArrayCollection();
     }
 
-    public function getId(): ?int
+    public function getId() : ?int
     {
         return $this->id;
     }
 
-    public function getName(): ?string
+    public function getName() : ?string
     {
         return $this->name;
     }
 
-    public function setName(string $name): self
+    public function setName(string $name) : self
     {
         $this->name = $name;
 
         return $this;
     }
 
-    public function getPriority(): ?int
+    public function getPriority() : ?int
     {
         return $this->priority;
     }
 
-    public function setPriority(?int $priority): self
+    public function setPriority(?int $priority) : self
     {
         $this->priority = $priority;
 
@@ -71,12 +71,12 @@ class Category
     /**
      * @return Collection|Badge[]
      */
-    public function getBadges(): Collection
+    public function getBadges() : Collection
     {
         return $this->badges;
     }
 
-    public function addBadge(Badge $badge): self
+    public function addBadge(Badge $badge) : self
     {
         if (!$this->badges->contains($badge)) {
             $this->badges[] = $badge;
@@ -86,7 +86,7 @@ class Category
         return $this;
     }
 
-    public function removeBadge(Badge $badge): self
+    public function removeBadge(Badge $badge) : self
     {
         if ($this->badges->contains($badge)) {
             $this->badges->removeElement($badge);

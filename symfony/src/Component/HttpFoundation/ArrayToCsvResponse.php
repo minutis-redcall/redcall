@@ -35,7 +35,7 @@ class ArrayToCsvResponse extends Response
      *
      * @return null|string
      */
-    private function arrayToCsv(array &$array): ?string
+    private function arrayToCsv(array &$array) : ?string
     {
         if (count($array) == 0) {
             return null;

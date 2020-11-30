@@ -56,62 +56,62 @@ class User extends AbstractUser
         $this->structures = new ArrayCollection();
     }
 
-    public function getLocale(): ?string
+    public function getLocale() : ?string
     {
         return $this->locale;
     }
 
-    public function setLocale(?string $locale): self
+    public function setLocale(?string $locale) : self
     {
         $this->locale = $locale;
 
         return $this;
     }
 
-    public function getNivol(): ?string
+    public function getNivol() : ?string
     {
         return $this->nivol;
     }
 
-    public function setNivol(?string $nivol): self
+    public function setNivol(?string $nivol) : self
     {
         $this->nivol = $nivol;
 
         return $this;
     }
 
-    public function isDeveloper(): bool
+    public function isDeveloper() : bool
     {
         return $this->isDeveloper;
     }
 
-    public function setIsDeveloper(bool $isDeveloper): self
+    public function setIsDeveloper(bool $isDeveloper) : self
     {
         $this->isDeveloper = $isDeveloper;
 
         return $this;
     }
 
-    public function getVolunteer(): ?Volunteer
+    public function getVolunteer() : ?Volunteer
     {
         return $this->volunteer;
     }
 
-    public function setVolunteer(?Volunteer $volunteer): self
+    public function setVolunteer(?Volunteer $volunteer) : self
     {
         $this->volunteer = $volunteer;
 
         return $this;
     }
 
-    public function getStructures(): Collection
+    public function getStructures() : Collection
     {
         return $this->structures->filter(function (Structure $structure) {
             return $structure->isEnabled();
         });
     }
 
-    public function addStructure(Structure $structure): self
+    public function addStructure(Structure $structure) : self
     {
         if (!$this->structures->contains($structure)) {
             $this->structures[] = $structure;
@@ -120,7 +120,7 @@ class User extends AbstractUser
         return $this;
     }
 
-    public function removeStructure(Structure $structure): self
+    public function removeStructure(Structure $structure) : self
     {
         if ($this->structures->contains($structure)) {
             $this->structures->removeElement($structure);
@@ -139,7 +139,7 @@ class User extends AbstractUser
     /**
      * @return Structure[]
      */
-    public function getRootStructures(): array
+    public function getRootStructures() : array
     {
         $roots = [];
         foreach ($this->structures as $structure) {
@@ -165,19 +165,19 @@ class User extends AbstractUser
         return $this->structures;
     }
 
-    public function isLocked(): ?bool
+    public function isLocked() : ?bool
     {
         return $this->locked;
     }
 
-    public function setLocked(bool $locked): self
+    public function setLocked(bool $locked) : self
     {
         $this->locked = $locked;
 
         return $this;
     }
 
-    public function getRoles(): array
+    public function getRoles() : array
     {
         $roles = parent::getRoles();
 

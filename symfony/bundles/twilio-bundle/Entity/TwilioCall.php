@@ -34,36 +34,36 @@ class TwilioCall extends BaseTwilio
      */
     private $duration;
 
-    public function getStartedAt(): ?\DateTime
+    public function getStartedAt() : ?\DateTime
     {
         return $this->startedAt;
     }
 
-    public function setStartedAt(\DateTime $startedAt): self
+    public function setStartedAt(\DateTime $startedAt) : self
     {
         $this->startedAt = $startedAt;
 
         return $this;
     }
 
-    public function getEndedAt(): ?\DateTime
+    public function getEndedAt() : ?\DateTime
     {
         return $this->endedAt;
     }
 
-    public function setEndedAt(\DateTime $endedAt): self
+    public function setEndedAt(\DateTime $endedAt) : self
     {
         $this->endedAt = $endedAt;
 
         return $this;
     }
 
-    public function getDuration(): ?int
+    public function getDuration() : ?int
     {
         return $this->duration;
     }
 
-    public function setDuration(int $duration): self
+    public function setDuration(int $duration) : self
     {
         $this->duration = $duration;
 

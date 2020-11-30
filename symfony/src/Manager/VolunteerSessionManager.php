@@ -33,7 +33,7 @@ class VolunteerSessionManager
     /**
      * @param Volunteer $volunteer
      */
-    public function createSession(Volunteer $volunteer): string
+    public function createSession(Volunteer $volunteer) : string
     {
         if ($this->session->get('volunteer-session')) {
             return $this->session->get('volunteer-session');

@@ -12,25 +12,25 @@ set_time_limit(0);
 require __DIR__.'/../vendor/autoload.php';
 
 if (!class_exists(Application::class)) {
-    throw new \RuntimeException('You need to add "symfony/framework-bundle" as a Composer dependency.');
+    throw new RuntimeException('You need to add "symfony/framework-bundle" as a Composer dependency.');
 }
 
 if (!isset($_SERVER['APP_ENV'])) {
     if (!class_exists(Dotenv::class)) {
-        throw new \RuntimeException('APP_ENV environment variable is not defined. You need to define environment variables for configuration or add "symfony/dotenv" as a Composer dependency to load variables from a .env file.');
+        throw new RuntimeException('APP_ENV environment variable is not defined. You need to define environment variables for configuration or add "symfony/dotenv" as a Composer dependency to load variables from a .env file.');
     }
     (new Dotenv())->load(__DIR__.'/../.env');
 }
 
 if (file_exists(realpath(__DIR__.'/../config/keys/google-service-account.json'))) {
     putenv(sprintf(
-        'GOOGLE_APPLICATION_CREDENTIALS=%s',
-        realpath(__DIR__.'/../config/keys/google-service-account.json'))
+            'GOOGLE_APPLICATION_CREDENTIALS=%s',
+            realpath(__DIR__.'/../config/keys/google-service-account.json'))
     );
 }
 
 $input = new ArgvInput();
-$env = $input->getParameterOption(['--env', '-e'], $_SERVER['APP_ENV'] ?? 'dev', true);
+$env   = $input->getParameterOption(['--env', '-e'], $_SERVER['APP_ENV'] ?? 'dev', true);
 $debug = (bool) ($_SERVER['APP_DEBUG'] ?? ('prod' !== $env)) && !$input->hasParameterOption('--no-debug', true);
 
 if ($debug) {
@@ -41,6 +41,6 @@ if ($debug) {
     }
 }
 
-$kernel = new Kernel($env, $debug);
+$kernel      = new Kernel($env, $debug);
 $application = new Application($kernel);
 $application->run($input);

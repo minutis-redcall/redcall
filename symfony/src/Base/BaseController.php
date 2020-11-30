@@ -50,7 +50,7 @@ class BaseController extends Controller
         ];
     }
 
-    public function getPager($data, $prefix = '', $hasJoins = false): Pagerfanta
+    public function getPager($data, $prefix = '', $hasJoins = false) : Pagerfanta
     {
         return $this->get(PaginationManager::class)->getPager($data, $prefix, $hasJoins);
     }
@@ -68,7 +68,7 @@ class BaseController extends Controller
         return $this->container->get('form.factory')->createNamedBuilder($name, $type, $data, $options);
     }
 
-    public function validateCsrfOrThrowNotFoundException(string $id, ?string $token): void
+    public function validateCsrfOrThrowNotFoundException(string $id, ?string $token) : void
     {
         if (!$token || !is_scalar($token) || !$this->isCsrfTokenValid($id, $token)) {
             throw $this->createNotFoundException();

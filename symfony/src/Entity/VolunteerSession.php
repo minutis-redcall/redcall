@@ -37,41 +37,41 @@ class VolunteerSession
      */
     private $createdAt;
 
-    public function getId(): ?int
+    public function getId() : ?int
     {
         return $this->id;
     }
 
-    public function getVolunteer(): ?Volunteer
+    public function getVolunteer() : ?Volunteer
     {
         return $this->volunteer;
     }
 
-    public function setVolunteer(?Volunteer $volunteer): self
+    public function setVolunteer(?Volunteer $volunteer) : self
     {
         $this->volunteer = $volunteer;
 
         return $this;
     }
 
-    public function getSessionId(): ?string
+    public function getSessionId() : ?string
     {
         return $this->sessionId;
     }
 
-    public function setSessionId(string $sessionId): self
+    public function setSessionId(string $sessionId) : self
     {
         $this->sessionId = $sessionId;
 
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeInterface
+    public function getCreatedAt() : ?\DateTimeInterface
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeInterface $createdAt): self
+    public function setCreatedAt(\DateTimeInterface $createdAt) : self
     {
         $this->createdAt = $createdAt;
 

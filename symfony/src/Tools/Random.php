@@ -11,7 +11,7 @@ class Random
      *
      * @return string
      */
-    static public function generate($size, $base = self::BASE): string
+    static public function generate($size, $base = self::BASE) : string
     {
         $code = '';
 

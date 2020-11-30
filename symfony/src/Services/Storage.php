@@ -11,7 +11,7 @@ class Storage
      */
     private $client;
 
-    public function store(string $filename, string $content): string
+    public function store(string $filename, string $content) : string
     {
         $bucket = $this->getClient()->bucket(
             getenv('GCP_STORAGE_BUCKET')
@@ -27,7 +27,7 @@ class Storage
         return $object->signedUrl(time() + 7 * 24 * 3600);
     }
 
-    private function getClient(): StorageClient
+    private function getClient() : StorageClient
     {
         if (!$this->client) {
             $this->client = new StorageClient();

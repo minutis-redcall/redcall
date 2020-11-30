@@ -142,7 +142,7 @@ class Tag
     /**
      * @return int
      */
-    public function getId(): int
+    public function getId() : int
     {
         return $this->id;
     }
@@ -162,7 +162,7 @@ class Tag
     /**
      * @return string
      */
-    public function getLabel(): string
+    public function getLabel() : string
     {
         return $this->label;
     }
@@ -190,7 +190,7 @@ class Tag
     /**
      * @return int
      */
-    public function getTagPriority(): int
+    public function getTagPriority() : int
     {
         $priority = array_search($this->label, self::PRIORITY);
 
@@ -204,7 +204,7 @@ class Tag
     /**
      * @return string
      */
-    public function __toString(): string
+    public function __toString() : string
     {
         return $this->label;
     }

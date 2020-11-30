@@ -102,7 +102,7 @@ class LocaleManager
     /**
      * @return null|User
      */
-    private function getUser(): ?User
+    private function getUser() : ?User
     {
         $token = $this->tokenStorage->getToken();
 
@@ -129,7 +129,7 @@ class LocaleManager
      *
      * @return string
      */
-    private function sanitizeLocale(string $locale): string
+    private function sanitizeLocale(string $locale) : string
     {
         $locale = strtolower($locale);
 

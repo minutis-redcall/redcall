@@ -32,7 +32,7 @@ class Session
      */
     private $lifetime;
 
-    public function getId(): ?int
+    public function getId() : ?int
     {
         return $this->id;
     }
@@ -42,31 +42,31 @@ class Session
         return $this->data;
     }
 
-    public function setData($data): self
+    public function setData($data) : self
     {
         $this->data = $data;
 
         return $this;
     }
 
-    public function getTime(): ?int
+    public function getTime() : ?int
     {
         return $this->time;
     }
 
-    public function setTime(int $time): self
+    public function setTime(int $time) : self
     {
         $this->time = $time;
 
         return $this;
     }
 
-    public function getLifetime(): ?int
+    public function getLifetime() : ?int
     {
         return $this->lifetime;
     }
 
-    public function setLifetime(int $lifetime): self
+    public function setLifetime(int $lifetime) : self
     {
         $this->lifetime = $lifetime;
 

@@ -60,101 +60,101 @@ class Cost
      */
     private $createdAt;
 
-    public function getId(): ?int
+    public function getId() : ?int
     {
         return $this->id;
     }
 
-    public function getMessage(): ?Message
+    public function getMessage() : ?Message
     {
         return $this->message;
     }
 
-    public function setMessage(?Message $message): self
+    public function setMessage(?Message $message) : self
     {
         $this->message = $message;
 
         return $this;
     }
 
-    public function getDirection(): ?string
+    public function getDirection() : ?string
     {
         return $this->direction;
     }
 
-    public function setDirection(string $direction): self
+    public function setDirection(string $direction) : self
     {
         $this->direction = $direction;
 
         return $this;
     }
 
-    public function getFromNumber(): ?string
+    public function getFromNumber() : ?string
     {
         return $this->fromNumber;
     }
 
-    public function setFromNumber(string $fromNumber): self
+    public function setFromNumber(string $fromNumber) : self
     {
         $this->fromNumber = $fromNumber;
 
         return $this;
     }
 
-    public function getToNumber(): ?string
+    public function getToNumber() : ?string
     {
         return $this->toNumber;
     }
 
-    public function setToNumber(string $toNumber): self
+    public function setToNumber(string $toNumber) : self
     {
         $this->toNumber = $toNumber;
 
         return $this;
     }
 
-    public function getBody(): ?string
+    public function getBody() : ?string
     {
         return $this->body;
     }
 
-    public function setBody(string $body): self
+    public function setBody(string $body) : self
     {
         $this->body = $body;
 
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeInterface
+    public function getCreatedAt() : ?\DateTimeInterface
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(\DateTimeInterface $createdAt): self
+    public function setCreatedAt(\DateTimeInterface $createdAt) : self
     {
         $this->createdAt = $createdAt;
 
         return $this;
     }
 
-    public function getPrice(): ?string
+    public function getPrice() : ?string
     {
         return $this->price;
     }
 
-    public function setPrice(string $price): self
+    public function setPrice(string $price) : self
     {
         $this->price = $price;
 
         return $this;
     }
 
-    public function getCurrency(): ?string
+    public function getCurrency() : ?string
     {
         return $this->currency;
     }
 
-    public function setCurrency(string $currency): self
+    public function setCurrency(string $currency) : self
     {
         $this->currency = $currency;
 

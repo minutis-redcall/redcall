@@ -12,7 +12,7 @@ class Mjml
      */
     private $client;
 
-    public function convert(string $mjml): string
+    public function convert(string $mjml) : string
     {
         $this->getClient()->request('POST', 'https://api.mjml.io/v1/render', [], [], [
             'HTTP_AUTHORIZATION' => sprintf('Basic %s', base64_encode(sprintf('%s:%s', getenv('MJML_APPLICATION_ID'), getenv('MJML_PRIVATE_KEY')))),
@@ -26,7 +26,7 @@ class Mjml
         return $response['html'];
     }
 
-    private function getClient(): HttpBrowser
+    private function getClient() : HttpBrowser
     {
         if (!$this->client) {
             $this->client = new HttpBrowser(

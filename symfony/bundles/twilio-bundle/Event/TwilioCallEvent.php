@@ -29,12 +29,12 @@ class TwilioCallEvent
         $this->keyPressed = $keyPressed;
     }
 
-    public function getCall(): TwilioCall
+    public function getCall() : TwilioCall
     {
         return $this->call;
     }
 
-    public function getKeyPressed(): ?string
+    public function getKeyPressed() : ?string
     {
         return $this->keyPressed;
     }
@@ -52,7 +52,7 @@ class TwilioCallEvent
      *
      * @return TwilioCallEvent
      */
-    public function setResponse($response): TwilioCallEvent
+    public function setResponse($response) : TwilioCallEvent
     {
         $this->response = $response;
 

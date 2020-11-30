@@ -111,82 +111,82 @@ class Badge
         $this->synonyms       = new ArrayCollection();
     }
 
-    public function getId(): ?int
+    public function getId() : ?int
     {
         return $this->id;
     }
 
-    public function getExternalId(): ?string
+    public function getExternalId() : ?string
     {
         return $this->externalId;
     }
 
-    public function setExternalId(string $externalId): self
+    public function setExternalId(string $externalId) : self
     {
         $this->externalId = $externalId;
 
         return $this;
     }
 
-    public function isExternal(): bool
+    public function isExternal() : bool
     {
         return null !== $this->externalId;
     }
 
-    public function getName(): ?string
+    public function getName() : ?string
     {
         return $this->name;
     }
 
-    public function setName(string $name): self
+    public function setName(string $name) : self
     {
         $this->name = $name;
 
         return $this;
     }
 
-    public function getDescription(): ?string
+    public function getDescription() : ?string
     {
         return $this->description;
     }
 
-    public function setDescription(?string $description): self
+    public function setDescription(?string $description) : self
     {
         $this->description = $description;
 
         return $this;
     }
 
-    public function getPriority(): ?int
+    public function getPriority() : ?int
     {
         return $this->priority;
     }
 
-    public function setPriority(?int $priority): self
+    public function setPriority(?int $priority) : self
     {
         $this->priority = $priority;
 
         return $this;
     }
 
-    public function getVisibility(): ?bool
+    public function getVisibility() : ?bool
     {
         return $this->visibility;
     }
 
-    public function setVisibility(bool $visibility): self
+    public function setVisibility(bool $visibility) : self
     {
         $this->visibility = $visibility;
 
         return $this;
     }
 
-    public function getCategory(): ?Category
+    public function getCategory() : ?Category
     {
         return $this->category;
     }
 
-    public function setCategory(?Category $category): self
+    public function setCategory(?Category $category) : self
     {
         $this->category = $category;
 
@@ -196,12 +196,12 @@ class Badge
     /**
      * @return Collection|Structure[]
      */
-    public function getIsVisibleFor(): Collection
+    public function getIsVisibleFor() : Collection
     {
         return $this->isVisibleFor;
     }
 
-    public function addIsVisibleFor(Structure $isVisibleFor): self
+    public function addIsVisibleFor(Structure $isVisibleFor) : self
     {
         if (!$this->isVisibleFor->contains($isVisibleFor)) {
             $this->isVisibleFor[] = $isVisibleFor;
@@ -210,7 +210,7 @@ class Badge
         return $this;
     }
 
-    public function removeIsVisibleFor(Structure $isVisibleFor): self
+    public function removeIsVisibleFor(Structure $isVisibleFor) : self
     {
         if ($this->isVisibleFor->contains($isVisibleFor)) {
             $this->isVisibleFor->removeElement($isVisibleFor);
@@ -222,12 +222,12 @@ class Badge
     /**
      * @return Collection|Structure[]
      */
-    public function getIsRestrictedTo(): Collection
+    public function getIsRestrictedTo() : Collection
     {
         return $this->isRestrictedTo;
     }
 
-    public function addIsRestrictedTo(Structure $isRestrictedTo): self
+    public function addIsRestrictedTo(Structure $isRestrictedTo) : self
     {
         if (!$this->isRestrictedTo->contains($isRestrictedTo)) {
             $this->isRestrictedTo[] = $isRestrictedTo;
@@ -236,7 +236,7 @@ class Badge
         return $this;
     }
 
-    public function removeIsRestrictedTo(Structure $isRestrictedTo): self
+    public function removeIsRestrictedTo(Structure $isRestrictedTo) : self
     {
         if ($this->isRestrictedTo->contains($isRestrictedTo)) {
             $this->isRestrictedTo->removeElement($isRestrictedTo);
@@ -248,12 +248,12 @@ class Badge
     /**
      * @return Collection|Volunteer[]
      */
-    public function getVolunteers(): Collection
+    public function getVolunteers() : Collection
     {
         return $this->volunteers;
     }
 
-    public function addVolunteer(Volunteer $volunteer): self
+    public function addVolunteer(Volunteer $volunteer) : self
     {
         if (!$this->volunteers->contains($volunteer)) {
             $this->volunteers[] = $volunteer;
@@ -262,7 +262,7 @@ class Badge
         return $this;
     }
 
-    public function removeVolunteer(Volunteer $volunteer): self
+    public function removeVolunteer(Volunteer $volunteer) : self
     {
         if ($this->volunteers->contains($volunteer)) {
             $this->volunteers->removeElement($volunteer);
@@ -271,24 +271,24 @@ class Badge
         return $this;
     }
 
-    public function getSynonym(): ?self
+    public function getSynonym() : ?self
     {
         return $this->synonym;
     }
 
-    public function setSynonym(?self $synonym): self
+    public function setSynonym(?self $synonym) : self
     {
         $this->synonym = $synonym;
 
         return $this;
     }
 
-    public function getParent(): ?self
+    public function getParent() : ?self
     {
         return $this->parent;
     }
 
-    public function setParent(?self $parent): self
+    public function setParent(?self $parent) : self
     {
         $this->parent = $parent;
 
@@ -298,12 +298,12 @@ class Badge
     /**
      * @return Collection|self[]
      */
-    public function getChildren(): Collection
+    public function getChildren() : Collection
     {
         return $this->children;
     }
 
-    public function addChild(self $child): self
+    public function addChild(self $child) : self
     {
         if (!$this->children->contains($child)) {
             $this->children[] = $child;
@@ -313,7 +313,7 @@ class Badge
         return $this;
     }
 
-    public function removeChild(self $child): self
+    public function removeChild(self $child) : self
     {
         if ($this->children->contains($child)) {
             $this->children->removeElement($child);
@@ -326,7 +326,7 @@ class Badge
         return $this;
     }
 
-    public function getFullName(): string
+    public function getFullName() : string
     {
         if ($this->description) {
             return sprintf('%s (%s)', $this->name, $this->description);
@@ -343,12 +343,12 @@ class Badge
     /**
      * @return Collection|self[]
      */
-    public function getSynonyms(): Collection
+    public function getSynonyms() : Collection
     {
         return $this->synonyms;
     }
 
-    public function addSynonym(self $synonym): self
+    public function addSynonym(self $synonym) : self
     {
         if (!$this->synonyms->contains($synonym)) {
             $this->synonyms[] = $synonym;
@@ -358,7 +358,7 @@ class Badge
         return $this;
     }
 
-    public function removeSynonym(self $synonym): self
+    public function removeSynonym(self $synonym) : self
     {
         if ($this->synonyms->contains($synonym)) {
             $this->synonyms->removeElement($synonym);

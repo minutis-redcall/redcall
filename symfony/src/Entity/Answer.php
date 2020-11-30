@@ -82,7 +82,7 @@ class Answer
     /**
      * @return int
      */
-    public function getId(): int
+    public function getId() : int
     {
         return $this->id;
     }
@@ -92,7 +92,7 @@ class Answer
      *
      * @return Answer
      */
-    public function setId(int $id): Answer
+    public function setId(int $id) : Answer
     {
         $this->id = $id;
 
@@ -102,7 +102,7 @@ class Answer
     /**
      * @return Message
      */
-    public function getMessage(): Message
+    public function getMessage() : Message
     {
         return $this->message;
     }
@@ -112,7 +112,7 @@ class Answer
      *
      * @return $this
      */
-    public function setMessage($message): Answer
+    public function setMessage($message) : Answer
     {
         $this->message = $message;
 
@@ -122,7 +122,7 @@ class Answer
     /**
      * @return string
      */
-    public function getRaw(): string
+    public function getRaw() : string
     {
         return $this->raw;
     }
@@ -132,7 +132,7 @@ class Answer
      *
      * @return Answer
      */
-    public function setRaw(string $raw): Answer
+    public function setRaw(string $raw) : Answer
     {
         $this->raw = $raw;
 
@@ -142,7 +142,7 @@ class Answer
     /**
      * @return string
      */
-    public function getSafeRaw(): string
+    public function getSafeRaw() : string
     {
         return htmlentities($this->raw);
     }
@@ -150,7 +150,7 @@ class Answer
     /**
      * @return DateTime
      */
-    public function getReceivedAt(): DateTime
+    public function getReceivedAt() : DateTime
     {
         return $this->receivedAt;
     }
@@ -160,7 +160,7 @@ class Answer
      *
      * @return Answer
      */
-    public function setReceivedAt(DateTime $receivedAt): Answer
+    public function setReceivedAt(DateTime $receivedAt) : Answer
     {
         $this->receivedAt = $receivedAt;
 
@@ -170,7 +170,7 @@ class Answer
     /**
      * @return DateTime
      */
-    public function getUpdatedAt(): ?DateTime
+    public function getUpdatedAt() : ?DateTime
     {
         return $this->updatedAt;
     }
@@ -180,7 +180,7 @@ class Answer
      *
      * @return Answer
      */
-    public function setUpdatedAt(DateTime $updatedAt): Answer
+    public function setUpdatedAt(DateTime $updatedAt) : Answer
     {
         $this->updatedAt = $updatedAt;
 
@@ -192,7 +192,7 @@ class Answer
      *
      * @return bool
      */
-    public function hasChoice(Choice $choice): bool
+    public function hasChoice(Choice $choice) : bool
     {
         return $this->choices->contains($choice);
     }
@@ -200,7 +200,7 @@ class Answer
     /**
      * @return array
      */
-    public function getChoiceLabels(): array
+    public function getChoiceLabels() : array
     {
         $labels = [];
 
@@ -215,7 +215,7 @@ class Answer
     /**
      * @return bool|null
      */
-    public function isUnclear(): ?bool
+    public function isUnclear() : ?bool
     {
         return $this->unclear;
     }
@@ -225,7 +225,7 @@ class Answer
      *
      * @return Answer
      */
-    public function setUnclear(bool $unclear): self
+    public function setUnclear(bool $unclear) : self
     {
         $this->unclear = $unclear;
 
@@ -243,7 +243,7 @@ class Answer
     /**
      * @return Collection|Choice[]
      */
-    public function getChoices(): Collection
+    public function getChoices() : Collection
     {
         return $this->choices;
     }
@@ -253,7 +253,7 @@ class Answer
      *
      * @return Answer
      */
-    public function addChoice(Choice $choice): self
+    public function addChoice(Choice $choice) : self
     {
         if (!$this->choices->contains($choice)) {
             $this->choices[] = $choice;
@@ -267,7 +267,7 @@ class Answer
      *
      * @return Answer
      */
-    public function removeChoice(Choice $choice): self
+    public function removeChoice(Choice $choice) : self
     {
         if ($this->choices->contains($choice)) {
             $this->choices->removeElement($choice);

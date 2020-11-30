@@ -107,7 +107,7 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
     {
         // Decode and verify JWT token
         try {
-            $decoded = (array)JWT::decode($jwt, $this->getMinutisPublicKey(), ['RS256']);
+            $decoded = (array) JWT::decode($jwt, $this->getMinutisPublicKey(), ['RS256']);
         } catch (Exception $e) {
             // Either invalid JWT, invalid algo, expired token...
             $this->logger->warning('Minutis authenticator: unable to decode JWT', [
