@@ -65,7 +65,9 @@
             <strong>{{ 'space.consult_data.identity_phone'|trans }}</strong>
         </td>
         <td style="padding:5px;">
-            {{ session.volunteer.phoneNumber }}
+            {% for phone in session.volunteer.phones %}
+                {{ phone.e164 }} {% if phone.preferred %}(✔️){% else %}(⤫){% endif %}
+            {% endfor %}
         </td>
     </tr>
 
