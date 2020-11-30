@@ -344,7 +344,7 @@ class VolunteerManager
 
         $volunteer->setFirstName('-');
         $volunteer->setLastName('-');
-        $volunteer->setPhoneNumber(null);
+        $volunteer->getPhones()->clear();
         $volunteer->setEmail(null);
         $volunteer->setEnabled(false);
         $volunteer->setLocked(true);
