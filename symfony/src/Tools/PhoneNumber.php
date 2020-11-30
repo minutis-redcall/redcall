@@ -3,6 +3,8 @@
 namespace App\Tools;
 
 use App\Entity\Phone;
+use libphonenumber\PhoneNumberFormat;
+use libphonenumber\PhoneNumberUtil;
 
 class PhoneNumber
 {
@@ -32,6 +34,14 @@ class PhoneNumber
         return array_unique($phones);
     }
 
+    static public function getFormattedSmsSender(?Phone $phone) : string
+    {
+        $sender    = self::getSmsSender($phone);
+        $phoneUtil = PhoneNumberUtil::getInstance();
+        $parsed    = $phoneUtil->parse($sender, Phone::DEFAULT_LANG);
+
+        return $phoneUtil->format($parsed, PhoneNumberFormat::INTERNATIONAL);
+    }
 
     static private function getSender(?Phone $to, string $key)
     {

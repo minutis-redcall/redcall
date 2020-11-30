@@ -94,7 +94,7 @@ class MessageFormatter
             } else {
                 $contentParts[] = $this->translator->trans('message.sms.how_to_answer_url', [
                     '%url%'    => trim(getenv('WEBSITE_URL'), '/').$this->router->generate('message_open', ['code' => $message->getCode()]),
-                    '%number%' => PhoneNumber::getSmsSender($message->getVolunteer()->getPhone()),
+                    '%number%' => PhoneNumber::getFormattedSmsSender($message->getVolunteer()->getPhone()),
                 ]);
             }
         }
