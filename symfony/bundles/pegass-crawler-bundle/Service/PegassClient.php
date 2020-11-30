@@ -146,7 +146,7 @@ class PegassClient
         if (!$this->client) {
             $this->client = new Client(HttpClient::create([
                 'max_redirects' => 10,
-                'timeout'       => 300,
+                'timeout'       => 30,
             ]));
         }
 
