@@ -394,7 +394,7 @@ class Volunteer
 
     public function getFormattedPhoneNumber() : string
     {
-        return $this->getPhone()->getNational();
+        return $this->getPhone() ? $this->getPhone()->getNational() : null;
     }
 
     public function getTagPriority() : int
