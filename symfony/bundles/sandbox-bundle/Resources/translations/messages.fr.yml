@@ -11,7 +11,7 @@ sandbox:
   fake_sms:
     button: 'Simulateur de SMS'
     title: 'Simulateur de SMS - Liste des destinataires'
-    thread: 'Messagerie du +%phoneNumber% (%name%)'
+    thread: 'Messagerie du %phoneNumber% (%name%)'
     your_message: 'Votre message'
     send: 'Envoyer'
     clear: 'Effacer tous les messages'
@@ -20,7 +20,7 @@ sandbox:
   fake_call:
     button: 'Simulateur d''appels'
     title: 'Simulateur d''appels - Liste des destinataires'
-    read: 'Appels au +%phoneNumber% (%name%)'
+    read: 'Appels au %phoneNumber% (%name%)'
     your_message: 'Code'
     send: 'Envoyer'
     clear: 'Effacer tous les appels'
