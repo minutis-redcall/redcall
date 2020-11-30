@@ -29,13 +29,13 @@ class TagRepository extends BaseRepository
         return $tags;
     }
 
-    public function findAllQueryBuilder(): QueryBuilder
+    public function findAllQueryBuilder() : QueryBuilder
     {
         return $this->createQueryBuilder('t')
                     ->orderBy('t.id', 'asc');
     }
 
-    public function findTagsByNivol(array $nivols): array
+    public function findTagsByNivol(array $nivols) : array
     {
         return $this->createQueryBuilder('t')
                     ->select('v.nivol, t.label')

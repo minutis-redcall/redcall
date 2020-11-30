@@ -29,7 +29,7 @@ class CommunicationRepository extends BaseRepository
      * @param Communication $communication
      * @param string        $newName
      */
-    public function changeName(Communication $communication, string $newName): void
+    public function changeName(Communication $communication, string $newName) : void
     {
         $communication->setLabel($newName);
         $this->save($communication);

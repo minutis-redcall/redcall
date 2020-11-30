@@ -43,7 +43,7 @@ class CampaignRepository extends BaseRepository
      *
      * @return QueryBuilder
      */
-    public function getActiveCampaignsForUserQueryBuilder(AbstractUser $user): QueryBuilder
+    public function getActiveCampaignsForUserQueryBuilder(AbstractUser $user) : QueryBuilder
     {
         return $this
             ->createQueryBuilder('c')
@@ -60,7 +60,7 @@ class CampaignRepository extends BaseRepository
      *
      * @return QueryBuilder
      */
-    public function getInactiveCampaignsForUserQueryBuilder(AbstractUser $user): QueryBuilder
+    public function getInactiveCampaignsForUserQueryBuilder(AbstractUser $user) : QueryBuilder
     {
         return $this
             ->createQueryBuilder('c')
@@ -124,14 +124,14 @@ class CampaignRepository extends BaseRepository
      *
      * @return QueryBuilder
      */
-    public function getActiveCampaignsQueryBuilder(): QueryBuilder
+    public function getActiveCampaignsQueryBuilder() : QueryBuilder
     {
         return $this->createQueryBuilder('c')
                     ->where('c.active = :active')
                     ->setParameter('active', true);
     }
 
-    public function getAllCampaignsQueryBuilder(): QueryBuilder
+    public function getAllCampaignsQueryBuilder() : QueryBuilder
     {
         return $this->createQueryBuilder('c');
     }
@@ -142,7 +142,7 @@ class CampaignRepository extends BaseRepository
      * @throws \Doctrine\ORM\NonUniqueResultException
      * @throws \Doctrine\ORM\NoResultException
      */
-    public function countAllOpenCampaigns(): int
+    public function countAllOpenCampaigns() : int
     {
         return $this->getActiveCampaignsQueryBuilder()
                     ->select('COUNT(c.id)')
@@ -157,7 +157,7 @@ class CampaignRepository extends BaseRepository
      *
      * @throws \Exception
      */
-    public function findInactiveCampaignsSince(int $days): array
+    public function findInactiveCampaignsSince(int $days) : array
     {
         return $this->getActiveCampaignsQueryBuilder()
                     ->join('c.communications', 'co')
@@ -167,7 +167,7 @@ class CampaignRepository extends BaseRepository
                     ->getResult();
     }
 
-    public function getNoteUpdateTimestamp(int $campaignId): int
+    public function getNoteUpdateTimestamp(int $campaignId) : int
     {
         $row = $this->createQueryBuilder('c')
                     ->select('c.notesUpdatedAt')
@@ -184,7 +184,7 @@ class CampaignRepository extends BaseRepository
         return 0;
     }
 
-    public function countNumberOfMessagesSent(int $campaignId): int
+    public function countNumberOfMessagesSent(int $campaignId) : int
     {
         return $this->createQueryBuilder('c')
                     ->select('COUNT(m.id)')
@@ -198,7 +198,7 @@ class CampaignRepository extends BaseRepository
                     ->getSingleScalarResult();
     }
 
-    public function countNumberOfAnswersReceived(int $campaignId): int
+    public function countNumberOfAnswersReceived(int $campaignId) : int
     {
         return $this->createQueryBuilder('c')
                     ->select('COUNT(a.id)')
@@ -212,7 +212,7 @@ class CampaignRepository extends BaseRepository
                     ->getSingleScalarResult();
     }
 
-    public function countNumberOfGeoLocationReceived(int $campaignId): int
+    public function countNumberOfGeoLocationReceived(int $campaignId) : int
     {
         return $this->createQueryBuilder('c')
                     ->select('COUNT(g.id)')
@@ -226,7 +226,7 @@ class CampaignRepository extends BaseRepository
                     ->getSingleScalarResult();
     }
 
-    public function getLastGeoLocationUpdated(int $campaignId): int
+    public function getLastGeoLocationUpdated(int $campaignId) : int
     {
         $row = $this->createQueryBuilder('c')
                     ->select('g.datetime')

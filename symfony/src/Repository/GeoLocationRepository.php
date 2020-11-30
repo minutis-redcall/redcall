@@ -20,7 +20,7 @@ class GeoLocationRepository extends BaseRepository
         parent::__construct($registry, GeoLocation::class);
     }
 
-    public function getLastGeoLocationUpdateTimestamp(Communication $communication): ?int
+    public function getLastGeoLocationUpdateTimestamp(Communication $communication) : ?int
     {
         /* @var GeoLocation $lastGeolocation */
         $lastGeolocation = $this->createQueryBuilder('g')

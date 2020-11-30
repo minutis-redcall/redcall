@@ -29,7 +29,7 @@ class AnswerRepository extends BaseRepository
      *
      * @return int|null
      */
-    public function getLastCampaignUpdateTimestamp(Campaign $campaign): ?int
+    public function getLastCampaignUpdateTimestamp(Campaign $campaign) : ?int
     {
         $lastAnswer = $this->createQueryBuilder('a')
                            ->join('a.message', 'm')
@@ -89,7 +89,7 @@ class AnswerRepository extends BaseRepository
         $this->_em->flush();
     }
 
-    public function getSearchQueryBuilder(string $criteria): QueryBuilder
+    public function getSearchQueryBuilder(string $criteria) : QueryBuilder
     {
         $qb = $this->createQueryBuilder('a')
                    ->join('a.message', 'm')

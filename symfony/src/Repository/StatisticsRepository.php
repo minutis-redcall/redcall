@@ -24,7 +24,7 @@ class StatisticsRepository
         $this->entityManager = $entityManager;
     }
 
-    public function getNumberOfCampaigns(\DateTime $from, \DateTime $to): array
+    public function getNumberOfCampaigns(\DateTime $from, \DateTime $to) : array
     {
         return $this->entityManager->getConnection()->fetchAssoc('
             SELECT COUNT(*) as created, SUM(IF(c.active, 1, 0)) as active
