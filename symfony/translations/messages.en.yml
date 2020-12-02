@@ -172,7 +172,8 @@ campaign:
     3_dark_orange: 'Preparation (DT)'
     4_red: 'Engagement'
   statuses:
-    ongoing: 'Ongoing'
+    my_structures: 'Triggers on my structures'
+    my_volunteers: 'Triggers impacting volunteers in my structures'
     finished: 'Finished'
   actions:
     continue: 'Continue'

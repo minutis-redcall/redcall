@@ -4,27 +4,21 @@
     {{ 'campaign.titles.list_full'|trans }}
 </h1>
 
-{% set renderTabs = data['ongoing'].pager.nbResults > 0 and data['finished'].pager.nbResults > 0 %}
-{% set ongoingActive = data['ongoing'].pager.nbResults > 0 %}
-
-{% if renderTabs and ongoingActive %}
-    <nav>
-        <div class="nav nav-tabs" id="nav-tab" role="tablist">
-            <a class="nav-item nav-link {% if ongoingActive %}active{% endif %}" id="nav-ongoing-tab" data-toggle="tab"
-               href="#nav-ongoing" role="tab"
-               aria-controls="nav-ongoing" aria-selected="true">{{ 'campaign.statuses.ongoing'|trans }}</a>
-            <a class="nav-item nav-link {% if not ongoingActive %}active{% endif %}" id="nav-finished-tab"
+<nav>
+    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+        {% for type, tab in data %}
+            <a class="nav-item nav-link" id="nav-{{ type }}-tab"
                data-toggle="tab"
-               href="#nav-finished" role="tab"
-               aria-controls="nav-finished" aria-selected="false">{{ 'campaign.statuses.finished'|trans }}</a>
-        </div>
-    </nav>
-{% endif %}
+               href="#nav-{{ type }}" role="tab"
+               aria-controls="nav-{{ type }}" aria-selected="false">{{ ('campaign.statuses.' ~ type)|trans }}</a>
+        {% endfor %}
+    </div>
+</nav>
 
 <div class="tab-content" id="nav-content">
     {% for type, table in data %}
 
-        <div class="tab-pane {% if (type == 'ongoing' and ongoingActive) or (type == 'finished' and not ongoingActive) %}show active{% endif %}"
+        <div class="tab-pane"
              id="nav-{{ type }}"
              role="tabpanel" aria-labelledby="nav-{{ type }}-tab">
 
