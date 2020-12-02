@@ -165,8 +165,9 @@ campaign:
     3_dark_orange: 'Préparation (DT)'
     4_red: 'Engagement'
   statuses:
-    ongoing: 'En cours'
-    finished: 'Terminé'
+    my_structures: 'Par des bénévoles de vos structures'
+    my_volunteers: 'Implicant des bénévoles de vos structures'
+    finished: 'Terminés'
   actions:
     continue: 'Continuer'
     classify: 'Classifier'

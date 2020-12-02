@@ -38,17 +38,29 @@ class CampaignRepository extends BaseRepository
                     ->getOneOrNullResult();
     }
 
-    /**
-     * @param AbstractUser $user
-     *
-     * @return QueryBuilder
-     */
-    public function getActiveCampaignsForUserQueryBuilder(AbstractUser $user) : QueryBuilder
+    public function getCampaignsOpenedByMeOrMyCrew(AbstractUser $user) : QueryBuilder
     {
         return $this
             ->createQueryBuilder('c')
             ->distinct()
-            ->innerJoin('c.structures', 's')
+            ->innerJoin('c.communications', 'co')
+            ->innerJoin('co.volunteer', 'v')
+            ->innerJoin('v.structures', 's')
+            ->innerJoin('s.users', 'u')
+            ->where('u.id = :user')
+            ->setParameter('user', $user)
+            ->andWhere('c.active = true');
+    }
+
+    public function getCampaignImpactingMyVolunteers(AbstractUser $user) : QueryBuilder
+    {
+        return $this
+            ->createQueryBuilder('c')
+            ->distinct()
+            ->innerJoin('c.communications', 'co')
+            ->innerJoin('co.messages', 'm')
+            ->innerJoin('m.volunteer', 'v')
+            ->innerJoin('v.structures', 's')
             ->innerJoin('s.users', 'u')
             ->where('u.id = :user')
             ->setParameter('user', $user)

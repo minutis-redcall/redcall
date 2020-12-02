@@ -52,16 +52,21 @@ class CampaignController extends BaseController
 
     public function renderCampaignsTable() : Response
     {
-        $ongoing  = $this->campaignManager->getActiveCampaignsForUserQueryBuilder($this->getUser());
-        $finished = $this->campaignManager->getInactiveCampaignsForUserQueryBuilder($this->getUser());
+        $byMyCrew      = $this->campaignManager->getCampaignsOpenedByMeOrMyCrew($this->getUser());
+        $byMyTeammates = $this->campaignManager->getCampaignImpactingMyVolunteers($this->getUser());
+        $finished      = $this->campaignManager->getInactiveCampaignsForUserQueryBuilder($this->getUser());
 
         return $this->render('campaign/table.html.twig', [
             'data' => [
-                'ongoing'  => [
-                    'orderBy' => $this->orderBy($ongoing, Campaign::class, 'c.createdAt', 'DESC', 'ongoing'),
-                    'pager'   => $this->getPager($ongoing, 'ongoing'),
+                'my_structures' => [
+                    'orderBy' => $this->orderBy($byMyCrew, Campaign::class, 'c.createdAt', 'DESC', 'crew'),
+                    'pager'   => $this->getPager($byMyCrew, 'ongoing'),
                 ],
-                'finished' => [
+                'my_volunteers' => [
+                    'orderBy' => $this->orderBy($byMyTeammates, Campaign::class, 'c.createdAt', 'DESC', 'mates'),
+                    'pager'   => $this->getPager($byMyTeammates, 'ongoing'),
+                ],
+                'finished'      => [
                     'orderBy' => $this->orderBy($finished, Campaign::class, 'c.createdAt', 'DESC', 'finished'),
                     'pager'   => $this->getPager($finished, 'finished'),
                 ],

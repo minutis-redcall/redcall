@@ -6,6 +6,7 @@ use App\Communication\Processor\ProcessorInterface;
 use App\Communication\Processor\SimpleProcessor;
 use App\Entity\Campaign as CampaignEntity;
 use App\Entity\Communication;
+use App\Entity\User;
 use App\Entity\Volunteer;
 use App\Enum\Type;
 use App\Form\Model\Campaign;
@@ -13,8 +14,6 @@ use App\Form\Model\Campaign as CampaignModel;
 use App\Repository\CampaignRepository;
 use Bundles\PasswordLoginBundle\Entity\AbstractUser;
 use Doctrine\ORM\QueryBuilder;
-use Exception;
-use LogicException;
 
 class CampaignManager
 {
@@ -49,33 +48,16 @@ class CampaignManager
         $this->processor            = $processor;
     }
 
-    /**
-     * @param int $campaignId
-     *
-     * @return CampaignEntity|null
-     */
     public function find(int $campaignId) : ?CampaignEntity
     {
         return $this->campaignRepository->find($campaignId);
     }
 
-    /**
-     * @param CampaignEntity $campaign
-     */
     public function save(CampaignEntity $campaign)
     {
         $this->campaignRepository->save($campaign);
     }
 
-    /**
-     * Launches a campaign by creating a new one and sending an initial communication to a list of volunteers.
-     *
-     * @param CampaignModel $campaignModel
-     *
-     * @return CampaignEntity
-     *
-     * @throws Exception
-     */
     public function launchNewCampaign(CampaignModel $campaignModel,
         ProcessorInterface $processor = null) : CampaignEntity
     {
@@ -95,21 +77,11 @@ class CampaignManager
         return $campaignEntity;
     }
 
-    /**
-     * @param Campaign $campaign
-     *
-     * @throws LogicException
-     */
     public function closeCampaign(CampaignEntity $campaign)
     {
         $this->campaignRepository->closeCampaign($campaign);
     }
 
-    /**
-     * @param Campaign $campaign
-     *
-     * @throws LogicException
-     */
     public function openCampaign(CampaignEntity $campaign)
     {
         $this->campaignRepository->openCampaign($campaign);
@@ -135,21 +107,16 @@ class CampaignManager
         return $this->campaignRepository->findOneByIdNoCache($campaign->getId());
     }
 
-    /**
-     * @param AbstractUser $user
-     *
-     * @return QueryBuilder
-     */
-    public function getActiveCampaignsForUserQueryBuilder(AbstractUser $user) : QueryBuilder
+    public function getCampaignsOpenedByMeOrMyCrew(User $user) : QueryBuilder
     {
-        return $this->campaignRepository->getActiveCampaignsForUserQueryBuilder($user);
+        return $this->campaignRepository->getCampaignsOpenedByMeOrMyCrew($user);
     }
 
-    /**
-     * @param AbstractUser $user
-     *
-     * @return QueryBuilder
-     */
+    public function getCampaignImpactingMyVolunteers(User $user) : QueryBuilder
+    {
+        return $this->campaignRepository->getCampaignImpactingMyVolunteers($user);
+    }
+
     public function getInactiveCampaignsForUserQueryBuilder(AbstractUser $user) : QueryBuilder
     {
         return $this->campaignRepository->getInactiveCampaignsForUserQueryBuilder($user);
