@@ -113,7 +113,7 @@ class CampaignController extends BaseController
 
     /**
      * @Route(path="campaign/{id}/close/{csrf}", name="close_campaign")
-     * @IsGranted("CAMPAIGN", subject="campaign")
+     * @IsGranted("CAMPAIGN_OWNER", subject="campaign")
      */
     public function closeCampaign(Campaign $campaign, string $csrf) : Response
     {
@@ -131,7 +131,7 @@ class CampaignController extends BaseController
 
     /**
      * @Route(path="campaign/{id}/open/{csrf}", name="open_campaign")
-     * @IsGranted("CAMPAIGN", subject="campaign")
+     * @IsGranted("CAMPAIGN_ACCESS", subject="campaign")
      */
     public function openCampaign(Campaign $campaign, string $csrf) : Response
     {
@@ -152,7 +152,7 @@ class CampaignController extends BaseController
 
     /**
      * @Route(path="campaign/{id}/change-color/{color}/{csrf}", name="color_campaign")
-     * @IsGranted("CAMPAIGN", subject="campaignEntity")
+     * @IsGranted("CAMPAIGN_OWNER", subject="campaignEntity")
      */
     public function changeColor(Campaign $campaignEntity, string $color, string $csrf) : Response
     {
@@ -176,7 +176,7 @@ class CampaignController extends BaseController
 
     /**
      * @Route(path="campaign/{id}/rename", name="rename_campaign")
-     * @IsGranted("CAMPAIGN", subject="campaignEntity")
+     * @IsGranted("CAMPAIGN_OWNER", subject="campaignEntity")
      */
     public function rename(Request $request, Campaign $campaignEntity) : Response
     {
@@ -200,7 +200,7 @@ class CampaignController extends BaseController
 
     /**
      * @Route(path="campaign/{id}/notes", name="notes_campaign")
-     * @IsGranted("CAMPAIGN", subject="campaignEntity")
+     * @IsGranted("CAMPAIGN_ACCESS", subject="campaignEntity")
      */
     public function notes(Request $request, Campaign $campaignEntity) : Response
     {

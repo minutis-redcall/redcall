@@ -392,7 +392,7 @@ class Volunteer
         return false;
     }
 
-    public function getFormattedPhoneNumber() : string
+    public function getFormattedPhoneNumber() : ?string
     {
         return $this->getPhone() ? $this->getPhone()->getNational() : null;
     }

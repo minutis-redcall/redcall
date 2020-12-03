@@ -107,7 +107,7 @@ class CommunicationController extends BaseController
 
     /**
      * @Route(path="campaign/{id}", name="index", requirements={"id" = "\d+"})
-     * @IsGranted("CAMPAIGN", subject="campaign")
+     * @IsGranted("CAMPAIGN_ACCESS", subject="campaign")
      */
     public function indexAction(Campaign $campaign)
     {
@@ -123,7 +123,7 @@ class CommunicationController extends BaseController
 
     /**
      * @Route(path="campaign/{id}/short-polling", name="short_polling", requirements={"id" = "\d+"})
-     * @IsGranted("CAMPAIGN", subject="campaign")
+     * @IsGranted("CAMPAIGN_ACCESS", subject="campaign")
      */
     public function shortPolling(Campaign $campaign)
     {
@@ -137,7 +137,7 @@ class CommunicationController extends BaseController
     /**
      * @Route(path="campaign/{id}/long-polling", name="long_polling", requirements={"id" = "\d+", "olHash" =
      *                                           "[0-9a-f]{40}"})
-     * @IsGranted("CAMPAIGN", subject="campaign")
+     * @IsGranted("CAMPAIGN_ACCESS", subject="campaign")
      */
     public function longPolling(Campaign $campaign, Request $request)
     {
@@ -171,7 +171,7 @@ class CommunicationController extends BaseController
      *     path="campaign/{id}/add-communication/{type}",
      *     requirements={"id" = "\d+"}
      * )
-     * @IsGranted("CAMPAIGN", subject="campaign")
+     * @IsGranted("CAMPAIGN_ACCESS", subject="campaign")
      * @Method("POST")
      */
     public function addCommunicationAction(Request $request, Campaign $campaign, Type $type)
@@ -220,7 +220,7 @@ class CommunicationController extends BaseController
      *     defaults={"key" = null},
      *     requirements={"id" = "\d+"}
      * )
-     * @IsGranted("CAMPAIGN", subject="campaign")
+     * @IsGranted("CAMPAIGN_ACCESS", subject="campaign")
      */
     public function newCommunicationAction(Request $request, Campaign $campaign, Type $type, ?string $key)
     {
@@ -358,7 +358,7 @@ class CommunicationController extends BaseController
             throw $this->createNotFoundException();
         }
 
-        if (!$this->isGranted('CAMPAIGN', $message->getCommunication()->getCampaign())) {
+        if (!$this->isGranted('CAMPAIGN_ACCESS', $message->getCommunication()->getCampaign())) {
             throw $this->createAccessDeniedException();
         }
 
@@ -378,7 +378,7 @@ class CommunicationController extends BaseController
     {
         $this->validateCsrfOrThrowNotFoundException('communication', $csrf);
 
-        if (!$this->isGranted('CAMPAIGN', $message->getCommunication()->getCampaign())) {
+        if (!$this->isGranted('CAMPAIGN_ACCESS', $message->getCommunication()->getCampaign())) {
             throw $this->createAccessDeniedException();
         }
 
@@ -402,7 +402,7 @@ class CommunicationController extends BaseController
      * @Route(path="campaign/{campaignId}/rename-communication/{communicationId}", name="rename")
      * @Entity("campaign", expr="repository.find(campaignId)")
      * @Entity("communicationEntity", expr="repository.find(communicationId)")
-     * @IsGranted("CAMPAIGN", subject="campaign")
+     * @IsGranted("CAMPAIGN_ACCESS", subject="campaign")
      */
     public function rename(Request $request, Campaign $campaign, Communication $communicationEntity) : Response
     {
