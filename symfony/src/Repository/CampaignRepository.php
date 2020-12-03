@@ -43,7 +43,8 @@ class CampaignRepository extends BaseRepository
         return $this
             ->createQueryBuilder('c')
             ->distinct()
-            ->innerJoin('c.volunteer', 'v')
+            ->innerJoin('c.communications', 'co')
+            ->innerJoin('co.volunteer', 'v')
             ->innerJoin('v.structures', 's')
             ->innerJoin('s.users', 'u')
             ->where('u.id = :user')
