@@ -9,7 +9,7 @@
     {# -------------------------------------------------------------------------------- #}
     <br/>
     <div class="row skip-line">
-        <div class="col-12 h1" {% if campaign.active %}onclick="$('#change-campaign-label').modal();"{% endif %} style="cursor: pointer;">
+        <div class="col-12 h1" {% if campaign.active and is_granted('CAMPAIGN_OWNER', campaign) %}onclick="$('#change-campaign-label').modal();"{% endif %} style="cursor: pointer;">
             {% if not campaign.active %}
                 <strike>{{ campaign.label }}</strike>
             {% else %}
@@ -17,15 +17,15 @@
             {% endif %}
             {% if not campaign.active %}
                 <em>({{ 'campaign.statuses.finished'|trans|lower }})</em>
-            {% else %}
+            {% elseif is_granted('CAMPAIGN_OWNER', campaign) %}
                 <span class="float-right badge badge-light" style="cursor:pointer;">✏️</span>
             {% endif %}
         </div>
-        <div class="col-12" {% if campaign.active %}onclick="$('#change-color').modal();"{% endif %} style="cursor:pointer;">
+        <div class="col-12" {% if campaign.active and is_granted('CAMPAIGN_OWNER', campaign) %}onclick="$('#change-color').modal();"{% endif %} style="cursor:pointer;">
             {% set hexColor = constant('App\\Entity\\Campaign::COLORS')[campaign.type] %}
             <div id="current-color" class="w-100 text-center text-white badge" style="background-color:{{ hexColor }};">
                 {{ ('campaign.types.' ~ campaign.type)|trans }}
-                {% if campaign.active %}
+                {% if campaign.active and is_granted('CAMPAIGN_OWNER', campaign) %}
                     <span>✏️</span>
                 {% endif %}
             </div>
@@ -518,18 +518,19 @@
 
                         {# Open / Close campaign #}
                         <div class="col-md-3 col-12 skip-line">
-                            {% if campaign.active %}
-                                <a href="{{ path('close_campaign', { id: campaign.id, csrf: csrf_token('campaign') }) }}"
-                                   class="btn btn-warning" role="button">
-                                    {{ 'campaign.actions.close'|trans }}
-                                </a>
-                            {% else %}
-                                <a href="{{ path('open_campaign', { id: campaign.id, csrf: csrf_token('campaign') }) }}"
-                                   class="btn btn-danger" role="button">
-                                    {{ 'campaign.actions.open'|trans }}
-                                </a>
+                            {% if is_granted('CAMPAIGN_OWNER', campaign) %}
+                                {% if campaign.active %}
+                                    <a href="{{ path('close_campaign', { id: campaign.id, csrf: csrf_token('campaign') }) }}"
+                                       class="btn btn-warning" role="button">
+                                        {{ 'campaign.actions.close'|trans }}
+                                    </a>
+                                {% else %}
+                                    <a href="{{ path('open_campaign', { id: campaign.id, csrf: csrf_token('campaign') }) }}"
+                                       class="btn btn-danger" role="button">
+                                        {{ 'campaign.actions.open'|trans }}
+                                    </a>
+                                {% endif %}
                             {% endif %}
-
                         </div>
                     </div>
 

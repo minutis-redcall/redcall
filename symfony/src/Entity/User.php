@@ -136,6 +136,22 @@ class User extends AbstractUser
         }
     }
 
+    public function hasStructure(Structure $structure) : bool
+    {
+        return $this->structures->contains($structure);
+    }
+
+    public function hasCommonStructure($structures) : bool
+    {
+        foreach ($structures as $structure) {
+            if ($this->hasStructure($structure)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     /**
      * @return Structure[]
      */

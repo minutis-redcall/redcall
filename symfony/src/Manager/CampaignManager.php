@@ -14,6 +14,7 @@ use App\Form\Model\Campaign as CampaignModel;
 use App\Repository\CampaignRepository;
 use Bundles\PasswordLoginBundle\Entity\AbstractUser;
 use Doctrine\ORM\QueryBuilder;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class CampaignManager
 {
@@ -37,15 +38,22 @@ class CampaignManager
      */
     private $processor;
 
+    /**
+     * @var TokenStorageInterface
+     */
+    private $tokenStorage;
+
     public function __construct(CampaignRepository $campaignRepository,
         CommunicationManager $communicationManager,
         MessageManager $messageManager,
-        SimpleProcessor $processor)
+        SimpleProcessor $processor,
+        TokenStorageInterface $tokenStorage)
     {
         $this->campaignRepository   = $campaignRepository;
         $this->communicationManager = $communicationManager;
         $this->messageManager       = $messageManager;
         $this->processor            = $processor;
+        $this->tokenStorage         = $tokenStorage;
     }
 
     public function find(int $campaignId) : ?CampaignEntity
@@ -63,6 +71,7 @@ class CampaignManager
     {
         $campaignEntity = new CampaignEntity();
         $campaignEntity
+            ->setVolunteer($this->tokenStorage->getToken()->getUser()->getVolunteer())
             ->setLabel($campaignModel->label)
             ->setType($campaignModel->type)
             ->setNotes($campaignModel->notes)

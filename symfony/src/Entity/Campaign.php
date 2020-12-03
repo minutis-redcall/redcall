@@ -99,6 +99,11 @@ class Campaign
      */
     private $notesUpdatedAt;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=Volunteer::class)
+     */
+    private $volunteer;
+
     public function __construct()
     {
         $this->structures = new ArrayCollection();
@@ -356,5 +361,17 @@ class Campaign
         }
 
         return $structures;
+    }
+
+    public function getVolunteer(): ?Volunteer
+    {
+        return $this->volunteer;
+    }
+
+    public function setVolunteer(?Volunteer $volunteer): self
+    {
+        $this->volunteer = $volunteer;
+
+        return $this;
     }
 }
