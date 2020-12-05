@@ -22,6 +22,7 @@ final class Version20201205165719 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
+        $this->addSql('UPDATE choice SET label = SUBSTRING(label, 1, 16)');
         $this->addSql('ALTER TABLE choice CHANGE label label VARCHAR(16) NOT NULL');
     }
 
