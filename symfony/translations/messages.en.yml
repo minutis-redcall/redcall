@@ -159,10 +159,12 @@ campaign:
     new: 'Create a "%type%" trigger'
     list_full: 'List triggers'
     list_admin: 'List all triggers'
-    structures: '%nbr% implicated structures'
     sms: 'SMS'
     call: 'Call'
     email: 'Email'
+    implicated_structures: 'Implicated structures list'
+    created_by: 'Créé par %name%'
+    volunteers: 'volunteer(s)'
   no_nivol:
     title: 'No nivol bound'
     description: 'Your RedCall account is not bound to your Pegass account, please contact us in order to use the platform.'

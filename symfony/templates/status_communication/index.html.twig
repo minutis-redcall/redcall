@@ -243,7 +243,8 @@
                     {# -------------------------------------------------------------------------------- #}
                     <div class="skip-line text-small">
                         {{ 'campaign_status.filter.title'|trans }}
-                        {% if campaign.structures|length > 1 %}
+                        {% set commonStructures = app.user.getCommonStructures(campaignStructures) %}
+                        {% if commonStructures > 1 %}
                             <a href="#"
                                id="link-filter-structure-{{ communication.id }}"
                                onclick="$('#filter-structure-{{ communication.id }}').modal(); return false;">{{ 'campaign_status.filter.by_structure'|trans }}</a>
@@ -641,7 +642,8 @@
 
         {% set body %}
 
-            {% for structure in campaign.getStructuresForUser(app.user) %}
+            {% set commonStructures = app.user.getCommonStructures(campaignStructures) %}
+            {% for structure in commonStructures %}
                 <div class="form-check">
                     <label class="switch">
                         <input type="checkbox"
@@ -943,7 +945,7 @@
         function refreshVisibility() {
 
             var structures = [];
-            {% for structure in campaign.structures %}
+            {% for structure in campaignStructures %}
             structures.push("structure-{{ structure.id|e('js') }}");
             {% endfor %}
 

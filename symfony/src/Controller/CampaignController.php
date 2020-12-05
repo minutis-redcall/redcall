@@ -12,6 +12,7 @@ use App\Manager\CampaignManager;
 use App\Manager\CommunicationManager;
 use App\Manager\UserManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -109,6 +110,17 @@ class CampaignController extends BaseController
             'form' => $form->createView(),
             'type' => $type,
         ]);
+    }
+
+    /**
+     * @Route(path="campaign/{id}/audience", name="audience_campaign")
+     * @IsGranted("CAMPAIGN_ACCESS", subject="campaign")
+     */
+    public function audience(Campaign $campaign)
+    {
+        return new JsonResponse(
+            $this->campaignManager->getCampaignAudience($campaign)
+        );
     }
 
     /**

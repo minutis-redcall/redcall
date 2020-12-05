@@ -3,8 +3,6 @@
 namespace App\Entity;
 
 use DateTime;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -84,12 +82,6 @@ class Campaign
     private $communications;
 
     /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\Structure", inversedBy="campaigns")
-     * @ORM\OrderBy({"identifier" = "ASC"})
-     */
-    private $structures;
-
-    /**
      * @ORM\Column(type="text", nullable=true)
      */
     private $notes;
@@ -104,10 +96,10 @@ class Campaign
      */
     private $volunteer;
 
-    public function __construct()
-    {
-        $this->structures = new ArrayCollection();
-    }
+    /**
+     * @var array
+     */
+    private $structures;
 
     public function getId()
     {
@@ -300,29 +292,6 @@ class Campaign
         return $cost;
     }
 
-    public function getStructures() : Collection
-    {
-        return $this->structures;
-    }
-
-    public function addStructure(Structure $structure) : self
-    {
-        if (!$this->structures->contains($structure)) {
-            $this->structures[] = $structure;
-        }
-
-        return $this;
-    }
-
-    public function removeStructure(Structure $structure) : self
-    {
-        if ($this->structures->contains($structure)) {
-            $this->structures->removeElement($structure);
-        }
-
-        return $this;
-    }
-
     public function getNotes() : ?string
     {
         return $this->notes;
@@ -347,28 +316,12 @@ class Campaign
         return $this;
     }
 
-    public function getStructuresForUser(User $user) : array
-    {
-        if ($user->isAdmin()) {
-            return $this->structures->toArray();
-        }
-
-        $structures = [];
-        foreach ($this->structures as $structure) {
-            if ($user->getStructures()->contains($structure)) {
-                $structures[] = $structure;
-            }
-        }
-
-        return $structures;
-    }
-
-    public function getVolunteer(): ?Volunteer
+    public function getVolunteer() : ?Volunteer
     {
         return $this->volunteer;
     }
 
-    public function setVolunteer(?Volunteer $volunteer): self
+    public function setVolunteer(?Volunteer $volunteer) : self
     {
         $this->volunteer = $volunteer;
 

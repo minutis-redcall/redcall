@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Base\BaseRepository;
+use App\Entity\Campaign;
 use App\Entity\Structure;
 use App\Entity\User;
 use App\Entity\Volunteer;
@@ -269,5 +270,21 @@ class StructureRepository extends BaseRepository
             ->where($qb->expr()->in('s.identifier', $sub->getDQL()))
             ->getQuery()
             ->execute();
+    }
+
+    public function getCampaignStructures(Campaign $campaign) : array
+    {
+        return $this
+            ->createQueryBuilder('s')
+            ->distinct()
+            ->join('s.volunteers', 'v')
+            ->join('v.messages', 'm')
+            ->join('m.communication', 'co')
+            ->join('co.campaign', 'c')
+            ->where('s.enabled = true')
+            ->andWhere('c.id = :campaign_id')
+            ->setParameter('campaign_id', $campaign->getId())
+            ->getQuery()
+            ->getResult();
     }
 }

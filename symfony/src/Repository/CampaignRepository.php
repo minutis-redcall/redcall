@@ -77,7 +77,10 @@ class CampaignRepository extends BaseRepository
         return $this
             ->createQueryBuilder('c')
             ->distinct()
-            ->innerJoin('c.structures', 's')
+            ->innerJoin('c.communications', 'co')
+            ->innerJoin('co.messages', 'm')
+            ->innerJoin('m.volunteer', 'v')
+            ->innerJoin('v.structures', 's')
             ->innerJoin('s.users', 'u')
             ->where('u.id = :user')
             ->setParameter('user', $user)
@@ -254,5 +257,22 @@ class CampaignRepository extends BaseRepository
                     ->getOneOrNullResult();
 
         return $row && $row['datetime'] ? $row['datetime']->getTimestamp() : 0;
+    }
+
+    public function getCampaignAudience(Campaign $campaign) : array
+    {
+        return $this->createQueryBuilder('c')
+                    ->select('s.id as structure_id, s.name as structure_name, COUNT(v) AS volunteer_count')
+                    ->join('c.communications', 'co')
+                    ->join('co.messages', 'm')
+                    ->join('m.volunteer', 'v')
+                    ->join('v.structures', 's')
+                    ->where('c.id = :campaign_id')
+                    ->setParameter('campaign_id', $campaign->getId())
+                    ->andWhere('s.enabled = true')
+                    ->orderBy('volunteer_count', 'DESC')
+                    ->groupBy('s.id')
+                    ->getQuery()
+                    ->getArrayResult();
     }
 }

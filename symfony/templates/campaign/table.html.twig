@@ -1,4 +1,5 @@
 {% import 'macros.html.twig' as macros %}
+{% import 'campaign/common.html.twig' as common %}
 
 <h1>
     {{ 'campaign.titles.list_full'|trans }}
@@ -35,7 +36,7 @@
                         <span style="color:red;">✚</span> {{ campaign.createdAt|date("d/m/Y H:i") }}
                     </div>
                     <div class="card-body">
-                        <div class="card-title">
+                        <div class="card-title h4">
                             <a href="{{ path('communication_index', {id: campaign.id}) }}">
                                 {% if not campaign.active %}
                                     <strike>{{ campaign.label }}</strike>
@@ -45,13 +46,7 @@
                             </a>
                         </div>
                         <div class="card-text">
-                            <em>
-                                <span class="text-sm-left color-grey">
-                                    {% for structure in campaign.structuresForUser(app.user) %}
-                                        <div>{{ structure.name }}</div>
-                                    {% endfor %}
-                                </span>
-                            </em>
+                            {{ common.campaign(campaign) }}
                         </div>
                     </div>
                 </div>
@@ -68,17 +63,4 @@
     {% endfor %}
 </div>
 
-<script type="text/javascript">
-
-    var anchor;
-    if (location.hash) {
-        anchor = location.hash;
-    } else if (qs('type')) {
-        anchor = '#nav-' + qs('type');
-    } else {
-        anchor = $("a[data-toggle='tab']").first().attr("href");
-    }
-
-    $("a[href='" + anchor + "']").tab("show");
-
-</script>
+{{ include('campaign/common.html.twig') }}
