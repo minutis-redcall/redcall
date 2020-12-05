@@ -445,6 +445,7 @@ csv_export:
   other: Other responses
   sent: Message sent
   received: Message received
+  answer_time: Answered at
 
 pdf_export:
   others: 'and %others% other(s)'
