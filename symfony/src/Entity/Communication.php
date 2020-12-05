@@ -101,7 +101,7 @@ class Communication
     private $multipleAnswer = false;
 
     /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Volunteer", inversedBy="communications")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Volunteer")
      */
     private $volunteer;
 
