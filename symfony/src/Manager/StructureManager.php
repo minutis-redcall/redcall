@@ -2,6 +2,7 @@
 
 namespace App\Manager;
 
+use App\Entity\Campaign;
 use App\Entity\Structure;
 use App\Entity\User;
 use App\Entity\Volunteer;
@@ -116,5 +117,10 @@ class StructureManager
     public function getStructuresForUser(User $user) : array
     {
         return $this->structureRepository->searchForUser($user, null, 0xFFFFFFFF, true);
+    }
+
+    public function getCampaignStructures(Campaign $campaign) : array
+    {
+        return $this->structureRepository->getCampaignStructures($campaign);
     }
 }

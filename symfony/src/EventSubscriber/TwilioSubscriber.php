@@ -3,6 +3,7 @@
 namespace App\EventSubscriber;
 
 use App\Communication\Sender;
+use App\Entity\Communication;
 use App\Entity\Message;
 use App\Manager\CostManager;
 use App\Manager\MessageManager;
@@ -133,7 +134,7 @@ class TwilioSubscriber implements EventSubscriberInterface
             $event->getCall()->getFromNumber()
         );
 
-        if ($message) {
+        if ($message && Communication::TYPE_EMAIL !== $message->getCommunication()->getType()) {
             $event->getCall()->setContext([
                 'message_id' => $message->getId(),
             ]);

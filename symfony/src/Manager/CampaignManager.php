@@ -4,12 +4,12 @@ namespace App\Manager;
 
 use App\Communication\Processor\ProcessorInterface;
 use App\Communication\Processor\SimpleProcessor;
+use App\Entity\Campaign;
 use App\Entity\Campaign as CampaignEntity;
 use App\Entity\Communication;
 use App\Entity\User;
 use App\Entity\Volunteer;
 use App\Enum\Type;
-use App\Form\Model\Campaign;
 use App\Form\Model\Campaign as CampaignModel;
 use App\Repository\CampaignRepository;
 use Bundles\PasswordLoginBundle\Entity\AbstractUser;
@@ -34,6 +34,11 @@ class CampaignManager
     private $messageManager;
 
     /**
+     * @var StructureManager
+     */
+    private $structureManager;
+
+    /**
      * @var SimpleProcessor
      */
     private $processor;
@@ -46,12 +51,14 @@ class CampaignManager
     public function __construct(CampaignRepository $campaignRepository,
         CommunicationManager $communicationManager,
         MessageManager $messageManager,
+        StructureManager $structureManager,
         SimpleProcessor $processor,
         TokenStorageInterface $tokenStorage)
     {
         $this->campaignRepository   = $campaignRepository;
         $this->communicationManager = $communicationManager;
         $this->messageManager       = $messageManager;
+        $this->structureManager     = $structureManager;
         $this->processor            = $processor;
         $this->tokenStorage         = $tokenStorage;
     }
@@ -232,6 +239,11 @@ class CampaignManager
         ];
 
         return sha1(implode('|', $criteria));
+    }
+
+    public function getCampaignAudience(CampaignEntity $campaign) : array
+    {
+        return $this->campaignRepository->getCampaignAudience($campaign);
     }
 
     public function contact(Volunteer $volunteer, Type $type, string $title, string $message) : CampaignEntity

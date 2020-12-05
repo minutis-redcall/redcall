@@ -152,10 +152,12 @@ campaign:
     new: 'Créer un déclenchement: %type%'
     list_full: 'Liste des déclenchements'
     list_admin: 'Liste de tous les déclenchements'
-    structures: '%nbr% structures impliquées'
     sms: 'SMS'
     call: 'Appel'
     email: 'Email'
+    implicated_structures: 'Liste des structures impliquées'
+    created_by: 'Créé par %name%'
+    volunteers: 'bénévole(s)'
   no_nivol:
     title: 'Pas de Nivol relié'
     description: 'Votre compte RedCall n''est pas relié à votre compte Pegass, merci de nous contacter afin de pouvoir utiliser la plateforme.'
@@ -433,15 +435,16 @@ manage_structures:
     list_title: "Liste des réponses pré-remplies"
 csv_export:
   nivol: Nivol
-  firstname: Prénom
+  firstname: Prenom
   lastname: Nom
-  phone_number: Numéro de téléphone
+  phone_number: Numero de telephone
   email: Email
-  tags: Compétences
+  tags: Competences
   choice: 'Choix "%choice%"'
-  other: Autre réponses
-  sent: Message envoyé
+  other: Autre reponses
+  sent: Message envoye
   received: Message reçu
+  answer_time: 'Date de la reponse la plus recente'
 
 pdf_export:
   others: 'et %others% autre(s)'

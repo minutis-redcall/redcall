@@ -28,6 +28,11 @@ class CommunicationManager
     private $messageManager;
 
     /**
+     * @var StructureManager
+     */
+    private $structureManager;
+
+    /**
      * @var CommunicationRepository
      */
     private $communicationRepository;
@@ -62,21 +67,12 @@ class CommunicationManager
      */
     private $logger;
 
-    /**
-     * @param MessageManager          $messageManager
-     * @param CommunicationRepository $communicationRepository
-     * @param ProcessorInterface      $processor
-     * @param UserManager             $userManager
-     * @param VolunteerManager        $volunteerManager
-     * @param RouterInterface         $router
-     * @param LoggerInterface         $slackLogger
-     * @param LoggerInterface         $logger
-     */
     public function __construct(MessageManager $messageManager,
         CommunicationRepository $communicationRepository,
         ProcessorInterface $processor,
         UserManager $userManager,
         VolunteerManager $volunteerManager,
+        StructureManager $structureManager,
         RouterInterface $router,
         LoggerInterface $slackLogger,
         LoggerInterface $logger)
@@ -86,6 +82,7 @@ class CommunicationManager
         $this->processor               = $processor;
         $this->userManager             = $userManager;
         $this->volunteerManager        = $volunteerManager;
+        $this->structureManager        = $structureManager;
         $this->router                  = $router;
         $this->slackLogger             = $slackLogger;
         $this->logger                  = $logger;
@@ -101,11 +98,6 @@ class CommunicationManager
         $this->campaignManager = $campaignManager;
     }
 
-    /**
-     * @param int $communicationId
-     *
-     * @return Communication|null
-     */
     public function find(int $communicationId) : ?Communication
     {
         return $this->communicationRepository->find($communicationId);
@@ -124,21 +116,15 @@ class CommunicationManager
 
         $campaign->addCommunication($communication);
 
-        foreach ($communication->getMessages() as $message) {
-            foreach ($message->getVolunteer()->getStructures() as $structure) {
-                $campaign->addStructure($structure);
-            }
-        }
-
         $this->campaignManager->save($campaign);
+
+        $this->communicationRepository->save($communication);
 
         if ($processor) {
             $processor->process($communication);
         } else {
             $this->processor->process($communication);
         }
-
-        $this->communicationRepository->save($communication);
 
         $this->slackLogger->info(
             sprintf(
@@ -147,7 +133,7 @@ class CommunicationManager
                 $communication->getVolunteer()->getDisplayName(),
                 $communication->getVolunteer()->getMainStructure()->getDisplayName(),
                 count($communication->getMessages()),
-                $campaign->getStructures()->count(),
+                count($this->structureManager->getCampaignStructures($campaign)),
                 PHP_EOL,
                 $campaign->getLabel(),
                 PHP_EOL,

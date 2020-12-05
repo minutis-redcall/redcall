@@ -141,11 +141,6 @@ class Volunteer
     private $structures;
 
     /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Communication", mappedBy="volunteer")
-     */
-    private $communications;
-
-    /**
      * @var User
      *
      * @ORM\OneToOne(targetEntity="App\Entity\User", mappedBy="volunteer")
@@ -196,11 +191,10 @@ class Volunteer
 
     public function __construct()
     {
-        $this->tags           = new ArrayCollection();
-        $this->structures     = new ArrayCollection();
-        $this->communications = new ArrayCollection();
-        $this->messages       = new ArrayCollection();
-        $this->phones         = new ArrayCollection();
+        $this->tags       = new ArrayCollection();
+        $this->structures = new ArrayCollection();
+        $this->messages   = new ArrayCollection();
+        $this->phones     = new ArrayCollection();
     }
 
     /**
@@ -576,34 +570,6 @@ class Volunteer
         return $this->getDisplayName();
     }
 
-    public function getCommunications() : Collection
-    {
-        return $this->communications;
-    }
-
-    public function addCommunication(Communication $communication) : self
-    {
-        if (!$this->communications->contains($communication)) {
-            $this->communications[] = $communication;
-            $communication->setVolunteer($this);
-        }
-
-        return $this;
-    }
-
-    public function removeCommunication(Communication $communication) : self
-    {
-        if ($this->communications->contains($communication)) {
-            $this->communications->removeElement($communication);
-            // set the owning side to null (unless already changed)
-            if ($communication->getVolunteer() === $this) {
-                $communication->setVolunteer(null);
-            }
-        }
-
-        return $this;
-    }
-
     public function getUser() : ?User
     {
         if ($this->user && $this->user->isTrusted()) {
@@ -650,7 +616,7 @@ class Volunteer
         $new = get_object_vars($this);
 
         foreach ($old as $key => $value) {
-            if ('phone' === $key || 'email' === $key || 'communications' === $key || 'structures' === $key || 'user' === $key) {
+            if ('phone' === $key || 'email' === $key || 'structures' === $key || 'user' === $key) {
                 continue;
             }
 

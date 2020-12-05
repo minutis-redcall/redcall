@@ -77,11 +77,6 @@ class Structure
     private $users;
 
     /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\Campaign", mappedBy="structures")
-     */
-    private $campaigns;
-
-    /**
      * @ORM\OneToMany(targetEntity="App\Entity\PrefilledAnswers", mappedBy="structure")
      */
     private $prefilledAnswers;
@@ -91,7 +86,6 @@ class Structure
         $this->volunteers         = new ArrayCollection();
         $this->childrenStructures = new ArrayCollection();
         $this->users              = new ArrayCollection();
-        $this->campaigns          = new ArrayCollection();
         $this->prefilledAnswers   = new ArrayCollection();
     }
 
@@ -344,34 +338,6 @@ class Structure
         if ($this->users->contains($user)) {
             $this->users->removeElement($user);
             $user->removeStructure($this);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Campaign[]
-     */
-    public function getCampaigns() : Collection
-    {
-        return $this->campaigns;
-    }
-
-    public function addCampaign(Campaign $campaign) : self
-    {
-        if (!$this->campaigns->contains($campaign)) {
-            $this->campaigns[] = $campaign;
-            $campaign->addStructure($this);
-        }
-
-        return $this;
-    }
-
-    public function removeCampaign(Campaign $campaign) : self
-    {
-        if ($this->campaigns->contains($campaign)) {
-            $this->campaigns->removeElement($campaign);
-            $campaign->removeStructure($this);
         }
 
         return $this;

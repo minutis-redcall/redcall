@@ -143,6 +143,10 @@ class User extends AbstractUser
 
     public function hasCommonStructure($structures) : bool
     {
+        if ($this->isAdmin()) {
+            return true;
+        }
+
         foreach ($structures as $structure) {
             if ($this->hasStructure($structure)) {
                 return true;
@@ -150,6 +154,23 @@ class User extends AbstractUser
         }
 
         return false;
+    }
+
+    public function getCommonStructures($structures) : array
+    {
+        if ($this->isAdmin()) {
+            return $structures;
+        }
+
+        $common = [];
+
+        foreach ($structures as $structure) {
+            if ($this->hasStructure($structure)) {
+                $common[] = $structure;
+            }
+        }
+
+        return $common;
     }
 
     /**

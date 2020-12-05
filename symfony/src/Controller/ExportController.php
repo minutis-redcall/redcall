@@ -56,6 +56,7 @@ class ExportController extends BaseController
                 $this->trans('csv_export.phone_number') => $volunteer->getFormattedPhoneNumber(),
                 $this->trans('csv_export.tags')         => $tags,
                 $this->trans('csv_export.sent')         => $this->trans($message->isSent() ? 'base.yes' : 'base.no'),
+                $this->trans('csv_export.answer_time')  => $message->getLastAnswer() ? $message->getLastAnswer()->getReceivedAt()->format('Y-m-d H:i:s') : null,
             ];
 
             /* @var Choice $choice */
@@ -73,7 +74,8 @@ class ExportController extends BaseController
             }
 
             $row[$this->trans('csv_export.other')] = $message->getInvalidAnswer() ? $message->getInvalidAnswer()->getRaw() : null;
-            $rows[]                                = $row;
+
+            $rows[] = $row;
         }
 
         return new ArrayToCsvResponse($rows, sprintf('export-%s.csv', date('Y-m-d.H:i:s')));

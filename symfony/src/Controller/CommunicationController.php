@@ -17,6 +17,7 @@ use App\Manager\CampaignManager;
 use App\Manager\CommunicationManager;
 use App\Manager\MediaManager;
 use App\Manager\MessageManager;
+use App\Manager\StructureManager;
 use App\Manager\TagManager;
 use App\Manager\UserManager;
 use App\Manager\VolunteerManager;
@@ -84,6 +85,11 @@ class CommunicationController extends BaseController
      */
     private $mediaManager;
 
+    /**
+     * @var StructureManager
+     */
+    private $structureManager;
+
     public function __construct(CampaignManager $campaignManager,
         CommunicationManager $communicationManager,
         MessageFormatter $formatter,
@@ -92,7 +98,8 @@ class CommunicationController extends BaseController
         MessageManager $messageManager,
         AnswerManager $answerManager,
         UserManager $userManager,
-        MediaManager $mediaManager)
+        MediaManager $mediaManager,
+        StructureManager $structureManager)
     {
         $this->campaignManager      = $campaignManager;
         $this->communicationManager = $communicationManager;
@@ -103,6 +110,7 @@ class CommunicationController extends BaseController
         $this->answerManager        = $answerManager;
         $this->userManager          = $userManager;
         $this->mediaManager         = $mediaManager;
+        $this->structureManager     = $structureManager;
     }
 
     /**
@@ -114,10 +122,11 @@ class CommunicationController extends BaseController
         $this->get('session')->save();
 
         return $this->render('status_communication/index.html.twig', [
-            'campaign' => $campaign,
-            'skills'   => $this->tagManager->findAll(),
-            'progress' => $campaign->getCampaignProgression(),
-            'hash'     => $this->campaignManager->getHash($campaign->getId()),
+            'campaign'           => $campaign,
+            'skills'             => $this->tagManager->findAll(),
+            'progress'           => $campaign->getCampaignProgression(),
+            'hash'               => $this->campaignManager->getHash($campaign->getId()),
+            'campaignStructures' => $this->structureManager->getCampaignStructures($campaign),
         ]);
     }
 

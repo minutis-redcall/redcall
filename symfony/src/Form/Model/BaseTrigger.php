@@ -47,6 +47,7 @@ abstract class BaseTrigger implements \JsonSerializable
      * @var array
      *
      * @Assert\Count(max=9)
+     * @Assert\Valid
      */
     private $answers = [];
 
