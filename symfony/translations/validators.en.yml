@@ -22,3 +22,4 @@ form:
   phone_card:
     error_no_preferred: 'You didn''t choose any main phone number.'
     error_multi_preferred: 'You can only have one main phone number.'
+    error_duplicate: 'You entered the same number several times.'
