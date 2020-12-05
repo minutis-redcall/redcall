@@ -9,6 +9,8 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Choice
 {
+    const LENGTH = 16;
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -26,7 +28,7 @@ class Choice
     /**
      * @var string
      *
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", length=self::LENGTH)
      */
     private $label;
 
