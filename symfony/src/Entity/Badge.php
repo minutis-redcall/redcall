@@ -50,7 +50,7 @@ class Badge
     private $category;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Structure::class, inversedBy="badges")
+     * @ORM\ManyToMany(targetEntity=Structure::class, inversedBy="visibleBadges")
      * @ORM\JoinTable(
      *  name="badge_visibility",
      *  joinColumns={
