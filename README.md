@@ -1,4 +1,4 @@
-# The Red Call
+# Minutis RedCall
 
 This Red Cross project concerns volunteers that do social activities (roams, emergency night shelters...) and those who do first aid. As volunteers can be located anywhere in Paris (or elsewhere), tools are required to synchronize people as fast as possible when criticial situations occur.
 
