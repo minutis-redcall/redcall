@@ -305,6 +305,7 @@ form:
       add_answer: Add an answer
       remove: Delete
       submit: Send
+      test: Test on me
       submit_to: Contact %nbr% volunteers
       back: Back
       other_options: Other options

@@ -264,6 +264,12 @@ class CommunicationController extends BaseController
             ->createForm($type->getFormType(), $communication)
             ->handleRequest($request);
 
+        if ($form->get('test')->isClicked()) {
+            $communication->setAudience([
+                $this->getUser()->getNivol(),
+            ]);
+        }
+
         // Creating the new communication is form has been submitted
         if ($form->isSubmitted() && $form->isValid()) {
             $this->communicationManager->launchNewCommunication($campaign, $communication);

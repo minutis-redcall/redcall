@@ -46,10 +46,18 @@ class SmsTriggerType extends AbstractType
                 'label'    => 'form.communication.fields.geo_location',
                 'required' => false,
             ])
+            ->add('test', SubmitType::class, [
+                'label' => 'form.communication.fields.test',
+                'attr'  => [
+                    'class'   => 'trigger-test btn-secondary',
+                    'onclick' => "$('form').attr('target', '_blank');",
+                ],
+            ])
             ->add('submit', SubmitType::class, [
                 'label' => 'form.communication.fields.submit',
                 'attr'  => [
-                    'class' => 'btn-primary',
+                    'class'   => 'btn-primary',
+                    'onclick' => "$('form').attr('target', '');",
                 ],
             ]);
     }
