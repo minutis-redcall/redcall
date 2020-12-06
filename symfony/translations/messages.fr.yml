@@ -304,6 +304,7 @@ form:
       add_answer: Ajouter une réponse
       remove: X
       submit: Envoyer
+      test: Tester sur moi
       submit_to: Envoyer un %type% à %nbr% bénévoles
       back: Retour
       other_options: Autres options

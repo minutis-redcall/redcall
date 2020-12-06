@@ -383,7 +383,7 @@
                         clearTimeout(classificationTimeout);
                     }
                     classificationTimeout = setTimeout(function () {
-                        $('#{{ form.parent.vars.id }}').find('button[type="submit"]').html(
+                        $('#{{ form.parent.vars.id }}').find('button[type="submit"]').not('.trigger-test').html(
                             $('#submit-button-reset').html()
                         );
                         var count = 0;
@@ -398,7 +398,7 @@
                                 if (classification.success) {
                                     $('#{{ form.vars.id }} .audience-classification').html(classification.view);
 
-                                    $('#{{ form.vars.id }}').parent().find('button[type="submit"]').html(
+                                    $('#{{ form.vars.id }}').parent().find('button[type="submit"]').not('.trigger-test').html(
                                         $('#submit-button-audience').html().replace('%nbr%', classification.triggered)
                                     );
                                 }

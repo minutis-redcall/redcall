@@ -98,6 +98,13 @@ class CampaignController extends BaseController
             ])
             ->handleRequest($request);
 
+        if ($form->get('trigger')->get('test')->isSubmitted()) {
+            $campaignModel->label = sprintf('[test] %s', $campaignModel->label);
+            $campaignModel->trigger->setAudience([
+                $this->getUser()->getNivol(),
+            ]);
+        }
+
         if ($form->isSubmitted() && $form->isValid()) {
             $campaignEntity = $this->campaignManager->launchNewCampaign($campaignModel);
 
