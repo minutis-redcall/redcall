@@ -98,7 +98,7 @@ class CampaignController extends BaseController
             ])
             ->handleRequest($request);
 
-        if ($form->get('trigger')->get('test')->isSubmitted()) {
+        if ($form->get('trigger')->get('test')->isClicked()) {
             $campaignModel->label = sprintf('[test] %s', $campaignModel->label);
             $campaignModel->trigger->setAudience([
                 $this->getUser()->getNivol(),
