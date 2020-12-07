@@ -63,3 +63,13 @@ cp deploying/google-service-account.json symfony/config/keys/google-service-acco
 rm -r deploying
 rm symfony/app.yaml
 rm symfony/cron.yaml
+
+# Removing previous instance(s)
+# In case a rollback may be necessary, we give a 120 seconds grace
+sleep 120
+
+VERSIONS=$(gcloud app versions list --service default --sort-by '~version' --format 'value(version.id)' | sort -r |  tail -n +2)
+if [ ${#VERSIONS} -gt 0 ]
+then
+    gcloud app versions delete --service default $VERSIONS -q
+fi
