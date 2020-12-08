@@ -6,8 +6,7 @@ set -ex
 ENV=$1
 ROOTDIR=$(dirname "$0")/../
 
-if [ ! -d "${ENV}" ]
-then
+if [ ! -d "${ENV}" ]; then
   echo "'${ENV}' is not a valid environment."
   exit 1
 fi
@@ -34,11 +33,10 @@ cp deploy/${ENV}/cron.yaml symfony/
 
 # Deploying
 cd symfony
-source .env > /dev/null
+source .env >/dev/null
 
-GREENLIGHT=`wget -O- ${WEBSITE_URL}/deploy`
-if [[ "${GREENLIGHT}" != "0" ]]
-then
+GREENLIGHT=$(wget -O- ${WEBSITE_URL}/deploy)
+if [[ "${GREENLIGHT}" != "0" ]]; then
   echo "A communication has recently been triggered, cannot deploy before ${GREENLIGHT} seconds"
   cp deploying/.env symfony/.env
   cp deploying/google-service-account.json symfony/config/keys/google-service-account.json
@@ -65,11 +63,10 @@ rm symfony/app.yaml
 rm symfony/cron.yaml
 
 # Removing previous instance(s)
-# In case a rollback may be necessary, we give a 120 seconds grace
-sleep 120
+# In case a rollback may be necessary, we give a 5 mins grace
+sleep 300
 
-VERSIONS=$(gcloud app versions list --service default --sort-by '~version' --format 'value(version.id)' | sort -r |  tail -n +2)
-if [ ${#VERSIONS} -gt 0 ]
-then
-    gcloud app versions delete --service default $VERSIONS -q
+VERSIONS=$(gcloud app versions list --service default --sort-by '~version' --format 'value(version.id)' | sort -r | tail -n +2)
+if [ ${#VERSIONS} -gt 0 ]; then
+  gcloud app versions delete --service default $VERSIONS -q
 fi
