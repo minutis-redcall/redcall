@@ -15,6 +15,7 @@ use App\Repository\CampaignRepository;
 use Bundles\PasswordLoginBundle\Entity\AbstractUser;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 class CampaignManager
 {
@@ -76,9 +77,14 @@ class CampaignManager
     public function launchNewCampaign(CampaignModel $campaignModel,
         ProcessorInterface $processor = null) : CampaignEntity
     {
+        $volunteer = null;
+        if ($this->tokenStorage->getToken()->getUser() instanceof UserInterface) {
+            $volunteer = $this->tokenStorage->getToken()->getUser()->getVolunteer();
+        }
+
         $campaignEntity = new CampaignEntity();
         $campaignEntity
-            ->setVolunteer($this->tokenStorage->getToken()->getUser()->getVolunteer())
+            ->setVolunteer($volunteer)
             ->setLabel($campaignModel->label)
             ->setType($campaignModel->type)
             ->setNotes($campaignModel->notes)
