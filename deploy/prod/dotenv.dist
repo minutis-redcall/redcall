@@ -83,3 +83,7 @@ MINUTIS_URL=xxx
 MJML_APPLICATION_ID=xxx
 MJML_PUBLIC_KEY=xxx
 MJML_PRIVATE_KEY=xxx
+
+PHRASEAPP_PROJECT_ID='your project id'
+PHRASEAPP_API_TOKEN='your api token'
+PHRASEAPP_USER_AGENT='redcall - your@email.com'
