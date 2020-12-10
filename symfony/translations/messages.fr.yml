@@ -638,3 +638,6 @@ title:
   campaigns: Déclenchements
   costs: Coûts
   messages: Messages
+backlinks:
+  phpstorm: 'Developed with'
+  phrase: 'Translated with'

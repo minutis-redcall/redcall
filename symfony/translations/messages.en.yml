@@ -77,6 +77,9 @@ audience:
   select_all: 'Select all'
   structures: 'Structure(s) to trigger'
   unselect_all: 'Unselect all'
+backlinks:
+  phpstorm: 'Développé avec'
+  phrase: 'Traductions grâce à'
 base:
   actions: Actions
   button:
