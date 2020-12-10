@@ -1,51 +1,44 @@
 sandbox:
-
-  home:
-    link: 'Sandbox'
-
-  volunteer_generator:
-    button: 'Générateur de bénévoles'
-    title: 'Générer de faux bénévoles'
-    label: 'Nombre de bénévoles à créer'
-
-  fake_sms:
-    button: 'Simulateur de SMS'
-    title: 'Simulateur de SMS - Liste des destinataires'
-    thread: 'Messagerie du %phoneNumber% (%name%)'
-    your_message: 'Votre message'
-    send: 'Envoyer'
-    clear: 'Effacer tous les messages'
-    geo: 'Ouvrir la géolocalisation pour "%text"'
-
-  fake_call:
-    button: 'Simulateur d''appels'
-    title: 'Simulateur d''appels - Liste des destinataires'
-    read: 'Appels au %phoneNumber% (%name%)'
-    your_message: 'Code'
-    send: 'Envoyer'
-    clear: 'Effacer tous les appels'
-
-  fake_email:
-    button: 'Simulateur d''emails'
-    title: 'Simulateur d''emails - Liste des destinataires'
-    read: 'Messagerie de %email% (%name%)'
-    clear: 'Effacer tous les messages'
-
   anonymize:
     button: 'Anonymiser la base de données'
-
+  fake_call:
+    button: 'Simulateur d''appels'
+    clear: 'Effacer tous les appels'
+    read: 'Appels au %phoneNumber% (%name%)'
+    send: Envoyer
+    title: 'Simulateur d''appels - Liste des destinataires'
+    your_message: Code
+  fake_email:
+    button: 'Simulateur d''emails'
+    clear: 'Effacer tous les messages'
+    read: 'Messagerie de %email% (%name%)'
+    title: 'Simulateur d''emails - Liste des destinataires'
+  fake_sms:
+    button: 'Simulateur de SMS'
+    clear: 'Effacer tous les messages'
+    geo: 'Ouvrir la géolocalisation pour "%text"'
+    send: Envoyer
+    thread: 'Messagerie du %phoneNumber% (%name%)'
+    title: 'Simulateur de SMS - Liste des destinataires'
+    your_message: 'Votre message'
   fixtures:
-    title: 'Créer des compétences, structures & bénévoles'
-    tags: 'Générer les compétences'
     structure:
-      title: 'Générer une structure'
-      name: 'Nom de la structure'
-      parent: 'Structure parente (optionnelle)'
-      number_volunteers: 'Nombre de bénévoles dans la structure'
       bind_to_user: 'Relier la structure à votre compte'
       created: 'Structure créée'
+      name: 'Nom de la structure'
+      number_volunteers: 'Nombre de bénévoles dans la structure'
+      parent: 'Structure parente (optionnelle)'
+      title: 'Générer une structure'
+    tags: 'Générer les compétences'
+    title: 'Créer des compétences, structures & bénévoles'
     volunteer:
-      title: 'Générer des bénévoles'
+      created: '%nbr% bénévoles créés'
       number_volunteers: 'Nombre de bénévoles à générer'
       structure: 'Structure de rattachement'
-      created: '%nbr% bénévoles créés'
+      title: 'Générer des bénévoles'
+  home:
+    link: Sandbox
+  volunteer_generator:
+    button: 'Générateur de bénévoles'
+    label: 'Nombre de bénévoles à créer'
+    title: 'Générer de faux bénévoles'

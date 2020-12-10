@@ -100,10 +100,11 @@ class PhraseCommand extends Command
 
         // Dumping files
         foreach ($remoteTranslations as $file => $keys) {
-            $oldContent = file_get_contents($file);
+            $oldContent = is_file($file) ? file_get_contents($file) : null;
             $newContent = Yaml::dump($this->getDeflattedTranslationsFromArray($keys), 64, 2);
             if ($oldContent !== $newContent) {
                 file_put_contents($file, $newContent);
+                $output->writeln(sprintf('Translations updated: %s', $file));
             }
         }
     }
