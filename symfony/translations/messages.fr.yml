@@ -77,6 +77,9 @@ audience:
   select_all: 'Tout sélectionner'
   structures: 'Structure(s) à déclencher'
   unselect_all: 'Effacer la sélection'
+backlinks:
+  phpstorm: 'Developed with'
+  phrase: 'Translated with'
 base:
   actions: Actions
   button:
@@ -638,6 +641,3 @@ title:
   campaigns: Déclenchements
   costs: Coûts
   messages: Messages
-backlinks:
-  phpstorm: 'Developed with'
-  phrase: 'Translated with'

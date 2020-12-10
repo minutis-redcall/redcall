@@ -15,6 +15,8 @@ fi
 
 cd $ROOTDIR
 
+php symfony/bin/console phrase:sync
+
 # Backing up current context
 rm -rf deploying
 mkdir deploying
