@@ -5,6 +5,7 @@ namespace App\Command;
 use App\Services\Phrase;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Yaml\Yaml;
@@ -41,7 +42,8 @@ class PhraseCommand extends Command
 
         $this
             ->setName('phrase:sync')
-            ->setDescription('Synchronize translations with PhraseApp');
+            ->setDescription('Synchronize translations with PhraseApp')
+            ->addOption('sleep', null, InputOption::VALUE_OPTIONAL, 'Use this option for large operations to prevent hitting rate limits', 0);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -82,6 +84,9 @@ class PhraseCommand extends Command
                 $output->writeln(sprintf('<info>Creating missing translation %s for locale %s: %s</info>', $key, $locale, $value));
                 $this->phrase->createTranslation($tag, array_search($locale, $locales), $key, $value);
                 $remoteTranslations[$file][$key] = $value;
+                if ($input->getOption('sleep')) {
+                    sleep($input->getOption('sleep'));
+                }
             }
         }
 
@@ -96,6 +101,9 @@ class PhraseCommand extends Command
         foreach ($keysToRemove as $key) {
             $output->writeln(sprintf('<comment>Removing unused translation key: %s</comment>', $key));
             $this->phrase->removeKey($key);
+            if ($input->getOption('sleep')) {
+                sleep($input->getOption('sleep'));
+            }
         }
 
         // Dumping files
