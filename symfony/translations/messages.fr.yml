@@ -134,8 +134,8 @@ base:
     create_title: 'Ajouter une entrée'
     update_title: 'Editer "%entity%"'
     delete_confirm: 'Souhaitez-vous vraiment supprimer "%entity%" ?'
-  yes: Oui
-  no: Non
+  simple_yes: 'Oui'
+  simple_no: 'Non'
   search:
     placeholder: 'Rechercher...'
     no_results: 'Aucun résultat trouvé pour "{keyword}".'
