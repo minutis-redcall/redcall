@@ -644,3 +644,6 @@ title:
   campaigns: Déclenchements
   costs: Coûts
   messages: Messages
+developer:
+  home:
+    link: 'Espace développeur'

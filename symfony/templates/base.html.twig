@@ -150,6 +150,13 @@
 
             {% endif %}
 
+            {% if app.user|default(false) and is_granted('ROLE_DEVELOPER') %}
+
+                <a href="{{ path('developer_home') }}" class="btn btn-secondary">{{ 'developer.home.link'|trans }}</a>
+                &nbsp;&nbsp;
+
+            {% endif %}
+
             {% if app.user|default(false) and (is_granted('ROLE_ADMIN') or app.user.structures.count) %}
 
                 <a href="{{ path('management_home') }}" class="btn btn-secondary">{{ 'management.home.link'|trans }}</a>

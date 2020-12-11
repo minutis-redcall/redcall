@@ -644,3 +644,6 @@ title:
   campaigns: Campaigns
   costs: Costs
   messages: Messages
+developer:
+  home:
+    link: 'Developer space'
