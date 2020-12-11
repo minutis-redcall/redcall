@@ -78,8 +78,8 @@ audience:
   structures: 'Structure(s) à déclencher'
   unselect_all: 'Effacer la sélection'
 backlinks:
-  phpstorm: 'Developed with'
-  phrase: 'Translated with'
+  phpstorm: 'Développé avec'
+  phrase: 'Traductions grâce à'
 base:
   actions: Actions
   button:
