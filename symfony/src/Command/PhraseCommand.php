@@ -43,7 +43,9 @@ class PhraseCommand extends Command
         $this
             ->setName('phrase:sync')
             ->setDescription('Synchronize translations with PhraseApp')
-            ->addOption('sleep', null, InputOption::VALUE_OPTIONAL, 'Use this option for large operations to prevent hitting rate limits', 0);
+            ->addOption('sleep', null, InputOption::VALUE_OPTIONAL, 'Use this option for large operations to prevent hitting rate limits', 0)
+            ->addOption('delete', null, InputOption::VALUE_NONE, 'Add this option to automatically delete translations that are on Phrase but no more on the app')
+            ->addOption('create', null, InputOption::VALUE_NONE, 'Add this option to automatically create translations that are on the app but not yet on Phrase');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -81,11 +83,15 @@ class PhraseCommand extends Command
                 $tag    = $this->getPhraseTagFromFilename($file);
                 $locale = $this->getLocaleFromFileName($file);
                 $value  = $localTranslations[$file][$key];
-                $output->writeln(sprintf('<info>Creating missing translation %s for locale %s: %s</info>', $key, $locale, $value));
-                $this->phrase->createTranslation($tag, array_search($locale, $locales), $key, $value);
-                $remoteTranslations[$file][$key] = $value;
-                if ($input->getOption('sleep')) {
-                    sleep($input->getOption('sleep'));
+                if ($input->getOption('create')) {
+                    $output->writeln(sprintf('<info>Creating missing translation %s for locale %s: %s</info>', $key, $locale, $value));
+                    $this->phrase->createTranslation($tag, array_search($locale, $locales), $key, $value);
+                    $remoteTranslations[$file][$key] = $value;
+                    if ($input->getOption('sleep')) {
+                        sleep($input->getOption('sleep'));
+                    }
+                } else {
+                    $output->writeln(sprintf('<info>Missing translation %s for locale %s: %s - Consider creating it on Phrase</info>', $key, $locale, $value));
                 }
             }
         }
@@ -99,10 +105,14 @@ class PhraseCommand extends Command
         }, $remoteTranslations)));
         $keysToRemove  = array_diff($allRemoteKeys, $allLocalKeys);
         foreach ($keysToRemove as $key) {
-            $output->writeln(sprintf('<comment>Removing unused translation key: %s</comment>', $key));
-            $this->phrase->removeKey($key);
-            if ($input->getOption('sleep')) {
-                sleep($input->getOption('sleep'));
+            if ($input->getOption('delete')) {
+                $output->writeln(sprintf('<comment>Removing unused translation key: %s</comment>', $key));
+                $this->phrase->removeKey($key);
+                if ($input->getOption('sleep')) {
+                    sleep($input->getOption('sleep'));
+                }
+            } else {
+                $output->writeln(sprintf('<comment>Unused translation key: %s - consider deleting it on Phrase</comment>', $key));
             }
         }
 

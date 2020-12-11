@@ -22,7 +22,7 @@ translate the application.
 6. You can now create all translation keys on Phrase by running:
 
 ```
-php bin/console phrase:sync --sleep=10
+php bin/console phrase:sync --sleep=1
 ```
 
 Be careful, the Yaml parser on Phrase backends is compatible with YAML 1.1, there are few reserved words

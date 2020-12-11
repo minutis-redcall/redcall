@@ -80,6 +80,9 @@ audience:
 backlinks:
   phpstorm: 'Developed with'
   phrase: 'Translated with'
+  blablacar: 'Sponsored by'
+  minutis: 'Developed by Minutis volunteers'
+  redcross: 'French Red Cross'
 base:
   actions: Actions
   button:
