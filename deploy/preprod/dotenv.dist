@@ -81,3 +81,7 @@ PEGASS_LOGIN=yourlogin
 PEGASS_PASSWORD=yourpassword
 
 GAIA_URL='https://gaia.croix-rouge.fr/crf-benevoles/#contact/NIVOL/%nivol%'
+
+PHRASEAPP_PROJECT_ID='your project id'
+PHRASEAPP_API_TOKEN='your api token'
+PHRASEAPP_USER_AGENT='redcall - your@email.com'

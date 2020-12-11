@@ -1,51 +1,44 @@
 sandbox:
-
-  home:
-    link: 'Sandbox'
-
-  volunteer_generator:
-    button: 'Volunteer Generator'
-    title: 'Generate fake volunteers'
-    label: 'Number of volunteers to create'
-
-  fake_sms:
-    button: 'SMS Simulator'
-    title: 'SMS Simulator - List of recipients'
-    thread: '%phoneNumber% inbox (%name%)'
-    your_message: 'Your message'
-    send: 'Send'
-    clear: 'Remove all messages'
-    geo: 'Open geolocation for "%text"'
-
-  fake_call:
-    button: 'Calls Simulator'
-    title: 'Calls Simulator - List of recipients'
-    read: '%phoneNumber% calls (%name%)'
-    your_message: 'Digit'
-    send: 'Send'
-    clear: 'Remove all calls'
-
-  fake_email:
-    button: 'Email Simulator'
-    title: 'Email Simulator - List of recipients'
-    read: '%email% inbox (%name%)'
-    clear: 'Remove all messages'
-
   anonymize:
     button: 'Anonymize the database'
-
+  fake_call:
+    button: 'Calls Simulator'
+    clear: 'Remove all calls'
+    read: '%phoneNumber% calls (%name%)'
+    send: Send
+    title: 'Calls Simulator - List of recipients'
+    your_message: Digit
+  fake_email:
+    button: 'Email Simulator'
+    clear: 'Remove all messages'
+    read: '%email% inbox (%name%)'
+    title: 'Email Simulator - List of recipients'
+  fake_sms:
+    button: 'SMS Simulator'
+    clear: 'Remove all messages'
+    geo: 'Open geolocation for "%text"'
+    send: Send
+    thread: '%phoneNumber% inbox (%name%)'
+    title: 'SMS Simulator - List of recipients'
+    your_message: 'Your message'
   fixtures:
-    title: 'Generate skills, volunteers & structures'
-    tags: 'Generate skills'
     structure:
-      title: 'Generate structure'
-      name: 'Structure name'
-      parent: 'Optional parent structure'
-      number_volunteers: 'Number of volunteers to generate in the structure'
       bind_to_user: 'Link this new structure to your user account'
       created: 'Structure created'
+      name: 'Structure name'
+      number_volunteers: 'Number of volunteers to generate in the structure'
+      parent: 'Optional parent structure'
+      title: 'Generate structure'
+    tags: 'Generate skills'
+    title: 'Generate skills, volunteers & structures'
     volunteer:
-      title: 'Generate volunteers'
+      created: '%nbr% volunteers created'
       number_volunteers: 'Number of volunteers to generate'
       structure: 'Affiliate structure'
-      created: '%nbr% volunteers created'
+      title: 'Generate volunteers'
+  home:
+    link: Sandbox
+  volunteer_generator:
+    button: 'Volunteer Generator'
+    label: 'Number of volunteers to create'
+    title: 'Generate fake volunteers'

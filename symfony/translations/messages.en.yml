@@ -1,538 +1,588 @@
 admin:
-  home:
-    link: Administration
-  user:
-    list: User list
-    pegass: Pegass bindings
-  pegass:
-    title: 'Bindings between RedCall users and volunteer database'
-    structures: 'Update structures for %name%'
-    list_users: 'List user nivols'
-    list_users_explain: 'In order to contact all users, copy/paste this nivol list in a new campaign.'
-    create_user: 'Add a new user'
-    bound_volunteer: 'Bound volunteer: %name%'
-    locked: 'Frozen'
-    locked_details: 'Structures of a frozen user are not updated when Pegass is updating its bound volunteer.'
-    lock: 'Lock'
-    unlock: 'Unlock'
-    developered: 'Developer'
-    developered_details: 'A developer can integrate RedCall APIs and access technical features.'
-    developer: 'Grant developer access'
-    undeveloper: 'Remove developer access'
-  dashboard:
-    title: 'Statistics'
   answer_analysis:
-    title: 'Answers analysis'
     search:
-      title: 'This tool aims to search for people that answered they don''t want to be disturbed anymore.'
+      button: Search
       details: 'Once you found someone, just use the GDPR button to remove him, and and him a message.'
       label: 'Criteria to search for in volunteer answers'
-      button: 'Search'
+      title: 'This tool aims to search for people that answered they don''t want to be disturbed anymore.'
     table:
-      date: 'Date'
-      trigger: 'Trigger'
-      volunteer: 'Volunteer'
-      response: 'Response'
-  statistics:
-    no_stats: "No statistics for this section in the selected period."
-    campaign:
-      title: "Campaigns"
-      stats: "campaigns are still open right now."
-      period: "In the period, <b>%created%</b> campaigns were open, including <b>%active%</b> that are still active."
-    messages:
-      title: "Messages"
-      messages_sent: "<b>%stat%</b> messages were sent"
-      to_volunteers: "to <b>%volunteers%</b> volunteers."
-      answers_received: "<b>%answers%</b> answers were received."
-    costs:
-      title: "Costs"
-      total: "The total costs for the period is "
-      received: "for receiving"
-      sent: "for sending"
-    volunteers:
-      title: "Volunteers"
-      description: "All data are not filtered by period. These are globals."
-      summary: "The RedCall database has <b>%total_number% (%total_percent%%)</b> volunteers who may not be reachable"
-      email: "<b>%email_number% (%email_percent%%)</b> who do not have email"
-      phone: "<b>%phone_number% (%phone_percent%%)</b> who do not have phone number"
-      both: "<b>%both_number% (%both_percent%%)</b> who have neither"
-    pegass:
-      title: "Pegass updates"
-      oldest_update: "Oldest update"
-      newest_update: "Newest update"
-
-management:
-  current_structures: 'You are currently able to trigger the following structures:'
-  support_email: 'If there is a mistake, please contact support team at %email%'
-  update_structures: 'Update structures'
+      date: Date
+      response: Response
+      trigger: Trigger
+      volunteer: Volunteer
+    title: 'Answers analysis'
+  dashboard:
+    title: Statistics
   home:
-    link: Workforce Management
-
-tag:
-  emergency_assistance: Emergency Help
-  social_assistance: Social Assistance
-  psc_1: PSC 1
-  pse_1: PSE 1
-  pse_2: PSE 2
-  drvr_vl: VL driver
-  drvr_vpsp: VPSP driver
-  ci: Inter. chief
-  tcau: TCAU
-  tceo: TCEO
-  dlus: DLUS
-  dlas: DLAS
-  cem: Roam Leader
-  mar: Roamer
-  shortcuts:
-    emergency_assistance: US
-    social_assistance: AS
-    psc_1: PSC1
-    pse_1: PSE1
-    pse_2: PSE2
-    drvr_vl: VL
-    drvr_vpsp: VPSP
-    ci: CI
-    tcau: TCAU
-    tceo: TCEO
-    dlus: DLUS
-    dlas: DLAS
-    cem: CE
-    mar: ROAM
-
-minutis:
-  back: Go back to Minutis
-
+    link: Administration
+  pegass:
+    bound_volunteer: 'Bound volunteer: %name%'
+    create_user: 'Add a new user'
+    developer: 'Grant developer access'
+    developered: Developer
+    developered_details: 'A developer can integrate RedCall APIs and access technical features.'
+    list_users: 'List user nivols'
+    list_users_explain: 'In order to contact all users, copy/paste this nivol list in a new campaign.'
+    lock: Lock
+    locked: Frozen
+    locked_details: 'Structures of a frozen user are not updated when Pegass is updating its bound volunteer.'
+    structures: 'Update structures for %name%'
+    title: 'Bindings between RedCall users and volunteer database'
+    undeveloper: 'Remove developer access'
+    unlock: Unlock
+  statistics:
+    campaign:
+      period: 'In the period, <b>%created%</b> campaigns were open, including <b>%active%</b> that are still active.'
+      stats: 'campaigns are still open right now.'
+      title: Campaigns
+    costs:
+      received: 'for receiving'
+      sent: 'for sending'
+      title: Costs
+      total: 'The total costs for the period is'
+    messages:
+      answers_received: '<b>%answers%</b> answers were received.'
+      messages_sent: '<b>%stat%</b> messages were sent'
+      title: Messages
+      to_volunteers: 'to <b>%volunteers%</b> volunteers.'
+    no_stats: 'No statistics for this section in the selected period.'
+    pegass:
+      newest_update: 'Newest update'
+      oldest_update: 'Oldest update'
+      title: 'Pegass updates'
+    volunteers:
+      both: '<b>%both_number% (%both_percent%%)</b> who have neither'
+      description: 'All data are not filtered by period. These are globals.'
+      email: '<b>%email_number% (%email_percent%%)</b> who do not have email'
+      phone: '<b>%phone_number% (%phone_percent%%)</b> who do not have phone number'
+      summary: 'The RedCall database has <b>%total_number% (%total_percent%%)</b> volunteers who may not be reachable'
+      title: Volunteers
+  user:
+    list: 'User list'
+    pegass: 'Pegass bindings'
+audience:
+  audience: Audience
+  classify:
+    disabled: '%nbr% nivols are bound to disabled volunteers'
+    email_optout: '%nbr% nivols are bound to volunteers that don''t want to receive emails'
+    inaccessible: '%nbr% nivols are bound to volunteers that are not in your perimeter'
+    invalid: '%nbr% nivols do not exist'
+    no_email: '%nbr% nivols are bound to volunteers without any emails'
+    no_phone: '%nbr% nivols are bound to volunteers without any phone number'
+    phone_optout: '%nbr% nivols are bound to volunteers that don''t want to receive calls/SMS'
+    reachable: '%nbr% nivols will be triggered'
+  filter_title: 'Search by structures & skills'
+  nivol_title: 'Copy/paste a list of nivols'
+  see_selection: 'Click to see selection'
+  select_all: 'Select all'
+  structures: 'Structure(s) to trigger'
+  unselect_all: 'Unselect all'
+backlinks:
+  phpstorm: 'Developed with'
+  phrase: 'Translated with'
 base:
-  home: Home
-  documentation: Documentation
-  pager:
-    prev: '←'
-    current: '-'
-    next: '→'
-    result: '{0} results | {1} result | ]1,Inf[ results'
-    per_page: 'Results per page'
-    go_to: 'Go to page'
-    go: 'Go'
-  order_by:
-    order_by: 'Order results by:'
-    order: 'Order'
-    asc: 'Ascendant'
-    desc: 'Descendant'
-  modal:
-    close: Close
-  form:
-    change: Change
+  actions: Actions
   button:
     back: Back
+    create: 'Create new entry'
     delete: Delete
-    update: Edit
-    create: Create new entry
-    save: Save
-    open: Open
-    more: More...
     details: Details
+    more: More...
+    open: Open
+    save: Save
+    update: Edit
+  clear_selection: 'Clear selection'
   crud:
     create_title: 'Add a new entry'
-    update_title: 'Update "%entity%"'
     delete_confirm: 'Are you sure you wish to remove "%entity%"?'
-  yes: Yes
-  no: No
-  search:
-    placeholder: 'Search...'
-    no_results: 'No results found for "{keyword}".'
-  clear_selection: 'Clear selection'
-  select_all: 'Select all'
-  wait: 'One moment...'
-  actions: 'Actions'
-  play: 'Play'
+    update_title: 'Update "%entity%"'
+  documentation: Documentation
   error: 'An error has occured, please try again.'
-
-modal:
-  change_color: Change color...
-  change_campaign_label: Change name...
-  change_campaign_notes: Change notes...
-  answers: Answers
-
+  form:
+    change: Change
+  home: Home
+  modal:
+    close: Close
+  order_by:
+    asc: Ascendant
+    desc: Descendant
+    order: Order
+    order_by: 'Order results by:'
+  pager:
+    current: '-'
+    go: Go
+    go_to: 'Go to page'
+    next: →
+    per_page: 'Results per page'
+    prev: ←
+    result: '{0} results | {1} result | ]1,Inf[ results'
+  play: Play
+  search:
+    no_results: 'No results found for "{keyword}".'
+    placeholder: Search...
+  select_all: 'Select all'
+  simple_no: 'No'
+  simple_yes: 'Yes'
+  wait: 'One moment...'
+button:
+  submit: Submit
 campaign:
-  titles:
-    create_full: 'Create a trigger'
-    new: 'Create a "%type%" trigger'
-    list_full: 'List triggers'
-    list_admin: 'List all triggers'
-    sms: 'SMS'
-    call: 'Call'
-    email: 'Email'
-    implicated_structures: 'Implicated structures list'
-    created_by: 'Créé par %name%'
-    volunteers: 'volunteer(s)'
-  no_nivol:
-    title: 'No nivol bound'
-    description: 'Your RedCall account is not bound to your Pegass account, please contact us in order to use the platform.'
-  types:
-    1_green: 'Information'
-    2_light_orange: 'Preparation (UL)'
-    3_dark_orange: 'Preparation (DT)'
-    4_red: 'Engagement'
-  statuses:
-    my_structures: 'Triggers on my structures'
-    my_volunteers: 'Triggers impacting volunteers in my structures'
-    finished: 'Finished'
   actions:
-    continue: 'Continue'
-    classify: 'Classify'
+    classify: Classify
     close: 'Close the campaign'
+    continue: Continue
     open: 'Reopen the campaign'
+  cannot_reopen: 'Impossible to reopen the campaign: since it was closed, one or several volunteers were triggered and prefix used for their answers was reused.'
   errors:
     inactive: 'This campaign has ended, thank you for your participation.'
+  no_nivol:
+    description: 'Your RedCall account is not bound to your Pegass account, please contact us in order to use the platform.'
+    title: 'No nivol bound'
   order:
+    created_at: 'Creation date'
     label: Label
     type: Color
-    created_at: Creation date
-  cannot_reopen: 'Impossible to reopen the campaign: since it was closed, one or several volunteers were triggered and prefix used for their answers was reused.'
-
+  statuses:
+    finished: Finished
+    my_structures: 'Triggers on my structures'
+    my_volunteers: 'Triggers impacting volunteers in my structures'
+  titles:
+    call: Call
+    create_full: 'Create a trigger'
+    created_by: 'Créé par %name%'
+    email: Email
+    implicated_structures: 'Implicated structures list'
+    list_admin: 'List all triggers'
+    list_full: 'List triggers'
+    new: 'Create a "%type%" trigger'
+    sms: SMS
+    volunteers: volunteer(s)
+  types:
+    1_green: Information
+    2_light_orange: 'Preparation (UL)'
+    3_dark_orange: 'Preparation (DT)'
+    4_red: Engagement
+campaign_status:
+  answer: Responses
+  answer_invalid: 'Other rep.'
+  answer_no: 'Answer %choice%'
+  answers:
+    change: 'Change answers'
+    history: History
+    label: 'Response "%label%"'
+    labels: 'Responses %label%'
+    prefix: 'Response prefix: %prefix%'
+    unclear: Unclear
+  by: 'Sent by %name% (%structure%)'
+  communication_short_title: '%date% at %time%'
+  communication_tabs: Communications
+  communication_title: 'Communication from %date% at %time%'
+  filter:
+    by_response: 'by response'
+    by_skill: 'by skill'
+    by_structure: 'by structure'
+    by_unreachable: 'unreachable people'
+    or: or/and
+    title: Filter
+  finish: 'Sent all %sent% %type% (%replies% answers received, %replies_pct%%)'
+  legend:
+    sms_received: '"SMS received" indicates wether message has been received by the volunteer. If blank, volunteer may have turned off his phone number.'
+    sms_sent: '"SMS sent" indicates whether message has been sent to the volunteer. May be blank if there is a technical issue.'
+  message: 'Your message:'
+  no_notes_yet: 'This trigger does not contain any notes yet.'
+  notes_updated_at: 'Last notes updates on %date% at %time%'
+  progress: 'Sending: %sent% %type% / %total% (%progress%%).'
+  relaunch_communication: 'Relaunch communication'
+  relaunch_communication_confirm: 'Are you sure you wish to relaunch the communication?'
+  selection:
+    call: '📞 Voice call'
+    download_csv: 'Download CSV'
+    download_portrait_pdf: 'Download PDF'
+    email: '✉️ Email'
+    new_message: 'Write new message'
+    sms: '📱 SMS'
+  table:
+    other: 'Other response'
+  warning:
+    no_email: 'No email'
+    no_email_optin: 'Do not want to be triggered through email.'
+    no_phone: 'No phone number'
+    no_phone_optin: 'Do not want to be triggered through phone.'
+csv_export:
+  answer_time: 'Answered at'
+  choice: 'Choice "%choice%"'
+  email: Email
+  firstname: Firstname
+  lastname: Lastname
+  nivol: Nivol
+  other: 'Other responses'
+  phone_number: 'Phone number'
+  received: 'Message received'
+  sent: 'Message sent'
+  tags: Skills
+form:
+  campaign:
+    fields:
+      label: 'Campaign name'
+      notes: 'Optional notes rendered to other RedCall users'
+      notes_title: Notes
+      submit: Send
+  communication:
+    call: 'voice call'
+    email: email
+    fields:
+      add: Add
+      add_answer: 'Add an answer'
+      answer: 'Enter responsef'
+      answers: 'Possible responses'
+      back: Back
+      body: Body
+      cost: 'Message length multiplies its cost by:'
+      geo_location: 'Message recipients will be able to geo locate each others'
+      length: 'Message length:'
+      message: Message
+      multiple_answer: 'Volunteers can choose several answers'
+      other_options: 'Other options'
+      preview: Preview
+      price: 'Estimated communication price:'
+      remove: Delete
+      response_title: Responses
+      selection: 'Selection:'
+      selection_count: volunteers
+      structures: 'Structure(s) to call'
+      subject: Subject
+      submit: Send
+      submit_to: 'Contact %nbr% volunteers'
+      test: 'Test on me'
+      type_call: 'Emergency message sent through a voice call'
+      type_email: 'Message sent by email'
+      type_sms: 'Emergency message sent through SMS'
+      volunteers: Audience
+    nivols_search: 'Copy/paste a list of nivols'
+    nivols_separator: 'You can use any separator you want.'
+    sms: SMS
+    toggle:
+      by_filters: 'Back to filters selection'
+      by_nivol: 'Fill by nivols'
+geolocation:
+  error: 'An error occured.'
+  error_permission: 'You (or a setting in your device) refused to share your location.'
+  error_timeout: 'Location information request has timed out.'
+  error_unavailable: 'Location information are not available.'
+  last_data: 'Position received at %time% (precision: %accuracy%)'
+  last_update: 'Last update:'
+  na: N/A
+  not_supported: 'Your browser does not support geo localization.'
+  share: 'Share my location'
+  share_explains: 'This will let other members of the crew locate you.'
+  started: 'Geolocation enabled'
+  stop: 'Stop geolocalization'
+  subtitle: Geolocation
+  title: 'Crew geolocalization'
+  waiting: Waiting...
+import_report:
+  disable_locked: 'Cannot disable a locked volunteer.'
+  disabled: 'Volunteer is disabled on Pegass.'
+  failed: 'Volunteer is broken on Pegass.'
+  minor: 'Volunteer is minor.'
+  no_contact: 'Volunteer has no phone and no email.'
+  no_email: 'Volunteer has no email.'
+  no_phone: 'Volunteer has no phone number.'
+  removed: 'Volunteer has been anonymized.'
+  update_locked: 'Cannot update a locked volunteer.'
 issues:
-  not_reachable: 'Some volunteers from your action structures are not reachable:'
-  phones: '- %nbr% do not have a phone number'
-  emails: '- %nbr% do not have an email'
-  list: 'See the list of issues'
   details:
-    title: 'Missing phone numbers & emails'
     info1: 'RedCall can only work if volunteer''s contact information are valid and updated.'
     info2: 'This page only show you volunteers that do not have an email or a phone number so you can fill them up.'
     info3: 'Warning, even though a volunteer has both a phone number and an email, nothing guarantees that they are valid on the Gaia database.'
     info4: 'As soon as you can, invite your structure members to check their contact information on Gaia (most importantly their "favorite phone number" and "favorite email") to have better chances of reaching out a maximum of people.'
     open: 'open in Gaia'
-  missing_phone: 'No phone number'
+    title: 'Missing phone numbers & emails'
+  emails: '- %nbr% do not have an email'
+  list: 'See the list of issues'
   missing_email: 'No email'
-
-campaign_status:
-  communication_tabs: Communications
-  communication_short_title: '%date% at %time%'
-  communication_title: 'Communication from %date% at %time%'
-  message: 'Your message:'
-  filter:
-    title: Filter
-    by_structure: by structure
-    by_response: by response
-    by_skill: by skill
-    by_unreachable: unreachable people
-    or: or/and
-  table:
-    other: Other response
-  selection:
-    new_message: Write new message
-    download_csv: Download CSV
-    download_portrait_pdf: Download PDF
-    sms: 📱 SMS
-    call: 📞 Voice call
-    email: ✉️ Email
-  answer_no: 'Answer %choice%'
-  answer_invalid: 'Other rep.'
-  answer: 'Responses'
-  answers:
-    change: 'Change answers'
-    history: 'History'
-    label: 'Response "%label%"'
-    labels: 'Responses %label%'
-    unclear: 'Unclear'
-    prefix: 'Response prefix: %prefix%'
-  legend:
-    sms_sent: '"SMS sent" indicates whether message has been sent to the volunteer. May be blank if there is a technical issue.'
-    sms_received: '"SMS received" indicates wether message has been received by the volunteer. If blank, volunteer may have turned off his phone number.'
-  progress: 'Sending: %sent% %type% / %total% (%progress%%).'
-  relaunch_communication: 'Relaunch communication'
-  relaunch_communication_confirm: 'Are you sure you wish to relaunch the communication?'
-  finish: 'Sent all %sent% %type% (%replies% answers received, %replies_pct%%)'
-  warning:
-    no_phone: 'No phone number'
-    no_email: "No email"
-    no_phone_optin: 'Do not want to be triggered through phone.'
-    no_email_optin: "Do not want to be triggered through email."
-  by: 'Sent by %name% (%structure%)'
-  notes_updated_at: 'Last notes updates on %date% at %time%'
-  no_notes_yet: 'This trigger does not contain any notes yet.'
-
-new_communication:
-  title_sms: Write a new SMS
-  title_call: Write a new voice call
-  title_email: Write a new email
-  subtitle: 'As part of trigger "%label%"'
-
-message:
-  sms:
-    type: 'message(s)'
-    announcement: '%brand% at %hours%h%mins%:'
-    how_to_answer_simple: 'Reply by giving your choice code.'
-    how_to_answer_multiple: 'Reply by giving your choice(s) code(s), separated by a space.'
-    how_to_answer_url: 'Answer by following %url% or by calling %number%'
-    geo_location: 'Geolocation of your crew: %url%'
-  call:
-    type: 'call(s)'
-    announcement: '%brand% at %hours% hours %mins%.'
-    choices: 'To answer "%answer%", press %code%.'
-    repeat: 'To repeat this message, press 0.'
-    unknown: 'Invalid answer.'
-    answer: 'You answered: "%choice%". Thank you for your participation.'
-  email:
-    type: 'email(s)'
-    announcement: '%brand% on %year%-%month%-%day% at %hours%h%mins%:'
-    how_to_answer_simple: 'To give your answer, please click on the following link: %url%'
-    how_to_answer_multiple: 'To give your answer(s), please click on the following link: %url%'
-    possible_answers: 'Possible response(s):'
-    answer_here: 'Click on the following buttons to answer.'
-
-button:
-  submit: 'Submit'
-
-form:
-  communication:
-    fields:
-      response_title: "Responses"
-      type_sms: Emergency message sent through SMS
-      type_call: Emergency message sent through a voice call
-      type_email: Message sent by email
-      geo_location: Message recipients will be able to geo locate each others
-      structures: 'Structure(s) to call'
-      volunteers: Audience
-      selection: 'Selection:'
-      selection_count: volunteers
-      message: Message
-      subject: Subject
-      body: Body
-      answers: Possible responses
-      answer: Enter responsef
-      add: Add
-      add_answer: Add an answer
-      remove: Delete
-      submit: Send
-      test: Test on me
-      submit_to: Contact %nbr% volunteers
-      back: Back
-      other_options: Other options
-      preview: Preview
-      cost: 'Message length multiplies its cost by:'
-      length: 'Message length:'
-      price: 'Estimated communication price:'
-      multiple_answer: 'Volunteers can choose several answers'
-    nivols_search: 'Copy/paste a list of nivols'
-    nivols_separator: 'You can use any separator you want.'
-    toggle:
-      by_nivol: 'Fill by nivols'
-      by_filters: 'Back to filters selection'
-    sms: 'SMS'
-    call: 'voice call'
-    email: 'email'
-  campaign:
-    fields:
-      label: 'Campaign name'
-      notes_title: Notes
-      notes: 'Optional notes rendered to other RedCall users'
-      submit: Send
-
-prefilled_answers:
-  title: Manage pre-filled answers
-  editor:
-    label: 'Name of the responses group'
-    colors: 'Campaign colors for which this group is selectable'
-    answers: 'Responses to crate'
-
+  missing_phone: 'No phone number'
+  not_reachable: 'Some volunteers from your action structures are not reachable:'
+  phones: '- %nbr% do not have a phone number'
+label:
+  and: and
+  from: From
+  structures: structures
+  to: To
+  volunteers: volunteers
+maintenance:
+  message:
+    content: 'Message content (newlines allowed)'
+    title: 'Set a message at the top of every page'
+    type:
+      alert: 'Yellow (alert)'
+      danger: 'Red (danger)'
+      info: 'Blue (info)'
+      label: 'Message color'
+      success: 'Green (success)'
+  modal:
+    for_dev_only: 'This fonctionnality is for developer only.'
+    refresh_button: 'Refresh the datas'
+  refresh: 'Synchronize RedCall and Pegass databases entirely'
+  refresh_started: 'Synchronize launched, it will take a while.'
+  search:
+    description: 'This tool is made to help you build the right xpath search expression.'
+    expression: 'Enter the XPath expression to match your nivol data.'
+    invalid: 'Expression is not valid: %error%.'
+    match: 'Expression match with this document: %data%.'
+    nivol: 'Enter a nivol to render its XML content and test your expression.'
+    notmatch: 'Expression does not match this document.'
+    title: 'Advanced nivols search in Pegass'
+  title: Maintenance
+manage_structures:
+  export: 'Export volunteers contact information'
+  force_update: 'Force update now'
+  form:
+    create: 'Create new structure'
+    disabled: 'Show disabled structures'
+    enabled: 'Show enabled structures'
+  last_update: 'Last Pegass synchro on: %last_update% UTC'
+  manage_prefilled_answers: 'Manage prefilled answers'
+  next_update: 'Next Pegass synchro on: %next_update% UTC'
+  prefilled_answers:
+    form:
+      title: 'Edition of prefilled answers'
+    list_title: 'List of prefilled answers'
+  president: 'President: %president%'
+  search:
+    button: Search
+    label: 'Search structure'
+  title: 'Manage structures'
+  users: 'RedCall users count: %count%'
+  volunteers: 'Volunteers count: %count%'
 manage_volunteers:
   access_denied: 'Cannot edit this volunteer details, (s)he does not belong to any structure you are managing.'
-  title: 'Manage volunteers'
-  title_with_structure: 'Manage volunteers from %name%'
-  others: 'and %count% other(s)'
-  search:
-    label: 'Search for a volunteer (press Enter to continue)'
-    only_enabled: 'Hide disabled volunteers'
-    only_users: 'Only show volunteers having RedCall access'
-    button: 'Rechercher'
   action:
-    title: 'Actions'
-    lock: 'Lock'
-    unlock: 'Unlock'
-    enable: 'Enable'
-    disable: 'Disable'
-    pegass_update: 'Pegass update'
+    disable: Disable
+    enable: Enable
+    lock: Lock
     manual_update: 'Manual update'
-  columns:
-    update: Updated on %date%
-    never_updated: Skills never imported
-  form:
-    create: Create a new volunteer
-    update: Update volunteer
-    nivol: Nivol
-    first_name: First name
-    last_name: Last name
-    phone_number: Phone number
-    phone_number_locked: 'Locked phone number *'
-    phone_number_optin: 'Available by phone number'
-    email: Email
-    email_locked: 'Locked email *'
-    email_optin: 'Available by email'
-    minor: Minor (under 18)
-    enabled: Callable
-    tags: Skills
-    added: Volunteer has properly been added.
-    updated: Volunteer has properly been updated.
-    structures: Affiliate structure(s)
-    lock_info: '* Locked phones and emails are not automatically refreshed by Pegass updates.'
-  anonymize:
-    gdpr: GDPR
-    volunteer_asked_for_it: 'This volunteer asked you to remove his personal data?'
-    continue: 'Continue here'
-    title: 'Data deletion for %name%'
-    details_1: 'In accordance with the Data Protection Act and General Data Protection Regulations (GDPR), volunteers have the right to access, modify, delete and object to the processing of their personal data.'
-    details_2: 'By clicking on the button below, all his/her information will be anonymzed, but will be kept to comply with accounting obligations (because of fees implicated while sending communications).'
-    details_3: 'His/her external identifier (NIVOL) is the only information that will be kept untouched, in order to block any data update coming from external databases and/or other external services.'
-    message: 'Please review the message causing the data deletion.'
-    delete_button: 'Delete his/her data'
-    confirm: 'Confirm'
-    cancel: 'Cancel'
-    campaign:
-      title: '[GDPR] Data deletion request for %nivol%'
-      sms_content: 'Hello, we taken your request into account. You won''t receive messages from us. Sorry for the inconvenience.'
-      email:
-        subject: '[GDPR] RedCall - Update GAIA for #%nivol%'
-        greetings: 'Greetings,'
-        target: 'This message should be forwarded to the Local Unit secretary or its president.'
-        content_1: 'RedCall received from the following person a message indicating that he/she doesn''t belong to the Red Cross anymore. The Red Cross must comply with <a href="https://gdpr.eu/what-is-gdpr/">GDPR</a> and you should update GAIA as a consequence.'
-        content_2: 'From RedCall, required actions have been performed in order to opt him/her out from all upcoming triggers, and this person also received the following message:'
-        who: 'Involved person:'
-        firstname: 'First name : %firstname%'
-        lastname: 'Last name : %lastname%'
-        email: 'Email : %email%'
-        phone: 'Phone number : %phone%'
-        nivol: 'NIVOL : %nivol%'
-        message_received: 'Message received that conducted the volunteer data deletion received on %date% at %time% on trigger <a href="%url%">%trigger%</a>:'
-  contact:
-    mail_subject: '⚠️ %brand%: You have a RedCall Message'
+    pegass_update: 'Pegass update'
+    title: Actions
+    unlock: Unlock
   admin_structures:
     create: 'You will be able to set volunteer''s structures after creating it.'
     edit: 'Edit structures'
     structures: 'Structures update for %name%'
-  redcall:
-    redcall_user: 'Has access to RedCall'
-    action_structures: 'Structures that %name% can trigger'
-
-manage_structures:
-  title: 'Manage structures'
-  search:
-    label: 'Search structure'
-    button: 'Search'
-  president: 'President: %president%'
-  volunteers: 'Volunteers count: %count%'
-  users: 'RedCall users count: %count%'
-  last_update: 'Last Pegass synchro on: %last_update% UTC'
-  next_update: 'Next Pegass synchro on: %next_update% UTC'
-  force_update: 'Force update now'
-  export: 'Export volunteers contact information'
-  manage_prefilled_answers: 'Manage prefilled answers'
+  anonymize:
+    campaign:
+      email:
+        content_1: 'RedCall received from the following person a message indicating that he/she doesn''t belong to the Red Cross anymore. The Red Cross must comply with <a href="https://gdpr.eu/what-is-gdpr/">GDPR</a> and you should update GAIA as a consequence.'
+        content_2: 'From RedCall, required actions have been performed in order to opt him/her out from all upcoming triggers, and this person also received the following message:'
+        email: 'Email : %email%'
+        firstname: 'First name : %firstname%'
+        greetings: 'Greetings,'
+        lastname: 'Last name : %lastname%'
+        message_received: 'Message received that conducted the volunteer data deletion received on %date% at %time% on trigger <a href="%url%">%trigger%</a>:'
+        nivol: 'NIVOL : %nivol%'
+        phone: 'Phone number : %phone%'
+        subject: '[GDPR] RedCall - Update GAIA for #%nivol%'
+        target: 'This message should be forwarded to the Local Unit secretary or its president.'
+        who: 'Involved person:'
+      sms_content: 'Hello, we taken your request into account. You won''t receive messages from us. Sorry for the inconvenience.'
+      title: '[GDPR] Data deletion request for %nivol%'
+    cancel: Cancel
+    confirm: Confirm
+    continue: 'Continue here'
+    delete_button: 'Delete his/her data'
+    details_1: 'In accordance with the Data Protection Act and General Data Protection Regulations (GDPR), volunteers have the right to access, modify, delete and object to the processing of their personal data.'
+    details_2: 'By clicking on the button below, all his/her information will be anonymzed, but will be kept to comply with accounting obligations (because of fees implicated while sending communications).'
+    details_3: 'His/her external identifier (NIVOL) is the only information that will be kept untouched, in order to block any data update coming from external databases and/or other external services.'
+    gdpr: GDPR
+    message: 'Please review the message causing the data deletion.'
+    title: 'Data deletion for %name%'
+    volunteer_asked_for_it: 'This volunteer asked you to remove his personal data?'
+  columns:
+    never_updated: 'Skills never imported'
+    update: 'Updated on %date%'
+  contact:
+    mail_subject: '⚠️ %brand%: You have a RedCall Message'
   form:
-    enabled: 'Show enabled structures'
-    disabled: 'Show disabled structures'
-    create: "Create new structure"
-  prefilled_answers:
-    form:
-      title: "Edition of prefilled answers"
-    list_title: "List of prefilled answers"
-csv_export:
-  nivol: Nivol
-  firstname: Firstname
-  lastname: Lastname
-  phone_number: Phone number
-  email: Email
-  tags: Skills
-  choice: 'Choice "%choice%"'
-  other: Other responses
-  sent: Message sent
-  received: Message received
-  answer_time: Answered at
-
-pdf_export:
-  others: 'and %others% other(s)'
-  generated: 'Generated on %date% at %time%'
-  confidential: CONFIDENTIAL DOCUMENT
-  staff: STAFF
-  communication: 'Communication on %date% at %time%'
-  response: '%choice%'
-  staff_table:
-    name: NAME
-    phone: Phone number
-    skills: Skills
-    time: "Answer's time"
-    nivol: Nivol
+    added: 'Volunteer has properly been added.'
+    create: 'Create a new volunteer'
     email: Email
-
-geolocation:
-  title: Crew geolocalization
-  subtitle: Geolocation
-  share: Share my location
-  share_explains: This will let other members of the crew locate you.
-  not_supported: Your browser does not support geo localization.
-  last_update: 'Last update:'
-  waiting: Waiting...
-  error: An error occured.
-  error_permission: You (or a setting in your device) refused to share your location.
-  error_unavailable: Location information are not available.
-  error_timeout: Location information request has timed out.
-  started: Geolocation enabled
-  stop: Stop geolocalization
-  na: N/A
-  last_data: 'Position received at %time% (precision: %accuracy%)'
-
-import_report:
-  update_locked: 'Cannot update a locked volunteer.'
-  disable_locked: 'Cannot disable a locked volunteer.'
-  no_contact: 'Volunteer has no phone and no email.'
-  no_phone: 'Volunteer has no phone number.'
-  no_email: 'Volunteer has no email.'
-  minor: 'Volunteer is minor.'
-  disabled: 'Volunteer is disabled on Pegass.'
-  failed: 'Volunteer is broken on Pegass.'
-  removed: 'Volunteer has been anonymized.'
-
-maintenance:
-  title: 'Maintenance'
-  refresh: 'Synchronize RedCall and Pegass databases entirely'
-  refresh_started: 'Synchronize launched, it will take a while.'
-  modal:
-    for_dev_only: 'This fonctionnality is for developer only.'
-    refresh_button: 'Refresh the datas'
+    email_locked: 'Locked email *'
+    email_optin: 'Available by email'
+    enabled: Callable
+    first_name: 'First name'
+    last_name: 'Last name'
+    lock_info: '* Locked phones and emails are not automatically refreshed by Pegass updates.'
+    minor: 'Minor (under 18)'
+    nivol: Nivol
+    phone_number: 'Phone number'
+    phone_number_locked: 'Locked phone number *'
+    phone_number_optin: 'Available by phone number'
+    structures: 'Affiliate structure(s)'
+    tags: Skills
+    update: 'Update volunteer'
+    updated: 'Volunteer has properly been updated.'
+  others: 'and %count% other(s)'
+  redcall:
+    action_structures: 'Structures that %name% can trigger'
+    redcall_user: 'Has access to RedCall'
   search:
-    title: 'Advanced nivols search in Pegass'
-    description: 'This tool is made to help you build the right xpath search expression.'
-    nivol: 'Enter a nivol to render its XML content and test your expression.'
-    expression: 'Enter the XPath expression to match your nivol data.'
-  message:
-    title: 'Set a message at the top of every page'
-    type:
-      label: 'Message color'
-      success: 'Green (success)'
-      info: 'Blue (info)'
-      alert: 'Yellow (alert)'
-      danger: 'Red (danger)'
-    content: 'Message content (newlines allowed)'
-
-space:
+    button: Rechercher
+    label: 'Search for a volunteer (press Enter to continue)'
+    only_enabled: 'Hide disabled volunteers'
+    only_users: 'Only show volunteers having RedCall access'
+  title: 'Manage volunteers'
+  title_with_structure: 'Manage volunteers from %name%'
+management:
+  current_structures: 'You are currently able to trigger the following structures:'
   home:
-    link: 'Volunteer space'
-    contact: 'Contact preferences'
-    update_phone: 'Update my phone number, currently:'
-    add_phone: 'Specify a phone number in order to be triggered through SMS or voice calls'
-    update_email: 'Update my email, currently:'
+    link: 'Workforce Management'
+  support_email: 'If there is a mistake, please contact support team at %email%'
+  update_structures: 'Update structures'
+message:
+  call:
+    announcement: '%brand% at %hours% hours %mins%.'
+    answer: 'You answered: "%choice%". Thank you for your participation.'
+    choices: 'To answer "%answer%", press %code%.'
+    repeat: 'To repeat this message, press 0.'
+    type: call(s)
+    unknown: 'Invalid answer.'
+  email:
+    announcement: '%brand% on %year%-%month%-%day% at %hours%h%mins%:'
+    answer_here: 'Click on the following buttons to answer.'
+    how_to_answer_multiple: 'To give your answer(s), please click on the following link: %url%'
+    how_to_answer_simple: 'To give your answer, please click on the following link: %url%'
+    possible_answers: 'Possible response(s):'
+    type: email(s)
+  sms:
+    announcement: '%brand% at %hours%h%mins%:'
+    geo_location: 'Geolocation of your crew: %url%'
+    how_to_answer_multiple: 'Reply by giving your choice(s) code(s), separated by a space.'
+    how_to_answer_simple: 'Reply by giving your choice code.'
+    how_to_answer_url: 'Answer by following %url% or by calling %number%'
+    type: message(s)
+minutis:
+  back: 'Go back to Minutis'
+modal:
+  answers: Answers
+  change_campaign_label: 'Change name...'
+  change_campaign_notes: 'Change notes...'
+  change_color: 'Change color...'
+new_communication:
+  subtitle: 'As part of trigger "%label%"'
+  title_call: 'Write a new voice call'
+  title_email: 'Write a new email'
+  title_sms: 'Write a new SMS'
+pdf_export:
+  communication: 'Communication on %date% at %time%'
+  confidential: 'CONFIDENTIAL DOCUMENT'
+  generated: 'Generated on %date% at %time%'
+  others: 'and %others% other(s)'
+  response: '%choice%'
+  staff: STAFF
+  staff_table:
+    email: Email
+    name: NAME
+    nivol: Nivol
+    phone: 'Phone number'
+    skills: Skills
+    time: 'Answer''s time'
+phone_card:
+  add: 'Add a phone number'
+  error_invalid: 'This phone number format is invalid.'
+  error_not_mobile: 'You can only set mobile phone numbers.'
+  error_taken: 'This phone number is already taken by %truncated_name% (%nivol%).'
+  main: Main
+  title: 'Phone #%index%'
+  use: 'Set as main'
+prefilled_answers:
+  editor:
+    answers: 'Responses to crate'
+    colors: 'Campaign colors for which this group is selectable'
+    label: 'Name of the responses group'
+  title: 'Manage pre-filled answers'
+space:
+  consult_data:
+    announcement_email: '📧 Message sent by email on %day%/%month%/%year% at %hours%h%mins%'
+    announcement_sms: '📱 Message sent by SMS on %day%/%month%/%year% at %hours%h%mins%'
+    announcement_voice: '📞 Message sent by voice call on %day%/%month%/%year% at %hours%h%mins%'
+    answers: 'Received response(s)'
+    choices: 'Possible choices'
+    communications: 'Communications and triggers'
+    download: 'Download as PDF'
+    geo: 'Geolocation data'
+    geo_accuracy: 'Accuracy (m)'
+    geo_date: Date
+    geo_heading: Heading
+    geo_latitude: Latitude
+    geo_longitude: Longitude
+    identity_email: Email
+    identity_email_locked: 'Locked email'
+    identity_email_optin: 'Contacts through email allowed'
+    identity_external: 'External ID'
+    identity_firstname: Firstname
+    identity_id: 'RedCall ID'
+    identity_identifier: 'Synchronisation ID'
+    identity_last_update: 'Last synchronisation'
+    identity_lastname: Lastname
+    identity_locked: 'Active synchronization'
+    identity_main: 'Volunteer record'
+    identity_minor: Minor
+    identity_next_update: 'Next synchronisation'
+    identity_phone: 'Phone number'
+    identity_phone_locked: 'Locked phone number'
+    identity_phone_optin: 'Contacts through voice calls/SMS allowed'
+    identity_report_update: 'Last synchronization rapport'
+    identity_skills: 'Interests & Skills'
+    identity_structures: 'Affiliate structure(s)'
+    identity_sync: 'Pegass Synchronization'
+    identity_user: 'RedCall user'
+    identity_user_access: 'User access'
+    identity_user_admin: 'Administrator access'
+    identity_user_developer: 'Developper access'
+    identity_user_locale: 'Plateform language'
+    identity_user_structures: 'Action structures'
+    title: 'My personal RedCall data'
+  delete_data:
+    cancel: Cancel
+    confirm: Confirm
+    delete_button: 'Remove my data'
+    details_1: 'In accordance with the Data Protection Act and General Data Protection Regulations (GDPR), you have the right to access, modify, delete and object to the processing of your personal data.'
+    details_2: 'By clicking on the button below, all your information will be anonymzed, but will be kept to comply with accounting obligations (because of fees implicated while sending communications).'
+    details_3: 'Your external identifier (NIVOL) is the only information that will be kept untouched, in order to block any data update coming from external databases and/or other external services.'
+    details_4: 'If you wish to anonymize your data, your volunteer space will become unreachable and you won''t be triggered anymore. You will need to contact your local representatives in order to access the RedCall services again.'
+    title: 'Deletion of my personal data'
+  email:
+    details_1: 'You may be contacted by your local unit through email when they need to give you some information or gather your availability for the coming days.'
+    details_2: 'All emails are coming from the following email: %from%'
+    details_3: 'When one or several answers are required, you should click on the buttons located below the message.'
+    details_4: 'Direct replies to the email cannot be taken into account; if you need further details please contact your supervisors.'
+    title: 'Edit my email'
+  enabled:
+    details_1: 'Use ticks below to stop receiving communications from your local unit.'
+    details_2: 'You will be able to come back here anytime to change them again.'
+    title: 'Edit my availability'
+  home:
     add_email: 'Specify an email in order to be triggered through that way'
-    toggle_callable: 'Change my trigger preferences (I am currently'
-    callable: 'triggerable'
-    not_callable: 'not available'
+    add_phone: 'Specify a phone number in order to be triggered through SMS or voice calls'
+    callable: triggerable
+    contact: 'Contact preferences'
     data: 'Personal data'
     data_access: 'Access or download my data'
     data_delete: 'Ask the complete deletion of my data'
+    link: 'Volunteer space'
     no_tracking: 'There are no trackers on this website.'
-    user_title: 'You have an access to RedCall trigger features.'
+    not_callable: 'not available'
+    toggle_callable: 'Change my trigger preferences (I am currently'
+    update_email: 'Update my email, currently:'
+    update_phone: 'Update my phone number, currently:'
     user_details: 'When a volunteer connects to RedCall without that access, he lands by default to this page, which allows him to update his contact preferences and manage his personal data. Do not hesitate to invite volunteers in your structures to check that those information are correct.'
+    user_title: 'You have an access to RedCall trigger features.'
   infos:
-    title: 'RedCall, what''s that?'
     context_1: 'The French Red-Cross is composed of more than a thousand different structures, especially working on Social Action and First Aid.'
+    context_10: '- First name'
+    context_11: '- Last name'
+    context_12: '- Nivol'
+    context_13: 'Structures on which permissions are required'
     context_2: 'For example, if a severe accident occurs in a given building and tens of people find themselves with no housing, the Social Action will take care of them, offering emergency solutions, and providing food and warm clothes if needed.'
     context_3: 'Or, if a strike gets out of hand and French Emergencies are overwhelmed, the French Red-Cross can assist them with ambulances and volunteers.'
     context_4: 'Since members are all civilians and volunteers from all parts of France, it is a great challenge to trigger and mobilise them efficiently.'
@@ -541,123 +591,53 @@ space:
     context_7: 'What the coordinator sees:'
     context_8: 'Once teams are complete, the coordinator can send a PDF containing all relevant information to his territorial direction.'
     context_9: 'RedCall is by default enabled for DLUS, DTUS and PDT, which can trigger their affiliate and action structures. If more permissions are required, you can request them to the Minutis support, with the following information attached:'
-    context_10: '- First name'
-    context_11: '- Last name'
-    context_12: '- Nivol'
-    context_13: 'Structures on which permissions are required'
+    title: 'RedCall, what''s that?'
   logout: 'Sign out'
   phone:
-    title: 'Edit my phone number'
     details_1: 'You may be contacted by your local unit through SMS or voice calls in case of emergency.'
     details_2: 'All messages and calls are coming from the following number(s): %from%'
     details_3: 'You can already add it to your contacts, and assign it a recognizable ringtone.'
     details_4: 'When you receive a message and an answer is required, directly answer to the message by giving, if possible, only the codes that match your choice.'
     details_5: 'Example: if you''re asked "Are you available?" and possible answers are "A1: Yes" and "A2: No", answer using A1 or A2, this will help processing your message automatically, and ease trigger responsible''s job.'
-  email:
-    title: 'Edit my email'
-    details_1: 'You may be contacted by your local unit through email when they need to give you some information or gather your availability for the coming days.'
-    details_2: 'All emails are coming from the following email: %from%'
-    details_3: 'When one or several answers are required, you should click on the buttons located below the message.'
-    details_4: 'Direct replies to the email cannot be taken into account; if you need further details please contact your supervisors.'
-  enabled:
-    title: 'Edit my availability'
-    details_1: 'Use ticks below to stop receiving communications from your local unit.'
-    details_2: 'You will be able to come back here anytime to change them again.'
-  consult_data:
-    download: 'Download as PDF'
-    title: 'My personal RedCall data'
-    identity_main: 'Volunteer record'
-    identity_sync: 'Pegass Synchronization'
-    identity_id: 'RedCall ID'
-    identity_identifier: 'Synchronisation ID'
-    identity_external: 'External ID'
-    identity_firstname: 'Firstname'
-    identity_lastname: 'Lastname'
-    identity_minor: 'Minor'
-    identity_phone: 'Phone number'
-    identity_phone_locked: 'Locked phone number'
-    identity_phone_optin: 'Contacts through voice calls/SMS allowed'
-    identity_email: 'Email'
-    identity_email_locked: 'Locked email'
-    identity_email_optin: 'Contacts through email allowed'
-    identity_locked: 'Active synchronization'
-    identity_last_update: 'Last synchronisation'
-    identity_next_update: 'Next synchronisation'
-    identity_report_update: 'Last synchronization rapport'
-    identity_structures: 'Affiliate structure(s)'
-    identity_skills: 'Interests & Skills'
-    identity_user: 'RedCall user'
-    identity_user_locale: 'Plateform language'
-    identity_user_access: 'User access'
-    identity_user_developer: 'Developper access'
-    identity_user_admin: 'Administrator access'
-    identity_user_structures: 'Action structures'
-    communications: 'Communications and triggers'
-    announcement_sms: '📱 Message sent by SMS on %day%/%month%/%year% at %hours%h%mins%'
-    announcement_voice: '📞 Message sent by voice call on %day%/%month%/%year% at %hours%h%mins%'
-    announcement_email: '📧 Message sent by email on %day%/%month%/%year% at %hours%h%mins%'
-    choices: 'Possible choices'
-    answers: 'Received response(s)'
-    geo: 'Geolocation data'
-    geo_date: 'Date'
-    geo_longitude: 'Longitude'
-    geo_latitude: 'Latitude'
-    geo_accuracy: 'Accuracy (m)'
-    geo_heading: 'Heading'
-  delete_data:
-    title: 'Deletion of my personal data'
-    details_1: 'In accordance with the Data Protection Act and General Data Protection Regulations (GDPR), you have the right to access, modify, delete and object to the processing of your personal data.'
-    details_2: 'By clicking on the button below, all your information will be anonymzed, but will be kept to comply with accounting obligations (because of fees implicated while sending communications).'
-    details_3: 'Your external identifier (NIVOL) is the only information that will be kept untouched, in order to block any data update coming from external databases and/or other external services.'
-    details_4: 'If you wish to anonymize your data, your volunteer space will become unreachable and you won''t be triggered anymore. You will need to contact your local representatives in order to access the RedCall services again.'
-    delete_button: 'Remove my data'
-    confirm: 'Confirm'
-    cancel: 'Cancel'
-
-title:
-  costs: "Costs"
-  messages: "Messages"
-  campaigns: "Campaigns"
-
-label:
-  and: "and"
-  from: "From"
-  to: "To"
-  volunteers: "volunteers"
-  structures: "structures"
-
+    title: 'Edit my phone number'
+special_answers:
+  stop: 'You have successfully unsubscribed to RedCall messages. Manage your preferences at https://rcl.re using your Pegass credentials and clicking the small RedCall icon at the top left.'
+  title: 'Keyword "%keyword%" received from a volunteer'
 structure:
   form:
-    parent: 'Optional parent structure'
     name: 'Structure name'
-
-audience:
-  structures: 'Structure(s) to trigger'
-  audience: 'Audience'
-  select_all: 'Select all'
-  unselect_all: 'Unselect all'
-  see_selection: 'Click to see selection'
-  nivol_title: 'Copy/paste a list of nivols'
-  filter_title: 'Search by structures & skills'
-  classify:
-    invalid: '%nbr% nivols do not exist'
-    disabled: '%nbr% nivols are bound to disabled volunteers'
-    inaccessible: '%nbr% nivols are bound to volunteers that are not in your perimeter'
-    reachable: '%nbr% nivols will be triggered'
-    no_phone: '%nbr% nivols are bound to volunteers without any phone number'
-    phone_optout: '%nbr% nivols are bound to volunteers that don''t want to receive calls/SMS'
-    no_email: '%nbr% nivols are bound to volunteers without any emails'
-    email_optout: '%nbr% nivols are bound to volunteers that don''t want to receive emails'
-
-special_answers:
-  title: 'Keyword "%keyword%" received from a volunteer'
-  stop: 'You have successfully unsubscribed to RedCall messages. Manage your preferences at https://rcl.re using your Pegass credentials and clicking the small RedCall icon at the top left.'
-
-phone_card:
-  title: 'Phone #%index%'
-  main: 'Main'
-  use: 'Set as main'
-  add: 'Add a phone number'
-  error_taken: 'This phone number is already taken by %truncated_name% (%nivol%).'
-  error_invalid: 'This phone number format is invalid.'
-  error_not_mobile: 'You can only set mobile phone numbers.'
+    parent: 'Optional parent structure'
+tag:
+  cem: 'Roam Leader'
+  ci: 'Inter. chief'
+  dlas: DLAS
+  dlus: DLUS
+  drvr_vl: 'VL driver'
+  drvr_vpsp: 'VPSP driver'
+  emergency_assistance: 'Emergency Help'
+  mar: Roamer
+  psc_1: 'PSC 1'
+  pse_1: 'PSE 1'
+  pse_2: 'PSE 2'
+  shortcuts:
+    cem: CE
+    ci: CI
+    dlas: DLAS
+    dlus: DLUS
+    drvr_vl: VL
+    drvr_vpsp: VPSP
+    emergency_assistance: US
+    mar: ROAM
+    psc_1: PSC1
+    pse_1: PSE1
+    pse_2: PSE2
+    social_assistance: AS
+    tcau: TCAU
+    tceo: TCEO
+  social_assistance: 'Social Assistance'
+  tcau: TCAU
+  tceo: TCEO
+title:
+  campaigns: Campaigns
+  costs: Costs
+  messages: Messages

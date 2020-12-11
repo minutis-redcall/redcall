@@ -1,25 +1,25 @@
 form:
   campaign:
     errors:
+      message:
+        empty: 'Please enter a message'
       type:
         empty: 'Please select a campaign type'
       volunteers:
         min: 'At least one volunteer should be targeted'
-      message:
-        empty: 'Please enter a message'
   communication:
     errors:
+      call_multiple: 'Multiple answers are not possible on phone calls.'
       email_geolocation: 'No possible geo location when message sent by email.'
+      no_subject: 'You should provide a subject to the email'
+      prefix_already_used: 'Prefix "{{ string }}" is already used by a communication, in an active campaign.'
+      too_large_call: 'This voice call is too long.'
       too_large_email: 'This email is too long.'
       too_large_sms: 'This SMS is too long.'
-      too_large_call: 'This voice call is too long.'
-      prefix_already_used: 'Prefix "{{ string }}" is already used by a communication, in an active campaign.'
-      no_subject: 'You should provide a subject to the email'
-      call_multiple: 'Multiple answers are not possible on phone calls.'
+  phone_card:
+    error_duplicate: 'You entered the same number several times.'
+    error_multi_preferred: 'You can only have one main phone number.'
+    error_no_preferred: 'You didn''t choose any main phone number.'
   volunteer:
     errors:
       redcall_user: 'This volunteer is bound to a RedCall user, remove first the user and then remove this volunteer.'
-  phone_card:
-    error_no_preferred: 'You didn''t choose any main phone number.'
-    error_multi_preferred: 'You can only have one main phone number.'
-    error_duplicate: 'You entered the same number several times.'

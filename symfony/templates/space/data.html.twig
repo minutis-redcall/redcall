@@ -56,7 +56,7 @@
             <strong>{{ 'space.consult_data.identity_minor'|trans }}</strong>
         </td>
         <td style="padding:5px;">
-            {{ session.volunteer.minor ? 'base.yes'|trans : 'base.no'|trans }}
+            {{ session.volunteer.minor ? 'base.simple_yes'|trans : 'base.simple_no'|trans }}
         </td>
     </tr>
 
@@ -76,7 +76,7 @@
             <strong>{{ 'space.consult_data.identity_phone_locked'|trans }}</strong>
         </td>
         <td style="padding:5px;">
-            {{ session.volunteer.phoneNumberLocked ? 'base.yes'|trans : 'base.no'|trans }}
+            {{ session.volunteer.phoneNumberLocked ? 'base.simple_yes'|trans : 'base.simple_no'|trans }}
         </td>
     </tr>
 
@@ -85,7 +85,7 @@
             <strong>{{ 'space.consult_data.identity_phone_optin'|trans }}</strong>
         </td>
         <td style="padding:5px;">
-            {{ session.volunteer.phoneNumberOptin ? 'base.yes'|trans : 'base.no'|trans }}
+            {{ session.volunteer.phoneNumberOptin ? 'base.simple_yes'|trans : 'base.simple_no'|trans }}
         </td>
     </tr>
 
@@ -103,7 +103,7 @@
             <strong>{{ 'space.consult_data.identity_email_locked'|trans }}</strong>
         </td>
         <td style="padding:5px;">
-            {{ session.volunteer.emailLocked ? 'base.yes'|trans : 'base.no'|trans }}
+            {{ session.volunteer.emailLocked ? 'base.simple_yes'|trans : 'base.simple_no'|trans }}
         </td>
     </tr>
 
@@ -112,7 +112,7 @@
             <strong>{{ 'space.consult_data.identity_email_optin'|trans }}</strong>
         </td>
         <td style="padding:5px;">
-            {{ session.volunteer.emailOptin ? 'base.yes'|trans : 'base.no'|trans }}
+            {{ session.volunteer.emailOptin ? 'base.simple_yes'|trans : 'base.simple_no'|trans }}
         </td>
     </tr>
 
@@ -151,7 +151,7 @@
             <strong>{{ 'space.consult_data.identity_locked'|trans }}</strong>
         </td>
         <td style="padding:5px;">
-            {{ session.volunteer.locked ? 'base.no'|trans : 'base.yes'|trans }}
+            {{ session.volunteer.locked ? 'base.simple_no'|trans : 'base.simple_yes'|trans }}
         </td>
     </tr>
 
@@ -209,7 +209,7 @@
             <strong>{{ 'space.consult_data.identity_user_access'|trans }}</strong>
         </td>
         <td style="padding:5px;">
-            {{ session.volunteer.user ? 'base.yes'|trans : 'base.no'|trans }}
+            {{ session.volunteer.user ? 'base.simple_yes'|trans : 'base.simple_no'|trans }}
         </td>
     </tr>
 
@@ -219,7 +219,7 @@
         </td>
         <td style="padding:5px;">
             {% if session.volunteer.user %}
-                {{ session.volunteer.user.developer ? 'base.yes'|trans : 'base.no'|trans }}
+                {{ session.volunteer.user.developer ? 'base.simple_yes'|trans : 'base.simple_no'|trans }}
             {% else %}
                 -
             {% endif %}
@@ -232,7 +232,7 @@
         </td>
         <td style="padding:5px;">
             {% if session.volunteer.user %}
-                {{ session.volunteer.user.admin ? 'base.yes'|trans : 'base.no'|trans }}
+                {{ session.volunteer.user.admin ? 'base.simple_yes'|trans : 'base.simple_no'|trans }}
             {% else %}
                 -
             {% endif %}
@@ -347,9 +347,9 @@
                                     </td>
                                     <td style="padding: 5px;">
                                         {% if message.answerByChoice(choice) %}
-                                            {{ 'base.yes'|trans }}
+                                            {{ 'base.simple_yes'|trans }}
                                         {% else %}
-                                            {{ 'base.no'|trans }}
+                                            {{ 'base.simple_no'|trans }}
                                         {% endif %}
                                     </td>
                                 </tr>
