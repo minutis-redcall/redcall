@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    <div class="jumbotron text-center">
+
+        {{ block('body', '@!Api/token/details.html.twig') }}
+
+        <br/><br/><br/>
+
+        <a href="{{ path('developer_token_index') }}" class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+
+    </div>
+
+{% endblock %}
+
+{% block javascripts %}
+
+    {{ parent() }}
+
+    {{ block('javascripts', '@!Api/token/details.html.twig') }}
+
+{% endblock %}

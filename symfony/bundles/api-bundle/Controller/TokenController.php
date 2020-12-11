@@ -4,11 +4,13 @@ namespace Bundles\ApiBundle\Controller;
 
 use Bundles\ApiBundle\Entity\Token;
 use Bundles\ApiBundle\Manager\TokenManager;
+use Bundles\ApiBundle\Util;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Constraints\Callback;
@@ -61,7 +63,7 @@ class TokenController extends BaseController
      * @Entity("token", expr="repository.findOneByToken(token)")
      * @IsGranted("TOKEN", subject="token")
      */
-    public function remove(Request $request, Token $token, string $csrf)
+    public function remove(Token $token, string $csrf)
     {
         if (!$this->isCsrfTokenValid('api', $csrf)) {
             throw $this->createNotFoundException();
@@ -70,6 +72,30 @@ class TokenController extends BaseController
         $this->tokenManager->remove($token);
 
         return $this->redirectToRoute('developer_token_index');
+    }
+
+    /**
+     * @Route(path="/details/{token}", name="details")
+     * @Entity("token", expr="repository.findOneByToken(token)")
+     * @IsGranted("TOKEN", subject="token")
+     */
+    public function details(Token $token)
+    {
+        return $this->render('@Api/token/details.html.twig', [
+            'token' => $token,
+        ]);
+    }
+
+    /**
+     * @Route(path="/show-secret/{token}", name="show_secret")
+     * @Entity("token", expr="repository.findOneByToken(token)")
+     * @IsGranted("TOKEN", subject="token")
+     */
+    public function showSecret(Token $token)
+    {
+        return new JsonResponse([
+            'secret' => Util::decrypt($token->getSecret(), $this->getUser()->getUsername()),
+        ]);
     }
 
     private function createTokenCreationForm(Request $request) : FormInterface

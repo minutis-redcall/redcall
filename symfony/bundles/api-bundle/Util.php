@@ -36,7 +36,7 @@ class Util
             case 1:
                 $secret  = getenv('SECRET');
                 $iv      = substr(openssl_digest($username.$secret, 'SHA512'), 0, 16);
-                $urlsafe = substr($encrypted, strpos($encrypted, '-') + 17);
+                $urlsafe = substr($encrypted, strpos($encrypted, '-') + 1);
                 $cypher  = strtr($urlsafe, '-_', '+/');
 
                 $cleartext = openssl_decrypt($cypher, 'AES-256-CBC', $secret, 0, $iv);

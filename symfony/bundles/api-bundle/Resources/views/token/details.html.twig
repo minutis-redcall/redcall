@@ -1,0 +1,43 @@
+{% extends '@Api/base.html.twig' %}
+
+{% block body %}
+
+    <div class="text-left">
+        <h3>Token "{{ token.name }}"</h3>
+
+        <table class="table bg-white">
+            <tr>
+                <td><strong>Token</strong></td>
+                <td>{{ token.token }}</td>
+            </tr>
+            <tr>
+                <td><strong>Secret</strong></td>
+                <td>
+                    <div id="secret-container">
+                        {% for i in 0..64 %}*{% endfor %}
+                        <div class="float-right">
+                            <a href="#" id="show-secret" class="btn btn-sm btn-primary">Show</a>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+
+    </div>
+
+{% endblock %}
+
+{% block javascripts %}
+
+    {{ parent() }}
+
+    <script type="text/javascript">
+        $('#show-secret').click(function (e) {
+            e.preventDefault();
+            $.get('{{ path('developer_token_show_secret', {token: token}) }}', function (data) {
+                $('#secret-container').html(data.secret);
+            });
+        });
+    </script>
+
+{% endblock %}

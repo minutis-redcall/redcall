@@ -149,4 +149,9 @@ class Token
     {
         return $this->username === $user->getUsername();
     }
+
+    public function __toString() : string
+    {
+        return $this->token;
+    }
 }

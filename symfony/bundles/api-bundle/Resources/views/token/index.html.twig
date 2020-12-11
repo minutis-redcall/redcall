@@ -28,9 +28,9 @@
                         </td>
                         <td>
                             <div class="text-right">
-                                <a href="#" class="btn btn-primary">Open</a>
+                                <a href="{{ path('developer_token_details', {token: token}) }}" class="btn btn-primary">Open</a>
                                 &nbsp;&nbsp;
-                                <a href="{{ path('developer_token_remove', {token: token.token, csrf: csrf_token('api')}) }}" onclick="return confirm('Really remove that token?');" class="btn btn-danger">Delete</a>
+                                <a href="{{ path('developer_token_remove', {token: token, csrf: csrf_token('api')}) }}" onclick="return confirm('Really remove that token?');" class="btn btn-danger">Delete</a>
                             </div>
                         </td>
 
