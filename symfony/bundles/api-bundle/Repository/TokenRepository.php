@@ -3,7 +3,6 @@
 namespace Bundles\ApiBundle\Repository;
 
 use Bundles\ApiBundle\Entity\Token;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -13,7 +12,7 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Token[]    findAll()
  * @method Token[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class TokenRepository extends ServiceEntityRepository
+class TokenRepository extends BaseRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
@@ -27,4 +26,13 @@ class TokenRepository extends ServiceEntityRepository
                     ->setParameter('username', $username);
     }
 
+    public function findTokenByNameForUser(string $username, string $name) : ?Token
+    {
+        return $this->getTokensQueryBuilderForUser($username)
+                    ->andWhere('t.name = :name')
+                    ->setParameter('name', $name)
+                    ->setMaxResults(1)
+                    ->getQuery()
+                    ->getOneOrNullResult();
+    }
 }

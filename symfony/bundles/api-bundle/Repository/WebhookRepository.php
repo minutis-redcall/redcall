@@ -3,7 +3,6 @@
 namespace Bundles\ApiBundle\Repository;
 
 use Bundles\ApiBundle\Entity\Webhook;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -12,7 +11,7 @@ use Doctrine\Persistence\ManagerRegistry;
  * @method Webhook[]    findAll()
  * @method Webhook[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class WebhookRepository extends ServiceEntityRepository
+class WebhookRepository extends BaseRepository
 {
     public function __construct(ManagerRegistry $registry)
     {

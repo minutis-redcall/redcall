@@ -4,6 +4,7 @@ namespace Bundles\ApiBundle\Entity;
 
 use Bundles\ApiBundle\Repository\TokenRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @ORM\Entity(repositoryClass=TokenRepository::class)
@@ -14,6 +15,9 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Token
 {
+    const NAME_MAX_LENGTH         = 255;
+    const CLEARTEXT_SECRET_LENGTH = 64;
+
     /**
      * @ORM\Id
      * @ORM\GeneratedValue
@@ -22,7 +26,7 @@ class Token
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=self::NAME_MAX_LENGTH)
      */
     private $name;
 
@@ -40,6 +44,16 @@ class Token
      * @ORM\Column(type="string", length=255)
      */
     private $secret;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $usageCount = 0;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $lastUsedAt;
 
     /**
      * @ORM\Column(type="datetime")
@@ -99,6 +113,26 @@ class Token
         return $this;
     }
 
+    public function getUsageCount() : ?int
+    {
+        return $this->usageCount;
+    }
+
+    public function setUsageCount(int $usageCount) : void
+    {
+        $this->usageCount = $usageCount;
+    }
+
+    public function getLastUsedAt() : ?\DateTimeInterface
+    {
+        return $this->lastUsedAt;
+    }
+
+    public function setLastUsedAt(\DateTimeInterface $lastUsedAt) : void
+    {
+        $this->lastUsedAt = $lastUsedAt;
+    }
+
     public function getCreatedAt() : ?\DateTimeInterface
     {
         return $this->createdAt;
@@ -109,5 +143,10 @@ class Token
         $this->createdAt = $createdAt;
 
         return $this;
+    }
+
+    public function isOwnedBy(UserInterface $user) : bool
+    {
+        return $this->username === $user->getUsername();
     }
 }

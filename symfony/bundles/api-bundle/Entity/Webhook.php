@@ -4,6 +4,7 @@ namespace Bundles\ApiBundle\Entity;
 
 use Bundles\ApiBundle\Repository\WebhookRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @ORM\Entity(repositoryClass=WebhookRepository::class)
@@ -36,6 +37,21 @@ class Webhook
      * @ORM\Column(type="text", nullable=true)
      */
     private $features;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $usageCount;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $lastUsedAt;
+
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    private $createdAt;
 
     public function getId() : ?int
     {
@@ -88,5 +104,40 @@ class Webhook
         $this->features = $features;
 
         return $this;
+    }
+
+    public function getUsageCount() : ?int
+    {
+        return $this->usageCount;
+    }
+
+    public function setUsageCount(int $usageCount) : void
+    {
+        $this->usageCount = $usageCount;
+    }
+
+    public function getLastUsedAt() : ?\DateTimeInterface
+    {
+        return $this->lastUsedAt;
+    }
+
+    public function setLastUsedAt(\DateTimeInterface $lastUsedAt) : void
+    {
+        $this->lastUsedAt = $lastUsedAt;
+    }
+
+    public function getCreatedAt() : ?\DateTimeInterface
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeInterface $createdAt) : void
+    {
+        $this->createdAt = $createdAt;
+    }
+
+    public function isOwnedBy(UserInterface $user) : bool
+    {
+        return $this->username === $user->getUsername();
     }
 }

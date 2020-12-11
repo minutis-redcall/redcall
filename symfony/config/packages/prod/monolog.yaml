@@ -16,12 +16,13 @@ monolog:
       path: "%kernel.logs_dir%/%kernel.environment%.log"
       level: debug
     console:
-      type:   console
+      type: console
       process_psr_3_messages: false
-      channels: ["!event", "!doctrine"]
+      channels: [ "!event", "!doctrine" ]
     google_cloud:
       type: service
       id: monolog_psr_batch_logger
+      level: notice
     slack_no_404:
       type: fingers_crossed
       handler: slack_errors
@@ -38,15 +39,15 @@ monolog:
       type: slack
       token: '%env(SLACK_TOKEN)%'
       channel: '%env(SLACK_CHANNEL)%'
-      channels: ['slack']
+      channels: [ 'slack' ]
 
 services:
 
   monolog_psr_batch_logger:
     class: Monolog\Handler\PsrHandler
-    arguments: ['@google_cloud_stackdriver_psr_batch_logger']
+    arguments: [ '@google_cloud_stackdriver_psr_batch_logger' ]
 
   google_cloud_stackdriver_psr_batch_logger:
     class: Google\Cloud\Logging\PsrLogger
-    factory: ['Google\Cloud\Logging\LoggingClient', 'psrBatchLogger']
-    arguments: ['app']
+    factory: [ 'Google\Cloud\Logging\LoggingClient', 'psrBatchLogger' ]
+    arguments: [ 'app' ]

@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Security\Voter;
+namespace Bundles\ApiBundle\Security\Voter;
 
-use App\Entity\Structure;
 use App\Entity\User;
+use Bundles\ApiBundle\Entity\Token;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-class StructureVoter extends Voter
+class TokenVoter extends Voter
 {
     /**
      * @var Security
@@ -26,7 +26,7 @@ class StructureVoter extends Voter
      */
     protected function supports($attribute, $subject)
     {
-        if (!$subject instanceof Structure) {
+        if (!$subject instanceof Token) {
             return false;
         }
 
@@ -48,12 +48,9 @@ class StructureVoter extends Voter
             return false;
         }
 
-        /** @var Structure $structure */
-        $structure = $subject;
-        if (0 === $structure->getIdentifier()) {
-            return false;
-        }
+        /** @var Token $token */
+        $token = $subject;
 
-        return $user->getStructures()->contains($structure);
+        return $token->isOwnedBy($user);
     }
 }

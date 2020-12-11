@@ -26,7 +26,6 @@ use App\Tools\GSM;
 use App\Tools\Random;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -181,7 +180,6 @@ class CommunicationController extends BaseController
      *     requirements={"id" = "\d+"}
      * )
      * @IsGranted("CAMPAIGN_ACCESS", subject="campaign")
-     * @Method("POST")
      */
     public function addCommunicationAction(Request $request, Campaign $campaign, Type $type)
     {

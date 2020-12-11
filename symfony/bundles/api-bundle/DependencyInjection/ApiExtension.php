@@ -15,5 +15,6 @@ class ApiExtension extends Extension
         $loader->load('controller.yaml');
         $loader->load('manager.yaml');
         $loader->load('repository.yaml');
+        $loader->load('security.yaml');
     }
 }
