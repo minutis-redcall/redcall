@@ -3,6 +3,8 @@
 namespace Bundles\ApiBundle\Manager;
 
 use Bundles\ApiBundle\Repository\TokenRepository;
+use Doctrine\ORM\QueryBuilder;
+use Symfony\Component\Security\Core\Security;
 
 class TokenManager
 {
@@ -11,8 +13,15 @@ class TokenManager
      */
     private $tokenRepository;
 
-    public function __construct(TokenRepository $tokenRepository)
+    /**
+     * @var Security
+     */
+    private $security;
+
+    public function getTokensQueryBuilderForUser() : QueryBuilder
     {
-        $this->tokenRepository = $tokenRepository;
+        return $this->tokenRepository->getTokensQueryBuilderForUser(
+            $this->security->getUser()->getUsername()
+        );
     }
 }

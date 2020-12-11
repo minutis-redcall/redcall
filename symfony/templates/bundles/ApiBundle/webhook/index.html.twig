@@ -1,0 +1,15 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    <div class="jumbotron text-center">
+
+        {{ block('body', '@!Api/webhook/index.html.twig') }}
+
+        <br/><br/><br/>
+
+        <a href="{{ path('developer_home') }}" class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+
+    </div>
+
+{% endblock %}

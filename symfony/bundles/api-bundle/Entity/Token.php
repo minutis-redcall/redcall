@@ -7,6 +7,10 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=TokenRepository::class)
+ * @ORM\Table(indexes={
+ *     @ORM\Index(name="usernamex", columns={"username"}),
+ *     @ORM\Index(name="tokenx", columns={"token"})
+ * })
  */
 class Token
 {

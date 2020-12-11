@@ -1,0 +1,4 @@
+developer:
+  home:
+    manage_tokens: Manage access tokens
+    manage_webhooks: Manage webhooks

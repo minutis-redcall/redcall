@@ -4,16 +4,11 @@
 
     <div class="jumbotron text-center">
 
-        <a href="{{ path('developer_token_index') }}"
-           class="text-lg-center large-button btn btn-secondary">Manage your access tokens</a>
-
-        <br/><br/>
-
+        {{ include('@Api/links.html.twig') }}
 
         <br/><br/><br/>
 
-        <a href="{{ path('home') }}"
-           class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+        <a href="{{ path('home') }}" class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
 
     </div>
 
