@@ -1,0 +1,70 @@
+{% extends '@Api/base.html.twig' %}
+
+{% block body %}
+
+    <div class="text-left">
+        <h3>Token "{{ token.name }}"</h3>
+
+        <table class="table bg-white">
+            <tr>
+                <td><strong>Token</strong></td>
+                <td>{{ token.token }}</td>
+            </tr>
+            <tr>
+                <td><strong>Secret</strong></td>
+                <td>
+                    <div id="secret-container">
+                        {% for i in 0..64 %}*{% endfor %}
+                        <div class="float-right">
+                            <a href="#" id="show-secret" class="btn btn-sm btn-primary">Show</a>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+
+        <p>In order to authenticate, use the following headers:</p>
+        <div class="bg-white" style="padding-left:20px;">
+            <br/>
+            <code>
+                Authorization: Bearer {{ token }}<br/>
+                X-Signature: &lt;Request Signature&gt;
+            </code>
+            <br/><br/>
+        </div>
+
+        <p>&nbsp;</p>
+        <p>The <code>Request Signature</code> is a keyed hash of the request with your token secret.</p>
+        <p>
+            It is an hexadecimal <code>SHA256 HMAC</code> of the concatenation without separators of the method, the
+            relative path of the endoint (without query string) and the body of the API request.
+        </p>
+        <p>&nbsp;</p>
+
+        {% set method = 'GET' %}
+        {% set uri = path("developer_demo") %}
+        {% set body = {'Hello': 'world!'} %}
+        {{ api_demo(token, method, uri, body, false) }}
+
+        <p>&nbsp;</p>
+        <p>In the above example, <code>HMAC(SHA256, {{ method }}{{ uri }}{{ body|json_encode }}, secret)</code></p>
+        <p>= <code>{{ token.sign(method, uri, body|json_encode) }}</code></p>
+
+    </div>
+
+{% endblock %}
+
+{% block javascripts %}
+
+    {{ parent() }}
+
+    <script type="text/javascript">
+        $('#show-secret').click(function (e) {
+            e.preventDefault();
+            $.get('{{ path('developer_token_show_secret', {token: token}) }}', function (data) {
+                $('#secret-container').html(data.secret);
+            });
+        });
+    </script>
+
+{% endblock %}

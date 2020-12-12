@@ -1,0 +1,17 @@
+services:
+
+  Bundles\ApiBundle\Security\Voter\TokenVoter:
+    arguments:
+      - '@security.helper'
+    tags:
+      - security.voter
+
+  Bundles\ApiBundle\Security\Voter\WebhookVoter:
+    arguments:
+      - '@security.helper'
+    tags:
+      - security.voter
+
+  Bundles\ApiBundle\Security\Authenticator\ApiAuthenticator:
+    arguments:
+      - '@Bundles\ApiBundle\Manager\TokenManager'

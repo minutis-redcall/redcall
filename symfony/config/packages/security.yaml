@@ -15,6 +15,16 @@ security:
       pattern: ^/(_(profiler|wdt)|css|images|js)/
       security: false
 
+    api:
+      pattern: '^/api'
+      provider: user_provider
+      stateless: true
+      anonymous: false
+      logout: ~
+      guard:
+        authenticators:
+          - Bundles\ApiBundle\Security\Authenticator\ApiAuthenticator
+
     main:
       pattern: '^/'
       provider: user_provider

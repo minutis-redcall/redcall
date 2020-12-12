@@ -1,0 +1,7 @@
+services:
+
+  Bundles\ApiBundle\Controller\TokenController:
+    arguments:
+      - '@Bundles\ApiBundle\Manager\TokenManager'
+    tags:
+      - controller.service_arguments

@@ -150,6 +150,13 @@
 
             {% endif %}
 
+            {% if app.user|default(false) and is_granted('ROLE_DEVELOPER') %}
+
+                <a href="{{ path('developer_home') }}" class="btn btn-secondary">{{ 'developer.home.link'|trans }}</a>
+                &nbsp;&nbsp;
+
+            {% endif %}
+
             {% if app.user|default(false) and (is_granted('ROLE_ADMIN') or app.user.structures.count) %}
 
                 <a href="{{ path('management_home') }}" class="btn btn-secondary">{{ 'management.home.link'|trans }}</a>
@@ -186,11 +193,27 @@
 
     <div class="row">
         <div class="col-3">
+            <span style="font-size:6px;">{{ 'backlinks.minutis'|trans }}</span>
+            <br/>
+            <span style="font-size:6px;">{{ 'backlinks.redcross'|trans }}</span>
+        </div>
+
+        <div class="col-3">
+            <span style="font-size:6px;">{{ 'backlinks.blablacar'|trans }}</span>
+            <br/>
+            <div style="padding-top:2px;">
+                <a href="https://blablacar.com" target="_blank">
+                    <img src="{{ asset('partners/logo-blablacar.png') }}" height="11"/>
+                </a>
+            </div>
+        </div>
+
+        <div class="col-3">
             <span style="font-size:6px;">{{ 'backlinks.phpstorm'|trans }}</span>
             <br/>
             <div style="padding-top:2px;">
                 <a href="https://www.jetbrains.com/phpstorm/" target="_blank">
-                    <img src="partners/logo-phpstorm.png" height="11"/>
+                    <img src="{{ asset('partners/logo-phpstorm.png') }}" height="11"/>
                 </a>
             </div>
         </div>
@@ -200,11 +223,10 @@
             <br/>
             <div style="margin-left:1px;">
                 <a href="https://phrase.com" target="_blank">
-                    <img src="partners/logo-phrase.png" height="11"/>
+                    <img src="{{ asset('partners/logo-phrase.png') }}" height="11"/>
                 </a>
             </div>
         </div>
-
     </div>
 
 </div>

@@ -80,6 +80,9 @@ audience:
 backlinks:
   phpstorm: 'Développé avec'
   phrase: 'Traductions grâce à'
+  blablacar: 'Parrainé par'
+  minutis: 'Développé par les bénévoles'
+  redcross: 'de Minutis'
 base:
   actions: Actions
   button:
@@ -641,3 +644,6 @@ title:
   campaigns: Déclenchements
   costs: Coûts
   messages: Messages
+developer:
+  home:
+    link: 'Espace développeur'

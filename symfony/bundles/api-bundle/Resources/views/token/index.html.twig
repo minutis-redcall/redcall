@@ -1,0 +1,51 @@
+{% extends '@Api/base.html.twig' %}
+
+{% block body %}
+
+    <div class="text-left">
+        <h3>Your API tokens</h3>
+    </div>
+
+    {% if pager.count %}
+        <div class="bg-white text-left">
+
+            <table class="table table-striped">
+                {% for token in pager %}
+
+                    <tr>
+                        <td>
+                            {{ token.name }}
+                        </td>
+                        <td>
+                            <div class="text-sm-left">
+                                <p>
+                                    {{ token.usageCount }} hits
+                                </p>
+                                <p>
+                                    Last used: {{ token.lastUsedAt ? token.lastUsedAt|date('d/m/Y H:i') : 'Never' }}
+                                </p>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="text-right">
+                                <a href="{{ path('developer_token_details', {token: token}) }}" class="btn btn-primary">Open</a>
+                                &nbsp;&nbsp;
+                                <a href="{{ path('developer_token_remove', {token: token, csrf: csrf_token('api')}) }}" onclick="return confirm('Really remove that token?');" class="btn btn-danger">Delete</a>
+                            </div>
+                        </td>
+
+                    </tr>
+
+                {% endfor %}
+            </table>
+        </div>
+    {% endif %}
+
+    <div class="text-left">
+        {{ form(form) }}
+    </div>
+
+    {% import '@Pagination/macros.html.twig' as macros %}
+    {{ macros.pager(pager) }}
+
+{% endblock %}

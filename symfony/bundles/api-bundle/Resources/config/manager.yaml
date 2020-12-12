@@ -1,0 +1,11 @@
+services:
+
+  Bundles\ApiBundle\Manager\TokenManager:
+    arguments:
+      - '@Bundles\ApiBundle\Repository\TokenRepository'
+      - '@security.helper'
+
+  Bundles\ApiBundle\Manager\WebhookManager:
+    arguments:
+      - '@Bundles\ApiBundle\Repository\WebhookRepository'
+

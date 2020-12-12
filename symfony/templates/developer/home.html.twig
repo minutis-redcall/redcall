@@ -1,0 +1,28 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    <div class="jumbotron">
+
+        <h3>Developer space</h3>
+
+        <p>
+            This part of the application is only available in English because the documentation is automatically
+            generated from the English code.
+        </p>
+
+        <br/><br/>
+
+        <div class="text-center">
+
+            {{ include('@Api/links.html.twig') }}
+
+            <br/><br/><br/>
+
+            <a href="{{ path('home') }}" class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+
+        </div>
+
+    </div>
+
+{% endblock %}

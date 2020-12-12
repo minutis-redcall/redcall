@@ -8,6 +8,7 @@ use App\Manager\StructureManager;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 use Symfony\Component\Security\Core\Security;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 class CampaignVoter extends Voter
 {
@@ -51,7 +52,7 @@ class CampaignVoter extends Voter
 
         /** @var User $user */
         $user = $this->security->getUser();
-        if (!$user) {
+        if (!$user || !($user instanceof UserInterface)) {
             return false;
         }
 
