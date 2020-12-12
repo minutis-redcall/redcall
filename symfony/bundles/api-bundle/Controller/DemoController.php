@@ -2,8 +2,8 @@
 
 namespace Bundles\ApiBundle\Controller;
 
+use Bundles\ApiBundle\Model\ApiResponse;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -12,12 +12,12 @@ use Symfony\Component\Routing\Annotation\Route;
 class DemoController extends BaseController
 {
     /**
-     * @Route(path="/developer/demo", name="developer_demo")
+     * @Route(path="/api/demo", name="developer_demo")
      */
     public function index()
     {
-        return new JsonResponse([
-            'success' => true,
+        return new ApiResponse([
+            'demo' => 'You successfully authenticated!',
         ]);
     }
 }

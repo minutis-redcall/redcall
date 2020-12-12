@@ -61,4 +61,8 @@ class TokenManager
         $this->tokenRepository->remove($token);
     }
 
+    public function findToken(string $token) : ?Token
+    {
+        return $this->tokenRepository->findOneByToken($token);
+    }
 }

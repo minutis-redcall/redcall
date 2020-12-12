@@ -34,15 +34,15 @@
         </div>
 
         <p>&nbsp;</p>
-        <p>The <code>Request Signature</code> is a keyed hash of the request with your secret.</p>
+        <p>The <code>Request Signature</code> is a keyed hash of the request with your token secret.</p>
         <p>
             It is an hexadecimal <code>SHA256 HMAC</code> of the concatenation without separators of the method, the
-            relative uri of the endoint and the body of the API request.
+            relative path of the endoint (without query string) and the body of the API request.
         </p>
         <p>&nbsp;</p>
 
         {% set method = 'GET' %}
-        {% set uri = path("developer_demo", {'foo': 'bar'}) %}
+        {% set uri = path("developer_demo") %}
         {% set body = {'Hello': 'world!'} %}
         {{ api_demo(token, method, uri, body, false) }}
 

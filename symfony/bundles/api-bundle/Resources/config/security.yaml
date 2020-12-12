@@ -11,3 +11,7 @@ services:
       - '@security.helper'
     tags:
       - security.voter
+
+  Bundles\ApiBundle\Security\Authenticator\ApiAuthenticator:
+    arguments:
+      - '@Bundles\ApiBundle\Manager\TokenManager'
