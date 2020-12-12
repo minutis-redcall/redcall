@@ -16,5 +16,6 @@ class ApiExtension extends Extension
         $loader->load('manager.yaml');
         $loader->load('repository.yaml');
         $loader->load('security.yaml');
+        $loader->load('twig.yaml');
     }
 }

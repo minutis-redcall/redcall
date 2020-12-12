@@ -5,4 +5,3 @@ services:
       - '@Bundles\ApiBundle\Manager\TokenManager'
     tags:
       - controller.service_arguments
-

@@ -23,6 +23,33 @@
             </tr>
         </table>
 
+        <p>In order to authenticate, use the following headers:</p>
+        <div class="bg-white" style="padding-left:20px;">
+            <br/>
+            <code>
+                Authorization: Bearer {{ token }}<br/>
+                X-Signature: &lt;Request Signature&gt;
+            </code>
+            <br/><br/>
+        </div>
+
+        <p>&nbsp;</p>
+        <p>The <code>Request Signature</code> is a keyed hash of the request with your secret.</p>
+        <p>
+            It is an hexadecimal <code>SHA256 HMAC</code> of the concatenation without separators of the method, the
+            relative uri of the endoint and the body of the API request.
+        </p>
+        <p>&nbsp;</p>
+
+        {% set method = 'GET' %}
+        {% set uri = path("developer_demo", {'foo': 'bar'}) %}
+        {% set body = {'Hello': 'world!'} %}
+        {{ api_demo(token, method, uri, body, false) }}
+
+        <p>&nbsp;</p>
+        <p>In the above example, <code>HMAC(SHA256, {{ method }}{{ uri }}{{ body|json_encode }}, secret)</code></p>
+        <p>= <code>{{ token.sign(method, uri, body|json_encode) }}</code></p>
+
     </div>
 
 {% endblock %}

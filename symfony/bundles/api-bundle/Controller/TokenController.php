@@ -106,7 +106,7 @@ class TokenController extends BaseController
                         'constraints' => [
                             new NotBlank(),
                             new Length(['max' => Token::NAME_MAX_LENGTH]),
-                            new Regex(['pattern' => '|[a-zA-Z0-9 _/\-]+|']),
+                            new Regex(['pattern' => '|^[a-zA-Z0-9 _/\-]+$|']),
                             new Callback(function ($object, ExecutionContextInterface $context, $payload) {
                                 if ($this->tokenManager->findTokenByNameForUser($object)) {
                                     $context->buildViolation('A token with that name already exists.')
