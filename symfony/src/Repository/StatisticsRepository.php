@@ -40,13 +40,13 @@ class StatisticsRepository
     {
         $sql = "
             select count(*) as total, 
-                   sum(if(volunteer.email is null and volunteer.phone_number is not null, 1, 0)) as email_null,
-                   sum(if(volunteer.phone_number is null and volunteer.email is not null, 1, 0)) as phone_null,
-                   sum(if(volunteer.email is null and volunteer.phone_number is null, 1, 0)) as both_null,
-                   sum(if(volunteer.phone_number is null or volunteer.email is null, 1, 0)) as one_is_null
-            from volunteer
+                   sum(if(v.email is null and p.id is not null, 1, 0)) as email_null,
+                   sum(if(p.id is null and v.email is not null, 1, 0)) as phone_null,
+                   sum(if(v.email is null and p.id is null, 1, 0)) as both_null,
+                   sum(if(p.id is null or v.email is null, 1, 0)) as one_is_null
+            from volunteer v
+            left join phone p on p.volunteer_id = v.id 
             where enabled = 1
-            and locked = 0
         ";
 
         $rsm = new ResultSetMapping();
