@@ -68,6 +68,8 @@ class ApiAuthenticator extends AbstractGuardAuthenticator
             return null;
         }
 
+        $this->tokenManager->increaseHitCount($token);
+
         return $userProvider->loadUserByUsername(
             $token->getUsername()
         );

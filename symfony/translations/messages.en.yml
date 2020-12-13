@@ -78,10 +78,10 @@ audience:
   structures: 'Structure(s) to trigger'
   unselect_all: 'Unselect all'
 backlinks:
-  phpstorm: 'Developed with'
-  phrase: 'Translated with'
   blablacar: 'Sponsored by'
   minutis: 'Developed by Minutis volunteers'
+  phpstorm: 'Developed with'
+  phrase: 'Translated with'
   redcross: 'French Red Cross'
 base:
   actions: Actions
@@ -223,6 +223,9 @@ csv_export:
   received: 'Message received'
   sent: 'Message sent'
   tags: Skills
+developer:
+  home:
+    link: 'Developer space'
 form:
   campaign:
     fields:
@@ -644,6 +647,3 @@ title:
   campaigns: Campaigns
   costs: Costs
   messages: Messages
-developer:
-  home:
-    link: 'Developer space'
