@@ -287,4 +287,14 @@ class StructureRepository extends BaseRepository
             ->getQuery()
             ->getResult();
     }
+
+    public function countRedCallUsersQueryBuilder(QueryBuilder $qb) : QueryBuilder
+    {
+        return (clone $qb)
+            ->select('s.id as structure_id, COUNT(v) AS count')
+            ->join('s.volunteers', 'v')
+            ->join('v.user', 'u')
+            ->andWhere('v.enabled = true')
+            ->groupBy('s.id');
+    }
 }

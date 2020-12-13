@@ -50,7 +50,7 @@
                                     {% endif %}
                                     {{ 'manage_structures.volunteers'|trans({'%count%': structure.activeVolunteers|length}) }}
                                     <br/>
-                                    {{ 'manage_structures.users'|trans({'%count%': structure.users|length}) }}
+                                    {{ 'manage_structures.users'|trans({'%count%': redcallUsers[structure.id]|default(0)}) }}
                                 </div>
                             </div>
                         </div>
