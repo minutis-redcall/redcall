@@ -79,10 +79,17 @@ class StructuresController extends BaseController
             $queryBuilder = $this->structureManager->searchForCurrentUserQueryBuilder($criteria, $enabled);
         }
 
+        $redcallUsers = $this->structureManager->countRedCallUsers(
+            $this->paginationManager->getPager(
+                $this->structureManager->countRedCallUsersQueryBuilder($queryBuilder)
+            )
+        );
+
         return $this->render('management/structures/list.html.twig', [
-            'search'     => $search->createView(),
-            'structures' => $this->paginationManager->getPager($queryBuilder),
-            'enabled'    => $enabled,
+            'search'       => $search->createView(),
+            'structures'   => $this->paginationManager->getPager($queryBuilder),
+            'redcallUsers' => $redcallUsers,
+            'enabled'      => $enabled,
         ]);
     }
 

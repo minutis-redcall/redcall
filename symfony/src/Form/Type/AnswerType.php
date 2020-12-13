@@ -15,12 +15,12 @@ class AnswerType extends TextType
 
         $resolver->setDefaults([
             'attr'        => [
-                'maxlength' => Choice::LENGTH,
+                'maxlength' => Choice::MAX_LENGTH_DEFAULT,
             ],
             'constraints' => [
                 new Length([
                     'min' => 1,
-                    'max' => Choice::LENGTH,
+                    'max' => Choice::MAX_LENGTH_DEFAULT,
                 ]),
             ],
         ]);

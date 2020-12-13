@@ -2,7 +2,5 @@ services:
   Bundles\ApiBundle\Twig\Extension\ApiExtension:
     arguments:
       - '@twig'
-      - '@router'
-      - '@request_stack'
     tags:
       - twig.extension

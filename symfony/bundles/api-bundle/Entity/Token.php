@@ -155,6 +155,14 @@ class Token
         return hash_hmac('sha256', sprintf('%s%s%s', $method, $uri, $body), $this->secret);
     }
 
+    public function incrementHitCount() : int
+    {
+        $this->usageCount++;
+        $this->lastUsedAt = new \DateTime();
+
+        return $this->usageCount;
+    }
+
     public function __toString() : string
     {
         return $this->token;

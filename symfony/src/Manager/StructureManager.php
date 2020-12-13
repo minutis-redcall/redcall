@@ -8,6 +8,7 @@ use App\Entity\User;
 use App\Entity\Volunteer;
 use App\Repository\StructureRepository;
 use Doctrine\ORM\QueryBuilder;
+use Pagerfanta\Pagerfanta;
 
 class StructureManager
 {
@@ -122,5 +123,20 @@ class StructureManager
     public function getCampaignStructures(Campaign $campaign) : array
     {
         return $this->structureRepository->getCampaignStructures($campaign);
+    }
+
+    public function countRedCallUsersQueryBuilder(QueryBuilder $queryBuilder) : QueryBuilder
+    {
+        return $this->structureRepository->countRedCallUsersQueryBuilder($queryBuilder);
+    }
+
+    public function countRedCallUsers(Pagerfanta $pagerfanta) : array
+    {
+        $counts = [];
+        foreach ($pagerfanta->getIterator() as $row) {
+            $counts[$row['structure_id']] = $row['count'];
+        }
+
+        return $counts;
     }
 }

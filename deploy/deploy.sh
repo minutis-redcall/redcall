@@ -15,7 +15,7 @@ fi
 
 cd $ROOTDIR
 
-php symfony/bin/console phrase:sync --sleep=2 --create
+php symfony/bin/console phrase:sync --sleep=5 --create
 
 # Backing up current context
 rm -rf deploying

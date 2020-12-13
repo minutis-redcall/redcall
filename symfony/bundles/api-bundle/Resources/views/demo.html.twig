@@ -1,9 +1,10 @@
-<textarea rows="{{ body|split("\n")|length + 5 }}" style="width: 100%;">
-curl "{{ base }}{{ uri }}" \
-     -X '{{ method }}' \
-     -H 'Content-Type: application/json; charset=utf-8' \
+<textarea rows="{{ body|split("\n")|length + 6 }}" style="width: 100%;">
+curl "{{ uri }}" \
+{% if not method == 'GET' %}     -X '{{ method }}' \
+{% endif %}
      -H 'Authorization: Bearer {{ token }}' \
+     -H 'Content-Length: {{ body|length }}' \
+     -H 'Content-Type: application/json; charset=utf-8' \
      -H 'X-Signature: {{ token.sign(method, uri, body) }}' \
      -d $'{{ body }}'
 </textarea>
-

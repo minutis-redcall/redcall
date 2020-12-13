@@ -54,7 +54,7 @@ class ApiAuthenticator extends AbstractGuardAuthenticator
             'token'     => $this->tokenManager->findToken($matches['uuid']),
             'signature' => $signature,
             'method'    => $request->getMethod(),
-            'uri'       => $request->getPathInfo(),
+            'uri'       => $request->getUri(),
             'body'      => $request->getContent(),
         ];
     }
@@ -67,6 +67,8 @@ class ApiAuthenticator extends AbstractGuardAuthenticator
         if (!$token) {
             return null;
         }
+
+        $this->tokenManager->increaseHitCount($token);
 
         return $userProvider->loadUserByUsername(
             $token->getUsername()

@@ -43,11 +43,13 @@ class TokenController extends BaseController
         $form = $this->createTokenCreationForm($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->tokenManager->createTokenForUser(
+            $token = $this->tokenManager->createTokenForUser(
                 $form->get('name')->getData()
             );
 
-            return $this->redirectToRoute('developer_token_index');
+            return $this->redirectToRoute('developer_token_details', [
+                'token' => $token,
+            ]);
         }
 
         return $this->render('@Api/token/index.html.twig', [

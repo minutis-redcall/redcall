@@ -78,10 +78,10 @@ audience:
   structures: 'Structure(s) à déclencher'
   unselect_all: 'Effacer la sélection'
 backlinks:
-  phpstorm: 'Développé avec'
-  phrase: 'Traductions grâce à'
   blablacar: 'Parrainé par'
   minutis: 'Développé par les bénévoles'
+  phpstorm: 'Développé avec'
+  phrase: 'Traductions grâce à'
   redcross: 'de Minutis'
 base:
   actions: Actions
@@ -223,6 +223,9 @@ csv_export:
   received: 'Message reçu'
   sent: 'Message envoye'
   tags: Competences
+developer:
+  home:
+    link: 'Espace développeur'
 form:
   campaign:
     fields:
@@ -644,6 +647,3 @@ title:
   campaigns: Déclenchements
   costs: Coûts
   messages: Messages
-developer:
-  home:
-    link: 'Espace développeur'

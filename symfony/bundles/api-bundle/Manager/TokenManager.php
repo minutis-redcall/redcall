@@ -42,7 +42,7 @@ class TokenManager
         );
     }
 
-    public function createTokenForUser(string $tokenName)
+    public function createTokenForUser(string $tokenName) : Token
     {
         $username = $this->security->getUser()->getUsername();
 
@@ -54,6 +54,8 @@ class TokenManager
         $token->setCreatedAt(new \DateTime());
 
         $this->tokenRepository->save($token);
+
+        return $token;
     }
 
     public function remove(Token $token)
@@ -64,5 +66,14 @@ class TokenManager
     public function findToken(string $token) : ?Token
     {
         return $this->tokenRepository->findOneByToken($token);
+    }
+
+    public function increaseHitCount(Token $token) : int
+    {
+        $count = $token->incrementHitCount();
+
+        $this->tokenRepository->save($token);
+
+        return $count;
     }
 }

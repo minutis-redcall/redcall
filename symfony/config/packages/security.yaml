@@ -79,7 +79,10 @@ security:
 
     # Website administration
     - { path: '^/admin', roles: [ 'ROLE_ADMIN' ] }
+
+    # Api and api management
     - { path: '^/developer', roles: [ 'ROLE_DEVELOPER' ] }
+    - { path: '^/api', roles: [ 'ROLE_DEVELOPER' ] }
 
     # Google Cloud Tasks
     - { path: '^/cloud-task$', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }

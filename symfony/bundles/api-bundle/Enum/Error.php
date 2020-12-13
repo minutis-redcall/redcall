@@ -28,27 +28,27 @@ class Error extends Enum
     private const DETAILS = [
         self::AUTHENTICATION_NO_AUTHORIZATION => [
             self::KEY_STATUS  => Response::HTTP_BAD_REQUEST,
-            self::KEY_CODE    => '1001',
+            self::KEY_CODE    => 1001,
             self::KEY_MESSAGE => 'Authorization header is missing.',
         ],
         self::AUTHENTICATION_NO_TOKEN         => [
             self::KEY_STATUS  => Response::HTTP_BAD_REQUEST,
-            self::KEY_CODE    => '1002',
+            self::KEY_CODE    => 1002,
             self::KEY_MESSAGE => 'Authorization header is invalid.',
         ],
         self::AUTHENTICATION_NO_SIGNATURE     => [
             self::KEY_STATUS  => Response::HTTP_BAD_REQUEST,
-            self::KEY_CODE    => '1003',
+            self::KEY_CODE    => 1003,
             self::KEY_MESSAGE => 'X-Signature header is missing.',
         ],
         self::AUTHENTICATION_FAILED           => [
             self::KEY_STATUS  => Response::HTTP_UNAUTHORIZED,
-            self::KEY_CODE    => '1004',
+            self::KEY_CODE    => 1004,
             self::KEY_MESSAGE => 'Bad credentials.',
         ],
         self::AUTHENTICATION_REQUIRED         => [
             self::KEY_STATUS  => Response::HTTP_UNAUTHORIZED,
-            self::KEY_CODE    => '1005',
+            self::KEY_CODE    => 1005,
             self::KEY_MESSAGE => 'Authentication required.',
         ],
     ];

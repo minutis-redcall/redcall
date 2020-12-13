@@ -1,9 +1,11 @@
 {% extends '@Api/base.html.twig' %}
 
 {% block body %}
+    {% import '@Api/macros.html.twig' as macros %}
+
 
     <div class="text-left">
-        <h3>Token "{{ token.name }}"</h3>
+        <div class="h3">Token "{{ token.name }}"</div>
 
         <table class="table bg-white">
             <tr>
@@ -23,40 +25,118 @@
             </tr>
         </table>
 
-        <p>In order to authenticate, use the following headers:</p>
-        <div class="bg-white" style="padding-left:20px;">
-            <br/>
-            <code>
-                Authorization: Bearer {{ token }}<br/>
-                X-Signature: &lt;Request Signature&gt;
-            </code>
-            <br/><br/>
+        <hr/>
+
+        <div class="row">
+            <div class="col-md-3">
+                <nav id="toc" class="sticky-top"></nav>
+            </div>
+            <div class="col-md-9">
+                <div>
+                    <h2>Authentication</h2>
+
+                    <p>In order to authenticate, use the following headers:</p>
+                    <div class="bg-white" style="padding-left:20px;">
+                        <br/>
+                        <code>
+                            Authorization: Bearer {{ token }}<br/>
+                            X-Signature: &lt;Request Signature&gt;
+                        </code>
+                        <br/><br/>
+                    </div>
+
+                    <p>&nbsp;</p>
+                    <p>The <code>Request Signature</code> is a keyed hash of the request with your token secret.</p>
+                    <p>
+                        It is an hexadecimal <code>SHA256 HMAC</code> of the concatenation without separators of the
+                        method,
+                        the
+                        full uri of the requested endoint (including query string) and the body of the API request.
+                    </p>
+                    <p>&nbsp;</p>
+
+                    {% set method = 'POST' %}
+                    {% set uri = app.request.schemeAndHttpHost ~ path("developer_demo", {foo: 'bar'}) %}
+                    {% set body = {'Hello': 'world!'} %}
+                    {{ api_demo(token, method, uri, body, false) }}
+
+                    <p>&nbsp;</p>
+                    <p>In the above example, <code>HMAC(SHA256, {{ method }}{{ uri }}{{ body|json_encode }},
+                            secret)</code>
+                    </p>
+                    <p>= <code>{{ token.sign(method, uri, body|json_encode) }}</code></p>
+                </div>
+
+                <hr/>
+
+                <div>
+                    <h2>Responses format</h2>
+
+                    <p>All responses in the API will at least have 2 fields</p>
+
+                    {{ macros.responseProperties([
+                        ['success', true, 'Whether the API call was successful or not'],
+                        ['payload', [], 'The requested resource'],
+                    ]) }}
+
+                    {{ macros.responseSample('{"success":true,"payload":{"demo":"You successfully authenticated!"}}') }}
+                </div>
+
+                <hr/>
+
+                <div>
+                    <h3>Error responses</h3>
+                    <p>If <code>success</code> property is false in the API responses, you will always get the following
+                        properties.</p>
+
+                    {{ macros.responseProperties([
+                        ['success', false, ''],
+                        ['code', 1003, 'A numeric value of the error, meant to ease error handling on your application.'],
+                        ['message', 'X-Signature header is missing.', 'A human readable explanation of the error.'],
+                        ['payload', [], 'Error details (violation of constraints, ...) if any.'],
+                    ]) }}
+
+                    {{ macros.responseSample('{"success":false,"code":1003,"message":"X-Signature header is missing.","payload":{}}') }}
+                </div>
+
+                <hr/>
+
+                <div>
+                    <h3>Pagined responses</h3>
+                    <br/><br/><br/>
+                    <br/><br/><br/>
+                    <br/><br/><br/>
+                    <br/><br/><br/>
+                    <br/><br/><br/>
+                    <br/><br/><br/>
+                    <br/><br/><br/>
+                    <hr/>
+                </div>
+
+            </div>
         </div>
 
-        <p>&nbsp;</p>
-        <p>The <code>Request Signature</code> is a keyed hash of the request with your token secret.</p>
-        <p>
-            It is an hexadecimal <code>SHA256 HMAC</code> of the concatenation without separators of the method, the
-            relative path of the endoint (without query string) and the body of the API request.
-        </p>
-        <p>&nbsp;</p>
+        <br/><br/><br/>
 
-        {% set method = 'GET' %}
-        {% set uri = path("developer_demo") %}
-        {% set body = {'Hello': 'world!'} %}
-        {{ api_demo(token, method, uri, body, false) }}
-
-        <p>&nbsp;</p>
-        <p>In the above example, <code>HMAC(SHA256, {{ method }}{{ uri }}{{ body|json_encode }}, secret)</code></p>
-        <p>= <code>{{ token.sign(method, uri, body|json_encode) }}</code></p>
+        <div class="text-center">
+            <a href="{{ path('developer_token_index') }}" class="btn btn-secondary">Back</a>
+        </div>
 
     </div>
 
+
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet"
+          href="https://cdn.rawgit.com/afeld/bootstrap-toc/v1.0.1/dist/bootstrap-toc.min.css"/>
 {% endblock %}
 
 {% block javascripts %}
 
     {{ parent() }}
+    <script src="https://cdn.rawgit.com/afeld/bootstrap-toc/v1.0.1/dist/bootstrap-toc.min.js"></script>
 
     <script type="text/javascript">
         $('#show-secret').click(function (e) {
@@ -65,6 +145,16 @@
                 $('#secret-container').html(data.secret);
             });
         });
+
+        $(function () {
+            var navSelector = '#toc';
+            var $myNav = $(navSelector);
+            Toc.init($myNav);
+            $('body').scrollspy({
+                target: navSelector
+            });
+        });
+
     </script>
 
 {% endblock %}
