@@ -16,6 +16,7 @@ form:
       too_large_call: 'This voice call is too long.'
       too_large_email: 'This email is too long.'
       too_large_sms: 'This SMS is too long.'
+      too_large_choice: 'Length of one of the answer is too long.'
   phone_card:
     error_duplicate: 'You entered the same number several times.'
     error_multi_preferred: 'You can only have one main phone number.'

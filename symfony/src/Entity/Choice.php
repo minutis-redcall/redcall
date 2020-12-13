@@ -9,7 +9,8 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Choice
 {
-    const LENGTH = 16;
+    const MAX_LENGTH_DEFAULT = 255;
+    const MAX_LENGTH_SMS     = 16;
 
     /**
      * @ORM\Id()
@@ -28,7 +29,7 @@ class Choice
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=self::LENGTH)
+     * @ORM\Column(type="string", length=self::MAX_LENGTH_DEFAULT)
      */
     private $label;
 

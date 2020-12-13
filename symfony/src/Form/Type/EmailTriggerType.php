@@ -2,6 +2,7 @@
 
 namespace App\Form\Type;
 
+use App\Entity\Choice;
 use App\Form\Model\EmailTrigger;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -37,6 +38,9 @@ class EmailTriggerType extends AbstractType
                 'entry_type'    => AnswerType::class,
                 'entry_options' => [
                     'label' => false,
+                    'attr'  => [
+                        'maxlength' => Choice::MAX_LENGTH_DEFAULT,
+                    ],
                 ],
                 'allow_add'     => true,
                 'allow_delete'  => true,
