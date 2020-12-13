@@ -82,6 +82,8 @@
                     {{ macros.responseSample('{"success":true,"payload":{"demo":"You successfully authenticated!"}}') }}
                 </div>
 
+                <hr/>
+
                 <div>
                     <h3>Error responses</h3>
                     <p>If <code>success</code> property is false in the API responses, you will always get the following
@@ -94,8 +96,10 @@
                         ['payload', [], 'Error details (violation of constraints, ...) if any.'],
                     ]) }}
 
-                    {{ macros.responseSample('{"success":true,"payload":{"demo":"You successfully authenticated!"}}') }}
+                    {{ macros.responseSample('{"success":false,"code":1003,"message":"X-Signature header is missing.","payload":{}}') }}
                 </div>
+
+                <hr/>
 
                 <div>
                     <h3>Pagined responses</h3>
@@ -114,7 +118,9 @@
 
         <br/><br/><br/>
 
-        <a href="{{ path('developer_token_index') }}" class="btn btn-secondary">Back</a>
+        <div class="text-center">
+            <a href="{{ path('developer_token_index') }}" class="btn btn-secondary">Back</a>
+        </div>
 
     </div>
 
