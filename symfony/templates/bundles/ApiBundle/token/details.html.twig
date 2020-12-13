@@ -6,10 +6,6 @@
 
         {{ block('body', '@!Api/token/details.html.twig') }}
 
-        <br/><br/><br/>
-
-        <a href="{{ path('developer_token_index') }}" class="btn btn-secondary">Back</a>
-
     </div>
 
 {% endblock %}
@@ -19,5 +15,13 @@
     {{ parent() }}
 
     {{ block('javascripts', '@!Api/token/details.html.twig') }}
+
+{% endblock %}
+
+{% block stylesheets %}
+
+    {{ parent() }}
+
+    {{ block('stylesheets', '@!Api/token/details.html.twig') }}
 
 {% endblock %}
