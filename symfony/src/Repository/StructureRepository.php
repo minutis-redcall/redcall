@@ -293,7 +293,7 @@ class StructureRepository extends BaseRepository
         return (clone $qb)
             ->select('s.id as structure_id, COUNT(v) AS count')
             ->join('s.volunteers', 'v')
-            ->join('v.user', 'u')
+            ->join('v.user', 'su')
             ->andWhere('v.enabled = true')
             ->groupBy('s.id');
     }

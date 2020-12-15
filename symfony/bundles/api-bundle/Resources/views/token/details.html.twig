@@ -28,10 +28,10 @@
         <hr/>
 
         <div class="row">
-            <div class="col-md-3">
+            <div class="col-md-2">
                 <nav id="toc" class="sticky-top"></nav>
             </div>
-            <div class="col-md-9">
+            <div class="col-md-8">
                 <div>
                     <h2>Authentication</h2>
 
@@ -49,9 +49,8 @@
                     <p>The <code>Request Signature</code> is a keyed hash of the request with your token secret.</p>
                     <p>
                         It is an hexadecimal <code>SHA256 HMAC</code> of the concatenation without separators of the
-                        method,
-                        the
-                        full uri of the requested endoint (including query string) and the body of the API request.
+                        method, the full uri of the requested endoint (including query string) and the body of the API
+                        request.
                     </p>
                     <p>&nbsp;</p>
 
@@ -72,7 +71,7 @@
                 <div>
                     <h2>Responses format</h2>
 
-                    <p>All responses in the API will at least have 2 fields</p>
+                    <p>All responses in the API will at least have 2 properties</p>
 
                     {{ macros.responseProperties([
                         ['success', true, 'Whether the API call was successful or not'],
@@ -86,11 +85,10 @@
 
                 <div>
                     <h3>Error responses</h3>
-                    <p>If <code>success</code> property is false in the API responses, you will always get the following
-                        properties.</p>
+                    <p>If <code>success</code> property is false in the API responses, the following properties will be
+                        available.</p>
 
                     {{ macros.responseProperties([
-                        ['success', false, ''],
                         ['code', 1003, 'A numeric value of the error, meant to ease error handling on your application.'],
                         ['message', 'X-Signature header is missing.', 'A human readable explanation of the error.'],
                         ['payload', [], 'Error details (violation of constraints, ...) if any.'],
