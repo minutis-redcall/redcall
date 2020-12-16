@@ -40,6 +40,7 @@ source .env >/dev/null
 GREENLIGHT=$(wget -O- ${WEBSITE_URL}/deploy)
 if [[ "${GREENLIGHT}" != "0" ]]; then
   echo "A communication has recently been triggered, cannot deploy before ${GREENLIGHT} seconds"
+  cd ..
   cp deploying/.env symfony/.env
   cp deploying/google-service-account.json symfony/config/keys/google-service-account.json
   rm -r deploying
