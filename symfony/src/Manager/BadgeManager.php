@@ -4,6 +4,7 @@ namespace App\Manager;
 
 use App\Entity\Badge;
 use App\Repository\BadgeRepository;
+use Pagerfanta\Pagerfanta;
 
 class BadgeManager
 {
@@ -44,4 +45,21 @@ class BadgeManager
     {
         return $this->badgeRepository->search($criteria, $limit);
     }
+
+    public function remove(Badge $badge)
+    {
+        $this->badgeRepository->remove($badge);
+    }
+
+    public function getVolunteerCountInSearch(Pagerfanta $pager)
+    {
+        $ids = [];
+        foreach ($pager->getIterator() as $badge) {
+            /** @var Badge $badge */
+            $ids[] = $badge->getId();
+        }
+
+        return $this->badgeRepository->getVolunteerCountInBadgeList($ids);
+    }
+
 }

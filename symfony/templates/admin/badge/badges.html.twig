@@ -26,7 +26,7 @@
     <div class="row">
         {% for badge in badges %}
             <div class="col-6" id="badge-{{ badge.id }}" style="padding:5px;">
-                {{ include('admin/badge/badge.html.twig', {badge: badge}) }}
+                {{ include('admin/badge/badge.html.twig', {badge: badge, count: counts[badge.id]}) }}
             </div>
         {% endfor %}
     </div>
@@ -34,5 +34,27 @@
     <br/>
     {{ macros.pager(badges) }}
     <br/>
+
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    <script type="text/javascript">
+        {# Delete button #}
+        $('body').on('click', '.delete-badge', function (e) {
+            e.preventDefault();
+
+            var that = $(this);
+
+            if (!confirm('{{ 'admin.badge.delete'|trans }}'.replace('%name%', that.data('name')))) {
+                return;
+            }
+
+            $.post(that.data('uri'), function () {
+                $('#badge-' + that.data('id')).remove();
+            });
+        });
+    </script>
 
 {% endblock %}

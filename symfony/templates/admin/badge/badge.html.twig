@@ -5,7 +5,7 @@
     <div class="card-body">
         <strong>{{ badge.description }}</strong>
 
-        <p>Utilisé par {{ badge.volunteers|length }} bénévoles</p>
+        <p>Utilisé par {{ count }} bénévoles</p>
 
         {% if badge.synonym %}
             <div>Synonyme : {{ badge.synonym.name }}</div>
@@ -15,21 +15,26 @@
             <div>Parent : {{ badge.parent.name }}</div>
         {% endif %}
 
+        <br/>
 
-        <div class="text-right">
-            <a href="#" class="btn btn-small btn-secondary open-category-form"
+        <div>
+            <a href="{{ path('admin_badge_manage', app.request.query.all|merge({id: badge.id})) }}" class="btn btn-small btn-secondary open-category-form"
                data-uri="">
                 ✏️ {{ 'base.button.update'|trans }}
             </a>
 
-            <a href="#"
-               class="btn btn-small btn-secondary delete-category"
-               data-id="{{ badge.id }}"
-               data-name="{{ badge.name|e('js') }}"
-               data-uri="#">
-                🔥️ {{ 'base.button.delete'|trans }}
-            </a>
-
+            {% if badge.canBeRemoved %}
+                <div class="float-right">
+                    <a href="#"
+                       class="btn btn-small btn-secondary delete-badge"
+                       style="border: 1px solid red!important;"
+                       data-id="{{ badge.id }}"
+                       data-name="{{ badge.name|e('js') }}"
+                       data-uri="{{ path('admin_badge_remove', {id: badge.id, token: csrf_token('token')}) }}">
+                        ❌
+                    </a>
+                </div>
+            {% endif %}
         </div>
 
     </div>

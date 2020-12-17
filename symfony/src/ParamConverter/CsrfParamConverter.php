@@ -27,16 +27,20 @@ class CsrfParamConverter implements ParamConverterInterface
 
     public function apply(Request $request, ParamConverter $configuration)
     {
+        if ($configuration->isOptional()) {
+            throw new \LogicException('CSRF tokens cannot be optional.');
+        }
+
         $id = $configuration->getName();
 
         if (!$request->attributes->has($id)) {
-            return false;
+            throw new NotFoundHttpException('Invalid CSRF token');
         }
 
         $token = $request->attributes->get($id);
 
-        if (!$token && $configuration->isOptional()) {
-            return false;
+        if (!$token) {
+            throw new NotFoundHttpException('Invalid CSRF token');
         }
 
         if (!$this->csrfTokenManager->isTokenValid(new CsrfToken($id, $token))) {

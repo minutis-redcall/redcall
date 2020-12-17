@@ -8,6 +8,7 @@
             </div>
             <div class="col-3 category-badge-{{ badge.id }} text-right" style="padding:5px;">
                 <a href="#"
+                   data-id="{{ category.id }}"
                    data-confirm="{{ 'admin.category.badges_delete'|trans({'%name%': badge.name}) }}"
                    data-uri="{{ path('admin_category_delete_badge', {categoryId: category.id, badgeId: badge.id, token: csrf_token('token')}) }}"
                    data-row="category-badge-{{ badge.id }}"
@@ -37,6 +38,9 @@
                 }, function (response) {
                     $('#category-badges .modal-body').html(response.body);
                     $('#category-badges .modal-body .flexdatalist').flexdatalist();
+                    $.get('{{ path('admin_category_refresh', {id: category.id}) }}', function (html) {
+                        $('#category-{{ category.id }}').html(html);
+                    });
                 });
             }
         });

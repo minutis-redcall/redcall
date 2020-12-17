@@ -23,6 +23,16 @@ admin:
       8: 'Vous pouvez choisir quels badges sont visibles par défaut sur la plateforme. Les structures pourront en faire apparaître d''autres si besoin.'
     search: 'Chercher un badge'
     title: 'Gestion des badges'
+    create: 'Create a new badge'
+    edit: 'Edit badge "%name%"'
+    delete: 'Do you really want to remove %name% badge?'
+    form:
+      name: 'Badge name'
+      description: 'Complete description'
+      category: 'Badge category (actions, vehicles, trainings...)'
+      priority: 'Badge priority (this will change its position on the badge list)'
+      parent: 'Badge of the pevious level (ex: a "truck driver" has "vehicle driver" as previous level badge, because if someone can ride a truck, he also can ride a car)'
+      synonyms: 'Synonym badges (this badge should replace all badges given on the following field)'
   category:
     badges: Badges
     badges_add: 'Add a badge'
@@ -33,7 +43,7 @@ admin:
       badges: 'Manage badges'
       priority: 'Priority: %priority%'
     create: 'Create a new category'
-    delete: 'Do you really want to remove %name% name?'
+    delete: 'Do you really want to remove %name% category?'
     description: 'Categories are used to regroup and sort out how badges are rendered in the platform.'
     edit: 'Edit a category'
     form:
@@ -124,6 +134,7 @@ base:
     open: Open
     save: Save
     update: Edit
+    search: Search
   clear_selection: 'Clear selection'
   crud:
     create_title: 'Add a new entry'

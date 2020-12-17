@@ -14,12 +14,8 @@
             {{ 'base.button.save'|trans }}
         </a>
     {% endset %}
+
     {{ macros.modal('category-form', 'base.wait'|trans, '', buttons) }}
-    <div class="text-right">
-        <a href="#" class="btn btn-secondary open-category-form" data-uri="{{ path('admin_category_form') }}">
-            {{ 'admin.category.create'|trans }}
-        </a>
-    </div>
 
     {# Modal: Badge list #}
     {{ macros.modal('category-badges', 'base.wait'|trans, '') }}
@@ -36,7 +32,13 @@
 
     {{ macros.pager(categories) }}
 
-    <br/><br/>
+    <br/>
+
+    <div class="text-right">
+        <a href="#" class="btn btn-secondary open-category-form" data-uri="{{ path('admin_category_form') }}">
+            {{ 'admin.category.create'|trans }}
+        </a>
+    </div>
 
     <div class="text-center">
         <a href="{{ path('admin_badge_index') }}" class="btn btn-secondary">
@@ -134,6 +136,9 @@
             if (confirm(that.data('confirm'))) {
                 $.post(that.data('uri'), function () {
                     $('.' + that.data('row')).remove();
+                    $.get('{{ path('admin_category_refresh', {id: 'categoryId'}) }}'.replace('categoryId', that.data('id')), function (html) {
+                        $('#category-' + that.data('id')).html(html);
+                    });
                 });
             }
         })

@@ -101,6 +101,8 @@ class Phrase
                 'HTTP_CONTENT_TYPE'  => 'Application/Json',
             ], $body ? json_encode($body, JSON_PRETTY_PRINT) : null);
 
+        //echo "{$method} {$path}: ", $placeholders ? sprintf('(%s):', json_encode($placeholders)) : '', $this->getClient()->getResponse()->getStatusCode(), PHP_EOL;
+
         $response = $this->getClient()->getResponse()->getContent();
 
         return $response;

@@ -110,7 +110,7 @@ class Category
     public function toSearchResults() : array
     {
         return [
-            'id'   => $this->getId(),
+            'id'   => (string) $this->getId(),
             'name' => $this->getName(),
         ];
     }

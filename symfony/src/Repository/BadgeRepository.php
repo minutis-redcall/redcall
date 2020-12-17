@@ -25,15 +25,36 @@ class BadgeRepository extends BaseRepository
         $qb = $this->createQueryBuilder('b')
                    ->leftJoin('b.category', 'c')
                    ->where('b.restricted = false')
-                   ->orderBy('c.priority', 'DESC')
+                   ->addOrderBy('c.priority', 'DESC')
                    ->addOrderBy('b.priority', 'DESC')
-                   ->addOrderBy('b.name', 'ASC');
+                   ->addOrderBy('b.name', 'ASC')
+                   ->groupBy('b.id');
 
         if ($criteria) {
             $this->addSearchCriteria($qb, $criteria);
         }
 
         return $qb;
+    }
+
+    public function getVolunteerCountInBadgeList(array $ids) : array
+    {
+        $rows = $this->createQueryBuilder('b')
+                     ->select('b.id, COUNT(v) AS count')
+                     ->join('b.volunteers', 'v')
+                     ->where('b.restricted = false')
+                     ->andWhere('b.id IN (:ids)')
+                     ->setParameter('ids', $ids)
+                     ->groupBy('b.id')
+                     ->getQuery()
+                     ->getArrayResult();
+
+        $counts = [];
+        foreach ($rows as $row) {
+            $counts[$row['id']] = $row['count'];
+        }
+
+        return $counts;
     }
 
     public function search(?string $criteria, int $limit) : array

@@ -155,6 +155,16 @@ class CategoryController extends BaseController
     }
 
     /**
+     * @Route(name="refresh", path="/refresh-category-category-{id}")
+     */
+    public function refreshCategoryCard(Category $category)
+    {
+        return $this->render('admin/category/category.html.twig', [
+            'category' => $category,
+        ]);
+    }
+
+    /**
      * @Route(name="delete_badge", path="/delete-badge-{badgeId}-in-category-{categoryId}/{token}"))
      * @Entity("category", expr="repository.find(categoryId)")
      * @Entity("badge", expr="repository.find(badgeId)")

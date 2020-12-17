@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=BadgeRepository::class)
+ * @ORM\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
  */
 class Badge
 {
@@ -88,22 +89,22 @@ class Badge
     private $volunteers;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Badge::class, inversedBy="children")
+     * @ORM\ManyToOne(targetEntity=Badge::class, inversedBy="children", cascade="all")
      */
     private $parent;
 
     /**
-     * @ORM\OneToMany(targetEntity=Badge::class, mappedBy="parent")
+     * @ORM\OneToMany(targetEntity=Badge::class, mappedBy="parent", cascade="all")
      */
     private $children;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Badge::class, inversedBy="synonyms")
+     * @ORM\ManyToOne(targetEntity=Badge::class, inversedBy="synonyms", cascade="all")
      */
     private $synonym;
 
     /**
-     * @ORM\OneToMany(targetEntity=Badge::class, mappedBy="synonym")
+     * @ORM\OneToMany(targetEntity=Badge::class, mappedBy="synonym", cascade="all")
      */
     private $synonyms;
 
@@ -358,7 +359,7 @@ class Badge
     public function toSearchResults() : array
     {
         return [
-            'id'   => $this->getId(),
+            'id'   => (string) $this->getId(),
             'name' => $this->getFullName(),
         ];
     }
@@ -397,5 +398,10 @@ class Badge
         }
 
         return $this;
+    }
+
+    public function canBeRemoved() : bool
+    {
+        return null === $this->externalId;
     }
 }

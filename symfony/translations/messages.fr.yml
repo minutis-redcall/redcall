@@ -21,8 +21,18 @@ admin:
       6: 'Un badge peut-être catégorisé (ex: VL et VPSP sont des compétences liées aux véhicules; PSC, PSE, CI liées au secourisme).'
       7: 'Un badge peut-être priorisé (cela change son ordre d''apparition dans la liste des compétences).'
       8: 'Vous pouvez choisir quels badges sont visibles par défaut sur la plateforme. Les structures pourront en faire apparaître d''autres si besoin.'
+    form:
+      name: 'Nom du badge'
+      description: 'Description complète'
+      category: 'Catégorie du badge (ex: actions, véhicules, formation secouriste...)'
+      priority: 'Priorité du badge (cela modifiera sa place dans l''affichage des badges)'
+      parent: 'Badge de niveau inférieur (ex: chauffeur VPSP a pour badge de niveau inférieur chauffeur VL car si un chauffeur conduit une ambulance, il peut conduire une voiture)'
+      synonyms: 'Badges synonymes (ce badge remplacera l''ensemble des badges ci-dessous)'
     search: 'Chercher un badge'
     title: 'Gestion des badges'
+    create: 'Création d''un nouveau badge'
+    edit: 'Edition du badge "%name%"'
+    delete: 'Voulez-vous vraiment supprimer le badge %name% ?'
   category:
     badges: Badges
     badges_add: 'Ajouter un badge'
@@ -124,6 +134,7 @@ base:
     open: Ouvrir
     save: Sauvegarder
     update: Editer
+    search: Rechercher
   clear_selection: 'Effacer la sélection'
   crud:
     create_title: 'Ajouter une entrée'

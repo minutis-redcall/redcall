@@ -1,0 +1,12 @@
+{% block collection_row %}
+
+    {{ form_errors(form) }}
+    {{ form_label(form) }}
+
+    {{ block('collection_widget') }}
+
+    <div class="text-right">
+        <a href="#" id="add-synonym" class="btn btn-secondary">Ajouter un synonyme</a>
+    </div>
+
+{% endblock %}
