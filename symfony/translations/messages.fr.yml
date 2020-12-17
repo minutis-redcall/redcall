@@ -11,6 +11,36 @@ admin:
       trigger: Déclenchement
       volunteer: Bénévole
     title: 'Analyser les réponses'
+  badge:
+    description:
+      1: 'Les badges permettent de filtrer les bénévoles à déclencher.'
+      2: 'Le nom du badge doit-être petit car il est affiché partout où le bénévole est affiché (ex: US pour Urgence Secours).'
+      3: 'La description du badge doit permettre de comprendre à quoi il correspond.'
+      4: 'Un badge (REC-PSE1) peut avoir un synonyme (PSE1), ainsi tout bénévole possédant REC-PSE1 affichera PSE1.'
+      5: 'Un badge (PSE2) peut avoir un parent (PSE1), ainsi tout bénévole possédant PSE2 aura implicitement PSE1 aussi.'
+      6: 'Un badge peut-être catégorisé (ex: VL et VPSP sont des compétences liées aux véhicules; PSC, PSE, CI liées au secourisme).'
+      7: 'Un badge peut-être priorisé (cela change son ordre d''apparition dans la liste des compétences).'
+      8: 'Vous pouvez choisir quels badges sont visibles par défaut sur la plateforme. Les structures pourront en faire apparaître d''autres si besoin.'
+    search: 'Chercher un badge'
+    title: 'Gestion des badges'
+  category:
+    badges: Badges
+    badges_add: 'Ajouter un badge'
+    badges_delete: 'Vraiment supprimer le badge %name% de cette catégorie ?'
+    badges_list: 'Liste des badges dans %name%'
+    card:
+      badge_count: 'Nombre de badges: %badge_count%'
+      badges: 'Modifier les badges'
+      priority: 'Priorité : %priority%'
+    create: 'Créer une nouvelle catégorie'
+    delete: 'Voulez-vous vraiment supprimer la catégorie %name% ?'
+    description: 'Les catégories permettent de regrouper et d''organiser l''affichage des badges.'
+    edit: 'Editer une catégorie'
+    form:
+      name: 'Nom de la catégorie'
+      priority: 'Priorité d''affichage'
+    search: 'Rechercher une catégorie'
+    title: 'Gestion des catégories de badge'
   dashboard:
     title: Statistiques
   home:
@@ -647,15 +677,3 @@ title:
   campaigns: Déclenchements
   costs: Coûts
   messages: Messages
-badge:
-  title: 'Gestion des badges'
-  search: 'Chercher un badge'
-  description:
-    1: 'Les badges permettent de filtrer les bénévoles à déclencher.'
-    2: 'Le nom du badge doit-être petit car il est affiché partout où le bénévole est affiché (ex: US pour Urgence Secours).'
-    3: 'La description du badge doit permettre de comprendre à quoi il correspond.'
-    4: 'Un badge (REC-PSE1) peut avoir un synonyme (PSE1), ainsi tout bénévole possédant REC-PSE1 affichera PSE1.'
-    5: 'Un badge (PSE2) peut avoir un parent (PSE1), ainsi tout bénévole possédant PSE2 aura implicitement PSE1 aussi.'
-    6: 'Un badge peut-être catégorisé (ex: VL et VPSP sont des compétences liées aux véhicules; PSC, PSE, CI liées au secourisme).'
-    7: 'Un badge peut-être priorisé (cela change son ordre d''apparition dans la liste des compétences).'
-    8: 'Vous pouvez choisir quels badges sont visibles par défaut sur la plateforme. Les structures pourront en faire apparaître d''autres si besoin.'

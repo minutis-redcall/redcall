@@ -108,6 +108,10 @@ class PhraseCommand extends Command
             if ($input->getOption('delete')) {
                 $output->writeln(sprintf('<comment>Removing unused translation key: %s</comment>', $key));
                 $this->phrase->removeKey($key);
+                foreach ($remoteTranslations as $file => $keys) {
+                    unset($keys[$key]);
+                    $remoteTranslations[$file] = $keys;
+                }
                 if ($input->getOption('sleep')) {
                     sleep($input->getOption('sleep'));
                 }
