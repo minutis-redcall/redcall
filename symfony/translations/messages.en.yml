@@ -88,19 +88,6 @@ backlinks:
       title: "Pegass updates"
       oldest_update: "Oldest update"
       newest_update: "Newest update"
-  badge:
-    title: 'Manage badges'
-    search: 'Search for a badge'
-    description:
-      1: 'Badges aim to filter out people to trigger.'
-      2: 'Badge name should be small because it will be shown everywhere where volunteers are rendered (ex: FA for First Aider)'
-      3: 'Badge description should let anyone understand what it means.'
-      4: 'A badge (first-aider-renewed) may have a synonym (first-aider), so all volunteers having first-aider-renewd will be rendered first-aider.'
-      5: 'A badge (first-aider-lvl-2) may have a parent (first-aider-lvl-1), so all volunteers having first-aider-lvl-2 will implicitely have first-aider-lvl-1.'
-      6: 'A badge can be categorized (ex: ambulance driver and light vehicle driver are skills bound to vehicles).'
-      7: 'A badge can be prioritized, sorting it on someone''s badge list.'
-      8: 'You may choose which badges are visible by default in the platform. Structures will still be able to change this behavior according to their needs.'
-
   category:
     title: 'Manage badge categories'
     description: 'Categories are used to regroup and sort out how badges are rendered in the platform.'
