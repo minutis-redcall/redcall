@@ -210,7 +210,7 @@ class PhraseCommand extends Command
 
     private function extractTranslationsFromFile(string $file) : array
     {
-        $array = Yaml::parseFile($file);
+        $array = Yaml::parseFile($file) ?? [];
 
         return $this->getFlattenArrayFromTranslations($array);
     }
