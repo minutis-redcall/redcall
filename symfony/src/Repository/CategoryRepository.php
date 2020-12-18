@@ -22,7 +22,7 @@ class CategoryRepository extends BaseRepository
     public function getSearchInCategoriesQueryBuilder(?string $criteria) : QueryBuilder
     {
         $qb = $this->createQueryBuilder('c')
-                   ->orderBy('c.priority', 'DESC');
+                   ->orderBy('c.priority', 'ASC');
 
         if ($criteria) {
             $this->addSearchCriteria($qb, $criteria);

@@ -445,7 +445,7 @@ class Badge
             return false;
         }
 
-        if ($this->getSynonyms()) {
+        if ($this->getSynonyms()->count() > 0) {
             return false;
         }
 

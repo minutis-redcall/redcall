@@ -27,8 +27,8 @@ class BadgeRepository extends BaseRepository
                    ->where('b.restricted = false')
                    ->addOrderBy('b.visibility', 'DESC')
                    ->addOrderBy('b.synonym', 'ASC')
-                   ->addOrderBy('c.priority', 'DESC')
-                   ->addOrderBy('b.priority', 'DESC')
+                   ->addOrderBy('c.priority', 'ASC')
+                   ->addOrderBy('b.priority', 'ASC')
                    ->addOrderBy('b.name', 'ASC')
                    ->groupBy('b.id');
 
