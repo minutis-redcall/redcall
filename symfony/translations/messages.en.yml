@@ -26,6 +26,11 @@ admin:
     create: 'Create a new badge'
     edit: 'Edit badge "%name%"'
     delete: 'Do you really want to remove %name% badge?'
+    synonym_of: 'Synonym of %name%'
+    used_by: 'Used by %count% volunteers'
+    replace: 'Replace the following badges'
+    covers: 'Covers the following badges:'
+    covered_by: 'Covered by the following badges:'
     form:
       name: 'Badge name'
       description: 'Complete description'
@@ -33,6 +38,7 @@ admin:
       priority: 'Badge priority (this will change its position on the badge list)'
       parent: 'Badge of the pevious level (ex: a "truck driver" has "vehicle driver" as previous level badge, because if someone can ride a truck, he also can ride a car)'
       synonyms: 'Synonym badges (this badge should replace all badges given on the following field)'
+      add_synonym: 'Add a synonym'
   category:
     badges: Badges
     badges_add: 'Add a badge'

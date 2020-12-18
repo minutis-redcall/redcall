@@ -25,6 +25,7 @@ class BadgeRepository extends BaseRepository
         $qb = $this->createQueryBuilder('b')
                    ->leftJoin('b.category', 'c')
                    ->where('b.restricted = false')
+                   ->addOrderBy('b.synonym', 'ASC')
                    ->addOrderBy('c.priority', 'DESC')
                    ->addOrderBy('b.priority', 'DESC')
                    ->addOrderBy('b.name', 'ASC')
@@ -65,15 +66,25 @@ class BadgeRepository extends BaseRepository
                     ->getResult();
     }
 
+    public function searchForCompletion(?string $criteria, int $limit) : array
+    {
+        return $this->getSearchInPublicBadgesQueryBuilder($criteria)
+                    ->andWhere('b.synonym IS NULL')
+                    ->setMaxResults($limit)
+                    ->getQuery()
+                    ->getResult();
+    }
+
     private function addSearchCriteria(QueryBuilder $qb, string $criteria)
     {
-        $qb->andWhere(
-            $qb->expr()->orX(
-                'b.name LIKE :criteria',
-                'b.description LIKE :criteria',
-                'c.name LIKE :criteria'
+        $qb
+            ->andWhere(
+                $qb->expr()->orX(
+                    'b.name LIKE :criteria',
+                    'b.description LIKE :criteria',
+                    'c.name LIKE :criteria'
+                )
             )
-        )
-           ->setParameter('criteria', sprintf('%%%s%%', str_replace(' ', '%', $criteria)));
+            ->setParameter('criteria', sprintf('%%%s%%', str_replace(' ', '%', $criteria)));
     }
 }

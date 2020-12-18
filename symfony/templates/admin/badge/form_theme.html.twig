@@ -6,7 +6,9 @@
     {{ block('collection_widget') }}
 
     <div class="text-right">
-        <a href="#" id="add-synonym" class="btn btn-secondary">Ajouter un synonyme</a>
+        <a href="#" id="add-synonym" class="btn btn-secondary">
+            {{ 'admin.badge.form.add_synonym'|trans }}
+        </a>
     </div>
 
 {% endblock %}

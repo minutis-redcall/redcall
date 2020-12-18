@@ -1,25 +1,62 @@
+{% macro badge_link(badge) %}
+    <a href="{{ path('admin_badge_manage', app.request.query.all|merge({id: badge.id})) }}">{{ badge.name }}</a>
+{%- endmacro %}
+{% import _self as macros %}
+
 <div class="card">
     <div class="card-header">
-        <div class="card-title h3">{{ badge.name }}</div>
+        <div class="card-title">
+            {% if badge.synonym %}
+                <span class="h3 color-grey">
+                    <strike>{{ badge.name }}</strike>
+                </span>
+                <span class="h4">({{ 'admin.badge.synonym_of'|trans({'%name%': badge.synonym.name}) }})</span>
+            {% else %}
+                <span class="h3">{{ badge.name }}</span>
+            {% endif %}
+        </div>
     </div>
     <div class="card-body">
         <strong>{{ badge.description }}</strong>
 
-        <p>Utilisé par {{ count }} bénévoles</p>
+        {% if count %}
+            <p>{{ 'admin.badge.used_by'|trans({'%count%': count}) }}</p>
+        {% endif %}
 
-        {% if badge.synonym %}
-            <div>Synonyme : {{ badge.synonym.name }}</div>
+        {% if badge.synonyms|length %}
+            <br/>
+            <div>{{ 'admin.badge.replace'|trans }}</div>
+            <table class="table">
+                {% for synonym in badge.synonyms %}
+                    <tr>
+                        <td>{{ macros.badge_link(synonym) }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
         {% endif %}
 
         {% if badge.parent %}
-            <div>Parent : {{ badge.parent.name }}</div>
+            <div>
+                {{ 'admin.badge.covers'|trans }}
+                {% for parent in badge.coveringBadges %}
+                    {{ macros.badge_link(parent) }}{% if not loop.last %},{% endif %}
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {% if badge.children|length %}
+            <div>
+                {{ 'admin.badge.covered_by'|trans }}
+                {% for child in badge.coveredBadges %}
+                    {{ macros.badge_link(child) }}{% if not loop.last %},{% endif %}
+                {% endfor %}
+            </div>
         {% endif %}
 
         <br/>
 
         <div>
-            <a href="{{ path('admin_badge_manage', app.request.query.all|merge({id: badge.id})) }}" class="btn btn-small btn-secondary open-category-form"
-               data-uri="">
+            <a href="{{ path('admin_badge_manage', app.request.query.all|merge({id: badge.id})) }}" class="btn btn-small btn-secondary open-category-form" data-uri="">
                 ✏️ {{ 'base.button.update'|trans }}
             </a>
 

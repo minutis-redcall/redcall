@@ -404,4 +404,27 @@ class Badge
     {
         return null === $this->externalId;
     }
+
+    public function getCoveringBadges() : array
+    {
+        $parents = [];
+        $ref     = $this->parent;
+        while ($ref) {
+            array_unshift($parents, $ref);
+            $ref = $ref->parent;
+        }
+
+        return $parents;
+    }
+
+    public function getCoveredBadges() : array
+    {
+        $children = [];
+
+        foreach ($this->children as $child) {
+            $children = array_merge($children, [$child], $child->getCoveredBadges());
+        }
+
+        return $children;
+    }
 }

@@ -46,7 +46,7 @@ class PhraseCommand extends Command
             ->addOption('sleep', null, InputOption::VALUE_OPTIONAL, 'Use this option for large operations to prevent hitting rate limits', 0)
             ->addOption('delete', null, InputOption::VALUE_NONE, 'Add this option to automatically delete translations that are on Phrase but no more on the app')
             ->addOption('create', null, InputOption::VALUE_NONE, 'Add this option to automatically create translations that are on the app but not yet on Phrase')
-            ->addOption('keep', null, InputOption::VALUE_NONE, 'Add this option to prevent updating local files.');
+            ->addOption('dump', null, InputOption::VALUE_NONE, 'Add this option to update local files.');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -85,14 +85,14 @@ class PhraseCommand extends Command
                 $locale = $this->getLocaleFromFileName($file);
                 $value  = $localTranslations[$file][$key];
                 if ($input->getOption('create')) {
-                    $output->writeln(sprintf('<info>Creating missing translation %s for locale %s: %s</info>', $key, $locale, $value));
+                    $output->writeln(sprintf('<info>Creating missing translation %s for locale %s</info>', $key, $locale, $value));
                     $this->phrase->createTranslation($tag, array_search($locale, $locales), $key, $value);
                     $remoteTranslations[$file][$key] = $value;
                     if ($input->getOption('sleep')) {
                         sleep($input->getOption('sleep'));
                     }
                 } else {
-                    $output->writeln(sprintf('<info>Missing translation %s for locale %s: %s - Consider creating it on Phrase</info>', $key, $locale, $value));
+                    $output->writeln(sprintf('<info>Missing translation %s for locale %s</info>', $key, $locale, $value));
                 }
             }
         }
@@ -117,12 +117,12 @@ class PhraseCommand extends Command
                     sleep($input->getOption('sleep'));
                 }
             } else {
-                $output->writeln(sprintf('<comment>Unused translation key: %s - consider deleting it on Phrase</comment>', $key));
+                $output->writeln(sprintf('<comment>Unused translation key: %s</comment>', $key));
             }
         }
 
         // Dumping files
-        if (!$input->getOption('keep')) {
+        if ($input->getOption('dump')) {
             foreach ($remoteTranslations as $file => $keys) {
                 $oldContent = is_file($file) ? file_get_contents($file) : null;
                 $newContent = Yaml::dump($this->getDeflattedTranslationsFromArray($keys), 64, 2);

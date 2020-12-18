@@ -46,6 +46,11 @@ class BadgeManager
         return $this->badgeRepository->search($criteria, $limit);
     }
 
+    public function searchForCompletion(?string $criteria, int $limit = 0) : array
+    {
+        return $this->badgeRepository->searchForCompletion($criteria, $limit);
+    }
+
     public function remove(Badge $badge)
     {
         $this->badgeRepository->remove($badge);
@@ -61,5 +66,4 @@ class BadgeManager
 
         return $this->badgeRepository->getVolunteerCountInBadgeList($ids);
     }
-
 }
