@@ -1,4 +1,13 @@
 form:
+  badge:
+    errors:
+      parent:
+        loop: 'This badge is on the next level, so you can''t set it on the previous level.'
+        synonym: 'This badge is a synonym of "%name%", use "%name%" directy.'
+      synonym:
+        visible: 'Badge "%name%" is enabled, so you can''t replace it by another badge.'
+        has_synonyms: 'Badge "%name%" has synonyms, remove them first before marking this badge as synonym.'
+        has_parent: 'Badge "%name%" has a previous level badge, so it cannot be replaced.'
   campaign:
     errors:
       message:

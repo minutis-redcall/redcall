@@ -56,7 +56,6 @@
 {% block volunteer_widget_row %}
 
     {{ form_label(form) }}
-    {{ form_errors(form) }}
 
     {{ form_widget(form, {
         attr: {
@@ -80,8 +79,6 @@
 
 {% block structure_widget_row %}
     <div class="form-group">
-        {{ form_errors(form) }}
-
         {{ form_label(form) }}
 
         {{ form_widget(form, {
@@ -105,8 +102,6 @@
 
 {% block badge_widget_row %}
     <div class="form-group">
-        {{ form_errors(form) }}
-
         {{ form_label(form) }}
 
         {{ form_widget(form, {
@@ -131,8 +126,6 @@
 
 {% block category_widget_row %}
     <div class="form-group">
-        {{ form_errors(form) }}
-
         {{ form_label(form) }}
 
         {{ form_widget(form, {

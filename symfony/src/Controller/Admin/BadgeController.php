@@ -105,9 +105,11 @@ class BadgeController extends BaseController
      */
     public function toggleVisibility(Badge $badge, Csrf $token)
     {
-        $badge->setVisibility(1 - $badge->getVisibility());
+        if ($badge->isUsable()) {
+            $badge->setVisibility(1 - $badge->getVisibility());
 
-        $this->badgeManager->save($badge);
+            $this->badgeManager->save($badge);
+        }
 
         return new Response('', Response::HTTP_NO_CONTENT);
     }

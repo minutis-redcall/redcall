@@ -28,9 +28,11 @@
         </div>
     </div>
     <div class="card-body">
-        <div class="float-right">
-            {{ 'admin.badge.priority'|trans({'%priority%': badge.priority}) }}
-        </div>
+        {% if badge.visibility %}
+            <div class="float-right">
+                {{ 'admin.badge.priority'|trans({'%priority%': badge.priority}) }}
+            </div>
+        {% endif %}
 
         <strong>{{ badge.description }}</strong>
 

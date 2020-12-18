@@ -6,6 +6,8 @@ use App\Repository\BadgeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
  * @ORM\Entity(repositoryClass=BadgeRepository::class)
@@ -27,16 +29,20 @@ class Badge
 
     /**
      * @ORM\Column(type="string", length=64)
+     * @Assert\NotBlank
+     * @Assert\Length(max="64")
      */
     private $name;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Assert\Length(max="255")
      */
     private $description;
 
     /**
      * @ORM\Column(type="integer")
+     * @Assert\Range(min="-1000", max="1000")
      */
     private $priority = 0;
 
@@ -185,6 +191,11 @@ class Badge
         $this->visibility = $visibility;
 
         return $this;
+    }
+
+    public function isVisible() : bool
+    {
+        return $this->visibility;
     }
 
     public function getCategory() : ?Category
@@ -405,13 +416,13 @@ class Badge
         return null === $this->externalId;
     }
 
-    public function getCoveringBadges() : array
+    public function getCoveringBadges(int $stop = null) : array
     {
         $parents = [];
-        $ref     = $this->parent;
-        while ($ref) {
+        $ref     = $this->getParent();
+        while ($ref && (null === $stop || $ref->getId() !== $stop)) {
             array_unshift($parents, $ref);
-            $ref = $ref->parent;
+            $ref = $ref->getParent();
         }
 
         return $parents;
@@ -421,10 +432,99 @@ class Badge
     {
         $children = [];
 
-        foreach ($this->children as $child) {
+        foreach ($this->getChildren() as $child) {
             $children = array_merge($children, [$child], $child->getCoveredBadges());
         }
 
         return $children;
+    }
+
+    public function isUsable() : bool
+    {
+        if ($this->isRestricted()) {
+            return false;
+        }
+
+        if ($this->getSynonyms()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @Assert\Callback
+     */
+    public function validate(ExecutionContextInterface $context, $payload)
+    {
+        if ($this->getParent()) {
+            // Infinite loop because parent was bound to one of his children
+            if ($this->isParentLooping()) {
+                $context
+                    ->buildViolation('form.badge.errors.parent.loop', [
+                        '%hierarchy%' => implode(' -> ', $this->getCoveringBadges($this->id)),
+                    ])
+                    ->atPath('parent')
+                    ->addViolation();
+            }
+
+            // A parent cannot be a synonym
+            if ($this->getParent()->getSynonym()) {
+                $context
+                    ->buildViolation('form.badge.errors.parent.synonym', [
+                        '%name%' => $this->getParent()->getSynonym()->getName(),
+                    ])
+                    ->atPath('parent')
+                    ->addViolation();
+            }
+        }
+
+        foreach ($this->synonyms as $synonym) {
+            /** @var Badge $synonym */
+
+            // A badge cannot be marked as synonym if it is enabled
+            if ($synonym->isVisible()) {
+                $context
+                    ->buildViolation('form.badge.errors.synonym.visible', [
+                        '%name%' => $synonym->getName(),
+                    ])
+                    ->atPath('synonyms')
+                    ->addViolation();
+            }
+
+            // A badge cannot be marked as synonym if it has synonyms himself
+            if ($synonym->getSynonyms()->count()) {
+                $context
+                    ->buildViolation('form.badge.errors.synonym.has_synonyms', [
+                        '%name%' => $synonym->getName(),
+                    ])
+                    ->atPath('synonyms')
+                    ->addViolation();
+            }
+
+            // cannot have a synonym having parents
+            if ($synonym->getParent()) {
+                $context
+                    ->buildViolation('form.badge.errors.synonym.has_parent', [
+                        '%name%' => $synonym->getName(),
+                    ])
+                    ->atPath('synonyms')
+                    ->addViolation();
+            }
+        }
+    }
+
+    private function isParentLooping() : bool
+    {
+        $ref = $this->getParent();
+        while ($ref) {
+
+            if ($ref->id === $this->id) {
+                return true;
+            }
+            $ref = $ref->getParent();
+        }
+
+        return false;
     }
 }
