@@ -10,12 +10,12 @@ use App\Form\Type\CategoryWigetType;
 use App\Manager\BadgeManager;
 use App\Model\Csrf;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -75,9 +75,15 @@ class BadgeController extends BaseController
      */
     public function manage(Request $request, ?Badge $badge = null)
     {
-        $form = $this->createManageForm($request, $badge);
+        $collection = clone $badge->getSynonyms();
+        $form       = $this->createManageForm($request, $badge);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // Update required on the owning side
+            foreach ($collection as $synonym) {
+                $synonym->setSynonym(null);
+                $this->badgeManager->save($synonym);
+            }
             foreach ($badge->getSynonyms() as $synonym) {
                 $synonym->setSynonym($badge);
                 $this->badgeManager->save($synonym);
@@ -92,6 +98,18 @@ class BadgeController extends BaseController
             'badge' => $badge,
             'form'  => $form->createView(),
         ];
+    }
+
+    /**
+     * @Route(path="/toggle-visibility-{id}/{token}", name="toggle_visibility")
+     */
+    public function toggleVisibility(Badge $badge, Csrf $token)
+    {
+        $badge->setVisibility(1 - $badge->getVisibility());
+
+        $this->badgeManager->save($badge);
+
+        return new Response('', Response::HTTP_NO_CONTENT);
     }
 
     private function createSearchForm(Request $request, string $label) : FormInterface
@@ -133,19 +151,10 @@ class BadgeController extends BaseController
                 'label'    => 'admin.badge.form.parent',
                 'required' => false,
             ])
-            ->add('synonyms', CollectionType::class, [
-                'label'         => 'admin.badge.form.synonyms',
-                'entry_type'    => BadgeWidgetType::class,
-                'entry_options' => [
-                    'label'    => false,
-                    'required' => false,
-                ],
-                'allow_add'     => true,
-                'allow_delete'  => true,
-                'delete_empty'  => true,
-                'prototype'     => true,
-                'required'      => false,
-                'by_reference'  => false,
+            ->add('synonyms', BadgeWidgetType::class, [
+                'label'    => 'admin.badge.form.synonyms',
+                'required' => false,
+                'multiple' => true,
             ])
             ->add('submit', SubmitType::class, [
                 'label' => 'base.button.save',

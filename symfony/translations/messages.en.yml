@@ -34,6 +34,7 @@ admin:
       parent: 'Badge of the pevious level (ex: a "truck driver" has "vehicle driver" as previous level badge, because if someone can ride a truck, he also can ride a car)'
       priority: 'Badge priority (this will change its position on the badge list)'
       synonyms: 'Synonym badges (this badge should replace all badges given on the following field)'
+    priority: 'Priority: %priority%'
     replace: 'Replace the following badges'
     search: 'Chercher un badge'
     synonym_of: 'Synonym of %name%'

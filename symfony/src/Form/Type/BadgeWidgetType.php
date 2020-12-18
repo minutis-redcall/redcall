@@ -9,6 +9,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class BadgeWidgetType extends TextType
 {
@@ -31,11 +32,23 @@ class BadgeWidgetType extends TextType
 
         $builder->addModelTransformer(
             new CallbackTransformer(
-                function (?Badge $badge) {
-                    return $badge ? $badge->getId() : null;
+                function ($badge) use ($options) {
+                    if (!$options['multiple']) {
+                        return $badge ? $badge->getId() : null;
+                    }
+
+                    return implode(',', array_map(function (Badge $badge) {
+                        return $badge->getId();
+                    }, $badge->toArray()));
                 },
-                function (?int $badgeId) {
-                    return $badgeId ? $this->badgeManager->find($badgeId) : null;
+                function ($badgeId) use ($options) {
+                    if (!$options['multiple']) {
+                        return $badgeId ? $this->badgeManager->find($badgeId) : null;
+                    }
+
+                    return $badgeId ? array_map(function (int $badgeId) {
+                        return $this->badgeManager->find($badgeId);
+                    }, explode(',', $badgeId)) : [];
                 }
             )
         );
@@ -48,14 +61,32 @@ class BadgeWidgetType extends TextType
 
     public function buildView(FormView $view, FormInterface $form, array $options)
     {
+        $view->vars['multiple'] = $options['multiple'];
         if ($view->vars['value']) {
             $badge = $view->vars['value'];
             if (!$badge instanceof Badge) {
-                $badge = $this->badgeManager->find($view->vars['value']);
-                if ($badge) {
-                    $view->vars['data'] = [$badge->toSearchResults()];
+                if (!$options['multiple']) {
+                    $badge = $this->badgeManager->find($view->vars['value']);
+                    if ($badge) {
+                        $view->vars['data'] = [$badge->toSearchResults()];
+                    }
+                } else {
+                    $view->vars['data'] = [];
+                    foreach (explode(',', $view->vars['value']) as $badgeId) {
+                        $badge = $this->badgeManager->find($badgeId);
+                        if ($badge) {
+                            $view->vars['data'][] = $badge->toSearchResults();
+                        }
+                    }
                 }
             }
         }
+    }
+
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        parent::configureOptions($resolver);
+
+        $resolver->setDefault('multiple', false);
     }
 }

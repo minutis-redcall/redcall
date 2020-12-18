@@ -25,6 +25,7 @@ class BadgeRepository extends BaseRepository
         $qb = $this->createQueryBuilder('b')
                    ->leftJoin('b.category', 'c')
                    ->where('b.restricted = false')
+                   ->addOrderBy('b.visibility', 'DESC')
                    ->addOrderBy('b.synonym', 'ASC')
                    ->addOrderBy('c.priority', 'DESC')
                    ->addOrderBy('b.priority', 'DESC')

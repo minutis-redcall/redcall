@@ -1,7 +1,5 @@
 {% extends 'base.html.twig' %}
 
-{% import 'macros.html.twig' as macros %}
-
 {% block body %}
 
     <h1>
@@ -12,7 +10,6 @@
         {% endif %}
     </h1>
 
-    {% form_theme form 'admin/badge/form_theme.html.twig' %}
     {{ form(form) }}
 
     <div class="text-center">
@@ -24,34 +21,6 @@
     </div>
 
     <br/><br/>
-
-{% endblock %}
-
-{% block javascripts %}
-    {{ parent() }}
-
-    <script type="text/javascript">
-
-        $('#add-synonym').click(function (e) {
-            e.preventDefault();
-
-            var collection = $('#{{ form.synonyms.vars.id }}');
-            if (!collection.data('index')) {
-                collection.data('index', collection.find('input').length / 2);
-            }
-
-            var index = collection.data('index') + 1;
-            collection.data('index', index);
-
-            var prototype = collection.data('prototype');
-            collection.append(
-                prototype.replaceAll(/__name__/g, index)
-            );
-
-            collection.find('.flexdatalist:not(.flexdatalist-set)').flexdatalist();
-        });
-
-    </script>
 
 {% endblock %}
 

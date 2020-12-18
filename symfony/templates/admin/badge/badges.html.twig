@@ -41,7 +41,11 @@
     {{ parent() }}
 
     <script type="text/javascript">
-        {# Delete button #}
+
+        $('.toggle-visibility').click(function () {
+            $.post($(this).data('href'));
+        });
+
         $('body').on('click', '.delete-badge', function (e) {
             e.preventDefault();
 

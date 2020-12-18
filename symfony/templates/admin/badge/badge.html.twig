@@ -10,13 +10,28 @@
                 <span class="h3 color-grey">
                     <strike>{{ badge.name }}</strike>
                 </span>
-                <span class="h4">({{ 'admin.badge.synonym_of'|trans({'%name%': badge.synonym.name}) }})</span>
+                <span class="h4">({{ 'admin.badge.synonym_of'|trans({'%name%': macros.badge_link(badge.synonym)})|raw }})</span>
             {% else %}
                 <span class="h3">{{ badge.name }}</span>
+            {% endif %}
+            {% if not badge.synonym %}
+                <div class="float-right" style="margin-top:-15px;margin-right:-10px;">
+                    <label class="switch">
+                        <input type="checkbox"
+                               class="toggle-visibility"
+                               {% if badge.visibility %}checked{% endif %}
+                               data-href="{{ path('admin_badge_toggle_visibility', {id: badge.id, token: csrf_token('token')}) }}"/>
+                        <span class="slider"></span>
+                    </label>
+                </div>
             {% endif %}
         </div>
     </div>
     <div class="card-body">
+        <div class="float-right">
+            {{ 'admin.badge.priority'|trans({'%priority%': badge.priority}) }}
+        </div>
+
         <strong>{{ badge.description }}</strong>
 
         {% if count %}
