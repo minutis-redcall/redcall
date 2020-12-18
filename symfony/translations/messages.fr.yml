@@ -34,12 +34,12 @@ admin:
       parent: 'Badge de niveau inférieur (ex: chauffeur VPSP a pour badge de niveau inférieur chauffeur VL car si un chauffeur conduit une ambulance, il peut conduire une voiture)'
       priority: 'Priorité du badge (cela modifiera sa place dans l''affichage des badges)'
       synonyms: 'Badges synonymes (ce badge remplacera l''ensemble des badges ci-dessous)'
-    priority: 'Priorité: %priority%'
     replace: 'Remplace les badges suivants'
     search: 'Chercher un badge'
     synonym_of: 'Synonyme de %name%'
     title: 'Gestion des badges'
     used_by: 'Utilisé par %count% bénévoles'
+    priority: 'Priorité: %priority%'
   category:
     badges: Badges
     badges_add: 'Ajouter un badge'
