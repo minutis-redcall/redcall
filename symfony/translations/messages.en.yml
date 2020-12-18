@@ -12,6 +12,10 @@ admin:
       volunteer: Volunteer
     title: 'Answers analysis'
   badge:
+    covered_by: 'Covered by the following badges:'
+    covers: 'Covers the following badges:'
+    create: 'Create a new badge'
+    delete: 'Do you really want to remove %name% badge?'
     description:
       1: 'Les badges permettent de filtrer les bénévoles à déclencher.'
       2: 'Le nom du badge doit-être petit car il est affiché partout où le bénévole est affiché (ex: US pour Urgence Secours).'
@@ -21,24 +25,20 @@ admin:
       6: 'Un badge peut-être catégorisé (ex: VL et VPSP sont des compétences liées aux véhicules; PSC, PSE, CI liées au secourisme).'
       7: 'Un badge peut-être priorisé (cela change son ordre d''apparition dans la liste des compétences).'
       8: 'Vous pouvez choisir quels badges sont visibles par défaut sur la plateforme. Les structures pourront en faire apparaître d''autres si besoin.'
-    search: 'Chercher un badge'
-    title: 'Gestion des badges'
-    create: 'Create a new badge'
     edit: 'Edit badge "%name%"'
-    delete: 'Do you really want to remove %name% badge?'
-    synonym_of: 'Synonym of %name%'
-    used_by: 'Used by %count% volunteers'
-    replace: 'Replace the following badges'
-    covers: 'Covers the following badges:'
-    covered_by: 'Covered by the following badges:'
     form:
-      name: 'Badge name'
-      description: 'Complete description'
-      category: 'Badge category (actions, vehicles, trainings...)'
-      priority: 'Badge priority (this will change its position on the badge list)'
-      parent: 'Badge of the pevious level (ex: a "truck driver" has "vehicle driver" as previous level badge, because if someone can ride a truck, he also can ride a car)'
-      synonyms: 'Synonym badges (this badge should replace all badges given on the following field)'
       add_synonym: 'Add a synonym'
+      category: 'Badge category (actions, vehicles, trainings...)'
+      description: 'Complete description'
+      name: 'Badge name'
+      parent: 'Badge of the pevious level (ex: a "truck driver" has "vehicle driver" as previous level badge, because if someone can ride a truck, he also can ride a car)'
+      priority: 'Badge priority (this will change its position on the badge list)'
+      synonyms: 'Synonym badges (this badge should replace all badges given on the following field)'
+    replace: 'Replace the following badges'
+    search: 'Chercher un badge'
+    synonym_of: 'Synonym of %name%'
+    title: 'Gestion des badges'
+    used_by: 'Used by %count% volunteers'
   category:
     badges: Badges
     badges_add: 'Add a badge'
@@ -139,8 +139,8 @@ base:
     more: More...
     open: Open
     save: Save
-    update: Edit
     search: Search
+    update: Edit
   clear_selection: 'Clear selection'
   crud:
     create_title: 'Add a new entry'
