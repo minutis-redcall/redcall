@@ -6,9 +6,12 @@ use App\Repository\BadgeRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
  * @ORM\Entity(repositoryClass=BadgeRepository::class)
+ * @ORM\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
  */
 class Badge
 {
@@ -26,16 +29,20 @@ class Badge
 
     /**
      * @ORM\Column(type="string", length=64)
+     * @Assert\NotBlank
+     * @Assert\Length(max="64")
      */
     private $name;
 
     /**
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Assert\Length(max="255")
      */
     private $description;
 
     /**
      * @ORM\Column(type="integer")
+     * @Assert\Range(min="-1000", max="1000")
      */
     private $priority = 0;
 
@@ -50,7 +57,7 @@ class Badge
     private $category;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Structure::class, inversedBy="badges")
+     * @ORM\ManyToMany(targetEntity=Structure::class, inversedBy="visibleBadges")
      * @ORM\JoinTable(
      *  name="badge_visibility",
      *  joinColumns={
@@ -62,6 +69,11 @@ class Badge
      * )
      */
     private $isVisibleFor;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $restricted = false;
 
     /**
      * @ORM\ManyToMany(targetEntity=Structure::class, inversedBy="customBadges")
@@ -83,22 +95,22 @@ class Badge
     private $volunteers;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Badge::class, inversedBy="children")
+     * @ORM\ManyToOne(targetEntity=Badge::class, inversedBy="children", cascade="all")
      */
     private $parent;
 
     /**
-     * @ORM\OneToMany(targetEntity=Badge::class, mappedBy="parent")
+     * @ORM\OneToMany(targetEntity=Badge::class, mappedBy="parent", cascade="all")
      */
     private $children;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Badge::class, inversedBy="synonyms")
+     * @ORM\ManyToOne(targetEntity=Badge::class, inversedBy="synonyms", cascade="all")
      */
     private $synonym;
 
     /**
-     * @ORM\OneToMany(targetEntity=Badge::class, mappedBy="synonym")
+     * @ORM\OneToMany(targetEntity=Badge::class, mappedBy="synonym", cascade="all")
      */
     private $synonyms;
 
@@ -181,6 +193,11 @@ class Badge
         return $this;
     }
 
+    public function isVisible() : bool
+    {
+        return $this->visibility;
+    }
+
     public function getCategory() : ?Category
     {
         return $this->category;
@@ -215,6 +232,18 @@ class Badge
         if ($this->isVisibleFor->contains($isVisibleFor)) {
             $this->isVisibleFor->removeElement($isVisibleFor);
         }
+
+        return $this;
+    }
+
+    public function isRestricted() : bool
+    {
+        return $this->restricted;
+    }
+
+    public function setRestricted(bool $restricted) : Badge
+    {
+        $this->restricted = $restricted;
 
         return $this;
     }
@@ -335,6 +364,17 @@ class Badge
         return $this->name;
     }
 
+    /**
+     * @return array
+     */
+    public function toSearchResults() : array
+    {
+        return [
+            'id'   => (string) $this->getId(),
+            'name' => $this->getFullName(),
+        ];
+    }
+
     public function __toString()
     {
         return $this->getFullName();
@@ -369,5 +409,122 @@ class Badge
         }
 
         return $this;
+    }
+
+    public function canBeRemoved() : bool
+    {
+        return null === $this->externalId;
+    }
+
+    public function getCoveringBadges(int $stop = null) : array
+    {
+        $parents = [];
+        $ref     = $this->getParent();
+        while ($ref && (null === $stop || $ref->getId() !== $stop)) {
+            array_unshift($parents, $ref);
+            $ref = $ref->getParent();
+        }
+
+        return $parents;
+    }
+
+    public function getCoveredBadges() : array
+    {
+        $children = [];
+
+        foreach ($this->getChildren() as $child) {
+            $children = array_merge($children, [$child], $child->getCoveredBadges());
+        }
+
+        return $children;
+    }
+
+    public function isUsable() : bool
+    {
+        if ($this->isRestricted()) {
+            return false;
+        }
+
+        if ($this->getSynonyms()->count() > 0) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @Assert\Callback
+     */
+    public function validate(ExecutionContextInterface $context, $payload)
+    {
+        if ($this->getParent()) {
+            // Infinite loop because parent was bound to one of his children
+            if ($this->isParentLooping()) {
+                $context
+                    ->buildViolation('form.badge.errors.parent.loop', [
+                        '%hierarchy%' => implode(' -> ', $this->getCoveringBadges($this->id)),
+                    ])
+                    ->atPath('parent')
+                    ->addViolation();
+            }
+
+            // A parent cannot be a synonym
+            if ($this->getParent()->getSynonym()) {
+                $context
+                    ->buildViolation('form.badge.errors.parent.synonym', [
+                        '%name%' => $this->getParent()->getSynonym()->getName(),
+                    ])
+                    ->atPath('parent')
+                    ->addViolation();
+            }
+        }
+
+        foreach ($this->synonyms as $synonym) {
+            /** @var Badge $synonym */
+
+            // A badge cannot be marked as synonym if it is enabled
+            if ($synonym->isVisible()) {
+                $context
+                    ->buildViolation('form.badge.errors.synonym.visible', [
+                        '%name%' => $synonym->getName(),
+                    ])
+                    ->atPath('synonyms')
+                    ->addViolation();
+            }
+
+            // A badge cannot be marked as synonym if it has synonyms himself
+            if ($synonym->getSynonyms()->count()) {
+                $context
+                    ->buildViolation('form.badge.errors.synonym.has_synonyms', [
+                        '%name%' => $synonym->getName(),
+                    ])
+                    ->atPath('synonyms')
+                    ->addViolation();
+            }
+
+            // cannot have a synonym having parents
+            if ($synonym->getParent()) {
+                $context
+                    ->buildViolation('form.badge.errors.synonym.has_parent', [
+                        '%name%' => $synonym->getName(),
+                    ])
+                    ->atPath('synonyms')
+                    ->addViolation();
+            }
+        }
+    }
+
+    private function isParentLooping() : bool
+    {
+        $ref = $this->getParent();
+        while ($ref) {
+
+            if ($ref->id === $this->id) {
+                return true;
+            }
+            $ref = $ref->getParent();
+        }
+
+        return false;
     }
 }

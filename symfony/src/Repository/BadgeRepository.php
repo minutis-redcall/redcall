@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Base\BaseRepository;
 use App\Entity\Badge;
+use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -19,32 +20,72 @@ class BadgeRepository extends BaseRepository
         parent::__construct($registry, Badge::class);
     }
 
-    // /**
-    //  * @return Badge[] Returns an array of Badge objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    public function getSearchInPublicBadgesQueryBuilder(?string $criteria) : QueryBuilder
     {
-        return $this->createQueryBuilder('b')
-            ->andWhere('b.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('b.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
-    }
-    */
+        $qb = $this->createQueryBuilder('b')
+                   ->leftJoin('b.category', 'c')
+                   ->where('b.restricted = false')
+                   ->addOrderBy('b.visibility', 'DESC')
+                   ->addOrderBy('b.synonym', 'ASC')
+                   ->addOrderBy('c.priority', 'ASC')
+                   ->addOrderBy('b.priority', 'ASC')
+                   ->addOrderBy('b.name', 'ASC')
+                   ->groupBy('b.id');
 
-    /*
-    public function findOneBySomeField($value): ?Badge
-    {
-        return $this->createQueryBuilder('b')
-            ->andWhere('b.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
+        if ($criteria) {
+            $this->addSearchCriteria($qb, $criteria);
+        }
+
+        return $qb;
     }
-    */
+
+    public function getVolunteerCountInBadgeList(array $ids) : array
+    {
+        $rows = $this->createQueryBuilder('b')
+                     ->select('b.id, COUNT(v) AS count')
+                     ->join('b.volunteers', 'v')
+                     ->where('b.restricted = false')
+                     ->andWhere('b.id IN (:ids)')
+                     ->setParameter('ids', $ids)
+                     ->groupBy('b.id')
+                     ->getQuery()
+                     ->getArrayResult();
+
+        $counts = [];
+        foreach ($rows as $row) {
+            $counts[$row['id']] = $row['count'];
+        }
+
+        return $counts;
+    }
+
+    public function search(?string $criteria, int $limit) : array
+    {
+        return $this->getSearchInPublicBadgesQueryBuilder($criteria)
+                    ->setMaxResults($limit)
+                    ->getQuery()
+                    ->getResult();
+    }
+
+    public function searchForCompletion(?string $criteria, int $limit) : array
+    {
+        return $this->getSearchInPublicBadgesQueryBuilder($criteria)
+                    ->andWhere('b.synonym IS NULL')
+                    ->setMaxResults($limit)
+                    ->getQuery()
+                    ->getResult();
+    }
+
+    private function addSearchCriteria(QueryBuilder $qb, string $criteria)
+    {
+        $qb
+            ->andWhere(
+                $qb->expr()->orX(
+                    'b.name LIKE :criteria',
+                    'b.description LIKE :criteria',
+                    'c.name LIKE :criteria'
+                )
+            )
+            ->setParameter('criteria', sprintf('%%%s%%', str_replace(' ', '%', $criteria)));
+    }
 }

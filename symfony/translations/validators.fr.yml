@@ -24,3 +24,12 @@ form:
   volunteer:
     errors:
       redcall_user: 'Ce bénévole est rattaché à un utilisateur RedCall, supprimez d''abord l''utilisateur afin de pouvoir désactiver le bénévole.'
+  badge:
+    errors:
+      parent:
+        loop: 'Ce badge est de niveau supérieur (%hierarchy%), vous ne pouvez donc pas l''utiliser en badge de niveau inférieur.'
+        synonym: 'Ce badge est un synonyme de "%name%", utilisez "%name%" directement.'
+      synonym:
+        visible: 'Le badge "%name%" est activé, vous ne pouvez donc pas le remplacer par un autre badge.'
+        has_synonyms: 'Le badge "%name%" a des synonymes, vous devez d''abord les supprimer avant de lui-même le marquer comme un synonyme.'
+        has_parent: 'Le badge "%name%" a un badge de niveau précédent, il ne peut donc pas remplacé par un autre badge.'

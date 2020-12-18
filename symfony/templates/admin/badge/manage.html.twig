@@ -1,0 +1,26 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    <h1>
+        {% if badge %}
+            {{ 'admin.badge.edit'|trans({'%name%': badge.name}) }}
+        {% else %}
+            {{ 'admin.badge.create'|trans }}
+        {% endif %}
+    </h1>
+
+    {{ form(form) }}
+
+    <div class="text-center">
+
+        <a href="{{ path('admin_badge_index', app.request.query.all) }}" class="btn btn-secondary">
+            {{ 'base.button.back'|trans }}
+        </a>
+
+    </div>
+
+    <br/><br/>
+
+{% endblock %}
+

@@ -189,12 +189,18 @@ class Volunteer
      */
     private $phones;
 
+    /**
+     * @ORM\ManyToMany(targetEntity=Badge::class, mappedBy="volunteers")
+     */
+    private $badges;
+
     public function __construct()
     {
         $this->tags       = new ArrayCollection();
         $this->structures = new ArrayCollection();
         $this->messages   = new ArrayCollection();
         $this->phones     = new ArrayCollection();
+        $this->badges     = new ArrayCollection();
     }
 
     /**
@@ -726,6 +732,59 @@ class Volunteer
         }
 
         return null;
+    }
+
+    /**
+     * @return Collection|Badge[]
+     */
+    public function getBadges() : Collection
+    {
+        return $this->badges;
+    }
+
+    public function setBadges(array $badges)
+    {
+        $this->badges->clear();
+        foreach ($badges as $badge) {
+            $this->badges->add($badge);
+        }
+    }
+
+    public function addBadge(Badge $badge) : self
+    {
+        if (!$this->badges->contains($badge)) {
+            $this->badges[] = $badge;
+            $badge->addVolunteer($this);
+        }
+
+        return $this;
+    }
+
+    public function removeBadge(Badge $badge) : self
+    {
+        if ($this->badges->contains($badge)) {
+            $this->badges->removeElement($badge);
+            $badge->removeVolunteer($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param Badge[] $badges
+     */
+    public function setExternalBadges(array $badges)
+    {
+        foreach ($this->badges as $badge) {
+            /** @var Badge $badge */
+            if ($badge->isExternal()) {
+                $this->removeBadge($badge);
+            }
+        }
+
+        foreach ($badges as $badge) {
+            $this->addBadge($badge);
+        }
     }
 
     /**

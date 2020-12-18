@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\Management;
+namespace App\Controller\Management\Volunteer;
 
 use App\Base\BaseController;
 use App\Communication\Processor\SimpleProcessor;
@@ -492,11 +492,6 @@ class VolunteersController extends BaseController
         return $trigger;
     }
 
-    /**
-     * @param Request $request
-     *
-     * @return FormInterface
-     */
     private function createSearchForm(Request $request) : FormInterface
     {
         return $this->createFormBuilder([

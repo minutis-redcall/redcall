@@ -1,0 +1,38 @@
+<div class="card">
+    <div class="card-header">
+        <div class="card-title h3">{{ category.name }}</div>
+    </div>
+    <div class="card-body">
+        <p>{{ 'admin.category.card.badge_count'|trans({'%badge_count%': category.badges.count}) }}</p>
+        <p>{{ 'admin.category.card.priority'|trans({'%priority%': category.priority}) }}</p>
+
+        <br/>
+
+        <div>
+
+            <a href="#" class="btn btn-small btn-secondary open-category-form"
+               data-uri="{{ path('admin_category_form', {id: category.id}) }}">
+                ✏️ {{ 'base.button.update'|trans }}
+            </a>
+
+            <a href="#" class="btn btn-small btn-secondary open-category-badges"
+               data-uri="{{ path('admin_category_badges', {id: category.id}) }}">
+                🎫 {{ 'admin.category.badges'|trans }}
+            </a>
+
+            <div class="float-right">
+                <a href="#"
+                   class="btn btn-small btn-secondary delete-category"
+                   style="border: 1px solid red!important;"
+                   data-id="{{ category.id }}"
+                   data-name="{{ category.name|e('js') }}"
+                   data-uri="{{ path('admin_category_delete', {id: category.id, token: csrf_token('token')}) }}">
+                    ❌
+                </a>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+

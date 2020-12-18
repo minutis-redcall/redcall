@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller\Management;
+namespace App\Controller\Management\Structure;
 
 use App\Base\BaseController;
 use App\Component\HttpFoundation\ArrayToCsvResponse;

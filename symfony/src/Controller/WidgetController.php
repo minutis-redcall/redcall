@@ -3,15 +3,21 @@
 namespace App\Controller;
 
 use App\Base\BaseController;
+use App\Entity\Badge;
 use App\Entity\Campaign;
+use App\Entity\Category;
 use App\Entity\PrefilledAnswers;
 use App\Entity\Structure;
 use App\Entity\User;
 use App\Entity\Volunteer;
 use App\Form\Type\AudienceType;
+use App\Form\Type\BadgeWidgetType;
+use App\Form\Type\CategoryWigetType;
 use App\Form\Type\StructureWidgetType;
 use App\Form\Type\VolunteerWidgetType;
+use App\Manager\BadgeManager;
 use App\Manager\CampaignManager;
+use App\Manager\CategoryManager;
 use App\Manager\PrefilledAnswersManager;
 use App\Manager\StructureManager;
 use App\Manager\TagManager;
@@ -51,9 +57,15 @@ class WidgetController extends BaseController
     private $structureManager;
 
     /**
-     * @var TranslatorInterface
+     * @var BadgeManager
      */
-    private $translator;
+    private $badgeManager;
+
+    /**
+     * @var CategoryManager
+     */
+    private $categoryManager;
+
     /**
      * @var UserManager
      */
@@ -65,29 +77,40 @@ class WidgetController extends BaseController
     private $tagManager;
 
     /**
+     * @var TranslatorInterface
+     */
+    private $translator;
+
+    /**
      * @param CampaignManager         $campaignManager
      * @param PrefilledAnswersManager $prefilledAnswersManager
      * @param VolunteerManager        $volunteerManager
      * @param StructureManager        $structureManager
-     * @param TranslatorInterface     $translator
+     * @param BadgeManager            $badgeManager
+     * @param CategoryManager         $categoryManager
      * @param UserManager             $userManager
      * @param TagManager              $tagManager
+     * @param TranslatorInterface     $translator
      */
     public function __construct(CampaignManager $campaignManager,
         PrefilledAnswersManager $prefilledAnswersManager,
         VolunteerManager $volunteerManager,
         StructureManager $structureManager,
-        TranslatorInterface $translator,
+        BadgeManager $badgeManager,
+        CategoryManager $categoryManager,
         UserManager $userManager,
-        TagManager $tagManager)
+        TagManager $tagManager,
+        TranslatorInterface $translator)
     {
         $this->campaignManager         = $campaignManager;
         $this->prefilledAnswersManager = $prefilledAnswersManager;
         $this->volunteerManager        = $volunteerManager;
         $this->structureManager        = $structureManager;
-        $this->translator              = $translator;
+        $this->badgeManager            = $badgeManager;
+        $this->categoryManager         = $categoryManager;
         $this->userManager             = $userManager;
         $this->tagManager              = $tagManager;
+        $this->translator              = $translator;
     }
 
     public function prefilledAnswers(?int $campaignId = null)
@@ -176,7 +199,6 @@ class WidgetController extends BaseController
             $volunteers = $this->volunteerManager->searchForCurrentUser($criteria, 20);
         }
 
-        // Format volunteer for the flexdatalist rendering
         $results = [];
         foreach ($volunteers as $volunteer) {
             /* @var Volunteer $volunteer */
@@ -222,11 +244,76 @@ class WidgetController extends BaseController
             $structures = $this->structureManager->searchForCurrentUser($criteria, 20);
         }
 
-        // Format volunteer for the flexdatalist rendering
         $results = [];
         foreach ($structures as $structure) {
             /** @var Structure $structure */
             $results[] = $structure->toSearchResults();
+        }
+
+        return $this->json($results);
+    }
+
+    public function badgeEditor()
+    {
+        $form = $this
+            ->createNamedFormBuilder(
+                sprintf('badge-%s', Uuid::uuid4()),
+                FormType::class
+            )
+            ->add('badge', BadgeWidgetType::class, ['label' => false])
+            ->getForm();
+
+        return $this->render('widget/form.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+
+    /**
+     * @Route(path="/badge-search", name="badge_search")
+     */
+    public function badgeSearch(Request $request)
+    {
+        $criteria = trim($request->query->get('keyword'));
+
+        $badges = $this->badgeManager->searchForCompletion($criteria, 20);
+
+        $results = [];
+        foreach ($badges as $badge) {
+            /** @var Badge $badge */
+            $results[] = $badge->toSearchResults();
+        }
+
+        return $this->json($results);
+    }
+
+    public function categoryEditor()
+    {
+        $form = $this
+            ->createNamedFormBuilder(
+                sprintf('category-%s', Uuid::uuid4()),
+                FormType::class
+            )
+            ->add('category', CategoryWigetType::class, ['label' => false])
+            ->getForm();
+
+        return $this->render('widget/form.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
+
+    /**
+     * @Route(path="/category-search", name="category_search")
+     */
+    public function categorySearch(Request $request)
+    {
+        $criteria = trim($request->query->get('keyword'));
+
+        $categories = $this->categoryManager->search($criteria, 20);
+
+        $results = [];
+        foreach ($categories as $category) {
+            /** @var Category $category */
+            $results[] = $category->toSearchResults();
         }
 
         return $this->json($results);

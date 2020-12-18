@@ -1,0 +1,69 @@
+<?php
+
+namespace App\Manager;
+
+use App\Entity\Badge;
+use App\Repository\BadgeRepository;
+use Pagerfanta\Pagerfanta;
+
+class BadgeManager
+{
+    /**
+     * @var BadgeRepository
+     */
+    private $badgeRepository;
+
+    /**
+     * @param BadgeRepository $badgeRepository
+     */
+    public function __construct(BadgeRepository $badgeRepository)
+    {
+        $this->badgeRepository = $badgeRepository;
+    }
+
+    public function find(int $id) : ?Badge
+    {
+        return $this->badgeRepository->find($id);
+    }
+
+    public function findOneByExternalId(string $externalId) : ?Badge
+    {
+        return $this->badgeRepository->findOneByExternalId($externalId);
+    }
+
+    public function save(Badge $badge)
+    {
+        $this->badgeRepository->save($badge);
+    }
+
+    public function getSearchInPublicBadgesQueryBuilder(?string $criteria)
+    {
+        return $this->badgeRepository->getSearchInPublicBadgesQueryBuilder($criteria);
+    }
+
+    public function search(?string $criteria, int $limit = 0) : array
+    {
+        return $this->badgeRepository->search($criteria, $limit);
+    }
+
+    public function searchForCompletion(?string $criteria, int $limit = 0) : array
+    {
+        return $this->badgeRepository->searchForCompletion($criteria, $limit);
+    }
+
+    public function remove(Badge $badge)
+    {
+        $this->badgeRepository->remove($badge);
+    }
+
+    public function getVolunteerCountInSearch(Pagerfanta $pager)
+    {
+        $ids = [];
+        foreach ($pager->getIterator() as $badge) {
+            /** @var Badge $badge */
+            $ids[] = $badge->getId();
+        }
+
+        return $this->badgeRepository->getVolunteerCountInBadgeList($ids);
+    }
+}

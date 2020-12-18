@@ -10,6 +10,7 @@ use App\Entity\Choice;
 use App\Entity\Message;
 use App\Entity\Selection;
 use Doctrine\Bundle\DoctrineBundle\Registry;
+use Doctrine\ORM\NoResultException;
 
 class MessageRepository extends BaseRepository
 {
@@ -163,7 +164,6 @@ class MessageRepository extends BaseRepository
 
         return !$result;
     }
-
 
     public function getLatestMessageUpdated() : ?Message
     {

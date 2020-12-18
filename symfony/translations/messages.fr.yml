@@ -11,6 +11,53 @@ admin:
       trigger: Déclenchement
       volunteer: Bénévole
     title: 'Analyser les réponses'
+  badge:
+    covered_by: 'Couvert par les badges suivants :'
+    covers: 'Couvre les badges suivants :'
+    create: 'Création d''un nouveau badge'
+    delete: 'Voulez-vous vraiment supprimer le badge %name% ?'
+    description:
+      1: 'Les badges permettent de filtrer les bénévoles à déclencher.'
+      2: 'Le nom du badge doit-être petit car il est affiché partout où le bénévole est affiché (ex: US pour Urgence Secours).'
+      3: 'La description du badge doit permettre de comprendre à quoi il correspond.'
+      4: 'Un badge (REC-PSE1) peut avoir un synonyme (PSE1), ainsi tout bénévole possédant REC-PSE1 affichera PSE1.'
+      5: 'Un badge (PSE2) peut avoir un parent (PSE1), ainsi tout bénévole possédant PSE2 aura implicitement PSE1 aussi.'
+      6: 'Un badge peut-être catégorisé (ex: VL et VPSP sont des compétences liées aux véhicules; PSC, PSE, CI liées au secourisme).'
+      7: 'Un badge peut-être priorisé (cela change son ordre d''apparition dans la liste des compétences).'
+      8: 'Vous pouvez choisir quels badges sont visibles par défaut sur la plateforme. Les structures pourront en faire apparaître d''autres si besoin.'
+    edit: 'Edition du badge "%name%"'
+    form:
+      add_synonym: 'Ajouter un synonyme'
+      category: 'Catégorie du badge (ex: actions, véhicules, formation secouriste...)'
+      description: 'Description complète'
+      name: 'Nom du badge'
+      parent: 'Badge de niveau inférieur (ex: chauffeur VPSP a pour badge de niveau inférieur chauffeur VL car si un chauffeur conduit une ambulance, il peut conduire une voiture)'
+      priority: 'Priorité du badge (cela modifiera sa place dans l''affichage des badges)'
+      synonyms: 'Badges synonymes (ce badge remplacera l''ensemble des badges ci-dessous)'
+    replace: 'Remplace les badges suivants'
+    search: 'Chercher un badge'
+    synonym_of: 'Synonyme de %name%'
+    title: 'Gestion des badges'
+    used_by: 'Utilisé par %count% bénévoles'
+    priority: 'Priorité: %priority%'
+  category:
+    badges: Badges
+    badges_add: 'Ajouter un badge'
+    badges_delete: 'Vraiment supprimer le badge %name% de cette catégorie ?'
+    badges_list: 'Liste des badges dans %name%'
+    card:
+      badge_count: 'Nombre de badges: %badge_count%'
+      badges: 'Modifier les badges'
+      priority: 'Priorité : %priority%'
+    create: 'Créer une nouvelle catégorie'
+    delete: 'Voulez-vous vraiment supprimer la catégorie %name% ?'
+    description: 'Les catégories permettent de regrouper et d''organiser l''affichage des badges.'
+    edit: 'Editer une catégorie'
+    form:
+      name: 'Nom de la catégorie'
+      priority: 'Priorité d''affichage'
+    search: 'Rechercher une catégorie'
+    title: 'Gestion des catégories de badge'
   dashboard:
     title: Statistiques
   home:
@@ -93,6 +140,7 @@ base:
     more: Plus...
     open: Ouvrir
     save: Sauvegarder
+    search: Rechercher
     update: Editer
   clear_selection: 'Effacer la sélection'
   crud:
