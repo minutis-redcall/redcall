@@ -26,13 +26,13 @@
     <div class="row">
         {% for badge in badges %}
             <div class="col-6" id="badge-{{ badge.id }}" style="padding:5px;">
-                {{ include('admin/badge/badge.html.twig', {badge: badge, count: counts[badge.id]}) }}
+                {{ include('admin/badge/badge.html.twig', {badge: badge, count: counts[badge.id]|default(0)}) }}
             </div>
         {% endfor %}
     </div>
 
     <br/>
-    {{ macros.pager(badges) }}
+    {{ macros.pager(badges, '', app.request.query.all) }}
     <br/>
 
 {% endblock %}

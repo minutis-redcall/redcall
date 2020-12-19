@@ -190,7 +190,7 @@ class Volunteer
     private $phones;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Badge::class, mappedBy="volunteers")
+     * @ORM\ManyToMany(targetEntity=Badge::class, inversedBy="volunteers")
      */
     private $badges;
 

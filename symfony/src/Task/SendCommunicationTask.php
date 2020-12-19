@@ -41,4 +41,9 @@ class SendCommunicationTask extends AbstractTask
             ]);
         }
     }
+
+    public function getQueueName() : string
+    {
+        return getenv('GCP_QUEUE_PRIORITY');
+    }
 }

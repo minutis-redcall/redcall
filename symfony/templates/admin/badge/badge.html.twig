@@ -1,7 +1,4 @@
-{% macro badge_link(badge) %}
-    <a href="{{ path('admin_badge_manage', app.request.query.all|merge({id: badge.id})) }}">{{ badge.name }}</a>
-{%- endmacro %}
-{% import _self as macros %}
+{% import 'macros.html.twig' as macros %}
 
 <div class="card">
     <div class="card-header">
@@ -10,7 +7,7 @@
                 <span class="h3 color-grey">
                     <strike>{{ badge.name }}</strike>
                 </span>
-                <span class="h4">({{ 'admin.badge.synonym_of'|trans({'%name%': macros.badge_link(badge.synonym)})|raw }})</span>
+                <span class="h4">({{ 'admin.badge.synonym_of'|trans({'%name%': macros.badge(badge.synonym)})|raw }})</span>
             {% else %}
                 <span class="h3">{{ badge.name }}</span>
             {% endif %}
@@ -50,7 +47,7 @@
             <table class="table">
                 {% for synonym in badge.synonyms %}
                     <tr>
-                        <td>{{ macros.badge_link(synonym) }}</td>
+                        <td>{{ macros.badge(synonym) }}</td>
                     </tr>
                 {% endfor %}
             </table>
@@ -60,7 +57,7 @@
             <div>
                 {{ 'admin.badge.covers'|trans }}
                 {% for parent in badge.coveringBadges %}
-                    {{ macros.badge_link(parent) }}{% if not loop.last %},{% endif %}
+                    {{ macros.badge(parent) }}{% if not loop.last %},{% endif %}
                 {% endfor %}
             </div>
         {% endif %}
@@ -69,7 +66,7 @@
             <div>
                 {{ 'admin.badge.covered_by'|trans }}
                 {% for child in badge.coveredBadges %}
-                    {{ macros.badge_link(child) }}{% if not loop.last %},{% endif %}
+                    {{ macros.badge(child) }}{% if not loop.last %},{% endif %}
                 {% endfor %}
             </div>
         {% endif %}
