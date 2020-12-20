@@ -90,7 +90,7 @@ class Badge
     private $isRestrictedTo;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Volunteer::class, inversedBy="badges")
+     * @ORM\ManyToMany(targetEntity=Volunteer::class, mappedBy="badges")
      */
     private $volunteers;
 

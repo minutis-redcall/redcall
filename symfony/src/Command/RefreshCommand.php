@@ -4,6 +4,7 @@ namespace App\Command;
 
 use App\Base\BaseCommand;
 use App\Manager\RefreshManager;
+use Bundles\PegassCrawlerBundle\Manager\PegassManager;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -15,11 +16,17 @@ class RefreshCommand extends BaseCommand
      */
     private $refreshManager;
 
-    public function __construct(RefreshManager $refreshManager)
+    /**
+     * @var PegassManager
+     */
+    private $pegassManager;
+
+    public function __construct(RefreshManager $refreshManager, PegassManager $pegassManager)
     {
         parent::__construct();
 
         $this->refreshManager = $refreshManager;
+        $this->pegassManager  = $pegassManager;
     }
 
     protected function configure()
@@ -33,6 +40,12 @@ class RefreshCommand extends BaseCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         date_default_timezone_set('UTC');
+
+        //        $this->refreshManager->refreshVolunteer(
+        //            $this->pegassManager->getEntity(\Bundles\PegassCrawlerBundle\Entity\Pegass::TYPE_VOLUNTEER, '00000342302R'),
+        //            true
+        //        );
+        //        return 0;
 
         // Refresh everything
         $this->refreshManager->refresh(
