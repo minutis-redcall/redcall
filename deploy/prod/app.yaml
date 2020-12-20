@@ -32,10 +32,9 @@ handlers:
     script: auto
     redirect_http_response_code: 301
 
-instance_class: F4
+instance_class: F4_1G
 
 automatic_scaling:
-  min_instances: 2
   max_concurrent_requests: 20
 
 inbound_services:

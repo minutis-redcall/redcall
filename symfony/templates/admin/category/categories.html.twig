@@ -141,7 +141,12 @@
                     });
                 });
             }
-        })
+        });
+
+        $('body')
+            .on('click', '.toggle-visibility', function () {
+                $.post($(this).data('href'));
+            });
 
     </script>
 

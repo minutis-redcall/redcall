@@ -3,10 +3,12 @@
 namespace App\Task;
 
 use App\Manager\CommunicationManager;
+use App\Queues;
+use Bundles\GoogleTaskBundle\Api\TaskInterface;
 use Bundles\GoogleTaskBundle\Service\TaskSender;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
-class SendCommunicationTask extends AbstractTask
+class SendCommunicationTask implements TaskInterface
 {
     /**
      * @var TaskSender
@@ -44,6 +46,6 @@ class SendCommunicationTask extends AbstractTask
 
     public function getQueueName() : string
     {
-        return getenv('GCP_QUEUE_PRIORITY');
+        return Queues::CREATE_TRIGGER;
     }
 }
