@@ -3,10 +3,12 @@
 namespace App\Task;
 
 use App\Manager\RefreshManager;
+use App\Queues;
+use Bundles\GoogleTaskBundle\Api\TaskInterface;
 use Bundles\PegassCrawlerBundle\Entity\Pegass;
 use Bundles\PegassCrawlerBundle\Manager\PegassManager;
 
-class SyncOneWithPegass extends AbstractTask
+class SyncOneWithPegass implements TaskInterface
 {
     const PARENT_STRUCUTRES = 'parent_structures';
 
@@ -41,5 +43,10 @@ class SyncOneWithPegass extends AbstractTask
                 $this->refreshManager->refreshVolunteer($pegass, true);
                 break;
         }
+    }
+
+    public function getQueueName() : string
+    {
+        return Queues::SYNC_WITH_PEGASS_ONE;
     }
 }

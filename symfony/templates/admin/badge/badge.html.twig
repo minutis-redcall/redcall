@@ -15,7 +15,7 @@
                 &nbsp;
                 <span class="badge badge-pill badge-secondary">{{ badge.category.name }}</span>
             {% endif %}
-            {% if not badge.synonym %}
+            {% if badge.usable %}
                 <div class="float-right" style="margin-top:-15px;margin-right:-10px;">
                     <label class="switch">
                         <input type="checkbox"

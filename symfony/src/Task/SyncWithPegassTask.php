@@ -3,8 +3,10 @@
 namespace App\Task;
 
 use App\Manager\RefreshManager;
+use App\Queues;
+use Bundles\GoogleTaskBundle\Api\TaskInterface;
 
-class SyncWithPegassTask extends AbstractTask
+class SyncWithPegassTask implements TaskInterface
 {
     /**
      * @var RefreshManager
@@ -19,5 +21,10 @@ class SyncWithPegassTask extends AbstractTask
     public function execute(array $context)
     {
         $this->refreshManager->refreshAsync();
+    }
+
+    public function getQueueName() : string
+    {
+        return Queues::SYNC_WITH_PEGASS_ALL;
     }
 }

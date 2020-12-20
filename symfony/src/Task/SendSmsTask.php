@@ -2,10 +2,12 @@
 
 namespace App\Task;
 
+use App\Queues;
+
 class SendSmsTask extends AbstractSendMessageTask
 {
     public function getQueueName() : string
     {
-        return getenv('GCP_QUEUE_SMS');
+        return Queues::MESSAGES_SMS;
     }
 }
