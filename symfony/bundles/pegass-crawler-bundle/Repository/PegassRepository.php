@@ -28,7 +28,7 @@ class PegassRepository extends ServiceEntityRepository
      *
      * @return Pegass[]
      */
-    public function getEntities(string $type): array
+    public function getEntities(string $type) : array
     {
         return $this->findBy([
             'type' => $type,
@@ -41,7 +41,7 @@ class PegassRepository extends ServiceEntityRepository
      * @return int
      * @throws \Doctrine\ORM\NonUniqueResultException
      */
-    public function countEntities(string $type): int
+    public function countEntities(string $type) : int
     {
         return $this->createQueryBuilder('p')
                     ->select('COUNT(p.id)')
@@ -53,7 +53,7 @@ class PegassRepository extends ServiceEntityRepository
 
     public function getEntity(string $type,
         string $identifier = null,
-        bool $onlyEnabled = true): ?Pegass
+        bool $onlyEnabled = true) : ?Pegass
     {
         $filters['type'] = $type;
 
@@ -73,7 +73,7 @@ class PegassRepository extends ServiceEntityRepository
      *
      * @return array
      */
-    public function findExpiredEntities(int $limit): array
+    public function findExpiredEntities(int $limit) : array
     {
         return $this->createQueryBuilder('p')
                     ->where('p.type = :type_area AND p.updatedAt < :expire_area')
@@ -128,7 +128,7 @@ class PegassRepository extends ServiceEntityRepository
      *
      * @return Pegass[]
      */
-    public function findMissingEntities(string $type, array $identifiers, string $parentIdentifier): array
+    public function findMissingEntities(string $type, array $identifiers, string $parentIdentifier) : array
     {
         return $this->createQueryBuilder('p')
                     ->where('p.type = :type')
@@ -152,32 +152,31 @@ class PegassRepository extends ServiceEntityRepository
      */
     public function foreach(string $type, callable $callback, bool $onlyEnabled = true)
     {
-        $count = $this->createQueryBuilder('p')
-                      ->select('COUNT(p.id)')
-                      ->where('p.type = :type')
-                      ->setParameter('type', $type)
-                      ->getQuery()
-                      ->getSingleScalarResult();
+        $qb = $this->createQueryBuilder('p')
+                   ->select('COUNT(p.id)')
+                   ->where('p.type = :type')
+                   ->setParameter('type', $type);
+
+        if ($onlyEnabled) {
+            $qb->andWhere('p.enabled = true');
+        }
+
+        $count = $qb->getQuery()
+                    ->getSingleScalarResult();
+
+        $qb->select('p.id')
+           ->setMaxResults(1000);
 
         $offset = 0;
         $stop   = false;
         while ($offset < $count) {
-            $qb = $this->createQueryBuilder('p')
-                       ->where('p.type = :type')
-                       ->setParameter('type', $type);
-
-            if ($onlyEnabled) {
-                $qb->andWhere('p.enabled = true');
-            }
-
-            $qb->setFirstResult($offset)
-               ->setMaxResults(1000);
+            $qb->setFirstResult($offset);
 
             $iterator = $qb->getQuery()->iterate();
 
             while (($row = $iterator->next()) !== false) {
                 /* @var Pegass $entity */
-                $entity = reset($row);
+                $entity = $this->find(reset($row)['id']);
 
                 // Do not proceed an entity that is not imported yet
                 if (!$entity->getContent()) {
@@ -221,7 +220,7 @@ class PegassRepository extends ServiceEntityRepository
      *
      * @return DateTime
      */
-    private function getExpireDate(string $type): DateTime
+    private function getExpireDate(string $type) : DateTime
     {
         return DateTime::createFromFormat('U', time() - Pegass::TTL[$type]);
     }
