@@ -462,7 +462,7 @@ class VolunteersController extends BaseController
     }
 
     private function deleteVolunteer(Volunteer $volunteer,
-        ?Answer $answer,
+        Answer $answer,
         SimpleProcessor $processor) : \App\Entity\Campaign
     {
         // Sending a message to the volunteer to let him know he is now removed
@@ -484,14 +484,23 @@ class VolunteersController extends BaseController
         // Sending a message inviting redcall users managing volunteer's structure to complete data deletion
         $email = new EmailTrigger();
 
-        $audience = [];
-        foreach ($volunteer->getStructures() as $structure) {
+        $audience            = [];
+        $triggeringVolunteer = $answer->getMessage()->getCommunication()->getVolunteer();
+        if (!$triggeringVolunteer) {
+            return $trigger;
+        }
+
+        $commonStructures = array_intersect($triggeringVolunteer->getStructures()->toArray(), $volunteer->getStructures()->toArray());
+        foreach ($commonStructures as $structure) {
             /** @var Structure $structure */
             foreach ($structure->getUsers() as $user) {
                 /** @var User $user */
                 if ($user->getVolunteer()) {
                     $audience[] = $user->getVolunteer()->getNivol();
                 }
+            }
+            if ($structure->getPresident()) {
+                $audience[] = $structure->getPresident();
             }
         }
         $email->setAudience(array_unique($audience));
@@ -545,7 +554,9 @@ class VolunteersController extends BaseController
                     ->add('answer', EntityType::class, [
                         'class'         => Answer::class,
                         'query_builder' => $this->answerManager->getVolunteerAnswersQueryBuilder($volunteer),
-                        'choice_label'  => 'raw',
+                        'choice_label'  => function (Answer $answer) {
+                            return sprintf('%s: %s', $answer->getReceivedAt()->format('d/m/Y H:i'), $answer->getRaw());
+                        },
                         'multiple'      => false,
                         'expanded'      => false,
                         'label'         => 'manage_volunteers.anonymize.choose_answer',

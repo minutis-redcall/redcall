@@ -118,6 +118,7 @@ class AnswerRepository extends BaseRepository
                     ->join('a.message', 'm')
                     ->join('m.volunteer', 'v')
                     ->where('v.id = :volunteer_id')
-                    ->setParameter('volunteer_id', $volunteer->getId());
+                    ->setParameter('volunteer_id', $volunteer->getId())
+                    ->orderBy('a.id', 'DESC');
     }
 }
