@@ -142,6 +142,8 @@ base:
     save: Sauvegarder
     search: Rechercher
     update: Editer
+    enable: Activer
+    disable: Desactiver
   clear_selection: 'Effacer la sélection'
   crud:
     create_title: 'Ajouter une entrée'
@@ -451,6 +453,7 @@ manage_volunteers:
     message: 'Merci de bien vouloir relire attentivement le message causant la suppression de données avant de continuer.'
     title: 'Suppression des données de %name%'
     volunteer_asked_for_it: 'Ce bénévole vous a demandé de supprimer ses données ?'
+    choose_answer: 'Sélectionnez la réponse du bénévole demendant la suppression de ses données personnelles.'
   columns:
     never_updated: 'Pas encore importé'
     update: 'MàJ le %date%'

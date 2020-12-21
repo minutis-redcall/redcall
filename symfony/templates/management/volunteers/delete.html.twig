@@ -1,4 +1,3 @@
-
 {% extends 'base.html.twig' %}
 
 {% block body %}
@@ -19,28 +18,26 @@
 
         <br/>
 
-        {% if answer %}
-            <div style="color:red;">{{ 'manage_volunteers.anonymize.message'|trans }}</div>
-            <br/>
+        <div style="color:red;">{{ 'manage_volunteers.anonymize.message'|trans }}</div>
+        <br/>
 
-            <blockquote class="quote-card">
-                <p>{{ answer.raw }}</p>
-                <cite>{{ answer.receivedAt|date('d/m/Y H:i') }}</cite>
-            </blockquote>
-        {% endif %}
+        <blockquote class="quote-card">
+            <p>{{ answer.raw }}</p>
+            <cite>{{ answer.receivedAt|date('d/m/Y H:i') }}</cite>
+        </blockquote>
 
         <br/>
 
         <div id="delete-buttons" class="d-none">
             {{ form_start(form) }}
-                <div class="row">
-                    <div class="col-6 text-center">
-                        {{ form_row(form.cancel) }}
-                    </div>
-                    <div class="col-6 text-center">
-                        {{ form_row(form.confirm) }}
-                    </div>
+            <div class="row">
+                <div class="col-6 text-center">
+                    {{ form_row(form.cancel) }}
                 </div>
+                <div class="col-6 text-center">
+                    {{ form_row(form.confirm) }}
+                </div>
+            </div>
             {{ form_end(form) }}
         </div>
 
@@ -55,13 +52,13 @@
 
     <script type="text/javascript">
 
-        $('#ask-deletion').click(function(e) {
+        $('#ask-deletion').click(function (e) {
             e.preventDefault();
             $(this).addClass('d-none');
             $('#delete-buttons').removeClass('d-none');
         });
 
-        $('#{{ form.cancel.vars.id }}').click(function(e) {
+        $('#{{ form.cancel.vars.id }}').click(function (e) {
             e.preventDefault();
             $('#ask-deletion').removeClass('d-none');
             $('#delete-buttons').addClass('d-none');

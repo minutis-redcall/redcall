@@ -3,19 +3,21 @@
 {% if category.badges|length %}
     <div class="row">
         {% for badge in category.badges %}
-            <div class="col-9 category-badge-{{ badge.id }}" style="padding:5px;">
+            <div class="col-7 category-badge-{{ badge.id }}" style="padding:5px;">
                 {{ macros.badge(badge) }}
             </div>
 
-            <div class="col-3 category-badge-{{ badge.id }} text-right" style="padding:5px;">
+            <div class="col-5 category-badge-{{ badge.id }} text-right" style="padding:5px;">
                 <div class="float-right">
-                    <label class="switch">
-                        <input type="checkbox"
-                               class="toggle-visibility"
-                               {% if badge.visibility %}checked{% endif %}
-                               data-href="{{ path('admin_badge_toggle_visibility', {id: badge.id, token: csrf_token('token')}) }}"/>
-                        <span class="slider"></span>
-                    </label>
+
+                    <span class="{% if badge.visibility %}d-none{% endif %}" id="enable-{{ badge.id }}">
+                        <a href="{{ path('admin_badge_toggle_visibility', {id: badge.id, token: csrf_token('token')}) }}"
+                           class="btn btn-primary toggle-visibility enable" data-id="{{ badge.id }}">{{ 'base.button.enable'|trans }}</a>
+                    </span>
+                    <span class="{% if not badge.visibility %}d-none{% endif %}" data-id="{{ badge.id }}" id="disable-{{ badge.id }}">
+                        <a href="{{ path('admin_badge_toggle_visibility', {id: badge.id, token: csrf_token('token')}) }}"
+                           class="btn btn-secondary toggle-visibility disable" data-id="{{ badge.id }}">{{ 'base.button.disable'|trans }}</a>
+                    </span>
 
                     <a href="#"
                        data-id="{{ category.id }}"
@@ -53,6 +55,25 @@
                         $('#category-{{ category.id }}').html(html);
                     });
                 });
+            }
+        });
+
+    $('body')
+        .off('click', '.toggle-visibility')
+        .on('click', '.toggle-visibility', function (e) {
+            e.preventDefault();
+
+            var that = $(this);
+            var id = that.data('id');
+
+            $.post(that.prop('href'));
+
+            if (that.hasClass('enable')) {
+                $('#enable-' + id).addClass('d-none');
+                $('#disable-' + id).removeClass('d-none');
+            } else {
+                $('#enable-' + id).removeClass('d-none');
+                $('#disable-' + id).addClass('d-none');
             }
         });
 
