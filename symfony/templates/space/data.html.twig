@@ -121,8 +121,10 @@
             <strong>{{ 'space.consult_data.identity_skills'|trans }}</strong>
         </td>
         <td style="padding:5px;">
-            {% for skill in session.volunteer.tagsView %}
-                {{ ('tag.' ~ skill)|trans }}{% if not loop.last %},{% endif %}
+            {% for badge in session.volunteer.badges %}
+                <div>
+                    <strong>{{ badge.name }}</strong> {% if badge.description %}({{ badge.description }}){% endif %}
+                </div>
             {% endfor %}
         </td>
     </tr>
