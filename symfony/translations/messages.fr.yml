@@ -142,6 +142,8 @@ base:
     save: Sauvegarder
     search: Rechercher
     update: Editer
+    enable: Activer
+    disable: Desactiver
   clear_selection: 'Effacer la sélection'
   crud:
     create_title: 'Ajouter une entrée'

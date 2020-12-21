@@ -142,6 +142,8 @@ base:
     save: Save
     search: Search
     update: Edit
+    enable: Enable
+    disable: Disable
   clear_selection: 'Clear selection'
   crud:
     create_title: 'Add a new entry'
