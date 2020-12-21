@@ -453,6 +453,7 @@ manage_volunteers:
     message: 'Please review the message causing the data deletion.'
     title: 'Data deletion for %name%'
     volunteer_asked_for_it: 'This volunteer asked you to remove his personal data?'
+    choose_answer: 'Choose the volunteer''s answer asking for his data deletion.'
   columns:
     never_updated: 'Skills never imported'
     update: 'Updated on %date%'

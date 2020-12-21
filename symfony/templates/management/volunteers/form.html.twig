@@ -48,13 +48,11 @@
         <br/><br/>
     </div>
 
-    {% if not volunteer.user %}
+    {% if (not volunteer.user or not volunteer.user.trusted) and delete %}
         <div>
+            <hr/>
             <strong>{{ 'manage_volunteers.anonymize.gdpr'|trans }}</strong>: {{ 'manage_volunteers.anonymize.volunteer_asked_for_it'|trans }}
-            <a href="{{ path('management_volunteers_delete', {volunteerId: volunteer.id, answerId: answerId}) }}">
-                {{ 'manage_volunteers.anonymize.continue'|trans }}
-            </a>
-            <br/><br>
+            {{ form(delete) }}
         </div>
     {% endif %}
 

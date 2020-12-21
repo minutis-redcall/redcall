@@ -13,6 +13,7 @@ use App\Form\Model\EmailTrigger;
 use App\Form\Model\SmsTrigger;
 use App\Form\Type\VolunteerType;
 use App\Import\VolunteerImporter;
+use App\Manager\AnswerManager;
 use App\Manager\CampaignManager;
 use App\Manager\CommunicationManager;
 use App\Manager\PhoneManager;
@@ -27,6 +28,7 @@ use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -74,6 +76,11 @@ class VolunteersController extends BaseController
     private $phoneManager;
 
     /**
+     * @var AnswerManager
+     */
+    private $answerManager;
+
+    /**
      * @var PaginationManager
      */
     private $paginationManager;
@@ -99,6 +106,7 @@ class VolunteersController extends BaseController
         CampaignManager $campaignManager,
         CommunicationManager $communicationManager,
         PhoneManager $phoneManager,
+        AnswerManager $answerManager,
         PaginationManager $paginationManager,
         KernelInterface $kernel,
         TranslatorInterface $translator,
@@ -110,6 +118,7 @@ class VolunteersController extends BaseController
         $this->campaignManager      = $campaignManager;
         $this->communicationManager = $communicationManager;
         $this->phoneManager         = $phoneManager;
+        $this->answerManager        = $answerManager;
         $this->paginationManager    = $paginationManager;
         $this->kernel               = $kernel;
         $this->translator           = $translator;
@@ -237,10 +246,21 @@ class VolunteersController extends BaseController
             return $this->redirectToRoute('management_volunteers_list', $request->query->all());
         }
 
+        if (!$isCreate) {
+            $delete = $this->createDeletionForm($request, $volunteer);
+            if ($delete->isSubmitted() && $delete->isValid()) {
+                return $this->redirectToRoute('management_volunteers_delete', [
+                    'volunteerId' => $volunteer->getId(),
+                    'answerId'    => $delete->get('answer')->getData()->getId(),
+                ]);
+            }
+        }
+
         return $this->render('management/volunteers/form.html.twig', [
             'form'      => $form->createView(),
             'isCreate'  => $isCreate,
             'volunteer' => $volunteer,
+            'delete'    => !$isCreate ? $delete->createView() : null,
             'answerId'  => $request->get('answerId'),
         ]);
     }
@@ -383,6 +403,7 @@ class VolunteersController extends BaseController
      * @Route(path="/delete-structure/{csrf}/{volunteerId}/{structureId}", name="delete_structure")
      * @Entity("volunteer", expr="repository.find(volunteerId)")
      * @Entity("structure", expr="repository.find(structureId)")
+     * @IsGranted("ROLE_ADMIN")
      */
     public function deleteStructure(string $csrf, Volunteer $volunteer, Structure $structure)
     {
@@ -398,12 +419,12 @@ class VolunteersController extends BaseController
     }
 
     /**
-     * @Route(path="/delete/{volunteerId}/{answerId}", name="delete", defaults={"answerId": null})
+     * @Route(path="/delete/{volunteerId}/{answerId}", name="delete")
      * @Entity("volunteer", expr="repository.find(volunteerId)")
-     * @Entity("answer", expr="answerId ? repository.find(answerId) : null")
+     * @Entity("answer", expr="repository.find(answerId)")
      * @Template("management/volunteers/delete.html.twig")
      */
-    public function deleteAction(Request $request, SimpleProcessor $processor, Volunteer $volunteer, ?Answer $answer)
+    public function deleteAction(Request $request, SimpleProcessor $processor, Volunteer $volunteer, Answer $answer)
     {
         if ($volunteer->getUser()) {
             throw $this->createNotFoundException();
@@ -494,9 +515,7 @@ class VolunteersController extends BaseController
 
     private function createSearchForm(Request $request) : FormInterface
     {
-        return $this->createFormBuilder([
-            'only_enabled' => true,
-        ], ['csrf_protection' => false])
+        return $this->createFormBuilder(['only_enabled' => true], ['csrf_protection' => false])
                     ->setMethod('GET')
                     ->add('criteria', TextType::class, [
                         'label'    => 'manage_volunteers.search.label',
@@ -514,6 +533,27 @@ class VolunteersController extends BaseController
                         'label' => 'manage_volunteers.search.button',
                         'attr'  => [
                             'class ' => 'd-none',
+                        ],
+                    ])
+                    ->getForm()
+                    ->handleRequest($request);
+    }
+
+    private function createDeletionForm(Request $request, Volunteer $volunteer) : FormInterface
+    {
+        return $this->createFormBuilder()
+                    ->add('answer', EntityType::class, [
+                        'class'         => Answer::class,
+                        'query_builder' => $this->answerManager->getVolunteerAnswersQueryBuilder($volunteer),
+                        'choice_label'  => 'raw',
+                        'multiple'      => false,
+                        'expanded'      => false,
+                        'label'         => 'manage_volunteers.anonymize.choose_answer',
+                    ])
+                    ->add('delete', SubmitType::class, [
+                        'label' => 'base.button.delete',
+                        'attr'  => [
+                            'class' => 'btn-danger',
                         ],
                     ])
                     ->getForm()

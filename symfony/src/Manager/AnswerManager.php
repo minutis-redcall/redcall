@@ -5,6 +5,7 @@ namespace App\Manager;
 use App\Entity\Answer;
 use App\Entity\Campaign;
 use App\Entity\Message;
+use App\Entity\Volunteer;
 use App\Enum\Stop;
 use App\Enum\Type;
 use App\Repository\AnswerRepository;
@@ -106,5 +107,10 @@ class AnswerManager
 
             $this->volunteerManager->save($volunteer);
         }
+    }
+
+    public function getVolunteerAnswersQueryBuilder(Volunteer $volunteer) : QueryBuilder
+    {
+        return $this->answerRepository->getVolunteerAnswersQueryBuilder($volunteer);
     }
 }

@@ -6,6 +6,7 @@ use App\Base\BaseRepository;
 use App\Entity\Answer;
 use App\Entity\Campaign;
 use App\Entity\Message;
+use App\Entity\Volunteer;
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
@@ -111,4 +112,12 @@ class AnswerRepository extends BaseRepository
         return $qb;
     }
 
+    public function getVolunteerAnswersQueryBuilder(Volunteer $volunteer) : QueryBuilder
+    {
+        return $this->createQueryBuilder('a')
+                    ->join('a.message', 'm')
+                    ->join('m.volunteer', 'v')
+                    ->where('v.id = :volunteer_id')
+                    ->setParameter('volunteer_id', $volunteer->getId());
+    }
 }
