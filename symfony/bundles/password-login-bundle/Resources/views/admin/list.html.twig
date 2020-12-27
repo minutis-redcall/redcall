@@ -80,6 +80,12 @@
                                         {% if not user.isEqualTo(app.user) %}
 
                                             <div>
+                                                <a href="{{ path('password_login_admin_profile', {username: user.username}) }}" class="text-primary">
+                                                    {{ 'password_login.user_list.profile'|trans }}
+                                                </a>
+                                            </div>
+
+                                            <div>
                                                 {% if user.verified %}
                                                     <a href="{{ path('password_login_admin_toggle_verify', {username: user.username, csrf: csrf_token('password_login')}) }}" class="text-danger">
                                                         {{ 'password_login.user_list.unverify'|trans }}

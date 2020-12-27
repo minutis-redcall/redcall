@@ -36,6 +36,8 @@ password_login:
     submit: 'Ask to change password'
     title: 'Lost your password ?'
     username: 'Please enter your email in order to change your password.'
+    reset_by_admin: 'Send a "Reset password" email'
+    sent_by_admin: 'An email has successfully been sent to %email%.'
   logout:
     button: Disconnect
   not_trusted:
@@ -67,6 +69,7 @@ password_login:
     submit: 'Save changes'
     success: 'Your profile have been saved.'
     title: 'Change your information'
+    saved: 'Changes saved'
   register:
     already_exists: 'This email is already known in our database.'
     already_have_account: 'Already have an account?'
@@ -101,6 +104,8 @@ password_login:
     unverify: 'Unverify user''s email'
     username: Email
     verify: 'Verify user''s email'
+    edit_profile: '%user%''s profile edition'
+    profile: 'Edit profile'
   verify_email:
     failure: 'An email containing a link has been sent during your subscription: you should click on that link in order to verify your email and connect to the platform.'
     mail:

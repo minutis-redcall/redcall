@@ -34,12 +34,12 @@ admin:
       parent: 'Badge of the pevious level (ex: a "truck driver" has "vehicle driver" as previous level badge, because if someone can ride a truck, he also can ride a car)'
       priority: 'Badge priority (this will change its position on the badge list)'
       synonyms: 'Synonym badges (this badge should replace all badges given on the following field)'
+    priority: 'Priority: %priority%'
     replace: 'Replace the following badges'
     search: 'Chercher un badge'
     synonym_of: 'Synonym of %name%'
     title: 'Gestion des badges'
     used_by: 'Used by %count% volunteers'
-    priority: 'Priority: %priority%'
   category:
     badges: Badges
     badges_add: 'Add a badge'
@@ -137,13 +137,13 @@ base:
     create: 'Create new entry'
     delete: Delete
     details: Details
+    disable: Disable
+    enable: Enable
     more: More...
     open: Open
     save: Save
     search: Search
     update: Edit
-    enable: Enable
-    disable: Disable
   clear_selection: 'Clear selection'
   crud:
     create_title: 'Add a new entry'
@@ -443,6 +443,7 @@ manage_volunteers:
       sms_content: 'Hello, we taken your request into account. You won''t receive messages from us. Sorry for the inconvenience.'
       title: '[GDPR] Data deletion request for %nivol%'
     cancel: Cancel
+    choose_answer: 'Choose the volunteer''s answer asking for his data deletion.'
     confirm: Confirm
     continue: 'Continue here'
     delete_button: 'Delete his/her data'
@@ -453,7 +454,6 @@ manage_volunteers:
     message: 'Please review the message causing the data deletion.'
     title: 'Data deletion for %name%'
     volunteer_asked_for_it: 'This volunteer asked you to remove his personal data?'
-    choose_answer: 'Choose the volunteer''s answer asking for his data deletion.'
   columns:
     never_updated: 'Skills never imported'
     update: 'Updated on %date%'

@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'password_login.user_list.edit_profile'|trans({'%user%': user.username}) }}{% endblock %}
+{% block footer %}{% endblock %}
+
+{% block body %}
+
+    {{ block('body', '@!PasswordLogin/admin/profile.html.twig') }}
+
+    <div class="text-center">
+
+        <a href="{{ path('admin_pegass_index') }}" class="btn btn-secondary">
+            {{ 'base.button.back'|trans }}
+        </a>
+
+    </div>
+
+    {{ block('locales') }}
+
+{% endblock %}
+

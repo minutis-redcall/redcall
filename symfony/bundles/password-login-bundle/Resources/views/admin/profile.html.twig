@@ -1,0 +1,29 @@
+{% extends '@PasswordLogin/base.html.twig' %}
+
+{% block title %}{{ 'password_login.user_list.edit_profile'|trans({'%user%': user.username}) }}{% endblock %}
+
+{% block body %}
+
+    <br/>
+
+    <div class="row">
+
+        {% block content %}
+
+            <div class="col-md-12 jumbotron">
+                <h3>{{ block('title') }}</h3>
+
+                {{ form(form) }}
+
+                <div class="text-right">
+                    <a href="{{ path('password_login_admin_reset_password', {username: user.username, csrf: csrf_token('password_login')}) }}" class="btn btn-secondary">
+                        {{ 'password_login.forgot_password.reset_by_admin'|trans }}
+                    </a>
+                </div>
+            </div>
+
+        {% endblock %}
+
+    </div>
+
+{% endblock %}
