@@ -1,4 +1,13 @@
 form:
+  badge:
+    errors:
+      parent:
+        loop: 'This badge is on the next level, so you can''t set it on the previous level.'
+        synonym: 'This badge is a synonym of "%name%", use "%name%" directy.'
+      synonym:
+        has_parent: 'Badge "%name%" has a previous level badge, so it cannot be replaced.'
+        has_synonyms: 'Badge "%name%" has synonyms, remove them first before marking this badge as synonym.'
+        visible: 'Badge "%name%" is enabled, so you can''t replace it by another badge.'
   campaign:
     errors:
       message:
@@ -24,12 +33,3 @@ form:
   volunteer:
     errors:
       redcall_user: 'This volunteer is bound to a RedCall user, remove first the user and then remove this volunteer.'
-  badge:
-    errors:
-      parent:
-        loop: 'This badge is on the next level, so you can''t set it on the previous level.'
-        synonym: 'This badge is a synonym of "%name%", use "%name%" directy.'
-      synonym:
-        visible: 'Badge "%name%" is enabled, so you can''t replace it by another badge.'
-        has_synonyms: 'Badge "%name%" has synonyms, remove them first before marking this badge as synonym.'
-        has_parent: 'Badge "%name%" has a previous level badge, so it cannot be replaced.'

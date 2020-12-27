@@ -34,12 +34,12 @@ admin:
       parent: 'Badge de niveau inférieur (ex: chauffeur VPSP a pour badge de niveau inférieur chauffeur VL car si un chauffeur conduit une ambulance, il peut conduire une voiture)'
       priority: 'Priorité du badge (cela modifiera sa place dans l''affichage des badges)'
       synonyms: 'Badges synonymes (ce badge remplacera l''ensemble des badges ci-dessous)'
+    priority: 'Priorité: %priority%'
     replace: 'Remplace les badges suivants'
     search: 'Chercher un badge'
     synonym_of: 'Synonyme de %name%'
     title: 'Gestion des badges'
     used_by: 'Utilisé par %count% bénévoles'
-    priority: 'Priorité: %priority%'
   category:
     badges: Badges
     badges_add: 'Ajouter un badge'
@@ -137,13 +137,13 @@ base:
     create: 'Ajouter une nouvelle entrée'
     delete: Effacer
     details: Détails
+    disable: Desactiver
+    enable: Activer
     more: Plus...
     open: Ouvrir
     save: Sauvegarder
     search: Rechercher
     update: Editer
-    enable: Activer
-    disable: Desactiver
   clear_selection: 'Effacer la sélection'
   crud:
     create_title: 'Ajouter une entrée'
@@ -443,6 +443,7 @@ manage_volunteers:
       sms_content: 'Bonjour, nous avons pris en compte votre demande. Vous ne recevrez plus de message de notre part. Toutes nos excuses pour la gêne occasionnée.'
       title: '[RGPD] Demande de suppression de données pour %nivol%'
     cancel: Annuler
+    choose_answer: 'Sélectionnez la réponse du bénévole demendant la suppression de ses données personnelles.'
     confirm: Confirmer
     continue: 'Continuez ici'
     delete_button: 'Supprimer ses données'
@@ -453,7 +454,6 @@ manage_volunteers:
     message: 'Merci de bien vouloir relire attentivement le message causant la suppression de données avant de continuer.'
     title: 'Suppression des données de %name%'
     volunteer_asked_for_it: 'Ce bénévole vous a demandé de supprimer ses données ?'
-    choose_answer: 'Sélectionnez la réponse du bénévole demendant la suppression de ses données personnelles.'
   columns:
     never_updated: 'Pas encore importé'
     update: 'MàJ le %date%'
