@@ -32,6 +32,8 @@ password_login:
       6: 'L''équipe redcall.'
     remember: 'En fait, je me souviens de mon mot de passe !'
     sent: 'Si un compte existe avec l''email %email%, vous allez prochainement recevoir un email contenant un lien qui vous permettra de réinitialiser votre mot de passe. Si votre boîte emails est protégée par un anti-spam, pensez à vérifier que celui-ci n''ait pas été bloqué.'
+    reset_by_admin: 'Envoyer un email de réinitialisation de mot de passe'
+    sent_by_admin: 'Un email a bien été envoyé à %email%.'
     subject: '☎️ Réinitialisation de votre mot de passe.'
     submit: 'Demander à changer de mot de passe'
     title: 'Mot de passe perdu ?'

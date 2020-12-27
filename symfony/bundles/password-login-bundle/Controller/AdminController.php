@@ -221,6 +221,30 @@ class AdminController extends BaseController
         ];
     }
 
+    /**
+     * @Route("/reset-password/{username}/{csrf}", name="reset_password")
+     */
+    public function resetPassword($username, $csrf)
+    {
+        if ($this->checkCsrfAndUser($username, $csrf)) {
+            $uuid = $this->passwordRecoveryManager->generateToken($username);
+            $url  = trim(getenv('WEBSITE_URL'), '/').$this->generateUrl('password_login_change_password', ['uuid' => $uuid]);
+
+            $this->mail->send(
+                $username,
+                'password_login.forgot_password.subject',
+                '@PasswordLogin/security/forgot_password_mail.txt.twig',
+                ['url' => $url, 'type' => 'register']
+            );
+        }
+
+        $this->success('password_login.forgot_password.sent_by_admin', ['%email%' => $username]);
+
+        return $this->redirectToRoute('password_login_admin_profile', [
+            'username' => $username,
+        ]);
+    }
+
     private function checkCsrfAndUser($username, $csrf) : AbstractUser
     {
         if (!$this->isCsrfTokenValid('password_login', $csrf)) {

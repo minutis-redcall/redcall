@@ -32,6 +32,8 @@ password_login:
       6: 'The redcall team.'
     remember: 'Oh wait, I do remember my password!'
     sent: 'If an account exists with email %email%, you will soon receive an email containing a link that will let you reinitialize your password. If your inbox is behind an anti-spam protection, check that it has not been blocked.'
+    reset_by_admin: 'Send a "Reset password" email'
+    sent_by_admin: 'An email has successfully been sent to %email%.'
     subject: '☎️ Change your password.'
     submit: 'Ask to change password'
     title: 'Lost your password ?'
