@@ -11,6 +11,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Encoder\BCryptPasswordEncoder;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
@@ -76,28 +77,32 @@ class ProfileType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        if (!$options['admin']) {
+            $builder
+                ->add('current_password', Type\PasswordType::class, [
+                    'required'    => true,
+                    'label'       => 'password_login.profile.current_password',
+                    'constraints' => [
+                        new Constraints\Length([
+                            'min' => 8,
+                            'max' => BCryptPasswordEncoder::MAX_PASSWORD_LENGTH,
+                        ]),
+                        new Constraints\Callback([
+                            'callback' => function ($object, ExecutionContextInterface $context, $payload) {
+                                if (!$this->encoder->isPasswordValid($this->getUser(), $object)) {
+                                    $context
+                                        ->buildViolation($this->translator->trans('password_login.profile.invalid_current_password'))
+                                        ->atPath('current_password')
+                                        ->addViolation();
+                                }
+                            },
+                        ]),
+                    ],
+                    'mapped'      => false,
+                ]);
+        }
+
         $builder
-            ->add('current_password', Type\PasswordType::class, [
-                'required'    => true,
-                'label'       => 'password_login.profile.current_password',
-                'constraints' => [
-                    new Constraints\Length([
-                        'min' => 8,
-                        'max' => BCryptPasswordEncoder::MAX_PASSWORD_LENGTH,
-                    ]),
-                    new Constraints\Callback([
-                        'callback' => function ($object, ExecutionContextInterface $context, $payload) {
-                            if (!$this->encoder->isPasswordValid($this->getUser(), $object)) {
-                                $context
-                                    ->buildViolation($this->translator->trans('password_login.profile.invalid_current_password'))
-                                    ->atPath('current_password')
-                                    ->addViolation();
-                            }
-                        },
-                    ]),
-                ],
-                'mapped'      => false,
-            ])
             ->add('username', Type\EmailType::class, [
                 'label'       => 'password_login.profile.email',
                 'required'    => true,
@@ -106,8 +111,9 @@ class ProfileType extends AbstractType
                     new Constraints\Regex('/^[a-zA-Z0-9\_\-\.\@]+$/'),
                     new Constraints\Length(['min' => 8]),
                     new Constraints\Callback([
-                        'callback' => function ($object, ExecutionContextInterface $context, $payload) {
-                            if ($object !== $this->getUser()->getUsername()
+                        'callback' => function ($object, ExecutionContextInterface $context, $payload) use ($options) {
+                            $user = $options['user'] ?? $this->getUser();
+                            if ($object !== $user->getUsername()
                                 && $this->userManager->findOneByUsername($object)) {
                                 $context
                                     ->buildViolation($this->translator->trans('password_login.profile.already_exists'))
@@ -117,31 +123,35 @@ class ProfileType extends AbstractType
                         },
                     ]),
                 ],
-            ])
-            ->add('password', Type\RepeatedType::class, [
-                'type'            => Type\PasswordType::class,
-                'invalid_message' => $this->translator->trans('password_login.profile.password_should_match'),
-                'required'        => false,
-                'first_options'   => [
-                    'label'       => 'password_login.profile.password',
-                    'constraints' => new Constraints\Length([
-                        'min' => 8,
-                        'max' => BCryptPasswordEncoder::MAX_PASSWORD_LENGTH,
-                    ]),
-                ],
-                'second_options'  => ['label' => 'password_login.register.repeat_password'],
             ]);
 
-        $ip = $this->requestStack->getMasterRequest()->getClientIp();
+        if (!$options['admin']) {
+            $builder
+                ->add('password', Type\RepeatedType::class, [
+                    'type'            => Type\PasswordType::class,
+                    'invalid_message' => $this->translator->trans('password_login.profile.password_should_match'),
+                    'required'        => false,
+                    'first_options'   => [
+                        'label'       => 'password_login.profile.password',
+                        'constraints' => new Constraints\Length([
+                            'min' => 8,
+                            'max' => 4096,
+                        ]),
+                    ],
+                    'second_options'  => ['label' => 'password_login.register.repeat_password'],
+                ]);
 
-        if (!$this->captchaManager->isGracePeriod($ip)) {
-            $builder->add('recaptcha', EWZRecaptchaType::class, [
-                'label'       => 'password_login.profile.captcha',
-                'constraints' => [
-                    new RecaptchaTrue(),
-                ],
-                'mapped'      => false,
-            ]);
+            $ip = $this->requestStack->getMasterRequest()->getClientIp();
+
+            if (!$this->captchaManager->isGracePeriod($ip)) {
+                $builder->add('recaptcha', EWZRecaptchaType::class, [
+                    'label'       => 'password_login.profile.captcha',
+                    'constraints' => [
+                        new RecaptchaTrue(),
+                    ],
+                    'mapped'      => false,
+                ]);
+            }
         }
 
         $builder->add('submit', Type\SubmitType::class, [
@@ -149,7 +159,15 @@ class ProfileType extends AbstractType
         ]);
     }
 
-    private function getUser(): UserInterface
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        $resolver->setDefaults([
+            'user'  => null,
+            'admin' => false,
+        ]);
+    }
+
+    private function getUser() : UserInterface
     {
         return $this->tokenStorage->getToken()->getUser();
     }

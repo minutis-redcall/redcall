@@ -284,7 +284,7 @@ class SecurityController extends BaseController
                 $newUser->setUsername($formUser->getUsername());
                 $newUser->setIsVerified(false);
                 $this->sendEmailVerification($newUser->getUsername(), EmailVerification::TYPE_EDIT_PROFILE);
-                $this->tokenStorage->setToken(null);
+                $this->tokenStorage->setToken();
                 $this->alert('password_login.profile.logout');
             }
 

@@ -4,17 +4,21 @@ namespace Bundles\PasswordLoginBundle\Controller;
 
 use Bundles\PasswordLoginBundle\Base\BaseController;
 use Bundles\PasswordLoginBundle\Entity\AbstractUser;
+use Bundles\PasswordLoginBundle\Event\PasswordLoginEvents;
+use Bundles\PasswordLoginBundle\Event\PostEditProfileEvent;
+use Bundles\PasswordLoginBundle\Event\PreEditProfileEvent;
+use Bundles\PasswordLoginBundle\Form\Type\ProfileType;
 use Bundles\PasswordLoginBundle\Manager\CaptchaManager;
 use Bundles\PasswordLoginBundle\Manager\EmailVerificationManager;
 use Bundles\PasswordLoginBundle\Manager\PasswordRecoveryManager;
 use Bundles\PasswordLoginBundle\Manager\UserManager;
 use Bundles\PasswordLoginBundle\Services\Mail;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
@@ -120,7 +124,7 @@ class AdminController extends BaseController
     /**
      * @Route("/toggle-verify/{username}/{csrf}", name="toggle_verify")
      */
-    public function toggleVerifyAction($username, $csrf)
+    public function toggleVerify($username, $csrf)
     {
         $user = $this->checkCsrfAndUser($username, $csrf);
 
@@ -138,7 +142,7 @@ class AdminController extends BaseController
     /**
      * @Route("/toggle-trust/{username}/{csrf}", name="toggle_trust")
      */
-    public function toggleTrustAction($username, $csrf)
+    public function toggleTrust($username, $csrf)
     {
         $user = $this->checkCsrfAndUser($username, $csrf);
 
@@ -151,7 +155,7 @@ class AdminController extends BaseController
     /**
      * @Route("/toggle-admin/{username}/{csrf}", name="toggle_admin")
      */
-    public function toggleAdminAction($username, $csrf)
+    public function toggleAdmin($username, $csrf)
     {
         $user = $this->checkCsrfAndUser($username, $csrf);
 
@@ -164,7 +168,7 @@ class AdminController extends BaseController
     /**
      * @Route("/delete/{username}/{csrf}", name="delete")
      */
-    public function deleteAction($username, $csrf)
+    public function delete($username, $csrf)
     {
         $user = $this->checkCsrfAndUser($username, $csrf);
 
@@ -181,12 +185,53 @@ class AdminController extends BaseController
         return $this->redirectToRoute('password_login_admin_list');
     }
 
-    private function checkCsrfAndUser($username, $csrf): AbstractUser
+    /**
+     * @Route("/profile/{username}", name="profile")
+     * @Template()
+     */
+    public function profile(Request $request, string $username)
+    {
+        $newUser = $this->checkUser($username);
+        $oldUser = clone $newUser;
+
+        $form = $this
+            ->createForm(ProfileType::class, $newUser, [
+                'admin' => true,
+                'user'  => $newUser,
+            ])
+            ->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->dispatcher->dispatch(PasswordLoginEvents::PRE_EDIT_PROFILE, new PreEditProfileEvent($oldUser, $newUser));
+
+            $this->userManager->save($newUser);
+
+            $this->dispatcher->dispatch(PasswordLoginEvents::POST_EDIT_PROFILE, new PostEditProfileEvent($newUser, $oldUser));
+
+            $this->success('password_login.profile.saved');
+
+            return $this->redirectToRoute('password_login_admin_profile', [
+                'username' => $newUser->getUsername(),
+            ]);
+        }
+
+        return [
+            'user' => $newUser,
+            'form' => $form->createView(),
+        ];
+    }
+
+    private function checkCsrfAndUser($username, $csrf) : AbstractUser
     {
         if (!$this->isCsrfTokenValid('password_login', $csrf)) {
             throw $this->createNotFoundException();
         }
 
+        return $this->checkUser($username);
+    }
+
+    private function checkUser(string $username) : AbstractUser
+    {
         $user = $this->userManager->findOneByUsername($username);
         if (is_null($user)) {
             throw $this->createNotFoundException();

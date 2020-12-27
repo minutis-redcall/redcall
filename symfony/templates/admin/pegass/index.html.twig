@@ -112,70 +112,77 @@
                             </div>
                             <div class="col-md-1">
                                 {% if not user.isEqualTo(app.user) %}
-                                <div class="dropdown">
-                                    <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        {{ 'base.actions'|trans }}
-                                    </button>
-                                    <div class="dropdown-menu">
-                                        {% if user.verified %}
-                                            <a class="dropdown-item text-danger" href="{{ path('admin_pegass_toggle_verify', {id: user.id, csrf: csrf_token('pegass')}) }}">
-                                                {{ 'password_login.user_list.unverify'|trans }}
-                                            </a>
-                                        {% else %}
-                                            <a class="dropdown-item text-success" href="{{ path('admin_pegass_toggle_verify', {id: user.id, csrf: csrf_token('pegass')}) }}">
-                                                {{ 'password_login.user_list.verify'|trans }}
-                                            </a>
-                                        {% endif %}
+                                    <div class="dropdown">
+                                        <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            {{ 'base.actions'|trans }}
+                                        </button>
+                                        <div class="dropdown-menu">
 
-                                        {% if user.trusted %}
-                                            <a class="dropdown-item text-danger" href="{{ path('admin_pegass_toggle_trust', {id: user.id, csrf: csrf_token('pegass')}) }}">
-                                                {{ 'password_login.user_list.untrust'|trans }}
+                                            <a class="dropdown-item text-primary" href="{{ path('password_login_admin_profile', {username: user.username}) }}">
+                                                {{ 'password_login.user_list.profile'|trans }}
                                             </a>
-                                        {% else %}
-                                            <a class="dropdown-item text-success" href="{{ path('admin_pegass_toggle_trust', {id: user.id, csrf: csrf_token('pegass')}) }}">
-                                                {{ 'password_login.user_list.trust'|trans }}
-                                            </a>
-                                        {% endif %}
 
-                                        {% if user.admin %}
-                                            <a class="dropdown-item text-danger" href="{{ path('admin_pegass_toggle_admin', {id: user.id, csrf: csrf_token('pegass')}) }}">
-                                                {{ 'password_login.user_list.unadmin'|trans }}
-                                            </a>
-                                        {% else %}
-                                            <a class="dropdown-item text-success" href="{{ path('admin_pegass_toggle_admin', {id: user.id, csrf: csrf_token('pegass')}) }}">
-                                                {{ 'password_login.user_list.admin'|trans }}
-                                            </a>
-                                        {% endif %}
+                                            <div class="dropdown-divider"></div>
 
-                                        {% if user.developer %}
-                                            <a class="dropdown-item text-danger" href="{{ path('admin_pegass_toggle_developer', {id: user.id, csrf: csrf_token('pegass')}) }}">
-                                                {{ 'admin.pegass.undeveloper'|trans }}
-                                            </a>
-                                        {% else %}
-                                            <a class="dropdown-item text-success" href="{{ path('admin_pegass_toggle_developer', {id: user.id, csrf: csrf_token('pegass')}) }}">
-                                                {{ 'admin.pegass.developer'|trans }}
-                                            </a>
-                                        {% endif %}
+                                            {% if user.verified %}
+                                                <a class="dropdown-item text-danger" href="{{ path('admin_pegass_toggle_verify', {id: user.id, csrf: csrf_token('pegass')}) }}">
+                                                    {{ 'password_login.user_list.unverify'|trans }}
+                                                </a>
+                                            {% else %}
+                                                <a class="dropdown-item text-success" href="{{ path('admin_pegass_toggle_verify', {id: user.id, csrf: csrf_token('pegass')}) }}">
+                                                    {{ 'password_login.user_list.verify'|trans }}
+                                                </a>
+                                            {% endif %}
 
-                                        <div class="dropdown-divider"></div>
+                                            {% if user.trusted %}
+                                                <a class="dropdown-item text-danger" href="{{ path('admin_pegass_toggle_trust', {id: user.id, csrf: csrf_token('pegass')}) }}">
+                                                    {{ 'password_login.user_list.untrust'|trans }}
+                                                </a>
+                                            {% else %}
+                                                <a class="dropdown-item text-success" href="{{ path('admin_pegass_toggle_trust', {id: user.id, csrf: csrf_token('pegass')}) }}">
+                                                    {{ 'password_login.user_list.trust'|trans }}
+                                                </a>
+                                            {% endif %}
 
-                                        {% if user.locked %}
-                                            <a class="dropdown-item text-danger" href="{{ path('admin_pegass_toggle_lock', {id: user.id, csrf: csrf_token('pegass')}) }}">
-                                                {{ 'admin.pegass.unlock'|trans }}
+                                            {% if user.admin %}
+                                                <a class="dropdown-item text-danger" href="{{ path('admin_pegass_toggle_admin', {id: user.id, csrf: csrf_token('pegass')}) }}">
+                                                    {{ 'password_login.user_list.unadmin'|trans }}
+                                                </a>
+                                            {% else %}
+                                                <a class="dropdown-item text-success" href="{{ path('admin_pegass_toggle_admin', {id: user.id, csrf: csrf_token('pegass')}) }}">
+                                                    {{ 'password_login.user_list.admin'|trans }}
+                                                </a>
+                                            {% endif %}
+
+                                            {% if user.developer %}
+                                                <a class="dropdown-item text-danger" href="{{ path('admin_pegass_toggle_developer', {id: user.id, csrf: csrf_token('pegass')}) }}">
+                                                    {{ 'admin.pegass.undeveloper'|trans }}
+                                                </a>
+                                            {% else %}
+                                                <a class="dropdown-item text-success" href="{{ path('admin_pegass_toggle_developer', {id: user.id, csrf: csrf_token('pegass')}) }}">
+                                                    {{ 'admin.pegass.developer'|trans }}
+                                                </a>
+                                            {% endif %}
+
+                                            <div class="dropdown-divider"></div>
+
+                                            {% if user.locked %}
+                                                <a class="dropdown-item text-danger" href="{{ path('admin_pegass_toggle_lock', {id: user.id, csrf: csrf_token('pegass')}) }}">
+                                                    {{ 'admin.pegass.unlock'|trans }}
+                                                </a>
+                                            {% else %}
+                                                <a class="dropdown-item text-success" href="{{ path('admin_pegass_toggle_lock', {id: user.id, csrf: csrf_token('pegass')}) }}">
+                                                    {{ 'admin.pegass.lock'|trans }}
+                                                </a>
+                                            {% endif %}
+
+                                            <div class="dropdown-divider"></div>
+
+                                            <a class="dropdown-item text-danger" href="{{ path('admin_pegass_delete', {id: user.id, csrf: csrf_token('pegass')}) }}">
+                                                {{ 'password_login.user_list.delete'|trans }}
                                             </a>
-                                        {% else %}
-                                            <a class="dropdown-item text-success" href="{{ path('admin_pegass_toggle_lock', {id: user.id, csrf: csrf_token('pegass')}) }}">
-                                                {{ 'admin.pegass.lock'|trans }}
-                                            </a>
-                                        {% endif %}
-
-                                        <div class="dropdown-divider"></div>
-
-                                        <a class="dropdown-item text-danger" href="{{ path('admin_pegass_delete', {id: user.id, csrf: csrf_token('pegass')}) }}">
-                                            {{ 'password_login.user_list.delete'|trans }}
-                                        </a>
+                                        </div>
                                     </div>
-                                </div>
                                 {% endif %}
                             </div>
                         </div>
