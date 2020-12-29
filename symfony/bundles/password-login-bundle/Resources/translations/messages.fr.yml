@@ -31,13 +31,13 @@ password_login:
       5: 'Bonne journée,'
       6: 'L''équipe redcall.'
     remember: 'En fait, je me souviens de mon mot de passe !'
+    reset_by_admin: 'Envoyer un email de réinitialisation de mot de passe'
     sent: 'Si un compte existe avec l''email %email%, vous allez prochainement recevoir un email contenant un lien qui vous permettra de réinitialiser votre mot de passe. Si votre boîte emails est protégée par un anti-spam, pensez à vérifier que celui-ci n''ait pas été bloqué.'
+    sent_by_admin: 'Un email a bien été envoyé à %email%.'
     subject: '☎️ Réinitialisation de votre mot de passe.'
     submit: 'Demander à changer de mot de passe'
     title: 'Mot de passe perdu ?'
     username: 'Veuillez saisir votre email afin de réinitialiser votre mot de passe.'
-    reset_by_admin: 'Envoyer un email de réinitialisation de mot de passe'
-    sent_by_admin: 'Un email a bien été envoyé à %email%.'
   logout:
     button: Déconnexion
   not_trusted:
@@ -66,10 +66,10 @@ password_login:
     password: 'Saisissez votre nouveau mot de passe (ou laissez vide pour ne pas en changer)'
     password_should_match: 'Les deux mots de passes saisis ne correspondent pas.'
     repeat_password: 'Resaisissez votre nouveau mot de passe'
+    saved: 'Changements sauvegardés'
     submit: 'Effectuer les changements'
     success: 'Votre profile est sauvegardé.'
     title: 'Changement de vos informations'
-    saved: 'Changements sauvegardés'
   register:
     already_exists: 'Cet email est déjà connu dans notre base.'
     already_have_account: 'Vous avez déjà un compte ?'
@@ -89,10 +89,12 @@ password_login:
     description_admin: 'Un administrateur peut autoriser des nouveaux inscrits et configurer la plateforme.'
     description_trusted: 'N''importe qui peut s''inscrire sur la plateforme, mais seuls les utilisateurs autorisés peuvent accéder aux outils mis à disposition.'
     description_verified: 'Lors de son inscription, chaque utilisateur reçoit un email de vérification. L''email est considéré valide lorsque l''utilisateur clique sur le lien qu''il contient.'
+    edit_profile: 'Edition du profile de %user%'
     home: 'Retourner à la page d''accueil'
     is_admin: Administrateur
     is_trusted: 'Utilisateur autorisé'
     is_valid: 'Email vérifié'
+    profile: 'Editer le profile'
     registered_at: 'Enregistré(e) depuis le %date%'
     search:
       criteria: 'Rechercher un utilisateur'
@@ -104,8 +106,6 @@ password_login:
     unverify: 'Invalider l''email de cet utilisateur'
     username: Email
     verify: 'Valider l''email de cet utilisateur'
-    edit_profile: 'Edition du profile de %user%'
-    profile: 'Editer le profile'
   verify_email:
     failure: 'Un email contenant un lien vous a été envoyé lors de votre inscription: vous devez cliquer dessus pour vérifier votre email et pouvoir vous connecter à la plateforme.'
     mail:

@@ -31,13 +31,13 @@ password_login:
       5: 'Have a great day,'
       6: 'The redcall team.'
     remember: 'Oh wait, I do remember my password!'
+    reset_by_admin: 'Send a "Reset password" email'
     sent: 'If an account exists with email %email%, you will soon receive an email containing a link that will let you reinitialize your password. If your inbox is behind an anti-spam protection, check that it has not been blocked.'
+    sent_by_admin: 'An email has successfully been sent to %email%.'
     subject: '☎️ Change your password.'
     submit: 'Ask to change password'
     title: 'Lost your password ?'
     username: 'Please enter your email in order to change your password.'
-    reset_by_admin: 'Send a "Reset password" email'
-    sent_by_admin: 'An email has successfully been sent to %email%.'
   logout:
     button: Disconnect
   not_trusted:
@@ -66,10 +66,10 @@ password_login:
     password: 'Choose your new password (leave empty if you don''t want to change)'
     password_should_match: 'The two entered passwords do not match.'
     repeat_password: 'Type your new password again'
+    saved: 'Changes saved'
     submit: 'Save changes'
     success: 'Your profile have been saved.'
     title: 'Change your information'
-    saved: 'Changes saved'
   register:
     already_exists: 'This email is already known in our database.'
     already_have_account: 'Already have an account?'
@@ -89,10 +89,12 @@ password_login:
     description_admin: 'An administrator can trust new users and configure the platform.'
     description_trusted: 'Anyone can subscribe on the platform, but only the ones trusted can access the provided tools.'
     description_verified: 'When registering, every user receive a verification email. User''s email is considered valid once user clicked on the link it contains.'
+    edit_profile: '%user%''s profile edition'
     home: 'Go back home'
     is_admin: Administrator
     is_trusted: 'User trusted'
     is_valid: 'Email verified'
+    profile: 'Edit profile'
     registered_at: 'Registered on %date%'
     search:
       criteria: 'User search'
@@ -104,8 +106,6 @@ password_login:
     unverify: 'Unverify user''s email'
     username: Email
     verify: 'Verify user''s email'
-    edit_profile: '%user%''s profile edition'
-    profile: 'Edit profile'
   verify_email:
     failure: 'An email containing a link has been sent during your subscription: you should click on that link in order to verify your email and connect to the platform.'
     mail:
