@@ -77,6 +77,8 @@ admin:
     title: 'Bindings between RedCall users and volunteer database'
     undeveloper: 'Remove developer access'
     unlock: Unlock
+    add_structure: 'Add a structure'
+    delete_structures: 'Delete one or several structures'
   statistics:
     campaign:
       period: 'In the period, <b>%created%</b> campaigns were open, including <b>%active%</b> that are still active.'

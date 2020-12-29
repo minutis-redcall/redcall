@@ -127,6 +127,13 @@ class UserManager extends BaseUserManager
         );
     }
 
+    public function getUserStructuresQueryBuilder(User $user) : QueryBuilder
+    {
+        return $this->structureManager->getStructuresQueryBuilderForUser(
+            $user
+        );
+    }
+
     public function getCurrentUserStructures() : array
     {
         return $this->structureManager->getStructuresForUser(
