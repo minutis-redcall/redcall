@@ -224,4 +224,9 @@ class User extends AbstractUser
 
         return $roles;
     }
+
+    public function __clone()
+    {
+        $this->structures = clone $this->structures;
+    }
 }

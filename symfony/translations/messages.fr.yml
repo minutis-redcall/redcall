@@ -77,6 +77,8 @@ admin:
     title: 'Connexions entre les utilisateurs de RedCall et la base de données bénévole'
     undeveloper: 'Retirer l''accès développeur'
     unlock: Dégeler
+    add_structure: 'Ajouter une structure'
+    delete_structures: 'Effacer une ou plusieurs structures'
   statistics:
     campaign:
       period: 'Dans cette période, <b>%created%</b> déclenchements ont été créés, dont <b>%active%</b> sont toujours actifs.'

@@ -5,12 +5,12 @@ namespace App\Controller\Admin;
 use App\Base\BaseController;
 use App\Entity\Structure;
 use App\Entity\User;
+use App\Form\Type\UserStructuresType;
 use App\Form\Type\VolunteerWidgetType;
 use App\Manager\StructureManager;
 use App\Manager\UserManager;
 use App\Manager\VolunteerManager;
 use Bundles\PaginationBundle\Manager\PaginationManager;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
@@ -127,10 +127,40 @@ class PegassController extends BaseController
     /**
      * @Route(name="update_structures", path="/update-structures/{id}")
      */
-    public function updateStructures(User $user)
+    public function updateStructures(Request $request, User $user)
     {
+        // It's a reverse use of the entity type: we want to show all
+        // user structures unticked, and tick only the ones we wish
+        // to delete. So when submitting, we'll delete from user
+        // entity the ones that exist on the cloned entity.
+        $clone = clone $user;
+        foreach ($clone->getStructures() as $structure) {
+            $clone->removeStructure($structure);
+        }
+
+        $form = $this
+            ->createForm(UserStructuresType::class, $clone, [
+                'user' => $user,
+            ])
+            ->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            foreach ($clone->getStructures() as $structure) {
+                $user->removeStructure($structure);
+            }
+
+            // Freeze user to keep prevent Pegass from overwriting the change
+            $user->setLocked(true);
+            $this->userManager->save($user);
+
+            return $this->redirectToRoute('admin_pegass_update_structures', [
+                'id' => $user->getId(),
+            ]);
+        }
+
         return $this->render('admin/pegass/structures.html.twig', [
             'user' => $user,
+            'form' => $form->createView(),
         ]);
     }
 
@@ -155,27 +185,6 @@ class PegassController extends BaseController
         foreach ($structures as $structure) {
             $user->addStructure($structure);
         }
-
-        // Freeze user to keep prevent Pegass from overwriting the change
-        $user->setLocked(true);
-
-        $this->userManager->save($user);
-
-        return $this->redirectToRoute('admin_pegass_update_structures', [
-            'id' => $user->getId(),
-        ]);
-    }
-
-    /**
-     * @Route(name="delete_structure", path="/delete-structure/{csrf}/{userId}/{structureId}")
-     * @Entity("user", expr="repository.find(userId)")
-     * @Entity("structure", expr="repository.find(structureId)")
-     */
-    public function deleteStructure(string $csrf, User $user, Structure $structure)
-    {
-        $this->validateCsrfOrThrowNotFoundException('pegass', $csrf);
-
-        $user->removeStructure($structure);
 
         // Freeze user to keep prevent Pegass from overwriting the change
         $user->setLocked(true);
