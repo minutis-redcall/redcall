@@ -36,6 +36,7 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Environment;
 
@@ -560,6 +561,7 @@ class VolunteersController extends BaseController
                         'multiple'      => false,
                         'expanded'      => false,
                         'label'         => 'manage_volunteers.anonymize.choose_answer',
+                        'constraints'   => new NotBlank(),
                     ])
                     ->add('delete', SubmitType::class, [
                         'label' => 'base.button.delete',
