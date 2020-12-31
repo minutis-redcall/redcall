@@ -835,6 +835,56 @@ class Volunteer
         }
     }
 
+    public function getVisibleBadges() : array
+    {
+        $badges = $this->badges->toArray();
+
+        // Only use synonyms
+        foreach ($badges as $key => $badge) {
+            /** @var Badge $badge */
+            if ($badge->getSynonym() && !in_array($badge->getSynonym(), $badges)) {
+                $badges[] = $badge->getSynonym();
+                unset($badges[$key]);
+            }
+        }
+
+        // Only use visible badges
+        $badges = array_filter($badges, function (Badge $badge) {
+            return $badge->isVisible();
+        });
+
+        // Only rendering the higher badge in the hierarchy
+        $badges = array_filter($badges, function (Badge $badge) use ($badges) {
+            foreach ($badge->getChildren() as $child) {
+                if (in_array($child, $badges)) {
+                    return false;
+                }
+            }
+
+            return true;
+        });
+
+        // Sorting badges by category's priority and then by priority
+        usort($badges, function (Badge $a, Badge $b) {
+            if ($a->getCategory() && $b->getCategory()
+                && $a->getCategory()->getPriority() !== $b->getCategory()->getPriority()) {
+                return $a->getCategory()->getPriority() <=> $b->getCategory()->getPriority();
+            }
+
+            if ($a->getCategory() && !$b->getCategory()) {
+                return -1;
+            }
+
+            if (!$a->getCategory() && $b->getCategory()) {
+                return 1;
+            }
+
+            return $a->getPriority() <=> $b->getPriority();
+        });
+
+        return $badges;
+    }
+
     private function toName(string $name) : string
     {
         return preg_replace_callback('/[^\\s\-]+/ui', function (array $match) {

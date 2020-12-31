@@ -303,42 +303,7 @@
 
                                 <td id="volunteer-{{ suffix }}">
 
-                                    {# Volunteer's name #}
-                                    <div id="volunteer-name-{{ suffix }}"
-                                         class="h4 {% if not message.sent %}text-black-50{% endif %}">
-                                        <span href="#" class="volunteer-info" style="cursor:pointer;"
-                                              onclick="$('#volunteer-info-{{ message.id }}').toggleClass('d-none');return false;">
-                                            {{ volunteer.displayName }}
-                                            {% if volunteer.minor %}
-                                                🐻
-                                            {% elseif volunteer.user %}
-                                                <img src="{{ asset('minutis.png') }}"/>
-                                            {% else %}
-                                                👤
-                                            {% endif %}
-                                        </span>
-                                    </div>
-                                    <div id="volunteer-info-{{ message.id }}" class="d-none">
-                                        #{{ volunteer.nivol }}
-                                        <br/>
-                                        {% if volunteer.email %}
-                                            {% if not volunteer.emailOptin %}<strike>{% endif %}
-                                            <a href="mailto:{{ volunteer.email }}?subject={{ 'manage_volunteers.contact.mail_subject'|trans({'%brand%': brand|upper})|e('html_attr') }}">{{ volunteer.email }}</a>
-                                            {% if not volunteer.emailOptin %}</strike>{% endif %}
-                                            <br/>
-                                        {% endif %}
-                                        {% if volunteer.phoneNumber %}
-                                            {% if not volunteer.phoneNumberOptin %}<strike>{% endif %}
-                                            {{ macros.phone(volunteer.phone) }}
-                                            {% if not volunteer.phoneNumberOptin %}</strike>{% endif %}
-                                            <br/>
-                                        {% endif %}
-                                        {% if is_granted('VOLUNTEER', volunteer) %}
-                                            <a target="_blank" href="{{ path('management_volunteers_manual_update', {'id': volunteer.id}) }}">{{ 'base.button.more'|trans|lower }}</a>
-                                        {% else %}
-                                            <span style="color:grey;">{{ 'manage_volunteers.access_denied'|trans }}</span>
-                                        {% endif %}
-                                    </div>
+                                    {{ macros.volunteer(message.volunteer) }}
 
                                     <div class="float-right">
 
@@ -408,17 +373,6 @@
                                                   class="open-message" style="cursor:pointer;">✏️</span>
                                         {% endif %}
                                     </div>
-
-                                    {# Volunteer's skills #}
-                                    {% for skill in message.volunteer.tags %}
-                                        <div class="d-none message-is-skill-{{ skill.id|e('html_attr') }}-{{ communication.id }}"
-                                             data-value=1></div>
-                                    {% endfor %}
-                                    <span class="text-small">
-                                            {% for skill in message.volunteer.tagsView %}
-                                                {{ ('tag.shortcuts.' ~ skill)|trans }}{% if not loop.last %},{% endif %}
-                                            {% endfor %}
-                                    </span>
 
                                     {# Warnings #}
                                     {% if communication.type in [constant('App\\Entity\\Communication::TYPE_SMS'), constant('App\\Entity\\Communication::TYPE_CALL')] %}

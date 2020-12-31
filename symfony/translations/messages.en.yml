@@ -68,11 +68,13 @@ admin:
     developer: 'Grant developer access'
     developered: Developer
     developered_details: 'A developer can integrate RedCall APIs and access technical features.'
+    edit: 'Open volunteer record'
     list_users: 'List user nivols'
     list_users_explain: 'In order to contact all users, copy/paste this nivol list in a new campaign.'
     lock: Lock
     locked: Frozen
     locked_details: 'Structures of a frozen user are not updated when Pegass is updating its bound volunteer.'
+    open: 'Open Pegass entity'
     structures: 'Update structures for %name%'
     title: 'Bindings between RedCall users and volunteer database'
     undeveloper: 'Remove developer access'

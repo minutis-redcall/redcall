@@ -91,7 +91,9 @@ class BadgeController extends BaseController
 
             $this->badgeManager->save($badge);
 
-            return $this->redirectToRoute('admin_badge_index', $request->query->all());
+            return $this->redirectToRoute('admin_badge_manage', array_merge($request->query->all(), [
+                'id' => $badge->getId(),
+            ]));
         }
 
         return [

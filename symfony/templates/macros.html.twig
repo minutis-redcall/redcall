@@ -85,3 +85,94 @@
         <span alt="{{ badge.description }}">{{ badge.name }}</span>
     {%- endif %}
 {%- endmacro %}
+
+{% macro volunteerBadges(volunteer) %}
+    {% import _self as macros %}
+    {% for badge in volunteer.visibleBadges %}
+        {{ macros.badge(badge) }}{% if not loop.last %},{% endif %}
+    {% endfor %}
+{% endmacro %}
+
+{% macro volunteer(volunteer, clickable = true) %}
+    {% import _self as macros %}
+    <div id="volunteer-{{ volunteer.id }}">
+
+        {# Volunteer's name #}
+        <div id="volunteer-name-{{ volunteer.id }}" class="h4">
+            <span href="#" class="volunteer-info" {% if clickable %}style="cursor:pointer;{% endif %}"
+                  {% if clickable %}onclick="$('#volunteer-details-{{ volunteer.id }}').toggleClass('d-none');return false;"{% endif %}>
+                {% if volunteer.enabled %}
+                    {{ volunteer.displayName }}
+                {% else %}
+                    <span style="color:grey;">{{ volunteer.displayName }}</span> 🚫
+                {% endif %}
+                {% if volunteer.minor %}
+                    🐻
+                {% elseif volunteer.user %}
+                    <img src="{{ asset('minutis.png') }}"/>
+                {% else %}
+                    👤
+                {% endif %}
+                {% if not clickable and is_granted('ROLE_ADMIN') and volunteer.identifier %}
+                    <a href="{{ path('management_volunteers_pegass', {id: volunteer.id}) }}" target="_blank">
+                    🛠
+                </a>
+                {% endif %}
+            </span>
+        </div>
+        <div id="volunteer-structures-{{ volunteer.id }}">
+            {% if volunteer.structures.count %}
+                <strong>{{ (volunteer.structures|first).name }}</strong>
+                {% if volunteer.structures.count > 1 %}
+                    <span onclick="$('#volunteer-structures-details-{{ volunteer.id }}').toggleClass('d-none');return false;">
+                 {{ 'manage_volunteers.others'|trans({'%count%': volunteer.structures.count - 1}) }}
+                 </span>
+                    <div id="volunteer-structures-details-{{ volunteer.id }}" class="d-none">
+                        {% for structure in volunteer.structures %}
+                            {% if structure != volunteer.structures.get(0) %}
+                                <div>{{ structure.displayName }}</div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endif %}
+        </div>
+        {% if clickable %}
+            <div id="volunteer-details-{{ volunteer.id }}" class="d-none">
+                #{{ volunteer.nivol }}
+                <br/>
+                {% if volunteer.email %}
+                    {% if not volunteer.emailOptin %}<strike>{% endif %}
+                    <a href="mailto:{{ volunteer.email }}?subject={{ 'manage_volunteers.contact.mail_subject'|trans({'%brand%': brand|upper})|e('html_attr') }}">{{ volunteer.email }}</a>
+                    {% if not volunteer.emailOptin %}</strike>{% endif %}
+                    <br/>
+                {% endif %}
+                {% if volunteer.phoneNumber %}
+                    {% if not volunteer.phoneNumberOptin %}<strike>{% endif %}
+                    {{ macros.phone(volunteer.phone) }}
+                    {% if not volunteer.phoneNumberOptin %}</strike>{% endif %}
+                    <br/>
+                {% endif %}
+
+                {% if is_granted('ROLE_ADMIN') and volunteer.identifier %}
+                    <div>
+                        <a href="{{ path('management_volunteers_pegass', {id: volunteer.id}) }}" target="_blank">
+                            🛠 {{ 'admin.pegass.open'|trans }}
+                        </a>
+                    </div>
+                {% endif %}
+
+                {% if is_granted('VOLUNTEER', volunteer) %}
+                    ✏️
+                    <a target="_blank" href="{{ path('management_volunteers_manual_update', {'id': volunteer.id}) }}">{{ 'admin.pegass.edit'|trans }}</a>
+                {% else %}
+                    <span style="color:grey;">{{ 'manage_volunteers.access_denied'|trans }}</span>
+                {% endif %}
+            </div>
+        {% endif %}
+        <div class="text-small">
+            {{ macros.volunteerBadges(volunteer) }}
+        </div>
+    </div>
+
+{% endmacro %}

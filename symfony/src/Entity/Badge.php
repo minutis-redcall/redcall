@@ -302,6 +302,10 @@ class Badge
 
     public function getSynonym() : ?self
     {
+        if ($this->synonym && $this->synonym->getSynonym()) {
+            return $this->synonym->getSynonym();
+        }
+
         return $this->synonym;
     }
 
@@ -518,11 +522,25 @@ class Badge
     {
         $ref = $this->getParent();
         while ($ref) {
-
             if ($ref->id === $this->id) {
                 return true;
             }
+
             $ref = $ref->getParent();
+        }
+
+        return false;
+    }
+
+    private function isSynonymLooping() : bool
+    {
+        $ref = $this->getSynonym();
+        while ($ref) {
+            if ($ref->id === $this->id) {
+                return true;
+            }
+
+            $ref = $ref->getSynonym();
         }
 
         return false;
