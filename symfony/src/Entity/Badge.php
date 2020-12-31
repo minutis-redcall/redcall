@@ -57,39 +57,6 @@ class Badge
     private $category;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Structure::class, inversedBy="visibleBadges")
-     * @ORM\JoinTable(
-     *  name="badge_visibility",
-     *  joinColumns={
-     *      @ORM\JoinColumn(name="badge_id", referencedColumnName="id")
-     *  },
-     *  inverseJoinColumns={
-     *      @ORM\JoinColumn(name="structure_id", referencedColumnName="id")
-     *  }
-     * )
-     */
-    private $isVisibleFor;
-
-    /**
-     * @ORM\Column(type="boolean")
-     */
-    private $restricted = false;
-
-    /**
-     * @ORM\ManyToMany(targetEntity=Structure::class, inversedBy="customBadges")
-     * @ORM\JoinTable(
-     *  name="badge_restriction",
-     *  joinColumns={
-     *      @ORM\JoinColumn(name="badge_id", referencedColumnName="id")
-     *  },
-     *  inverseJoinColumns={
-     *      @ORM\JoinColumn(name="structure_id", referencedColumnName="id")
-     *  }
-     * )
-     */
-    private $isRestrictedTo;
-
-    /**
      * @ORM\ManyToMany(targetEntity=Volunteer::class, mappedBy="badges")
      */
     private $volunteers;
@@ -116,11 +83,9 @@ class Badge
 
     public function __construct()
     {
-        $this->isVisibleFor   = new ArrayCollection();
-        $this->isRestrictedTo = new ArrayCollection();
-        $this->volunteers     = new ArrayCollection();
-        $this->children       = new ArrayCollection();
-        $this->synonyms       = new ArrayCollection();
+        $this->volunteers = new ArrayCollection();
+        $this->children   = new ArrayCollection();
+        $this->synonyms   = new ArrayCollection();
     }
 
     public function getId() : ?int
@@ -206,70 +171,6 @@ class Badge
     public function setCategory(?Category $category) : self
     {
         $this->category = $category;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Structure[]
-     */
-    public function getIsVisibleFor() : Collection
-    {
-        return $this->isVisibleFor;
-    }
-
-    public function addIsVisibleFor(Structure $isVisibleFor) : self
-    {
-        if (!$this->isVisibleFor->contains($isVisibleFor)) {
-            $this->isVisibleFor[] = $isVisibleFor;
-        }
-
-        return $this;
-    }
-
-    public function removeIsVisibleFor(Structure $isVisibleFor) : self
-    {
-        if ($this->isVisibleFor->contains($isVisibleFor)) {
-            $this->isVisibleFor->removeElement($isVisibleFor);
-        }
-
-        return $this;
-    }
-
-    public function isRestricted() : bool
-    {
-        return $this->restricted;
-    }
-
-    public function setRestricted(bool $restricted) : Badge
-    {
-        $this->restricted = $restricted;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Structure[]
-     */
-    public function getIsRestrictedTo() : Collection
-    {
-        return $this->isRestrictedTo;
-    }
-
-    public function addIsRestrictedTo(Structure $isRestrictedTo) : self
-    {
-        if (!$this->isRestrictedTo->contains($isRestrictedTo)) {
-            $this->isRestrictedTo[] = $isRestrictedTo;
-        }
-
-        return $this;
-    }
-
-    public function removeIsRestrictedTo(Structure $isRestrictedTo) : self
-    {
-        if ($this->isRestrictedTo->contains($isRestrictedTo)) {
-            $this->isRestrictedTo->removeElement($isRestrictedTo);
-        }
 
         return $this;
     }
@@ -445,10 +346,6 @@ class Badge
 
     public function isUsable() : bool
     {
-        if ($this->isRestricted()) {
-            return false;
-        }
-
         if ($this->getSynonym()) {
             return false;
         }

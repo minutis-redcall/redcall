@@ -63,24 +63,24 @@ admin:
   home:
     link: Administration
   pegass:
+    add_structure: 'Ajouter une structure'
     bound_volunteer: 'Bénévole associé : %name%'
     create_user: 'Ajouter un nouvel utilisateur'
+    delete_structures: 'Effacer une ou plusieurs structures'
     developer: 'Donner l''accès développeur'
     developered: Développeur
     developered_details: 'Un développeur peut intégrer les APIs de RedCall et accéder à des fonctionnalités techniques.'
-    edit: 'Ouvrir la fiche bénévole'
     list_users: 'Envoyer un message à tous les utilisateurs'
     list_users_explain: 'Afin de contacter tous les utilisateurs, copiez/collez cette liste de nivols dans un nouveau déclenchement.'
     lock: Geler
     locked: Gelé
     locked_details: 'Les structures d''un utilisateur gelé ne seront pas mises à jour avec la mise à jour Pegass de son bénévole attaché.'
-    open: 'Ouvrir l''entrée Pegass'
     structures: 'Mise à jour des structures pour %name%'
     title: 'Connexions entre les utilisateurs de RedCall et la base de données bénévole'
     undeveloper: 'Retirer l''accès développeur'
     unlock: Dégeler
-    add_structure: 'Ajouter une structure'
-    delete_structures: 'Effacer une ou plusieurs structures'
+    edit: 'Ouvrir la fiche bénévole'
+    open: 'Ouvrir l''entrée Pegass'
   statistics:
     campaign:
       period: 'Dans cette période, <b>%created%</b> déclenchements ont été créés, dont <b>%active%</b> sont toujours actifs.'

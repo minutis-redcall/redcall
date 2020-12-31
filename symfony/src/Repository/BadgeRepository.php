@@ -24,7 +24,6 @@ class BadgeRepository extends BaseRepository
     {
         $qb = $this->createQueryBuilder('b')
                    ->leftJoin('b.category', 'c')
-                   ->where('b.restricted = false')
                    ->addOrderBy('b.visibility', 'DESC')
                    ->addOrderBy('b.synonym', 'ASC')
                    ->addOrderBy('c.priority', 'ASC')
@@ -44,7 +43,6 @@ class BadgeRepository extends BaseRepository
         $rows = $this->createQueryBuilder('b')
                      ->select('b.id, COUNT(v) AS count')
                      ->join('b.volunteers', 'v')
-                     ->where('b.restricted = false')
                      ->andWhere('b.id IN (:ids)')
                      ->setParameter('ids', $ids)
                      ->groupBy('b.id')

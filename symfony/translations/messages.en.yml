@@ -63,24 +63,24 @@ admin:
   home:
     link: Administration
   pegass:
+    add_structure: 'Add a structure'
     bound_volunteer: 'Bound volunteer: %name%'
     create_user: 'Add a new user'
+    delete_structures: 'Delete one or several structures'
     developer: 'Grant developer access'
     developered: Developer
     developered_details: 'A developer can integrate RedCall APIs and access technical features.'
-    edit: 'Open volunteer record'
     list_users: 'List user nivols'
     list_users_explain: 'In order to contact all users, copy/paste this nivol list in a new campaign.'
     lock: Lock
     locked: Frozen
     locked_details: 'Structures of a frozen user are not updated when Pegass is updating its bound volunteer.'
-    open: 'Open Pegass entity'
     structures: 'Update structures for %name%'
     title: 'Bindings between RedCall users and volunteer database'
     undeveloper: 'Remove developer access'
     unlock: Unlock
-    add_structure: 'Add a structure'
-    delete_structures: 'Delete one or several structures'
+    edit: 'Open volunteer record'
+    open: 'Open Pegass entity'
   statistics:
     campaign:
       period: 'In the period, <b>%created%</b> campaigns were open, including <b>%active%</b> that are still active.'
