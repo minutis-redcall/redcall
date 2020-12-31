@@ -20,14 +20,13 @@ class BadgeRepository extends BaseRepository
         parent::__construct($registry, Badge::class);
     }
 
-    public function getSearchInPublicBadgesQueryBuilder(?string $criteria) : QueryBuilder
+    public function getSearchInBadgesQueryBuilder(?string $criteria) : QueryBuilder
     {
         $qb = $this->createQueryBuilder('b')
                    ->leftJoin('b.category', 'c')
                    ->addOrderBy('b.visibility', 'DESC')
                    ->addOrderBy('b.synonym', 'ASC')
-                   ->addOrderBy('c.priority', 'ASC')
-                   ->addOrderBy('b.priority', 'ASC')
+                   ->addOrderBy('(1000 - c.priority) * 1000 + 1000 - b.priority', 'DESC')
                    ->addOrderBy('b.name', 'ASC')
                    ->groupBy('b.id');
 
@@ -59,7 +58,7 @@ class BadgeRepository extends BaseRepository
 
     public function search(?string $criteria, int $limit) : array
     {
-        return $this->getSearchInPublicBadgesQueryBuilder($criteria)
+        return $this->getSearchInBadgesQueryBuilder($criteria)
                     ->setMaxResults($limit)
                     ->getQuery()
                     ->getResult();
@@ -67,11 +66,17 @@ class BadgeRepository extends BaseRepository
 
     public function searchForCompletion(?string $criteria, int $limit) : array
     {
-        return $this->getSearchInPublicBadgesQueryBuilder($criteria)
+        return $this->getSearchInBadgesQueryBuilder($criteria)
                     ->andWhere('b.synonym IS NULL')
                     ->setMaxResults($limit)
                     ->getQuery()
                     ->getResult();
+    }
+
+    public function getPublicBadgesQueryBuilder() : QueryBuilder
+    {
+        return $this->getSearchInBadgesQueryBuilder(null)
+                    ->andWhere('b.visibility = true');
     }
 
     private function addSearchCriteria(QueryBuilder $qb, string $criteria)

@@ -482,6 +482,8 @@ manage_volunteers:
     tags: Compétences
     update: 'Mettre à jour un bénévole'
     updated: 'Le bénévole a correctement été modifié.'
+    visible_badges: 'Badges principaux'
+    invisible_badges: 'Autres badges'
   others: 'et %count% autre(s)'
   redcall:
     action_structures: 'Structures déclenchables par %name%'

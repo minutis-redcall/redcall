@@ -482,6 +482,8 @@ manage_volunteers:
     tags: Skills
     update: 'Update volunteer'
     updated: 'Volunteer has properly been updated.'
+    visible_badges: 'Main badges'
+    invisible_badges: 'Other badges'
   others: 'and %count% other(s)'
   redcall:
     action_structures: 'Structures that %name% can trigger'

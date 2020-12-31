@@ -42,7 +42,7 @@ class Badge
 
     /**
      * @ORM\Column(type="integer")
-     * @Assert\Range(min="-1000", max="1000")
+     * @Assert\Range(min="0", max="1000")
      */
     private $priority = 0;
 

@@ -3,7 +3,6 @@
 namespace App\Form\Type;
 
 use App\Entity\Structure;
-use App\Entity\Tag;
 use App\Entity\Volunteer;
 use App\Repository\StructureRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -83,13 +82,8 @@ class VolunteerType extends AbstractType
                 'label'    => 'manage_volunteers.form.enabled',
                 'required' => false,
             ])
-            ->add('tags', EntityType::class, [
-                'class'        => Tag::class,
-                'choice_label' => function ($tag) {
-                    return sprintf('tag.%s', $tag);
-                },
-                'expanded'     => true,
-                'multiple'     => true,
+            ->add('badges', BadgeSelectionType::class, [
+                'label' => false,
             ])
             ->add('submit', SubmitType::class, [
                 'label' => 'base.button.save',
