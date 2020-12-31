@@ -32,13 +32,6 @@
 
 {% endmacro %}
 
-{% macro typeBadge(color) %}
-    {% set hexColor = constant('App\\Entity\\Campaign::COLORS')[color] %}
-    <span class="badge text-white" style="background-color:{{ hexColor }};">
-        {{ ('campaign.types.' ~ color)|trans }}
-    </span>
-{% endmacro %}
-
 {% macro modal(id, title, body, buttons = '') %}
     <div class="modal fade" id="{{ id }}" tabindex="-1" role="dialog" aria-labelledby="{{ title }}" aria-hidden="true">
         <div class="modal-dialog" role="document">
@@ -60,6 +53,13 @@
         </div>
     </div>
 
+{% endmacro %}
+
+{% macro triggerColor(color) %}
+    {% set hexColor = constant('App\\Entity\\Campaign::COLORS')[color] %}
+    <span class="badge text-white" style="background-color:{{ hexColor }};">
+        {{ ('campaign.types.' ~ color)|trans }}
+    </span>
 {% endmacro %}
 
 {% macro communicationIcon(communication) %}
