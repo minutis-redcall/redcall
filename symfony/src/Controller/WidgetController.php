@@ -10,7 +10,6 @@ use App\Entity\PrefilledAnswers;
 use App\Entity\Structure;
 use App\Entity\User;
 use App\Entity\Volunteer;
-use App\Form\Type\AudienceType;
 use App\Form\Type\BadgeWidgetType;
 use App\Form\Type\CategoryWigetType;
 use App\Form\Type\StructureWidgetType;
@@ -374,47 +373,6 @@ class WidgetController extends BaseController
         }
 
         return new JsonResponse($view);
-    }
-
-    /**
-     * @Route(path="/audience/classify", name="audience_classify")
-     */
-    public function audienceClassify(Request $request)
-    {
-        // Audience type can be located anywhere in the main form, so we need to seek for the
-        // audience data following the path created using its full name.
-        $name = trim(str_replace(['[', ']'], '.', trim($request->query->get('name'))), '.');
-        $data = $request->request->all();
-        $path = array_filter(explode('.', $name));
-        foreach ($path as $node) {
-            $data = $data[$node];
-        }
-
-        // Recovering structures
-        if ($data['structures'] ?? false) {
-            foreach ($data['structures'] as $key => $structureId) {
-                $data['structures'][$key] = $this->structureManager->find($structureId);
-            }
-        }
-
-        // Classifying nivols
-        $nivols = AudienceType::getNivolsFromFormData($data);
-
-        if ($nivols) {
-            $classification = $this->volunteerManager->classifyNivols($nivols);
-
-            return new JsonResponse([
-                'success'   => true,
-                'view'      => $this->renderView('widget/classification.html.twig', [
-                    'classified' => $classification,
-                ]),
-                'triggered' => count($classification['reachable']),
-            ]);
-        }
-
-        return new JsonResponse([
-            'success' => false,
-        ]);
     }
 
     private function getStructure(int $id) : Structure
