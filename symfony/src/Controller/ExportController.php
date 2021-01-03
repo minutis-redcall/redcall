@@ -22,11 +22,15 @@ use Symfony\Component\Routing\Annotation\Route;
 class ExportController extends BaseController
 {
     /**
-     * @Route(path="{id}/csv", name="csv", requirements={"id" = "\d+"}, methods={"POST"})
+     * @Route(path="{id}/csv", name="csv", requirements={"id" = "\d+"})
      */
     public function csvAction(Request $request, Communication $communication)
     {
         $this->validateCsrfOrThrowNotFoundException('communication', $request->request->get('csrf'));
+
+        if (!$this->isGranted('CAMPAIGN_ACCESS', $communication->getCampaign())) {
+            throw $this->createAccessDeniedException();
+        }
 
         $selection = json_decode($request->request->get('volunteers'), true);
         if (!$selection && $communication->getMessages()) {
@@ -82,11 +86,15 @@ class ExportController extends BaseController
     }
 
     /**
-     * @Route(path="{id}/pdf", name="pdf", requirements={"id" = "\d+"}, methods={"POST"})
+     * @Route(path="{id}/pdf", name="pdf", requirements={"id" = "\d+"})
      */
     public function pdfAction(Request $request, Communication $communication)
     {
         $this->validateCsrfOrThrowNotFoundException('communication', $request->request->get('csrf'));
+
+        if (!$this->isGranted('CAMPAIGN_ACCESS', $communication->getCampaign())) {
+            throw $this->createAccessDeniedException();
+        }
 
         $selection = $this->getSelection($request, $communication);
         $campaign  = $communication->getCampaign();
