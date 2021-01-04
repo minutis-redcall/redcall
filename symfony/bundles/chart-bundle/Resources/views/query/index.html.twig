@@ -1,0 +1,46 @@
+{% extends '@Chart/base.html.twig' %}
+
+{% block body %}
+
+    <div class="text-right">
+        <a href="{{ path('chart_query_edit') }}" class="btn btn-secondary">
+            {{ 'chart.query.new'|trans }}
+        </a>
+    </div>
+
+    {% if queries %}
+
+        <table class="table table-bordered">
+            <thead>
+            <tr>
+                <th>#</th>
+                <th>{{ 'chart.query.table.name'|trans }}</th>
+                <th>{{ 'chart.query.table.date'|trans }}</th>
+                <th>&nbsp;</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for query in queries %}
+                <tr>
+                    <td>{{ query.id }}</td>
+                    <td>{{ query.name }}</td>
+                    <td>{{ query.createdAt|date('d/m/Y H:i') }}</td>
+                    <td>
+                        <a href="#" class="btn btn-small btn-secondary" style="border: 1px solid red!important;">❌</a>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+    {% endif %}
+
+    <br/><br/><br/>
+
+    <div class="text-center">
+        <a href="{{ path('chart_home') }}" class="btn btn-secondary">
+            {{ 'chart.base.back'|trans }}
+        </a>
+    </div>
+
+{% endblock %}

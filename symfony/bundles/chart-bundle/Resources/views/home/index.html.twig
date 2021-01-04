@@ -1,4 +1,13 @@
 {% extends '@Chart/base.html.twig' %}
 
 {% block body %}
+
+    {% if is_granted('ROLE_DEVELOPER') %}
+        <div class="text-right">
+            <a href="{{ path('chart_query_home') }}" class="btn btn-secondary">
+                {{ 'chart.manage.queries'|trans }}
+            </a>
+        </div>
+    {% endif %}
+
 {% endblock %}

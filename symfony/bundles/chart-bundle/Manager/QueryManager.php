@@ -16,5 +16,8 @@ class QueryManager
         $this->queryRepository = $queryRepository;
     }
 
-
+    public function findAll() : array
+    {
+        return $this->queryRepository->findAll();
+    }
 }

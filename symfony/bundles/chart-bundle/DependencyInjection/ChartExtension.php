@@ -17,7 +17,9 @@ class ChartExtension extends Extension
         $container->setParameter('chart.config', $config);
 
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
+        $loader->load('context_type.yaml');
         $loader->load('controller.yaml');
+        $loader->load('form.yaml');
         $loader->load('manager.yaml');
         $loader->load('repository.yaml');
     }

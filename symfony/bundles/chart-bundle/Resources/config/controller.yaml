@@ -1,7 +1,7 @@
 services:
 
-#  Bundles\ApiBundle\Controller\TokenController:
-#    arguments:
-#      - '@Bundles\ApiBundle\Manager\TokenManager'
-#    tags:
-#      - controller.service_arguments
+  Bundles\ChartBundle\Controller\QueryController:
+    arguments:
+      - '@Bundles\ChartBundle\Manager\QueryManager'
+    tags:
+      - controller.service_arguments

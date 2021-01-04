@@ -1,0 +1,7 @@
+chart:
+  violations:
+    query:
+      select: 'The query must start by "SELECT" keyword.'
+    context:
+      value: 'This value does not contain valid JSON.'
+

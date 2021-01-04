@@ -1,0 +1,53 @@
+{% block query_widget %}
+
+    {{ form_row(form.name) }}
+    {{ form_row(form.query) }}
+
+    <div id="context-container">
+        {{ form_row(form.context) }}
+    </div>
+
+    <a id="add-context" href="#" class="btn btn-secondary" data-index="{{ form.context.children|length }}">
+        {{ 'chart.context.add'|trans }}
+    </a>
+
+    <script type="text/javascript">
+
+        $('#add-context').click(function (e) {
+            e.preventDefault();
+
+            var link = $(this);
+            var form = $('#{{ form.context.vars.id }}');
+            var item = form.data('prototype').replace(/__name__/g, link.data('index'));
+
+            $('#context-container').append(item);
+
+            link.data('index', link.data('index') + 1);
+        });
+
+    </script>
+
+{% endblock %}
+
+{% block context_widget %}
+
+    <div class="card" id="context-card-{{ form.vars.name }}">
+        <div class="card-header">
+            <div class="h4">
+                {{ 'chart.context.title'|trans({'%nbr%': form.vars.name}) }}
+            </div>
+        </div>
+        <div class="card-body">
+            {{ form_widget(form) }}
+        </div>
+        <div class="card-footer">
+            <div class="float-right">
+                <a href="#"
+                   class="btn btn-small btn-secondary"
+                   style="border: 1px solid red!important;"
+                   onclick="$('#context-card-{{ form.vars.name }}').remove();return false;">❌</a>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

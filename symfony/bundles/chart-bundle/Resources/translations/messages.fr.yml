@@ -1,0 +1,21 @@
+chart:
+  base:
+    back: 'Retour'
+  manage:
+    queries: 'Gestion des requêtes'
+  query:
+    new: 'Nouvelle requête'
+    table:
+      name: 'Nom'
+      date: 'Date de création'
+    edit:
+      name: 'Nom de la requête'
+      query: 'Requête'
+      context: 'Contexte requis par la requête'
+  context:
+    title: 'Variable #%nbr%'
+    name: 'Nom du champ'
+    type: 'Type de donnée'
+    add: 'Ajouter une variable'
+    labels:
+      string: 'Valeur par défaut de la chaîne de caractères'

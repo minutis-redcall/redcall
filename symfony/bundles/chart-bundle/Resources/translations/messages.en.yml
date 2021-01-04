@@ -1,0 +1,21 @@
+chart:
+  base:
+    back: 'Back'
+  manage:
+    queries: 'Manage queries'
+  query:
+    new: 'New query'
+    table:
+      name: 'Name'
+      date: 'Creation date'
+    edit:
+      name: 'Query name'
+      query: 'Query'
+      context: 'Required query context'
+  context:
+    title: 'Variable #%nbr%'
+    name: 'Placeholder name'
+    type: 'Data type'
+    add: 'Add contextual variable'
+    labels:
+      string: 'Default string value'
