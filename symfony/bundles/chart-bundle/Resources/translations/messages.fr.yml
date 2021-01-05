@@ -19,14 +19,19 @@ chart:
     add: 'Ajouter une variable'
     types:
       string: 'Chaîne de caractères'
+      relative_date: 'Date relative'
     labels:
       string: 'Valeur par défaut de la chaîne de caractères'
-      relative_date: 'Date relative par défaut'
+      relative_date:
+        amount: 'Valeur par défaut'
+        unit: 'Unité par défaut'
     relative_date:
-      amount: 'Il y a %amount% %unit%'
+      amount: 'il y a %amount% %unit%'
+      now: 'maintenant'
       unit_second: 'seconde(s)'
       unit_minute: 'minute(s)'
       unit_hour: 'heure(s)'
       unit_day: 'jour(s)'
+      unit_week: 'semaine(s)'
       unit_month: 'mois'
       unit_year: 'année(s)'

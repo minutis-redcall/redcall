@@ -50,7 +50,14 @@ class RelativeDateValue implements ValueInterface
 
     public function toHumanReadable(TranslatorInterface $translator) : string
     {
-        // TODO: Implement toHumanReadable() method.
+        if (0 === $this->amount) {
+            return $translator->trans('chart.context.relative_date.now');
+        } else {
+            return $translator->trans('chart.context.relative_date.amount', [
+                '%%amount%' => $this->amount,
+                '%unit%'    => $translator->trans(sprintf('chart.context.relative_date.unit_%s', $this->unit)),
+            ]);
+        }
     }
 
     public function getSQLType()
@@ -60,7 +67,18 @@ class RelativeDateValue implements ValueInterface
 
     public function getSQLValue()
     {
-        // TODO: Implement getSQLValue() method.
+        $period = 'P';
+        foreach (array_reverse(self::UNITS) as $unit) {
+            if (self::UNIT_HOUR === $unit) {
+                $period .= 'T';
+            }
+            if ($this->unit === $unit) {
+                $period .= $this->amount;
+            }
+            $period .= strtoupper(substr($unit, 0, 1));
+        }
+
+        return (new \DateTime())->sub(new \DateInterval($period))->format('Y-m-d H:i:s');
     }
 
     public function jsonSerialize()

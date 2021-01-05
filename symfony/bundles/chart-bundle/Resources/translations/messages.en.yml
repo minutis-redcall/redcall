@@ -18,15 +18,20 @@ chart:
     type: 'Data type'
     types:
       string: 'String'
+      relative_date: 'Relative date'
     add: 'Add contextual variable'
     labels:
       string: 'Default string value'
-      relative_date: 'Default relative date'
+      relative_date:
+        amount: 'Default amount'
+        unit: 'Default unit'
     relative_date:
       amount: '%amount% %unit% ago'
+      now: 'now'
       unit_second: 'second(s)'
       unit_minute: 'minute(s)'
       unit_hour: 'hour(s)'
       unit_day: 'day(s)'
+      unit_week: 'semaine(s)'
       unit_month: 'month(s)'
       unit_year: 'year(s)'
