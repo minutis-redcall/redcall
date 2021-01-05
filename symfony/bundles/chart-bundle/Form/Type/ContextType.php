@@ -2,9 +2,8 @@
 
 namespace Bundles\ChartBundle\Form\Type;
 
-use Bundles\ChartBundle\Bag\ContextTypeBag;
-use Bundles\ChartBundle\Context\TypeEnum;
-use Bundles\ChartBundle\ContextType\ContextTypeInterface;
+use Bundles\ChartBundle\Context\Bag\FormatBag;
+use Bundles\ChartBundle\Context\Format\FormatInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -15,20 +14,20 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 class ContextType extends AbstractType
 {
     /**
-     * @var ContextTypeBag
+     * @var FormatBag
      */
-    private $contextTypeBag;
+    private $formatBag;
 
-    public function __construct(ContextTypeBag $contextTypeBag)
+    public function __construct(FormatBag $formatBag)
     {
-        $this->contextTypeBag = $contextTypeBag;
+        $this->formatBag = $formatBag;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $types = array_flip(array_map(function (ContextTypeInterface $contextType) {
-            return $contextType->getTranslationKey();
-        }, $this->contextTypeBag->getContextTypes()));
+        $types = array_flip(array_map(function (FormatInterface $format) {
+            return $format->getTranslationKey();
+        }, $this->formatBag->getFormats()));
 
         $builder
             ->add('name', TextType::class, [
@@ -48,11 +47,10 @@ class ContextType extends AbstractType
                 ],
             ]);
 
-        foreach ($this->contextTypeBag->getContextTypes() as $contextType) {
-            /** @var ContextTypeInterface $contextType */
-            $builder->add($contextType->getName(), $contextType->getFormType(), [
-                'constraints' => null,
-                'required'    => false,
+        foreach ($this->formatBag->getFormats() as $format) {
+            /** @var FormatInterface $format */
+            $builder->add($format->getName(), $format->getFormType(), [
+                'required' => false,
             ]);
         }
     }

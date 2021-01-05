@@ -1,10 +1,10 @@
 <?php
 
-namespace Bundles\ChartBundle\ContextType;
+namespace Bundles\ChartBundle\Context\Format;
 
 use Symfony\Component\Form\FormFactoryInterface;
 
-abstract class AbstractContextType implements ContextTypeInterface
+abstract class AbstractFormat implements FormatInterface
 {
     /**
      * @var FormFactoryInterface

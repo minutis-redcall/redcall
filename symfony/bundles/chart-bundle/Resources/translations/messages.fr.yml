@@ -17,5 +17,16 @@ chart:
     name: 'Nom du champ'
     type: 'Type de donnée'
     add: 'Ajouter une variable'
+    types:
+      string: 'Chaîne de caractères'
     labels:
       string: 'Valeur par défaut de la chaîne de caractères'
+      relative_date: 'Date relative par défaut'
+    relative_date:
+      amount: 'Il y a %amount% %unit%'
+      unit_second: 'seconde(s)'
+      unit_minute: 'minute(s)'
+      unit_hour: 'heure(s)'
+      unit_day: 'jour(s)'
+      unit_month: 'mois'
+      unit_year: 'année(s)'

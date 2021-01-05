@@ -16,6 +16,17 @@ chart:
     title: 'Variable #%nbr%'
     name: 'Placeholder name'
     type: 'Data type'
+    types:
+      string: 'String'
     add: 'Add contextual variable'
     labels:
       string: 'Default string value'
+      relative_date: 'Default relative date'
+    relative_date:
+      amount: '%amount% %unit% ago'
+      unit_second: 'second(s)'
+      unit_minute: 'minute(s)'
+      unit_hour: 'hour(s)'
+      unit_day: 'day(s)'
+      unit_month: 'month(s)'
+      unit_year: 'year(s)'

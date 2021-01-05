@@ -1,6 +1,6 @@
 <?php
 
-namespace Bundles\ChartBundle\Form\Type\Context;
+namespace Bundles\ChartBundle\Context\Type;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
