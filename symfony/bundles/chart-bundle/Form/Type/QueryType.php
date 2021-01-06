@@ -6,6 +6,7 @@ use Bundles\ChartBundle\Entity\StatQuery;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -13,7 +14,6 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
-use Symfony\Component\Validator\Constraints\Valid;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 class QueryType extends AbstractType
@@ -25,7 +25,9 @@ class QueryType extends AbstractType
                 'label'       => 'chart.query.edit.name',
                 'constraints' => [
                     new NotBlank(),
-                    new Length(['max' => 255]),
+                    new Length([
+                        'max' => 255,
+                    ]),
                 ],
             ])
             ->add('query', TextareaType::class, [
@@ -53,18 +55,18 @@ class QueryType extends AbstractType
                 'delete_empty'  => true,
                 'prototype'     => true,
                 'required'      => false,
-                'constraints'   => [
-                    new Valid(),
-                ],
+            ])
+            ->add('submit', SubmitType::class, [
+                'label' => 'chart.base.submit',
             ]);
 
         $builder->get('context')->addModelTransformer(
             new CallbackTransformer(
                 function ($fromModel) {
-                    return json_encode($fromModel);
+                    return json_decode($fromModel, true);
                 },
                 function ($fromForm) {
-                    return json_decode($fromForm, true);
+                    return json_encode($fromForm);
                 }
             )
         );

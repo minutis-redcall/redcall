@@ -49,6 +49,7 @@ class QueryController extends AbstractController
 
         $form = $this->createForm(QueryType::class, $query);
         $form->handleRequest($request);
+
         if ($form->isSubmitted() && $form->isValid()) {
 
             // ...

@@ -8,6 +8,8 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Validator\Constraints\Choice;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
@@ -45,14 +47,33 @@ class ContextType extends AbstractType
                         'choices' => $types,
                     ]),
                 ],
+                'attr'        => [
+                    'class' => 'context-type-selector',
+                ],
             ]);
 
         foreach ($this->formatBag->getFormats() as $format) {
             /** @var FormatInterface $format */
             $builder->add($format->getName(), $format->getFormType(), [
-                'required' => false,
+                'attr' => [
+                    'class' => sprintf('context-type context-type-%s', $format->getName()),
+                ],
             ]);
         }
+
+        // We only want constraints on the selected type.
+        $builder->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $event) use ($builder) {
+            foreach ($this->formatBag->getFormats() as $format) {
+                if ($format->getName() !== $event->getData()['type']) {
+                    $event->getForm()->add($format->getName(), $format->getFormType(), [
+                        'attr'              => [
+                            'class' => sprintf('context-type context-type-%s', $format->getName()),
+                        ],
+                        'validation_groups' => false,
+                    ]);
+                }
+            }
+        });
     }
 
     public function getBlockPrefix()

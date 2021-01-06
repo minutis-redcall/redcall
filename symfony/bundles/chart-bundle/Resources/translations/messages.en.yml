@@ -1,6 +1,7 @@
 chart:
   base:
     back: 'Back'
+    submit: 'Submit'
   manage:
     queries: 'Manage queries'
   query:

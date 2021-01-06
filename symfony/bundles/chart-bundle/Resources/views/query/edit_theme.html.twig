@@ -11,19 +11,46 @@
         {{ 'chart.context.add'|trans }}
     </a>
 
+    <br/><br/>
+
     <script type="text/javascript">
 
-        $('#add-context').click(function (e) {
-            e.preventDefault();
+        (function () {
 
-            var link = $(this);
-            var form = $('#{{ form.context.vars.id }}');
-            var item = form.data('prototype').replace(/__name__/g, link.data('index'));
+            var refreshContextSelector = function (typeSelect) {
+                var collectionItem = typeSelect.parent().parent();
+                var selectedType = typeSelect.val();
+                collectionItem.find('.context-type').parent().addClass('d-none');
+                collectionItem.find('.context-type-' + selectedType).parent().removeClass('d-none');
+            };
 
-            $('#context-container').append(item);
+            var refreshAllSelectors = function () {
+                $('.context-type-selector').each(function () {
+                    refreshContextSelector($(this));
+                });
+            };
 
-            link.data('index', link.data('index') + 1);
-        });
+            $('#add-context').click(function (e) {
+                e.preventDefault();
+
+                var link = $(this);
+                var form = $('#{{ form.context.vars.id }}');
+                var item = form.data('prototype').replace(/__name__/g, link.data('index'));
+
+                $('#context-container').append(item);
+
+                link.data('index', link.data('index') + 1);
+
+                refreshAllSelectors();
+            });
+
+            $('body').on('change', '.context-type-selector', function () {
+                refreshContextSelector($(this));
+            });
+
+            refreshAllSelectors();
+
+        })();
 
     </script>
 
@@ -31,7 +58,7 @@
 
 {% block context_widget %}
 
-    <div class="card" id="context-card-{{ form.vars.name }}">
+    <div class="card" id="context-card-{{ form.vars.name }}" data-index="{{ form.vars.name }}">
         <div class="card-header">
             <div class="h4">
                 {{ 'chart.context.title'|trans({'%nbr%': form.vars.name}) }}

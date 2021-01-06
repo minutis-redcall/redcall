@@ -1,6 +1,7 @@
 chart:
   base:
     back: 'Retour'
+    submit: 'Envoyer'
   manage:
     queries: 'Gestion des requêtes'
   query:

@@ -10,7 +10,7 @@ class FormatBag
 
     public function addFormat(FormatInterface $format)
     {
-        $this->formats[get_class($format)] = $format;
+        $this->formats[$format->getName()] = $format;
     }
 
     public function getFormat(string $name) : FormatInterface
@@ -22,6 +22,9 @@ class FormatBag
         return $this->formats[$name];
     }
 
+    /**
+     * @return FormatInterface[]
+     */
     public function getFormats() : array
     {
         return $this->formats;
