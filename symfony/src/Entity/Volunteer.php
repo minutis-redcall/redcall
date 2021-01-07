@@ -12,7 +12,6 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * @ORM\Table(indexes={
@@ -497,24 +496,16 @@ class Volunteer
         return $mainStructure;
     }
 
-    public function toSearchResults(TranslatorInterface $translator)
+    public function toSearchResults()
     {
+        $badges = implode(', ', array_map(function (Badge $badge) {
+            return $badge->getName();
+        }, $this->getVisibleBadges()));
+
         return [
-            'nivol'      => strval($this->getNivol()),
-            'firstName'  => $this->getFirstName(),
-            'lastName'   => $this->getLastName(),
-            'firstLast'  => sprintf('%s %s', $this->firstName, $this->lastName),
-            'lastFirst'  => sprintf('%s %s', $this->lastName, $this->firstName),
-            'tags'       => $this->getTagsView() ? sprintf('(%s)', implode(', ', array_map(function (Tag $tag) use (
-                $translator
-            ) {
-                return $translator->trans(sprintf('tag.shortcuts.%s', $tag->getLabel()));
-            }, $this->getTagsView()))) : '',
-            'structures' => sprintf('<br/>%s',
-                implode('<br/>', array_map(function (Structure $structure) {
-                    return $structure->getName();
-                }, $this->getStructures()->toArray()))
-            ),
+            'id'    => strval($this->getId()),
+            'nivol' => strval($this->getNivol()),
+            'human' => sprintf('%s %s%s', $this->getFirstName(), $this->getLastName(), $badges ? sprintf(' (%s)', $badges) : null),
         ];
     }
 

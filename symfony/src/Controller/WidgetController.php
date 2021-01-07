@@ -25,7 +25,6 @@ use App\Manager\VolunteerManager;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -316,77 +315,5 @@ class WidgetController extends BaseController
         }
 
         return $this->json($results);
-    }
-
-    /**
-     * @Route(path="/audience/search", name="audience_search")
-     */
-    public function audienceSearch(Request $request)
-    {
-        $structure = $this->getStructure(
-            trim($request->get('structureId'))
-        );
-
-        $load = $request->get('load');
-        if ($load) {
-            if (!is_array($request->get('load'))) {
-                throw $this->createNotFoundException();
-            }
-
-            $results = $this->volunteerManager->loadVolunteersAudience($structure, $request->get('load'));
-        } else {
-            if (!$request->get('keyword')) {
-                throw $this->createNotFoundException();
-            }
-
-            $results = $this->volunteerManager->searchVolunteersAudience($structure, $request->get('keyword'));
-        }
-
-        return new JsonResponse([
-            'results' => $results,
-            'options' => [],
-        ]);
-    }
-
-    /**
-     * @Route(path="/audience/toggle-tag", name="audience_toggle_tag")
-     */
-    public function audienceToggleTag(Request $request)
-    {
-        $tags = array_map(function (int $tag) {
-            if (!$entity = $this->tagManager->find($tag)) {
-                throw $this->createNotFoundException();
-            }
-
-            return $entity;
-        }, $request->get('tags', []));
-
-        $structures = [];
-        foreach ($request->get('structures') as $structure) {
-            $structures[] = $this->getStructure($structure);
-        }
-
-        $view = [];
-        foreach ($structures as $structure) {
-            /** @var Structure $structure */
-            $view[$structure->getId()] = $this->volunteerManager->searchVolunteerAudienceByTags($tags, $structure);
-        }
-
-        return new JsonResponse($view);
-    }
-
-    private function getStructure(int $id) : Structure
-    {
-        $structure = $this->structureManager->find($id);
-
-        if (!$structure) {
-            throw $this->createNotFoundException();
-        }
-
-        if (!$this->isGranted('STRUCTURE', $structure)) {
-            throw $this->createAccessDeniedException();
-        }
-
-        return $structure;
     }
 }

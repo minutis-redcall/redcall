@@ -1,0 +1,40 @@
+{% block audience_widget %}
+
+    {# Volunteers search #}
+    {{ form_row(form.volunteers, {
+        'attr': {
+            'multiple': "multiple",
+            'placeholder': 'base.search.placeholder'|trans,
+            'data-data': volunteers_data|json_encode,
+            'data-url': path('audience_search_volunteer'),
+            'data-search-disabled': true,
+            'data-min-length': 1,
+            'data-visible-properties': '["human"]',
+            'data-no-results-text': 'base.search.no_results'|trans,
+            'data-focus-first-result': true,
+            'data-selection-required': true,
+            'data-text-property': "human",
+            'data-value-property': "id",
+        }
+    }) }}
+
+    {# Copy/paste nivols #}
+    <div style="margin-left:-5px;width:100%;">
+        <a class="btn btn-secondary" data-toggle="collapse" href="#audience-volunteers" role="button" style="width:100%;margin:5px;">
+            {{ 'audience.filters.copy_paste_identifiers'| trans }}
+        </a>
+    </div>
+    <div id="audience-volunteers" class="collapse active">
+        {{ form_row(form.nivols) }}
+    </div>
+
+    <script type="text/javascript">
+
+        $(function () {
+            $('#{{ form.volunteers.vars.id }}').flexdatalist();
+        });
+
+
+    </script>
+
+{% endblock %}

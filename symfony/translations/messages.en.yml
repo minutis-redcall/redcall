@@ -122,12 +122,18 @@ audience:
     no_phone: '%nbr% nivols are bound to volunteers without any phone number'
     phone_optout: '%nbr% nivols are bound to volunteers that don''t want to receive calls/SMS'
     reachable: '%nbr% nivols will be triggered'
-  filter_title: 'Search by structures & skills'
-  nivol_title: 'Copy/paste a list of nivols'
-  see_selection: 'Click to see selection'
   select_all: 'Select all'
   structures: 'Structure(s) to trigger'
   unselect_all: 'Unselect all'
+  filters:
+    search_for_volunteers: 'Search for volunteers'
+    copy_paste_identifiers: 'Copy/paste a list of identifiers'
+    copy_paste_details: 'Paste a list of identifiers in the field below.'
+  ###
+  filter_title: 'Search by structures & skills'
+  nivol_title: 'Copy/paste a list of nivols'
+  see_selection: 'Click to see selection'
+  ###
 backlinks:
   blablacar: 'Sponsored by'
   minutis: 'Developed by Minutis volunteers'

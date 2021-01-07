@@ -394,54 +394,24 @@ class VolunteerRepository extends BaseRepository
         return array_column($filtered, 'nivol');
     }
 
-    public function loadVolunteersAudience(Structure $structure, array $nivols) : array
+    public function getVolunteerList(array $volunteerIds) : array
     {
-        return $this->findInStructureQueryBuilder($structure, true)
-                    ->select('v.firstName, v.lastName, v.nivol')
-                    ->andWhere('v.nivol IN (:nivols)')
-                    ->setParameter('nivols', $nivols)
-                    ->addOrderBy('v.firstName', 'ASC')
-                    ->getQuery()
-                    ->getArrayResult();
+        return $this
+            ->createVolunteersQueryBuilder()
+            ->andWhere('v.id IN (:volunteer_ids)')
+            ->setParameter('volunteer_ids', $volunteerIds)
+            ->getQuery()
+            ->getResult();
     }
 
-    public function searchVolunteersAudience(Structure $structure, string $criteria) : array
+    public function getVolunteerListForUser(User $user, array $volunteerIds) : array
     {
-        return $this->searchInStructureQueryBuilder($structure, $criteria, true)
-                    ->select('v.firstName, v.lastName, concat(v.firstName, \' \', v.lastName) as firstLast, concat(v.lastName, \' \', v.firstName) as lastFirst, v.nivol')
-                    ->addOrderBy('v.firstName', 'ASC')
-                    ->setMaxResults(25)
-                    ->getQuery()
-                    ->getArrayResult();
-    }
-
-    public function searchVolunteerAudienceByTags(array $tags, Structure $structure) : array
-    {
-        $rows = $this->createVolunteersQueryBuilder(true)
-                     ->select('v.nivol')
-                     ->join('v.structures', 's')
-                     ->andWhere('s.id = :structure')
-                     ->setParameter('structure', $structure)
-                     ->join('v.tags', 't')
-                     ->andWhere('t.id IN (:tags)')
-                     ->setParameter('tags', $tags)
-                     ->getQuery()
-                     ->getArrayResult();
-
-        return array_column($rows, 'nivol');
-    }
-
-    public function getNivolsAndStructures(array $structures, array $nivols) : array
-    {
-        return $this->createVolunteersQueryBuilder(true)
-                    ->select('v.nivol, s.id as structure_id')
-                    ->join('v.structures', 's')
-                    ->andWhere('s.id IN (:structures)')
-                    ->setParameter('structures', $structures)
-                    ->andWhere('v.nivol IN (:nivols)')
-                    ->setParameter('nivols', $nivols)
-                    ->getQuery()
-                    ->getArrayResult();
+        return $this
+            ->createAccessibleVolunteersQueryBuilder($user)
+            ->andWhere('v.id IN (:volunteer_ids)')
+            ->setParameter('volunteer_ids', $volunteerIds)
+            ->getQuery()
+            ->getResult();
     }
 
     private function createVolunteersQueryBuilder(bool $enabled = true) : QueryBuilder

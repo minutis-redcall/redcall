@@ -141,6 +141,19 @@ class VolunteerManager
         );
     }
 
+    public function getVolunteerList(array $volunteerIds) : array
+    {
+        return $this->volunteerRepository->getVolunteerList($volunteerIds);
+    }
+
+    public function getVolunteerListForCurrentUser(array $volunteerIds) : array
+    {
+        return $this->volunteerRepository->getVolunteerListForUser(
+            $this->userManager->findForCurrentUser(),
+            $volunteerIds
+        );
+    }
+
     public function searchInStructureQueryBuilder(Structure $structure,
         ?string $criteria,
         bool $onlyEnabled,
@@ -272,48 +285,6 @@ class VolunteerManager
         ];
     }
 
-    public function loadVolunteersAudience(Structure $structure, array $nivols) : array
-    {
-        $rows = $this->volunteerRepository->loadVolunteersAudience($structure, $nivols);
-
-        return $this->populateDatalist($rows);
-    }
-
-    public function searchVolunteersAudience(Structure $structure, string $criteria) : array
-    {
-        $rows = $this->volunteerRepository->searchVolunteersAudience($structure, $criteria);
-
-        return $this->populateDatalist($rows);
-    }
-
-    public function searchVolunteerAudienceByTags(array $tags, Structure $structure) : array
-    {
-        return $this->volunteerRepository->searchVolunteerAudienceByTags($tags, $structure);
-    }
-
-    public function organizeNivolsByStructures(array $structures, array $nivols) : array
-    {
-        $organized = [];
-
-        $rows = $this->volunteerRepository->getNivolsAndStructures($structures, $nivols);
-        foreach ($rows as $row) {
-            if (!isset($organized[$row['structure_id']])) {
-                $organized[$row['structure_id']] = [];
-            }
-            $organized[$row['structure_id']][] = $row['nivol'];
-        }
-
-        if (!count($organized)) {
-            $organized[] = [];
-        }
-
-        // All other nivols were set in the "nivol" field
-        $diff         = call_user_func_array('array_diff', array_merge([$nivols], array_values($organized)));
-        $organized[0] = $diff;
-
-        return $organized;
-    }
-
     public function anonymize(Volunteer $volunteer)
     {
         foreach ($volunteer->getMessages() as $message) {
@@ -359,28 +330,5 @@ class VolunteerManager
         $volunteer->setEmailLocked(false);
 
         $this->save($volunteer);
-    }
-
-    private function populateDatalist(array $rows) : array
-    {
-        $tags = $this->tagManager->findTagsForNivols(
-            array_unique(array_column($rows, 'nivol'))
-        );
-
-        $mapped = [];
-        foreach ($rows as $volunteer) {
-            $volunteer['tags']           = [];
-            $mapped[$volunteer['nivol']] = $volunteer;
-        }
-
-        foreach ($tags as $tag) {
-            $mapped[$tag['nivol']]['tags'][] = $this->translator->trans(sprintf('tag.shortcuts.%s', $tag['label']));
-        }
-
-        foreach ($mapped as $nivol => $volunteer) {
-            $mapped[$nivol]['tags'] = implode(', ', $volunteer['tags']);
-        }
-
-        return array_values($mapped);
     }
 }

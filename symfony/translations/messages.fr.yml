@@ -122,12 +122,18 @@ audience:
     no_phone: '%nbr% nivols sont reliés à des bénévoles n''ayant pas de numéro de téléphone'
     phone_optout: '%nbr% nivols sont reliés à des bénévoles ne souhaitant pas recevoir d''appels/SMS'
     reachable: '%nbr% nivols seront déclenchés'
-  filter_title: 'Recherche par structures & compétences'
-  nivol_title: 'Copier/coller une liste de nivols'
-  see_selection: 'Cliquez pour voir la sélection'
   select_all: 'Tout sélectionner'
   structures: 'Structure(s) à déclencher'
   unselect_all: 'Effacer la sélection'
+  filters:
+    search_for_volunteers: 'Rechercher des bénévoles'
+    copy_paste_identifiers: 'Copier/coller une liste de nivols'
+    copy_paste_details: 'Collez une liste de nivols dans le champ ci-dessous.'
+  ###
+  filter_title: 'Recherche par structures & compétences'
+  nivol_title: 'Copier/coller une liste de nivols'
+  see_selection: 'Cliquez pour voir la sélection'
+  ###
 backlinks:
   blablacar: 'Parrainé par'
   minutis: 'Développé par les bénévoles'
