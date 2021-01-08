@@ -115,9 +115,11 @@ class StructureManager
         return $this->structureRepository->searchForUserQueryBuilder($user, null, true);
     }
 
-    public function getStructuresForUser(User $user) : array
+    public function getStructureHierarchyForCurrentUser()
     {
-        return $this->structureRepository->searchForUser($user, null, 0xFFFFFFFF, true);
+        return $this->structureRepository->getStructureHierarchyForCurrentUser(
+            $this->userManager->findForCurrentUser()
+        );
     }
 
     public function getCampaignStructures(Campaign $campaign) : array
@@ -138,5 +140,10 @@ class StructureManager
         }
 
         return $counts;
+    }
+
+    public function getVolunteerCounts(array $ids) : array
+    {
+        return $this->structureRepository->getVolunteerCounts($ids);
     }
 }

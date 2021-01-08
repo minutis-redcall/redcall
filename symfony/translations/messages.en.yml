@@ -112,7 +112,6 @@ admin:
     list: 'User list'
     pegass: 'Pegass bindings'
 audience:
-  audience: Audience
   classify:
     disabled: '%nbr% nivols are bound to disabled volunteers'
     email_optout: '%nbr% nivols are bound to volunteers that don''t want to receive emails'
@@ -122,17 +121,21 @@ audience:
     no_phone: '%nbr% nivols are bound to volunteers without any phone number'
     phone_optout: '%nbr% nivols are bound to volunteers that don''t want to receive calls/SMS'
     reachable: '%nbr% nivols will be triggered'
-  select_all: 'Select all'
   structures: 'Structure(s) to trigger'
-  unselect_all: 'Unselect all'
-  filters:
-    search_for_volunteers: 'Search for volunteers'
-    copy_paste_identifiers: 'Copy/paste a list of identifiers'
-    copy_paste_details: 'Paste a list of identifiers in the field below.'
+  badges: 'Skills & Nominations'
+  search_for_volunteers: 'Search for volunteers'
+  copy_paste_identifiers: 'Copy/paste a list of identifiers'
+  copy_paste_details: 'Paste a list of identifiers in the field below.'
+  by_structures_and_skills: 'Search by structures & skills'
+  select_all_badges: 'Select all volunteers whatever their skills'
+  search_other_badge: 'Search for another skill'
   ###
+  select_all: 'Select all'
   filter_title: 'Search by structures & skills'
   nivol_title: 'Copy/paste a list of nivols'
   see_selection: 'Click to see selection'
+  audience: Audience
+  unselect_all: 'Unselect all'
   ###
 backlinks:
   blablacar: 'Sponsored by'

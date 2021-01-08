@@ -9,6 +9,7 @@ use App\Entity\User;
 use App\Entity\Volunteer;
 use Bundles\PegassCrawlerBundle\Entity\Pegass;
 use Doctrine\Bundle\DoctrineBundle\Registry;
+use Doctrine\DBAL\Connection;
 use Doctrine\ORM\QueryBuilder;
 
 /**
@@ -178,7 +179,7 @@ class StructureRepository extends BaseRepository
         return $counts;
     }
 
-    public function getStructuresForAdminQueryBuilder(User $user) : QueryBuilder
+    public function getStructuresForUserQueryBuilder(User $user) : QueryBuilder
     {
         return $this->createQueryBuilder('s')
                     ->join('s.users', 'u')
@@ -186,11 +187,6 @@ class StructureRepository extends BaseRepository
                     ->setParameter('id', $user->getId())
                     ->andWhere('s.enabled = true')
                     ->orderBy('s.identifier', 'asc');
-    }
-
-    public function getStructuresForUserQueryBuilder(User $user) : QueryBuilder
-    {
-        return $this->getStructuresForAdminQueryBuilder($user);
     }
 
     public function searchAllQueryBuilder(?string $criteria, bool $enabled = true) : QueryBuilder
@@ -202,7 +198,7 @@ class StructureRepository extends BaseRepository
 
         if ($criteria) {
             $qb->andWhere('s.identifier LIKE :criteria OR s.name LIKE :criteria')
-               ->setParameter('criteria', sprintf('%%%s%%', $criteria));
+               ->setParameter('criteria', sprintf('%%%s%%', str_replace(' ', '%', $criteria)));
         }
 
         $qb->orderBy('s.name');
@@ -233,21 +229,12 @@ class StructureRepository extends BaseRepository
 
         if ($criteria) {
             $qb->andWhere('s.identifier LIKE :criteria OR s.name LIKE :criteria')
-               ->setParameter('criteria', sprintf('%%%s%%', $criteria));
+               ->setParameter('criteria', sprintf('%%%s%%', str_replace(' ', '%', $criteria)));
         }
 
         $qb->orderBy('s.name');
 
         return $qb;
-    }
-
-    public function searchForUser(User $user, ?string $criteria, int $maxResults, ?bool $enabled = null) : array
-    {
-        return $this
-            ->searchForUserQueryBuilder($user, $criteria, $enabled)
-            ->setMaxResults($maxResults)
-            ->getQuery()
-            ->getResult();
     }
 
     public function synchronizeWithPegass()
@@ -296,5 +283,30 @@ class StructureRepository extends BaseRepository
             ->join('v.user', 'su')
             ->andWhere('v.enabled = true')
             ->groupBy('s.id');
+    }
+
+    public function getStructureHierarchyForCurrentUser(User $user) : array
+    {
+        return $this
+            ->getStructuresForUserQueryBuilder($user)
+            ->select('s.id, c.id as child_id')
+            ->leftJoin('s.childrenStructures', 'c')
+            ->getQuery()
+            ->getArrayResult();
+    }
+
+    public function getVolunteerCounts(array $structureIds) : array
+    {
+        return $this
+            ->createQueryBuilder('s')
+            ->select('s.id, s.name, COUNT(DISTINCT v) AS count')
+            ->where('s.id IN (:ids)')
+            ->setParameter('ids', $structureIds, Connection::PARAM_INT_ARRAY)
+            ->andWhere('s.enabled = true')
+            ->leftJoin('s.volunteers', 'v')
+            ->andWhere('v.enabled = true OR v.enabled IS NULL')
+            ->groupBy('s.id')
+            ->getQuery()
+            ->getArrayResult();
     }
 }

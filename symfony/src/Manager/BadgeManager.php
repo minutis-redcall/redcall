@@ -52,6 +52,11 @@ class BadgeManager
         return $this->badgeRepository->searchForCompletion($criteria, $limit);
     }
 
+    public function searchNonVisibleUsableBadge(?string $criteria, int $limit = 0) : array
+    {
+        return $this->badgeRepository->searchNonVisibleUsableBadge($criteria, $limit);
+    }
+
     public function remove(Badge $badge)
     {
         $this->badgeRepository->remove($badge);
@@ -71,5 +76,13 @@ class BadgeManager
     public function getPublicBadgesQueryBuilder() : QueryBuilder
     {
         return $this->badgeRepository->getPublicBadgesQueryBuilder();
+    }
+
+    public function getPublicBadges() : array
+    {
+        return $this
+            ->getPublicBadgesQueryBuilder()
+            ->getQuery()
+            ->getResult();
     }
 }

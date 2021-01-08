@@ -452,7 +452,7 @@ class VolunteerRepository extends BaseRepository
                     'CONCAT(v.lastName, \' \', v.firstName) LIKE :criteria'
                 )
             )
-            ->setParameter('criteria', sprintf('%%%s%%', $criteria));
+            ->setParameter('criteria', sprintf('%%%s%%', str_replace(' ', '%', $criteria)));
     }
 
     private function addUserCriteria(QueryBuilder $qb)

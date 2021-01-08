@@ -112,7 +112,6 @@ admin:
     list: 'Liste d''utilisateurs'
     pegass: 'Connexions à Pegass'
 audience:
-  audience: Audience
   classify:
     disabled: '%nbr% nivols sont reliés à des bénévoles desactivés'
     email_optout: '%nbr% nivols sont reliés à des bénévoles ne souhaitant pas recevoir d''emails'
@@ -122,17 +121,21 @@ audience:
     no_phone: '%nbr% nivols sont reliés à des bénévoles n''ayant pas de numéro de téléphone'
     phone_optout: '%nbr% nivols sont reliés à des bénévoles ne souhaitant pas recevoir d''appels/SMS'
     reachable: '%nbr% nivols seront déclenchés'
-  select_all: 'Tout sélectionner'
   structures: 'Structure(s) à déclencher'
-  unselect_all: 'Effacer la sélection'
-  filters:
-    search_for_volunteers: 'Rechercher des bénévoles'
-    copy_paste_identifiers: 'Copier/coller une liste de nivols'
-    copy_paste_details: 'Collez une liste de nivols dans le champ ci-dessous.'
+  badges: 'Compétences & nominations'
+  search_for_volunteers: 'Rechercher des bénévoles'
+  copy_paste_identifiers: 'Copier/coller une liste de nivols'
+  copy_paste_details: 'Collez une liste de nivols dans le champ ci-dessous.'
+  by_structures_and_skills: 'Recherche par structures & compétences'
+  select_all_badges: 'Sélectionner tous les bénévoles quelque soient leurs compétences'
+  search_other_badge: 'Rechercher une autre compétence'
   ###
+  select_all: 'Tout sélectionner'
+  audience: Audience
   filter_title: 'Recherche par structures & compétences'
   nivol_title: 'Copier/coller une liste de nivols'
   see_selection: 'Cliquez pour voir la sélection'
+  unselect_all: 'Effacer la sélection'
   ###
 backlinks:
   blablacar: 'Parrainé par'

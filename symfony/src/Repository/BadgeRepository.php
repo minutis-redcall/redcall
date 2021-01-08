@@ -73,6 +73,16 @@ class BadgeRepository extends BaseRepository
                     ->getResult();
     }
 
+    public function searchNonVisibleUsableBadge(?string $criteria, int $limit = 0) : array
+    {
+        return $this->getSearchInBadgesQueryBuilder($criteria)
+                    ->andWhere('b.synonym IS NULL')
+                    ->andWhere('b.visibility = false')
+                    ->setMaxResults($limit)
+                    ->getQuery()
+                    ->getResult();
+    }
+
     public function getPublicBadgesQueryBuilder() : QueryBuilder
     {
         return $this->getSearchInBadgesQueryBuilder(null)

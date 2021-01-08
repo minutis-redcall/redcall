@@ -450,9 +450,8 @@ class Structure
     public function toSearchResults() : array
     {
         return [
-            'id'         => (string) $this->getId(),
-            'name'       => $this->getDisplayName(),
-            'volunteers' => sprintf('(%d)', count($this->getVolunteers())),
+            'id'   => (string) $this->getId(),
+            'name' => $this->getDisplayName(),
         ];
     }
 

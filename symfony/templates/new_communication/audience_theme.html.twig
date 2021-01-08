@@ -1,8 +1,12 @@
 {% block audience_widget %}
+    {{ form_start(form) }}
 
+    {# -------------------------------------------------------------------------------- #}
     {# Volunteers search #}
+    {# -------------------------------------------------------------------------------- #}
     {{ form_row(form.volunteers, {
         'attr': {
+            'class': 'flexdatalist',
             'multiple': "multiple",
             'placeholder': 'base.search.placeholder'|trans,
             'data-data': volunteers_data|json_encode,
@@ -18,23 +22,182 @@
         }
     }) }}
 
+    {# -------------------------------------------------------------------------------- #}
     {# Copy/paste nivols #}
+    {# -------------------------------------------------------------------------------- #}
     <div style="margin-left:-5px;width:100%;">
         <a class="btn btn-secondary" data-toggle="collapse" href="#audience-volunteers" role="button" style="width:100%;margin:5px;">
-            {{ 'audience.filters.copy_paste_identifiers'| trans }}
+            {{ 'audience.copy_paste_identifiers'| trans }}
         </a>
     </div>
-    <div id="audience-volunteers" class="collapse active">
+    <div id="audience-volunteers" class="collapse">
         {{ form_row(form.nivols) }}
     </div>
 
+    {# -------------------------------------------------------------------------------- #}
+    {# Structure tree #}
+    {# -------------------------------------------------------------------------------- #}
+    {{ form_row(form.structures_global) }}
+    {{ form_row(form.structures_local) }}
+    <div style="margin-left:-5px;width:100%;">
+        <a class="btn btn-secondary" data-toggle="collapse" href="#audience-structures-and-skills" role="button" style="width:100%;margin:5px;">
+            {{ 'audience.by_structures_and_skills'|trans }}
+        </a>
+    </div>
+    <div id="audience-structures-and-skills" class="collapse show">
+
+    {% if app.user.structures|length > 1 %}
+
+        <div class="h3">
+            {{ 'audience.structures'|trans }}
+        </div>
+
+        {# All structure ticks, in the tree view #}
+        {% macro renderSlider(form, global, local, hierarchy, information, current) %}
+
+            {% set has_children = hierarchy[current]|length %}
+
+            {# Slider header #}
+            <div>
+                <label class="switch">
+                    <input id="global-structure-{{ current }}"
+                           type="checkbox"
+                           class="toggle-to-text"
+                           {% if current in global %}checked{% endif %}
+                           data-field="#{{ form.structures_global.vars.id }}"
+                           data-id="{{ current }}"/>
+                    <span class="slider"></span>
+                </label>
+                {% if has_children %}
+                    <a data-toggle="collapse" href="#container-children-{{ current }}">
+                        <label for="global-structure-{{ current }}">
+                            {{ information[current].name }} ({{ information[current].global_count }})
+                        </label>
+                    </a>
+                {% else %}
+                    <label for="global-structure-{{ current }}">
+                        {{ information[current].name }} ({{ information[current].global_count }})
+                    </label>
+                {% endif %}
+            </div>
+
+            {# Slider body #}
+            {% if has_children %}
+                <div id="container-children-{{ current }}" class="collapse">
+                    <div class="card card-body">
+                        <div>
+                            <label class="switch">
+                                <input id="local-structure-{{ current }}"
+                                       type="checkbox"
+                                       class="toggle-to-text"
+                                       {% if current in local %}checked{% endif %}
+                                       data-field="#{{ form.structures_local.vars.id }}"
+                                       data-id="{{ current }}"/>
+                                <span class="slider"></span>
+                            </label>
+                            <label for="local-structure-{{ current }}">
+                                {{ information[current].name }} ({{ information[current].local_count }})
+                            </label>
+                        </div>
+                        {% for child in hierarchy[current] %}
+                            {{ _self.renderSlider(form, global, local, hierarchy, information, child) }}
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+        {% endmacro %}
+
+        {% for structure_id in structures_roots %}
+            {{ _self.renderSlider(form, form.structures_global.vars.data|split(','), form.structures_local.vars.data|split(','), structures_hierarchy, structures_information, structure_id) }}
+        {% endfor %}
+
+    {% endif %}
+
+    <hr/>
+
+    {# -------------------------------------------------------------------------------- #}
+    {# Badges #}
+    {# -------------------------------------------------------------------------------- #}
+
+    {% if app.user.structures|length > 1 %}
+        <div class="h3">
+            {{ 'audience.badges'|trans }}
+        </div>
+    {% endif %}
+
+    {# Trigger everyone discarding badges #}
+    {{ form_row(form.badges_all) }}
+
+    {# Main badges #}
+    <div class="row">
+
+        {% set badges_ticked = form.badges_ticked.vars.data|split(',') %}
+
+        {% for badge in badges_public %}
+            <div class="col-md-4">
+                <label class="switch">
+                    <input id="badge-{{ badge.id }}"
+                           type="checkbox"
+                           class="toggle-to-text"
+                           {% if badge.id in badges_ticked %}checked{% endif %}
+                           data-field="#{{ form.badges_ticked.vars.id }}"
+                           data-id="{{ badge.id }}"/>
+                    <span class="slider"></span>
+                </label>
+                <label for="badge-{{ badge.id }}">
+                    {{ badge.name }}
+                </label>
+
+            </div>
+        {% endfor %}
+    </div>
+
+    <br/>
+
+    {# Other badges search #}
+    {{ form_row(form.badges_searched, {
+        'attr': {
+            'class': 'flexdatalist',
+            'multiple': "multiple",
+            'placeholder': 'base.search.placeholder'|trans,
+            'data-url': path('audience_search_badge'),
+            'data-search-disabled': true,
+            'data-min-length': 1,
+            'data-visible-properties': '["name"]',
+            'data-no-results-text': 'base.search.no_results'|trans,
+            'data-focus-first-result': true,
+            'data-selection-required': true,
+            'data-text-property': "name",
+            'data-value-property': "id",
+        }
+    }) }}
+
+
+    {{ form_end(form) }}
+
+    {# -------------------------------------------------------------------------------- #}
+    {# Javscript #}
+    {# -------------------------------------------------------------------------------- #}
+
     <script type="text/javascript">
 
-        $(function () {
-            $('#{{ form.volunteers.vars.id }}').flexdatalist();
+        {# Filling up backend fields when ticking structures #}
+        $('.toggle-to-text').click(function () {
+            var tick = $(this);
+            var input = $(tick.data('field'));
+            var list = input.val().split(',');
+            if (tick.is(':checked')) {
+                if (!list.includes(tick.data('id'))) {
+                    list.push(tick.data('id'));
+                }
+            } else if (!tick.is(':checked')) {
+                var index = list.indexOf(tick.data('id').toString());
+                if (index >= 0) {
+                    list.splice(index, 1);
+                }
+            }
+            input.val(list.join(','));
         });
 
-
     </script>
-
 {% endblock %}
