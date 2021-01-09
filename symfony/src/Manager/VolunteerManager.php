@@ -264,6 +264,19 @@ class VolunteerManager
         return $this->volunteerRepository->filterInvalidNivols($nivols);
     }
 
+    public function filterInaccessibles(array $volunteerIds) : array
+    {
+        return $this->volunteerRepository->filterInaccessibles(
+            $this->userManager->findForCurrentUser(),
+            $volunteerIds
+        );
+    }
+
+    public function filterDisabled(array $volunteerIds) : array
+    {
+        return array_column($this->volunteerRepository->filterDisabled($volunteerIds), 'id');
+    }
+
     public function classifyNivols(array $nivols) : array
     {
         $user = $this->userManager->findForCurrentUser();

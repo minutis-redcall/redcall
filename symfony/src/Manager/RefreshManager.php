@@ -14,7 +14,6 @@ use Bundles\PegassCrawlerBundle\Manager\PegassManager;
 use libphonenumber\NumberParseException;
 use libphonenumber\PhoneNumber;
 use libphonenumber\PhoneNumberFormat;
-use libphonenumber\PhoneNumberType;
 use libphonenumber\PhoneNumberUtil;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -418,12 +417,8 @@ class RefreshManager
             try {
                 /** @var PhoneNumber $parsed */
                 $parsed = $phoneUtil->parse($row['libelle'], Phone::DEFAULT_LANG);
+                $e164   = $phoneUtil->format($parsed, PhoneNumberFormat::E164);
 
-                if (PhoneNumberType::MOBILE !== $phoneUtil->getNumberType($parsed)) {
-                    continue;
-                }
-
-                $e164 = $phoneUtil->format($parsed, PhoneNumberFormat::E164);
                 if (!$volunteer->hasPhoneNumber($e164) && !$this->phoneManager->findOneByPhoneNumber($e164)) {
                     $phone = new Phone();
                     $phone->setPreferred(0 === $volunteer->getPhones()->count());
@@ -432,20 +427,6 @@ class RefreshManager
                 }
             } catch (NumberParseException $e) {
                 continue;
-            }
-        }
-
-        // Cleaning: do not integrate non mobile phones
-        foreach ($volunteer->getPhones() as $phone) {
-            /** @var Phone $phone */
-            $parsed = $phoneUtil->parse($phone->getE164(), Phone::DEFAULT_LANG);
-            if (PhoneNumberType::MOBILE !== $phoneUtil->getNumberType($parsed)) {
-                $volunteer->removePhone($phone);
-            }
-        }
-        if (1 === $volunteer->getPhones()->count()) {
-            foreach ($volunteer->getPhones() as $phone) {
-                $phone->setPreferred(true);
             }
         }
     }

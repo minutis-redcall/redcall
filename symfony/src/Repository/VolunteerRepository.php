@@ -281,33 +281,16 @@ class VolunteerRepository extends BaseRepository
                     ->getResult();
     }
 
-    /**
-     * @param array $ids
-     *
-     * @return Volunteer[]
-     */
-    public function filterByIds(array $ids) : array
+    public function filterInaccessibles(User $user, $volunteerIds) : array
     {
-        return $this->createVolunteersQueryBuilder()
-                    ->andWhere('v.id IN (:ids)')
-                    ->setParameter('ids', $ids, Connection::PARAM_INT_ARRAY)
-                    ->getQuery()
-                    ->getResult();
-    }
+        $accessibles = $this->createAccessibleVolunteersQueryBuilder($user)
+                            ->select('v.id')
+                            ->andWhere('v.id IN (:volunteer_ids)')
+                            ->setParameter('volunteer_ids', $volunteerIds)
+                            ->getQuery()
+                            ->getArrayResult();
 
-    /**
-     * @param array $ids
-     * @param User  $user
-     *
-     * @return Volunteer[]
-     */
-    public function filterByIdsAndAccess(array $ids, User $user) : array
-    {
-        return $this->createAccessibleVolunteersQueryBuilder($user)
-                    ->andWhere('v.id IN (:ids)')
-                    ->setParameter('ids', $ids, Connection::PARAM_INT_ARRAY)
-                    ->getQuery()
-                    ->getResult();
+        return array_diff($volunteerIds, array_column($accessibles, 'id'));
     }
 
     public function createAcessibleNivolsFilterQueryBuilder(array $nivols, User $user) : QueryBuilder
@@ -341,7 +324,7 @@ class VolunteerRepository extends BaseRepository
                       ->getQuery()
                       ->getArrayResult();
 
-        return array_filter(array_diff($nivols, array_column($valid, 'nivol')));
+        return array_diff($nivols, array_column($valid, 'nivol'));
     }
 
     public function filterDisabledNivols(array $nivols) : array
@@ -476,6 +459,18 @@ class VolunteerRepository extends BaseRepository
             ->setParameter('structure_ids', $structureIds)
             ->getQuery()
             ->getSingleScalarResult();
+    }
+
+    public function filterDisabled(array $volunteerIds) : array
+    {
+        return $this
+            ->createQueryBuilder('v')
+            ->select('v.id')
+            ->where('v.enabled = false')
+            ->andWhere('v.id IN (:volunteer_ids)')
+            ->setParameter('volunteer_ids', $volunteerIds)
+            ->getQuery()
+            ->getArrayResult();
     }
 
     private function createVolunteersQueryBuilder(bool $enabled = true) : QueryBuilder

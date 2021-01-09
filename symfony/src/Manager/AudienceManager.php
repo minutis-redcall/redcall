@@ -85,6 +85,27 @@ class AudienceManager
 
         $audience = $this->extractAudience($data);
 
+        $classification->disabled = $this->volunteerManager->filterDisabled($audience);
+
+        if (!$this->security->isGranted('ROLE_ADMIN')) {
+            $classification->inaccessible = $this->volunteerManager->filterInaccessibles($audience);
+        }
+
+        // Reducing the audience to potentially reachable volunteers
+        $audience                  = array_diff($audience, $classification->disabled, $classification->inaccessible);
+        $classification->reachable = $audience;
+
+        // Adding more contextual information in order to help understanding why volunteers weren't triggered
+
+        /*
+    public $phoneLandline = [];
+    public $phoneMissing  = [];
+    public $phoneOptout   = [];
+    public $emailMissing  = [];
+    public $emailOptout   = [];
+    public $reachable     = [];
+*/
+
         return $classification;
     }
 

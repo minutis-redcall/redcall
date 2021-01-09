@@ -12,7 +12,8 @@ use libphonenumber\PhoneNumberUtil;
  * @ORM\Entity(repositoryClass=PhoneRepository::class)
  * @ORM\Table(indexes={
  *     @ORM\Index(name="nationalx", columns={"national"}),
- *     @ORM\Index(name="internationalx", columns={"international"})
+ *     @ORM\Index(name="internationalx", columns={"international"}),
+ *     @ORM\Index(name="ismobilex", columns={"is_mobile"})
  * })
  * @ORM\HasLifecycleCallbacks()
  * @ORM\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
@@ -65,6 +66,11 @@ class Phone
      * @ORM\Column(type="string", length=32)
      */
     private $international;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $isMobile;
 
     public function getId() : ?int
     {
@@ -178,5 +184,17 @@ class Phone
         $this->setPrefix($parsed->getCountryCode());
         $this->setNational($phoneUtil->format($parsed, PhoneNumberFormat::NATIONAL));
         $this->setInternational($phoneUtil->format($parsed, PhoneNumberFormat::INTERNATIONAL));
+    }
+
+    public function getIsMobile() : ?bool
+    {
+        return $this->isMobile;
+    }
+
+    public function setIsMobile(bool $isMobile) : self
+    {
+        $this->isMobile = $isMobile;
+
+        return $this;
     }
 }
