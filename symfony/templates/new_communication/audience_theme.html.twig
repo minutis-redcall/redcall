@@ -1,10 +1,24 @@
 {% block audience_widget %}
     {{ form_start(form) }}
 
+    <div class="h3">
+        {{ 'audience.audience'|trans }}
+    </div>
+    <p>{{ 'audience.audience_help'|trans }}</p>
+    <br/>
+
     {# -------------------------------------------------------------------------------- #}
-    {# Volunteers search #}
+    {# Manual selection #}
     {# -------------------------------------------------------------------------------- #}
-    {{ form_row(form.volunteers, {
+
+    {% if app.user.structures|length > 1 %}
+        <div class="h4">
+            {{ 'audience.manual_selection'|trans }}
+        </div>
+    {% endif %}
+
+    {{ form_label(form.volunteers) }}
+    {{ form_widget(form.volunteers, {
         'attr': {
             'class': 'flexdatalist',
             'multiple': "multiple",
@@ -22,33 +36,18 @@
         }
     }) }}
 
-    {# -------------------------------------------------------------------------------- #}
-    {# Copy/paste nivols #}
-    {# -------------------------------------------------------------------------------- #}
-    <div style="margin-left:-5px;width:100%;">
-        <a class="btn btn-secondary" data-toggle="collapse" href="#audience-volunteers" role="button" style="width:100%;margin:5px;">
-            {{ 'audience.copy_paste_identifiers'| trans }}
-        </a>
-    </div>
-    <div id="audience-volunteers" class="collapse">
-        {{ form_row(form.nivols) }}
-    </div>
+    {{ form_row(form.nivols) }}
+    <br/>
 
     {# -------------------------------------------------------------------------------- #}
     {# Structure tree #}
     {# -------------------------------------------------------------------------------- #}
     {{ form_row(form.structures_global) }}
     {{ form_row(form.structures_local) }}
-    <div style="margin-left:-5px;width:100%;">
-        <a class="btn btn-secondary" data-toggle="collapse" href="#audience-structures-and-skills" role="button" style="width:100%;margin:5px;">
-            {{ 'audience.by_structures_and_skills'|trans }}
-        </a>
-    </div>
-    <div id="audience-structures-and-skills" class="collapse show">
 
     {% if app.user.structures|length > 1 %}
 
-        <div class="h3">
+        <div class="h4">
             {{ 'audience.structures'|trans }}
         </div>
 
@@ -111,16 +110,15 @@
             {{ _self.renderSlider(form, form.structures_global.vars.data|split(','), form.structures_local.vars.data|split(','), structures_hierarchy, structures_information, structure_id) }}
         {% endfor %}
 
+        <br/>
     {% endif %}
-
-    <hr/>
 
     {# -------------------------------------------------------------------------------- #}
     {# Badges #}
     {# -------------------------------------------------------------------------------- #}
 
     {% if app.user.structures|length > 1 %}
-        <div class="h3">
+        <div class="h4">
             {{ 'audience.badges'|trans }}
         </div>
     {% endif %}
@@ -134,7 +132,7 @@
         {% set badges_ticked = form.badges_ticked.vars.data|split(',') %}
 
         {% for badge in badges_public %}
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <label class="switch">
                     <input id="badge-{{ badge.id }}"
                            type="checkbox"
@@ -161,6 +159,7 @@
             'multiple': "multiple",
             'placeholder': 'base.search.placeholder'|trans,
             'data-url': path('audience_search_badge'),
+            'data-data': badges_searched|json_encode,
             'data-search-disabled': true,
             'data-min-length': 1,
             'data-visible-properties': '["name"]',
@@ -172,8 +171,16 @@
         }
     }) }}
 
+    {# -------------------------------------------------------------------------------- #}
+    {# Summary #}
+    {# -------------------------------------------------------------------------------- #}
 
-    {{ form_end(form) }}
+    <div class="h4">
+        {{ 'audience.classify.title'|trans }}
+    </div>
+
+
+
 
     {# -------------------------------------------------------------------------------- #}
     {# Javscript #}
@@ -181,7 +188,7 @@
 
     <script type="text/javascript">
 
-        {# Filling up backend fields when ticking structures #}
+        {# Filling up backend fields when ticking structures/badges #}
         $('.toggle-to-text').click(function () {
             var tick = $(this);
             var input = $(tick.data('field'));
@@ -200,4 +207,7 @@
         });
 
     </script>
+
+    {{ form_end(form) }}
+
 {% endblock %}

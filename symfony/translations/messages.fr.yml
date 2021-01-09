@@ -113,6 +113,7 @@ admin:
     pegass: 'Connexions à Pegass'
 audience:
   classify:
+    title: 'Résumé de la sélection'
     disabled: '%nbr% nivols sont reliés à des bénévoles desactivés'
     email_optout: '%nbr% nivols sont reliés à des bénévoles ne souhaitant pas recevoir d''emails'
     inaccessible: '%nbr% nivols sont reliés à des bénévoles ne faisant pas partie de votre périmètre'
@@ -123,15 +124,15 @@ audience:
     reachable: '%nbr% nivols seront déclenchés'
   structures: 'Structure(s) à déclencher'
   badges: 'Compétences & nominations'
-  search_for_volunteers: 'Rechercher des bénévoles'
-  copy_paste_identifiers: 'Copier/coller une liste de nivols'
-  copy_paste_details: 'Collez une liste de nivols dans le champ ci-dessous.'
-  by_structures_and_skills: 'Recherche par structures & compétences'
-  select_all_badges: 'Sélectionner tous les bénévoles quelque soient leurs compétences'
-  search_other_badge: 'Rechercher une autre compétence'
+  search_for_volunteers: 'Rechercher des bénévoles à déclencher :'
+  manual_selection: 'Saisie manuelle de bénévoles'
+  copy_paste_details: 'Ou coller une liste de nivols dans le champ ci-dessous.'
+  select_all_badges: 'Déclencher tous les bénévoles quelque soient leurs compétences.'
+  search_other_badge: 'Rechercher une autre compétence :'
+  audience: Audience
+  audience_help: 'Vous pouvez sélectionner les bénévoles à déclencher en les saisissant manuellement, ou en les filtrant par structures et compétences.'
   ###
   select_all: 'Tout sélectionner'
-  audience: Audience
   filter_title: 'Recherche par structures & compétences'
   nivol_title: 'Copier/coller une liste de nivols'
   see_selection: 'Cliquez pour voir la sélection'

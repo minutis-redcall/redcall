@@ -13,6 +13,8 @@ use Doctrine\DBAL\Connection;
 use Doctrine\ORM\QueryBuilder;
 
 /**
+ * Hierarchy deepness is limited to 5.
+ *
  * @method Structure|null find($id, $lockMode = null, $lockVersion = null)
  * @method Structure|null findOneBy(array $criteria, array $orderBy = null)
  * @method Structure[]    findAll()
@@ -295,7 +297,7 @@ class StructureRepository extends BaseRepository
             ->getArrayResult();
     }
 
-    public function getVolunteerCounts(array $structureIds) : array
+    public function getVolunteerLocalCounts(array $structureIds) : array
     {
         return $this
             ->createQueryBuilder('s')
@@ -308,5 +310,25 @@ class StructureRepository extends BaseRepository
             ->groupBy('s.id')
             ->getQuery()
             ->getArrayResult();
+    }
+
+    public function getDescendantStructures(array $structureIds) : array
+    {
+        for ($i = 0; $i < 5; $i++) {
+            $structureIds = array_merge(
+                $structureIds,
+                array_column($this
+                    ->createQueryBuilder('s')
+                    ->select('s.id')
+                    ->where('s.enabled = true')
+                    ->join('s.parentStructure', 'p')
+                    ->andWhere('p.id IN (:ids)')
+                    ->setParameter('ids', $structureIds, Connection::PARAM_INT_ARRAY)
+                    ->getQuery()
+                    ->getArrayResult(), 'id')
+            );
+        }
+
+        return $structureIds;
     }
 }

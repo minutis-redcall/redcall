@@ -239,20 +239,29 @@ class VolunteerManager
         return $this->volunteerRepository->filterByNivolsAndAccess($nivols, $user);
     }
 
-    /**
-     * @param array $ids
-     *
-     * @return Volunteer[]
-     */
-    public function filterByIdAndAccess(array $ids) : array
+    public function getIdsByNivols(array $nivols) : array
     {
-        $user = $this->userManager->findForCurrentUser();
+        return array_column($this->volunteerRepository->getIdsByNivols($nivols), 'id');
+    }
 
-        if ($user->isAdmin()) {
-            return $this->volunteerRepository->filterByIds($ids);
-        }
+    public function getVolunteerListInStructures(array $structureIds) : array
+    {
+        return array_column($this->volunteerRepository->getVolunteerListInStructures($structureIds), 'id');
+    }
 
-        return $this->volunteerRepository->filterByIdsAndAccess($ids, $user);
+    public function getVolunteerListInStructuresHavingBadges(array $structureIds, array $badgeIds) : array
+    {
+        return array_column($this->volunteerRepository->getVolunteerListInStructuresHavingBadges($structureIds, $badgeIds), 'id');
+    }
+
+    public function getVolunteerGlobalCounts(array $structureIds) : int
+    {
+        return $this->volunteerRepository->getVolunteerGlobalCounts($structureIds);
+    }
+
+    public function filterInvalidNivols(array $nivols) : array
+    {
+        return $this->volunteerRepository->filterInvalidNivols($nivols);
     }
 
     public function classifyNivols(array $nivols) : array

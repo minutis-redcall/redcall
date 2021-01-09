@@ -142,8 +142,14 @@ class StructureManager
         return $counts;
     }
 
-    public function getVolunteerCounts(array $ids) : array
+    public function getVolunteerLocalCounts(array $structureIds) : array
     {
-        return $this->structureRepository->getVolunteerCounts($ids);
+        return $this->structureRepository->getVolunteerLocalCounts($structureIds);
+    }
+
+    public function getDescendantStructures(array $structureIds) : array
+    {
+        return $this->structureRepository->getDescendantStructures($structureIds);
     }
 }
+

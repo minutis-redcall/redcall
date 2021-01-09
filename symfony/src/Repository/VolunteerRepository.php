@@ -126,14 +126,6 @@ class VolunteerRepository extends BaseRepository
         return $qb;
     }
 
-    public function findInStructureQueryBuilder(Structure $structure, bool $enabled = false) : QueryBuilder
-    {
-        return $this->createVolunteersQueryBuilder($enabled)
-                    ->join('v.structures', 's')
-                    ->andWhere('s.id = :structure')
-                    ->setParameter('structure', $structure);
-    }
-
     public function searchAllQueryBuilder(?string $keyword, bool $enabled = false) : QueryBuilder
     {
         $qb = $this->createVolunteersQueryBuilder($enabled);
@@ -257,6 +249,21 @@ class VolunteerRepository extends BaseRepository
                     ->setParameter('nivols', $nivols, Connection::PARAM_STR_ARRAY)
                     ->getQuery()
                     ->getResult();
+    }
+
+    /**
+     * @param array $nivols
+     *
+     * @return Volunteer[]
+     */
+    public function getIdsByNivols(array $nivols) : array
+    {
+        return $this->createQueryBuilder('v')
+                    ->select('v.id')
+                    ->andWhere('v.nivol IN (:nivols)')
+                    ->setParameter('nivols', $nivols, Connection::PARAM_STR_ARRAY)
+                    ->getQuery()
+                    ->getArrayResult();
     }
 
     /**
@@ -412,6 +419,63 @@ class VolunteerRepository extends BaseRepository
             ->setParameter('volunteer_ids', $volunteerIds)
             ->getQuery()
             ->getResult();
+    }
+
+    public function getVolunteerListInStructures(array $structureIds) : array
+    {
+        return $this
+            ->createQueryBuilder('v')
+            ->select('DISTINCT v.id')
+            ->where('v.enabled = true')
+            ->join('v.structures', 's')
+            ->andWhere('s.enabled = true')
+            ->andWhere('s.id IN (:structure_ids)')
+            ->setParameter('structure_ids', $structureIds)
+            ->getQuery()
+            ->getArrayResult();
+    }
+
+    public function getVolunteerListInStructuresHavingBadges(array $structureIds, array $badgeIds) : array
+    {
+        return $this
+            ->createQueryBuilder('v')
+            ->select('DISTINCT v.id')
+            ->where('v.enabled = true')
+            ->join('v.structures', 's')
+            ->andWhere('s.enabled = true')
+            ->andWhere('s.id IN (:structure_ids)')
+            ->setParameter('structure_ids', $structureIds)
+            ->join('v.badges', 'b')
+            ->leftJoin('b.synonym', 'x')
+            ->leftJoin('b.parent', 'p1')
+            ->leftJoin('p1.parent', 'p2')
+            ->leftJoin('p2.parent', 'p3')
+            ->leftJoin('p3.parent', 'p4')
+            ->andWhere('
+                    b.id IN (:badge_ids) 
+                 OR x.id IN (:badge_ids) 
+                 OR p1.id IN (:badge_ids) 
+                 OR p2.id IN (:badge_ids) 
+                 OR p3.id IN (:badge_ids) 
+                 OR p4.id IN (:badge_ids)
+             ')
+            ->setParameter('badge_ids', $badgeIds)
+            ->getQuery()
+            ->getArrayResult();
+    }
+
+    public function getVolunteerGlobalCounts(array $structureIds) : int
+    {
+        return $this
+            ->createQueryBuilder('v')
+            ->select('COUNT(DISTINCT v)')
+            ->join('v.structures', 's')
+            ->andWhere('v.enabled = true')
+            ->andWhere('s.enabled = true')
+            ->andWhere('s.id IN (:structure_ids)')
+            ->setParameter('structure_ids', $structureIds)
+            ->getQuery()
+            ->getSingleScalarResult();
     }
 
     private function createVolunteersQueryBuilder(bool $enabled = true) : QueryBuilder

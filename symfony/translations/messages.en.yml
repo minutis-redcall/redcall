@@ -113,6 +113,7 @@ admin:
     pegass: 'Pegass bindings'
 audience:
   classify:
+    title: 'Selection summary'
     disabled: '%nbr% nivols are bound to disabled volunteers'
     email_optout: '%nbr% nivols are bound to volunteers that don''t want to receive emails'
     inaccessible: '%nbr% nivols are bound to volunteers that are not in your perimeter'
@@ -123,18 +124,18 @@ audience:
     reachable: '%nbr% nivols will be triggered'
   structures: 'Structure(s) to trigger'
   badges: 'Skills & Nominations'
-  search_for_volunteers: 'Search for volunteers'
-  copy_paste_identifiers: 'Copy/paste a list of identifiers'
+  search_for_volunteers: 'Search for volunteers:'
+  manual_selection: 'Volunteers manual selection'
   copy_paste_details: 'Paste a list of identifiers in the field below.'
-  by_structures_and_skills: 'Search by structures & skills'
-  select_all_badges: 'Select all volunteers whatever their skills'
-  search_other_badge: 'Search for another skill'
+  select_all_badges: 'Trigger all volunteers whatever their skills.'
+  search_other_badge: 'Search for another skill:'
+  audience: Audience
+  audience_help: 'You can select volunteers to trigger by writting them down manually, or by filtering them by structures and skills.'
   ###
   select_all: 'Select all'
   filter_title: 'Search by structures & skills'
   nivol_title: 'Copy/paste a list of nivols'
   see_selection: 'Click to see selection'
-  audience: Audience
   unselect_all: 'Unselect all'
   ###
 backlinks:

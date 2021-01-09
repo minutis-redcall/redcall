@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Base\BaseRepository;
 use App\Entity\Badge;
+use Doctrine\DBAL\Connection;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -79,6 +80,17 @@ class BadgeRepository extends BaseRepository
                     ->andWhere('b.synonym IS NULL')
                     ->andWhere('b.visibility = false')
                     ->setMaxResults($limit)
+                    ->getQuery()
+                    ->getResult();
+    }
+
+    public function getNonVisibleUsableBadgesList(array $ids)
+    {
+        return $this->getSearchInBadgesQueryBuilder(null)
+                    ->andWhere('b.synonym IS NULL')
+                    ->andWhere('b.visibility = false')
+                    ->andWhere('b.id IN (:ids)')
+                    ->setParameter('ids', $ids, Connection::PARAM_INT_ARRAY)
                     ->getQuery()
                     ->getResult();
     }

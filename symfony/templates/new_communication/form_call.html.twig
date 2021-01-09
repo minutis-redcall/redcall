@@ -1,4 +1,3 @@
-
 {% form_theme form 'new_communication/audience_theme.html.twig' %}
 {{ form_row(form.audience) }}
 
@@ -7,7 +6,7 @@
 {% set max_length_call = constant('App\\Entity\\Message::MAX_LENGTH_CALL') %}
 
 <div id="message-container">
-    <div class="h4">{{ 'form.communication.fields.message'|trans }}</div>
+    <div class="h3">{{ 'form.communication.fields.message'|trans }}</div>
 
     <div id="textarea-wrapper" class="textarea-wrapper">
         {{ form_widget(form.message) }}
@@ -22,7 +21,7 @@
 
 <div class="clearfix"></div>
 
-<div class="h4">{{ 'form.communication.fields.response_title'|trans }}</div>
+<div class="h3">{{ 'form.communication.fields.response_title'|trans }}</div>
 
 {{ form_label(form.answers) }}
 
@@ -30,7 +29,7 @@
 
 {{ include('widget/prefilled_answers_editor.html.twig', {answers: form.answers}) }}
 
-<div class="h4">{{ 'form.communication.fields.preview'|trans }}</div>
+<div class="h3">{{ 'form.communication.fields.preview'|trans }}</div>
 
 <div id="message-preview-audio">
     <a href="#" id="message-play" class="btn btn-sm btn-secondary">{{ 'base.play'|trans }}</a>
@@ -45,7 +44,7 @@
 <script type="text/javascript">
 
     {# Preview voice calls #}
-    $('#message-play').click(function(e) {
+    $('#message-play').click(function (e) {
         e.preventDefault();
         $('#message-play').prop('disabled', 'disabled');
         $('#message-play').css('cursor', 'not-allowed');
