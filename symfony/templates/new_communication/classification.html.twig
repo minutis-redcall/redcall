@@ -1,0 +1,15 @@
+{% for key, list in classification.toArray %}
+    {% if list %}
+
+        <p>
+            {{ ('audience.classification.' ~ classification.snake(key))|trans({'%nbr%': list|length})|raw }}
+        </p>
+
+    {% endif %}
+{% endfor %}
+
+{% if classification.problems %}
+
+    <a href="#" class="btn btn-sm btn-secondary" id="open-problems">{{ 'audience.classification.problems'|trans }}</a>
+
+{% endif %}

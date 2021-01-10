@@ -5,7 +5,6 @@ namespace App\Manager;
 use App\Entity\Badge;
 use App\Entity\Volunteer;
 use App\Model\Classification;
-use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Security\Core\Security;
 
 class AudienceManager
@@ -70,51 +69,66 @@ class AudienceManager
         }, $badges);
     }
 
-    public function classifyAudience(FormInterface $form) : Classification
+    public function classifyAudience(array $data) : Classification
     {
-        // Extracting form data
-        $data = [];
-        foreach ($form as $name => $element) {
-            $data[$name] = $element->getData();
+        $classification = new Classification();
+
+        if (true === ($data['test_on_me'] ?? false)) {
+            $classification->setReachable([
+                $this->userManager->findForCurrentUser()->getVolunteer()->getId(),
+            ]);
+
+            return $classification;
         }
 
-        $classification = new Classification();
         if ($data['nivols']) {
-            $classification->invalid = $this->volunteerManager->filterInvalidNivols($data['nivols']);
+            $classification->setInvalid(
+                $this->volunteerManager->filterInvalidNivols($data['nivols'])
+            );
         }
 
         $audience = $this->extractAudience($data);
 
-        $classification->disabled = $this->volunteerManager->filterDisabled($audience);
+        $classification->setDisabled(
+            $this->volunteerManager->filterDisabled($audience)
+        );
 
         if (!$this->security->isGranted('ROLE_ADMIN')) {
-            $classification->inaccessible = $this->volunteerManager->filterInaccessibles($audience);
+            $classification->setInaccessible(
+                $this->volunteerManager->filterInaccessibles($audience)
+            );
         }
 
         // Reducing the audience to potentially reachable volunteers
-        $audience                  = array_diff($audience, $classification->disabled, $classification->inaccessible);
-        $classification->reachable = $audience;
+        $audience = array_diff($audience, $classification->getDisabled(), $classification->getInaccessible());
+        $classification->setReachable($audience);
 
-        // Adding more contextual information in order to help understanding why volunteers weren't triggered
+        // Adding more contextual information in order to help fix contact info
+        $classification->setPhoneLandline(
+            $this->volunteerManager->filterPhoneLandline($audience)
+        );
 
-        /*
-    public $phoneLandline = [];
-    public $phoneMissing  = [];
-    public $phoneOptout   = [];
-    public $emailMissing  = [];
-    public $emailOptout   = [];
-    public $reachable     = [];
-*/
+        $classification->setPhoneMissing(
+            $this->volunteerManager->filterPhoneMissing($audience)
+        );
+
+        $classification->setPhoneOptout(
+            $this->volunteerManager->filterPhoneOptout($audience)
+        );
+
+        $classification->setEmailMissing(
+            $this->volunteerManager->filterEmailMissing($audience)
+        );
+
+        $classification->setEmailOptout(
+            $this->volunteerManager->filterEmailOptout($audience)
+        );
 
         return $classification;
     }
 
     private function extractAudience(array $data) : array
     {
-        if (true === ($data['test_on_me'] ?? false)) {
-            return [$this->userManager->findForCurrentUser()->getVolunteer()->getId()];
-        }
-
         $volunteerIds = array_merge(
             $data['volunteers'] ?? [],
             $data['nivols'] ? $this->volunteerManager->getIdsByNivols($data['nivols']) : []

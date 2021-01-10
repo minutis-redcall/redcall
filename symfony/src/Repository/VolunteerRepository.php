@@ -327,69 +327,10 @@ class VolunteerRepository extends BaseRepository
         return array_diff($nivols, array_column($valid, 'nivol'));
     }
 
-    public function filterDisabledNivols(array $nivols) : array
-    {
-        $disabled = $this->createVolunteersQueryBuilder(false)
-                         ->select('v.nivol')
-                         ->andWhere('v.nivol IN (:nivols)')
-                         ->setParameter('nivols', $nivols)
-                         ->andWhere('v.enabled = false')
-                         ->getQuery()
-                         ->getArrayResult();
-
-        return array_column($disabled, 'nivol');
-    }
-
-    public function filterNoPhoneNivols(array $nivols, User $user) : array
-    {
-        $filtered = $this->createAcessibleNivolsFilterQueryBuilder($nivols, $user)
-                         ->leftJoin('v.phones', 'p')
-                         ->andWhere('p.id IS NULL')
-                         ->getQuery()
-                         ->getArrayResult();
-
-        return array_column($filtered, 'nivol');
-    }
-
-    public function filterPhoneOptOutNivols(array $nivols, User $user) : array
-    {
-        $filtered = $this->createAcessibleNivolsFilterQueryBuilder($nivols, $user)
-                         ->leftJoin('v.phones', 'p')
-                         ->andWhere('p.id IS NOT NULL')
-                         ->andWhere('v.phoneNumberOptin = false')
-                         ->getQuery()
-                         ->getArrayResult();
-
-        return array_column($filtered, 'nivol');
-    }
-
-    public function filterNoEmailNivols(array $nivols, User $user) : array
-    {
-        $filtered = $this->createAcessibleNivolsFilterQueryBuilder($nivols, $user)
-                         ->andWhere('v.email IS NULL')
-                         ->getQuery()
-                         ->getArrayResult();
-
-        return array_column($filtered, 'nivol');
-    }
-
-    public function filterEmailOptOutNivols(array $nivols, User $user) : array
-    {
-        $filtered = $this->createAcessibleNivolsFilterQueryBuilder($nivols, $user)
-                         ->andWhere('v.email IS NOT NULL')
-                         ->andWhere('v.emailOptin = false')
-                         ->getQuery()
-                         ->getArrayResult();
-
-        return array_column($filtered, 'nivol');
-    }
-
     public function getVolunteerList(array $volunteerIds) : array
     {
         return $this
-            ->createVolunteersQueryBuilder()
-            ->andWhere('v.id IN (:volunteer_ids)')
-            ->setParameter('volunteer_ids', $volunteerIds)
+            ->createVolunteerListQueryBuilder($volunteerIds)
             ->getQuery()
             ->getResult();
     }
@@ -471,6 +412,68 @@ class VolunteerRepository extends BaseRepository
             ->setParameter('volunteer_ids', $volunteerIds)
             ->getQuery()
             ->getArrayResult();
+    }
+
+    public function filterPhoneLandline(array $volunteerIds) : array
+    {
+        return $this
+            ->createVolunteerListQueryBuilder($volunteerIds)
+            ->select('v.id')
+            ->join('v.phones', 'p')
+            ->andWhere('v.phoneNumberOptin = true')
+            ->andWhere('p.isMobile = false')
+            ->getQuery()
+            ->getArrayResult();
+    }
+
+    public function filterPhoneMissing(array $volunteerIds) : array
+    {
+        return $this
+            ->createVolunteerListQueryBuilder($volunteerIds)
+            ->leftJoin('v.phones', 'p')
+            ->andWhere('v.phoneNumberOptin = true')
+            ->andWhere('p.id IS NULL')
+            ->getQuery()
+            ->getArrayResult();
+    }
+
+    public function filterPhoneOptout(array $volunteerIds) : array
+    {
+        return $this
+            ->createVolunteerListQueryBuilder($volunteerIds)
+            ->leftJoin('v.phones', 'p')
+            ->andWhere('v.phoneNumberOptin = false')
+            ->andWhere('p.id IS NOT NULL')
+            ->getQuery()
+            ->getArrayResult();
+    }
+
+    public function filterEmailMissing(array $volunteerIds) : array
+    {
+        return $this
+            ->createVolunteerListQueryBuilder($volunteerIds)
+            ->andWhere('v.email IS NULL')
+            ->andWhere('v.emailOptin = true')
+            ->getQuery()
+            ->getArrayResult();
+    }
+
+    public function filterEmailOptout(array $volunteerIds) : array
+    {
+        return $this
+            ->createVolunteerListQueryBuilder($volunteerIds)
+            ->andWhere('v.email IS NOT NULL')
+            ->andWhere('v.emailOptin = false')
+            ->getQuery()
+            ->getArrayResult();
+    }
+
+    private function createVolunteerListQueryBuilder(array $volunteerIds) : QueryBuilder
+    {
+        return $this
+            ->createVolunteersQueryBuilder()
+            ->andWhere('v.id IN (:volunteer_ids)')
+            ->setParameter('volunteer_ids', $volunteerIds);
     }
 
     private function createVolunteersQueryBuilder(bool $enabled = true) : QueryBuilder

@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Base\BaseController;
 use App\Entity\Badge;
 use App\Entity\Volunteer;
+use App\Manager\AudienceManager;
 use App\Manager\BadgeManager;
 use App\Manager\VolunteerManager;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,14 +26,22 @@ class AudienceController extends BaseController
      */
     private $badgeManager;
 
-    public function __construct(VolunteerManager $volunteerManager, BadgeManager $badgeManager)
+    /**
+     * @var AudienceManager
+     */
+    private $audienceManager;
+
+    public function __construct(VolunteerManager $volunteerManager,
+        BadgeManager $badgeManager,
+        AudienceManager $audienceManager)
     {
         $this->volunteerManager = $volunteerManager;
         $this->badgeManager     = $badgeManager;
+        $this->audienceManager  = $audienceManager;
     }
 
     /**
-     * @Route(path="search-volunteer", name="search_volunteer")
+     * @Route(path="/search-volunteer", name="search_volunteer")
      */
     public function searchVolunteer(Request $request)
     {
@@ -54,7 +63,7 @@ class AudienceController extends BaseController
     }
 
     /**
-     * @Route(path="search-badge", name="search_badge")
+     * @Route(path="/search-badge", name="search_badge")
      */
     public function searchBadge(Request $request)
     {
@@ -72,24 +81,44 @@ class AudienceController extends BaseController
         return $this->json($results);
     }
 
-    public function classification()
+    /**
+     * @Route(path="/classification", name="classification")
+     */
+    public function classification(Request $request)
     {
-        // get all selected volunteer ids
+        // Audience type can be located anywhere in the main form, so we need to seek for the
+        // audience data following the path created using its full name.
+        $name = trim(str_replace(['[', ']'], '.', trim($request->query->get('name'))), '.');
+        $data = $request->request->all();
+        $path = array_filter(explode('.', $name));
+        foreach ($path as $node) {
+            $data = $data[$node];
+        }
 
-        // get invalid nivols
+        return $this->render('new_communication/classification.html.twig', [
+            'classification' => $this->audienceManager->classifyAudience($data),
+        ]);
+    }
 
-        // get disabled volunteers
 
-        // get inaccessible volunteers
+    /**
+     * @Route(path="/problems", name="problems")
+     */
+    public function problems(Request $request)
+    {
+        // Audience type can be located anywhere in the main form, so we need to seek for the
+        // audience data following the path created using its full name.
+        $name = trim(str_replace(['[', ']'], '.', trim($request->query->get('name'))), '.');
+        $data = $request->request->all();
+        $path = array_filter(explode('.', $name));
+        foreach ($path as $node) {
+            $data = $data[$node];
+        }
 
-        // get volunteers not available by phone (because none and sms | call)
+        $classification = $this->audienceManager->classifyAudience($data);
 
-        // get volunteers not available by phone (because landline and sms)
-
-        // get volunteers not available by phone (because optout and sms | call)
-
-        // get volunteers not available by email (because none and email)
-
-        // get volunteers not available by email (because optout and email)
+        return $this->render('new_communication/problems.html.twig', [
+            'classification' => $this->audienceManager->classifyAudience($data),
+        ]);
     }
 }

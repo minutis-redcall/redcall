@@ -1,4 +1,6 @@
 {% block audience_widget %}
+    {% import 'macros.html.twig' as macros %}
+
     {{ form_start(form) }}
 
     <div class="h3">
@@ -176,11 +178,20 @@
     {# -------------------------------------------------------------------------------- #}
 
     <div class="h4">
-        {{ 'audience.classify.title'|trans }}
+        {{ 'audience.classification.title'|trans }}
     </div>
 
+    {{ include('new_communication/classification.html.twig', {
+        classification: classification,
+    }) }}
 
+    {% set body %}
 
+        sss
+
+    {% endset %}
+
+    {{ macros.modal('problems-modal', 'audience.problems.title'|trans, body) }}
 
     {# -------------------------------------------------------------------------------- #}
     {# Javscript #}
@@ -204,6 +215,15 @@
                 }
             }
             input.val(list.join(','));
+        });
+
+        {# Opening the list of problems #}
+        $('#open-problems').click(function (e) {
+            e.preventDefault();
+
+            $('#problems-modal').modal();
+
+
         });
 
     </script>

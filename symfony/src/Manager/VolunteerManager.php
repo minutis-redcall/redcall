@@ -277,34 +277,29 @@ class VolunteerManager
         return array_column($this->volunteerRepository->filterDisabled($volunteerIds), 'id');
     }
 
-    public function classifyNivols(array $nivols) : array
+    public function filterPhoneLandline(array $volunteerIds) : array
     {
-        $user = $this->userManager->findForCurrentUser();
+        return array_column($this->volunteerRepository->filterPhoneLandline($volunteerIds), 'id');
+    }
 
-        $reachable    = $this->volunteerRepository->filterReachableNivols($nivols, $user);
-        $invalid      = $this->volunteerRepository->filterInvalidNivols($nivols);
-        $disabled     = $this->volunteerRepository->filterDisabledNivols($nivols);
-        $noPhone      = $this->volunteerRepository->filterNoPhoneNivols($nivols, $user);
-        $phoneOptout  = $this->volunteerRepository->filterPhoneOptOutNivols($nivols, $user);
-        $noEmail      = $this->volunteerRepository->filterNoEmailNivols($nivols, $user);
-        $emailOptout  = $this->volunteerRepository->filterEmailOptOutNivols($nivols, $user);
-        $inaccessible = array_diff($nivols, $reachable, $invalid, $disabled, $noPhone, $phoneOptout, $noEmail, $emailOptout);
+    public function filterPhoneMissing(array $volunteerIds) : array
+    {
+        return array_column($this->volunteerRepository->filterPhoneMissing($volunteerIds), 'id');
+    }
 
-        if ($user->isAdmin()) {
-            $reachable    = array_merge($reachable, $inaccessible);
-            $inaccessible = [];
-        }
+    public function filterPhoneOptout(array $volunteerIds) : array
+    {
+        return array_column($this->volunteerRepository->filterPhoneOptout($volunteerIds), 'id');
+    }
 
-        return [
-            'reachable'    => $reachable,
-            'invalid'      => $invalid,
-            'disabled'     => $disabled,
-            'inaccessible' => $inaccessible,
-            'no_phone'     => $noPhone,
-            'phone_optout' => $phoneOptout,
-            'no_email'     => $noEmail,
-            'email_optout' => $emailOptout,
-        ];
+    public function filterEmailMissing(array $volunteerIds) : array
+    {
+        return array_column($this->volunteerRepository->filterEmailMissing($volunteerIds), 'id');
+    }
+
+    public function filterEmailOptout(array $volunteerIds) : array
+    {
+        return array_column($this->volunteerRepository->filterEmailOptout($volunteerIds), 'id');
     }
 
     public function anonymize(Volunteer $volunteer)

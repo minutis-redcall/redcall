@@ -96,7 +96,7 @@ class AudienceType extends AbstractType
             ])
             ->add('badges_ticked', HiddenType::class, [
                 'required' => false,
-                'data'     => [502],
+                'data'     => [489],
             ])
             ->add('badges_searched', TextType::class, [
                 'label'    => 'audience.search_other_badge',
@@ -129,12 +129,27 @@ class AudienceType extends AbstractType
 
     public function buildView(FormView $view, FormInterface $form, array $options)
     {
-        $this->buildVolunteerView($view, $form);
+        // Volunteer view
+        $view->vars['volunteers_data'] = [];
+        if ($ids = $form->get('volunteers')->getData()) {
+            $view->vars['volunteers_data'] = $this->audienceManager->getVolunteerList($ids);
+        }
+
         $this->buildStructureView($view);
-        $this->buildBadgeView($view, $form);
 
-        $classification = $this->audienceManager->classifyAudience($form);
+        // Badge view
+        $view->vars['badges_public']   = $this->badgeManager->getPublicBadges();
+        $view->vars['badges_searched'] = [];
+        if ($ids = $form->get('badges_searched')->getData()) {
+            $view->vars['badges_searched'] = $this->audienceManager->getBadgeList($ids);
+        }
 
+        // Preparing initial selection classification
+        $data = [];
+        foreach ($form as $name => $element) {
+            $data[$name] = $element->getData();
+        }
+        $view->vars['classification'] = $this->audienceManager->classifyAudience($data);
     }
 
     /**
@@ -156,13 +171,6 @@ class AudienceType extends AbstractType
         return 'audience';
     }
 
-    private function buildVolunteerView(FormView $view, FormInterface $form)
-    {
-        $view->vars['volunteers_data'] = [];
-        if ($ids = $form->get('volunteers')->getData()) {
-            $view->vars['volunteers_data'] = $this->audienceManager->getVolunteerList($ids);
-        }
-    }
 
     private function buildStructureView(FormView $view)
     {
@@ -237,15 +245,6 @@ class AudienceType extends AbstractType
         }
 
         return $ids;
-    }
-
-    private function buildBadgeView(FormView $view, FormInterface $form)
-    {
-        $view->vars['badges_public']   = $this->badgeManager->getPublicBadges();
-        $view->vars['badges_searched'] = [];
-        if ($ids = $form->get('badges_searched')->getData()) {
-            $view->vars['badges_searched'] = $this->audienceManager->getBadgeList($ids);
-        }
     }
 }
 
