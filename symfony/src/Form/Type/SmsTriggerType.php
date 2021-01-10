@@ -74,6 +74,9 @@ class SmsTriggerType extends AbstractType
         $resolver->setDefaults([
             'data_class' => SmsTrigger::class,
             'submit'     => true,
+            'attr'       => [
+                'class' => 'trigger',
+            ],
         ]);
     }
 }

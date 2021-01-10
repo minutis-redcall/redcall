@@ -7,9 +7,9 @@ class Classification
     private $invalid       = [];
     private $disabled      = [];
     private $inaccessible  = [];
-    private $phoneLandline = [];
     private $phoneMissing  = [];
     private $phoneOptout   = [];
+    private $phoneLandline = [];
     private $emailMissing  = [];
     private $emailOptout   = [];
     private $reachable     = [];
@@ -44,16 +44,6 @@ class Classification
         $this->inaccessible = $inaccessible;
     }
 
-    public function getPhoneLandline() : array
-    {
-        return $this->phoneLandline;
-    }
-
-    public function setPhoneLandline(array $phoneLandline) : void
-    {
-        $this->phoneLandline = $phoneLandline;
-    }
-
     public function getPhoneMissing() : array
     {
         return $this->phoneMissing;
@@ -72,6 +62,16 @@ class Classification
     public function setPhoneOptout(array $phoneOptout) : void
     {
         $this->phoneOptout = $phoneOptout;
+    }
+
+    public function getPhoneLandline() : array
+    {
+        return $this->phoneLandline;
+    }
+
+    public function setPhoneLandline(array $phoneLandline) : void
+    {
+        $this->phoneLandline = $phoneLandline;
     }
 
     public function getEmailMissing() : array
@@ -115,13 +115,13 @@ class Classification
         return false;
     }
 
-    public function snake(string $camelCase)
-    {
-        return strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $camelCase));
-    }
-
-    public function toArray()
+    public function toArray() : array
     {
         return get_object_vars($this);
+    }
+
+    public function getKeys() : array
+    {
+        return array_keys(get_class_vars(self));
     }
 }

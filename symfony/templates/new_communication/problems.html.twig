@@ -1,0 +1,43 @@
+{% import 'macros.html.twig' as macros %}
+
+<div class="row text-left">
+    <div class="col-md-4">
+        <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+            {% set counter = 0 %}
+            {% for key, list in classification.toArray %}
+                {% set length = list|length %}
+                {% if length %}
+                    <a class="nav-link {% if not counter %}active{% endif %}" id="v-pills-{{ key }}-tab" data-toggle="pill" href="#v-pills-{{ key }}" role="tab" aria-controls="v-pills-{{ key }}" aria-selected="true">
+                        {{ ('audience.problems.' ~ (key|snake))|trans }} ({{ length }})
+                    </a>
+                    {% set counter = counter + 1 %}
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="tab-content" id="v-pills-tabContent">
+            {% set counter = 0 %}
+            {% for key, list in classification.toArray %}
+                {% set length = list|length %}
+                {% if length %}
+                    <div class="tab-pane fade {% if not counter %}show active{% endif %}" id="v-pills-{{ key }}" role="tabpanel" aria-labelledby="v-pills-{{ key }}-tab">
+                        <div class="row">
+                            {% for id in list %}
+                                <div class="col-md-6" style="padding:5px;">
+                                    {% if 'invalid' == key %}
+                                        {{ id }} {# it is a nivol for which we didn't find a volunteer #}
+                                    {% else %}
+                                        {{ macros.volunteer(volunteers[id]) }}
+                                    {% endif %}
+                                </div>
+                                {% set counter = counter + 1 %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+</div>
+

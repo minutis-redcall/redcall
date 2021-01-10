@@ -143,7 +143,16 @@ class VolunteerManager
 
     public function getVolunteerList(array $volunteerIds) : array
     {
-        return $this->volunteerRepository->getVolunteerList($volunteerIds);
+        $volunteers = [];
+
+        $list = $this->volunteerRepository->getVolunteerList($volunteerIds);
+
+        foreach ($list as $volunteer) {
+            /** @var Volunteer $volunteer */
+            $volunteers[$volunteer->getId()] = $volunteer;
+        }
+
+        return $volunteers;
     }
 
     public function getVolunteerListForCurrentUser(array $volunteerIds) : array

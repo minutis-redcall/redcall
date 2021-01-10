@@ -65,6 +65,9 @@ class CallTriggerType extends AbstractType
         $resolver->setDefaults([
             'data_class' => CallTrigger::class,
             'submit'     => true,
+            'attr'       => [
+                'class' => 'trigger',
+            ],
         ]);
     }
 }

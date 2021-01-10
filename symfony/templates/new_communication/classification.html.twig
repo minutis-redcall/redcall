@@ -1,10 +1,8 @@
 {% for key, list in classification.toArray %}
     {% if list %}
-
         <p>
-            {{ ('audience.classification.' ~ classification.snake(key))|trans({'%nbr%': list|length})|raw }}
+            {{ ('audience.classification.' ~ (key|snake))|trans({'%nbr%': list|length})|raw }}
         </p>
-
     {% endif %}
 {% endfor %}
 

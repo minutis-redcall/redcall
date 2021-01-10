@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Base\BaseController;
 use App\Entity\Badge;
 use App\Entity\Volunteer;
+use App\Form\Type\AudienceType;
 use App\Manager\AudienceManager;
 use App\Manager\BadgeManager;
 use App\Manager\VolunteerManager;
@@ -86,39 +87,53 @@ class AudienceController extends BaseController
      */
     public function classification(Request $request)
     {
-        // Audience type can be located anywhere in the main form, so we need to seek for the
-        // audience data following the path created using its full name.
-        $name = trim(str_replace(['[', ']'], '.', trim($request->query->get('name'))), '.');
-        $data = $request->request->all();
-        $path = array_filter(explode('.', $name));
-        foreach ($path as $node) {
-            $data = $data[$node];
-        }
+        $data = $this->getAudienceFormData($request);
 
         return $this->render('new_communication/classification.html.twig', [
             'classification' => $this->audienceManager->classifyAudience($data),
         ]);
     }
 
-
     /**
      * @Route(path="/problems", name="problems")
      */
     public function problems(Request $request)
     {
+        $data = $this->getAudienceFormData($request);
+
+        $classification = $this->audienceManager->classifyAudience($data);
+        $classification->setReachable([]);
+
+        $volunteers = $this->volunteerManager->getVolunteerList(
+            call_user_func_array('array_merge', $classification->toArray())
+        );
+
+        return $this->render('new_communication/problems.html.twig', [
+            'classification' => $classification,
+            'volunteers'     => $volunteers,
+        ]);
+    }
+
+    private function getAudienceFormData(Request $request)
+    {
         // Audience type can be located anywhere in the main form, so we need to seek for the
         // audience data following the path created using its full name.
         $name = trim(str_replace(['[', ']'], '.', trim($request->query->get('name'))), '.');
+        $name = preg_replace('/\.+/', '.', $name);
+
         $data = $request->request->all();
         $path = array_filter(explode('.', $name));
+
         foreach ($path as $node) {
             $data = $data[$node];
         }
 
-        $classification = $this->audienceManager->classifyAudience($data);
+        foreach ($data as $key => $value) {
+            if (in_array($key, AudienceType::LISTS)) {
+                $data[$key] = array_filter(explode(',', $value));
+            }
+        }
 
-        return $this->render('new_communication/problems.html.twig', [
-            'classification' => $this->audienceManager->classifyAudience($data),
-        ]);
+        return $data;
     }
 }

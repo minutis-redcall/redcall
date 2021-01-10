@@ -21,6 +21,16 @@ use Symfony\Component\Security\Core\Security;
 
 class AudienceType extends AbstractType
 {
+    // Lists are hidden fields transformed to array of ids
+    const LISTS = [
+        'volunteers',
+        'nivols',
+        'structures_global',
+        'structures_local',
+        'badges_ticked',
+        'badges_searched',
+    ];
+
     /**
      * @var AudienceManager
      */
@@ -79,6 +89,7 @@ class AudienceType extends AbstractType
             ->add('nivols', TextareaType::class, [
                 'label'    => 'audience.copy_paste_details',
                 'required' => false,
+                'data'     => ['foobar', 'baz', 'toto'],
                 'attr'     => [
                     'rows' => 4,
                 ],
@@ -107,14 +118,7 @@ class AudienceType extends AbstractType
                 'required' => false,
             ]);
 
-        $lists = [
-            'volunteers',
-            'nivols',
-            'structures_global',
-            'structures_local',
-            'badges_ticked',
-            'badges_searched',
-        ];
+        $lists = self::LISTS;
         foreach ($lists as $list) {
             $builder->get($list)->addModelTransformer(new CallbackTransformer(
                 function (?array $fromModel) {

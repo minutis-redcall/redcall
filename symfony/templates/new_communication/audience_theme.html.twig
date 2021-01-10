@@ -1,6 +1,4 @@
 {% block audience_widget %}
-    {% import 'macros.html.twig' as macros %}
-
     {{ form_start(form) }}
 
     <div class="h3">
@@ -181,17 +179,28 @@
         {{ 'audience.classification.title'|trans }}
     </div>
 
-    {{ include('new_communication/classification.html.twig', {
-        classification: classification,
-    }) }}
+    <div id="classification">
+        {{ include('new_communication/classification.html.twig', {
+            classification: classification,
+        }) }}
+    </div>
 
-    {% set body %}
-
-        sss
-
-    {% endset %}
-
-    {{ macros.modal('problems-modal', 'audience.problems.title'|trans, body) }}
+    <div class="modal fade" id="problems-modal" tabindex="-1" role="dialog" aria-labelledby="{{ 'audience.problems.title'|trans }}" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{{ 'audience.problems.title'|trans }}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div id="problems-body" class="modal-body text-center"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ 'base.modal.close'|trans }}</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     {# -------------------------------------------------------------------------------- #}
     {# Javscript #}
@@ -218,12 +227,13 @@
         });
 
         {# Opening the list of problems #}
-        $('#open-problems').click(function (e) {
+        $('body').on('click', '#open-problems', function (e) {
             e.preventDefault();
-
+            $('#problems-body').html('<img src="{{ asset('spinner.gif') }}"/>')
             $('#problems-modal').modal();
-
-
+            $.post('{{ path('audience_problems', {name: form.vars.full_name}) }}', $('form.trigger').serialize(), function (content) {
+                $('#problems-body').html(content);
+            });
         });
 
     </script>

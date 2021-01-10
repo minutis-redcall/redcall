@@ -134,10 +134,13 @@ class AudienceManager
             $data['nivols'] ? $this->volunteerManager->getIdsByNivols($data['nivols']) : []
         );
 
-        $structureIds = array_unique(array_merge(
-            explode(',', $data['structures_local']),
-            $this->structureManager->getDescendantStructures($data['structures_global'])
-        ));
+        $structureIds = $data['structures_local'] ?? [];
+        if ($data['structures_global']) {
+            $structureIds = array_merge(
+                $structureIds,
+                $this->structureManager->getDescendantStructures($data['structures_global'])
+            );
+        }
 
         if (true === ($data['badges_all'] ?? false)) {
             $volunteerIds = array_merge(
@@ -145,7 +148,7 @@ class AudienceManager
                 $this->volunteerManager->getVolunteerListInStructures($structureIds)
             );
         } else {
-            $badgeIds = array_unique(array_merge($data['badges_ticked'], $data['badges_searched']));
+            $badgeIds = array_unique(array_merge($data['badges_ticked'] ?? [], $data['badges_searched'] ?? []));
 
             $volunteerIds = array_merge(
                 $volunteerIds,

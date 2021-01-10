@@ -75,6 +75,9 @@ class EmailTriggerType extends AbstractType
         $resolver->setDefaults([
             'data_class' => EmailTrigger::class,
             'submit'     => true,
+            'attr'       => [
+                'class' => 'trigger',
+            ],
         ]);
     }
 }
