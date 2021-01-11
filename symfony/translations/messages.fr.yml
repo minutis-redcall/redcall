@@ -124,6 +124,8 @@ audience:
     email_optout: '<strong>%nbr%</strong> bénévoles ne souhaitant pas recevoir d''emails'
     reachable: '<strong>%nbr%</strong> bénévoles sont sélectionnés'
     problems: 'Obtenir plus de détails sur la liste des problèmes'
+    audience: 'Afficher la liste des bénévoles sélectionnés'
+    selected: 'Liste des bénévoles sélectionnés'
   problems:
     title: 'Détails à propos des problèmes dans la sélection'
     invalid: 'Invalides'

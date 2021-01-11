@@ -114,6 +114,24 @@ class AudienceController extends BaseController
         ]);
     }
 
+    /**
+     * @Route(path="/selection", name="selection")
+     */
+    public function selection(Request $request)
+    {
+        $data = $this->getAudienceFormData($request);
+
+        $classification = $this->audienceManager->classifyAudience($data);
+
+        $volunteers = $this->volunteerManager->getVolunteerList(
+            $classification->getReachable()
+        );
+
+        return $this->render('new_communication/selection.html.twig', [
+            'volunteers' => $volunteers,
+        ]);
+    }
+
     private function getAudienceFormData(Request $request)
     {
         // Audience type can be located anywhere in the main form, so we need to seek for the

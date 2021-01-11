@@ -1,0 +1,12 @@
+{% import 'macros.html.twig' as macros %}
+
+<div class="row text-left">
+
+    {% for volunteer in volunteers %}
+        <div class="col-md-4" style="padding:5px;">
+            {{ macros.volunteer(volunteer) }}
+        </div>
+    {% endfor %}
+
+
+</div>

@@ -8,6 +8,24 @@
 
 {% if classification.problems %}
 
-    <a href="#" class="btn btn-sm btn-secondary" id="open-problems">{{ 'audience.classification.problems'|trans }}</a>
+    <a href="#"
+       class="btn btn-sm btn-secondary"
+       id="open-problems">
+        {{ 'audience.classification.problems'|trans }}
+    </a>
+    {% if classification.reachable %}
+        <br/>
+    {% endif %}
+{% endif %}
+
+{% if classification.reachable %}
+
+    <a href="#"
+       class="btn btn-sm btn-secondary"
+       {% if classification.problems %}style="margin-top:5px;"{% endif %}
+       id="open-audience">
+        {{ 'audience.classification.audience'|trans }}
+    </a>
 
 {% endif %}
+

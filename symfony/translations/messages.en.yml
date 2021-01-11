@@ -124,8 +124,18 @@ audience:
     email_optout: '<strong>%nbr%</strong> volunteers do not want to receive emails'
     reachable: '<strong>%nbr%</strong> volunteers are selected'
     problems: 'Get more details about problems'
+    audience: 'Render the selected volunteers list'
+    selected: 'Liste des bénévoles sélectionnés'
   problems:
     title: 'Audience problem details'
+    invalid: 'Invalids'
+    disabled: 'Disabled'
+    inaccessible: 'Out of perimeter'
+    phone_missing: 'No phone'
+    phone_optout: 'Phone opted-out'
+    phone_landline: 'Only landline'
+    email_missing: 'No email'
+    email_optout: 'Emails opted-out'
   structures: 'Structure(s) to trigger'
   badges: 'Skills & Nominations'
   search_for_volunteers: 'Search for volunteers:'
@@ -135,13 +145,6 @@ audience:
   search_other_badge: 'Search for another skill:'
   audience: Audience
   audience_help: 'You can select volunteers to trigger by writting them down manually, or by filtering them by structures and skills.'
-  ###
-  select_all: 'Select all'
-  filter_title: 'Search by structures & skills'
-  nivol_title: 'Copy/paste a list of nivols'
-  see_selection: 'Click to see selection'
-  unselect_all: 'Unselect all'
-  ###
 backlinks:
   blablacar: 'Sponsored by'
   minutis: 'Developed by Minutis volunteers'
