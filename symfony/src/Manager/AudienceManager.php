@@ -142,7 +142,7 @@ class AudienceManager
             );
         }
 
-        if (true === ($data['badges_all'] ?? false)) {
+        if ($data['badges_all'] ?? false) {
             $volunteerIds = array_merge(
                 $volunteerIds,
                 $this->volunteerManager->getVolunteerListInStructures($structureIds)

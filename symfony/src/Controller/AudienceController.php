@@ -89,7 +89,7 @@ class AudienceController extends BaseController
     {
         $data = $this->getAudienceFormData($request);
 
-        return $this->render('new_communication/classification.html.twig', [
+        return $this->render('audience/classification.html.twig', [
             'classification' => $this->audienceManager->classifyAudience($data),
         ]);
     }
@@ -108,7 +108,7 @@ class AudienceController extends BaseController
             call_user_func_array('array_merge', $classification->toArray())
         );
 
-        return $this->render('new_communication/problems.html.twig', [
+        return $this->render('audience/problems.html.twig', [
             'classification' => $classification,
             'volunteers'     => $volunteers,
         ]);
@@ -127,7 +127,7 @@ class AudienceController extends BaseController
             $classification->getReachable()
         );
 
-        return $this->render('new_communication/selection.html.twig', [
+        return $this->render('audience/selection.html.twig', [
             'volunteers' => $volunteers,
         ]);
     }

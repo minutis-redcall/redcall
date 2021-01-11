@@ -1,5 +1,7 @@
 {% import 'macros.html.twig' as macros %}
 
+<h1>{{ volunteers|length }}</h1>
+
 <div class="row text-left">
 
     {% for volunteer in volunteers %}
@@ -7,6 +9,5 @@
             {{ macros.volunteer(volunteer) }}
         </div>
     {% endfor %}
-
 
 </div>
