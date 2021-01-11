@@ -83,14 +83,24 @@ class AudienceController extends BaseController
     }
 
     /**
-     * @Route(path="/classification", name="classification")
+     * @Route(path="/numbers", name="numbers")
      */
-    public function classification(Request $request)
+    public function numbers(Request $request)
     {
         $data = $this->getAudienceFormData($request);
 
-        return $this->render('audience/classification.html.twig', [
+        $badgeCounts = $this->audienceManager->extractBadgeCounts(
+            $data,
+            $this->badgeManager->getPublicBadges()
+        );
+
+        $classification = $this->renderView('audience/classification.html.twig', [
             'classification' => $this->audienceManager->classifyAudience($data),
+        ]);
+
+        return $this->json([
+            'badge_counts'   => $badgeCounts,
+            'classification' => $classification,
         ]);
     }
 

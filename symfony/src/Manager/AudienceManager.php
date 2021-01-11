@@ -127,20 +127,14 @@ class AudienceManager
         return $classification;
     }
 
-    private function extractAudience(array $data) : array
+    public function extractAudience(array $data) : array
     {
         $volunteerIds = array_merge(
             $data['volunteers'] ?? [],
             $data['nivols'] ? $this->volunteerManager->getIdsByNivols($data['nivols']) : []
         );
 
-        $structureIds = $data['structures_local'] ?? [];
-        if ($data['structures_global']) {
-            $structureIds = array_merge(
-                $structureIds,
-                $this->structureManager->getDescendantStructures($data['structures_global'])
-            );
-        }
+        $structureIds = $this->extractStructures($data);
 
         if ($data['badges_all'] ?? false) {
             $volunteerIds = array_merge(
@@ -157,5 +151,44 @@ class AudienceManager
         }
 
         return array_filter(array_unique($volunteerIds));
+    }
+
+    public function extractStructures(array $data) : array
+    {
+        // This method is called twice when updating numbers:
+        // - when we need to get the classification data
+        // - when we need to get the badge counts for selected structures
+        // So we cache results to prevent hitting the db twice
+        static $cache = [];
+
+        $hash = sha1(json_encode($data));
+        if (array_key_exists($hash, $cache)) {
+            return $cache[$hash];
+        }
+
+        $structureIds = $data['structures_local'] ?? [];
+        if ($data['structures_global']) {
+            $structureIds = array_merge(
+                $structureIds,
+                $this->structureManager->getDescendantStructures($data['structures_global'])
+            );
+        }
+
+        $cache[$hash] = $structureIds;
+
+        return $cache[$hash];
+    }
+
+    public function extractBadgeCounts(array $data, array $badgeList) : array
+    {
+        $structureIds = $this->extractStructures($data);
+
+        $counts = [];
+        foreach ($badgeList as $badge) {
+            /** @var Badge $badge */
+            $counts[$badge->getId()] = $this->volunteerManager->getVolunteerCountInStructuresHavingBadges($structureIds, [$badge->getId()]);
+        }
+
+        return $counts;
     }
 }

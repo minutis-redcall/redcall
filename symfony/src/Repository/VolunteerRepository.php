@@ -359,7 +359,8 @@ class VolunteerRepository extends BaseRepository
             ->getArrayResult();
     }
 
-    public function getVolunteerListInStructuresHavingBadges(array $structureIds, array $badgeIds) : array
+    public function getVolunteerListInStructuresHavingBadgesQueryBuilder(array $structureIds,
+        array $badgeIds) : QueryBuilder
     {
         return $this
             ->createQueryBuilder('v')
@@ -383,9 +384,22 @@ class VolunteerRepository extends BaseRepository
                  OR p3.id IN (:badge_ids) 
                  OR p4.id IN (:badge_ids)
              ')
-            ->setParameter('badge_ids', $badgeIds)
-            ->getQuery()
-            ->getArrayResult();
+            ->setParameter('badge_ids', $badgeIds);
+    }
+
+    public function getVolunteerListInStructuresHavingBadges(array $structureIds, array $badgeIds) : array
+    {
+        return $this->getVolunteerListInStructuresHavingBadgesQueryBuilder($structureIds, $badgeIds)
+                    ->getQuery()
+                    ->getArrayResult();
+    }
+
+    public function getVolunteerCountInStructuresHavingBadges(array $structureIds, array $badgeIds) : int
+    {
+        return $this->getVolunteerListInStructuresHavingBadgesQueryBuilder($structureIds, $badgeIds)
+                    ->select('COUNT(DISTINCT v.id)')
+                    ->getQuery()
+                    ->getSingleScalarResult();
     }
 
     public function getVolunteerGlobalCounts(array $structureIds) : int

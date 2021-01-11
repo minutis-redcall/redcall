@@ -142,7 +142,8 @@ class AudienceType extends AbstractType
         $this->buildStructureView($view);
 
         // Badge view
-        $view->vars['badges_public']   = $this->badgeManager->getPublicBadges();
+        $publicBadges                  = $this->badgeManager->getPublicBadges();
+        $view->vars['badges_public']   = $publicBadges;
         $view->vars['badges_searched'] = [];
         if ($ids = $form->get('badges_searched')->getData()) {
             $view->vars['badges_searched'] = $this->audienceManager->getBadgeList($ids);
@@ -154,6 +155,7 @@ class AudienceType extends AbstractType
             $data[$name] = $element->getData();
         }
         $view->vars['classification'] = $this->audienceManager->classifyAudience($data);
+        $view->vars['badge_counts']   = $this->audienceManager->extractBadgeCounts($data, $publicBadges);
     }
 
     /**

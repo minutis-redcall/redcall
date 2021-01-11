@@ -144,6 +144,7 @@
                 </label>
                 <label for="badge-{{ badge.id }}">
                     {{ badge.name }}
+                    (<span id="badge-count-{{ badge.id }}">{{ badge_counts[badge.id] }}</span>)
                 </label>
 
             </div>
@@ -247,6 +248,17 @@
                 $('#audience-modal-body').html(content);
             });
         });
+
+        {# Updating classification and badge counts #}
+        function numbers() {
+            $.post('{{ path('audience_numbers', {name: form.vars.full_name}) }}', $('form.trigger').serialize(), function (data) {
+                $('#classification').html(data.classification);
+
+                $.each(data.badge_counts, function (badgeId, count) {
+                    $('#badge-count-' + badgeId).html(count);
+                });
+            });
+        }
 
     </script>
 

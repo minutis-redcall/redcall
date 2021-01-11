@@ -263,6 +263,11 @@ class VolunteerManager
         return array_column($this->volunteerRepository->getVolunteerListInStructuresHavingBadges($structureIds, $badgeIds), 'id');
     }
 
+    public function getVolunteerCountInStructuresHavingBadges(array $structureIds, array $badgeIds) : int
+    {
+        return $this->volunteerRepository->getVolunteerCountInStructuresHavingBadges($structureIds, $badgeIds);
+    }
+
     public function getVolunteerGlobalCounts(array $structureIds) : int
     {
         return $this->volunteerRepository->getVolunteerGlobalCounts($structureIds);
