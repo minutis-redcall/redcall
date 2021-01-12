@@ -129,7 +129,18 @@
     {% endif %}
 
     {# Trigger everyone discarding badges #}
-    {{ form_row(form.badges_all) }}
+    <div class="form-group">
+        <label class="switch">
+            <input id="{{ form.badges_all.vars.id }}"
+                   type="checkbox"
+                   {% if init_data.badges_all %}checked{% endif %}/>
+            <span class="slider"></span>
+        </label>
+        <label for="{{ form.badges_all.vars.id }}">
+            {{ 'audience.select_all_badges'|trans }}
+            (<span id="badge-count-0" class="badge-count">{{ badge_counts[0] }}</span>)
+        </label>
+    </div>
 
     {# Main badges #}
     <div class="row">

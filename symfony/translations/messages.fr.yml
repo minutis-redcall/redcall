@@ -141,7 +141,7 @@ audience:
   search_for_volunteers: 'Rechercher des bénévoles à déclencher :'
   manual_selection: 'Saisie manuelle de bénévoles'
   copy_paste_details: 'Ou coller une liste de nivols dans le champ ci-dessous.'
-  select_all_badges: 'Déclencher tous les bénévoles quelque soient leurs compétences.'
+  select_all_badges: 'Déclencher tous les bénévoles quelque soient leurs compétences'
   search_other_badge: 'Rechercher une autre compétence :'
   audience: Audience
   audience_help: 'Vous pouvez sélectionner les bénévoles à déclencher en les saisissant manuellement, ou en les filtrant par structures et compétences.'

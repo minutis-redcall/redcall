@@ -131,7 +131,7 @@ class AudienceType extends AbstractType
                 'required' => false,
             ])
             ->add('badges_all', CheckboxType::class, [
-                'label'    => 'audience.select_all_badges',
+                'label'    => false,
                 'required' => false,
                 'data'     => true,
             ])

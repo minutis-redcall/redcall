@@ -141,7 +141,7 @@ audience:
   search_for_volunteers: 'Search for volunteers:'
   manual_selection: 'Volunteers manual selection'
   copy_paste_details: 'Paste a list of identifiers in the field below.'
-  select_all_badges: 'Trigger all volunteers whatever their skills.'
+  select_all_badges: 'Trigger all volunteers whatever their skills'
   search_other_badge: 'Search for another skill:'
   audience: Audience
   audience_help: 'You can select volunteers to trigger by writting them down manually, or by filtering them by structures and skills.'
