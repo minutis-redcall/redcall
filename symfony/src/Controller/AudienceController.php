@@ -100,11 +100,13 @@ class AudienceController extends BaseController
             $response['badge_counts'] = $badgeCounts;
         }
 
-        $classification = $this->renderView('audience/classification.html.twig', [
-            'classification' => $this->audienceManager->classifyAudience($data),
+        $classification = $this->audienceManager->classifyAudience($data);
+
+        $response['classification'] = $this->renderView('audience/classification.html.twig', [
+            'classification' => $classification,
         ]);
 
-        $response['classification'] = $classification;
+        $response['triggered_count'] = count($classification->getReachable());
 
         return $this->json($response);
     }

@@ -60,7 +60,7 @@ class SmsTriggerType extends AbstractType
             ->add('submit', SubmitType::class, [
                 'label' => 'form.communication.fields.submit',
                 'attr'  => [
-                    'class'   => 'btn-primary',
+                    'class'   => 'trigger-launch btn-primary',
                     'onclick' => "$('form').attr('target', '');",
                 ],
             ]);
