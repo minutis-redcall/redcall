@@ -89,19 +89,24 @@ class AudienceController extends BaseController
     {
         $data = AudienceType::getAudienceFormData($request);
 
-        $badgeCounts = $this->audienceManager->extractBadgeCounts(
-            $data,
-            $this->badgeManager->getPublicBadges()
-        );
+        $response = [];
+
+        if ('false' !== $request->get('badge_counts', true)) {
+            $badgeCounts = $this->audienceManager->extractBadgeCounts(
+                $data,
+                $this->badgeManager->getPublicBadges()
+            );
+
+            $response['badge_counts'] = $badgeCounts;
+        }
 
         $classification = $this->renderView('audience/classification.html.twig', [
             'classification' => $this->audienceManager->classifyAudience($data),
         ]);
 
-        return $this->json([
-            'badge_counts'   => $badgeCounts,
-            'classification' => $classification,
-        ]);
+        $response['classification'] = $classification;
+
+        return $this->json($response);
     }
 
     /**

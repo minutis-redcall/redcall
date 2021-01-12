@@ -23,7 +23,7 @@
     {{ form_label(form.volunteers) }}
     {{ form_widget(form.volunteers, {
         'attr': {
-            'class': 'flexdatalist',
+            'class': 'flexdatalist numbers no-badge-counts',
             'multiple': "multiple",
             'placeholder': 'base.search.placeholder'|trans,
             'data-data': volunteers_data|json_encode,
@@ -39,7 +39,12 @@
         }
     }) }}
 
-    {{ form_row(form.nivols) }}
+    {{ form_row(form.nivols, {
+        'attr': {
+            'class': 'numbers no-badge-counts'
+        }
+    }) }}
+
     <br/>
 
     {# -------------------------------------------------------------------------------- #}
@@ -65,7 +70,7 @@
                 <label class="switch">
                     <input id="global-structure-{{ current }}"
                            type="checkbox"
-                           class="toggle-to-text structure-tick"
+                           class="toggle-to-text structure-tick numbers"
                            {% if ticked %}checked{% endif %}
                            data-field="#{{ form.structures_global.vars.id }}"
                            data-id="{{ current }}"/>
@@ -91,7 +96,7 @@
                                 <label class="switch">
                                     <input id="local-structure-{{ current }}"
                                            type="checkbox"
-                                           class="toggle-to-text structure-tick"
+                                           class="toggle-to-text structure-tick numbers"
                                            {% if ticked %}checked{% endif %}
                                            data-field="#{{ form.structures_local.vars.id }}"
                                            data-id="{{ current }}"/>
@@ -130,13 +135,19 @@
 
     {# Trigger everyone discarding badges #}
     <div class="form-group">
+        {{ form_label(form.badges_all) }}
+        <div class="d-none">
+            {{ form_widget(form.badges_all) }}
+        </div>
         <label class="switch">
-            <input id="{{ form.badges_all.vars.id }}"
+            <input id="badges-all"
+                   class="numbers no-badge-counts"
+                   onclick="$('#{{ form.badges_all.vars.id }}').prop('checked', $(this).prop('checked'));"
                    type="checkbox"
                    {% if init_data.badges_all %}checked{% endif %}/>
             <span class="slider"></span>
         </label>
-        <label for="{{ form.badges_all.vars.id }}">
+        <label for="badges-all">
             {{ 'audience.select_all_badges'|trans }}
             (<span id="badge-count-0" class="badge-count">{{ badge_counts[0] }}</span>)
         </label>
@@ -152,7 +163,7 @@
                 <label class="switch">
                     <input id="badge-{{ badge.id }}"
                            type="checkbox"
-                           class="toggle-to-text badge-tick"
+                           class="toggle-to-text badge-tick numbers no-badge-counts"
                            {% if init_data.badges_all %}disabled="disabled"{% endif %}
                             {% if badge.id in badges_ticked %}checked{% endif %}
                            data-field="#{{ form.badges_ticked.vars.id }}"
@@ -267,7 +278,7 @@
         });
 
         {# Handling enabling or disabling badge search according to select all #}
-        $('#{{ form.badges_all.vars.id }}').click(function () {
+        $('#badges-all').click(function () {
             if ($(this).is(':checked')) {
                 $('.badge-tick')
                     .addClass('disabled')
@@ -310,16 +321,52 @@
         });
 
         {# Updating classification and badge counts #}
-        function numbers() {
-            $('.badge-count').html('<img src="{{ asset('spinner.gif') }}" style="width:25px;"/>')
-            $.post('{{ path('audience_numbers', {name: form.vars.full_name}) }}', $('form.trigger').serialize(), function (data) {
-                $('#classification').html(data.classification);
+        var numbersContext = null;
+        var numbersLock = false;
 
-                $.each(data.badge_counts, function (badgeId, count) {
-                    $('#badge-count-' + badgeId).html(count);
-                });
+        function numbers(withBadgeCounts = 1) {
+            numbersContext = {
+                withBadgeCounts: withBadgeCounts,
+                formData: $('form.trigger').serialize(),
+            };
+
+            if (!numbersLock) {
+                updateNumbers();
+            }
+        }
+
+        function updateNumbers() {
+            var withBadgeCounts = numbersContext.withBadgeCounts;
+            var formData = numbersContext.formData;
+
+            numbersLock = true;
+            numbersContext = null;
+
+            if (withBadgeCounts) {
+                $('.badge-count').html('<img src="{{ asset('spinner.gif') }}" style="width:25px;"/>');
+            }
+
+            $.post('{{ path('audience_numbers', {name: form.vars.full_name}) }}&badge_counts=' + withBadgeCounts, formData, function (data) {
+                $('#classification').html(data.classification);
+                if (withBadgeCounts) {
+                    $.each(data.badge_counts, function (badgeId, count) {
+                        $('#badge-count-' + badgeId).html(count);
+                    });
+                }
+
+                if (numbersContext) {
+                    updateNumbers();
+                } else {
+                    numbersLock = false;
+                }
             });
         }
+
+        $('.numbers').change(function () {
+            numbers(
+                !$(this).hasClass('no-badge-counts')
+            );
+        });
 
     </script>
 
