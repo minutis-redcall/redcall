@@ -139,13 +139,14 @@
                 <label class="switch">
                     <input id="badge-{{ badge.id }}"
                            type="checkbox"
-                           class="toggle-to-text"
-                           {% if badge.id in badges_ticked %}checked{% endif %}
+                           class="toggle-to-text badge-tick"
+                           {% if init_data.badges_all %}disabled="disabled"{% endif %}
+                            {% if badge.id in badges_ticked %}checked{% endif %}
                            data-field="#{{ form.badges_ticked.vars.id }}"
                            data-id="{{ badge.id }}"/>
                     <span class="slider"></span>
                 </label>
-                <label for="badge-{{ badge.id }}">
+                <label for="badge-{{ badge.id }}" class="badge-tick {% if init_data.badges_all %}disabled{% endif %}">
                     {{ macros.badge(badge) }}
                     (<span id="badge-count-{{ badge.id }}" class="badge-count">{{ badge_counts[badge.id] }}</span>)
                 </label>
@@ -157,23 +158,33 @@
     <br/>
 
     {# Other badges search #}
-    {{ form_row(form.badges_searched, {
-        'attr': {
-            'class': 'flexdatalist',
-            'multiple': "multiple",
-            'placeholder': 'base.search.placeholder'|trans,
-            'data-url': path('audience_search_badge'),
-            'data-data': badges_searched|json_encode,
-            'data-search-disabled': true,
-            'data-min-length': 1,
-            'data-visible-properties': '["name"]',
-            'data-no-results-text': 'base.search.no_results'|trans,
-            'data-focus-first-result': true,
-            'data-selection-required': true,
-            'data-text-property': "name",
-            'data-value-property': "id",
-        }
-    }) }}
+    {% set attr = {
+        'class': 'flexdatalist badge-tick ' ~ (init_data.badges_all ? 'disabled' : ''),
+        'multiple': "multiple",
+        'placeholder': 'base.search.placeholder'|trans,
+        'data-url': path('audience_search_badge'),
+        'data-data': badges_searched|json_encode,
+        'data-search-disabled': true,
+        'data-min-length': 1,
+        'data-visible-properties': '["name"]',
+        'data-no-results-text': 'base.search.no_results'|trans,
+        'data-focus-first-result': true,
+        'data-selection-required': true,
+        'data-text-property': "name",
+        'data-value-property': "id",
+    } %}
+
+    {% if init_data.badges_all %}
+        {% set attr = attr|merge({
+            'disabled': 'disabled',
+        }) %}
+    {% endif %}
+
+    <div class="badge-tick {% if init_data.badges_all %}disabled{% endif %}">
+        {{ form_row(form.badges_searched, {
+            'attr': attr
+        }) }}
+    </div>
 
     {# -------------------------------------------------------------------------------- #}
     {# Summary #}
@@ -224,6 +235,27 @@
                 }
             }
             input.val(list.join(','));
+        });
+
+        {# Handling enabling or disabling badge search according to select all #}
+        $('#{{ form.badges_all.vars.id }}').click(function () {
+            if ($(this).is(':checked')) {
+                $('.badge-tick')
+                    .addClass('disabled')
+                    .prop('disabled', 'disabled');
+
+                $('#{{ form.badges_searched.vars.id }}').flexdatalist({
+                    disabled: true,
+                });
+            } else {
+                $('.badge-tick')
+                    .removeClass('disabled')
+                    .removeProp('disabled');
+
+                $('#{{ form.badges_searched.vars.id }}').flexdatalist({
+                    disabled: false,
+                });
+            }
         });
 
         {# Opening the list of problems #}

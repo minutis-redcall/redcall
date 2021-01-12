@@ -89,7 +89,7 @@ class AudienceType extends AbstractType
             ->add('nivols', TextareaType::class, [
                 'label'    => 'audience.copy_paste_details',
                 'required' => false,
-                //'data'     => ['foobar', 'baz', 'toto'],
+                'data'     => ['foobar', 'baz', 'toto'],
                 'attr'     => [
                     'rows' => 4,
                 ],
@@ -104,6 +104,7 @@ class AudienceType extends AbstractType
             ->add('badges_all', CheckboxType::class, [
                 'label'    => 'audience.select_all_badges',
                 'required' => false,
+                'data'     => true,
             ])
             ->add('badges_ticked', HiddenType::class, [
                 'required' => false,
@@ -156,6 +157,7 @@ class AudienceType extends AbstractType
         }
         $view->vars['classification'] = $this->audienceManager->classifyAudience($data);
         $view->vars['badge_counts']   = $this->audienceManager->extractBadgeCounts($data, $publicBadges);
+        $view->vars['init_data']      = $data;
     }
 
     /**
