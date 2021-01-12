@@ -1,4 +1,7 @@
 {% block audience_widget %}
+
+    {% import 'macros.html.twig' as macros %}
+
     {{ form_start(form) }}
 
     <div class="h3">
@@ -143,8 +146,8 @@
                     <span class="slider"></span>
                 </label>
                 <label for="badge-{{ badge.id }}">
-                    {{ badge.name }}
-                    (<span id="badge-count-{{ badge.id }}">{{ badge_counts[badge.id] }}</span>)
+                    {{ macros.badge(badge) }}
+                    (<span id="badge-count-{{ badge.id }}" class="badge-count">{{ badge_counts[badge.id] }}</span>)
                 </label>
 
             </div>
@@ -175,10 +178,6 @@
     {# -------------------------------------------------------------------------------- #}
     {# Summary #}
     {# -------------------------------------------------------------------------------- #}
-
-    <div class="h4">
-        {{ 'audience.classification.title'|trans }}
-    </div>
 
     <div id="classification">
         {{ include('audience/classification.html.twig', {
@@ -251,6 +250,7 @@
 
         {# Updating classification and badge counts #}
         function numbers() {
+            $('.badge-count').html('<img src="{{ asset('spinner.gif') }}" style="width:25px;"/>')
             $.post('{{ path('audience_numbers', {name: form.vars.full_name}) }}', $('form.trigger').serialize(), function (data) {
                 $('#classification').html(data.classification);
 

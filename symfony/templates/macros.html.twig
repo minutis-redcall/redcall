@@ -80,9 +80,11 @@
 
 {% macro badge(badge) -%}
     {% if is_granted('ROLE_ADMIN') -%}
-        <a href="{{ path('admin_badge_manage', app.request.query.all|merge({id: badge.id})) }}" alt="{{ badge.description }}" target="_blank">{{ badge.name }}</a>
+        <a href="{{ path('admin_badge_manage', app.request.query.all|merge({id: badge.id})) }}"
+           title="{{ badge.description }}"
+           target="_blank">{{ badge.name }}</a>
     {%- else -%}
-        <span alt="{{ badge.description }}">{{ badge.name }}</span>
+        <span title="{{ badge.description }}">{{ badge.name }}</span>
     {%- endif %}
 {%- endmacro %}
 

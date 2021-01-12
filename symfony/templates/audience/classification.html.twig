@@ -1,3 +1,9 @@
+{% if classification.problems or classification.reachable %}
+    <div class="h4">
+        {{ 'audience.classification.title'|trans }}
+    </div>
+{% endif %}
+
 {% for key, list in classification.toArray %}
     {% if list %}
         <p>

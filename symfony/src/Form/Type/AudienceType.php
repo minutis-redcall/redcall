@@ -89,7 +89,7 @@ class AudienceType extends AbstractType
             ->add('nivols', TextareaType::class, [
                 'label'    => 'audience.copy_paste_details',
                 'required' => false,
-                'data'     => ['foobar', 'baz', 'toto'],
+                //'data'     => ['foobar', 'baz', 'toto'],
                 'attr'     => [
                     'rows' => 4,
                 ],
