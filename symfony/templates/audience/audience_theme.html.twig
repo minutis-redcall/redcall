@@ -2,8 +2,6 @@
 
     {% import 'macros.html.twig' as macros %}
 
-    {{ form_start(form) }}
-
     <div class="h3">
         {{ 'audience.audience'|trans }}
     </div>
@@ -394,10 +392,15 @@
                 $('#{{ form.test_on_me.vars.id }}').prop('checked', false);
                 $('form').attr('target', '').submit();
             });
+
+            {% if classification.reachable|length %}
+            $('.trigger-launch').html(
+                $('#submit-button-audience').html().replace('%nbr%', {{ classification.reachable|length }})
+            );
+            {% endif %}
         });
 
-    </script>
 
-    {{ form_end(form) }}
+    </script>
 
 {% endblock %}
