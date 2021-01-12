@@ -54,15 +54,13 @@ class EmailTriggerType extends AbstractType
             ->add('test', SubmitType::class, [
                 'label' => 'form.communication.fields.test',
                 'attr'  => [
-                    'class'   => 'trigger-test btn-secondary',
-                    'onclick' => "$('form').attr('target', '_blank');",
+                    'class' => 'trigger-test btn-secondary',
                 ],
             ])
             ->add('submit', SubmitType::class, [
                 'label' => 'form.communication.fields.submit',
                 'attr'  => [
-                    'class'   => 'trigger-launch btn-primary',
-                    'onclick' => "$('form').attr('target', '');",
+                    'class' => 'trigger-launch btn-primary',
                 ],
             ]);
     }

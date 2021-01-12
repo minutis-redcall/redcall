@@ -238,6 +238,14 @@
     </div>
 
     {# -------------------------------------------------------------------------------- #}
+    {# Test on me #}
+    {# -------------------------------------------------------------------------------- #}
+
+    <div class="d-none">
+        {{ form_row(form.test_on_me) }}
+    </div>
+
+    {# -------------------------------------------------------------------------------- #}
     {# Javscript #}
     {# -------------------------------------------------------------------------------- #}
 
@@ -371,6 +379,21 @@
             numbers(
                 !$(this).hasClass('no-badge-counts')
             );
+        });
+
+        {# Submit buttons #}
+        $(function () {
+            $('.trigger-test').click(function (e) {
+                e.preventDefault();
+                $('#{{ form.test_on_me.vars.id }}').prop('checked', 'checked');
+                $('form').attr('target', '_blank').submit();
+            });
+
+            $('.trigger-launch').click(function (e) {
+                e.preventDefault();
+                $('#{{ form.test_on_me.vars.id }}').prop('checked', false);
+                $('form').attr('target', '').submit();
+            });
         });
 
     </script>
