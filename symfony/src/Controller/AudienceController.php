@@ -87,7 +87,7 @@ class AudienceController extends BaseController
      */
     public function numbers(Request $request)
     {
-        $data = $this->getAudienceFormData($request);
+        $data = AudienceType::getAudienceFormData($request);
 
         $badgeCounts = $this->audienceManager->extractBadgeCounts(
             $data,
@@ -109,7 +109,7 @@ class AudienceController extends BaseController
      */
     public function problems(Request $request)
     {
-        $data = $this->getAudienceFormData($request);
+        $data = AudienceType::getAudienceFormData($request);
 
         $classification = $this->audienceManager->classifyAudience($data);
         $classification->setReachable([]);
@@ -129,7 +129,7 @@ class AudienceController extends BaseController
      */
     public function selection(Request $request)
     {
-        $data = $this->getAudienceFormData($request);
+        $data = AudienceType::getAudienceFormData($request);
 
         $classification = $this->audienceManager->classifyAudience($data);
 
@@ -140,28 +140,5 @@ class AudienceController extends BaseController
         return $this->render('audience/selection.html.twig', [
             'volunteers' => $volunteers,
         ]);
-    }
-
-    private function getAudienceFormData(Request $request)
-    {
-        // Audience type can be located anywhere in the main form, so we need to seek for the
-        // audience data following the path created using its full name.
-        $name = trim(str_replace(['[', ']'], '.', trim($request->query->get('name'))), '.');
-        $name = preg_replace('/\.+/', '.', $name);
-
-        $data = $request->request->all();
-        $path = array_filter(explode('.', $name));
-
-        foreach ($path as $node) {
-            $data = $data[$node];
-        }
-
-        foreach ($data as $key => $value) {
-            if (in_array($key, AudienceType::LISTS)) {
-                $data[$key] = array_filter(explode(',', $value));
-            }
-        }
-
-        return $data;
     }
 }

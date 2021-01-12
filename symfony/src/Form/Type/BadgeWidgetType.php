@@ -50,6 +50,7 @@ class BadgeWidgetType extends TextType
                         $badge = $badge->toArray();
                     }
 
+                    $badges = $badge;
                     if ($options['only_invisible']) {
                         $badges = array_filter($badge, function (Badge $badge) {
                             return !$badge->isVisible();

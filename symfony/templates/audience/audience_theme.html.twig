@@ -268,7 +268,7 @@
             } else {
                 $('.badge-tick')
                     .removeClass('disabled')
-                    .removeProp('disabled');
+                    .prop('disabled', false);
 
                 $('#{{ form.badges_searched.vars.id }}').flexdatalist({
                     disabled: false,

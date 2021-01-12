@@ -16,6 +16,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Security\Core\Security;
 
@@ -76,6 +77,34 @@ class AudienceType extends AbstractType
         $this->security         = $security;
     }
 
+    static public function getAudienceFormData(Request $request)
+    {
+        // Audience type can be located anywhere in the main form, so we need to seek for the
+        // audience data following the path created using its full name.
+        $name = trim(str_replace(['[', ']'], '.', trim($request->query->get('name'))), '.');
+        $name = preg_replace('/\.+/', '.', $name);
+
+        $data = $request->request->all();
+        $path = array_filter(explode('.', $name));
+
+        foreach ($path as $node) {
+            $data = $data[$node];
+        }
+
+        foreach ($data as $key => $value) {
+            if (in_array($key, AudienceType::LISTS)) {
+                $data[$key] = self::split($value);
+            }
+        }
+
+        return $data;
+    }
+
+    static public function split(string $value)
+    {
+        return array_unique(array_filter(preg_split('/[^0-9a-z*]/ui', $value)));
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $structures      = $this->userManager->findForCurrentUser()->getStructures();
@@ -126,7 +155,7 @@ class AudienceType extends AbstractType
                     return $fromModel ? implode(',', $fromModel) : null;
                 },
                 function (?string $fromView) {
-                    return $fromView ? array_filter(explode(',', $fromView)) : null;
+                    return $fromView ? self::split($fromView) : null;
                 }
             ));
         }
@@ -178,7 +207,6 @@ class AudienceType extends AbstractType
     {
         return 'audience';
     }
-
 
     private function buildStructureView(FormView $view)
     {
@@ -255,5 +283,3 @@ class AudienceType extends AbstractType
         return $ids;
     }
 }
-
-;
