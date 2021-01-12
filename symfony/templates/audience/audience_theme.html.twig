@@ -59,12 +59,12 @@
 
             {% set has_children = hierarchy[current]|length %}
 
-            {# Slider header #}
-            <div>
+            <div class="structure-node">
+                {# Slider header #}
                 <label class="switch">
                     <input id="global-structure-{{ current }}"
                            type="checkbox"
-                           class="toggle-to-text"
+                           class="toggle-to-text structure-tick"
                            {% if current in global %}checked{% endif %}
                            data-field="#{{ form.structures_global.vars.id }}"
                            data-id="{{ current }}"/>
@@ -81,32 +81,32 @@
                         {{ information[current].name }} ({{ information[current].global_count }})
                     </label>
                 {% endif %}
-            </div>
 
-            {# Slider body #}
-            {% if has_children %}
-                <div id="container-children-{{ current }}" class="collapse">
-                    <div class="card card-body">
-                        <div>
-                            <label class="switch">
-                                <input id="local-structure-{{ current }}"
-                                       type="checkbox"
-                                       class="toggle-to-text"
-                                       {% if current in local %}checked{% endif %}
-                                       data-field="#{{ form.structures_local.vars.id }}"
-                                       data-id="{{ current }}"/>
-                                <span class="slider"></span>
-                            </label>
-                            <label for="local-structure-{{ current }}">
-                                {{ information[current].name }} ({{ information[current].local_count }})
-                            </label>
+                {# Slider body #}
+                {% if has_children %}
+                    <div id="container-children-{{ current }}" class="collapse structure-children">
+                        <div class="card card-body">
+                            <div>
+                                <label class="switch">
+                                    <input id="local-structure-{{ current }}"
+                                           type="checkbox"
+                                           class="toggle-to-text structure-tick"
+                                           {% if current in local %}checked{% endif %}
+                                           data-field="#{{ form.structures_local.vars.id }}"
+                                           data-id="{{ current }}"/>
+                                    <span class="slider"></span>
+                                </label>
+                                <label for="local-structure-{{ current }}">
+                                    {{ information[current].name }} ({{ information[current].local_count }})
+                                </label>
+                            </div>
+                            {% for child in hierarchy[current] %}
+                                {{ _self.renderSlider(form, global, local, hierarchy, information, child) }}
+                            {% endfor %}
                         </div>
-                        {% for child in hierarchy[current] %}
-                            {{ _self.renderSlider(form, global, local, hierarchy, information, child) }}
-                        {% endfor %}
                     </div>
-                </div>
-            {% endif %}
+                {% endif %}
+            </div>
         {% endmacro %}
 
         {% for structure_id in structures_roots %}
@@ -235,6 +235,22 @@
                 }
             }
             input.val(list.join(','));
+        });
+
+        {# Handling parent structure selection #}
+        var structureTicked = false;
+        $('.structure-tick').click(function () {
+            if (structureTicked) {
+                return;
+            }
+            structureTicked = true;
+            var that = $(this);
+            if (that.is(':checked')) {
+                that.parents().eq(1).find('.structure-children .structure-tick').prop('checked', 'checked');
+            } else {
+                that.parents().eq(1).find('.structure-children input:is(:checked)').click();
+            }
+            structureTicked = false;
         });
 
         {# Handling enabling or disabling badge search according to select all #}
