@@ -106,7 +106,7 @@
                 {% if volunteer.enabled %}
                     {{ volunteer.displayName }}
                 {% else %}
-                    <span style="color:grey;">{{ volunteer.displayName }}</span> 🚫
+                    <span style="text-decoration:line-through;color:grey;">{{ volunteer.displayName }}</span> 🚫
                 {% endif %}
                 {% if volunteer.minor %}
                     🐻

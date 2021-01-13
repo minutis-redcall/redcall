@@ -77,6 +77,20 @@ class AudienceType extends AbstractType
         $this->security         = $security;
     }
 
+    static public function createEmptyData(array $defaults) : array
+    {
+        return array_merge([
+            'volunteers'        => [],
+            'nivols'            => [],
+            'structures_global' => [],
+            'structures_local'  => [],
+            'badges_all'        => false,
+            'badges_ticked'     => [],
+            'badges_searched'   => [],
+            'test_on_me'        => false,
+        ], $defaults);
+    }
+
     static public function getAudienceFormData(Request $request)
     {
         // Audience type can be located anywhere in the main form, so we need to seek for the
@@ -131,7 +145,6 @@ class AudienceType extends AbstractType
                 'required' => false,
             ])
             ->add('badges_all', CheckboxType::class, [
-                'label'    => false,
                 'required' => false,
                 'data'     => true,
             ])

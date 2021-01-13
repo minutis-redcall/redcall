@@ -282,6 +282,7 @@ campaign_status:
     no_email_optin: 'Ne souhaite pas recevoir d''emails.'
     no_phone: 'Pas de numéro de téléphone'
     no_phone_optin: 'Ne souhaite pas recevoir de SMS/appels.'
+    no_phone_mobile: 'Ne possède pas de numéro de téléphone portable.'
 csv_export:
   answer_time: 'Date de la reponse la plus recente'
   choice: 'Choix "%choice%"'

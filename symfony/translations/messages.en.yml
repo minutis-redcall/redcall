@@ -282,6 +282,7 @@ campaign_status:
     no_email_optin: 'Do not want to be triggered through email.'
     no_phone: 'No phone number'
     no_phone_optin: 'Do not want to be triggered through phone.'
+    no_phone_mobile: 'Do not own a mobile phone number.'
 csv_export:
   answer_time: 'Answered at'
   choice: 'Choice "%choice%"'

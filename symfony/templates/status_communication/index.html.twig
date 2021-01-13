@@ -302,8 +302,9 @@
                                 </td>
 
                                 <td id="volunteer-{{ suffix }}">
-
-                                    {{ macros.volunteer(message.volunteer) }}
+                                    <div class="{% if message.error %}message-error{% endif %}">
+                                        {{ macros.volunteer(message.volunteer) }}
+                                    </div>
 
                                     <div class="float-right">
 
@@ -380,8 +381,10 @@
                                             <div style="color:red;">{{ 'campaign_status.warning.no_phone'|trans }}</div>
                                         {% elseif not message.volunteer.phoneNumberOptin %}
                                             <div style="color:red;">{{ 'campaign_status.warning.no_phone_optin'|trans }}</div>
+                                        {% elseif communication.type == constant('App\\Entity\\Communication::TYPE_SMS') and not message.volunteer.phone.isMobile|default(false) %}
+                                            <div style="color:red;">{{ 'campaign_status.warning.no_phone_optin'|trans }}</div>
                                         {% endif %}
-                                    {% elseif communication.type in [constant('App\\Entity\\Communication::TYPE_EMAIL')] %}
+                                    {% elseif communication.type == constant('App\\Entity\\Communication::TYPE_EMAIL') %}
                                         {% if not message.volunteer.email %}
                                             <div style="color:red;">{{ 'campaign_status.warning.no_email'|trans }}</div>
                                         {% endif %}

@@ -68,7 +68,7 @@ class Phone
     private $international;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="boolean", nullable=true)
      */
     private $isMobile;
 

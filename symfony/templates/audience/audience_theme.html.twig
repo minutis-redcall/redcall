@@ -133,9 +133,9 @@
 
     {# Trigger everyone discarding badges #}
     <div class="form-group">
-        {{ form_label(form.badges_all) }}
+
         <div class="d-none">
-            {{ form_widget(form.badges_all) }}
+            {{ form_row(form.badges_all) }}
         </div>
         <label class="switch">
             <input id="badges-all"
@@ -153,6 +153,10 @@
 
     {# Main badges #}
     <div class="row">
+
+        <div class="d-none">
+            {{ form_row(form.badges_ticked) }}
+        </div>
 
         {% set badges_ticked = form.badges_ticked.vars.data|split(',') %}
 

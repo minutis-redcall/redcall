@@ -344,3 +344,7 @@ input:checked + .slider {
 .badge-tick.disabled {
     color: grey;
 }
+
+.message-error .volunteer-info {
+    color: grey;
+}

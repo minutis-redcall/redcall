@@ -53,6 +53,11 @@ class CommunicationManager
     private $volunteerManager;
 
     /**
+     * @var AudienceManager
+     */
+    private $audienceManager;
+
+    /**
      * @var RouterInterface
      */
     private $router;
@@ -72,6 +77,7 @@ class CommunicationManager
         ProcessorInterface $processor,
         UserManager $userManager,
         VolunteerManager $volunteerManager,
+        AudienceManager $audienceManager,
         StructureManager $structureManager,
         RouterInterface $router,
         LoggerInterface $slackLogger,
@@ -82,6 +88,7 @@ class CommunicationManager
         $this->processor               = $processor;
         $this->userManager             = $userManager;
         $this->volunteerManager        = $volunteerManager;
+        $this->audienceManager         = $audienceManager;
         $this->structureManager        = $structureManager;
         $this->router                  = $router;
         $this->slackLogger             = $slackLogger;
@@ -157,12 +164,12 @@ class CommunicationManager
     {
         $volunteer = null;
         if ($user = $this->userManager->findForCurrentUser()) {
-            $nivol     = null;
+            $id        = null;
             $volunteer = $user->getVolunteer();
         } else {
             // Triggers ran through the Campaign::contact() method only contain 1 volunteer
-            $nivol     = implode(' ', $trigger->getAudience());
-            $volunteer = $this->volunteerManager->findOneByNivol($nivol);
+            $id        = $trigger->getAudience()['volunteers'][0];
+            $volunteer = $this->volunteerManager->find($id);
         }
 
         $communication = new Communication();
@@ -187,10 +194,11 @@ class CommunicationManager
             $choiceKey++;
         }
 
-        if ($nivol) {
+        if ($id) {
             $volunteers = [$volunteer];
         } else {
-            $volunteers = $this->volunteerManager->filterByNivolAndAccess($trigger->getAudience());
+            $classification = $this->audienceManager->classifyAudience($trigger->getAudience());
+            $volunteers     = $this->volunteerManager->getVolunteerList($classification->getReachable());
         }
 
         $codes = $this->messageManager->generateCodes(count($volunteers));
