@@ -152,6 +152,7 @@ audience:
     selected_volunteers: 'Selected volunteers'
     remove_volunteer: 'Use ticks to remove volunteers from the selection.'
     use_standard_form: 'Use classic form'
+    close_standard_form: 'Close classic form'
 backlinks:
   blablacar: 'Sponsored by'
   minutis: 'Developed by Minutis volunteers'

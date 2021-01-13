@@ -147,6 +147,10 @@ class VolunteerManager
 
         $list = $this->volunteerRepository->getVolunteerList($volunteerIds);
 
+        usort($list, function (Volunteer $a, Volunteer $b) {
+            return $a->getLastName() <=> $b->getLastName();
+        });
+
         foreach ($list as $volunteer) {
             /** @var Volunteer $volunteer */
             $volunteers[$volunteer->getId()] = $volunteer;

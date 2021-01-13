@@ -152,6 +152,7 @@ audience:
     selected_volunteers: 'Bénévoles sélectionnés'
     remove_volunteer: 'Utilisez les coches pour supprimer des bénévoles de la sélection.'
     use_standard_form: 'Ouvrir le formulaire classique'
+    close_standard_form: 'Fermer le formulaire classique'
 backlinks:
   blablacar: 'Parrainé par'
   minutis: 'Développé par les bénévoles'

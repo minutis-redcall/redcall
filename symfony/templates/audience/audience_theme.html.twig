@@ -453,6 +453,11 @@
 
         $('body').on('click', '#toggle-audience-form', function () {
             $('#audience-form').toggleClass('d-none');
+            if ($('#audience-form').hasClass('d-none')) {
+                $('#toggle-audience-form').html('{{ 'audience.pre_selection.use_standard_form'|trans }}');
+            } else {
+                $('#toggle-audience-form').html('{{ 'audience.pre_selection.close_standard_form'|trans }}');
+            }
         });
 
     </script>
