@@ -131,13 +131,6 @@ audience:
     title: 'Selection summary'
   copy_paste_details: 'Paste a list of identifiers in the field below.'
   manual_selection: 'Volunteers manual selection'
-  pre_selection:
-    title: 'Volunteers preselection'
-    description: 'In a previous communication, you selected <strong>%nbr%</strong> volunteers.'
-    edit: 'Edit this selection'
-    selected_volunteers: 'Selected volunteers'
-    remove_volunteer: 'Use ticks to remove volunteers from the selection.'
-    use_standard_form: 'Use classic form'
   problems:
     disabled: Disabled
     email_missing: 'No email'
@@ -152,6 +145,13 @@ audience:
   search_other_badge: 'Search for another skill:'
   select_all_badges: 'Trigger all volunteers whatever their skills'
   structures: 'Structure(s) to trigger'
+  pre_selection:
+    title: 'Volunteers preselection'
+    description: 'In a previous communication, you selected <strong>%nbr%</strong> volunteers.'
+    edit: 'Edit this selection'
+    selected_volunteers: 'Selected volunteers'
+    remove_volunteer: 'Use ticks to remove volunteers from the selection.'
+    use_standard_form: 'Use classic form'
 backlinks:
   blablacar: 'Sponsored by'
   minutis: 'Developed by Minutis volunteers'
