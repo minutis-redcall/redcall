@@ -70,17 +70,17 @@ admin:
     developer: 'Grant developer access'
     developered: Developer
     developered_details: 'A developer can integrate RedCall APIs and access technical features.'
+    edit: 'Open volunteer record'
     list_users: 'List user nivols'
     list_users_explain: 'In order to contact all users, copy/paste this nivol list in a new campaign.'
     lock: Lock
     locked: Frozen
     locked_details: 'Structures of a frozen user are not updated when Pegass is updating its bound volunteer.'
+    open: 'Open Pegass entity'
     structures: 'Update structures for %name%'
     title: 'Bindings between RedCall users and volunteer database'
     undeveloper: 'Remove developer access'
     unlock: Unlock
-    edit: 'Open volunteer record'
-    open: 'Open Pegass entity'
   statistics:
     campaign:
       period: 'In the period, <b>%created%</b> campaigns were open, including <b>%active%</b> that are still active.'
@@ -112,39 +112,39 @@ admin:
     list: 'User list'
     pegass: 'Pegass bindings'
 audience:
+  audience: Audience
+  audience_help: 'You can select volunteers to trigger by writting them down manually, or by filtering them by structures and skills.'
+  badges: 'Skills & Nominations'
   classification:
-    title: 'Selection summary'
-    invalid: '<strong>%nbr%</strong> nivols do not exist'
+    audience: 'Render the selected volunteers list'
     disabled: '<strong>%nbr%</strong> volunteers are disabled'
+    email_missing: '<strong>%nbr%</strong> volunteers do not have an email'
+    email_optout: '<strong>%nbr%</strong> volunteers do not want to receive emails'
     inaccessible: '<strong>%nbr%</strong> volunteers are out of your perimeter'
+    invalid: '<strong>%nbr%</strong> nivols do not exist'
     phone_landline: '<strong>%nbr%</strong> volunteers only have a landline phone number'
     phone_missing: '<strong>%nbr%</strong> volunteers do not have a phone number'
     phone_optout: '<strong>%nbr%</strong> volunteers do not want to receive phone calls/SMS'
-    email_missing: '<strong>%nbr%</strong> volunteers do not have an email'
-    email_optout: '<strong>%nbr%</strong> volunteers do not want to receive emails'
-    reachable: '<strong>%nbr%</strong> volunteers are selected'
     problems: 'Get more details about problems'
-    audience: 'Render the selected volunteers list'
+    reachable: '<strong>%nbr%</strong> volunteers are selected'
     selected: 'Liste des bénévoles sélectionnés'
+    title: 'Selection summary'
+  copy_paste_details: 'Paste a list of identifiers in the field below.'
+  manual_selection: 'Volunteers manual selection'
   problems:
-    title: 'Audience problem details'
-    invalid: 'Invalids'
-    disabled: 'Disabled'
-    inaccessible: 'Out of perimeter'
-    phone_missing: 'No phone'
-    phone_optout: 'Phone opted-out'
-    phone_landline: 'Only landline'
+    disabled: Disabled
     email_missing: 'No email'
     email_optout: 'Emails opted-out'
-  structures: 'Structure(s) to trigger'
-  badges: 'Skills & Nominations'
+    inaccessible: 'Out of perimeter'
+    invalid: Invalids
+    phone_landline: 'Only landline'
+    phone_missing: 'No phone'
+    phone_optout: 'Phone opted-out'
+    title: 'Audience problem details'
   search_for_volunteers: 'Search for volunteers:'
-  manual_selection: 'Volunteers manual selection'
-  copy_paste_details: 'Paste a list of identifiers in the field below.'
-  select_all_badges: 'Trigger all volunteers whatever their skills'
   search_other_badge: 'Search for another skill:'
-  audience: Audience
-  audience_help: 'You can select volunteers to trigger by writting them down manually, or by filtering them by structures and skills.'
+  select_all_badges: 'Trigger all volunteers whatever their skills'
+  structures: 'Structure(s) to trigger'
 backlinks:
   blablacar: 'Sponsored by'
   minutis: 'Developed by Minutis volunteers'
@@ -281,8 +281,8 @@ campaign_status:
     no_email: 'No email'
     no_email_optin: 'Do not want to be triggered through email.'
     no_phone: 'No phone number'
-    no_phone_optin: 'Do not want to be triggered through phone.'
     no_phone_mobile: 'Do not own a mobile phone number.'
+    no_phone_optin: 'Do not want to be triggered through phone.'
 csv_export:
   answer_time: 'Answered at'
   choice: 'Choice "%choice%"'
@@ -489,6 +489,7 @@ manage_volunteers:
     email_optin: 'Available by email'
     enabled: Callable
     first_name: 'First name'
+    invisible_badges: 'Other badges'
     last_name: 'Last name'
     lock_info: '* Locked phones and emails are not automatically refreshed by Pegass updates.'
     minor: 'Minor (under 18)'
@@ -501,7 +502,6 @@ manage_volunteers:
     update: 'Update volunteer'
     updated: 'Volunteer has properly been updated.'
     visible_badges: 'Main badges'
-    invisible_badges: 'Other badges'
   others: 'and %count% other(s)'
   redcall:
     action_structures: 'Structures that %name% can trigger'

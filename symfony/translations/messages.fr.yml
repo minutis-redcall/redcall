@@ -70,17 +70,17 @@ admin:
     developer: 'Donner l''accès développeur'
     developered: Développeur
     developered_details: 'Un développeur peut intégrer les APIs de RedCall et accéder à des fonctionnalités techniques.'
+    edit: 'Ouvrir la fiche bénévole'
     list_users: 'Envoyer un message à tous les utilisateurs'
     list_users_explain: 'Afin de contacter tous les utilisateurs, copiez/collez cette liste de nivols dans un nouveau déclenchement.'
     lock: Geler
     locked: Gelé
     locked_details: 'Les structures d''un utilisateur gelé ne seront pas mises à jour avec la mise à jour Pegass de son bénévole attaché.'
+    open: 'Ouvrir l''entrée Pegass'
     structures: 'Mise à jour des structures pour %name%'
     title: 'Connexions entre les utilisateurs de RedCall et la base de données bénévole'
     undeveloper: 'Retirer l''accès développeur'
     unlock: Dégeler
-    edit: 'Ouvrir la fiche bénévole'
-    open: 'Ouvrir l''entrée Pegass'
   statistics:
     campaign:
       period: 'Dans cette période, <b>%created%</b> déclenchements ont été créés, dont <b>%active%</b> sont toujours actifs.'
@@ -112,39 +112,39 @@ admin:
     list: 'Liste d''utilisateurs'
     pegass: 'Connexions à Pegass'
 audience:
+  audience: Audience
+  audience_help: 'Vous pouvez sélectionner les bénévoles à déclencher en les saisissant manuellement, ou en les filtrant par structures et compétences.'
+  badges: 'Compétences & nominations'
   classification:
-    title: 'Résumé de la sélection'
-    invalid: '<strong>%nbr%</strong> nivols n''existent pas'
+    audience: 'Afficher la liste des bénévoles sélectionnés'
     disabled: '<strong>%nbr%</strong> bénévoles sont desactivés'
+    email_missing: '<strong>%nbr%</strong> bénévoles n''ont pas d''email'
+    email_optout: '<strong>%nbr%</strong> bénévoles ne souhaitant pas recevoir d''emails'
     inaccessible: '<strong>%nbr%</strong> bénévoles ne font pas partie de votre périmètre'
+    invalid: '<strong>%nbr%</strong> nivols n''existent pas'
     phone_landline: '<strong>%nbr%</strong> bénévoles ne possèdent qu''un numéro de téléphone fixe'
     phone_missing: '<strong>%nbr%</strong> bénévoles n''ont pas de numéro de téléphone'
     phone_optout: '<strong>%nbr%</strong> bénévoles ne souhaitant pas recevoir d''appels/SMS'
-    email_missing: '<strong>%nbr%</strong> bénévoles n''ont pas d''email'
-    email_optout: '<strong>%nbr%</strong> bénévoles ne souhaitant pas recevoir d''emails'
-    reachable: '<strong>%nbr%</strong> bénévoles sont sélectionnés'
     problems: 'Obtenir plus de détails sur la liste des problèmes'
-    audience: 'Afficher la liste des bénévoles sélectionnés'
+    reachable: '<strong>%nbr%</strong> bénévoles sont sélectionnés'
     selected: 'Liste des bénévoles sélectionnés'
+    title: 'Résumé de la sélection'
+  copy_paste_details: 'Ou coller une liste de nivols dans le champ ci-dessous.'
+  manual_selection: 'Saisie manuelle de bénévoles'
   problems:
-    title: 'Détails à propos des problèmes dans la sélection'
-    invalid: 'Invalides'
-    disabled: 'Desactivés'
-    inaccessible: 'Hors périmètre'
-    phone_missing: 'Pas de tél.'
-    phone_optout: 'Appels/SMS refusés'
-    phone_landline: 'Fixe uniquement'
+    disabled: Desactivés
     email_missing: 'Pas d''email'
     email_optout: 'Emails refusés'
-  structures: 'Structure(s) à déclencher'
-  badges: 'Compétences & nominations'
+    inaccessible: 'Hors périmètre'
+    invalid: Invalides
+    phone_landline: 'Fixe uniquement'
+    phone_missing: 'Pas de tél.'
+    phone_optout: 'Appels/SMS refusés'
+    title: 'Détails à propos des problèmes dans la sélection'
   search_for_volunteers: 'Rechercher des bénévoles à déclencher :'
-  manual_selection: 'Saisie manuelle de bénévoles'
-  copy_paste_details: 'Ou coller une liste de nivols dans le champ ci-dessous.'
-  select_all_badges: 'Déclencher tous les bénévoles quelque soient leurs compétences'
   search_other_badge: 'Rechercher une autre compétence :'
-  audience: Audience
-  audience_help: 'Vous pouvez sélectionner les bénévoles à déclencher en les saisissant manuellement, ou en les filtrant par structures et compétences.'
+  select_all_badges: 'Déclencher tous les bénévoles quelque soient leurs compétences'
+  structures: 'Structure(s) à déclencher'
 backlinks:
   blablacar: 'Parrainé par'
   minutis: 'Développé par les bénévoles'
@@ -281,8 +281,8 @@ campaign_status:
     no_email: 'Pas d''email'
     no_email_optin: 'Ne souhaite pas recevoir d''emails.'
     no_phone: 'Pas de numéro de téléphone'
-    no_phone_optin: 'Ne souhaite pas recevoir de SMS/appels.'
     no_phone_mobile: 'Ne possède pas de numéro de téléphone portable.'
+    no_phone_optin: 'Ne souhaite pas recevoir de SMS/appels.'
 csv_export:
   answer_time: 'Date de la reponse la plus recente'
   choice: 'Choix "%choice%"'
@@ -489,6 +489,7 @@ manage_volunteers:
     email_optin: 'Disponible par email'
     enabled: Déclenchable
     first_name: Prénom
+    invisible_badges: 'Autres badges'
     last_name: 'Nom de famille'
     lock_info: '* Les nᵒˢ de téléphone et emails gelés ne sont plus mis à jour automatiquement par Pegass.'
     minor: 'Mineur(e) (-18 ans)'
@@ -501,7 +502,6 @@ manage_volunteers:
     update: 'Mettre à jour un bénévole'
     updated: 'Le bénévole a correctement été modifié.'
     visible_badges: 'Badges principaux'
-    invisible_badges: 'Autres badges'
   others: 'et %count% autre(s)'
   redcall:
     action_structures: 'Structures déclenchables par %name%'
