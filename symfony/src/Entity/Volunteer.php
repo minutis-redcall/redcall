@@ -105,22 +105,6 @@ class Volunteer
     private $minor = false;
 
     /**
-     * @var array
-     *
-     * @ORM\ManyToMany(targetEntity="App\Entity\Tag", inversedBy="volunteers")
-     */
-    private $tags;
-
-    /**
-     * Same as $tags but only contain the highest tags in the
-     * tag hierarchy, to avoid flooding UX of skills that
-     * wrap other ones.
-     *
-     * @var array
-     */
-    private $tagsView;
-
-    /**
      * @var DateTime
      *
      * @ORM\Column(type="datetime", nullable=true)
@@ -195,7 +179,6 @@ class Volunteer
 
     public function __construct()
     {
-        $this->tags       = new ArrayCollection();
         $this->structures = new ArrayCollection();
         $this->messages   = new ArrayCollection();
         $this->phones     = new ArrayCollection();
@@ -337,76 +320,9 @@ class Volunteer
         return $this;
     }
 
-    public function getTags() : Collection
-    {
-        return $this->tags;
-    }
-
-    public function addTag(Tag $tag)
-    {
-        if (!$this->hasTag($tag)) {
-            $this->tags->add($tag);
-        }
-    }
-
-    public function removeTag(Tag $tag)
-    {
-        $this->tags->removeElement($tag);
-    }
-
-    public function getTagsView() : array
-    {
-        if ($this->tagsView) {
-            return $this->tagsView;
-        }
-
-        $this->tagsView = [];
-        foreach ($this->tags->toArray() as $tag) {
-            $this->tagsView[$tag->getLabel()] = $tag;
-        }
-
-        foreach (Tag::getTagHierarchyMap() as $masterTag => $tagsToRemove) {
-            if (array_key_exists($masterTag, $this->tagsView)) {
-                foreach ($tagsToRemove as $tagToRemove) {
-                    if (array_key_exists($tagToRemove, $this->tagsView)) {
-                        unset($this->tagsView[$tagToRemove]);
-                    }
-                }
-            }
-        }
-
-        $this->tagsView = array_values($this->tagsView);
-
-        return $this->tagsView;
-    }
-
-    public function hasTag(string $tagToSearch) : bool
-    {
-        foreach ($this->tags as $tag) {
-            if ($tag->getLabel() == $tagToSearch) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     public function getFormattedPhoneNumber() : ?string
     {
         return $this->getPhone() ? $this->getPhone()->getNational() : null;
-    }
-
-    public function getTagPriority() : int
-    {
-        $highest = -1;
-        foreach ($this->getTags() as $tag) {
-            /* @var Tag $tag */
-            if ($tag->getTagPriority() > $highest) {
-                $highest = $tag->getTagPriority();
-            }
-        }
-
-        return $highest;
     }
 
     public function getLastPegassUpdate() : ?DateTime

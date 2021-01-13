@@ -130,57 +130,6 @@ class StructureRepository extends BaseRepository
                     ->getResult();
     }
 
-    public function getTagCountByStructuresForUser(User $user) : array
-    {
-        return $this->createQueryBuilder('s')
-                    ->select('s.id as structure_id, t.id as tag_id, COUNT(v.id) as count')
-                    ->join('s.users', 'u')
-                    ->join('s.volunteers', 'v')
-                    ->join('v.tags', 't')
-                    ->where('u.id = :id')
-                    ->andWhere('v.enabled = true')
-                    ->andWhere('s.enabled = true')
-                    ->setParameter('id', $user->getId())
-                    ->orderBy('t.id', 'ASC')
-                    ->groupBy('s.id', 't.id')
-                    ->getQuery()
-                    ->getArrayResult();
-    }
-
-    public function getVolunteerCountByStructuresForUser(User $user) : array
-    {
-        $rows = $this->createQueryBuilder('s')
-                     ->select('s.id as structure_id, p.id as parent_id, COUNT(DISTINCT v.id) as count')
-                     ->join('s.users', 'u')
-                     ->join('s.volunteers', 'v')
-                     ->leftJoin('s.parentStructure', 'p')
-                     ->where('u.id = :id')
-                     ->andWhere('v.enabled = true')
-                     ->andWhere('s.enabled = true')
-                     ->setParameter('id', $user->getId())
-                     ->groupBy('s.id')
-                     ->getQuery()
-                     ->getArrayResult();
-
-        $counts = [];
-        foreach ($rows as $row) {
-            $counts[$row['structure_id']]['local'] = $row['count'];
-            if (!isset($counts[$row['structure_id']]['global'])) {
-                $counts[$row['structure_id']]['global'] = 0;
-            }
-            $counts[$row['structure_id']]['global'] += $row['count'];
-
-            if ($row['parent_id']) {
-                if (!isset($counts[$row['parent_id']]['global'])) {
-                    $counts[$row['parent_id']]['global'] = 0;
-                }
-                $counts[$row['parent_id']]['global'] += $row['count'];
-            }
-        }
-
-        return $counts;
-    }
-
     public function getStructuresForUserQueryBuilder(User $user) : QueryBuilder
     {
         return $this->createQueryBuilder('s')

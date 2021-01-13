@@ -24,11 +24,6 @@ class VolunteerManager
     private $userManager;
 
     /**
-     * @var TagManager
-     */
-    private $tagManager;
-
-    /**
      * @var AnswerManager
      */
     private $answerManager;
@@ -49,14 +44,12 @@ class VolunteerManager
     private $translator;
 
     public function __construct(VolunteerRepository $volunteerRepository,
-        TagManager $tagManager,
         AnswerManager $answerManager,
         GeoLocationManager $geoLocationManager,
         PhoneManager $phoneManager,
         TranslatorInterface $translator)
     {
         $this->volunteerRepository = $volunteerRepository;
-        $this->tagManager          = $tagManager;
         $this->answerManager       = $answerManager;
         $this->geoLocationManager  = $geoLocationManager;
         $this->phoneManager        = $phoneManager;
@@ -71,31 +64,16 @@ class VolunteerManager
         $this->userManager = $userManager;
     }
 
-    /**
-     * @param int $volunteerId
-     *
-     * @return Volunteer|null
-     */
     public function find(int $volunteerId) : ?Volunteer
     {
         return $this->volunteerRepository->find($volunteerId);
     }
 
-    /**
-     * @param string $nivol
-     *
-     * @return Volunteer|null
-     */
     public function findOneByNivol(string $nivol) : ?Volunteer
     {
         return $this->volunteerRepository->findOneByNivol($nivol);
     }
 
-    /**
-     * @param string $phoneNumber
-     *
-     * @return Volunteer|null
-     */
     public function findOneByPhoneNumber(string $phoneNumber) : ?Volunteer
     {
         $phone = $this->phoneManager->findOneByPhoneNumber($phoneNumber);
@@ -103,29 +81,16 @@ class VolunteerManager
         return $phone ? $phone->getVolunteer() : null;
     }
 
-    /**
-     * @param string $email
-     *
-     * @return Volunteer|null
-     */
     public function findOneByEmail(string $email) : ?Volunteer
     {
         return $this->volunteerRepository->findOneByEmail($email);
     }
 
-    /**
-     * @param Volunteer $volunteer
-     */
     public function save(Volunteer $volunteer)
     {
         $this->volunteerRepository->save($volunteer);
     }
 
-    /**
-     * @param string|null $criteria
-     *
-     * @return Volunteer[]|array
-     */
     public function searchAll(?string $criteria, int $limit)
     {
         return $this->volunteerRepository->searchAll($criteria, $limit);
@@ -221,9 +186,6 @@ class VolunteerManager
         return $issues;
     }
 
-    /**
-     * @return array
-     */
     public function getIssues() : array
     {
         return $this->volunteerRepository->getIssues(
@@ -234,22 +196,6 @@ class VolunteerManager
     public function synchronizeWithPegass()
     {
         $this->volunteerRepository->synchronizeWithPegass();
-    }
-
-    /**
-     * @param array $nivols
-     *
-     * @return Volunteer[]
-     */
-    public function filterByNivolAndAccess(array $nivols) : array
-    {
-        $user = $this->userManager->findForCurrentUser();
-
-        if ($user->isAdmin()) {
-            return $this->volunteerRepository->filterByNivols($nivols);
-        }
-
-        return $this->volunteerRepository->filterByNivolsAndAccess($nivols, $user);
     }
 
     public function getIdsByNivols(array $nivols) : array

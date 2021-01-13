@@ -65,27 +65,6 @@ class StructureManager
         return $this->structureRepository->findCallableStructuresForStructure($structure);
     }
 
-    public function getTagCountByStructuresForCurrentUser() : array
-    {
-        $rows = $this->structureRepository->getTagCountByStructuresForUser(
-            $this->userManager->findForCurrentUser()
-        );
-
-        $counts = [];
-        foreach ($rows as $row) {
-            $counts[$row['structure_id']][$row['tag_id']] = $row['count'];
-        }
-
-        return $counts;
-    }
-
-    public function getVolunteerCountByStructuresForCurrentUser() : array
-    {
-        return $this->structureRepository->getVolunteerCountByStructuresForUser(
-            $this->userManager->findForCurrentUser()
-        );
-    }
-
     public function searchAllQueryBuilder(?string $criteria, bool $enabled) : QueryBuilder
     {
         return $this->structureRepository->searchAllQueryBuilder($criteria, $enabled);

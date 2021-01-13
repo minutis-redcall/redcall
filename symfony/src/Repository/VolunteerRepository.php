@@ -242,20 +242,6 @@ class VolunteerRepository extends BaseRepository
      *
      * @return Volunteer[]
      */
-    public function filterByNivols(array $nivols) : array
-    {
-        return $this->createVolunteersQueryBuilder()
-                    ->andWhere('v.nivol IN (:nivols)')
-                    ->setParameter('nivols', $nivols, Connection::PARAM_STR_ARRAY)
-                    ->getQuery()
-                    ->getResult();
-    }
-
-    /**
-     * @param array $nivols
-     *
-     * @return Volunteer[]
-     */
     public function getIdsByNivols(array $nivols) : array
     {
         return $this->createQueryBuilder('v')
@@ -264,21 +250,6 @@ class VolunteerRepository extends BaseRepository
                     ->setParameter('nivols', $nivols, Connection::PARAM_STR_ARRAY)
                     ->getQuery()
                     ->getArrayResult();
-    }
-
-    /**
-     * @param array $nivols
-     * @param User  $user
-     *
-     * @return Volunteer[]
-     */
-    public function filterByNivolsAndAccess(array $nivols, User $user) : array
-    {
-        return $this->createAccessibleVolunteersQueryBuilder($user)
-                    ->andWhere('v.nivol IN (:nivols)')
-                    ->setParameter('nivols', $nivols, Connection::PARAM_STR_ARRAY)
-                    ->getQuery()
-                    ->getResult();
     }
 
     public function filterInaccessibles(User $user, $volunteerIds) : array

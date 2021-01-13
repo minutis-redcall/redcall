@@ -19,7 +19,6 @@ use App\Manager\CampaignManager;
 use App\Manager\CategoryManager;
 use App\Manager\PrefilledAnswersManager;
 use App\Manager\StructureManager;
-use App\Manager\TagManager;
 use App\Manager\UserManager;
 use App\Manager\VolunteerManager;
 use Ramsey\Uuid\Uuid;
@@ -70,26 +69,10 @@ class WidgetController extends BaseController
     private $userManager;
 
     /**
-     * @var TagManager
-     */
-    private $tagManager;
-
-    /**
      * @var TranslatorInterface
      */
     private $translator;
 
-    /**
-     * @param CampaignManager         $campaignManager
-     * @param PrefilledAnswersManager $prefilledAnswersManager
-     * @param VolunteerManager        $volunteerManager
-     * @param StructureManager        $structureManager
-     * @param BadgeManager            $badgeManager
-     * @param CategoryManager         $categoryManager
-     * @param UserManager             $userManager
-     * @param TagManager              $tagManager
-     * @param TranslatorInterface     $translator
-     */
     public function __construct(CampaignManager $campaignManager,
         PrefilledAnswersManager $prefilledAnswersManager,
         VolunteerManager $volunteerManager,
@@ -97,7 +80,6 @@ class WidgetController extends BaseController
         BadgeManager $badgeManager,
         CategoryManager $categoryManager,
         UserManager $userManager,
-        TagManager $tagManager,
         TranslatorInterface $translator)
     {
         $this->campaignManager         = $campaignManager;
@@ -107,7 +89,6 @@ class WidgetController extends BaseController
         $this->badgeManager            = $badgeManager;
         $this->categoryManager         = $categoryManager;
         $this->userManager             = $userManager;
-        $this->tagManager              = $tagManager;
         $this->translator              = $translator;
     }
 
