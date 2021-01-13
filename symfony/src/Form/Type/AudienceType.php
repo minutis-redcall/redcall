@@ -132,30 +132,26 @@ class AudienceType extends AbstractType
             ->add('nivols', TextareaType::class, [
                 'label'    => 'audience.copy_paste_details',
                 'required' => false,
-                'data'     => ['foobar', 'baz', 'toto'],
                 'attr'     => [
                     'rows' => 4,
                 ],
             ])
             ->add('structures_global', HiddenType::class, [
                 'required' => false,
-                'data'     => [1044], /* $hasOneStructure ? [$structures->first()->getId()] : null, */
+                'data'     => $hasOneStructure ? [$structures->first()->getId()] : null,
             ])
             ->add('structures_local', HiddenType::class, [
                 'required' => false,
             ])
             ->add('badges_all', CheckboxType::class, [
                 'required' => false,
-                'data'     => true,
             ])
             ->add('badges_ticked', HiddenType::class, [
                 'required' => false,
-                'data'     => [489],
             ])
             ->add('badges_searched', TextType::class, [
                 'label'    => 'audience.search_other_badge',
                 'required' => false,
-                'data'     => [567, 544],
             ])
             ->add('test_on_me', CheckboxType::class, [
                 'required' => false,
@@ -210,9 +206,6 @@ class AudienceType extends AbstractType
         $resolver->setDefaults([
             'label'          => false,
             'error_bubbling' => false,
-            'constraints'    => [
-                // todo
-            ],
         ]);
     }
 
