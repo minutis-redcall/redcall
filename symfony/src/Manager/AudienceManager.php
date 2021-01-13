@@ -30,6 +30,11 @@ class AudienceManager
     private $badgeManager;
 
     /**
+     * @var ExpirableManager
+     */
+    private $expirableManager;
+
+    /**
      * @var Security
      */
     private $security;
@@ -38,12 +43,14 @@ class AudienceManager
         VolunteerManager $volunteerManager,
         StructureManager $structureManager,
         BadgeManager $badgeManager,
+        ExpirableManager $expirableManager,
         Security $security)
     {
         $this->userManager      = $userManager;
         $this->volunteerManager = $volunteerManager;
         $this->structureManager = $structureManager;
         $this->badgeManager     = $badgeManager;
+        $this->expirableManager = $expirableManager;
         $this->security         = $security;
     }
 
@@ -131,7 +138,8 @@ class AudienceManager
     {
         $volunteerIds = array_merge(
             $data['volunteers'] ?? [],
-            $data['nivols'] ? $this->volunteerManager->getIdsByNivols($data['nivols']) : []
+            $data['nivols'] ? $this->volunteerManager->getIdsByNivols($data['nivols']) : [],
+            $data['preselection_key'] ? $this->expirableManager->get($data['preselection_key'])['volunteers'] : []
         );
 
         $structureIds = $this->extractStructures($data);

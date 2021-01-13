@@ -21,9 +21,10 @@ class CronController extends AbstractController
         'user:cron',
         'pegass',
         'twilio:price',
-        'campaign:expired',
-        'media:clear',
-        'space:clear',
+        'clear:campaign',
+        'clear:media',
+        'clear:space',
+        'clear:expirable',
     ];
 
     /**

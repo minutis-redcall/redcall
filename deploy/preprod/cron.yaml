@@ -5,22 +5,27 @@ cron:
     url: /cron/user-cron
     schedule: every 24 hours
 
-  # * * * * * <path/to/the/project>/symfony/bin/console campaign:expired
-  - description: "Automatically close inactive campaigns"
-    url: /cron/campaign-expired
-    schedule: every 24 hours
-
   # * * * * * <path/to/the/project>/symfony/bin/console twilio:price
   - description: "Fetch missing message prices on Twilio"
     url: /cron/twilio-price
     schedule: every 1 hours
 
-  # * * * * * <path/to/the/project>/symfony/bin/console media:clear
-  - description: "Remove epxired medias"
-    url: /cron/media-clear
+  # * * * * * <path/to/the/project>/symfony/bin/console clear:campaign
+  - description: "Automatically close inactive campaigns"
+    url: /cron/clear-campaign
     schedule: every 24 hours
 
-  # * * * * * <path/to/the/project>/symfony/bin/console space:clear
-  - description: "Remove epxired volunteer space sessions"
-    url: /cron/space-clear
+  # * * * * * <path/to/the/project>/symfony/bin/console clear:media
+  - description: "Remove expired medias"
+    url: /cron/clear-media
+    schedule: every 24 hours
+
+  # * * * * * <path/to/the/project>/symfony/bin/console clear:space
+  - description: "Remove expired volunteer space sessions"
+    url: /cron/clear-space
+    schedule: every 24 hours
+
+  # * * * * * <path/to/the/project>/symfony/bin/console clear:expirable
+  - description: "Remove expired expirable entities"
+    url: /cron/clear-expirable
     schedule: every 24 hours

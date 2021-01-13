@@ -2,249 +2,273 @@
 
     {% import 'macros.html.twig' as macros %}
 
-    <div class="h3">
-        {{ 'audience.audience'|trans }}
-    </div>
-    <p>{{ 'audience.audience_help'|trans }}</p>
-    <br/>
+    <div id="{{ form.vars.id }}">
 
-    {# -------------------------------------------------------------------------------- #}
-    {# Manual selection #}
-    {# -------------------------------------------------------------------------------- #}
+        {# -------------------------------------------------------------------------------- #}
+        {# Pre selection #}
+        {# -------------------------------------------------------------------------------- #}
 
-    {% if app.user.structures|length > 1 %}
-        <div class="h4">
-            {{ 'audience.manual_selection'|trans }}
-        </div>
-    {% endif %}
-
-    {{ form_label(form.volunteers) }}
-    {{ form_widget(form.volunteers, {
-        'attr': {
-            'class': 'flexdatalist numbers no-badge-counts',
-            'multiple': "multiple",
-            'placeholder': 'base.search.placeholder'|trans,
-            'data-data': volunteers_data|json_encode,
-            'data-url': path('audience_search_volunteer'),
-            'data-search-disabled': true,
-            'data-min-length': 1,
-            'data-visible-properties': '["human"]',
-            'data-no-results-text': 'base.search.no_results'|trans,
-            'data-focus-first-result': true,
-            'data-selection-required': true,
-            'data-text-property': "human",
-            'data-value-property': "id",
-        }
-    }) }}
-
-    {{ form_row(form.nivols, {
-        'attr': {
-            'class': 'numbers no-badge-counts'
-        }
-    }) }}
-
-    <br/>
-
-    {# -------------------------------------------------------------------------------- #}
-    {# Structure tree #}
-    {# -------------------------------------------------------------------------------- #}
-    {{ form_row(form.structures_global) }}
-    {{ form_row(form.structures_local) }}
-
-    {% if app.user.structures|length > 1 %}
-
-        <div class="h4">
-            {{ 'audience.structures'|trans }}
+        <div class="d-none">
+            {{ form_row(form.preselection_key) }}
         </div>
 
-        {# All structure ticks, in the tree view #}
-        {% macro renderSlider(form, global, local, hierarchy, information, current, ticked = false) %}
-            {% set ticked = ticked or current in global or current in local %}
+        <div id="pre-selection-summary">
+            {{ include('audience/pre_selection_summary.html.twig') }}
+        </div>
 
-            {% set has_children = hierarchy[current]|length %}
-
-            <div class="structure-node">
-                {# Slider header #}
-                <label class="switch">
-                    <input id="global-structure-{{ current }}"
-                           type="checkbox"
-                           class="toggle-to-text structure-tick numbers"
-                           {% if ticked %}checked{% endif %}
-                           data-field="#{{ form.structures_global.vars.id }}"
-                           data-id="{{ current }}"/>
-                    <span class="slider"></span>
-                </label>
-                {% if has_children %}
-                    <a data-toggle="collapse" href="#container-children-{{ current }}">
-                        <label for="global-structure-{{ current }}">
-                            {{ information[current].name }} ({{ information[current].global_count }})
-                        </label>
-                    </a>
-                {% else %}
-                    <label for="global-structure-{{ current }}">
-                        {{ information[current].name }} ({{ information[current].global_count }})
-                    </label>
-                {% endif %}
-
-                {# Slider body #}
-                {% if has_children %}
-                    <div id="container-children-{{ current }}" class="collapse structure-children">
-                        <div class="card card-body">
-                            <div>
-                                <label class="switch">
-                                    <input id="local-structure-{{ current }}"
-                                           type="checkbox"
-                                           class="toggle-to-text structure-tick numbers"
-                                           {% if ticked %}checked{% endif %}
-                                           data-field="#{{ form.structures_local.vars.id }}"
-                                           data-id="{{ current }}"/>
-                                    <span class="slider"></span>
-                                </label>
-                                <label for="local-structure-{{ current }}">
-                                    {{ information[current].name }} ({{ information[current].local_count }})
-                                </label>
-                            </div>
-                            {% for child in hierarchy[current] %}
-                                {% set ticked = ticked or child in global or child in local %}
-                                {{ _self.renderSlider(form, global, local, hierarchy, information, child, ticked) }}
-                            {% endfor %}
-                        </div>
+        <div class="modal fade" id="audience-modal" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 id="audience-modal-title" class="modal-title"></h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
                     </div>
-                {% endif %}
+                    <div id="audience-modal-body" class="modal-body text-center"></div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ 'base.modal.close'|trans }}</button>
+                    </div>
+                </div>
             </div>
-        {% endmacro %}
-
-        {% for structure_id in structures_roots %}
-            {{ _self.renderSlider(form, form.structures_global.vars.data|split(','), form.structures_local.vars.data|split(','), structures_hierarchy, structures_information, structure_id) }}
-        {% endfor %}
-
-        <br/>
-    {% endif %}
-
-    {# -------------------------------------------------------------------------------- #}
-    {# Badges #}
-    {# -------------------------------------------------------------------------------- #}
-
-    {% if app.user.structures|length > 1 %}
-        <div class="h4">
-            {{ 'audience.badges'|trans }}
-        </div>
-    {% endif %}
-
-    {# Trigger everyone discarding badges #}
-    <div class="form-group">
-
-        <div class="d-none">
-            {{ form_row(form.badges_all) }}
-        </div>
-        <label class="switch">
-            <input id="badges-all"
-                   class="numbers no-badge-counts"
-                   onclick="$('#{{ form.badges_all.vars.id }}').prop('checked', $(this).prop('checked'));"
-                   type="checkbox"
-                   {% if init_data.badges_all %}checked{% endif %}/>
-            <span class="slider"></span>
-        </label>
-        <label for="badges-all">
-            {{ 'audience.select_all_badges'|trans }}
-            (<span id="badge-count-0" class="badge-count">{{ badge_counts[0] }}</span>)
-        </label>
-    </div>
-
-    {# Main badges #}
-    <div class="row">
-
-        <div class="d-none">
-            {{ form_row(form.badges_ticked) }}
         </div>
 
-        {% set badges_ticked = form.badges_ticked.vars.data|split(',') %}
+        <div id="audience-form" class="{% if preselection %}d-none{% endif %}">
 
-        {% for badge in badges_public %}
-            <div class="col-md-3">
+            <div class="h3">
+                {{ 'audience.audience'|trans }}
+            </div>
+
+            <p>{{ 'audience.audience_help'|trans }}</p>
+
+            <br/>
+
+            {# -------------------------------------------------------------------------------- #}
+            {# Manual selection #}
+            {# -------------------------------------------------------------------------------- #}
+
+            {% if app.user.structures|length > 1 %}
+                <div class="h4">
+                    {{ 'audience.manual_selection'|trans }}
+                </div>
+            {% endif %}
+
+            {{ form_label(form.volunteers) }}
+            {{ form_widget(form.volunteers, {
+                'attr': {
+                    'class': 'flexdatalist numbers no-badge-counts',
+                    'multiple': "multiple",
+                    'placeholder': 'base.search.placeholder'|trans,
+                    'data-data': volunteers_data|json_encode,
+                    'data-url': path('audience_search_volunteer'),
+                    'data-search-disabled': true,
+                    'data-min-length': 1,
+                    'data-visible-properties': '["human"]',
+                    'data-no-results-text': 'base.search.no_results'|trans,
+                    'data-focus-first-result': true,
+                    'data-selection-required': true,
+                    'data-text-property': "human",
+                    'data-value-property': "id",
+                }
+            }) }}
+
+            {{ form_row(form.nivols, {
+                'attr': {
+                    'class': 'numbers no-badge-counts'
+                }
+            }) }}
+
+            <br/>
+
+            {# -------------------------------------------------------------------------------- #}
+            {# Structure tree #}
+            {# -------------------------------------------------------------------------------- #}
+            <div class="d-none">
+                {{ form_row(form.structures_global) }}
+                {{ form_row(form.structures_local) }}
+            </div>
+
+            {% if app.user.structures|length > 1 %}
+
+                <div class="h4">
+                    {{ 'audience.structures'|trans }}
+                </div>
+
+                {# All structure ticks, in the tree view #}
+                {% macro renderSlider(form, global, local, hierarchy, information, current, ticked = false) %}
+                    {% set ticked = ticked or current in global or current in local %}
+
+                    {% set has_children = hierarchy[current]|length %}
+
+                    <div class="structure-node">
+                        {# Slider header #}
+                        <label class="switch">
+                            <input id="global-structure-{{ current }}"
+                                   type="checkbox"
+                                   class="toggle-to-text structure-tick numbers"
+                                   {% if ticked %}checked{% endif %}
+                                   data-field="#{{ form.structures_global.vars.id }}"
+                                   data-id="{{ current }}"/>
+                            <span class="slider"></span>
+                        </label>
+                        {% if has_children %}
+                            <a data-toggle="collapse" href="#container-children-{{ current }}">
+                                <label for="global-structure-{{ current }}">
+                                    {{ information[current].name }} ({{ information[current].global_count }})
+                                </label>
+                            </a>
+                        {% else %}
+                            <label for="global-structure-{{ current }}">
+                                {{ information[current].name }} ({{ information[current].global_count }})
+                            </label>
+                        {% endif %}
+
+                        {# Slider body #}
+                        {% if has_children %}
+                            <div id="container-children-{{ current }}" class="collapse structure-children">
+                                <div class="card card-body">
+                                    <div>
+                                        <label class="switch">
+                                            <input id="local-structure-{{ current }}"
+                                                   type="checkbox"
+                                                   class="toggle-to-text structure-tick numbers"
+                                                   {% if ticked %}checked{% endif %}
+                                                   data-field="#{{ form.structures_local.vars.id }}"
+                                                   data-id="{{ current }}"/>
+                                            <span class="slider"></span>
+                                        </label>
+                                        <label for="local-structure-{{ current }}">
+                                            {{ information[current].name }} ({{ information[current].local_count }})
+                                        </label>
+                                    </div>
+                                    {% for child in hierarchy[current] %}
+                                        {% set ticked = ticked or child in global or child in local %}
+                                        {{ _self.renderSlider(form, global, local, hierarchy, information, child, ticked) }}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endmacro %}
+
+                {% for structure_id in structures_roots %}
+                    {{ _self.renderSlider(form, form.structures_global.vars.data|split(','), form.structures_local.vars.data|split(','), structures_hierarchy, structures_information, structure_id) }}
+                {% endfor %}
+
+                <br/>
+            {% endif %}
+
+            {# -------------------------------------------------------------------------------- #}
+            {# Badges #}
+            {# -------------------------------------------------------------------------------- #}
+
+            {% if app.user.structures|length > 1 %}
+                <div class="h4">
+                    {{ 'audience.badges'|trans }}
+                </div>
+            {% endif %}
+
+            {# Trigger everyone discarding badges #}
+            <div class="form-group">
+
+                <div class="d-none">
+                    {{ form_row(form.badges_all) }}
+                </div>
                 <label class="switch">
-                    <input id="badge-{{ badge.id }}"
+                    <input id="badges-all"
+                           class="numbers no-badge-counts"
+                           onclick="$('#{{ form.badges_all.vars.id }}').prop('checked', $(this).prop('checked'));"
                            type="checkbox"
-                           class="toggle-to-text badge-tick numbers no-badge-counts"
-                           {% if init_data.badges_all %}disabled="disabled"{% endif %}
-                            {% if badge.id in badges_ticked %}checked{% endif %}
-                           data-field="#{{ form.badges_ticked.vars.id }}"
-                           data-id="{{ badge.id }}"/>
+                           {% if init_data.badges_all %}checked{% endif %}/>
                     <span class="slider"></span>
                 </label>
-                <label for="badge-{{ badge.id }}" class="badge-tick {% if init_data.badges_all %}disabled{% endif %}">
-                    {{ macros.badge(badge) }}
-                    (<span id="badge-count-{{ badge.id }}" class="badge-count">{{ badge_counts[badge.id] }}</span>)
+                <label for="badges-all">
+                    {{ 'audience.select_all_badges'|trans }}
+                    (<span id="badge-count-0" class="badge-count">{{ badge_counts[0] }}</span>)
                 </label>
-
             </div>
-        {% endfor %}
-    </div>
 
-    <br/>
+            {# Main badges #}
+            <div class="row">
 
-    {# Other badges search #}
-    {% set attr = {
-        'class': 'flexdatalist badge-tick ' ~ (init_data.badges_all ? 'disabled' : ''),
-        'multiple': "multiple",
-        'placeholder': 'base.search.placeholder'|trans,
-        'data-url': path('audience_search_badge'),
-        'data-data': badges_searched|json_encode,
-        'data-search-disabled': true,
-        'data-min-length': 1,
-        'data-visible-properties': '["name"]',
-        'data-no-results-text': 'base.search.no_results'|trans,
-        'data-focus-first-result': true,
-        'data-selection-required': true,
-        'data-text-property': "name",
-        'data-value-property': "id",
-    } %}
-
-    {% if init_data.badges_all %}
-        {% set attr = attr|merge({
-            'disabled': 'disabled',
-        }) %}
-    {% endif %}
-
-    <div class="badge-tick {% if init_data.badges_all %}disabled{% endif %}">
-        {{ form_row(form.badges_searched, {
-            'attr': attr
-        }) }}
-    </div>
-
-    {# -------------------------------------------------------------------------------- #}
-    {# Summary #}
-    {# -------------------------------------------------------------------------------- #}
-
-    <div id="classification">
-        {{ include('audience/classification.html.twig', {
-            classification: classification,
-        }) }}
-    </div>
-
-    <div class="modal fade" id="audience-modal" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 id="audience-modal-title" class="modal-title"></h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                <div class="d-none">
+                    {{ form_row(form.badges_ticked) }}
                 </div>
-                <div id="audience-modal-body" class="modal-body text-center"></div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ 'base.modal.close'|trans }}</button>
-                </div>
+
+                {% set badges_ticked = form.badges_ticked.vars.data|split(',') %}
+
+                {% for badge in badges_public %}
+                    <div class="col-md-3">
+                        <label class="switch">
+                            <input id="badge-{{ badge.id }}"
+                                   type="checkbox"
+                                   class="toggle-to-text badge-tick numbers no-badge-counts"
+                                   {% if init_data.badges_all %}disabled="disabled"{% endif %}
+                                    {% if badge.id in badges_ticked %}checked{% endif %}
+                                   data-field="#{{ form.badges_ticked.vars.id }}"
+                                   data-id="{{ badge.id }}"/>
+                            <span class="slider"></span>
+                        </label>
+                        <label for="badge-{{ badge.id }}" class="badge-tick {% if init_data.badges_all %}disabled{% endif %}">
+                            {{ macros.badge(badge) }}
+                            (<span id="badge-count-{{ badge.id }}" class="badge-count">{{ badge_counts[badge.id] }}</span>)
+                        </label>
+
+                    </div>
+                {% endfor %}
             </div>
+
+            <br/>
+
+            {# Other badges search #}
+            {% set attr = {
+                'class': 'flexdatalist badge-tick ' ~ (init_data.badges_all ? 'disabled' : ''),
+                'multiple': "multiple",
+                'placeholder': 'base.search.placeholder'|trans,
+                'data-url': path('audience_search_badge'),
+                'data-data': badges_searched|json_encode,
+                'data-search-disabled': true,
+                'data-min-length': 1,
+                'data-visible-properties': '["name"]',
+                'data-no-results-text': 'base.search.no_results'|trans,
+                'data-focus-first-result': true,
+                'data-selection-required': true,
+                'data-text-property': "name",
+                'data-value-property': "id",
+            } %}
+
+            {% if init_data.badges_all %}
+                {% set attr = attr|merge({
+                    'disabled': 'disabled',
+                }) %}
+            {% endif %}
+
+            <div class="badge-tick {% if init_data.badges_all %}disabled{% endif %}">
+                {{ form_row(form.badges_searched, {
+                    'attr': attr
+                }) }}
+            </div>
+
+            {# -------------------------------------------------------------------------------- #}
+            {# Summary #}
+            {# -------------------------------------------------------------------------------- #}
+
+            <div id="classification">
+                {{ include('audience/classification.html.twig', {
+                    classification: classification,
+                }) }}
+            </div>
+
+            {# -------------------------------------------------------------------------------- #}
+            {# Test on me #}
+            {# -------------------------------------------------------------------------------- #}
+
+            <div class="d-none">
+                {{ form_row(form.test_on_me) }}
+            </div>
+
         </div>
-    </div>
 
-    {# -------------------------------------------------------------------------------- #}
-    {# Test on me #}
-    {# -------------------------------------------------------------------------------- #}
-
-    <div class="d-none">
-        {{ form_row(form.test_on_me) }}
     </div>
 
     {# -------------------------------------------------------------------------------- #}
@@ -330,6 +354,29 @@
             });
         });
 
+        {% if preselection %}
+        {# Opening the list of selected volunteers from a previous communication #}
+        $('body').on('click', '#open-preselection', function (e) {
+            e.preventDefault();
+            $('#audience-modal-title').html('{{ 'audience.pre_selection.selected_volunteers'|trans }}');
+            $('#audience-modal-body').html('<img src="{{ asset('spinner.gif') }}"/>');
+            $('#audience-modal').modal();
+            $.post('{{ path('audience_pre_selection', {uuid: init_data.preselection_key, name: form.vars.full_name}) }}', $('form.trigger').serialize(), function (content) {
+                $('#audience-modal-body').html(content);
+            });
+        });
+
+        $('body').on('click', '.preselection-volunteer-toggle', function () {
+            var id = $(this).data('id');
+            $.post('{{ path('audience_pre_selection_remove_volunteer', {uuid: init_data.preselection_key}) }}?id=' + id, function (content) {
+                $('#preselection-volunteer-' + id).fadeOut();
+                $('#pre-selection-summary').html(content);
+                numbers(0);
+            });
+        });
+
+        {% endif %}
+
         {# Updating classification and badge counts #}
         var numbersContext = null;
         var numbersLock = false;
@@ -404,6 +451,9 @@
             {% endif %}
         });
 
+        $('body').on('click', '#toggle-audience-form', function () {
+            $('#audience-form').toggleClass('d-none');
+        });
 
     </script>
 

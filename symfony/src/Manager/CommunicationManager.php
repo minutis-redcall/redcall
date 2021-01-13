@@ -11,7 +11,6 @@ use App\Entity\Volunteer;
 use App\Form\Model\BaseTrigger;
 use App\Repository\CommunicationRepository;
 use DateTime;
-use Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -153,13 +152,6 @@ class CommunicationManager
         return $communication;
     }
 
-    /**
-     * @param BaseTrigger $trigger
-     *
-     * @return Communication
-     *
-     * @throws Exception
-     */
     public function createCommunication(BaseTrigger $trigger) : Communication
     {
         $volunteer = null;
@@ -232,18 +224,6 @@ class CommunicationManager
         return $communication;
     }
 
-    /**
-     * @return array
-     */
-    public function getTakenPrefixes() : array
-    {
-        return $this->communicationRepository->getTakenPrefixes();
-    }
-
-    /**
-     * @param \App\Manager\Communication $communication
-     * @param string                     $newName
-     */
     public function changeName(Communication $communication, string $newName)
     {
         $this->communicationRepository->changeName($communication, $newName);

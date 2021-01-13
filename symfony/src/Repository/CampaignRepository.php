@@ -262,7 +262,7 @@ class CampaignRepository extends BaseRepository
     public function getCampaignAudience(Campaign $campaign) : array
     {
         return $this->createQueryBuilder('c')
-                    ->select('s.id as structure_id, s.name as structure_name, COUNT(v) AS volunteer_count')
+                    ->select('s.id as structure_id, s.name as structure_name, COUNT(DISTINCT v) AS volunteer_count')
                     ->join('c.communications', 'co')
                     ->join('co.messages', 'm')
                     ->join('m.volunteer', 'v')

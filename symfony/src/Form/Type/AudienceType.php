@@ -4,13 +4,13 @@ namespace App\Form\Type;
 
 use App\Manager\AudienceManager;
 use App\Manager\BadgeManager;
+use App\Manager\ExpirableManager;
 use App\Manager\StructureManager;
 use App\Manager\UserManager;
 use App\Manager\VolunteerManager;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -58,6 +58,11 @@ class AudienceType extends AbstractType
     private $badgeManager;
 
     /**
+     * @var ExpirableManager
+     */
+    private $expirableManager;
+
+    /**
      * @var Security
      */
     private $security;
@@ -67,6 +72,7 @@ class AudienceType extends AbstractType
         VolunteerManager $volunteerManager,
         StructureManager $structureManager,
         BadgeManager $badgeManager,
+        ExpirableManager $expirableManager,
         Security $security)
     {
         $this->audienceManager  = $audienceManager;
@@ -74,12 +80,14 @@ class AudienceType extends AbstractType
         $this->volunteerManager = $volunteerManager;
         $this->structureManager = $structureManager;
         $this->badgeManager     = $badgeManager;
+        $this->expirableManager = $expirableManager;
         $this->security         = $security;
     }
 
     static public function createEmptyData(array $defaults) : array
     {
         return array_merge([
+            'preselection_key'  => null,
             'volunteers'        => [],
             'nivols'            => [],
             'structures_global' => [],
@@ -125,9 +133,11 @@ class AudienceType extends AbstractType
         $hasOneStructure = 1 === $structures->count();
 
         $builder
-            ->add('volunteers', HiddenType::class, [
-                'label'    => 'audience.search_for_volunteers',
-                'required' => false,
+            ->add('preselection_key', TextType::class, [
+                'label' => false,
+            ])
+            ->add('volunteers', TextType::class, [
+                'label' => 'audience.search_for_volunteers',
             ])
             ->add('nivols', TextareaType::class, [
                 'label'    => 'audience.copy_paste_details',
@@ -136,24 +146,26 @@ class AudienceType extends AbstractType
                     'rows' => 4,
                 ],
             ])
-            ->add('structures_global', HiddenType::class, [
-                'required' => false,
-                'data'     => $hasOneStructure ? [$structures->first()->getId()] : null,
+            ->add('structures_global', TextType::class, [
+                'data'  => $hasOneStructure ? [$structures->first()->getId()] : null,
+                'label' => false,
             ])
-            ->add('structures_local', HiddenType::class, [
-                'required' => false,
+            ->add('structures_local', TextType::class, [
+                'label' => false,
             ])
             ->add('badges_all', CheckboxType::class, [
                 'required' => false,
+                'label'    => false,
             ])
-            ->add('badges_ticked', HiddenType::class, [
-                'required' => false,
+            ->add('badges_ticked', TextType::class, [
+                'label' => false,
             ])
             ->add('badges_searched', TextType::class, [
                 'label'    => 'audience.search_other_badge',
                 'required' => false,
             ])
             ->add('test_on_me', CheckboxType::class, [
+                'label'    => false,
                 'required' => false,
             ]);
 
@@ -196,6 +208,11 @@ class AudienceType extends AbstractType
         $view->vars['classification'] = $this->audienceManager->classifyAudience($data);
         $view->vars['badge_counts']   = $this->audienceManager->extractBadgeCounts($data, $publicBadges);
         $view->vars['init_data']      = $data;
+
+        $view->vars['preselection'] = [];
+        if ($data['preselection_key']) {
+            $view->vars['preselection'] = $this->expirableManager->get($data['preselection_key']);
+        }
     }
 
     /**

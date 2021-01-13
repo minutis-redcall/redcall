@@ -348,3 +348,7 @@ input:checked + .slider {
 .message-error .volunteer-info {
     color: grey;
 }
+
+strong {
+    color: black;
+}

@@ -7,7 +7,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class SpaceClearCommand extends Command
+class ClearSpaceCommand extends Command
 {
     /**
      * @var VolunteerSessionManager
@@ -29,7 +29,7 @@ class SpaceClearCommand extends Command
         parent::configure();
 
         $this
-            ->setName('space:clear')
+            ->setName('clear:space')
             ->setDescription('Clears up old space sessions');
     }
 

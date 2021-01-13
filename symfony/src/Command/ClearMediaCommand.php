@@ -7,7 +7,7 @@ use App\Manager\MediaManager;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class MediaClearCommand extends BaseCommand
+class ClearMediaCommand extends BaseCommand
 {
     /**
      * @var MediaManager
@@ -24,7 +24,7 @@ class MediaClearCommand extends BaseCommand
     protected function configure()
     {
         $this
-            ->setName('media:clear')
+            ->setName('clear:media')
             ->setDescription('Clear expired medias');
     }
 

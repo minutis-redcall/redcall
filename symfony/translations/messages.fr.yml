@@ -131,6 +131,13 @@ audience:
     title: 'Résumé de la sélection'
   copy_paste_details: 'Ou coller une liste de nivols dans le champ ci-dessous.'
   manual_selection: 'Saisie manuelle de bénévoles'
+  pre_selection:
+    title: 'Préselection de bénévoles'
+    description: 'Dans une communication précédente, vous avez sélectionné <strong>%nbr%</strong> bénévoles.'
+    edit: 'Editer cette sélection'
+    selected_volunteers: 'Bénévoles sélectionnés'
+    remove_volunteer: 'Utilisez les coches pour supprimer des bénévoles de la sélection.'
+    use_standard_form: 'Ouvrir le formulaire classique'
   problems:
     disabled: Desactivés
     email_missing: 'Pas d''email'

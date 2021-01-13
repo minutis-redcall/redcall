@@ -9,7 +9,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class CloseExpiredCampaignsCommand extends BaseCommand
+class ClearCampaignCommand extends BaseCommand
 {
     /**
      * @var CampaignManager
@@ -26,7 +26,7 @@ class CloseExpiredCampaignsCommand extends BaseCommand
     protected function configure()
     {
         $this
-            ->setName('campaign:expired')
+            ->setName('clear:campaign')
             ->setDescription('Close campaigns inactive since X days')
             ->addArgument('days', InputArgument::OPTIONAL, 'Number of days before closing an inactive campaign', 7);
     }

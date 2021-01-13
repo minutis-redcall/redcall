@@ -76,11 +76,14 @@ class CampaignManager
     }
 
     public function launchNewCampaign(CampaignModel $campaignModel,
-        ProcessorInterface $processor = null) : CampaignEntity
+        ProcessorInterface $processor = null) : ?CampaignEntity
     {
         $volunteer = null;
         if ($this->tokenStorage->getToken()->getUser() instanceof UserInterface) {
             $volunteer = $this->tokenStorage->getToken()->getUser()->getVolunteer();
+            if (!$volunteer) {
+                return null;
+            }
         }
 
         $campaignEntity = new CampaignEntity();

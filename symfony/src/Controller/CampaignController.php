@@ -90,23 +90,18 @@ class CampaignController extends BaseController
             $type->getFormData()
         );
 
-        $campaignModel->trigger->structures = $user->computeStructureList();
-
         $form = $this
             ->createForm(CampaignType::class, $campaignModel, [
                 'type' => $type,
             ])
             ->handleRequest($request);
 
-        if ($form->get('trigger')->get('test')->isClicked()) {
-            $campaignModel->label = sprintf('[test] %s', $campaignModel->label);
-            $campaignModel->trigger->setAudience([
-                $this->getUser()->getNivol(),
-            ]);
-        }
-
         if ($form->isSubmitted() && $form->isValid()) {
             $campaignEntity = $this->campaignManager->launchNewCampaign($campaignModel);
+
+            if (!$campaignEntity) {
+                return $this->redirectToRoute('home');
+            }
 
             return $this->redirect($this->generateUrl('communication_index', [
                 'id' => $campaignEntity->getId(),
