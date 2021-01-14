@@ -64,7 +64,8 @@ class SpaceController extends BaseController
     public function home(VolunteerSession $session)
     {
         return $this->render('space/index.html.twig', [
-            'session' => $session,
+            'session'  => $session,
+            'messages' => $this->messageManager->getActiveMessagesForVolunteer($session->getVolunteer()),
         ]);
     }
 

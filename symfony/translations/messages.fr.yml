@@ -666,6 +666,12 @@ space:
     update_phone: 'Mettre à jour mon numéro de téléphone, actuellement :'
     user_details: 'Lorsqu''un bénévole se connecte à RedCall mais n''y a pas accès, il tombe par défaut sur cette page qui lui permet de mettre à jour ses préférences de contact et de gérer ses données personnelles. N''hésitez-pas à communiquer au sein de vos structures d''action afin que les bénévoles sous votre responsabilité mettent correctement ces informations à jour.'
     user_title: 'Vous avez un accès aux fonctionnalités de déclenchement de RedCall.'
+    triggers:
+      title: 'Vos messages récents'
+      sms: 'SMS'
+      call: 'appel vocal'
+      email: 'email'
+      subject: 'Message envoyé par %type% le %date% à %time%'
   infos:
     context_1: 'La Croix-Rouge Française possède un peu plus d''un millier de structures ayant des fonctions diverses, notamment dans l''action sociale et le secourisme.'
     context_10: '- Nom'

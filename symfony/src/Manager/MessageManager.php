@@ -309,4 +309,14 @@ class MessageManager
 
         return self::DEPLOY_GRACE - $diff;
     }
+
+    /**
+     * @param Volunteer $volunteer
+     *
+     * @return Message[]
+     */
+    public function getActiveMessagesForVolunteer(Volunteer $volunteer) : array
+    {
+        return $this->messageRepository->getActiveMessagesForVolunteer($volunteer);
+    }
 }
