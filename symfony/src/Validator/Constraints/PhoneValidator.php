@@ -4,7 +4,6 @@ namespace App\Validator\Constraints;
 
 use App\Manager\PhoneManager;
 use libphonenumber\NumberParseException;
-use libphonenumber\PhoneNumberType;
 use libphonenumber\PhoneNumberUtil;
 use Symfony\Component\Form\Exception\UnexpectedTypeException;
 use Symfony\Component\Validator\Constraint;
@@ -54,31 +53,26 @@ class PhoneValidator extends ConstraintValidator
             return;
         }
 
-        if (PhoneNumberType::MOBILE !== $phoneUtil->getNumberType($parsed)) {
-            $this->context
-                ->buildViolation(
-                    $this->translator->trans('phone_card.error_not_mobile')
-                )
-                ->atPath('editor')
-                ->addViolation();
-        }
-
         $phone = $this->phoneManager->findOneByPhoneNumber($value);
 
         // This phone number is already taken by someone else
         if ($phone && $phone->getVolunteer() && $value->getVolunteer()
             && $phone->getVolunteer()->getId() !== $value->getVolunteer()->getId()) {
-            $this->context
-                ->buildViolation(
-                    $this->translator->trans('phone_card.error_taken', [
-                        '%nivol%'          => $phone->getVolunteer()->getNivol(),
-                        '%truncated_name%' => $phone->getVolunteer()->getTruncatedName(),
-                    ])
-                )
-                ->atPath('editor')
-                ->addViolation();
-
-            return;
+            // If it is taken by a disabled volunteer, allow to reuse it anyway
+            if (!$phone->getVolunteer()->isEnabled()) {
+                $phone->getVolunteer()->removePhone($phone);
+                $this->phoneManager->save($phone);
+            } else {
+                $this->context
+                    ->buildViolation(
+                        $this->translator->trans('phone_card.error_taken', [
+                            '%nivol%'          => $phone->getVolunteer()->getNivol(),
+                            '%truncated_name%' => $phone->getVolunteer()->getTruncatedName(),
+                        ])
+                    )
+                    ->atPath('editor')
+                    ->addViolation();
+            }
         }
     }
 }

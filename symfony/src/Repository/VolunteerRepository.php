@@ -126,14 +126,6 @@ class VolunteerRepository extends BaseRepository
         return $qb;
     }
 
-    public function findInStructureQueryBuilder(Structure $structure, bool $enabled = false) : QueryBuilder
-    {
-        return $this->createVolunteersQueryBuilder($enabled)
-                    ->join('v.structures', 's')
-                    ->andWhere('s.id = :structure')
-                    ->setParameter('structure', $structure);
-    }
-
     public function searchAllQueryBuilder(?string $keyword, bool $enabled = false) : QueryBuilder
     {
         $qb = $this->createVolunteersQueryBuilder($enabled);
@@ -250,57 +242,26 @@ class VolunteerRepository extends BaseRepository
      *
      * @return Volunteer[]
      */
-    public function filterByNivols(array $nivols) : array
+    public function getIdsByNivols(array $nivols) : array
     {
-        return $this->createVolunteersQueryBuilder()
+        return $this->createQueryBuilder('v')
+                    ->select('v.id')
                     ->andWhere('v.nivol IN (:nivols)')
                     ->setParameter('nivols', $nivols, Connection::PARAM_STR_ARRAY)
                     ->getQuery()
-                    ->getResult();
+                    ->getArrayResult();
     }
 
-    /**
-     * @param array $nivols
-     * @param User  $user
-     *
-     * @return Volunteer[]
-     */
-    public function filterByNivolsAndAccess(array $nivols, User $user) : array
+    public function filterInaccessibles(User $user, $volunteerIds) : array
     {
-        return $this->createAccessibleVolunteersQueryBuilder($user)
-                    ->andWhere('v.nivol IN (:nivols)')
-                    ->setParameter('nivols', $nivols, Connection::PARAM_STR_ARRAY)
-                    ->getQuery()
-                    ->getResult();
-    }
+        $accessibles = $this->createAccessibleVolunteersQueryBuilder($user)
+                            ->select('v.id')
+                            ->andWhere('v.id IN (:volunteer_ids)')
+                            ->setParameter('volunteer_ids', $volunteerIds)
+                            ->getQuery()
+                            ->getArrayResult();
 
-    /**
-     * @param array $ids
-     *
-     * @return Volunteer[]
-     */
-    public function filterByIds(array $ids) : array
-    {
-        return $this->createVolunteersQueryBuilder()
-                    ->andWhere('v.id IN (:ids)')
-                    ->setParameter('ids', $ids, Connection::PARAM_INT_ARRAY)
-                    ->getQuery()
-                    ->getResult();
-    }
-
-    /**
-     * @param array $ids
-     * @param User  $user
-     *
-     * @return Volunteer[]
-     */
-    public function filterByIdsAndAccess(array $ids, User $user) : array
-    {
-        return $this->createAccessibleVolunteersQueryBuilder($user)
-                    ->andWhere('v.id IN (:ids)')
-                    ->setParameter('ids', $ids, Connection::PARAM_INT_ARRAY)
-                    ->getQuery()
-                    ->getResult();
+        return array_diff($volunteerIds, array_column($accessibles, 'id'));
     }
 
     public function createAcessibleNivolsFilterQueryBuilder(array $nivols, User $user) : QueryBuilder
@@ -334,114 +295,186 @@ class VolunteerRepository extends BaseRepository
                       ->getQuery()
                       ->getArrayResult();
 
-        return array_filter(array_diff($nivols, array_column($valid, 'nivol')));
+        return array_diff($nivols, array_column($valid, 'nivol'));
     }
 
-    public function filterDisabledNivols(array $nivols) : array
+    public function getVolunteerList(array $volunteerIds) : array
     {
-        $disabled = $this->createVolunteersQueryBuilder(false)
-                         ->select('v.nivol')
-                         ->andWhere('v.nivol IN (:nivols)')
-                         ->setParameter('nivols', $nivols)
-                         ->andWhere('v.enabled = false')
-                         ->getQuery()
-                         ->getArrayResult();
-
-        return array_column($disabled, 'nivol');
+        return $this
+            ->createVolunteerListQueryBuilder($volunteerIds)
+            ->getQuery()
+            ->getResult();
     }
 
-    public function filterNoPhoneNivols(array $nivols, User $user) : array
+    public function getVolunteerListForUser(User $user, array $volunteerIds) : array
     {
-        $filtered = $this->createAcessibleNivolsFilterQueryBuilder($nivols, $user)
-                         ->leftJoin('v.phones', 'p')
-                         ->andWhere('p.id IS NULL')
-                         ->getQuery()
-                         ->getArrayResult();
-
-        return array_column($filtered, 'nivol');
+        return $this
+            ->createAccessibleVolunteersQueryBuilder($user)
+            ->andWhere('v.id IN (:volunteer_ids)')
+            ->setParameter('volunteer_ids', $volunteerIds)
+            ->getQuery()
+            ->getResult();
     }
 
-    public function filterPhoneOptOutNivols(array $nivols, User $user) : array
+    public function getVolunteerListInStructuresQueryBuilder(array $structureIds) : QueryBuilder
     {
-        $filtered = $this->createAcessibleNivolsFilterQueryBuilder($nivols, $user)
-                         ->leftJoin('v.phones', 'p')
-                         ->andWhere('p.id IS NOT NULL')
-                         ->andWhere('v.phoneNumberOptin = false')
-                         ->getQuery()
-                         ->getArrayResult();
-
-        return array_column($filtered, 'nivol');
+        return $this
+            ->createQueryBuilder('v')
+            ->select('DISTINCT v.id')
+            ->where('v.enabled = true')
+            ->join('v.structures', 's')
+            ->andWhere('s.enabled = true')
+            ->andWhere('s.id IN (:structure_ids)')
+            ->setParameter('structure_ids', $structureIds);
     }
 
-    public function filterNoEmailNivols(array $nivols, User $user) : array
+    public function getVolunteerListInStructures(array $structureIds) : array
     {
-        $filtered = $this->createAcessibleNivolsFilterQueryBuilder($nivols, $user)
-                         ->andWhere('v.email IS NULL')
-                         ->getQuery()
-                         ->getArrayResult();
-
-        return array_column($filtered, 'nivol');
+        return $this
+            ->getVolunteerListInStructuresQueryBuilder($structureIds)
+            ->getQuery()
+            ->getArrayResult();
     }
 
-    public function filterEmailOptOutNivols(array $nivols, User $user) : array
+    public function getVolunteerCountInStructures(array $structureIds) : int
     {
-        $filtered = $this->createAcessibleNivolsFilterQueryBuilder($nivols, $user)
-                         ->andWhere('v.email IS NOT NULL')
-                         ->andWhere('v.emailOptin = false')
-                         ->getQuery()
-                         ->getArrayResult();
-
-        return array_column($filtered, 'nivol');
+        return $this
+            ->getVolunteerListInStructuresQueryBuilder($structureIds)
+            ->select('COUNT(DISTINCT v.id)')
+            ->getQuery()
+            ->getSingleScalarResult();
     }
 
-    public function loadVolunteersAudience(Structure $structure, array $nivols) : array
+    public function getVolunteerListInStructuresHavingBadgesQueryBuilder(array $structureIds,
+        array $badgeIds) : QueryBuilder
     {
-        return $this->findInStructureQueryBuilder($structure, true)
-                    ->select('v.firstName, v.lastName, v.nivol')
-                    ->andWhere('v.nivol IN (:nivols)')
-                    ->setParameter('nivols', $nivols)
-                    ->addOrderBy('v.firstName', 'ASC')
+        return $this
+            ->createQueryBuilder('v')
+            ->select('DISTINCT v.id')
+            ->where('v.enabled = true')
+            ->join('v.structures', 's')
+            ->andWhere('s.enabled = true')
+            ->andWhere('s.id IN (:structure_ids)')
+            ->setParameter('structure_ids', $structureIds)
+            ->join('v.badges', 'b')
+            ->leftJoin('b.synonym', 'x')
+            ->leftJoin('b.parent', 'p1')
+            ->leftJoin('p1.parent', 'p2')
+            ->leftJoin('p2.parent', 'p3')
+            ->leftJoin('p3.parent', 'p4')
+            ->andWhere('
+                    b.id IN (:badge_ids) 
+                 OR x.id IN (:badge_ids) 
+                 OR p1.id IN (:badge_ids) 
+                 OR p2.id IN (:badge_ids) 
+                 OR p3.id IN (:badge_ids) 
+                 OR p4.id IN (:badge_ids)
+             ')
+            ->setParameter('badge_ids', $badgeIds);
+    }
+
+    public function getVolunteerListInStructuresHavingBadges(array $structureIds, array $badgeIds) : array
+    {
+        return $this->getVolunteerListInStructuresHavingBadgesQueryBuilder($structureIds, $badgeIds)
                     ->getQuery()
                     ->getArrayResult();
     }
 
-    public function searchVolunteersAudience(Structure $structure, string $criteria) : array
+    public function getVolunteerCountInStructuresHavingBadges(array $structureIds, array $badgeIds) : int
     {
-        return $this->searchInStructureQueryBuilder($structure, $criteria, true)
-                    ->select('v.firstName, v.lastName, concat(v.firstName, \' \', v.lastName) as firstLast, concat(v.lastName, \' \', v.firstName) as lastFirst, v.nivol')
-                    ->addOrderBy('v.firstName', 'ASC')
-                    ->setMaxResults(25)
+        return $this->getVolunteerListInStructuresHavingBadgesQueryBuilder($structureIds, $badgeIds)
+                    ->select('COUNT(DISTINCT v.id)')
                     ->getQuery()
-                    ->getArrayResult();
+                    ->getSingleScalarResult();
     }
 
-    public function searchVolunteerAudienceByTags(array $tags, Structure $structure) : array
+    public function getVolunteerGlobalCounts(array $structureIds) : int
     {
-        $rows = $this->createVolunteersQueryBuilder(true)
-                     ->select('v.nivol')
-                     ->join('v.structures', 's')
-                     ->andWhere('s.id = :structure')
-                     ->setParameter('structure', $structure)
-                     ->join('v.tags', 't')
-                     ->andWhere('t.id IN (:tags)')
-                     ->setParameter('tags', $tags)
-                     ->getQuery()
-                     ->getArrayResult();
-
-        return array_column($rows, 'nivol');
+        return $this
+            ->createQueryBuilder('v')
+            ->select('COUNT(DISTINCT v)')
+            ->join('v.structures', 's')
+            ->andWhere('v.enabled = true')
+            ->andWhere('s.enabled = true')
+            ->andWhere('s.id IN (:structure_ids)')
+            ->setParameter('structure_ids', $structureIds)
+            ->getQuery()
+            ->getSingleScalarResult();
     }
 
-    public function getNivolsAndStructures(array $structures, array $nivols) : array
+    public function filterDisabled(array $volunteerIds) : array
     {
-        return $this->createVolunteersQueryBuilder(true)
-                    ->select('v.nivol, s.id as structure_id')
-                    ->join('v.structures', 's')
-                    ->andWhere('s.id IN (:structures)')
-                    ->setParameter('structures', $structures)
-                    ->andWhere('v.nivol IN (:nivols)')
-                    ->setParameter('nivols', $nivols)
-                    ->getQuery()
-                    ->getArrayResult();
+        return $this
+            ->createQueryBuilder('v')
+            ->select('v.id')
+            ->where('v.enabled = false')
+            ->andWhere('v.id IN (:volunteer_ids)')
+            ->setParameter('volunteer_ids', $volunteerIds)
+            ->getQuery()
+            ->getArrayResult();
+    }
+
+    public function filterPhoneLandline(array $volunteerIds) : array
+    {
+        return $this
+            ->createVolunteerListQueryBuilder($volunteerIds)
+            ->select('v.id')
+            ->join('v.phones', 'p')
+            ->andWhere('v.phoneNumberOptin = true')
+            ->andWhere('p.preferred = true')
+            ->andWhere('p.mobile = false')
+            ->getQuery()
+            ->getArrayResult();
+    }
+
+    public function filterPhoneMissing(array $volunteerIds) : array
+    {
+        return $this
+            ->createVolunteerListQueryBuilder($volunteerIds)
+            ->leftJoin('v.phones', 'p')
+            ->andWhere('v.phoneNumberOptin = true')
+            ->andWhere('p.id IS NULL')
+            ->getQuery()
+            ->getArrayResult();
+    }
+
+    public function filterPhoneOptout(array $volunteerIds) : array
+    {
+        return $this
+            ->createVolunteerListQueryBuilder($volunteerIds)
+            ->leftJoin('v.phones', 'p')
+            ->andWhere('v.phoneNumberOptin = false')
+            ->andWhere('p.preferred = true')
+            ->getQuery()
+            ->getArrayResult();
+    }
+
+    public function filterEmailMissing(array $volunteerIds) : array
+    {
+        return $this
+            ->createVolunteerListQueryBuilder($volunteerIds)
+            ->andWhere('v.email IS NULL')
+            ->andWhere('v.emailOptin = true')
+            ->getQuery()
+            ->getArrayResult();
+    }
+
+    public function filterEmailOptout(array $volunteerIds) : array
+    {
+        return $this
+            ->createVolunteerListQueryBuilder($volunteerIds)
+            ->andWhere('v.email IS NOT NULL')
+            ->andWhere('v.emailOptin = false')
+            ->getQuery()
+            ->getArrayResult();
+    }
+
+    private function createVolunteerListQueryBuilder(array $volunteerIds) : QueryBuilder
+    {
+        return $this
+            ->createVolunteersQueryBuilder()
+            ->andWhere('v.id IN (:volunteer_ids)')
+            ->setParameter('volunteer_ids', $volunteerIds);
     }
 
     private function createVolunteersQueryBuilder(bool $enabled = true) : QueryBuilder
@@ -482,7 +515,7 @@ class VolunteerRepository extends BaseRepository
                     'CONCAT(v.lastName, \' \', v.firstName) LIKE :criteria'
                 )
             )
-            ->setParameter('criteria', sprintf('%%%s%%', $criteria));
+            ->setParameter('criteria', sprintf('%%%s%%', str_replace(' ', '%', $criteria)));
     }
 
     private function addUserCriteria(QueryBuilder $qb)

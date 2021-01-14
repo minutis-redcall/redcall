@@ -1,0 +1,55 @@
+{% if classification.problems or classification.reachable %}
+    <div class="h4">
+        {{ 'audience.classification.title'|trans }}
+    </div>
+{% endif %}
+
+{% for key, list in classification.toArray %}
+    {% if list %}
+        <p>
+            {{ ('audience.classification.' ~ (key|snake))|trans({'%nbr%': list|length})|raw }}
+        </p>
+    {% endif %}
+{% endfor %}
+
+{% if classification.problems %}
+
+    <a href="#"
+       class="btn btn-sm btn-secondary"
+       id="open-problems">
+        {{ 'audience.classification.problems'|trans }}
+    </a>
+    {% if classification.reachable %}
+        <br/>
+    {% endif %}
+{% endif %}
+
+{% if classification.reachable %}
+
+    <a href="#"
+       class="btn btn-sm btn-secondary"
+       {% if classification.problems %}style="margin-top:5px;"{% endif %}
+       id="open-audience">
+        {{ 'audience.classification.audience'|trans }}
+    </a>
+
+    <script type="text/javascript">
+
+        $(function () {
+            $('.trigger-launch').prop('disabled', false);
+        });
+
+    </script>
+
+{% else %}
+
+    <script type="text/javascript">
+
+        $(function () {
+            $('.trigger-launch').prop('disabled', 'disabled');
+        });
+
+    </script>
+
+{% endif %}
+

@@ -10,7 +10,6 @@ use App\Entity\PrefilledAnswers;
 use App\Entity\Structure;
 use App\Entity\User;
 use App\Entity\Volunteer;
-use App\Form\Type\AudienceType;
 use App\Form\Type\BadgeWidgetType;
 use App\Form\Type\CategoryWigetType;
 use App\Form\Type\StructureWidgetType;
@@ -20,13 +19,11 @@ use App\Manager\CampaignManager;
 use App\Manager\CategoryManager;
 use App\Manager\PrefilledAnswersManager;
 use App\Manager\StructureManager;
-use App\Manager\TagManager;
 use App\Manager\UserManager;
 use App\Manager\VolunteerManager;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -72,26 +69,10 @@ class WidgetController extends BaseController
     private $userManager;
 
     /**
-     * @var TagManager
-     */
-    private $tagManager;
-
-    /**
      * @var TranslatorInterface
      */
     private $translator;
 
-    /**
-     * @param CampaignManager         $campaignManager
-     * @param PrefilledAnswersManager $prefilledAnswersManager
-     * @param VolunteerManager        $volunteerManager
-     * @param StructureManager        $structureManager
-     * @param BadgeManager            $badgeManager
-     * @param CategoryManager         $categoryManager
-     * @param UserManager             $userManager
-     * @param TagManager              $tagManager
-     * @param TranslatorInterface     $translator
-     */
     public function __construct(CampaignManager $campaignManager,
         PrefilledAnswersManager $prefilledAnswersManager,
         VolunteerManager $volunteerManager,
@@ -99,7 +80,6 @@ class WidgetController extends BaseController
         BadgeManager $badgeManager,
         CategoryManager $categoryManager,
         UserManager $userManager,
-        TagManager $tagManager,
         TranslatorInterface $translator)
     {
         $this->campaignManager         = $campaignManager;
@@ -109,7 +89,6 @@ class WidgetController extends BaseController
         $this->badgeManager            = $badgeManager;
         $this->categoryManager         = $categoryManager;
         $this->userManager             = $userManager;
-        $this->tagManager              = $tagManager;
         $this->translator              = $translator;
     }
 
@@ -317,118 +296,5 @@ class WidgetController extends BaseController
         }
 
         return $this->json($results);
-    }
-
-    /**
-     * @Route(path="/audience/search", name="audience_search")
-     */
-    public function audienceSearch(Request $request)
-    {
-        $structure = $this->getStructure(
-            trim($request->get('structureId'))
-        );
-
-        $load = $request->get('load');
-        if ($load) {
-            if (!is_array($request->get('load'))) {
-                throw $this->createNotFoundException();
-            }
-
-            $results = $this->volunteerManager->loadVolunteersAudience($structure, $request->get('load'));
-        } else {
-            if (!$request->get('keyword')) {
-                throw $this->createNotFoundException();
-            }
-
-            $results = $this->volunteerManager->searchVolunteersAudience($structure, $request->get('keyword'));
-        }
-
-        return new JsonResponse([
-            'results' => $results,
-            'options' => [],
-        ]);
-    }
-
-    /**
-     * @Route(path="/audience/toggle-tag", name="audience_toggle_tag")
-     */
-    public function audienceToggleTag(Request $request)
-    {
-        $tags = array_map(function (int $tag) {
-            if (!$entity = $this->tagManager->find($tag)) {
-                throw $this->createNotFoundException();
-            }
-
-            return $entity;
-        }, $request->get('tags', []));
-
-        $structures = [];
-        foreach ($request->get('structures') as $structure) {
-            $structures[] = $this->getStructure($structure);
-        }
-
-        $view = [];
-        foreach ($structures as $structure) {
-            /** @var Structure $structure */
-            $view[$structure->getId()] = $this->volunteerManager->searchVolunteerAudienceByTags($tags, $structure);
-        }
-
-        return new JsonResponse($view);
-    }
-
-    /**
-     * @Route(path="/audience/classify", name="audience_classify")
-     */
-    public function audienceClassify(Request $request)
-    {
-        // Audience type can be located anywhere in the main form, so we need to seek for the
-        // audience data following the path created using its full name.
-        $name = trim(str_replace(['[', ']'], '.', trim($request->query->get('name'))), '.');
-        $data = $request->request->all();
-        $path = array_filter(explode('.', $name));
-        foreach ($path as $node) {
-            $data = $data[$node];
-        }
-
-        // Recovering structures
-        if ($data['structures'] ?? false) {
-            foreach ($data['structures'] as $key => $structureId) {
-                $data['structures'][$key] = $this->structureManager->find($structureId);
-            }
-        }
-
-        // Classifying nivols
-        $nivols = AudienceType::getNivolsFromFormData($data);
-
-        if ($nivols) {
-            $classification = $this->volunteerManager->classifyNivols($nivols);
-
-            return new JsonResponse([
-                'success'   => true,
-                'view'      => $this->renderView('widget/classification.html.twig', [
-                    'classified' => $classification,
-                ]),
-                'triggered' => count($classification['reachable']),
-            ]);
-        }
-
-        return new JsonResponse([
-            'success' => false,
-        ]);
-    }
-
-    private function getStructure(int $id) : Structure
-    {
-        $structure = $this->structureManager->find($id);
-
-        if (!$structure) {
-            throw $this->createNotFoundException();
-        }
-
-        if (!$this->isGranted('STRUCTURE', $structure)) {
-            throw $this->createAccessDeniedException();
-        }
-
-        return $structure;
     }
 }

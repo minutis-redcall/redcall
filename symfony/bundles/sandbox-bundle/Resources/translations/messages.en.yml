@@ -29,7 +29,6 @@ sandbox:
       number_volunteers: 'Number of volunteers to generate in the structure'
       parent: 'Optional parent structure'
       title: 'Generate structure'
-    tags: 'Generate skills'
     title: 'Generate skills, volunteers & structures'
     volunteer:
       created: '%nbr% volunteers created'

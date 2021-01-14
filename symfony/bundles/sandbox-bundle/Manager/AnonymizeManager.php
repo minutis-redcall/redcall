@@ -104,7 +104,9 @@ class AnonymizeManager
 
         $phone = new Phone();
         $phone->setE164($this->generatePhoneNumber());
-        $volunteer->addPhone($phone);
+        $phone->setMobile(true);
+        $phone->setPreferred(true);
+        $volunteer->getPhones()->add($phone);
 
         $volunteer->setEmail($this->generateEmail($volunteer->getFirstName(), $volunteer->getLastName()));
 

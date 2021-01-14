@@ -120,24 +120,10 @@ class UserManager extends BaseUserManager
         $this->save($user);
     }
 
-    public function getCurrentUserStructuresQueryBuilder() : QueryBuilder
-    {
-        return $this->structureManager->getStructuresQueryBuilderForUser(
-            $this->findForCurrentUser()
-        );
-    }
-
     public function getUserStructuresQueryBuilder(User $user) : QueryBuilder
     {
         return $this->structureManager->getStructuresQueryBuilderForUser(
             $user
-        );
-    }
-
-    public function getCurrentUserStructures() : array
-    {
-        return $this->structureManager->getStructuresForUser(
-            $this->findForCurrentUser()
         );
     }
 

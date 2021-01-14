@@ -9,9 +9,12 @@ use App\Entity\User;
 use App\Entity\Volunteer;
 use Bundles\PegassCrawlerBundle\Entity\Pegass;
 use Doctrine\Bundle\DoctrineBundle\Registry;
+use Doctrine\DBAL\Connection;
 use Doctrine\ORM\QueryBuilder;
 
 /**
+ * Hierarchy deepness is limited to 5.
+ *
  * @method Structure|null find($id, $lockMode = null, $lockVersion = null)
  * @method Structure|null findOneBy(array $criteria, array $orderBy = null)
  * @method Structure[]    findAll()
@@ -127,58 +130,7 @@ class StructureRepository extends BaseRepository
                     ->getResult();
     }
 
-    public function getTagCountByStructuresForUser(User $user) : array
-    {
-        return $this->createQueryBuilder('s')
-                    ->select('s.id as structure_id, t.id as tag_id, COUNT(v.id) as count')
-                    ->join('s.users', 'u')
-                    ->join('s.volunteers', 'v')
-                    ->join('v.tags', 't')
-                    ->where('u.id = :id')
-                    ->andWhere('v.enabled = true')
-                    ->andWhere('s.enabled = true')
-                    ->setParameter('id', $user->getId())
-                    ->orderBy('t.id', 'ASC')
-                    ->groupBy('s.id', 't.id')
-                    ->getQuery()
-                    ->getArrayResult();
-    }
-
-    public function getVolunteerCountByStructuresForUser(User $user) : array
-    {
-        $rows = $this->createQueryBuilder('s')
-                     ->select('s.id as structure_id, p.id as parent_id, COUNT(DISTINCT v.id) as count')
-                     ->join('s.users', 'u')
-                     ->join('s.volunteers', 'v')
-                     ->leftJoin('s.parentStructure', 'p')
-                     ->where('u.id = :id')
-                     ->andWhere('v.enabled = true')
-                     ->andWhere('s.enabled = true')
-                     ->setParameter('id', $user->getId())
-                     ->groupBy('s.id')
-                     ->getQuery()
-                     ->getArrayResult();
-
-        $counts = [];
-        foreach ($rows as $row) {
-            $counts[$row['structure_id']]['local'] = $row['count'];
-            if (!isset($counts[$row['structure_id']]['global'])) {
-                $counts[$row['structure_id']]['global'] = 0;
-            }
-            $counts[$row['structure_id']]['global'] += $row['count'];
-
-            if ($row['parent_id']) {
-                if (!isset($counts[$row['parent_id']]['global'])) {
-                    $counts[$row['parent_id']]['global'] = 0;
-                }
-                $counts[$row['parent_id']]['global'] += $row['count'];
-            }
-        }
-
-        return $counts;
-    }
-
-    public function getStructuresForAdminQueryBuilder(User $user) : QueryBuilder
+    public function getStructuresForUserQueryBuilder(User $user) : QueryBuilder
     {
         return $this->createQueryBuilder('s')
                     ->join('s.users', 'u')
@@ -186,11 +138,6 @@ class StructureRepository extends BaseRepository
                     ->setParameter('id', $user->getId())
                     ->andWhere('s.enabled = true')
                     ->orderBy('s.identifier', 'asc');
-    }
-
-    public function getStructuresForUserQueryBuilder(User $user) : QueryBuilder
-    {
-        return $this->getStructuresForAdminQueryBuilder($user);
     }
 
     public function searchAllQueryBuilder(?string $criteria, bool $enabled = true) : QueryBuilder
@@ -202,7 +149,7 @@ class StructureRepository extends BaseRepository
 
         if ($criteria) {
             $qb->andWhere('s.identifier LIKE :criteria OR s.name LIKE :criteria')
-               ->setParameter('criteria', sprintf('%%%s%%', $criteria));
+               ->setParameter('criteria', sprintf('%%%s%%', str_replace(' ', '%', $criteria)));
         }
 
         $qb->orderBy('s.name');
@@ -233,21 +180,12 @@ class StructureRepository extends BaseRepository
 
         if ($criteria) {
             $qb->andWhere('s.identifier LIKE :criteria OR s.name LIKE :criteria')
-               ->setParameter('criteria', sprintf('%%%s%%', $criteria));
+               ->setParameter('criteria', sprintf('%%%s%%', str_replace(' ', '%', $criteria)));
         }
 
         $qb->orderBy('s.name');
 
         return $qb;
-    }
-
-    public function searchForUser(User $user, ?string $criteria, int $maxResults, ?bool $enabled = null) : array
-    {
-        return $this
-            ->searchForUserQueryBuilder($user, $criteria, $enabled)
-            ->setMaxResults($maxResults)
-            ->getQuery()
-            ->getResult();
     }
 
     public function synchronizeWithPegass()
@@ -296,5 +234,50 @@ class StructureRepository extends BaseRepository
             ->join('v.user', 'su')
             ->andWhere('v.enabled = true')
             ->groupBy('s.id');
+    }
+
+    public function getStructureHierarchyForCurrentUser(User $user) : array
+    {
+        return $this
+            ->getStructuresForUserQueryBuilder($user)
+            ->select('s.id, c.id as child_id')
+            ->leftJoin('s.childrenStructures', 'c')
+            ->getQuery()
+            ->getArrayResult();
+    }
+
+    public function getVolunteerLocalCounts(array $structureIds) : array
+    {
+        return $this
+            ->createQueryBuilder('s')
+            ->select('s.id, s.name, COUNT(DISTINCT v) AS count')
+            ->where('s.id IN (:ids)')
+            ->setParameter('ids', $structureIds, Connection::PARAM_INT_ARRAY)
+            ->andWhere('s.enabled = true')
+            ->leftJoin('s.volunteers', 'v')
+            ->andWhere('v.enabled = true OR v.enabled IS NULL')
+            ->groupBy('s.id')
+            ->getQuery()
+            ->getArrayResult();
+    }
+
+    public function getDescendantStructures(array $structureIds) : array
+    {
+        for ($i = 0; $i < 5; $i++) {
+            $structureIds = array_merge(
+                $structureIds,
+                array_column($this
+                    ->createQueryBuilder('s')
+                    ->select('s.id')
+                    ->where('s.enabled = true')
+                    ->join('s.parentStructure', 'p')
+                    ->andWhere('p.id IN (:ids)')
+                    ->setParameter('ids', $structureIds, Connection::PARAM_INT_ARRAY)
+                    ->getQuery()
+                    ->getArrayResult(), 'id')
+            );
+        }
+
+        return $structureIds;
     }
 }

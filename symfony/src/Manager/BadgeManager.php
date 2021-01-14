@@ -4,6 +4,7 @@ namespace App\Manager;
 
 use App\Entity\Badge;
 use App\Repository\BadgeRepository;
+use Doctrine\ORM\QueryBuilder;
 use Pagerfanta\Pagerfanta;
 
 class BadgeManager
@@ -38,7 +39,7 @@ class BadgeManager
 
     public function getSearchInPublicBadgesQueryBuilder(?string $criteria)
     {
-        return $this->badgeRepository->getSearchInPublicBadgesQueryBuilder($criteria);
+        return $this->badgeRepository->getSearchInBadgesQueryBuilder($criteria);
     }
 
     public function search(?string $criteria, int $limit = 0) : array
@@ -49,6 +50,16 @@ class BadgeManager
     public function searchForCompletion(?string $criteria, int $limit = 0) : array
     {
         return $this->badgeRepository->searchForCompletion($criteria, $limit);
+    }
+
+    public function searchNonVisibleUsableBadge(?string $criteria, int $limit = 0) : array
+    {
+        return $this->badgeRepository->searchNonVisibleUsableBadge($criteria, $limit);
+    }
+
+    public function getNonVisibleUsableBadgesList(array $ids)
+    {
+        return $this->badgeRepository->getNonVisibleUsableBadgesList($ids);
     }
 
     public function remove(Badge $badge)
@@ -65,5 +76,18 @@ class BadgeManager
         }
 
         return $this->badgeRepository->getVolunteerCountInBadgeList($ids);
+    }
+
+    public function getPublicBadgesQueryBuilder() : QueryBuilder
+    {
+        return $this->badgeRepository->getPublicBadgesQueryBuilder();
+    }
+
+    public function getPublicBadges() : array
+    {
+        return $this
+            ->getPublicBadgesQueryBuilder()
+            ->getQuery()
+            ->getResult();
     }
 }

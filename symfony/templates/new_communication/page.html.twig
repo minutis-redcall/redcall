@@ -14,7 +14,7 @@
         {{ include(type.formView) }}
         {{ form_end(form) }}
 
-        <a href="{{ path('communication_index', {id: campaign.id}) }}" class="btn btn-light">
+        <a href="{{ path('communication_index', {id: campaign.id, key: key}) }}" class="btn btn-light">
             {{ 'form.communication.fields.back'|trans }}
         </a>
 
@@ -25,8 +25,20 @@
     <div id="spinner-container" class="d-none">
         <div class="jumbotron text-center">
             <div class="h2">{{ 'base.wait'|trans }}</div>
-            <img src="{{ asset('spinner.gif') }}" />
+            <img src="{{ asset('spinner.gif') }}"/>
         </div>
     </div>
+
+    <script type="text/javascript">
+
+        $(function () {
+            $('.trigger-launch').click(function () {
+                {# It's a click on "Send to XX volunteers" button #}
+                $('#form-container').addClass('d-none');
+                $('#spinner-container').removeClass('d-none');
+            });
+        });
+
+    </script>
 
 {% endblock %}

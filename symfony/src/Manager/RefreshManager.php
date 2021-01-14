@@ -5,7 +5,6 @@ namespace App\Manager;
 use App\Entity\Badge;
 use App\Entity\Phone;
 use App\Entity\Structure;
-use App\Entity\Tag;
 use App\Entity\Volunteer;
 use App\Task\SyncOneWithPegass;
 use Bundles\GoogleTaskBundle\Service\TaskSender;
@@ -14,7 +13,6 @@ use Bundles\PegassCrawlerBundle\Manager\PegassManager;
 use libphonenumber\NumberParseException;
 use libphonenumber\PhoneNumber;
 use libphonenumber\PhoneNumberFormat;
-use libphonenumber\PhoneNumberType;
 use libphonenumber\PhoneNumberUtil;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
@@ -53,11 +51,6 @@ class RefreshManager
     private $volunteerManager;
 
     /**
-     * @var TagManager
-     */
-    private $tagManager;
-
-    /**
      * @var BadgeManager
      */
     private $badgeManager;
@@ -90,7 +83,6 @@ class RefreshManager
     public function __construct(PegassManager $pegassManager,
         StructureManager $structureManager,
         VolunteerManager $volunteerManager,
-        TagManager $tagManager,
         BadgeManager $badgeManager,
         CategoryManager $categoryManager,
         UserManager $userManager,
@@ -101,7 +93,6 @@ class RefreshManager
         $this->pegassManager    = $pegassManager;
         $this->structureManager = $structureManager;
         $this->volunteerManager = $volunteerManager;
-        $this->tagManager       = $tagManager;
         $this->badgeManager     = $badgeManager;
         $this->categoryManager  = $categoryManager;
         $this->userManager      = $userManager;
@@ -211,8 +202,17 @@ class RefreshManager
                 }
 
                 if ($parent = $this->structureManager->findOneByIdentifier($parentId)) {
-                    $structure->setParentStructure($parent);
-                    $this->structureManager->save($structure);
+                    if (!in_array($structure, $parent->getAncestors())) {
+                        $structure->setParentStructure($parent);
+                        $this->structureManager->save($structure);
+                    } else {
+                        $this->logger->error(sprintf(
+                            'Hierarchy loop: structure %s has parent %s which itself has %s as ancestor!',
+                            $structure->getDisplayName(),
+                            $parent->getDisplayName(),
+                            $structure->getDisplayName()
+                        ));
+                    }
                 }
             }
         });
@@ -346,19 +346,6 @@ class RefreshManager
             $this->fetchBadges($pegass)
         );
 
-        // Update volunteer skills
-        $skills = $this->fetchSkills($pegass);
-        foreach ($skills as $skill) {
-            $volunteer->addTag(
-                $this->tagManager->findOneByLabel($skill)
-            );
-        }
-        foreach ($volunteer->getTags() as $tag) {
-            if (!in_array($tag->getLabel(), $skills)) {
-                $volunteer->removeTag($tag);
-            }
-        }
-
         // Some issues may lead to not contact a volunteer properly
         if (!$volunteer->getPhoneNumber() && !$volunteer->getEmail()) {
             $volunteer->addReport('import_report.no_contact');
@@ -418,12 +405,8 @@ class RefreshManager
             try {
                 /** @var PhoneNumber $parsed */
                 $parsed = $phoneUtil->parse($row['libelle'], Phone::DEFAULT_LANG);
+                $e164   = $phoneUtil->format($parsed, PhoneNumberFormat::E164);
 
-                if (PhoneNumberType::MOBILE !== $phoneUtil->getNumberType($parsed)) {
-                    continue;
-                }
-
-                $e164 = $phoneUtil->format($parsed, PhoneNumberFormat::E164);
                 if (!$volunteer->hasPhoneNumber($e164) && !$this->phoneManager->findOneByPhoneNumber($e164)) {
                     $phone = new Phone();
                     $phone->setPreferred(0 === $volunteer->getPhones()->count());
@@ -432,20 +415,6 @@ class RefreshManager
                 }
             } catch (NumberParseException $e) {
                 continue;
-            }
-        }
-
-        // Cleaning: do not integrate non mobile phones
-        foreach ($volunteer->getPhones() as $phone) {
-            /** @var Phone $phone */
-            $parsed = $phoneUtil->parse($phone->getE164(), Phone::DEFAULT_LANG);
-            if (PhoneNumberType::MOBILE !== $phoneUtil->getNumberType($parsed)) {
-                $volunteer->removePhone($phone);
-            }
-        }
-        if (1 === $volunteer->getPhones()->count()) {
-            foreach ($volunteer->getPhones() as $phone) {
-                $phone->setPreferred(true);
             }
         }
     }
@@ -613,91 +582,6 @@ class RefreshManager
         $this->badgeManager->save($badge);
 
         return $badge;
-    }
-
-    private function fetchSkills(Pegass $pegass)
-    {
-        $skills = [];
-
-        // US, AS
-        foreach ($pegass->evaluate('actions') as $action) {
-            if (1 == ($action['groupeAction']['id'] ?? false)) {
-                $skills[] = Tag::TAG_EMERGENCY_ASSISTANCE;
-            }
-
-            if (2 == ($action['groupeAction']['id'] ?? false)) {
-                $skills[] = Tag::TAG_SOCIAL_ASSISTANCE;
-            }
-        }
-
-        // VL, VPSP, MAR, CEM
-        foreach ($pegass->evaluate('skills') as $skill) {
-            if (9 == ($skill['id'] ?? false)) {
-                $skills[] = Tag::TAG_DRVR_VL;
-            }
-
-            if (10 == ($skill['id'] ?? false)) {
-                $skills[] = Tag::TAG_DRVR_VPSP;
-            }
-
-            if (15 == ($skill['id'] ?? false)) {
-                $skills[] = Tag::TAG_MAR;
-            }
-
-            if (8 == ($skill['id'] ?? false)) {
-                $skills[] = Tag::TAG_CEM;
-            }
-        }
-
-        // DLAS, DLUS, CEM
-        foreach ($pegass->evaluate('nominations') as $nomination) {
-            if (309 == ($nomination['id'] ?? false)) {
-                $skills[] = Tag::TAG_DLAS;
-            }
-            if (40 == ($nomination['id'] ?? false)) {
-                $skills[] = Tag::TAG_DLUS;
-            }
-            if (331 == ($nomination['id'] ?? false)) {
-                $skills[] = Tag::TAG_CEM;
-            }
-        }
-
-        // PSC1, PSE1, PSE2, CI, TCAU, TCEO
-        foreach ($pegass->evaluate('trainings') as $training) {
-            // Check skill expiration (expiration date + 6 months)
-            if (isset($training['dateRecyclage']) && preg_match('/^\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}$/', $training['dateRecyclage'])) {
-                $expiration = (new \DateTime($training['dateRecyclage']))->add(new \DateInterval('P6M'));
-                if (time() > $expiration->getTimestamp()) {
-                    continue;
-                }
-            }
-
-            if (in_array($training['formation']['code'] ?? false, ['RECCI', 'CI', 'CIP3'])) {
-                $skills[] = Tag::TAG_CI;
-            }
-
-            if (in_array($training['formation']['code'] ?? false, ['RECPSE2', 'PSE2'])) {
-                $skills[] = Tag::TAG_PSE_2;
-            }
-
-            if (in_array($training['formation']['code'] ?? false, ['RECPSE1', 'PSE1'])) {
-                $skills[] = Tag::TAG_PSE_1;
-            }
-
-            if (in_array($training['formation']['code'] ?? false, ['RECPSC1', 'PSC1'])) {
-                $skills[] = Tag::TAG_PSC_1;
-            }
-
-            if (in_array($training['formation']['code'] ?? false, ['TCAU'])) {
-                $skills[] = Tag::TAG_TCAU;
-            }
-
-            if (in_array($training['formation']['code'] ?? false, ['TCEO'])) {
-                $skills[] = Tag::TAG_TCEO;
-            }
-        }
-
-        return $skills;
     }
 
     private function debug(string $message, array $params = [])

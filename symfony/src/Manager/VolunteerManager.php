@@ -24,11 +24,6 @@ class VolunteerManager
     private $userManager;
 
     /**
-     * @var TagManager
-     */
-    private $tagManager;
-
-    /**
      * @var AnswerManager
      */
     private $answerManager;
@@ -49,14 +44,12 @@ class VolunteerManager
     private $translator;
 
     public function __construct(VolunteerRepository $volunteerRepository,
-        TagManager $tagManager,
         AnswerManager $answerManager,
         GeoLocationManager $geoLocationManager,
         PhoneManager $phoneManager,
         TranslatorInterface $translator)
     {
         $this->volunteerRepository = $volunteerRepository;
-        $this->tagManager          = $tagManager;
         $this->answerManager       = $answerManager;
         $this->geoLocationManager  = $geoLocationManager;
         $this->phoneManager        = $phoneManager;
@@ -71,31 +64,16 @@ class VolunteerManager
         $this->userManager = $userManager;
     }
 
-    /**
-     * @param int $volunteerId
-     *
-     * @return Volunteer|null
-     */
     public function find(int $volunteerId) : ?Volunteer
     {
         return $this->volunteerRepository->find($volunteerId);
     }
 
-    /**
-     * @param string $nivol
-     *
-     * @return Volunteer|null
-     */
     public function findOneByNivol(string $nivol) : ?Volunteer
     {
         return $this->volunteerRepository->findOneByNivol($nivol);
     }
 
-    /**
-     * @param string $phoneNumber
-     *
-     * @return Volunteer|null
-     */
     public function findOneByPhoneNumber(string $phoneNumber) : ?Volunteer
     {
         $phone = $this->phoneManager->findOneByPhoneNumber($phoneNumber);
@@ -103,29 +81,16 @@ class VolunteerManager
         return $phone ? $phone->getVolunteer() : null;
     }
 
-    /**
-     * @param string $email
-     *
-     * @return Volunteer|null
-     */
     public function findOneByEmail(string $email) : ?Volunteer
     {
         return $this->volunteerRepository->findOneByEmail($email);
     }
 
-    /**
-     * @param Volunteer $volunteer
-     */
     public function save(Volunteer $volunteer)
     {
         $this->volunteerRepository->save($volunteer);
     }
 
-    /**
-     * @param string|null $criteria
-     *
-     * @return Volunteer[]|array
-     */
     public function searchAll(?string $criteria, int $limit)
     {
         return $this->volunteerRepository->searchAll($criteria, $limit);
@@ -138,6 +103,32 @@ class VolunteerManager
             $criteria,
             $limit,
             $onlyEnabled
+        );
+    }
+
+    public function getVolunteerList(array $volunteerIds) : array
+    {
+        $volunteers = [];
+
+        $list = $this->volunteerRepository->getVolunteerList($volunteerIds);
+
+        usort($list, function (Volunteer $a, Volunteer $b) {
+            return $a->getLastName() <=> $b->getLastName();
+        });
+
+        foreach ($list as $volunteer) {
+            /** @var Volunteer $volunteer */
+            $volunteers[$volunteer->getId()] = $volunteer;
+        }
+
+        return $volunteers;
+    }
+
+    public function getVolunteerListForCurrentUser(array $volunteerIds) : array
+    {
+        return $this->volunteerRepository->getVolunteerListForUser(
+            $this->userManager->findForCurrentUser(),
+            $volunteerIds
         );
     }
 
@@ -195,9 +186,6 @@ class VolunteerManager
         return $issues;
     }
 
-    /**
-     * @return array
-     */
     public function getIssues() : array
     {
         return $this->volunteerRepository->getIssues(
@@ -210,108 +198,77 @@ class VolunteerManager
         $this->volunteerRepository->synchronizeWithPegass();
     }
 
-    /**
-     * @param array $nivols
-     *
-     * @return Volunteer[]
-     */
-    public function filterByNivolAndAccess(array $nivols) : array
+    public function getIdsByNivols(array $nivols) : array
     {
-        $user = $this->userManager->findForCurrentUser();
-
-        if ($user->isAdmin()) {
-            return $this->volunteerRepository->filterByNivols($nivols);
-        }
-
-        return $this->volunteerRepository->filterByNivolsAndAccess($nivols, $user);
+        return array_column($this->volunteerRepository->getIdsByNivols($nivols), 'id');
     }
 
-    /**
-     * @param array $ids
-     *
-     * @return Volunteer[]
-     */
-    public function filterByIdAndAccess(array $ids) : array
+    public function getVolunteerListInStructures(array $structureIds) : array
     {
-        $user = $this->userManager->findForCurrentUser();
-
-        if ($user->isAdmin()) {
-            return $this->volunteerRepository->filterByIds($ids);
-        }
-
-        return $this->volunteerRepository->filterByIdsAndAccess($ids, $user);
+        return array_column($this->volunteerRepository->getVolunteerListInStructures($structureIds), 'id');
     }
 
-    public function classifyNivols(array $nivols) : array
+    public function getVolunteerCountInStructures(array $structureIds) : int
     {
-        $user = $this->userManager->findForCurrentUser();
-
-        $reachable    = $this->volunteerRepository->filterReachableNivols($nivols, $user);
-        $invalid      = $this->volunteerRepository->filterInvalidNivols($nivols);
-        $disabled     = $this->volunteerRepository->filterDisabledNivols($nivols);
-        $noPhone      = $this->volunteerRepository->filterNoPhoneNivols($nivols, $user);
-        $phoneOptout  = $this->volunteerRepository->filterPhoneOptOutNivols($nivols, $user);
-        $noEmail      = $this->volunteerRepository->filterNoEmailNivols($nivols, $user);
-        $emailOptout  = $this->volunteerRepository->filterEmailOptOutNivols($nivols, $user);
-        $inaccessible = array_diff($nivols, $reachable, $invalid, $disabled, $noPhone, $phoneOptout, $noEmail, $emailOptout);
-
-        if ($user->isAdmin()) {
-            $reachable    = array_merge($reachable, $inaccessible);
-            $inaccessible = [];
-        }
-
-        return [
-            'reachable'    => $reachable,
-            'invalid'      => $invalid,
-            'disabled'     => $disabled,
-            'inaccessible' => $inaccessible,
-            'no_phone'     => $noPhone,
-            'phone_optout' => $phoneOptout,
-            'no_email'     => $noEmail,
-            'email_optout' => $emailOptout,
-        ];
+        return $this->volunteerRepository->getVolunteerCountInStructures($structureIds);
     }
 
-    public function loadVolunteersAudience(Structure $structure, array $nivols) : array
+    public function getVolunteerListInStructuresHavingBadges(array $structureIds, array $badgeIds) : array
     {
-        $rows = $this->volunteerRepository->loadVolunteersAudience($structure, $nivols);
-
-        return $this->populateDatalist($rows);
+        return array_column($this->volunteerRepository->getVolunteerListInStructuresHavingBadges($structureIds, $badgeIds), 'id');
     }
 
-    public function searchVolunteersAudience(Structure $structure, string $criteria) : array
+    public function getVolunteerCountInStructuresHavingBadges(array $structureIds, array $badgeIds) : int
     {
-        $rows = $this->volunteerRepository->searchVolunteersAudience($structure, $criteria);
-
-        return $this->populateDatalist($rows);
+        return $this->volunteerRepository->getVolunteerCountInStructuresHavingBadges($structureIds, $badgeIds);
     }
 
-    public function searchVolunteerAudienceByTags(array $tags, Structure $structure) : array
+    public function getVolunteerGlobalCounts(array $structureIds) : int
     {
-        return $this->volunteerRepository->searchVolunteerAudienceByTags($tags, $structure);
+        return $this->volunteerRepository->getVolunteerGlobalCounts($structureIds);
     }
 
-    public function organizeNivolsByStructures(array $structures, array $nivols) : array
+    public function filterInvalidNivols(array $nivols) : array
     {
-        $organized = [];
+        return $this->volunteerRepository->filterInvalidNivols($nivols);
+    }
 
-        $rows = $this->volunteerRepository->getNivolsAndStructures($structures, $nivols);
-        foreach ($rows as $row) {
-            if (!isset($organized[$row['structure_id']])) {
-                $organized[$row['structure_id']] = [];
-            }
-            $organized[$row['structure_id']][] = $row['nivol'];
-        }
+    public function filterInaccessibles(array $volunteerIds) : array
+    {
+        return $this->volunteerRepository->filterInaccessibles(
+            $this->userManager->findForCurrentUser(),
+            $volunteerIds
+        );
+    }
 
-        if (!count($organized)) {
-            $organized[] = [];
-        }
+    public function filterDisabled(array $volunteerIds) : array
+    {
+        return array_column($this->volunteerRepository->filterDisabled($volunteerIds), 'id');
+    }
 
-        // All other nivols were set in the "nivol" field
-        $diff         = call_user_func_array('array_diff', array_merge([$nivols], array_values($organized)));
-        $organized[0] = $diff;
+    public function filterPhoneLandline(array $volunteerIds) : array
+    {
+        return array_column($this->volunteerRepository->filterPhoneLandline($volunteerIds), 'id');
+    }
 
-        return $organized;
+    public function filterPhoneMissing(array $volunteerIds) : array
+    {
+        return array_column($this->volunteerRepository->filterPhoneMissing($volunteerIds), 'id');
+    }
+
+    public function filterPhoneOptout(array $volunteerIds) : array
+    {
+        return array_column($this->volunteerRepository->filterPhoneOptout($volunteerIds), 'id');
+    }
+
+    public function filterEmailMissing(array $volunteerIds) : array
+    {
+        return array_column($this->volunteerRepository->filterEmailMissing($volunteerIds), 'id');
+    }
+
+    public function filterEmailOptout(array $volunteerIds) : array
+    {
+        return array_column($this->volunteerRepository->filterEmailOptout($volunteerIds), 'id');
     }
 
     public function anonymize(Volunteer $volunteer)
@@ -359,28 +316,5 @@ class VolunteerManager
         $volunteer->setEmailLocked(false);
 
         $this->save($volunteer);
-    }
-
-    private function populateDatalist(array $rows) : array
-    {
-        $tags = $this->tagManager->findTagsForNivols(
-            array_unique(array_column($rows, 'nivol'))
-        );
-
-        $mapped = [];
-        foreach ($rows as $volunteer) {
-            $volunteer['tags']           = [];
-            $mapped[$volunteer['nivol']] = $volunteer;
-        }
-
-        foreach ($tags as $tag) {
-            $mapped[$tag['nivol']]['tags'][] = $this->translator->trans(sprintf('tag.shortcuts.%s', $tag['label']));
-        }
-
-        foreach ($mapped as $nivol => $volunteer) {
-            $mapped[$nivol]['tags'] = implode(', ', $volunteer['tags']);
-        }
-
-        return array_values($mapped);
     }
 }

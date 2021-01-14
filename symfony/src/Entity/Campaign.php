@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\CampaignRepository")
@@ -193,7 +194,7 @@ class Campaign
         return $this;
     }
 
-    public function getCampaignStatus() : array
+    public function getCampaignStatus(TranslatorInterface $translator) : array
     {
         $data = [
             'notes'          => [
@@ -228,7 +229,7 @@ class Campaign
 
                 $data['communications'][$communication->getId()]['msg'][$message->getId()] = [
                     'sent'               => $message->isSent(),
-                    'error'              => $message->getError(),
+                    'error'              => $translator->trans($message->getError()),
                     'has-answer'         => $message->getAnswers()->count(),
                     'choices'            => $choices,
                     'has-invalid-answer' => [

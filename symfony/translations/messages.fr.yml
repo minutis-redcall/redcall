@@ -63,22 +63,24 @@ admin:
   home:
     link: Administration
   pegass:
+    add_structure: 'Ajouter une structure'
     bound_volunteer: 'Bénévole associé : %name%'
     create_user: 'Ajouter un nouvel utilisateur'
+    delete_structures: 'Effacer une ou plusieurs structures'
     developer: 'Donner l''accès développeur'
     developered: Développeur
     developered_details: 'Un développeur peut intégrer les APIs de RedCall et accéder à des fonctionnalités techniques.'
+    edit: 'Ouvrir la fiche bénévole'
     list_users: 'Envoyer un message à tous les utilisateurs'
     list_users_explain: 'Afin de contacter tous les utilisateurs, copiez/collez cette liste de nivols dans un nouveau déclenchement.'
     lock: Geler
     locked: Gelé
     locked_details: 'Les structures d''un utilisateur gelé ne seront pas mises à jour avec la mise à jour Pegass de son bénévole attaché.'
+    open: 'Ouvrir l''entrée Pegass'
     structures: 'Mise à jour des structures pour %name%'
     title: 'Connexions entre les utilisateurs de RedCall et la base de données bénévole'
     undeveloper: 'Retirer l''accès développeur'
     unlock: Dégeler
-    add_structure: 'Ajouter une structure'
-    delete_structures: 'Effacer une ou plusieurs structures'
   statistics:
     campaign:
       period: 'Dans cette période, <b>%created%</b> déclenchements ont été créés, dont <b>%active%</b> sont toujours actifs.'
@@ -111,21 +113,46 @@ admin:
     pegass: 'Connexions à Pegass'
 audience:
   audience: Audience
-  classify:
-    disabled: '%nbr% nivols sont reliés à des bénévoles desactivés'
-    email_optout: '%nbr% nivols sont reliés à des bénévoles ne souhaitant pas recevoir d''emails'
-    inaccessible: '%nbr% nivols sont reliés à des bénévoles ne faisant pas partie de votre périmètre'
-    invalid: '%nbr% nivols n''existent pas'
-    no_email: '%nbr% nivols sont reliés à des bénévoles n''ayant pas d''email'
-    no_phone: '%nbr% nivols sont reliés à des bénévoles n''ayant pas de numéro de téléphone'
-    phone_optout: '%nbr% nivols sont reliés à des bénévoles ne souhaitant pas recevoir d''appels/SMS'
-    reachable: '%nbr% nivols seront déclenchés'
-  filter_title: 'Recherche par structures & compétences'
-  nivol_title: 'Copier/coller une liste de nivols'
-  see_selection: 'Cliquez pour voir la sélection'
-  select_all: 'Tout sélectionner'
+  audience_help: 'Vous pouvez sélectionner les bénévoles à déclencher en les saisissant manuellement, ou en les filtrant par structures et compétences.'
+  badges: 'Compétences & nominations'
+  classification:
+    audience: 'Afficher la liste des bénévoles sélectionnés'
+    disabled: '<strong>%nbr%</strong> bénévoles sont desactivés'
+    email_missing: '<strong>%nbr%</strong> bénévoles n''ont pas d''email'
+    email_optout: '<strong>%nbr%</strong> bénévoles ne souhaitant pas recevoir d''emails'
+    inaccessible: '<strong>%nbr%</strong> bénévoles ne font pas partie de votre périmètre'
+    invalid: '<strong>%nbr%</strong> nivols n''existent pas'
+    phone_landline: '<strong>%nbr%</strong> bénévoles ne possèdent qu''un numéro de téléphone fixe'
+    phone_missing: '<strong>%nbr%</strong> bénévoles n''ont pas de numéro de téléphone'
+    phone_optout: '<strong>%nbr%</strong> bénévoles ne souhaitant pas recevoir d''appels/SMS'
+    problems: 'Obtenir plus de détails sur la liste des problèmes'
+    reachable: '<strong>%nbr%</strong> bénévoles sont sélectionnés'
+    selected: 'Liste des bénévoles sélectionnés'
+    title: 'Résumé de la sélection'
+  copy_paste_details: 'Ou coller une liste de nivols dans le champ ci-dessous.'
+  manual_selection: 'Saisie manuelle de bénévoles'
+  pre_selection:
+    description: 'Dans une communication précédente, vous avez sélectionné <strong>%nbr%</strong> bénévoles.'
+    edit: 'Editer cette sélection'
+    remove_volunteer: 'Utilisez les coches pour supprimer des bénévoles de la sélection.'
+    selected_volunteers: 'Bénévoles sélectionnés'
+    title: 'Préselection de bénévoles'
+    use_standard_form: 'Ouvrir le formulaire classique'
+    close_standard_form: 'Fermer le formulaire classique'
+  problems:
+    disabled: Desactivés
+    email_missing: 'Pas d''email'
+    email_optout: 'Emails refusés'
+    inaccessible: 'Hors périmètre'
+    invalid: Invalides
+    phone_landline: 'Fixe uniquement'
+    phone_missing: 'Pas de tél.'
+    phone_optout: 'Appels/SMS refusés'
+    title: 'Détails à propos des problèmes dans la sélection'
+  search_for_volunteers: 'Rechercher des bénévoles à déclencher :'
+  search_other_badge: 'Rechercher une autre compétence :'
+  select_all_badges: 'Déclencher tous les bénévoles quelque soient leurs compétences'
   structures: 'Structure(s) à déclencher'
-  unselect_all: 'Effacer la sélection'
 backlinks:
   blablacar: 'Parrainé par'
   minutis: 'Développé par les bénévoles'
@@ -262,6 +289,7 @@ campaign_status:
     no_email: 'Pas d''email'
     no_email_optin: 'Ne souhaite pas recevoir d''emails.'
     no_phone: 'Pas de numéro de téléphone'
+    no_phone_mobile: 'Ne possède pas de numéro de téléphone portable.'
     no_phone_optin: 'Ne souhaite pas recevoir de SMS/appels.'
 csv_export:
   answer_time: 'Date de la reponse la plus recente'
@@ -469,6 +497,7 @@ manage_volunteers:
     email_optin: 'Disponible par email'
     enabled: Déclenchable
     first_name: Prénom
+    invisible_badges: 'Autres badges'
     last_name: 'Nom de famille'
     lock_info: '* Les nᵒˢ de téléphone et emails gelés ne sont plus mis à jour automatiquement par Pegass.'
     minor: 'Mineur(e) (-18 ans)'
@@ -480,6 +509,7 @@ manage_volunteers:
     tags: Compétences
     update: 'Mettre à jour un bénévole'
     updated: 'Le bénévole a correctement été modifié.'
+    visible_badges: 'Badges principaux'
   others: 'et %count% autre(s)'
   redcall:
     action_structures: 'Structures déclenchables par %name%'
@@ -548,7 +578,6 @@ pdf_export:
 phone_card:
   add: 'Ajouter un numéro de téléphone'
   error_invalid: 'Le format de ce numéro de téléphone n''est pas valide.'
-  error_not_mobile: 'Vous ne pouvez saisir que des numéros de téléphone portable.'
   error_taken: 'Ce numéro de téléphone est déjà utilisé par %truncated_name% (%nivol%).'
   main: Principal
   title: 'Téléphone #%index%'
@@ -636,6 +665,12 @@ space:
     update_phone: 'Mettre à jour mon numéro de téléphone, actuellement :'
     user_details: 'Lorsqu''un bénévole se connecte à RedCall mais n''y a pas accès, il tombe par défaut sur cette page qui lui permet de mettre à jour ses préférences de contact et de gérer ses données personnelles. N''hésitez-pas à communiquer au sein de vos structures d''action afin que les bénévoles sous votre responsabilité mettent correctement ces informations à jour.'
     user_title: 'Vous avez un accès aux fonctionnalités de déclenchement de RedCall.'
+    triggers:
+      title: 'Vos messages récents'
+      sms: 'SMS'
+      call: 'appel vocal'
+      email: 'email'
+      subject: 'Message envoyé par %type% le %date% à %time%'
   infos:
     context_1: 'La Croix-Rouge Française possède un peu plus d''un millier de structures ayant des fonctions diverses, notamment dans l''action sociale et le secourisme.'
     context_10: '- Nom'
@@ -666,36 +701,6 @@ structure:
   form:
     name: 'Nom de la structure'
     parent: 'Structure parente (optionnelle)'
-tag:
-  cem: 'Chef Maraude'
-  ci: 'Chef Int.'
-  dlas: DLAS
-  dlus: DLUS
-  drvr_vl: 'Chauf. VL'
-  drvr_vpsp: 'Chauf. VPSP'
-  emergency_assistance: 'Urg. Sec.'
-  mar: Maraudeur
-  psc_1: 'PSC 1'
-  pse_1: 'PSE 1'
-  pse_2: 'PSE 2'
-  shortcuts:
-    cem: CEM
-    ci: CI
-    dlas: DLAS
-    dlus: DLUS
-    drvr_vl: VL
-    drvr_vpsp: VPSP
-    emergency_assistance: US
-    mar: MAR
-    psc_1: PSC1
-    pse_1: PSE1
-    pse_2: PSE2
-    social_assistance: AS
-    tcau: TCAU
-    tceo: TCEO
-  social_assistance: 'Ass. Soc.'
-  tcau: TCAU
-  tceo: TCEO
 title:
   campaigns: Déclenchements
   costs: Coûts

@@ -9,6 +9,7 @@ use App\Entity\Campaign;
 use App\Entity\Choice;
 use App\Entity\Message;
 use App\Entity\Selection;
+use App\Entity\Volunteer;
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\ORM\NoResultException;
 
@@ -176,5 +177,25 @@ class MessageRepository extends BaseRepository
         } catch (NoResultException $e) {
             return null;
         }
+    }
+
+    /**
+     * @param Volunteer $volunteer
+     *
+     * @return Message[]
+     */
+    public function getActiveMessagesForVolunteer(Volunteer $volunteer) : array
+    {
+        return $this
+            ->createQueryBuilder('m')
+            ->join('m.volunteer', 'v')
+            ->join('m.communication', 'co')
+            ->join('co.campaign', 'ca')
+            ->where('ca.active = true')
+            ->andWhere('v.id = :volunteer')
+            ->setParameter('volunteer', $volunteer)
+            ->orderBy('co.createdAt', 'DESC')
+            ->getQuery()
+            ->getResult();
     }
 }

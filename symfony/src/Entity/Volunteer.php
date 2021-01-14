@@ -12,7 +12,6 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * @ORM\Table(indexes={
@@ -106,22 +105,6 @@ class Volunteer
     private $minor = false;
 
     /**
-     * @var array
-     *
-     * @ORM\ManyToMany(targetEntity="App\Entity\Tag", inversedBy="volunteers")
-     */
-    private $tags;
-
-    /**
-     * Same as $tags but only contain the highest tags in the
-     * tag hierarchy, to avoid flooding UX of skills that
-     * wrap other ones.
-     *
-     * @var array
-     */
-    private $tagsView;
-
-    /**
      * @var DateTime
      *
      * @ORM\Column(type="datetime", nullable=true)
@@ -196,7 +179,6 @@ class Volunteer
 
     public function __construct()
     {
-        $this->tags       = new ArrayCollection();
         $this->structures = new ArrayCollection();
         $this->messages   = new ArrayCollection();
         $this->phones     = new ArrayCollection();
@@ -338,76 +320,9 @@ class Volunteer
         return $this;
     }
 
-    public function getTags() : Collection
-    {
-        return $this->tags;
-    }
-
-    public function addTag(Tag $tag)
-    {
-        if (!$this->hasTag($tag)) {
-            $this->tags->add($tag);
-        }
-    }
-
-    public function removeTag(Tag $tag)
-    {
-        $this->tags->removeElement($tag);
-    }
-
-    public function getTagsView() : array
-    {
-        if ($this->tagsView) {
-            return $this->tagsView;
-        }
-
-        $this->tagsView = [];
-        foreach ($this->tags->toArray() as $tag) {
-            $this->tagsView[$tag->getLabel()] = $tag;
-        }
-
-        foreach (Tag::getTagHierarchyMap() as $masterTag => $tagsToRemove) {
-            if (array_key_exists($masterTag, $this->tagsView)) {
-                foreach ($tagsToRemove as $tagToRemove) {
-                    if (array_key_exists($tagToRemove, $this->tagsView)) {
-                        unset($this->tagsView[$tagToRemove]);
-                    }
-                }
-            }
-        }
-
-        $this->tagsView = array_values($this->tagsView);
-
-        return $this->tagsView;
-    }
-
-    public function hasTag(string $tagToSearch) : bool
-    {
-        foreach ($this->tags as $tag) {
-            if ($tag->getLabel() == $tagToSearch) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     public function getFormattedPhoneNumber() : ?string
     {
         return $this->getPhone() ? $this->getPhone()->getNational() : null;
-    }
-
-    public function getTagPriority() : int
-    {
-        $highest = -1;
-        foreach ($this->getTags() as $tag) {
-            /* @var Tag $tag */
-            if ($tag->getTagPriority() > $highest) {
-                $highest = $tag->getTagPriority();
-            }
-        }
-
-        return $highest;
     }
 
     public function getLastPegassUpdate() : ?DateTime
@@ -497,24 +412,16 @@ class Volunteer
         return $mainStructure;
     }
 
-    public function toSearchResults(TranslatorInterface $translator)
+    public function toSearchResults()
     {
+        $badges = implode(', ', array_map(function (Badge $badge) {
+            return $badge->getName();
+        }, $this->getVisibleBadges()));
+
         return [
-            'nivol'      => strval($this->getNivol()),
-            'firstName'  => $this->getFirstName(),
-            'lastName'   => $this->getLastName(),
-            'firstLast'  => sprintf('%s %s', $this->firstName, $this->lastName),
-            'lastFirst'  => sprintf('%s %s', $this->lastName, $this->firstName),
-            'tags'       => $this->getTagsView() ? sprintf('(%s)', implode(', ', array_map(function (Tag $tag) use (
-                $translator
-            ) {
-                return $translator->trans(sprintf('tag.shortcuts.%s', $tag->getLabel()));
-            }, $this->getTagsView()))) : '',
-            'structures' => sprintf('<br/>%s',
-                implode('<br/>', array_map(function (Structure $structure) {
-                    return $structure->getName();
-                }, $this->getStructures()->toArray()))
-            ),
+            'id'    => strval($this->getId()),
+            'nivol' => strval($this->getNivol()),
+            'human' => sprintf('%s %s%s', $this->getFirstName(), $this->getLastName(), $badges ? sprintf(' (%s)', $badges) : null),
         ];
     }
 
@@ -833,6 +740,56 @@ class Volunteer
                         ->addViolation();
             }
         }
+    }
+
+    public function getVisibleBadges() : array
+    {
+        $badges = $this->badges->toArray();
+
+        // Only use synonyms
+        foreach ($badges as $key => $badge) {
+            /** @var Badge $badge */
+            if ($badge->getSynonym() && !in_array($badge->getSynonym(), $badges)) {
+                $badges[] = $badge->getSynonym();
+                unset($badges[$key]);
+            }
+        }
+
+        // Only use visible badges
+        $badges = array_filter($badges, function (Badge $badge) {
+            return $badge->isVisible();
+        });
+
+        // Only rendering the higher badge in the hierarchy
+        $badges = array_filter($badges, function (Badge $badge) use ($badges) {
+            foreach ($badge->getChildren() as $child) {
+                if (in_array($child, $badges)) {
+                    return false;
+                }
+            }
+
+            return true;
+        });
+
+        // Sorting badges by category's priority and then by priority
+        usort($badges, function (Badge $a, Badge $b) {
+            if ($a->getCategory() && $b->getCategory()
+                && $a->getCategory()->getPriority() !== $b->getCategory()->getPriority()) {
+                return $a->getCategory()->getPriority() <=> $b->getCategory()->getPriority();
+            }
+
+            if ($a->getCategory() && !$b->getCategory()) {
+                return -1;
+            }
+
+            if (!$a->getCategory() && $b->getCategory()) {
+                return 1;
+            }
+
+            return $a->getPriority() <=> $b->getPriority();
+        });
+
+        return $badges;
     }
 
     private function toName(string $name) : string

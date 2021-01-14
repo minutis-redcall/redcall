@@ -13,17 +13,17 @@ use App\Form\Model\Campaign as CampaignModel;
 use App\Form\Model\SmsTrigger;
 use App\Form\Type\CampaignType;
 use App\Manager\AnswerManager;
+use App\Manager\BadgeManager;
 use App\Manager\CampaignManager;
 use App\Manager\CommunicationManager;
+use App\Manager\ExpirableManager;
 use App\Manager\MediaManager;
 use App\Manager\MessageManager;
 use App\Manager\StructureManager;
-use App\Manager\TagManager;
 use App\Manager\UserManager;
 use App\Manager\VolunteerManager;
 use App\Services\MessageFormatter;
 use App\Tools\GSM;
-use App\Tools\Random;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -31,6 +31,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * @Route(name="communication_")
@@ -55,9 +56,9 @@ class CommunicationController extends BaseController
     private $formatter;
 
     /**
-     * @var TagManager
+     * @var BadgeManager
      */
-    private $tagManager;
+    private $badgeManager;
 
     /**
      * @var VolunteerManager
@@ -89,27 +90,34 @@ class CommunicationController extends BaseController
      */
     private $structureManager;
 
+    /**
+     * @var ExpirableManager
+     */
+    private $expirableManager;
+
     public function __construct(CampaignManager $campaignManager,
         CommunicationManager $communicationManager,
         MessageFormatter $formatter,
-        TagManager $tagManager,
+        BadgeManager $badgeManager,
         VolunteerManager $volunteerManager,
         MessageManager $messageManager,
         AnswerManager $answerManager,
         UserManager $userManager,
         MediaManager $mediaManager,
-        StructureManager $structureManager)
-    {
+        StructureManager $structureManager,
+        ExpirableManager $expirableManager
+    ) {
         $this->campaignManager      = $campaignManager;
         $this->communicationManager = $communicationManager;
         $this->formatter            = $formatter;
-        $this->tagManager           = $tagManager;
+        $this->badgeManager         = $badgeManager;
         $this->volunteerManager     = $volunteerManager;
         $this->messageManager       = $messageManager;
         $this->answerManager        = $answerManager;
         $this->userManager          = $userManager;
         $this->mediaManager         = $mediaManager;
         $this->structureManager     = $structureManager;
+        $this->expirableManager     = $expirableManager;
     }
 
     /**
@@ -122,7 +130,7 @@ class CommunicationController extends BaseController
 
         return $this->render('status_communication/index.html.twig', [
             'campaign'           => $campaign,
-            'skills'             => $this->tagManager->findAll(),
+            'skills'             => $this->badgeManager->getPublicBadges(),
             'progress'           => $campaign->getCampaignProgression(),
             'hash'               => $this->campaignManager->getHash($campaign->getId()),
             'campaignStructures' => $this->structureManager->getCampaignStructures($campaign),
@@ -133,12 +141,12 @@ class CommunicationController extends BaseController
      * @Route(path="campaign/{id}/short-polling", name="short_polling", requirements={"id" = "\d+"})
      * @IsGranted("CAMPAIGN_ACCESS", subject="campaign")
      */
-    public function shortPolling(Campaign $campaign)
+    public function shortPolling(Campaign $campaign, TranslatorInterface $translator)
     {
         $this->get('session')->save();
 
         return new JsonResponse(
-            $campaign->getCampaignStatus()
+            $campaign->getCampaignStatus($translator)
         );
     }
 
@@ -147,7 +155,7 @@ class CommunicationController extends BaseController
      *                                           "[0-9a-f]{40}"})
      * @IsGranted("CAMPAIGN_ACCESS", subject="campaign")
      */
-    public function longPolling(Campaign $campaign, Request $request)
+    public function longPolling(Campaign $campaign, Request $request, TranslatorInterface $translator)
     {
         // Always close the session to prevent against session locks
         $this->get('session')->save();
@@ -160,7 +168,9 @@ class CommunicationController extends BaseController
                 $this->campaignManager->refresh($campaign);
 
                 return new JsonResponse(
-                    array_merge($campaign->getCampaignStatus(), [
+                    array_merge($campaign->getCampaignStatus($translator
+
+                    ), [
                         'hash' => $hash,
                     ])
                 );
@@ -191,27 +201,9 @@ class CommunicationController extends BaseController
 
         $selection = json_decode($request->request->get('volunteers', '[]'), true);
 
-        foreach ($selection as $volunteerId) {
-            $volunteer = $this->volunteerManager->find($volunteerId);
-            if (!$volunteer) {
-                throw $this->createNotFoundException();
-            }
-        }
-
-        // We should access the form using GET method, thus we need to store
-        // the volunteer selection in the session. But in the meantime, we
-        // should allow the dispatcher to create several new communications
-        // on separate tabs.
-        $selections = $this->get('session')->get('add-communication', []);
-        if (!isset($selections[$campaign->getId()])) {
-            $selections[$campaign->getId()] = [];
-        }
-        $key                                  = Random::generate(8);
-        $selections[$campaign->getId()][$key] = $selection;
-        if ($count = count($selections[$campaign->getId()]) > 100) {
-            $selections[$campaign->getId()] = array_slice($selections[$campaign->getId()], $count - 100);
-        }
-        $this->get('session')->set('add-communication', $selections);
+        $key = $this->expirableManager->set([
+            'volunteers' => $selection,
+        ]);
 
         return $this->redirectToRoute('communication_new', [
             'id'   => $campaign->getId(),
@@ -237,36 +229,18 @@ class CommunicationController extends BaseController
             return $this->redirectToRoute('home');
         }
 
-        // If volunteers selection have been made on the communication page,
-        // restore it from the session.
-        $volunteers = [];
-        if (!is_null($key)) {
-            $selection = $this->get('session')->get('add-communication', [])[$campaign->getId()][$key] ?? [];
-
-            foreach ($selection as $volunteerId) {
-                $volunteer = $this->volunteerManager->find($volunteerId);
-                if ($volunteer) {
-                    $volunteers[] = $volunteer->getNivol();
-                }
-            }
-        }
-
         /**
          * @var BaseTrigger
          */
         $communication = $type->getFormData();
-        $communication->setAudience($volunteers);
+        $communication->setAudience([
+            'preselection_key' => $key,
+        ]);
         $communication->setAnswers([]);
 
         $form = $this
             ->createForm($type->getFormType(), $communication)
             ->handleRequest($request);
-
-        if ($form->get('test')->isClicked()) {
-            $communication->setAudience([
-                $this->getUser()->getNivol(),
-            ]);
-        }
 
         // Creating the new communication is form has been submitted
         if ($form->isSubmitted() && $form->isValid()) {
@@ -278,10 +252,10 @@ class CommunicationController extends BaseController
         }
 
         return $this->render('new_communication/page.html.twig', [
-            'campaign'   => $campaign,
-            'volunteers' => $volunteers,
-            'form'       => $form->createView(),
-            'type'       => $type,
+            'campaign' => $campaign,
+            'form'     => $form->createView(),
+            'type'     => $type,
+            'key'      => $key,
         ]);
     }
 

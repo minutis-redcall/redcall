@@ -11,7 +11,6 @@ use App\Entity\Volunteer;
 use App\Form\Model\BaseTrigger;
 use App\Repository\CommunicationRepository;
 use DateTime;
-use Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -53,6 +52,11 @@ class CommunicationManager
     private $volunteerManager;
 
     /**
+     * @var AudienceManager
+     */
+    private $audienceManager;
+
+    /**
      * @var RouterInterface
      */
     private $router;
@@ -72,6 +76,7 @@ class CommunicationManager
         ProcessorInterface $processor,
         UserManager $userManager,
         VolunteerManager $volunteerManager,
+        AudienceManager $audienceManager,
         StructureManager $structureManager,
         RouterInterface $router,
         LoggerInterface $slackLogger,
@@ -82,6 +87,7 @@ class CommunicationManager
         $this->processor               = $processor;
         $this->userManager             = $userManager;
         $this->volunteerManager        = $volunteerManager;
+        $this->audienceManager         = $audienceManager;
         $this->structureManager        = $structureManager;
         $this->router                  = $router;
         $this->slackLogger             = $slackLogger;
@@ -146,23 +152,16 @@ class CommunicationManager
         return $communication;
     }
 
-    /**
-     * @param BaseTrigger $trigger
-     *
-     * @return Communication
-     *
-     * @throws Exception
-     */
     public function createCommunication(BaseTrigger $trigger) : Communication
     {
         $volunteer = null;
         if ($user = $this->userManager->findForCurrentUser()) {
-            $nivol     = null;
+            $id        = null;
             $volunteer = $user->getVolunteer();
         } else {
             // Triggers ran through the Campaign::contact() method only contain 1 volunteer
-            $nivol     = implode(' ', $trigger->getAudience());
-            $volunteer = $this->volunteerManager->findOneByNivol($nivol);
+            $id        = $trigger->getAudience()['volunteers'][0];
+            $volunteer = $this->volunteerManager->find($id);
         }
 
         $communication = new Communication();
@@ -187,10 +186,11 @@ class CommunicationManager
             $choiceKey++;
         }
 
-        if ($nivol) {
+        if ($id) {
             $volunteers = [$volunteer];
         } else {
-            $volunteers = $this->volunteerManager->filterByNivolAndAccess($trigger->getAudience());
+            $classification = $this->audienceManager->classifyAudience($trigger->getAudience());
+            $volunteers     = $this->volunteerManager->getVolunteerList($classification->getReachable());
         }
 
         $codes = $this->messageManager->generateCodes(count($volunteers));
@@ -218,26 +218,54 @@ class CommunicationManager
             $message->setCode($code);
             $message->setVolunteer($volunteer);
 
+            $this->handleUnreachable($communication->getType(), $message);
+
             $communication->addMessage($message);
         }
 
         return $communication;
     }
 
-    /**
-     * @return array
-     */
-    public function getTakenPrefixes() : array
-    {
-        return $this->communicationRepository->getTakenPrefixes();
-    }
-
-    /**
-     * @param \App\Manager\Communication $communication
-     * @param string                     $newName
-     */
     public function changeName(Communication $communication, string $newName)
     {
         $this->communicationRepository->changeName($communication, $newName);
+    }
+
+    private function handleUnreachable(string $type, Message $message)
+    {
+        $error     = null;
+        $volunteer = $message->getVolunteer();
+
+        switch ($type) {
+            case Communication::TYPE_SMS:
+                if ($volunteer->getPhoneNumber() && !$volunteer->getPhoneNumber()->getIsMobile()) {
+                    $error = 'campaign_status.warning.no_phone_mobile';
+                    break;
+                }
+            case Communication::TYPE_CALL:
+                if (null === $volunteer->getPhoneNumber()) {
+                    $error = 'campaign_status.warning.no_phone';
+                    break;
+                }
+                if (!$volunteer->isPhoneNumberOptin()) {
+                    $error = 'campaign_status.warning.no_phone_optin';
+                    break;
+                }
+                break;
+            case Communication::TYPE_EMAIL:
+                if (null === $volunteer->getEmail()) {
+                    $error = 'campaign_status.warning.no_email';
+                    break;
+                }
+                if (!$volunteer->isEmailOptin()) {
+                    $error = 'campaign_status.warning.no_email_optin';
+                    break;
+                }
+                break;
+        }
+
+        if (null !== $error) {
+            $message->setError($error);
+        }
     }
 }

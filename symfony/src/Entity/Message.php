@@ -96,7 +96,7 @@ class Message
     private $costs;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="text", nullable=true)
      */
     private $error;
 
@@ -539,10 +539,15 @@ class Message
 
         switch ($this->communication->getType()) {
             case Communication::TYPE_SMS:
+                return boolval($this->volunteer->getPhoneNumber())
+                       && $this->volunteer->isPhoneNumberOptin()
+                       && $this->volunteer->getPhone()->isMobile();
             case Communication::TYPE_CALL:
-                return boolval($this->volunteer->getPhoneNumber()) && $this->volunteer->isPhoneNumberOptin();
+                return boolval($this->volunteer->getPhoneNumber())
+                       && $this->volunteer->isPhoneNumberOptin();
             case Communication::TYPE_EMAIL:
-                return boolval($this->volunteer->getEmail()) && $this->volunteer->isEmailOptin();
+                return boolval($this->volunteer->getEmail())
+                       && $this->volunteer->isEmailOptin();
             default:
                 return false;
         }

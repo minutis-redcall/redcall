@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Base\BaseRepository;
 use App\Entity\Badge;
+use Doctrine\DBAL\Connection;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -20,15 +21,13 @@ class BadgeRepository extends BaseRepository
         parent::__construct($registry, Badge::class);
     }
 
-    public function getSearchInPublicBadgesQueryBuilder(?string $criteria) : QueryBuilder
+    public function getSearchInBadgesQueryBuilder(?string $criteria) : QueryBuilder
     {
         $qb = $this->createQueryBuilder('b')
                    ->leftJoin('b.category', 'c')
-                   ->where('b.restricted = false')
                    ->addOrderBy('b.visibility', 'DESC')
                    ->addOrderBy('b.synonym', 'ASC')
-                   ->addOrderBy('c.priority', 'ASC')
-                   ->addOrderBy('b.priority', 'ASC')
+                   ->addOrderBy('(1000 - c.priority) * 1000 + 1000 - b.priority', 'DESC')
                    ->addOrderBy('b.name', 'ASC')
                    ->groupBy('b.id');
 
@@ -44,7 +43,6 @@ class BadgeRepository extends BaseRepository
         $rows = $this->createQueryBuilder('b')
                      ->select('b.id, COUNT(v) AS count')
                      ->join('b.volunteers', 'v')
-                     ->where('b.restricted = false')
                      ->andWhere('b.id IN (:ids)')
                      ->setParameter('ids', $ids)
                      ->groupBy('b.id')
@@ -61,7 +59,7 @@ class BadgeRepository extends BaseRepository
 
     public function search(?string $criteria, int $limit) : array
     {
-        return $this->getSearchInPublicBadgesQueryBuilder($criteria)
+        return $this->getSearchInBadgesQueryBuilder($criteria)
                     ->setMaxResults($limit)
                     ->getQuery()
                     ->getResult();
@@ -69,11 +67,38 @@ class BadgeRepository extends BaseRepository
 
     public function searchForCompletion(?string $criteria, int $limit) : array
     {
-        return $this->getSearchInPublicBadgesQueryBuilder($criteria)
+        return $this->getSearchInBadgesQueryBuilder($criteria)
                     ->andWhere('b.synonym IS NULL')
                     ->setMaxResults($limit)
                     ->getQuery()
                     ->getResult();
+    }
+
+    public function searchNonVisibleUsableBadge(?string $criteria, int $limit = 0) : array
+    {
+        return $this->getSearchInBadgesQueryBuilder($criteria)
+                    ->andWhere('b.synonym IS NULL')
+                    ->andWhere('b.visibility = false')
+                    ->setMaxResults($limit)
+                    ->getQuery()
+                    ->getResult();
+    }
+
+    public function getNonVisibleUsableBadgesList(array $ids)
+    {
+        return $this->getSearchInBadgesQueryBuilder(null)
+                    ->andWhere('b.synonym IS NULL')
+                    ->andWhere('b.visibility = false')
+                    ->andWhere('b.id IN (:ids)')
+                    ->setParameter('ids', $ids, Connection::PARAM_INT_ARRAY)
+                    ->getQuery()
+                    ->getResult();
+    }
+
+    public function getPublicBadgesQueryBuilder() : QueryBuilder
+    {
+        return $this->getSearchInBadgesQueryBuilder(null)
+                    ->andWhere('b.visibility = true');
     }
 
     private function addSearchCriteria(QueryBuilder $qb, string $criteria)

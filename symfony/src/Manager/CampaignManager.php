@@ -11,6 +11,7 @@ use App\Entity\User;
 use App\Entity\Volunteer;
 use App\Enum\Type;
 use App\Form\Model\Campaign as CampaignModel;
+use App\Form\Type\AudienceType;
 use App\Repository\CampaignRepository;
 use Bundles\PasswordLoginBundle\Entity\AbstractUser;
 use Doctrine\ORM\QueryBuilder;
@@ -75,11 +76,14 @@ class CampaignManager
     }
 
     public function launchNewCampaign(CampaignModel $campaignModel,
-        ProcessorInterface $processor = null) : CampaignEntity
+        ProcessorInterface $processor = null) : ?CampaignEntity
     {
         $volunteer = null;
         if ($this->tokenStorage->getToken()->getUser() instanceof UserInterface) {
             $volunteer = $this->tokenStorage->getToken()->getUser()->getVolunteer();
+            if (!$volunteer) {
+                return null;
+            }
         }
 
         $campaignEntity = new CampaignEntity();
@@ -255,7 +259,9 @@ class CampaignManager
     public function contact(Volunteer $volunteer, Type $type, string $title, string $message) : CampaignEntity
     {
         $communication = $type->getFormData();
-        $communication->setAudience([$volunteer->getNivol()]);
+        $communication->setAudience(AudienceType::createEmptyData([
+            'volunteers' => [$volunteer->getId()],
+        ]));
         $communication->setMessage($message);
 
         $campaign        = new CampaignModel($communication);

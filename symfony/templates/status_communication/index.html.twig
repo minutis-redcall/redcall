@@ -303,41 +303,8 @@
 
                                 <td id="volunteer-{{ suffix }}">
 
-                                    {# Volunteer's name #}
-                                    <div id="volunteer-name-{{ suffix }}"
-                                         class="h4 {% if not message.sent %}text-black-50{% endif %}">
-                                        <span href="#" class="volunteer-info" style="cursor:pointer;"
-                                              onclick="$('#volunteer-info-{{ message.id }}').toggleClass('d-none');return false;">
-                                            {{ volunteer.displayName }}
-                                            {% if volunteer.minor %}
-                                                🐻
-                                            {% elseif volunteer.user %}
-                                                <img src="{{ asset('minutis.png') }}"/>
-                                            {% else %}
-                                                👤
-                                            {% endif %}
-                                        </span>
-                                    </div>
-                                    <div id="volunteer-info-{{ message.id }}" class="d-none">
-                                        #{{ volunteer.nivol }}
-                                        <br/>
-                                        {% if volunteer.email %}
-                                            {% if not volunteer.emailOptin %}<strike>{% endif %}
-                                            <a href="mailto:{{ volunteer.email }}?subject={{ 'manage_volunteers.contact.mail_subject'|trans({'%brand%': brand|upper})|e('html_attr') }}">{{ volunteer.email }}</a>
-                                            {% if not volunteer.emailOptin %}</strike>{% endif %}
-                                            <br/>
-                                        {% endif %}
-                                        {% if volunteer.phoneNumber %}
-                                            {% if not volunteer.phoneNumberOptin %}<strike>{% endif %}
-                                            {{ macros.phone(volunteer.phone) }}
-                                            {% if not volunteer.phoneNumberOptin %}</strike>{% endif %}
-                                            <br/>
-                                        {% endif %}
-                                        {% if is_granted('VOLUNTEER', volunteer) %}
-                                            <a target="_blank" href="{{ path('management_volunteers_manual_update', {'id': volunteer.id}) }}">{{ 'base.button.more'|trans|lower }}</a>
-                                        {% else %}
-                                            <span style="color:grey;">{{ 'manage_volunteers.access_denied'|trans }}</span>
-                                        {% endif %}
+                                    <div class="{% if message.error %}message-error{% endif %}">
+                                        {{ macros.volunteer(message.volunteer) }}
                                     </div>
 
                                     <div class="float-right">
@@ -407,38 +374,17 @@
                                                   data-message-id="{{ message.id }}"
                                                   class="open-message" style="cursor:pointer;">✏️</span>
                                         {% endif %}
-                                    </div>
 
-                                    {# Volunteer's skills #}
-                                    {% for skill in message.volunteer.tags %}
-                                        <div class="d-none message-is-skill-{{ skill.id|e('html_attr') }}-{{ communication.id }}"
-                                             data-value=1></div>
-                                    {% endfor %}
-                                    <span class="text-small">
-                                            {% for skill in message.volunteer.tagsView %}
-                                                {{ ('tag.shortcuts.' ~ skill)|trans }}{% if not loop.last %},{% endif %}
+                                        <div class="d-none">
+                                            {% for skill in message.volunteer.badges %}
+                                                <div class="message-is-skill-{{ skill.id|e('html_attr') }}-{{ communication.id }}" data-value=1></div>
                                             {% endfor %}
-                                    </span>
-
-                                    {# Warnings #}
-                                    {% if communication.type in [constant('App\\Entity\\Communication::TYPE_SMS'), constant('App\\Entity\\Communication::TYPE_CALL')] %}
-                                        {% if not message.volunteer.phoneNumber %}
-                                            <div style="color:red;">{{ 'campaign_status.warning.no_phone'|trans }}</div>
-                                        {% elseif not message.volunteer.phoneNumberOptin %}
-                                            <div style="color:red;">{{ 'campaign_status.warning.no_phone_optin'|trans }}</div>
-                                        {% endif %}
-                                    {% elseif communication.type in [constant('App\\Entity\\Communication::TYPE_EMAIL')] %}
-                                        {% if not message.volunteer.email %}
-                                            <div style="color:red;">{{ 'campaign_status.warning.no_email'|trans }}</div>
-                                        {% endif %}
-                                        {% if not message.volunteer.emailOptin %}
-                                            <div style="color:red;">{{ 'campaign_status.warning.no_email_optin'|trans }}</div>
-                                        {% endif %}
-                                    {% endif %}
+                                        </div>
+                                    </div>
 
                                     {# Unexpected error #}
                                     <div id="error-{{ suffix }}" style="color:red;">
-                                        {{ message.error }}
+                                        {{ message.error|trans }}
                                     </div>
                                     <div>
                                         <span id="message-is-unclear-{{ suffix }}" class="{{ message.isUnclear ? '' : 'd-none' }}" style="color:red;font-size:10px;">
@@ -718,7 +664,7 @@
                     </label>
                     <label class="form-check-label"
                            for="filter-is-skill-{{ skill.id }}-{{ communication.id }}">
-                        {{ ('tag.' ~ skill.label)|trans }}
+                        {{ macros.badge(skill) }}
                     </label>
                 </div>
             {% endfor %}

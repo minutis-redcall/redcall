@@ -63,22 +63,24 @@ admin:
   home:
     link: Administration
   pegass:
+    add_structure: 'Add a structure'
     bound_volunteer: 'Bound volunteer: %name%'
     create_user: 'Add a new user'
+    delete_structures: 'Delete one or several structures'
     developer: 'Grant developer access'
     developered: Developer
     developered_details: 'A developer can integrate RedCall APIs and access technical features.'
+    edit: 'Open volunteer record'
     list_users: 'List user nivols'
     list_users_explain: 'In order to contact all users, copy/paste this nivol list in a new campaign.'
     lock: Lock
     locked: Frozen
     locked_details: 'Structures of a frozen user are not updated when Pegass is updating its bound volunteer.'
+    open: 'Open Pegass entity'
     structures: 'Update structures for %name%'
     title: 'Bindings between RedCall users and volunteer database'
     undeveloper: 'Remove developer access'
     unlock: Unlock
-    add_structure: 'Add a structure'
-    delete_structures: 'Delete one or several structures'
   statistics:
     campaign:
       period: 'In the period, <b>%created%</b> campaigns were open, including <b>%active%</b> that are still active.'
@@ -111,21 +113,46 @@ admin:
     pegass: 'Pegass bindings'
 audience:
   audience: Audience
-  classify:
-    disabled: '%nbr% nivols are bound to disabled volunteers'
-    email_optout: '%nbr% nivols are bound to volunteers that don''t want to receive emails'
-    inaccessible: '%nbr% nivols are bound to volunteers that are not in your perimeter'
-    invalid: '%nbr% nivols do not exist'
-    no_email: '%nbr% nivols are bound to volunteers without any emails'
-    no_phone: '%nbr% nivols are bound to volunteers without any phone number'
-    phone_optout: '%nbr% nivols are bound to volunteers that don''t want to receive calls/SMS'
-    reachable: '%nbr% nivols will be triggered'
-  filter_title: 'Search by structures & skills'
-  nivol_title: 'Copy/paste a list of nivols'
-  see_selection: 'Click to see selection'
-  select_all: 'Select all'
+  audience_help: 'You can select volunteers to trigger by writting them down manually, or by filtering them by structures and skills.'
+  badges: 'Skills & Nominations'
+  classification:
+    audience: 'Render the selected volunteers list'
+    disabled: '<strong>%nbr%</strong> volunteers are disabled'
+    email_missing: '<strong>%nbr%</strong> volunteers do not have an email'
+    email_optout: '<strong>%nbr%</strong> volunteers do not want to receive emails'
+    inaccessible: '<strong>%nbr%</strong> volunteers are out of your perimeter'
+    invalid: '<strong>%nbr%</strong> nivols do not exist'
+    phone_landline: '<strong>%nbr%</strong> volunteers only have a landline phone number'
+    phone_missing: '<strong>%nbr%</strong> volunteers do not have a phone number'
+    phone_optout: '<strong>%nbr%</strong> volunteers do not want to receive phone calls/SMS'
+    problems: 'Get more details about problems'
+    reachable: '<strong>%nbr%</strong> volunteers are selected'
+    selected: 'Liste des bénévoles sélectionnés'
+    title: 'Selection summary'
+  copy_paste_details: 'Paste a list of identifiers in the field below.'
+  manual_selection: 'Volunteers manual selection'
+  pre_selection:
+    close_standard_form: 'Close classic form'
+    description: 'In a previous communication, you selected <strong>%nbr%</strong> volunteers.'
+    edit: 'Edit this selection'
+    remove_volunteer: 'Use ticks to remove volunteers from the selection.'
+    selected_volunteers: 'Selected volunteers'
+    title: 'Volunteers preselection'
+    use_standard_form: 'Use classic form'
+  problems:
+    disabled: Disabled
+    email_missing: 'No email'
+    email_optout: 'Emails opted-out'
+    inaccessible: 'Out of perimeter'
+    invalid: Invalids
+    phone_landline: 'Only landline'
+    phone_missing: 'No phone'
+    phone_optout: 'Phone opted-out'
+    title: 'Audience problem details'
+  search_for_volunteers: 'Search for volunteers:'
+  search_other_badge: 'Search for another skill:'
+  select_all_badges: 'Trigger all volunteers whatever their skills'
   structures: 'Structure(s) to trigger'
-  unselect_all: 'Unselect all'
 backlinks:
   blablacar: 'Sponsored by'
   minutis: 'Developed by Minutis volunteers'
@@ -262,6 +289,7 @@ campaign_status:
     no_email: 'No email'
     no_email_optin: 'Do not want to be triggered through email.'
     no_phone: 'No phone number'
+    no_phone_mobile: 'Do not own a mobile phone number.'
     no_phone_optin: 'Do not want to be triggered through phone.'
 csv_export:
   answer_time: 'Answered at'
@@ -469,6 +497,7 @@ manage_volunteers:
     email_optin: 'Available by email'
     enabled: Callable
     first_name: 'First name'
+    invisible_badges: 'Other badges'
     last_name: 'Last name'
     lock_info: '* Locked phones and emails are not automatically refreshed by Pegass updates.'
     minor: 'Minor (under 18)'
@@ -480,6 +509,7 @@ manage_volunteers:
     tags: Skills
     update: 'Update volunteer'
     updated: 'Volunteer has properly been updated.'
+    visible_badges: 'Main badges'
   others: 'and %count% other(s)'
   redcall:
     action_structures: 'Structures that %name% can trigger'
@@ -548,7 +578,6 @@ pdf_export:
 phone_card:
   add: 'Add a phone number'
   error_invalid: 'This phone number format is invalid.'
-  error_not_mobile: 'You can only set mobile phone numbers.'
   error_taken: 'This phone number is already taken by %truncated_name% (%nivol%).'
   main: Main
   title: 'Phone #%index%'
@@ -636,6 +665,12 @@ space:
     update_phone: 'Update my phone number, currently:'
     user_details: 'When a volunteer connects to RedCall without that access, he lands by default to this page, which allows him to update his contact preferences and manage his personal data. Do not hesitate to invite volunteers in your structures to check that those information are correct.'
     user_title: 'You have an access to RedCall trigger features.'
+    triggers:
+      title: 'Recent messages'
+      sms: 'SMS'
+      call: 'voice call'
+      email: 'email'
+      subject: 'Message sent by %type% on %date% at %time%'
   infos:
     context_1: 'The French Red-Cross is composed of more than a thousand different structures, especially working on Social Action and First Aid.'
     context_10: '- First name'
@@ -666,36 +701,6 @@ structure:
   form:
     name: 'Structure name'
     parent: 'Optional parent structure'
-tag:
-  cem: 'Roam Leader'
-  ci: 'Inter. chief'
-  dlas: DLAS
-  dlus: DLUS
-  drvr_vl: 'VL driver'
-  drvr_vpsp: 'VPSP driver'
-  emergency_assistance: 'Emergency Help'
-  mar: Roamer
-  psc_1: 'PSC 1'
-  pse_1: 'PSE 1'
-  pse_2: 'PSE 2'
-  shortcuts:
-    cem: CE
-    ci: CI
-    dlas: DLAS
-    dlus: DLUS
-    drvr_vl: VL
-    drvr_vpsp: VPSP
-    emergency_assistance: US
-    mar: ROAM
-    psc_1: PSC1
-    pse_1: PSE1
-    pse_2: PSE2
-    social_assistance: AS
-    tcau: TCAU
-    tceo: TCEO
-  social_assistance: 'Social Assistance'
-  tcau: TCAU
-  tceo: TCEO
 title:
   campaigns: Campaigns
   costs: Costs

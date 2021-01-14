@@ -31,21 +31,5 @@
     {# Disable submit button at submission to prevent sending communication twice #}
     $('#form-container').removeClass('d-none');
     $('#spinner-container').addClass('d-none');
-    $('form').submit(function () {
-        if ($('form').attr('target')) {
-            // It's a click on "Test on me" button
-            var nivol = ' {{ app.user.nivol }}';
-            var nivols = $('#{{ form.audience.nivols.vars.id }}');
-            if (!nivols.val().includes(nivol)) {
-                nivols.val(
-                    nivols.val() + ' {{ app.user.nivol }}'
-                );
-            }
-        } else {
-            // It's a click on "Send to XX volunteers" button
-            $('#form-container').addClass('d-none');
-            $('#spinner-container').removeClass('d-none');
-        }
-    });
 
 </script>

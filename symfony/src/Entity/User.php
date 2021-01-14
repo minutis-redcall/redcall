@@ -197,11 +197,6 @@ class User extends AbstractUser
         return $roots;
     }
 
-    public function computeStructureList()
-    {
-        return $this->structures;
-    }
-
     public function isLocked() : ?bool
     {
         return $this->locked;
