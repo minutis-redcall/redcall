@@ -31,6 +31,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * @Route(name="communication_")
@@ -140,12 +141,12 @@ class CommunicationController extends BaseController
      * @Route(path="campaign/{id}/short-polling", name="short_polling", requirements={"id" = "\d+"})
      * @IsGranted("CAMPAIGN_ACCESS", subject="campaign")
      */
-    public function shortPolling(Campaign $campaign)
+    public function shortPolling(Campaign $campaign, TranslatorInterface $translator)
     {
         $this->get('session')->save();
 
         return new JsonResponse(
-            $campaign->getCampaignStatus()
+            $campaign->getCampaignStatus($translator)
         );
     }
 
@@ -154,7 +155,7 @@ class CommunicationController extends BaseController
      *                                           "[0-9a-f]{40}"})
      * @IsGranted("CAMPAIGN_ACCESS", subject="campaign")
      */
-    public function longPolling(Campaign $campaign, Request $request)
+    public function longPolling(Campaign $campaign, Request $request, TranslatorInterface $translator)
     {
         // Always close the session to prevent against session locks
         $this->get('session')->save();
@@ -167,7 +168,9 @@ class CommunicationController extends BaseController
                 $this->campaignManager->refresh($campaign);
 
                 return new JsonResponse(
-                    array_merge($campaign->getCampaignStatus(), [
+                    array_merge($campaign->getCampaignStatus($translator
+
+                    ), [
                         'hash' => $hash,
                     ])
                 );

@@ -218,6 +218,8 @@ class CommunicationManager
             $message->setCode($code);
             $message->setVolunteer($volunteer);
 
+            $this->handleUnreachable($communication->getType(), $message);
+
             $communication->addMessage($message);
         }
 
@@ -227,5 +229,43 @@ class CommunicationManager
     public function changeName(Communication $communication, string $newName)
     {
         $this->communicationRepository->changeName($communication, $newName);
+    }
+
+    private function handleUnreachable(string $type, Message $message)
+    {
+        $error     = null;
+        $volunteer = $message->getVolunteer();
+
+        switch ($type) {
+            case Communication::TYPE_SMS:
+                if (null === $volunteer->getPhoneNumber()) {
+                    $error = 'campaign_status.warning.no_phone';
+                    break;
+                }
+            case Communication::TYPE_CALL:
+                if (!$volunteer->isPhoneNumberOptin()) {
+                    $error = 'campaign_status.warning.no_phone_optin';
+                    break;
+                }
+                if (!$volunteer->getPhone()->getIsMobile()) {
+                    $error = 'campaign_status.warning.no_phone_mobile';
+                    break;
+                }
+                break;
+            case Communication::TYPE_EMAIL:
+                if (null === $volunteer->getEmail()) {
+                    $error = 'campaign_status.warning.no_email';
+                    break;
+                }
+                if (!$volunteer->isEmailOptin()) {
+                    $error = 'campaign_status.warning.no_email_optin';
+                    break;
+                }
+                break;
+        }
+
+        if (null !== $error) {
+            $message->setError($error);
+        }
     }
 }
