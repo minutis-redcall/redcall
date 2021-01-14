@@ -6,6 +6,7 @@ use App\Repository\PhoneRepository;
 use App\Validator\Constraints as CustomAssert;
 use Doctrine\ORM\Mapping as ORM;
 use libphonenumber\PhoneNumberFormat;
+use libphonenumber\PhoneNumberType;
 use libphonenumber\PhoneNumberUtil;
 
 /**
@@ -70,7 +71,7 @@ class Phone
     /**
      * @ORM\Column(type="boolean", nullable=true)
      */
-    private $mobile;
+    private $mobile = false;
 
     public function getId() : ?int
     {
@@ -184,6 +185,7 @@ class Phone
         $this->setPrefix($parsed->getCountryCode());
         $this->setNational($phoneUtil->format($parsed, PhoneNumberFormat::NATIONAL));
         $this->setInternational($phoneUtil->format($parsed, PhoneNumberFormat::INTERNATIONAL));
+        $this->setMobile(PhoneNumberType::MOBILE === $phoneUtil->getNumberType($parsed));
     }
 
     public function isMobile() : ?bool
