@@ -70,7 +70,7 @@ class Phone
     /**
      * @ORM\Column(type="boolean", nullable=true)
      */
-    private $isMobile;
+    private $mobile;
 
     public function getId() : ?int
     {
@@ -186,14 +186,14 @@ class Phone
         $this->setInternational($phoneUtil->format($parsed, PhoneNumberFormat::INTERNATIONAL));
     }
 
-    public function getIsMobile() : ?bool
+    public function isMobile() : ?bool
     {
-        return $this->isMobile;
+        return $this->mobile;
     }
 
-    public function setIsMobile(bool $isMobile) : self
+    public function setMobile(bool $mobile) : self
     {
-        $this->isMobile = $isMobile;
+        $this->mobile = $mobile;
 
         return $this;
     }

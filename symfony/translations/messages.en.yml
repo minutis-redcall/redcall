@@ -578,7 +578,6 @@ pdf_export:
 phone_card:
   add: 'Add a phone number'
   error_invalid: 'This phone number format is invalid.'
-  error_not_mobile: 'You can only set mobile phone numbers.'
   error_taken: 'This phone number is already taken by %truncated_name% (%nivol%).'
   main: Main
   title: 'Phone #%index%'

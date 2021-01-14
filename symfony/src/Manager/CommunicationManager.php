@@ -238,17 +238,17 @@ class CommunicationManager
 
         switch ($type) {
             case Communication::TYPE_SMS:
+                if ($volunteer->getPhoneNumber() && !$volunteer->getPhoneNumber()->getIsMobile()) {
+                    $error = 'campaign_status.warning.no_phone_mobile';
+                    break;
+                }
+            case Communication::TYPE_CALL:
                 if (null === $volunteer->getPhoneNumber()) {
                     $error = 'campaign_status.warning.no_phone';
                     break;
                 }
-            case Communication::TYPE_CALL:
                 if (!$volunteer->isPhoneNumberOptin()) {
                     $error = 'campaign_status.warning.no_phone_optin';
-                    break;
-                }
-                if (!$volunteer->getPhone()->getIsMobile()) {
-                    $error = 'campaign_status.warning.no_phone_mobile';
                     break;
                 }
                 break;

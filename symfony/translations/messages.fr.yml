@@ -578,7 +578,6 @@ pdf_export:
 phone_card:
   add: 'Ajouter un numéro de téléphone'
   error_invalid: 'Le format de ce numéro de téléphone n''est pas valide.'
-  error_not_mobile: 'Vous ne pouvez saisir que des numéros de téléphone portable.'
   error_taken: 'Ce numéro de téléphone est déjà utilisé par %truncated_name% (%nivol%).'
   main: Principal
   title: 'Téléphone #%index%'

@@ -541,7 +541,7 @@ class Message
             case Communication::TYPE_SMS:
                 return boolval($this->volunteer->getPhoneNumber())
                        && $this->volunteer->isPhoneNumberOptin()
-                       && $this->volunteer->getPhone()->getIsMobile();
+                       && $this->volunteer->getPhone()->isMobile();
             case Communication::TYPE_CALL:
                 return boolval($this->volunteer->getPhoneNumber())
                        && $this->volunteer->isPhoneNumberOptin();

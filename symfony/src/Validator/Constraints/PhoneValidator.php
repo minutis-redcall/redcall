@@ -4,7 +4,6 @@ namespace App\Validator\Constraints;
 
 use App\Manager\PhoneManager;
 use libphonenumber\NumberParseException;
-use libphonenumber\PhoneNumberType;
 use libphonenumber\PhoneNumberUtil;
 use Symfony\Component\Form\Exception\UnexpectedTypeException;
 use Symfony\Component\Validator\Constraint;
@@ -52,15 +51,6 @@ class PhoneValidator extends ConstraintValidator
                 ->addViolation();
 
             return;
-        }
-
-        if (PhoneNumberType::MOBILE !== $phoneUtil->getNumberType($parsed)) {
-            $this->context
-                ->buildViolation(
-                    $this->translator->trans('phone_card.error_not_mobile')
-                )
-                ->atPath('editor')
-                ->addViolation();
         }
 
         $phone = $this->phoneManager->findOneByPhoneNumber($value);

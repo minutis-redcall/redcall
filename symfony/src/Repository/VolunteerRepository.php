@@ -421,6 +421,7 @@ class VolunteerRepository extends BaseRepository
             ->select('v.id')
             ->join('v.phones', 'p')
             ->andWhere('v.phoneNumberOptin = true')
+            ->andWhere('p.preferred = true')
             ->andWhere('p.isMobile = false')
             ->getQuery()
             ->getArrayResult();
@@ -443,7 +444,7 @@ class VolunteerRepository extends BaseRepository
             ->createVolunteerListQueryBuilder($volunteerIds)
             ->leftJoin('v.phones', 'p')
             ->andWhere('v.phoneNumberOptin = false')
-            ->andWhere('p.id IS NOT NULL')
+            ->andWhere('p.preferred = true')
             ->getQuery()
             ->getArrayResult();
     }
