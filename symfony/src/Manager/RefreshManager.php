@@ -202,8 +202,17 @@ class RefreshManager
                 }
 
                 if ($parent = $this->structureManager->findOneByIdentifier($parentId)) {
-                    $structure->setParentStructure($parent);
-                    $this->structureManager->save($structure);
+                    if (!in_array($structure, $parent->getAncestors())) {
+                        $structure->setParentStructure($parent);
+                        $this->structureManager->save($structure);
+                    } else {
+                        $this->logger->error(sprintf(
+                            'Hierarchy loop: structure %s has parent %s which itself has %s as ancestor!',
+                            $structure->getDisplayName(),
+                            $parent->getDisplayName(),
+                            $structure->getDisplayName()
+                        ));
+                    }
                 }
             }
         });
