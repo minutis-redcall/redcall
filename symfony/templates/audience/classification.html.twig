@@ -33,5 +33,23 @@
         {{ 'audience.classification.audience'|trans }}
     </a>
 
+    <script type="text/javascript">
+
+        $(function () {
+            $('.trigger-launch').prop('disabled', false);
+        });
+
+    </script>
+
+{% else %}
+
+    <script type="text/javascript">
+
+        $(function () {
+            $('.trigger-launch').prop('disabled', 'disabled');
+        });
+
+    </script>
+
 {% endif %}
 

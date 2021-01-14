@@ -59,26 +59,22 @@ class CampaignVoter extends Voter
         /** @var Campaign $campaign */
         $campaign = $subject;
 
-        if (!$campaign->getVolunteer()) {
-            // Older campaigns had no "owner" access
-            $attribute = self::ACCESS;
+        if ($campaign->getVolunteer()) {
+            // A user has ownership of a campaign if he shares one structure with
+            // user who triggered the campaign.
+            $isOwner = $user->hasCommonStructure(
+                $campaign->getVolunteer()->getStructures()
+            );
+
+            if ($isOwner) {
+                return true;
+            }
         }
 
-        switch ($attribute) {
-            case self::ACCESS:
-                // A user can access a campaign if any of the triggered volunteer has a
-                // common structure with that user.
-                return $user->hasCommonStructure(
-                    $this->structureManager->getCampaignStructures($campaign)
-                );
-            case self::OWNER:
-                // A user has ownership of a campaign if he shares one structure with
-                // user who triggered the campaign.
-                return $user->hasCommonStructure(
-                    $campaign->getVolunteer()->getStructures()
-                );
-        }
-
-        return false;
+        // A user can access a campaign if any of the triggered volunteer has a
+        // common structure with that user.
+        return $user->hasCommonStructure(
+            $this->structureManager->getCampaignStructures($campaign)
+        );
     }
 }
