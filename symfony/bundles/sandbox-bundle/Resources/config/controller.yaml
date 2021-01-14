@@ -29,5 +29,4 @@ services:
     public: true
     arguments:
       - '@Bundles\SandboxBundle\Manager\FixturesManager'
-      - '@App\Manager\TagManager'
       - '@translator'

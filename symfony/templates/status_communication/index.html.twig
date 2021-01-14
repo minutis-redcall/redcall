@@ -302,7 +302,27 @@
                                 </td>
 
                                 <td id="volunteer-{{ suffix }}">
-                                    <div class="{% if message.error %}message-error{% endif %}">
+
+                                    {# Warnings #}
+                                    {% set warning = null %}
+                                    {% if communication.type in [constant('App\\Entity\\Communication::TYPE_SMS'), constant('App\\Entity\\Communication::TYPE_CALL')] %}
+                                        {% if not message.volunteer.phoneNumber %}
+                                            {% set warning = 'campaign_status.warning.no_phone'|trans %}
+                                        {% elseif not message.volunteer.phoneNumberOptin %}
+                                            {% set warning = 'campaign_status.warning.no_phone_optin'|trans %}
+                                        {% elseif communication.type == constant('App\\Entity\\Communication::TYPE_SMS') and not message.volunteer.phone.isMobile|default(false) %}
+                                            {% set warning = 'campaign_status.warning.no_phone_mobile'|trans %}
+                                        {% endif %}
+                                    {% elseif communication.type == constant('App\\Entity\\Communication::TYPE_EMAIL') %}
+                                        {% if not message.volunteer.email %}
+                                            {% set warning = 'campaign_status.warning.no_email'|trans %}
+                                        {% endif %}
+                                        {% if not message.volunteer.emailOptin %}
+                                            {% set warning = 'campaign_status.warning.no_email_optin'|trans %}
+                                        {% endif %}
+                                    {% endif %}
+
+                                    <div class="{% if warning or message.error %}message-error{% endif %}">
                                         {{ macros.volunteer(message.volunteer) }}
                                     </div>
 
@@ -373,24 +393,17 @@
                                                   data-message-id="{{ message.id }}"
                                                   class="open-message" style="cursor:pointer;">✏️</span>
                                         {% endif %}
+
+                                        <div class="d-none">
+                                            {% for skill in message.volunteer.badges %}
+                                                <div class="message-is-skill-{{ skill.id|e('html_attr') }}-{{ communication.id }}" data-value=1></div>
+                                            {% endfor %}
+                                        </div>
                                     </div>
 
                                     {# Warnings #}
-                                    {% if communication.type in [constant('App\\Entity\\Communication::TYPE_SMS'), constant('App\\Entity\\Communication::TYPE_CALL')] %}
-                                        {% if not message.volunteer.phoneNumber %}
-                                            <div style="color:red;">{{ 'campaign_status.warning.no_phone'|trans }}</div>
-                                        {% elseif not message.volunteer.phoneNumberOptin %}
-                                            <div style="color:red;">{{ 'campaign_status.warning.no_phone_optin'|trans }}</div>
-                                        {% elseif communication.type == constant('App\\Entity\\Communication::TYPE_SMS') and not message.volunteer.phone.isMobile|default(false) %}
-                                            <div style="color:red;">{{ 'campaign_status.warning.no_phone_optin'|trans }}</div>
-                                        {% endif %}
-                                    {% elseif communication.type == constant('App\\Entity\\Communication::TYPE_EMAIL') %}
-                                        {% if not message.volunteer.email %}
-                                            <div style="color:red;">{{ 'campaign_status.warning.no_email'|trans }}</div>
-                                        {% endif %}
-                                        {% if not message.volunteer.emailOptin %}
-                                            <div style="color:red;">{{ 'campaign_status.warning.no_email_optin'|trans }}</div>
-                                        {% endif %}
+                                    {% if warning %}
+                                        <div style="color:red;">{{ warning }}</div>
                                     {% endif %}
 
                                     {# Unexpected error #}
@@ -675,7 +688,7 @@
                     </label>
                     <label class="form-check-label"
                            for="filter-is-skill-{{ skill.id }}-{{ communication.id }}">
-                        {{ ('tag.' ~ skill.label)|trans }}
+                        {{ macros.badge(skill) }}
                     </label>
                 </div>
             {% endfor %}

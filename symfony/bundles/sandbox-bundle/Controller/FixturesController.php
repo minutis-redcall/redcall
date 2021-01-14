@@ -3,9 +3,7 @@
 namespace Bundles\SandboxBundle\Controller;
 
 use App\Base\BaseController;
-use App\Entity\Tag;
 use App\Form\Type\StructureWidgetType;
-use App\Manager\TagManager;
 use Bundles\SandboxBundle\Manager\FixturesManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -15,9 +13,9 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Translation\TranslatorInterface;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * @Route("/fixtures", name="fixtures_")
@@ -30,26 +28,14 @@ class FixturesController extends BaseController
     private $fixturesManager;
 
     /**
-     * @var TagManager
-     */
-    private $tagManager;
-
-    /**
      * @var TranslatorInterface
      */
     private $translator;
 
-    /**
-     * @param FixturesManager     $fixturesManager
-     * @param TagManager          $tagManager
-     * @param TranslatorInterface $translator
-     */
     public function __construct(FixturesManager $fixturesManager,
-        TagManager $tagManager,
         TranslatorInterface $translator)
     {
         $this->fixturesManager = $fixturesManager;
-        $this->tagManager      = $tagManager;
         $this->translator      = $translator;
     }
 
@@ -88,29 +74,12 @@ class FixturesController extends BaseController
         }
 
         return [
-            'tags'      => count(Tag::TAGS) !== count($this->tagManager->findAll()),
             'structure' => $structure->createView(),
             'volunteer' => $volunteer->createView(),
         ];
     }
 
-    /**
-     * @Route(path="/skills", name="tags")
-     * @Template()
-     */
-    public function tags()
-    {
-        $this->fixturesManager->createTags();
-
-        return $this->redirectToRoute('sandbox_fixtures_index');
-    }
-
-    /**
-     * @param Request $request
-     *
-     * @return FormInterface
-     */
-    private function getStructureForm(Request $request): FormInterface
+    private function getStructureForm(Request $request) : FormInterface
     {
         return $this->createFormBuilder()
                     ->add('name', TextType::class, [
@@ -142,12 +111,7 @@ class FixturesController extends BaseController
                     ->handleRequest($request);
     }
 
-    /**
-     * @param Request $request
-     *
-     * @return FormInterface
-     */
-    private function getVolunteerForm(Request $request): FormInterface
+    private function getVolunteerForm(Request $request) : FormInterface
     {
         return $this->createFormBuilder()
                     ->add('number_volunteers', NumberType::class, [
@@ -167,5 +131,4 @@ class FixturesController extends BaseController
                     ->getForm()
                     ->handleRequest($request);
     }
-
 }

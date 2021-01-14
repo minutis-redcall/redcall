@@ -131,6 +131,14 @@ audience:
     title: 'Résumé de la sélection'
   copy_paste_details: 'Ou coller une liste de nivols dans le champ ci-dessous.'
   manual_selection: 'Saisie manuelle de bénévoles'
+  pre_selection:
+    description: 'Dans une communication précédente, vous avez sélectionné <strong>%nbr%</strong> bénévoles.'
+    edit: 'Editer cette sélection'
+    remove_volunteer: 'Utilisez les coches pour supprimer des bénévoles de la sélection.'
+    selected_volunteers: 'Bénévoles sélectionnés'
+    title: 'Préselection de bénévoles'
+    use_standard_form: 'Ouvrir le formulaire classique'
+    close_standard_form: 'Fermer le formulaire classique'
   problems:
     disabled: Desactivés
     email_missing: 'Pas d''email'
@@ -145,14 +153,6 @@ audience:
   search_other_badge: 'Rechercher une autre compétence :'
   select_all_badges: 'Déclencher tous les bénévoles quelque soient leurs compétences'
   structures: 'Structure(s) à déclencher'
-  pre_selection:
-    title: 'Préselection de bénévoles'
-    description: 'Dans une communication précédente, vous avez sélectionné <strong>%nbr%</strong> bénévoles.'
-    edit: 'Editer cette sélection'
-    selected_volunteers: 'Bénévoles sélectionnés'
-    remove_volunteer: 'Utilisez les coches pour supprimer des bénévoles de la sélection.'
-    use_standard_form: 'Ouvrir le formulaire classique'
-    close_standard_form: 'Fermer le formulaire classique'
 backlinks:
   blablacar: 'Parrainé par'
   minutis: 'Développé par les bénévoles'
@@ -696,36 +696,6 @@ structure:
   form:
     name: 'Nom de la structure'
     parent: 'Structure parente (optionnelle)'
-tag:
-  cem: 'Chef Maraude'
-  ci: 'Chef Int.'
-  dlas: DLAS
-  dlus: DLUS
-  drvr_vl: 'Chauf. VL'
-  drvr_vpsp: 'Chauf. VPSP'
-  emergency_assistance: 'Urg. Sec.'
-  mar: Maraudeur
-  psc_1: 'PSC 1'
-  pse_1: 'PSE 1'
-  pse_2: 'PSE 2'
-  shortcuts:
-    cem: CEM
-    ci: CI
-    dlas: DLAS
-    dlus: DLUS
-    drvr_vl: VL
-    drvr_vpsp: VPSP
-    emergency_assistance: US
-    mar: MAR
-    psc_1: PSC1
-    pse_1: PSE1
-    pse_2: PSE2
-    social_assistance: AS
-    tcau: TCAU
-    tceo: TCEO
-  social_assistance: 'Ass. Soc.'
-  tcau: TCAU
-  tceo: TCEO
 title:
   campaigns: Déclenchements
   costs: Coûts

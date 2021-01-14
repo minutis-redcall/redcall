@@ -131,6 +131,14 @@ audience:
     title: 'Selection summary'
   copy_paste_details: 'Paste a list of identifiers in the field below.'
   manual_selection: 'Volunteers manual selection'
+  pre_selection:
+    close_standard_form: 'Close classic form'
+    description: 'In a previous communication, you selected <strong>%nbr%</strong> volunteers.'
+    edit: 'Edit this selection'
+    remove_volunteer: 'Use ticks to remove volunteers from the selection.'
+    selected_volunteers: 'Selected volunteers'
+    title: 'Volunteers preselection'
+    use_standard_form: 'Use classic form'
   problems:
     disabled: Disabled
     email_missing: 'No email'
@@ -145,14 +153,6 @@ audience:
   search_other_badge: 'Search for another skill:'
   select_all_badges: 'Trigger all volunteers whatever their skills'
   structures: 'Structure(s) to trigger'
-  pre_selection:
-    title: 'Volunteers preselection'
-    description: 'In a previous communication, you selected <strong>%nbr%</strong> volunteers.'
-    edit: 'Edit this selection'
-    selected_volunteers: 'Selected volunteers'
-    remove_volunteer: 'Use ticks to remove volunteers from the selection.'
-    use_standard_form: 'Use classic form'
-    close_standard_form: 'Close classic form'
 backlinks:
   blablacar: 'Sponsored by'
   minutis: 'Developed by Minutis volunteers'
@@ -696,36 +696,6 @@ structure:
   form:
     name: 'Structure name'
     parent: 'Optional parent structure'
-tag:
-  cem: 'Roam Leader'
-  ci: 'Inter. chief'
-  dlas: DLAS
-  dlus: DLUS
-  drvr_vl: 'VL driver'
-  drvr_vpsp: 'VPSP driver'
-  emergency_assistance: 'Emergency Help'
-  mar: Roamer
-  psc_1: 'PSC 1'
-  pse_1: 'PSE 1'
-  pse_2: 'PSE 2'
-  shortcuts:
-    cem: CE
-    ci: CI
-    dlas: DLAS
-    dlus: DLUS
-    drvr_vl: VL
-    drvr_vpsp: VPSP
-    emergency_assistance: US
-    mar: ROAM
-    psc_1: PSC1
-    pse_1: PSE1
-    pse_2: PSE2
-    social_assistance: AS
-    tcau: TCAU
-    tceo: TCEO
-  social_assistance: 'Social Assistance'
-  tcau: TCAU
-  tceo: TCEO
 title:
   campaigns: Campaigns
   costs: Costs

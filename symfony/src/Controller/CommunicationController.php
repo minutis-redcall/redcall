@@ -13,13 +13,13 @@ use App\Form\Model\Campaign as CampaignModel;
 use App\Form\Model\SmsTrigger;
 use App\Form\Type\CampaignType;
 use App\Manager\AnswerManager;
+use App\Manager\BadgeManager;
 use App\Manager\CampaignManager;
 use App\Manager\CommunicationManager;
 use App\Manager\ExpirableManager;
 use App\Manager\MediaManager;
 use App\Manager\MessageManager;
 use App\Manager\StructureManager;
-use App\Manager\TagManager;
 use App\Manager\UserManager;
 use App\Manager\VolunteerManager;
 use App\Services\MessageFormatter;
@@ -55,9 +55,9 @@ class CommunicationController extends BaseController
     private $formatter;
 
     /**
-     * @var TagManager
+     * @var BadgeManager
      */
-    private $tagManager;
+    private $badgeManager;
 
     /**
      * @var VolunteerManager
@@ -97,7 +97,7 @@ class CommunicationController extends BaseController
     public function __construct(CampaignManager $campaignManager,
         CommunicationManager $communicationManager,
         MessageFormatter $formatter,
-        TagManager $tagManager,
+        BadgeManager $badgeManager,
         VolunteerManager $volunteerManager,
         MessageManager $messageManager,
         AnswerManager $answerManager,
@@ -109,7 +109,7 @@ class CommunicationController extends BaseController
         $this->campaignManager      = $campaignManager;
         $this->communicationManager = $communicationManager;
         $this->formatter            = $formatter;
-        $this->tagManager           = $tagManager;
+        $this->badgeManager         = $badgeManager;
         $this->volunteerManager     = $volunteerManager;
         $this->messageManager       = $messageManager;
         $this->answerManager        = $answerManager;
@@ -129,7 +129,7 @@ class CommunicationController extends BaseController
 
         return $this->render('status_communication/index.html.twig', [
             'campaign'           => $campaign,
-            'skills'             => $this->tagManager->findAll(),
+            'skills'             => $this->badgeManager->getPublicBadges(),
             'progress'           => $campaign->getCampaignProgression(),
             'hash'               => $this->campaignManager->getHash($campaign->getId()),
             'campaignStructures' => $this->structureManager->getCampaignStructures($campaign),
