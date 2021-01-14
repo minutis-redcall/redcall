@@ -43,7 +43,7 @@ class VolunteerType extends AbstractType
             ->add('lastName', TextType::class, [
                 'label' => 'manage_volunteers.form.last_name',
             ])
-            ->add('phones', PhonesType::class, [
+            ->add('phones', PhoneCardsType::class, [
                 'label' => false,
             ])
             ->add('phoneNumberOptin', CheckboxType::class, [

@@ -6,7 +6,7 @@ use App\Base\BaseController;
 use App\Component\HttpFoundation\MpdfResponse;
 use App\Entity\Message;
 use App\Entity\VolunteerSession;
-use App\Form\Type\PhonesType;
+use App\Form\Type\PhoneCardsType;
 use App\Manager\MessageManager;
 use App\Manager\PhoneManager;
 use App\Manager\VolunteerManager;
@@ -87,7 +87,7 @@ class SpaceController extends BaseController
         $volunteer = $session->getVolunteer();
 
         $form = $this->createFormBuilder($volunteer)
-                     ->add('phones', PhonesType::class, [
+                     ->add('phones', PhoneCardsType::class, [
                          'label' => false,
                      ])
                      ->add('submit', SubmitType::class, [

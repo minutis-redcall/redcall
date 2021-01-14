@@ -58,17 +58,21 @@ class PhoneValidator extends ConstraintValidator
         // This phone number is already taken by someone else
         if ($phone && $phone->getVolunteer() && $value->getVolunteer()
             && $phone->getVolunteer()->getId() !== $value->getVolunteer()->getId()) {
-            $this->context
-                ->buildViolation(
-                    $this->translator->trans('phone_card.error_taken', [
-                        '%nivol%'          => $phone->getVolunteer()->getNivol(),
-                        '%truncated_name%' => $phone->getVolunteer()->getTruncatedName(),
-                    ])
-                )
-                ->atPath('editor')
-                ->addViolation();
-
-            return;
+            // If it is taken by a disabled volunteer, allow to reuse it anyway
+            if (!$phone->getVolunteer()->isEnabled()) {
+                $phone->getVolunteer()->removePhone($phone);
+                $this->phoneManager->save($phone);
+            } else {
+                $this->context
+                    ->buildViolation(
+                        $this->translator->trans('phone_card.error_taken', [
+                            '%nivol%'          => $phone->getVolunteer()->getNivol(),
+                            '%truncated_name%' => $phone->getVolunteer()->getTruncatedName(),
+                        ])
+                    )
+                    ->atPath('editor')
+                    ->addViolation();
+            }
         }
     }
 }

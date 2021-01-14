@@ -147,33 +147,6 @@
     </div>
 {% endblock %}
 
-{% block phone_row %}
-
-    {{ form_row(form) }}
-
-    <script type="text/javascript">
-        $(function () {
-            var tel = document.querySelector('#{{ form.vars.id }}');
-            var iti = intlTelInput(tel, {
-                nationalMode: true,
-                defaultCountry: 'FR',
-                preferredCountries: ['FR', 'GP', 'GF', 'MQ', 'YT', 'PF', 'RE', 'NC', 'PM', 'BL', 'MF', 'WF'],
-            });
-            var handleChange = function () {
-                if (iti.isValidNumber()) {
-                    var e164 = $('#{{ form.vars.id }}').data('e164');
-                    $(e164).val(
-                        iti.getNumber()
-                    );
-                }
-            }
-            tel.addEventListener('change', handleChange);
-            tel.addEventListener('keyup', handleChange);
-        });
-    </script>
-
-{% endblock %}
-
 {% block phone_card_row %}
 
     <div class="col-md-4 phone-row" id="form-row-{{ form.vars.id }}">
@@ -189,11 +162,13 @@
                 </div>
             </div>
             <div class="card-body">
+
                 {{ form_row(form.editor, {
                     attr: {
                         'data-e164': '#' ~ form.e164.vars.id
                     }
                 }) }}
+
                 {{ form_row(form.e164) }}
 
                 <div class="d-none">
@@ -220,9 +195,37 @@
         </div>
     </div>
 
+    <script type="text/javascript">
+        $(function () {
+
+            $('#{{ form.editor.vars.id }}').val(
+                $('#{{ form.e164.vars.id }}').val()
+            );
+
+            var tel = document.querySelector('#{{ form.editor.vars.id }}');
+            var iti = intlTelInput(tel, {
+                nationalMode: true,
+                defaultCountry: 'FR',
+                preferredCountries: ['FR', 'GP', 'GF', 'MQ', 'YT', 'PF', 'RE', 'NC', 'PM', 'BL', 'MF', 'WF'],
+            });
+
+            var handleChange = function () {
+                if (iti.isValidNumber()) {
+                    var e164 = $('#{{ form.editor.vars.id }}').data('e164');
+                    $(e164).val(
+                        iti.getNumber()
+                    );
+                }
+            }
+
+            tel.addEventListener('change', handleChange);
+            tel.addEventListener('keyup', handleChange);
+        });
+    </script>
+
 {% endblock %}
 
-{% block phones_row %}
+{% block phone_cards_row %}
 
     <div class="phone-collection" data-index="{{ form.children|length }}">
         {{ form_widget(form, {

@@ -6,7 +6,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class PhonesType extends AbstractType
+class PhoneCardsType extends AbstractType
 {
     public function getParent()
     {
@@ -15,7 +15,7 @@ class PhonesType extends AbstractType
 
     public function getBlockPrefix()
     {
-        return 'phones';
+        return 'phone_cards';
     }
 
     public function configureOptions(OptionsResolver $resolver)
