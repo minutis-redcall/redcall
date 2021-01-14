@@ -422,7 +422,7 @@ class VolunteerRepository extends BaseRepository
             ->join('v.phones', 'p')
             ->andWhere('v.phoneNumberOptin = true')
             ->andWhere('p.preferred = true')
-            ->andWhere('p.isMobile = false')
+            ->andWhere('p.mobile = false')
             ->getQuery()
             ->getArrayResult();
     }

@@ -13,7 +13,7 @@ use libphonenumber\PhoneNumberUtil;
  * @ORM\Table(indexes={
  *     @ORM\Index(name="nationalx", columns={"national"}),
  *     @ORM\Index(name="internationalx", columns={"international"}),
- *     @ORM\Index(name="ismobilex", columns={"is_mobile"})
+ *     @ORM\Index(name="ismobilex", columns={"mobile"})
  * })
  * @ORM\HasLifecycleCallbacks()
  * @ORM\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
