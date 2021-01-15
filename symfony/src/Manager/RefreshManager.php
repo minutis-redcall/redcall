@@ -389,13 +389,12 @@ class RefreshManager
                 $e164   = $phoneUtil->format($parsed, PhoneNumberFormat::E164);
                 if (!$volunteer->hasPhoneNumber($e164)) {
                     $existingPhone = $this->phoneManager->findOneByPhoneNumber($e164);
-                    if ($existingPhone) {
-                        if (!$existingPhone->getVolunteer()->isEnabled()) {
-                            $existingVolunteer = $existingPhone->getVolunteer();
-                            $existingVolunteer->removePhone($existingPhone);
-                            $this->volunteerManager->save($existingVolunteer);
-                            $existingPhone = null;
-                        }
+                    // Allow a volunteer to take disabled people's phone number
+                    if ($existingPhone && !$existingPhone->getVolunteer()->isEnabled()) {
+                        $existingVolunteer = $existingPhone->getVolunteer();
+                        $existingVolunteer->removePhone($existingPhone);
+                        $this->volunteerManager->save($existingVolunteer);
+                        $existingPhone = null;
                     }
                     if (!$existingPhone) {
                         $phone = new Phone();
