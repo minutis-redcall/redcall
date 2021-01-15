@@ -97,11 +97,6 @@ class Campaign
      */
     private $volunteer;
 
-    /**
-     * @var array
-     */
-    private $structures;
-
     public function getId()
     {
         return $this->id;

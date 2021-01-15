@@ -84,19 +84,19 @@ class MessageFormatter
                 } else {
                     $contentParts[] = $this->translator->trans('message.sms.how_to_answer_multiple');
                 }
-
-                // Enabled geo location
-                if ($message->getCommunication()->hasGeoLocation()) {
-                    $contentParts[] = $this->translator->trans('message.sms.geo_location', [
-                        '%url%' => trim(getenv('WEBSITE_URL'), '/').$this->router->generate('geo_open', ['code' => $message->getCode()]),
-                    ]);
-                }
             } else {
                 $contentParts[] = $this->translator->trans('message.sms.how_to_answer_url', [
                     '%url%'    => trim(getenv('WEBSITE_URL'), '/').$this->router->generate('message_open', ['code' => $message->getCode()]),
                     '%number%' => PhoneNumber::getFormattedSmsSender($message->getVolunteer()->getPhone()),
                 ]);
             }
+        }
+
+        // Enabled geo location
+        if ($message->getCommunication()->hasGeoLocation()) {
+            $contentParts[] = $this->translator->trans('message.sms.geo_location', [
+                '%url%' => trim(getenv('WEBSITE_URL'), '/').$this->router->generate('geo_open', ['code' => $message->getCode()]),
+            ]);
         }
 
         return GSM::enforceGSMAlphabet(implode("\n", $contentParts));

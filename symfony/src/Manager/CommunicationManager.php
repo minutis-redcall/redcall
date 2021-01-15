@@ -238,7 +238,7 @@ class CommunicationManager
 
         switch ($type) {
             case Communication::TYPE_SMS:
-                if ($volunteer->getPhoneNumber() && !$volunteer->getPhoneNumber()->getIsMobile()) {
+                if ($volunteer->getPhoneNumber() && !$volunteer->getPhone()->isMobile()) {
                     $error = 'campaign_status.warning.no_phone_mobile';
                     break;
                 }

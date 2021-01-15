@@ -222,7 +222,7 @@
 
             {# Other badges search #}
             {% set attr = {
-                'class': 'flexdatalist badge-tick ' ~ (init_data.badges_all ? 'disabled' : ''),
+                'class': 'flexdatalist numbers no-badge-counts badge-tick ' ~ (init_data.badges_all ? 'disabled' : ''),
                 'multiple': "multiple",
                 'placeholder': 'base.search.placeholder'|trans,
                 'data-url': path('audience_search_badge'),

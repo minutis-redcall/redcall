@@ -6,10 +6,10 @@ use App\Base\BaseController;
 use App\Component\HttpFoundation\ArrayToCsvResponse;
 use App\Component\HttpFoundation\MpdfResponse;
 use App\Entity\Answer;
+use App\Entity\Badge;
 use App\Entity\Choice;
 use App\Entity\Communication;
 use App\Entity\Message;
-use App\Entity\Tag;
 use App\Entity\Volunteer;
 use DateTime;
 use Mpdf\Mpdf;
@@ -44,9 +44,9 @@ class ExportController extends BaseController
             /* @var Volunteer $volunteer */
             $volunteer = $message->getVolunteer();
 
-            $tags = implode(', ', array_map(function (Tag $tag) {
-                return $this->trans(sprintf('tag.shortcuts.%s', $tag->getLabel()));
-            }, $volunteer->getTags()->toArray()));
+            $tags = implode(', ', array_map(function (Badge $badge) {
+                return $badge->getName();
+            }, $volunteer->getVisibleBadges()->toArray()));
 
             $row = [
                 $this->trans('csv_export.nivol')        => $volunteer->getNivol(),
@@ -143,7 +143,7 @@ class ExportController extends BaseController
                 /* @var Volunteer $volunteerB */
                 $volunteerB = $rowB['volunteer'];
 
-                return -1 * ($volunteerA->getTagPriority() <=> $volunteerB->getTagPriority());
+                return ($volunteerA->getBadgePriority() <=> $volunteerB->getBadgePriority());
             });
         }
 
