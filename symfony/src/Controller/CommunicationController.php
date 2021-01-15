@@ -420,6 +420,7 @@ class CommunicationController extends BaseController
         ProcessorInterface $processor)
     {
         foreach ($communication->getMessages() as $message) {
+            $message->setError(false);
             $message->setSent(false);
             $this->messageManager->save($message);
         }

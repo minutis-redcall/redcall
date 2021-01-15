@@ -151,7 +151,7 @@ audience:
     title: 'Détails à propos des problèmes dans la sélection'
   search_for_volunteers: 'Rechercher des bénévoles à déclencher :'
   search_other_badge: 'Rechercher une autre compétence :'
-  select_all_badges: 'Déclencher tous les bénévoles quelque soient leurs compétences'
+  select_all_badges: 'Déclencher tous les bénévoles quelles que soient leurs compétences'
   structures: 'Structure(s) à déclencher'
 backlinks:
   blablacar: 'Parrainé par'

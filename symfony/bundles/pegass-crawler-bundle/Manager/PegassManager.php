@@ -56,6 +56,11 @@ class PegassManager
         $this->logger           = $logger;
     }
 
+    public function getAllEnabledEntities() : array
+    {
+        return $this->pegassRepository->getAllEnabledEntities();
+    }
+
     /**
      * @param int  $limit
      * @param bool $fromCache

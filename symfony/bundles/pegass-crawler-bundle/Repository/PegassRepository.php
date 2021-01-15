@@ -165,7 +165,7 @@ class PegassRepository extends ServiceEntityRepository
                     ->getSingleScalarResult();
 
         $qb->select('p.id')
-           ->setMaxResults(1000);
+           ->setMaxResults(100);
 
         $offset = 0;
         $stop   = false;
@@ -199,8 +199,18 @@ class PegassRepository extends ServiceEntityRepository
                 break;
             }
 
-            $offset += 1000;
+            $offset += 100;
         }
+    }
+
+    public function getAllEnabledEntities() : array
+    {
+        return $this
+            ->createQueryBuilder('p')
+            ->select('p.type', 'p.identifier')
+            ->where('p.enabled = true')
+            ->getQuery()
+            ->getArrayResult();
     }
 
     /**
