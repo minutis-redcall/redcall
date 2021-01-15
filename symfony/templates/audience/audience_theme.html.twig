@@ -390,6 +390,7 @@
             };
 
             if (!numbersLock) {
+                numbersLock = true;
                 updateNumbers();
             }
         }
@@ -398,7 +399,6 @@
             var withBadgeCounts = numbersContext.withBadgeCounts;
             var formData = numbersContext.formData;
 
-            numbersLock = true;
             numbersContext = null;
 
             if (withBadgeCounts) {

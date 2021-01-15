@@ -32,7 +32,7 @@ final class Version20210109191432 extends AbstractMigration
 
         foreach ($rows as $idx => $row) {
             $parsed = $phoneUtil->parse($row['e164'], Phone::DEFAULT_LANG);
-            $query  .= sprintf(' WHEN id = %d THEN %d ', $idx, PhoneNumberType::MOBILE === $phoneUtil->getNumberType($parsed));
+            $query  .= sprintf(' WHEN id = %d THEN %d ', $idx /* oops */, PhoneNumberType::MOBILE === $phoneUtil->getNumberType($parsed));
         }
 
         $query .= 'END';
