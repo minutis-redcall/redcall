@@ -305,7 +305,7 @@ class VolunteerManager
         $volunteer->setEmail(null);
         $volunteer->setEnabled(false);
         $volunteer->setLocked(true);
-        $volunteer->getTags()->clear();
+        $volunteer->getBadges()->clear();
         $volunteer->setLastPegassUpdate(new \DateTime('2000-01-01'));
         $volunteer->setReport([]);
         $volunteer->getStructures()->clear();

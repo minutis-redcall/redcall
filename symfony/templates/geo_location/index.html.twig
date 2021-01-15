@@ -51,8 +51,8 @@
                     <div class="h4">{{ msg.volunteer.displayName }}</div>
 
                     <div class="text-small">
-                        {% for skill in msg.volunteer.tagsView %}
-                            {{ ('tag.shortcuts.' ~ skill)|trans }}{% if not loop.last %},{% endif %}
+                        {% for skill in msg.volunteer.visibleBadges %}
+                            {{ skill.name }}{% if not loop.last %},{% endif %}
                         {% endfor %}
                     </div>
 

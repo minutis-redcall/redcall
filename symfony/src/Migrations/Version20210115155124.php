@@ -13,7 +13,7 @@ use libphonenumber\PhoneNumberUtil;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20210109191432 extends AbstractMigration
+final class Version20210115155124 extends AbstractMigration
 {
     public function getDescription() : string
     {
@@ -25,14 +25,15 @@ final class Version20210109191432 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
+        // Same as Version20210109191432 but without the bug
         $rows      = $this->connection->fetchAll('SELECT id, e164 FROM phone');
         $phoneUtil = PhoneNumberUtil::getInstance();
 
-        $query = 'UPDATE phone SET is_mobile = CASE ';
+        $query = 'UPDATE phone SET mobile = CASE ';
 
-        foreach ($rows as $idx => $row) {
+        foreach ($rows as $row) {
             $parsed = $phoneUtil->parse($row['e164'], Phone::DEFAULT_LANG);
-            $query  .= sprintf(' WHEN id = %d THEN %d ', $idx /* oops */, PhoneNumberType::MOBILE === $phoneUtil->getNumberType($parsed));
+            $query  .= sprintf(' WHEN id = %d THEN %d ', $row['id'], PhoneNumberType::MOBILE === $phoneUtil->getNumberType($parsed));
         }
 
         $query .= 'END';
@@ -42,5 +43,7 @@ final class Version20210109191432 extends AbstractMigration
 
     public function down(Schema $schema) : void
     {
+        // this up() migration is auto-generated, please modify it to your needs
+        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
     }
 }

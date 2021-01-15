@@ -109,33 +109,24 @@ class RefreshManager
 
     public function refreshAsync()
     {
-        $this->structureManager->synchronizeWithPegass();
-
-        $this->pegassManager->foreach(Pegass::TYPE_STRUCTURE, function (Pegass $pegass) {
-            $this->async->fire(SyncOneWithPegass::class, [
-                'type'       => Pegass::TYPE_STRUCTURE,
-                'identifier' => $pegass->getIdentifier(),
-            ]);
-        });
+        foreach ($this->pegassManager->getAllEnabledEntities() as $row) {
+            $this->async->fire(SyncOneWithPegass::class, $row);
+        }
 
         $this->async->fire(SyncOneWithPegass::class, [
             'type'       => SyncOneWithPegass::PARENT_STRUCUTRES,
             'identifier' => null,
         ]);
 
-        $this->volunteerManager->synchronizeWithPegass();
+        $this->async->fire(SyncOneWithPegass::class, [
+            'type'       => SyncOneWithPegass::SYNC_STRUCTURES,
+            'identifier' => null,
+        ]);
 
-        $this->pegassManager->foreach(Pegass::TYPE_VOLUNTEER, function (Pegass $pegass) {
-            // Volunteer is invalid (ex: 00000048004C)
-            if (!$pegass->evaluate('user.id')) {
-                return;
-            }
-
-            $this->async->fire(SyncOneWithPegass::class, [
-                'type'       => Pegass::TYPE_VOLUNTEER,
-                'identifier' => $pegass->getIdentifier(),
-            ]);
-        });
+        $this->async->fire(SyncOneWithPegass::class, [
+            'type'       => SyncOneWithPegass::SYNC_VOLUNTEERS,
+            'identifier' => null,
+        ]);
     }
 
     public function refreshStructures(bool $force)
@@ -346,16 +337,6 @@ class RefreshManager
             $this->fetchBadges($pegass)
         );
 
-        // Some issues may lead to not contact a volunteer properly
-        if (!$volunteer->getPhoneNumber() && !$volunteer->getEmail()) {
-            $volunteer->addReport('import_report.no_contact');
-            $volunteer->setEnabled(false);
-        } elseif (!$volunteer->getPhoneNumber()) {
-            $volunteer->addReport('import_report.no_phone');
-        } elseif (!$volunteer->getEmail()) {
-            $volunteer->addReport('import_report.no_email');
-        }
-
         // Disabling minors
         if ($volunteer->isMinor()) {
             $volunteer->addReport('import_report.minor');
@@ -406,12 +387,21 @@ class RefreshManager
                 /** @var PhoneNumber $parsed */
                 $parsed = $phoneUtil->parse($row['libelle'], Phone::DEFAULT_LANG);
                 $e164   = $phoneUtil->format($parsed, PhoneNumberFormat::E164);
-
-                if (!$volunteer->hasPhoneNumber($e164) && !$this->phoneManager->findOneByPhoneNumber($e164)) {
-                    $phone = new Phone();
-                    $phone->setPreferred(0 === $volunteer->getPhones()->count());
-                    $phone->setE164($e164);
-                    $volunteer->addPhone($phone);
+                if (!$volunteer->hasPhoneNumber($e164)) {
+                    $existingPhone = $this->phoneManager->findOneByPhoneNumber($e164);
+                    // Allow a volunteer to take disabled people's phone number
+                    if ($existingPhone && !$existingPhone->getVolunteer()->isEnabled()) {
+                        $existingVolunteer = $existingPhone->getVolunteer();
+                        $existingVolunteer->removePhone($existingPhone);
+                        $this->volunteerManager->save($existingVolunteer);
+                        $existingPhone = null;
+                    }
+                    if (!$existingPhone) {
+                        $phone = new Phone();
+                        $phone->setPreferred(0 === $volunteer->getPhones()->count());
+                        $phone->setE164($e164);
+                        $volunteer->addPhone($phone);
+                    }
                 }
             } catch (NumberParseException $e) {
                 continue;

@@ -16,6 +16,7 @@ use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
@@ -69,17 +70,6 @@ class FormLoginAuthenticator extends AbstractFormLoginAuthenticator
      */
     private $homeRoute;
 
-    /**
-     * @param CaptchaManager               $captchaManager
-     * @param FormFactoryInterface         $formFactory
-     * @param UserPasswordEncoderInterface $encoder
-     * @param Session                      $session
-     * @param TokenStorageInterface        $tokenStorage
-     * @param TranslatorInterface          $translator
-     * @param RequestStack                 $requestStack
-     * @param RouterInterface              $router
-     * @param string                       $homeRoute
-     */
     public function __construct(CaptchaManager $captchaManager,
         FormFactoryInterface $formFactory,
         UserPasswordEncoderInterface $encoder,
@@ -99,6 +89,16 @@ class FormLoginAuthenticator extends AbstractFormLoginAuthenticator
         $this->requestStack   = $requestStack;
         $this->router         = $router;
         $this->homeRoute      = $homeRoute;
+    }
+
+    public function start(Request $request, AuthenticationException $authException = null)
+    {
+        $this->session->set('auth_redirect', [
+            'route'        => $request->attributes->get('_route'),
+            'route_params' => $request->attributes->get('_route_params'),
+        ]);
+
+        parent::start($request, $authException);
     }
 
     public function supports(Request $request)
@@ -185,8 +185,15 @@ class FormLoginAuthenticator extends AbstractFormLoginAuthenticator
                 ->whitelistNow($ip);
         }
 
+        $route = $this->session->get('auth_redirect', [
+            'route'        => $this->homeRoute,
+            'route_params' => [],
+        ]);
+
+        $this->session->remove('auth_redirect');
+
         $response = new RedirectResponse(
-            $this->router->generate($this->homeRoute)
+            $this->router->generate($route['route'], $route['route_params'])
         );
 
         $response->headers->setCookie(

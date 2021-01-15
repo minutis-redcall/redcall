@@ -132,12 +132,17 @@ class CommunicationManager
             $this->processor->process($communication);
         }
 
+        $structureName = $communication->getVolunteer()->getMainStructure()->getDisplayName();
+        if ($communication->getVolunteer()->getUser() && $communication->getVolunteer()->getUser()->getMainStructure()) {
+            $structureName = $communication->getVolunteer()->getUser()->getMainStructure()->getDisplayName();
+        }
+
         $this->slackLogger->info(
             sprintf(
                 'New %s trigger by %s (%s) on %d volunteers from %d structures.%s%s%sLink: %s',
                 strtoupper($communication->getType()),
                 $communication->getVolunteer()->getDisplayName(),
-                $communication->getVolunteer()->getMainStructure()->getDisplayName(),
+                $structureName,
                 count($communication->getMessages()),
                 count($this->structureManager->getCampaignStructures($campaign)),
                 PHP_EOL,
@@ -238,7 +243,7 @@ class CommunicationManager
 
         switch ($type) {
             case Communication::TYPE_SMS:
-                if ($volunteer->getPhoneNumber() && !$volunteer->getPhoneNumber()->getIsMobile()) {
+                if ($volunteer->getPhoneNumber() && !$volunteer->getPhone()->isMobile()) {
                     $error = 'campaign_status.warning.no_phone_mobile';
                     break;
                 }

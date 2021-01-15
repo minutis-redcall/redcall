@@ -792,6 +792,20 @@ class Volunteer
         return $badges;
     }
 
+    public function getBadgePriority() : int
+    {
+        $lowest = 0xFFFFFFFF;
+
+        foreach ($this->getVisibleBadges() as $badge) {
+            /** @var Badge $badge */
+            if ($badge->getPriority() < $lowest) {
+                $lowest = $badge->getPriority();
+            }
+        }
+
+        return $lowest;
+    }
+
     private function toName(string $name) : string
     {
         return preg_replace_callback('/[^\\s\-]+/ui', function (array $match) {

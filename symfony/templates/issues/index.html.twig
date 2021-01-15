@@ -26,29 +26,7 @@
                 <td>
                     <div class="row">
                         <div class="col-md-5">
-                            <div class="h4">
-                                {% if volunteer.enabled %}
-                                    {{ volunteer.displayName }}
-                                {% else %}
-                                    <span style="color:grey;">{{ volunteer.displayName }}</span>
-                                {% endif %}
-                                {% if volunteer.minor %}
-                                    <span title="{{ 'manage_volunteers.form.minor'|trans }}">🐻</span>
-                                {% endif %}
-                            </div>
-                            <div>
-                                {% if volunteer.structures.count %}
-                                    <strong>{{ volunteer.structures.get(0).name }}</strong>
-                                    {% if volunteer.structures.count > 1 %}
-                                        {{ 'manage_volunteers.others'|trans({'%count%': volunteer.structures.count - 1}) }}
-                                    {% endif %}
-                                {% endif %}
-                            </div>
-                            <div>
-                                {% for skill in volunteer.tagsView %}
-                                    {{ ('tag.shortcuts.' ~ skill)|trans }}{% if not loop.last %},{% endif %}
-                                {% endfor %}
-                            </div>
+                            {{ macros.volunteer(volunteer, false) }}
                         </div>
                         <div class="col-md-5">
                             #{{ volunteer.nivol }}
