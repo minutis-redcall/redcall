@@ -132,12 +132,17 @@ class CommunicationManager
             $this->processor->process($communication);
         }
 
+        $structureName = $communication->getVolunteer()->getMainStructure()->getDisplayName();
+        if ($communication->getVolunteer()->getUser() && $communication->getVolunteer()->getUser()->getMainStructure()) {
+            $structureName = $communication->getVolunteer()->getUser()->getMainStructure()->getDisplayName();
+        }
+
         $this->slackLogger->info(
             sprintf(
                 'New %s trigger by %s (%s) on %d volunteers from %d structures.%s%s%sLink: %s',
                 strtoupper($communication->getType()),
                 $communication->getVolunteer()->getDisplayName(),
-                $communication->getVolunteer()->getMainStructure()->getDisplayName(),
+                $structureName,
                 count($communication->getMessages()),
                 count($this->structureManager->getCampaignStructures($campaign)),
                 PHP_EOL,

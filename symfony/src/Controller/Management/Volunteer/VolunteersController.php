@@ -11,6 +11,7 @@ use App\Entity\Volunteer;
 use App\Form\Model\Campaign;
 use App\Form\Model\EmailTrigger;
 use App\Form\Model\SmsTrigger;
+use App\Form\Type\AudienceType;
 use App\Form\Type\VolunteerType;
 use App\Import\VolunteerImporter;
 use App\Manager\AnswerManager;
@@ -478,7 +479,9 @@ class VolunteersController extends BaseController
             '%nivol%' => $volunteer->getNivol(),
         ]);
 
-        $sms->setAudience([$volunteer->getNivol()]);
+        $sms->setAudience(AudienceType::createEmptyData([
+            'volunteers' => [$volunteer->getId()],
+        ]));
 
         $sms->setMessage(
             $this->translator->trans('manage_volunteers.anonymize.campaign.sms_content')
@@ -491,24 +494,32 @@ class VolunteersController extends BaseController
 
         $audience            = [];
         $triggeringVolunteer = $answer->getMessage()->getCommunication()->getVolunteer();
-        if (!$triggeringVolunteer) {
+        if (!$triggeringVolunteer || !$triggeringVolunteer->getUser()) {
             return $trigger;
         }
 
-        $commonStructures = array_intersect($triggeringVolunteer->getStructures()->toArray(), $volunteer->getStructures()->toArray());
+        $triggeringUser   = $triggeringVolunteer->getUser();
+        $commonStructures = array_intersect($triggeringUser->getStructures()->toArray(), $volunteer->getStructures()->toArray());
+
         foreach ($commonStructures as $structure) {
             /** @var Structure $structure */
             foreach ($structure->getUsers() as $user) {
                 /** @var User $user */
                 if ($user->getVolunteer()) {
-                    $audience[] = $user->getVolunteer()->getNivol();
+                    $audience[] = $user->getVolunteer()->getId();
                 }
             }
             if ($structure->getPresident()) {
-                $audience[] = $structure->getPresident();
+                $president = $this->volunteerManager->findOneByNivol($structure->getPresident());
+                if ($president) {
+                    $audience[] = $president->getId();
+                }
             }
         }
-        $email->setAudience(array_unique($audience));
+
+        $email->setAudience(AudienceType::createEmptyData([
+            'volunteers' => array_unique($audience),
+        ]));
 
         $email->setSubject($this->translator->trans('manage_volunteers.anonymize.campaign.email.subject', [
             '%nivol%' => $volunteer->getNivol(),

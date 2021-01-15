@@ -197,6 +197,17 @@ class User extends AbstractUser
         return $roots;
     }
 
+    public function getMainStructure() : ?Structure
+    {
+        $root = $this->getRootStructures();
+
+        if ($root) {
+            return reset($root);
+        }
+
+        return null;
+    }
+
     public function isLocked() : ?bool
     {
         return $this->locked;
