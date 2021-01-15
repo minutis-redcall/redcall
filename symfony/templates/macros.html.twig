@@ -97,12 +97,14 @@
 
 {% macro volunteer(volunteer, clickable = true) %}
     {% import _self as macros %}
-    <div id="volunteer-{{ volunteer.id }}">
+    {% set uuid = uuid() %}
+
+    <div id="volunteer-{{ uuid }}">
 
         {# Volunteer's name #}
-        <div id="volunteer-name-{{ volunteer.id }}" class="h4">
+        <div id="volunteer-name-{{ uuid }}" class="h4">
             <span href="#" class="volunteer-info" {% if clickable %}style="cursor:pointer;{% endif %}"
-                  {% if clickable %}onclick="$('#volunteer-details-{{ volunteer.id }}').toggleClass('d-none');return false;"{% endif %}>
+                  {% if clickable %}onclick="$('#volunteer-details-{{ uuid }}').toggleClass('d-none');return false;"{% endif %}>
                 {% if volunteer.enabled %}
                     {{ volunteer.displayName }}
                 {% else %}
@@ -122,14 +124,14 @@
                 {% endif %}
             </span>
         </div>
-        <div id="volunteer-structures-{{ volunteer.id }}">
+        <div id="volunteer-structures-{{ uuid }}">
             {% if volunteer.structures.count %}
                 <strong>{{ (volunteer.structures|first).name }}</strong>
                 {% if volunteer.structures.count > 1 %}
-                    <span onclick="$('#volunteer-structures-details-{{ volunteer.id }}').toggleClass('d-none');return false;">
+                    <span onclick="$('#volunteer-structures-details-{{ uuid }}').toggleClass('d-none');return false;">
                  {{ 'manage_volunteers.others'|trans({'%count%': volunteer.structures.count - 1}) }}
                  </span>
-                    <div id="volunteer-structures-details-{{ volunteer.id }}" class="d-none">
+                    <div id="volunteer-structures-details-{{ uuid }}" class="d-none">
                         {% for structure in volunteer.structures %}
                             {% if structure != volunteer.structures.get(0) %}
                                 <div>{{ structure.displayName }}</div>
@@ -140,7 +142,7 @@
             {% endif %}
         </div>
         {% if clickable %}
-            <div id="volunteer-details-{{ volunteer.id }}" class="d-none">
+            <div id="volunteer-details-{{ uuid }}" class="d-none">
                 #{{ volunteer.nivol }}
                 <br/>
                 {% if volunteer.email %}

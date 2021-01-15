@@ -6,7 +6,6 @@ use App\Base\BaseController;
 use App\Communication\Processor\SimpleProcessor;
 use App\Entity\Answer;
 use App\Entity\Structure;
-use App\Entity\User;
 use App\Entity\Volunteer;
 use App\Form\Model\Campaign;
 use App\Form\Model\EmailTrigger;
@@ -492,27 +491,13 @@ class VolunteersController extends BaseController
         // Sending a message inviting redcall users managing volunteer's structure to complete data deletion
         $email = new EmailTrigger();
 
-        $audience            = [];
-        $triggeringVolunteer = $answer->getMessage()->getCommunication()->getVolunteer();
-        if (!$triggeringVolunteer || !$triggeringVolunteer->getUser()) {
-            return $trigger;
-        }
-
-        $triggeringUser   = $triggeringVolunteer->getUser();
-        $commonStructures = array_intersect($triggeringUser->getStructures()->toArray(), $volunteer->getStructures()->toArray());
-
-        foreach ($commonStructures as $structure) {
+        $audience = [];
+        foreach ($volunteer->getStructures() as $structure) {
             /** @var Structure $structure */
-            foreach ($structure->getUsers() as $user) {
-                /** @var User $user */
-                if ($user->getVolunteer()) {
-                    $audience[] = $user->getVolunteer()->getId();
-                }
-            }
-            if ($structure->getPresident()) {
-                $president = $this->volunteerManager->findOneByNivol($structure->getPresident());
-                if ($president) {
-                    $audience[] = $president->getId();
+            foreach ($structure->getVolunteers() as $structureVolunteer) {
+                /** @var Volunteer $volunteer */
+                if ($structureVolunteer->getUser()) {
+                    $audience[] = $structureVolunteer->getId();
                 }
             }
         }
