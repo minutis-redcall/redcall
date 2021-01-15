@@ -187,7 +187,7 @@ class AudienceType extends AbstractType
         // Volunteer view
         $view->vars['volunteers_data'] = [];
         if ($ids = $form->get('volunteers')->getData()) {
-            $view->vars['volunteers_data'] = $this->audienceManager->getVolunteerList($ids);
+            $view->vars['volunteers_data'] = array_values($this->audienceManager->getVolunteerList($ids));
         }
 
         $this->buildStructureView($view);

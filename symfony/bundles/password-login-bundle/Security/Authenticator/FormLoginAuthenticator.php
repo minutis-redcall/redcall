@@ -70,17 +70,6 @@ class FormLoginAuthenticator extends AbstractFormLoginAuthenticator
      */
     private $homeRoute;
 
-    /**
-     * @param CaptchaManager               $captchaManager
-     * @param FormFactoryInterface         $formFactory
-     * @param UserPasswordEncoderInterface $encoder
-     * @param Session                      $session
-     * @param TokenStorageInterface        $tokenStorage
-     * @param TranslatorInterface          $translator
-     * @param RequestStack                 $requestStack
-     * @param RouterInterface              $router
-     * @param string                       $homeRoute
-     */
     public function __construct(CaptchaManager $captchaManager,
         FormFactoryInterface $formFactory,
         UserPasswordEncoderInterface $encoder,
@@ -200,6 +189,8 @@ class FormLoginAuthenticator extends AbstractFormLoginAuthenticator
             'route'        => $this->homeRoute,
             'route_params' => [],
         ]);
+
+        $this->session->remove('auth_redirect');
 
         $response = new RedirectResponse(
             $this->router->generate($route['route'], $route['route_params'])

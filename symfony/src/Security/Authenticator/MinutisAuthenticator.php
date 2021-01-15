@@ -202,6 +202,8 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
             'route_params' => [],
         ]);
 
+        $this->session->remove('auth_redirect');
+
         $response = new RedirectResponse(
             $this->router->generate($route['route'], $route['route_params'])
         );
