@@ -229,7 +229,9 @@ class VolunteersController extends BaseController
                 // See SpaceController::phone
                 $this->alert('base.error');
 
-                return $this->redirectToRoute('management_volunteers_list', $request->query->all());
+                return $this->redirectToRoute('management_volunteers_manual_update', array_merge([
+                    'id' => $volunteer->getId(),
+                ], $request->query->all()));
             }
 
             if ($isCreate) {
@@ -244,7 +246,9 @@ class VolunteersController extends BaseController
                 ]);
             }
 
-            return $this->redirectToRoute('management_volunteers_list', $request->query->all());
+            return $this->redirectToRoute('management_volunteers_manual_update', array_merge($request->query->all(), [
+                'id' => $volunteer->getId(),
+            ]));
         }
 
         if (!$isCreate) {

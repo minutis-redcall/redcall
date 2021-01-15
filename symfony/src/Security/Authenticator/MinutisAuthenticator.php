@@ -14,6 +14,7 @@ use Psr\Log\NullLogger;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
@@ -56,6 +57,11 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
     private $kernel;
 
     /**
+     * @var SessionInterface
+     */
+    private $session;
+
+    /**
      * @var Volunteer
      */
     private $volunteer;
@@ -65,6 +71,7 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
         UserManager $userManager,
         RouterInterface $router,
         KernelInterface $kernel,
+        SessionInterface $session,
         LoggerInterface $logger = null)
     {
         $this->volunteerManager        = $volunteerManager;
@@ -72,6 +79,7 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
         $this->userManager             = $userManager;
         $this->router                  = $router;
         $this->kernel                  = $kernel;
+        $this->session                 = $session;
         $this->logger                  = $logger ?? new NullLogger();
     }
 
@@ -189,8 +197,13 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)
     {
+        $route = $this->session->get('auth_redirect', [
+            'route'        => 'home',
+            'route_params' => [],
+        ]);
+
         $response = new RedirectResponse(
-            $this->router->generate('home')
+            $this->router->generate($route['route'], $route['route_params'])
         );
 
         $response->headers->setCookie(
@@ -202,6 +215,11 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
 
     public function start(Request $request, AuthenticationException $authException = null)
     {
+        $this->session->set('auth_redirect', [
+            'route'        => $request->attributes->get('_route'),
+            'route_params' => $request->attributes->get('_route_params'),
+        ]);
+
         $url = $this->router->generate('password_login_connect');
 
         if ('dev' !== $this->kernel->getEnvironment()

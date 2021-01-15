@@ -394,7 +394,6 @@ class RefreshManager
                             $existingVolunteer = $existingPhone->getVolunteer();
                             $existingVolunteer->removePhone($existingPhone);
                             $this->volunteerManager->save($existingVolunteer);
-                            $this->phoneManager->remove($existingPhone);
                             $existingPhone = null;
                         }
                     }
