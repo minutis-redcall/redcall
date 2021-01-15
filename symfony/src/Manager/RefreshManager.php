@@ -407,7 +407,13 @@ class RefreshManager
                 $parsed = $phoneUtil->parse($row['libelle'], Phone::DEFAULT_LANG);
                 $e164   = $phoneUtil->format($parsed, PhoneNumberFormat::E164);
 
-                if (!$volunteer->hasPhoneNumber($e164) && !$this->phoneManager->findOneByPhoneNumber($e164)) {
+                if (!$volunteer->hasPhoneNumber($e164)) {
+                    $exists = $this->phoneManager->findOneByPhoneNumber($e164);
+                    if ($exists && !$exists->getVolunteer()->isEnabled()) {
+                        $exists->getVolunteer()->removePhone($exists);
+                        $this->phoneManager->save($exists);
+                    }
+
                     $phone = new Phone();
                     $phone->setPreferred(0 === $volunteer->getPhones()->count());
                     $phone->setE164($e164);
