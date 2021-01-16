@@ -2,13 +2,15 @@
 
 {% block content %}
 
-    {% block title %}
-        {% if communication.label %}
-            {{ communication.label }}
-        {% else %}
-            {{ 'campaign_status.communication_short_title'|trans({'%date%': communication.createdAt|date('d/m/Y'), '%time%': communication.createdAt|date('H:i')}) }}
-        {% endif %}
-    {% endblock %}
+    <h3>
+        {% block title %}
+            {% if communication.subject %}
+                {{ communication.subject }}
+            {% else %}
+                {{ 'campaign_status.communication_short_title'|trans({'%date%': communication.createdAt|date('d/m/Y'), '%time%': communication.createdAt|date('H:i')}) }}
+            {% endif %}
+        {% endblock %}
+    </h3>
 
     <style>
         p {
@@ -41,7 +43,7 @@
 
             <table style="width: 100%;">
                 <tr>
-                    <td style="width: 80%;" align="center" valign="middle" class="bg-danger">
+                    <td style="width: 80%;" align="center" valign="middle" class="bg-success">
                         <div class="text-white">
                             <span class="h4">{{ choice.label }}</span>
                             <br/>
@@ -63,6 +65,25 @@
         <br/>
 
     {% endfor %}
+
+    {{ form(form) }}
+
+    {% if message.answers|length %}
+
+        <hr/>
+        <h4>{{ 'campaign_status.answer_history'|trans }}</h4>
+
+        <table class="table table-striped">
+            {% for answer in message.answers %}
+                <tr>
+                    <td>{{ answer.receivedAt|date('d/m/Y H:i') }}</td>
+                    <td>{{ answer.raw }}</td>
+                </tr>
+            {% endfor %}
+        </table>
+
+
+    {% endif %}
 
     <script type="text/javascript">
 

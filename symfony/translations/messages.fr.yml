@@ -172,6 +172,7 @@ base:
     open: Ouvrir
     save: Sauvegarder
     search: Rechercher
+    submit: Envoyer
     update: Editer
   clear_selection: 'Effacer la sélection'
   crud:
@@ -206,8 +207,6 @@ base:
   simple_no: Non
   simple_yes: Oui
   wait: 'Un petit instant...'
-button:
-  submit: Valider
 campaign:
   actions:
     classify: Classifier
@@ -291,6 +290,8 @@ campaign_status:
     no_phone: 'Pas de numéro de téléphone'
     no_phone_mobile: 'Ne possède pas de numéro de téléphone portable.'
     no_phone_optin: 'Ne souhaite pas recevoir de SMS/appels.'
+  free_answer: 'Envoyer une réponse libre'
+  answer_history: 'Historique de vos réponsess'
 csv_export:
   answer_time: 'Date de la reponse la plus recente'
   choice: 'Choix "%choice%"'
