@@ -173,6 +173,7 @@ base:
     save: Sauvegarder
     search: Rechercher
     update: Editer
+    submit: Envoyer
   clear_selection: 'Effacer la sélection'
   crud:
     create_title: 'Ajouter une entrée'
@@ -206,8 +207,6 @@ base:
   simple_no: Non
   simple_yes: Oui
   wait: 'Un petit instant...'
-button:
-  submit: Valider
 campaign:
   actions:
     classify: Classifier
@@ -267,6 +266,8 @@ campaign_status:
     or: ou/et
     title: Filtrer
   finish: 'Envoi terminé: %sent% %type% envoyé(s) (%replies% réponse(s) reçue(s), %replies_pct%%)'
+  free_answer: 'Envoyer une réponse libre'
+  answer_history: 'Historique de vos réponsess'
   legend:
     sms_received: '"SMS reçu" indique si le message a bien été délivré au bénévole. Elle peut rester blanche si le bénévole a éteint son téléphone.'
     sms_sent: '"SMS envoyé" indique si le message a bien été envoyé au volonaire. Si cette colonne reste vide, il y a probablement un problème technique.'

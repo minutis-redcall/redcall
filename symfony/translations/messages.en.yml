@@ -173,6 +173,7 @@ base:
     save: Save
     search: Search
     update: Edit
+    submit: Submit
   clear_selection: 'Clear selection'
   crud:
     create_title: 'Add a new entry'
@@ -206,8 +207,6 @@ base:
   simple_no: 'No'
   simple_yes: 'Yes'
   wait: 'One moment...'
-button:
-  submit: Submit
 campaign:
   actions:
     classify: Classify
@@ -267,6 +266,8 @@ campaign_status:
     or: or/and
     title: Filter
   finish: 'Sent all %sent% %type% (%replies% answers received, %replies_pct%%)'
+  free_answer: 'Send a reply'
+  answer_history: 'Replies history'
   legend:
     sms_received: '"SMS received" indicates wether message has been received by the volunteer. If blank, volunteer may have turned off his phone number.'
     sms_sent: '"SMS sent" indicates whether message has been sent to the volunteer. May be blank if there is a technical issue.'
