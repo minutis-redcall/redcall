@@ -210,7 +210,6 @@ class User extends AbstractUser
     public function getMainStructure() : ?Structure
     {
         $root = $this->getRootStructures();
-        dump($root);
 
         if ($root) {
             return reset($root);
