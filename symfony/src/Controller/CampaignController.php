@@ -108,7 +108,7 @@ class CampaignController extends BaseController
             ]));
         }
 
-        return $this->render('campaign/new.html.twig', [
+        return $this->render('new_communication/new.html.twig', [
             'form' => $form->createView(),
             'type' => $type,
         ]);

@@ -251,7 +251,7 @@ class CommunicationController extends BaseController
             ]));
         }
 
-        return $this->render('new_communication/page.html.twig', [
+        return $this->render('new_communication/add.html.twig', [
             'campaign' => $campaign,
             'form'     => $form->createView(),
             'type'     => $type,
