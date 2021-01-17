@@ -40,7 +40,7 @@ class User extends AbstractUser
 
     /**
      * @ORM\ManyToMany(targetEntity="App\Entity\Structure", inversedBy="users")
-     * @ORM\OrderBy({"identifier" = "ASC"})
+     * @ORM\OrderBy({"enabled" = "DESC", "identifier" = "ASC"})
      */
     private $structures;
 
@@ -104,7 +104,16 @@ class User extends AbstractUser
         return $this;
     }
 
-    public function getStructures() : Collection
+    public function getStructures(bool $onlyEnabled = true) : Collection
+    {
+        if ($onlyEnabled) {
+            return $this->getEnabledStructures();
+        }
+
+        return $this->structures;
+    }
+
+    public function getEnabledStructures() : Collection
     {
         return $this->structures->filter(function (Structure $structure) {
             return $structure->isEnabled();
@@ -178,8 +187,9 @@ class User extends AbstractUser
      */
     public function getRootStructures() : array
     {
-        $roots = [];
-        foreach ($this->structures as $structure) {
+        $structures = $this->getStructures();
+        $roots      = [];
+        foreach ($structures as $structure) {
             /** @var Structure $structure */
             if (!$structure->getParentStructure()) {
                 $roots[] = $structure;
@@ -188,7 +198,7 @@ class User extends AbstractUser
 
             // Structure disappear if any of its ancestor is in the list
             foreach ($structure->getAncestors() as $ancestor) {
-                if (!$this->structures->contains($ancestor)) {
+                if (!$structures->contains($ancestor)) {
                     $roots[] = $structure;
                 }
             }

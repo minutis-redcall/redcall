@@ -542,6 +542,7 @@ message:
     how_to_answer_multiple: 'Afin de donner votre ou vos réponses, veuillez cliquer sur le lien suivant : %url%'
     how_to_answer_simple: 'Afin de donner votre réponse, veuillez cliquer sur le lien suivant : %url%'
     possible_answers: 'Réponse(s) possibles :'
+    open_in_redcall: 'Ouvrir dans RedCall'
     type: email(s)
   sms:
     announcement: '%brand% %hours%h%mins%'

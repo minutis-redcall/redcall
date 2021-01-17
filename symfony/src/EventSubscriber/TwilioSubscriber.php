@@ -194,9 +194,11 @@ class TwilioSubscriber implements EventSubscriberInterface
     {
         $message = $this->getMessageFromCall($event);
 
-        $message->setSent(false);
+        if ($message->getVolunteer()->getPhone() && $message->getVolunteer()->getPhone()->isMobile()) {
+            $message->setSent(false);
 
-        $this->sender->sendSms($message);
+            $this->sender->sendSms($message);
+        }
     }
 
     private function getMessageFromSms(TwilioMessageEvent $event) : ?Message

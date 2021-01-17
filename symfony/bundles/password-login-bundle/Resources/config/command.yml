@@ -18,6 +18,13 @@ services:
     tags:
       - { name: console.command }
 
+  Bundles\PasswordLoginBundle\Command\UserPasswordCommand:
+    arguments:
+      - '@Bundles\PasswordLoginBundle\Manager\UserManager'
+      - '@security.encoder_factory.generic'
+    tags:
+      - { name: console.command }
+
   Bundles\PasswordLoginBundle\Command\UserCronCommand:
     arguments:
       - '@Bundles\PasswordLoginBundle\Manager\CaptchaManager'

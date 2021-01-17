@@ -91,7 +91,24 @@ class StructureManager
 
     public function getStructuresQueryBuilderForUser(User $user) : QueryBuilder
     {
-        return $this->structureRepository->searchForUserQueryBuilder($user, null, true);
+        return $this->structureRepository->searchForUserQueryBuilder($user, null);
+    }
+
+    public function getStructuresForCurrrentUser() : array
+    {
+        $entities = $this
+            ->structureRepository
+            ->searchForUserQueryBuilder($this->userManager->findForCurrentUser(), null)
+            ->getQuery()
+            ->getResult();
+
+        $structures = [];
+        foreach ($entities as $entity) {
+            /** @var Structure $entity */
+            $structures[$entity->getId()] = $entity;
+        }
+
+        return $structures;
     }
 
     public function getStructureHierarchyForCurrentUser()

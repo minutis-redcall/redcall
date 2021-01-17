@@ -303,10 +303,6 @@
 
                                 <td id="volunteer-{{ suffix }}">
 
-                                    <div class="{% if message.error %}message-error{% endif %}">
-                                        {{ macros.volunteer(message.volunteer) }}
-                                    </div>
-
                                     <div class="float-right">
 
                                         {% if app.environment == 'dev' %}
@@ -380,6 +376,10 @@
                                                 <div class="message-is-skill-{{ skill.id|e('html_attr') }}-{{ communication.id }}" data-value=1></div>
                                             {% endfor %}
                                         </div>
+                                    </div>
+
+                                    <div class="{% if message.error %}message-error{% endif %}">
+                                        {{ macros.volunteer(message.volunteer) }}
                                     </div>
 
                                     {# Unexpected error #}

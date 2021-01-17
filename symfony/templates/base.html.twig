@@ -122,33 +122,35 @@
 
             {% block security %}
 
-                {% if app.user|default(false) or session.volunteer|default(false) %}
+                {% if app.user|default(false) %}
+
                     <a href="{{ minutis_url }}">{{ 'minutis.back'|trans }}</a>
 
                     <br/><br/>
-                {% endif %}
 
-                <div class="text-center">
-                    {% if is_granted('ROLE_ADMIN') %}
-                        <a href="{{ path('admin_pegass_update_structures', {id: app.user.id}) }}" target="_blank">
+                    <div class="text-center">
+                        {% if is_granted('ROLE_ADMIN') %}
+                            <a href="{{ path('admin_pegass_update_structures', {id: app.user.id}) }}" target="_blank">
+                                {{ 'password_login.connect.who_am_i'|trans({'%username%': app.user.username}) }}
+                            </a>
+                        {% else %}
                             {{ 'password_login.connect.who_am_i'|trans({'%username%': app.user.username}) }}
-                        </a>
-                    {% else %}
-                        {{ 'password_login.connect.who_am_i'|trans({'%username%': app.user.username}) }}
-                    {% endif %}
-                </div>
+                        {% endif %}
+                    </div>
 
-                {{ include('@PasswordLogin/menu.html.twig', {
-                    display_user: false,
-                    display_profile: false,
-                    display_manage_users: false,
-                }) }}
+                    {{ include('@PasswordLogin/menu.html.twig', {
+                        display_user: false,
+                        display_profile: false,
+                        display_manage_users: false,
+                    }) }}
+
+                {% endif %}
 
             {% endblock %}
 
             <br/>
 
-            {% if app.environment == 'dev' %}
+            {% if app.user|default(false) and app.environment == 'dev' %}
 
                 <a href="{{ path('sandbox_home') }}" class="btn btn-secondary">{{ 'sandbox.home.link'|trans }}</a>
                 &nbsp;&nbsp;

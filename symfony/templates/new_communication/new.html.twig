@@ -28,12 +28,7 @@
 
             </div>
 
-            <div id="spinner-container" class="d-none">
-                <div class="jumbotron text-center">
-                    <div class="h2">{{ 'base.wait'|trans }}</div>
-                    <img src="{{ asset('spinner.gif') }}" />
-                </div>
-            </div>
+            {{ include('new_communication/spinner.html.twig') }}
 
         </div>
     </div>

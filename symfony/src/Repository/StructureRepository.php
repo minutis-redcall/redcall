@@ -183,7 +183,7 @@ class StructureRepository extends BaseRepository
                ->setParameter('criteria', sprintf('%%%s%%', str_replace(' ', '%', $criteria)));
         }
 
-        $qb->orderBy('s.name');
+        $qb->orderBy('s.enabled DESC, s.name');
 
         return $qb;
     }

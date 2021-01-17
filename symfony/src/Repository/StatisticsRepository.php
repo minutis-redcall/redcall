@@ -71,7 +71,14 @@ class StatisticsRepository
      */
     public function getVolunteerPegassUpdate()
     {
-        $sql = "select min(volunteer.last_pegass_update) oldest_update, max(volunteer.last_pegass_update) newest_update from volunteer where volunteer.enabled = 1 and locked=0";
+        $sql = "select 
+                        min(volunteer.last_pegass_update) oldest_update, 
+                        max(volunteer.last_pegass_update) newest_update 
+                from volunteer 
+                where volunteer.enabled = 1 
+                and locked = 0
+                and last_pegass_update < '2100-01-01'
+        ";
 
         $rsm = new ResultSetMapping();
         $rsm->addScalarResult('oldest_update', 'oldest_update', 'datetime')
@@ -92,7 +99,11 @@ class StatisticsRepository
      */
     public function getStructurePegassUpdate()
     {
-        $sql = "select min(structure.last_pegass_update) oldest_update, max(structure.last_pegass_update) newest_update from structure where structure.enabled = 1";
+        $sql = "
+            select min(structure.last_pegass_update) oldest_update, 
+                   max(structure.last_pegass_update) newest_update 
+                   from structure where structure.enabled = 1
+        ";
 
         $rsm = new ResultSetMapping();
         $rsm->addScalarResult('oldest_update', 'oldest_update', 'datetime')
