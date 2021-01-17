@@ -23,7 +23,11 @@
             {% endif %}
 
             <div id="structures">
-                {{ form_widget(form.structures) }}
+                {% for child in form.structures %}
+                    <div class="{% if not structures[child.vars.value].enabled %}color-grey{% endif %}">
+                        {{ form_widget(child) }}
+                    </div>
+                {% endfor %}
             </div>
 
             <br/>

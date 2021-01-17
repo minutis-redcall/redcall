@@ -365,7 +365,16 @@ class Volunteer
         $this->setReport($report);
     }
 
-    public function getStructures() : Collection
+    public function getStructures(bool $onlyEnabled = true) : Collection
+    {
+        if ($onlyEnabled) {
+            return $this->getEnabledStructures();
+        }
+
+        return $this->structures;
+    }
+
+    public function getEnabledStructures() : Collection
     {
         return $this->structures->filter(function (Structure $structure) {
             return $structure->isEnabled();
@@ -397,12 +406,12 @@ class Volunteer
         return $this;
     }
 
-    public function getMainStructure() : ?Structure
+    public function getMainStructure(bool $onlyEnabled = true) : ?Structure
     {
         /** @var Structure|null $mainStructure */
         $mainStructure = null;
-
-        foreach ($this->structures as $structure) {
+        $structures    = $onlyEnabled ? $this->getStructures() : $this->structures;
+        foreach ($structures as $structure) {
             /** @var Structure $structure */
             if (!$mainStructure || $structure->getIdentifier() < $mainStructure->getIdentifier()) {
                 $mainStructure = $structure;

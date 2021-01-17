@@ -134,7 +134,7 @@ class PegassController extends BaseController
         // to delete. So when submitting, we'll delete from user
         // entity the ones that exist on the cloned entity.
         $clone = clone $user;
-        foreach ($clone->getStructures() as $structure) {
+        foreach ($clone->getStructures(false) as $structure) {
             $clone->removeStructure($structure);
         }
 
@@ -145,7 +145,7 @@ class PegassController extends BaseController
             ->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            foreach ($clone->getStructures() as $structure) {
+            foreach ($clone->getStructures(false) as $structure) {
                 $user->removeStructure($structure);
             }
 
@@ -159,8 +159,9 @@ class PegassController extends BaseController
         }
 
         return $this->render('admin/pegass/structures.html.twig', [
-            'user' => $user,
-            'form' => $form->createView(),
+            'user'       => $user,
+            'form'       => $form->createView(),
+            'structures' => $this->structureManager->getStructuresForCurrrentUser(),
         ]);
     }
 
