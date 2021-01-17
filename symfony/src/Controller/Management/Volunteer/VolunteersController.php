@@ -301,6 +301,7 @@ class VolunteersController extends BaseController
         $this->validateCsrfOrThrowNotFoundException('volunteers', $csrf);
 
         $volunteer->setLocked(false);
+        $volunteer->setLastPegassUpdate(new \DateTime('1984-07-10'));
         $this->volunteerManager->save($volunteer);
 
         return $this->redirectToRoute('management_volunteers_list', $request->query->all());
