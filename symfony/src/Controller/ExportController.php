@@ -46,7 +46,7 @@ class ExportController extends BaseController
 
             $tags = implode(', ', array_map(function (Badge $badge) {
                 return $badge->getName();
-            }, $volunteer->getVisibleBadges()->toArray()));
+            }, $volunteer->getVisibleBadges()));
 
             $row = [
                 $this->trans('csv_export.nivol')        => $volunteer->getNivol(),
