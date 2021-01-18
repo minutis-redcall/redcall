@@ -207,12 +207,15 @@ base:
   simple_no: Non
   simple_yes: Oui
   wait: 'Un petit instant...'
+button:
+  submit: Valider
 campaign:
   actions:
     classify: Classifier
     close: 'Fermer le déclenchement'
     continue: Continuer
     open: 'Réouvrir le déclenchement'
+    expires: 'Fermé auto. le'
   cannot_reopen: 'Impossible de réouvrir le déclenchement : depuis sa fermeure, un ou plusieurs bénévoles ont été déclenchés et le préfixe associé à leur réponse a été réuilisé.'
   errors:
     inactive: 'Ce déclenchement est terminé, merci pour votre participation.'
@@ -541,11 +544,11 @@ message:
     answer_here: 'Cliquez sur le(s) bouton(s) de votre choix pour répondre.'
     how_to_answer_multiple: 'Afin de donner votre ou vos réponses, veuillez cliquer sur le lien suivant : %url%'
     how_to_answer_simple: 'Afin de donner votre réponse, veuillez cliquer sur le lien suivant : %url%'
+    in_app_long_answer: 'Si vous le souhaitez, vous pouvez directement répondre "%choice%" à ce message.'
+    in_app_short_answer: 'Répondre "%choice%"'
     open_in_redcall: 'Ouvrir dans RedCall'
     possible_answers: 'Réponse(s) possibles :'
     type: email(s)
-    in_app_short_answer: 'Répondre "%choice%"'
-    in_app_long_answer: 'Si vous le souhaitez, vous pouvez directement répondre "%choice%" à ce message.'
   sms:
     announcement: '%brand% %hours%h%mins%'
     geo_location: 'Géolocalisation de votre équipe: %url%'

@@ -207,11 +207,14 @@ base:
   simple_no: 'No'
   simple_yes: 'Yes'
   wait: 'One moment...'
+button:
+  submit: Submit
 campaign:
   actions:
     classify: Classify
     close: 'Close the campaign'
     continue: Continue
+    expires: 'Auto. closed on'
     open: 'Reopen the campaign'
   cannot_reopen: 'Impossible to reopen the campaign: since it was closed, one or several volunteers were triggered and prefix used for their answers was reused.'
   errors:
@@ -541,11 +544,11 @@ message:
     answer_here: 'Click on the following buttons to answer.'
     how_to_answer_multiple: 'To give your answer(s), please click on the following link: %url%'
     how_to_answer_simple: 'To give your answer, please click on the following link: %url%'
+    in_app_long_answer: 'If you wish, you can directly answer "%choice%" to this message.'
+    in_app_short_answer: 'Answer "%choice%"'
     open_in_redcall: 'Open in RedCall'
     possible_answers: 'Possible response(s):'
     type: email(s)
-    in_app_short_answer: 'Answer "%choice%"'
-    in_app_long_answer: 'If you wish, you can directly answer "%choice%" to this message.'
   sms:
     announcement: '%brand% at %hours%h%mins%:'
     geo_location: 'Geolocation of your crew: %url%'

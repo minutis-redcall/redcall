@@ -8,6 +8,9 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\CampaignRepository")
+ * @ORM\Table(indexes={
+ *     @ORM\Index(name="expires_atx", columns={"expires_at"})
+ * })
  */
 class Campaign
 {
@@ -96,6 +99,11 @@ class Campaign
      * @ORM\ManyToOne(targetEntity=Volunteer::class)
      */
     private $volunteer;
+
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    private $expiresAt;
 
     public function getId()
     {
@@ -320,6 +328,18 @@ class Campaign
     public function setVolunteer(?Volunteer $volunteer) : self
     {
         $this->volunteer = $volunteer;
+
+        return $this;
+    }
+
+    public function getExpiresAt() : ?\DateTimeInterface
+    {
+        return $this->expiresAt;
+    }
+
+    public function setExpiresAt(\DateTimeInterface $expiresAt) : self
+    {
+        $this->expiresAt = $expiresAt;
 
         return $this;
     }

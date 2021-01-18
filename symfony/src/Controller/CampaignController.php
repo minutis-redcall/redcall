@@ -145,7 +145,7 @@ class CampaignController extends BaseController
 
     /**
      * @Route(path="campaign/{id}/open/{csrf}", name="open_campaign")
-     * @IsGranted("CAMPAIGN_ACCESS", subject="campaign")
+     * @IsGranted("CAMPAIGN_OWNER", subject="campaign")
      */
     public function openCampaign(Campaign $campaign, string $csrf) : Response
     {
@@ -162,6 +162,23 @@ class CampaignController extends BaseController
         return $this->redirect($this->generateUrl('communication_index', [
             'id' => $campaign->getId(),
         ]));
+    }
+
+    /**
+     * @Route(path="campaign/{id}/keep/{csrf}", name="keep_campaign")
+     * @IsGranted("CAMPAIGN_OWNER", subject="campaign")
+     */
+    public function keepCampaign(Campaign $campaign, string $csrf) : Response
+    {
+        $this->validateCsrfOrThrowNotFoundException('campaign', $csrf);
+
+        if ($campaign->isActive()) {
+            $this->campaignManager->postponeExpiration($campaign);
+        }
+
+        return $this->json([
+            'expiresAt' => $campaign->getExpiresAt()->format('d/m/Y H:i'),
+        ]);
     }
 
     /**
