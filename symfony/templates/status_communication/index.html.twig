@@ -381,7 +381,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="{% if message.error %}message-error{% endif %}">
+                                    <div class="{% if not message.sent or message.error %}message-error{% endif %}">
                                         {{ macros.volunteer(message.volunteer) }}
                                     </div>
 
