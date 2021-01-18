@@ -3,9 +3,7 @@
 namespace App\Command;
 
 use App\Base\BaseCommand;
-use App\Entity\Campaign;
 use App\Manager\CampaignManager;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
@@ -27,21 +25,12 @@ class ClearCampaignCommand extends BaseCommand
     {
         $this
             ->setName('clear:campaign')
-            ->setDescription('Close campaigns inactive since X days')
-            ->addArgument('days', InputArgument::OPTIONAL, 'Number of days before closing an inactive campaign', 7);
+            ->setDescription('Close expired campaigns');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $campaigns = $this->campaignManager->findInactiveCampaignsSince(
-            $input->getArgument('days')
-        );
-
-        foreach ($campaigns as $campaign) {
-            /** @var Campaign $campaign */
-            $output->writeln(sprintf('Closing #%d', $campaign->getId()));
-            $this->campaignManager->closeCampaign($campaign);
-        }
+        $this->campaignManager->closeExpiredCampaigns();
 
         return 0;
     }

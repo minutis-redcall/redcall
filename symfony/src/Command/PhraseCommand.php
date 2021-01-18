@@ -43,7 +43,7 @@ class PhraseCommand extends Command
         $this
             ->setName('phrase:sync')
             ->setDescription('Synchronize translations with PhraseApp')
-            ->addOption('sleep', null, InputOption::VALUE_OPTIONAL, 'Use this option for large operations to prevent hitting rate limits', 0)
+            ->addOption('sleep', null, InputOption::VALUE_OPTIONAL, 'Use this option for large operations to prevent hitting rate limits', 1)
             ->addOption('delete', null, InputOption::VALUE_NONE, 'Add this option to automatically delete translations that are on Phrase but no more on the app')
             ->addOption('create', null, InputOption::VALUE_NONE, 'Add this option to automatically create translations that are on the app but not yet on Phrase')
             ->addOption('dump', null, InputOption::VALUE_NONE, 'Add this option to update local files.');

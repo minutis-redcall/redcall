@@ -207,11 +207,14 @@ base:
   simple_no: Non
   simple_yes: Oui
   wait: 'Un petit instant...'
+button:
+  submit: Valider
 campaign:
   actions:
     classify: Classifier
     close: 'Fermer le déclenchement'
     continue: Continuer
+    expires: 'Fermé auto. le'
     open: 'Réouvrir le déclenchement'
   cannot_reopen: 'Impossible de réouvrir le déclenchement : depuis sa fermeure, un ou plusieurs bénévoles ont été déclenchés et le préfixe associé à leur réponse a été réuilisé.'
   errors:
@@ -245,6 +248,7 @@ campaign:
     4_red: Engagement
 campaign_status:
   answer: 'Réponses libres'
+  answer_history: 'Historique de vos réponsess'
   answer_invalid: 'Autres Rép.'
   answer_no: 'Réponse %choice%'
   answers:
@@ -266,6 +270,7 @@ campaign_status:
     or: ou/et
     title: Filtrer
   finish: 'Envoi terminé: %sent% %type% envoyé(s) (%replies% réponse(s) reçue(s), %replies_pct%%)'
+  free_answer: 'Envoyer une réponse libre'
   legend:
     sms_received: '"SMS reçu" indique si le message a bien été délivré au bénévole. Elle peut rester blanche si le bénévole a éteint son téléphone.'
     sms_sent: '"SMS envoyé" indique si le message a bien été envoyé au volonaire. Si cette colonne reste vide, il y a probablement un problème technique.'
@@ -288,10 +293,8 @@ campaign_status:
     no_email: 'Pas d''email'
     no_email_optin: 'Ne souhaite pas recevoir d''emails.'
     no_phone: 'Pas de numéro de téléphone'
-    no_phone_mobile: 'Ne possède pas de numéro de téléphone portable.'
+    no_phone_mobile: 'Pas de numéro de téléphone portable.'
     no_phone_optin: 'Ne souhaite pas recevoir de SMS/appels.'
-  free_answer: 'Envoyer une réponse libre'
-  answer_history: 'Historique de vos réponsess'
 csv_export:
   answer_time: 'Date de la reponse la plus recente'
   choice: 'Choix "%choice%"'
@@ -541,8 +544,10 @@ message:
     answer_here: 'Cliquez sur le(s) bouton(s) de votre choix pour répondre.'
     how_to_answer_multiple: 'Afin de donner votre ou vos réponses, veuillez cliquer sur le lien suivant : %url%'
     how_to_answer_simple: 'Afin de donner votre réponse, veuillez cliquer sur le lien suivant : %url%'
-    possible_answers: 'Réponse(s) possibles :'
+    in_app_long_answer: 'Si vous le souhaitez, vous pouvez directement répondre "%choice%" à ce message.'
+    in_app_short_answer: 'Répondre "%choice%"'
     open_in_redcall: 'Ouvrir dans RedCall'
+    possible_answers: 'Réponse(s) possibles :'
     type: email(s)
   sms:
     announcement: '%brand% %hours%h%mins%'

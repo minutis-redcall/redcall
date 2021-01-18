@@ -17,6 +17,9 @@
             {{ macros.triggerColor(campaign.type) }}
         </div>
         <div class="col-9">
+            {% for communication in campaign.communications %}
+                {{ macros.communicationIcon(communication) }}
+            {% endfor %}
             <a href="{{ path('communication_index', {id: campaign.id}) }}">
                 {% if not campaign.active %}
                     <strike>{{ campaign.label }}</strike>

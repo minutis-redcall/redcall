@@ -207,11 +207,14 @@ base:
   simple_no: 'No'
   simple_yes: 'Yes'
   wait: 'One moment...'
+button:
+  submit: Submit
 campaign:
   actions:
     classify: Classify
     close: 'Close the campaign'
     continue: Continue
+    expires: 'Auto. closed on'
     open: 'Reopen the campaign'
   cannot_reopen: 'Impossible to reopen the campaign: since it was closed, one or several volunteers were triggered and prefix used for their answers was reused.'
   errors:
@@ -290,7 +293,7 @@ campaign_status:
     no_email: 'No email'
     no_email_optin: 'Do not want to be triggered through email.'
     no_phone: 'No phone number'
-    no_phone_mobile: 'Do not own a mobile phone number.'
+    no_phone_mobile: 'No mobile phone number.'
     no_phone_optin: 'Do not want to be triggered through phone.'
 csv_export:
   answer_time: 'Answered at'
@@ -541,8 +544,10 @@ message:
     answer_here: 'Click on the following buttons to answer.'
     how_to_answer_multiple: 'To give your answer(s), please click on the following link: %url%'
     how_to_answer_simple: 'To give your answer, please click on the following link: %url%'
-    possible_answers: 'Possible response(s):'
+    in_app_long_answer: 'If you wish, you can directly answer "%choice%" to this message.'
+    in_app_short_answer: 'Answer "%choice%"'
     open_in_redcall: 'Open in RedCall'
+    possible_answers: 'Possible response(s):'
     type: email(s)
   sms:
     announcement: '%brand% at %hours%h%mins%:'

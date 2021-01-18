@@ -113,6 +113,19 @@ class CampaignManager
         $this->campaignRepository->openCampaign($campaign);
     }
 
+    public function postponeExpiration(CampaignEntity $campaign)
+    {
+        $tm = $campaign->getExpiresAt()->getTimestamp();
+        if ($tm < time()) {
+            $tm = time() + 7 * 86400;
+        } else {
+            $tm = $tm + 7 * 86400;
+        }
+        $campaign->setExpiresAt((new \DateTime())->setTimestamp($tm));
+
+        $this->campaignRepository->save($campaign);
+    }
+
     public function changeColor(CampaignEntity $campaign, string $color) : void
     {
         $this->campaignRepository->changeColor($campaign, $color);
@@ -200,14 +213,9 @@ class CampaignManager
         return $this->campaignRepository->countAllOpenCampaigns();
     }
 
-    /**
-     * @param int $days
-     *
-     * @return array
-     */
-    public function findInactiveCampaignsSince(int $days) : array
+    public function closeExpiredCampaigns()
     {
-        return $this->campaignRepository->findInactiveCampaignsSince($days);
+        $this->campaignRepository->closeExpiredCampaigns();
     }
 
     /**

@@ -105,11 +105,14 @@ class CampaignRepository extends BaseRepository
      */
     public function openCampaign(Campaign $campaign)
     {
+        $campaign->setExpiresAt(
+            (new \DateTime())->add(new \DateInterval('P7D'))
+        );
+
         $campaign->setActive(true);
 
         $this->save($campaign);
     }
-
 
     /**
      * @param Campaign $campaign
@@ -168,21 +171,15 @@ class CampaignRepository extends BaseRepository
                     ->getSingleScalarResult();
     }
 
-    /**
-     * @param int $days
-     *
-     * @return array
-     *
-     * @throws \Exception
-     */
-    public function findInactiveCampaignsSince(int $days) : array
+    public function closeExpiredCampaigns()
     {
-        return $this->getActiveCampaignsQueryBuilder()
-                    ->join('c.communications', 'co')
-                    ->andWhere('co.createdAt < :limit')
-                    ->setParameter('limit', (new \DateTime('now'))->sub(new \DateInterval(sprintf('P%dD', $days))))
-                    ->getQuery()
-                    ->getResult();
+        $this->getActiveCampaignsQueryBuilder()
+             ->update(Campaign::class, 'c')
+             ->set('c.active', 0)
+             ->andWhere('c.expiresAt < :now')
+             ->setParameter('now', (new \DateTime())->format('Y-m-d H:i:s'))
+             ->getQuery()
+             ->execute();
     }
 
     public function getNoteUpdateTimestamp(int $campaignId) : int

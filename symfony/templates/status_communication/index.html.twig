@@ -114,6 +114,9 @@
                             <span class="float-right badge badge-light">✏️</span>
                         {% endif %}
                     </h3>
+                    {% if communication.label %}
+                        <p>{{ 'campaign_status.communication_title'|trans({'%date%': communication.createdAt|date('d/m/Y'), '%time%': communication.createdAt|date('H:i')}) }}</p>
+                    {% endif %}
                     <div class="clearfix"></div>
 
                     {# -------------------------------------------------------------------------------- #}
@@ -378,7 +381,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="{% if message.error %}message-error{% endif %}">
+                                    <div class="{% if not message.sent or message.error %}message-error{% endif %}">
                                         {{ macros.volunteer(message.volunteer) }}
                                     </div>
 
@@ -471,6 +474,10 @@
                                        class="btn btn-warning" role="button">
                                         {{ 'campaign.actions.close'|trans }}
                                     </a>
+                                    <p>
+                                        {{ 'campaign.actions.expires'|trans }}
+                                        <a href="#" id="closed-at">{{ campaign.expiresAt|date('d/m/Y H:i') }}</a>
+                                    </p>
                                 {% else %}
                                     <a href="{{ path('open_campaign', { id: campaign.id, csrf: csrf_token('campaign') }) }}"
                                        class="btn btn-danger" role="button">
@@ -1248,6 +1255,16 @@
             $('#campaign-notes-ack').addClass('d-none');
             $('#campaign-notes-border').css('border', '1px solid black');
             $('#campaign-notes-last-update').css('color', '');
+        });
+
+        {# -------------------------------------------------------------------------------- #}
+        {# Extend event expiration date #}
+        {# -------------------------------------------------------------------------------- #}
+        $('#closed-at').click(function (e) {
+            e.preventDefault();
+            $.post('{{ path('keep_campaign', {id: campaign.id, csrf: csrf_token('campaign')}) }}', function (result) {
+                $('#closed-at').html(result.expiresAt);
+            });
         });
 
     </script>
