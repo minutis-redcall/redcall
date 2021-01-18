@@ -60,7 +60,6 @@ class Sender
 
     /**
      * @param Communication $communication
-     * @param bool          $force
      *
      * @throws \Twig\Error\LoaderError
      * @throws \Twig\Error\RuntimeError
@@ -69,22 +68,20 @@ class Sender
     public function sendCommunication(Communication $communication, bool $force = false)
     {
         foreach ($communication->getMessages() as $message) {
-            if ($message->isReachable() && ($force || $message->canBeSent())) {
-                $this->sendMessage($message);
+            if ($force) {
+                $message->setSent(false);
+                $message->setError(null);
             }
+            $this->sendMessage($message);
         }
     }
 
-    /**
-     * @param Message $message
-     * @param bool    $sleep
-     *
-     * @throws \Twig\Error\LoaderError
-     * @throws \Twig\Error\RuntimeError
-     * @throws \Twig\Error\SyntaxError
-     */
     public function sendMessage(Message $message, bool $sleep = true)
     {
+        if ($this->isMessageNotTransmittable($message)) {
+            return;
+        }
+
         switch ($message->getCommunication()->getType()) {
             case Communication::TYPE_SMS:
                 $this->sendSms($message);
@@ -198,5 +195,47 @@ class Sender
 
         $this->entityManager->merge($message);
         $this->entityManager->flush();
+    }
+
+    private function isMessageNotTransmittable(Message $message) : bool
+    {
+        $error     = null;
+        $volunteer = $message->getVolunteer();
+
+        switch ($message->getCommunication()->getType()) {
+            case Communication::TYPE_SMS:
+                if ($volunteer->getPhoneNumber() && !$volunteer->getPhone()->isMobile()) {
+                    $error = 'campaign_status.warning.no_phone_mobile';
+                    break;
+                }
+            case Communication::TYPE_CALL:
+                if (null === $volunteer->getPhoneNumber()) {
+                    $error = 'campaign_status.warning.no_phone';
+                    break;
+                }
+                if (!$volunteer->isPhoneNumberOptin()) {
+                    $error = 'campaign_status.warning.no_phone_optin';
+                    break;
+                }
+                break;
+            case Communication::TYPE_EMAIL:
+                if (null === $volunteer->getEmail()) {
+                    $error = 'campaign_status.warning.no_email';
+                    break;
+                }
+                if (!$volunteer->isEmailOptin()) {
+                    $error = 'campaign_status.warning.no_email_optin';
+                    break;
+                }
+                break;
+        }
+
+        if (null !== $error) {
+            $message->setError($error);
+            $this->entityManager->persist($message);
+            $this->entityManager->flush();
+        }
+
+        return null !== $error;
     }
 }

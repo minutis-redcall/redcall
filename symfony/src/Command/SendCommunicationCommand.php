@@ -25,6 +25,7 @@ class SendCommunicationCommand extends BaseCommand
     public function __construct(CommunicationManager $communicationManager, Sender $sender)
     {
         parent::__construct();
+
         $this->communicationManager = $communicationManager;
         $this->sender               = $sender;
     }
