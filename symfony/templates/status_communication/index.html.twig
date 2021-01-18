@@ -114,6 +114,9 @@
                             <span class="float-right badge badge-light">✏️</span>
                         {% endif %}
                     </h3>
+                    {% if communication.label %}
+                        <p>{{ 'campaign_status.communication_title'|trans({'%date%': communication.createdAt|date('d/m/Y'), '%time%': communication.createdAt|date('H:i')}) }}</p>
+                    {% endif %}
                     <div class="clearfix"></div>
 
                     {# -------------------------------------------------------------------------------- #}
