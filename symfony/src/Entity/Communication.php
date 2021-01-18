@@ -7,6 +7,7 @@ use App\Task\SendEmailTask;
 use App\Task\SendSmsTask;
 use App\Tools\GSM;
 use DateTime;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Exception;
 
@@ -403,6 +404,20 @@ class Communication
         }
 
         return array_filter($choices);
+    }
+
+    public function getFirstChoice() : ?Choice
+    {
+        $choices = $this->choices;
+        if ($choices instanceof Collection) {
+            $choices = $choices->toArray();
+        }
+
+        if ($choices) {
+            return reset($choices);
+        }
+
+        return null;
     }
 
     /**

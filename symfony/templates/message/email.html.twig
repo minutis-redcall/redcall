@@ -59,7 +59,26 @@
   
         </style>
         
-        <script type="application/ld+json">
+        {% if 1 == communication.choices|length %}
+                <script type="application/ld+json">
+
+                    {
+                        "@context": "http://schema.org",
+                        "@type": "EmailMessage",
+                        "potentialAction": {
+                            "@type": "ConfirmAction",
+                            "name": "{{ 'message.email.in_app_short_answer'|trans({'%choice%': communication.firstChoice.label}) }}",
+                            "handler": {
+                                "@type": "HttpActionHandler",
+                                "url": "{{ website_url }}{{ path('message_action', {code: message.code, action: communication.firstChoice.code, signature: message.signature}) }}"
+                            }
+                        },
+                        "description": "{{ 'message.email.in_app_long_answer'|trans({'%choice%': communication.firstChoice.label}) }}"
+                    }
+
+                </script>
+            {% else %}
+                <script type="application/ld+json">
 
                 {
                     "@context": "http://schema.org",
@@ -72,7 +91,8 @@
                     "description": "{{ 'message.email.open_in_redcall'|trans }}"
                 }
 
-            </script>
+                </script>
+            {% endif %}
       </head>
       <body>
         
