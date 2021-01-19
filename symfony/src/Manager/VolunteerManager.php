@@ -200,7 +200,14 @@ class VolunteerManager
 
     public function getIdsByNivols(array $nivols) : array
     {
-        return array_column($this->volunteerRepository->getIdsByNivols($nivols), 'id');
+        return array_column(
+            $this->volunteerRepository->getIdsByNivols(
+                array_map(function ($nivol) {
+                    return ltrim($nivol, '0');
+                }, $nivols)
+            ),
+            'id'
+        );
     }
 
     public function getVolunteerListInStructures(array $structureIds) : array
@@ -230,7 +237,11 @@ class VolunteerManager
 
     public function filterInvalidNivols(array $nivols) : array
     {
-        return $this->volunteerRepository->filterInvalidNivols($nivols);
+        return $this->volunteerRepository->filterInvalidNivols(
+            array_map(function ($nivol) {
+                return ltrim($nivol, '0');
+            }, $nivols)
+        );
     }
 
     public function filterInaccessibles(array $volunteerIds) : array

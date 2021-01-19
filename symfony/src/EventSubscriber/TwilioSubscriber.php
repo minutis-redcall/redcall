@@ -63,9 +63,6 @@ class TwilioSubscriber implements EventSubscriberInterface
         $this->translator     = $translator;
     }
 
-    /**
-     * @return array
-     */
     public static function getSubscribedEvents()
     {
         return [
@@ -81,9 +78,6 @@ class TwilioSubscriber implements EventSubscriberInterface
         ];
     }
 
-    /**
-     * @param TwilioMessageEvent $event
-     */
     public function onMessagePriceUpdated(TwilioMessageEvent $event)
     {
         $message = $this->getMessageFromSms($event);
@@ -91,13 +85,6 @@ class TwilioSubscriber implements EventSubscriberInterface
         $this->costManager->saveMessageCost($event->getMessage(), $message);
     }
 
-    /**
-     * @param TwilioMessageEvent $event
-     *
-     * @throws \Doctrine\ORM\NonUniqueResultException
-     * @throws \Doctrine\ORM\ORMException
-     * @throws \Doctrine\ORM\OptimisticLockException
-     */
     public function onMessageReceived(TwilioMessageEvent $event)
     {
         $twilioMessage = $event->getMessage();
@@ -121,9 +108,6 @@ class TwilioSubscriber implements EventSubscriberInterface
         $this->messageManager->save($message);
     }
 
-    /**
-     * @param TwilioCallEvent $event
-     */
     public function onCallPriceUpdated(TwilioCallEvent $event)
     {
         $twilioCall = $event->getCall();
