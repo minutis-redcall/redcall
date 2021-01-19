@@ -153,6 +153,7 @@ audience:
   search_other_badge: 'Search for another skill:'
   select_all_badges: 'Trigger all volunteers whatever their skills'
   structures: 'Structure(s) to trigger'
+  copy_paste: 'Or paste a list of identifiers'
 backlinks:
   blablacar: 'Sponsored by'
   minutis: 'Developed by Minutis volunteers'
@@ -256,9 +257,9 @@ campaign_status:
     history: History
     label: 'Response "%label%"'
     labels: 'Responses %label%'
+    new: 'Send a new SMS'
     prefix: 'Response prefix: %prefix%'
     unclear: Unclear
-    new: 'Send a new SMS'
   by: 'Sent by %name% (%structure%)'
   communication_short_title: '%date% at %time%'
   communication_tabs: Communications
