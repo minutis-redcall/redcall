@@ -153,6 +153,7 @@ audience:
   search_other_badge: 'Rechercher une autre compétence :'
   select_all_badges: 'Déclencher tous les bénévoles quelles que soient leurs compétences'
   structures: 'Structure(s) à déclencher'
+  copy_paste: 'Ou coller une liste de nivols'
 backlinks:
   blablacar: 'Parrainé par'
   minutis: 'Développé par les bénévoles'
@@ -256,6 +257,7 @@ campaign_status:
     history: Historique
     label: 'Réponse "%label%"'
     labels: 'Réponses %label%'
+    new: 'Envoyer un nouveau SMS'
     prefix: 'Préfix de la réponse: %prefix%'
     unclear: Ambigüe
   by: 'Envoyée par %name% (%structure%)'

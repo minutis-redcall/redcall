@@ -102,6 +102,19 @@ class MessageFormatter
         return GSM::enforceGSMAlphabet(implode("\n", $contentParts));
     }
 
+    public function formatSimpleSMSContent(string $content) : string
+    {
+        $contentParts[] = $this->translator->trans('message.sms.announcement', [
+            '%brand%' => mb_strtoupper(getenv('BRAND')),
+            '%hours%' => date('H'),
+            '%mins%'  => date('i'),
+        ]);
+
+        $contentParts[] = $content;
+
+        return GSM::enforceGSMAlphabet(implode("\n", $contentParts));
+    }
+
     public function formatCallContent(Message $message, bool $withChoices = true) : string
     {
         $communication = $message->getCommunication();

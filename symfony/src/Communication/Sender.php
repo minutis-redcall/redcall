@@ -4,12 +4,12 @@ namespace App\Communication;
 
 use App\Entity\Communication;
 use App\Entity\Message;
+use App\Manager\MessageManager;
 use App\Provider\Call\CallProvider;
 use App\Provider\Email\EmailProvider;
 use App\Provider\SMS\SMSProvider;
 use App\Services\MessageFormatter;
 use App\Tools\PhoneNumber;
-use Doctrine\ORM\EntityManagerInterface;
 
 class Sender
 {
@@ -40,31 +40,23 @@ class Sender
     private $formatter;
 
     /**
-     * @var EntityManagerInterface
+     * @var MessageManager
      */
-    private $entityManager;
+    private $messageManager;
 
-    public function __construct(
-        SMSProvider $SMSProvider,
+    public function __construct(SMSProvider $SMSProvider,
         CallProvider $callProvider,
         EmailProvider $emailProvider,
         MessageFormatter $formatter,
-        EntityManagerInterface $entityManager
-    ) {
-        $this->SMSProvider   = $SMSProvider;
-        $this->callProvider  = $callProvider;
-        $this->emailProvider = $emailProvider;
-        $this->formatter     = $formatter;
-        $this->entityManager = $entityManager;
+        MessageManager $messageManager)
+    {
+        $this->SMSProvider    = $SMSProvider;
+        $this->callProvider   = $callProvider;
+        $this->emailProvider  = $emailProvider;
+        $this->formatter      = $formatter;
+        $this->messageManager = $messageManager;
     }
 
-    /**
-     * @param Communication $communication
-     *
-     * @throws \Twig\Error\LoaderError
-     * @throws \Twig\Error\RuntimeError
-     * @throws \Twig\Error\SyntaxError
-     */
     public function sendCommunication(Communication $communication, bool $force = false)
     {
         foreach ($communication->getMessages() as $message) {
@@ -132,8 +124,7 @@ class Sender
             $message->setError($e->getMessage());
         }
 
-        $this->entityManager->merge($message);
-        $this->entityManager->flush();
+        $this->messageManager->save($message);
     }
 
     public function sendCall(Message $message)
@@ -160,8 +151,7 @@ class Sender
             $message->setError($e->getMessage());
         }
 
-        $this->entityManager->merge($message);
-        $this->entityManager->flush();
+        $this->messageManager->save($message);
     }
 
     /**
@@ -193,8 +183,7 @@ class Sender
             $message->setError($e->getMessage());
         }
 
-        $this->entityManager->merge($message);
-        $this->entityManager->flush();
+        $this->messageManager->save($message);
     }
 
     private function isMessageNotTransmittable(Message $message) : bool
@@ -232,8 +221,7 @@ class Sender
 
         if (null !== $error) {
             $message->setError($error);
-            $this->entityManager->persist($message);
-            $this->entityManager->flush();
+            $this->messageManager->save($message);
         }
 
         return null !== $error;

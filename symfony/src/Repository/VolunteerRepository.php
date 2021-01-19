@@ -298,10 +298,10 @@ class VolunteerRepository extends BaseRepository
         return array_diff($nivols, array_column($valid, 'nivol'));
     }
 
-    public function getVolunteerList(array $volunteerIds) : array
+    public function getVolunteerList(array $volunteerIds, bool $onlyEnabled = true) : array
     {
         return $this
-            ->createVolunteerListQueryBuilder($volunteerIds)
+            ->createVolunteerListQueryBuilder($volunteerIds, $onlyEnabled)
             ->getQuery()
             ->getResult();
     }
@@ -469,10 +469,10 @@ class VolunteerRepository extends BaseRepository
             ->getArrayResult();
     }
 
-    private function createVolunteerListQueryBuilder(array $volunteerIds) : QueryBuilder
+    private function createVolunteerListQueryBuilder(array $volunteerIds, bool $onlyEnabled = true) : QueryBuilder
     {
         return $this
-            ->createVolunteersQueryBuilder()
+            ->createVolunteersQueryBuilder($onlyEnabled)
             ->andWhere('v.id IN (:volunteer_ids)')
             ->setParameter('volunteer_ids', $volunteerIds);
     }
@@ -515,7 +515,7 @@ class VolunteerRepository extends BaseRepository
                     'CONCAT(v.lastName, \' \', v.firstName) LIKE :criteria'
                 )
             )
-            ->setParameter('criteria', sprintf('%%%s%%', str_replace(' ', '%', $criteria)));
+            ->setParameter('criteria', sprintf('%%%s%%', str_replace(' ', '%', ltrim($criteria, '0'))));
     }
 
     private function addUserCriteria(QueryBuilder $qb)
