@@ -93,6 +93,7 @@ class CampaignManager
             ->setType($campaignModel->type)
             ->setNotes($campaignModel->notes)
             ->setNotesUpdatedAt($campaignModel->notes ? new \DateTime() : null)
+            ->setExpiresAt((new \DateTime())->add(new \DateInterval('P7D')))
             ->setActive(true)
             ->setCreatedAt(new \DateTime());
 
