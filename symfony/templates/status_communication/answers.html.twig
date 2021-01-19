@@ -60,6 +60,7 @@
                 $('#{{ form.vars.id }}').parent().serialize(),
                 function (content) {
                     $('#modal-edit-answer').html(content);
+                    $('#{{ form.content.vars.id }}').html('');
                 }
             );
         });
