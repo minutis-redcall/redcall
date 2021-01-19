@@ -1,47 +1,72 @@
 <div class="text-center h4">{{ message.volunteer.displayName }}</div>
 
-<p>{{ 'campaign_status.answers.change'|trans }}</p>
-{% for key, choice in message.communication.choices %}
-    <div class="form-check {% if key == 0 %}border-top{% endif %}">
-        <label class="switch">
-            <input type="checkbox"
-                   class="form-check-input answer-change"
-                   data-endpoint="{{ path('communication_change_answer', {id: message.id, csrf: csrf_token('communication')}) }}"
-                   data-message-id="{{ message.id }}"
-                   data-choice-id="{{ choice.id }}"
-                   data-multi="{{ message.communication.isMultipleAnswer }}"
-                   {% if message.answerByChoice(choice) %}checked{% endif %}
-                   id="toggle-answer-{{ message.id }}-{{ choice.id }}"/>
-            <span class="slider"></span>
-        </label>
-        <label class="form-check-label"
-               for="toggle-answer-{{ message.id }}-{{ choice.id }}">{{ choice.label }}</label>
-    </div>
-{% endfor %}
-
-<p>{{ 'campaign_status.answers.history'|trans }}</p>
-<table class="table">
-    {% for answer in message.answers %}
-        <tr>
-            <td>
-                <div {% if answer.unclear %}style="color:red"{% endif %}>
-                    {{ answer.receivedAt|date('d/m/y H:i') }}:
-                    {{ answer.raw }}
-                </div>
-                {% if answer.choices %}
-                    {% if answer.choices.count == 1 %}
-                        <em>{{ 'campaign_status.answers.label'|trans({'%label%': answer.choices[0].label }) }}</em>
-                    {% elseif answer.choices.count > 1 %}
-                        <em>{{ 'campaign_status.answers.label'|trans({'%label%': '"' ~ answer.choiceLabels|join('", "') ~ '"' }) }}</em>
-                    {% endif %}
-                    {% if answer.byAdmin %}
-                        (<span class="text-danger">{{ answer.byAdmin }}</span>)
-                    {% endif %}
-                {% endif %}
-            </td>
-        </tr>
+{% if message.communication.choices|length %}
+    <p>{{ 'campaign_status.answers.change'|trans }}</p>
+    {% for key, choice in message.communication.choices %}
+        <div class="form-check {% if key == 0 %}border-top{% endif %}">
+            <label class="switch">
+                <input type="checkbox"
+                       class="form-check-input answer-change"
+                       data-endpoint="{{ path('communication_change_answer', {id: message.id, csrf: csrf_token('communication')}) }}"
+                       data-message-id="{{ message.id }}"
+                       data-choice-id="{{ choice.id }}"
+                       data-multi="{{ message.communication.isMultipleAnswer }}"
+                       {% if message.answerByChoice(choice) %}checked{% endif %}
+                       id="toggle-answer-{{ message.id }}-{{ choice.id }}"/>
+                <span class="slider"></span>
+            </label>
+            <label class="form-check-label"
+                   for="toggle-answer-{{ message.id }}-{{ choice.id }}">{{ choice.label }}</label>
+        </div>
     {% endfor %}
-</table>
+{% endif %}
 
-<div class="text-right">{{ 'campaign_status.answers.prefix'|trans({'%prefix%': message.prefix}) }}</div>
+{% if message.answers|length %}
+    <p>{{ 'campaign_status.answers.history'|trans }}</p>
+    <table class="table">
+        {% for answer in message.answers|reverse %}
+            <tr>
+                <td class="{% if answer.byAdmin %}text-right{% endif %}">
+                    <div {% if answer.unclear %}style="color:red"{% endif %}>
+                        {{ answer.receivedAt|date('d/m/y H:i') }}:
+                        {{ answer.raw }}
+                    </div>
+                    {% if answer.choices %}
+                        {% if answer.choices.count == 1 %}
+                            <em>{{ 'campaign_status.answers.label'|trans({'%label%': answer.choices[0].label }) }}</em>
+                        {% elseif answer.choices.count > 1 %}
+                            <em>{{ 'campaign_status.answers.label'|trans({'%label%': '"' ~ answer.choiceLabels|join('", "') ~ '"' }) }}</em>
+                        {% endif %}
+                        {% if answer.byAdmin %}
+                            (<span class="text-danger">{{ answer.byAdmin }}</span>)
+                        {% endif %}
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endif %}
 
+{% if constant('App\\Entity\\Communication::TYPE_SMS') == message.communication.type and message.reachable %}
+    {{ form(form) }}
+
+    <script type="text/javascript">
+
+        $('#{{ form.submit.vars.id }}').click(function (e) {
+            e.preventDefault();
+
+            $.post(
+                '{{ path('communication_answers', {messageId: message.id}) }}',
+                $('#{{ form.vars.id }}').parent().serialize(),
+                function (content) {
+                    $('#modal-edit-answer').html(content);
+                }
+            );
+        });
+
+    </script>
+{% endif %}
+
+{% if message.communication.choices|length %}
+    <div class="text-right">{{ 'campaign_status.answers.prefix'|trans({'%prefix%': message.prefix}) }}</div>
+{% endif %}

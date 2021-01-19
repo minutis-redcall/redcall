@@ -27,10 +27,14 @@ use App\Tools\GSM;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
@@ -349,8 +353,28 @@ class CommunicationController extends BaseController
             throw $this->createAccessDeniedException();
         }
 
+        $form = $this
+            ->createFormBuilder()
+            ->add('content', TextareaType::class, [
+                'label'       => 'campaign_status.answers.new',
+                'constraints' => [
+                    new NotBlank(),
+                    new Length(['max' => 300]),
+                ],
+            ])
+            ->add('submit', SubmitType::class, [
+                'label' => 'base.button.submit',
+            ])
+            ->getForm()
+            ->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->answerManager->sendSms($message, $form->get('content')->getData());
+        }
+
         return $this->render('status_communication/answers.html.twig', [
             'message' => $message,
+            'form'    => $form->createView(),
         ]);
     }
 

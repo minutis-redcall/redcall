@@ -258,6 +258,7 @@ campaign_status:
     labels: 'Réponses %label%'
     prefix: 'Préfix de la réponse: %prefix%'
     unclear: Ambigüe
+    new: 'Envoyer un nouveau SMS'
   by: 'Envoyée par %name% (%structure%)'
   communication_short_title: '%date% à %time%'
   communication_tabs: Communications

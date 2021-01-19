@@ -258,6 +258,7 @@ campaign_status:
     labels: 'Responses %label%'
     prefix: 'Response prefix: %prefix%'
     unclear: Unclear
+    new: 'Send a new SMS'
   by: 'Sent by %name% (%structure%)'
   communication_short_title: '%date% at %time%'
   communication_tabs: Communications

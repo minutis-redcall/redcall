@@ -5,6 +5,7 @@ namespace App\EventSubscriber;
 use App\Communication\Sender;
 use App\Entity\Communication;
 use App\Entity\Message;
+use App\Manager\AnswerManager;
 use App\Manager\CostManager;
 use App\Manager\MessageManager;
 use App\Services\VoiceCalls;
@@ -28,6 +29,11 @@ class TwilioSubscriber implements EventSubscriberInterface
     private $messageManager;
 
     /**
+     * @var AnswerManager
+     */
+    private $answerManager;
+
+    /**
      * @var VoiceCalls
      */
     private $voiceCalls;
@@ -44,12 +50,14 @@ class TwilioSubscriber implements EventSubscriberInterface
 
     public function __construct(CostManager $costManager,
         MessageManager $messageManager,
+        AnswerManager $answerManager,
         VoiceCalls $voiceCalls,
         Sender $sender,
         TranslatorInterface $translator)
     {
         $this->costManager    = $costManager;
         $this->messageManager = $messageManager;
+        $this->answerManager  = $answerManager;
         $this->voiceCalls     = $voiceCalls;
         $this->sender         = $sender;
         $this->translator     = $translator;
