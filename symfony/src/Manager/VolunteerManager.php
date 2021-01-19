@@ -106,11 +106,11 @@ class VolunteerManager
         );
     }
 
-    public function getVolunteerList(array $volunteerIds) : array
+    public function getVolunteerList(array $volunteerIds, bool $onlyEnabled = true) : array
     {
         $volunteers = [];
 
-        $list = $this->volunteerRepository->getVolunteerList($volunteerIds);
+        $list = $this->volunteerRepository->getVolunteerList($volunteerIds, $onlyEnabled);
 
         usort($list, function (Volunteer $a, Volunteer $b) {
             return $a->getLastName() <=> $b->getLastName();
