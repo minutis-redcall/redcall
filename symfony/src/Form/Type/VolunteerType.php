@@ -49,15 +49,11 @@ class VolunteerType extends AbstractType
             ->add('phoneNumberOptin', CheckboxType::class, [
                 'label'    => 'manage_volunteers.form.phone_number_optin',
                 'required' => false,
-            ]);
-
-        $builder
+            ])
             ->add('phoneNumberLocked', CheckboxType::class, [
                 'label'    => 'manage_volunteers.form.phone_number_locked',
                 'required' => false,
-            ]);
-
-        $builder
+            ])
             ->add('email', TextType::class, [
                 'label'    => 'manage_volunteers.form.email',
                 'required' => false,
@@ -65,15 +61,11 @@ class VolunteerType extends AbstractType
             ->add('emailOptin', CheckboxType::class, [
                 'label'    => 'manage_volunteers.form.email_optin',
                 'required' => false,
-            ]);
-
-        $builder
+            ])
             ->add('emailLocked', CheckboxType::class, [
                 'label'    => 'manage_volunteers.form.email_locked',
                 'required' => false,
-            ]);
-
-        $builder
+            ])
             ->add('minor', CheckboxType::class, [
                 'label'    => 'manage_volunteers.form.minor',
                 'required' => false,
