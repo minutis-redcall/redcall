@@ -32,6 +32,7 @@
                         "description": "{{ 'message.email.in_app_long_answer'|trans({'%choice%': communication.firstChoice.label}) }}"
                     }
 
+
                 </script>
             {% else %}
                 <script type="application/ld+json">
@@ -41,11 +42,12 @@
                     "@type": "EmailMessage",
                     "potentialAction": {
                         "@type": "ViewAction",
-                        "target": "{{ website_url }}{{ path('message_open', {code: message.code}) }}",
+                        "url": "{{ website_url }}{{ path('message_open', {code: message.code}) }}",
                         "name": "{{ 'message.email.open_in_redcall'|trans }}"
                     },
                     "description": "{{ 'message.email.open_in_redcall'|trans }}"
                 }
+
 
                 </script>
             {% endif %}
