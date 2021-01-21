@@ -4,6 +4,7 @@ curl "{{ uri }}" \
 {% endif %}
      -H 'Authorization: Bearer {{ token }}' \
      -H 'Content-Length: {{ body|length }}' \
+     -H 'Accept: application/json' \
      -H 'Content-Type: application/json; charset=utf-8' \
      -H 'X-Signature: {{ token.sign(method, uri, body) }}' \
      -d $'{{ body }}'

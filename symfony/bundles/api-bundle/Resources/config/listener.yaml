@@ -1,0 +1,8 @@
+services:
+
+  Bundles\ApiBundle\Listener\ViewListener:
+    arguments:
+      - '@serializer'
+      - '@Bundles\ApiBundle\Parser\StatusCodeParser'
+    tags:
+      - { name: kernel.event_listener, event: kernel.view }

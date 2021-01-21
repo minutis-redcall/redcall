@@ -14,6 +14,8 @@ class ApiExtension extends Extension
         $loader = new Loader\YamlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
         $loader->load('controller.yaml');
         $loader->load('manager.yaml');
+        $loader->load('listener.yaml');
+        $loader->load('parser.yaml');
         $loader->load('repository.yaml');
         $loader->load('security.yaml');
         $loader->load('twig.yaml');
