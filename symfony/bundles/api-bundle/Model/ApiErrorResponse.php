@@ -11,6 +11,7 @@ class ApiErrorResponse extends ApiResponse
      */
     private $error;
 
+    /* ErrorFacade */
     public function __construct(Error $error, array $payload = [])
     {
         $this->error = $error;
@@ -23,7 +24,6 @@ class ApiErrorResponse extends ApiResponse
         return [
             'success' => false,
             'code'    => $this->error->getCode(),
-            'error'   => $this->error,
             'message' => $this->error->getMessage(),
             'payload' => $this->getPayload(),
         ];

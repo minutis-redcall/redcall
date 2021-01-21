@@ -213,7 +213,8 @@ class VolunteersController extends BaseController
             }
 
             // Automatically lock phone & email if necessary
-            if ($oldPhone !== $volunteer->getPhone()) {
+            if ($oldPhone && $volunteer->getPhone() && $oldPhone->getId() !== $volunteer->getPhone()->getId()
+                || !$oldPhone && $volunteer->getPhone() || $oldPhone && !$volunteer->getPhone()) {
                 $volunteer->setPhoneNumberLocked(true);
             }
             if ($oldVolunteer->getEmail() !== $volunteer->getEmail()) {
