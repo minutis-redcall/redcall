@@ -26,6 +26,17 @@ class ErrorFacade implements FacadeInterface
      */
     private $context;
 
+    static public function getExample() : FacadeInterface
+    {
+        $facade = new self;
+
+        $facade->code    = '1234';
+        $facade->message = 'Sample message';
+        $facade->context = CollectionFacade::getExample();
+
+        return $facade;
+    }
+
     public function isSuccess() : bool
     {
         return $this->success;

@@ -31,6 +31,22 @@ class ThrowableFacade implements FacadeInterface
         }
     }
 
+    static public function getExample() : FacadeInterface
+    {
+        $facade = new self;
+
+        $facade->message = 'This is a sample exception message';
+        $facade->trace   = implode("\n", [
+            '#0 /Users/alain/Data/developpement/redcall/app/symfony/vendor/symfony/http-kernel/HttpKernel.php(158): App\Controller\HomeController->home()',
+            '#1 /Users/alain/Data/developpement/redcall/app/symfony/vendor/symfony/http-kernel/HttpKernel.php(80): Symfony\Component\HttpKernel\HttpKernel->handleRaw(Object(Symfony\Component\HttpFoundation\Request), 1)',
+            '#2 /Users/alain/Data/developpement/redcall/app/symfony/vendor/symfony/http-kernel/Kernel.php(201): Symfony\Component\HttpKernel\HttpKernel->handle(Object(Symfony\Component\HttpFoundation\Request), 1, true)',
+            '#3 /Users/alain/Data/developpement/redcall/app/symfony/public/index.php(46): Symfony\Component\HttpKernel\Kernel->handle(Object(Symfony\Component\HttpFoundation\Request))',
+            '#4 {main}',
+        ]);
+
+        return $facade;
+    }
+
     public function getMessage() : string
     {
         return $this->message;

@@ -16,6 +16,16 @@ class SuccessFacade implements FacadeInterface
      */
     private $payload;
 
+    static public function getExample() : FacadeInterface
+    {
+        $facade = new self;
+
+        $facade->code    = '1234';
+        $facade->payload = CollectionFacade::getExample();
+
+        return $facade;
+    }
+
     public function isSuccess() : bool
     {
         return $this->success;

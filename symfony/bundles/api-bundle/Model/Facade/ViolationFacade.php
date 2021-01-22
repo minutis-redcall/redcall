@@ -2,6 +2,7 @@
 
 namespace Bundles\ApiBundle\Model\Facade;
 
+use Bundles\ApiBundle\Contracts\FacadeInterface;
 use Symfony\Component\Validator\ConstraintViolation;
 
 class ViolationFacade
@@ -34,6 +35,18 @@ class ViolationFacade
         $this->parameters   = $violation->getParameters();
     }
 
+    static public function getExample() : FacadeInterface
+    {
+        $facade = new self;
+
+        $facade->propertyPath = 'firstName';
+        $facade->invalidValue = '';
+        $facade->message      = 'This field cannot be empty.';
+        $facade->parameters   = [];
+
+        return $facade;
+    }
+
     public function getPropertyPath() : ?string
     {
         return $this->propertyPath;
@@ -47,5 +60,10 @@ class ViolationFacade
     public function getMessage() : string
     {
         return $this->message;
+    }
+
+    public function getParameters() : array
+    {
+        return $this->parameters;
     }
 }
