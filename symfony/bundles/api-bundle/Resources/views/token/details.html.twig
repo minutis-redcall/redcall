@@ -56,7 +56,7 @@
 
                     {% set method = 'POST' %}
                     {% set uri = app.request.schemeAndHttpHost ~ path("developer_demo", {foo: 'bar'}) %}
-                    {% set body = {'Hello': 'world!'} %}
+                    {% set body = {'name': 'alain'} %}
                     {{ api_demo(token, method, uri, body, false) }}
 
                     <p>&nbsp;</p>

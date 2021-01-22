@@ -14,10 +14,8 @@ class DemoController extends BaseController
     /**
      * @Route(path="/api/demo", name="developer_demo")
      */
-    public function index()
+    public function index(DemoFacade $demo)
     {
-        $demo = new DemoFacade();
-
         return $demo;
     }
 }

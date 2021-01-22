@@ -10,5 +10,6 @@ services:
   Bundles\ApiBundle\Listener\ExceptionListener:
     arguments:
       - '@serializer'
+      - '@logger'
     tags:
       - { name: kernel.event_listener, event: kernel.exception }

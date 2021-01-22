@@ -1,6 +1,6 @@
-<textarea rows="{{ body|split("\n")|length + 6 }}" style="width: 100%;">
+<textarea rows="{{ body|split("\n")|length + 7 }}" style="width: 100%;">
 curl "{{ uri }}" \
-{% if not method == 'GET' %}     -X '{{ method }}' \
+{% if not (method == 'GET') %}     -X '{{ method }}' \
 {% endif %}
      -H 'Authorization: Bearer {{ token }}' \
      -H 'Content-Length: {{ body|length }}' \

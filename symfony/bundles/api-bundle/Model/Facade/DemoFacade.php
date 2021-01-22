@@ -12,7 +12,12 @@ class DemoFacade implements FacadeInterface
      *
      * @var string
      */
-    private $name = 'bob';
+    private $name;
+
+    /**
+     * @var string
+     */
+    private $demo = 'You successfully authenticated!';
 
     public function getName() : string
     {
@@ -24,5 +29,10 @@ class DemoFacade implements FacadeInterface
         $this->name = $name;
 
         return $this;
+    }
+
+    public function getDemo() : string
+    {
+        return $this->demo;
     }
 }

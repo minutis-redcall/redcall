@@ -6,6 +6,7 @@ use Bundles\ApiBundle\Contracts\ApiExceptionInterface;
 use Bundles\ApiBundle\Error\HttpError;
 use Bundles\ApiBundle\Error\ThrowableError;
 use Bundles\ApiBundle\Model\Facade\ErrorFacade;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -18,9 +19,15 @@ class ExceptionListener
      */
     private $serializer;
 
-    public function __construct(SerializerInterface $serializer)
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    public function __construct(SerializerInterface $serializer, LoggerInterface $logger)
     {
         $this->serializer = $serializer;
+        $this->logger     = $logger;
     }
 
     public function onKernelException(ExceptionEvent $event)
@@ -38,6 +45,12 @@ class ExceptionListener
             $error = $throwable->getError();
         } else {
             $error = new ThrowableError($throwable);;
+        }
+
+        if ($error->getCode() >= Response::HTTP_INTERNAL_SERVER_ERROR) {
+            $this->logger->error($throwable->getMessage(), [
+                'trace' => $throwable->getTraceAsString(),
+            ]);
         }
 
         $facade = new ErrorFacade();
