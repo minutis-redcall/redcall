@@ -2,17 +2,17 @@
 
 namespace Bundles\ApiBundle\Model;
 
-use Bundles\ApiBundle\Enum\Error;
+use Bundles\ApiBundle\Enum\AuthenticationError;
 
 class ApiErrorResponse extends ApiResponse
 {
     /**
-     * @var Error
+     * @var AuthenticationError
      */
     private $error;
 
     /* ErrorFacade */
-    public function __construct(Error $error, array $payload = [])
+    public function __construct(AuthenticationError $error, array $payload = [])
     {
         $this->error = $error;
 

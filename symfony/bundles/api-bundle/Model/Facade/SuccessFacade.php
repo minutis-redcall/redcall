@@ -2,10 +2,18 @@
 
 namespace Bundles\ApiBundle\Model\Facade;
 
+use Bundles\ApiBundle\Contracts\FacadeInterface;
+
 class SuccessFacade implements FacadeInterface
 {
+    /**
+     * @var bool
+     */
     private $success = true;
 
+    /**
+     * @var FacadeInterface
+     */
     private $payload;
 
     public function isSuccess() : bool
@@ -13,7 +21,7 @@ class SuccessFacade implements FacadeInterface
         return $this->success;
     }
 
-    public function getPayload()
+    public function getPayload() : FacadeInterface
     {
         return $this->payload;
     }

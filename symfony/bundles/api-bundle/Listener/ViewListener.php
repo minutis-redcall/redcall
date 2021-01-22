@@ -2,7 +2,7 @@
 
 namespace Bundles\ApiBundle\Listener;
 
-use Bundles\ApiBundle\Model\Facade\FacadeInterface;
+use Bundles\ApiBundle\Contracts\FacadeInterface;
 use Bundles\ApiBundle\Model\Facade\SuccessFacade;
 use Bundles\ApiBundle\Parser\StatusCodeParser;
 use Symfony\Component\HttpFoundation\Response;

@@ -2,7 +2,7 @@
 
 namespace Bundles\ApiBundle\Parser;
 
-use Bundles\ApiBundle\Model\Facade\FacadeInterface;
+use Bundles\ApiBundle\Contracts\FacadeInterface;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Symfony\Component\HttpFoundation\Response;
 

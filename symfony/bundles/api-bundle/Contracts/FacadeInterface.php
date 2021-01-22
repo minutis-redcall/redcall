@@ -1,6 +1,6 @@
 <?php
 
-namespace Bundles\ApiBundle\Model\Facade;
+namespace Bundles\ApiBundle\Contracts;
 
 use Bundles\ApiBundle\Annotation as Api;
 use Symfony\Component\HttpFoundation\Response;

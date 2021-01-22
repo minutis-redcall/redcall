@@ -2,6 +2,7 @@
 
 namespace Bundles\ApiBundle\Model\Facade;
 
+use Bundles\ApiBundle\Contracts\FacadeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class DemoFacade implements FacadeInterface
