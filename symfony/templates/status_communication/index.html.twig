@@ -381,7 +381,7 @@
                                         </div>
                                     </div>
 
-                                    <div class="{% if not message.sent or message.error %}message-error{% endif %}">
+                                    <div id="volunteer-container-{{ suffix }}" class="{% if not message.sent %}text-black-50{% elseif message.error %}message.error{% endif %}">
                                         {{ macros.volunteer(message.volunteer) }}
                                     </div>
 
@@ -746,7 +746,7 @@
 
                     {# Message is sent #}
                     if (messageStatus.sent) {
-                        $('#volunteer-name-' + suffix).removeClass('text-black-50');
+                        $('#volunteer-container-' + suffix).removeClass('text-black-50');
                     }
 
                     {# Message is "<value>" #}
