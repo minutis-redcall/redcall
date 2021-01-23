@@ -1,0 +1,3 @@
+services:
+
+  Bundles\ApiBundle\Parser\StatusCodeParser:

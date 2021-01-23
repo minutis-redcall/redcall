@@ -1,8 +1,10 @@
 <?php
 
-namespace Bundles\ApiBundle\Enum;
+namespace Bundles\ApiBundle\Error;
 
-use Bundles\ApiBundle\Model\ApiErrorResponse;
+use Bundles\ApiBundle\Contracts\ErrorInterface;
+use Bundles\ApiBundle\Contracts\FacadeInterface;
+use Bundles\ApiBundle\Model\Facade\EmptyFacade;
 use MyCLabs\Enum\Enum;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -13,7 +15,7 @@ use Symfony\Component\HttpFoundation\Response;
  * @method static $this AUTHENTICATION_FAILED
  * @method static $this AUTHENTICATION_REQUIRED
  */
-class Error extends Enum
+class AuthenticationError extends Enum implements ErrorInterface
 {
     private const AUTHENTICATION_NO_AUTHORIZATION = 'authentication.no_authorization';
     private const AUTHENTICATION_NO_TOKEN         = 'authentication.no_token';
@@ -53,12 +55,7 @@ class Error extends Enum
         ],
     ];
 
-    public function getResponse(array $context = [])
-    {
-        return new ApiErrorResponse($this, $context);
-    }
-
-    public function getStatus() : string
+    public function getStatus() : int
     {
         return self::DETAILS[$this->value][self::KEY_STATUS];
     }
@@ -71,5 +68,10 @@ class Error extends Enum
     public function getMessage() : string
     {
         return self::DETAILS[$this->value][self::KEY_MESSAGE];
+    }
+
+    public function getContext() : FacadeInterface
+    {
+        return new EmptyFacade();
     }
 }

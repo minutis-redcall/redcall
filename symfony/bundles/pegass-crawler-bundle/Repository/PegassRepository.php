@@ -9,6 +9,7 @@ use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
+use Doctrine\ORM\QueryBuilder;
 
 /**
  * @method Pegass|null find($id, $lockMode = null, $lockVersion = null)
@@ -211,6 +212,15 @@ class PegassRepository extends ServiceEntityRepository
             ->where('p.enabled = true')
             ->getQuery()
             ->getArrayResult();
+    }
+
+    public function getEnabledEntitiesQueryBuilder(string $type) : QueryBuilder
+    {
+        return $this
+            ->createQueryBuilder('p')
+            ->where('p.enabled = true')
+            ->andWhere('p.type = :type')
+            ->setParameter('type', $type);
     }
 
     /**

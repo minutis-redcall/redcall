@@ -4,9 +4,8 @@ namespace Bundles\ApiBundle\Exception;
 
 use Bundles\ApiBundle\Contracts\ApiExceptionInterface;
 use Bundles\ApiBundle\Contracts\ErrorInterface;
-use Symfony\Component\Security\Core\Exception\AuthenticationException;
 
-class ApiAuthenticationException extends AuthenticationException implements ApiExceptionInterface
+class ApiException extends \RuntimeException implements ApiExceptionInterface
 {
     private $error;
 

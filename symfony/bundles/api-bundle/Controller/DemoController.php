@@ -2,7 +2,7 @@
 
 namespace Bundles\ApiBundle\Controller;
 
-use Bundles\ApiBundle\Model\ApiResponse;
+use Bundles\ApiBundle\Model\Facade\DemoFacade;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -14,10 +14,8 @@ class DemoController extends BaseController
     /**
      * @Route(path="/api/demo", name="developer_demo")
      */
-    public function index()
+    public function index(DemoFacade $demo)
     {
-        return new ApiResponse([
-            'demo' => 'You successfully authenticated!',
-        ]);
+        return $demo;
     }
 }

@@ -71,4 +71,3 @@ api:
   resource: '@ApiBundle/Controller/'
     type: annotation
 ```
-
