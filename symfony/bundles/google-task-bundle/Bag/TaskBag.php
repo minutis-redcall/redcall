@@ -2,7 +2,7 @@
 
 namespace Bundles\GoogleTaskBundle\Bag;
 
-use Bundles\GoogleTaskBundle\Api\TaskInterface;
+use Bundles\GoogleTaskBundle\Contracts\TaskInterface;
 
 class TaskBag
 {

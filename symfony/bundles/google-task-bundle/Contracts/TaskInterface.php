@@ -1,6 +1,6 @@
 <?php
 
-namespace Bundles\GoogleTaskBundle\Api;
+namespace Bundles\GoogleTaskBundle\Contracts;
 
 interface TaskInterface
 {

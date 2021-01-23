@@ -17,7 +17,7 @@ services:
     public: false       # Allows optimizing the container by removing unused services; this also means
 
   _instanceof:
-    Bundles\GoogleTaskBundle\Api\TaskInterface:
+    Bundles\GoogleTaskBundle\Contracts\TaskInterface:
       tags: [ 'google_task' ]
 
   # configures session storage on the database

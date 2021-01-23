@@ -1,6 +1,7 @@
 # Google Cloud Tasks for Symfony
 
 Aim to simplify asynchronous tasks in Symfony for App Engine through Google Cloud Tasks.
+
 - simple interface to implement
 - request signature integrated
 
@@ -65,7 +66,7 @@ return [
 ];
 ```
 
-Make sure Twilio webhooks are not behind your security firewall. 
+Make sure Twilio webhooks are not behind your security firewall.
 
 ```yaml
   # security.yaml
@@ -89,7 +90,7 @@ Automatically handle your task implementations
 ```yaml
 # config/services.yaml
 services:
-    _instanceof:
-        Bundles\GoogleTaskBundle\Api\TaskInterface:
-            tags: ['google_task']
+  _instanceof:
+    Bundles\GoogleTaskBundle\Contracts\TaskInterface:
+      tags: [ 'google_task' ]
 ```
