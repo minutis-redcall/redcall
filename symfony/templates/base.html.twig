@@ -58,7 +58,7 @@
     {% endblock %}
 
     {% block header %}
-        <div class="card-header">
+        <div class="{% if app.user|default(false) or session.volunteer|default(false) %}card-header{% endif %}">
 
             {% block menu %}
 
