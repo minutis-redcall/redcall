@@ -25,6 +25,7 @@ class AudienceType extends AbstractType
     // Lists are hidden fields transformed to array of ids
     const LISTS = [
         'volunteers',
+        'excluded_volunteers',
         'nivols',
         'structures_global',
         'structures_local',
@@ -87,15 +88,16 @@ class AudienceType extends AbstractType
     static public function createEmptyData(array $defaults) : array
     {
         return array_merge([
-            'preselection_key'  => null,
-            'volunteers'        => [],
-            'nivols'            => [],
-            'structures_global' => [],
-            'structures_local'  => [],
-            'badges_all'        => false,
-            'badges_ticked'     => [],
-            'badges_searched'   => [],
-            'test_on_me'        => false,
+            'preselection_key'    => null,
+            'volunteers'          => [],
+            'excluded_volunteers' => [],
+            'nivols'              => [],
+            'structures_global'   => [],
+            'structures_local'    => [],
+            'badges_all'          => false,
+            'badges_ticked'       => [],
+            'badges_searched'     => [],
+            'test_on_me'          => false,
         ], $defaults);
     }
 
@@ -138,6 +140,9 @@ class AudienceType extends AbstractType
             ])
             ->add('volunteers', TextType::class, [
                 'label' => 'audience.search_for_volunteers',
+            ])
+            ->add('excluded_volunteers', TextType::class, [
+                'label' => false,
             ])
             ->add('nivols', TextareaType::class, [
                 'label'    => 'audience.copy_paste_details',

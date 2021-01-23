@@ -142,20 +142,21 @@ class AudienceController extends BaseController
     }
 
     /**
-     * @Route(path="/selection", name="selection")
+     * @Route(path="/large-selection", name="large_selection")
      */
-    public function selection(Request $request)
+    public function largeSelection(Request $request)
     {
         $data = AudienceType::getAudienceFormData($request);
 
         $classification = $this->audienceManager->classifyAudience($data);
 
         $volunteers = $this->volunteerManager->getVolunteerList(
-            $classification->getReachable()
+            array_merge($classification->getExcluded(), $classification->getReachable())
         );
 
-        return $this->render('audience/selection.html.twig', [
-            'volunteers' => $volunteers,
+        return $this->render('audience/large_selection.html.twig', [
+            'classification' => $classification,
+            'volunteers'     => $volunteers,
         ]);
     }
 

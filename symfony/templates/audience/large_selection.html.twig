@@ -1,0 +1,55 @@
+{% import 'macros.html.twig' as macros %}
+
+<h3>{{ 'audience.large_audience.title'|trans({'%nbr%': volunteers|length}) }}</h3>
+
+<div class="text-left">
+    <p style="padding-bottom: 3px;">{{ 'audience.large_audience.buttons'|trans }}</p>
+    <p style="padding-bottom: 5px;">
+        <a href="#" class="btn btn-small btn-secondary" onclick="return false;" style="border: 1px solid red!important;">❌</a>
+        {{ 'audience.large_audience.button_remove'|trans }}
+    </p>
+    <p>
+        <a href="#" class="btn btn-small btn-secondary" onclick="return false;" style="border: 1px solid green!important;">✅</a>
+        {{ 'audience.large_audience.button_add'|trans }}
+    </p>
+    <hr/>
+</div>
+
+<div class="row text-left">
+    {% for volunteer in volunteers %}
+        <div class="col-md-6" style="padding:5px;" id="preselection-volunteer-{{ volunteer.id }}">
+            <table>
+                <tr>
+                    <td style="padding:5px;">
+                        {% set ticked = volunteer.id not in classification.excluded %}
+                        <div id="exclude-volunteer-{{ volunteer.id }}" class="{% if not ticked %}d-none{% endif %}">
+                            <a href="#"
+                               class="btn btn-small btn-secondary exclude-volunteer"
+                               data-id="{{ volunteer.id }}"
+                               style="border: 1px solid red!important;">
+                                ❌
+                            </a>
+                        </div>
+                        <div id="include-volunteer-{{ volunteer.id }}" class="{% if ticked %}d-none{% endif %}">
+                            <a href="#"
+                               class="btn btn-small btn-secondary exclude-volunteer"
+                               data-id="{{ volunteer.id }}"
+                               style="border: 1px solid green!important;">
+                                ✅
+                            </a>
+                        </div>
+                        <input id="toggle-volunteer-exclusion-{{ volunteer.id }}"
+                               type="checkbox"
+                               class="toggle-to-text numbers no-badge-counts d-none"
+                               {% if not ticked %}checked{% endif %}
+                               data-proxy="#excluded-volunteers"
+                               data-id="{{ volunteer.id }}"/>
+                    </td>
+                    <td style="padding:5px;">
+                        {{ macros.volunteer(volunteer) }}
+                    </td>
+                </tr>
+            </table>
+        </div>
+    {% endfor %}
+</div>
