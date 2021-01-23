@@ -4,7 +4,7 @@ namespace Bundles\PaginationBundle\Manager;
 
 use Doctrine\ORM\QueryBuilder;
 use Pagerfanta\Adapter\ArrayAdapter;
-use Pagerfanta\Adapter\DoctrineORMAdapter;
+use Pagerfanta\Doctrine\ORM\QueryAdapter;
 use Pagerfanta\Pagerfanta;
 use RuntimeException;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -32,7 +32,7 @@ class PaginationManager
     /**
      * @return int
      */
-    public function getPerPage(): int
+    public function getPerPage() : int
     {
         return $this->perPage;
     }
@@ -42,7 +42,7 @@ class PaginationManager
      *
      * @return PaginationManager
      */
-    public function setPerPage(int $perPage): PaginationManager
+    public function setPerPage(int $perPage) : PaginationManager
     {
         $this->perPage = $perPage;
 
@@ -56,13 +56,13 @@ class PaginationManager
      *
      * @return Pagerfanta
      */
-    public function getPager($data, $prefix = '', $hasJoins = false): Pagerfanta
+    public function getPager($data, $prefix = '', $hasJoins = false) : Pagerfanta
     {
         $request = $this->requestStack->getMasterRequest();
 
         $adapter = null;
         if ($data instanceof QueryBuilder) {
-            $adapter = new DoctrineORMAdapter($data, $hasJoins);
+            $adapter = new QueryAdapter($data, $hasJoins);
         } elseif (is_array($data)) {
             $adapter = new ArrayAdapter($data);
         } else {

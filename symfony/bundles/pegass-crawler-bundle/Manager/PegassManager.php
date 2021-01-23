@@ -12,6 +12,7 @@ use DateTime;
 use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
+use Doctrine\ORM\QueryBuilder;
 use Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -59,6 +60,11 @@ class PegassManager
     public function getAllEnabledEntities() : array
     {
         return $this->pegassRepository->getAllEnabledEntities();
+    }
+
+    public function getEnabledEntitiesQueryBuilder(string $type) : QueryBuilder
+    {
+        return $this->pegassRepository->getEnabledEntitiesQueryBuilder($type);
     }
 
     /**

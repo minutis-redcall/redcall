@@ -3,10 +3,15 @@
 namespace Bundles\ApiBundle\Annotation;
 
 /**
+ * Facades can be used to replace standard Symfony responses,
+ * in order to be serialized in a response listener. Thus,
+ * this annotation can be used to change the used HTTP response
+ * status code.
+ *
  * @Annotation
  * @Target({"CLASS"})
  */
-class StatusCode
+final class StatusCode
 {
     /**
      * @Required

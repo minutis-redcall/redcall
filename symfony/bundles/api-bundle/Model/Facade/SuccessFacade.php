@@ -2,8 +2,12 @@
 
 namespace Bundles\ApiBundle\Model\Facade;
 
+use Bundles\ApiBundle\Annotation as Api;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
 
+/**
+ * @Api\Compound
+ */
 class SuccessFacade implements FacadeInterface
 {
     /**
@@ -16,12 +20,15 @@ class SuccessFacade implements FacadeInterface
      */
     private $payload;
 
-    static public function getExample() : FacadeInterface
+    static public function getExample(FacadeInterface $child = null) : FacadeInterface
     {
+        if (null === $child) {
+            throw new \LogicException('This facade decorates another facade');
+        }
+
         $facade = new self;
 
-        $facade->code    = '1234';
-        $facade->payload = CollectionFacade::getExample();
+        $facade->payload = $child;
 
         return $facade;
     }

@@ -31,7 +31,7 @@ class ThrowableFacade implements FacadeInterface
         }
     }
 
-    static public function getExample() : FacadeInterface
+    static public function getExample(FacadeInterface $child = null) : FacadeInterface
     {
         $facade = new self;
 

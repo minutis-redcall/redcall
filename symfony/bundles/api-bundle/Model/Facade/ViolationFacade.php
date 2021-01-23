@@ -13,7 +13,7 @@ class ViolationFacade
     private $propertyPath;
 
     /**
-     * @var string
+     * @var string|null
      */
     private $invalidValue;
 
@@ -22,27 +22,20 @@ class ViolationFacade
      */
     private $message;
 
-    /**
-     * @var array
-     */
-    private $parameters;
-
     public function __construct(ConstraintViolation $violation)
     {
         $this->propertyPath = $violation->getPropertyPath();
         $this->invalidValue = $violation->getInvalidValue();
         $this->message      = $violation->getMessage();
-        $this->parameters   = $violation->getParameters();
     }
 
-    static public function getExample() : FacadeInterface
+    static public function getExample(FacadeInterface $child = null) : FacadeInterface
     {
         $facade = new self;
 
         $facade->propertyPath = 'firstName';
-        $facade->invalidValue = '';
+        $facade->invalidValue = null;
         $facade->message      = 'This field cannot be empty.';
-        $facade->parameters   = [];
 
         return $facade;
     }
@@ -52,7 +45,7 @@ class ViolationFacade
         return $this->propertyPath;
     }
 
-    public function getInvalidValue() : string
+    public function getInvalidValue() : ?string
     {
         return $this->invalidValue;
     }
@@ -60,10 +53,5 @@ class ViolationFacade
     public function getMessage() : string
     {
         return $this->message;
-    }
-
-    public function getParameters() : array
-    {
-        return $this->parameters;
     }
 }

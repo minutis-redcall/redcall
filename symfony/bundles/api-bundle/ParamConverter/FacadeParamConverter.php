@@ -32,8 +32,17 @@ class FacadeParamConverter implements ParamConverterInterface
     public function apply(Request $request, ParamConverter $configuration)
     {
         if (Request::METHOD_GET === $request->getMethod()) {
+            $params = [];
+            foreach ($request->query->all() as $key => $value) {
+                if (is_numeric($value)) {
+                    $params[$key] = floatval($value);
+                } else {
+                    $params[$key] = $value;
+                }
+            }
+
             $facade = $this->serializer->deserialize(
-                json_encode($request->query->all()),
+                json_encode($params),
                 $configuration->getClass(),
                 'json'
             );

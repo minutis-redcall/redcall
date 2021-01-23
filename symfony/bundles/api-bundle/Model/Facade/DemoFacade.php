@@ -19,7 +19,7 @@ class DemoFacade implements FacadeInterface
      */
     private $demo = 'You successfully authenticated!';
 
-    static public function getExample() : FacadeInterface
+    static public function getExample(FacadeInterface $child = null) : FacadeInterface
     {
         $facade       = new self;
         $facade->name = 'bob';
