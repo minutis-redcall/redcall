@@ -81,6 +81,8 @@ admin:
     title: 'Connexions entre les utilisateurs de RedCall et la base de données bénévole'
     undeveloper: 'Retirer l''accès développeur'
     unlock: Dégeler
+    only_admins: 'Rechercher parmi les administrateurs'
+    only_developers: 'Rechercher parmi les développeurs'
   statistics:
     campaign:
       period: 'Dans cette période, <b>%created%</b> déclenchements ont été créés, dont <b>%active%</b> sont toujours actifs.'

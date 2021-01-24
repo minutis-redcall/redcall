@@ -81,6 +81,8 @@ admin:
     title: 'Bindings between RedCall users and volunteer database'
     undeveloper: 'Remove developer access'
     unlock: Unlock
+    only_admins: 'Search among administrators only'
+    only_developers: 'Search among developers only'
   statistics:
     campaign:
       period: 'In the period, <b>%created%</b> campaigns were open, including <b>%active%</b> that are still active.'
