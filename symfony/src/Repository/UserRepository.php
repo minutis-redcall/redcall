@@ -25,7 +25,7 @@ class UserRepository extends AbstractUserRepository implements UserRepositoryInt
         parent::__construct($registry, User::class);
     }
 
-    public function searchQueryBuilder(?string $criteria, bool $onlyAdmins, bool $onlyDevelopers) : QueryBuilder
+    public function searchQueryBuilder(?string $criteria, ?bool $onlyAdmins, ?bool $onlyDevelopers) : QueryBuilder
     {
         $qb = $this->createQueryBuilder('u');
 

@@ -127,7 +127,7 @@ class UserManager extends BaseUserManager
         );
     }
 
-    public function searchQueryBuilder(?string $criteria, bool $onlyAdmins, bool $onlyDevelopers) : QueryBuilder
+    public function searchQueryBuilder(?string $criteria, ?bool $onlyAdmins, ?bool $onlyDevelopers) : QueryBuilder
     {
         return $this->userRepository->searchQueryBuilder($criteria, $onlyAdmins, $onlyDevelopers);
     }
