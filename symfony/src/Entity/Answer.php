@@ -333,7 +333,7 @@ class Answer
         return $this;
     }
 
-    public function getSentimentFace() : ?string
+    public function getFace() : ?string
     {
         if (null === $this->sentiment) {
             return null;

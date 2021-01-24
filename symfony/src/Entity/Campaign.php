@@ -238,12 +238,12 @@ class Campaign
                     'has-answer'         => $message->getAnswers()->count(),
                     'choices'            => $choices,
                     'has-invalid-answer' => [
-                        'face' => $invalidAnswer ? $invalidAnswer->getSentimentFace() : null,
+                        'face' => $invalidAnswer ? $invalidAnswer->getFace() : null,
                         'raw'  => $invalidAnswer ? $invalidAnswer->getSafeRaw() : null,
                         'time' => $invalidAnswer ? $invalidAnswer->getReceivedAt()->format('H:i') : null,
                     ],
                     'has-unclear-answer' => [
-                        'face' => $unclearAnswer ? $unclearAnswer->getSentimentFace() : null,
+                        'face' => $unclearAnswer ? $unclearAnswer->getFace() : null,
                         'raw'  => $unclearAnswer ? $unclearAnswer->getSafeRaw() : null,
                         'time' => $unclearAnswer ? $unclearAnswer->getReceivedAt()->format('H:i') : null,
                     ],

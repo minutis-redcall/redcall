@@ -390,11 +390,11 @@
                                         {{ message.error|trans }}
                                     </div>
                                     <div>
-                                        {% set face = message.lastAnswer and message.lastAnswer.sentimentFace %}
+                                        {% set face = message.lastAnswer and message.lastAnswer.face %}
                                         <span id="sentiment-{{ suffix }}" class="{% if not face %}d-none{% endif %}">
                                             <span id="face-{{ suffix }}">
                                                 {% if face %}
-                                                    {{ message.lastAnswer.sentimentFace }}
+                                                    {{ message.lastAnswer.face }}
                                                 {% endif %}
                                             </span>
                                             <span class="color-grey">|</span>
