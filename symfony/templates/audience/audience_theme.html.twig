@@ -261,6 +261,14 @@
             </div>
 
             {# -------------------------------------------------------------------------------- #}
+            {# Excluded volunteers #}
+            {# -------------------------------------------------------------------------------- #}
+
+            <div id="excluded-volunteers" data-field="#{{ form.excluded_volunteers.vars.id }}" class="d-none">
+                {{ form_row(form.excluded_volunteers) }}
+            </div>
+
+            {# -------------------------------------------------------------------------------- #}
             {# Test on me #}
             {# -------------------------------------------------------------------------------- #}
 
@@ -291,9 +299,14 @@
     <script type="text/javascript">
 
         {# Filling up backend fields when ticking structures/badges #}
-        $('.toggle-to-text').click(function () {
+        $('body').on('click', '.toggle-to-text', function () {
             var tick = $(this);
-            var input = $(tick.data('field'));
+            if (tick.data('field')) {
+                var input = $(tick.data('field'));
+            } else {
+                var proxy = $(tick.data('proxy'));
+                var input = $(proxy.data('field'));
+            }
             var list = input.val().split(',');
             if (tick.is(':checked')) {
                 if (!list.includes(tick.data('id'))) {
@@ -310,7 +323,7 @@
 
         {# Handling parent structure selection #}
         var structureTicked = false;
-        $('.structure-tick').click(function () {
+        $('body').on('click', '.structure-tick', function () {
             if (structureTicked) {
                 return;
             }
@@ -356,18 +369,37 @@
             });
         });
 
-        {# Opening the list of selected volunteers #}
-        $('body').on('click', '#open-audience', function (e) {
+        {# Opening the list of selected volunteers (large audience) #}
+        $('body').on('click', '#open-large-audience', function (e) {
             e.preventDefault();
             $('#audience-modal-title').html('{{ 'audience.classification.selected'|trans }}');
             $('#audience-modal-body').html('<img src="{{ asset('spinner.gif') }}"/>');
             $('#audience-modal').modal();
-            $.post('{{ path('audience_selection', {name: form.vars.full_name}) }}', $('form.trigger').serialize(), function (content) {
+            $.post('{{ path('audience_large_selection', {name: form.vars.full_name}) }}', $('form.trigger').serialize(), function (content) {
                 $('#audience-modal-body').html(content);
             });
         });
 
+        {# Excluding a volunteer from the selection or preselection modal #}
+        $('body').on('click', '.exclude-volunteer', function (e) {
+            e.preventDefault();
+            var that = $(this);
+            var id = that.data('id');
+            $('#include-volunteer-' + id).toggleClass('d-none');
+            $('#exclude-volunteer-' + id).toggleClass('d-none');
+            $('#toggle-volunteer-exclusion-' + id).click();
+        })
+
+        {# Opening the list of selected volunteers (small audience) #}
+        {#
+        $('body').on('click', '#open-small-audience', function (e) {
+            e.preventDefault();
+            alert('open small audience!');
+        });
+        #}
+
         {% if preselection %}
+
         {# Opening the list of selected volunteers from a previous communication #}
         $('body').on('click', '#open-preselection', function (e) {
             e.preventDefault();
@@ -437,7 +469,7 @@
             });
         }
 
-        $('.numbers').change(function () {
+        $('body').on('change', '.numbers', function () {
             numbers(
                 !$(this).hasClass('no-badge-counts')
             );

@@ -120,6 +120,7 @@ audience:
     disabled: '<strong>%nbr%</strong> volunteers are disabled'
     email_missing: '<strong>%nbr%</strong> volunteers do not have an email'
     email_optout: '<strong>%nbr%</strong> volunteers do not want to receive emails'
+    excluded: '<strong>%nbr%</strong> volunteers have been manually excluded from this trigger'
     inaccessible: '<strong>%nbr%</strong> volunteers are out of your perimeter'
     invalid: '<strong>%nbr%</strong> nivols do not exist'
     phone_landline: '<strong>%nbr%</strong> volunteers only have a landline phone number'
@@ -143,12 +144,18 @@ audience:
     disabled: Disabled
     email_missing: 'No email'
     email_optout: 'Emails opted-out'
+    excluded: 'Manually excluded'
     inaccessible: 'Out of perimeter'
     invalid: Invalids
     phone_landline: 'Only landline'
     phone_missing: 'No phone'
     phone_optout: 'Phone opted-out'
     title: 'Audience problem details'
+  large_audience:
+    title: '%nbr% selected volunteers'
+    buttons: 'Use buttons:'
+    button_remove: 'in order to manually remove a volunteer from the trigger.'
+    button_add: 'in order to include him back into the trigger.'
   search_for_volunteers: 'Search for volunteers:'
   search_other_badge: 'Search for another skill:'
   select_all_badges: 'Trigger all volunteers whatever their skills'

@@ -4,9 +4,12 @@ namespace App\Model;
 
 class Classification
 {
+    const LARGE_AUDIENCE = 250;
+
     private $invalid       = [];
     private $disabled      = [];
     private $inaccessible  = [];
+    private $excluded      = [];
     private $phoneMissing  = [];
     private $phoneOptout   = [];
     private $phoneLandline = [];
@@ -42,6 +45,16 @@ class Classification
     public function setInaccessible(array $inaccessible) : void
     {
         $this->inaccessible = $inaccessible;
+    }
+
+    public function getExcluded() : array
+    {
+        return $this->excluded;
+    }
+
+    public function setExcluded(array $excluded) : void
+    {
+        $this->excluded = $excluded;
     }
 
     public function getPhoneMissing() : array

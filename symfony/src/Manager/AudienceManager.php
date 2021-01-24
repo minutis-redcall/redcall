@@ -106,8 +106,18 @@ class AudienceManager
             );
         }
 
+        if ($data['excluded_volunteers']) {
+            $classification->setExcluded($data['excluded_volunteers']);
+        }
+
         // Reducing the audience to potentially reachable volunteers
-        $audience = array_diff($audience, $classification->getDisabled(), $classification->getInaccessible());
+        $audience = array_diff(
+            $audience,
+            $classification->getDisabled(),
+            $classification->getInaccessible(),
+            $classification->getExcluded()
+        );
+
         $classification->setReachable($audience);
 
         // Adding more contextual information in order to help fix contact info

@@ -1,3 +1,6 @@
+parameters:
+  communication.processor: 'App\Communication\Processor\ExecProcessor'
+
 services:
   App\Provider\SMS\SMSProvider:
     class: 'Bundles\SandboxBundle\Provider\FakeSmsProvider'

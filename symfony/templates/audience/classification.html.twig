@@ -26,12 +26,29 @@
 
 {% if classification.reachable %}
 
+    {#
+    {% if classification.reachable|length <= constant('App\\Model\\Classification::LARGE_AUDIENCE') %}
+
+        <a href="#"
+           class="btn btn-sm btn-secondary"
+           {% if classification.problems %}style="margin-top:5px;"{% endif %}
+           id="open-small-audience">
+            {{ 'audience.classification.audience'|trans }}
+        </a>
+
+    {% else %}
+    #}
+
     <a href="#"
        class="btn btn-sm btn-secondary"
        {% if classification.problems %}style="margin-top:5px;"{% endif %}
-       id="open-audience">
+       id="open-large-audience">
         {{ 'audience.classification.audience'|trans }}
     </a>
+
+    {#
+    {% endif %}
+    #}
 
     <script type="text/javascript">
 

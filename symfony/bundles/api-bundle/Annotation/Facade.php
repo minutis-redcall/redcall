@@ -4,7 +4,6 @@ namespace Bundles\ApiBundle\Annotation;
 
 /**
  * @Annotation
- * @Target({"METHOD"})
  */
 class Facade
 {

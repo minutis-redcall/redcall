@@ -6,7 +6,7 @@ use App\Manager\RefreshManager;
 use App\Manager\StructureManager;
 use App\Manager\VolunteerManager;
 use App\Queues;
-use Bundles\GoogleTaskBundle\Api\TaskInterface;
+use Bundles\GoogleTaskBundle\Contracts\TaskInterface;
 use Bundles\PegassCrawlerBundle\Entity\Pegass;
 use Bundles\PegassCrawlerBundle\Manager\PegassManager;
 

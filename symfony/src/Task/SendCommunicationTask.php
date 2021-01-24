@@ -4,7 +4,7 @@ namespace App\Task;
 
 use App\Manager\CommunicationManager;
 use App\Queues;
-use Bundles\GoogleTaskBundle\Api\TaskInterface;
+use Bundles\GoogleTaskBundle\Contracts\TaskInterface;
 use Bundles\GoogleTaskBundle\Service\TaskSender;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 

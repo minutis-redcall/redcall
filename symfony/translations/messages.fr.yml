@@ -120,6 +120,7 @@ audience:
     disabled: '<strong>%nbr%</strong> bénévoles sont desactivés'
     email_missing: '<strong>%nbr%</strong> bénévoles n''ont pas d''email'
     email_optout: '<strong>%nbr%</strong> bénévoles ne souhaitant pas recevoir d''emails'
+    excluded: '<strong>%nbr%</strong> bénévoles sont manuellement exclus du déclenchement'
     inaccessible: '<strong>%nbr%</strong> bénévoles ne font pas partie de votre périmètre'
     invalid: '<strong>%nbr%</strong> nivols n''existent pas'
     phone_landline: '<strong>%nbr%</strong> bénévoles ne possèdent qu''un numéro de téléphone fixe'
@@ -143,12 +144,18 @@ audience:
     disabled: Desactivés
     email_missing: 'Pas d''email'
     email_optout: 'Emails refusés'
+    excluded: 'Manuellement exclus'
     inaccessible: 'Hors périmètre'
     invalid: Invalides
     phone_landline: 'Fixe uniquement'
     phone_missing: 'Pas de tél.'
     phone_optout: 'Appels/SMS refusés'
     title: 'Détails à propos des problèmes dans la sélection'
+  large_audience:
+    title: '%nbr% bénévoles sélectionnés'
+    buttons: 'Utilisez les boutons :'
+    button_remove: 'afin de retirer manuellement un bénévole du déclenchement.'
+    button_add: 'afin de l''inclure à nouveau dans le déclenchement.'
   search_for_volunteers: 'Rechercher des bénévoles à déclencher :'
   search_other_badge: 'Rechercher une autre compétence :'
   select_all_badges: 'Déclencher tous les bénévoles quelles que soient leurs compétences'
