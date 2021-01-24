@@ -32,7 +32,6 @@
                         "description": "{{ 'message.email.in_app_long_answer'|trans({'%choice%': communication.firstChoice.label}) }}"
                     }
 
-
                 </script>
             {% else %}
                 <script type="application/ld+json">
@@ -47,7 +46,6 @@
                     },
                     "description": "{{ 'message.email.open_in_redcall'|trans }}"
                 }
-
 
                 </script>
             {% endif %}
@@ -87,6 +85,11 @@
                 </mj-column>
             </mj-section>
             <mj-raw>{% endif %}</mj-raw>
+            <mj-section background-color="white" padding-right="50px;" padding-left="50px;">
+                <mj-text color="black" font-size="14px;">
+                    {{ 'message.email.how_to_answer_free'|trans({'%url%': website_url ~ path('message_open', {code: message.code})})|raw }}
+                </mj-text>
+            </mj-section>
         </mj-section>
     </mj-body>
 </mjml>

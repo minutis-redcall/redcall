@@ -551,6 +551,7 @@ message:
   email:
     announcement: '%brand% on %year%-%month%-%day% at %hours%h%mins%:'
     answer_here: 'Click on the following buttons to answer.'
+    how_to_answer_free: 'You can give a free answer by reaching out <a href="%url%">here</a>.'
     how_to_answer_multiple: 'To give your answer(s), please click on the following link: %url%'
     how_to_answer_simple: 'To give your answer, please click on the following link: %url%'
     in_app_long_answer: 'If you wish, you can directly answer "%choice%" to this message.'

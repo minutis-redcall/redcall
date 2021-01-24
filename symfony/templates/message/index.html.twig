@@ -60,7 +60,9 @@
                     {% endif %}
                     <br/>
                 {% endfor %}
-                <hr/>
+                {% if message.communication.choices|length %}
+                    <hr/>
+                {% endif %}
             </div>
             <div id="free-answer">
                 {{ form(form) }}
