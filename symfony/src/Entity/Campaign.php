@@ -227,7 +227,9 @@ class Campaign
                     }
                 }
 
+                /** @var Answer $unclearAnswer */
                 $unclearAnswer = $message->getUnclear();
+                /** @var Answer $invalidAnswer */
                 $invalidAnswer = $message->getInvalidAnswer();
 
                 $data['communications'][$communication->getId()]['msg'][$message->getId()] = [
@@ -236,10 +238,12 @@ class Campaign
                     'has-answer'         => $message->getAnswers()->count(),
                     'choices'            => $choices,
                     'has-invalid-answer' => [
+                        'face' => $invalidAnswer ? $invalidAnswer->getSentimentFace() : null,
                         'raw'  => $invalidAnswer ? $invalidAnswer->getSafeRaw() : null,
                         'time' => $invalidAnswer ? $invalidAnswer->getReceivedAt()->format('H:i') : null,
                     ],
                     'has-unclear-answer' => [
+                        'face' => $unclearAnswer ? $unclearAnswer->getSentimentFace() : null,
                         'raw'  => $unclearAnswer ? $unclearAnswer->getSafeRaw() : null,
                         'time' => $unclearAnswer ? $unclearAnswer->getReceivedAt()->format('H:i') : null,
                     ],

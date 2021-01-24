@@ -71,7 +71,7 @@ class VolunteerRepository extends BaseRepository
      */
     public function searchForUser(User $user, ?string $keyword, int $maxResults, bool $onlyEnabled = false) : array
     {
-        return $this->searchForUserQueryBuilder($user, $keyword, $onlyEnabled)
+        return $this->searchForUserQueryBuilder($user, $keyword, $onlyEnabled, false)
                     ->getQuery()
                     ->setMaxResults($maxResults)
                     ->getResult();

@@ -72,6 +72,11 @@ class Answer
     private $byAdmin;
 
     /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $sentiment;
+
+    /**
      * Answer constructor.
      */
     public function __construct()
@@ -314,5 +319,43 @@ class Answer
         if (!$this->getUpdatedAt()) {
             $this->setUpdatedAt(new DateTime());
         }
+    }
+
+    public function getSentiment() : ?int
+    {
+        return $this->sentiment;
+    }
+
+    public function setSentiment(?int $sentiment) : self
+    {
+        $this->sentiment = $sentiment;
+
+        return $this;
+    }
+
+    public function getSentimentFace() : ?string
+    {
+        if (null === $this->sentiment) {
+            return null;
+        }
+
+        switch ($this->sentiment) {
+            case $this->sentiment < -75:
+                return '😡';
+            case $this->sentiment < -50:
+                return '😩';
+            case $this->sentiment < -25:
+                return '☹';
+            case $this->sentiment < 25:
+                return '😐';
+            case $this->sentiment < 50:
+                return '🙂';
+            case $this->sentiment < 75:
+                return '😀';
+            default:
+                return '🤩';
+        }
+
+        return null;
     }
 }

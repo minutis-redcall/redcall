@@ -13,6 +13,8 @@ use App\Repository\AnswerRepository;
 use App\Services\MessageFormatter;
 use App\Tools\PhoneNumber;
 use Doctrine\ORM\QueryBuilder;
+use Google\Cloud\Language\LanguageClient;
+use Psr\Log\LoggerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class AnswerManager
@@ -57,15 +59,22 @@ class AnswerManager
      */
     private $formatter;
 
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
     public function __construct(AnswerRepository $answerRepository,
         SMSProvider $smsProvider,
         TranslatorInterface $translator,
-        MessageFormatter $formatter)
+        MessageFormatter $formatter,
+        LoggerInterface $logger)
     {
         $this->answerRepository = $answerRepository;
         $this->smsProvider      = $smsProvider;
         $this->translator       = $translator;
         $this->formatter        = $formatter;
+        $this->logger           = $logger;
     }
 
     /**
@@ -186,5 +195,27 @@ class AnswerManager
             $this->formatter->formatSimpleSMSContent($content),
             ['message_id' => $message->getId()]
         );
+    }
+
+    public function getSentiment(string $body) : ?int
+    {
+        try {
+            $client     = new LanguageClient();
+            $annotation = $client->analyzeSentiment($body);
+            $sentiment  = $annotation->sentiment();
+
+            if ($sentiment['magnitude'] > 0.5) {
+                return $sentiment['score'] * 100;
+            }
+
+            return null;
+        } catch (\Throwable $e) {
+            $this->logger->warning('Cannot retrieve answer\'s sentiment', [
+                'exception' => $e->getMessage(),
+                'trace'     => $e->getTraceAsString(),
+            ]);
+
+            return null;
+        }
     }
 }

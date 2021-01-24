@@ -390,6 +390,15 @@
                                         {{ message.error|trans }}
                                     </div>
                                     <div>
+                                        {% set face = message.lastAnswer and message.lastAnswer.sentimentFace %}
+                                        <span id="sentiment-{{ suffix }}" class="{% if not face %}d-none{% endif %}">
+                                            {% if face %}
+                                                <span id="face-{{ suffix }}">
+                                                    {{ message.lastAnswer.sentimentFace }}
+                                                </span>
+                                            {% endif %}
+                                            <span class="color-grey">|</span>
+                                        </span>
                                         <span id="message-is-unclear-{{ suffix }}" class="{{ message.isUnclear ? '' : 'd-none' }}" style="color:red;font-size:10px;">
                                             <strong>⚠️ {{ 'campaign_status.answers.unclear'|trans }}</strong>
                                         </span>
@@ -769,6 +778,14 @@
                         $('#message-is-unclear-' + suffix).addClass('d-none');
                     }
 
+                    {# Sentiment on ambiguous answer #}
+                    if (messageStatus['has-unclear-answer']['face']) {
+                        $('#sentiment-' + suffix).removeClass('d-none');
+                        $('#face-' + suffix).html(messageStatus['has-unclear-answer']['face']);
+                    } else {
+                        $('#sentiment-' + suffix).addClass('d-none');
+                    }
+
                     {# Message has a new answer #}
                     if (messageStatus['has-answer'] !== row.data('has-answer')) {
                         row.prependTo($('#top-' + communicationId));
@@ -793,6 +810,14 @@
                         }
                     }
                     $('#message-has-invalid-answer-' + suffix).data('value', messageStatus['has-invalid-answer']['raw'] ? 1 : 0);
+
+                    {# Sentiment on invalid answer #}
+                    if (messageStatus['has-invalid-answer']['face']) {
+                        $('#sentiment-' + suffix).removeClass('d-none');
+                        $('#face-' + suffix).html(messageStatus['has-invalid-answer']['face']);
+                    } else {
+                        $('#sentiment-' + suffix).addClass('d-none');
+                    }
                 });
 
                 {# Refresh the SMS sending progress bar #}

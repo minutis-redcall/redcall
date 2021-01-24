@@ -40,55 +40,49 @@
                                 </div>
                             </div>
                             <div class="col-md-3">
-                                {% if not user.isEqualTo(app.user) %}
-                                    <div>
-                                        {% if user.verified %}
-                                            <span class="h4">✅</span>
-                                        {% else %}
-                                            <span class="h4">❌</span>
-                                        {% endif %}
+                                <div>
+                                    {% if user.verified %}
+                                        <span class="h4">✅</span>
+                                    {% else %}
+                                        <span class="h4">❌</span>
+                                    {% endif %}
 
-                                        {{ 'password_login.user_list.is_valid'|trans }} <sup>(1)</sup>
-                                    </div>
-                                    <div>
-                                        {% if user.trusted %}
-                                            <span class="h4">✅</span>
-                                        {% else %}
-                                            <span class="h4">❌</span>
-                                        {% endif %}
+                                    {{ 'password_login.user_list.is_valid'|trans }} <sup>(1)</sup>
+                                </div>
+                                <div>
+                                    {% if user.trusted %}
+                                        <span class="h4">✅</span>
+                                    {% else %}
+                                        <span class="h4">❌</span>
+                                    {% endif %}
 
-                                        {{ 'password_login.user_list.is_trusted'|trans }} <sup>(2)</sup>
-                                    </div>
-                                    <div class="text-small">
-                                        {% if user.admin %}
-                                            <span class="h4">✅</span>
-                                        {% else %}
-                                            <span class="h4">❌</span>
-                                        {% endif %}
+                                    {{ 'password_login.user_list.is_trusted'|trans }} <sup>(2)</sup>
+                                </div>
+                                <div class="text-small">
+                                    {% if user.admin %}
+                                        <span class="h4">✅</span>
+                                    {% else %}
+                                        <span class="h4">❌</span>
+                                    {% endif %}
 
-                                        {{ 'password_login.user_list.is_admin'|trans }} <sup>(3)</sup>
-                                    </div>
-                                    <div class="text-small">
-                                        {% if user.developer %}
-                                            <span class="h4">✅</span>
-                                        {% else %}
-                                            <span class="h4">❌</span>
-                                        {% endif %}
-                                        {{ 'admin.pegass.developered'|trans }} <sup>(4)</sup>
-                                    </div>
-                                    <div class="text-small">
-                                        {% if user.locked %}
-                                            <span class="h4">✅</span>
-                                        {% else %}
-                                            <span class="h4">❌</span>
-                                        {% endif %}
-                                        {{ 'admin.pegass.locked'|trans }} <sup>(5)</sup>
-                                    </div>
-                                {% else %}
-                                    <div class="text-small">&nbsp;</div>
-                                    <div class="text-small">&nbsp;</div>
-                                    <div class="text-small">&nbsp;</div>
-                                {% endif %}
+                                    {{ 'password_login.user_list.is_admin'|trans }} <sup>(3)</sup>
+                                </div>
+                                <div class="text-small">
+                                    {% if user.developer %}
+                                        <span class="h4">✅</span>
+                                    {% else %}
+                                        <span class="h4">❌</span>
+                                    {% endif %}
+                                    {{ 'admin.pegass.developered'|trans }} <sup>(4)</sup>
+                                </div>
+                                <div class="text-small">
+                                    {% if user.locked %}
+                                        <span class="h4">✅</span>
+                                    {% else %}
+                                        <span class="h4">❌</span>
+                                    {% endif %}
+                                    {{ 'admin.pegass.locked'|trans }} <sup>(5)</sup>
+                                </div>
                             </div>
                             <div class="col-md-4">
                                 <div class="nivol"

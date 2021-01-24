@@ -25,16 +25,11 @@ class UserRepository extends AbstractUserRepository implements UserRepositoryInt
         parent::__construct($registry, User::class);
     }
 
-    /**
-     * @param string $criteria
-     *
-     * @return QueryBuilder
-     */
-    public function searchQueryBuilder(?string $criteria) : QueryBuilder
+    public function searchQueryBuilder(?string $criteria, ?bool $onlyAdmins, ?bool $onlyDevelopers) : QueryBuilder
     {
         $qb = $this->createQueryBuilder('u');
 
-        return $qb
+        $qb
             ->leftJoin('u.volunteer', 'v')
             ->leftJoin('v.phones', 'p')
             ->where(
@@ -54,6 +49,16 @@ class UserRepository extends AbstractUserRepository implements UserRepositoryInt
             ->setParameter('criteria', sprintf('%%%s%%', $criteria))
             ->addOrderBy('u.registeredAt', 'DESC')
             ->addOrderBy('u.username', 'ASC');
+
+        if ($onlyAdmins) {
+            $qb->andWhere('u.isAdmin = true');
+        }
+
+        if ($onlyDevelopers) {
+            $qb->andWhere('u.isDeveloper = true');
+        }
+
+        return $qb;
     }
 }
 

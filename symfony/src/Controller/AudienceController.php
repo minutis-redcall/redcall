@@ -163,7 +163,7 @@ class AudienceController extends BaseController
     /**
      * @Route(path="/pre-selection/{uuid}", name="pre_selection")
      */
-    public function preSelection(Expirable $expirable)
+    public function preselection(Expirable $expirable)
     {
         $volunteers = $this->volunteerManager->getVolunteerList(
             $expirable->getData()['volunteers'] ?? []

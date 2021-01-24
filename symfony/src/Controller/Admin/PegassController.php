@@ -14,6 +14,7 @@ use Bundles\PaginationBundle\Manager\PaginationManager;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
@@ -74,14 +75,16 @@ class PegassController extends BaseController
 
         $criteria = null;
         if ($search->isSubmitted() && $search->isValid()) {
-            $criteria = $search->get('criteria')->getData();
+            $criteria       = $search->get('criteria')->getData();
+            $onlyAdmins     = $search->get('only_admins')->getData();
+            $onlyDevelopers = $search->get('only_developers')->getData();
         }
 
         return $this->render('admin/pegass/index.html.twig', [
             'search' => $search->createView(),
             'type'   => $request->get('type'),
             'users'  => $this->paginationManager->getPager(
-                $this->userManager->searchQueryBuilder($criteria)
+                $this->userManager->searchQueryBuilder($criteria, $onlyAdmins, $onlyDevelopers)
             ),
         ]);
     }
@@ -358,6 +361,14 @@ class PegassController extends BaseController
                     ->setMethod('GET')
                     ->add('criteria', TextType::class, [
                         'label'    => 'password_login.user_list.search.criteria',
+                        'required' => false,
+                    ])
+                    ->add('only_admins', CheckboxType::class, [
+                        'label'    => 'admin.pegass.only_admins',
+                        'required' => false,
+                    ])
+                    ->add('only_developers', CheckboxType::class, [
+                        'label'    => 'admin.pegass.only_developers',
                         'required' => false,
                     ])
                     ->add('submit', SubmitType::class, [
