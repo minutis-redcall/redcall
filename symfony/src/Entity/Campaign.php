@@ -14,9 +14,8 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  */
 class Campaign
 {
-    /**
-     * Campaign types
-     */
+    const DEFAULT_EXPIRATION = 7 * 86400;
+
     // TODO use a MyCLabs\Enum (Color)
     const TYPE_GREEN        = '1_green';
     const TYPE_LIGHT_ORANGE = '2_light_orange';
@@ -191,6 +190,11 @@ class Campaign
 
     public function addCommunication(Communication $communication)
     {
+        // Campaign expires after minimum 7 days when creating a new communication
+        if ($this->expiresAt->getTimestamp() < time() + self::DEFAULT_EXPIRATION) {
+            $this->expiresAt = (new \DateTime())->setTimestamp(time() + self::DEFAULT_EXPIRATION);
+        }
+
         $this->communications[] = $communication;
         $communication->setCampaign($this);
 

@@ -118,9 +118,9 @@ class CampaignManager
     {
         $tm = $campaign->getExpiresAt()->getTimestamp();
         if ($tm < time()) {
-            $tm = time() + 7 * 86400;
+            $tm = time() + Campaign::DEFAULT_EXPIRATION;
         } else {
-            $tm = $tm + 7 * 86400;
+            $tm = $tm + Campaign::DEFAULT_EXPIRATION;
         }
         $campaign->setExpiresAt((new \DateTime())->setTimestamp($tm));
 
