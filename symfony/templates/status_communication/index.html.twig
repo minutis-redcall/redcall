@@ -392,11 +392,11 @@
                                     <div>
                                         {% set face = message.lastAnswer and message.lastAnswer.sentimentFace %}
                                         <span id="sentiment-{{ suffix }}" class="{% if not face %}d-none{% endif %}">
-                                            {% if face %}
-                                                <span id="face-{{ suffix }}">
+                                            <span id="face-{{ suffix }}">
+                                                {% if face %}
                                                     {{ message.lastAnswer.sentimentFace }}
-                                                </span>
-                                            {% endif %}
+                                                {% endif %}
+                                            </span>
                                             <span class="color-grey">|</span>
                                         </span>
                                         <span id="message-is-unclear-{{ suffix }}" class="{{ message.isUnclear ? '' : 'd-none' }}" style="color:red;font-size:10px;">
