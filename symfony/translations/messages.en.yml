@@ -76,13 +76,13 @@ admin:
     lock: Lock
     locked: Frozen
     locked_details: 'Structures of a frozen user are not updated when Pegass is updating its bound volunteer.'
+    only_admins: 'Search among administrators only'
+    only_developers: 'Search among developers only'
     open: 'Open Pegass entity'
     structures: 'Update structures for %name%'
     title: 'Bindings between RedCall users and volunteer database'
     undeveloper: 'Remove developer access'
     unlock: Unlock
-    only_admins: 'Search among administrators only'
-    only_developers: 'Search among developers only'
   statistics:
     campaign:
       period: 'In the period, <b>%created%</b> campaigns were open, including <b>%active%</b> that are still active.'
@@ -132,7 +132,22 @@ audience:
     reachable: '<strong>%nbr%</strong> volunteers are selected'
     selected: 'Liste des bénévoles sélectionnés'
     title: 'Selection summary'
+    home: 'You may not be able to reach out all your volunteers.'
+    resolve:
+      button: 'Click here to get details and resolve issues'
+      title: 'Volunteer records having issues'
+      details:
+        info1: 'RedCall can only work if volunteer''s contact information are valid and updated.'
+        info2: 'Warning, even though a volunteer has both a phone number and an email, nothing guarantees that they are valid on the Gaia database.'
+        info3: 'As soon as you can, invite your structure members to check their contact information on Gaia (most importantly their "favorite phone number" and "favorite email") to have better chances of reaching out a maximum of people.'
+        gaia: 'Open in Gaia'
+        redcall: 'Open in RedCall'
   copy_paste_details: 'Paste a list of identifiers in the field below.'
+  large_audience:
+    button_add: 'in order to include him back into the trigger.'
+    button_remove: 'in order to manually remove a volunteer from the trigger.'
+    buttons: 'Use buttons:'
+    title: '%nbr% selected volunteers'
   manual_selection: 'Volunteers manual selection'
   pre_selection:
     close_standard_form: 'Close classic form'
@@ -153,11 +168,6 @@ audience:
     phone_missing: 'No phone'
     phone_optout: 'Phone opted-out'
     title: 'Audience problem details'
-  large_audience:
-    title: '%nbr% selected volunteers'
-    buttons: 'Use buttons:'
-    button_remove: 'in order to manually remove a volunteer from the trigger.'
-    button_add: 'in order to include him back into the trigger.'
   search_for_volunteers: 'Search for volunteers:'
   search_other_badge: 'Search for another skill:'
   select_all_badges: 'Trigger all volunteers whatever their skills'
@@ -391,20 +401,6 @@ import_report:
   no_phone: 'Volunteer has no phone number.'
   removed: 'Volunteer has been anonymized.'
   update_locked: 'Cannot update a locked volunteer.'
-issues:
-  details:
-    info1: 'RedCall can only work if volunteer''s contact information are valid and updated.'
-    info2: 'This page only show you volunteers that do not have an email or a phone number so you can fill them up.'
-    info3: 'Warning, even though a volunteer has both a phone number and an email, nothing guarantees that they are valid on the Gaia database.'
-    info4: 'As soon as you can, invite your structure members to check their contact information on Gaia (most importantly their "favorite phone number" and "favorite email") to have better chances of reaching out a maximum of people.'
-    open: 'open in Gaia'
-    title: 'Missing phone numbers & emails'
-  emails: '- %nbr% do not have an email'
-  list: 'See the list of issues'
-  missing_email: 'No email'
-  missing_phone: 'No phone number'
-  not_reachable: 'Some volunteers from your action structures are not reachable:'
-  phones: '- %nbr% do not have a phone number'
 label:
   and: and
   from: From

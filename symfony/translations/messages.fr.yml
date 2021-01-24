@@ -76,13 +76,13 @@ admin:
     lock: Geler
     locked: Gelé
     locked_details: 'Les structures d''un utilisateur gelé ne seront pas mises à jour avec la mise à jour Pegass de son bénévole attaché.'
+    only_admins: 'Rechercher parmi les administrateurs'
+    only_developers: 'Rechercher parmi les développeurs'
     open: 'Ouvrir l''entrée Pegass'
     structures: 'Mise à jour des structures pour %name%'
     title: 'Connexions entre les utilisateurs de RedCall et la base de données bénévole'
     undeveloper: 'Retirer l''accès développeur'
     unlock: Dégeler
-    only_admins: 'Rechercher parmi les administrateurs'
-    only_developers: 'Rechercher parmi les développeurs'
   statistics:
     campaign:
       period: 'Dans cette période, <b>%created%</b> déclenchements ont été créés, dont <b>%active%</b> sont toujours actifs.'
@@ -132,7 +132,22 @@ audience:
     reachable: '<strong>%nbr%</strong> bénévoles sont sélectionnés'
     selected: 'Liste des bénévoles sélectionnés'
     title: 'Résumé de la sélection'
+    home: 'Il est possible que vous ne puissiez pas joindre tous vos bénévoles.'
+    resolve:
+      button: 'Cliquez ici pour obtenir plus d''informations et résoudre les problèmes'
+      title: 'Fiches bénévoles comportant des problèmes'
+      details:
+        info1: 'RedCall ne peut fonctionner que si les données de contact de nos bénévoles sont correctes et à jour.'
+        info2: 'Attention, même si un bénévole possède un numéro et un email, rien ne garantit qu''ils soient à jour sur la base de données Gaia.'
+        info3: 'Dès que vous le pourrez, invitez les membres de votre structure à consulter leurs informations de contact sur Gaia, notamment leur "email préféré" et "numéro de téléphone préféré" afin d''augmenter vos chances de déclencher un maximum de monde.'
+        gaia: 'Ouvrir dans Gaia'
+        redcall: 'Ouvrir dans RedCall'
   copy_paste_details: 'Ou coller une liste de nivols dans le champ ci-dessous.'
+  large_audience:
+    button_add: 'afin de l''inclure à nouveau dans le déclenchement.'
+    button_remove: 'afin de retirer manuellement un bénévole du déclenchement.'
+    buttons: 'Utilisez les boutons :'
+    title: '%nbr% bénévoles sélectionnés'
   manual_selection: 'Saisie manuelle de bénévoles'
   pre_selection:
     close_standard_form: 'Fermer le formulaire classique'
@@ -153,11 +168,6 @@ audience:
     phone_missing: 'Pas de tél.'
     phone_optout: 'Appels/SMS refusés'
     title: 'Détails à propos des problèmes dans la sélection'
-  large_audience:
-    title: '%nbr% bénévoles sélectionnés'
-    buttons: 'Utilisez les boutons :'
-    button_remove: 'afin de retirer manuellement un bénévole du déclenchement.'
-    button_add: 'afin de l''inclure à nouveau dans le déclenchement.'
   search_for_volunteers: 'Rechercher des bénévoles à déclencher :'
   search_other_badge: 'Rechercher une autre compétence :'
   select_all_badges: 'Déclencher tous les bénévoles quelles que soient leurs compétences'
@@ -391,20 +401,6 @@ import_report:
   no_phone: 'Le bénévole ne possède pas de numéro de téléphone.'
   removed: 'Le bénévole a été anonymisé.'
   update_locked: 'Impossible de mettre à jour un bénévole gelé.'
-issues:
-  details:
-    info1: 'RedCall ne peut fonctionner que si les données de contact de nos bénévoles sont correctes et à jour.'
-    info2: 'Cette page vous montre les bénévoles n''ayant pas de numéro de téléphone ou/et d''email afin que vous puissiez les saisir.'
-    info3: 'Attention, même si un bénévole possède un numéro et un email, rien ne garantit qu''ils soient à jour sur la base de données Gaia.'
-    info4: 'Dès que vous le pourrez, invitez les membres de votre structure à consulter leurs informations de contact sur Gaia, notamment leur "email préféré" et "numéro de téléphone préféré" afin d''augmenter vos chances de déclencher un maximum de monde.'
-    open: 'ouvrir dans Gaia'
-    title: 'Numéros de téléphones et emails manquants'
-  emails: '- %nbr% n''ont pas d''email'
-  list: 'Voir la liste des problèmes'
-  missing_email: 'Pas d''email'
-  missing_phone: 'Pas de téléphone'
-  not_reachable: 'Des bénévoles de vos structures d''action ne sont pas déclenchables :'
-  phones: '- %nbr% n''ont pas de numéro de téléphone'
 label:
   and: et
   from: Du

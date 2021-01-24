@@ -1,0 +1,90 @@
+{% extends 'base.html.twig' %}
+{% import 'macros.html.twig' as macros %}
+
+{% block body %}
+
+    <h2>{{ 'audience.classification.resolve.title'|trans }}</h2>
+
+    <p>
+        {{ 'audience.classification.resolve.details.info1'|trans }}
+        {{ 'audience.classification.resolve.details.info2'|trans }}
+        {{ 'audience.classification.resolve.details.info3'|trans }}
+    </p>
+
+    <br/>
+
+    <div class="row text-left jumbotron">
+        <div class="col-md-3">
+            <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+                {% set counter = 0 %}
+                {% for key, list in classification.toArray %}
+                    {% set length = list|length %}
+                    {% if length %}
+                        <a class="nav-link {% if not counter %}active{% endif %}" id="v-pills-{{ key }}-tab" data-toggle="pill" href="#v-pills-{{ key }}" role="tab" aria-controls="v-pills-{{ key }}" aria-selected="true">
+                            {{ ('audience.problems.' ~ (key|snake))|trans }} ({{ length }})
+                        </a>
+                        {% set counter = counter + 1 %}
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        <div class="col-md-9">
+            <div class="tab-content" id="v-pills-tabContent">
+                {% set counter = 0 %}
+                {% for key, list in classification.toArray %}
+                    {% set length = list|length %}
+                    {% if length %}
+                        <div class="tab-pane fade {% if not counter %}show active{% endif %}" id="v-pills-{{ key }}" role="tabpanel" aria-labelledby="v-pills-{{ key }}-tab">
+                            <table class="table">
+                                <tbody>
+                                {% for id in list %}
+                                    {% set volunteer = volunteers[id] %}
+                                    <tr>
+                                        <td>
+                                            <div class="row">
+                                                <div class="col-md-5">
+                                                    {{ macros.volunteer(volunteer, false) }}
+                                                </div>
+                                                <div class="col-md-5">
+                                                    #{{ volunteer.nivol }}
+                                                    /
+                                                    <a target="_blank" href="{{ gaia|replace({'%nivol%': volunteer.identifier}) }}">{{ 'audience.classification.resolve.details.gaia'|trans }}</a>
+                                                    <br/>
+                                                    {% if volunteer.email %}
+                                                        {% if not volunteer.emailOptin %}<strike>{% endif %}
+                                                        <a href="mailto:{{ volunteer.email }}?subject={{ 'manage_volunteers.contact.mail_subject'|trans({'%brand%': brand|upper})|e('html_attr') }}">{{ volunteer.email }}</a>
+                                                        {% if not volunteer.emailOptin %}</strike>{% endif %}
+                                                        <br/>
+                                                    {% endif %}
+                                                    {% if volunteer.phoneNumber %}
+                                                        {% if not volunteer.phoneNumberOptin %}<strike>{% endif %}
+                                                        {{ macros.phone(volunteer.phone) }}
+                                                        {% if not volunteer.phoneNumberOptin %}</strike>{% endif %}
+                                                        <br/>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <a href="{{ path('management_volunteers_manual_update', {id: volunteer.id}) }}"
+                                                       target="_blank" class="btn btn-secondary">{{ 'audience.classification.resolve.details.redcall'|trans }}</a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        {% set counter = counter + 1 %}
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center">
+        <a href="{{ path('home') }}"
+           class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+        <br/><br/>
+    </div>
+
+{% endblock %}
