@@ -77,6 +77,11 @@ class Answer
     private $sentiment;
 
     /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $magnitude;
+
+    /**
      * Answer constructor.
      */
     public function __construct()
@@ -357,5 +362,17 @@ class Answer
         }
 
         return null;
+    }
+
+    public function getMagnitude(): ?int
+    {
+        return $this->magnitude;
+    }
+
+    public function setMagnitude(?int $magnitude): self
+    {
+        $this->magnitude = $magnitude;
+
+        return $this;
     }
 }

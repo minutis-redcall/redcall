@@ -212,7 +212,7 @@ class MessageManager
         // We get the answer sentiment only if the answer is not one or several answer codes:
         // Answer is a set of answer codes if every word inside has 2 characters
         if (array_sum(array_map('strlen', explode(' ', $body))) !== 2 * count(explode(' ', $body))) {
-            $answer->setSentiment($this->answerManager->getSentiment($body));
+            $this->answerManager->addSentiment($answer, $body);
         }
 
         if ($byAdmin) {
