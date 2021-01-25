@@ -8,7 +8,7 @@
 
         <h3>{{ 'admin.pegass.structures'|trans({'%name%': user.username}) }}</h3>
 
-        {% if user.structures.count %}
+        {% if user.structures(false).count %}
 
             {{ form_start(form) }}
 

@@ -197,25 +197,20 @@ class AnswerManager
         );
     }
 
-    public function getSentiment(string $body) : ?int
+    public function addSentiment(Answer $answer, string $body)
     {
         try {
             $client     = new LanguageClient();
             $annotation = $client->analyzeSentiment($body);
             $sentiment  = $annotation->sentiment();
 
-            if ($sentiment['magnitude'] > 0.5) {
-                return $sentiment['score'] * 100;
-            }
-
-            return null;
+            $answer->setSentiment((int) ($sentiment['score'] * 100));
+            $answer->setMagnitude((int) ($sentiment['magnitude'] * 100));
         } catch (\Throwable $e) {
             $this->logger->warning('Cannot retrieve answer\'s sentiment', [
                 'exception' => $e->getMessage(),
                 'trace'     => $e->getTraceAsString(),
             ]);
-
-            return null;
         }
     }
 }

@@ -29,6 +29,9 @@
                 <td class="{% if answer.byAdmin %}text-right{% endif %}">
                     <div {% if answer.unclear %}style="color:red"{% endif %}>
                         {{ answer.receivedAt|date('d/m/y H:i') }}:
+                        {% if answer.face %}
+                            {{ answer.face }}:
+                        {% endif %}
                         {{ answer.raw }}
                     </div>
                     {% if answer.choices %}

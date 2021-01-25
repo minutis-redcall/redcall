@@ -5,12 +5,14 @@ namespace App\Controller;
 use App\Base\BaseController;
 use App\Entity\Badge;
 use App\Entity\Expirable;
+use App\Entity\Structure;
 use App\Entity\Volunteer;
 use App\Form\Type\AudienceType;
 use App\Manager\AudienceManager;
 use App\Manager\BadgeManager;
 use App\Manager\ExpirableManager;
 use App\Manager\VolunteerManager;
+use App\Model\Classification;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -190,5 +192,50 @@ class AudienceController extends BaseController
         return $this->render('audience/pre_selection_summary.html.twig', [
             'preselection' => $data,
         ]);
+    }
+
+    /**
+     * @Route("/home", name="home")
+     */
+    public function home()
+    {
+        return $this->render('audience/home.html.twig', [
+            'classification' => $this->getGlboalClassification(),
+        ]);
+    }
+
+    /**
+     * @Route("/resolve", name="resolve")
+     */
+    public function resolve()
+    {
+        $classification = $this->getGlboalClassification();
+        $classification->setReachable([]);
+
+        $volunteers = $this->volunteerManager->getVolunteerList(
+            call_user_func_array('array_merge', $classification->toArray())
+        );
+
+        return $this->render('audience/resolve.html.twig', [
+            'classification' => $classification,
+            'volunteers'     => $volunteers,
+            'gaia'           => getenv('GAIA_URL'),
+        ]);
+    }
+
+    private function getGlboalClassification() : Classification
+    {
+        // Get all user's structure ids
+        $structures = array_map(function (Structure $structure) {
+            return $structure->getId();
+        }, $this->getUser()->getStructures()->toArray());
+
+        // Simulate audience selection
+        $data = AudienceType::createEmptyData([
+            'structures_local' => $structures,
+            'badges_all'       => true,
+        ]);
+
+        return $this->audienceManager->classifyAudience($data);
     }
 }
