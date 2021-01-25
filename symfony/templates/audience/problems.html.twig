@@ -22,6 +22,8 @@
                 {% set length = list|length %}
                 {% if length %}
                     <div class="tab-pane fade {% if not counter %}show active{% endif %}" id="v-pills-{{ key }}" role="tabpanel" aria-labelledby="v-pills-{{ key }}-tab">
+                        <p>{{ ('audience.problem_details.' ~ key|snake)|trans }}</p>
+                        <hr/>
                         <div class="row">
                             {% for id in list %}
                                 <div class="col-md-6" style="padding:5px;">

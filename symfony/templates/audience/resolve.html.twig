@@ -35,44 +35,50 @@
                     {% set length = list|length %}
                     {% if length %}
                         <div class="tab-pane fade {% if not counter %}show active{% endif %}" id="v-pills-{{ key }}" role="tabpanel" aria-labelledby="v-pills-{{ key }}-tab">
-                            <table class="table">
-                                <tbody>
-                                {% for id in list %}
-                                    {% set volunteer = volunteers[id] %}
-                                    <tr>
-                                        <td>
-                                            <div class="row">
-                                                <div class="col-md-5">
-                                                    {{ macros.volunteer(volunteer, false) }}
-                                                </div>
-                                                <div class="col-md-5">
-                                                    #{{ volunteer.nivol }}
-                                                    /
-                                                    <a target="_blank" href="{{ gaia|replace({'%nivol%': volunteer.identifier}) }}">{{ 'audience.classification.resolve.details.gaia'|trans }}</a>
-                                                    <br/>
-                                                    {% if volunteer.email %}
-                                                        {% if not volunteer.emailOptin %}<strike>{% endif %}
-                                                        <a href="mailto:{{ volunteer.email }}?subject={{ 'manage_volunteers.contact.mail_subject'|trans({'%brand%': brand|upper})|e('html_attr') }}">{{ volunteer.email }}</a>
-                                                        {% if not volunteer.emailOptin %}</strike>{% endif %}
-                                                        <br/>
-                                                    {% endif %}
-                                                    {% if volunteer.phoneNumber %}
-                                                        {% if not volunteer.phoneNumberOptin %}<strike>{% endif %}
-                                                        {{ macros.phone(volunteer.phone) }}
-                                                        {% if not volunteer.phoneNumberOptin %}</strike>{% endif %}
-                                                        <br/>
-                                                    {% endif %}
-                                                </div>
-                                                <div class="col-md-2">
-                                                    <a href="{{ path('management_volunteers_manual_update', {id: volunteer.id}) }}"
-                                                       target="_blank" class="btn btn-secondary">{{ 'audience.classification.resolve.details.redcall'|trans }}</a>
-                                                </div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                {% endfor %}
-                                </tbody>
-                            </table>
+                            <div class="card">
+                                <div class="card-body">
+                                    <p>{{ ('audience.problem_details.' ~ key|snake)|trans }}</p>
+                                    <br/>
+                                    <table class="table">
+                                        <tbody>
+                                        {% for id in list %}
+                                            {% set volunteer = volunteers[id] %}
+                                            <tr>
+                                                <td>
+                                                    <div class="row">
+                                                        <div class="col-md-5">
+                                                            {{ macros.volunteer(volunteer, false) }}
+                                                        </div>
+                                                        <div class="col-md-5">
+                                                            #{{ volunteer.nivol }}
+                                                            /
+                                                            <a target="_blank" href="{{ gaia|replace({'%nivol%': volunteer.identifier}) }}">{{ 'audience.classification.resolve.details.gaia'|trans }}</a>
+                                                            <br/>
+                                                            {% if volunteer.email %}
+                                                                {% if not volunteer.emailOptin %}<strike>{% endif %}
+                                                                <a href="mailto:{{ volunteer.email }}?subject={{ 'manage_volunteers.contact.mail_subject'|trans({'%brand%': brand|upper})|e('html_attr') }}">{{ volunteer.email }}</a>
+                                                                {% if not volunteer.emailOptin %}</strike>{% endif %}
+                                                                <br/>
+                                                            {% endif %}
+                                                            {% if volunteer.phoneNumber %}
+                                                                {% if not volunteer.phoneNumberOptin %}<strike>{% endif %}
+                                                                {{ macros.phone(volunteer.phone) }}
+                                                                {% if not volunteer.phoneNumberOptin %}</strike>{% endif %}
+                                                                <br/>
+                                                            {% endif %}
+                                                        </div>
+                                                        <div class="col-md-2">
+                                                            <a href="{{ path('management_volunteers_manual_update', {id: volunteer.id}) }}"
+                                                               target="_blank" class="btn btn-secondary">{{ 'audience.classification.resolve.details.redcall'|trans }}</a>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
                         </div>
                         {% set counter = counter + 1 %}
                     {% endif %}
