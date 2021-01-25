@@ -132,7 +132,7 @@ audience:
     problems: 'Get more details about problems'
     reachable: '<strong>%nbr%</strong> volunteers are selected'
     resolve:
-      button: 'Click here to get details and resolve issues'
+      button: 'Resolve issues'
       details:
         gaia: 'Open in Gaia'
         info1: 'RedCall can only work if volunteer''s contact information are valid and updated.'

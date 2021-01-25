@@ -132,7 +132,7 @@ audience:
     problems: 'Obtenir plus de détails sur la liste des problèmes'
     reachable: '<strong>%nbr%</strong> bénévoles sont sélectionnés'
     resolve:
-      button: 'Cliquez ici pour obtenir plus d''informations et résoudre les problèmes'
+      button: 'Résoudre les problèmes'
       details:
         gaia: 'Ouvrir dans Gaia'
         info1: 'RedCall ne peut fonctionner que si les données de contact de nos bénévoles sont correctes et à jour.'
