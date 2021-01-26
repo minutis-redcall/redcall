@@ -38,6 +38,7 @@ class PegassController
 
     /**
      * @Endpoint(
+     *   priority = 999,
      *   request  = @Facade(class     = PegassFiltersFacade::class),
      *   response = @Facade(class     = SuccessFacade::class,
      *                      decorator = @Facade(class     = QueryBuilderFacade::class,

@@ -27,6 +27,11 @@ class EndpointDescription
     private $uri;
 
     /**
+     * @var RoleDescription[]
+     */
+    private $roles = [];
+
+    /**
      * @var string|null
      */
     private $description;
@@ -90,6 +95,18 @@ class EndpointDescription
     public function setUri(string $uri) : EndpointDescription
     {
         $this->uri = $uri;
+
+        return $this;
+    }
+
+    public function getRoles() : array
+    {
+        return $this->roles;
+    }
+
+    public function setRoles(array $roles) : EndpointDescription
+    {
+        $this->roles = $roles;
 
         return $this;
     }

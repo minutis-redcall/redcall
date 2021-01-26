@@ -1,17 +1,23 @@
 <?php
 
-namespace Bundles\ApiBundle\Parser;
+namespace Bundles\ApiBundle\Fetcher;
 
+use Bundles\ApiBundle\Annotation\StatusCode;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Symfony\Component\HttpFoundation\Response;
 
-class StatusCodeParser
+class StatusCodeFetcher
 {
     /**
      * @var AnnotationReader|null
      */
     private $annotationReader;
+
+    public function __construct(?AnnotationReader $annotationReader)
+    {
+        $this->annotationReader = $annotationReader;
+    }
 
     public function getStatusCode(FacadeInterface $facade)
     {
@@ -34,26 +40,15 @@ class StatusCodeParser
     private function findStatusCodeInReflection(\ReflectionClass $reflector) : ?int
     {
         do {
-            $classAnnotations = $this->getAnnotationReader()->getClassAnnotations($reflector);
+            $classAnnotations = $this->annotationReader->getClassAnnotations($reflector);
 
             foreach ($classAnnotations as $annot) {
-                if ($annot instanceof \Bundles\ApiBundle\Annotation\StatusCode) {
+                if ($annot instanceof StatusCode) {
                     return $annot->value;
                 }
             }
         } while ($reflector = $reflector->getParentClass());
 
         return null;
-    }
-
-    private function getAnnotationReader() : AnnotationReader
-    {
-        if ($this->annotationReader) {
-            return $this->annotationReader;
-        }
-
-        $this->annotationReader = new AnnotationReader();
-
-        return $this->annotationReader;
     }
 }

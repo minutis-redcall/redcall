@@ -3,8 +3,8 @@
 namespace Bundles\ApiBundle\Listener;
 
 use Bundles\ApiBundle\Contracts\FacadeInterface;
+use Bundles\ApiBundle\Fetcher\StatusCodeFetcher;
 use Bundles\ApiBundle\Model\Facade\SuccessFacade;
-use Bundles\ApiBundle\Parser\StatusCodeParser;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ViewEvent;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -17,11 +17,11 @@ class ViewListener
     private $serializer;
 
     /**
-     * @var StatusCodeParser
+     * @var StatusCodeFetcher
      */
     private $statusCodeParser;
 
-    public function __construct(SerializerInterface $serializer, StatusCodeParser $statusCodeParser)
+    public function __construct(SerializerInterface $serializer, StatusCodeFetcher $statusCodeParser)
     {
         $this->serializer       = $serializer;
         $this->statusCodeParser = $statusCodeParser;
