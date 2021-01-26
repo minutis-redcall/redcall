@@ -17,9 +17,9 @@ class EndpointDescription
     private $title;
 
     /**
-     * @var string
+     * @var string[]
      */
-    private $method;
+    private $methods;
 
     /**
      * @var string
@@ -75,14 +75,14 @@ class EndpointDescription
         return $this;
     }
 
-    public function getMethod() : string
+    public function getMethods() : array
     {
-        return $this->method;
+        return $this->methods;
     }
 
-    public function setMethod(string $method) : EndpointDescription
+    public function setMethods(array $methods) : EndpointDescription
     {
-        $this->method = $method;
+        $this->methods = $methods;
 
         return $this;
     }
@@ -104,9 +104,9 @@ class EndpointDescription
         return $this->roles;
     }
 
-    public function setRoles(array $roles) : EndpointDescription
+    public function addRole(RoleDescription $role) : EndpointDescription
     {
-        $this->roles = $roles;
+        $this->roles[] = $role;
 
         return $this;
     }

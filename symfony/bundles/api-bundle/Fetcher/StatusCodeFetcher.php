@@ -10,11 +10,11 @@ use Symfony\Component\HttpFoundation\Response;
 class StatusCodeFetcher
 {
     /**
-     * @var AnnotationReader|null
+     * @var AnnotationReader
      */
     private $annotationReader;
 
-    public function __construct(?AnnotationReader $annotationReader)
+    public function __construct(AnnotationReader $annotationReader)
     {
         $this->annotationReader = $annotationReader;
     }

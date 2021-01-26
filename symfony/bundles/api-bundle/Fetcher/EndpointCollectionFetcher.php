@@ -46,8 +46,8 @@ class EndpointCollectionFetcher
     public function fetch() : EndpointCollectionDescription
     {
         $endpoints = new EndpointCollectionDescription();
-
         foreach ($this->router->getRouteCollection() as $route) {
+
             $request = new Request();
             $request->attributes->add($route->getDefaults());
 
@@ -59,7 +59,7 @@ class EndpointCollectionFetcher
             foreach ($annotations as $annotation) {
                 if ($annotation instanceof Endpoint) {
                     $endpoints->add($this->endpointFetcher->fetch(
-                        new ControllerDescription(get_class($service), $method, $annotation)
+                        new ControllerDescription($route, get_class($service), $method, $annotation)
                     ));
                 }
             }

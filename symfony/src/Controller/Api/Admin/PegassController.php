@@ -8,7 +8,6 @@ use App\Transformer\PegassTransformer;
 use Bundles\ApiBundle\Annotation\Endpoint;
 use Bundles\ApiBundle\Annotation\Facade;
 use Bundles\ApiBundle\Model\Facade\QueryBuilderFacade;
-use Bundles\ApiBundle\Model\Facade\SuccessFacade;
 use Bundles\PegassCrawlerBundle\Entity\Pegass;
 use Bundles\PegassCrawlerBundle\Manager\PegassManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
@@ -37,14 +36,20 @@ class PegassController
     }
 
     /**
+     * Get Pegass records from RedCall cache.
+     *
+     * RedCall aims to trigger people from the Red Cross, but people arrive, evolve, leave.
+     *
+     * In order to stay sync, RedCall regularly update every entity using the Pegass database, a tool
+     * widely used in the French Red Cross.
+     *
      * @Endpoint(
      *   priority = 999,
      *   request  = @Facade(class     = PegassFiltersFacade::class),
-     *   response = @Facade(class     = SuccessFacade::class,
-     *                      decorator = @Facade(class     = QueryBuilderFacade::class,
-     *                                          decorator = @Facade(class = PegassFacade::class)))
+     *   response = @Facade(class     = QueryBuilderFacade::class,
+     *                      decorator = @Facade(class = PegassFacade::class))
      * )
-     * @Route(name="records", methods={"GET"})
+     * @Route(path="/", name="records", methods={"GET"})
      */
     public function records(PegassFiltersFacade $filters)
     {
