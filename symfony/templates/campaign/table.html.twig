@@ -37,6 +37,9 @@
                     </div>
                     <div class="card-body">
                         <div class="card-title h4">
+                            {% for communication in campaign.communications %}
+                                {{ macros.communicationIcon(communication) }}
+                            {% endfor %}
                             <a href="{{ path('communication_index', {id: campaign.id}) }}">
                                 {% if not campaign.active %}
                                     <strike>{{ campaign.label }}</strike>
