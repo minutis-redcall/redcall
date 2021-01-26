@@ -3,12 +3,14 @@
 namespace Bundles\ApiBundle\Fetcher;
 
 use Bundles\ApiBundle\Annotation\Endpoint;
+use Bundles\ApiBundle\Model\Documentation\ControllerDescription;
+use Bundles\ApiBundle\Model\Documentation\EndpointCollectionDescription;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Controller\ControllerResolverInterface;
 use Symfony\Component\Routing\RouterInterface;
 
-class EndpointListFetcher
+class EndpointCollectionFetcher
 {
     /**
      * @var RouterInterface
@@ -25,18 +27,25 @@ class EndpointListFetcher
      */
     private $annotationReader;
 
+    /**
+     * @var EndpointFetcher
+     */
+    private $endpointFetcher;
+
     public function __construct(RouterInterface $router,
         ControllerResolverInterface $resolver,
-        ?AnnotationReader $annotationReader)
+        ?AnnotationReader $annotationReader,
+        EndpointFetcher $endpointFetcher)
     {
         $this->router           = $router;
         $this->resolver         = $resolver;
         $this->annotationReader = $annotationReader;
+        $this->endpointFetcher  = $endpointFetcher;
     }
 
-    public function getApiEndpoints() : array
+    public function fetch() : EndpointCollectionDescription
     {
-        $endpoints = [];
+        $endpoints = new EndpointCollectionDescription();
 
         foreach ($this->router->getRouteCollection() as $route) {
             $request = new Request();
@@ -49,10 +58,9 @@ class EndpointListFetcher
 
             foreach ($annotations as $annotation) {
                 if ($annotation instanceof Endpoint) {
-                    $endpoints[] = [
-                        'class'  => get_class($service),
-                        'method' => $method,
-                    ];
+                    $endpoints->add($this->endpointFetcher->fetch(
+                        new ControllerDescription(get_class($service), $method, $annotation)
+                    ));
                 }
             }
         }

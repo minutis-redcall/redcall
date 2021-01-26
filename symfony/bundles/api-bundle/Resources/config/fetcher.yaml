@@ -1,10 +1,13 @@
 services:
 
-  Bundles\ApiBundle\Fetcher\EndpointListFetcher:
+  Bundles\ApiBundle\Fetcher\EndpointCollectionFetcher:
     arguments:
       - '@router'
       - '@controller_resolver'
       - '@doctrine.annotation_reader'
+      - '@Bundles\ApiBundle\Fetcher\EndpointFetcher'
+
+  Bundles\ApiBundle\Fetcher\EndpointFetcher:
 
   Bundles\ApiBundle\Fetcher\StatusCodeFetcher:
     arguments:

@@ -2,12 +2,8 @@
 
 namespace Bundles\ApiBundle\Model\Facade;
 
-use Bundles\ApiBundle\Annotation as Api;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
 
-/**
- * @Api\Compound
- */
 class ErrorFacade implements FacadeInterface
 {
     /**

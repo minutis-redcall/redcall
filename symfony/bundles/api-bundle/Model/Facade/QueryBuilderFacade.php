@@ -2,15 +2,11 @@
 
 namespace Bundles\ApiBundle\Model\Facade;
 
-use Bundles\ApiBundle\Annotation as Api;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
 use Doctrine\ORM\QueryBuilder;
 use Pagerfanta\Doctrine\ORM\QueryAdapter;
 use Pagerfanta\Pagerfanta;
 
-/**
- * @Api\Compound
- */
 class QueryBuilderFacade implements FacadeInterface
 {
     const ITEMS_PER_PAGE = 25;
