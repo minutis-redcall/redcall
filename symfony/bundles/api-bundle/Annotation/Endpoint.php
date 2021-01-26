@@ -11,6 +11,11 @@ namespace Bundles\ApiBundle\Annotation;
 final class Endpoint
 {
     /**
+     * @var int
+     */
+    public $priority = 1;
+
+    /**
      * @var \Bundles\ApiBundle\Annotation\Facade
      */
     public $request;

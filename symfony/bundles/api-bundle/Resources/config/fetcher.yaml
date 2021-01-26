@@ -1,0 +1,22 @@
+services:
+
+  Bundles\ApiBundle\Fetcher\EndpointCollectionFetcher:
+    arguments:
+      - '@router'
+      - '@controller_resolver'
+      - '@doctrine.annotation_reader'
+      - '@Bundles\ApiBundle\Fetcher\EndpointFetcher'
+
+  Bundles\ApiBundle\Fetcher\EndpointFetcher:
+    - '@Bundles\ApiBundle\Fetcher\RolesFetcher'
+
+  Bundles\ApiBundle\Fetcher\RolesFetcher:
+    - '@security.access_map'
+    - '@doctrine.annotation_reader'
+
+  Bundles\ApiBundle\Fetcher\StatusCodeFetcher:
+    arguments:
+      - '@doctrine.annotation_reader'
+
+  doctrine.annotation_reader:
+    class: Doctrine\Common\Annotations\AnnotationReader
