@@ -290,6 +290,8 @@ campaign_status:
     prefix: 'Préfix de la réponse: %prefix%'
     unclear: Ambigüe
   by: 'Envoyée par %name% (%structure%)'
+  by_no_structures: 'Envoyée par %name%'
+  by_admin: 'Equipe Minutis'
   communication_short_title: '%date% à %time%'
   communication_tabs: Communications
   communication_title: 'Communication du %date% à %time%'
