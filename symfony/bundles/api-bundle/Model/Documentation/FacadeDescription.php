@@ -20,9 +20,14 @@ class FacadeDescription
     private $properties = [];
 
     /**
-     * @var array|null
+     * @var string|null
      */
     private $example;
+
+    /**
+     * @var int
+     */
+    private $statusCode;
 
     public function getTitle() : string
     {
@@ -60,14 +65,26 @@ class FacadeDescription
         return $this;
     }
 
-    public function getExample() : ?array
+    public function getExample() : ?string
     {
         return $this->example;
     }
 
-    public function setExample(?array $example) : FacadeDescription
+    public function setExample(?string $example) : FacadeDescription
     {
         $this->example = $example;
+
+        return $this;
+    }
+
+    public function getStatusCode() : int
+    {
+        return $this->statusCode;
+    }
+
+    public function setStatusCode(int $statusCode) : FacadeDescription
+    {
+        $this->statusCode = $statusCode;
 
         return $this;
     }

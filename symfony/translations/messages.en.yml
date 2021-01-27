@@ -290,6 +290,8 @@ campaign_status:
     prefix: 'Response prefix: %prefix%'
     unclear: Unclear
   by: 'Sent by %name% (%structure%)'
+  by_no_structures: 'Sent by %name%'
+  by_admin: 'Team Minutis'
   communication_short_title: '%date% at %time%'
   communication_tabs: Communications
   communication_title: 'Communication from %date% at %time%'

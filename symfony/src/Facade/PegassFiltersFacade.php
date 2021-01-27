@@ -9,6 +9,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 class PegassFiltersFacade implements FacadeInterface
 {
     /**
+     * Page number to request
+     *
      * @Assert\Range(min = 1)
      *
      * @var int
@@ -16,6 +18,8 @@ class PegassFiltersFacade implements FacadeInterface
     private $page = 1;
 
     /**
+     * Type of required Pegass entity
+     *
      * @Assert\NotBlank
      * @Assert\Choice(choices = {
      *     Pegass::TYPE_AREA,
@@ -34,6 +38,8 @@ class PegassFiltersFacade implements FacadeInterface
 
         $facade->page = 1;
         $facade->type = Pegass::TYPE_VOLUNTEER;
+
+        return $facade;
     }
 
     public function getPage() : int

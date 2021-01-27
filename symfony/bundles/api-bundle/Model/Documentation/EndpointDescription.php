@@ -123,24 +123,24 @@ class EndpointDescription
         return $this;
     }
 
-    public function getRequestFacade() : ?FacadeInterface
+    public function getRequestFacade() : ?FacadeDescription
     {
         return $this->requestFacade;
     }
 
-    public function setRequestFacade(?FacadeInterface $requestFacade) : EndpointDescription
+    public function setRequestFacade(?FacadeDescription $requestFacade) : EndpointDescription
     {
         $this->requestFacade = $requestFacade;
 
         return $this;
     }
 
-    public function getResponseFacade() : ?FacadeInterface
+    public function getResponseFacade() : ?FacadeDescription
     {
         return $this->responseFacade;
     }
 
-    public function setResponseFacade(?FacadeInterface $responseFacade) : EndpointDescription
+    public function setResponseFacade(?FacadeDescription $responseFacade) : EndpointDescription
     {
         $this->responseFacade = $responseFacade;
 

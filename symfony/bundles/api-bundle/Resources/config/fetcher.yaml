@@ -1,5 +1,7 @@
 services:
 
+  Bundles\ApiBundle\Fetcher\DocblockFetcher:
+
   Bundles\ApiBundle\Fetcher\EndpointCollectionFetcher:
     arguments:
       - '@router'
@@ -9,6 +11,19 @@ services:
 
   Bundles\ApiBundle\Fetcher\EndpointFetcher:
     - '@Bundles\ApiBundle\Fetcher\RolesFetcher'
+    - '@Bundles\ApiBundle\Fetcher\FacadeFetcher'
+    - '@Bundles\ApiBundle\Fetcher\DocblockFetcher'
+    - '@doctrine.annotation_reader'
+
+  Bundles\ApiBundle\Fetcher\FacadeFetcher:
+    - '@Bundles\ApiBundle\Fetcher\DocblockFetcher'
+    - '@Bundles\ApiBundle\Fetcher\StatusCodeFetcher'
+    - '@doctrine.annotation_reader'
+    - '@serializer'
+
+  Bundles\ApiBundle\Fetcher\PropertyFetcher:
+    - '@Bundles\ApiBundle\Fetcher\DocblockFetcher'
+    - '@doctrine.annotation_reader'
 
   Bundles\ApiBundle\Fetcher\RolesFetcher:
     - '@security.access_map'

@@ -163,10 +163,17 @@
                         {% if communication.volunteer or is_granted('ROLE_ADMIN') %}
                             <div class="float-right color-grey" style="font-weight: normal;" {% if communication.volunteer %}title="{{ communication.volunteer.nivol }}"{% endif %}>
                                 {% if communication.volunteer %}
-                                    {{ 'campaign_status.by'|trans({
-                                        '%name%': communication.volunteer.displayName,
-                                        '%structure%': communication.volunteer.mainStructure,
-                                    }) }}
+                                    {% if communication.volunteer.user.admin|default(false) %}
+                                        {{ 'campaign_status.by_no_structures'|trans({
+                                            '%name%': communication.volunteer.displayName,
+                                        }) }}
+                                        (<span style="color:red;">{{ 'campaign_status.by_admin'|trans }}</span>)
+                                    {% else %}
+                                        {{ 'campaign_status.by'|trans({
+                                            '%name%': communication.volunteer.displayName,
+                                            '%structure%': communication.volunteer.mainStructure,
+                                        }) }}
+                                    {% endif %}
                                 {% endif %}
 
                                 {% if communication.volunteer and is_granted('ROLE_ADMIN') %}

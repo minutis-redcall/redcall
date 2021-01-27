@@ -18,5 +18,5 @@ class Facade
     /**
      * @var \Bundles\ApiBundle\Annotation\Facade
      */
-    public $decorator;
+    public $decorates;
 }
