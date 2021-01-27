@@ -442,7 +442,7 @@ class Volunteer
 
         // Doctrine loaded an UTC-saved date using the default timezone (Europe/Paris)
         $utc      = (new DateTime($this->lastPegassUpdate->format('Y-m-d H:i:s'), new DateTimeZone('UTC')));
-        $interval = new DateInterval(sprintf('PT%dS', Pegass::TTL[Pegass::TYPE_VOLUNTEER]));
+        $interval = new DateInterval(sprintf('PT%dS', Pegass::TTL[Pegass::TYPE_VOLUNTEER] * 24 * 60 * 60));
 
         $nextPegassUpdate = clone $utc;
         $nextPegassUpdate->add($interval);

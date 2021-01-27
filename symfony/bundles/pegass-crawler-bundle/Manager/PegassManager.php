@@ -369,7 +369,7 @@ class PegassManager
         foreach (Pegass::TTL as $type => $ttl) {
             $count = $this->pegassRepository->countEntities($type);
             $date  = (new DateTime())->sub(new DateInterval(sprintf('PT%dS', $ttl)));
-            $step  = intval($ttl / $count);
+            $step  = intval(($ttl * 24 * 60 * 60) / $count);
             $this->pegassRepository->foreach($type, function (Pegass $entity) use ($date, $step) {
                 $updateAt = new DateInterval(sprintf('PT%dS', $step));
                 $date->add($updateAt);

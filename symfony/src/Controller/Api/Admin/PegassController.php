@@ -47,7 +47,7 @@ class PegassController
      *   priority = 999,
      *   request  = @Facade(class     = PegassFiltersFacade::class),
      *   response = @Facade(class     = QueryBuilderFacade::class,
-     *                      decorator = @Facade(class = PegassFacade::class))
+     *                      decorates = @Facade(class = PegassFacade::class))
      * )
      * @Route(path="/", name="records", methods={"GET"})
      */

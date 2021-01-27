@@ -242,6 +242,6 @@ class PegassRepository extends ServiceEntityRepository
      */
     private function getExpireDate(string $type) : DateTime
     {
-        return DateTime::createFromFormat('U', time() - Pegass::TTL[$type]);
+        return DateTime::createFromFormat('U', time() - (Pegass::TTL[$type] * 24 * 60 * 60));
     }
 }

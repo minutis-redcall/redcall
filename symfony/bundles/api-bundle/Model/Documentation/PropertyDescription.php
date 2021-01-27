@@ -17,6 +17,11 @@ class PropertyDescription
     /**
      * @var string|null
      */
+    private $title;
+
+    /**
+     * @var string|null
+     */
     private $description;
 
     /**
@@ -44,6 +49,18 @@ class PropertyDescription
     public function setType(string $type) : PropertyDescription
     {
         $this->type = $type;
+
+        return $this;
+    }
+
+    public function getTitle() : ?string
+    {
+        return $this->title;
+    }
+
+    public function setTitle(?string $title) : PropertyDescription
+    {
+        $this->title = $title;
 
         return $this;
     }

@@ -27,6 +27,11 @@ class Pegass
     const TYPE_STRUCTURE  = 'structure';
     const TYPE_VOLUNTEER  = 'volunteer';
 
+    const TTL_AREA       = 365;
+    const TTL_DEPARTMENT = 7;
+    const TTL_STRUCTURE  = 7;
+    const TTL_VOLUNTEER  = 30;
+
     const TYPES = [
         self::TYPE_AREA,
         self::TYPE_DEPARTMENT,
@@ -35,10 +40,10 @@ class Pegass
     ];
 
     const TTL = [
-        self::TYPE_AREA       => 365 * 24 * 60 * 60, // 1 year
-        self::TYPE_DEPARTMENT => 7 * 24 * 60 * 60, // 1 week
-        self::TYPE_STRUCTURE  => 7 * 24 * 60 * 60, // 1 week
-        self::TYPE_VOLUNTEER  => 30 * 24 * 60 * 60, // 1 month
+        self::TYPE_AREA       => self::TTL_AREA,
+        self::TYPE_DEPARTMENT => self::TTL_DEPARTMENT,
+        self::TYPE_STRUCTURE  => self::TTL_STRUCTURE,
+        self::TYPE_VOLUNTEER  => self::TTL_VOLUNTEER,
     ];
 
     /**
