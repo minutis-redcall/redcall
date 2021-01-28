@@ -33,7 +33,7 @@ class CommunicationRepository extends BaseRepository
     {
         $rows = $this->createQueryBuilder('c')
                      ->select('c.id')
-                     ->where('c.lastActivityAt IS NULL OR c.lastActivityAt < :date')
+                     ->where('c.lastActivityAt < :date OR c.lastActivityAt IS NULL AND c.createdAt < :date')
                      ->setParameter('date', $date)
                      ->andWhere('c.report IS NULL')
                      ->getQuery()

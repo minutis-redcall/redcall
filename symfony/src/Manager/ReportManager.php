@@ -53,16 +53,26 @@ class ReportManager
 
             $report = $this->createReport($communication);
 
-            $this->reportRepository->save($report);
-            foreach ($report->getRepartitions() as $repartition) {
-                $this->repartitionRepository->save($repartition);
+            if (count($report->getRepartitions())) {
+                $this->reportRepository->save($report);
+
+                foreach ($report->getRepartitions() as $repartition) {
+                    $this->repartitionRepository->save($repartition);
+                }
+
+                $this->communicationManager->save($communication);
             }
 
             $this->communicationManager->clearEntityManager();
         }
     }
 
-    public function createReport(Communication $communication) : Report
+    public function getCommunicationReportsBetween(\DateTime $from, \DateTime $to) : array
+    {
+        return $this->reportRepository->getCommunicationReportsBetween($from, $to);
+    }
+
+    private function createReport(Communication $communication) : Report
     {
         $report = $communication->getReport() ?? new Report();
 
@@ -106,7 +116,11 @@ class ReportManager
         foreach ($this->communicationManager->getCommunicationStructures($communication) as $structureId) {
             // Structure may have been removed from Pegass
             $structures[$structureId] = $this->structureManager->find($structureId);;
-            $repartition[$structureId] = 0;
+            $repartition[$structureId] = [
+                'messages' => 0,
+                'answers'  => 0,
+                'bounces'  => 0,
+            ];
         }
 
         // Then, for every messages, we find in which structures volunteer was triggered. The structure list
@@ -123,28 +137,37 @@ class ReportManager
                     // fully true. Costs are not the same according to the volunteer phone numbers, and for
                     // very precise results, we should keep a relation between the structure and the
                     // $message->getCost() here.
-                    $repartition[$structure->getId()] += 1;
-                    break 2;
+                    $repartition[$structure->getId()]['messages'] += 1;
+                    $repartition[$structure->getId()]['answers']  += (count($message->getAnswers()) > 0);
+                    $repartition[$structure->getId()]['bounces']  += count($message->getAnswers());
+                    break;
                 }
             }
         }
 
         $report->getRepartitions()->clear();
-        foreach ($repartition as $structureId => $count) {
-            if (!$count) {
+        foreach ($repartition as $structureId => $counts) {
+            if (!$counts['messages']) {
                 continue;
             }
 
             $entity = new ReportRepartition();
             $entity->setStructure($structures[$structureId]);
-            $entity->setTotalMessages($report->getMessageCount());
-            $entity->setShareMessages($repartition[$structureId]);
-
-            if ($entity->getTotalMessages()) {
-                $entity->setRatio((int) ($entity->getShareMessages() * 100 / $entity->getTotalMessages()));
+            $entity->setMessageCount($counts['messages']);
+            $entity->setAnswerCount($counts['answers']);
+            $entity->setBounceCount($counts['bounces']);
+            if (count($communication->getChoices()) && $counts['messages'] > 0) {
+                $entity->setAnswerRatio($counts['answers'] * 100 / $counts['messages']);
             }
 
-            $report->addRepartition($entity);
+            $entity->setRatio(0);
+            if ($report->getMessageCount()) {
+                $entity->setRatio((int) ($entity->getMessageCount() * 100 / $report->getMessageCount()));
+            }
+
+            if ($entity->getRatio() > 0) {
+                $report->addRepartition($entity);
+            }
         }
     }
 }

@@ -695,7 +695,6 @@ class Communication
      */
     public function onChange()
     {
-        $this->report         = null;
         $this->lastActivityAt = new \DateTime();
     }
 }

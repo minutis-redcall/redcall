@@ -24,4 +24,15 @@ class ReportRepository extends ServiceEntityRepository
         $this->_em->persist($report);
         $this->_em->flush();
     }
+
+    public function getCommunicationReportsBetween(\DateTime $from, \DateTime $to) : array
+    {
+        return $this->createQueryBuilder('r')
+                    ->join('r.communication', 'c')
+                    ->where('c.createdAt BETWEEN :from AND :to')
+                    ->setParameter('from', $from)
+                    ->setParameter('to', $to)
+                    ->getQuery()
+                    ->getResult();
+    }
 }

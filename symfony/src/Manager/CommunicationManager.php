@@ -250,4 +250,9 @@ class CommunicationManager
     {
         return $this->communicationRepository->getCommunicationStructures($communication);
     }
+
+    public function save(Communication $communication)
+    {
+        $this->communicationRepository->save($communication);
+    }
 }

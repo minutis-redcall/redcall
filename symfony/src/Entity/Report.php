@@ -45,9 +45,9 @@ class Report
     private $bounceCount = 0;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", nullable=true)
      */
-    private $answerRatio = 0;
+    private $answerRatio;
 
     /**
      * @ORM\OneToMany(targetEntity=ReportRepartition::class, mappedBy="report", cascade={"persist", "remove"},
@@ -225,8 +225,12 @@ class Report
         $this->updatedAt = new \DateTime();
     }
 
-    public function getCost() : ?string
+    public function getCost() : ?array
     {
+        if (!$this->cost) {
+            return null;
+        }
+
         return json_decode($this->cost, true);
     }
 

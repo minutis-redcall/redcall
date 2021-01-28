@@ -36,12 +36,22 @@ class ReportRepartition
     /**
      * @ORM\Column(type="integer")
      */
-    private $totalMessages;
+    private $messageCount;
 
     /**
      * @ORM\Column(type="integer")
      */
-    private $shareMessages;
+    private $answerCount;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $bounceCount;
+
+    /**
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $answerRatio;
 
     public function getId() : ?int
     {
@@ -84,26 +94,50 @@ class ReportRepartition
         return $this;
     }
 
-    public function getTotalMessages() : ?int
+    public function getMessageCount() : ?int
     {
-        return $this->totalMessages;
+        return $this->messageCount;
     }
 
-    public function setTotalMessages(int $totalMessages) : self
+    public function setMessageCount(int $messageCount) : self
     {
-        $this->totalMessages = $totalMessages;
+        $this->messageCount = $messageCount;
 
         return $this;
     }
 
-    public function getShareMessages() : ?int
+    public function getAnswerCount() : ?int
     {
-        return $this->shareMessages;
+        return $this->answerCount;
     }
 
-    public function setShareMessages(int $shareMessages) : self
+    public function setAnswerCount(int $answerCount) : self
     {
-        $this->shareMessages = $shareMessages;
+        $this->answerCount = $answerCount;
+
+        return $this;
+    }
+
+    public function getBounceCount() : ?int
+    {
+        return $this->bounceCount;
+    }
+
+    public function setBounceCount(int $bounceCount) : self
+    {
+        $this->bounceCount = $bounceCount;
+
+        return $this;
+    }
+
+    public function getAnswerRatio() : ?int
+    {
+        return $this->answerRatio;
+    }
+
+    public function setAnswerRatio(int $answerRatio) : self
+    {
+        $this->answerRatio = $answerRatio;
 
         return $this;
     }
