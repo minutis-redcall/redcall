@@ -56,6 +56,8 @@ class ReportStructureCommand extends BaseCommand
                             $k1 = '#'                                        => $structureId,
                             $k2 = 'Nom'                                      => $repartition->getStructure()->getName(),
                             'Type'                                           => $type,
+                            $k11 = 'Nombre de campagnes'                     => [],
+                            $k10 = 'Nombre de communications'                => 0,
                             $k3 = 'Nombre de messages sans reponses'         => 0,
                             $k9 = 'Nombre de messages demandant une reponse' => 0,
                             $k4 = 'Nombre de réponses'                       => 0,
@@ -73,12 +75,13 @@ class ReportStructureCommand extends BaseCommand
                 } else {
                     $ref[$k3] += $repartition->getMessageCount();
                 }
-                $ref[$k4] += $repartition->getAnswerCount();
-                $ref[$k5] += $repartition->getBounceCount();
-
-                $cost     = $report->getCost();
-                $ref[$k7] += (($repartition->getRatio() / 100) * ($cost['EUR'] ?? 0));
-                $ref[$k8] += (($repartition->getRatio() / 100) * ($cost['USD'] ?? 0));
+                $ref[$k4]    += $repartition->getAnswerCount();
+                $ref[$k5]    += $repartition->getBounceCount();
+                $ref[$k10]   += 1;
+                $ref[$k11][] = $report->getCommunication()->getCampaign()->getId();
+                $cost        = $report->getCost();
+                $ref[$k7]    += (($repartition->getRatio() / 100) * ($cost['EUR'] ?? 0));
+                $ref[$k8]    += (($repartition->getRatio() / 100) * ($cost['USD'] ?? 0));
             }
         }
 
@@ -88,6 +91,7 @@ class ReportStructureCommand extends BaseCommand
                 if ($ref[$k9]) {
                     $ref[$k6] = $ref[$k4] * 100 / $ref[$k9];
                 }
+                $ref[$k11] = count(array_unique($ref[$k11]));
             }
         }
 
