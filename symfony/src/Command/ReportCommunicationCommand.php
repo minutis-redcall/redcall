@@ -14,6 +14,13 @@ class ReportCommunicationCommand extends Command
      */
     private $reportManager;
 
+    public function __construct(ReportManager $reportManager)
+    {
+        parent::__construct();
+
+        $this->reportManager = $reportManager;
+    }
+
     protected function configure()
     {
         $this
@@ -23,6 +30,7 @@ class ReportCommunicationCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $this->reportManager->createReports($output);
 
         return 0;
     }

@@ -19,32 +19,9 @@ class ReportRepartitionRepository extends ServiceEntityRepository
         parent::__construct($registry, ReportRepartition::class);
     }
 
-    // /**
-    //  * @return ReportCostRepartition[] Returns an array of ReportCostRepartition objects
-    //  */
-    /*
-    public function findByExampleField($value)
+    public function save(ReportRepartition $report)
     {
-        return $this->createQueryBuilder('r')
-            ->andWhere('r.exampleField = :val')
-            ->setParameter('val', $value)
-            ->orderBy('r.id', 'ASC')
-            ->setMaxResults(10)
-            ->getQuery()
-            ->getResult()
-        ;
+        $this->_em->persist($report);
+        $this->_em->flush();
     }
-    */
-
-    /*
-    public function findOneBySomeField($value): ?ReportCostRepartition
-    {
-        return $this->createQueryBuilder('r')
-            ->andWhere('r.exampleField = :val')
-            ->setParameter('val', $value)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-    */
 }

@@ -240,4 +240,14 @@ class CommunicationManager
             (new \DateTime())->sub(new \DateInterval('P7D'))
         );
     }
+
+    public function clearEntityManager()
+    {
+        $this->communicationRepository->clearEntityManager();
+    }
+
+    public function getCommunicationStructures(Communication $communication) : array
+    {
+        return $this->communicationRepository->getCommunicationStructures($communication);
+    }
 }

@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=App\Repository\ReportRepository::class)
+ * @ORM\HasLifecycleCallbacks()
  */
 class Report
 {
@@ -26,30 +27,31 @@ class Report
     /**
      * @ORM\Column(type="integer")
      */
-    private $messageCount;
+    private $messageCount = 0;
 
     /**
      * @ORM\Column(type="integer")
      */
-    private $answerCount;
+    private $answerCount = 0;
 
     /**
      * @ORM\Column(type="integer")
      */
-    private $choiceCount;
+    private $choiceCount = 0;
 
     /**
      * @ORM\Column(type="integer")
      */
-    private $bounceCount;
+    private $bounceCount = 0;
 
     /**
      * @ORM\Column(type="integer")
      */
-    private $answerRatio;
+    private $answerRatio = 0;
 
     /**
-     * @ORM\OneToMany(targetEntity=ReportRepartition::class, mappedBy="report", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity=ReportRepartition::class, mappedBy="report", cascade={"persist", "remove"},
+     *                                                       orphanRemoval=true)
      */
     private $repartitions;
 
@@ -62,6 +64,11 @@ class Report
      * @ORM\OneToOne(targetEntity=Communication::class, mappedBy="report", cascade={"persist", "remove"})
      */
     private $communication;
+
+    /**
+     * @ORM\Column(type="string", length=64)
+     */
+    private $cost = 'free';
 
     public function __construct()
     {
@@ -153,7 +160,7 @@ class Report
         return $this->repartitions;
     }
 
-    public function addCostRepartition(ReportRepartition $costRepartition) : self
+    public function addRepartition(ReportRepartition $costRepartition) : self
     {
         if (!$this->repartitions->contains($costRepartition)) {
             $this->repartitions[] = $costRepartition;
@@ -163,7 +170,7 @@ class Report
         return $this;
     }
 
-    public function removeCostRepartition(ReportRepartition $costRepartition) : self
+    public function removeRepartition(ReportRepartition $costRepartition) : self
     {
         if ($this->repartitions->removeElement($costRepartition)) {
             // set the owning side to null (unless already changed)
@@ -205,6 +212,27 @@ class Report
         }
 
         $this->communication = $communication;
+
+        return $this;
+    }
+
+    /**
+     * @ORM\PrePersist
+     * @ORM\PreUpdate
+     */
+    public function onChange()
+    {
+        $this->updatedAt = new \DateTime();
+    }
+
+    public function getCost() : ?string
+    {
+        return json_decode($this->cost, true);
+    }
+
+    public function setCost(array $cost) : self
+    {
+        $this->cost = json_encode($cost);
 
         return $this;
     }

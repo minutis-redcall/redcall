@@ -33,9 +33,31 @@ class CommunicationRepository extends BaseRepository
     {
         $rows = $this->createQueryBuilder('c')
                      ->select('c.id')
-                     ->where('c.lastActivityAt < :date')
+                     ->where('c.lastActivityAt IS NULL OR c.lastActivityAt < :date')
                      ->setParameter('date', $date)
                      ->andWhere('c.report IS NULL')
+                     ->getQuery()
+                     ->getArrayResult();
+
+        return array_column($rows, 'id');
+    }
+
+    public function clearEntityManager()
+    {
+        $this->_em->clear();
+    }
+
+    public function getCommunicationStructures(Communication $communication) : array
+    {
+        $rows = $this->createQueryBuilder('c')
+                     ->select('s.id, COUNT(DISTINCT v) AS volunteer_count')
+                     ->join('c.messages', 'm')
+                     ->join('m.volunteer', 'v')
+                     ->join('v.structures', 's')
+                     ->where('c.id = :communication_id')
+                     ->setParameter('communication_id', $communication->getId())
+                     ->orderBy('volunteer_count', 'DESC')
+                     ->groupBy('s.id')
                      ->getQuery()
                      ->getArrayResult();
 
