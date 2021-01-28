@@ -3,17 +3,14 @@
 namespace Bundles\SettingsBundle\Repository;
 
 use Bundles\SettingsBundle\Entity\Setting;
+use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
-use Symfony\Bridge\Doctrine\RegistryInterface;
 
 class SettingRepository extends ServiceEntityRepository
 {
-    /**
-     * @param RegistryInterface $registry
-     */
-    public function __construct(RegistryInterface $registry)
+    public function __construct(Registry $registry)
     {
         parent::__construct($registry, Setting::class);
     }
@@ -21,7 +18,7 @@ class SettingRepository extends ServiceEntityRepository
     /**
      * @return array
      */
-    public function all(): array
+    public function all() : array
     {
         $settings = [];
         $entities = $this->findAll();
@@ -30,7 +27,7 @@ class SettingRepository extends ServiceEntityRepository
             $settings[$entity->getProperty()] = $entity->getValue();
         }
 
-        return $entity;
+        return $settings;
     }
 
     /**
@@ -39,7 +36,7 @@ class SettingRepository extends ServiceEntityRepository
      *
      * @return string|null
      */
-    public function get(string $property, ?string $default = null): ?string
+    public function get(string $property, ?string $default = null) : ?string
     {
         $entity = $this->findOneByProperty($property);
 

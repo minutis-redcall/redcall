@@ -144,7 +144,7 @@ class Communication
      *
      * @return $this
      */
-    public function setCampaign($campaign) : self
+    public function setCampaign(Campaign $campaign) : self
     {
         $this->campaign = $campaign;
 
@@ -184,7 +184,7 @@ class Communication
      *
      * @return $this
      */
-    public function setType($type) : self
+    public function setType(string $type) : self
     {
         $this->type = $type;
 
@@ -239,7 +239,7 @@ class Communication
      *
      * @return $this
      */
-    public function setBody($body) : self
+    public function setBody(string $body) : self
     {
         $this->body = $body;
 
@@ -273,7 +273,7 @@ class Communication
      *
      * @return $this
      */
-    public function setMessages($messages) : self
+    public function setMessages(array $messages) : self
     {
         $this->messages = $messages;
 
@@ -306,7 +306,7 @@ class Communication
      *
      * @return $this
      */
-    public function setCreatedAt($createdAt) : self
+    public function setCreatedAt(\DateTime $createdAt) : self
     {
         $this->createdAt = $createdAt;
 

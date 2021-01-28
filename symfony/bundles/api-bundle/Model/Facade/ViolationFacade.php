@@ -31,13 +31,7 @@ class ViolationFacade
 
     static public function getExample(FacadeInterface $child = null) : FacadeInterface
     {
-        $facade = new self;
-
-        $facade->propertyPath = 'firstName';
-        $facade->invalidValue = null;
-        $facade->message      = 'This field cannot be empty.';
-
-        return $facade;
+        return new EmptyFacade();
     }
 
     public function getPropertyPath() : ?string

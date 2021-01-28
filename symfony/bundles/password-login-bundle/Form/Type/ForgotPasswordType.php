@@ -2,7 +2,6 @@
 
 namespace Bundles\PasswordLoginBundle\Form\Type;
 
-use Bundles\PasswordLoginBundle\Base\BaseType;
 use Bundles\PasswordLoginBundle\Manager\CaptchaManager;
 use EWZ\Bundle\RecaptchaBundle\Form\Type\EWZRecaptchaType;
 use EWZ\Bundle\RecaptchaBundle\Validator\Constraints\IsTrue as RecaptchaTrue;

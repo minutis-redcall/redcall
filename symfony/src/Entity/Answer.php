@@ -122,7 +122,7 @@ class Answer
      *
      * @return $this
      */
-    public function setMessage($message) : Answer
+    public function setMessage(Message $message) : Answer
     {
         $this->message = $message;
 
@@ -245,7 +245,7 @@ class Answer
     /**
      * @return bool
      */
-    public function isValid()
+    public function isValid() : bool
     {
         return $this->choices->count() > 0;
     }
@@ -289,7 +289,7 @@ class Answer
     /**
      * @return string
      */
-    public function getByAdmin()
+    public function getByAdmin() : string
     {
         return $this->byAdmin;
     }
@@ -360,16 +360,14 @@ class Answer
             default:
                 return '🤩';
         }
-
-        return null;
     }
 
-    public function getMagnitude(): ?int
+    public function getMagnitude() : ?int
     {
         return $this->magnitude;
     }
 
-    public function setMagnitude(?int $magnitude): self
+    public function setMagnitude(?int $magnitude) : self
     {
         $this->magnitude = $magnitude;
 

@@ -9,11 +9,10 @@ class Configuration implements ConfigurationInterface
 {
     public function getConfigTreeBuilder()
     {
-        $treeBuilder = new TreeBuilder();
-        $rootNode    = $treeBuilder->root('pegass_crawler');
+        $rootNode = new TreeBuilder('pegass_crawler');
 
         // ¯\_(ツ)_/¯
 
-        return $treeBuilder;
+        return $rootNode;
     }
 }

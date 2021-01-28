@@ -81,7 +81,7 @@ class PegassSearchCommand extends Command
             ) {
                 $match = $pegass->xpath($input->getArgument('template'), $input->getOption('parameter'));
                 if (!$match) {
-                    return;
+                    return true;
                 }
 
                 $this->logger->debug(sprintf('Found %s %s', $pegass->getType(), $pegass->getIdentifier()));
@@ -97,6 +97,8 @@ class PegassSearchCommand extends Command
                 if ($input->getOption('limit') && $count == $input->getOption('limit')) {
                     return false;
                 }
+
+                return true;
             }, true);
         }
 

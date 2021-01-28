@@ -89,6 +89,8 @@ class VolunteerManager
     public function save(Volunteer $volunteer)
     {
         $this->volunteerRepository->save($volunteer);
+
+        return $volunteer;
     }
 
     public function searchAll(?string $criteria, int $limit)

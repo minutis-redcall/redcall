@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Setting
  *
- * @ORM\Entity(repositoryClass="App\Repository\SettingRepository")
+ * @ORM\Entity(repositoryClass="Bundles\SettingsBundle\Repository\SettingRepository")
  * @ORM\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
  * @ORM\HasLifecycleCallbacks()
  */
@@ -55,7 +55,7 @@ class Setting
     /**
      * @return int|null
      */
-    public function getId(): ?int
+    public function getId() : ?int
     {
         return $this->id;
     }
@@ -63,7 +63,7 @@ class Setting
     /**
      * @return string|null
      */
-    public function getProperty(): ?string
+    public function getProperty() : ?string
     {
         return $this->property;
     }
@@ -83,7 +83,7 @@ class Setting
     /**
      * @return string|null
      */
-    public function getValue(): ?string
+    public function getValue() : ?string
     {
         return $this->value;
     }
@@ -103,7 +103,7 @@ class Setting
     /**
      * @return DateTimeInterface|null
      */
-    public function getCreatedAt(): ?DateTimeInterface
+    public function getCreatedAt() : ?DateTimeInterface
     {
         return $this->createdAt;
     }
@@ -113,7 +113,7 @@ class Setting
      *
      * @return Setting
      */
-    public function setCreatedAt(DateTimeInterface $createdAt): self
+    public function setCreatedAt(DateTimeInterface $createdAt) : self
     {
         $this->createdAt = $createdAt;
 
@@ -123,7 +123,7 @@ class Setting
     /**
      * @return DateTimeInterface|null
      */
-    public function getUpdatedAt(): ?DateTimeInterface
+    public function getUpdatedAt() : ?DateTimeInterface
     {
         return $this->updatedAt;
     }
@@ -133,7 +133,7 @@ class Setting
      *
      * @return Setting
      */
-    public function setUpdatedAt(DateTimeInterface $updatedAt): self
+    public function setUpdatedAt(DateTimeInterface $updatedAt) : self
     {
         $this->updatedAt = $updatedAt;
 

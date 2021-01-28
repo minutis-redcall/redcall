@@ -19,6 +19,11 @@ class Webhook
     private $id;
 
     /**
+     * @ORM\Column(type="string", length=36)
+     */
+    private $username;
+
+    /**
      * @ORM\Column(type="string", length=255)
      */
     private $uri;
@@ -66,6 +71,18 @@ class Webhook
     public function setUri(string $uri) : self
     {
         $this->uri = $uri;
+
+        return $this;
+    }
+
+    public function getUsername() : string
+    {
+        return $this->username;
+    }
+
+    public function setUsername(string $username)
+    {
+        $this->username = $username;
 
         return $this;
     }

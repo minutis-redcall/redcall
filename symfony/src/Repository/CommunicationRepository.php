@@ -5,7 +5,6 @@ namespace App\Repository;
 use App\Base\BaseRepository;
 use App\Entity\Communication;
 use Doctrine\Bundle\DoctrineBundle\Registry;
-use Symfony\Bridge\Doctrine\RegistryInterface;
 
 /**
  * @method Communication|null find($id, $lockMode = null, $lockVersion = null)
@@ -15,11 +14,6 @@ use Symfony\Bridge\Doctrine\RegistryInterface;
  */
 class CommunicationRepository extends BaseRepository
 {
-    /**
-     * CommunicationRepository constructor.
-     *
-     * @param RegistryInterface $registry
-     */
     public function __construct(Registry $registry)
     {
         parent::__construct($registry, Communication::class);

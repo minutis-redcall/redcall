@@ -4,9 +4,11 @@ Manage incoming and outgoing SMS and voice calls in your Symfony application.
 
 ## What is it?
 
-Purpose of this bundle is to manage sending and receiving SMS and voice calls in a way independent from your application logic.
+Purpose of this bundle is to manage sending and receiving SMS and voice calls in a way independent from your application
+logic.
 
-In order to stay KISS, this bundle does not handle cost optimizations (transliteration, character set filtering etc). You should implement them by yourself.
+In order to stay KISS, this bundle does not handle cost optimizations (transliteration, character set filtering etc).
+You should implement them by yourself.
 
 ## Installation
 
@@ -29,7 +31,7 @@ return [
 ];
 ```
 
-Make sure Twilio webhooks are not behind your security firewall. 
+Make sure Twilio webhooks are not behind your security firewall.
 
 ```yaml
   # security.yaml
@@ -49,15 +51,16 @@ twilio:
   type: annotation
 ```
 
-Make sure to add the `twilio:price` command in your cron jobs (executed once every hour) in order to store prices associated with your usage.
+Make sure to add the `twilio:price` command in your cron jobs (executed once every hour) in order to store prices
+associated with your usage.
 
 On Twilio console:
 
 - to receive messages, add `<your website>/twilio/incoming-message` in your "Phone Number"
-configuration page (example: `https://d7185d61.ngrok.io/twilio/incoming-message`).
+  configuration page (example: `https://d7185d61.ngrok.io/twilio/incoming-message`).
 
 - to receive voice calls, add `<your website>/twilio/incoming-call` in your "Phone Number"
-configuration page (example: `https://d7185d61.ngrok.io/twilio/incoming-call`).
+  configuration page (example: `https://d7185d61.ngrok.io/twilio/incoming-call`).
 
 ## Usage
 
@@ -212,6 +215,9 @@ class DemoController
 
             // Call recipient
             '33600000000',
+            
+            // Handle answering machines
+            true,
 
             // Your application context (to bind this call to your app logic,
             // will be sent back in events)
@@ -357,16 +363,13 @@ class DemoSubscriber implements EventSubscriberInterface
 
 ### Price tracking
 
-With Twilio, all costs are asynchronous, you can't know how much costed a call or
-a message when you trigger it. Thus, there is a command that try to fetch prices
-for every message or call SIDs known by the application.
+With Twilio, all costs are asynchronous, you can't know how much costed a call or a message when you trigger it. Thus,
+there is a command that try to fetch prices for every message or call SIDs known by the application.
 
 In order to handle prices on your application, you can add the `twilio:price`
-command in your cron jobs, ran every hour. Prices will be fetched 48 times for
-each SIDs for which prices are unknown.
+command in your cron jobs, ran every hour. Prices will be fetched 48 times for each SIDs for which prices are unknown.
 
-You can then subscribe to the following events if you want to bind those costs
-to your application logic (billing etc):
+You can then subscribe to the following events if you want to bind those costs to your application logic (billing etc):
 
 - `TwilioEvents::MESSAGE_PRICE_UPDATED` to get the TwilioMessage for which price is available
 - `TwilioEvents::CALL_PRICE_UPDATED` to get the TwilioCall for which the price is available

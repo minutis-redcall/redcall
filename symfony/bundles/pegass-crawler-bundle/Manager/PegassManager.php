@@ -305,7 +305,7 @@ class PegassManager
         foreach ($pages as $page) {
             $list = $page['list'] ?? $page['content'] ?? [];
             foreach ($list as $row) {
-                $volunteer = $this->pegassRepository->getEntity(Pegass::TYPE_VOLUNTEER, $row['id'], $entity->getIdentifier(), false);
+                $volunteer = $this->pegassRepository->getEntity(Pegass::TYPE_VOLUNTEER, $row['id'], false);
                 if (!$volunteer) {
                     $volunteer = new Pegass();
                     $volunteer->setType(Pegass::TYPE_VOLUNTEER);
@@ -358,7 +358,7 @@ class PegassManager
      */
     private function spreadUpdateDatesInTTL()
     {
-        $area = $this->pegassRepository->getEntity(Pegass::TYPE_AREA, null);
+        $area = $this->pegassRepository->getEntity(Pegass::TYPE_AREA);
         if (!$area || $area->getIdentifier()) {
             return;
         }

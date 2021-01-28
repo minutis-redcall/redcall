@@ -44,7 +44,7 @@ class ExceptionListener
         } elseif ($throwable instanceof ApiExceptionInterface) {
             $error = $throwable->getError();
         } else {
-            $error = new ThrowableError($throwable);;
+            $error = new ThrowableError($throwable);
         }
 
         if ($error->getCode() >= Response::HTTP_INTERNAL_SERVER_ERROR) {

@@ -169,7 +169,7 @@ class FormLoginAuthenticator extends AbstractFormLoginAuthenticator
 
         if (!$user->isVerified()) {
             $this->session->getFlashBag()->add('alert', $this->translator->trans('password_login.verify_email.failure'));
-            $this->tokenStorage->setToken(null);
+            $this->tokenStorage->setToken();
 
             return new RedirectResponse($this->getLoginUrl());
         }

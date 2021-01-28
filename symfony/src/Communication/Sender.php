@@ -197,6 +197,7 @@ class Sender
                     $error = 'campaign_status.warning.no_phone_mobile';
                     break;
                 }
+            // No break here as next checks also work for SMSs
             case Communication::TYPE_CALL:
                 if (null === $volunteer->getPhoneNumber()) {
                     $error = 'campaign_status.warning.no_phone';

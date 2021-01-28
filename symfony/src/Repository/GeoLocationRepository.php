@@ -31,11 +31,11 @@ class GeoLocationRepository extends BaseRepository
                                 ->orderBy('g.datetime', 'DESC')
                                 ->setMaxResults(1)
                                 ->getQuery()
-                                ->useResultCache(false)
+                                ->disableResultCache()
                                 ->getOneOrNullResult();
 
         if ($lastGeolocation) {
-            $this->_em->detach($lastGeolocation);
+            $this->_em->clear($lastGeolocation);
 
             return $lastGeolocation->getDatetime()->getTimestamp();
         }

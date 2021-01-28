@@ -22,7 +22,7 @@ class ErrorFacade implements FacadeInterface
     private $message;
 
     /**
-     * @var array
+     * @var FacadeInterface
      */
     private $context;
 

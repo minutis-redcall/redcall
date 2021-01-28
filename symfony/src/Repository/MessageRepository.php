@@ -74,7 +74,7 @@ class MessageRepository extends BaseRepository
                     ->where('m.id = :id')
                     ->setParameter('id', $messageId)
                     ->getQuery()
-                    ->useResultCache(false)
+                    ->disableResultCache()
                     ->getOneOrNullResult();
     }
 
@@ -95,7 +95,7 @@ class MessageRepository extends BaseRepository
                     ->andWhere('m.messageId IS NOT NULL')
                     ->setParameter('campaignId', $campaign->getId())
                     ->getQuery()
-                    ->useResultCache(false)
+                    ->disableResultCache()
                     ->getSingleScalarResult();
     }
 

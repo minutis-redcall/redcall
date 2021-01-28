@@ -3,7 +3,7 @@
 namespace Bundles\PasswordLoginBundle\EventListener;
 
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
+use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\Security\Core\Exception\InvalidCsrfTokenException;
 use Symfony\Component\Security\Core\Exception\LogoutException;
 use Twig\Environment;
@@ -26,9 +26,9 @@ class CsrfExceptionListener
         $this->homeRoute = $homeRoute;
     }
 
-    public function onKernelException(GetResponseForExceptionEvent $event)
+    public function onKernelException(ExceptionEvent $event)
     {
-        $exception = $event->getException();
+        $exception = $event->getThrowable();
 
         if ($exception instanceof LogoutException || $exception instanceof InvalidCsrfTokenException) {
             $response = new Response();
