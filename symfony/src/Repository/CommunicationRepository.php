@@ -28,4 +28,17 @@ class CommunicationRepository extends BaseRepository
         $communication->setLabel($newName);
         $this->save($communication);
     }
+
+    public function findCommunicationIdsRequiringReports(\DateTime $date) : array
+    {
+        $rows = $this->createQueryBuilder('c')
+                     ->select('c.id')
+                     ->where('c.lastActivityAt < :date')
+                     ->setParameter('date', $date)
+                     ->andWhere('c.report IS NULL')
+                     ->getQuery()
+                     ->getArrayResult();
+
+        return array_column($rows, 'id');
+    }
 }

@@ -13,6 +13,10 @@ use Exception;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\CommunicationRepository")
+ * @ORM\Table(indexes={
+ *     @ORM\Index(name="last_activity_idx", columns={"last_activity_at"})
+ * })
+ * @ORM\HasLifecycleCallbacks()
  */
 class Communication
 {
@@ -110,6 +114,17 @@ class Communication
      * @ORM\Column(type="text", nullable=true)
      */
     private $raw;
+
+    /**
+     * @ORM\OneToOne(targetEntity=Report::class, inversedBy="communication", cascade={"persist", "remove"},
+     *                                           orphanRemoval=true)
+     */
+    private $report;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $lastActivityAt;
 
     /**
      * @return mixed
@@ -648,5 +663,39 @@ class Communication
             'replies-percent' => $msgsSent ? round($replies * 100 / $msgsSent, 2) : 0,
             'type'            => $this->type,
         ];
+    }
+
+    public function getReport() : ?Report
+    {
+        return $this->report;
+    }
+
+    public function setReport(?Report $report) : self
+    {
+        $this->report = $report;
+
+        return $this;
+    }
+
+    public function getLastActivityAt() : ?\DateTimeInterface
+    {
+        return $this->lastActivityAt;
+    }
+
+    public function setLastActivityAt(?\DateTimeInterface $lastActivityAt) : self
+    {
+        $this->lastActivityAt = $lastActivityAt;
+
+        return $this;
+    }
+
+    /**
+     * @ORM\PrePersist
+     * @ORM\PreUpdate
+     */
+    public function onChange()
+    {
+        $this->report         = null;
+        $this->lastActivityAt = new \DateTime();
     }
 }

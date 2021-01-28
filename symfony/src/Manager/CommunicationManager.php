@@ -233,4 +233,11 @@ class CommunicationManager
     {
         $this->communicationRepository->changeName($communication, $newName);
     }
+
+    public function findCommunicationIdsRequiringReports() : array
+    {
+        return $this->communicationRepository->findCommunicationIdsRequiringReports(
+            (new \DateTime())->sub(new \DateInterval('P7D'))
+        );
+    }
 }
