@@ -25,13 +25,13 @@ class UserRepository extends AbstractUserRepository implements UserRepositoryInt
     public function save(AbstractUser $user)
     {
         $this->_em->persist($user);
-        $this->_em->flush($user);
+        $this->_em->flush();
     }
 
     public function remove(AbstractUser $user)
     {
         $this->_em->remove($user);
-        $this->_em->flush($user);
+        $this->_em->flush();
     }
 
     public function searchQueryBuilder(?string $criteria, ?bool $onlyAdmins, ?bool $onlyDevelopers) : QueryBuilder

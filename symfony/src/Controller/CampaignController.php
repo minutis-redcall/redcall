@@ -13,6 +13,7 @@ use App\Manager\CommunicationManager;
 use App\Manager\UserManager;
 use Bundles\PaginationBundle\Manager\PaginationManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -64,16 +65,11 @@ class CampaignController extends BaseController
      */
     public function listCampaigns()
     {
-        return $this->render('campaign/list.html.twig');
-    }
-
-    public function renderCampaignsTable() : Response
-    {
         $byMyCrew      = $this->campaignManager->getCampaignsOpenedByMeOrMyCrew($this->getUser());
         $byMyTeammates = $this->campaignManager->getCampaignImpactingMyVolunteers($this->getUser());
         $finished      = $this->campaignManager->getInactiveCampaignsForUserQueryBuilder($this->getUser());
 
-        return $this->render('campaign/table.html.twig', [
+        return $this->render('campaign/list.html.twig', [
             'data' => [
                 'my_structures' => [
                     'orderBy' => $this->orderBy($byMyCrew, Campaign::class, 'c.createdAt', 'DESC', 'crew'),
@@ -249,16 +245,28 @@ class CampaignController extends BaseController
      * @Route(path="campaign/{id}/notes", name="notes_campaign")
      * @IsGranted("CAMPAIGN_ACCESS", subject="campaignEntity")
      */
-    public function notes(Request $request, Campaign $campaignEntity) : Response
+    public function notes(Request $request, Campaign $campaign) : Response
     {
         $this->validateCsrfOrThrowNotFoundException('campaign', $request->request->get('csrf'));
 
         $notes = strip_tags($request->request->get('notes'));
 
-        $this->campaignManager->changeNotes($campaignEntity, $notes);
+        $this->campaignManager->changeNotes($campaign, $notes);
 
         return $this->redirect($this->generateUrl('communication_index', [
-            'id' => $campaignEntity->getId(),
+            'id' => $campaign->getId(),
         ]));
+    }
+
+    /**
+     * @Route(path="campaign/{id}/report", name="campaign_report")
+     * @IsGranted("CAMPAIGN_ACCESS", subject="campaign")
+     * @Template
+     */
+    public function report(Campaign $campaign)
+    {
+        return [
+            'campaign' => $campaign,
+        ];
     }
 }

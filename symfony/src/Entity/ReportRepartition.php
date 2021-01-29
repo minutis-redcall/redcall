@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Entity(repositoryClass=App\Repository\ReportRepartitionRepository::class)
  */
-class ReportRepartition
+class ReportRepartition extends AbstractReport
 {
     /**
      * @ORM\Id
@@ -22,7 +22,7 @@ class ReportRepartition
     private $structure;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="float")
      */
     private $ratio;
 
@@ -31,31 +31,6 @@ class ReportRepartition
      * @ORM\JoinColumn(nullable=false)
      */
     private $report;
-
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private $messageCount = 0;
-
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private $questionCount = 0;
-
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private $answerCount = 0;
-
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private $exchangeCount = 0;
-
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private $answerRatio;
 
     /**
      * @ORM\Column(type="string", length=64)
@@ -79,12 +54,12 @@ class ReportRepartition
         return $this;
     }
 
-    public function getRatio() : ?int
+    public function getRatio() : ?float
     {
         return $this->ratio;
     }
 
-    public function setRatio(int $ratio) : self
+    public function setRatio(float $ratio) : self
     {
         $this->ratio = $ratio;
 
@@ -99,66 +74,6 @@ class ReportRepartition
     public function setReport(?Report $report) : self
     {
         $this->report = $report;
-
-        return $this;
-    }
-
-    public function getMessageCount() : ?int
-    {
-        return $this->messageCount;
-    }
-
-    public function setMessageCount(int $messageCount) : self
-    {
-        $this->messageCount = $messageCount;
-
-        return $this;
-    }
-
-    public function getQuestionCount()
-    {
-        return $this->questionCount;
-    }
-
-    public function setQuestionCount($questionCount)
-    {
-        $this->questionCount = $questionCount;
-
-        return $this;
-    }
-
-    public function getAnswerCount() : ?int
-    {
-        return $this->answerCount;
-    }
-
-    public function setAnswerCount(int $answerCount) : self
-    {
-        $this->answerCount = $answerCount;
-
-        return $this;
-    }
-
-    public function getExchangeCount() : ?int
-    {
-        return $this->exchangeCount;
-    }
-
-    public function setExchangeCount(int $exchangeCount) : self
-    {
-        $this->exchangeCount = $exchangeCount;
-
-        return $this;
-    }
-
-    public function getAnswerRatio() : ?int
-    {
-        return $this->answerRatio;
-    }
-
-    public function setAnswerRatio(int $answerRatio) : self
-    {
-        $this->answerRatio = $answerRatio;
 
         return $this;
     }

@@ -32,28 +32,19 @@ class CampaignController extends BaseController
 
     /**
      * @Route(name="index")
-     * @Template("admin/campaign/index.html.twig")
+     * @Template("admin/campaign/list.html.twig")
      *
      * @return array
      */
     public function index() : array
     {
-        return [];
-    }
-
-    /**
-     * @Template("admin/campaign/table.html.twig")
-     *
-     * @return array
-     */
-    public function renderCampaignsTable() : array
-    {
         $all = $this->campaignManager->getAllCampaignsQueryBuilder();
 
         return [
-            'all' => [
+            'type'  => 'all',
+            'table' => [
                 'orderBy' => $this->orderBy($all, Campaign::class, 'c.createdAt', 'DESC', 'all'),
-                'pager'   => $this->paginationManager->getPager($all),
+                'pager'   => $this->paginationManager->getPager($all, 'all'),
             ],
         ];
     }

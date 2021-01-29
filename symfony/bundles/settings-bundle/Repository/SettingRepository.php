@@ -66,7 +66,7 @@ class SettingRepository extends ServiceEntityRepository
         $entity->setValue($value);
 
         $this->_em->persist($entity);
-        $this->_em->flush($entity);
+        $this->_em->flush();
     }
 
     /**
@@ -81,7 +81,7 @@ class SettingRepository extends ServiceEntityRepository
 
         if ($entity) {
             $this->_em->remove($entity);
-            $this->_em->flush($entity);
+            $this->_em->flush();
         }
     }
 }

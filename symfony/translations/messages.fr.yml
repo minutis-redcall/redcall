@@ -205,6 +205,7 @@ base:
     submit: Envoyer
     update: Editer
   clear_selection: 'Effacer la sélection'
+  closed: 'Fermé'
   crud:
     create_title: 'Ajouter une entrée'
     delete_confirm: 'Souhaitez-vous vraiment supprimer "%entity%" ?'
@@ -216,6 +217,7 @@ base:
   home: Accueil
   modal:
     close: Fermer
+  open: Ouvert
   order_by:
     asc: Croissant
     desc: Décroissant
@@ -265,10 +267,11 @@ campaign:
     create_full: 'Créer un déclenchement'
     created_by: 'Créé par %name%'
     email: Email
-    implicated_structures: 'Liste des structures impliquées'
+    implicated_structures: 'Structures impliquées'
     list_admin: 'Liste de tous les déclenchements'
     list_full: 'Liste des déclenchements'
     new: 'Créer un déclenchement: %type%'
+    report: 'Voir le rapport'
     sms: SMS
     volunteers: bénévole(s)
   types:
@@ -732,3 +735,15 @@ title:
   campaigns: Déclenchements
   costs: Coûts
   messages: Messages
+report:
+  campaign:
+    title: 'Structures impliquées'
+    headers:
+      structure: 'Structure'
+      messages: 'Messages'
+      answers: 'Réponses'
+      ratio: 'Ratio R/M'
+      prices: 'Coûts'
+    communication:
+      without_title: 'Communication #%nbr% du %day%/%month%/%year% à %hours%h%mins%'
+      with_title: 'Communication #%nbr% "%title%" du day%/%month%/%year% à %hours%h%mins%'

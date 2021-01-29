@@ -1,9 +1,16 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
+
     <div class="row justify-content-md-center">
         <div class="col-md-12">
-            {{ render(controller('App\\Controller\\Admin\\CampaignController::renderCampaignsTable')) }}
+
+            <h1>
+                {{ 'campaign.titles.list_admin'|trans }}
+            </h1>
+
+            {{ include('campaign/table.html.twig') }}
+
         </div>
     </div>
 
@@ -15,4 +22,17 @@
 
         <br/><br/>
     </div>
+
+{% endblock %}
+
+{% block javascripts %}
+
+    {{ parent() }}
+
+    <script type="text/javascript">
+
+        {{ include('campaign/common.js.twig') }}
+
+    </script>
+
 {% endblock %}

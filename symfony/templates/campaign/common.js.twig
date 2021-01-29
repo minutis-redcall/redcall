@@ -1,0 +1,36 @@
+var anchor;
+if (location.hash) {
+    anchor = location.hash;
+} else if (qs('type')) {
+    anchor = '#nav-' + qs('type');
+} else if ($("a[data-toggle='tab']").length > 0) {
+    anchor = $("a[data-toggle='tab']").first().attr("href");
+}
+
+if (anchor) {
+    $("a[href='" + anchor + "']").tab("show");
+}
+
+$('.toggle-structure-list').click(function (e) {
+    e.preventDefault();
+    var that = $(this);
+    that.addClass('d-none');
+    $(that.data('target')).toggleClass('d-none');
+    $.post(that.data('href'), function (structures) {
+        var target = that.data('target');
+        $.each(structures, function (index, value) {
+            $(target).html($(target).html() + '<p>' + value.structure_name + ' (' + value.volunteer_count + ' {{ 'campaign.titles.volunteers'|trans|e('js') }})</p>');
+        });
+    });
+});
+
+$('.open-report').click(function (e) {
+    e.preventDefault();
+    var that = $(this);
+    var target = $(that.data('target'));
+    that.addClass('d-none');
+    $.post(that.data('href'), function (report) {
+        target.toggleClass('d-none');
+        target.html(report);
+    });
+});

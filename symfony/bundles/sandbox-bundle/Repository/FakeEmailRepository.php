@@ -44,13 +44,13 @@ class FakeEmailRepository extends ServiceEntityRepository
         $fake->setCreatedAt(new DateTime());
 
         $this->_em->persist($fake);
-        $this->_em->flush($fake);
+        $this->_em->flush();
     }
 
     /**
      * @return array
      */
-    public function findAllEmails(): array
+    public function findAllEmails() : array
     {
         return $this->createQueryBuilder('e')
                     ->select('
@@ -69,7 +69,7 @@ class FakeEmailRepository extends ServiceEntityRepository
      *
      * @return array
      */
-    public function findMessagesForEmail(string $email): array
+    public function findMessagesForEmail(string $email) : array
     {
         return $this->createQueryBuilder('e')
                     ->where('e.email = :email')

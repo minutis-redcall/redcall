@@ -52,15 +52,7 @@ class ReportManager
 
             $output->writeln(sprintf('Handling communication #%d: %s', $communicationId, $communication->getCampaign()->getLabel()));
 
-            $report = $this->createReport($communication);
-
-            $this->reportRepository->save($report);
-
-            foreach ($report->getRepartitions() as $repartition) {
-                $this->repartitionRepository->save($repartition);
-            }
-
-            $this->communicationManager->save($communication);
+            $this->createReport($communication);
 
             $this->communicationManager->clearEntityManager();
         }
@@ -71,7 +63,7 @@ class ReportManager
         return $this->reportRepository->getCommunicationReportsBetween($from, $to);
     }
 
-    private function createReport(Communication $communication) : Report
+    public function createReport(Communication $communication) : Report
     {
         $report     = $communication->getReport() ?? new Report();
         $hasChoices = $communication->getChoices()->count() > 0;
@@ -84,10 +76,12 @@ class ReportManager
         }
 
         if ($report->getQuestionCount()) {
-            $report->setAnswerRatio((int) ($report->getAnswerCount() * 100 / $report->getQuestionCount()));
+            $report->setAnswerRatio($report->getAnswerCount() * 100 / $report->getQuestionCount());
         }
 
         $this->createRepartition($communication, $report);
+
+        $this->saveCommunicationReport($communication);
 
         return $report;
     }
@@ -136,11 +130,11 @@ class ReportManager
             }
 
             if ($repartition->getMessageCount()) {
-                $repartition->setRatio((int) ($repartition->getMessageCount() * 100 / $report->getMessageCount()));
+                $repartition->setRatio($repartition->getMessageCount() * 100 / $report->getMessageCount());
             }
 
             if ($repartition->getQuestionCount()) {
-                $repartition->setRatio((int) ($repartition->getQuestionCount() * 100 / $report->getQuestionCount()));
+                $repartition->setRatio($repartition->getQuestionCount() * 100 / $report->getQuestionCount());
             }
 
             if ($repartition->getMessageCount() || $repartition->getQuestionCount()) {
@@ -178,5 +172,18 @@ class ReportManager
         }
 
         return $costs;
+    }
+
+    private function saveCommunicationReport(Communication $communication)
+    {
+        $report = $communication->getReport();
+
+        $this->reportRepository->save($report);
+
+        foreach ($report->getRepartitions() as $repartition) {
+            $this->repartitionRepository->save($repartition);
+        }
+
+        $this->communicationManager->save($communication);
     }
 }

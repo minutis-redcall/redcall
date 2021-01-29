@@ -1,0 +1,116 @@
+{% import 'macros.html.twig' as macros %}
+{% import _self as helpers %}
+
+{% macro commonFieldColumns(report, entity = null) %}
+
+    {% set ratio = null %}
+    {% if not entity %}
+        {% set ratio = 100 %}
+        {% set entity = report %}
+    {% endif %}
+
+    <td>
+        {% if ratio %}
+            {{ ratio }}%
+        {% else %}
+            {{ entity.ratio|round(2) }}%
+        {% endif %}
+    </td>
+    <td>
+        {% if report.questionCount %}
+            {{ entity.questionCount }}
+        {% else %}
+            {{ entity.messageCount }}
+        {% endif %}
+    </td>
+    {% if report.questionCount %}
+        <td>{{ entity.answerCount }}</td>
+        <td>{{ entity.answerRatio|round(2) }}%</td>
+    {% endif %}
+    {% if is_granted('ROLE_ADMIN') %}
+        <td>
+            {% for currency, amount in entity.costs %}
+                <div class="row">
+                    <div class="input-group col-md-6">
+                        <div class="input-group-prepend">
+                            <div class="input-group-text">{{ currency }}</div>
+                        </div>
+                        <input type="text" class="form-control" readonly value="{{ (-1 * amount)|round(2) }}"/>
+                    </div>
+                </div>
+            {% endfor %}
+        </td>
+    {% endif %}
+
+{% endmacro %}
+
+<br/>
+
+<div class="h4">{{ 'report.campaign.title'|trans }}</div>
+
+{% for key, communication in campaign.communications %}
+    {% set report = communication.report %}
+
+    {% if report.repartitions.count > 0 %}
+
+        <div class="float-right color-grey" style="font-weight: normal;" {% if communication.volunteer %}title="{{ communication.volunteer.nivol }}"{% endif %}>
+            {{ macros.communicationBy(communication) }}
+        </div>
+
+        <strong>
+            {% if communication.label %}
+                {{ 'report.campaign.communication.with_title'|trans({
+                    '%nbr%': key + 1,
+                    '%title%': communication.label,
+                    '%day%': communication.createdAt|date('d'),
+                    '%month%': communication.createdAt|date('m'),
+                    '%year%': communication.createdAt|date('Y'),
+                    '%hours%': communication.createdAt|date('H'),
+                    '%mins%': communication.createdAt|date('i'),
+                }) }}
+            {% else %}
+                {{ 'report.campaign.communication.without_title'|trans({
+                    '%nbr%': key + 1,
+                    '%day%': communication.createdAt|date('d'),
+                    '%month%': communication.createdAt|date('m'),
+                    '%year%': communication.createdAt|date('Y'),
+                    '%hours%': communication.createdAt|date('H'),
+                    '%mins%': communication.createdAt|date('i'),
+                }) }}
+            {% endif %}
+        </strong>
+
+        <table class="table table-striped">
+            <thead class="thead-light">
+            <tr>
+                <th>{{ 'report.campaign.headers.structure'|trans }}</th>
+                <th></th>
+                <th>{{ 'report.campaign.headers.messages'|trans }}</th>
+                {% if communication.report.questionCount %}
+                    <th>{{ 'report.campaign.headers.answers'|trans }}</th>
+                    <th>{{ 'report.campaign.headers.ratio'|trans }}</th>
+                {% endif %}
+                {% if is_granted('ROLE_ADMIN') %}
+                    <th>{{ 'report.campaign.headers.prices'|trans }}</th>
+                {% endif %}
+            </tr>
+            </thead>
+            <tbody>
+            {% for repartition in report.repartitions %}
+                <tr>
+                    <td>{{ repartition.structure.name }}</td>
+                    {{ helpers.commonFieldColumns(report, repartition) }}
+                </tr>
+            {% endfor %}
+            {% if report.repartitions|length > 1 %}
+                <tr>
+                    <td>&nbsp;</td>
+                    {{ helpers.commonFieldColumns(report) }}
+                </tr>
+            {% endif %}
+            </tbody>
+        </table>
+
+    {% endif %}
+
+{% endfor %}

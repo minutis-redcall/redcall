@@ -1,69 +1,86 @@
 {% import 'macros.html.twig' as macros %}
-{% import 'campaign/common.html.twig' as common %}
 
-<h1>
-    {{ 'campaign.titles.list_full'|trans }}
-</h1>
+{{ macros.orderBy(table.orderBy, {
+    'type': 'campaign.order.type'|trans,
+    'createdAt': 'campaign.order.created_at'|trans,
+    'label': 'campaign.order.label'|trans,
+}, 'nav-' ~ type) }}
 
-<nav>
-    <div class="nav nav-tabs" id="nav-tab" role="tablist">
-        {% for type, tab in data %}
-            <a class="nav-item nav-link" id="nav-{{ type }}-tab"
-               data-toggle="tab"
-               href="#nav-{{ type }}" role="tab"
-               aria-controls="nav-{{ type }}" aria-selected="false">{{ ('campaign.statuses.' ~ type)|trans }}</a>
-        {% endfor %}
-    </div>
-</nav>
+{% for index, campaign in table.pager.currentPageResults %}
 
-<div class="tab-content" id="nav-content">
-    {% for type, table in data %}
+    <div class="card">
 
-        <div class="tab-pane"
-             id="nav-{{ type }}"
-             role="tabpanel" aria-labelledby="nav-{{ type }}-tab">
+        <div class="card-header text-center" style="background-color: {{ constant('App\\Entity\\Campaign::BACKGROUNDS')[campaign.type] }}; color: {{ constant('App\\Entity\\Campaign::COLORS')[campaign.type] }};">
+            <strong>{{ ('campaign.types.' ~ campaign.type)|trans }}</strong>
+            <span style="color:red;">✚</span> {{ campaign.createdAt|date("d/m/Y H:i") }}
 
-            {{ macros.orderBy(table.orderBy, {
-                'type': 'campaign.order.type'|trans,
-                'createdAt': 'campaign.order.created_at'|trans,
-                'label': 'campaign.order.label'|trans,
-            }, 'nav-' ~ type) }}
-
-            {% for index, campaign in table.pager.currentPageResults %}
-                <div class="card">
-                    <div class="card-header text-center" style="background-color: {{ constant('App\\Entity\\Campaign::BACKGROUNDS')[campaign.type] }}; color: {{ constant('App\\Entity\\Campaign::COLORS')[campaign.type] }};">
-                        <strong>{{ ('campaign.types.' ~ campaign.type)|trans }}</strong>
-                        <span style="color:red;">✚</span> {{ campaign.createdAt|date("d/m/Y H:i") }}
-                    </div>
-                    <div class="card-body">
-                        <div class="card-title h4">
-                            {% for communication in campaign.communications %}
-                                {{ macros.communicationIcon(communication) }}
-                            {% endfor %}
-                            <a href="{{ path('communication_index', {id: campaign.id}) }}">
-                                {% if not campaign.active %}
-                                    <strike>{{ campaign.label }}</strike>
-                                {% else %}
-                                    {{ campaign.label }}
-                                {% endif %}
-                            </a>
-                        </div>
-                        <div class="card-text">
-                            {{ common.campaign(campaign) }}
-                        </div>
-                    </div>
-                </div>
-
-                <br/>
-            {% endfor %}
-
-            <br/>
-
-            {{ macros.pager(table.pager, type, {type: type}) }}
+            <div class="float-right">
+                <a href="{{ path('communication_index', {id: campaign.id}) }}">
+                    {% if campaign.active %}
+                        <div class="badge badge-pill badge-success">{{ 'base.open'|trans }}</div>
+                    {% else %}
+                        <div class="badge badge-pill badge-danger">{{ 'base.closed'|trans }}</div>
+                    {% endif %}
+                </a>
+            </div>
 
         </div>
 
-    {% endfor %}
-</div>
+        <div class="card-body">
 
-{{ include('campaign/common.html.twig') }}
+            <div class="card-title h4">
+                {% for communication in campaign.communications %}
+                    {{ macros.communicationIcon(communication) }}
+                {% endfor %}
+                <a href="{{ path('communication_index', {id: campaign.id}) }}">
+                    {% if not campaign.active %}
+                        <strike>{{ campaign.label }}</strike>
+                    {% else %}
+                        {{ campaign.label }}
+                    {% endif %}
+                </a>
+            </div>
+
+            <div class="card-text">
+                <div class="text-sm-left color-grey">
+                    {% if campaign.volunteer %}
+                        <p>{{ 'campaign.titles.created_by'|trans({'%name%': campaign.volunteer.displayName}) }}</p>
+                        <br/>
+                    {% endif %}
+
+                    {% if campaign.reportReady %}
+
+                        <div>
+                            <a href="#"
+                               class="btn btn-sm btn-secondary open-report"
+                               data-href="{{ path('campaign_report', {id: campaign.id}) }}"
+                               data-target="#report-{{ campaign.id }}">{{ 'campaign.titles.report'|trans }}</a>
+                        </div>
+
+                        <div class="d-none" id="report-{{ campaign.id }}"></div>
+
+                    {% else %}
+
+                        <div>
+                            <a href="#"
+                               data-href="{{ path('audience_campaign', {id: campaign.id}) }}"
+                               data-target="#structures-in-{{ campaign.id }}"
+                               class="btn btn-sm btn-secondary toggle-structure-list">{{ 'campaign.titles.implicated_structures'|trans }}</a>
+                        </div>
+
+                    {% endif %}
+
+                    <div class="d-none" id="structures-in-{{ campaign.id }}"></div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <br/>
+{% endfor %}
+
+<br/>
+
+{{ macros.pager(table.pager, type, {type: type}) }}
+

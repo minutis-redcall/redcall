@@ -20,7 +20,7 @@ class FakeCallRepository extends ServiceEntityRepository
         parent::__construct($registry, FakeCall::class);
     }
 
-    public function findAllPhones(): array
+    public function findAllPhones() : array
     {
         return $this->createQueryBuilder('c')
                     ->select('
@@ -36,7 +36,7 @@ class FakeCallRepository extends ServiceEntityRepository
     public function save(FakeCall $fakeCall)
     {
         $this->_em->persist($fakeCall);
-        $this->_em->flush($fakeCall);
+        $this->_em->flush();
     }
 
     public function findMessagesForPhone(string $phoneNumber)
