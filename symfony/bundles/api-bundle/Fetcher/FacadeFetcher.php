@@ -3,7 +3,6 @@
 namespace Bundles\ApiBundle\Fetcher;
 
 use Bundles\ApiBundle\Annotation\Facade;
-use Bundles\ApiBundle\Contracts\FacadeInterface;
 use Bundles\ApiBundle\Model\Documentation\FacadeDescription;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -53,7 +52,7 @@ class FacadeFetcher
 
         // todo properties
 
-        $example = $this->fetchExample($class, $decorates);
+        $example = $class::getExample($decorates);
 
         $serialized = $this->serializer->serialize($example, 'json');
         $facade->setExample($serialized);
@@ -81,16 +80,5 @@ class FacadeFetcher
         */
 
         return $facade;
-    }
-
-    private function fetchExample(string $class, ?Facade $decorates) : FacadeInterface
-    {
-        $child = null;
-
-        if ($decorates) {
-            $child = $this->fetchExample($decorates->class, $decorates->decorates);
-        }
-
-        return $class::getExample($child);
     }
 }

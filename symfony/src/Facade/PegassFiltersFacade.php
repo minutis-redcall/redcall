@@ -2,6 +2,7 @@
 
 namespace App\Facade;
 
+use Bundles\ApiBundle\Annotation\Facade;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
 use Bundles\PegassCrawlerBundle\Entity\Pegass;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -32,7 +33,7 @@ class PegassFiltersFacade implements FacadeInterface
      */
     private $type;
 
-    static public function getExample(FacadeInterface $child = null) : FacadeInterface
+    static public function getExample(Facade $decorates = null) : FacadeInterface
     {
         $facade = new self;
 

@@ -10,5 +10,5 @@ use Symfony\Component\HttpFoundation\Response;
  */
 interface FacadeInterface
 {
-    static public function getExample(FacadeInterface $child = null) : FacadeInterface;
+    static public function getExample(Api\Facade $decorates = null) : FacadeInterface;
 }
