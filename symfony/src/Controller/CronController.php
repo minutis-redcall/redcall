@@ -25,6 +25,7 @@ class CronController extends AbstractController
         'clear:media',
         'clear:space',
         'clear:expirable',
+        'report:communication',
     ];
 
     /**

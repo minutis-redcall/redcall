@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use App\Repository\ReportCostRepartitionRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -36,22 +35,32 @@ class ReportRepartition
     /**
      * @ORM\Column(type="integer")
      */
-    private $messageCount;
+    private $messageCount = 0;
 
     /**
      * @ORM\Column(type="integer")
      */
-    private $answerCount;
+    private $questionCount = 0;
 
     /**
      * @ORM\Column(type="integer")
      */
-    private $bounceCount;
+    private $answerCount = 0;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $exchangeCount = 0;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
      */
     private $answerRatio;
+
+    /**
+     * @ORM\Column(type="string", length=64)
+     */
+    private $costs = '[]';
 
     public function getId() : ?int
     {
@@ -106,6 +115,18 @@ class ReportRepartition
         return $this;
     }
 
+    public function getQuestionCount()
+    {
+        return $this->questionCount;
+    }
+
+    public function setQuestionCount($questionCount)
+    {
+        $this->questionCount = $questionCount;
+
+        return $this;
+    }
+
     public function getAnswerCount() : ?int
     {
         return $this->answerCount;
@@ -118,14 +139,14 @@ class ReportRepartition
         return $this;
     }
 
-    public function getBounceCount() : ?int
+    public function getExchangeCount() : ?int
     {
-        return $this->bounceCount;
+        return $this->exchangeCount;
     }
 
-    public function setBounceCount(int $bounceCount) : self
+    public function setExchangeCount(int $exchangeCount) : self
     {
-        $this->bounceCount = $bounceCount;
+        $this->exchangeCount = $exchangeCount;
 
         return $this;
     }
@@ -138,6 +159,22 @@ class ReportRepartition
     public function setAnswerRatio(int $answerRatio) : self
     {
         $this->answerRatio = $answerRatio;
+
+        return $this;
+    }
+
+    public function getCosts() : ?array
+    {
+        if (!$this->costs) {
+            return null;
+        }
+
+        return json_decode($this->costs, true);
+    }
+
+    public function setCosts(array $costs) : self
+    {
+        $this->costs = json_encode($costs);
 
         return $this;
     }

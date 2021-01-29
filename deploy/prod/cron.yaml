@@ -35,3 +35,8 @@ cron:
   - description: "Remove expired expirable entities"
     url: /cron/clear-expirable
     schedule: every 24 hours
+
+  # * * * * * <path/to/the/project>/symfony/bin/console report:communication
+  - description: "Creates communication reports"
+    url: /cron/report-communication
+    schedule: every 24 hours

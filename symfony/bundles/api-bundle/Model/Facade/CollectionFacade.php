@@ -12,9 +12,11 @@ class CollectionFacade extends \ArrayObject implements FacadeInterface
             throw new \LogicException('This facade decorates another facade');
         }
 
-        return new self([
-            $child->getExample(),
-            $child->getExample(),
-        ]);
+        $facade = new self;
+
+        $facade[] = $child;
+        $facade[] = $child;
+
+        return $facade;
     }
 }

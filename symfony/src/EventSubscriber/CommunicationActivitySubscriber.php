@@ -14,11 +14,11 @@ class CommunicationActivitySubscriber
         $entity = $args->getObject();
 
         if ($entity instanceof Message) {
-            $entity->getCommunication()->onChange();
+            $entity->getCommunication()->setReport(null);
         }
 
         if ($entity instanceof Answer || $entity instanceof Cost) {
-            $entity->getMessage()->getCommunication()->onChange();
+            $entity->getMessage()->getCommunication()->setReport(null);
         }
     }
 }

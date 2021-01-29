@@ -76,10 +76,10 @@ class ReportStructureCommand extends BaseCommand
                     $ref[$k3] += $repartition->getMessageCount();
                 }
                 $ref[$k4]    += $repartition->getAnswerCount();
-                $ref[$k5]    += $repartition->getBounceCount();
+                $ref[$k5]    += $repartition->getExchangeCount();
                 $ref[$k10]   += 1;
                 $ref[$k11][] = $report->getCommunication()->getCampaign()->getId();
-                $cost        = $report->getCost();
+                $cost        = $report->getCosts();
                 $ref[$k7]    += (($repartition->getRatio() / 100) * ($cost['EUR'] ?? 0));
                 $ref[$k8]    += (($repartition->getRatio() / 100) * ($cost['USD'] ?? 0));
             }

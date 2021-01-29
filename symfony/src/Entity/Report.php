@@ -32,17 +32,17 @@ class Report
     /**
      * @ORM\Column(type="integer")
      */
+    private $questionCount = 0;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
     private $answerCount = 0;
 
     /**
      * @ORM\Column(type="integer")
      */
-    private $choiceCount = 0;
-
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private $bounceCount = 0;
+    private $exchangeCount = 0;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
@@ -56,6 +56,11 @@ class Report
     private $repartitions;
 
     /**
+     * @ORM\Column(type="string", length=64)
+     */
+    private $costs = '[]';
+
+    /**
      * @ORM\Column(type="datetime")
      */
     private $updatedAt;
@@ -64,11 +69,6 @@ class Report
      * @ORM\OneToOne(targetEntity=Communication::class, mappedBy="report", cascade={"persist", "remove"})
      */
     private $communication;
-
-    /**
-     * @ORM\Column(type="string", length=64)
-     */
-    private $cost = 'free';
 
     public function __construct()
     {
@@ -104,6 +104,18 @@ class Report
         return $this;
     }
 
+    public function getQuestionCount() : int
+    {
+        return $this->questionCount;
+    }
+
+    public function setQuestionCount(int $questionCount) : Report
+    {
+        $this->questionCount = $questionCount;
+
+        return $this;
+    }
+
     public function getAnswerCount() : ?int
     {
         return $this->answerCount;
@@ -116,26 +128,14 @@ class Report
         return $this;
     }
 
-    public function getChoiceCount() : ?int
+    public function getExchangeCount() : ?int
     {
-        return $this->choiceCount;
+        return $this->exchangeCount;
     }
 
-    public function setChoiceCount(int $choiceCount) : self
+    public function setExchangeCount(int $exchangeCount) : self
     {
-        $this->choiceCount = $choiceCount;
-
-        return $this;
-    }
-
-    public function getBounceCount() : ?int
-    {
-        return $this->bounceCount;
-    }
-
-    public function setBounceCount(int $bounceCount) : self
-    {
-        $this->bounceCount = $bounceCount;
+        $this->exchangeCount = $exchangeCount;
 
         return $this;
     }
@@ -182,6 +182,23 @@ class Report
         return $this;
     }
 
+
+    public function getCosts() : ?array
+    {
+        if (!$this->costs) {
+            return null;
+        }
+
+        return json_decode($this->costs, true);
+    }
+
+    public function setCosts(array $costs) : self
+    {
+        $this->costs = json_encode($costs);
+
+        return $this;
+    }
+
     public function getUpdatedAt() : ?\DateTimeInterface
     {
         return $this->updatedAt;
@@ -223,21 +240,5 @@ class Report
     public function onChange()
     {
         $this->updatedAt = new \DateTime();
-    }
-
-    public function getCost() : ?array
-    {
-        if (!$this->cost) {
-            return null;
-        }
-
-        return json_decode($this->cost, true);
-    }
-
-    public function setCost(array $cost) : self
-    {
-        $this->cost = json_encode($cost);
-
-        return $this;
     }
 }
