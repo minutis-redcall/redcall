@@ -3,11 +3,11 @@
 namespace App\Repository;
 
 use App\Entity\User;
+use Bundles\PasswordLoginBundle\Entity\AbstractUser;
 use Bundles\PasswordLoginBundle\Repository\AbstractUserRepository;
 use Bundles\PasswordLoginBundle\Repository\UserRepositoryInterface;
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\ORM\QueryBuilder;
-use Symfony\Bridge\Doctrine\RegistryInterface;
 
 /**
  * @method User|null find($id, $lockMode = null, $lockVersion = null)
@@ -17,12 +17,21 @@ use Symfony\Bridge\Doctrine\RegistryInterface;
  */
 class UserRepository extends AbstractUserRepository implements UserRepositoryInterface
 {
-    /**
-     * @param RegistryInterface $registry
-     */
     public function __construct(Registry $registry)
     {
         parent::__construct($registry, User::class);
+    }
+
+    public function save(AbstractUser $user)
+    {
+        $this->_em->persist($user);
+        $this->_em->flush($user);
+    }
+
+    public function remove(AbstractUser $user)
+    {
+        $this->_em->remove($user);
+        $this->_em->flush($user);
     }
 
     public function searchQueryBuilder(?string $criteria, ?bool $onlyAdmins, ?bool $onlyDevelopers) : QueryBuilder

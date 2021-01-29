@@ -2,8 +2,6 @@
 
 namespace Bundles\ApiBundle\Model\Documentation;
 
-use Bundles\ApiBundle\Contracts\FacadeInterface;
-
 class EndpointDescription
 {
     /**
@@ -37,12 +35,12 @@ class EndpointDescription
     private $description;
 
     /**
-     * @var FacadeInterface|null
+     * @var FacadeDescription|null
      */
     private $requestFacade;
 
     /**
-     * @var FacadeInterface|null
+     * @var FacadeDescription|null
      */
     private $responseFacade;
 

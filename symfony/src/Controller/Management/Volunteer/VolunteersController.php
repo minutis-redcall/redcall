@@ -179,7 +179,7 @@ class VolunteersController extends BaseController
         $this->volunteerManager->save($volunteer);
 
         // Executing asynchronous task to prevent against interruptions
-        $console = sprintf('%s/../bin/console', $this->kernel->getRootDir());
+        $console = sprintf('%s/bin/console', $this->kernel->getProjectDir());
         $command = sprintf('%s pegass --volunteer %s', escapeshellarg($console), $volunteer->getIdentifier());
         exec(sprintf('%s > /dev/null 2>&1 & echo -n \$!', $command));
 

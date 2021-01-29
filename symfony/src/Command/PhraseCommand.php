@@ -85,14 +85,14 @@ class PhraseCommand extends Command
                 $locale = $this->getLocaleFromFileName($file);
                 $value  = $localTranslations[$file][$key];
                 if ($input->getOption('create')) {
-                    $output->writeln(sprintf('<info>Creating missing translation %s for locale %s</info>', $key, $locale, $value));
+                    $output->writeln(sprintf('<info>Creating missing translation %s for locale %s</info>', $key, $locale));
                     $this->phrase->createTranslation($tag, array_search($locale, $locales), $key, $value);
                     $remoteTranslations[$file][$key] = $value;
                     if ($input->getOption('sleep')) {
                         sleep($input->getOption('sleep'));
                     }
                 } else {
-                    $output->writeln(sprintf('<info>Missing translation %s for locale %s</info>', $key, $locale, $value));
+                    $output->writeln(sprintf('<info>Missing translation %s for locale %s</info>', $key, $locale));
                 }
             }
         }
@@ -232,7 +232,7 @@ class PhraseCommand extends Command
             return [];
         }
 
-        return $this->getFlattenArrayFromTranslations($array);;
+        return $this->getFlattenArrayFromTranslations($array);
     }
 
     /**

@@ -135,6 +135,6 @@ class Classification
 
     public function getKeys() : array
     {
-        return array_keys(get_class_vars(self));
+        return array_keys(get_class_vars(__CLASS__));
     }
 }

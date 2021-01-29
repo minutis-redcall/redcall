@@ -24,7 +24,6 @@ use Bundles\PasswordLoginBundle\Manager\EmailVerificationManager;
 use Bundles\PasswordLoginBundle\Manager\PasswordRecoveryManager;
 use Bundles\PasswordLoginBundle\Manager\UserManager;
 use Bundles\PasswordLoginBundle\Services\Mail;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Form\FormError;
@@ -32,6 +31,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
@@ -157,13 +157,13 @@ class SecurityController extends BaseController
         if ($registrationForm->isSubmitted() && $registrationForm->isValid()) {
             $user->setPassword($this->encoder->encodePassword($user, $user->getPassword()));
 
-            $this->dispatcher->dispatch(PasswordLoginEvents::PRE_REGISTER, new PreRegisterEvent($user));
+            $this->dispatcher->dispatch(new PreRegisterEvent($user), PasswordLoginEvents::PRE_REGISTER);
 
             $this->userManager->save($user);
 
             $this->sendEmailVerification($user->getUsername(), EmailVerification::TYPE_REGISTRATION);
 
-            $this->dispatcher->dispatch(PasswordLoginEvents::POST_REGISTER, new PostRegisterEvent($user));
+            $this->dispatcher->dispatch(new PostRegisterEvent($user), PasswordLoginEvents::POST_REGISTER);
 
             $this->success('password_login.register.success');
 
@@ -200,7 +200,7 @@ class SecurityController extends BaseController
             throw $this->createNotFoundException();
         }
 
-        $this->dispatcher->dispatch(PasswordLoginEvents::PRE_VERIFY_EMAIL, new PreVerifyEmailEvent($user));
+        $this->dispatcher->dispatch(new PreVerifyEmailEvent($user), PasswordLoginEvents::PRE_VERIFY_EMAIL);
 
         $user->setIsVerified(true);
 
@@ -210,7 +210,7 @@ class SecurityController extends BaseController
 
         $this->userManager->save($user);
 
-        $this->dispatcher->dispatch(PasswordLoginEvents::POST_VERIFY_EMAIL, new PostVerifyEmailEvent($user));
+        $this->dispatcher->dispatch(new PostVerifyEmailEvent($user), PasswordLoginEvents::POST_VERIFY_EMAIL);
 
         $token = new UsernamePasswordToken($user, null, 'main', $user->getRoles());
         $this->tokenStorage->setToken($token);
@@ -294,11 +294,11 @@ class SecurityController extends BaseController
                 );
             }
 
-            $this->dispatcher->dispatch(PasswordLoginEvents::PRE_EDIT_PROFILE, new PreEditProfileEvent($oldUser, $newUser));
+            $this->dispatcher->dispatch(new PreEditProfileEvent($oldUser, $newUser), PasswordLoginEvents::PRE_EDIT_PROFILE);
 
             $this->userManager->save($newUser);
 
-            $this->dispatcher->dispatch(PasswordLoginEvents::POST_EDIT_PROFILE, new PostEditProfileEvent($newUser, $oldUser));
+            $this->dispatcher->dispatch(new PostEditProfileEvent($newUser, $oldUser), PasswordLoginEvents::POST_EDIT_PROFILE);
 
             $this->success('password_login.profile.success');
 
@@ -394,7 +394,7 @@ class SecurityController extends BaseController
             ->handleRequest($request);
 
         if ($changePassword->isSubmitted() && $changePassword->isValid()) {
-            $this->dispatcher->dispatch(PasswordLoginEvents::PRE_CHANGE_PASSWORD, new PreChangePasswordEvent($user));
+            $this->dispatcher->dispatch(new PreChangePasswordEvent($user), PasswordLoginEvents::PRE_CHANGE_PASSWORD);
 
             $newPassword = $changePassword->getData()['password'];
 
@@ -404,7 +404,7 @@ class SecurityController extends BaseController
 
             $this->userManager->save($user);
 
-            $this->dispatcher->dispatch(PasswordLoginEvents::POST_CHANGE_PASSWORD, new PostChangePasswordEvent($user));
+            $this->dispatcher->dispatch(new PostChangePasswordEvent($user), PasswordLoginEvents::POST_CHANGE_PASSWORD);
 
             $this->success('password_login.change_password.success');
 

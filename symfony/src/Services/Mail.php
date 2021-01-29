@@ -4,7 +4,7 @@ namespace App\Services;
 
 use Bundles\PasswordLoginBundle\Manager\UserManager;
 use Bundles\PasswordLoginBundle\Services\Mail as BaseMail;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Environment;
 
 class Mail extends BaseMail

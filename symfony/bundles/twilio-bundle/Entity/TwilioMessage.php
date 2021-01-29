@@ -14,7 +14,7 @@ use Doctrine\ORM\Mapping as ORM;
  *         @ORM\Index(name="price_idx", columns={"price"})
  *     }
  * )
- * @ORM\Entity(repositoryClass="TwilioMessageRepository")
+ * @ORM\Entity(repositoryClass="Bundles\TwilioBundle\Repository\TwilioMessageRepository")
  * @ORM\HasLifecycleCallbacks
  */
 class TwilioMessage extends BaseTwilio

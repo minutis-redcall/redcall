@@ -137,7 +137,7 @@ class StructuresController extends BaseController
         $this->structureManager->save($structure);
 
         // Executing asynchronous task to prevent against interruptions
-        $console = sprintf('%s/../bin/console', $this->kernel->getRootDir());
+        $console = sprintf('%s/bin/console', $this->kernel->getProjectDir());
         $command = sprintf('%s pegass --structure %s', escapeshellarg($console), $structure->getIdentifier());
         exec(sprintf('%s > /dev/null 2>&1 & echo -n \$!', $command));
 

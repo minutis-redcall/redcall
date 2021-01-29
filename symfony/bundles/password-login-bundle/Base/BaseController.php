@@ -3,9 +3,9 @@
 namespace Bundles\PasswordLoginBundle\Base;
 
 use Bundles\PasswordLoginBundle\Traits\ServiceTrait;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
-class BaseController extends Controller
+class BaseController extends AbstractController
 {
     public function trans(string $template, array $parameters = [])
     {

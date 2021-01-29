@@ -13,6 +13,10 @@ use Exception;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\CommunicationRepository")
+ * @ORM\Table(indexes={
+ *     @ORM\Index(name="last_activity_idx", columns={"last_activity_at"})
+ * })
+ * @ORM\HasLifecycleCallbacks()
  */
 class Communication
 {
@@ -112,6 +116,17 @@ class Communication
     private $raw;
 
     /**
+     * @ORM\OneToOne(targetEntity=Report::class, inversedBy="communication", cascade={"persist", "remove"},
+     *                                           orphanRemoval=true)
+     */
+    private $report;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $lastActivityAt;
+
+    /**
      * @return mixed
      */
     public function getId()
@@ -144,7 +159,7 @@ class Communication
      *
      * @return $this
      */
-    public function setCampaign($campaign) : self
+    public function setCampaign(Campaign $campaign) : self
     {
         $this->campaign = $campaign;
 
@@ -184,7 +199,7 @@ class Communication
      *
      * @return $this
      */
-    public function setType($type) : self
+    public function setType(string $type) : self
     {
         $this->type = $type;
 
@@ -239,7 +254,7 @@ class Communication
      *
      * @return $this
      */
-    public function setBody($body) : self
+    public function setBody(string $body) : self
     {
         $this->body = $body;
 
@@ -273,7 +288,7 @@ class Communication
      *
      * @return $this
      */
-    public function setMessages($messages) : self
+    public function setMessages(array $messages) : self
     {
         $this->messages = $messages;
 
@@ -306,7 +321,7 @@ class Communication
      *
      * @return $this
      */
-    public function setCreatedAt($createdAt) : self
+    public function setCreatedAt(\DateTime $createdAt) : self
     {
         $this->createdAt = $createdAt;
 
@@ -648,5 +663,38 @@ class Communication
             'replies-percent' => $msgsSent ? round($replies * 100 / $msgsSent, 2) : 0,
             'type'            => $this->type,
         ];
+    }
+
+    public function getReport() : ?Report
+    {
+        return $this->report;
+    }
+
+    public function setReport(?Report $report) : self
+    {
+        $this->report = $report;
+
+        return $this;
+    }
+
+    public function getLastActivityAt() : ?\DateTimeInterface
+    {
+        return $this->lastActivityAt;
+    }
+
+    public function setLastActivityAt(?\DateTimeInterface $lastActivityAt) : self
+    {
+        $this->lastActivityAt = $lastActivityAt;
+
+        return $this;
+    }
+
+    /**
+     * @ORM\PrePersist
+     * @ORM\PreUpdate
+     */
+    public function onChange()
+    {
+        $this->lastActivityAt = new \DateTime();
     }
 }

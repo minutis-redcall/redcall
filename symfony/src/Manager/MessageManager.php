@@ -93,7 +93,8 @@ class MessageManager
         foreach ($volunteers as $volunteer) {
             /** @var Volunteer $volunteer */
             for ($prefix = 'A'; in_array($prefix, $usedPrefixes[$volunteer->getId()] ?? []); $prefix++) {
-                ;
+                // Hack: A+1=B, Z+1=AA, ...
+                // Let me be happy to find a use case for this shit 😅
             }
             $prefixes[$volunteer->getId()] = $prefix;
         }

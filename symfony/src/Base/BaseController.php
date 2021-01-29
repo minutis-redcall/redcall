@@ -6,11 +6,11 @@ use Bundles\PaginationBundle\Manager\PaginationManager;
 use Doctrine\ORM\QueryBuilder;
 use LogicException;
 use Pagerfanta\Pagerfanta;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\Form\Test\FormBuilderInterface;
 
-class BaseController extends Controller
+class BaseController extends AbstractController
 {
     public function orderBy(QueryBuilder $qb,
         $class,

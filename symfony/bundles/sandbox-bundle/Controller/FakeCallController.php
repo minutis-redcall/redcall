@@ -70,7 +70,6 @@ class FakeCallController extends BaseController
 
     /**
      * @Route("/clear/{csrf}", name="clear")
-     * @Template()
      */
     public function clearAction(string $csrf)
     {

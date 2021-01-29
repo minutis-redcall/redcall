@@ -25,6 +25,6 @@ class GeoLocationManager
 
     public function save(GeoLocation $geoLocation)
     {
-        return $this->geoLocationRepository->save($geoLocation);
+        $this->geoLocationRepository->save($geoLocation);
     }
 }

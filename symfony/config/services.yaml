@@ -64,6 +64,10 @@ services:
     tags:
       - { name: monolog.processor }
 
+  App\EventSubscriber\CommunicationActivitySubscriber:
+    tags:
+      - { name: doctrine.event_listener, event: postPersist }
+
   Bundles\PasswordLoginBundle\Repository\UserRepositoryInterface:
     class: App\Repository\UserRepository
     arguments: [ '@Doctrine\Common\Persistence\ManagerRegistry' ]

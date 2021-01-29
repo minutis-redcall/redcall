@@ -16,10 +16,12 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 class GenerateMjmlCommand extends Command
 {
     protected static $defaultName = 'generate:mjml';
+
     /**
      * @var Mjml
      */
     private $mjmlClient;
+
     /**
      * @var SymfonyStyle
      */

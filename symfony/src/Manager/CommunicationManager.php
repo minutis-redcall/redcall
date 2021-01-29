@@ -233,4 +233,26 @@ class CommunicationManager
     {
         $this->communicationRepository->changeName($communication, $newName);
     }
+
+    public function findCommunicationIdsRequiringReports() : array
+    {
+        return $this->communicationRepository->findCommunicationIdsRequiringReports(
+            (new \DateTime())->sub(new \DateInterval('P7D'))
+        );
+    }
+
+    public function clearEntityManager()
+    {
+        $this->communicationRepository->clearEntityManager();
+    }
+
+    public function getCommunicationStructures(Communication $communication) : array
+    {
+        return $this->communicationRepository->getCommunicationStructures($communication);
+    }
+
+    public function save(Communication $communication)
+    {
+        $this->communicationRepository->save($communication);
+    }
 }

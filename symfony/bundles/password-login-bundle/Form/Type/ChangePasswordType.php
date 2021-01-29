@@ -5,7 +5,6 @@ namespace Bundles\PasswordLoginBundle\Form\Type;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\Security\Core\Encoder\BCryptPasswordEncoder;
 use Symfony\Component\Validator\Constraints;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -32,7 +31,7 @@ class ChangePasswordType extends AbstractType
                     'label'       => 'password_login.change_password.password',
                     'constraints' => new Constraints\Length([
                         'min' => 8,
-                        'max' => BCryptPasswordEncoder::MAX_PASSWORD_LENGTH,
+                        'max' => 4096,
                     ]),
                 ],
                 'second_options'  => ['label' => 'password_login.change_password.repeat_password'],

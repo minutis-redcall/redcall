@@ -2,6 +2,8 @@
 
 namespace Bundles\TwilioBundle\Command;
 
+use App\Entity\Phone;
+use App\Tools\PhoneNumber;
 use Bundles\TwilioBundle\Manager\TwilioMessageManager;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
@@ -35,7 +37,12 @@ class SmsCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $phone = new Phone();
+        $phone->setE164($input->getArgument('phoneNumber'));
+        $phone->onChange();
+
         $this->messageManager->sendMessage(
+            PhoneNumber::getSmsSender($phone),
             $input->getArgument('phoneNumber'),
             implode(' ', $input->getArgument('message'))
         );

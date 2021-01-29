@@ -24,14 +24,14 @@ class FakeSmsManager
     /**
      * @return array
      */
-    public function findAllPhones(): array
+    public function findAllPhones() : array
     {
         return $this->fakeSmsRepository->findAllPhones();
     }
 
     public function truncate()
     {
-        return $this->fakeSmsRepository->truncate();
+        $this->fakeSmsRepository->truncate();
     }
 
     /**
@@ -39,7 +39,7 @@ class FakeSmsManager
      *
      * @return FakeSms[]
      */
-    public function findMessagesForPhoneNumber(string $phoneNumber): array
+    public function findMessagesForPhoneNumber(string $phoneNumber) : array
     {
         return $this->fakeSmsRepository->findMessagesForPhoneNumber($phoneNumber);
     }
@@ -60,7 +60,7 @@ class FakeSmsManager
      *
      * @return array
      */
-    public function findMessagesHavingIdGreaterThan($phoneNumber, $lastMessageId): array
+    public function findMessagesHavingIdGreaterThan($phoneNumber, $lastMessageId) : array
     {
         return $this->fakeSmsRepository->findMessagesHavingIdGreaterThan($phoneNumber, $lastMessageId);
     }

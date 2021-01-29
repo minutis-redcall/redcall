@@ -23,7 +23,6 @@ use App\Manager\UserManager;
 use App\Manager\VolunteerManager;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\FormType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -146,10 +145,7 @@ class WidgetController extends BaseController
     public function nivolEditor(User $user = null)
     {
         $form = $this
-            ->createNamedFormBuilder(
-                sprintf('nivol-%s', Uuid::uuid4()),
-                FormType::class
-            )
+            ->createNamedFormBuilder(sprintf('nivol-%s', Uuid::uuid4()))
             ->add('nivol', VolunteerWidgetType::class, [
                 'data'  => $user ? $user->getNivol() : null,
                 'label' => false,
@@ -181,7 +177,7 @@ class WidgetController extends BaseController
         $results = [];
         foreach ($volunteers as $volunteer) {
             /* @var Volunteer $volunteer */
-            $results[] = $volunteer->toSearchResults($this->translator);
+            $results[] = $volunteer->toSearchResults();
         }
 
         return $this->json($results);
@@ -194,10 +190,7 @@ class WidgetController extends BaseController
         }
 
         $form = $this
-            ->createNamedFormBuilder(
-                sprintf('structure-%s', Uuid::uuid4()),
-                FormType::class
-            )
+            ->createNamedFormBuilder(sprintf('structure-%s', Uuid::uuid4()))
             ->add('structure', StructureWidgetType::class, ['label' => false])
             ->getForm();
 
@@ -235,10 +228,7 @@ class WidgetController extends BaseController
     public function badgeEditor()
     {
         $form = $this
-            ->createNamedFormBuilder(
-                sprintf('badge-%s', Uuid::uuid4()),
-                FormType::class
-            )
+            ->createNamedFormBuilder(sprintf('badge-%s', Uuid::uuid4()))
             ->add('badge', BadgeWidgetType::class, ['label' => false])
             ->getForm();
 
@@ -268,10 +258,7 @@ class WidgetController extends BaseController
     public function categoryEditor()
     {
         $form = $this
-            ->createNamedFormBuilder(
-                sprintf('category-%s', Uuid::uuid4()),
-                FormType::class
-            )
+            ->createNamedFormBuilder(sprintf('category-%s', Uuid::uuid4()))
             ->add('category', CategoryWigetType::class, ['label' => false])
             ->getForm();
 

@@ -45,7 +45,7 @@ class AnswerRepository extends BaseRepository
                            ->getOneOrNullResult();
 
         if ($lastAnswer) {
-            $this->_em->detach($lastAnswer);
+            $this->_em->clear();
 
             /* @var Answer $lastAnswer */
             return $lastAnswer->getUpdatedAt()->getTimestamp();

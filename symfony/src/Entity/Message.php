@@ -168,7 +168,7 @@ class Message
      *
      * @return $this
      */
-    public function setVolunteer($volunteer) : Message
+    public function setVolunteer(Volunteer $volunteer) : Message
     {
         $this->volunteer = $volunteer;
 
@@ -188,7 +188,7 @@ class Message
      *
      * @return $this
      */
-    public function setSent($sent) : Message
+    public function setSent(bool $sent) : Message
     {
         $this->sent = $sent;
 
@@ -236,7 +236,7 @@ class Message
      *
      * @return $this
      */
-    public function setAnswers($answers) : Message
+    public function setAnswers(array $answers) : Message
     {
         $this->answers = $answers;
 
@@ -280,7 +280,7 @@ class Message
      *
      * @return $this
      */
-    public function setCommunication($communication) : Message
+    public function setCommunication(Communication $communication) : Message
     {
         $this->communication = $communication;
 

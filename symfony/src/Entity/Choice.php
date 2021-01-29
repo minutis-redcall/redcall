@@ -93,7 +93,7 @@ class Choice
      *
      * @return $this
      */
-    public function setLabel($label)
+    public function setLabel(string $label)
     {
         $this->label = $label;
 
@@ -113,7 +113,7 @@ class Choice
      *
      * @return $this
      */
-    public function setCommunication($communication)
+    public function setCommunication(Communication $communication)
     {
         $this->communication = $communication;
 
