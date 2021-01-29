@@ -2,6 +2,7 @@
 
 namespace Bundles\ApiBundle\Model\Facade;
 
+use Bundles\ApiBundle\Annotation\Facade;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
 
 class ErrorFacade implements FacadeInterface
@@ -26,17 +27,18 @@ class ErrorFacade implements FacadeInterface
      */
     private $context;
 
-    static public function getExample(FacadeInterface $child = null) : FacadeInterface
+    static public function getExample(Facade $decorates = null) : FacadeInterface
     {
-        if (null === $child) {
+        if (null === $decorates) {
             throw new \LogicException('This facade decorates another facade');
         }
 
         $facade = new self;
+        $child  = $decorates->class;
 
         $facade->code    = '1234';
         $facade->message = 'Sample message';
-        $facade->context = $child;
+        $facade->context = $child::getExample($decorates->decorates);
 
         return $facade;
     }

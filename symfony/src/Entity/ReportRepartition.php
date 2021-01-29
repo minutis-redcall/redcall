@@ -2,13 +2,12 @@
 
 namespace App\Entity;
 
-use App\Repository\ReportCostRepartitionRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass=App\Repository\ReportRepartitionRepository::class)
  */
-class ReportRepartition
+class ReportRepartition extends AbstractReport
 {
     /**
      * @ORM\Id
@@ -23,7 +22,7 @@ class ReportRepartition
     private $structure;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="float")
      */
     private $ratio;
 
@@ -34,24 +33,9 @@ class ReportRepartition
     private $report;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="string", length=64)
      */
-    private $messageCount;
-
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private $answerCount;
-
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private $bounceCount;
-
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private $answerRatio;
+    private $costs = '[]';
 
     public function getId() : ?int
     {
@@ -70,12 +54,12 @@ class ReportRepartition
         return $this;
     }
 
-    public function getRatio() : ?int
+    public function getRatio() : ?float
     {
         return $this->ratio;
     }
 
-    public function setRatio(int $ratio) : self
+    public function setRatio(float $ratio) : self
     {
         $this->ratio = $ratio;
 
@@ -94,50 +78,18 @@ class ReportRepartition
         return $this;
     }
 
-    public function getMessageCount() : ?int
+    public function getCosts() : ?array
     {
-        return $this->messageCount;
+        if (!$this->costs) {
+            return null;
+        }
+
+        return json_decode($this->costs, true);
     }
 
-    public function setMessageCount(int $messageCount) : self
+    public function setCosts(array $costs) : self
     {
-        $this->messageCount = $messageCount;
-
-        return $this;
-    }
-
-    public function getAnswerCount() : ?int
-    {
-        return $this->answerCount;
-    }
-
-    public function setAnswerCount(int $answerCount) : self
-    {
-        $this->answerCount = $answerCount;
-
-        return $this;
-    }
-
-    public function getBounceCount() : ?int
-    {
-        return $this->bounceCount;
-    }
-
-    public function setBounceCount(int $bounceCount) : self
-    {
-        $this->bounceCount = $bounceCount;
-
-        return $this;
-    }
-
-    public function getAnswerRatio() : ?int
-    {
-        return $this->answerRatio;
-    }
-
-    public function setAnswerRatio(int $answerRatio) : self
-    {
-        $this->answerRatio = $answerRatio;
+        $this->costs = json_encode($costs);
 
         return $this;
     }

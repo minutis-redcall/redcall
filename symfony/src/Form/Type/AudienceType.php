@@ -303,7 +303,7 @@ class AudienceType extends AbstractType
 
         foreach ($children as $child) {
             $ids[] = $child;
-            if ($hierarchy[$child]) {
+            if ($hierarchy[$child] ?? false) {
                 $ids = array_merge($ids, $this->findDescendants($hierarchy, $hierarchy[$child]));
             }
         }

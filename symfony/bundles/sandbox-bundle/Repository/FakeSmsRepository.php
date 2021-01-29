@@ -58,7 +58,7 @@ class FakeSmsRepository extends ServiceEntityRepository
         $fakeSms->setCreatedAt(new DateTime());
 
         $this->_em->persist($fakeSms);
-        $this->_em->flush($fakeSms);
+        $this->_em->flush();
     }
 
     public function findMessagesHavingIdGreaterThan(string $phoneNumber, ?string $lastMessageId) : array

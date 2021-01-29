@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * Class GeoLocationController
@@ -34,13 +35,17 @@ class GeoLocationController extends BaseController
     private $messageManager;
 
     /**
-     * @param GeoLocationManager $geoLocationManager
-     * @param MessageManager     $messageManager
+     * @var TranslatorInterface
      */
-    public function __construct(GeoLocationManager $geoLocationManager, MessageManager $messageManager)
+    private $translator;
+
+    public function __construct(GeoLocationManager $geoLocationManager,
+        MessageManager $messageManager,
+        TranslatorInterface $translator)
     {
         $this->geoLocationManager = $geoLocationManager;
         $this->messageManager     = $messageManager;
+        $this->translator         = $translator;
     }
 
     /**
@@ -110,7 +115,7 @@ class GeoLocationController extends BaseController
                     'longitude' => $geo->getLongitude(),
                     'accuracy'  => $geo->getAccuracy(),
                     'heading'   => $geo->getHeading(),
-                    'last_data' => $this->trans('geolocation.last_data', [
+                    'last_data' => $this->translator->trans('geolocation.last_data', [
                         '%time%'     => $geo->getDatetime()->format('H:i'),
                         '%accuracy%' => $geo->getReadableAccuracy(),
                     ]),

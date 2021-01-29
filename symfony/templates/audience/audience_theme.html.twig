@@ -109,57 +109,62 @@
                 {% macro renderSlider(form, global, local, hierarchy, information, current, ticked = false) %}
                     {% set ticked = ticked or current in global or current in local %}
 
-                    {% set has_children = hierarchy[current]|length %}
+                    {# A user may not have access to a children structure #}
+                    {% if hierarchy[current] is defined %}
 
-                    <div class="structure-node">
-                        {# Slider header #}
-                        <label class="switch">
-                            <input id="global-structure-{{ current }}"
-                                   type="checkbox"
-                                   class="toggle-to-text structure-tick numbers"
-                                   {% if ticked %}checked{% endif %}
-                                   data-field="#{{ form.structures_global.vars.id }}"
-                                   data-id="{{ current }}"/>
-                            <span class="slider"></span>
-                        </label>
-                        {% if has_children %}
-                            <a data-toggle="collapse" href="#container-children-{{ current }}">
+                        {% set has_children = hierarchy[current]|length %}
+
+                        <div class="structure-node">
+                            {# Slider header #}
+                            <label class="switch">
+                                <input id="global-structure-{{ current }}"
+                                       type="checkbox"
+                                       class="toggle-to-text structure-tick numbers"
+                                       {% if ticked %}checked{% endif %}
+                                       data-field="#{{ form.structures_global.vars.id }}"
+                                       data-id="{{ current }}"/>
+                                <span class="slider"></span>
+                            </label>
+                            {% if has_children %}
+                                <a data-toggle="collapse" href="#container-children-{{ current }}">
+                                    <label for="global-structure-{{ current }}">
+                                        {{ information[current].name }} ({{ information[current].global_count }})
+                                    </label>
+                                </a>
+                            {% else %}
                                 <label for="global-structure-{{ current }}">
                                     {{ information[current].name }} ({{ information[current].global_count }})
                                 </label>
-                            </a>
-                        {% else %}
-                            <label for="global-structure-{{ current }}">
-                                {{ information[current].name }} ({{ information[current].global_count }})
-                            </label>
-                        {% endif %}
+                            {% endif %}
 
-                        {# Slider body #}
-                        {% if has_children %}
-                            <div id="container-children-{{ current }}" class="collapse structure-children">
-                                <div class="card card-body">
-                                    <div>
-                                        <label class="switch">
-                                            <input id="local-structure-{{ current }}"
-                                                   type="checkbox"
-                                                   class="toggle-to-text structure-tick numbers"
-                                                   {% if ticked %}checked{% endif %}
-                                                   data-field="#{{ form.structures_local.vars.id }}"
-                                                   data-id="{{ current }}"/>
-                                            <span class="slider"></span>
-                                        </label>
-                                        <label for="local-structure-{{ current }}">
-                                            {{ information[current].name }} ({{ information[current].local_count }})
-                                        </label>
+                            {# Slider body #}
+                            {% if has_children %}
+                                <div id="container-children-{{ current }}" class="collapse structure-children">
+                                    <div class="card card-body">
+                                        <div>
+                                            <label class="switch">
+                                                <input id="local-structure-{{ current }}"
+                                                       type="checkbox"
+                                                       class="toggle-to-text structure-tick numbers"
+                                                       {% if ticked %}checked{% endif %}
+                                                       data-field="#{{ form.structures_local.vars.id }}"
+                                                       data-id="{{ current }}"/>
+                                                <span class="slider"></span>
+                                            </label>
+                                            <label for="local-structure-{{ current }}">
+                                                {{ information[current].name }} ({{ information[current].local_count }})
+                                            </label>
+                                        </div>
+                                        {% for child in hierarchy[current] %}
+                                            {% set ticked = ticked or child in global or child in local %}
+                                            {{ _self.renderSlider(form, global, local, hierarchy, information, child, ticked) }}
+                                        {% endfor %}
                                     </div>
-                                    {% for child in hierarchy[current] %}
-                                        {% set ticked = ticked or child in global or child in local %}
-                                        {{ _self.renderSlider(form, global, local, hierarchy, information, child, ticked) }}
-                                    {% endfor %}
                                 </div>
-                            </div>
-                        {% endif %}
-                    </div>
+                            {% endif %}
+                        </div>
+
+                    {% endif %}
                 {% endmacro %}
 
                 {% for structure_id in structures_roots %}

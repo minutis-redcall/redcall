@@ -3,7 +3,6 @@
 namespace Bundles\ApiBundle\Repository;
 
 use Bundles\ApiBundle\Entity\Token;
-use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -19,11 +18,13 @@ class TokenRepository extends BaseRepository
         parent::__construct($registry, Token::class);
     }
 
-    public function getTokensQueryBuilderForUser(string $username) : QueryBuilder
+    public function getTokensForUser(string $username) : array
     {
         return $this->createQueryBuilder('t')
                     ->where('t.username = :username')
-                    ->setParameter('username', $username);
+                    ->setParameter('username', $username)
+                    ->getQuery()
+                    ->getResult();
     }
 
     public function findTokenByNameForUser(string $username, string $name) : ?Token

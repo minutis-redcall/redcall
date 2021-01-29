@@ -2,6 +2,7 @@
 
 namespace Bundles\ApiBundle\Model\Facade;
 
+use Bundles\ApiBundle\Annotation\Facade;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
 
 class ThrowableFacade implements FacadeInterface
@@ -31,7 +32,7 @@ class ThrowableFacade implements FacadeInterface
         }
     }
 
-    static public function getExample(FacadeInterface $child = null) : FacadeInterface
+    static public function getExample(Facade $decorates = null) : FacadeInterface
     {
         try {
             throw new \Exception('This is a sample exception');

@@ -111,6 +111,7 @@ class Message
     public function __construct()
     {
         $this->sent      = false;
+        $this->answers   = new ArrayCollection();
         $this->costs     = new ArrayCollection();
         $this->updatedAt = new \DateTime();
     }

@@ -351,4 +351,16 @@ class Campaign
 
         return $this;
     }
+
+    public function isReportReady() : bool
+    {
+        foreach ($this->communications as $communication) {
+            /** @var Communication $communication */
+            if (!$communication->getReport()) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }

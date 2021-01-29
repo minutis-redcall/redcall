@@ -3,6 +3,7 @@
 namespace App\Facade;
 
 use Bundles\ApiBundle\Annotation as Api;
+use Bundles\ApiBundle\Annotation\Facade;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
 use Bundles\PegassCrawlerBundle\Entity\Pegass;
 
@@ -53,7 +54,7 @@ class PegassFacade implements FacadeInterface
      */
     private $updatedAt;
 
-    static public function getExample(FacadeInterface $child = null) : FacadeInterface
+    static public function getExample(Facade $decorates = null) : FacadeInterface
     {
         $facade = new self;
 

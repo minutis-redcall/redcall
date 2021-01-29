@@ -329,7 +329,7 @@ class Communication
     }
 
     /**
-     * @return Choice[]
+     * @return Choice[]|Collection
      */
     public function getChoices()
     {

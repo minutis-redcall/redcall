@@ -205,6 +205,7 @@ base:
     submit: Submit
     update: Edit
   clear_selection: 'Clear selection'
+  closed: 'Fermé'
   crud:
     create_title: 'Add a new entry'
     delete_confirm: 'Are you sure you wish to remove "%entity%"?'
@@ -216,6 +217,7 @@ base:
   home: Home
   modal:
     close: Close
+  open: Open
   order_by:
     asc: Ascendant
     desc: Descendant
@@ -265,10 +267,11 @@ campaign:
     create_full: 'Create a trigger'
     created_by: 'Créé par %name%'
     email: Email
-    implicated_structures: 'Implicated structures list'
+    implicated_structures: 'Implicated structures'
     list_admin: 'List all triggers'
     list_full: 'List triggers'
     new: 'Create a "%type%" trigger'
+    report: 'View report'
     sms: SMS
     volunteers: volunteer(s)
   types:
@@ -732,3 +735,4 @@ title:
   campaigns: Campaigns
   costs: Costs
   messages: Messages
+report:

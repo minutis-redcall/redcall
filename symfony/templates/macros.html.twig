@@ -72,6 +72,22 @@
     {% endif %}
 {% endmacro %}
 
+{% macro communicationBy(communication) %}
+    {% if communication.volunteer %}
+        {% if communication.volunteer.user.admin|default(false) %}
+            {{ 'campaign_status.by_no_structures'|trans({
+                '%name%': communication.volunteer.displayName,
+            }) }}
+            (<span style="color:red;">{{ 'campaign_status.by_admin'|trans }}</span>)
+        {% else %}
+            {{ 'campaign_status.by'|trans({
+                '%name%': communication.volunteer.displayName,
+                '%structure%': communication.volunteer.mainStructure,
+            }) }}
+        {% endif %}
+    {% endif %}
+{% endmacro %}
+
 {% macro phone(phone) %}
     <a href="tel:{{ phone.e164 }}">
         <div class="iti__flag iti__{{ phone.countryCode|lower }}" style="float:left;"></div>&nbsp; {{ phone.national }}

@@ -1,11 +1,49 @@
 {% extends 'base.html.twig' %}
+{% import 'macros.html.twig' as macros %}
 
 {% block body %}
 
     <div class="row justify-content-md-center">
         <div class="col-md-12">
-            {{ render(controller('App\\Controller\\CampaignController::renderCampaignsTable')) }}
+
+            <h1>
+                {{ 'campaign.titles.list_full'|trans }}
+            </h1>
+
+            <nav>
+                <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                    {% for type, tab in data %}
+                        <a class="nav-item nav-link" id="nav-{{ type }}-tab"
+                           data-toggle="tab"
+                           href="#nav-{{ type }}" role="tab"
+                           aria-controls="nav-{{ type }}" aria-selected="false">{{ ('campaign.statuses.' ~ type)|trans }}</a>
+                    {% endfor %}
+                </div>
+            </nav>
+
+            <div class="tab-content" id="nav-content">
+                {% for type, table in data %}
+                    <div class="tab-pane"
+                         id="nav-{{ type }}"
+                         role="tabpanel" aria-labelledby="nav-{{ type }}-tab">
+                        {{ include('campaign/table.html.twig') }}
+                    </div>
+                {% endfor %}
+            </div>
         </div>
+
     </div>
+
+{% endblock %}
+
+{% block javascripts %}
+
+    {{ parent() }}
+
+    <script type="text/javascript">
+
+        {{ include('campaign/common.js.twig') }}
+
+    </script>
 
 {% endblock %}

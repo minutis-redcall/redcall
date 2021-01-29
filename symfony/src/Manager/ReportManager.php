@@ -3,6 +3,7 @@
 namespace App\Manager;
 
 use App\Entity\Communication;
+use App\Entity\Message;
 use App\Entity\Report;
 use App\Entity\ReportRepartition;
 use App\Repository\ReportRepartitionRepository;
@@ -51,17 +52,7 @@ class ReportManager
 
             $output->writeln(sprintf('Handling communication #%d: %s', $communicationId, $communication->getCampaign()->getLabel()));
 
-            $report = $this->createReport($communication);
-
-            if (count($report->getRepartitions())) {
-                $this->reportRepository->save($report);
-
-                foreach ($report->getRepartitions() as $repartition) {
-                    $this->repartitionRepository->save($repartition);
-                }
-
-                $this->communicationManager->save($communication);
-            }
+            $this->createReport($communication);
 
             $this->communicationManager->clearEntityManager();
         }
@@ -72,55 +63,44 @@ class ReportManager
         return $this->reportRepository->getCommunicationReportsBetween($from, $to);
     }
 
-    private function createReport(Communication $communication) : Report
+    public function createReport(Communication $communication) : Report
     {
-        $report = $communication->getReport() ?? new Report();
+        $report     = $communication->getReport() ?? new Report();
+        $hasChoices = $communication->getChoices()->count() > 0;
 
         $report->setCommunication($communication);
         $report->setType($communication->getType());
-        $report->setChoiceCount(count($communication->getChoices()));
-        $report->setMessageCount(count($communication->getMessages()));
 
-        $answerCount = 0;
-        $bounceCount = 0;
-        $costs       = [];
         foreach ($communication->getMessages() as $message) {
-            $answerCount += count($message->getAnswers()) > 0;
-            $bounceCount += count($message->getAnswers());
-            foreach ($message->getCosts() as $cost) {
-                if (!isset($costs[$cost->getCurrency()])) {
-                    $costs[$cost->getCurrency()] = 0;
-                }
-                $costs[$cost->getCurrency()] += $cost->getPrice();
-            }
+            $this->incrementCounters($message, $hasChoices, $report);
         }
-        $report->setAnswerCount($answerCount);
-        $report->setBounceCount($bounceCount);
-        $report->setCost($costs);
 
-        if ($report->getChoiceCount() && $report->getMessageCount()) {
-            $report->setAnswerRatio((int) ($answerCount * 100 / $report->getMessageCount()));
+        if ($report->getQuestionCount()) {
+            $report->setAnswerRatio($report->getAnswerCount() * 100 / $report->getQuestionCount());
         }
 
         $this->createRepartition($communication, $report);
+
+        $this->saveCommunicationReport($communication);
 
         return $report;
     }
 
     private function createRepartition(Communication $communication, Report $report)
     {
+        $hasChoices = $communication->getChoices()->count() > 0;
+
         // In order to calculate the right volunteers repartition, we fetch all triggered structures
         // and order the results by the descendant number of volunteers per structures.
-        $structures  = [];
-        $repartition = [];
+        $structures   = [];
+        $repartitions = [];
         foreach ($this->communicationManager->getCommunicationStructures($communication) as $structureId) {
-            // Structure may have been removed from Pegass
-            $structures[$structureId] = $this->structureManager->find($structureId);;
-            $repartition[$structureId] = [
-                'messages' => 0,
-                'answers'  => 0,
-                'bounces'  => 0,
-            ];
+            $structure                = $this->structureManager->find($structureId);
+            $structures[$structureId] = $structure;
+
+            $repartition = new ReportRepartition();
+            $repartition->setStructure($structure);
+            $repartitions[$structureId] = $repartition;
         }
 
         // Then, for every messages, we find in which structures volunteer was triggered. The structure list
@@ -133,41 +113,77 @@ class ReportManager
                 }
 
                 if ($structure->getVolunteers()->contains($message->getVolunteer())) {
-                    // This is a simple way to calculate the ratio of triggered volunteers, but this is not
-                    // fully true. Costs are not the same according to the volunteer phone numbers, and for
-                    // very precise results, we should keep a relation between the structure and the
-                    // $message->getCost() here.
-                    $repartition[$structure->getId()]['messages'] += 1;
-                    $repartition[$structure->getId()]['answers']  += (count($message->getAnswers()) > 0);
-                    $repartition[$structure->getId()]['bounces']  += count($message->getAnswers());
+                    /** @var ReportRepartition $repartition */
+                    $repartition = $repartitions[$structure->getId()];
+                    $this->incrementCounters($message, $hasChoices, $repartition);
                     break;
                 }
             }
         }
 
+        // We finally create question/answer ratio, and proportion of messages per structure
+        // among all messages sent in the trigger
         $report->getRepartitions()->clear();
-        foreach ($repartition as $structureId => $counts) {
-            if (!$counts['messages']) {
-                continue;
+        foreach ($repartitions as $structureId => $repartition) {
+            if ($hasChoices && $repartition->getQuestionCount()) {
+                $repartition->setAnswerRatio($repartition->getAnswerCount() * 100 / $repartition->getQuestionCount());
             }
 
-            $entity = new ReportRepartition();
-            $entity->setStructure($structures[$structureId]);
-            $entity->setMessageCount($counts['messages']);
-            $entity->setAnswerCount($counts['answers']);
-            $entity->setBounceCount($counts['bounces']);
-            if (count($communication->getChoices()) && $counts['messages'] > 0) {
-                $entity->setAnswerRatio($counts['answers'] * 100 / $counts['messages']);
+            if ($repartition->getMessageCount()) {
+                $repartition->setRatio($repartition->getMessageCount() * 100 / $report->getMessageCount());
             }
 
-            $entity->setRatio(0);
-            if ($report->getMessageCount()) {
-                $entity->setRatio((int) ($entity->getMessageCount() * 100 / $report->getMessageCount()));
+            if ($repartition->getQuestionCount()) {
+                $repartition->setRatio($repartition->getQuestionCount() * 100 / $report->getQuestionCount());
             }
 
-            if ($entity->getRatio() > 0) {
-                $report->addRepartition($entity);
+            if ($repartition->getMessageCount() || $repartition->getQuestionCount()) {
+                $report->addRepartition($repartition);
             }
         }
+    }
+
+    /**
+     * @param Report|ReportRepartition $entity
+     */
+    private function incrementCounters(Message $message, bool $communicationHasChoices, $entity)
+    {
+        if ($communicationHasChoices) {
+            $entity->setQuestionCount($entity->getQuestionCount() + 1);
+            $entity->setAnswerCount($entity->getAnswerCount() + (int) ($message->getAnswers()->count() > 0));
+        } else {
+            $entity->setMessageCount($entity->getMessageCount() + 1);
+        }
+
+        $entity->setExchangeCount($entity->getExchangeCount() + $message->getAnswers()->count());
+
+        $entity->setCosts(
+            $this->calculateMessageCosts($message, $entity->getCosts())
+        );
+    }
+
+    private function calculateMessageCosts(Message $message, array $costs) : array
+    {
+        foreach ($message->getCosts() as $cost) {
+            if (!isset($costs[$cost->getCurrency()])) {
+                $costs[$cost->getCurrency()] = 0;
+            }
+            $costs[$cost->getCurrency()] += $cost->getPrice();
+        }
+
+        return $costs;
+    }
+
+    private function saveCommunicationReport(Communication $communication)
+    {
+        $report = $communication->getReport();
+
+        $this->reportRepository->save($report);
+
+        foreach ($report->getRepartitions() as $repartition) {
+            $this->repartitionRepository->save($repartition);
+        }
+
+        $this->communicationManager->save($communication);
     }
 }

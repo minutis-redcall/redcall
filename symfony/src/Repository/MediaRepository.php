@@ -22,7 +22,7 @@ class MediaRepository extends ServiceEntityRepository
     public function save(Media $media)
     {
         $this->_em->persist($media);
-        $this->_em->flush($media);
+        $this->_em->flush();
     }
 
     public function clearExpired()

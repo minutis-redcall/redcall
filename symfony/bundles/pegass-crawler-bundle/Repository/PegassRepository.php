@@ -232,7 +232,7 @@ class PegassRepository extends ServiceEntityRepository
     public function save(Pegass $entity)
     {
         $this->_em->persist($entity);
-        $this->_em->flush($entity);
+        $this->_em->flush();
     }
 
     /**

@@ -5,7 +5,6 @@ namespace Bundles\ApiBundle\Manager;
 use Bundles\ApiBundle\Entity\Token;
 use Bundles\ApiBundle\Repository\TokenRepository;
 use Bundles\ApiBundle\Util;
-use Doctrine\ORM\QueryBuilder;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Security\Core\Security;
 
@@ -27,9 +26,9 @@ class TokenManager
         $this->security        = $security;
     }
 
-    public function getTokensQueryBuilderForUser() : QueryBuilder
+    public function getTokensForUser() : array
     {
-        return $this->tokenRepository->getTokensQueryBuilderForUser(
+        return $this->tokenRepository->getTokensForUser(
             $this->security->getUser()->getUsername()
         );
     }

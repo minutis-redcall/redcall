@@ -233,6 +233,9 @@ class CampaignManager
      * all queries, because Doctrine will usually return the same result
      * for the same query.
      *
+     * @TODO we now have Communicaiton.lastActivityAt, use it instead (update CommunicationActivitySubscriber with
+     *       Campaign changes if necessary)
+     *
      * @param int $campaignId
      *
      * @return string

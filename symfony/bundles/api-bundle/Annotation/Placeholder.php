@@ -6,7 +6,7 @@ namespace Bundles\ApiBundle\Annotation;
  * @Annotation
  * @Target({"CLASS", "METHOD", "PROPERTY"})
  */
-class Placeholder
+final class Placeholder
 {
     /**
      * @var string

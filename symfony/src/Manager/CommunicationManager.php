@@ -57,6 +57,11 @@ class CommunicationManager
     private $audienceManager;
 
     /**
+     * @var ReportManager
+     */
+    private $reportManager;
+
+    /**
      * @var RouterInterface
      */
     private $router;
@@ -96,12 +101,18 @@ class CommunicationManager
 
     /**
      * @required
-     *
-     * @param CampaignManager $campaignManager
      */
     public function setCampaignManager(CampaignManager $campaignManager)
     {
         $this->campaignManager = $campaignManager;
+    }
+
+    /**
+     * @required
+     */
+    public function setReportManager(ReportManager $reportManager)
+    {
+        $this->reportManager = $reportManager;
     }
 
     public function find(int $communicationId) : ?Communication
@@ -237,7 +248,7 @@ class CommunicationManager
     public function findCommunicationIdsRequiringReports() : array
     {
         return $this->communicationRepository->findCommunicationIdsRequiringReports(
-            (new \DateTime())->sub(new \DateInterval('P7D'))
+            (new \DateTime())->sub(new \DateInterval('P1D'))
         );
     }
 

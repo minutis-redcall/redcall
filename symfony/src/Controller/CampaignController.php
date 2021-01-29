@@ -11,14 +11,22 @@ use App\Form\Type\CampaignType;
 use App\Manager\CampaignManager;
 use App\Manager\CommunicationManager;
 use App\Manager\UserManager;
+use Bundles\PaginationBundle\Manager\PaginationManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class CampaignController extends BaseController
 {
+    /**
+     * @var PaginationManager
+     */
+    private $paginationManager;
+
     /**
      * @var CampaignManager
      */
@@ -34,13 +42,22 @@ class CampaignController extends BaseController
      */
     private $userManager;
 
-    public function __construct(CampaignManager $campaignManager,
+    /**
+     * @var TranslatorInterface
+     */
+    private $translator;
+
+    public function __construct(PaginationManager $paginationManager,
+        CampaignManager $campaignManager,
         CommunicationManager $communicationManager,
-        UserManager $userManager)
+        UserManager $userManager,
+        TranslatorInterface $translator)
     {
+        $this->paginationManager    = $paginationManager;
         $this->campaignManager      = $campaignManager;
         $this->communicationManager = $communicationManager;
         $this->userManager          = $userManager;
+        $this->translator           = $translator;
     }
 
     /**
@@ -48,28 +65,23 @@ class CampaignController extends BaseController
      */
     public function listCampaigns()
     {
-        return $this->render('campaign/list.html.twig');
-    }
-
-    public function renderCampaignsTable() : Response
-    {
         $byMyCrew      = $this->campaignManager->getCampaignsOpenedByMeOrMyCrew($this->getUser());
         $byMyTeammates = $this->campaignManager->getCampaignImpactingMyVolunteers($this->getUser());
         $finished      = $this->campaignManager->getInactiveCampaignsForUserQueryBuilder($this->getUser());
 
-        return $this->render('campaign/table.html.twig', [
+        return $this->render('campaign/list.html.twig', [
             'data' => [
                 'my_structures' => [
                     'orderBy' => $this->orderBy($byMyCrew, Campaign::class, 'c.createdAt', 'DESC', 'crew'),
-                    'pager'   => $this->getPager($byMyCrew, 'ongoing'),
+                    'pager'   => $this->paginationManager->getPager($byMyCrew, 'ongoing'),
                 ],
                 'my_volunteers' => [
                     'orderBy' => $this->orderBy($byMyTeammates, Campaign::class, 'c.createdAt', 'DESC', 'mates'),
-                    'pager'   => $this->getPager($byMyTeammates, 'ongoing'),
+                    'pager'   => $this->paginationManager->getPager($byMyTeammates, 'ongoing'),
                 ],
                 'finished'      => [
                     'orderBy' => $this->orderBy($finished, Campaign::class, 'c.createdAt', 'DESC', 'finished'),
-                    'pager'   => $this->getPager($finished, 'finished'),
+                    'pager'   => $this->paginationManager->getPager($finished, 'finished'),
                 ],
             ],
         ]);
@@ -153,7 +165,7 @@ class CampaignController extends BaseController
 
         if (!$campaign->isActive()) {
             if (!$this->campaignManager->canReopenCampaign($campaign)) {
-                $this->danger('campaign.cannot_reopen');
+                $this->addFlash('danger', $this->translator->trans('campaign.cannot_reopen'));
             } else {
                 $this->campaignManager->openCampaign($campaign);
             }
@@ -233,16 +245,28 @@ class CampaignController extends BaseController
      * @Route(path="campaign/{id}/notes", name="notes_campaign")
      * @IsGranted("CAMPAIGN_ACCESS", subject="campaignEntity")
      */
-    public function notes(Request $request, Campaign $campaignEntity) : Response
+    public function notes(Request $request, Campaign $campaign) : Response
     {
         $this->validateCsrfOrThrowNotFoundException('campaign', $request->request->get('csrf'));
 
         $notes = strip_tags($request->request->get('notes'));
 
-        $this->campaignManager->changeNotes($campaignEntity, $notes);
+        $this->campaignManager->changeNotes($campaign, $notes);
 
         return $this->redirect($this->generateUrl('communication_index', [
-            'id' => $campaignEntity->getId(),
+            'id' => $campaign->getId(),
         ]));
+    }
+
+    /**
+     * @Route(path="campaign/{id}/report", name="campaign_report")
+     * @IsGranted("CAMPAIGN_ACCESS", subject="campaign")
+     * @Template
+     */
+    public function report(Campaign $campaign)
+    {
+        return [
+            'campaign' => $campaign,
+        ];
     }
 }

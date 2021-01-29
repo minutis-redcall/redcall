@@ -2,6 +2,7 @@
 
 namespace Bundles\ApiBundle\Model\Facade;
 
+use Bundles\ApiBundle\Annotation\Facade;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
 
 class PaginedFacade implements FacadeInterface
@@ -28,18 +29,21 @@ class PaginedFacade implements FacadeInterface
         $this->entries = new CollectionFacade();
     }
 
-    public static function getExample(FacadeInterface $child = null) : FacadeInterface
+    public static function getExample(Facade $decorates = null) : FacadeInterface
     {
-        if (null === $child) {
+        if (null === $decorates) {
             throw new \LogicException('This facade decorates another facade');
         }
 
         $facade = new self;
+        $child  = $decorates->class;
 
         $facade->totalPages  = 5;
         $facade->currentPage = 2;
         for ($i = 0; $i < self::ITEMS_PER_PAGE; $i++) {
-            $facade->addEntry($child);
+            $facade->addEntry(
+                $child::getExample($decorates->decorates)
+            );
         }
 
         return $facade;

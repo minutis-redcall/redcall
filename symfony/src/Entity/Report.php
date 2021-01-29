@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity(repositoryClass=App\Repository\ReportRepository::class)
  * @ORM\HasLifecycleCallbacks()
  */
-class Report
+class Report extends AbstractReport
 {
     /**
      * @ORM\Id
@@ -25,35 +25,16 @@ class Report
     private $type;
 
     /**
-     * @ORM\Column(type="integer")
-     */
-    private $messageCount = 0;
-
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private $answerCount = 0;
-
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private $choiceCount = 0;
-
-    /**
-     * @ORM\Column(type="integer")
-     */
-    private $bounceCount = 0;
-
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
-    private $answerRatio;
-
-    /**
      * @ORM\OneToMany(targetEntity=ReportRepartition::class, mappedBy="report", cascade={"persist", "remove"},
      *                                                       orphanRemoval=true)
+     * @ORM\OrderBy({"messageCount" = "DESC", "questionCount" = "DESC"})
      */
     private $repartitions;
+
+    /**
+     * @ORM\Column(type="string", length=64)
+     */
+    private $costs = '[]';
 
     /**
      * @ORM\Column(type="datetime")
@@ -64,11 +45,6 @@ class Report
      * @ORM\OneToOne(targetEntity=Communication::class, mappedBy="report", cascade={"persist", "remove"})
      */
     private $communication;
-
-    /**
-     * @ORM\Column(type="string", length=64)
-     */
-    private $cost = 'free';
 
     public function __construct()
     {
@@ -88,66 +64,6 @@ class Report
     public function setType(string $type) : self
     {
         $this->type = $type;
-
-        return $this;
-    }
-
-    public function getMessageCount() : ?int
-    {
-        return $this->messageCount;
-    }
-
-    public function setMessageCount(int $messageCount) : self
-    {
-        $this->messageCount = $messageCount;
-
-        return $this;
-    }
-
-    public function getAnswerCount() : ?int
-    {
-        return $this->answerCount;
-    }
-
-    public function setAnswerCount(int $answerCount) : self
-    {
-        $this->answerCount = $answerCount;
-
-        return $this;
-    }
-
-    public function getChoiceCount() : ?int
-    {
-        return $this->choiceCount;
-    }
-
-    public function setChoiceCount(int $choiceCount) : self
-    {
-        $this->choiceCount = $choiceCount;
-
-        return $this;
-    }
-
-    public function getBounceCount() : ?int
-    {
-        return $this->bounceCount;
-    }
-
-    public function setBounceCount(int $bounceCount) : self
-    {
-        $this->bounceCount = $bounceCount;
-
-        return $this;
-    }
-
-    public function getAnswerRatio() : ?int
-    {
-        return $this->answerRatio;
-    }
-
-    public function setAnswerRatio(int $answerRatio) : self
-    {
-        $this->answerRatio = $answerRatio;
 
         return $this;
     }
@@ -178,6 +94,23 @@ class Report
                 $costRepartition->setReport(null);
             }
         }
+
+        return $this;
+    }
+
+
+    public function getCosts() : ?array
+    {
+        if (!$this->costs) {
+            return null;
+        }
+
+        return json_decode($this->costs, true);
+    }
+
+    public function setCosts(array $costs) : self
+    {
+        $this->costs = json_encode($costs);
 
         return $this;
     }
@@ -223,21 +156,5 @@ class Report
     public function onChange()
     {
         $this->updatedAt = new \DateTime();
-    }
-
-    public function getCost() : ?array
-    {
-        if (!$this->cost) {
-            return null;
-        }
-
-        return json_decode($this->cost, true);
-    }
-
-    public function setCost(array $cost) : self
-    {
-        $this->cost = json_encode($cost);
-
-        return $this;
     }
 }

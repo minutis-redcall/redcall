@@ -2,10 +2,11 @@
 
 namespace Bundles\ApiBundle\Model\Facade;
 
+use Bundles\ApiBundle\Annotation\Facade;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
 use Symfony\Component\Validator\ConstraintViolation;
 
-class ViolationFacade
+class ViolationFacade implements FacadeInterface
 {
     /**
      * @var string
@@ -29,7 +30,7 @@ class ViolationFacade
         $this->message      = $violation->getMessage();
     }
 
-    static public function getExample(FacadeInterface $child = null) : FacadeInterface
+    static public function getExample(Facade $decorates = null) : FacadeInterface
     {
         return new EmptyFacade();
     }
