@@ -142,6 +142,8 @@ audience:
       title: 'Fiches bénévoles comportant des problèmes'
     selected: 'Liste des bénévoles sélectionnés'
     title: 'Résumé de la sélection'
+  copy_paste: 'Ou coller une liste de nivols'
+  copy_paste_details: 'Ou coller une liste de nivols dans le champ ci-dessous.'
   large_audience:
     button_add: 'afin de l''inclure à nouveau dans le déclenchement.'
     button_remove: 'afin de retirer manuellement un bénévole du déclenchement.'
@@ -181,8 +183,6 @@ audience:
   search_other_badge: 'Rechercher une autre compétence :'
   select_all_badges: 'Déclencher tous les bénévoles quelles que soient leurs compétences'
   structures: 'Structure(s) à déclencher'
-  copy_paste_details: 'Ou coller une liste de nivols dans le champ ci-dessous.'
-  copy_paste: 'Ou coller une liste de nivols'
 backlinks:
   blablacar: 'Parrainé par'
   minutis: 'Développé par les bénévoles'
@@ -205,7 +205,6 @@ base:
     submit: Envoyer
     update: Editer
   clear_selection: 'Effacer la sélection'
-  closed: 'Fermé'
   crud:
     create_title: 'Ajouter une entrée'
     delete_confirm: 'Souhaitez-vous vraiment supprimer "%entity%" ?'
@@ -217,7 +216,6 @@ base:
   home: Accueil
   modal:
     close: Fermer
-  open: Ouvert
   order_by:
     asc: Croissant
     desc: Décroissant
@@ -239,6 +237,8 @@ base:
   simple_no: Non
   simple_yes: Oui
   wait: 'Un petit instant...'
+  closed: Fermé
+  open: Ouvert
 button:
   submit: Valider
 campaign:
@@ -271,9 +271,9 @@ campaign:
     list_admin: 'Liste de tous les déclenchements'
     list_full: 'Liste des déclenchements'
     new: 'Créer un déclenchement: %type%'
-    report: 'Voir le rapport'
     sms: SMS
     volunteers: bénévole(s)
+    report: 'Voir le rapport'
   types:
     1_green: Information
     2_light_orange: 'Préparation (UL)'
@@ -293,8 +293,8 @@ campaign_status:
     prefix: 'Préfix de la réponse: %prefix%'
     unclear: Ambigüe
   by: 'Envoyée par %name% (%structure%)'
-  by_no_structures: 'Envoyée par %name%'
   by_admin: 'Equipe Minutis'
+  by_no_structures: 'Envoyée par %name%'
   communication_short_title: '%date% à %time%'
   communication_tabs: Communications
   communication_title: 'Communication du %date% à %time%'
@@ -739,11 +739,11 @@ report:
   campaign:
     title: 'Structures impliquées'
     headers:
-      structure: 'Structure'
-      messages: 'Messages'
-      answers: 'Réponses'
+      structure: Structure
+      messages: Messages
+      answers: Réponses
       ratio: 'Ratio R/M'
-      prices: 'Coûts'
+      prices: Coûts
     communication:
       without_title: 'Communication #%nbr% du %day%/%month%/%year% à %hours%h%mins%'
       with_title: 'Communication #%nbr% "%title%" du day%/%month%/%year% à %hours%h%mins%'

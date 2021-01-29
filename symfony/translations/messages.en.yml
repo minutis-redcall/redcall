@@ -142,6 +142,8 @@ audience:
       title: 'Volunteer records having issues'
     selected: 'Liste des bénévoles sélectionnés'
     title: 'Selection summary'
+  copy_paste: 'Or paste a list of identifiers'
+  copy_paste_details: 'Paste a list of identifiers in the field below.'
   large_audience:
     button_add: 'in order to include him back into the trigger.'
     button_remove: 'in order to manually remove a volunteer from the trigger.'
@@ -181,8 +183,6 @@ audience:
   search_other_badge: 'Search for another skill:'
   select_all_badges: 'Trigger all volunteers whatever their skills'
   structures: 'Structure(s) to trigger'
-  copy_paste_details: 'Paste a list of identifiers in the field below.'
-  copy_paste: 'Or paste a list of identifiers'
 backlinks:
   blablacar: 'Sponsored by'
   minutis: 'Developed by Minutis volunteers'
@@ -205,7 +205,7 @@ base:
     submit: Submit
     update: Edit
   clear_selection: 'Clear selection'
-  closed: 'Fermé'
+  closed: Fermé
   crud:
     create_title: 'Add a new entry'
     delete_confirm: 'Are you sure you wish to remove "%entity%"?'
@@ -293,8 +293,8 @@ campaign_status:
     prefix: 'Response prefix: %prefix%'
     unclear: Unclear
   by: 'Sent by %name% (%structure%)'
-  by_no_structures: 'Sent by %name%'
   by_admin: 'Team Minutis'
+  by_no_structures: 'Sent by %name%'
   communication_short_title: '%date% at %time%'
   communication_tabs: Communications
   communication_title: 'Communication from %date% at %time%'
@@ -736,3 +736,14 @@ title:
   costs: Costs
   messages: Messages
 report:
+  campaign:
+    title: 'Implicated structures'
+    headers:
+      structure: Structure
+      messages: Messages
+      answers: Answers
+      ratio: 'Ratio A/M'
+      prices: Costs
+    communication:
+      without_title: 'Communication #%nbr% on %day%/%month%/%year% at %hours%h%mins%'
+      with_title: 'Communication #%nbr% "%title%" on day%/%month%/%year% at %hours%h%mins%'
