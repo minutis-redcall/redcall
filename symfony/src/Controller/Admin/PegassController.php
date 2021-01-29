@@ -73,7 +73,6 @@ class PegassController extends BaseController
         $request = $this->requestStack->getMasterRequest();
         $search  = $this->createSearchForm($request);
 
-        $criteria = null;
         if ($search->isSubmitted() && $search->isValid()) {
             $criteria       = $search->get('criteria')->getData();
             $onlyAdmins     = $search->get('only_admins')->getData();
@@ -84,7 +83,7 @@ class PegassController extends BaseController
             'search' => $search->createView(),
             'type'   => $request->get('type'),
             'users'  => $this->paginationManager->getPager(
-                $this->userManager->searchQueryBuilder($criteria, $onlyAdmins, $onlyDevelopers)
+                $this->userManager->searchQueryBuilder($criteria ?? null, $onlyAdmins ?? false, $onlyDevelopers ?? false)
             ),
         ]);
     }
@@ -164,7 +163,7 @@ class PegassController extends BaseController
         return $this->render('admin/pegass/structures.html.twig', [
             'user'       => $user,
             'form'       => $form->createView(),
-            'structures' => $this->structureManager->getStructuresForCurrrentUser(),
+            'structures' => $this->structureManager->getStructuresForUser($user),
         ]);
     }
 

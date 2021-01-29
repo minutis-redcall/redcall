@@ -15,12 +15,23 @@ use DateTime;
 use Mpdf\Mpdf;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * @Route(name="export_", path="export/")
  */
 class ExportController extends BaseController
 {
+    /**
+     * @var TranslatorInterface
+     */
+    private $translator;
+
+    public function __construct(TranslatorInterface $translator)
+    {
+        $this->translator = $translator;
+    }
+
     /**
      * @Route(path="{id}/csv", name="csv", requirements={"id" = "\d+"}, methods={"POST"})
      */
@@ -187,5 +198,10 @@ class ExportController extends BaseController
         }
 
         return $selection;
+    }
+
+    private function trans($property, array $parameters = [])
+    {
+        return $this->translator->trans($property, $parameters);
     }
 }

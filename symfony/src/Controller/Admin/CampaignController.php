@@ -5,6 +5,7 @@ namespace App\Controller\Admin;
 use App\Base\BaseController;
 use App\Entity\Campaign;
 use App\Manager\CampaignManager;
+use Bundles\PaginationBundle\Manager\PaginationManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -14,13 +15,19 @@ use Symfony\Component\Routing\Annotation\Route;
 class CampaignController extends BaseController
 {
     /**
+     * @var PaginationManager
+     */
+    private $paginationManager;
+
+    /**
      * @var CampaignManager
      */
     private $campaignManager;
 
-    public function __construct(CampaignManager $campaignManager)
+    public function __construct(PaginationManager $paginationManager, CampaignManager $campaignManager)
     {
-        $this->campaignManager = $campaignManager;
+        $this->paginationManager = $paginationManager;
+        $this->campaignManager   = $campaignManager;
     }
 
     /**
@@ -46,7 +53,7 @@ class CampaignController extends BaseController
         return [
             'all' => [
                 'orderBy' => $this->orderBy($all, Campaign::class, 'c.createdAt', 'DESC', 'all'),
-                'pager'   => $this->getPager($all),
+                'pager'   => $this->paginationManager->getPager($all),
             ],
         ];
     }

@@ -88,7 +88,7 @@ class MaintenanceController extends BaseController
     {
         $this->maintenanceManager->refresh();
 
-        $this->success('maintenance.refresh_started');
+        $this->addFlash('success', $this->translator->trans('maintenance.refresh_started'));
 
         return $this->redirectToRoute('admin_maintenance_index');
     }

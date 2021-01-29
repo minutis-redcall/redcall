@@ -20,6 +20,7 @@ use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * @Route(path="/space/{sessionId}", name="space_")
@@ -47,15 +48,22 @@ class SpaceController extends BaseController
      */
     private $phoneManager;
 
+    /**
+     * @var TranslatorInterface
+     */
+    private $translator;
+
     public function __construct(VolunteerSessionManager $volunteerSessionManager,
         VolunteerManager $volunteerManager,
         MessageManager $messageManager,
-        PhoneManager $phoneManager)
+        PhoneManager $phoneManager,
+        TranslatorInterface $translator)
     {
         $this->volunteerSessionManager = $volunteerSessionManager;
         $this->volunteerManager        = $volunteerManager;
         $this->messageManager          = $messageManager;
         $this->phoneManager            = $phoneManager;
+        $this->translator              = $translator;
     }
 
     /**
@@ -108,7 +116,7 @@ class SpaceController extends BaseController
                 // the new one before removing the other. As a result, an exception
                 // is thrown because of the unique constraint. I was not able to manage
                 // correctly that behavior, so I just render a generic error message.
-                $this->alert('base.error');
+                $this->addFlash('alert', $this->translator->trans('base.error'));
             }
 
             return $this->redirectToRoute('space_home', [

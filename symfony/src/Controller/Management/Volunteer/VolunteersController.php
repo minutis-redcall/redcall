@@ -228,7 +228,7 @@ class VolunteersController extends BaseController
                 }
             } catch (UniqueConstraintViolationException $e) {
                 // See SpaceController::phone
-                $this->alert('base.error');
+                $this->addFlash('alert', $this->translator->trans('base.error'));
 
                 return $this->redirectToRoute('management_volunteers_manual_update', array_merge([
                     'id' => $volunteer->getId(),
@@ -236,9 +236,9 @@ class VolunteersController extends BaseController
             }
 
             if ($isCreate) {
-                $this->success('manage_volunteers.form.added');
+                $this->addFlash('success', $this->translator->trans('manage_volunteers.form.added'));
             } else {
-                $this->success('manage_volunteers.form.updated');
+                $this->addFlash('success', $this->translator->trans('manage_volunteers.form.updated'));
             }
 
             if ($isCreate && $this->isGranted('ROLE_ADMIN')) {

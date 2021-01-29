@@ -102,13 +102,18 @@ class AnonymizeManager
         $volunteer->setFirstName($this->generateFirstname());
         $volunteer->setLastName($this->generateLastname());
 
+        $volunteer->setEmail($this->generateEmail($volunteer->getFirstName(), $volunteer->getLastName()));
+
+        if (!$volunteer->getId()) {
+            $this->volunteerManager->save($volunteer);
+        }
+
         $phone = new Phone();
+        $phone->setVolunteer($volunteer);
         $phone->setE164($this->generatePhoneNumber());
         $phone->setMobile(true);
         $phone->setPreferred(true);
         $volunteer->getPhones()->add($phone);
-
-        $volunteer->setEmail($this->generateEmail($volunteer->getFirstName(), $volunteer->getLastName()));
 
         $this->volunteerManager->save($volunteer);
     }

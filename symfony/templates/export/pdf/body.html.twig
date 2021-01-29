@@ -118,7 +118,7 @@
                         <tr>
                             <td style="padding:10px;color:black;background-color:{{ offwhite }};border: 1px solid black;">
                                 {{ volunteer.displayName }}
-                                {% if volunteer.structures.count > 1 %}
+                                {% if volunteer.structures.count > 0 %}
                                     <div style="font-size:12px;">{{ volunteer.structures|join(', ') }}</div>
                                 {% endif %}
                             </td>

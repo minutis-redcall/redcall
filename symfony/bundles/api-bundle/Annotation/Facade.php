@@ -8,7 +8,7 @@ use Bundles\ApiBundle\Contracts\FacadeInterface;
  * @Annotation
  * @Target({"ANNOTATION"})
  */
-class Facade
+final class Facade
 {
     /**
      * @var string

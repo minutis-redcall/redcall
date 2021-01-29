@@ -21,27 +21,16 @@ class PaginationManager
      */
     private $perPage = 20;
 
-    /**
-     * @param RequestStack $requestStack
-     */
     public function __construct(RequestStack $requestStack)
     {
         $this->requestStack = $requestStack;
     }
 
-    /**
-     * @return int
-     */
     public function getPerPage() : int
     {
         return $this->perPage;
     }
 
-    /**
-     * @param int $perPage
-     *
-     * @return PaginationManager
-     */
     public function setPerPage(int $perPage) : PaginationManager
     {
         $this->perPage = $perPage;
@@ -49,13 +38,6 @@ class PaginationManager
         return $this;
     }
 
-    /**
-     * @param        $data
-     * @param string $prefix
-     * @param bool   $hasJoins
-     *
-     * @return Pagerfanta
-     */
     public function getPager($data, $prefix = '', $hasJoins = false) : Pagerfanta
     {
         $request = $this->requestStack->getMasterRequest();

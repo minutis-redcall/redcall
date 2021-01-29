@@ -54,15 +54,13 @@ class ReportManager
 
             $report = $this->createReport($communication);
 
-            if ($report->getRepartitions()->count()) {
-                $this->reportRepository->save($report);
+            $this->reportRepository->save($report);
 
-                foreach ($report->getRepartitions() as $repartition) {
-                    $this->repartitionRepository->save($repartition);
-                }
-
-                $this->communicationManager->save($communication);
+            foreach ($report->getRepartitions() as $repartition) {
+                $this->repartitionRepository->save($repartition);
             }
+
+            $this->communicationManager->save($communication);
 
             $this->communicationManager->clearEntityManager();
         }

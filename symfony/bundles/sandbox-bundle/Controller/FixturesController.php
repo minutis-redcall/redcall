@@ -54,7 +54,7 @@ class FixturesController extends BaseController
                 $structure->get('bind_to_user')->getData()
             );
 
-            $this->success($this->translator->trans('sandbox.fixtures.structure.created'));
+            $this->addFlash('success', $this->translator->trans('sandbox.fixtures.structure.created'));
 
             return $this->redirectToRoute('sandbox_fixtures_index');
         }
@@ -66,8 +66,8 @@ class FixturesController extends BaseController
                 $volunteer->get('structure')->getData()
             );
 
-            $this->success($this->translator->trans('sandbox.fixtures.volunteer.created', [
-                '%nbr%' => $n,
+            $this->addFlash('success', $this->translator->trans('sandbox.fixtures.volunteer.created', [
+                ' % nbr % ' => $n,
             ]));
 
             return $this->redirectToRoute('sandbox_fixtures_index');

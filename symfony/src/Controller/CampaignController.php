@@ -11,14 +11,21 @@ use App\Form\Type\CampaignType;
 use App\Manager\CampaignManager;
 use App\Manager\CommunicationManager;
 use App\Manager\UserManager;
+use Bundles\PaginationBundle\Manager\PaginationManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class CampaignController extends BaseController
 {
+    /**
+     * @var PaginationManager
+     */
+    private $paginationManager;
+
     /**
      * @var CampaignManager
      */
@@ -34,13 +41,22 @@ class CampaignController extends BaseController
      */
     private $userManager;
 
-    public function __construct(CampaignManager $campaignManager,
+    /**
+     * @var TranslatorInterface
+     */
+    private $translator;
+
+    public function __construct(PaginationManager $paginationManager,
+        CampaignManager $campaignManager,
         CommunicationManager $communicationManager,
-        UserManager $userManager)
+        UserManager $userManager,
+        TranslatorInterface $translator)
     {
+        $this->paginationManager    = $paginationManager;
         $this->campaignManager      = $campaignManager;
         $this->communicationManager = $communicationManager;
         $this->userManager          = $userManager;
+        $this->translator           = $translator;
     }
 
     /**
@@ -61,15 +77,15 @@ class CampaignController extends BaseController
             'data' => [
                 'my_structures' => [
                     'orderBy' => $this->orderBy($byMyCrew, Campaign::class, 'c.createdAt', 'DESC', 'crew'),
-                    'pager'   => $this->getPager($byMyCrew, 'ongoing'),
+                    'pager'   => $this->paginationManager->getPager($byMyCrew, 'ongoing'),
                 ],
                 'my_volunteers' => [
                     'orderBy' => $this->orderBy($byMyTeammates, Campaign::class, 'c.createdAt', 'DESC', 'mates'),
-                    'pager'   => $this->getPager($byMyTeammates, 'ongoing'),
+                    'pager'   => $this->paginationManager->getPager($byMyTeammates, 'ongoing'),
                 ],
                 'finished'      => [
                     'orderBy' => $this->orderBy($finished, Campaign::class, 'c.createdAt', 'DESC', 'finished'),
-                    'pager'   => $this->getPager($finished, 'finished'),
+                    'pager'   => $this->paginationManager->getPager($finished, 'finished'),
                 ],
             ],
         ]);
@@ -153,7 +169,7 @@ class CampaignController extends BaseController
 
         if (!$campaign->isActive()) {
             if (!$this->campaignManager->canReopenCampaign($campaign)) {
-                $this->danger('campaign.cannot_reopen');
+                $this->addFlash('danger', $this->translator->trans('campaign.cannot_reopen'));
             } else {
                 $this->campaignManager->openCampaign($campaign);
             }
