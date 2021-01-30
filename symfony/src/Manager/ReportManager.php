@@ -2,6 +2,7 @@
 
 namespace App\Manager;
 
+use App\Entity\AbstractReport;
 use App\Entity\Communication;
 use App\Entity\Message;
 use App\Entity\Report;
@@ -75,10 +76,6 @@ class ReportManager
             $this->incrementCounters($message, $hasChoices, $report);
         }
 
-        if ($report->getQuestionCount()) {
-            $report->setAnswerRatio($report->getAnswerCount() * 100 / $report->getQuestionCount());
-        }
-
         $this->createRepartition($communication, $report);
 
         $this->saveCommunicationReport($communication);
@@ -125,10 +122,6 @@ class ReportManager
         // among all messages sent in the trigger
         $report->getRepartitions()->clear();
         foreach ($repartitions as $structureId => $repartition) {
-            if ($hasChoices && $repartition->getQuestionCount()) {
-                $repartition->setAnswerRatio($repartition->getAnswerCount() * 100 / $repartition->getQuestionCount());
-            }
-
             if ($repartition->getMessageCount()) {
                 $repartition->setRatio($repartition->getMessageCount() * 100 / $report->getMessageCount());
             }
@@ -143,10 +136,7 @@ class ReportManager
         }
     }
 
-    /**
-     * @param Report|ReportRepartition $entity
-     */
-    private function incrementCounters(Message $message, bool $communicationHasChoices, $entity)
+    private function incrementCounters(Message $message, bool $communicationHasChoices, AbstractReport $entity)
     {
         if ($communicationHasChoices) {
             $entity->setQuestionCount($entity->getQuestionCount() + 1);
@@ -156,6 +146,10 @@ class ReportManager
         }
 
         $entity->setExchangeCount($entity->getExchangeCount() + $message->getAnswers()->count());
+
+        if ($message->getError()) {
+            $entity->setErrorCount($entity->getErrorCount() + 1);
+        }
 
         $entity->setCosts(
             $this->calculateMessageCosts($message, $entity->getCosts())

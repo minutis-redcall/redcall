@@ -205,6 +205,7 @@ base:
     submit: Envoyer
     update: Editer
   clear_selection: 'Effacer la sélection'
+  closed: Fermé
   crud:
     create_title: 'Ajouter une entrée'
     delete_confirm: 'Souhaitez-vous vraiment supprimer "%entity%" ?'
@@ -216,6 +217,7 @@ base:
   home: Accueil
   modal:
     close: Fermer
+  open: Ouvert
   order_by:
     asc: Croissant
     desc: Décroissant
@@ -237,8 +239,6 @@ base:
   simple_no: Non
   simple_yes: Oui
   wait: 'Un petit instant...'
-  closed: Fermé
-  open: Ouvert
 button:
   submit: Valider
 campaign:
@@ -271,9 +271,9 @@ campaign:
     list_admin: 'Liste de tous les déclenchements'
     list_full: 'Liste des déclenchements'
     new: 'Créer un déclenchement: %type%'
+    report: 'Voir le rapport'
     sms: SMS
     volunteers: bénévole(s)
-    report: 'Voir le rapport'
   types:
     1_green: Information
     2_light_orange: 'Préparation (UL)'
@@ -618,6 +618,18 @@ prefilled_answers:
     colors: 'Couleurs du déclenchement où ce groupe est sélectionnable'
     label: 'Nom du groupe de réponses'
   title: 'Gestion des réponses pré-remplies'
+report:
+  campaign:
+    communication:
+      with_title: 'Communication #%nbr% "%title%" du day%/%month%/%year% à %hours%h%mins%'
+      without_title: 'Communication #%nbr% du %day%/%month%/%year% à %hours%h%mins%'
+    headers:
+      answers: Réponses
+      messages: Messages
+      prices: Coûts
+      structure: Structure
+      errors: Erreurs
+    title: 'Structures impliquées'
 space:
   consult_data:
     announcement_email: '📧 Message envoyé par email le %day%/%month%/%year% à %hours%h%mins%'
@@ -735,15 +747,3 @@ title:
   campaigns: Déclenchements
   costs: Coûts
   messages: Messages
-report:
-  campaign:
-    title: 'Structures impliquées'
-    headers:
-      structure: Structure
-      messages: Messages
-      answers: Réponses
-      ratio: 'Ratio R/M'
-      prices: Coûts
-    communication:
-      without_title: 'Communication #%nbr% du %day%/%month%/%year% à %hours%h%mins%'
-      with_title: 'Communication #%nbr% "%title%" du day%/%month%/%year% à %hours%h%mins%'

@@ -344,6 +344,10 @@ class Answer
             return null;
         }
 
+        if ($this->magnitude < 0.3) {
+            return null;
+        }
+
         switch ($this->sentiment) {
             case $this->sentiment < -75:
                 return '😡';

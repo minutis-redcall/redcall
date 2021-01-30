@@ -618,6 +618,18 @@ prefilled_answers:
     colors: 'Campaign colors for which this group is selectable'
     label: 'Name of the responses group'
   title: 'Manage pre-filled answers'
+report:
+  campaign:
+    communication:
+      with_title: 'Communication #%nbr% "%title%" on day%/%month%/%year% at %hours%h%mins%'
+      without_title: 'Communication #%nbr% on %day%/%month%/%year% at %hours%h%mins%'
+    headers:
+      answers: Answers
+      messages: Messages
+      prices: Costs
+      structure: Structure
+      errors: Errors
+    title: 'Implicated structures'
 space:
   consult_data:
     announcement_email: '📧 Message sent by email on %day%/%month%/%year% at %hours%h%mins%'
@@ -735,15 +747,3 @@ title:
   campaigns: Campaigns
   costs: Costs
   messages: Messages
-report:
-  campaign:
-    title: 'Implicated structures'
-    headers:
-      structure: Structure
-      messages: Messages
-      answers: Answers
-      ratio: 'Ratio A/M'
-      prices: Costs
-    communication:
-      without_title: 'Communication #%nbr% on %day%/%month%/%year% at %hours%h%mins%'
-      with_title: 'Communication #%nbr% "%title%" on day%/%month%/%year% at %hours%h%mins%'
