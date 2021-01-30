@@ -405,6 +405,14 @@
                                                 {{ message.unclear.raw }}
                                             {% endif %}
                                         </span>
+                                        <a id="answer-link-{{ suffix }}"
+                                           style="font-size:10px;"
+                                           href="#"
+                                           onclick="return false;"
+                                           data-message-id="{{ message.id }}"
+                                           class="open-message {% if communication.type == constant('App\\Entity\\Communication::TYPE_SMS') and (not message.isUnclear and not message.invalidAnswer) %}d-none{% endif %}">
+                                            {{ 'campaign_status.answers.answer_link'|trans }}
+                                        </a>
                                     </div>
                                 </td>
                             </tr>
@@ -767,6 +775,9 @@
 
                     {# Message has ambiguous answer #}
                     if (messageStatus['has-unclear-answer']['raw']) {
+                        if ('{{ constant('App\\Entity\\Communication::TYPE_SMS') }}' == communication.type) {
+                            $('#answer-link-' + suffix).removeClass('d-none');
+                        }
                         $('#message-is-unclear-' + suffix).removeClass('d-none');
                         $('#invalid-answer-raw-' + suffix).html(messageStatus['has-unclear-answer']['raw']).removeClass('d-none');
                     } else {
@@ -794,6 +805,9 @@
 
                     {# Message has invalid answer #}
                     if (messageStatus['has-invalid-answer']['raw']) {
+                        if ('{{ constant('App\\Entity\\Communication::TYPE_SMS') }}' == communication.type) {
+                            $('#answer-link-' + suffix).removeClass('d-none');
+                        }
                         $('#message-has-invalid-answer-' + suffix).removeClass('d-none');
                         $('#message-has-invalid-answer-time-' + suffix).html(messageStatus['has-invalid-answer']['time']);
                         $('#invalid-answer-raw-' + suffix).html(messageStatus['has-invalid-answer']['raw']).removeClass('d-none');
@@ -812,6 +826,17 @@
                         $('#face-' + suffix).html(messageStatus['has-invalid-answer']['face']);
                     } else {
                         $('#sentiment-' + suffix).addClass('d-none');
+                    }
+
+                    {# Hide "Answer" link when there are no rendered responses #}
+                    if (!messageStatus['has-invalid-answer']['raw'] && !messageStatus['has-unclear-answer']['raw']) {
+                        $('#answer-link-' + suffix).addClass('d-none');
+                    }
+
+                    {# Show "refresh" on opened answer modal if new message received #}
+                    var refreshAnswer = $('#refresh-answers-' + messageId);
+                    if (refreshAnswer.length && messageStatus['has-answer'] !== refreshAnswer.data('count')) {
+                        refreshAnswer.removeClass('d-none');
                     }
                 });
 
@@ -1132,7 +1157,7 @@
         {# -------------------------------------------------------------------------------- #}
         {# Answers viewing #}
         {# -------------------------------------------------------------------------------- #}
-        $('.open-message').click(function () {
+        $('body').on('click', '.open-message', function () {
             $('#modal-edit-answer').html('');
             $('#edit-answer').modal();
             loadCommunicationAnswers($(this));

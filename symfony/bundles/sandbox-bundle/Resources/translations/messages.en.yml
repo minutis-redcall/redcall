@@ -37,6 +37,11 @@ sandbox:
       title: 'Generate volunteers'
   home:
     link: Sandbox
+  spinner:
+    button: 'Spinner generator'
+    upload: 'Upload an image'
+    splits: 'Splits'
+    result: 'Result'
   volunteer_generator:
     button: 'Volunteer Generator'
     label: 'Number of volunteers to create'

@@ -154,13 +154,6 @@ class Sender
         $this->messageManager->save($message);
     }
 
-    /**
-     * @param Message $message
-     *
-     * @throws \Twig\Error\LoaderError
-     * @throws \Twig\Error\RuntimeError
-     * @throws \Twig\Error\SyntaxError
-     */
     public function sendEmail(Message $message)
     {
         if (!$message->canBeSent()) {

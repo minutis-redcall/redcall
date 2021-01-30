@@ -13,6 +13,7 @@ use DateTime;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class MessageManager
@@ -35,17 +36,19 @@ class MessageManager
     private $tokenStorage;
 
     /**
-     * @param AnswerManager         $answerManager
-     * @param MessageRepository     $messageRepository
-     * @param TokenStorageInterface $tokenStorage
+     * @var LoggerInterface
      */
+    private $logger;
+
     public function __construct(AnswerManager $answerManager,
         MessageRepository $messageRepository,
-        TokenStorageInterface $tokenStorage)
+        TokenStorageInterface $tokenStorage,
+        LoggerInterface $logger)
     {
         $this->answerManager     = $answerManager;
         $this->messageRepository = $messageRepository;
         $this->tokenStorage      = $tokenStorage;
+        $this->logger            = $logger;
     }
 
     public function generateCodes(int $numberOfCodes)

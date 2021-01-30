@@ -11,14 +11,28 @@ class CommunicationActivitySubscriber
 {
     public function postPersist(LifecycleEventArgs $args)
     {
-        $entity = $args->getObject();
+        $this->onChange(
+            $args->getObject()
+        );
+    }
 
+    public function postUpdate(LifecycleEventArgs $args)
+    {
+        $this->onChange(
+            $args->getObject()
+        );
+    }
+
+    public function onChange($entity)
+    {
         if ($entity instanceof Message) {
             $entity->getCommunication()->setReport(null);
         }
 
         if ($entity instanceof Answer || $entity instanceof Cost) {
-            $entity->getMessage()->getCommunication()->setReport(null);
+            if ($entity->getMessage()) {
+                $entity->getMessage()->getCommunication()->setReport(null);
+            }
         }
     }
 }

@@ -24,8 +24,23 @@
         {% endif %}
     </td>
     {% if report.questionCount %}
-        <td>{{ entity.answerCount }}</td>
-        <td>{{ entity.answerRatio|round(2) }}%</td>
+        <td>
+            {{ entity.answerCount }}
+            {% if entity.questionCount %}
+                ({{ (entity.answerCount * 100 / entity.questionCount)|round(2) }}%)
+            {% endif %}
+        </td>
+    {% endif %}
+    {% if report.errorCount %}
+        <td>
+            {{ entity.errorCount }}
+            {% if entity.messageCount %}
+                ({{ (entity.errorCount * 100 / entity.messageCount)|round(2) }}%)
+            {% endif %}
+            {% if entity.questionCount %}
+                ({{ (entity.errorCount * 100 / entity.questionCount)|round(2) }}%)
+            {% endif %}
+        </td>
     {% endif %}
     {% if is_granted('ROLE_ADMIN') %}
         <td>
@@ -58,9 +73,11 @@
         </div>
 
         <strong>
+            {{ macros.communicationIcon(communication) }}
+
             {% if communication.label %}
                 {{ 'report.campaign.communication.with_title'|trans({
-                    '%nbr%': key + 1,
+                    '%nbr%': campaign.communications|length - key,
                     '%title%': communication.label,
                     '%day%': communication.createdAt|date('d'),
                     '%month%': communication.createdAt|date('m'),
@@ -70,7 +87,7 @@
                 }) }}
             {% else %}
                 {{ 'report.campaign.communication.without_title'|trans({
-                    '%nbr%': key + 1,
+                    '%nbr%': campaign.communications|length - key,
                     '%day%': communication.createdAt|date('d'),
                     '%month%': communication.createdAt|date('m'),
                     '%year%': communication.createdAt|date('Y'),
@@ -88,7 +105,9 @@
                 <th>{{ 'report.campaign.headers.messages'|trans }}</th>
                 {% if communication.report.questionCount %}
                     <th>{{ 'report.campaign.headers.answers'|trans }}</th>
-                    <th>{{ 'report.campaign.headers.ratio'|trans }}</th>
+                {% endif %}
+                {% if communication.report.errorCount %}
+                    <th>{{ 'report.campaign.headers.errors'|trans }}</th>
                 {% endif %}
                 {% if is_granted('ROLE_ADMIN') %}
                     <th>{{ 'report.campaign.headers.prices'|trans }}</th>

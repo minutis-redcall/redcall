@@ -262,7 +262,7 @@ class PhraseCommand extends Command
         $array = [];
 
         foreach ($translations as $key => $value) {
-            if (is_scalar($value)) {
+            if (null == $value or is_scalar($value)) {
                 $array[$key] = $value;
             } else {
                 foreach ($this->getFlattenArrayFromTranslations($value) as $childKey => $childValue) {

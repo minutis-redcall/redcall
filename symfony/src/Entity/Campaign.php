@@ -236,6 +236,7 @@ class Campaign
                 /** @var Answer $invalidAnswer */
                 $invalidAnswer = $message->getInvalidAnswer();
 
+                $data['communications'][$communication->getId()]['type']                   = $communication->getType();
                 $data['communications'][$communication->getId()]['msg'][$message->getId()] = [
                     'sent'               => $message->isSent(),
                     'error'              => $translator->trans($message->getError()),

@@ -30,9 +30,9 @@ abstract class AbstractReport
     private $exchangeCount = 0;
 
     /**
-     * @ORM\Column(type="float", nullable=true)
+     * @ORM\Column(type="integer")
      */
-    private $answerRatio;
+    private $errorCount = 0;
 
     public function getMessageCount() : int
     {
@@ -82,14 +82,14 @@ abstract class AbstractReport
         return $this;
     }
 
-    public function getAnswerRatio() : ?float
+    public function getErrorCount() : int
     {
-        return $this->answerRatio;
+        return $this->errorCount;
     }
 
-    public function setAnswerRatio(float $answerRatio) : self
+    public function setErrorCount(int $errorCount) : AbstractReport
     {
-        $this->answerRatio = $answerRatio;
+        $this->errorCount = $errorCount;
 
         return $this;
     }

@@ -67,6 +67,7 @@ services:
   App\EventSubscriber\CommunicationActivitySubscriber:
     tags:
       - { name: doctrine.event_listener, event: postPersist }
+      - { name: doctrine.event_listener, event: postUpdate }
 
   Bundles\PasswordLoginBundle\Repository\UserRepositoryInterface:
     class: App\Repository\UserRepository

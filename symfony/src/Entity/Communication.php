@@ -116,8 +116,7 @@ class Communication
     private $raw;
 
     /**
-     * @ORM\OneToOne(targetEntity=Report::class, inversedBy="communication", cascade={"persist", "remove"},
-     *                                           orphanRemoval=true)
+     * @ORM\OneToOne(targetEntity=Report::class, inversedBy="communication", cascade={"persist", "remove"})
      */
     private $report;
 

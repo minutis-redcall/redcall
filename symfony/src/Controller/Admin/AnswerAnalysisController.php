@@ -27,9 +27,10 @@ class AnswerAnalysisController extends BaseController
      */
     private $answerManager;
 
-    public function __construct(PaginationManager $paginationManager)
+    public function __construct(PaginationManager $paginationManager, AnswerManager $answerManager)
     {
         $this->paginationManager = $paginationManager;
+        $this->answerManager     = $answerManager;
     }
 
     /**

@@ -42,7 +42,7 @@ class Report extends AbstractReport
     private $updatedAt;
 
     /**
-     * @ORM\OneToOne(targetEntity=Communication::class, mappedBy="report", cascade={"persist", "remove"})
+     * @ORM\OneToOne(targetEntity=Communication::class, mappedBy="report")
      */
     private $communication;
 

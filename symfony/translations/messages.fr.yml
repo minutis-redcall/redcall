@@ -142,6 +142,8 @@ audience:
       title: 'Fiches bénévoles comportant des problèmes'
     selected: 'Liste des bénévoles sélectionnés'
     title: 'Résumé de la sélection'
+  copy_paste: 'Ou coller une liste de nivols'
+  copy_paste_details: 'Ou coller une liste de nivols dans le champ ci-dessous.'
   large_audience:
     button_add: 'afin de l''inclure à nouveau dans le déclenchement.'
     button_remove: 'afin de retirer manuellement un bénévole du déclenchement.'
@@ -181,8 +183,6 @@ audience:
   search_other_badge: 'Rechercher une autre compétence :'
   select_all_badges: 'Déclencher tous les bénévoles quelles que soient leurs compétences'
   structures: 'Structure(s) à déclencher'
-  copy_paste_details: 'Ou coller une liste de nivols dans le champ ci-dessous.'
-  copy_paste: 'Ou coller une liste de nivols'
 backlinks:
   blablacar: 'Parrainé par'
   minutis: 'Développé par les bénévoles'
@@ -204,8 +204,9 @@ base:
     search: Rechercher
     submit: Envoyer
     update: Editer
+    refresh: Mettre à jour
   clear_selection: 'Effacer la sélection'
-  closed: 'Fermé'
+  closed: Fermé
   crud:
     create_title: 'Ajouter une entrée'
     delete_confirm: 'Souhaitez-vous vraiment supprimer "%entity%" ?'
@@ -292,9 +293,11 @@ campaign_status:
     new: 'Envoyer un nouveau SMS'
     prefix: 'Préfix de la réponse: %prefix%'
     unclear: Ambigüe
+    answer_link: 'Répondre'
+    new_message: 'Un nouveau message est arrivé.'
   by: 'Envoyée par %name% (%structure%)'
-  by_no_structures: 'Envoyée par %name%'
   by_admin: 'Equipe Minutis'
+  by_no_structures: 'Envoyée par %name%'
   communication_short_title: '%date% à %time%'
   communication_tabs: Communications
   communication_title: 'Communication du %date% à %time%'
@@ -618,6 +621,18 @@ prefilled_answers:
     colors: 'Couleurs du déclenchement où ce groupe est sélectionnable'
     label: 'Nom du groupe de réponses'
   title: 'Gestion des réponses pré-remplies'
+report:
+  campaign:
+    communication:
+      with_title: 'Communication #%nbr% "%title%" du day%/%month%/%year% à %hours%h%mins%'
+      without_title: 'Communication #%nbr% du %day%/%month%/%year% à %hours%h%mins%'
+    headers:
+      answers: Réponses
+      messages: Messages
+      prices: Coûts
+      structure: Structure
+      errors: Erreurs
+    title: 'Structures impliquées'
 space:
   consult_data:
     announcement_email: '📧 Message envoyé par email le %day%/%month%/%year% à %hours%h%mins%'
@@ -735,15 +750,3 @@ title:
   campaigns: Déclenchements
   costs: Coûts
   messages: Messages
-report:
-  campaign:
-    title: 'Structures impliquées'
-    headers:
-      structure: 'Structure'
-      messages: 'Messages'
-      answers: 'Réponses'
-      ratio: 'Ratio R/M'
-      prices: 'Coûts'
-    communication:
-      without_title: 'Communication #%nbr% du %day%/%month%/%year% à %hours%h%mins%'
-      with_title: 'Communication #%nbr% "%title%" du day%/%month%/%year% à %hours%h%mins%'

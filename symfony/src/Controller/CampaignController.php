@@ -18,6 +18,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class CampaignController extends BaseController
@@ -197,13 +198,16 @@ class CampaignController extends BaseController
      * @Route(path="campaign/{id}/change-color/{color}/{csrf}", name="color_campaign")
      * @IsGranted("CAMPAIGN_OWNER", subject="campaignEntity")
      */
-    public function changeColor(Campaign $campaignEntity, string $color, string $csrf) : Response
+    public function changeColor(Campaign $campaignEntity,
+        string $color,
+        string $csrf,
+        ValidatorInterface $validator) : Response
     {
         $this->validateCsrfOrThrowNotFoundException('campaign', $csrf);
 
         $campaign       = new CampaignModel(new SmsTrigger());
         $campaign->type = $color;
-        $errors         = $this->get('validator')->validate($campaign, null, ['color_edition']);
+        $errors         = $validator->validate($campaign, null, ['color_edition']);
         if (count($errors) > 0) {
             foreach ($errors as $error) {
                 $this->addFlash('danger', $error->getMessage());
@@ -221,13 +225,13 @@ class CampaignController extends BaseController
      * @Route(path="campaign/{id}/rename", name="rename_campaign")
      * @IsGranted("CAMPAIGN_OWNER", subject="campaignEntity")
      */
-    public function rename(Request $request, Campaign $campaignEntity) : Response
+    public function rename(Request $request, Campaign $campaignEntity, ValidatorInterface $validator) : Response
     {
         $this->validateCsrfOrThrowNotFoundException('campaign', $request->request->get('csrf'));
 
         $campaign        = new CampaignModel(new SmsTrigger());
         $campaign->label = $request->request->get('new_name');
-        $errors          = $this->get('validator')->validate($campaign, null, ['label_edition']);
+        $errors          = $validator->validate($campaign, null, ['label_edition']);
         if (count($errors) > 0) {
             foreach ($errors as $error) {
                 $this->addFlash('danger', $error->getMessage());
@@ -243,7 +247,7 @@ class CampaignController extends BaseController
 
     /**
      * @Route(path="campaign/{id}/notes", name="notes_campaign")
-     * @IsGranted("CAMPAIGN_ACCESS", subject="campaignEntity")
+     * @IsGranted("CAMPAIGN_ACCESS", subject="campaign")
      */
     public function notes(Request $request, Campaign $campaign) : Response
     {
