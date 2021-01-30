@@ -92,8 +92,6 @@ class CampaignController extends BaseController
      */
     public function createCampaign(Request $request, Type $type)
     {
-        sleep(10);
-
         $user = $this->getUser();
 
         if (!$user->getVolunteer() || !$user->getStructures()->count()) {
