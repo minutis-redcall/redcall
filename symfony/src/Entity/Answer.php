@@ -287,9 +287,9 @@ class Answer
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getByAdmin() : string
+    public function getByAdmin() : ?string
     {
         return $this->byAdmin;
     }
@@ -340,7 +340,7 @@ class Answer
 
     public function getFace() : ?string
     {
-        if (null === $this->sentiment) {
+        if (null === $this->sentiment || strlen($this->raw) < 10) {
             return null;
         }
 

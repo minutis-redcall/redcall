@@ -58,9 +58,11 @@
         </div>
 
         <strong>
+            {{ macros.communicationIcon(communication) }}
+
             {% if communication.label %}
                 {{ 'report.campaign.communication.with_title'|trans({
-                    '%nbr%': key + 1,
+                    '%nbr%': campaign.communications|length - key,
                     '%title%': communication.label,
                     '%day%': communication.createdAt|date('d'),
                     '%month%': communication.createdAt|date('m'),
@@ -70,7 +72,7 @@
                 }) }}
             {% else %}
                 {{ 'report.campaign.communication.without_title'|trans({
-                    '%nbr%': key + 1,
+                    '%nbr%': campaign.communications|length - key,
                     '%day%': communication.createdAt|date('d'),
                     '%month%': communication.createdAt|date('m'),
                     '%year%': communication.createdAt|date('Y'),
