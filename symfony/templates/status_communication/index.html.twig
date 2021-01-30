@@ -406,6 +406,7 @@
                                             {% endif %}
                                         </span>
                                         <a id="answer-link-{{ suffix }}"
+                                           style="font-size:10px;"
                                            href="#"
                                            onclick="return false;"
                                            data-message-id="{{ message.id }}"
@@ -831,6 +832,12 @@
                     if (!messageStatus['has-invalid-answer']['raw'] && !messageStatus['has-unclear-answer']['raw']) {
                         $('#answer-link-' + suffix).addClass('d-none');
                     }
+
+                    {# Show "refresh" on opened answer modal if new message received #}
+                    var refreshAnswer = $('#refresh-answers-' + messageId);
+                    if (refreshAnswer.length && messageStatus['has-answer'] !== refreshAnswer.data('count')) {
+                        refreshAnswer.removeClass('d-none');
+                    }
                 });
 
                 {# Refresh the SMS sending progress bar #}
@@ -1150,7 +1157,7 @@
         {# -------------------------------------------------------------------------------- #}
         {# Answers viewing #}
         {# -------------------------------------------------------------------------------- #}
-        $('.open-message').click(function () {
+        $('body').on('click', '.open-message', function () {
             $('#modal-edit-answer').html('');
             $('#edit-answer').modal();
             loadCommunicationAnswers($(this));

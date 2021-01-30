@@ -35,6 +35,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
@@ -415,13 +416,16 @@ class CommunicationController extends BaseController
      * @Entity("communicationEntity", expr="repository.find(communicationId)")
      * @IsGranted("CAMPAIGN_ACCESS", subject="campaign")
      */
-    public function rename(Request $request, Campaign $campaign, Communication $communicationEntity) : Response
+    public function rename(Request $request,
+        Campaign $campaign,
+        Communication $communicationEntity,
+        ValidatorInterface $validator) : Response
     {
         $this->validateCsrfOrThrowNotFoundException('communication', $request->request->get('csrf'));
 
         $communication = new SmsTrigger();
         $communication->setLabel($request->request->get('new_name'));
-        $errors = $this->get('validator')->validate($communication, null, ['label_edition']);
+        $errors = $validator->validate($communication, null, ['label_edition']);
         if (count($errors) > 0) {
             foreach ($errors as $error) {
                 $this->addFlash('danger', $error->getMessage());

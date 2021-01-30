@@ -204,6 +204,7 @@ base:
     search: Search
     submit: Submit
     update: Edit
+    refresh: Refresh
   clear_selection: 'Clear selection'
   closed: Fermé
   crud:
@@ -293,6 +294,7 @@ campaign_status:
     prefix: 'Response prefix: %prefix%'
     unclear: Unclear
     answer_link: 'Answer'
+    new_message: 'A new message has been received.'
   by: 'Sent by %name% (%structure%)'
   by_admin: 'Team Minutis'
   by_no_structures: 'Sent by %name%'

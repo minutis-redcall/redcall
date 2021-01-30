@@ -50,6 +50,20 @@
     </table>
 {% endif %}
 
+<div id="refresh-answers-{{ message.id }}" data-count="{{ message.answers|length }}" class="d-none">
+    <div class="text-center" style="border:1px solid grey;padding:5px;">
+        <p>⚠️</p>
+        <p><strong>{{ 'campaign_status.answers.new_message'|trans }}</strong></p>
+        <a href="#"
+           class="text-center open-message btn btn-sm btn-secondary"
+           onclick="return false;"
+           data-message-id="{{ message.id }}">
+            {{ 'base.button.refresh'|trans }}
+        </a>
+    </div>
+    <br/>
+</div>
+
 {% if constant('App\\Entity\\Communication::TYPE_SMS') == message.communication.type and message.reachable %}
     {{ form(form) }}
 
