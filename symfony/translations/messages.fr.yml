@@ -292,7 +292,7 @@ campaign_status:
     new: 'Envoyer un nouveau SMS'
     prefix: 'Préfix de la réponse: %prefix%'
     unclear: Ambigüe
-    answer: 'Répondre'
+    answer_link: 'Répondre'
   by: 'Envoyée par %name% (%structure%)'
   by_admin: 'Equipe Minutis'
   by_no_structures: 'Envoyée par %name%'

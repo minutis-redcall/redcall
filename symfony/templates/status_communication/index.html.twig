@@ -410,7 +410,7 @@
                                            onclick="return false;"
                                            data-message-id="{{ message.id }}"
                                            class="open-message {% if communication.type == constant('App\\Entity\\Communication::TYPE_SMS') and (not message.isUnclear and not message.invalidAnswer) %}d-none{% endif %}">
-                                            {{ 'campaign_status.answers.answer'|trans }}
+                                            {{ 'campaign_status.answers.answer_link'|trans }}
                                         </a>
                                     </div>
                                 </td>
@@ -774,8 +774,10 @@
 
                     {# Message has ambiguous answer #}
                     if (messageStatus['has-unclear-answer']['raw']) {
+                        if ('{{ constant('App\\Entity\\Communication::TYPE_SMS') }}' == communication.type) {
+                            $('#answer-link-' + suffix).removeClass('d-none');
+                        }
                         $('#message-is-unclear-' + suffix).removeClass('d-none');
-                        $('#answer-link-' + suffix).removeClass('d-none');
                         $('#invalid-answer-raw-' + suffix).html(messageStatus['has-unclear-answer']['raw']).removeClass('d-none');
                     } else {
                         $('#message-is-unclear-' + suffix).addClass('d-none');
@@ -784,7 +786,6 @@
                     {# Sentiment on ambiguous answer #}
                     if (messageStatus['has-unclear-answer']['face']) {
                         $('#sentiment-' + suffix).removeClass('d-none');
-                        $('#answer-link-' + suffix).removeClass('d-none');
                         $('#face-' + suffix).html(messageStatus['has-unclear-answer']['face']);
                     } else {
                         $('#sentiment-' + suffix).addClass('d-none');
@@ -803,7 +804,9 @@
 
                     {# Message has invalid answer #}
                     if (messageStatus['has-invalid-answer']['raw']) {
-                        $('#answer-link-' + suffix).removeClass('d-none');
+                        if ('{{ constant('App\\Entity\\Communication::TYPE_SMS') }}' == communication.type) {
+                            $('#answer-link-' + suffix).removeClass('d-none');
+                        }
                         $('#message-has-invalid-answer-' + suffix).removeClass('d-none');
                         $('#message-has-invalid-answer-time-' + suffix).html(messageStatus['has-invalid-answer']['time']);
                         $('#invalid-answer-raw-' + suffix).html(messageStatus['has-invalid-answer']['raw']).removeClass('d-none');

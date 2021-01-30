@@ -292,7 +292,7 @@ campaign_status:
     new: 'Send a new SMS'
     prefix: 'Response prefix: %prefix%'
     unclear: Unclear
-    answer: 'Answer'
+    answer_link: 'Answer'
   by: 'Sent by %name% (%structure%)'
   by_admin: 'Team Minutis'
   by_no_structures: 'Sent by %name%'
