@@ -8,8 +8,12 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\Range;
+use Symfony\Component\Validator\Constraints\Regex;
 
 class SpinnerController extends AbstractController
 {
@@ -20,12 +24,33 @@ class SpinnerController extends AbstractController
     public function index(Request $request)
     {
         $form = $this
-            ->createFormBuilder(['splits' => 12])
+            ->createFormBuilder([
+                'splits' => 12,
+                'mixer'  => '#e9ecef',
+                'width'  => 100,
+                'speed'  => 5,
+            ])
             ->add('file', FileType::class, [
                 'label' => false,
             ])
             ->add('splits', IntegerType::class, [
-                'label' => 'sandbox.spinner.splits',
+                'label'       => 'sandbox.spinner.splits',
+                'constraints' => [
+                    new NotBlank(),
+                    new Range(['min' => 2, 'max' => 100]),
+                ],
+            ])
+            ->add('mixer', TextType::class, [
+                'constraints' => [
+                    new NotBlank(),
+                    new Regex('/^#[0-9a-f]{6}$/'),
+                ],
+            ])
+            ->add('speed', IntegerType::class, [
+                'constraints' => [
+                    new NotBlank(),
+                    new Range(['min' => 1, 'max' => 100]),
+                ],
             ])
             ->add('submit', SubmitType::class, [
                 'label' => 'base.button.submit',
@@ -34,10 +59,9 @@ class SpinnerController extends AbstractController
             ->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $file   = $form->get('file')->getData();
-            $splits = $form->get('splits')->getData();
-            $images = $this->createSplits($file, $splits);
-            $result = $this->createResult($file, $splits);
+            $data   = $form->getData();
+            $images = $this->createSplits($data);
+            $result = $this->createResult($data);
         }
 
         return [
@@ -47,15 +71,15 @@ class SpinnerController extends AbstractController
         ];
     }
 
-    private function createSplits(string $path, int $count) : array
+    private function createSplits(array $data) : array
     {
         $splits = [];
 
-        $contents = file_get_contents($path);
-        $step     = 100 / $count;
+        $contents = file_get_contents($data['file']);
+        $step     = 100 / $data['splits'];
 
-        for ($opacity = $step; $opacity < 100; $opacity += $step) {
-            $image = $this->createImage($contents, $opacity);
+        for ($opacity = $step; $opacity <= 100; $opacity += $step) {
+            $image = $this->createImage($contents, $opacity, $data);
             ob_start();
             imagegif($image);
             $bytes    = ob_get_clean();
@@ -65,38 +89,38 @@ class SpinnerController extends AbstractController
         return $splits;
     }
 
-    private function createResult(string $path, int $count) : string
+    private function createResult(array $data) : string
     {
         $images   = [];
-        $contents = file_get_contents($path);
-        $step     = 100 / $count;
+        $contents = file_get_contents($data['file']);
+        $step     = 100 / $data['splits'];
 
-        for ($opacity = $step; $opacity < 100; $opacity += $step) {
-            $images[] = $this->createImage($contents, $opacity);
+        for ($opacity = $step; $opacity <= 100; $opacity += $step) {
+            $images[] = $this->createImage($contents, $opacity, $data);
         }
-
-        for ($i = count($images) - 1; $i != 0; $i--) {
+        for ($i = count($images) - 2; $i > 0; $i--) {
             $images[] = $images[$i];
         }
 
         $anim = new AnimGif();
-        $anim->create($images, 5);
+        $anim->create($images, $data['speed']);
 
         $bytes = $anim->get();
 
         return base64_encode($bytes);
     }
 
-    private function createImage(string $contents, float $opacity)
+    private function createImage(string $contents, float $opacity, array $options)
     {
         $image = imagecreatefromstring($contents);
+
         imagealphablending($image, false);
 
-        $color = imagecolorat($image, 0, 0);
-        $r     = ($color >> 16) & 0xFF;
-        $g     = ($color >> 8) & 0xFF;
-        $b     = $color & 0xFF;
-
+        // Make background transparent (considering that first pixel at top left is background)
+        $color  = imagecolorat($image, 0, 0);
+        $r      = ($color >> 16) & 0xFF;
+        $g      = ($color >> 8) & 0xFF;
+        $b      = $color & 0xFF;
         $transp = imagecolorallocatealpha($image, $r, $g, $b, 127);
         imagecolortransparent($image, $transp);
 
@@ -107,11 +131,10 @@ class SpinnerController extends AbstractController
         //        imagefilter($image, IMG_FILTER_COLORIZE, 0, 0, 0, 127 * $transparency);
 
         // But on GIFs, transparency is a single color, so we'll mix the color with white instead.
-        // White = opacity 0%
+        // White (mixing color) = opacity 0%
         // original color at pixel = opacity 100%
 
-        // #e9ecef
-        $mixer  = 0xe9ecef;
+        $mixer  = base_convert(substr($options['mixer'], 1), 16, 10);
         $rMixer = ($mixer >> 16) & 0xFF;
         $gMixer = ($mixer >> 8) & 0xFF;
         $bMixer = $mixer & 0xFF;
@@ -131,7 +154,6 @@ class SpinnerController extends AbstractController
                 $b = $color & 0xFF;
 
                 // Mixed color
-
                 $r = (($r * $opacity) / 100) + (($rMixer * (100 - $opacity)) / 100);
                 $g = (($g * $opacity) / 100) + (($gMixer * (100 - $opacity)) / 100);
                 $b = (($b * $opacity) / 100) + (($bMixer * (100 - $opacity)) / 100);
