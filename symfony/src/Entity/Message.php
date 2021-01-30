@@ -355,10 +355,12 @@ class Message
      */
     public function getLastAnswer() : ?Answer
     {
-        if ($this->answers) {
-            $answers = $this->answers->toArray();
+        foreach ($this->answers as $answer) {
+            if ($answer->getByAdmin()) {
+                continue;
+            }
 
-            return reset($answers) ?: null;
+            return $answer;
         }
 
         return null;
@@ -406,6 +408,10 @@ class Message
         }
 
         foreach ($this->answers ?? [] as $answer) {
+            if ($answer->getByAdmin()) {
+                continue;
+            }
+
             /* @var Answer $answer */
             if ($answer->isUnclear()) {
                 return true;
