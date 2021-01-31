@@ -3,12 +3,15 @@
 namespace App\Form\Model;
 
 use App\Entity\Communication;
+use App\Entity\Media;
 use App\Entity\Message;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 class EmailTrigger extends BaseTrigger
 {
+    private $images = [];
+
     public function __construct()
     {
         $this->setType(Communication::TYPE_EMAIL);
@@ -19,7 +22,7 @@ class EmailTrigger extends BaseTrigger
      */
     public function validate(ExecutionContextInterface $context, $payload)
     {
-        if (mb_strlen($this->getMessage()) > Message::MAX_LENGTH_EMAIL) {
+        if (mb_strlen(strip_tags($this->getMessage())) > Message::MAX_LENGTH_EMAIL) {
             $context->buildViolation('form.communication.errors.too_large_sms')
                     ->atPath('message')
                     ->addViolation();
@@ -30,5 +33,17 @@ class EmailTrigger extends BaseTrigger
                     ->atPath('subject')
                     ->addViolation();
         }
+    }
+
+    public function getImages() : array
+    {
+        return $this->images;
+    }
+
+    public function addImage(Media $media) : EmailTrigger
+    {
+        $this->images[] = $media;
+
+        return $this;
     }
 }

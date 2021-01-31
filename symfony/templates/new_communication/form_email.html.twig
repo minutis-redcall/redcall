@@ -3,8 +3,6 @@
 
 <hr/>
 
-{% set max_length_email = constant('App\\Entity\\Message::MAX_LENGTH_EMAIL') %}
-
 <div id="message-container">
     <div class="h3">{{ 'form.communication.fields.message'|trans }}</div>
 
@@ -22,12 +20,6 @@
 
         <div class="d-none">
             {{ form_widget(form.message) }}
-        </div>
-
-        <div class="message-length float-right">
-            <span id="message-size">0</span>
-            /
-            <span id="message-max">{{ max_length_email }}</span>
         </div>
     </div>
 
@@ -106,7 +98,6 @@
         $('#{{ form.message.vars.id }}').val(
             editor.root.innerHTML,
         );
-        updateMessageSize();
         refreshPreview();
     });
 
