@@ -117,10 +117,11 @@ class EmailTriggerType extends AbstractType
                 continue;
             }
 
-            // Sanitize image to png whatever its extension
+            // Sanitize image to png whatever its extension (sorry animated gifs)
             if (!$gd = @imagecreatefromstring($binary)) {
                 continue;
             }
+            imagesavealpha($gd, true);
             ob_start();
             imagepng($gd);
             $clean = ob_get_clean();
