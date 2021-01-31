@@ -39,9 +39,9 @@ sandbox:
     link: Sandbox
   spinner:
     button: 'Générateur de spinner'
+    result: Résultat
+    splits: Splits
     upload: 'Charger une image'
-    splits: 'Splits'
-    result: 'Résultat'
   volunteer_generator:
     button: 'Générateur de bénévoles'
     label: 'Nombre de bénévoles à créer'

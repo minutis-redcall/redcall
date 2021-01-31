@@ -83,6 +83,74 @@ class ReportManager
         return $report;
     }
 
+    public function createStructureReport(\DateTime $from, \DateTime $to, int $minMessages)
+    {
+        $reports = $this->reportRepository->getCommunicationReportsBetween($from, $to, $minMessages);
+
+        $structures = [];
+        $costs      = [];
+
+        foreach ($reports as $report) {
+            /** @var Report $report */
+            foreach ($report->getRepartitions() as $repartition) {
+                $structure   = $repartition->getStructure();
+                $structureId = $structure->getId();
+
+                // Initializing
+                if (!array_key_exists($structureId, $structures)) {
+                    $costs[$structureId] = 0;
+                    foreach ([Communication::TYPE_SMS, Communication::TYPE_CALL, Communication::TYPE_EMAIL] as $type) {
+                        $structures[$structureId][$type] = [
+                            'name'           => $structure->getName(),
+                            'campaigns'      => [],
+                            'type'           => $type,
+                            'communications' => 0,
+                            'messages'       => 0,
+                            'questions'      => 0,
+                            'answers'        => 0,
+                            'errors'         => 0,
+                            'costs'          => [],
+                        ];
+                    }
+                }
+
+                // Filling
+                $ref                   = &$structures[$structureId][$report->getCommunication()->getType()];
+                $ref['campaigns'][]    = $report->getCommunication()->getCampaign()->getId();
+                $ref['communications'] += 1;
+                $ref['messages']       += $repartition->getMessageCount();
+                $ref['questions']      += $repartition->getQuestionCount();
+                $ref['answers']        += $repartition->getAnswerCount();
+                $ref['errors']         += $repartition->getErrorCount();
+                foreach ($repartition->getCosts() as $currency => $amount) {
+                    if (!isset($ref['costs'][$currency])) {
+                        $ref['costs'][$currency] = 0;
+                    }
+                    $ref['costs'][$currency] += $amount;
+
+                    // We mix all currencies (we currently support EUR and USD),
+                    // but it's just for sorting results, so it doesn't matter.
+                    $costs[$structureId] += $amount;
+                }
+            }
+        }
+
+        // Fixing campaign counts
+        foreach ($structures as $structureId => $types) {
+            foreach ($types as $type => $data) {
+                $ref              = &$structures[$structureId][$type];
+                $ref['campaigns'] = count(array_unique($ref['campaigns']));
+            }
+        }
+
+        // Sorting by descending cost
+        uksort($structures, function ($a, $b) use (&$costs) {
+            return $costs[$a] <=> $costs[$b];
+        });
+
+        return $structures;
+    }
+
     private function createRepartition(Communication $communication, Report $report)
     {
         $hasChoices = $communication->getChoices()->count() > 0;

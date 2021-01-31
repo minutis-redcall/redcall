@@ -58,8 +58,6 @@ admin:
       priority: 'Rendering priority'
     search: 'Search for a category'
     title: 'Manage badge categories'
-  dashboard:
-    title: Statistics
   home:
     link: Administration
   pegass:
@@ -110,6 +108,27 @@ admin:
       phone: '<b>%phone_number% (%phone_percent%%)</b> who do not have phone number'
       summary: 'The RedCall database has <b>%total_number% (%total_percent%%)</b> volunteers who may not be reachable'
       title: Volunteers
+    buttons:
+      main: Statistics
+      general: 'General statistics'
+      structure: 'Structure reports'
+    structure:
+      form:
+        title: 'Choose the period'
+        from: 'From:'
+        to: 'To :'
+        min: 'Only count triggers having minimum X messages:'
+      report:
+        id: '#'
+        name: Structure
+        type: Type
+        campaigns: Trgrs
+        communications: Comms
+        messages: Msgs
+        questions: Questions
+        answers: Ans.
+        errors: Err.
+        costs: Costs
   user:
     list: 'User list'
     pegass: 'Pegass bindings'
@@ -200,11 +219,11 @@ base:
     enable: Enable
     more: More...
     open: Open
+    refresh: Refresh
     save: Save
     search: Search
     submit: Submit
     update: Edit
-    refresh: Refresh
   clear_selection: 'Clear selection'
   closed: Fermé
   crud:
@@ -286,15 +305,15 @@ campaign_status:
   answer_invalid: 'Other rep.'
   answer_no: 'Answer %choice%'
   answers:
+    answer_link: Answer
     change: 'Change answers'
     history: History
     label: 'Response "%label%"'
     labels: 'Responses %label%'
     new: 'Send a new SMS'
+    new_message: 'A new message has been received.'
     prefix: 'Response prefix: %prefix%'
     unclear: Unclear
-    answer_link: 'Answer'
-    new_message: 'A new message has been received.'
   by: 'Sent by %name% (%structure%)'
   by_admin: 'Team Minutis'
   by_no_structures: 'Sent by %name%'
@@ -628,10 +647,10 @@ report:
       without_title: 'Communication #%nbr% on %day%/%month%/%year% at %hours%h%mins%'
     headers:
       answers: Answers
+      errors: Errors
       messages: Messages
       prices: Costs
       structure: Structure
-      errors: Errors
     title: 'Implicated structures'
 space:
   consult_data:

@@ -58,8 +58,6 @@ admin:
       priority: 'Priorité d''affichage'
     search: 'Rechercher une catégorie'
     title: 'Gestion des catégories de badge'
-  dashboard:
-    title: Statistiques
   home:
     link: Administration
   pegass:
@@ -110,6 +108,27 @@ admin:
       phone: '<b>%phone_number% (%phone_percent%%)</b> qui n’ont pas de numéro de téléphone'
       summary: 'La base de données RedCall contient <b>%total_number% (%total_percent%%)</b> bénévoles qui ne sont pas forcément joignables'
       title: Bénévoles
+    buttons:
+      main: Statistiques
+      general: 'Statistiques générales'
+      structure: 'Rapports par structure'
+    structure:
+      form:
+        title: 'Choisir la période'
+        from: 'Entre le :'
+        to: 'Et le :'
+        min: 'Compter les déclenchements ayant au moins X messages :'
+      report:
+        id: '#'
+        name: Structure
+        type: Type
+        campaigns: Décl.
+        communications: Comms
+        messages: Msgs
+        questions: Questions
+        answers: Rép.
+        errors: Err.
+        costs: Dépenses
   user:
     list: 'Liste d''utilisateurs'
     pegass: 'Connexions à Pegass'
@@ -200,11 +219,11 @@ base:
     enable: Activer
     more: Plus...
     open: Ouvrir
+    refresh: 'Mettre à jour'
     save: Sauvegarder
     search: Rechercher
     submit: Envoyer
     update: Editer
-    refresh: Mettre à jour
   clear_selection: 'Effacer la sélection'
   closed: Fermé
   crud:
@@ -286,15 +305,15 @@ campaign_status:
   answer_invalid: 'Autres Rép.'
   answer_no: 'Réponse %choice%'
   answers:
+    answer_link: Répondre
     change: 'Changer les réponses'
     history: Historique
     label: 'Réponse "%label%"'
     labels: 'Réponses %label%'
     new: 'Envoyer un nouveau SMS'
+    new_message: 'Un nouveau message est arrivé.'
     prefix: 'Préfix de la réponse: %prefix%'
     unclear: Ambigüe
-    answer_link: 'Répondre'
-    new_message: 'Un nouveau message est arrivé.'
   by: 'Envoyée par %name% (%structure%)'
   by_admin: 'Equipe Minutis'
   by_no_structures: 'Envoyée par %name%'
@@ -628,10 +647,10 @@ report:
       without_title: 'Communication #%nbr% du %day%/%month%/%year% à %hours%h%mins%'
     headers:
       answers: Réponses
+      errors: Erreurs
       messages: Messages
       prices: Coûts
       structure: Structure
-      errors: Erreurs
     title: 'Structures impliquées'
 space:
   consult_data:
