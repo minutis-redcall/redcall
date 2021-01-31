@@ -50,6 +50,11 @@ class Media
      */
     private $expiresAt;
 
+    /**
+     * @ORM\ManyToOne(targetEntity=Communication::class, inversedBy="images")
+     */
+    private $communication;
+
     public function getId() : ?int
     {
         return $this->id;
@@ -111,6 +116,18 @@ class Media
     public function setExpiresAt(?\DateTimeInterface $expiresAt) : self
     {
         $this->expiresAt = $expiresAt;
+
+        return $this;
+    }
+
+    public function getCommunication(): ?Communication
+    {
+        return $this->communication;
+    }
+
+    public function setCommunication(?Communication $communication): self
+    {
+        $this->communication = $communication;
 
         return $this;
     }

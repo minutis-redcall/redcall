@@ -63,9 +63,14 @@
 {% endmacro %}
 
 {% macro communicationIcon(communication) %}
-    {% if communication.type == constant('App\\Entity\\Communication::TYPE_SMS') %}
+    {% import _self as macros %}
+    {{ macros.communicationTypeIcon(communication.type) }}
+{% endmacro %}
+
+{% macro communicationTypeIcon(type) %}
+    {% if type == constant('App\\Entity\\Communication::TYPE_SMS') %}
         📱
-    {% elseif communication.type == constant('App\\Entity\\Communication::TYPE_CALL') %}
+    {% elseif type == constant('App\\Entity\\Communication::TYPE_CALL') %}
         📞
     {% else %}
         📧

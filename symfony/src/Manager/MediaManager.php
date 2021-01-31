@@ -55,6 +55,11 @@ class MediaManager
         $this->mediaRepository->clearExpired();
     }
 
+    public function save(Media $media)
+    {
+        $this->mediaRepository->save($media);
+    }
+
     private function getMedia(string $extension, string $text, callable $callback)
     {
         /** @var Media $media */

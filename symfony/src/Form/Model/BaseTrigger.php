@@ -2,6 +2,7 @@
 
 namespace App\Form\Model;
 
+use App\Entity\Media;
 use Symfony\Component\Validator\Constraints as Assert;
 
 abstract class BaseTrigger implements \JsonSerializable
@@ -60,6 +61,11 @@ abstract class BaseTrigger implements \JsonSerializable
      * @var boolean
      */
     private $multipleAnswer = false;
+
+    /**
+     * @var array
+     */
+    private $images = [];
 
     /**
      * @return string
@@ -221,8 +227,26 @@ abstract class BaseTrigger implements \JsonSerializable
         return $this;
     }
 
+    public function getImages() : array
+    {
+        return $this->images;
+    }
+
+    public function addImage(Media $media) : EmailTrigger
+    {
+        $this->images[] = $media;
+
+        return $this;
+    }
+
     public function jsonSerialize()
     {
-        return get_object_vars($this);
+        $vars = get_object_vars($this);
+
+        $vars['images'] = array_map(function (Media $media) {
+            return $media->getUuid();
+        }, $this->images);
+
+        return $vars;
     }
 }

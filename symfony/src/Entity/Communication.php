@@ -7,9 +7,9 @@ use App\Task\SendEmailTask;
 use App\Task\SendSmsTask;
 use App\Tools\GSM;
 use DateTime;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Exception;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\CommunicationRepository")
@@ -40,44 +40,34 @@ class Communication
     private $campaign;
 
     /**
-     * @var string
-     *
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $label;
 
     /**
-     * @var string
-     *
      * @ORM\Column(type="string", length=20)
      */
     private $type;
 
     /**
-     * @var string
-     *
      * @ORM\Column(type="string", length=80, nullable=true)
      */
     private $subject;
 
     /**
-     * @var string
-     *
      * @ORM\Column(type="text")
      */
     private $body;
 
     /**
-     * @var DateTime
+     * @var \DateTime
      *
      * @ORM\Column(type="datetime")
      */
     private $createdAt;
 
     /**
-     * Contains volunteer's message statuses, the message itself is inside body.
-     *
-     * @var array
+     * @var Message[]
      *
      * @ORM\OneToMany(targetEntity="App\Entity\Message", mappedBy="communication", cascade={"persist"})
      * @ORM\OrderBy({"updatedAt" = "DESC"})
@@ -116,6 +106,8 @@ class Communication
     private $raw;
 
     /**
+     * @var Report|null
+     *
      * @ORM\OneToOne(targetEntity=Report::class, inversedBy="communication", cascade={"persist", "remove"})
      */
     private $report;
@@ -124,6 +116,18 @@ class Communication
      * @ORM\Column(type="datetime", nullable=true)
      */
     private $lastActivityAt;
+
+    /**
+     * @var Media[]
+     *
+     * @ORM\OneToMany(targetEntity=Media::class, mappedBy="communication", cascade={"persist", "remove"})
+     */
+    private $images;
+
+    public function __construct()
+    {
+        $this->images = new ArrayCollection();
+    }
 
     /**
      * @return mixed
@@ -258,6 +262,21 @@ class Communication
         $this->body = $body;
 
         return $this;
+    }
+
+    public function getFormattedBody() : ?string
+    {
+        $body = $this->body;
+
+        foreach ($this->images as $image) {
+            $body = str_replace(
+                sprintf('{image:%s}', $image->getUuid()),
+                sprintf('<img class="img-fluid" src="%s"/>', $image->getUrl()),
+                $body
+            );
+        }
+
+        return $body;
     }
 
     public function getLimitedBody(int $limit = 300) : string
@@ -482,7 +501,7 @@ class Communication
      *
      * @return bool
      *
-     * @throws Exception
+     * @throws \Exception
      */
     public function isUnclear(?string $prefix, string $message) : bool
     {
@@ -695,5 +714,35 @@ class Communication
     public function onChange()
     {
         $this->lastActivityAt = new \DateTime();
+    }
+
+    /**
+     * @return Collection|Media[]
+     */
+    public function getImages() : Collection
+    {
+        return $this->images;
+    }
+
+    public function addImage(Media $image) : self
+    {
+        if (!$this->images->contains($image)) {
+            $this->images[] = $image;
+            $image->setCommunication($this);
+        }
+
+        return $this;
+    }
+
+    public function removeImage(Media $image) : self
+    {
+        if ($this->images->removeElement($image)) {
+            // set the owning side to null (unless already changed)
+            if ($image->getCommunication() === $this) {
+                $image->setCommunication(null);
+            }
+        }
+
+        return $this;
     }
 }

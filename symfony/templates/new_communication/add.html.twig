@@ -1,8 +1,10 @@
 {% extends 'base.html.twig' %}
+{% import 'macros.html.twig' as macros %}
 
 {% block body %}
 
     <h1>
+        {{ macros.communicationTypeIcon(type) }}
         {{ ('new_communication.title_' ~ type)|trans }}
         <br/>
         <div class="h3">{{ 'new_communication.subtitle'|trans({'%label%': campaign.label|lower}) }}</div>

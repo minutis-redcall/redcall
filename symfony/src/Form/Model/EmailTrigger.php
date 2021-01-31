@@ -3,15 +3,12 @@
 namespace App\Form\Model;
 
 use App\Entity\Communication;
-use App\Entity\Media;
 use App\Entity\Message;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 class EmailTrigger extends BaseTrigger
 {
-    private $images = [];
-
     public function __construct()
     {
         $this->setType(Communication::TYPE_EMAIL);
@@ -33,17 +30,5 @@ class EmailTrigger extends BaseTrigger
                     ->atPath('subject')
                     ->addViolation();
         }
-    }
-
-    public function getImages() : array
-    {
-        return $this->images;
-    }
-
-    public function addImage(Media $media) : EmailTrigger
-    {
-        $this->images[] = $media;
-
-        return $this;
     }
 }
