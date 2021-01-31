@@ -30,3 +30,8 @@ services:
     arguments:
       - '@Bundles\SandboxBundle\Manager\FixturesManager'
       - '@translator'
+
+  Bundles\SandboxBundle\Controller\FakeStorageController:
+    public: true
+    arguments:
+      - '@kernel'

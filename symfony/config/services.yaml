@@ -53,6 +53,10 @@ services:
     class: App\Provider\Email\Sendgrid
     public: true
 
+  App\Provider\Storage\StorageProvider:
+    class: App\Provider\Storage\GoogleCloudStorage
+    public: true
+
   App\Communication\Processor\ProcessorInterface:
     class: '%communication.processor%'
 

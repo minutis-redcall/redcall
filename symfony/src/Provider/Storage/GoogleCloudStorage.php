@@ -1,11 +1,13 @@
 <?php
 
-namespace App\Services;
+namespace App\Provider\Storage;
 
 use Google\Cloud\Storage\StorageClient;
 
-class Storage
+class GoogleCloudStorage implements StorageProvider
 {
+    const RETENTION = 365;
+
     /**
      * @var StorageClient
      */
@@ -24,7 +26,12 @@ class Storage
             ['name' => $filename]
         );
 
-        return $object->signedUrl(time() + 7 * 24 * 3600);
+        return $object->signedUrl(time() + self::RETENTION * 24 * 3600);
+    }
+
+    public function getRetentionDays() : int
+    {
+        return self::RETENTION;
     }
 
     private function getClient() : StorageClient

@@ -21,3 +21,7 @@ services:
     arguments: [ '@doctrine' ]
     public: true
 
+  App\Provider\Storage\StorageProvider:
+    class: 'Bundles\SandboxBundle\Provider\FakeStorageProvider'
+    arguments: [ '@kernel', '@router' ]
+    public: true
