@@ -1,7 +1,7 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <h1>{{ 'admin.dashboard.title' | trans }}</h1>
+    <h1>{{ 'admin.statistics.buttons.general' | trans }}</h1>
 
     <form method="get">
         <div class="form-row">
@@ -124,7 +124,7 @@
     <div class="text-center">
         <br/><br/>
 
-        <a href="{{ path('admin_home') }}"
+        <a href="{{ path('admin_stats_home') }}"
            class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
 
         <br/><br/>

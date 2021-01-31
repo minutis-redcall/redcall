@@ -21,7 +21,7 @@
         </div>
         <div class="card-body">
             <div id="content">
-                {{ message.communication.body|purify }}
+                {{ message.communication.formattedBody|raw }}
             </div>
 
             <hr/>

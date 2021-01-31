@@ -185,7 +185,7 @@
                             <div class="text-center h4">{{ communication.subject }}</div>
                         {% endif %}
                         {% if communication.type in [constant('App\\Entity\\Communication::TYPE_EMAIL')] %}
-                            {{ communication.body|purify }}
+                            {{ communication.formattedBody|raw }}
                         {% else %}
                             {{ communication.body|nl2br }}
                         {% endif %}
@@ -410,7 +410,7 @@
                                            href="#"
                                            onclick="return false;"
                                            data-message-id="{{ message.id }}"
-                                           class="open-message {% if communication.type == constant('App\\Entity\\Communication::TYPE_SMS') and (not message.isUnclear and not message.invalidAnswer) %}d-none{% endif %}">
+                                           class="open-message {% if communication.type != constant('App\\Entity\\Communication::TYPE_SMS') or (not message.isUnclear and not message.invalidAnswer) %}d-none{% endif %}">
                                             {{ 'campaign_status.answers.answer_link'|trans }}
                                         </a>
                                     </div>

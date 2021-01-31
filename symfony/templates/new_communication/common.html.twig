@@ -8,6 +8,8 @@
 
 <script type="text/javascript">
 
+    {% if type != constant('App\\Entity\\Communication::TYPE_EMAIL') %}
+
     {# Update message size automatically #}
     function updateMessageSize() {
         var textArea = $('#{{ form.message.vars.id }}');
@@ -21,10 +23,17 @@
 
     $('#{{ form.message.vars.id }}').keyup(updateMessageSize);
 
+    {% endif %}
+
     {# Disables "enter" key on input fields #}
     $('form').keypress(function (e) {
-        if (e.keyCode == 13 && $(e.target).not('textarea, button').length) {
-            e.preventDefault();
+        try {
+            if (e.keyCode == 13 && $(e.target).not('textarea, button').length) {
+                e.preventDefault();
+            }
+        } catch (e) {
+            // Ugly: when typing enter in a Quill, an exception is thrown
+            // TODO: find a cleaner way
         }
     });
 

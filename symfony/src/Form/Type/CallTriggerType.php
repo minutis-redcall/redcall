@@ -5,6 +5,7 @@ namespace App\Form\Type;
 use App\Entity\Choice;
 use App\Form\Model\CallTrigger;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -53,6 +54,15 @@ class CallTriggerType extends AbstractType
                     'class' => 'trigger-launch btn-primary',
                 ],
             ]);
+
+        $builder->get('message')->addModelTransformer(new CallbackTransformer(
+            function ($fromModel) {
+                return $fromModel;
+            },
+            function ($fromView) {
+                return strip_tags($fromView);
+            }
+        ));
     }
 
     /**

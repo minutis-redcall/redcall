@@ -57,9 +57,9 @@ class CommunicationManager
     private $audienceManager;
 
     /**
-     * @var ReportManager
+     * @var MediaManager
      */
-    private $reportManager;
+    private $mediaManager;
 
     /**
      * @var RouterInterface
@@ -83,6 +83,7 @@ class CommunicationManager
         VolunteerManager $volunteerManager,
         AudienceManager $audienceManager,
         StructureManager $structureManager,
+        MediaManager $mediaManager,
         RouterInterface $router,
         LoggerInterface $slackLogger,
         LoggerInterface $logger)
@@ -94,6 +95,7 @@ class CommunicationManager
         $this->volunteerManager        = $volunteerManager;
         $this->audienceManager         = $audienceManager;
         $this->structureManager        = $structureManager;
+        $this->mediaManager            = $mediaManager;
         $this->router                  = $router;
         $this->slackLogger             = $slackLogger;
         $this->logger                  = $logger;
@@ -105,14 +107,6 @@ class CommunicationManager
     public function setCampaignManager(CampaignManager $campaignManager)
     {
         $this->campaignManager = $campaignManager;
-    }
-
-    /**
-     * @required
-     */
-    public function setReportManager(ReportManager $reportManager)
-    {
-        $this->reportManager = $reportManager;
     }
 
     public function find(int $communicationId) : ?Communication
@@ -189,6 +183,10 @@ class CommunicationManager
             ->setCreatedAt(new DateTime())
             ->setMultipleAnswer($trigger->isMultipleAnswer())
             ->setSubject($trigger->getSubject());
+
+        foreach ($trigger->getImages() as $image) {
+            $communication->addImage($image);
+        }
 
         // The first choice key is always "1"
         $choiceKey = 1;

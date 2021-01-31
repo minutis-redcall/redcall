@@ -25,13 +25,15 @@ class ReportRepository extends ServiceEntityRepository
         $this->_em->flush();
     }
 
-    public function getCommunicationReportsBetween(\DateTime $from, \DateTime $to) : array
+    public function getCommunicationReportsBetween(\DateTime $from, \DateTime $to, int $minMessages) : array
     {
         return $this->createQueryBuilder('r')
                     ->join('r.communication', 'c')
                     ->where('c.createdAt BETWEEN :from AND :to')
-                    ->setParameter('from', $from)
-                    ->setParameter('to', $to)
+                    ->setParameter('from', $from->format('Y-m-d'))
+                    ->setParameter('to', $to->format('Y-m-d'))
+                    ->andWhere('r.messageCount + r.questionCount >= :min_messages')
+                    ->setParameter('min_messages', $minMessages)
                     ->getQuery()
                     ->getResult();
     }

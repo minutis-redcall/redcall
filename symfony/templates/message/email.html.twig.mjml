@@ -73,7 +73,7 @@
                 <mj-text color="white" font-size="18px;" font-weight="bold">{{ communication.subject }}</mj-text>
             </mj-section>
             <mj-section background-color="white" padding-right="50px;" padding-left="50px;">
-                <mj-text color="black" font-size="14px;">{{ communication.body|purify }}</mj-text>
+                <mj-text color="black" font-size="14px;">{{ communication.formattedBody|raw }}</mj-text>
             </mj-section>
             <mj-raw>{% if communication.choices|length %}</mj-raw>
             <mj-section background-color="white" padding-right="50px;" padding-left="50px;">

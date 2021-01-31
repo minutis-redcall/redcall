@@ -3,8 +3,8 @@
 namespace App\Manager;
 
 use App\Entity\Media;
+use App\Provider\Storage\StorageProvider;
 use App\Repository\MediaRepository;
-use App\Services\Storage;
 use App\Services\TextToSpeech;
 use Ramsey\Uuid\Uuid;
 
@@ -21,16 +21,11 @@ class MediaManager
     private $textToSpeech;
 
     /**
-     * @var Storage
+     * @var StorageProvider
      */
     private $storage;
 
-    /**
-     * @param MediaRepository $mediaRepository
-     * @param TextToSpeech    $textToSpeech
-     * @param Storage         $storage
-     */
-    public function __construct(MediaRepository $mediaRepository, TextToSpeech $textToSpeech, Storage $storage)
+    public function __construct(MediaRepository $mediaRepository, TextToSpeech $textToSpeech, StorageProvider $storage)
     {
         $this->mediaRepository = $mediaRepository;
         $this->textToSpeech    = $textToSpeech;
@@ -60,6 +55,11 @@ class MediaManager
         $this->mediaRepository->clearExpired();
     }
 
+    public function save(Media $media)
+    {
+        $this->mediaRepository->save($media);
+    }
+
     private function getMedia(string $extension, string $text, callable $callback)
     {
         /** @var Media $media */
@@ -77,7 +77,7 @@ class MediaManager
 
         $media->setUrl($url);
         $media->setCreatedAt(new \DateTime());
-        $media->setExpiresAt((new \DateTime())->add(new \DateInterval('P7D')));
+        $media->setExpiresAt((new \DateTime())->add(new \DateInterval(sprintf('P%dD', $this->storage->getRetentionDays()))));
 
         $this->mediaRepository->save($media);
 
