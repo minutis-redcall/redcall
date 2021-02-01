@@ -28,7 +28,7 @@ class DocblockFetcher
         return $this->getFactory()->create($docblock);
     }
 
-    public function getFactory() : DocBlockFactoryInterface
+    private function getFactory() : DocBlockFactoryInterface
     {
         if ($this->factory) {
             return $this->factory;

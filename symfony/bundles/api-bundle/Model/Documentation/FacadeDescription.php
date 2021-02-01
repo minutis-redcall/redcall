@@ -53,12 +53,12 @@ class FacadeDescription
         return $this;
     }
 
-    public function getProperties() : array
+    public function getProperties() : PropertyCollectionDescription
     {
         return $this->properties;
     }
 
-    public function setProperties(array $properties) : FacadeDescription
+    public function setProperties(PropertyCollectionDescription $properties) : FacadeDescription
     {
         $this->properties = $properties;
 

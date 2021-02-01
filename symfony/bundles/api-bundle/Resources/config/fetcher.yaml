@@ -18,12 +18,17 @@ services:
   Bundles\ApiBundle\Fetcher\FacadeFetcher:
     - '@Bundles\ApiBundle\Fetcher\DocblockFetcher'
     - '@Bundles\ApiBundle\Fetcher\StatusCodeFetcher'
+    - '@Bundles\ApiBundle\Fetcher\PropertyCollectionFetcher'
     - '@doctrine.annotation_reader'
     - '@serializer'
 
+  Bundles\ApiBundle\Fetcher\PropertyCollectionFetcher:
+    - '@Bundles\ApiBundle\Fetcher\PropertyFetcher'
+    - '@property_info'
+
   Bundles\ApiBundle\Fetcher\PropertyFetcher:
     - '@Bundles\ApiBundle\Fetcher\DocblockFetcher'
-    - '@doctrine.annotation_reader'
+    - '@property_info'
 
   Bundles\ApiBundle\Fetcher\RolesFetcher:
     - '@security.access_map'

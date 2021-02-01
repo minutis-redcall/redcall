@@ -20,6 +20,11 @@ class FacadeFetcher
     private $statusCodeFetcher;
 
     /**
+     * @var PropertyCollectionFetcher
+     */
+    private $propertyCollectionFetcher;
+
+    /**
      * @var AnnotationReader
      */
     private $annotationReader;
@@ -31,13 +36,15 @@ class FacadeFetcher
 
     public function __construct(DocblockFetcher $docblockFetcher,
         StatusCodeFetcher $statusCodeFetcher,
+        PropertyCollectionFetcher $propertyCollectionFetcher,
         AnnotationReader $annotationReader,
         SerializerInterface $serializer)
     {
-        $this->docblockFetcher   = $docblockFetcher;
-        $this->statusCodeFetcher = $statusCodeFetcher;
-        $this->annotationReader  = $annotationReader;
-        $this->serializer        = $serializer;
+        $this->docblockFetcher           = $docblockFetcher;
+        $this->statusCodeFetcher         = $statusCodeFetcher;
+        $this->propertyCollectionFetcher = $propertyCollectionFetcher;
+        $this->annotationReader          = $annotationReader;
+        $this->serializer                = $serializer;
     }
 
     public function fetch(string $class, ?Facade $decorates) : FacadeDescription
@@ -50,7 +57,8 @@ class FacadeFetcher
         $facade->setTitle($docblock->getSummary());
         $facade->setDescription($docblock->getDescription());
 
-        // todo properties
+        $properties = $this->propertyCollectionFetcher->fetch($class);
+        $facade->setProperties($properties);
 
         $example = $class::getExample($decorates);
 
