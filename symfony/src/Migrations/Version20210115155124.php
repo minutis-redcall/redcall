@@ -26,7 +26,11 @@ final class Version20210115155124 extends AbstractMigration
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
         // Same as Version20210109191432 but without the bug
-        $rows      = $this->connection->fetchAll('SELECT id, e164 FROM phone');
+        $rows = $this->connection->fetchAll('SELECT id, e164 FROM phone');
+        if (!$rows) {
+            return;
+        }
+
         $phoneUtil = PhoneNumberUtil::getInstance();
 
         $query = 'UPDATE phone SET mobile = CASE ';
