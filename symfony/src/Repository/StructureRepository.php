@@ -242,6 +242,7 @@ class StructureRepository extends BaseRepository
             ->getStructuresForUserQueryBuilder($user)
             ->select('s.id, c.id as child_id')
             ->leftJoin('s.childrenStructures', 'c')
+            ->andWhere('c.enabled IS NULL OR c.enabled = true')
             ->getQuery()
             ->getArrayResult();
     }
