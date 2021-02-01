@@ -4,6 +4,10 @@ services:
     public: true
     arguments:
       - '@Bundles\SandboxBundle\Manager\AnonymizeManager'
+    calls: [ [ 'setContainer', [ '@Psr\Container\ContainerInterface' ] ] ]
+    tags:
+      - controller.service_arguments
+      - container.service_subscriber
 
   Bundles\SandboxBundle\Controller\FakeSmsController:
     public: true
@@ -11,6 +15,10 @@ services:
       - '@Bundles\SandboxBundle\Manager\FakeSmsManager'
       - '@App\Manager\MessageManager'
       - '@App\Manager\VolunteerManager'
+    calls: [ [ 'setContainer', [ '@Psr\Container\ContainerInterface' ] ] ]
+    tags:
+      - controller.service_arguments
+      - container.service_subscriber
 
   Bundles\SandboxBundle\Controller\FakeCallController:
     public: true
@@ -18,20 +26,36 @@ services:
       - '@Bundles\SandboxBundle\Manager\FakeCallManager'
       - '@App\Provider\Call\CallProvider'
       - '@App\Manager\VolunteerManager'
+    calls: [ [ 'setContainer', [ '@Psr\Container\ContainerInterface' ] ] ]
+    tags:
+      - controller.service_arguments
+      - container.service_subscriber
 
   Bundles\SandboxBundle\Controller\FakeEmailController:
     public: true
     arguments:
       - '@Bundles\SandboxBundle\Manager\FakeEmailManager'
       - '@App\Manager\VolunteerManager'
+    calls: [ [ 'setContainer', [ '@Psr\Container\ContainerInterface' ] ] ]
+    tags:
+      - controller.service_arguments
+      - container.service_subscriber
 
   Bundles\SandboxBundle\Controller\FixturesController:
     public: true
     arguments:
       - '@Bundles\SandboxBundle\Manager\FixturesManager'
       - '@translator'
+    calls: [ [ 'setContainer', [ '@Psr\Container\ContainerInterface' ] ] ]
+    tags:
+      - controller.service_arguments
+      - container.service_subscriber
 
   Bundles\SandboxBundle\Controller\FakeStorageController:
     public: true
     arguments:
       - '@kernel'
+    calls: [ [ 'setContainer', [ '@Psr\Container\ContainerInterface' ] ] ]
+    tags:
+      - controller.service_arguments
+      - container.service_subscriber

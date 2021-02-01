@@ -10,14 +10,14 @@ use App\Entity\Choice;
 use App\Entity\Message;
 use App\Entity\Selection;
 use App\Entity\Volunteer;
-use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\ORM\NoResultException;
+use Doctrine\Persistence\ManagerRegistry;
 
 class MessageRepository extends BaseRepository
 {
     const CODE_SIZE = 8;
 
-    public function __construct(Registry $registry)
+    public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Message::class);
     }

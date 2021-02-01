@@ -3,6 +3,7 @@ services:
   Bundles\GoogleTaskBundle\Controller\TaskController:
     arguments:
       - '@Bundles\GoogleTaskBundle\Service\TaskReceiver'
+    calls: [ [ 'setContainer', [ '@Psr\Container\ContainerInterface' ] ] ]
     tags:
       - controller.service_arguments
-
+      - container.service_subscriber

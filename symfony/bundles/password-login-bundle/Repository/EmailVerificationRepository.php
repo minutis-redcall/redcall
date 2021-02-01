@@ -4,7 +4,7 @@ namespace Bundles\PasswordLoginBundle\Repository;
 
 use Bundles\PasswordLoginBundle\Base\BaseRepository;
 use Bundles\PasswordLoginBundle\Entity\EmailVerification;
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ManagerRegistry;
 use Ramsey\Uuid\Uuid;
 
 class EmailVerificationRepository extends BaseRepository

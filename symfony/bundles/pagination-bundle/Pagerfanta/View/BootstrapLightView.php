@@ -3,7 +3,6 @@
 namespace Bundles\PaginationBundle\Pagerfanta\View;
 
 use Pagerfanta\View\TwitterBootstrap4View;
-use RuntimeException;
 
 class BootstrapLightView extends TwitterBootstrap4View
 {
@@ -14,6 +13,6 @@ class BootstrapLightView extends TwitterBootstrap4View
 
     protected function createDefaultTemplate()
     {
-        throw new RuntimeException('Template should be injected using dependancy injection.');
+        throw new \RuntimeException('Template should be injected using dependancy injection.');
     }
 }

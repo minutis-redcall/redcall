@@ -13,8 +13,10 @@ services:
       - '@session'
       - '@translator'
       - '%home_route%'
+    calls: [ [ 'setContainer', [ '@Psr\Container\ContainerInterface' ] ] ]
     tags:
       - controller.service_arguments
+      - container.service_subscriber
 
   Bundles\PasswordLoginBundle\Controller\SecurityController:
     arguments:
@@ -31,5 +33,7 @@ services:
       - '@request_stack'
       - '%user_entity%'
       - '%home_route%'
+    calls: [ [ 'setContainer', [ '@Psr\Container\ContainerInterface' ] ] ]
     tags:
       - controller.service_arguments
+      - container.service_subscriber

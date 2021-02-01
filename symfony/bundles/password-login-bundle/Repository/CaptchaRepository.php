@@ -4,9 +4,9 @@ namespace Bundles\PasswordLoginBundle\Repository;
 
 use Bundles\PasswordLoginBundle\Base\BaseRepository;
 use Bundles\PasswordLoginBundle\Entity\Captcha;
-use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
+use Doctrine\Persistence\ManagerRegistry;
 
 class CaptchaRepository extends BaseRepository
 {
@@ -15,7 +15,7 @@ class CaptchaRepository extends BaseRepository
         parent::__construct($registry, Captcha::class);
     }
 
-    public function clearExpired(): void
+    public function clearExpired() : void
     {
         $this->_em->createQuery('
             DELETE Bundles\PasswordLoginBundle\Entity\Captcha c
@@ -30,7 +30,7 @@ class CaptchaRepository extends BaseRepository
      *
      * @return bool
      */
-    public function isAllowed(string $ip): bool
+    public function isAllowed(string $ip) : bool
     {
         if (null === $captcha = $this->findOneBy(['ip' => ip2long($ip)])) {
             $captcha = new Captcha($ip);
@@ -39,7 +39,7 @@ class CaptchaRepository extends BaseRepository
         return $captcha->isAllowed();
     }
 
-    public function isGracePeriod(string $ip): bool
+    public function isGracePeriod(string $ip) : bool
     {
         if (null === $captcha = $this->findOneBy(['ip' => ip2long($ip)])) {
             $captcha = new Captcha($ip);
@@ -54,7 +54,7 @@ class CaptchaRepository extends BaseRepository
      * @throws ORMException
      * @throws OptimisticLockException
      */
-    public function decreaseGrace(string $ip): void
+    public function decreaseGrace(string $ip) : void
     {
         if (null === $captcha = $this->findOneBy(['ip' => ip2long($ip)])) {
             $captcha = new Captcha($ip);
@@ -71,7 +71,7 @@ class CaptchaRepository extends BaseRepository
      * @throws ORMException
      * @throws OptimisticLockException
      */
-    public function whitelistNow(string $ip): void
+    public function whitelistNow(string $ip) : void
     {
         if (null === $captcha = $this->findOneBy(['ip' => ip2long($ip)])) {
             $captcha = new Captcha($ip);

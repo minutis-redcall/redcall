@@ -6,8 +6,8 @@ use App\Entity\User;
 use Bundles\PasswordLoginBundle\Entity\AbstractUser;
 use Bundles\PasswordLoginBundle\Repository\AbstractUserRepository;
 use Bundles\PasswordLoginBundle\Repository\UserRepositoryInterface;
-use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\ORM\QueryBuilder;
+use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @method User|null find($id, $lockMode = null, $lockVersion = null)
@@ -17,7 +17,7 @@ use Doctrine\ORM\QueryBuilder;
  */
 class UserRepository extends AbstractUserRepository implements UserRepositoryInterface
 {
-    public function __construct(Registry $registry)
+    public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, User::class);
     }

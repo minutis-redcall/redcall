@@ -8,9 +8,9 @@ use App\Entity\Structure;
 use App\Entity\User;
 use App\Entity\Volunteer;
 use Bundles\PegassCrawlerBundle\Entity\Pegass;
-use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\QueryBuilder;
+use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * Hierarchy deepness is limited to 5.
@@ -22,7 +22,7 @@ use Doctrine\ORM\QueryBuilder;
  */
 class StructureRepository extends BaseRepository
 {
-    public function __construct(Registry $registry)
+    public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Structure::class);
     }
