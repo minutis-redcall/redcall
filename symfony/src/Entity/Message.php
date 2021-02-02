@@ -429,7 +429,7 @@ class Message
 
         foreach ($this->answers ?? [] as $answer) {
             /* @var Answer $answer */
-            if ($answer->isUnclear()) {
+            if ($answer->isUnclear() && !$answer->getByAdmin()) {
                 return $answer;
             }
         }

@@ -21,9 +21,6 @@ class FakeSmsRepository extends ServiceEntityRepository
         parent::__construct($registry, FakeSms::class);
     }
 
-    /**
-     * @return array
-     */
     public function findAllPhones() : array
     {
         return $this->createQueryBuilder('s')

@@ -13,7 +13,7 @@
         <div class="col-md-12 jumbotron">
 
             <div class="text-center">
-                <img style="max-height:100px;" src="{{ asset('build/images/redcall-full.png') }}" />
+                <img style="max-height:100px;" src="{{ asset('build/images/redcall-full.png') }}"/>
             </div>
 
             <h3>{{ block('title') }}</h3>
@@ -22,14 +22,12 @@
             {{ form(connect) }}
 
             <div class="text-right">
-                {% spaceless %}
-                    <a href="{{ path('password_login_forgot_password') }}">
-                        {{ 'password_login.connect.forgot_password'|trans }}</a>
-                    <br/>
-                    <a href="{{ path('password_login_register') }}">
-                        {{ 'password_login.connect.no_account_yet'|trans }}
-                    </a>
-                {% endspaceless %}
+                <a href="{{ path('password_login_forgot_password') }}">
+                    {{ 'password_login.connect.forgot_password'|trans }}</a>
+                <br/>
+                <a href="{{ path('password_login_register') }}">
+                    {{ 'password_login.connect.no_account_yet'|trans }}
+                </a>
             </div>
 
         </div>

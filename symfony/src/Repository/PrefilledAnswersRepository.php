@@ -6,7 +6,7 @@ use App\Base\BaseRepository;
 use App\Entity\PrefilledAnswers;
 use App\Entity\Structure;
 use App\Entity\User;
-use Doctrine\Bundle\DoctrineBundle\Registry;
+use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @method PrefilledAnswers|null find($id, $lockMode = null, $lockVersion = null)
@@ -16,7 +16,7 @@ use Doctrine\Bundle\DoctrineBundle\Registry;
  */
 class PrefilledAnswersRepository extends BaseRepository
 {
-    public function __construct(Registry $registry)
+    public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, PrefilledAnswers::class);
     }

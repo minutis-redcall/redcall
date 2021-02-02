@@ -5,8 +5,6 @@ namespace Bundles\SettingsBundle\Repository;
 use Bundles\SettingsBundle\Entity\Setting;
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\ORMException;
 
 class SettingRepository extends ServiceEntityRepository
 {
@@ -15,9 +13,6 @@ class SettingRepository extends ServiceEntityRepository
         parent::__construct($registry, Setting::class);
     }
 
-    /**
-     * @return array
-     */
     public function all() : array
     {
         $settings = [];
@@ -30,12 +25,6 @@ class SettingRepository extends ServiceEntityRepository
         return $settings;
     }
 
-    /**
-     * @param string      $property
-     * @param string|null $default
-     *
-     * @return string|null
-     */
     public function get(string $property, ?string $default = null) : ?string
     {
         $entity = $this->findOneByProperty($property);
@@ -47,13 +36,6 @@ class SettingRepository extends ServiceEntityRepository
         return $default;
     }
 
-    /**
-     * @param string $property
-     * @param string $value
-     *
-     * @throws ORMException
-     * @throws OptimisticLockException
-     */
     public function set(string $property, string $value)
     {
         $entity = $this->findOneByProperty($property);
@@ -69,12 +51,6 @@ class SettingRepository extends ServiceEntityRepository
         $this->_em->flush();
     }
 
-    /**
-     * @param string $property
-     *
-     * @throws ORMException
-     * @throws OptimisticLockException
-     */
     public function remove(string $property)
     {
         $entity = $this->findOneByProperty($property);

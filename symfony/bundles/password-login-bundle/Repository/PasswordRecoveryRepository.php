@@ -4,7 +4,7 @@ namespace Bundles\PasswordLoginBundle\Repository;
 
 use Bundles\PasswordLoginBundle\Base\BaseRepository;
 use Bundles\PasswordLoginBundle\Entity\PasswordRecovery;
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ManagerRegistry;
 use Ramsey\Uuid\Uuid;
 
 class PasswordRecoveryRepository extends BaseRepository
@@ -14,7 +14,7 @@ class PasswordRecoveryRepository extends BaseRepository
         parent::__construct($registry, PasswordRecovery::class);
     }
 
-    public function clearExpired(): void
+    public function clearExpired() : void
     {
         $this->_em->createQuery('
                     DELETE Bundles\PasswordLoginBundle\Entity\PasswordRecovery pr
@@ -44,7 +44,7 @@ class PasswordRecoveryRepository extends BaseRepository
         return $uuid;
     }
 
-    public function getByToken(string $token): ?PasswordRecovery
+    public function getByToken(string $token) : ?PasswordRecovery
     {
         if (!$passwordRecovery = $this->findOneByUuid($token)) {
             return null;

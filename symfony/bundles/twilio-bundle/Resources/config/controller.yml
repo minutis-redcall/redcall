@@ -5,16 +5,20 @@ services:
       - '@request_stack'
       - '@Bundles\TwilioBundle\Manager\TwilioCallManager'
       - '@logger'
+    calls: [ [ 'setContainer', [ '@Psr\Container\ContainerInterface' ] ] ]
     tags:
       - controller.service_arguments
+      - container.service_subscriber
 
   Bundles\TwilioBundle\Controller\MessageController:
     arguments:
       - '@request_stack'
       - '@Bundles\TwilioBundle\Manager\TwilioMessageManager'
       - '@logger'
+    calls: [ [ 'setContainer', [ '@Psr\Container\ContainerInterface' ] ] ]
     tags:
       - controller.service_arguments
+      - container.service_subscriber
 
   Bundles\TwilioBundle\Controller\StatusController:
     arguments:
@@ -23,5 +27,7 @@ services:
       - '@Bundles\TwilioBundle\Manager\TwilioStatusManager'
       - '@event_dispatcher'
       - '@logger'
+    calls: [ [ 'setContainer', [ '@Psr\Container\ContainerInterface' ] ] ]
     tags:
       - controller.service_arguments
+      - container.service_subscriber

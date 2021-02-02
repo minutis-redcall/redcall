@@ -74,11 +74,11 @@ class CampaignController extends BaseController
             'data' => [
                 'my_structures' => [
                     'orderBy' => $this->orderBy($byMyCrew, Campaign::class, 'c.createdAt', 'DESC', 'crew'),
-                    'pager'   => $this->paginationManager->getPager($byMyCrew, 'ongoing'),
+                    'pager'   => $this->paginationManager->getPager($byMyCrew, 'my_structures'),
                 ],
                 'my_volunteers' => [
                     'orderBy' => $this->orderBy($byMyTeammates, Campaign::class, 'c.createdAt', 'DESC', 'mates'),
-                    'pager'   => $this->paginationManager->getPager($byMyTeammates, 'ongoing'),
+                    'pager'   => $this->paginationManager->getPager($byMyTeammates, 'my_volunteers'),
                 ],
                 'finished'      => [
                     'orderBy' => $this->orderBy($finished, Campaign::class, 'c.createdAt', 'DESC', 'finished'),

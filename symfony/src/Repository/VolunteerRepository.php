@@ -7,9 +7,9 @@ use App\Entity\Structure;
 use App\Entity\User;
 use App\Entity\Volunteer;
 use Bundles\PegassCrawlerBundle\Entity\Pegass;
-use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\QueryBuilder;
+use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @method Volunteer|null find($id, $lockMode = null, $lockVersion = null)
@@ -18,7 +18,7 @@ use Doctrine\ORM\QueryBuilder;
  */
 class VolunteerRepository extends BaseRepository
 {
-    public function __construct(Registry $registry)
+    public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Volunteer::class);
     }

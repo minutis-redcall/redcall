@@ -5,8 +5,6 @@ namespace Bundles\SandboxBundle\Repository;
 use Bundles\SandboxBundle\Entity\FakeEmail;
 use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\ORMException;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -17,24 +15,11 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class FakeEmailRepository extends ServiceEntityRepository
 {
-    /**
-     * AnswerRepository constructor.
-     *
-     * @param ManagerRegistry $registry
-     */
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, FakeEmail::class);
     }
 
-    /**
-     * @param string $to
-     * @param string $subject
-     * @param string $body
-     *
-     * @throws ORMException
-     * @throws OptimisticLockException
-     */
     public function store(string $to, string $subject, string $body)
     {
         $fake = new FakeEmail();
@@ -47,9 +32,6 @@ class FakeEmailRepository extends ServiceEntityRepository
         $this->_em->flush();
     }
 
-    /**
-     * @return array
-     */
     public function findAllEmails() : array
     {
         return $this->createQueryBuilder('e')
@@ -64,11 +46,6 @@ class FakeEmailRepository extends ServiceEntityRepository
 
     }
 
-    /**
-     * @param string $phoneNumber
-     *
-     * @return array
-     */
     public function findMessagesForEmail(string $email) : array
     {
         return $this->createQueryBuilder('e')

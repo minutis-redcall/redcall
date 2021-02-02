@@ -5,8 +5,8 @@ namespace App\Repository;
 use App\Base\BaseRepository;
 use App\Entity\Campaign;
 use Bundles\PasswordLoginBundle\Entity\AbstractUser;
-use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\ORM\QueryBuilder;
+use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @method Campaign|null find($id, $lockMode = null, $lockVersion = null)
@@ -16,7 +16,7 @@ use Doctrine\ORM\QueryBuilder;
  */
 class CampaignRepository extends BaseRepository
 {
-    public function __construct(Registry $registry)
+    public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Campaign::class);
     }
