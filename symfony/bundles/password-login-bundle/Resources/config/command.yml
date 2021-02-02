@@ -12,6 +12,12 @@ services:
     tags:
       - { name: console.command }
 
+  Bundles\PasswordLoginBundle\Command\UserTrustCommand:
+    arguments:
+      - '@Bundles\PasswordLoginBundle\Manager\UserManager'
+    tags:
+      - { name: console.command }
+
   Bundles\PasswordLoginBundle\Command\UserListCommand:
     arguments:
       - '@Bundles\PasswordLoginBundle\Manager\UserManager'

@@ -1,5 +1,12 @@
 services:
 
+  Bundles\SandboxBundle\Controller\HomeController:
+    public: true
+    calls: [ [ 'setContainer', [ '@Psr\Container\ContainerInterface' ] ] ]
+    tags:
+      - controller.service_arguments
+      - container.service_subscriber
+
   Bundles\SandboxBundle\Controller\AnonymizeController:
     public: true
     arguments:
@@ -55,6 +62,13 @@ services:
     public: true
     arguments:
       - '@kernel'
+    calls: [ [ 'setContainer', [ '@Psr\Container\ContainerInterface' ] ] ]
+    tags:
+      - controller.service_arguments
+      - container.service_subscriber
+
+  Bundles\SandboxBundle\Controller\SpinnerController:
+    public: true
     calls: [ [ 'setContainer', [ '@Psr\Container\ContainerInterface' ] ] ]
     tags:
       - controller.service_arguments

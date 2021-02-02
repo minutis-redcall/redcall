@@ -10,6 +10,7 @@
     "ext-json": "*",
     "ext-mbstring": "*",
     "ext-openssl": "*",
+    "babdev/pagerfanta-bundle": "^2.8",
     "doctrine/doctrine-bundle": "^2",
     "excelwebzone/recaptcha-bundle": "^1.5",
     "exercise/htmlpurifier-bundle": "^3.0",
@@ -61,6 +62,7 @@
     "symfony/dotenv": "^5",
     "symfony/maker-bundle": "^1.0",
     "symfony/profiler-pack": "*",
+    "symfony/web-server-bundle": "^4",
     "symfony/test-pack": "^1.0",
     "doctrine/migrations": "^2",
     "doctrine/doctrine-migrations-bundle": "^2"

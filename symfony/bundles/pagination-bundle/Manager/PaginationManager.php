@@ -55,7 +55,7 @@ class PaginationManager
         $pager->setNormalizeOutOfRangePages(true);
 
         $pager->setMaxPerPage($this->perPage);
-        $pager->setCurrentPage($request->request->get($prefix.'page') ?: $request->query->get($prefix.'page', 1));
+        $pager->setCurrentPage($request->get($prefix.'page', 1));
 
         return $pager;
     }

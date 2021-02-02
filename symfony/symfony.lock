@@ -1,4 +1,7 @@
 {
+    "babdev/pagerfanta-bundle": {
+        "version": "v2.8.0"
+    },
     "doctrine/annotations": {
         "version": "1.0",
         "recipe": {
@@ -182,10 +185,7 @@
     "ocramius/proxy-manager": {
         "version": "2.1.1"
     },
-    "pagerfanta/core": {
-        "version": "v2.5.1"
-    },
-    "pagerfanta/doctrine-orm-adapter": {
+    "pagerfanta/pagerfanta": {
         "version": "v2.5.1"
     },
     "paragonie/constant_time_encoding": {
@@ -195,7 +195,7 @@
         "version": "v2.0.15"
     },
     "php": {
-        "version": "7.2"
+        "version": "7.3"
     },
     "phpdocumentor/reflection-common": {
         "version": "1.0.1"
@@ -574,6 +574,15 @@
             "branch": "master",
             "version": "3.3",
             "ref": "6bdfa1a95f6b2e677ab985cd1af2eae35d62e0f6"
+        }
+    },
+    "symfony/web-server-bundle": {
+        "version": "3.3",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "3.3",
+            "ref": "dae9b39fd6717970be7601101ce5aa960bf53d9a"
         }
     },
     "symfony/webpack-encore-bundle": {
