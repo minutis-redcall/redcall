@@ -36,5 +36,7 @@ class ClearSpaceCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->volunteerSessionManager->clearExpired();
+
+        return 0;
     }
 }

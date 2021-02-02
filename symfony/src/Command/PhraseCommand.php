@@ -98,12 +98,12 @@ class PhraseCommand extends Command
         }
 
         // Searching for expired keys (existing on Phrase but not used anymore by the app)
-        $allLocalKeys  = array_unique(call_user_func_array('array_merge', array_map(function (array $localTranslation) {
+        $allLocalKeys  = array_unique(call_user_func_array('array_merge', array_values(array_map(function (array $localTranslation) {
             return array_keys($localTranslation);
-        }, $localTranslations)));
-        $allRemoteKeys = array_unique(call_user_func_array('array_merge', array_map(function (array $remoteTranslation) {
+        }, $localTranslations))));
+        $allRemoteKeys = array_unique(call_user_func_array('array_merge', array_values(array_map(function (array $remoteTranslation) {
             return array_keys($remoteTranslation);
-        }, $remoteTranslations)));
+        }, $remoteTranslations))));
         $keysToRemove  = array_diff($allRemoteKeys, $allLocalKeys);
         foreach ($keysToRemove as $key) {
             if ($input->getOption('delete')) {
@@ -132,6 +132,8 @@ class PhraseCommand extends Command
                 }
             }
         }
+
+        return 0;
     }
 
     /**
