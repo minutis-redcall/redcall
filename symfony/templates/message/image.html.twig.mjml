@@ -1,0 +1,11 @@
+<mjml>
+    <mj-body>
+        <mj-section>
+            <mj-column>
+                <mj-raw><!-- image:begin --></mj-raw>
+                <mj-image class="img-fluid" src="{{ url }}"/>
+                <mj-raw><!-- image:end --></mj-raw>
+            </mj-column>
+        </mj-section>
+    </mj-body>
+</mjml>
