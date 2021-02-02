@@ -185,7 +185,7 @@
                             <div class="text-center h4">{{ communication.subject }}</div>
                         {% endif %}
                         {% if communication.type in [constant('App\\Entity\\Communication::TYPE_EMAIL')] %}
-                            {{ communication.formattedBody|raw }}
+                            {{ communication|format_email }}
                         {% else %}
                             {{ communication.body|nl2br }}
                         {% endif %}
