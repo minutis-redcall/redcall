@@ -18,18 +18,23 @@ class TokenRepository extends BaseRepository
         parent::__construct($registry, Token::class);
     }
 
-    public function getTokensForUser(string $username) : array
+    public function getTokensForUserQueryBuilder(string $username)
     {
         return $this->createQueryBuilder('t')
-                    ->where('t.username = :username')
-                    ->setParameter('username', $username)
+            ->where('t.username = :username')
+            ->setParameter('username', $username);
+    }
+
+    public function getTokensForUser(string $username) : array
+    {
+        return $this->getTokensForUserQueryBuilder($username)
                     ->getQuery()
                     ->getResult();
     }
 
     public function findTokenByNameForUser(string $username, string $name) : ?Token
     {
-        return $this->getTokensQueryBuilderForUser($username)
+        return $this->getTokensForUserQueryBuilder($username)
                     ->andWhere('t.name = :name')
                     ->setParameter('name', $name)
                     ->setMaxResults(1)

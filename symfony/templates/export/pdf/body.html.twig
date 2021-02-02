@@ -1,5 +1,5 @@
 {% block content %}
-    {% spaceless %}
+    {% apply spaceless %}
 
         {# Header #}
         <div style="margin-left:60px;margin-right:60px;border:1px solid {{ lightgrey }};">
@@ -75,7 +75,8 @@
             </h2>
 
             {# Tables by choices #}
-            {% for label, table in tables if table|length > 0 %}
+            {% for label, table in tables %}
+                {% if table|length > 0 %}
 
                 <table width="100%" cellspacing="0">
                     {% if communication.choices|length %}
@@ -143,9 +144,11 @@
 
                 <br/>
 
+                {% endif %}
+
             {% endfor %}
 
         </div>
 
-    {% endspaceless %}
+    {% endapply %}
 {% endblock %}

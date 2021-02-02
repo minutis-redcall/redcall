@@ -12,7 +12,6 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Validator\Constraints\Date;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Range;
 
@@ -95,19 +94,15 @@ class StatsController extends BaseController
             ->add('from', DateType::class, [
                 'label'       => 'admin.statistics.structure.form.from',
                 'widget'      => 'single_text',
-                'format'      => 'dd/MM/yyyy',
                 'constraints' => [
                     new NotBlank(),
-                    new Date(),
                 ],
             ])
             ->add('to', DateType::class, [
                 'label'       => 'admin.statistics.structure.form.to',
                 'widget'      => 'single_text',
-                'format'      => 'dd/MM/yyyy',
                 'constraints' => [
                     new NotBlank(),
-                    new Date(),
                 ],
             ])
             ->add('min', NumberType::class, [
