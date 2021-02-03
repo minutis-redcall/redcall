@@ -2,7 +2,9 @@
 
 namespace Bundles\ApiBundle\Fetcher;
 
+use Bundles\ApiBundle\Contracts\FacadeInterface;
 use Bundles\ApiBundle\Model\Documentation\PropertyCollectionDescription;
+use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyInfo\PropertyInfoExtractorInterface;
 
 class PropertyCollectionFetcher
@@ -23,23 +25,44 @@ class PropertyCollectionFetcher
         $this->extractor       = $extractor;
     }
 
-    public function fetch(string $class/*, Facade $decorates*/) : PropertyCollectionDescription
+    public function fetch(FacadeInterface $facade) : PropertyCollectionDescription
     {
+        $class      = get_class($facade);
         $collection = new PropertyCollectionDescription();
-
-        /*
-         * TODO
-         * Properties should be based on the example, not on the class
-         * - The class may contain a FacadeInterface
-         * - The example has an instance from which we can get real class name
-         * Property names should be separated by dots . or []. (if collection)
-         */
-
         $properties = $this->extractor->getProperties($class);
+
+        $accessor = PropertyAccess::createPropertyAccessor();
         foreach ($properties as $property) {
-            $collection->add(
-                $this->propertyFetcher->fetch($class, $property)
-            );
+            $description = $this->propertyFetcher->fetch($class, $property);
+
+            // Based on the example ?
+            $value = $accessor->getValue($facade, $property);
+            if ($value instanceof FacadeInterface) {
+                // ...
+            }
+
+            // Or based on the doc only, but it can contain interfaces and not implementations?
+            foreach ($description->getTypes() as $type) {
+                if ($type->isFacade()) {
+                    // ...
+                }
+            }
+
+            // Or both?
+            foreach ($description->getTypes() as $type) {
+                if ($type->isFacade()) {
+                    if (interface_exists($type->getClassName())) {
+                        // Cannot use the doc
+                        $value = $accessor->getValue($facade, $property);
+                        // ...
+                    } else {
+                        //
+
+                    }
+                }
+            }
+
+            $collection->add($description);
         }
 
         return $collection;

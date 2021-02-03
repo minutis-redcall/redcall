@@ -3,6 +3,7 @@
 namespace Bundles\ApiBundle\Fetcher;
 
 use Bundles\ApiBundle\Model\Documentation\PropertyDescription;
+use Bundles\ApiBundle\Model\Documentation\TypeDescription;
 use Symfony\Component\PropertyInfo\PropertyInfoExtractorInterface;
 
 class PropertyFetcher
@@ -30,6 +31,7 @@ class PropertyFetcher
 
         $types = $this->extractor->getTypes($class, $property);
         foreach ($types ?? [] as $type) {
+            $type = new TypeDescription($type->getBuiltinType(), $type->isNullable(), $type->getClassName(), $type->isCollection(), $type->getCollectionKeyType(), $type->getCollectionValueType());
             $description->addType($type);
         }
 

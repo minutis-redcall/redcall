@@ -2,8 +2,6 @@
 
 namespace Bundles\ApiBundle\Model\Documentation;
 
-use Symfony\Component\PropertyInfo\Type;
-
 class PropertyDescription
 {
     /**
@@ -12,7 +10,7 @@ class PropertyDescription
     private $name;
 
     /**
-     * @var Type[]
+     * @var TypeDescription[]
      */
     private $types = [];
 
@@ -31,6 +29,8 @@ class PropertyDescription
      */
     private $constraints = [];
 
+    private $child
+
     public function getName() : string
     {
         return $this->name;
@@ -48,7 +48,7 @@ class PropertyDescription
         return $this->types;
     }
 
-    public function addType(Type $type) : PropertyDescription
+    public function addType(TypeDescription $type) : PropertyDescription
     {
         $this->types[] = $type;
 
