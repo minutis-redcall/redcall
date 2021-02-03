@@ -508,6 +508,11 @@ class Volunteer
         return $this;
     }
 
+    public function isUserEnabled() : bool
+    {
+        return $this->user && $this->user->isVerified() && $this->user->isTrusted();
+    }
+
     public function isPhoneNumberLocked() : ?bool
     {
         return $this->phoneNumberLocked;

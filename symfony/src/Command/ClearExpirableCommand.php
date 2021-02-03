@@ -33,5 +33,7 @@ class ClearExpirableCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->expirableManager->clearExpired();
+
+        return 0;
     }
 }

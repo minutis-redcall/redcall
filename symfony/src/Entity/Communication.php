@@ -264,21 +264,6 @@ class Communication
         return $this;
     }
 
-    public function getFormattedBody() : ?string
-    {
-        $body = $this->body;
-
-        foreach ($this->images as $image) {
-            $body = str_replace(
-                sprintf('{image:%s}', $image->getUuid()),
-                sprintf('<img class="img-fluid" src="%s"/>', $image->getUrl()),
-                $body
-            );
-        }
-
-        return $body;
-    }
-
     public function getLimitedBody(int $limit = 300) : string
     {
         if (mb_strlen($this->body) > $limit) {
