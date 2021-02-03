@@ -19,12 +19,13 @@
        id="open-problems">
         {{ 'audience.classification.problems'|trans }}
     </a>
-    {% if classification.reachable %}
+
+    {% if classification.reachable or classification.excluded %}
         <br/>
     {% endif %}
 {% endif %}
 
-{% if classification.reachable %}
+{% if classification.reachable or classification.excluded %}
 
     {#
     {% if classification.reachable|length <= constant('App\\Model\\Classification::LARGE_AUDIENCE') %}

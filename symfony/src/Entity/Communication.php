@@ -376,6 +376,8 @@ class Communication
             return null;
         }
 
+        $code = preg_replace('/([a-zA-Z]+)\s*(\d)/', '$1$2', $code);
+
         $codes = explode(' ', trim($code));
         foreach ($codes as $code) {
 
@@ -493,6 +495,8 @@ class Communication
         if (!$prefix) {
             return false;
         }
+
+        $message = preg_replace('/([a-zA-Z]+)\s*(\d)/', '$1$2', $message);
 
         $words   = explode(' ', trim($message));
         $choices = [];

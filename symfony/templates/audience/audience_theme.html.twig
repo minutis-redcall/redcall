@@ -403,30 +403,6 @@
         });
         #}
 
-        {% if preselection %}
-
-        {# Opening the list of selected volunteers from a previous communication #}
-        $('body').on('click', '#open-preselection', function (e) {
-            e.preventDefault();
-            $('#audience-modal-title').html('{{ 'audience.pre_selection.selected_volunteers'|trans }}');
-            $('#audience-modal-body').html('<img src="{{ asset('spinner.gif') }}"/>');
-            $('#audience-modal').modal();
-            $.post('{{ path('audience_pre_selection', {uuid: init_data.preselection_key, name: form.vars.full_name}) }}', $('form.trigger').serialize(), function (content) {
-                $('#audience-modal-body').html(content);
-            });
-        });
-
-        $('body').on('click', '.preselection-volunteer-toggle', function () {
-            var id = $(this).data('id');
-            $.post('{{ path('audience_pre_selection_remove_volunteer', {uuid: init_data.preselection_key}) }}?id=' + id, function (content) {
-                $('#preselection-volunteer-' + id).fadeOut();
-                $('#pre-selection-summary').html(content);
-                numbers(0);
-            });
-        });
-
-        {% endif %}
-
         {# Updating classification and badge counts #}
         var numbersContext = null;
         var numbersLock = false;

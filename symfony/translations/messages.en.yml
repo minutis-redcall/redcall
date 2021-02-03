@@ -82,6 +82,10 @@ admin:
     undeveloper: 'Remove developer access'
     unlock: Unlock
   statistics:
+    buttons:
+      general: 'General statistics'
+      main: Statistics
+      structure: 'Structure reports'
     campaign:
       period: 'In the period, <b>%created%</b> campaigns were open, including <b>%active%</b> that are still active.'
       stats: 'campaigns are still open right now.'
@@ -101,6 +105,23 @@ admin:
       newest_update: 'Newest update'
       oldest_update: 'Oldest update'
       title: 'Pegass updates'
+    structure:
+      form:
+        from: 'From:'
+        min: 'Only count triggers having minimum X messages:'
+        title: 'Choose the period'
+        to: 'To :'
+      report:
+        answers: Ans.
+        campaigns: Trgrs
+        communications: Comms
+        costs: Costs
+        errors: Err.
+        id: '#'
+        messages: Msgs
+        name: Structure
+        questions: Questions
+        type: Type
     volunteers:
       both: '<b>%both_number% (%both_percent%%)</b> who have neither'
       description: 'All data are not filtered by period. These are globals.'
@@ -108,27 +129,6 @@ admin:
       phone: '<b>%phone_number% (%phone_percent%%)</b> who do not have phone number'
       summary: 'The RedCall database has <b>%total_number% (%total_percent%%)</b> volunteers who may not be reachable'
       title: Volunteers
-    buttons:
-      main: Statistics
-      general: 'General statistics'
-      structure: 'Structure reports'
-    structure:
-      form:
-        title: 'Choose the period'
-        from: 'From:'
-        to: 'To :'
-        min: 'Only count triggers having minimum X messages:'
-      report:
-        id: '#'
-        name: Structure
-        type: Type
-        campaigns: Trgrs
-        communications: Comms
-        messages: Msgs
-        questions: Questions
-        answers: Ans.
-        errors: Err.
-        costs: Costs
   user:
     list: 'User list'
     pegass: 'Pegass bindings'
@@ -164,15 +164,11 @@ audience:
   copy_paste: 'Or paste a list of identifiers'
   copy_paste_details: 'Paste a list of identifiers in the field below.'
   large_audience:
-    button_add: 'in order to include him back into the trigger.'
-    button_remove: 'in order to manually remove a volunteer from the trigger.'
-    buttons: 'Use buttons:'
     title: '%nbr% selected volunteers'
   manual_selection: 'Volunteers manual selection'
   pre_selection:
     close_standard_form: 'Close classic form'
     description: 'In a previous communication, you selected <strong>%nbr%</strong> volunteers.'
-    edit: 'Edit this selection'
     remove_volunteer: 'Use ticks to remove volunteers from the selection.'
     selected_volunteers: 'Selected volunteers'
     title: 'Volunteers preselection'

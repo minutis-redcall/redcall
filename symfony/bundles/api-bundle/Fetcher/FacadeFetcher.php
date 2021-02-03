@@ -57,35 +57,16 @@ class FacadeFetcher
         $facade->setTitle($docblock->getSummary());
         $facade->setDescription($docblock->getDescription());
 
-        $properties = $this->propertyCollectionFetcher->fetch($class);
-        $facade->setProperties($properties);
-
         $example = $class::getExample($decorates);
 
         $serialized = $this->serializer->serialize($example, 'json');
         $facade->setExample($serialized);
 
+        $properties = $this->propertyCollectionFetcher->fetch($example);
+        $facade->setProperties($properties);
+
         $statusCode = $this->statusCodeFetcher->getStatusCode($example);
         $facade->setStatusCode($statusCode);
-
-        /*
-                facade:
-                ✅ private $title;
-                ✅ private $description;
-                private $properties = [];
-                ✅ private $example;
-                ✅ private $statusCode;
-
-                properties:
-                private $name;
-                private $type;
-                private $description;
-                private $constraints = [];
-
-                constrants:
-                private $name;
-                private $options = [];
-        */
 
         return $facade;
     }

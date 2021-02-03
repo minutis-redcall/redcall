@@ -2,8 +2,6 @@
 
 namespace Bundles\ApiBundle\Model\Documentation;
 
-use Symfony\Component\PropertyInfo\Type;
-
 class PropertyDescription
 {
     /**
@@ -12,7 +10,7 @@ class PropertyDescription
     private $name;
 
     /**
-     * @var Type[]
+     * @var TypeDescription[]
      */
     private $types = [];
 
@@ -31,6 +29,21 @@ class PropertyDescription
      */
     private $constraints = [];
 
+    /**
+     * @var PropertyDescription|null
+     */
+    private $parent;
+
+    /**
+     * @var PropertyCollectionDescription|null
+     */
+    private $children;
+
+    /**
+     * @var bool
+     */
+    private $collection = false;
+
     public function getName() : string
     {
         return $this->name;
@@ -43,12 +56,25 @@ class PropertyDescription
         return $this;
     }
 
+    public function getFullname() : string
+    {
+        if ($this->parent && $this->parent->isCollection()) {
+            $name = sprintf('%s[].%s', $this->getParent()->getFullname(), $this->getName());
+        } elseif ($this->parent) {
+            $name = sprintf('%s.%s', $this->getParent()->getFullname(), $this->getName());
+        } else {
+            $name = $this->getName();
+        }
+
+        return $name;
+    }
+
     public function getTypes() : array
     {
         return $this->types;
     }
 
-    public function addType(Type $type) : PropertyDescription
+    public function addType(TypeDescription $type) : PropertyDescription
     {
         $this->types[] = $type;
 
@@ -87,6 +113,42 @@ class PropertyDescription
     public function setConstraints(array $constraints) : PropertyDescription
     {
         $this->constraints = $constraints;
+
+        return $this;
+    }
+
+    public function getParent() : ?PropertyDescription
+    {
+        return $this->parent;
+    }
+
+    public function setParent(?PropertyDescription $parent) : PropertyDescription
+    {
+        $this->parent = $parent;
+
+        return $this;
+    }
+
+    public function getChildren() : ?PropertyCollectionDescription
+    {
+        return $this->children;
+    }
+
+    public function setChildren(?PropertyCollectionDescription $children) : PropertyDescription
+    {
+        $this->children = $children;
+
+        return $this;
+    }
+
+    public function isCollection() : bool
+    {
+        return $this->collection;
+    }
+
+    public function setCollection(bool $collection) : PropertyDescription
+    {
+        $this->collection = $collection;
 
         return $this;
     }
