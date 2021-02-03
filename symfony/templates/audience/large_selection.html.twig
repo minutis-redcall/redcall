@@ -2,19 +2,6 @@
 
 <h3>{{ 'audience.large_audience.title'|trans({'%nbr%': volunteers|length}) }}</h3>
 
-<div class="text-left">
-    <p style="padding-bottom: 3px;">{{ 'audience.large_audience.buttons'|trans }}</p>
-    <p style="padding-bottom: 5px;">
-        <a href="#" class="btn btn-small btn-secondary" onclick="return false;" style="border: 1px solid red!important;">❌</a>
-        {{ 'audience.large_audience.button_remove'|trans }}
-    </p>
-    <p>
-        <a href="#" class="btn btn-small btn-secondary" onclick="return false;" style="border: 1px solid green!important;">✅</a>
-        {{ 'audience.large_audience.button_add'|trans }}
-    </p>
-    <hr/>
-</div>
-
 <div class="row text-left">
     {% for volunteer in volunteers %}
         <div class="col-md-6" style="padding:5px;" id="preselection-volunteer-{{ volunteer.id }}">

@@ -82,6 +82,10 @@ admin:
     undeveloper: 'Retirer l''accès développeur'
     unlock: Dégeler
   statistics:
+    buttons:
+      general: 'Statistiques générales'
+      main: Statistiques
+      structure: 'Rapports par structure'
     campaign:
       period: 'Dans cette période, <b>%created%</b> déclenchements ont été créés, dont <b>%active%</b> sont toujours actifs.'
       stats: 'déclenchements sont toujours actifs à l''heure actuelle.'
@@ -101,6 +105,23 @@ admin:
       newest_update: 'Mise à jour la plus récente'
       oldest_update: 'Mise à jour la plus ancienne'
       title: 'Mise à jour Pegass'
+    structure:
+      form:
+        from: 'Entre le :'
+        min: 'Compter les déclenchements ayant au moins X messages :'
+        title: 'Choisir la période'
+        to: 'Et le :'
+      report:
+        answers: Rép.
+        campaigns: Décl.
+        communications: Comms
+        costs: Dépenses
+        errors: Err.
+        id: '#'
+        messages: Msgs
+        name: Structure
+        questions: Questions
+        type: Type
     volunteers:
       both: '<b>%both_number% (%both_percent%%)</b> qui n’ont ni l’un ni l’autre'
       description: 'Toutes les données ne sont pas filtrées par une période.'
@@ -108,27 +129,6 @@ admin:
       phone: '<b>%phone_number% (%phone_percent%%)</b> qui n’ont pas de numéro de téléphone'
       summary: 'La base de données RedCall contient <b>%total_number% (%total_percent%%)</b> bénévoles qui ne sont pas forcément joignables'
       title: Bénévoles
-    buttons:
-      main: Statistiques
-      general: 'Statistiques générales'
-      structure: 'Rapports par structure'
-    structure:
-      form:
-        title: 'Choisir la période'
-        from: 'Entre le :'
-        to: 'Et le :'
-        min: 'Compter les déclenchements ayant au moins X messages :'
-      report:
-        id: '#'
-        name: Structure
-        type: Type
-        campaigns: Décl.
-        communications: Comms
-        messages: Msgs
-        questions: Questions
-        answers: Rép.
-        errors: Err.
-        costs: Dépenses
   user:
     list: 'Liste d''utilisateurs'
     pegass: 'Connexions à Pegass'
@@ -164,15 +164,11 @@ audience:
   copy_paste: 'Ou coller une liste de nivols'
   copy_paste_details: 'Ou coller une liste de nivols dans le champ ci-dessous.'
   large_audience:
-    button_add: 'afin de l''inclure à nouveau dans le déclenchement.'
-    button_remove: 'afin de retirer manuellement un bénévole du déclenchement.'
-    buttons: 'Utilisez les boutons :'
     title: '%nbr% bénévoles sélectionnés'
   manual_selection: 'Saisie manuelle de bénévoles'
   pre_selection:
     close_standard_form: 'Fermer le formulaire classique'
     description: 'Dans une communication précédente, vous avez sélectionné <strong>%nbr%</strong> bénévoles.'
-    edit: 'Editer cette sélection'
     remove_volunteer: 'Utilisez les coches pour supprimer des bénévoles de la sélection.'
     selected_volunteers: 'Bénévoles sélectionnés'
     title: 'Préselection de bénévoles'

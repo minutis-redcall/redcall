@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Base\BaseController;
 use App\Entity\Badge;
-use App\Entity\Expirable;
 use App\Entity\Structure;
 use App\Entity\Volunteer;
 use App\Form\Type\AudienceType;
@@ -133,7 +132,7 @@ class AudienceController extends BaseController
         $classification->setReachable([]);
 
         $volunteers = $this->volunteerManager->getVolunteerList(
-            call_user_func_array('array_merge', $classification->toArray()),
+            call_user_func_array('array_merge', array_values($classification->toArray())),
             false
         );
 
@@ -159,38 +158,6 @@ class AudienceController extends BaseController
         return $this->render('audience/large_selection.html.twig', [
             'classification' => $classification,
             'volunteers'     => $volunteers,
-        ]);
-    }
-
-    /**
-     * @Route(path="/pre-selection/{uuid}", name="pre_selection")
-     */
-    public function preselection(Expirable $expirable)
-    {
-        $volunteers = $this->volunteerManager->getVolunteerList(
-            $expirable->getData()['volunteers'] ?? []
-        );
-
-        return $this->render('audience/pre_selection.html.twig', [
-            'volunteers' => $volunteers,
-        ]);
-    }
-
-    /**
-     * @Route(path="/pre-selection-remove-volunteer/{uuid}", name="pre_selection_remove_volunteer")
-     */
-    public function preselectionRemoveVolunteer(Request $request, Expirable $expirable)
-    {
-        $data = $expirable->getData();
-        if (in_array($id = $request->get('id'), $data['volunteers'] ?? [])) {
-            $index = array_search($id, $data['volunteers']);
-            unset($data['volunteers'][$index]);
-            $expirable->setData($data);
-            $this->expirableManager->save($expirable);
-        }
-
-        return $this->render('audience/pre_selection_summary.html.twig', [
-            'preselection' => $data,
         ]);
     }
 
