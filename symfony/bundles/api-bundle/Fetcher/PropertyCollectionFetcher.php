@@ -4,6 +4,7 @@ namespace Bundles\ApiBundle\Fetcher;
 
 use Bundles\ApiBundle\Contracts\FacadeInterface;
 use Bundles\ApiBundle\Model\Documentation\PropertyCollectionDescription;
+use Bundles\ApiBundle\Model\Documentation\PropertyDescription;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyInfo\PropertyInfoExtractorInterface;
 
@@ -25,7 +26,7 @@ class PropertyCollectionFetcher
         $this->extractor       = $extractor;
     }
 
-    public function fetch(FacadeInterface $facade) : PropertyCollectionDescription
+    public function fetch(FacadeInterface $facade, PropertyDescription $parent = null) : PropertyCollectionDescription
     {
         $class      = get_class($facade);
         $collection = new PropertyCollectionDescription();
@@ -35,31 +36,20 @@ class PropertyCollectionFetcher
         foreach ($properties as $property) {
             $description = $this->propertyFetcher->fetch($class, $property);
 
-            // Based on the example ?
+            if ($parent) {
+                $description->setParent($parent);
+            }
+
             $value = $accessor->getValue($facade, $property);
+
+            if (is_iterable($value)) {
+                $description->setCollection(true);
+            }
+
             if ($value instanceof FacadeInterface) {
-                // ...
-            }
-
-            // Or based on the doc only, but it can contain interfaces and not implementations?
-            foreach ($description->getTypes() as $type) {
-                if ($type->isFacade()) {
-                    // ...
-                }
-            }
-
-            // Or both?
-            foreach ($description->getTypes() as $type) {
-                if ($type->isFacade()) {
-                    if (interface_exists($type->getClassName())) {
-                        // Cannot use the doc
-                        $value = $accessor->getValue($facade, $property);
-                        // ...
-                    } else {
-                        //
-
-                    }
-                }
+                $description->setChildren(
+                    $this->fetch($value, $description)
+                );
             }
 
             $collection->add($description);

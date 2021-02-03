@@ -29,7 +29,20 @@ class PropertyDescription
      */
     private $constraints = [];
 
-    private $child
+    /**
+     * @var PropertyDescription|null
+     */
+    private $parent;
+
+    /**
+     * @var PropertyCollectionDescription|null
+     */
+    private $children;
+
+    /**
+     * @var bool
+     */
+    private $collection = false;
 
     public function getName() : string
     {
@@ -41,6 +54,19 @@ class PropertyDescription
         $this->name = $name;
 
         return $this;
+    }
+
+    public function getFullname() : string
+    {
+        if ($this->parent && $this->parent->isCollection()) {
+            $name = sprintf('%s[].%s', $this->getParent()->getFullname(), $this->getName());
+        } elseif ($this->parent) {
+            $name = sprintf('%s.%s', $this->getParent()->getFullname(), $this->getName());
+        } else {
+            $name = $this->getName();
+        }
+
+        return $name;
     }
 
     public function getTypes() : array
@@ -87,6 +113,42 @@ class PropertyDescription
     public function setConstraints(array $constraints) : PropertyDescription
     {
         $this->constraints = $constraints;
+
+        return $this;
+    }
+
+    public function getParent() : ?PropertyDescription
+    {
+        return $this->parent;
+    }
+
+    public function setParent(?PropertyDescription $parent) : PropertyDescription
+    {
+        $this->parent = $parent;
+
+        return $this;
+    }
+
+    public function getChildren() : ?PropertyCollectionDescription
+    {
+        return $this->children;
+    }
+
+    public function setChildren(?PropertyCollectionDescription $children) : PropertyDescription
+    {
+        $this->children = $children;
+
+        return $this;
+    }
+
+    public function isCollection() : bool
+    {
+        return $this->collection;
+    }
+
+    public function setCollection(bool $collection) : PropertyDescription
+    {
+        $this->collection = $collection;
 
         return $this;
     }
