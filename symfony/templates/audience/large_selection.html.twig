@@ -13,16 +13,16 @@
                             <a href="#"
                                class="btn btn-small btn-secondary exclude-volunteer"
                                data-id="{{ volunteer.id }}"
-                               style="border: 1px solid red!important;">
-                                ❌
+                               style="border: 1px solid green!important;">
+                                ✅
                             </a>
                         </div>
                         <div id="include-volunteer-{{ volunteer.id }}" class="{% if ticked %}d-none{% endif %}">
                             <a href="#"
                                class="btn btn-small btn-secondary exclude-volunteer"
                                data-id="{{ volunteer.id }}"
-                               style="border: 1px solid green!important;">
-                                ✅
+                               style="border: 1px solid red!important;">
+                                ❌
                             </a>
                         </div>
                         <input id="toggle-volunteer-exclusion-{{ volunteer.id }}"
