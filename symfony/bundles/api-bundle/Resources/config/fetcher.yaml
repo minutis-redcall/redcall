@@ -29,6 +29,7 @@ services:
   Bundles\ApiBundle\Fetcher\PropertyFetcher:
     - '@Bundles\ApiBundle\Fetcher\DocblockFetcher'
     - '@property_info'
+    - '@doctrine.annotation_reader'
 
   Bundles\ApiBundle\Fetcher\RolesFetcher:
     - '@security.access_map'

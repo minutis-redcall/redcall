@@ -78,17 +78,6 @@ class EndpointFetcher
             );
         }
 
-        /*
-        ✅ private $title;
-        ✅ private $method;
-        ✅ private $uri;
-        ✅ private $roles = [];
-        ✅ private $description;
-        ✅ private $requestFacade;
-        ✅ private $responseFacade;
-        private $errors = [];
-         */
-
         return $endpoint;
     }
 }

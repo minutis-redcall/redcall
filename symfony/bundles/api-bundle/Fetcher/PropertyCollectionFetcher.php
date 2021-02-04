@@ -5,6 +5,7 @@ namespace Bundles\ApiBundle\Fetcher;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
 use Bundles\ApiBundle\Model\Documentation\PropertyCollectionDescription;
 use Bundles\ApiBundle\Model\Documentation\PropertyDescription;
+use Bundles\ApiBundle\Model\Facade\CollectionFacade;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyInfo\PropertyInfoExtractorInterface;
 
@@ -28,33 +29,36 @@ class PropertyCollectionFetcher
 
     public function fetch(FacadeInterface $facade, PropertyDescription $parent = null) : PropertyCollectionDescription
     {
+        $collectionDescription = new PropertyCollectionDescription();
+
+        if ($facade instanceof CollectionFacade) {
+            $collectionDescription->setCollection(true);
+
+            if ($value = $facade->first()) {
+                foreach ($this->fetch($value, $parent)->all() as $propertyDescription) {
+                    $collectionDescription->add($propertyDescription);
+                }
+            }
+
+            return $collectionDescription;
+        }
+
         $class      = get_class($facade);
-        $collection = new PropertyCollectionDescription();
         $properties = $this->extractor->getProperties($class);
-
-        $accessor = PropertyAccess::createPropertyAccessor();
+        $accessor   = PropertyAccess::createPropertyAccessor();
         foreach ($properties as $property) {
-            $description = $this->propertyFetcher->fetch($class, $property);
-
-            if ($parent) {
-                $description->setParent($parent);
-            }
-
-            $value = $accessor->getValue($facade, $property);
-
-            if (is_iterable($value)) {
-                $description->setCollection(true);
-            }
+            $propertyDescription = $this->propertyFetcher->fetch($class, $property, $parent);
+            $value               = $accessor->getValue($facade, $property);
 
             if ($value instanceof FacadeInterface) {
-                $description->setChildren(
-                    $this->fetch($value, $description)
+                $propertyDescription->setChildren(
+                    $this->fetch($value, $propertyDescription)
                 );
             }
 
-            $collection->add($description);
+            $collectionDescription->add($propertyDescription);
         }
 
-        return $collection;
+        return $collectionDescription;
     }
 }
