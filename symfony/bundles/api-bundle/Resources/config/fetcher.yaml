@@ -28,6 +28,7 @@ services:
 
   Bundles\ApiBundle\Fetcher\PropertyFetcher:
     - '@Bundles\ApiBundle\Fetcher\DocblockFetcher'
+    - '@Bundles\ApiBundle\Fetcher\ConstraintFetcher'
     - '@property_info'
     - '@doctrine.annotation_reader'
 
@@ -38,6 +39,10 @@ services:
   Bundles\ApiBundle\Fetcher\StatusCodeFetcher:
     arguments:
       - '@doctrine.annotation_reader'
+
+  Bundles\ApiBundle\Fetcher\ConstraintFetcher:
+    arguments:
+      - '@property_info'
 
   doctrine.annotation_reader:
     class: Doctrine\Common\Annotations\AnnotationReader
