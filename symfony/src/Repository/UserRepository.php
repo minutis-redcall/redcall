@@ -74,11 +74,10 @@ class UserRepository extends AbstractUserRepository implements UserRepositoryInt
     public function getRedCallUsersInStructure(Structure $structure) : array
     {
         return $this->createQueryBuilder('u')
-                    ->join('u.volunteer', 'v')
-                    ->join('v.structures', 's')
+                    ->join('u.structures', 's')
+                    ->andWhere('s.enabled = true')
                     ->andWhere('s.id = :structure')
                     ->setParameter('structure', $structure)
-                    ->andWhere('v.enabled = true')
                     ->andWhere('u.isTrusted = true')
                     ->getQuery()
                     ->getResult();

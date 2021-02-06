@@ -229,11 +229,9 @@ class StructureRepository extends BaseRepository
     public function countRedCallUsersQueryBuilder(QueryBuilder $qb) : QueryBuilder
     {
         return (clone $qb)
-            ->select('s.id as structure_id, COUNT(v) AS count')
-            ->join('s.volunteers', 'v')
-            ->join('v.user', 'su')
-            ->andWhere('v.enabled = true')
-            ->andWhere('su.isTrusted = true')
+            ->select('s.id as structure_id, COUNT(u) AS count')
+            ->join('s.users', 'u')
+            ->andWhere('u.isTrusted = true')
             ->groupBy('s.id');
     }
 
