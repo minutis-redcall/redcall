@@ -479,6 +479,7 @@ maintenance:
 manage_structures:
   export: 'Export volunteers contact information'
   force_update: 'Force update now'
+  redcall_users: 'List of people that can trigger %name%'
   form:
     create: 'Create new structure'
     disabled: 'Show disabled structures'

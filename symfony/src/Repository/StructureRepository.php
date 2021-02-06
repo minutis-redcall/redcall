@@ -233,6 +233,7 @@ class StructureRepository extends BaseRepository
             ->join('s.volunteers', 'v')
             ->join('v.user', 'su')
             ->andWhere('v.enabled = true')
+            ->andWhere('su.isTrusted = true')
             ->groupBy('s.id');
     }
 

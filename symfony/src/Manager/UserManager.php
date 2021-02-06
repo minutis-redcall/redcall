@@ -2,6 +2,7 @@
 
 namespace App\Manager;
 
+use App\Entity\Structure;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use Bundles\PasswordLoginBundle\Manager\UserManager as BaseUserManager;
@@ -130,5 +131,10 @@ class UserManager extends BaseUserManager
     public function searchQueryBuilder(?string $criteria, ?bool $onlyAdmins, ?bool $onlyDevelopers) : QueryBuilder
     {
         return $this->userRepository->searchQueryBuilder($criteria, $onlyAdmins, $onlyDevelopers);
+    }
+
+    public function getRedCallUsersInStructure(Structure $structure) : array
+    {
+        return $this->userRepository->getRedCallUsersInStructure($structure);
     }
 }

@@ -1,7 +1,5 @@
 {% extends 'base.html.twig' %}
 
-{% block menu %}{% endblock %}
-
 {% import 'macros.html.twig' as macros %}
 
 {% block body %}
@@ -37,7 +35,7 @@
     </div>
 
     <script type="text/javascript">
-        $('#structure-to-add input').change(function() {
+        $('#structure-to-add input').change(function () {
             document.location = '{{ path('management_volunteers_add_structure', {id: volunteer.id, csrf: csrf_token('volunteer')})|e('js') }}?structure=' + $(this).val();
         });
     </script>

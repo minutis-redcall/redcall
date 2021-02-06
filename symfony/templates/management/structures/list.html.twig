@@ -51,6 +51,11 @@
                                     {{ 'manage_structures.volunteers'|trans({'%count%': structure.activeVolunteers|length}) }}
                                     <br/>
                                     {{ 'manage_structures.users'|trans({'%count%': redcallUsers[structure.id]|default(0)}) }}
+                                    {% if redcallUsers[structure.id]|default(0) %}
+                                        (<a href="#"
+                                            class="show-structure-users"
+                                            data-structure-id="{{ structure.id }}">{{ 'base.button.details'|trans }}</a>)
+                                    {% endif %}
                                 </div>
                             </div>
                         </div>
@@ -98,5 +103,44 @@
     </div>
 
     <br/><br/>
+
+    <div class="modal fade" id="redcall-user-modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 id="edcall-user-modal-title" class="modal-title"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div id="edcall-user-modal-body" class="modal-body text-center"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ 'base.modal.close'|trans }}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    <script type="text/javascript">
+
+        $('.show-structure-users').click(function (e) {
+            e.preventDefault();
+            $('#edcall-user-modal-title').html('');
+            $('#edcall-user-modal-body').html('<img src="{{ asset('spinner.gif') }}"/>');
+            $('#edcall-user-modal').modal();
+            $.post('{{ path('management_structures_list_users') }}', {
+                id: $(this).data('structure-id'),
+            }, function (data) {
+                $('#edcall-user-modal-title').html(data.title);
+                $('#edcall-user-modal-body').html(data.body);
+            });
+        });
+
+    </script>
 
 {% endblock %}

@@ -479,6 +479,7 @@ maintenance:
 manage_structures:
   export: 'Exporter les informations de contact des bénévoles'
   force_update: 'Forcer la mise à jour maintenant'
+  redcall_users: 'Liste des personnes pouvant déclencher %name%'
   form:
     create: 'Créer une nouvelle structure'
     disabled: 'Afficher les structures desactivées'

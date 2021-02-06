@@ -1,0 +1,12 @@
+{% import 'macros.html.twig' as macros %}
+
+<div class="row text-left">
+    {% for user in users %}
+        {% if user.volunteer %}
+            <div class="col-md-6" style="padding:5px;">
+                {{ macros.volunteer(user.volunteer) }}
+                <hr/>
+            </div>
+        {% endif %}
+    {% endfor %}
+</div>
