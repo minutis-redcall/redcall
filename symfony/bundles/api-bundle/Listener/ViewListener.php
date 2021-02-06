@@ -3,8 +3,8 @@
 namespace Bundles\ApiBundle\Listener;
 
 use Bundles\ApiBundle\Contracts\FacadeInterface;
-use Bundles\ApiBundle\Fetcher\StatusCodeFetcher;
 use Bundles\ApiBundle\Model\Facade\SuccessFacade;
+use Bundles\ApiBundle\Reader\StatusCodeReader;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ViewEvent;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -17,14 +17,14 @@ class ViewListener
     private $serializer;
 
     /**
-     * @var StatusCodeFetcher
+     * @var StatusCodeReader
      */
-    private $statusCodeParser;
+    private $statusCodeReader;
 
-    public function __construct(SerializerInterface $serializer, StatusCodeFetcher $statusCodeParser)
+    public function __construct(SerializerInterface $serializer, StatusCodeReader $statusCodeReader)
     {
         $this->serializer       = $serializer;
-        $this->statusCodeParser = $statusCodeParser;
+        $this->statusCodeReader = $statusCodeReader;
     }
 
     public function onKernelView(ViewEvent $event)
@@ -41,7 +41,7 @@ class ViewListener
         $event->setResponse(
             new Response(
                 $this->serializer->serialize($facade, 'json'),
-                $this->statusCodeParser->getStatusCode($facade)
+                $this->statusCodeReader->getStatusCode($facade)
             )
         );
     }

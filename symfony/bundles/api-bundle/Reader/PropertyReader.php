@@ -1,6 +1,6 @@
 <?php
 
-namespace Bundles\ApiBundle\Fetcher;
+namespace Bundles\ApiBundle\Reader;
 
 use Bundles\ApiBundle\Model\Documentation\PropertyDescription;
 use Bundles\ApiBundle\Model\Documentation\TypeDescription;
@@ -8,17 +8,17 @@ use Doctrine\Common\Annotations\AnnotationReader;
 use Symfony\Component\PropertyInfo\PropertyInfoExtractorInterface;
 use Symfony\Component\Validator\Constraint;
 
-class PropertyFetcher
+class PropertyReader
 {
     /**
-     * @var DocblockFetcher
+     * @var DocblockReader
      */
-    private $docblockFetcher;
+    private $docblockReader;
 
     /**
-     * @var ConstraintFetcher
+     * @var ConstraintReader
      */
-    private $constraintFetcher;
+    private $constraintReader;
 
     /**
      * @var PropertyInfoExtractorInterface
@@ -30,18 +30,18 @@ class PropertyFetcher
      */
     private $annotationReader;
 
-    public function __construct(DocblockFetcher $docblockFetcher,
-        ConstraintFetcher $constraintFetcher,
+    public function __construct(DocblockReader $docblockReader,
+        ConstraintReader $constraintReader,
         PropertyInfoExtractorInterface $extractor,
         AnnotationReader $annotationReader)
     {
-        $this->docblockFetcher   = $docblockFetcher;
-        $this->constraintFetcher = $constraintFetcher;
-        $this->extractor         = $extractor;
-        $this->annotationReader  = $annotationReader;
+        $this->docblockReader   = $docblockReader;
+        $this->constraintReader = $constraintReader;
+        $this->extractor        = $extractor;
+        $this->annotationReader = $annotationReader;
     }
 
-    public function fetch(string $class, string $propertyName, ?PropertyDescription $parent) : PropertyDescription
+    public function read(string $class, string $propertyName, ?PropertyDescription $parent) : PropertyDescription
     {
         $property = new PropertyDescription();
         $property->setName($propertyName);
@@ -54,13 +54,10 @@ class PropertyFetcher
 
         $reflector   = new \ReflectionProperty($class, $propertyName);
         $annotations = $this->annotationReader->getPropertyAnnotations($reflector);
-        $docblock    = $this->docblockFetcher->fetch($reflector, $annotations);
+        $docblock    = $this->docblockReader->read($reflector, $annotations);
 
         $property->setTitle($docblock->getSummary());
         $property->setDescription($docblock->getDescription());
-        if ('type' === $propertyName) {
-            dd($docblock);
-        }
 
         if ($parent) {
             $property->setParent($parent);
@@ -69,7 +66,7 @@ class PropertyFetcher
         foreach ($annotations as $annotation) {
             if ($annotation instanceof Constraint) {
                 $property->addConstraint(
-                    $this->constraintFetcher->fetch($annotation)
+                    $this->constraintReader->read($annotation)
                 );
             }
         }

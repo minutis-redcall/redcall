@@ -1,12 +1,12 @@
 <?php
 
-namespace Bundles\ApiBundle\Fetcher;
+namespace Bundles\ApiBundle\Reader;
 
 use Bundles\ApiBundle\Model\Documentation\ConstraintDescription;
 use Symfony\Component\PropertyInfo\PropertyInfoExtractorInterface;
 use Symfony\Component\Validator\Constraint;
 
-class ConstraintFetcher
+class ConstraintReader
 {
     /**
      * @var PropertyInfoExtractorInterface
@@ -18,7 +18,7 @@ class ConstraintFetcher
         $this->extractor = $extractor;
     }
 
-    public function fetch(Constraint $constraint) : ConstraintDescription
+    public function read(Constraint $constraint) : ConstraintDescription
     {
         $description = new ConstraintDescription();
 

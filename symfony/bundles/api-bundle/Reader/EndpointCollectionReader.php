@@ -1,6 +1,6 @@
 <?php
 
-namespace Bundles\ApiBundle\Fetcher;
+namespace Bundles\ApiBundle\Reader;
 
 use Bundles\ApiBundle\Annotation\Endpoint;
 use Bundles\ApiBundle\Model\Documentation\ControllerDescription;
@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Controller\ControllerResolverInterface;
 use Symfony\Component\Routing\RouterInterface;
 
-class EndpointCollectionFetcher
+class EndpointCollectionReader
 {
     /**
      * @var RouterInterface
@@ -28,22 +28,22 @@ class EndpointCollectionFetcher
     private $annotationReader;
 
     /**
-     * @var EndpointFetcher
+     * @var EndpointReader
      */
-    private $endpointFetcher;
+    private $endpointReader;
 
     public function __construct(RouterInterface $router,
         ControllerResolverInterface $resolver,
         ?AnnotationReader $annotationReader,
-        EndpointFetcher $endpointFetcher)
+        EndpointReader $endpointReader)
     {
         $this->router           = $router;
         $this->resolver         = $resolver;
         $this->annotationReader = $annotationReader;
-        $this->endpointFetcher  = $endpointFetcher;
+        $this->endpointReader   = $endpointReader;
     }
 
-    public function fetch() : EndpointCollectionDescription
+    public function read() : EndpointCollectionDescription
     {
         $endpoints = new EndpointCollectionDescription();
         foreach ($this->router->getRouteCollection() as $route) {
@@ -58,12 +58,14 @@ class EndpointCollectionFetcher
 
             foreach ($annotations as $annotation) {
                 if ($annotation instanceof Endpoint) {
-                    $endpoints->add($this->endpointFetcher->fetch(
+                    $endpoints->add($this->endpointReader->read(
                         new ControllerDescription($route, get_class($service), $method, $annotation)
                     ));
                 }
             }
         }
+
+        $endpoints->sort();
 
         return $endpoints;
     }

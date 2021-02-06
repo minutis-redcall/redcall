@@ -15,4 +15,11 @@ class EndpointCollectionDescription
 
         return $this;
     }
+
+    public function sort()
+    {
+        usort($this->endpoints, function (EndpointDescription $a, EndpointDescription $b) {
+            return $a->getPriority() <=> $b->getPriority();
+        });
+    }
 }

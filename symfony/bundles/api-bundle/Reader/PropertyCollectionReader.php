@@ -1,6 +1,6 @@
 <?php
 
-namespace Bundles\ApiBundle\Fetcher;
+namespace Bundles\ApiBundle\Reader;
 
 use Bundles\ApiBundle\Contracts\FacadeInterface;
 use Bundles\ApiBundle\Model\Documentation\PropertyCollectionDescription;
@@ -9,25 +9,25 @@ use Bundles\ApiBundle\Model\Facade\CollectionFacade;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyInfo\PropertyInfoExtractorInterface;
 
-class PropertyCollectionFetcher
+class PropertyCollectionReader
 {
     /**
-     * @var PropertyFetcher
+     * @var PropertyReader
      */
-    private $propertyFetcher;
+    private $propertyReader;
 
     /**
      * @var PropertyInfoExtractorInterface
      */
     private $extractor;
 
-    public function __construct(PropertyFetcher $propertyFetcher, PropertyInfoExtractorInterface $extractor)
+    public function __construct(PropertyReader $propertyReader, PropertyInfoExtractorInterface $extractor)
     {
-        $this->propertyFetcher = $propertyFetcher;
-        $this->extractor       = $extractor;
+        $this->propertyReader = $propertyReader;
+        $this->extractor      = $extractor;
     }
 
-    public function fetch(FacadeInterface $facade, PropertyDescription $parent = null) : PropertyCollectionDescription
+    public function read(FacadeInterface $facade, PropertyDescription $parent = null) : PropertyCollectionDescription
     {
         $collectionDescription = new PropertyCollectionDescription();
 
@@ -35,7 +35,7 @@ class PropertyCollectionFetcher
             $collectionDescription->setCollection(true);
 
             if ($value = $facade->first()) {
-                foreach ($this->fetch($value, $parent)->all() as $propertyDescription) {
+                foreach ($this->read($value, $parent)->all() as $propertyDescription) {
                     $collectionDescription->add($propertyDescription);
                 }
             }
@@ -47,12 +47,12 @@ class PropertyCollectionFetcher
         $properties = $this->extractor->getProperties($class);
         $accessor   = PropertyAccess::createPropertyAccessor();
         foreach ($properties as $property) {
-            $propertyDescription = $this->propertyFetcher->fetch($class, $property, $parent);
+            $propertyDescription = $this->propertyReader->read($class, $property, $parent);
             $value               = $accessor->getValue($facade, $property);
 
             if ($value instanceof FacadeInterface) {
                 $propertyDescription->setChildren(
-                    $this->fetch($value, $propertyDescription)
+                    $this->read($value, $propertyDescription)
                 );
             }
 
