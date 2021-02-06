@@ -408,6 +408,14 @@ form:
     toggle:
       by_filters: 'Back to filters selection'
       by_nivol: 'Fill by nivols'
+    too_long:
+      title: 'Your message length is long'
+      explaination_1: 'Long messages have less chances to reach out their target.'
+      explaination_2: 'Prefer writting short messages, like:'
+      explaination_3: 'Urgent. Fire on Catalan district, need some hands out there.'
+      explaination_4: 'Need help to clean up medical equipment, newbies welcome to discover it!'
+      explaination_5: 'Ambulances required next Sunday during protests in case of troubles.'
+      explaination_6: 'SMS are divided in 160 characters segments, and more there are segments, less there are chances that message reach out its destination. Let''s send small messages in order to secure their delivery to everyone.'
 geolocation:
   error: 'An error occured.'
   error_permission: 'You (or a setting in your device) refused to share your location.'

@@ -408,6 +408,14 @@ form:
     toggle:
       by_filters: 'Revenir aux filtres de sélection'
       by_nivol: 'Saisir une liste de nivol'
+    too_long:
+      title: 'Votre message est long.'
+      explaination_1: 'Les messages longs ont moins de chances d''arriver à destination.'
+      explaination_2: 'Privilégiez les messages courts comme:'
+      explaination_3: 'Urgent. Feu quartier de la Beaujoire, besoin d''un CAI.'
+      explaination_4: 'Besoin d''un coup de main pour nettoyer du matériel. Nouveaux bienvenus pour le découvrir!'
+      explaination_5: 'Renfort SAMU prévision manif ce samedi. Besoin de 2 équipages VPSP complets.'
+      explaination_6: 'Les SMS sont divisés en segments de 160 caractères, et plus il y a de segments, moins il y a de chances que le message arrive entier à son destinataire. Il faut que nous nous habituons à envoyer des petits messages pour en garantir la bonne réception par tout le monde.'
 geolocation:
   error: 'Une erreur est survenue.'
   error_permission: 'Vous avez refusé (ou un paramètre de votre appareil) de partager votre position.'

@@ -46,4 +46,26 @@
 
 {{ include('new_communication/preview.html.twig') }}
 
+<div id="too-long" class="d-none">
+    <div style="border:1px solid grey;padding:5px;">
+        <div class="text-center">
+            <p>⚠️</p>
+            <p><strong>{{ 'form.communication.too_long.title'|trans }}</strong></p>
+            <hr/>
+        </div>
+        <p>
+            {{ 'form.communication.too_long.explaination_1'|trans }}
+            {{ 'form.communication.too_long.explaination_2'|trans }}
+            <br/><br/>
+        </p>
+        <ul>
+            <li>{{ 'form.communication.too_long.explaination_3'|trans }}</li>
+            <li>{{ 'form.communication.too_long.explaination_4'|trans }}</li>
+            <li>{{ 'form.communication.too_long.explaination_5'|trans }}</li>
+        </ul>
+        <p>{{ 'form.communication.too_long.explaination_6'|trans }}</p>
+    </div>
+    <br/>
+</div>
+
 {{ include('new_communication/common.html.twig') }}
