@@ -161,6 +161,7 @@ audience:
       title: 'Fiches bénévoles comportant des problèmes'
     selected: 'Liste des bénévoles sélectionnés'
     title: 'Résumé de la sélection'
+    optout_until: '<strong>%nbr%</strong> bénévoles sont temporairement indisponibles'
   copy_paste: 'Ou coller une liste de nivols'
   copy_paste_details: 'Ou coller une liste de nivols dans le champ ci-dessous.'
   large_audience:
@@ -183,6 +184,7 @@ audience:
     phone_landline: 'Ces bénévoles peuvent recevoir des appels, mais pas de SMS.'
     phone_missing: 'Ces bénévoles ne pourront pas recevoir de communications par SMS ou appel vocal.'
     phone_optout: 'Ces bénévoles ne souhaitent pas recevoir de déclenchements par SMS ou appel vocal.'
+    optout_until: 'Ces bénévoles ont indiqué ne pas être disponible actuellement.'
   problems:
     disabled: Desactivés
     email_missing: 'Pas d''email'
@@ -194,6 +196,7 @@ audience:
     phone_missing: 'Pas de tél.'
     phone_optout: 'Appels/SMS refusés'
     title: 'Détails à propos des problèmes dans la sélection'
+    optout_until: 'Temp. indispo.'
   search_for_volunteers: 'Rechercher des bénévoles à déclencher :'
   search_other_badge: 'Rechercher une autre compétence :'
   select_all_badges: 'Déclencher tous les bénévoles quelles que soient leurs compétences'
@@ -349,6 +352,7 @@ campaign_status:
     no_phone: 'Pas de numéro de téléphone'
     no_phone_mobile: 'Pas de numéro de téléphone portable.'
     no_phone_optin: 'Ne souhaite pas recevoir de SMS/appels.'
+    optout_until: 'Temporairement indisponible'
 csv_export:
   answer_time: 'Date de la reponse la plus recente'
   choice: 'Choix "%choice%"'
@@ -409,13 +413,13 @@ form:
       by_filters: 'Revenir aux filtres de sélection'
       by_nivol: 'Saisir une liste de nivol'
     too_long:
-      title: 'Votre message est long.'
       explaination_1: 'Les messages longs ont moins de chances d''arriver à destination.'
       explaination_2: 'Privilégiez les messages courts comme:'
       explaination_3: 'Urgent. Feu quartier de la Beaujoire, besoin d''un CAI.'
       explaination_4: 'Besoin d''un coup de main pour nettoyer du matériel. Nouveaux bienvenus pour le découvrir!'
       explaination_5: 'Renfort SAMU prévision manif ce samedi. Besoin de 2 équipages VPSP complets.'
       explaination_6: 'Les SMS sont divisés en segments de 160 caractères, et plus il y a de segments, moins il y a de chances que le message arrive entier à son destinataire. Il faut que nous nous habituons à envoyer des petits messages pour en garantir la bonne réception par tout le monde.'
+      title: 'Votre message est long.'
 geolocation:
   error: 'Une erreur est survenue.'
   error_permission: 'Vous avez refusé (ou un paramètre de votre appareil) de partager votre position.'
@@ -562,6 +566,8 @@ manage_volunteers:
     update: 'Mettre à jour un bénévole'
     updated: 'Le bénévole a correctement été modifié.'
     visible_badges: 'Badges principaux'
+    optout_until_me: 'Je suis indisponible jusqu''au...'
+    optout_until: 'Bénévole indisponible jusqu''au...'
   others: 'et %count% autre(s)'
   redcall:
     action_structures: 'Structures déclenchables par %name%'

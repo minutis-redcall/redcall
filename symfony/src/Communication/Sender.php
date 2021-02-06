@@ -185,6 +185,11 @@ class Sender
         $volunteer = $message->getVolunteer();
 
         switch ($message->getCommunication()->getType()) {
+            case $message->getCommunication()->getType():
+                if ($volunteer->getOptoutUntil() && $volunteer->getOptoutUntil()->getTimestamp() > time()) {
+                    $error = 'campaign_status.warning.optout_until';
+                    break;
+                }
             case Communication::TYPE_SMS:
                 if ($volunteer->getPhoneNumber() && !$volunteer->getPhone()->isMobile()) {
                     $error = 'campaign_status.warning.no_phone_mobile';

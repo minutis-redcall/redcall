@@ -19,7 +19,8 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
  *     @ORM\Index(name="emailx", columns={"email"}),
  *     @ORM\Index(name="enabledx", columns={"enabled"}),
  *     @ORM\Index(name="phone_number_optinx", columns={"phone_number_optin"}),
- *     @ORM\Index(name="email_optinx", columns={"email_optin"})
+ *     @ORM\Index(name="email_optinx", columns={"email_optin"}),
+ *     @ORM\Index(name="optout_untilx", columns={"optout_until"})
  * })
  * @ORM\Entity(repositoryClass="App\Repository\VolunteerRepository")
  * @ORM\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
@@ -176,6 +177,11 @@ class Volunteer
      * @ORM\ManyToMany(targetEntity=Badge::class, inversedBy="volunteers")
      */
     private $badges;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $optoutUntil;
 
     public function __construct()
     {
@@ -351,11 +357,11 @@ class Volunteer
 
     public function isCallable() : bool
     {
-        return $this->enabled && (
-                $this->getPhone() && $this->phoneNumberOptin
-                ||
-                $this->email && $this->emailOptin
-            );
+        $hasPhone = $this->getPhone() && $this->phoneNumberOptin;
+        $hasEmail = $this->email && $this->emailOptin;
+        $isOptin  = !$this->optoutUntil || $this->optoutUntil->getTimestamp() < time();
+
+        return $this->enabled && $isOptin && ($hasPhone || $hasEmail);
     }
 
     public function addReport(string $message)
@@ -818,6 +824,18 @@ class Volunteer
         }
 
         return $lowest;
+    }
+
+    public function getOptoutUntil() : ?\DateTimeInterface
+    {
+        return $this->optoutUntil;
+    }
+
+    public function setOptoutUntil(?\DateTimeInterface $optoutUntil) : self
+    {
+        $this->optoutUntil = $optoutUntil;
+
+        return $this;
     }
 
     private function toName(string $name) : string

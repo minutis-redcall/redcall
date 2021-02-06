@@ -13,6 +13,7 @@ class Classification
     private $phoneMissing  = [];
     private $phoneOptout   = [];
     private $phoneLandline = [];
+    private $optoutUntil   = [];
     private $emailMissing  = [];
     private $emailOptout   = [];
     private $reachable     = [];
@@ -85,6 +86,18 @@ class Classification
     public function setPhoneLandline(array $phoneLandline) : void
     {
         $this->phoneLandline = $phoneLandline;
+    }
+
+    public function getOptoutUntil() : array
+    {
+        return $this->optoutUntil;
+    }
+
+    public function setOptoutUntil(array $optoutUntil) : Classification
+    {
+        $this->optoutUntil = $optoutUntil;
+
+        return $this;
     }
 
     public function getEmailMissing() : array

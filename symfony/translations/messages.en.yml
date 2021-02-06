@@ -161,6 +161,7 @@ audience:
       title: 'Volunteer records having issues'
     selected: 'Liste des bénévoles sélectionnés'
     title: 'Selection summary'
+    optout_until: '<strong>%nbr%</strong> volunteers are temporarily unavailable'
   copy_paste: 'Or paste a list of identifiers'
   copy_paste_details: 'Paste a list of identifiers in the field below.'
   large_audience:
@@ -183,6 +184,7 @@ audience:
     phone_landline: 'These volunteers can receive voice calls, but cannot receive text messages.'
     phone_missing: 'These volunteers won''t be able to receive voice calls nor text messages.'
     phone_optout: 'These volunteers do not want to be triggered through voice call nor text message.'
+    optout_until: 'These volunteers do not want to be triggered at the moment.'
   problems:
     disabled: Disabled
     email_missing: 'No email'
@@ -194,6 +196,7 @@ audience:
     phone_missing: 'No phone'
     phone_optout: 'Phone opted-out'
     title: 'Audience problem details'
+    optout_until: 'Temp. unavailable'
   search_for_volunteers: 'Search for volunteers:'
   search_other_badge: 'Search for another skill:'
   select_all_badges: 'Trigger all volunteers whatever their skills'
@@ -349,6 +352,7 @@ campaign_status:
     no_phone: 'No phone number'
     no_phone_mobile: 'No mobile phone number.'
     no_phone_optin: 'Do not want to be triggered through phone.'
+    optout_until: 'Temporarily unavailable.'
 csv_export:
   answer_time: 'Answered at'
   choice: 'Choice "%choice%"'
@@ -409,13 +413,13 @@ form:
       by_filters: 'Back to filters selection'
       by_nivol: 'Fill by nivols'
     too_long:
-      title: 'Your message length is long'
       explaination_1: 'Long messages have less chances to reach out their target.'
       explaination_2: 'Prefer writting short messages, like:'
       explaination_3: 'Urgent. Fire on Catalan district, need some hands out there.'
       explaination_4: 'Need help to clean up medical equipment, newbies welcome to discover it!'
       explaination_5: 'Ambulances required next Sunday during protests in case of troubles.'
       explaination_6: 'SMS are divided in 160 characters segments, and more there are segments, less there are chances that message reach out its destination. Let''s send small messages in order to secure their delivery to everyone.'
+      title: 'Your message length is long'
 geolocation:
   error: 'An error occured.'
   error_permission: 'You (or a setting in your device) refused to share your location.'
@@ -562,6 +566,8 @@ manage_volunteers:
     update: 'Update volunteer'
     updated: 'Volunteer has properly been updated.'
     visible_badges: 'Main badges'
+    optout_until: 'Volunteer not available until...'
+    optout_until_me: 'I am not available until...'
   others: 'and %count% other(s)'
   redcall:
     action_structures: 'Structures that %name% can trigger'
