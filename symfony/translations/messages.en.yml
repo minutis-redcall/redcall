@@ -145,6 +145,7 @@ audience:
     home: 'You may not be able to reach out all your volunteers.'
     inaccessible: '<strong>%nbr%</strong> volunteers are out of your perimeter'
     invalid: '<strong>%nbr%</strong> nivols do not exist'
+    optout_until: '<strong>%nbr%</strong> volunteers are temporarily unavailable'
     phone_landline: '<strong>%nbr%</strong> volunteers only have a landline phone number'
     phone_missing: '<strong>%nbr%</strong> volunteers do not have a phone number'
     phone_optout: '<strong>%nbr%</strong> volunteers do not want to receive phone calls/SMS'
@@ -161,7 +162,6 @@ audience:
       title: 'Volunteer records having issues'
     selected: 'Liste des bénévoles sélectionnés'
     title: 'Selection summary'
-    optout_until: '<strong>%nbr%</strong> volunteers are temporarily unavailable'
   copy_paste: 'Or paste a list of identifiers'
   copy_paste_details: 'Paste a list of identifiers in the field below.'
   large_audience:
@@ -181,10 +181,10 @@ audience:
     excluded: 'You can include these volunteers back by showing your selection.'
     inaccessible: 'These volunteers belong to structures you are not allowed to trigger.'
     invalid: 'These volunteers'' identifiers are not valid or not yet integrated.'
+    optout_until: 'These volunteers do not want to be triggered at the moment.'
     phone_landline: 'These volunteers can receive voice calls, but cannot receive text messages.'
     phone_missing: 'These volunteers won''t be able to receive voice calls nor text messages.'
     phone_optout: 'These volunteers do not want to be triggered through voice call nor text message.'
-    optout_until: 'These volunteers do not want to be triggered at the moment.'
   problems:
     disabled: Disabled
     email_missing: 'No email'
@@ -192,11 +192,11 @@ audience:
     excluded: 'Manually excluded'
     inaccessible: 'Out of perimeter'
     invalid: Invalids
+    optout_until: 'Temp. unavailable'
     phone_landline: 'Only landline'
     phone_missing: 'No phone'
     phone_optout: 'Phone opted-out'
     title: 'Audience problem details'
-    optout_until: 'Temp. unavailable'
   search_for_volunteers: 'Search for volunteers:'
   search_other_badge: 'Search for another skill:'
   select_all_badges: 'Trigger all volunteers whatever their skills'
@@ -479,7 +479,6 @@ maintenance:
 manage_structures:
   export: 'Export volunteers contact information'
   force_update: 'Force update now'
-  redcall_users: 'List of people that can trigger %name%'
   form:
     create: 'Create new structure'
     disabled: 'Show disabled structures'
@@ -492,6 +491,7 @@ manage_structures:
       title: 'Edition of prefilled answers'
     list_title: 'List of prefilled answers'
   president: 'President: %president%'
+  redcall_users: 'List of people that can trigger %name%'
   search:
     button: Search
     label: 'Search structure'
@@ -541,6 +541,7 @@ manage_volunteers:
     message: 'Please review the message causing the data deletion.'
     title: 'Data deletion for %name%'
     volunteer_asked_for_it: 'This volunteer asked you to remove his personal data?'
+  can_trigger: 'Structures %name% can trigger'
   columns:
     never_updated: 'Skills never imported'
     update: 'Updated on %date%'
@@ -559,6 +560,7 @@ manage_volunteers:
     lock_info: '* Locked phones and emails are not automatically refreshed by Pegass updates.'
     minor: 'Minor (under 18)'
     nivol: Nivol
+    optout_until_me: 'Volunteer not available until...'
     phone_number: 'Phone number'
     phone_number_locked: 'Locked phone number *'
     phone_number_optin: 'Available by phone number'
@@ -568,7 +570,6 @@ manage_volunteers:
     updated: 'Volunteer has properly been updated.'
     visible_badges: 'Main badges'
     optout_until: 'Volunteer not available until...'
-    optout_until_me: 'I am not available until...'
   others: 'and %count% other(s)'
   redcall:
     action_structures: 'Structures that %name% can trigger'
@@ -580,6 +581,7 @@ manage_volunteers:
     only_users: 'Only show volunteers having RedCall access'
   title: 'Manage volunteers'
   title_with_structure: 'Manage volunteers from %name%'
+  can_trigger_button: 'RedCall roles'
 management:
   current_structures: 'You are currently able to trigger the following structures:'
   home:
