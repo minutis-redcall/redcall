@@ -1,28 +1,28 @@
 <?php
 
-namespace Bundles\ApiBundle\Fetcher;
+namespace Bundles\ApiBundle\Reader;
 
 use Bundles\ApiBundle\Annotation\Facade;
 use Bundles\ApiBundle\Model\Documentation\FacadeDescription;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Symfony\Component\Serializer\SerializerInterface;
 
-class FacadeFetcher
+class FacadeReader
 {
     /**
-     * @var DocblockFetcher
+     * @var DocblockReader
      */
-    private $docblockFetcher;
+    private $docblockReader;
 
     /**
-     * @var StatusCodeFetcher
+     * @var StatusCodeReader
      */
-    private $statusCodeFetcher;
+    private $statusCodeReader;
 
     /**
-     * @var PropertyCollectionFetcher
+     * @var PropertyCollectionReader
      */
-    private $propertyCollectionFetcher;
+    private $propertyCollectionReader;
 
     /**
      * @var AnnotationReader
@@ -34,26 +34,26 @@ class FacadeFetcher
      */
     private $serializer;
 
-    public function __construct(DocblockFetcher $docblockFetcher,
-        StatusCodeFetcher $statusCodeFetcher,
-        PropertyCollectionFetcher $propertyCollectionFetcher,
+    public function __construct(DocblockReader $docblockReader,
+        StatusCodeReader $statusCodeReader,
+        PropertyCollectionReader $propertyCollectionReader,
         AnnotationReader $annotationReader,
         SerializerInterface $serializer)
     {
-        $this->docblockFetcher           = $docblockFetcher;
-        $this->statusCodeFetcher         = $statusCodeFetcher;
-        $this->propertyCollectionFetcher = $propertyCollectionFetcher;
-        $this->annotationReader          = $annotationReader;
-        $this->serializer                = $serializer;
+        $this->docblockReader           = $docblockReader;
+        $this->statusCodeReader         = $statusCodeReader;
+        $this->propertyCollectionReader = $propertyCollectionReader;
+        $this->annotationReader         = $annotationReader;
+        $this->serializer               = $serializer;
     }
 
-    public function fetch(string $class, ?Facade $decorates) : FacadeDescription
+    public function read(string $class, ?Facade $decorates) : FacadeDescription
     {
         $facade = new FacadeDescription();
 
         $reflector   = new \ReflectionClass($class);
         $annotations = $this->annotationReader->getClassAnnotations($reflector);
-        $docblock    = $this->docblockFetcher->fetch($reflector, $annotations);
+        $docblock    = $this->docblockReader->read($reflector, $annotations);
         $facade->setTitle($docblock->getSummary());
         $facade->setDescription($docblock->getDescription());
 
@@ -62,10 +62,10 @@ class FacadeFetcher
         $serialized = $this->serializer->serialize($example, 'json');
         $facade->setExample($serialized);
 
-        $properties = $this->propertyCollectionFetcher->fetch($example);
+        $properties = $this->propertyCollectionReader->read($example);
         $facade->setProperties($properties);
 
-        $statusCode = $this->statusCodeFetcher->getStatusCode($example);
+        $statusCode = $this->statusCodeReader->getStatusCode($example);
         $facade->setStatusCode($statusCode);
 
         return $facade;

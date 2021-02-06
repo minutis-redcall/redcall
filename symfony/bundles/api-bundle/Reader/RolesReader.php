@@ -1,6 +1,6 @@
 <?php
 
-namespace Bundles\ApiBundle\Fetcher;
+namespace Bundles\ApiBundle\Reader;
 
 use Bundles\ApiBundle\Model\Documentation\ControllerDescription;
 use Bundles\ApiBundle\Model\Documentation\EndpointDescription;
@@ -11,7 +11,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Http\AccessMapInterface;
 
-class RolesFetcher
+class RolesReader
 {
     /**
      * @var AccessMapInterface
@@ -29,19 +29,19 @@ class RolesFetcher
         $this->annotationReader = $annotationReader;
     }
 
-    public function fetch(ControllerDescription $controller, EndpointDescription $endpoint)
+    public function read(ControllerDescription $controller, EndpointDescription $endpoint)
     {
-        $this->fetchFromAccessMap($endpoint);
-        $this->fetchFromAnnotations($controller, $endpoint);
+        $this->readFromAccessMap($endpoint);
+        $this->readFromAnnotations($controller, $endpoint);
     }
 
     /**
-     * Fetch roles located in access_control block of security.yaml
+     * Read roles located in access_control block of security.yaml
      *
      * @param ControllerDescription $controller
      * @param EndpointDescription   $endpoint
      */
-    private function fetchFromAccessMap(EndpointDescription $endpoint)
+    private function readFromAccessMap(EndpointDescription $endpoint)
     {
         foreach ($endpoint->getMethods() as $method) {
             $request = Request::create($endpoint->getUri(), $method);
@@ -59,12 +59,12 @@ class RolesFetcher
     }
 
     /**
-     * Fetch roles based on IsGranted and Security annotations
+     * Read roles based on IsGranted and Security annotations
      *
      * @param ControllerDescription $controller
      * @param EndpointDescription   $endpoint
      */
-    private function fetchFromAnnotations(ControllerDescription $controller, EndpointDescription $endpoint)
+    private function readFromAnnotations(ControllerDescription $controller, EndpointDescription $endpoint)
     {
         $class            = new \ReflectionClass($controller->getClass());
         $classAnnotations = $this->annotationReader->getClassAnnotations($class);
@@ -74,16 +74,16 @@ class RolesFetcher
 
         foreach (array_merge($classAnnotations, $methodAnnotations) as $annotation) {
             if ($annotation instanceof IsGranted) {
-                $this->fetchFromIsGrantedAnnotation($annotation, $endpoint);
+                $this->readFromIsGrantedAnnotation($annotation, $endpoint);
             }
 
             if ($annotation instanceof Security) {
-                $this->fetchFromSecurityAnnotation($annotation, $endpoint);
+                $this->readFromSecurityAnnotation($annotation, $endpoint);
             }
         }
     }
 
-    private function fetchFromIsGrantedAnnotation(IsGranted $annotation, EndpointDescription $endpoint)
+    private function readFromIsGrantedAnnotation(IsGranted $annotation, EndpointDescription $endpoint)
     {
         $attributes = $annotation->getAttributes();
 
@@ -100,7 +100,7 @@ class RolesFetcher
         }
     }
 
-    private function fetchFromSecurityAnnotation(Security $annotation, EndpointDescription $endpoint)
+    private function readFromSecurityAnnotation(Security $annotation, EndpointDescription $endpoint)
     {
         $role = new RoleDescription();
         $role->setAttribute($annotation->getExpression());

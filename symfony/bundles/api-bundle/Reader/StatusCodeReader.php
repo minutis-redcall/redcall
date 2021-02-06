@@ -1,13 +1,13 @@
 <?php
 
-namespace Bundles\ApiBundle\Fetcher;
+namespace Bundles\ApiBundle\Reader;
 
 use Bundles\ApiBundle\Annotation\StatusCode;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Symfony\Component\HttpFoundation\Response;
 
-class StatusCodeFetcher
+class StatusCodeReader
 {
     /**
      * @var AnnotationReader

@@ -3,7 +3,7 @@ services:
   Bundles\ApiBundle\Listener\ViewListener:
     arguments:
       - '@serializer'
-      - '@Bundles\ApiBundle\Fetcher\StatusCodeFetcher'
+      - '@Bundles\ApiBundle\Reader\StatusCodeReader'
     tags:
       - { name: kernel.event_listener, event: kernel.view }
 

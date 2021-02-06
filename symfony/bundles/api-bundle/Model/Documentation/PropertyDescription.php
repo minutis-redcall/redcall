@@ -110,9 +110,9 @@ class PropertyDescription
         return $this->constraints;
     }
 
-    public function setConstraints(array $constraints) : PropertyDescription
+    public function addConstraint(ConstraintDescription $constraint) : PropertyDescription
     {
-        $this->constraints = $constraints;
+        $this->constraints[] = $constraint;
 
         return $this;
     }

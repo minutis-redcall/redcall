@@ -1,46 +1,46 @@
 <?php
 
-namespace Bundles\ApiBundle\Fetcher;
+namespace Bundles\ApiBundle\Reader;
 
 use Bundles\ApiBundle\Model\Documentation\ControllerDescription;
 use Bundles\ApiBundle\Model\Documentation\EndpointDescription;
 use Bundles\ApiBundle\Model\Facade\SuccessFacade;
 use Doctrine\Common\Annotations\AnnotationReader;
 
-class EndpointFetcher
+class EndpointReader
 {
     /**
-     * @var RolesFetcher
+     * @var RolesReader
      */
-    private $rolesFetcher;
+    private $rolesReader;
 
     /**
-     * @var FacadeFetcher
+     * @var FacadeReader
      */
-    private $facadeFetcher;
+    private $facadeReader;
 
     /**
-     * @var DocblockFetcher
+     * @var DocblockReader
      */
-    private $docblockFetcher;
+    private $docblockReader;
 
     /**
      * @var AnnotationReader
      */
     private $annotationReader;
 
-    public function __construct(RolesFetcher $rolesFetcher,
-        FacadeFetcher $facadeFetcher,
-        DocblockFetcher $docblockFetcher,
+    public function __construct(RolesReader $rolesReader,
+        FacadeReader $facadeReader,
+        DocblockReader $docblockReader,
         AnnotationReader $annotationReader)
     {
-        $this->rolesFetcher     = $rolesFetcher;
-        $this->facadeFetcher    = $facadeFetcher;
-        $this->docblockFetcher  = $docblockFetcher;
+        $this->rolesReader      = $rolesReader;
+        $this->facadeReader     = $facadeReader;
+        $this->docblockReader   = $docblockReader;
         $this->annotationReader = $annotationReader;
     }
 
-    public function fetch(ControllerDescription $controller) : EndpointDescription
+    public function read(ControllerDescription $controller) : EndpointDescription
     {
         $endpoint = new EndpointDescription();
 
@@ -48,7 +48,7 @@ class EndpointFetcher
 
         $reflector   = new \ReflectionMethod($controller->getClass(), $controller->getMethod());
         $annotations = $this->annotationReader->getMethodAnnotations($reflector);
-        $docblock    = $this->docblockFetcher->fetch($reflector, $annotations);
+        $docblock    = $this->docblockReader->read($reflector, $annotations);
         $endpoint->setTitle($docblock->getSummary());
         $endpoint->setDescription($docblock->getDescription());
 
@@ -58,11 +58,11 @@ class EndpointFetcher
         $uri = sprintf('%s%s', getenv('WEBSITE_URL'), $controller->getRoute()->getPath());
         $endpoint->setUri($uri);
 
-        $this->rolesFetcher->fetch($controller, $endpoint);
+        $this->rolesReader->read($controller, $endpoint);
 
         if ($controller->getAnnotation()->request) {
             $endpoint->setRequestFacade(
-                $this->facadeFetcher->fetch(
+                $this->facadeReader->read(
                     $controller->getAnnotation()->request->class,
                     $controller->getAnnotation()->request->decorates
                 )
@@ -71,23 +71,12 @@ class EndpointFetcher
 
         if ($controller->getAnnotation()->response) {
             $endpoint->setResponseFacade(
-                $this->facadeFetcher->fetch(
+                $this->facadeReader->read(
                     SuccessFacade::class,
                     $controller->getAnnotation()->response
                 )
             );
         }
-
-        /*
-        ✅ private $title;
-        ✅ private $method;
-        ✅ private $uri;
-        ✅ private $roles = [];
-        ✅ private $description;
-        ✅ private $requestFacade;
-        ✅ private $responseFacade;
-        private $errors = [];
-         */
 
         return $endpoint;
     }

@@ -1,17 +1,17 @@
 <?php
 
-namespace Bundles\ApiBundle\Fetcher;
+namespace Bundles\ApiBundle\Reader;
 
 use Bundles\ApiBundle\Annotation\Placeholder;
 use phpDocumentor\Reflection\DocBlock;
 use phpDocumentor\Reflection\DocBlockFactory;
 use phpDocumentor\Reflection\DocBlockFactoryInterface;
 
-class DocblockFetcher
+class DocblockReader
 {
     private $factory;
 
-    public function fetch(\Reflector $reflector, array $annotations) : DocBlock
+    public function read(\Reflector $reflector, array $annotations) : DocBlock
     {
         $docblock = $reflector->getDocComment();
 
