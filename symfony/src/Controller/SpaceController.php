@@ -16,10 +16,12 @@ use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Mpdf\Mpdf;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\Constraints\GreaterThan;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
@@ -181,6 +183,14 @@ class SpaceController extends BaseController
                      ->add('emailOptin', CheckboxType::class, [
                          'label'    => 'manage_volunteers.form.email_optin',
                          'required' => false,
+                     ])
+                     ->add('optoutUntil', DateType::class, [
+                         'label'       => 'manage_volunteers.form.optout_until_me',
+                         'widget'      => 'single_text',
+                         'required'    => false,
+                         'constraints' => [
+                             new GreaterThan('tomorrow'),
+                         ],
                      ])
                      ->add('submit', SubmitType::class, [
                          'label' => 'base.button.save',

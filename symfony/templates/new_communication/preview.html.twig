@@ -40,6 +40,15 @@
                     } else {
                         $('#message-preview').html(nl2br(data.message));
                     }
+
+                    if ('{{ constant('App\\Entity\\Communication::TYPE_SMS') }}' === data.type) {
+                        if (data.cost > 2) {
+                            $('#too-long').removeClass('d-none');
+                        } else {
+                            $('#too-long').addClass('d-none');
+                        }
+                    }
+
                     $('#message-cost').html(data.cost);
                     $('#message-price').html(data.price);
                     $('#message-length').html(data.length);

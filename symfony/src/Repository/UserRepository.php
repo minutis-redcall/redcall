@@ -2,6 +2,7 @@
 
 namespace App\Repository;
 
+use App\Entity\Structure;
 use App\Entity\User;
 use Bundles\PasswordLoginBundle\Entity\AbstractUser;
 use Bundles\PasswordLoginBundle\Repository\AbstractUserRepository;
@@ -68,6 +69,18 @@ class UserRepository extends AbstractUserRepository implements UserRepositoryInt
         }
 
         return $qb;
+    }
+
+    public function getRedCallUsersInStructure(Structure $structure) : array
+    {
+        return $this->createQueryBuilder('u')
+                    ->join('u.structures', 's')
+                    ->andWhere('s.enabled = true')
+                    ->andWhere('s.id = :structure')
+                    ->setParameter('structure', $structure)
+                    ->andWhere('u.isTrusted = true')
+                    ->getQuery()
+                    ->getResult();
     }
 }
 

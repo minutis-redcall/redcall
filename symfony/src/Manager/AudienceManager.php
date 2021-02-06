@@ -100,6 +100,10 @@ class AudienceManager
             $this->volunteerManager->filterDisabled($audience)
         );
 
+        $classification->setOptoutUntil(
+            $this->volunteerManager->filterOptoutUntil($audience)
+        );
+
         if (!$this->security->isGranted('ROLE_ADMIN')) {
             $classification->setInaccessible(
                 $this->volunteerManager->filterInaccessibles($audience)
@@ -115,7 +119,8 @@ class AudienceManager
             $audience,
             $classification->getDisabled(),
             $classification->getInaccessible(),
-            $classification->getExcluded()
+            $classification->getExcluded(),
+            $classification->getOptoutUntil()
         );
 
         $classification->setReachable($audience);

@@ -14,7 +14,6 @@ use Doctrine\ORM\Mapping as ORM;
  * })
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  * @ORM\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
- * @ORM\HasLifecycleCallbacks
  */
 class User extends AbstractUser
 {

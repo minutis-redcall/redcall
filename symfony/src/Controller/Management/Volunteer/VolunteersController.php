@@ -468,6 +468,28 @@ class VolunteersController extends BaseController
         ];
     }
 
+    /**
+     * @Route(name="list_user_structures", path="/list-user-structures")
+     */
+    public function listUserStructures(Request $request)
+    {
+        $volunteer = $this->getVolunteerById($request->get('id'));
+
+        if (!$volunteer->isUserEnabled()) {
+            throw $this->createNotFoundException();
+        }
+
+        return $this->json([
+            'title' => $this->translator->trans('manage_volunteers.can_trigger', [
+                '%name%' => $volunteer->getDisplayName(),
+            ]),
+            'body'  => $this->renderView('management/volunteers/user_structures.html.twig', [
+                'user' => $volunteer->getUser(),
+            ]),
+        ]);
+    }
+
+
     private function deleteVolunteer(Volunteer $volunteer,
         Answer $answer,
         SimpleProcessor $processor) : \App\Entity\Campaign
@@ -573,5 +595,20 @@ class VolunteersController extends BaseController
                     ])
                     ->getForm()
                     ->handleRequest($request);
+    }
+
+    private function getVolunteerById(?int $id) : Volunteer
+    {
+        $volunteer = $this->volunteerManager->find($id);
+
+        if (null === $id) {
+            throw $this->createNotFoundException();
+        }
+
+        if (!$this->isGranted('VOLUNTEER', $volunteer)) {
+            throw $this->createAccessDeniedException();
+        }
+
+        return $volunteer;
     }
 }

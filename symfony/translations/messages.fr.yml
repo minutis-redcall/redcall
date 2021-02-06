@@ -145,6 +145,7 @@ audience:
     home: 'Il est possible que vous ne puissiez pas joindre tous vos bénévoles.'
     inaccessible: '<strong>%nbr%</strong> bénévoles ne font pas partie de votre périmètre'
     invalid: '<strong>%nbr%</strong> nivols n''existent pas'
+    optout_until: '<strong>%nbr%</strong> bénévoles sont temporairement indisponibles'
     phone_landline: '<strong>%nbr%</strong> bénévoles ne possèdent qu''un numéro de téléphone fixe'
     phone_missing: '<strong>%nbr%</strong> bénévoles n''ont pas de numéro de téléphone'
     phone_optout: '<strong>%nbr%</strong> bénévoles ne souhaitant pas recevoir d''appels/SMS'
@@ -180,6 +181,7 @@ audience:
     excluded: 'Vous pouvez réinclure ces bénévoles en affichant votre sélection.'
     inaccessible: 'Ces bénévoles font partie de sturctures que vous ne pouvez pas déclencher.'
     invalid: 'Ces identifiants de bénévoles sont invalides ou pas encore intégrés.'
+    optout_until: 'Ces bénévoles ont indiqué ne pas être disponible actuellement.'
     phone_landline: 'Ces bénévoles peuvent recevoir des appels, mais pas de SMS.'
     phone_missing: 'Ces bénévoles ne pourront pas recevoir de communications par SMS ou appel vocal.'
     phone_optout: 'Ces bénévoles ne souhaitent pas recevoir de déclenchements par SMS ou appel vocal.'
@@ -190,6 +192,7 @@ audience:
     excluded: 'Manuellement exclus'
     inaccessible: 'Hors périmètre'
     invalid: Invalides
+    optout_until: 'Temp. indispo.'
     phone_landline: 'Fixe uniquement'
     phone_missing: 'Pas de tél.'
     phone_optout: 'Appels/SMS refusés'
@@ -349,6 +352,7 @@ campaign_status:
     no_phone: 'Pas de numéro de téléphone'
     no_phone_mobile: 'Pas de numéro de téléphone portable.'
     no_phone_optin: 'Ne souhaite pas recevoir de SMS/appels.'
+    optout_until: 'Temporairement indisponible'
 csv_export:
   answer_time: 'Date de la reponse la plus recente'
   choice: 'Choix "%choice%"'
@@ -408,6 +412,14 @@ form:
     toggle:
       by_filters: 'Revenir aux filtres de sélection'
       by_nivol: 'Saisir une liste de nivol'
+    too_long:
+      explaination_1: 'Les messages longs ont moins de chances d''arriver à destination.'
+      explaination_2: 'Privilégiez les messages courts comme:'
+      explaination_3: 'Urgent. Feu quartier de la Beaujoire, besoin d''un CAI.'
+      explaination_4: 'Besoin d''un coup de main pour nettoyer du matériel. Nouveaux bienvenus pour le découvrir!'
+      explaination_5: 'Renfort SAMU prévision manif ce samedi. Besoin de 2 équipages VPSP complets.'
+      explaination_6: 'Les SMS sont divisés en segments de 160 caractères, et plus il y a de segments, moins il y a de chances que le message arrive entier à son destinataire. Il faut que nous nous habituons à envoyer des petits messages pour en garantir la bonne réception par tout le monde.'
+      title: 'Votre message est long.'
 geolocation:
   error: 'Une erreur est survenue.'
   error_permission: 'Vous avez refusé (ou un paramètre de votre appareil) de partager votre position.'
@@ -479,6 +491,7 @@ manage_structures:
       title: 'Ajout/edition de réponse pré-remplies'
     list_title: 'Liste des réponses pré-remplies'
   president: 'Président : %president%'
+  redcall_users: 'Liste des personnes pouvant déclencher %name%'
   search:
     button: Rechercher
     label: 'Rechercher une structure'
@@ -528,6 +541,7 @@ manage_volunteers:
     message: 'Merci de bien vouloir relire attentivement le message causant la suppression de données avant de continuer.'
     title: 'Suppression des données de %name%'
     volunteer_asked_for_it: 'Ce bénévole vous a demandé de supprimer ses données ?'
+  can_trigger: 'Structures que %name% peut déclencher'
   columns:
     never_updated: 'Pas encore importé'
     update: 'MàJ le %date%'
@@ -546,6 +560,7 @@ manage_volunteers:
     lock_info: '* Les nᵒˢ de téléphone et emails gelés ne sont plus mis à jour automatiquement par Pegass.'
     minor: 'Mineur(e) (-18 ans)'
     nivol: Nivol
+    optout_until_me: 'Je suis indisponible jusqu''au...'
     phone_number: Téléphone
     phone_number_locked: 'Geler le nᵒ de téléphone *'
     phone_number_optin: 'Disponible par téléphone et SMS'
@@ -554,6 +569,7 @@ manage_volunteers:
     update: 'Mettre à jour un bénévole'
     updated: 'Le bénévole a correctement été modifié.'
     visible_badges: 'Badges principaux'
+    optout_until: 'Bénévole indisponible jusqu''au...'
   others: 'et %count% autre(s)'
   redcall:
     action_structures: 'Structures déclenchables par %name%'
@@ -565,6 +581,7 @@ manage_volunteers:
     only_users: 'Afficher seulement les bénévoles pouvant utiliser RedCall'
   title: 'Gestion des bénévoles'
   title_with_structure: 'Gestion des bénévoles de %name%'
+  can_trigger_button: 'Rôles RedCall'
 management:
   current_structures: 'Vous pouvez actuellement déclencher les structures suivantes :'
   home:

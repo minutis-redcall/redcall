@@ -414,6 +414,20 @@ class VolunteerRepository extends BaseRepository
             ->getArrayResult();
     }
 
+    public function filterOptoutUntil(array $volunteerIds) : array
+    {
+        return $this
+            ->createQueryBuilder('v')
+            ->select('v.id')
+            ->where('v.enabled = true')
+            ->andWhere('v.optoutUntil > :now')
+            ->setParameter('now', new \DateTime())
+            ->andWhere('v.id IN (:volunteer_ids)')
+            ->setParameter('volunteer_ids', $volunteerIds)
+            ->getQuery()
+            ->getArrayResult();
+    }
+
     public function filterPhoneLandline(array $volunteerIds) : array
     {
         return $this

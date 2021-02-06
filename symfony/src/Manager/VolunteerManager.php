@@ -259,6 +259,11 @@ class VolunteerManager
         return array_column($this->volunteerRepository->filterDisabled($volunteerIds), 'id');
     }
 
+    public function filterOptoutUntil(array $volunteerIds) : array
+    {
+        return array_column($this->volunteerRepository->filterOptoutUntil($volunteerIds), 'id');
+    }
+
     public function filterPhoneLandline(array $volunteerIds) : array
     {
         return array_column($this->volunteerRepository->filterPhoneLandline($volunteerIds), 'id');
@@ -329,5 +334,10 @@ class VolunteerManager
         $volunteer->setEmailLocked(false);
 
         $this->save($volunteer);
+    }
+
+    public function reactivateTemporaryOptouts()
+    {
+        $this->volunteerRepository->reactivateTemporaryOptouts();
     }
 }
