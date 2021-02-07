@@ -4,7 +4,7 @@ namespace App\Task;
 
 use App\Communication\Sender;
 use App\Manager\MessageManager;
-use Bundles\GoogleTaskBundle\Api\TaskInterface;
+use Bundles\GoogleTaskBundle\Contracts\TaskInterface;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 
 abstract class AbstractSendMessageTask implements TaskInterface

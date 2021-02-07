@@ -68,8 +68,11 @@ class StatisticsManager
             // TODO Wrong, currencies are mixed
             $totalCost = 0;
             foreach ($costsByDirection as $cost) {
-                $totalCost                                        += abs($cost['cost']);
-                $statistics['costs']['types'][$cost['direction']] = abs($cost['cost']);
+                $totalCost += abs($cost['cost']);
+                if (!isset($statistics['costs']['types'][$cost['direction']])) {
+                    $statistics['costs']['types'][$cost['direction']] = 0;
+                }
+                $statistics['costs']['types'][$cost['direction']] += abs($cost['cost']);
             }
             $statistics['costs']['total']    = $totalCost;
             $statistics['costs']['currency'] = $costsByDirection[0]['currency'];

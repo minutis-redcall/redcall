@@ -1,3 +1,6 @@
+parameters:
+  communication.processor: 'App\Communication\Processor\ExecProcessor'
+
 services:
   App\Provider\SMS\SMSProvider:
     class: 'Bundles\SandboxBundle\Provider\FakeSmsProvider'
@@ -18,3 +21,7 @@ services:
     arguments: [ '@doctrine' ]
     public: true
 
+  App\Provider\Storage\StorageProvider:
+    class: 'Bundles\SandboxBundle\Provider\FakeStorageProvider'
+    arguments: [ '@kernel', '@router' ]
+    public: true

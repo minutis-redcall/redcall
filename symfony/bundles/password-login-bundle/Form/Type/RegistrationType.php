@@ -11,7 +11,6 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\Security\Core\Encoder\BCryptPasswordEncoder;
 use Symfony\Component\Validator\Constraints;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -79,7 +78,7 @@ class RegistrationType extends AbstractType
                     'label'       => 'password_login.register.password',
                     'constraints' => new Constraints\Length([
                         'min' => 8,
-                        'max' => BCryptPasswordEncoder::MAX_PASSWORD_LENGTH,
+                        'max' => 4096,
                     ]),
                 ],
                 'second_options'  => ['label' => 'password_login.register.repeat_password'],

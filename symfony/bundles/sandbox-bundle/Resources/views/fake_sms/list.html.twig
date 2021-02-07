@@ -7,14 +7,16 @@
     <h1>{{ block('title') }}</h1>
 
     <table class="table">
-        {% for row in phoneNumbers if row.volunteer %}
+        {% for row in phoneNumbers %}
+            {% if row.volunteer %}
             <tr>
                 <td>
                     {{ row.volunteer.firstName }} {{ row.volunteer.lastName }}
-                    <a href="{{ path('sandbox_fake_sms_thread', {phoneNumber: row.phoneNumber}) }}">+{{ row.phoneNumber }}</a>
+                    <a href="{{ path('sandbox_fake_sms_thread', {e164: row.phoneNumber}) }}">{{ row.phoneNumber }}</a>
                     <span class="badge badge-primary">{{ row.countMsg }}</span>
                 </td>
             </tr>
+            {% endif %}
         {% endfor %}
     </table>
 

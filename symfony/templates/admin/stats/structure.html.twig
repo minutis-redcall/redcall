@@ -1,0 +1,87 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    <h1>{{ 'admin.statistics.buttons.structure' | trans }}</h1>
+
+    <div id="form-container" class="jumbotron">
+        <h3>{{ 'admin.statistics.structure.form.title'|trans }}</h3>
+        <br/>
+
+        {{ form(form) }}
+    </div>
+
+    {{ include('new_communication/spinner.html.twig') }}
+
+    {% if report %}
+
+        <hr/>
+
+        <table class="table">
+            <thead class="thead-light">
+            <tr>
+                <th>{{ 'admin.statistics.structure.report.id'|trans }}</th>
+                <th>{{ 'admin.statistics.structure.report.name'|trans }}</th>
+                <th>{{ 'admin.statistics.structure.report.campaigns'|trans }}</th>
+                <th>{{ 'admin.statistics.structure.report.type'|trans }}</th>
+                <th>{{ 'admin.statistics.structure.report.communications'|trans }}</th>
+                <th>{{ 'admin.statistics.structure.report.messages'|trans }}</th>
+                <th>{{ 'admin.statistics.structure.report.questions'|trans }}</th>
+                <th>{{ 'admin.statistics.structure.report.answers'|trans }}</th>
+                <th>{{ 'admin.statistics.structure.report.errors'|trans }}</th>
+                <th>{{ 'admin.statistics.structure.report.costs'|trans }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% set counter = 0 %}
+            {% for id, structure in report %}
+                {% set row = 0 %}
+                {% for type, data in structure %}
+                    <tr style="background-color: {{ cycle(['#ffffff', '#eeeeee'], counter) }};">
+                        {% if row == 0 %}
+                            <td style="vertical-align: middle;" rowspan="3">{{ id }}</td>
+                            <td style="vertical-align: middle;" rowspan="3">{{ data.name }}</td>
+                            <td style="vertical-align: middle;" rowspan="3">{{ data.campaigns }}</td>
+                        {% endif %}
+                        <td>{{ ('form.communication.' ~ data.type)|trans }}</td>
+                        <td>{{ data.communications }}</td>
+                        <td>{{ data.messages }}</td>
+                        <td>{{ data.questions }}</td>
+                        <td>
+                            {{ data.answers }}
+                            {% if data.questions %}
+                                ({{ (data.answers * 100 / data.questions)|round(2) }}%)
+                            {% endif %}
+                        </td>
+                        <td>
+                            {{ data.errors }}
+                            {% if data.messages + data.questions %}
+                                ({{ (data.errors * 100 / (data.messages + data.questions))|round(2) }}%)
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% for currency, amount in data.costs %}
+                                <div>{{ (-1 * amount)|round(2) }} {{ currency }}</div>
+                            {% endfor %}
+                        </td>
+                    </tr>
+                    {% set row = row + 1 %}
+                {% endfor %}
+                {% set counter = counter + 1 %}
+            {% endfor %}
+            </tbody>
+
+        </table>
+
+    {% endif %}
+
+    <div class="text-center">
+        <br/><br/>
+
+        <a href="{{ path('admin_stats_home') }}"
+           class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+
+        <br/><br/>
+    </div>
+
+{% endblock %}

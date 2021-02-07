@@ -6,8 +6,8 @@ use App\Base\BaseController;
 use App\Entity\Volunteer;
 use App\Manager\VolunteerManager;
 use Bundles\SandboxBundle\Manager\FakeEmailManager;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * @Route("/fake-email", name="fake_email_")
@@ -52,7 +52,6 @@ class FakeEmailController extends BaseController
 
     /**
      * @Route("/clear/{csrf}", name="clear")
-     * @Template()
      */
     public function clearAction(string $csrf)
     {

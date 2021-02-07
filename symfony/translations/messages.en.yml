@@ -58,28 +58,34 @@ admin:
       priority: 'Rendering priority'
     search: 'Search for a category'
     title: 'Manage badge categories'
-  dashboard:
-    title: Statistics
   home:
     link: Administration
   pegass:
+    add_structure: 'Add a structure'
     bound_volunteer: 'Bound volunteer: %name%'
     create_user: 'Add a new user'
+    delete_structures: 'Delete one or several structures'
     developer: 'Grant developer access'
     developered: Developer
     developered_details: 'A developer can integrate RedCall APIs and access technical features.'
+    edit: 'Open volunteer record'
     list_users: 'List user nivols'
     list_users_explain: 'In order to contact all users, copy/paste this nivol list in a new campaign.'
     lock: Lock
     locked: Frozen
     locked_details: 'Structures of a frozen user are not updated when Pegass is updating its bound volunteer.'
+    only_admins: 'Search among administrators only'
+    only_developers: 'Search among developers only'
+    open: 'Open Pegass entity'
     structures: 'Update structures for %name%'
     title: 'Bindings between RedCall users and volunteer database'
     undeveloper: 'Remove developer access'
     unlock: Unlock
-    add_structure: 'Add a structure'
-    delete_structures: 'Delete one or several structures'
   statistics:
+    buttons:
+      general: 'General statistics'
+      main: Statistics
+      structure: 'Structure reports'
     campaign:
       period: 'In the period, <b>%created%</b> campaigns were open, including <b>%active%</b> that are still active.'
       stats: 'campaigns are still open right now.'
@@ -99,6 +105,23 @@ admin:
       newest_update: 'Newest update'
       oldest_update: 'Oldest update'
       title: 'Pegass updates'
+    structure:
+      form:
+        from: 'From:'
+        min: 'Only count triggers having minimum X messages:'
+        title: 'Choose the period'
+        to: 'To :'
+      report:
+        answers: Ans.
+        campaigns: Trgrs
+        communications: Comms
+        costs: Costs
+        errors: Err.
+        id: '#'
+        messages: Msgs
+        name: Structure
+        questions: Questions
+        type: Type
     volunteers:
       both: '<b>%both_number% (%both_percent%%)</b> who have neither'
       description: 'All data are not filtered by period. These are globals.'
@@ -111,21 +134,73 @@ admin:
     pegass: 'Pegass bindings'
 audience:
   audience: Audience
-  classify:
-    disabled: '%nbr% nivols are bound to disabled volunteers'
-    email_optout: '%nbr% nivols are bound to volunteers that don''t want to receive emails'
-    inaccessible: '%nbr% nivols are bound to volunteers that are not in your perimeter'
-    invalid: '%nbr% nivols do not exist'
-    no_email: '%nbr% nivols are bound to volunteers without any emails'
-    no_phone: '%nbr% nivols are bound to volunteers without any phone number'
-    phone_optout: '%nbr% nivols are bound to volunteers that don''t want to receive calls/SMS'
-    reachable: '%nbr% nivols will be triggered'
-  filter_title: 'Search by structures & skills'
-  nivol_title: 'Copy/paste a list of nivols'
-  see_selection: 'Click to see selection'
-  select_all: 'Select all'
+  audience_help: 'You can select volunteers to trigger by writting them down manually, or by filtering them by structures and skills.'
+  badges: 'Skills & Nominations'
+  classification:
+    audience: 'Render the selected volunteers list'
+    disabled: '<strong>%nbr%</strong> volunteers are disabled'
+    email_missing: '<strong>%nbr%</strong> volunteers do not have an email'
+    email_optout: '<strong>%nbr%</strong> volunteers do not want to receive emails'
+    excluded: '<strong>%nbr%</strong> volunteers have been manually excluded from this trigger'
+    home: 'You may not be able to reach out all your volunteers.'
+    inaccessible: '<strong>%nbr%</strong> volunteers are out of your perimeter'
+    invalid: '<strong>%nbr%</strong> nivols do not exist'
+    optout_until: '<strong>%nbr%</strong> volunteers are temporarily unavailable'
+    phone_landline: '<strong>%nbr%</strong> volunteers only have a landline phone number'
+    phone_missing: '<strong>%nbr%</strong> volunteers do not have a phone number'
+    phone_optout: '<strong>%nbr%</strong> volunteers do not want to receive phone calls/SMS'
+    problems: 'Get more details about problems'
+    reachable: '<strong>%nbr%</strong> volunteers are selected'
+    resolve:
+      button: 'Resolve issues'
+      details:
+        gaia: 'Open in Gaia'
+        info1: 'RedCall can only work if volunteer''s contact information are valid and updated.'
+        info2: 'Warning, even though a volunteer has both a phone number and an email, nothing guarantees that they are valid on the Gaia database.'
+        info3: 'As soon as you can, invite your structure members to check their contact information on Gaia (most importantly their "favorite phone number" and "favorite email") to have better chances of reaching out a maximum of people.'
+        redcall: Open
+      title: 'Volunteer records having issues'
+    selected: 'Liste des bénévoles sélectionnés'
+    title: 'Selection summary'
+  copy_paste: 'Or paste a list of identifiers'
+  copy_paste_details: 'Paste a list of identifiers in the field below.'
+  large_audience:
+    title: '%nbr% selected volunteers'
+  manual_selection: 'Volunteers manual selection'
+  pre_selection:
+    close_standard_form: 'Close classic form'
+    description: 'In a previous communication, you selected <strong>%nbr%</strong> volunteers.'
+    remove_volunteer: 'Use ticks to remove volunteers from the selection.'
+    selected_volunteers: 'Selected volunteers'
+    title: 'Volunteers preselection'
+    use_standard_form: 'Use classic form'
+  problem_details:
+    disabled: 'These volunteers may not belong to the Red Cross anymore.'
+    email_missing: 'These volunteers won''t be able to receive email communications.'
+    email_optout: 'These volunteers do not want to be triggered through emails.'
+    excluded: 'You can include these volunteers back by showing your selection.'
+    inaccessible: 'These volunteers belong to structures you are not allowed to trigger.'
+    invalid: 'These volunteers'' identifiers are not valid or not yet integrated.'
+    optout_until: 'These volunteers do not want to be triggered at the moment.'
+    phone_landline: 'These volunteers can receive voice calls, but cannot receive text messages.'
+    phone_missing: 'These volunteers won''t be able to receive voice calls nor text messages.'
+    phone_optout: 'These volunteers do not want to be triggered through voice call nor text message.'
+  problems:
+    disabled: Disabled
+    email_missing: 'No email'
+    email_optout: 'Emails opted-out'
+    excluded: 'Manually excluded'
+    inaccessible: 'Out of perimeter'
+    invalid: Invalids
+    optout_until: 'Temp. unavailable'
+    phone_landline: 'Only landline'
+    phone_missing: 'No phone'
+    phone_optout: 'Phone opted-out'
+    title: 'Audience problem details'
+  search_for_volunteers: 'Search for volunteers:'
+  search_other_badge: 'Search for another skill:'
+  select_all_badges: 'Trigger all volunteers whatever their skills'
   structures: 'Structure(s) to trigger'
-  unselect_all: 'Unselect all'
 backlinks:
   blablacar: 'Sponsored by'
   minutis: 'Developed by Minutis volunteers'
@@ -143,10 +218,13 @@ base:
     enable: Enable
     more: More...
     open: Open
+    refresh: Refresh
     save: Save
     search: Search
+    submit: Submit
     update: Edit
   clear_selection: 'Clear selection'
+  closed: Fermé
   crud:
     create_title: 'Add a new entry'
     delete_confirm: 'Are you sure you wish to remove "%entity%"?'
@@ -158,6 +236,7 @@ base:
   home: Home
   modal:
     close: Close
+  open: Open
   order_by:
     asc: Ascendant
     desc: Descendant
@@ -186,6 +265,7 @@ campaign:
     classify: Classify
     close: 'Close the campaign'
     continue: Continue
+    expires: 'Auto. closed on'
     open: 'Reopen the campaign'
   cannot_reopen: 'Impossible to reopen the campaign: since it was closed, one or several volunteers were triggered and prefix used for their answers was reused.'
   errors:
@@ -206,10 +286,11 @@ campaign:
     create_full: 'Create a trigger'
     created_by: 'Créé par %name%'
     email: Email
-    implicated_structures: 'Implicated structures list'
+    implicated_structures: 'Implicated structures'
     list_admin: 'List all triggers'
     list_full: 'List triggers'
     new: 'Create a "%type%" trigger'
+    report: 'View report'
     sms: SMS
     volunteers: volunteer(s)
   types:
@@ -219,16 +300,22 @@ campaign:
     4_red: Engagement
 campaign_status:
   answer: Responses
+  answer_history: 'Replies history'
   answer_invalid: 'Other rep.'
   answer_no: 'Answer %choice%'
   answers:
+    answer_link: Answer
     change: 'Change answers'
     history: History
     label: 'Response "%label%"'
     labels: 'Responses %label%'
+    new: 'Send a new SMS'
+    new_message: 'A new message has been received.'
     prefix: 'Response prefix: %prefix%'
     unclear: Unclear
   by: 'Sent by %name% (%structure%)'
+  by_admin: 'Team Minutis'
+  by_no_structures: 'Sent by %name%'
   communication_short_title: '%date% at %time%'
   communication_tabs: Communications
   communication_title: 'Communication from %date% at %time%'
@@ -240,6 +327,7 @@ campaign_status:
     or: or/and
     title: Filter
   finish: 'Sent all %sent% %type% (%replies% answers received, %replies_pct%%)'
+  free_answer: 'Send a reply'
   legend:
     sms_received: '"SMS received" indicates wether message has been received by the volunteer. If blank, volunteer may have turned off his phone number.'
     sms_sent: '"SMS sent" indicates whether message has been sent to the volunteer. May be blank if there is a technical issue.'
@@ -262,7 +350,11 @@ campaign_status:
     no_email: 'No email'
     no_email_optin: 'Do not want to be triggered through email.'
     no_phone: 'No phone number'
+    no_phone_mobile: 'No mobile phone number.'
     no_phone_optin: 'Do not want to be triggered through phone.'
+    optout_until: 'Temporarily unavailable.'
+    country_no_sms: 'SMS not supported by RedCall for this phone number.'
+    country_no_call: 'Voice calls not supported for this phone number.'
 csv_export:
   answer_time: 'Answered at'
   choice: 'Choice "%choice%"'
@@ -322,6 +414,14 @@ form:
     toggle:
       by_filters: 'Back to filters selection'
       by_nivol: 'Fill by nivols'
+    too_long:
+      explaination_1: 'Long messages have less chances to reach out their target.'
+      explaination_2: 'Prefer writting short messages, like:'
+      explaination_3: 'Urgent. Fire on Catalan district, need some hands out there.'
+      explaination_4: 'Need help to clean up medical equipment, newbies welcome to discover it!'
+      explaination_5: 'Ambulances required next Sunday during protests in case of troubles.'
+      explaination_6: 'SMS are divided in 160 characters segments, and more there are segments, less there are chances that message reach out its destination. Let''s send small messages in order to secure their delivery to everyone.'
+      title: 'Your message length is long'
 geolocation:
   error: 'An error occured.'
   error_permission: 'You (or a setting in your device) refused to share your location.'
@@ -348,20 +448,6 @@ import_report:
   no_phone: 'Volunteer has no phone number.'
   removed: 'Volunteer has been anonymized.'
   update_locked: 'Cannot update a locked volunteer.'
-issues:
-  details:
-    info1: 'RedCall can only work if volunteer''s contact information are valid and updated.'
-    info2: 'This page only show you volunteers that do not have an email or a phone number so you can fill them up.'
-    info3: 'Warning, even though a volunteer has both a phone number and an email, nothing guarantees that they are valid on the Gaia database.'
-    info4: 'As soon as you can, invite your structure members to check their contact information on Gaia (most importantly their "favorite phone number" and "favorite email") to have better chances of reaching out a maximum of people.'
-    open: 'open in Gaia'
-    title: 'Missing phone numbers & emails'
-  emails: '- %nbr% do not have an email'
-  list: 'See the list of issues'
-  missing_email: 'No email'
-  missing_phone: 'No phone number'
-  not_reachable: 'Some volunteers from your action structures are not reachable:'
-  phones: '- %nbr% do not have a phone number'
 label:
   and: and
   from: From
@@ -407,6 +493,7 @@ manage_structures:
       title: 'Edition of prefilled answers'
     list_title: 'List of prefilled answers'
   president: 'President: %president%'
+  redcall_users: 'List of people that can trigger %name%'
   search:
     button: Search
     label: 'Search structure'
@@ -456,6 +543,7 @@ manage_volunteers:
     message: 'Please review the message causing the data deletion.'
     title: 'Data deletion for %name%'
     volunteer_asked_for_it: 'This volunteer asked you to remove his personal data?'
+  can_trigger: 'Structures %name% can trigger'
   columns:
     never_updated: 'Skills never imported'
     update: 'Updated on %date%'
@@ -469,10 +557,12 @@ manage_volunteers:
     email_optin: 'Available by email'
     enabled: Callable
     first_name: 'First name'
+    invisible_badges: 'Other badges'
     last_name: 'Last name'
     lock_info: '* Locked phones and emails are not automatically refreshed by Pegass updates.'
     minor: 'Minor (under 18)'
     nivol: Nivol
+    optout_until_me: 'Volunteer not available until...'
     phone_number: 'Phone number'
     phone_number_locked: 'Locked phone number *'
     phone_number_optin: 'Available by phone number'
@@ -480,6 +570,8 @@ manage_volunteers:
     tags: Skills
     update: 'Update volunteer'
     updated: 'Volunteer has properly been updated.'
+    visible_badges: 'Main badges'
+    optout_until: 'Volunteer not available until...'
   others: 'and %count% other(s)'
   redcall:
     action_structures: 'Structures that %name% can trigger'
@@ -491,6 +583,7 @@ manage_volunteers:
     only_users: 'Only show volunteers having RedCall access'
   title: 'Manage volunteers'
   title_with_structure: 'Manage volunteers from %name%'
+  can_trigger_button: 'RedCall roles'
 management:
   current_structures: 'You are currently able to trigger the following structures:'
   home:
@@ -508,8 +601,12 @@ message:
   email:
     announcement: '%brand% on %year%-%month%-%day% at %hours%h%mins%:'
     answer_here: 'Click on the following buttons to answer.'
+    how_to_answer_free: 'You can give a free answer by reaching out <a href="%url%">here</a>.'
     how_to_answer_multiple: 'To give your answer(s), please click on the following link: %url%'
     how_to_answer_simple: 'To give your answer, please click on the following link: %url%'
+    in_app_long_answer: 'If you wish, you can directly answer "%choice%" to this message.'
+    in_app_short_answer: 'Answer "%choice%"'
+    open_in_redcall: 'Open in RedCall'
     possible_answers: 'Possible response(s):'
     type: email(s)
   sms:
@@ -518,6 +615,7 @@ message:
     how_to_answer_multiple: 'Reply by giving your choice(s) code(s), separated by a space.'
     how_to_answer_simple: 'Reply by giving your choice code.'
     how_to_answer_url: 'Answer by following %url% or by calling %number%'
+    how_to_answer_url_only: 'Answer by following %url%'
     type: message(s)
 minutis:
   back: 'Go back to Minutis'
@@ -548,7 +646,6 @@ pdf_export:
 phone_card:
   add: 'Add a phone number'
   error_invalid: 'This phone number format is invalid.'
-  error_not_mobile: 'You can only set mobile phone numbers.'
   error_taken: 'This phone number is already taken by %truncated_name% (%nivol%).'
   main: Main
   title: 'Phone #%index%'
@@ -559,6 +656,18 @@ prefilled_answers:
     colors: 'Campaign colors for which this group is selectable'
     label: 'Name of the responses group'
   title: 'Manage pre-filled answers'
+report:
+  campaign:
+    communication:
+      with_title: 'Communication #%nbr% "%title%" on day%/%month%/%year% at %hours%h%mins%'
+      without_title: 'Communication #%nbr% on %day%/%month%/%year% at %hours%h%mins%'
+    headers:
+      answers: Answers
+      errors: Errors
+      messages: Messages
+      prices: Costs
+      structure: Structure
+    title: 'Implicated structures'
 space:
   consult_data:
     announcement_email: '📧 Message sent by email on %day%/%month%/%year% at %hours%h%mins%'
@@ -632,6 +741,12 @@ space:
     no_tracking: 'There are no trackers on this website.'
     not_callable: 'not available'
     toggle_callable: 'Change my trigger preferences (I am currently'
+    triggers:
+      call: 'voice call'
+      email: email
+      sms: SMS
+      subject: 'Message sent by %type% on %date% at %time%'
+      title: 'Recent messages'
     update_email: 'Update my email, currently:'
     update_phone: 'Update my phone number, currently:'
     user_details: 'When a volunteer connects to RedCall without that access, he lands by default to this page, which allows him to update his contact preferences and manage his personal data. Do not hesitate to invite volunteers in your structures to check that those information are correct.'
@@ -654,10 +769,11 @@ space:
   logout: 'Sign out'
   phone:
     details_1: 'You may be contacted by your local unit through SMS or voice calls in case of emergency.'
-    details_2: 'All messages and calls are coming from the following number(s): %from%'
     details_3: 'You can already add it to your contacts, and assign it a recognizable ringtone.'
     details_4: 'When you receive a message and an answer is required, directly answer to the message by giving, if possible, only the codes that match your choice.'
     details_5: 'Example: if you''re asked "Are you available?" and possible answers are "A1: Yes" and "A2: No", answer using A1 or A2, this will help processing your message automatically, and ease trigger responsible''s job.'
+    details_6: 'All messages are coming from the following number:'
+    details_7: 'All calls are coming from the following number:'
     title: 'Edit my phone number'
 special_answers:
   stop: 'You have successfully unsubscribed to RedCall messages. Manage your preferences at https://rcl.re using your Pegass credentials and clicking the small RedCall icon at the top left.'
@@ -666,36 +782,6 @@ structure:
   form:
     name: 'Structure name'
     parent: 'Optional parent structure'
-tag:
-  cem: 'Roam Leader'
-  ci: 'Inter. chief'
-  dlas: DLAS
-  dlus: DLUS
-  drvr_vl: 'VL driver'
-  drvr_vpsp: 'VPSP driver'
-  emergency_assistance: 'Emergency Help'
-  mar: Roamer
-  psc_1: 'PSC 1'
-  pse_1: 'PSE 1'
-  pse_2: 'PSE 2'
-  shortcuts:
-    cem: CE
-    ci: CI
-    dlas: DLAS
-    dlus: DLUS
-    drvr_vl: VL
-    drvr_vpsp: VPSP
-    emergency_assistance: US
-    mar: ROAM
-    psc_1: PSC1
-    pse_1: PSE1
-    pse_2: PSE2
-    social_assistance: AS
-    tcau: TCAU
-    tceo: TCEO
-  social_assistance: 'Social Assistance'
-  tcau: TCAU
-  tceo: TCEO
 title:
   campaigns: Campaigns
   costs: Costs

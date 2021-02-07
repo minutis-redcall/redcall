@@ -1,0 +1,27 @@
+{% if classification.problems %}
+    <div class="text-left card">
+
+        <div class="card-body">
+            <div class="h4">
+                ⚠️
+                {{ 'audience.classification.home'|trans }}
+            </div>
+
+            {% for key, list in classification.toArray %}
+                {% if key != 'reachable' and list %}
+                    <p>
+                        {{ ('audience.classification.' ~ (key|snake))|trans({'%nbr%': list|length})|raw }}
+                    </p>
+                {% endif %}
+            {% endfor %}
+
+            <br/>
+
+            <a href="{{ path('audience_resolve') }}" class="btn btn-sm btn-secondary">
+                {{ 'audience.classification.resolve.button'|trans }}
+            </a>
+        </div>
+
+    </div>
+
+{% endif %}

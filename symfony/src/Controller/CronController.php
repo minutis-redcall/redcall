@@ -17,13 +17,15 @@ use Symfony\Component\Routing\Annotation\Route;
  */
 class CronController extends AbstractController
 {
-    const CRONS = [
+    private const CRONS = [
         'user:cron',
         'pegass',
         'twilio:price',
-        'campaign:expired',
-        'media:clear',
-        'space:clear',
+        'clear:campaign',
+        'clear:media',
+        'clear:space',
+        'clear:expirable',
+        'report:communication',
     ];
 
     /**

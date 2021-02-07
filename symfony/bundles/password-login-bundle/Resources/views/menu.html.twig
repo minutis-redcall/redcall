@@ -2,9 +2,10 @@
 
     <div class="text-center">
 
-        {{ 'password_login.connect.who_am_i'|trans({'%username%': app.user.username}) }}
-
-        <br/>
+        {% if display_user is not defined or display_user %}
+            {{ 'password_login.connect.who_am_i'|trans({'%username%': app.user.username}) }}
+            <br/>
+        {% endif %}
 
         {% if is_granted('ROLE_ADMIN') %}
 

@@ -5,7 +5,7 @@ namespace App\Repository;
 use App\Base\BaseRepository;
 use App\Entity\Communication;
 use App\Entity\GeoLocation;
-use Doctrine\Bundle\DoctrineBundle\Registry;
+use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @method GeoLocation|null find($id, $lockMode = null, $lockVersion = null)
@@ -15,7 +15,7 @@ use Doctrine\Bundle\DoctrineBundle\Registry;
  */
 class GeoLocationRepository extends BaseRepository
 {
-    public function __construct(Registry $registry)
+    public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, GeoLocation::class);
     }
@@ -31,11 +31,11 @@ class GeoLocationRepository extends BaseRepository
                                 ->orderBy('g.datetime', 'DESC')
                                 ->setMaxResults(1)
                                 ->getQuery()
-                                ->useResultCache(false)
+                                ->disableResultCache()
                                 ->getOneOrNullResult();
 
         if ($lastGeolocation) {
-            $this->_em->detach($lastGeolocation);
+            $this->_em->clear();
 
             return $lastGeolocation->getDatetime()->getTimestamp();
         }

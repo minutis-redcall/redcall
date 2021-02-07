@@ -2,67 +2,87 @@
 
 {% block content %}
 
-    {% block title %}
-        {% if communication.label %}
-            {{ communication.label }}
-        {% else %}
-            {{ 'campaign_status.communication_short_title'|trans({'%date%': communication.createdAt|date('d/m/Y'), '%time%': communication.createdAt|date('H:i')}) }}
-        {% endif %}
-    {% endblock %}
-
     <style>
         p {
             color: black;
         }
     </style>
-    <div>{{ message.communication.body|purify }}</div>
 
-    <hr/><br/>
-
-    {% for choice in message.communication.choices %}
-
-        {% if not message.answerByChoice(choice) %}
-
-            {# Volunteer is able to answer #}
-
-            <div class="h3 text-center">
-
-                <a class="respond btn btn-primary"
-                   style="width: 100%;white-space: normal;"
-                   href="{{ path('message_action', {code: message.code, action: choice.code, signature: message.signature }) }}">
-                    <span class="h4">{{ choice.label }}</span>
-                </a>
-
+    <div class="card">
+        <div class="card-header">
+            <div class="card-title">
+                {{ 'campaign_status.communication_short_title'|trans({'%date%': communication.createdAt|date('d/m/Y'), '%time%': communication.createdAt|date('H:i')}) }}
+                {% if communication.subject %}
+                    <div class="h3">
+                        {{ communication.subject }}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="card-body">
+            <div id="content">
+                {{ message.communication|format_email }}
             </div>
 
-        {% else %}
+            <hr/>
 
-            {# Volunteer already answered, he can cancel though #}
-
-            <table style="width: 100%;">
-                <tr>
-                    <td style="width: 80%;" align="center" valign="middle" class="bg-danger">
-                        <div class="text-white">
-                            <span class="h4">{{ choice.label }}</span>
-                            <br/>
-                            <span class="font-italic">{{ message.answerByChoice(choice).receivedAt|date('d/m/Y H:i:s') }}</span>
+            <div id="choices">
+                {% for choice in message.communication.choices %}
+                    {% if not message.answerByChoice(choice) %}
+                        {# Volunteer is able to answer #}
+                        <div class="h3 text-center">
+                            <a class="respond btn btn-primary"
+                               style="width: 100%;white-space: normal;"
+                               href="{{ path('message_action', {code: message.code, action: choice.code, signature: message.signature }) }}">
+                                <span class="h4">{{ choice.label }}</span>
+                            </a>
                         </div>
-                    </td>
-                    <td style="width: 20%;" align="center" valign="middle">
-                        <a class="respond btn btn-light"
-                           style="width: 100%;"
-                           href="{{ path('message_cancel', {code: message.code, action: choice.code, signature: message.signature }) }}">
-                            <span class="h4">❌</span>
-                        </a>
-                    </td>
-                </tr>
-            </table>
-
-        {% endif %}
-
-        <br/>
-
-    {% endfor %}
+                    {% else %}
+                        {# Volunteer already answered, he can cancel though #}
+                        <table style="width: 100%;">
+                            <tr>
+                                <td style="width: 80%;" align="center" valign="middle" class="bg-success">
+                                    <div class="text-white">
+                                        <span class="h4">{{ choice.label }}</span>
+                                        <br/>
+                                        <span class="font-italic">{{ message.answerByChoice(choice).receivedAt|date('d/m/Y H:i:s') }}</span>
+                                    </div>
+                                </td>
+                                <td style="width: 20%;" align="center" valign="middle">
+                                    <a class="respond btn btn-light"
+                                       style="width: 100%;"
+                                       href="{{ path('message_cancel', {code: message.code, action: choice.code, signature: message.signature }) }}">
+                                        <span class="h4">❌</span>
+                                    </a>
+                                </td>
+                            </tr>
+                        </table>
+                    {% endif %}
+                    <br/>
+                {% endfor %}
+                {% if message.communication.choices|length %}
+                    <hr/>
+                {% endif %}
+            </div>
+            <div id="free-answer">
+                {{ form(form) }}
+            </div>
+            <div id="answers-history">
+                {% if message.answers|length %}
+                    <hr/>
+                    <h4>{{ 'campaign_status.answer_history'|trans }}</h4>
+                    <table class="table table-striped">
+                        {% for answer in message.answers %}
+                            <tr>
+                                <td>{{ answer.receivedAt|date('d/m/Y H:i') }}</td>
+                                <td>{{ answer.raw }}</td>
+                            </tr>
+                        {% endfor %}
+                    </table>
+                {% endif %}
+            </div>
+        </div>
+    </div>
 
     <script type="text/javascript">
 

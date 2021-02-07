@@ -4,6 +4,7 @@ namespace App\Controller\Admin;
 
 use App\Base\BaseController;
 use App\Manager\AnswerManager;
+use Bundles\PaginationBundle\Manager\PaginationManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -17,13 +18,19 @@ use Symfony\Component\Routing\Annotation\Route;
 class AnswerAnalysisController extends BaseController
 {
     /**
+     * @var PaginationManager
+     */
+    private $paginationManager;
+
+    /**
      * @var AnswerManager
      */
     private $answerManager;
 
-    public function __construct(AnswerManager $answerManager)
+    public function __construct(PaginationManager $paginationManager, AnswerManager $answerManager)
     {
-        $this->answerManager = $answerManager;
+        $this->paginationManager = $paginationManager;
+        $this->answerManager     = $answerManager;
     }
 
     /**
@@ -43,7 +50,7 @@ class AnswerAnalysisController extends BaseController
 
         return [
             'form'  => $form->createView(),
-            'pager' => $queryBuilder ? $this->getPager($queryBuilder) : null,
+            'pager' => $queryBuilder ? $this->paginationManager->getPager($queryBuilder) : null,
         ];
     }
 

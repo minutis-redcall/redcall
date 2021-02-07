@@ -4,7 +4,7 @@ namespace Bundles\SettingsBundle\Twig\Extension;
 
 use Bundles\SettingsBundle\Manager\SettingManager;
 use Twig\Extension\AbstractExtension;
-use Twig_SimpleFunction;
+use Twig\TwigFunction;
 
 class SettingExtension extends AbstractExtension
 {
@@ -29,7 +29,7 @@ class SettingExtension extends AbstractExtension
     public function getFunctions()
     {
         return [
-            new Twig_SimpleFunction('setting', [$this, 'setting']),
+            new TwigFunction('setting', [$this, 'setting']),
         ];
     }
 
@@ -39,7 +39,7 @@ class SettingExtension extends AbstractExtension
      *
      * @return string|null
      */
-    public function setting(string $property, ?string $default = null): ?string
+    public function setting(string $property, ?string $default = null) : ?string
     {
         if (isset($this->settings[$property])) {
             return $this->settings[$property];

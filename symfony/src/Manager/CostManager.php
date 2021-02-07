@@ -32,12 +32,6 @@ class CostManager
      */
     private $twilioCallManager;
 
-    /**
-     * @param CostRepository       $costRepository
-     * @param MessageManager       $messageManager
-     * @param TwilioMessageManager $twilioMessageManager
-     * @param TwilioCallManager    $twilioCallManager
-     */
     public function __construct(CostRepository $costRepository,
         MessageManager $messageManager,
         TwilioMessageManager $twilioMessageManager,

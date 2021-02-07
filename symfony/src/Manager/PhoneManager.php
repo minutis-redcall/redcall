@@ -26,4 +26,9 @@ class PhoneManager
     {
         $this->phoneRepository->save($phone);
     }
+
+    public function remove(Phone $phone)
+    {
+        $this->phoneRepository->remove($phone);
+    }
 }

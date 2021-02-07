@@ -4,42 +4,12 @@ namespace App\Controller;
 
 use App\Entity\Volunteer;
 use App\Manager\LocaleManager;
-use App\Manager\VolunteerManager;
 use App\Manager\VolunteerSessionManager;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 
-class HomeController extends Controller
+class HomeController extends AbstractController
 {
-    /**
-     * @var LocaleManager
-     */
-    private $locale;
-
-    /**
-     * @var VolunteerManager
-     */
-    private $volunteerManager;
-
-    /**
-     * @var VolunteerSessionManager
-     */
-    private $volunteerSessionManager;
-
-    /**
-     * @param LocaleManager           $locale
-     * @param VolunteerManager        $volunteerManager
-     * @param VolunteerSessionManager $volunteerSessionManager
-     */
-    public function __construct(LocaleManager $locale,
-        VolunteerManager $volunteerManager,
-        VolunteerSessionManager $volunteerSessionManager)
-    {
-        $this->locale                  = $locale;
-        $this->volunteerManager        = $volunteerManager;
-        $this->volunteerSessionManager = $volunteerSessionManager;
-    }
-
     /**
      * @Route(name="home")
      */
@@ -49,17 +19,15 @@ class HomeController extends Controller
             return $this->redirectToRoute('password_login_not_trusted');
         }
 
-        return $this->render('home.html.twig', [
-            'issues' => $this->volunteerManager->findIssues(),
-        ]);
+        return $this->render('home.html.twig');
     }
 
     /**
      * @Route("/locale/{locale}", name="locale")
      */
-    public function locale(string $locale)
+    public function locale(LocaleManager $localeManager, string $locale)
     {
-        $this->locale->save($locale);
+        $localeManager->save($locale);
 
         return $this->redirectToRoute('home');
     }
@@ -75,7 +43,7 @@ class HomeController extends Controller
     /**
      * @Route("/go-to-space", name="go_to_space")
      */
-    public function space()
+    public function space(VolunteerSessionManager $volunteerSessionManager)
     {
         /** @var Volunteer|null $volunteer */
         $volunteer = $this->getUser()->getVolunteer();
@@ -84,7 +52,7 @@ class HomeController extends Controller
         }
 
         return $this->redirectToRoute('space_home', [
-            'sessionId' => $this->volunteerSessionManager->createSession($volunteer),
+            'sessionId' => $volunteerSessionManager->createSession($volunteer),
         ]);
     }
 }

@@ -4,7 +4,7 @@ namespace Bundles\PasswordLoginBundle\Repository;
 
 use Bundles\PasswordLoginBundle\Base\BaseRepository;
 use Bundles\PasswordLoginBundle\Entity\EmailVerification;
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ManagerRegistry;
 use Ramsey\Uuid\Uuid;
 
 class EmailVerificationRepository extends BaseRepository
@@ -14,7 +14,7 @@ class EmailVerificationRepository extends BaseRepository
         parent::__construct($registry, EmailVerification::class);
     }
 
-    public function getExpiredUsernames(): array
+    public function getExpiredUsernames() : array
     {
         return array_map(function (EmailVerification $ev) {
             return $ev->getUsername();
@@ -27,7 +27,7 @@ class EmailVerificationRepository extends BaseRepository
         );
     }
 
-    public function clearExpired(): void
+    public function clearExpired() : void
     {
         $this->_em->createQuery('
             DELETE Bundles\PasswordLoginBundle\Entity\EmailVerification ev
@@ -58,14 +58,14 @@ class EmailVerificationRepository extends BaseRepository
         return $uuid;
     }
 
-    public function getByToken(string $token)
+    public function getByToken(string $token) : ?EmailVerification
     {
         if (!$emailVerification = $this->findOneByUuid($token)) {
-            return;
+            return null;
         }
 
         if ($token !== $emailVerification->getUuid() || $emailVerification->hasExpired()) {
-            return;
+            return null;
         }
 
         return $emailVerification;

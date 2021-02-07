@@ -4,7 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Media;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @method Media|null find($id, $lockMode = null, $lockVersion = null)
@@ -22,7 +22,7 @@ class MediaRepository extends ServiceEntityRepository
     public function save(Media $media)
     {
         $this->_em->persist($media);
-        $this->_em->flush($media);
+        $this->_em->flush();
     }
 
     public function clearExpired()

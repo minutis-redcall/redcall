@@ -9,9 +9,19 @@
     <div class="jumbotron text-center">
 
         <h1>{{ status_code }}</h1>
-        <h2>{{ status_text }}</h2>
 
-        <br/><br/>
+        <div style="margin-top:-40px;">
+            <h2>{{ status_text }}</h2>
+        </div>
+
+        <div style="margin-top:-40px;">
+            <div class="text-center">
+                <img src="{{ asset('build/images/statusdogs/' ~ status_code ~ '.jpg') }}"
+                     alt="{{ status_code }} - {{ status_text }}"
+                     style="-webkit-clip-path: inset(55px 55px 120px 55px);clip-path: inset(55px 55px 120px 55px);"
+                     class="img-fluid"/>
+            </div>
+        </div>
 
         <a href="{{ path('home') }}"
            class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>

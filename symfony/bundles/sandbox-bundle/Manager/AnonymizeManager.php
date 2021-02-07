@@ -74,7 +74,7 @@ class AnonymizeManager
             $this->settingManager->set(Settings::SANDBOX_LAST_ANONYMIZE, time());
 
             // Executing asynchronous task to prevent against interruptions
-            $console = sprintf('%s/../bin/console', $this->kernel->getRootDir());
+            $console = sprintf('%s/bin/console', $this->kernel->getProjectDir());
             $command = sprintf('%s anonymize', escapeshellarg($console));
             exec(sprintf('%s > /dev/null 2>&1 & echo -n \$!', $command));
         }
@@ -102,11 +102,18 @@ class AnonymizeManager
         $volunteer->setFirstName($this->generateFirstname());
         $volunteer->setLastName($this->generateLastname());
 
-        $phone = new Phone();
-        $phone->setE164($this->generatePhoneNumber());
-        $volunteer->addPhone($phone);
-
         $volunteer->setEmail($this->generateEmail($volunteer->getFirstName(), $volunteer->getLastName()));
+
+        if (!$volunteer->getId()) {
+            $this->volunteerManager->save($volunteer);
+        }
+
+        $phone = new Phone();
+        $phone->setVolunteer($volunteer);
+        $phone->setE164($this->generatePhoneNumber());
+        $phone->setMobile(true);
+        $phone->setPreferred(true);
+        $volunteer->getPhones()->add($phone);
 
         $this->volunteerManager->save($volunteer);
     }

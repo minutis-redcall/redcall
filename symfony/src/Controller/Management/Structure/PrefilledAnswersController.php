@@ -7,6 +7,7 @@ use App\Entity\PrefilledAnswers;
 use App\Entity\Structure;
 use App\Form\Type\PrefilledAnswersType;
 use App\Manager\PrefilledAnswersManager;
+use Bundles\PaginationBundle\Manager\PaginationManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -21,12 +22,18 @@ use Symfony\Component\Routing\Annotation\Route;
 class PrefilledAnswersController extends BaseController
 {
     /**
+     * @var PaginationManager
+     */
+    private $paginationManager;
+
+    /**
      * @var PrefilledAnswersManager
      */
     private $prefilledAnswersManager;
 
-    public function __construct(PrefilledAnswersManager $prefilledAnswersManager)
+    public function __construct(PaginationManager $paginationManager, PrefilledAnswersManager $prefilledAnswersManager)
     {
+        $this->paginationManager       = $paginationManager;
         $this->prefilledAnswersManager = $prefilledAnswersManager;
     }
 
@@ -42,7 +49,7 @@ class PrefilledAnswersController extends BaseController
     {
         $prefilledAnswers = $this->prefilledAnswersManager->getPrefilledAnswersByStructure($structure);
 
-        return ['pager' => $this->getPager($prefilledAnswers), 'structure' => $structure];
+        return ['pager' => $this->paginationManager->getPager($prefilledAnswers), 'structure' => $structure];
     }
 
     /**

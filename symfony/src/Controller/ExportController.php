@@ -6,15 +6,16 @@ use App\Base\BaseController;
 use App\Component\HttpFoundation\ArrayToCsvResponse;
 use App\Component\HttpFoundation\MpdfResponse;
 use App\Entity\Answer;
+use App\Entity\Badge;
 use App\Entity\Choice;
 use App\Entity\Communication;
 use App\Entity\Message;
-use App\Entity\Tag;
 use App\Entity\Volunteer;
 use DateTime;
 use Mpdf\Mpdf;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * @Route(name="export_", path="export/")
@@ -22,7 +23,17 @@ use Symfony\Component\Routing\Annotation\Route;
 class ExportController extends BaseController
 {
     /**
-     * @Route(path="{id}/csv", name="csv", requirements={"id" = "\d+"})
+     * @var TranslatorInterface
+     */
+    private $translator;
+
+    public function __construct(TranslatorInterface $translator)
+    {
+        $this->translator = $translator;
+    }
+
+    /**
+     * @Route(path="{id}/csv", name="csv", requirements={"id" = "\d+"}, methods={"POST"})
      */
     public function csvAction(Request $request, Communication $communication)
     {
@@ -48,9 +59,9 @@ class ExportController extends BaseController
             /* @var Volunteer $volunteer */
             $volunteer = $message->getVolunteer();
 
-            $tags = implode(', ', array_map(function (Tag $tag) {
-                return $this->trans(sprintf('tag.shortcuts.%s', $tag->getLabel()));
-            }, $volunteer->getTags()->toArray()));
+            $tags = implode(', ', array_map(function (Badge $badge) {
+                return $badge->getName();
+            }, $volunteer->getVisibleBadges()));
 
             $row = [
                 $this->trans('csv_export.nivol')        => $volunteer->getNivol(),
@@ -151,7 +162,7 @@ class ExportController extends BaseController
                 /* @var Volunteer $volunteerB */
                 $volunteerB = $rowB['volunteer'];
 
-                return -1 * ($volunteerA->getTagPriority() <=> $volunteerB->getTagPriority());
+                return ($volunteerA->getBadgePriority() <=> $volunteerB->getBadgePriority());
             });
         }
 
@@ -195,5 +206,10 @@ class ExportController extends BaseController
         }
 
         return $selection;
+    }
+
+    private function trans($property, array $parameters = [])
+    {
+        return $this->translator->trans($property, $parameters);
     }
 }

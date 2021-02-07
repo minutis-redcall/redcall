@@ -4,15 +4,18 @@ namespace App\Entity;
 
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\CampaignRepository")
+ * @ORM\Table(indexes={
+ *     @ORM\Index(name="expires_atx", columns={"expires_at"})
+ * })
  */
 class Campaign
 {
-    /**
-     * Campaign types
-     */
+    const DEFAULT_EXPIRATION = 7 * 86400;
+
     // TODO use a MyCLabs\Enum (Color)
     const TYPE_GREEN        = '1_green';
     const TYPE_LIGHT_ORANGE = '2_light_orange';
@@ -97,9 +100,9 @@ class Campaign
     private $volunteer;
 
     /**
-     * @var array
+     * @ORM\Column(type="datetime")
      */
-    private $structures;
+    private $expiresAt;
 
     public function getId()
     {
@@ -187,13 +190,18 @@ class Campaign
 
     public function addCommunication(Communication $communication)
     {
+        // Campaign expires after minimum 7 days when creating a new communication
+        if ($this->expiresAt->getTimestamp() < time() + self::DEFAULT_EXPIRATION) {
+            $this->expiresAt = (new \DateTime())->setTimestamp(time() + self::DEFAULT_EXPIRATION);
+        }
+
         $this->communications[] = $communication;
         $communication->setCampaign($this);
 
         return $this;
     }
 
-    public function getCampaignStatus() : array
+    public function getCampaignStatus(TranslatorInterface $translator) : array
     {
         $data = [
             'notes'          => [
@@ -223,19 +231,24 @@ class Campaign
                     }
                 }
 
+                /** @var Answer $unclearAnswer */
                 $unclearAnswer = $message->getUnclear();
+                /** @var Answer $invalidAnswer */
                 $invalidAnswer = $message->getInvalidAnswer();
 
+                $data['communications'][$communication->getId()]['type']                   = $communication->getType();
                 $data['communications'][$communication->getId()]['msg'][$message->getId()] = [
                     'sent'               => $message->isSent(),
-                    'error'              => $message->getError(),
+                    'error'              => $translator->trans($message->getError()),
                     'has-answer'         => $message->getAnswers()->count(),
                     'choices'            => $choices,
                     'has-invalid-answer' => [
+                        'face' => $invalidAnswer ? $invalidAnswer->getFace() : null,
                         'raw'  => $invalidAnswer ? $invalidAnswer->getSafeRaw() : null,
                         'time' => $invalidAnswer ? $invalidAnswer->getReceivedAt()->format('H:i') : null,
                     ],
                     'has-unclear-answer' => [
+                        'face' => $unclearAnswer ? $unclearAnswer->getFace() : null,
                         'raw'  => $unclearAnswer ? $unclearAnswer->getSafeRaw() : null,
                         'time' => $unclearAnswer ? $unclearAnswer->getReceivedAt()->format('H:i') : null,
                     ],
@@ -326,5 +339,29 @@ class Campaign
         $this->volunteer = $volunteer;
 
         return $this;
+    }
+
+    public function getExpiresAt() : ?\DateTimeInterface
+    {
+        return $this->expiresAt;
+    }
+
+    public function setExpiresAt(\DateTimeInterface $expiresAt) : self
+    {
+        $this->expiresAt = $expiresAt;
+
+        return $this;
+    }
+
+    public function isReportReady() : bool
+    {
+        foreach ($this->communications as $communication) {
+            /** @var Communication $communication */
+            if (!$communication->getReport()) {
+                return false;
+            }
+        }
+
+        return true;
     }
 }

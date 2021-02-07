@@ -21,10 +21,7 @@ class FakeSmsRepository extends ServiceEntityRepository
         parent::__construct($registry, FakeSms::class);
     }
 
-    /**
-     * @return array
-     */
-    public function findAllPhones(): array
+    public function findAllPhones() : array
     {
         return $this->createQueryBuilder('s')
                     ->select('
@@ -33,13 +30,12 @@ class FakeSmsRepository extends ServiceEntityRepository
                         COUNT(s.phoneNumber) as countMsg
                     ')
                     ->groupBy('s.phoneNumber')
-                    ->orderBy('s.id', 'DESC')
                     ->getQuery()
                     ->getArrayResult();
 
     }
 
-    public function findMessagesForPhoneNumber(string $phoneNumber): array
+    public function findMessagesForPhoneNumber(string $phoneNumber) : array
     {
         return $this->createQueryBuilder('s')
                     ->where('s.phoneNumber = :phoneNumber')
@@ -59,10 +55,10 @@ class FakeSmsRepository extends ServiceEntityRepository
         $fakeSms->setCreatedAt(new DateTime());
 
         $this->_em->persist($fakeSms);
-        $this->_em->flush($fakeSms);
+        $this->_em->flush();
     }
 
-    public function findMessagesHavingIdGreaterThan(string $phoneNumber, ?string $lastMessageId): array
+    public function findMessagesHavingIdGreaterThan(string $phoneNumber, ?string $lastMessageId) : array
     {
         $builder = $this->createQueryBuilder('s')
                         ->where('s.phoneNumber = :phoneNumber')

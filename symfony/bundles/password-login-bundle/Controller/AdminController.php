@@ -2,7 +2,6 @@
 
 namespace Bundles\PasswordLoginBundle\Controller;
 
-use Bundles\PasswordLoginBundle\Base\BaseController;
 use Bundles\PasswordLoginBundle\Entity\AbstractUser;
 use Bundles\PasswordLoginBundle\Event\PasswordLoginEvents;
 use Bundles\PasswordLoginBundle\Event\PostEditProfileEvent;
@@ -14,6 +13,7 @@ use Bundles\PasswordLoginBundle\Manager\PasswordRecoveryManager;
 use Bundles\PasswordLoginBundle\Manager\UserManager;
 use Bundles\PasswordLoginBundle\Services\Mail;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,11 +22,12 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * @Route("/admin/users", name="password_login_admin_")
  */
-class AdminController extends BaseController
+class AdminController extends AbstractController
 {
     /**
      * @var CaptchaManager
@@ -74,6 +75,11 @@ class AdminController extends BaseController
     private $session;
 
     /**
+     * @var TranslatorInterface
+     */
+    private $translator;
+
+    /**
      * @var string
      */
     private $homeRoute;
@@ -87,6 +93,7 @@ class AdminController extends BaseController
         UserPasswordEncoderInterface $encoder,
         TokenStorageInterface $tokenStorage,
         Session $session,
+        TranslatorInterface $translator,
         string $homeRoute)
     {
         $this->captchaManager           = $captchaManager;
@@ -98,6 +105,7 @@ class AdminController extends BaseController
         $this->encoder                  = $encoder;
         $this->tokenStorage             = $tokenStorage;
         $this->session                  = $session;
+        $this->translator               = $translator;
         $this->homeRoute                = $homeRoute;
     }
 
@@ -202,13 +210,13 @@ class AdminController extends BaseController
             ->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->dispatcher->dispatch(PasswordLoginEvents::PRE_EDIT_PROFILE, new PreEditProfileEvent($oldUser, $newUser));
+            $this->dispatcher->dispatch(new PreEditProfileEvent($oldUser, $newUser), PasswordLoginEvents::PRE_EDIT_PROFILE);
 
             $this->userManager->save($newUser);
 
-            $this->dispatcher->dispatch(PasswordLoginEvents::POST_EDIT_PROFILE, new PostEditProfileEvent($newUser, $oldUser));
+            $this->dispatcher->dispatch(new PostEditProfileEvent($newUser, $oldUser), PasswordLoginEvents::POST_EDIT_PROFILE);
 
-            $this->success('password_login.profile.saved');
+            $this->addFlash('success', $this->translator->trans('password_login.profile.saved'));
 
             return $this->redirectToRoute('password_login_admin_profile', [
                 'username' => $newUser->getUsername(),
@@ -238,7 +246,7 @@ class AdminController extends BaseController
             );
         }
 
-        $this->success('password_login.forgot_password.sent_by_admin', ['%email%' => $username]);
+        $this->addFlash('success', $this->translator->trans('password_login.forgot_password.sent_by_admin', ['%email%' => $username]));
 
         return $this->redirectToRoute('password_login_admin_profile', [
             'username' => $username,

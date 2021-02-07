@@ -9,6 +9,7 @@ use App\Entity\Category;
 use App\Manager\BadgeManager;
 use App\Manager\CategoryManager;
 use App\Model\Csrf;
+use Bundles\PaginationBundle\Manager\PaginationManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
@@ -18,12 +19,18 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * @Route("/admin/categories", name="admin_category_")
  */
 class CategoryController extends BaseController
 {
+    /**
+     * @var PaginationManager
+     */
+    private $paginationManager;
+
     /**
      * @var CategoryManager
      */
@@ -35,13 +42,19 @@ class CategoryController extends BaseController
     private $badgeManager;
 
     /**
-     * @param CategoryManager $categoryManager
-     * @param BadgeManager    $badgeManager
+     * @var TranslatorInterface
      */
-    public function __construct(CategoryManager $categoryManager, BadgeManager $badgeManager)
+    private $translator;
+
+    public function __construct(PaginationManager $paginationManager,
+        CategoryManager $categoryManager,
+        BadgeManager $badgeManager,
+        TranslatorInterface $translator)
     {
-        $this->categoryManager = $categoryManager;
-        $this->badgeManager    = $badgeManager;
+        $this->paginationManager = $paginationManager;
+        $this->categoryManager   = $categoryManager;
+        $this->badgeManager      = $badgeManager;
+        $this->translator        = $translator;
     }
 
     /**
@@ -52,7 +65,7 @@ class CategoryController extends BaseController
     {
         $searchForm = $this->createSearchForm($request, 'admin.category.search');
 
-        $categories = $this->getPager(
+        $categories = $this->paginationManager->getPager(
             $this->categoryManager->getSearchInCategoriesQueryBuilder(
                 $searchForm->get('criteria')->getData()
             )
@@ -102,7 +115,7 @@ class CategoryController extends BaseController
 
         return $this->json([
             'saved' => false,
-            'title' => $category->getId() ? $this->trans('admin.category.edit') : $this->trans('admin.category.create'),
+            'title' => $category->getId() ? $this->translator->trans('admin.category.edit') : $this->translator->trans('admin.category.create'),
             'body'  => $this->renderView('widget/form.html.twig', [
                 'form' => $form->createView(),
             ]),
@@ -125,7 +138,7 @@ class CategoryController extends BaseController
     public function listBadgeInCategory(Category $category)
     {
         return $this->json([
-            'title' => $this->trans('admin.category.badges_list', [
+            'title' => $this->translator->trans('admin.category.badges_list', [
                 '%name%' => $category->getName(),
             ]),
             'body'  => $this->renderView('admin/category/badges_in_category.html.twig', [

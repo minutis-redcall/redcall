@@ -6,11 +6,11 @@
         <h3>Your API tokens</h3>
     </div>
 
-    {% if pager.count %}
+    {% if tokens|length %}
         <div class="bg-white text-left">
 
             <table class="table table-striped">
-                {% for token in pager %}
+                {% for token in tokens %}
 
                     <tr>
                         <td>
@@ -44,8 +44,5 @@
     <div class="text-left">
         {{ form(form) }}
     </div>
-
-    {% import '@Pagination/macros.html.twig' as macros %}
-    {{ macros.pager(pager) }}
 
 {% endblock %}

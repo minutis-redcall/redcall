@@ -3,8 +3,9 @@
 namespace Bundles\ApiBundle\Security\Authenticator;
 
 use Bundles\ApiBundle\Entity\Token;
-use Bundles\ApiBundle\Enum\Error;
+use Bundles\ApiBundle\Error\AuthenticationError;
 use Bundles\ApiBundle\Exception\ApiAuthenticationException;
+use Bundles\ApiBundle\Exception\ApiException;
 use Bundles\ApiBundle\Manager\TokenManager;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
@@ -27,7 +28,9 @@ class ApiAuthenticator extends AbstractGuardAuthenticator
 
     public function start(Request $request, AuthenticationException $authException = null)
     {
-        return Error::AUTHENTICATION_REQUIRED()->getResponse();
+        throw new ApiAuthenticationException(
+            AuthenticationError::AUTHENTICATION_REQUIRED()
+        );
     }
 
     public function supports(Request $request)
@@ -38,16 +41,22 @@ class ApiAuthenticator extends AbstractGuardAuthenticator
     public function getCredentials(Request $request)
     {
         if (!$authorization = $request->headers->get('Authorization')) {
-            throw new ApiAuthenticationException(Error::AUTHENTICATION_NO_AUTHORIZATION());
+            throw new ApiAuthenticationException(
+                AuthenticationError::AUTHENTICATION_NO_AUTHORIZATION()
+            );
         }
 
         $matches = [];
         if (!preg_match('|^Bearer (?P<uuid>[0-9a-f]{8}\-[0-9a-f]{4}\-4[0-9a-f]{3}\-[89ab][0-9a-f]{3}\-[0-9a-f]{12})$|', $authorization, $matches)) {
-            throw new ApiAuthenticationException(Error::AUTHENTICATION_NO_TOKEN());
+            throw new ApiAuthenticationException(
+                AuthenticationError::AUTHENTICATION_NO_TOKEN()
+            );
         }
 
         if (!$signature = $request->headers->get('X-Signature')) {
-            throw new ApiAuthenticationException(Error::AUTHENTICATION_NO_SIGNATURE());
+            throw new ApiAuthenticationException(
+                AuthenticationError::AUTHENTICATION_NO_SIGNATURE()
+            );
         }
 
         return [
@@ -77,16 +86,24 @@ class ApiAuthenticator extends AbstractGuardAuthenticator
 
     public function checkCredentials($credentials, UserInterface $user)
     {
+        if ('dev' === getenv('APP_ENV')) {
+            return true;
+        }
+
         return $credentials['signature'] === $credentials['token']->sign($credentials['method'], $credentials['uri'], $credentials['body']);
     }
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
     {
         if ($exception instanceof ApiAuthenticationException) {
-            return $exception->getError()->getResponse();
+            throw new ApiException(
+                $exception->getError()
+            );
         }
 
-        return Error::AUTHENTICATION_FAILED()->getResponse();
+        throw new ApiException(
+            AuthenticationError::AUTHENTICATION_FAILED()
+        );
     }
 
     public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)

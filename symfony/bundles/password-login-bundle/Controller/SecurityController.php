@@ -2,7 +2,6 @@
 
 namespace Bundles\PasswordLoginBundle\Controller;
 
-use Bundles\PasswordLoginBundle\Base\BaseController;
 use Bundles\PasswordLoginBundle\Entity\AbstractUser;
 use Bundles\PasswordLoginBundle\Entity\EmailVerification;
 use Bundles\PasswordLoginBundle\Event\PasswordLoginEvents;
@@ -24,23 +23,25 @@ use Bundles\PasswordLoginBundle\Manager\EmailVerificationManager;
 use Bundles\PasswordLoginBundle\Manager\PasswordRecoveryManager;
 use Bundles\PasswordLoginBundle\Manager\UserManager;
 use Bundles\PasswordLoginBundle\Services\Mail;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Core\Security;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * @Route(name="password_login_")
  */
-class SecurityController extends BaseController
+class SecurityController extends AbstractController
 {
     /**
      * @var CaptchaManager
@@ -88,6 +89,11 @@ class SecurityController extends BaseController
     private $session;
 
     /**
+     * @var TranslatorInterface
+     */
+    private $translator;
+
+    /**
      * @var RequestStack
      */
     private $requestStack;
@@ -111,6 +117,7 @@ class SecurityController extends BaseController
         UserPasswordEncoderInterface $encoder,
         TokenStorageInterface $tokenStorage,
         Session $session,
+        TranslatorInterface $translator,
         RequestStack $requestStack,
         string $userClass,
         string $homeRoute)
@@ -124,6 +131,7 @@ class SecurityController extends BaseController
         $this->encoder                  = $encoder;
         $this->tokenStorage             = $tokenStorage;
         $this->session                  = $session;
+        $this->translator               = $translator;
         $this->requestStack             = $requestStack;
         $this->userClass                = $userClass;
         $this->homeRoute                = $homeRoute;
@@ -157,15 +165,15 @@ class SecurityController extends BaseController
         if ($registrationForm->isSubmitted() && $registrationForm->isValid()) {
             $user->setPassword($this->encoder->encodePassword($user, $user->getPassword()));
 
-            $this->dispatcher->dispatch(PasswordLoginEvents::PRE_REGISTER, new PreRegisterEvent($user));
+            $this->dispatcher->dispatch(new PreRegisterEvent($user), PasswordLoginEvents::PRE_REGISTER);
 
             $this->userManager->save($user);
 
             $this->sendEmailVerification($user->getUsername(), EmailVerification::TYPE_REGISTRATION);
 
-            $this->dispatcher->dispatch(PasswordLoginEvents::POST_REGISTER, new PostRegisterEvent($user));
+            $this->dispatcher->dispatch(new PostRegisterEvent($user), PasswordLoginEvents::POST_REGISTER);
 
-            $this->success('password_login.register.success');
+            $this->addFlash('success', $this->translator->trans('password_login.register.success'));
 
             return new RedirectResponse(
                 $this->generateUrl($this->homeRoute)
@@ -200,7 +208,7 @@ class SecurityController extends BaseController
             throw $this->createNotFoundException();
         }
 
-        $this->dispatcher->dispatch(PasswordLoginEvents::PRE_VERIFY_EMAIL, new PreVerifyEmailEvent($user));
+        $this->dispatcher->dispatch(new PreVerifyEmailEvent($user), PasswordLoginEvents::PRE_VERIFY_EMAIL);
 
         $user->setIsVerified(true);
 
@@ -210,12 +218,12 @@ class SecurityController extends BaseController
 
         $this->userManager->save($user);
 
-        $this->dispatcher->dispatch(PasswordLoginEvents::POST_VERIFY_EMAIL, new PostVerifyEmailEvent($user));
+        $this->dispatcher->dispatch(new PostVerifyEmailEvent($user), PasswordLoginEvents::POST_VERIFY_EMAIL);
 
         $token = new UsernamePasswordToken($user, null, 'main', $user->getRoles());
         $this->tokenStorage->setToken($token);
 
-        $this->success('password_login.verify_email.success');
+        $this->addFlash('success', $this->translator->trans('password_login.verify_email.success'));
 
         return $this->redirectToRoute($this->homeRoute);
     }
@@ -236,7 +244,7 @@ class SecurityController extends BaseController
 
         if ($this->session->has(Security::AUTHENTICATION_ERROR)) {
             $connectForm->addError(
-                new FormError($this->trans('password_login.connect.incorrect'))
+                new FormError($this->translator->trans('password_login.connect.incorrect'))
             );
 
             $this->session->remove(Security::AUTHENTICATION_ERROR);
@@ -285,7 +293,7 @@ class SecurityController extends BaseController
                 $newUser->setIsVerified(false);
                 $this->sendEmailVerification($newUser->getUsername(), EmailVerification::TYPE_EDIT_PROFILE);
                 $this->tokenStorage->setToken();
-                $this->alert('password_login.profile.logout');
+                $this->addFlash('alert', $this->translator->trans('password_login.profile.logout'));
             }
 
             if ($formUser->getPassword()) {
@@ -294,13 +302,13 @@ class SecurityController extends BaseController
                 );
             }
 
-            $this->dispatcher->dispatch(PasswordLoginEvents::PRE_EDIT_PROFILE, new PreEditProfileEvent($oldUser, $newUser));
+            $this->dispatcher->dispatch(new PreEditProfileEvent($oldUser, $newUser), PasswordLoginEvents::PRE_EDIT_PROFILE);
 
             $this->userManager->save($newUser);
 
-            $this->dispatcher->dispatch(PasswordLoginEvents::POST_EDIT_PROFILE, new PostEditProfileEvent($newUser, $oldUser));
+            $this->dispatcher->dispatch(new PostEditProfileEvent($newUser, $oldUser), PasswordLoginEvents::POST_EDIT_PROFILE);
 
-            $this->success('password_login.profile.success');
+            $this->addFlash('success', $this->translator->trans('password_login.profile.success'));
 
             return new RedirectResponse(
                 $this->generateUrl($this->homeRoute)
@@ -355,7 +363,7 @@ class SecurityController extends BaseController
                 );
             }
 
-            $this->success('password_login.forgot_password.sent', ['%email%' => $username]);
+            $this->addFlash('success', $this->translator->trans('password_login.forgot_password.sent', ['%email%' => $username]));
 
             return new RedirectResponse(
                 $this->generateUrl('password_login_connect')
@@ -394,7 +402,7 @@ class SecurityController extends BaseController
             ->handleRequest($request);
 
         if ($changePassword->isSubmitted() && $changePassword->isValid()) {
-            $this->dispatcher->dispatch(PasswordLoginEvents::PRE_CHANGE_PASSWORD, new PreChangePasswordEvent($user));
+            $this->dispatcher->dispatch(new PreChangePasswordEvent($user), PasswordLoginEvents::PRE_CHANGE_PASSWORD);
 
             $newPassword = $changePassword->getData()['password'];
 
@@ -404,9 +412,9 @@ class SecurityController extends BaseController
 
             $this->userManager->save($user);
 
-            $this->dispatcher->dispatch(PasswordLoginEvents::POST_CHANGE_PASSWORD, new PostChangePasswordEvent($user));
+            $this->dispatcher->dispatch(new PostChangePasswordEvent($user), PasswordLoginEvents::POST_CHANGE_PASSWORD);
 
-            $this->success('password_login.change_password.success');
+            $this->addFlash('success', $this->translator->trans('password_login.change_password.success'));
 
             return new RedirectResponse(
                 $this->generateUrl('password_login_connect')

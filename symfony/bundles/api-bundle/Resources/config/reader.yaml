@@ -1,0 +1,48 @@
+services:
+
+  Bundles\ApiBundle\Reader\DocblockReader:
+
+  Bundles\ApiBundle\Reader\EndpointCollectionReader:
+    arguments:
+      - '@router'
+      - '@controller_resolver'
+      - '@doctrine.annotation_reader'
+      - '@Bundles\ApiBundle\Reader\EndpointReader'
+
+  Bundles\ApiBundle\Reader\EndpointReader:
+    - '@Bundles\ApiBundle\Reader\RolesReader'
+    - '@Bundles\ApiBundle\Reader\FacadeReader'
+    - '@Bundles\ApiBundle\Reader\DocblockReader'
+    - '@doctrine.annotation_reader'
+
+  Bundles\ApiBundle\Reader\FacadeReader:
+    - '@Bundles\ApiBundle\Reader\DocblockReader'
+    - '@Bundles\ApiBundle\Reader\StatusCodeReader'
+    - '@Bundles\ApiBundle\Reader\PropertyCollectionReader'
+    - '@doctrine.annotation_reader'
+    - '@serializer'
+
+  Bundles\ApiBundle\Reader\PropertyCollectionReader:
+    - '@Bundles\ApiBundle\Reader\PropertyReader'
+    - '@property_info'
+
+  Bundles\ApiBundle\Reader\PropertyReader:
+    - '@Bundles\ApiBundle\Reader\DocblockReader'
+    - '@Bundles\ApiBundle\Reader\ConstraintReader'
+    - '@property_info'
+    - '@doctrine.annotation_reader'
+
+  Bundles\ApiBundle\Reader\RolesReader:
+    - '@security.access_map'
+    - '@doctrine.annotation_reader'
+
+  Bundles\ApiBundle\Reader\StatusCodeReader:
+    arguments:
+      - '@doctrine.annotation_reader'
+
+  Bundles\ApiBundle\Reader\ConstraintReader:
+    arguments:
+      - '@property_info'
+
+  doctrine.annotation_reader:
+    class: Doctrine\Common\Annotations\AnnotationReader

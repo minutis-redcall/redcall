@@ -58,28 +58,34 @@ admin:
       priority: 'Priorité d''affichage'
     search: 'Rechercher une catégorie'
     title: 'Gestion des catégories de badge'
-  dashboard:
-    title: Statistiques
   home:
     link: Administration
   pegass:
+    add_structure: 'Ajouter une structure'
     bound_volunteer: 'Bénévole associé : %name%'
     create_user: 'Ajouter un nouvel utilisateur'
+    delete_structures: 'Effacer une ou plusieurs structures'
     developer: 'Donner l''accès développeur'
     developered: Développeur
     developered_details: 'Un développeur peut intégrer les APIs de RedCall et accéder à des fonctionnalités techniques.'
+    edit: 'Ouvrir la fiche bénévole'
     list_users: 'Envoyer un message à tous les utilisateurs'
     list_users_explain: 'Afin de contacter tous les utilisateurs, copiez/collez cette liste de nivols dans un nouveau déclenchement.'
     lock: Geler
     locked: Gelé
     locked_details: 'Les structures d''un utilisateur gelé ne seront pas mises à jour avec la mise à jour Pegass de son bénévole attaché.'
+    only_admins: 'Rechercher parmi les administrateurs'
+    only_developers: 'Rechercher parmi les développeurs'
+    open: 'Ouvrir l''entrée Pegass'
     structures: 'Mise à jour des structures pour %name%'
     title: 'Connexions entre les utilisateurs de RedCall et la base de données bénévole'
     undeveloper: 'Retirer l''accès développeur'
     unlock: Dégeler
-    add_structure: 'Ajouter une structure'
-    delete_structures: 'Effacer une ou plusieurs structures'
   statistics:
+    buttons:
+      general: 'Statistiques générales'
+      main: Statistiques
+      structure: 'Rapports par structure'
     campaign:
       period: 'Dans cette période, <b>%created%</b> déclenchements ont été créés, dont <b>%active%</b> sont toujours actifs.'
       stats: 'déclenchements sont toujours actifs à l''heure actuelle.'
@@ -99,6 +105,23 @@ admin:
       newest_update: 'Mise à jour la plus récente'
       oldest_update: 'Mise à jour la plus ancienne'
       title: 'Mise à jour Pegass'
+    structure:
+      form:
+        from: 'Entre le :'
+        min: 'Compter les déclenchements ayant au moins X messages :'
+        title: 'Choisir la période'
+        to: 'Et le :'
+      report:
+        answers: Rép.
+        campaigns: Décl.
+        communications: Comms
+        costs: Dépenses
+        errors: Err.
+        id: '#'
+        messages: Msgs
+        name: Structure
+        questions: Questions
+        type: Type
     volunteers:
       both: '<b>%both_number% (%both_percent%%)</b> qui n’ont ni l’un ni l’autre'
       description: 'Toutes les données ne sont pas filtrées par une période.'
@@ -111,21 +134,73 @@ admin:
     pegass: 'Connexions à Pegass'
 audience:
   audience: Audience
-  classify:
-    disabled: '%nbr% nivols sont reliés à des bénévoles desactivés'
-    email_optout: '%nbr% nivols sont reliés à des bénévoles ne souhaitant pas recevoir d''emails'
-    inaccessible: '%nbr% nivols sont reliés à des bénévoles ne faisant pas partie de votre périmètre'
-    invalid: '%nbr% nivols n''existent pas'
-    no_email: '%nbr% nivols sont reliés à des bénévoles n''ayant pas d''email'
-    no_phone: '%nbr% nivols sont reliés à des bénévoles n''ayant pas de numéro de téléphone'
-    phone_optout: '%nbr% nivols sont reliés à des bénévoles ne souhaitant pas recevoir d''appels/SMS'
-    reachable: '%nbr% nivols seront déclenchés'
-  filter_title: 'Recherche par structures & compétences'
-  nivol_title: 'Copier/coller une liste de nivols'
-  see_selection: 'Cliquez pour voir la sélection'
-  select_all: 'Tout sélectionner'
+  audience_help: 'Vous pouvez sélectionner les bénévoles à déclencher en les saisissant manuellement, ou en les filtrant par structures et compétences.'
+  badges: 'Compétences & nominations'
+  classification:
+    audience: 'Afficher la liste des bénévoles sélectionnés'
+    disabled: '<strong>%nbr%</strong> bénévoles sont desactivés'
+    email_missing: '<strong>%nbr%</strong> bénévoles n''ont pas d''email'
+    email_optout: '<strong>%nbr%</strong> bénévoles ne souhaitant pas recevoir d''emails'
+    excluded: '<strong>%nbr%</strong> bénévoles sont manuellement exclus du déclenchement'
+    home: 'Il est possible que vous ne puissiez pas joindre tous vos bénévoles.'
+    inaccessible: '<strong>%nbr%</strong> bénévoles ne font pas partie de votre périmètre'
+    invalid: '<strong>%nbr%</strong> nivols n''existent pas'
+    optout_until: '<strong>%nbr%</strong> bénévoles sont temporairement indisponibles'
+    phone_landline: '<strong>%nbr%</strong> bénévoles ne possèdent qu''un numéro de téléphone fixe'
+    phone_missing: '<strong>%nbr%</strong> bénévoles n''ont pas de numéro de téléphone'
+    phone_optout: '<strong>%nbr%</strong> bénévoles ne souhaitant pas recevoir d''appels/SMS'
+    problems: 'Obtenir plus de détails sur la liste des problèmes'
+    reachable: '<strong>%nbr%</strong> bénévoles sont sélectionnés'
+    resolve:
+      button: 'Résoudre les problèmes'
+      details:
+        gaia: 'Ouvrir dans Gaia'
+        info1: 'RedCall ne peut fonctionner que si les données de contact de nos bénévoles sont correctes et à jour.'
+        info2: 'Attention, même si un bénévole possède un numéro et un email, rien ne garantit qu''ils soient à jour sur la base de données Gaia.'
+        info3: 'Dès que vous le pourrez, invitez les membres de votre structure à consulter leurs informations de contact sur Gaia, notamment leur "email préféré" et "numéro de téléphone préféré" afin d''augmenter vos chances de déclencher un maximum de monde.'
+        redcall: Ouvrir
+      title: 'Fiches bénévoles comportant des problèmes'
+    selected: 'Liste des bénévoles sélectionnés'
+    title: 'Résumé de la sélection'
+  copy_paste: 'Ou coller une liste de nivols'
+  copy_paste_details: 'Ou coller une liste de nivols dans le champ ci-dessous.'
+  large_audience:
+    title: '%nbr% bénévoles sélectionnés'
+  manual_selection: 'Saisie manuelle de bénévoles'
+  pre_selection:
+    close_standard_form: 'Fermer le formulaire classique'
+    description: 'Dans une communication précédente, vous avez sélectionné <strong>%nbr%</strong> bénévoles.'
+    remove_volunteer: 'Utilisez les coches pour supprimer des bénévoles de la sélection.'
+    selected_volunteers: 'Bénévoles sélectionnés'
+    title: 'Préselection de bénévoles'
+    use_standard_form: 'Ouvrir le formulaire classique'
+  problem_details:
+    disabled: 'Ces bénévoles ne font probablement plus partie de la Croix-Rouge.'
+    email_missing: 'Ces bénévoles ne pourront pas recevoir de communications par email.'
+    email_optout: 'Ces bénévoles ne souhaitent pas recevoir de déclenchements par email.'
+    excluded: 'Vous pouvez réinclure ces bénévoles en affichant votre sélection.'
+    inaccessible: 'Ces bénévoles font partie de sturctures que vous ne pouvez pas déclencher.'
+    invalid: 'Ces identifiants de bénévoles sont invalides ou pas encore intégrés.'
+    optout_until: 'Ces bénévoles ont indiqué ne pas être disponible actuellement.'
+    phone_landline: 'Ces bénévoles peuvent recevoir des appels, mais pas de SMS.'
+    phone_missing: 'Ces bénévoles ne pourront pas recevoir de communications par SMS ou appel vocal.'
+    phone_optout: 'Ces bénévoles ne souhaitent pas recevoir de déclenchements par SMS ou appel vocal.'
+  problems:
+    disabled: Desactivés
+    email_missing: 'Pas d''email'
+    email_optout: 'Emails refusés'
+    excluded: 'Manuellement exclus'
+    inaccessible: 'Hors périmètre'
+    invalid: Invalides
+    optout_until: 'Temp. indispo.'
+    phone_landline: 'Fixe uniquement'
+    phone_missing: 'Pas de tél.'
+    phone_optout: 'Appels/SMS refusés'
+    title: 'Détails à propos des problèmes dans la sélection'
+  search_for_volunteers: 'Rechercher des bénévoles à déclencher :'
+  search_other_badge: 'Rechercher une autre compétence :'
+  select_all_badges: 'Déclencher tous les bénévoles quelles que soient leurs compétences'
   structures: 'Structure(s) à déclencher'
-  unselect_all: 'Effacer la sélection'
 backlinks:
   blablacar: 'Parrainé par'
   minutis: 'Développé par les bénévoles'
@@ -143,10 +218,13 @@ base:
     enable: Activer
     more: Plus...
     open: Ouvrir
+    refresh: 'Mettre à jour'
     save: Sauvegarder
     search: Rechercher
+    submit: Envoyer
     update: Editer
   clear_selection: 'Effacer la sélection'
+  closed: Fermé
   crud:
     create_title: 'Ajouter une entrée'
     delete_confirm: 'Souhaitez-vous vraiment supprimer "%entity%" ?'
@@ -158,6 +236,7 @@ base:
   home: Accueil
   modal:
     close: Fermer
+  open: Ouvert
   order_by:
     asc: Croissant
     desc: Décroissant
@@ -186,6 +265,7 @@ campaign:
     classify: Classifier
     close: 'Fermer le déclenchement'
     continue: Continuer
+    expires: 'Fermé auto. le'
     open: 'Réouvrir le déclenchement'
   cannot_reopen: 'Impossible de réouvrir le déclenchement : depuis sa fermeure, un ou plusieurs bénévoles ont été déclenchés et le préfixe associé à leur réponse a été réuilisé.'
   errors:
@@ -206,10 +286,11 @@ campaign:
     create_full: 'Créer un déclenchement'
     created_by: 'Créé par %name%'
     email: Email
-    implicated_structures: 'Liste des structures impliquées'
+    implicated_structures: 'Structures impliquées'
     list_admin: 'Liste de tous les déclenchements'
     list_full: 'Liste des déclenchements'
     new: 'Créer un déclenchement: %type%'
+    report: 'Voir le rapport'
     sms: SMS
     volunteers: bénévole(s)
   types:
@@ -219,16 +300,22 @@ campaign:
     4_red: Engagement
 campaign_status:
   answer: 'Réponses libres'
+  answer_history: 'Historique de vos réponsess'
   answer_invalid: 'Autres Rép.'
   answer_no: 'Réponse %choice%'
   answers:
+    answer_link: Répondre
     change: 'Changer les réponses'
     history: Historique
     label: 'Réponse "%label%"'
     labels: 'Réponses %label%'
+    new: 'Envoyer un nouveau SMS'
+    new_message: 'Un nouveau message est arrivé.'
     prefix: 'Préfix de la réponse: %prefix%'
     unclear: Ambigüe
   by: 'Envoyée par %name% (%structure%)'
+  by_admin: 'Equipe Minutis'
+  by_no_structures: 'Envoyée par %name%'
   communication_short_title: '%date% à %time%'
   communication_tabs: Communications
   communication_title: 'Communication du %date% à %time%'
@@ -240,6 +327,7 @@ campaign_status:
     or: ou/et
     title: Filtrer
   finish: 'Envoi terminé: %sent% %type% envoyé(s) (%replies% réponse(s) reçue(s), %replies_pct%%)'
+  free_answer: 'Envoyer une réponse libre'
   legend:
     sms_received: '"SMS reçu" indique si le message a bien été délivré au bénévole. Elle peut rester blanche si le bénévole a éteint son téléphone.'
     sms_sent: '"SMS envoyé" indique si le message a bien été envoyé au volonaire. Si cette colonne reste vide, il y a probablement un problème technique.'
@@ -262,7 +350,11 @@ campaign_status:
     no_email: 'Pas d''email'
     no_email_optin: 'Ne souhaite pas recevoir d''emails.'
     no_phone: 'Pas de numéro de téléphone'
+    no_phone_mobile: 'Pas de numéro de téléphone portable.'
     no_phone_optin: 'Ne souhaite pas recevoir de SMS/appels.'
+    optout_until: 'Temporairement indisponible'
+    country_no_sms: 'SMS non supportés par RedCall pour ce numéro.'
+    country_no_call: 'Appels non supportés par RedCall pour ce numéro.'
 csv_export:
   answer_time: 'Date de la reponse la plus recente'
   choice: 'Choix "%choice%"'
@@ -322,6 +414,14 @@ form:
     toggle:
       by_filters: 'Revenir aux filtres de sélection'
       by_nivol: 'Saisir une liste de nivol'
+    too_long:
+      explaination_1: 'Les messages longs ont moins de chances d''arriver à destination.'
+      explaination_2: 'Privilégiez les messages courts comme:'
+      explaination_3: 'Urgent. Feu quartier de la Beaujoire, besoin d''un CAI.'
+      explaination_4: 'Besoin d''un coup de main pour nettoyer du matériel. Nouveaux bienvenus pour le découvrir!'
+      explaination_5: 'Renfort SAMU prévision manif ce samedi. Besoin de 2 équipages VPSP complets.'
+      explaination_6: 'Les SMS sont divisés en segments de 160 caractères, et plus il y a de segments, moins il y a de chances que le message arrive entier à son destinataire. Il faut que nous nous habituons à envoyer des petits messages pour en garantir la bonne réception par tout le monde.'
+      title: 'Votre message est long.'
 geolocation:
   error: 'Une erreur est survenue.'
   error_permission: 'Vous avez refusé (ou un paramètre de votre appareil) de partager votre position.'
@@ -348,20 +448,6 @@ import_report:
   no_phone: 'Le bénévole ne possède pas de numéro de téléphone.'
   removed: 'Le bénévole a été anonymisé.'
   update_locked: 'Impossible de mettre à jour un bénévole gelé.'
-issues:
-  details:
-    info1: 'RedCall ne peut fonctionner que si les données de contact de nos bénévoles sont correctes et à jour.'
-    info2: 'Cette page vous montre les bénévoles n''ayant pas de numéro de téléphone ou/et d''email afin que vous puissiez les saisir.'
-    info3: 'Attention, même si un bénévole possède un numéro et un email, rien ne garantit qu''ils soient à jour sur la base de données Gaia.'
-    info4: 'Dès que vous le pourrez, invitez les membres de votre structure à consulter leurs informations de contact sur Gaia, notamment leur "email préféré" et "numéro de téléphone préféré" afin d''augmenter vos chances de déclencher un maximum de monde.'
-    open: 'ouvrir dans Gaia'
-    title: 'Numéros de téléphones et emails manquants'
-  emails: '- %nbr% n''ont pas d''email'
-  list: 'Voir la liste des problèmes'
-  missing_email: 'Pas d''email'
-  missing_phone: 'Pas de téléphone'
-  not_reachable: 'Des bénévoles de vos structures d''action ne sont pas déclenchables :'
-  phones: '- %nbr% n''ont pas de numéro de téléphone'
 label:
   and: et
   from: Du
@@ -407,6 +493,7 @@ manage_structures:
       title: 'Ajout/edition de réponse pré-remplies'
     list_title: 'Liste des réponses pré-remplies'
   president: 'Président : %president%'
+  redcall_users: 'Liste des personnes pouvant déclencher %name%'
   search:
     button: Rechercher
     label: 'Rechercher une structure'
@@ -456,6 +543,7 @@ manage_volunteers:
     message: 'Merci de bien vouloir relire attentivement le message causant la suppression de données avant de continuer.'
     title: 'Suppression des données de %name%'
     volunteer_asked_for_it: 'Ce bénévole vous a demandé de supprimer ses données ?'
+  can_trigger: 'Structures que %name% peut déclencher'
   columns:
     never_updated: 'Pas encore importé'
     update: 'MàJ le %date%'
@@ -469,10 +557,12 @@ manage_volunteers:
     email_optin: 'Disponible par email'
     enabled: Déclenchable
     first_name: Prénom
+    invisible_badges: 'Autres badges'
     last_name: 'Nom de famille'
     lock_info: '* Les nᵒˢ de téléphone et emails gelés ne sont plus mis à jour automatiquement par Pegass.'
     minor: 'Mineur(e) (-18 ans)'
     nivol: Nivol
+    optout_until_me: 'Je suis indisponible jusqu''au...'
     phone_number: Téléphone
     phone_number_locked: 'Geler le nᵒ de téléphone *'
     phone_number_optin: 'Disponible par téléphone et SMS'
@@ -480,6 +570,8 @@ manage_volunteers:
     tags: Compétences
     update: 'Mettre à jour un bénévole'
     updated: 'Le bénévole a correctement été modifié.'
+    visible_badges: 'Badges principaux'
+    optout_until: 'Bénévole indisponible jusqu''au...'
   others: 'et %count% autre(s)'
   redcall:
     action_structures: 'Structures déclenchables par %name%'
@@ -491,6 +583,7 @@ manage_volunteers:
     only_users: 'Afficher seulement les bénévoles pouvant utiliser RedCall'
   title: 'Gestion des bénévoles'
   title_with_structure: 'Gestion des bénévoles de %name%'
+  can_trigger_button: 'Rôles RedCall'
 management:
   current_structures: 'Vous pouvez actuellement déclencher les structures suivantes :'
   home:
@@ -508,8 +601,12 @@ message:
   email:
     announcement: '%brand% le %day%/%month%/%year% à %hours%h%mins%'
     answer_here: 'Cliquez sur le(s) bouton(s) de votre choix pour répondre.'
+    how_to_answer_free: 'Vous pouvez répondre librement à ce message en cliquant <a href="%url%">ici</a>.'
     how_to_answer_multiple: 'Afin de donner votre ou vos réponses, veuillez cliquer sur le lien suivant : %url%'
     how_to_answer_simple: 'Afin de donner votre réponse, veuillez cliquer sur le lien suivant : %url%'
+    in_app_long_answer: 'Si vous le souhaitez, vous pouvez directement répondre "%choice%" à ce message.'
+    in_app_short_answer: 'Répondre "%choice%"'
+    open_in_redcall: 'Ouvrir dans RedCall'
     possible_answers: 'Réponse(s) possibles :'
     type: email(s)
   sms:
@@ -518,6 +615,7 @@ message:
     how_to_answer_multiple: 'Répondez avec les codes de votre choix séparés par un espace'
     how_to_answer_simple: 'Répondez avec le code de votre choix'
     how_to_answer_url: 'Répondez en suivant %url% ou en appelant le %number%'
+    how_to_answer_url_only: 'Répondez en suivant %url%'
     type: message(s)
 minutis:
   back: 'Retourner sur Minutis'
@@ -548,7 +646,6 @@ pdf_export:
 phone_card:
   add: 'Ajouter un numéro de téléphone'
   error_invalid: 'Le format de ce numéro de téléphone n''est pas valide.'
-  error_not_mobile: 'Vous ne pouvez saisir que des numéros de téléphone portable.'
   error_taken: 'Ce numéro de téléphone est déjà utilisé par %truncated_name% (%nivol%).'
   main: Principal
   title: 'Téléphone #%index%'
@@ -559,6 +656,18 @@ prefilled_answers:
     colors: 'Couleurs du déclenchement où ce groupe est sélectionnable'
     label: 'Nom du groupe de réponses'
   title: 'Gestion des réponses pré-remplies'
+report:
+  campaign:
+    communication:
+      with_title: 'Communication #%nbr% "%title%" du day%/%month%/%year% à %hours%h%mins%'
+      without_title: 'Communication #%nbr% du %day%/%month%/%year% à %hours%h%mins%'
+    headers:
+      answers: Réponses
+      errors: Erreurs
+      messages: Messages
+      prices: Coûts
+      structure: Structure
+    title: 'Structures impliquées'
 space:
   consult_data:
     announcement_email: '📧 Message envoyé par email le %day%/%month%/%year% à %hours%h%mins%'
@@ -632,6 +741,12 @@ space:
     no_tracking: 'Votre navigation n''est pas tracée sur ce site.'
     not_callable: indisponible
     toggle_callable: 'Changer mes préférences de déclenchement (je suis actuellement'
+    triggers:
+      call: 'appel vocal'
+      email: email
+      sms: SMS
+      subject: 'Message envoyé par %type% le %date% à %time%'
+      title: 'Vos messages récents'
     update_email: 'Mettre à jour mon email, actuellement :'
     update_phone: 'Mettre à jour mon numéro de téléphone, actuellement :'
     user_details: 'Lorsqu''un bénévole se connecte à RedCall mais n''y a pas accès, il tombe par défaut sur cette page qui lui permet de mettre à jour ses préférences de contact et de gérer ses données personnelles. N''hésitez-pas à communiquer au sein de vos structures d''action afin que les bénévoles sous votre responsabilité mettent correctement ces informations à jour.'
@@ -654,10 +769,11 @@ space:
   logout: 'Me déconnecter de l''espace bénévole'
   phone:
     details_1: 'Vous pourrez être contacté par votre unité locale ou DT par SMS ou par appel vocaux en cas d''urgence.'
-    details_2: 'Tous les messages et appels proviennent du ou des numéro(s): %from%'
     details_3: 'Vous pouvez dès à présent l''ajouter à vos contacts, et lui assigner une sonnerie reconnaissable.'
     details_4: 'Lorsque vous recevez un message et qu''une réponse est demandée, répondez directement au message en ne saisissant, si possible, que le ou les codes des réponses qui correspondent à votre choix.'
     details_5: 'Exemple : si on vous demande "Êtes-vous disponible ?" et que les réponses possibles sont "A1: Oui" ou "A2: Non", répondez le code A1 ou A2, cela permet un traitement automatique de votre choix et aide le responsable du déclenchement.'
+    details_6: 'Tous les messages proviennent du numéro :'
+    details_7: 'Tous les appels proviennent du numéro :'
     title: 'Editer mon numéro de téléphone'
 special_answers:
   stop: 'Vous êtes désormais désabonné(e) des SMS envoyés par RedCall. Gérez vos préférences sur https://rcl.re à l''aide de vos identifiants Pegass, puis en cliquant sur l''icône RedCall en haut à gauche.'
@@ -666,36 +782,6 @@ structure:
   form:
     name: 'Nom de la structure'
     parent: 'Structure parente (optionnelle)'
-tag:
-  cem: 'Chef Maraude'
-  ci: 'Chef Int.'
-  dlas: DLAS
-  dlus: DLUS
-  drvr_vl: 'Chauf. VL'
-  drvr_vpsp: 'Chauf. VPSP'
-  emergency_assistance: 'Urg. Sec.'
-  mar: Maraudeur
-  psc_1: 'PSC 1'
-  pse_1: 'PSE 1'
-  pse_2: 'PSE 2'
-  shortcuts:
-    cem: CEM
-    ci: CI
-    dlas: DLAS
-    dlus: DLUS
-    drvr_vl: VL
-    drvr_vpsp: VPSP
-    emergency_assistance: US
-    mar: MAR
-    psc_1: PSC1
-    pse_1: PSE1
-    pse_2: PSE2
-    social_assistance: AS
-    tcau: TCAU
-    tceo: TCEO
-  social_assistance: 'Ass. Soc.'
-  tcau: TCAU
-  tceo: TCEO
 title:
   campaigns: Déclenchements
   costs: Coûts

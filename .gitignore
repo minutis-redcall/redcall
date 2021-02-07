@@ -16,14 +16,10 @@
 /symfony/app.yaml
 /symfony/cron.yaml
 
-deploy.ulparis0102
-
 notes.txt
-archives.txt
 
 TestCommand.php
+TestController.php
 
 /gcp/cloudFunctions/twilioWebhooks/node_modules/
-
-.php_cs.cache
 

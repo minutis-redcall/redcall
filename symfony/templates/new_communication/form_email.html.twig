@@ -1,12 +1,10 @@
-{% form_theme form 'new_communication/audience_theme.html.twig' %}
+{% form_theme form 'audience/audience_theme.html.twig' %}
 {{ form_row(form.audience) }}
 
 <hr/>
 
-{% set max_length_email = constant('App\\Entity\\Message::MAX_LENGTH_EMAIL') %}
-
 <div id="message-container">
-    <div class="h4">{{ 'form.communication.fields.message'|trans }}</div>
+    <div class="h3">{{ 'form.communication.fields.message'|trans }}</div>
 
     {{ form_row(form.subject) }}
 
@@ -23,19 +21,13 @@
         <div class="d-none">
             {{ form_widget(form.message) }}
         </div>
-
-        <div class="message-length float-right">
-            <span id="message-size">0</span>
-            /
-            <span id="message-max">{{ max_length_email }}</span>
-        </div>
     </div>
 
 </div>
 
 <div class="clearfix"></div>
 
-<div class="h4">{{ 'form.communication.fields.response_title'|trans }}</div>
+<div class="h3">{{ 'form.communication.fields.response_title'|trans }}</div>
 
 {{ form_label(form.answers) }}
 
@@ -47,7 +39,7 @@
 
 {{ form_row(form.multipleAnswer) }}
 
-<div class="h4">{{ 'form.communication.fields.preview'|trans }}</div>
+<div class="h3">{{ 'form.communication.fields.preview'|trans }}</div>
 
 {{ include('new_communication/preview.html.twig') }}
 
@@ -106,7 +98,6 @@
         $('#{{ form.message.vars.id }}').val(
             editor.root.innerHTML,
         );
-        updateMessageSize();
         refreshPreview();
     });
 

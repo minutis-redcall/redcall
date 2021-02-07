@@ -1,0 +1,22 @@
+{% if preselection %}
+    <div class="jumbotron">
+
+        <div class="h4">
+            {{ 'audience.pre_selection.title'|trans }}
+        </div>
+
+        <p>{{ 'audience.pre_selection.description'|trans({'%nbr%': preselection.volunteers|length})|raw }}</p>
+
+        <br/>
+
+        <div>
+            <a href="#"
+               class="btn btn-sm btn-secondary"
+               id="toggle-audience-form">
+                {{ 'audience.pre_selection.use_standard_form'|trans }}
+            </a>
+        </div>
+
+    </div>
+
+{% endif %}

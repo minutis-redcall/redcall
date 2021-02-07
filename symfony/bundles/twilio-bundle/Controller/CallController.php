@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Twilio\TwiML\TwiML;
 
 /**
  * @Route(name="twilio_", path="/twilio/")
@@ -89,7 +90,7 @@ class CallController extends BaseController
             return new Response();
         } elseif ($response instanceof Response) {
             return $response;
-        } elseif ($response) {
+        } elseif ($response instanceof TwiML) {
             return new XmlResponse($response->asXml());
         }
 

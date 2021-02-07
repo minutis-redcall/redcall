@@ -96,7 +96,7 @@ class Message
     private $costs;
 
     /**
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="text", nullable=true)
      */
     private $error;
 
@@ -111,6 +111,7 @@ class Message
     public function __construct()
     {
         $this->sent      = false;
+        $this->answers   = new ArrayCollection();
         $this->costs     = new ArrayCollection();
         $this->updatedAt = new \DateTime();
     }
@@ -168,7 +169,7 @@ class Message
      *
      * @return $this
      */
-    public function setVolunteer($volunteer) : Message
+    public function setVolunteer(Volunteer $volunteer) : Message
     {
         $this->volunteer = $volunteer;
 
@@ -188,7 +189,7 @@ class Message
      *
      * @return $this
      */
-    public function setSent($sent) : Message
+    public function setSent(bool $sent) : Message
     {
         $this->sent = $sent;
 
@@ -236,7 +237,7 @@ class Message
      *
      * @return $this
      */
-    public function setAnswers($answers) : Message
+    public function setAnswers(array $answers) : Message
     {
         $this->answers = $answers;
 
@@ -280,7 +281,7 @@ class Message
      *
      * @return $this
      */
-    public function setCommunication($communication) : Message
+    public function setCommunication(Communication $communication) : Message
     {
         $this->communication = $communication;
 
@@ -354,10 +355,12 @@ class Message
      */
     public function getLastAnswer() : ?Answer
     {
-        if ($this->answers) {
-            $answers = $this->answers->toArray();
+        foreach ($this->answers as $answer) {
+            if ($answer->getByAdmin()) {
+                continue;
+            }
 
-            return reset($answers) ?: null;
+            return $answer;
         }
 
         return null;
@@ -405,6 +408,10 @@ class Message
         }
 
         foreach ($this->answers ?? [] as $answer) {
+            if ($answer->getByAdmin()) {
+                continue;
+            }
+
             /* @var Answer $answer */
             if ($answer->isUnclear()) {
                 return true;
@@ -422,7 +429,7 @@ class Message
 
         foreach ($this->answers ?? [] as $answer) {
             /* @var Answer $answer */
-            if ($answer->isUnclear()) {
+            if ($answer->isUnclear() && !$answer->getByAdmin()) {
                 return $answer;
             }
         }
@@ -539,10 +546,15 @@ class Message
 
         switch ($this->communication->getType()) {
             case Communication::TYPE_SMS:
+                return boolval($this->volunteer->getPhoneNumber())
+                       && $this->volunteer->isPhoneNumberOptin()
+                       && $this->volunteer->getPhone()->isMobile();
             case Communication::TYPE_CALL:
-                return boolval($this->volunteer->getPhoneNumber()) && $this->volunteer->isPhoneNumberOptin();
+                return boolval($this->volunteer->getPhoneNumber())
+                       && $this->volunteer->isPhoneNumberOptin();
             case Communication::TYPE_EMAIL:
-                return boolval($this->volunteer->getEmail()) && $this->volunteer->isEmailOptin();
+                return boolval($this->volunteer->getEmail())
+                       && $this->volunteer->isEmailOptin();
             default:
                 return false;
         }

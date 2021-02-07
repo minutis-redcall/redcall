@@ -7,9 +7,6 @@ use Ramsey\Uuid\Uuid;
 
 class TwilioWithStatusAsTask extends BaseTwilio implements SMSProvider
 {
-    /**
-     * {@inheritdoc}
-     */
     public function send(string $from, string $to, string $message, array $context = []) : ?string
     {
         $uuid = Uuid::uuid4();

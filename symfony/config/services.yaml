@@ -17,7 +17,7 @@ services:
     public: false       # Allows optimizing the container by removing unused services; this also means
 
   _instanceof:
-    Bundles\GoogleTaskBundle\Api\TaskInterface:
+    Bundles\GoogleTaskBundle\Contracts\TaskInterface:
       tags: [ 'google_task' ]
 
   # configures session storage on the database
@@ -27,7 +27,7 @@ services:
       - { lock_mode: 1 }
 
   Doctrine\DBAL\Driver\PDOConnection:
-    factory: 'doctrine.dbal.default_connection:getWrappedConnection'
+    factory: [ '@doctrine.dbal.default_connection', 'getWrappedConnection' ]
 
   # makes classes in src/ available to be used as services
   # this creates a service per class whose id is the fully-qualified class name
@@ -53,6 +53,10 @@ services:
     class: App\Provider\Email\Sendgrid
     public: true
 
+  App\Provider\Storage\StorageProvider:
+    class: App\Provider\Storage\GoogleCloudStorage
+    public: true
+
   App\Communication\Processor\ProcessorInterface:
     class: '%communication.processor%'
 
@@ -63,6 +67,11 @@ services:
     arguments: [ '@kernel', '@security.token_storage' ]
     tags:
       - { name: monolog.processor }
+
+  App\EventSubscriber\CommunicationActivitySubscriber:
+    tags:
+      - { name: doctrine.event_listener, event: postPersist }
+      - { name: doctrine.event_listener, event: postUpdate }
 
   Bundles\PasswordLoginBundle\Repository\UserRepositoryInterface:
     class: App\Repository\UserRepository

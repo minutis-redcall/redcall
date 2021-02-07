@@ -3,25 +3,17 @@
 namespace Bundles\SettingsBundle\Repository;
 
 use Bundles\SettingsBundle\Entity\Setting;
+use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\ORMException;
-use Symfony\Bridge\Doctrine\RegistryInterface;
 
 class SettingRepository extends ServiceEntityRepository
 {
-    /**
-     * @param RegistryInterface $registry
-     */
-    public function __construct(RegistryInterface $registry)
+    public function __construct(Registry $registry)
     {
         parent::__construct($registry, Setting::class);
     }
 
-    /**
-     * @return array
-     */
-    public function all(): array
+    public function all() : array
     {
         $settings = [];
         $entities = $this->findAll();
@@ -30,16 +22,10 @@ class SettingRepository extends ServiceEntityRepository
             $settings[$entity->getProperty()] = $entity->getValue();
         }
 
-        return $entity;
+        return $settings;
     }
 
-    /**
-     * @param string      $property
-     * @param string|null $default
-     *
-     * @return string|null
-     */
-    public function get(string $property, ?string $default = null): ?string
+    public function get(string $property, ?string $default = null) : ?string
     {
         $entity = $this->findOneByProperty($property);
 
@@ -50,13 +36,6 @@ class SettingRepository extends ServiceEntityRepository
         return $default;
     }
 
-    /**
-     * @param string $property
-     * @param string $value
-     *
-     * @throws ORMException
-     * @throws OptimisticLockException
-     */
     public function set(string $property, string $value)
     {
         $entity = $this->findOneByProperty($property);
@@ -69,22 +48,16 @@ class SettingRepository extends ServiceEntityRepository
         $entity->setValue($value);
 
         $this->_em->persist($entity);
-        $this->_em->flush($entity);
+        $this->_em->flush();
     }
 
-    /**
-     * @param string $property
-     *
-     * @throws ORMException
-     * @throws OptimisticLockException
-     */
     public function remove(string $property)
     {
         $entity = $this->findOneByProperty($property);
 
         if ($entity) {
             $this->_em->remove($entity);
-            $this->_em->flush($entity);
+            $this->_em->flush();
         }
     }
 }

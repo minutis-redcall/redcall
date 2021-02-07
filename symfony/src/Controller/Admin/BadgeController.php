@@ -9,6 +9,7 @@ use App\Form\Type\BadgeWidgetType;
 use App\Form\Type\CategoryWigetType;
 use App\Manager\BadgeManager;
 use App\Model\Csrf;
+use Bundles\PaginationBundle\Manager\PaginationManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -24,16 +25,19 @@ use Symfony\Component\Routing\Annotation\Route;
 class BadgeController extends BaseController
 {
     /**
+     * @var PaginationManager
+     */
+    private $paginationManager;
+
+    /**
      * @var BadgeManager
      */
     private $badgeManager;
 
-    /**
-     * @param BadgeManager $badgeManager
-     */
-    public function __construct(BadgeManager $badgeManager)
+    public function __construct(PaginationManager $paginationManager, BadgeManager $badgeManager)
     {
-        $this->badgeManager = $badgeManager;
+        $this->paginationManager = $paginationManager;
+        $this->badgeManager      = $badgeManager;
     }
 
     /**
@@ -44,7 +48,7 @@ class BadgeController extends BaseController
     {
         $searchForm = $this->createSearchForm($request, 'admin.badge.search');
 
-        $badges = $this->getPager(
+        $badges = $this->paginationManager->getPager(
             $this->badgeManager->getSearchInPublicBadgesQueryBuilder(
                 $searchForm->get('criteria')->getData()
             )
@@ -91,7 +95,9 @@ class BadgeController extends BaseController
 
             $this->badgeManager->save($badge);
 
-            return $this->redirectToRoute('admin_badge_index', $request->query->all());
+            return $this->redirectToRoute('admin_badge_manage', array_merge($request->query->all(), [
+                'id' => $badge->getId(),
+            ]));
         }
 
         return [

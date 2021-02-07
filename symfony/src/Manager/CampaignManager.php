@@ -11,6 +11,7 @@ use App\Entity\User;
 use App\Entity\Volunteer;
 use App\Enum\Type;
 use App\Form\Model\Campaign as CampaignModel;
+use App\Form\Type\AudienceType;
 use App\Repository\CampaignRepository;
 use Bundles\PasswordLoginBundle\Entity\AbstractUser;
 use Doctrine\ORM\QueryBuilder;
@@ -75,11 +76,14 @@ class CampaignManager
     }
 
     public function launchNewCampaign(CampaignModel $campaignModel,
-        ProcessorInterface $processor = null) : CampaignEntity
+        ProcessorInterface $processor = null) : ?CampaignEntity
     {
         $volunteer = null;
         if ($this->tokenStorage->getToken()->getUser() instanceof UserInterface) {
             $volunteer = $this->tokenStorage->getToken()->getUser()->getVolunteer();
+            if (!$volunteer) {
+                return null;
+            }
         }
 
         $campaignEntity = new CampaignEntity();
@@ -89,6 +93,7 @@ class CampaignManager
             ->setType($campaignModel->type)
             ->setNotes($campaignModel->notes)
             ->setNotesUpdatedAt($campaignModel->notes ? new \DateTime() : null)
+            ->setExpiresAt((new \DateTime())->add(new \DateInterval('P7D')))
             ->setActive(true)
             ->setCreatedAt(new \DateTime());
 
@@ -107,6 +112,19 @@ class CampaignManager
     public function openCampaign(CampaignEntity $campaign)
     {
         $this->campaignRepository->openCampaign($campaign);
+    }
+
+    public function postponeExpiration(CampaignEntity $campaign)
+    {
+        $tm = $campaign->getExpiresAt()->getTimestamp();
+        if ($tm < time()) {
+            $tm = time() + Campaign::DEFAULT_EXPIRATION;
+        } else {
+            $tm = $tm + Campaign::DEFAULT_EXPIRATION;
+        }
+        $campaign->setExpiresAt((new \DateTime())->setTimestamp($tm));
+
+        $this->campaignRepository->save($campaign);
     }
 
     public function changeColor(CampaignEntity $campaign, string $color) : void
@@ -196,14 +214,9 @@ class CampaignManager
         return $this->campaignRepository->countAllOpenCampaigns();
     }
 
-    /**
-     * @param int $days
-     *
-     * @return array
-     */
-    public function findInactiveCampaignsSince(int $days) : array
+    public function closeExpiredCampaigns()
     {
-        return $this->campaignRepository->findInactiveCampaignsSince($days);
+        $this->campaignRepository->closeExpiredCampaigns();
     }
 
     /**
@@ -219,6 +232,9 @@ class CampaignManager
      * We should also take care to explicitly disable Doctrine caching in
      * all queries, because Doctrine will usually return the same result
      * for the same query.
+     *
+     * @TODO we now have Communicaiton.lastActivityAt, use it instead (update CommunicationActivitySubscriber with
+     *       Campaign changes if necessary)
      *
      * @param int $campaignId
      *
@@ -255,7 +271,9 @@ class CampaignManager
     public function contact(Volunteer $volunteer, Type $type, string $title, string $message) : CampaignEntity
     {
         $communication = $type->getFormData();
-        $communication->setAudience([$volunteer->getNivol()]);
+        $communication->setAudience(AudienceType::createEmptyData([
+            'volunteers' => [$volunteer->getId()],
+        ]));
         $communication->setMessage($message);
 
         $campaign        = new CampaignModel($communication);

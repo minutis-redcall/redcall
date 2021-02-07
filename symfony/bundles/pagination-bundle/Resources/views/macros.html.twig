@@ -3,7 +3,7 @@
 
         <div class="row">
             <div class="col-md-12 text-center">
-                {{ pager.nbResults }} {{ 'pagination.result' | transchoice(pager.nbResults) }}
+                {{ pager.nbResults }} {{ 'pagination.result' | trans({'%count%': pager.nbResults}) }}
             </div>
             <div class="col-md-12 d-flex">
 

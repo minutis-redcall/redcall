@@ -7,10 +7,10 @@ use App\Entity\Answer;
 use App\Entity\Campaign;
 use App\Entity\Message;
 use App\Entity\Volunteer;
-use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Doctrine\ORM\QueryBuilder;
+use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @method Answer|null find($id, $lockMode = null, $lockVersion = null)
@@ -20,7 +20,7 @@ use Doctrine\ORM\QueryBuilder;
  */
 class AnswerRepository extends BaseRepository
 {
-    public function __construct(Registry $registry)
+    public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Answer::class);
     }
@@ -45,7 +45,7 @@ class AnswerRepository extends BaseRepository
                            ->getOneOrNullResult();
 
         if ($lastAnswer) {
-            $this->_em->detach($lastAnswer);
+            $this->_em->clear();
 
             /* @var Answer $lastAnswer */
             return $lastAnswer->getUpdatedAt()->getTimestamp();

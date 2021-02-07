@@ -3,13 +3,13 @@
 namespace App\Form\Type;
 
 use App\Entity\Structure;
-use App\Entity\Tag;
 use App\Entity\Volunteer;
 use App\Repository\StructureRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -17,6 +17,7 @@ use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Security\Core\Security;
+use Symfony\Component\Validator\Constraints\GreaterThan;
 
 class VolunteerType extends AbstractType
 {
@@ -44,21 +45,25 @@ class VolunteerType extends AbstractType
             ->add('lastName', TextType::class, [
                 'label' => 'manage_volunteers.form.last_name',
             ])
-            ->add('phones', PhonesType::class, [
+            ->add('optoutUntil', DateType::class, [
+                'label'       => 'manage_volunteers.form.optout_until',
+                'widget'      => 'single_text',
+                'required'    => false,
+                'constraints' => [
+                    new GreaterThan('tomorrow'),
+                ],
+            ])
+            ->add('phones', PhoneCardsType::class, [
                 'label' => false,
             ])
             ->add('phoneNumberOptin', CheckboxType::class, [
                 'label'    => 'manage_volunteers.form.phone_number_optin',
                 'required' => false,
-            ]);
-
-        $builder
+            ])
             ->add('phoneNumberLocked', CheckboxType::class, [
                 'label'    => 'manage_volunteers.form.phone_number_locked',
                 'required' => false,
-            ]);
-
-        $builder
+            ])
             ->add('email', TextType::class, [
                 'label'    => 'manage_volunteers.form.email',
                 'required' => false,
@@ -66,15 +71,11 @@ class VolunteerType extends AbstractType
             ->add('emailOptin', CheckboxType::class, [
                 'label'    => 'manage_volunteers.form.email_optin',
                 'required' => false,
-            ]);
-
-        $builder
+            ])
             ->add('emailLocked', CheckboxType::class, [
                 'label'    => 'manage_volunteers.form.email_locked',
                 'required' => false,
-            ]);
-
-        $builder
+            ])
             ->add('minor', CheckboxType::class, [
                 'label'    => 'manage_volunteers.form.minor',
                 'required' => false,
@@ -83,13 +84,8 @@ class VolunteerType extends AbstractType
                 'label'    => 'manage_volunteers.form.enabled',
                 'required' => false,
             ])
-            ->add('tags', EntityType::class, [
-                'class'        => Tag::class,
-                'choice_label' => function ($tag) {
-                    return sprintf('tag.%s', $tag);
-                },
-                'expanded'     => true,
-                'multiple'     => true,
+            ->add('badges', BadgeSelectionType::class, [
+                'label' => false,
             ])
             ->add('submit', SubmitType::class, [
                 'label' => 'base.button.save',

@@ -5,6 +5,7 @@ namespace App\Form\Type;
 use App\Entity\Choice;
 use App\Form\Model\CallTrigger;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -44,17 +45,24 @@ class CallTriggerType extends AbstractType
             ->add('test', SubmitType::class, [
                 'label' => 'form.communication.fields.test',
                 'attr'  => [
-                    'class'   => 'trigger-test btn-secondary',
-                    'onclick' => "$('form').attr('target', '_blank');",
+                    'class' => 'trigger-test btn-secondary',
                 ],
             ])
             ->add('submit', SubmitType::class, [
                 'label' => 'form.communication.fields.submit',
                 'attr'  => [
-                    'class'   => 'btn-primary',
-                    'onclick' => "$('form').attr('target', '');",
+                    'class' => 'trigger-launch btn-primary',
                 ],
             ]);
+
+        $builder->get('message')->addModelTransformer(new CallbackTransformer(
+            function ($fromModel) {
+                return $fromModel;
+            },
+            function ($fromView) {
+                return strip_tags($fromView);
+            }
+        ));
     }
 
     /**
@@ -65,6 +73,9 @@ class CallTriggerType extends AbstractType
         $resolver->setDefaults([
             'data_class' => CallTrigger::class,
             'submit'     => true,
+            'attr'       => [
+                'class' => 'trigger',
+            ],
         ]);
     }
 }

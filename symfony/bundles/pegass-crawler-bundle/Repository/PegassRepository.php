@@ -5,10 +5,11 @@ namespace Bundles\PegassCrawlerBundle\Repository;
 use Bundles\PegassCrawlerBundle\Entity\Pegass;
 use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
+use Doctrine\ORM\QueryBuilder;
+use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @method Pegass|null find($id, $lockMode = null, $lockVersion = null)
@@ -165,7 +166,7 @@ class PegassRepository extends ServiceEntityRepository
                     ->getSingleScalarResult();
 
         $qb->select('p.id')
-           ->setMaxResults(1000);
+           ->setMaxResults(100);
 
         $offset = 0;
         $stop   = false;
@@ -199,8 +200,27 @@ class PegassRepository extends ServiceEntityRepository
                 break;
             }
 
-            $offset += 1000;
+            $offset += 100;
         }
+    }
+
+    public function getAllEnabledEntities() : array
+    {
+        return $this
+            ->createQueryBuilder('p')
+            ->select('p.type', 'p.identifier')
+            ->where('p.enabled = true')
+            ->getQuery()
+            ->getArrayResult();
+    }
+
+    public function getEnabledEntitiesQueryBuilder(string $type) : QueryBuilder
+    {
+        return $this
+            ->createQueryBuilder('p')
+            ->where('p.enabled = true')
+            ->andWhere('p.type = :type')
+            ->setParameter('type', $type);
     }
 
     /**
@@ -212,7 +232,7 @@ class PegassRepository extends ServiceEntityRepository
     public function save(Pegass $entity)
     {
         $this->_em->persist($entity);
-        $this->_em->flush($entity);
+        $this->_em->flush();
     }
 
     /**
@@ -222,6 +242,6 @@ class PegassRepository extends ServiceEntityRepository
      */
     private function getExpireDate(string $type) : DateTime
     {
-        return DateTime::createFromFormat('U', time() - Pegass::TTL[$type]);
+        return DateTime::createFromFormat('U', time() - (Pegass::TTL[$type] * 24 * 60 * 60));
     }
 }

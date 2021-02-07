@@ -43,7 +43,7 @@ class PhraseCommand extends Command
         $this
             ->setName('phrase:sync')
             ->setDescription('Synchronize translations with PhraseApp')
-            ->addOption('sleep', null, InputOption::VALUE_OPTIONAL, 'Use this option for large operations to prevent hitting rate limits', 0)
+            ->addOption('sleep', null, InputOption::VALUE_OPTIONAL, 'Use this option for large operations to prevent hitting rate limits', 1)
             ->addOption('delete', null, InputOption::VALUE_NONE, 'Add this option to automatically delete translations that are on Phrase but no more on the app')
             ->addOption('create', null, InputOption::VALUE_NONE, 'Add this option to automatically create translations that are on the app but not yet on Phrase')
             ->addOption('dump', null, InputOption::VALUE_NONE, 'Add this option to update local files.');
@@ -85,25 +85,25 @@ class PhraseCommand extends Command
                 $locale = $this->getLocaleFromFileName($file);
                 $value  = $localTranslations[$file][$key];
                 if ($input->getOption('create')) {
-                    $output->writeln(sprintf('<info>Creating missing translation %s for locale %s</info>', $key, $locale, $value));
+                    $output->writeln(sprintf('<info>Creating missing translation %s for locale %s</info>', $key, $locale));
                     $this->phrase->createTranslation($tag, array_search($locale, $locales), $key, $value);
                     $remoteTranslations[$file][$key] = $value;
                     if ($input->getOption('sleep')) {
                         sleep($input->getOption('sleep'));
                     }
                 } else {
-                    $output->writeln(sprintf('<info>Missing translation %s for locale %s</info>', $key, $locale, $value));
+                    $output->writeln(sprintf('<info>Missing translation %s for locale %s</info>', $key, $locale));
                 }
             }
         }
 
         // Searching for expired keys (existing on Phrase but not used anymore by the app)
-        $allLocalKeys  = array_unique(call_user_func_array('array_merge', array_map(function (array $localTranslation) {
+        $allLocalKeys  = array_unique(call_user_func_array('array_merge', array_values(array_map(function (array $localTranslation) {
             return array_keys($localTranslation);
-        }, $localTranslations)));
-        $allRemoteKeys = array_unique(call_user_func_array('array_merge', array_map(function (array $remoteTranslation) {
+        }, $localTranslations))));
+        $allRemoteKeys = array_unique(call_user_func_array('array_merge', array_values(array_map(function (array $remoteTranslation) {
             return array_keys($remoteTranslation);
-        }, $remoteTranslations)));
+        }, $remoteTranslations))));
         $keysToRemove  = array_diff($allRemoteKeys, $allLocalKeys);
         foreach ($keysToRemove as $key) {
             if ($input->getOption('delete')) {
@@ -132,6 +132,8 @@ class PhraseCommand extends Command
                 }
             }
         }
+
+        return 0;
     }
 
     /**
@@ -232,7 +234,7 @@ class PhraseCommand extends Command
             return [];
         }
 
-        return $this->getFlattenArrayFromTranslations($array);;
+        return $this->getFlattenArrayFromTranslations($array);
     }
 
     /**
@@ -262,7 +264,7 @@ class PhraseCommand extends Command
         $array = [];
 
         foreach ($translations as $key => $value) {
-            if (is_scalar($value)) {
+            if (null == $value or is_scalar($value)) {
                 $array[$key] = $value;
             } else {
                 foreach ($this->getFlattenArrayFromTranslations($value) as $childKey => $childValue) {

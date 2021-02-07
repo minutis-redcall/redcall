@@ -14,9 +14,24 @@
 
         {{ form(form) }}
 
-        <p>{{ 'space.phone.details_2'|trans({'%from%': from}) }}</p>
-        <p>{{ 'space.phone.details_3'|trans }}</p>
-        <br/>
+        {% if country %}
+            {% if country.outboundSmsEnabled %}
+                <p>
+                    {{ 'space.phone.details_6'|trans }} {{ country.outboundSmsNumber }}
+                </p>
+            {% endif %}
+            {% if country.outboundCallEnabled %}
+                <p>
+                    {{ 'space.phone.details_7'|trans }} {{ country.outboundCallNumber }}
+                </p>
+            {% endif %}
+            {% if country.outboundSmsEnabled or country.outboundCallEnabled %}
+
+                <p>{{ 'space.phone.details_3'|trans }}</p>
+                <br/>
+            {% endif %}
+        {% endif %}
+
         <p>{{ 'space.phone.details_4'|trans }} {{ 'space.phone.details_5'|trans }}</p>
 
     </div>

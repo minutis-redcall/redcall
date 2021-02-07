@@ -3,7 +3,7 @@
 namespace Bundles\PaginationBundle\Pagerfanta\Template;
 
 use Pagerfanta\View\Template\TwitterBootstrap4Template;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class BootstrapLightTemplate extends TwitterBootstrap4Template
 {

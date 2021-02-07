@@ -3,7 +3,7 @@
 namespace Bundles\PasswordLoginBundle\Event;
 
 use Bundles\PasswordLoginBundle\Entity\AbstractUser;
-use Symfony\Component\EventDispatcher\Event;
+use Symfony\Contracts\EventDispatcher\Event;
 
 abstract class AbstractEvent extends Event
 {

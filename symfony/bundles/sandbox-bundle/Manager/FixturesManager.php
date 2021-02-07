@@ -3,10 +3,9 @@
 namespace Bundles\SandboxBundle\Manager;
 
 use App\Entity\Structure;
-use App\Entity\Tag;
 use App\Entity\Volunteer;
+use App\Manager\BadgeManager;
 use App\Manager\StructureManager;
-use App\Manager\TagManager;
 use App\Manager\UserManager;
 use App\Manager\VolunteerManager;
 use App\Tools\Random;
@@ -24,9 +23,9 @@ class FixturesManager
     private $volunteerManager;
 
     /**
-     * @var TagManager
+     * @var BadgeManager
      */
-    private $tagManager;
+    private $badgeManager;
 
     /**
      * @var UserManager
@@ -38,44 +37,20 @@ class FixturesManager
      */
     private $anonymizeManager;
 
-    /**
-     * @param StructureManager $structureManager
-     * @param VolunteerManager $volunteerManager
-     * @param TagManager       $tagManager
-     * @param UserManager      $userManager
-     * @param AnonymizeManager $anonymizeManager
-     */
     public function __construct(StructureManager $structureManager,
         VolunteerManager $volunteerManager,
-        TagManager $tagManager,
+        BadgeManager $badgeManager,
         UserManager $userManager,
         AnonymizeManager $anonymizeManager)
     {
         $this->structureManager = $structureManager;
         $this->volunteerManager = $volunteerManager;
-        $this->tagManager       = $tagManager;
+        $this->badgeManager     = $badgeManager;
         $this->userManager      = $userManager;
         $this->anonymizeManager = $anonymizeManager;
     }
 
-    public function createTags()
-    {
-        foreach (Tag::TAGS as $label) {
-            $tag = new Tag();
-            $tag->setLabel($label);
-            $this->tagManager->create($tag);
-        }
-    }
-
-    /**
-     * @param string   $name
-     * @param int|null $parent
-     * @param int      $numberOfVolunteers
-     * @param bool     $bindToUser
-     *
-     * @return Structure
-     */
-    public function createStructure(string $name, ?int $parent, int $numberOfVolunteers, bool $bindToUser): Structure
+    public function createStructure(string $name, ?int $parent, int $numberOfVolunteers, bool $bindToUser) : Structure
     {
         if ($structure = $this->structureManager->findOneByName($name)) {
             return $structure;
@@ -84,7 +59,6 @@ class FixturesManager
         $structure = new Structure();
         $structure->setName($name);
         $structure->setIdentifier(Random::generate(8, '0123456789'));
-        $structure->setType('UL');
         $structure->setEnabled(true);
         if ($parent && $parentStructure = $this->structureManager->find($parent)) {
             $structure->setParentStructure($parentStructure);
@@ -103,14 +77,10 @@ class FixturesManager
         return $structure;
     }
 
-    /**
-     * @param int      $numberOfVolunteers
-     * @param int|null $structureId
-     *
-     * @return array
-     */
-    public function createVolunteers(int $numberOfVolunteers, ?int $structureId): array
+    public function createVolunteers(int $numberOfVolunteers, ?int $structureId) : array
     {
+        $badges = $this->badgeManager->getPublicBadges();
+
         if ($structureId) {
             $structure = $this->structureManager->find($structureId);
             if (!$structure) {
@@ -120,7 +90,7 @@ class FixturesManager
 
         $volunteers = [];
         for ($i = 0; $i < $numberOfVolunteers; $i++) {
-            $volunteer = $this->createVolunteer();
+            $volunteer = $this->createVolunteer($badges);
             if ($structureId) {
                 $volunteer->addStructure($structure);
                 $volunteers[] = $this->volunteerManager->save($volunteer);
@@ -133,10 +103,9 @@ class FixturesManager
     /**
      * @return Volunteer
      */
-    private function createVolunteer(): Volunteer
+    private function createVolunteer(array $allBadges) : Volunteer
     {
-        $nivol   = $this->generateNivol();
-        $allTags = $this->tagManager->findAll();
+        $nivol = $this->generateNivol();
 
         $volunteer = new Volunteer();
         $volunteer->setNivol($nivol);
@@ -145,13 +114,13 @@ class FixturesManager
         $volunteer->setLocked(true);
         $volunteer->setMinor(false);
 
-        $tags = [];
+        $badges = [];
         for ($i = 0; $i < 4; $i++) {
-            $tags[] = Tag::TAGS[rand() % count(Tag::TAGS)];
+            $badges[] = $allBadges[rand() % count($allBadges)];
         }
 
-        foreach (array_unique($tags) as $tag) {
-            $volunteer->getTags()->add($allTags[$tag]);
+        foreach (array_unique($badges) as $badge) {
+            $volunteer->addBadge($badge);
         }
 
         $this->volunteerManager->save($volunteer);
@@ -164,7 +133,7 @@ class FixturesManager
     /**
      * @return string
      */
-    private function generateNivol(): string
+    private function generateNivol() : string
     {
         $nivol = Random::generate(12, '0123456789ABCDEF');
 

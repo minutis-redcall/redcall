@@ -6,11 +6,11 @@ use App\Base\BaseController;
 use App\Communication\Processor\SimpleProcessor;
 use App\Entity\Answer;
 use App\Entity\Structure;
-use App\Entity\User;
 use App\Entity\Volunteer;
 use App\Form\Model\Campaign;
 use App\Form\Model\EmailTrigger;
 use App\Form\Model\SmsTrigger;
+use App\Form\Type\AudienceType;
 use App\Form\Type\VolunteerType;
 use App\Import\VolunteerImporter;
 use App\Manager\AnswerManager;
@@ -36,6 +36,7 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Environment;
 
@@ -178,7 +179,7 @@ class VolunteersController extends BaseController
         $this->volunteerManager->save($volunteer);
 
         // Executing asynchronous task to prevent against interruptions
-        $console = sprintf('%s/../bin/console', $this->kernel->getRootDir());
+        $console = sprintf('%s/bin/console', $this->kernel->getProjectDir());
         $command = sprintf('%s pegass --volunteer %s', escapeshellarg($console), $volunteer->getIdentifier());
         exec(sprintf('%s > /dev/null 2>&1 & echo -n \$!', $command));
 
@@ -212,7 +213,8 @@ class VolunteersController extends BaseController
             }
 
             // Automatically lock phone & email if necessary
-            if ($oldPhone !== $volunteer->getPhone()) {
+            if ($oldPhone && $volunteer->getPhone() && $oldPhone->getId() !== $volunteer->getPhone()->getId()
+                || !$oldPhone && $volunteer->getPhone() || $oldPhone && !$volunteer->getPhone()) {
                 $volunteer->setPhoneNumberLocked(true);
             }
             if ($oldVolunteer->getEmail() !== $volunteer->getEmail()) {
@@ -226,15 +228,17 @@ class VolunteersController extends BaseController
                 }
             } catch (UniqueConstraintViolationException $e) {
                 // See SpaceController::phone
-                $this->alert('base.error');
+                $this->addFlash('alert', $this->translator->trans('base.error'));
 
-                return $this->redirectToRoute('management_volunteers_list', $request->query->all());
+                return $this->redirectToRoute('management_volunteers_manual_update', array_merge([
+                    'id' => $volunteer->getId(),
+                ], $request->query->all()));
             }
 
             if ($isCreate) {
-                $this->success('manage_volunteers.form.added');
+                $this->addFlash('success', $this->translator->trans('manage_volunteers.form.added'));
             } else {
-                $this->success('manage_volunteers.form.updated');
+                $this->addFlash('success', $this->translator->trans('manage_volunteers.form.updated'));
             }
 
             if ($isCreate && $this->isGranted('ROLE_ADMIN')) {
@@ -243,7 +247,9 @@ class VolunteersController extends BaseController
                 ]);
             }
 
-            return $this->redirectToRoute('management_volunteers_list', $request->query->all());
+            return $this->redirectToRoute('management_volunteers_manual_update', array_merge($request->query->all(), [
+                'id' => $volunteer->getId(),
+            ]));
         }
 
         if (!$isCreate) {
@@ -296,6 +302,7 @@ class VolunteersController extends BaseController
         $this->validateCsrfOrThrowNotFoundException('volunteers', $csrf);
 
         $volunteer->setLocked(false);
+        $volunteer->setLastPegassUpdate(new \DateTime('1984-07-10'));
         $this->volunteerManager->save($volunteer);
 
         return $this->redirectToRoute('management_volunteers_list', $request->query->all());
@@ -461,6 +468,28 @@ class VolunteersController extends BaseController
         ];
     }
 
+    /**
+     * @Route(name="list_user_structures", path="/list-user-structures")
+     */
+    public function listUserStructures(Request $request)
+    {
+        $volunteer = $this->getVolunteerById($request->get('id'));
+
+        if (!$volunteer->isUserEnabled()) {
+            throw $this->createNotFoundException();
+        }
+
+        return $this->json([
+            'title' => $this->translator->trans('manage_volunteers.can_trigger', [
+                '%name%' => $volunteer->getDisplayName(),
+            ]),
+            'body'  => $this->renderView('management/volunteers/user_structures.html.twig', [
+                'user' => $volunteer->getUser(),
+            ]),
+        ]);
+    }
+
+
     private function deleteVolunteer(Volunteer $volunteer,
         Answer $answer,
         SimpleProcessor $processor) : \App\Entity\Campaign
@@ -473,7 +502,9 @@ class VolunteersController extends BaseController
             '%nivol%' => $volunteer->getNivol(),
         ]);
 
-        $sms->setAudience([$volunteer->getNivol()]);
+        $sms->setAudience(AudienceType::createEmptyData([
+            'volunteers' => [$volunteer->getId()],
+        ]));
 
         $sms->setMessage(
             $this->translator->trans('manage_volunteers.anonymize.campaign.sms_content')
@@ -484,26 +515,20 @@ class VolunteersController extends BaseController
         // Sending a message inviting redcall users managing volunteer's structure to complete data deletion
         $email = new EmailTrigger();
 
-        $audience            = [];
-        $triggeringVolunteer = $answer->getMessage()->getCommunication()->getVolunteer();
-        if (!$triggeringVolunteer) {
-            return $trigger;
-        }
-
-        $commonStructures = array_intersect($triggeringVolunteer->getStructures()->toArray(), $volunteer->getStructures()->toArray());
-        foreach ($commonStructures as $structure) {
+        $audience = [];
+        foreach ($volunteer->getStructures() as $structure) {
             /** @var Structure $structure */
-            foreach ($structure->getUsers() as $user) {
-                /** @var User $user */
-                if ($user->getVolunteer()) {
-                    $audience[] = $user->getVolunteer()->getNivol();
+            foreach ($structure->getVolunteers() as $structureVolunteer) {
+                /** @var Volunteer $volunteer */
+                if ($structureVolunteer->getUser()) {
+                    $audience[] = $structureVolunteer->getId();
                 }
             }
-            if ($structure->getPresident()) {
-                $audience[] = $structure->getPresident();
-            }
         }
-        $email->setAudience(array_unique($audience));
+
+        $email->setAudience(AudienceType::createEmptyData([
+            'volunteers' => array_unique($audience),
+        ]));
 
         $email->setSubject($this->translator->trans('manage_volunteers.anonymize.campaign.email.subject', [
             '%nivol%' => $volunteer->getNivol(),
@@ -560,6 +585,7 @@ class VolunteersController extends BaseController
                         'multiple'      => false,
                         'expanded'      => false,
                         'label'         => 'manage_volunteers.anonymize.choose_answer',
+                        'constraints'   => new NotBlank(),
                     ])
                     ->add('delete', SubmitType::class, [
                         'label' => 'base.button.delete',
@@ -569,5 +595,20 @@ class VolunteersController extends BaseController
                     ])
                     ->getForm()
                     ->handleRequest($request);
+    }
+
+    private function getVolunteerById(?int $id) : Volunteer
+    {
+        $volunteer = $this->volunteerManager->find($id);
+
+        if (null === $id) {
+            throw $this->createNotFoundException();
+        }
+
+        if (!$this->isGranted('VOLUNTEER', $volunteer)) {
+            throw $this->createAccessDeniedException();
+        }
+
+        return $volunteer;
     }
 }

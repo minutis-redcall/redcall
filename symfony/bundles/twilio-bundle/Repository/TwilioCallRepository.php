@@ -4,7 +4,7 @@ namespace Bundles\TwilioBundle\Repository;
 
 use Bundles\TwilioBundle\Entity\TwilioCall;
 use Bundles\TwilioBundle\Entity\TwilioMessage;
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @method TwilioMessage|null find($id, $lockMode = null, $lockVersion = null)

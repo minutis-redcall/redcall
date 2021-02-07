@@ -6,7 +6,7 @@ use App\Entity\Message;
 use App\Manager\MediaManager;
 use App\Manager\MessageManager;
 use Symfony\Component\Routing\RouterInterface;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Twilio\TwiML\VoiceResponse;
 
 class VoiceCalls
@@ -132,7 +132,7 @@ class VoiceCalls
             ]);
 
             $keypad->play(
-                $this->getMediaUrl($gather, true),
+                $this->getMediaUrl($gather, true)
             );
         }
 

@@ -1,0 +1,62 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    <div class="jumbotron text-center">
+
+        <h3>{{ 'sandbox.spinner.upload'|trans }}</h3>
+
+        <div class="text-left">
+            {{ form(form) }}
+        </div>
+
+        {% if images %}
+
+            <hr/>
+
+            <h4>{{ 'sandbox.spinner.splits'|trans }}</h4>
+
+            <div class="row">
+
+                {% for split in images %}
+                    <div class="col-md-2">
+                        <img class="img-fluid" src="data:image/gif;base64,{{ split }}"/>
+                    </div>
+                {% endfor %}
+
+            </div>
+
+        {% endif %}
+
+        {% if result %}
+
+            <hr/>
+
+            <h4>{{ 'sandbox.spinner.result'|trans }}</h4>
+
+            <img class="img-fluid" src="data:image/gif;base64,{{ result }}"/>
+
+        {% endif %}
+
+    </div>
+
+{% endblock %}
+
+{% block javascripts %}
+
+    {{ parent() }}
+
+    <script type="text/javascript">
+
+        $(function () {
+            $('#{{ form.file.vars.id }}').change(function () {
+                var that = $(this);
+                that.next('.custom-file-label').html(
+                    that.val().replace('C:\\fakepath\\', '')
+                );
+            });
+        });
+
+    </script>
+
+{% endblock %}

@@ -11,7 +11,6 @@ use App\Entity\Volunteer;
 use App\Form\Model\BaseTrigger;
 use App\Repository\CommunicationRepository;
 use DateTime;
-use Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -53,6 +52,16 @@ class CommunicationManager
     private $volunteerManager;
 
     /**
+     * @var AudienceManager
+     */
+    private $audienceManager;
+
+    /**
+     * @var MediaManager
+     */
+    private $mediaManager;
+
+    /**
      * @var RouterInterface
      */
     private $router;
@@ -72,7 +81,9 @@ class CommunicationManager
         ProcessorInterface $processor,
         UserManager $userManager,
         VolunteerManager $volunteerManager,
+        AudienceManager $audienceManager,
         StructureManager $structureManager,
+        MediaManager $mediaManager,
         RouterInterface $router,
         LoggerInterface $slackLogger,
         LoggerInterface $logger)
@@ -82,7 +93,9 @@ class CommunicationManager
         $this->processor               = $processor;
         $this->userManager             = $userManager;
         $this->volunteerManager        = $volunteerManager;
+        $this->audienceManager         = $audienceManager;
         $this->structureManager        = $structureManager;
+        $this->mediaManager            = $mediaManager;
         $this->router                  = $router;
         $this->slackLogger             = $slackLogger;
         $this->logger                  = $logger;
@@ -90,8 +103,6 @@ class CommunicationManager
 
     /**
      * @required
-     *
-     * @param CampaignManager $campaignManager
      */
     public function setCampaignManager(CampaignManager $campaignManager)
     {
@@ -126,12 +137,17 @@ class CommunicationManager
             $this->processor->process($communication);
         }
 
+        $structureName = $communication->getVolunteer()->getMainStructure()->getDisplayName();
+        if ($communication->getVolunteer()->getUser() && $communication->getVolunteer()->getUser()->getMainStructure()) {
+            $structureName = $communication->getVolunteer()->getUser()->getMainStructure()->getDisplayName();
+        }
+
         $this->slackLogger->info(
             sprintf(
                 'New %s trigger by %s (%s) on %d volunteers from %d structures.%s%s%sLink: %s',
                 strtoupper($communication->getType()),
                 $communication->getVolunteer()->getDisplayName(),
-                $communication->getVolunteer()->getMainStructure()->getDisplayName(),
+                $structureName,
                 count($communication->getMessages()),
                 count($this->structureManager->getCampaignStructures($campaign)),
                 PHP_EOL,
@@ -146,23 +162,16 @@ class CommunicationManager
         return $communication;
     }
 
-    /**
-     * @param BaseTrigger $trigger
-     *
-     * @return Communication
-     *
-     * @throws Exception
-     */
     public function createCommunication(BaseTrigger $trigger) : Communication
     {
         $volunteer = null;
         if ($user = $this->userManager->findForCurrentUser()) {
-            $nivol     = null;
+            $id        = null;
             $volunteer = $user->getVolunteer();
         } else {
             // Triggers ran through the Campaign::contact() method only contain 1 volunteer
-            $nivol     = implode(' ', $trigger->getAudience());
-            $volunteer = $this->volunteerManager->findOneByNivol($nivol);
+            $id        = $trigger->getAudience()['volunteers'][0];
+            $volunteer = $this->volunteerManager->find($id);
         }
 
         $communication = new Communication();
@@ -174,6 +183,10 @@ class CommunicationManager
             ->setCreatedAt(new DateTime())
             ->setMultipleAnswer($trigger->isMultipleAnswer())
             ->setSubject($trigger->getSubject());
+
+        foreach ($trigger->getImages() as $image) {
+            $communication->addImage($image);
+        }
 
         // The first choice key is always "1"
         $choiceKey = 1;
@@ -187,10 +200,11 @@ class CommunicationManager
             $choiceKey++;
         }
 
-        if ($nivol) {
+        if ($id) {
             $volunteers = [$volunteer];
         } else {
-            $volunteers = $this->volunteerManager->filterByNivolAndAccess($trigger->getAudience());
+            $classification = $this->audienceManager->classifyAudience($trigger->getAudience());
+            $volunteers     = $this->volunteerManager->getVolunteerList($classification->getReachable());
         }
 
         $codes = $this->messageManager->generateCodes(count($volunteers));
@@ -224,20 +238,30 @@ class CommunicationManager
         return $communication;
     }
 
-    /**
-     * @return array
-     */
-    public function getTakenPrefixes() : array
-    {
-        return $this->communicationRepository->getTakenPrefixes();
-    }
-
-    /**
-     * @param \App\Manager\Communication $communication
-     * @param string                     $newName
-     */
     public function changeName(Communication $communication, string $newName)
     {
         $this->communicationRepository->changeName($communication, $newName);
+    }
+
+    public function findCommunicationIdsRequiringReports() : array
+    {
+        return $this->communicationRepository->findCommunicationIdsRequiringReports(
+            (new \DateTime())->sub(new \DateInterval('P1D'))
+        );
+    }
+
+    public function clearEntityManager()
+    {
+        $this->communicationRepository->clearEntityManager();
+    }
+
+    public function getCommunicationStructures(Communication $communication) : array
+    {
+        return $this->communicationRepository->getCommunicationStructures($communication);
+    }
+
+    public function save(Communication $communication)
+    {
+        $this->communicationRepository->save($communication);
     }
 }

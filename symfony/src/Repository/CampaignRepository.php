@@ -5,8 +5,8 @@ namespace App\Repository;
 use App\Base\BaseRepository;
 use App\Entity\Campaign;
 use Bundles\PasswordLoginBundle\Entity\AbstractUser;
-use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\ORM\QueryBuilder;
+use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @method Campaign|null find($id, $lockMode = null, $lockVersion = null)
@@ -16,7 +16,7 @@ use Doctrine\ORM\QueryBuilder;
  */
 class CampaignRepository extends BaseRepository
 {
-    public function __construct(Registry $registry)
+    public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Campaign::class);
     }
@@ -49,6 +49,7 @@ class CampaignRepository extends BaseRepository
             ->innerJoin('s.users', 'u')
             ->where('u.id = :user')
             ->setParameter('user', $user)
+            ->andWhere('s.enabled = true')
             ->andWhere('c.active = true');
     }
 
@@ -64,6 +65,7 @@ class CampaignRepository extends BaseRepository
             ->innerJoin('s.users', 'u')
             ->where('u.id = :user')
             ->setParameter('user', $user)
+            ->andWhere('s.enabled = true')
             ->andWhere('c.active = true');
     }
 
@@ -84,6 +86,7 @@ class CampaignRepository extends BaseRepository
             ->innerJoin('s.users', 'u')
             ->where('u.id = :user')
             ->setParameter('user', $user)
+            ->andWhere('s.enabled = true')
             ->andWhere('c.active = false');
     }
 
@@ -102,11 +105,14 @@ class CampaignRepository extends BaseRepository
      */
     public function openCampaign(Campaign $campaign)
     {
+        $campaign->setExpiresAt(
+            (new \DateTime())->add(new \DateInterval('P7D'))
+        );
+
         $campaign->setActive(true);
 
         $this->save($campaign);
     }
-
 
     /**
      * @param Campaign $campaign
@@ -165,21 +171,15 @@ class CampaignRepository extends BaseRepository
                     ->getSingleScalarResult();
     }
 
-    /**
-     * @param int $days
-     *
-     * @return array
-     *
-     * @throws \Exception
-     */
-    public function findInactiveCampaignsSince(int $days) : array
+    public function closeExpiredCampaigns()
     {
-        return $this->getActiveCampaignsQueryBuilder()
-                    ->join('c.communications', 'co')
-                    ->andWhere('co.createdAt < :limit')
-                    ->setParameter('limit', (new \DateTime('now'))->sub(new \DateInterval(sprintf('P%dD', $days))))
-                    ->getQuery()
-                    ->getResult();
+        $this->getActiveCampaignsQueryBuilder()
+             ->update(Campaign::class, 'c')
+             ->set('c.active', 0)
+             ->andWhere('c.expiresAt < :now')
+             ->setParameter('now', (new \DateTime())->format('Y-m-d H:i:s'))
+             ->getQuery()
+             ->execute();
     }
 
     public function getNoteUpdateTimestamp(int $campaignId) : int
@@ -262,7 +262,7 @@ class CampaignRepository extends BaseRepository
     public function getCampaignAudience(Campaign $campaign) : array
     {
         return $this->createQueryBuilder('c')
-                    ->select('s.id as structure_id, s.name as structure_name, COUNT(v) AS volunteer_count')
+                    ->select('s.id as structure_id, s.name as structure_name, COUNT(DISTINCT v) AS volunteer_count')
                     ->join('c.communications', 'co')
                     ->join('co.messages', 'm')
                     ->join('m.volunteer', 'v')

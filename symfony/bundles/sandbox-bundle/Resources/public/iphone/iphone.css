@@ -15,7 +15,6 @@ form.chat {
     top: 0;
     -webkit-touch-callout: none; /* iOS Safari */
     -webkit-user-select: none; /* Chrome/Safari/Opera */
-    -khtml-user-select: none; /* Konqueror */
     -moz-user-select: none; /* Firefox */
     -ms-user-select: none; /* IE/Edge */
     user-select: none;
@@ -90,7 +89,7 @@ form.chat .message:hover .fromThem {
     transform: translateX(130px);
 }
 
-form.chat .message:hover date {
+form.chat .message:hover {
     opacity: 1;
 }
 
@@ -185,7 +184,7 @@ form.chat .fromThem:after {
     transform: translate(-30px, -2px);
 }
 
-form.chat date {
+form.chat {
     position: absolute;
     top: 10px;
     font-size: 14px;
@@ -196,11 +195,11 @@ form.chat date {
     z-index: 4;
 }
 
-form.chat .myMessage date {
+form.chat .myMessage {
     left: 105%;
 }
 
-form.chat .fromThem date {
+form.chat .fromThem {
     right: 105%;
 }
 
@@ -240,14 +239,14 @@ form.chat .message:hover .fromThem {
     -webkit-transform: translateY(18px);
 }
 
-form.chat .myMessage date {
+form.chat .myMessage {
     top: -20px;
     left: auto;
     right: 0;
     font-size: 12px;
 }
 
-form.chat .fromThem date {
+form.chat .fromThem {
     top: -20px;
     left: 0px;
     right: 0;

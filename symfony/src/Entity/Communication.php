@@ -7,11 +7,16 @@ use App\Task\SendEmailTask;
 use App\Task\SendSmsTask;
 use App\Tools\GSM;
 use DateTime;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Exception;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\CommunicationRepository")
+ * @ORM\Table(indexes={
+ *     @ORM\Index(name="last_activity_idx", columns={"last_activity_at"})
+ * })
+ * @ORM\HasLifecycleCallbacks()
  */
 class Communication
 {
@@ -35,44 +40,34 @@ class Communication
     private $campaign;
 
     /**
-     * @var string
-     *
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $label;
 
     /**
-     * @var string
-     *
      * @ORM\Column(type="string", length=20)
      */
     private $type;
 
     /**
-     * @var string
-     *
      * @ORM\Column(type="string", length=80, nullable=true)
      */
     private $subject;
 
     /**
-     * @var string
-     *
      * @ORM\Column(type="text")
      */
     private $body;
 
     /**
-     * @var DateTime
+     * @var \DateTime
      *
      * @ORM\Column(type="datetime")
      */
     private $createdAt;
 
     /**
-     * Contains volunteer's message statuses, the message itself is inside body.
-     *
-     * @var array
+     * @var Message[]
      *
      * @ORM\OneToMany(targetEntity="App\Entity\Message", mappedBy="communication", cascade={"persist"})
      * @ORM\OrderBy({"updatedAt" = "DESC"})
@@ -111,6 +106,30 @@ class Communication
     private $raw;
 
     /**
+     * @var Report|null
+     *
+     * @ORM\OneToOne(targetEntity=Report::class, inversedBy="communication", cascade={"persist", "remove"})
+     */
+    private $report;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $lastActivityAt;
+
+    /**
+     * @var Media[]
+     *
+     * @ORM\OneToMany(targetEntity=Media::class, mappedBy="communication", cascade={"persist", "remove"})
+     */
+    private $images;
+
+    public function __construct()
+    {
+        $this->images = new ArrayCollection();
+    }
+
+    /**
      * @return mixed
      */
     public function getId()
@@ -143,7 +162,7 @@ class Communication
      *
      * @return $this
      */
-    public function setCampaign($campaign) : self
+    public function setCampaign(Campaign $campaign) : self
     {
         $this->campaign = $campaign;
 
@@ -183,7 +202,7 @@ class Communication
      *
      * @return $this
      */
-    public function setType($type) : self
+    public function setType(string $type) : self
     {
         $this->type = $type;
 
@@ -238,7 +257,7 @@ class Communication
      *
      * @return $this
      */
-    public function setBody($body) : self
+    public function setBody(string $body) : self
     {
         $this->body = $body;
 
@@ -272,7 +291,7 @@ class Communication
      *
      * @return $this
      */
-    public function setMessages($messages) : self
+    public function setMessages(array $messages) : self
     {
         $this->messages = $messages;
 
@@ -305,7 +324,7 @@ class Communication
      *
      * @return $this
      */
-    public function setCreatedAt($createdAt) : self
+    public function setCreatedAt(\DateTime $createdAt) : self
     {
         $this->createdAt = $createdAt;
 
@@ -313,7 +332,7 @@ class Communication
     }
 
     /**
-     * @return Choice[]
+     * @return Choice[]|Collection
      */
     public function getChoices()
     {
@@ -356,6 +375,8 @@ class Communication
         if (!$prefix) {
             return null;
         }
+
+        $code = preg_replace('/([a-zA-Z]+)\s*(\d)/', '$1$2', $code);
 
         $codes = explode(' ', trim($code));
         foreach ($codes as $code) {
@@ -403,6 +424,20 @@ class Communication
         }
 
         return array_filter($choices);
+    }
+
+    public function getFirstChoice() : ?Choice
+    {
+        $choices = $this->choices;
+        if ($choices instanceof Collection) {
+            $choices = $choices->toArray();
+        }
+
+        if ($choices) {
+            return reset($choices);
+        }
+
+        return null;
     }
 
     /**
@@ -453,13 +488,15 @@ class Communication
      *
      * @return bool
      *
-     * @throws Exception
+     * @throws \Exception
      */
     public function isUnclear(?string $prefix, string $message) : bool
     {
         if (!$prefix) {
             return false;
         }
+
+        $message = preg_replace('/([a-zA-Z]+)\s*(\d)/', '$1$2', $message);
 
         $words   = explode(' ', trim($message));
         $choices = [];
@@ -633,5 +670,68 @@ class Communication
             'replies-percent' => $msgsSent ? round($replies * 100 / $msgsSent, 2) : 0,
             'type'            => $this->type,
         ];
+    }
+
+    public function getReport() : ?Report
+    {
+        return $this->report;
+    }
+
+    public function setReport(?Report $report) : self
+    {
+        $this->report = $report;
+
+        return $this;
+    }
+
+    public function getLastActivityAt() : ?\DateTimeInterface
+    {
+        return $this->lastActivityAt;
+    }
+
+    public function setLastActivityAt(?\DateTimeInterface $lastActivityAt) : self
+    {
+        $this->lastActivityAt = $lastActivityAt;
+
+        return $this;
+    }
+
+    /**
+     * @ORM\PrePersist
+     * @ORM\PreUpdate
+     */
+    public function onChange()
+    {
+        $this->lastActivityAt = new \DateTime();
+    }
+
+    /**
+     * @return Collection|Media[]
+     */
+    public function getImages() : Collection
+    {
+        return $this->images;
+    }
+
+    public function addImage(Media $image) : self
+    {
+        if (!$this->images->contains($image)) {
+            $this->images[] = $image;
+            $image->setCommunication($this);
+        }
+
+        return $this;
+    }
+
+    public function removeImage(Media $image) : self
+    {
+        if ($this->images->removeElement($image)) {
+            // set the owning side to null (unless already changed)
+            if ($image->getCommunication() === $this) {
+                $image->setCommunication(null);
+            }
+        }
+
+        return $this;
     }
 }

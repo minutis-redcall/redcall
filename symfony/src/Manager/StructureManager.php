@@ -65,27 +65,6 @@ class StructureManager
         return $this->structureRepository->findCallableStructuresForStructure($structure);
     }
 
-    public function getTagCountByStructuresForCurrentUser() : array
-    {
-        $rows = $this->structureRepository->getTagCountByStructuresForUser(
-            $this->userManager->findForCurrentUser()
-        );
-
-        $counts = [];
-        foreach ($rows as $row) {
-            $counts[$row['structure_id']][$row['tag_id']] = $row['count'];
-        }
-
-        return $counts;
-    }
-
-    public function getVolunteerCountByStructuresForCurrentUser() : array
-    {
-        return $this->structureRepository->getVolunteerCountByStructuresForUser(
-            $this->userManager->findForCurrentUser()
-        );
-    }
-
     public function searchAllQueryBuilder(?string $criteria, bool $enabled) : QueryBuilder
     {
         return $this->structureRepository->searchAllQueryBuilder($criteria, $enabled);
@@ -112,12 +91,38 @@ class StructureManager
 
     public function getStructuresQueryBuilderForUser(User $user) : QueryBuilder
     {
-        return $this->structureRepository->searchForUserQueryBuilder($user, null, true);
+        return $this->structureRepository->searchForUserQueryBuilder($user, null);
     }
 
     public function getStructuresForUser(User $user) : array
     {
-        return $this->structureRepository->searchForUser($user, null, 0xFFFFFFFF, true);
+        $entities = $this
+            ->structureRepository
+            ->searchForUserQueryBuilder($user, null)
+            ->getQuery()
+            ->getResult();
+
+        $structures = [];
+        foreach ($entities as $entity) {
+            /** @var Structure $entity */
+            $structures[$entity->getId()] = $entity;
+        }
+
+        return $structures;
+    }
+
+    public function getStructuresForCurrrentUser() : array
+    {
+        return $this->getStructuresForUser(
+            $this->userManager->findForCurrentUser()
+        );
+    }
+
+    public function getStructureHierarchyForCurrentUser()
+    {
+        return $this->structureRepository->getStructureHierarchyForCurrentUser(
+            $this->userManager->findForCurrentUser()
+        );
     }
 
     public function getCampaignStructures(Campaign $campaign) : array
@@ -139,4 +144,15 @@ class StructureManager
 
         return $counts;
     }
+
+    public function getVolunteerLocalCounts(array $structureIds) : array
+    {
+        return $this->structureRepository->getVolunteerLocalCounts($structureIds);
+    }
+
+    public function getDescendantStructures(array $structureIds) : array
+    {
+        return $this->structureRepository->getDescendantStructures($structureIds);
+    }
 }
+

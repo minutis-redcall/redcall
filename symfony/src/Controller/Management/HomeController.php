@@ -3,7 +3,7 @@
 namespace App\Controller\Management;
 
 use App\Base\BaseController;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * @Route(path="management/", name="management_")

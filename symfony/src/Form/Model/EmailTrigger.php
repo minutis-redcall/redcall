@@ -19,7 +19,7 @@ class EmailTrigger extends BaseTrigger
      */
     public function validate(ExecutionContextInterface $context, $payload)
     {
-        if (mb_strlen($this->getMessage()) > Message::MAX_LENGTH_EMAIL) {
+        if (mb_strlen(strip_tags($this->getMessage())) > Message::MAX_LENGTH_EMAIL) {
             $context->buildViolation('form.communication.errors.too_large_sms')
                     ->atPath('message')
                     ->addViolation();

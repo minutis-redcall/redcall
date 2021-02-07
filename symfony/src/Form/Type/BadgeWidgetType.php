@@ -4,6 +4,7 @@ namespace App\Form\Type;
 
 use App\Entity\Badge;
 use App\Manager\BadgeManager;
+use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -34,12 +35,31 @@ class BadgeWidgetType extends TextType
             new CallbackTransformer(
                 function ($badge) use ($options) {
                     if (!$options['multiple']) {
-                        return $badge ? $badge->getId() : null;
+                        if (!$badge) {
+                            return null;
+                        }
+
+                        if ($options['only_invisible'] && $badge->isVisible()) {
+                            return null;
+                        }
+
+                        return $badge->getId();
+                    }
+
+                    if ($badge instanceof Collection) {
+                        $badge = $badge->toArray();
+                    }
+
+                    $badges = $badge;
+                    if ($options['only_invisible']) {
+                        $badges = array_filter($badge, function (Badge $badge) {
+                            return !$badge->isVisible();
+                        });
                     }
 
                     return implode(',', array_map(function (Badge $badge) {
                         return $badge->getId();
-                    }, $badge->toArray()));
+                    }, $badges));
                 },
                 function ($badgeId) use ($options) {
                     if (!$options['multiple']) {
@@ -67,14 +87,14 @@ class BadgeWidgetType extends TextType
             if (!$badge instanceof Badge) {
                 if (!$options['multiple']) {
                     $badge = $this->badgeManager->find($view->vars['value']);
-                    if ($badge) {
+                    if ($badge && (!$options['only_invisible'] || !$badge->isVisible())) {
                         $view->vars['data'] = [$badge->toSearchResults()];
                     }
                 } else {
                     $view->vars['data'] = [];
                     foreach (explode(',', $view->vars['value']) as $badgeId) {
                         $badge = $this->badgeManager->find($badgeId);
-                        if ($badge) {
+                        if ($badge && (!$options['only_invisible'] || !$badge->isVisible())) {
                             $view->vars['data'][] = $badge->toSearchResults();
                         }
                     }
@@ -87,6 +107,9 @@ class BadgeWidgetType extends TextType
     {
         parent::configureOptions($resolver);
 
-        $resolver->setDefault('multiple', false);
+        $resolver->setDefaults([
+            'multiple'       => false,
+            'only_invisible' => false,
+        ]);
     }
 }

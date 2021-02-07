@@ -3,7 +3,6 @@
 {% block body %}
     {% import '@Api/macros.html.twig' as macros %}
 
-
     <div class="text-left">
         <div class="h3">Token "{{ token.name }}"</div>
 
@@ -32,6 +31,9 @@
                 <nav id="toc" class="sticky-top"></nav>
             </div>
             <div class="col-md-10">
+
+                {% block introduction %}{% endblock %}
+
                 <div>
                     <h2>Authentication</h2>
 
@@ -56,7 +58,7 @@
 
                     {% set method = 'POST' %}
                     {% set uri = app.request.schemeAndHttpHost ~ path("developer_demo", {foo: 'bar'}) %}
-                    {% set body = {'Hello': 'world!'} %}
+                    {% set body = {'name': 'alain'} %}
                     {{ api_demo(token, method, uri, body, false) }}
 
                     <p>&nbsp;</p>
@@ -69,7 +71,54 @@
                 <hr/>
 
                 <div>
-                    <h2>Responses format</h2>
+                    <h2>Verbs</h2>
+
+                    <p>The API uses the recommanded HTTP verbs on CRUD operations.</p>
+
+                    <ul>
+                        <li>
+                            {{ macros.method('GET') }} for reading
+                        </li>
+                        <li>
+                            {{ macros.method('POST') }} for creating
+                        </li>
+                        <li>
+                            {{ macros.method('PUT') }} for updating
+                        </li>
+                        <li>
+                            {{ macros.method('DELETE') }} for deleting
+                        </li>
+                    </ul>
+
+                    <p>Request parameters should be given by these means:</p>
+
+                    <ul>
+                        <li>
+                            <strong><code>/path/{placeholder}</code></strong>:
+                            in the URI as placeholders when an endpoint affects a particular resource
+                        </li>
+                        <li>
+                            <strong><code>/path?query=string</code></strong>:
+                            in the query string for all other parameters if the endpoint method
+                            is {{ macros.method('GET') }}
+                        </li>
+                        <li>
+                            <strong><code>{"json": "payload"}</code></strong>:
+                            in the request body as a JSON-serialized payload for all other methods
+                        </li>
+                    </ul>
+
+                    <p>
+                        All responses provided are either empty or serialized in JSON.
+                    </p>
+
+                </div>
+
+                <hr/>
+
+                <div>
+                    <h2>Responses</h2>
+                    <h3>Success</h3>
 
                     <p>All responses in the API will at least have 2 properties</p>
 
@@ -84,7 +133,7 @@
                 <hr/>
 
                 <div>
-                    <h3>Error responses</h3>
+                    <h3>Errors</h3>
                     <p>If <code>success</code> property is false in the API responses, the following properties will be
                         available.</p>
 
@@ -100,7 +149,7 @@
                 <hr/>
 
                 <div>
-                    <h3>Pagined responses</h3>
+                    <h3>Pagination</h3>
                     <br/><br/><br/>
                     <br/><br/><br/>
                     <br/><br/><br/>

@@ -16,7 +16,6 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Constraints\Choice;
 use Symfony\Component\Validator\Constraints\Length;
@@ -89,7 +88,7 @@ class MaintenanceController extends BaseController
     {
         $this->maintenanceManager->refresh();
 
-        $this->success('maintenance.refresh_started');
+        $this->addFlash('success', $this->translator->trans('maintenance.refresh_started'));
 
         return $this->redirectToRoute('admin_maintenance_index');
     }
@@ -211,7 +210,7 @@ class MaintenanceController extends BaseController
     {
         $nivol = $this->createSearchForm($request)->get('nivol')->getData();
         if (!$nivol) {
-            return new Response('', Response::HTTP_BAD_REQUEST);
+            throw $this->createNotFoundException();
         }
 
         $volunteer = $this->volunteerManager->findOneByNivol($nivol);

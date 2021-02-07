@@ -4,12 +4,12 @@ namespace App\Communication;
 
 use App\Entity\Communication;
 use App\Entity\Message;
+use App\Manager\CountryManager;
+use App\Manager\MessageManager;
 use App\Provider\Call\CallProvider;
 use App\Provider\Email\EmailProvider;
 use App\Provider\SMS\SMSProvider;
 use App\Services\MessageFormatter;
-use App\Tools\PhoneNumber;
-use Doctrine\ORM\EntityManagerInterface;
 
 class Sender
 {
@@ -18,6 +18,11 @@ class Sender
     const PAUSE_SMS   = 500000; // 2 sms / second
     const PAUSE_CALL  = 200000; // 5 calls / second
     const PAUSE_EMAIL = 100000; // 10 emails / second
+
+    /**
+     * @var CountryManager
+     */
+    private $countryManager;
 
     /**
      * @var SMSProvider
@@ -40,51 +45,42 @@ class Sender
     private $formatter;
 
     /**
-     * @var EntityManagerInterface
+     * @var MessageManager
      */
-    private $entityManager;
+    private $messageManager;
 
-    public function __construct(
+    public function __construct(CountryManager $countryManager,
         SMSProvider $SMSProvider,
         CallProvider $callProvider,
         EmailProvider $emailProvider,
         MessageFormatter $formatter,
-        EntityManagerInterface $entityManager
-    ) {
-        $this->SMSProvider   = $SMSProvider;
-        $this->callProvider  = $callProvider;
-        $this->emailProvider = $emailProvider;
-        $this->formatter     = $formatter;
-        $this->entityManager = $entityManager;
+        MessageManager $messageManager)
+    {
+        $this->countryManager = $countryManager;
+        $this->SMSProvider    = $SMSProvider;
+        $this->callProvider   = $callProvider;
+        $this->emailProvider  = $emailProvider;
+        $this->formatter      = $formatter;
+        $this->messageManager = $messageManager;
     }
 
-    /**
-     * @param Communication $communication
-     * @param bool          $force
-     *
-     * @throws \Twig\Error\LoaderError
-     * @throws \Twig\Error\RuntimeError
-     * @throws \Twig\Error\SyntaxError
-     */
     public function sendCommunication(Communication $communication, bool $force = false)
     {
         foreach ($communication->getMessages() as $message) {
-            if ($message->isReachable() && ($force || $message->canBeSent())) {
-                $this->sendMessage($message);
+            if ($force) {
+                $message->setSent(false);
+                $message->setError(null);
             }
+            $this->sendMessage($message);
         }
     }
 
-    /**
-     * @param Message $message
-     * @param bool    $sleep
-     *
-     * @throws \Twig\Error\LoaderError
-     * @throws \Twig\Error\RuntimeError
-     * @throws \Twig\Error\SyntaxError
-     */
     public function sendMessage(Message $message, bool $sleep = true)
     {
+        if ($this->isMessageNotTransmittable($message)) {
+            return;
+        }
+
         switch ($message->getCommunication()->getType()) {
             case Communication::TYPE_SMS:
                 $this->sendSms($message);
@@ -117,7 +113,13 @@ class Sender
         }
 
         $volunteer = $message->getVolunteer();
-        $sender    = PhoneNumber::getSmsSender($volunteer->getPhone());
+        $country   = $this->countryManager->getCountry($volunteer);
+
+        if (!$country || !$country->isOutboundSmsEnabled() || !$country->getOutboundSmsNumber()) {
+            return;
+        }
+
+        $sender = $country->getOutboundSmsNumber();
 
         try {
             $messageId = $this->SMSProvider->send(
@@ -135,8 +137,7 @@ class Sender
             $message->setError($e->getMessage());
         }
 
-        $this->entityManager->merge($message);
-        $this->entityManager->flush();
+        $this->messageManager->save($message);
     }
 
     public function sendCall(Message $message)
@@ -146,7 +147,13 @@ class Sender
         }
 
         $volunteer = $message->getVolunteer();
-        $sender    = PhoneNumber::getCallSender($volunteer->getPhone());
+        $country   = $this->countryManager->getCountry($volunteer);
+
+        if (!$country || !$country->isOutboundCallEnabled() || !$country->getOutboundCallNumber()) {
+            return;
+        }
+
+        $sender = $country->getOutboundCallNumber();
 
         try {
             $messageId = $this->callProvider->send(
@@ -163,17 +170,9 @@ class Sender
             $message->setError($e->getMessage());
         }
 
-        $this->entityManager->merge($message);
-        $this->entityManager->flush();
+        $this->messageManager->save($message);
     }
 
-    /**
-     * @param Message $message
-     *
-     * @throws \Twig\Error\LoaderError
-     * @throws \Twig\Error\RuntimeError
-     * @throws \Twig\Error\SyntaxError
-     */
     public function sendEmail(Message $message)
     {
         if (!$message->canBeSent()) {
@@ -196,7 +195,69 @@ class Sender
             $message->setError($e->getMessage());
         }
 
-        $this->entityManager->merge($message);
-        $this->entityManager->flush();
+        $this->messageManager->save($message);
+    }
+
+    private function isMessageNotTransmittable(Message $message) : bool
+    {
+        $error     = null;
+        $volunteer = $message->getVolunteer();
+
+        switch ($message->getCommunication()->getType()) {
+            case $message->getCommunication()->getType():
+                if ($volunteer->getOptoutUntil() && $volunteer->getOptoutUntil()->getTimestamp() > time()) {
+                    $error = 'campaign_status.warning.optout_until';
+                    break;
+                }
+            case Communication::TYPE_SMS:
+                if ($volunteer->getPhoneNumber() && !$volunteer->getPhone()->isMobile()) {
+                    $error = 'campaign_status.warning.no_phone_mobile';
+                    break;
+                }
+                if (null === $volunteer->getPhoneNumber()) {
+                    $error = 'campaign_status.warning.no_phone';
+                    break;
+                }
+                if (!$volunteer->isPhoneNumberOptin()) {
+                    $error = 'campaign_status.warning.no_phone_optin';
+                    break;
+                }
+                if (!$this->countryManager->isSMSTransmittable($volunteer)) {
+                    $error = 'campaign_status.warning.country_no_sms';
+                    break;
+                }
+                break;
+            case Communication::TYPE_CALL:
+                if (null === $volunteer->getPhoneNumber()) {
+                    $error = 'campaign_status.warning.no_phone';
+                    break;
+                }
+                if (!$volunteer->isPhoneNumberOptin()) {
+                    $error = 'campaign_status.warning.no_phone_optin';
+                    break;
+                }
+                if (!$this->countryManager->isVoiceCallTransmittable($volunteer)) {
+                    $error = 'campaign_status.warning.country_no_call';
+                    break;
+                }
+                break;
+            case Communication::TYPE_EMAIL:
+                if (null === $volunteer->getEmail()) {
+                    $error = 'campaign_status.warning.no_email';
+                    break;
+                }
+                if (!$volunteer->isEmailOptin()) {
+                    $error = 'campaign_status.warning.no_email_optin';
+                    break;
+                }
+                break;
+        }
+
+        if (null !== $error) {
+            $message->setError($error);
+            $this->messageManager->save($message);
+        }
+
+        return null !== $error;
     }
 }

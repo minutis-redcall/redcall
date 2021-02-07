@@ -6,7 +6,8 @@ use App\Base\BaseController;
 use App\Component\HttpFoundation\MpdfResponse;
 use App\Entity\Message;
 use App\Entity\VolunteerSession;
-use App\Form\Type\PhonesType;
+use App\Form\Type\PhoneCardsType;
+use App\Manager\CountryManager;
 use App\Manager\MessageManager;
 use App\Manager\PhoneManager;
 use App\Manager\VolunteerManager;
@@ -16,10 +17,13 @@ use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Mpdf\Mpdf;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\Constraints\GreaterThan;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * @Route(path="/space/{sessionId}", name="space_")
@@ -43,28 +47,54 @@ class SpaceController extends BaseController
     private $messageManager;
 
     /**
+     * @var CountryManager
+     */
+    private $countryManager;
+
+    /**
      * @var PhoneManager
      */
     private $phoneManager;
 
+    /**
+     * @var TranslatorInterface
+     */
+    private $translator;
+
     public function __construct(VolunteerSessionManager $volunteerSessionManager,
         VolunteerManager $volunteerManager,
         MessageManager $messageManager,
-        PhoneManager $phoneManager)
+        CountryManager $countryManager,
+        PhoneManager $phoneManager,
+        TranslatorInterface $translator)
     {
         $this->volunteerSessionManager = $volunteerSessionManager;
         $this->volunteerManager        = $volunteerManager;
         $this->messageManager          = $messageManager;
+        $this->countryManager          = $countryManager;
         $this->phoneManager            = $phoneManager;
+        $this->translator              = $translator;
     }
 
     /**
      * @Route(path="/", name="home")
      */
-    public function home(VolunteerSession $session)
+    public function home(Request $request, VolunteerSession $session)
     {
+        $country = $this->countryManager->getCountry($session->getVolunteer());
+
+        // What if a volunteer wish to use another supported language?
+        if ($country && $request->getLocale() !== $country->getLocale()) {
+            $this->countryManager->applyLocale($country);
+
+            return $this->redirectToRoute('space_home', [
+                'sessionId' => $session,
+            ]);
+        }
+
         return $this->render('space/index.html.twig', [
-            'session' => $session,
+            'session'  => $session,
+            'messages' => $this->messageManager->getActiveMessagesForVolunteer($session->getVolunteer()),
         ]);
     }
 
@@ -86,7 +116,7 @@ class SpaceController extends BaseController
         $volunteer = $session->getVolunteer();
 
         $form = $this->createFormBuilder($volunteer)
-                     ->add('phones', PhonesType::class, [
+                     ->add('phones', PhoneCardsType::class, [
                          'label' => false,
                      ])
                      ->add('submit', SubmitType::class, [
@@ -107,7 +137,7 @@ class SpaceController extends BaseController
                 // the new one before removing the other. As a result, an exception
                 // is thrown because of the unique constraint. I was not able to manage
                 // correctly that behavior, so I just render a generic error message.
-                $this->alert('base.error');
+                $this->addFlash('alert', $this->translator->trans('base.error'));
             }
 
             return $this->redirectToRoute('space_home', [
@@ -118,7 +148,7 @@ class SpaceController extends BaseController
         return $this->render('space/phone.html.twig', [
             'session' => $session,
             'form'    => $form->createView(),
-            'from'    => implode(' / ', PhoneNumber::listAllNumbers()),
+            'country' => $this->countryManager->getCountry($volunteer),
         ]);
     }
 
@@ -172,6 +202,14 @@ class SpaceController extends BaseController
                      ->add('emailOptin', CheckboxType::class, [
                          'label'    => 'manage_volunteers.form.email_optin',
                          'required' => false,
+                     ])
+                     ->add('optoutUntil', DateType::class, [
+                         'label'       => 'manage_volunteers.form.optout_until_me',
+                         'widget'      => 'single_text',
+                         'required'    => false,
+                         'constraints' => [
+                             new GreaterThan('tomorrow'),
+                         ],
                      ])
                      ->add('submit', SubmitType::class, [
                          'label' => 'base.button.save',

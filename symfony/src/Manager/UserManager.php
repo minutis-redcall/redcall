@@ -2,6 +2,7 @@
 
 namespace App\Manager;
 
+use App\Entity\Structure;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use Bundles\PasswordLoginBundle\Manager\UserManager as BaseUserManager;
@@ -120,13 +121,6 @@ class UserManager extends BaseUserManager
         $this->save($user);
     }
 
-    public function getCurrentUserStructuresQueryBuilder() : QueryBuilder
-    {
-        return $this->structureManager->getStructuresQueryBuilderForUser(
-            $this->findForCurrentUser()
-        );
-    }
-
     public function getUserStructuresQueryBuilder(User $user) : QueryBuilder
     {
         return $this->structureManager->getStructuresQueryBuilderForUser(
@@ -134,15 +128,13 @@ class UserManager extends BaseUserManager
         );
     }
 
-    public function getCurrentUserStructures() : array
+    public function searchQueryBuilder(?string $criteria, ?bool $onlyAdmins, ?bool $onlyDevelopers) : QueryBuilder
     {
-        return $this->structureManager->getStructuresForUser(
-            $this->findForCurrentUser()
-        );
+        return $this->userRepository->searchQueryBuilder($criteria, $onlyAdmins, $onlyDevelopers);
     }
 
-    public function searchQueryBuilder(?string $criteria) : QueryBuilder
+    public function getRedCallUsersInStructure(Structure $structure) : array
     {
-        return $this->userRepository->searchQueryBuilder($criteria);
+        return $this->userRepository->getRedCallUsersInStructure($structure);
     }
 }

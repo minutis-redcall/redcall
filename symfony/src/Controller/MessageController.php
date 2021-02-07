@@ -5,7 +5,13 @@ namespace App\Controller;
 use App\Base\BaseController;
 use App\Entity\Message;
 use App\Manager\MessageManager;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\FormInterface;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 /**
  * Class MessageController
@@ -27,15 +33,25 @@ class MessageController extends BaseController
     }
 
     /**
-     * @Route(path="{code}", name="open", methods={"GET"})
+     * @Route(path="{code}", name="open", methods={"GET", "POST"})
      */
-    public function openAction(Message $message)
+    public function openAction(Request $request, Message $message)
     {
+        $form = $this->createFreeAnswerForm($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->messageManager->addAnswer($message, $form->get('freeAnswer')->getData());
+
+            return $this->redirectToRoute('message_open', [
+                'code' => $message->getCode(),
+            ]);
+        }
+
         return $this->render('message/index.html.twig', [
             'campaign'      => $message->getCommunication()->getCampaign(),
             'communication' => $message->getCommunication(),
             'message'       => $message,
             'website_url'   => getenv('WEBSITE_URL'),
+            'form'          => $form->createView(),
         ]);
     }
 
@@ -86,17 +102,26 @@ class MessageController extends BaseController
         ]);
     }
 
-    /**
-     * @param Message $message
-     *
-     * @param string  $signature
-     */
+    private function createFreeAnswerForm(Request $request) : FormInterface
+    {
+        return $this
+            ->createFormBuilder()
+            ->add('freeAnswer', TextType::class, [
+                'label'       => 'campaign_status.free_answer',
+                'constraints' => [
+                    new NotBlank(),
+                    new Length(['max' => 1024]),
+                ],
+            ])
+            ->add('submit', SubmitType::class, [
+                'label' => 'base.button.submit',
+            ])
+            ->getForm()
+            ->handleRequest($request);
+    }
+
     private function checkSignature(Message $message, string $signature)
     {
-        // Smouth rollout: do not invalidate links in emails sent recently.
-        // TODO: remove this on 01/05/2020
-        return;
-
         if ($message->getSignature() !== $signature) {
             throw $this->createNotFoundException();
         }

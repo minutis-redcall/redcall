@@ -1,8 +1,8 @@
 <?php
 
 use App\Kernel;
-use Symfony\Component\Debug\Debug;
 use Symfony\Component\Dotenv\Dotenv;
+use Symfony\Component\ErrorHandler\Debug;
 use Symfony\Component\HttpFoundation\Request;
 
 require __DIR__.'/../vendor/autoload.php';
@@ -14,7 +14,7 @@ if (!isset($_SERVER['APP_ENV'])) {
     if (!class_exists(Dotenv::class)) {
         throw new \RuntimeException('APP_ENV environment variable is not defined. You need to define environment variables for configuration or add "symfony/dotenv" as a Composer dependency to load variables from a .env file.');
     }
-    (new Dotenv())->load(__DIR__.'/../.env');
+    (new Dotenv())->usePutenv(true)->load(__DIR__.'/../.env');
 }
 
 if (is_file(__DIR__.'/../config/keys/google-service-account.json')) {
@@ -25,7 +25,7 @@ if (is_file(__DIR__.'/../config/keys/google-service-account.json')) {
 }
 
 $env   = $_SERVER['APP_ENV'] ?? 'dev';
-$debug = (bool)($_SERVER['APP_DEBUG'] ?? ('prod' !== $env));
+$debug = (bool) ($_SERVER['APP_DEBUG'] ?? ('prod' !== $env));
 
 if ($debug) {
     umask(0000);

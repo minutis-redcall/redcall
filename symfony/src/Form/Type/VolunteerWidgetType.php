@@ -42,7 +42,7 @@ class VolunteerWidgetType extends TextType
         if ($view->vars['value']) {
             $volunteer = $this->volunteerManager->findOneByNivol($view->vars['value']);
             if ($volunteer) {
-                $view->vars['data'] = [$volunteer->toSearchResults($this->translator)];
+                $view->vars['data'] = [$volunteer->toSearchResults()];
             }
         }
     }

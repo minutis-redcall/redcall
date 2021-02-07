@@ -1,3 +1,17 @@
+{% macro method(method) %}
+    {% if method == 'GET' %}
+        <div class="badge badge-success" style="margin:5px;">{{ method|upper }}</div>
+    {% elseif method == 'POST' %}
+        <div class="badge badge-info" style="margin:5px;">{{ method|upper }}</div>
+    {% elseif method == 'PUT' %}
+        <div class="badge badge-warning" style="margin:5px;">{{ method|upper }}</div>
+    {% elseif method == 'DELETE' %}
+        <div class="badge badge-danger" style="margin:5px;">{{ method|upper }}</div>
+    {% else %}
+        <div class="badge badge-dark" style="margin:5px;">{{ method|upper }}</div>
+    {% endif %}
+{% endmacro %}
+
 {% macro responseProperties(properties) %}
     <table class="table">
         {% for property in properties %}

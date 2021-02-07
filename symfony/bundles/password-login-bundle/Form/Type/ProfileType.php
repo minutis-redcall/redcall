@@ -13,7 +13,6 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
-use Symfony\Component\Security\Core\Encoder\BCryptPasswordEncoder;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints;
@@ -85,7 +84,7 @@ class ProfileType extends AbstractType
                     'constraints' => [
                         new Constraints\Length([
                             'min' => 8,
-                            'max' => BCryptPasswordEncoder::MAX_PASSWORD_LENGTH,
+                            'max' => 4096,
                         ]),
                         new Constraints\Callback([
                             'callback' => function ($object, ExecutionContextInterface $context, $payload) {

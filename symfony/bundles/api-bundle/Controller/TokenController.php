@@ -7,6 +7,7 @@ use Bundles\ApiBundle\Manager\TokenManager;
 use Bundles\ApiBundle\Util;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormInterface;
@@ -23,7 +24,7 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
  * @Route(name="developer_token_", path="/developer/token")
  * @IsGranted("ROLE_DEVELOPER")
  */
-class TokenController extends BaseController
+class TokenController extends AbstractController
 {
     /**
      * @var TokenManager
@@ -53,10 +54,8 @@ class TokenController extends BaseController
         }
 
         return $this->render('@Api/token/index.html.twig', [
-            'pager' => $this->getPager(
-                $this->tokenManager->getTokensQueryBuilderForUser()
-            ),
-            'form'  => $form->createView(),
+            'tokens' => $this->tokenManager->getTokensForUser(),
+            'form'   => $form->createView(),
         ]);
     }
 

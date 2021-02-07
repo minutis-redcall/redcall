@@ -3,7 +3,7 @@
 namespace Bundles\TwilioBundle\Repository;
 
 use Bundles\TwilioBundle\Entity\TwilioStatus;
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @method TwilioStatus|null find($id, $lockMode = null, $lockVersion = null)

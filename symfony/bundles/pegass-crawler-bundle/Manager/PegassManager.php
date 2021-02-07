@@ -12,6 +12,7 @@ use DateTime;
 use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
+use Doctrine\ORM\QueryBuilder;
 use Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -54,6 +55,16 @@ class PegassManager
         $this->pegassClient     = $pegassClient;
         $this->slackLogger      = $slackLogger;
         $this->logger           = $logger;
+    }
+
+    public function getAllEnabledEntities() : array
+    {
+        return $this->pegassRepository->getAllEnabledEntities();
+    }
+
+    public function getEnabledEntitiesQueryBuilder(string $type) : QueryBuilder
+    {
+        return $this->pegassRepository->getEnabledEntitiesQueryBuilder($type);
     }
 
     /**
@@ -294,7 +305,7 @@ class PegassManager
         foreach ($pages as $page) {
             $list = $page['list'] ?? $page['content'] ?? [];
             foreach ($list as $row) {
-                $volunteer = $this->pegassRepository->getEntity(Pegass::TYPE_VOLUNTEER, $row['id'], $entity->getIdentifier(), false);
+                $volunteer = $this->pegassRepository->getEntity(Pegass::TYPE_VOLUNTEER, $row['id'], false);
                 if (!$volunteer) {
                     $volunteer = new Pegass();
                     $volunteer->setType(Pegass::TYPE_VOLUNTEER);
@@ -347,7 +358,7 @@ class PegassManager
      */
     private function spreadUpdateDatesInTTL()
     {
-        $area = $this->pegassRepository->getEntity(Pegass::TYPE_AREA, null);
+        $area = $this->pegassRepository->getEntity(Pegass::TYPE_AREA);
         if (!$area || $area->getIdentifier()) {
             return;
         }
@@ -358,7 +369,7 @@ class PegassManager
         foreach (Pegass::TTL as $type => $ttl) {
             $count = $this->pegassRepository->countEntities($type);
             $date  = (new DateTime())->sub(new DateInterval(sprintf('PT%dS', $ttl)));
-            $step  = intval($ttl / $count);
+            $step  = intval(($ttl * 24 * 60 * 60) / $count);
             $this->pegassRepository->foreach($type, function (Pegass $entity) use ($date, $step) {
                 $updateAt = new DateInterval(sprintf('PT%dS', $step));
                 $date->add($updateAt);

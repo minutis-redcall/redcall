@@ -50,6 +50,11 @@ class VolunteerVoter extends Voter
 
         /** @var Volunteer $volunteer */
         $volunteer = $subject;
+
+        if (0 === $volunteer->getStructures()->count()) {
+            return true;
+        }
+
         foreach ($volunteer->getStructures() as $structure) {
             if ($user->getStructures()->contains($structure)) {
                 return true;

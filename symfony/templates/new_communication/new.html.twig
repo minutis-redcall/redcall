@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+{% import 'macros.html.twig' as macros %}
+
+{% block body %}
+    <div class="row justify-content-md-center">
+        <div class="col-md-12">
+            <h1>
+                {{ macros.communicationTypeIcon(type) }}
+                {{ 'campaign.titles.new'|trans({'%type%': ('campaign.titles.'~type)|trans|lower}) }}
+            </h1>
+
+            <div id="form-container">
+
+                {{ form_start(form) }}
+                {{ form_errors(form) }}
+
+                {{ form_row(form.label) }}
+
+                {{ form_row(form.type) }}
+
+                <hr/>
+
+                {{ include(type.formView, _context|merge({form: form.trigger})) }}
+
+                <hr/>
+                <div class="h4">{{ 'form.campaign.fields.notes_title'|trans }}</div>
+                {{ form_row(form.notes) }}
+
+                {{ form_end(form) }}
+
+            </div>
+
+            {{ include('new_communication/spinner.html.twig') }}
+
+        </div>
+    </div>
+{% endblock %}

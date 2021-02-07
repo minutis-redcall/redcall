@@ -29,8 +29,7 @@ sandbox:
       number_volunteers: 'Nombre de bénévoles dans la structure'
       parent: 'Structure parente (optionnelle)'
       title: 'Générer une structure'
-    tags: 'Générer les compétences'
-    title: 'Créer des compétences, structures & bénévoles'
+    title: 'Créer des structures & bénévoles'
     volunteer:
       created: '%nbr% bénévoles créés'
       number_volunteers: 'Nombre de bénévoles à générer'
@@ -38,6 +37,11 @@ sandbox:
       title: 'Générer des bénévoles'
   home:
     link: Sandbox
+  spinner:
+    button: 'Générateur de spinner'
+    result: Résultat
+    splits: Splits
+    upload: 'Charger une image'
   volunteer_generator:
     button: 'Générateur de bénévoles'
     label: 'Nombre de bénévoles à créer'

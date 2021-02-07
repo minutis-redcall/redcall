@@ -2,8 +2,8 @@
 
 namespace App\Base;
 
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Command\Command;
 
-abstract class BaseCommand extends ContainerAwareCommand
+abstract class BaseCommand extends Command
 {
 }

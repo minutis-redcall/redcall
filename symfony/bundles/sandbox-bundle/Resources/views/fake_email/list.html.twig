@@ -7,7 +7,8 @@
     <h1>{{ block('title') }}</h1>
 
     <table class="table">
-        {% for row in emails if row.volunteer %}
+        {% for row in emails %}
+            {% if row.volunteer %}
             <tr>
                 <td>
                     {{ row.volunteer.firstName }} {{ row.volunteer.lastName }}
@@ -15,6 +16,7 @@
                     <span class="badge badge-primary">{{ row.countMsg }}</span>
                 </td>
             </tr>
+            {% endif %}
         {% endfor %}
     </table>
 

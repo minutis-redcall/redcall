@@ -2,12 +2,13 @@
 
 namespace App\Repository;
 
+use App\Entity\Structure;
 use App\Entity\User;
+use Bundles\PasswordLoginBundle\Entity\AbstractUser;
 use Bundles\PasswordLoginBundle\Repository\AbstractUserRepository;
 use Bundles\PasswordLoginBundle\Repository\UserRepositoryInterface;
-use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\ORM\QueryBuilder;
-use Symfony\Bridge\Doctrine\RegistryInterface;
+use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @method User|null find($id, $lockMode = null, $lockVersion = null)
@@ -17,24 +18,28 @@ use Symfony\Bridge\Doctrine\RegistryInterface;
  */
 class UserRepository extends AbstractUserRepository implements UserRepositoryInterface
 {
-    /**
-     * @param RegistryInterface $registry
-     */
-    public function __construct(Registry $registry)
+    public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, User::class);
     }
 
-    /**
-     * @param string $criteria
-     *
-     * @return QueryBuilder
-     */
-    public function searchQueryBuilder(?string $criteria) : QueryBuilder
+    public function save(AbstractUser $user)
+    {
+        $this->_em->persist($user);
+        $this->_em->flush();
+    }
+
+    public function remove(AbstractUser $user)
+    {
+        $this->_em->remove($user);
+        $this->_em->flush();
+    }
+
+    public function searchQueryBuilder(?string $criteria, ?bool $onlyAdmins, ?bool $onlyDevelopers) : QueryBuilder
     {
         $qb = $this->createQueryBuilder('u');
 
-        return $qb
+        $qb
             ->leftJoin('u.volunteer', 'v')
             ->leftJoin('v.phones', 'p')
             ->where(
@@ -54,6 +59,28 @@ class UserRepository extends AbstractUserRepository implements UserRepositoryInt
             ->setParameter('criteria', sprintf('%%%s%%', $criteria))
             ->addOrderBy('u.registeredAt', 'DESC')
             ->addOrderBy('u.username', 'ASC');
+
+        if ($onlyAdmins) {
+            $qb->andWhere('u.isAdmin = true');
+        }
+
+        if ($onlyDevelopers) {
+            $qb->andWhere('u.isDeveloper = true');
+        }
+
+        return $qb;
+    }
+
+    public function getRedCallUsersInStructure(Structure $structure) : array
+    {
+        return $this->createQueryBuilder('u')
+                    ->join('u.structures', 's')
+                    ->andWhere('s.enabled = true')
+                    ->andWhere('s.id = :structure')
+                    ->setParameter('structure', $structure)
+                    ->andWhere('u.isTrusted = true')
+                    ->getQuery()
+                    ->getResult();
     }
 }
 

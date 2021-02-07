@@ -25,6 +25,7 @@ cp symfony/config/keys/google-service-account.json deploying/
 
 # Generating Twig templates from MJML code
 php symfony/bin/console generate:mjml symfony/templates/message/email.html.twig.mjml
+php symfony/bin/console generate:mjml symfony/templates/message/image.html.twig.mjml
 php symfony/bin/console --env=prod cache:warmup
 
 # Copying configuration files

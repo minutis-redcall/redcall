@@ -59,27 +59,31 @@
 
             <br/><br/><br/>
 
-            {% if issues.phones or issues.emails %}
-                <div class="alert alert-warning">
-                    <p>⚠️</p>
-                    <hr/>
-                    <div class="text-left">
-                        <p>{{ 'issues.not_reachable'|trans }}️</p>
-                        {% if issues.phones %}
-                            <p>{{ 'issues.phones'|trans({'%nbr%': issues.phones}) }}️</p>
-                        {% endif %}
-                        {% if issues.emails %}
-                            <p>{{ 'issues.emails'|trans({'%nbr%': issues.emails}) }}️</p>
-                        {% endif %}
-                        <p>
-                            <a href="{{ path('management_issues_index') }}">{{ 'issues.list'|trans }}</a>
-                        </p>
-                    </div>
-                </div>
-            {% endif %}
+            <div id="issues">
+                <img src="{{ asset('spinner.gif') }}" style="width:25px;"/>
+            </div>
 
         {% endif %}
 
     </div>
+
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    {% if app.user.structures.count %}
+
+        <script type="text/javascript">
+
+            $(function () {
+                $.get('{{ path('audience_home') }}', function (content) {
+                    $('#issues').html(content);
+                });
+            });
+
+        </script>
+
+    {% endif %}
 
 {% endblock %}

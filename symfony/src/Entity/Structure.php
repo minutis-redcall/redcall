@@ -81,24 +81,12 @@ class Structure
      */
     private $prefilledAnswers;
 
-    /**
-     * @ORM\ManyToMany(targetEntity=Badge::class, mappedBy="isVisibleFor")
-     */
-    private $visibleBadges;
-
-    /**
-     * @ORM\ManyToMany(targetEntity=Badge::class, mappedBy="isRestrictedTo")
-     */
-    private $customBadges;
-
     public function __construct()
     {
         $this->volunteers         = new ArrayCollection();
         $this->childrenStructures = new ArrayCollection();
         $this->users              = new ArrayCollection();
         $this->prefilledAnswers   = new ArrayCollection();
-        $this->visibleBadges      = new ArrayCollection();
-        $this->customBadges       = new ArrayCollection();
     }
 
     /**
@@ -421,7 +409,7 @@ class Structure
 
         // Doctrine loaded an UTC-saved date using the default timezone (Europe/Paris)
         $utc      = (new DateTime($this->lastPegassUpdate->format('Y-m-d H:i:s'), new DateTimeZone('UTC')));
-        $interval = new DateInterval(sprintf('PT%dS', Pegass::TTL[Pegass::TYPE_STRUCTURE]));
+        $interval = new DateInterval(sprintf('PT%dS', Pegass::TTL[Pegass::TYPE_STRUCTURE] * 24 * 60 * 60));
 
         $nextPegassUpdate = clone $utc;
         $nextPegassUpdate->add($interval);
@@ -462,9 +450,8 @@ class Structure
     public function toSearchResults() : array
     {
         return [
-            'id'         => (string) $this->getId(),
-            'name'       => $this->getDisplayName(),
-            'volunteers' => sprintf('(%d)', count($this->getVolunteers())),
+            'id'   => (string) $this->getId(),
+            'name' => $this->getDisplayName(),
         ];
     }
 
@@ -474,61 +461,5 @@ class Structure
     public function __toString()
     {
         return $this->getDisplayName();
-    }
-
-    /**
-     * @return Collection|Badge[]
-     */
-    public function getVisibleBadges() : Collection
-    {
-        return $this->visibleBadges;
-    }
-
-    public function addVisibleBadge(Badge $badge) : self
-    {
-        if (!$this->visibleBadges->contains($badge)) {
-            $this->visibleBadges[] = $badge;
-            $badge->addIsVisibleFor($this);
-        }
-
-        return $this;
-    }
-
-    public function removeVisibleBadge(Badge $badge) : self
-    {
-        if ($this->visibleBadges->contains($badge)) {
-            $this->visibleBadges->removeElement($badge);
-            $badge->removeIsVisibleFor($this);
-        }
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Badge[]
-     */
-    public function getCustomBadges() : Collection
-    {
-        return $this->customBadges;
-    }
-
-    public function addCustomBadge(Badge $customBadge) : self
-    {
-        if (!$this->customBadges->contains($customBadge)) {
-            $this->customBadges[] = $customBadge;
-            $customBadge->addIsRestrictedTo($this);
-        }
-
-        return $this;
-    }
-
-    public function removeCustomBadge(Badge $customBadge) : self
-    {
-        if ($this->customBadges->contains($customBadge)) {
-            $this->customBadges->removeElement($customBadge);
-            $customBadge->removeIsRestrictedTo($this);
-        }
-
-        return $this;
     }
 }

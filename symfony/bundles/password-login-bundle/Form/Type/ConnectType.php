@@ -9,7 +9,6 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\Security\Core\Encoder\BCryptPasswordEncoder;
 use Symfony\Component\Validator\Constraints;
 
 class ConnectType extends AbstractType
@@ -44,7 +43,7 @@ class ConnectType extends AbstractType
                 'label'       => 'password_login.connect.password',
                 'constraints' => new Constraints\Length([
                     'min' => 8,
-                    'max' => BCryptPasswordEncoder::MAX_PASSWORD_LENGTH,
+                    'max' => 4096,
                 ]),
             ]);
 

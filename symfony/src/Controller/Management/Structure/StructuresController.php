@@ -9,6 +9,7 @@ use App\Entity\Volunteer;
 use App\Form\Type\StructureType;
 use App\Import\StructureImporter;
 use App\Manager\StructureManager;
+use App\Manager\UserManager;
 use Bundles\PaginationBundle\Manager\PaginationManager;
 use Bundles\PegassCrawlerBundle\Entity\Pegass;
 use Bundles\PegassCrawlerBundle\Manager\PegassManager;
@@ -23,6 +24,7 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * @Route(path="management/structures", name="management_structures_")
@@ -45,19 +47,33 @@ class StructuresController extends BaseController
     private $pegassManager;
 
     /**
+     * @var UserManager
+     */
+    private $userManager;
+
+    /**
      * @var KernelInterface
      */
     private $kernel;
 
+    /**
+     * @var TranslatorInterface
+     */
+    private $translator;
+
     public function __construct(StructureManager $structureManager,
         PaginationManager $paginationManager,
         PegassManager $pegassManager,
-        KernelInterface $kernel
-    ) {
+        UserManager $userManager,
+        KernelInterface $kernel,
+        TranslatorInterface $translator)
+    {
         $this->structureManager  = $structureManager;
         $this->paginationManager = $paginationManager;
         $this->pegassManager     = $pegassManager;
+        $this->userManager       = $userManager;
         $this->kernel            = $kernel;
+        $this->translator        = $translator;
     }
 
     /**
@@ -137,7 +153,7 @@ class StructuresController extends BaseController
         $this->structureManager->save($structure);
 
         // Executing asynchronous task to prevent against interruptions
-        $console = sprintf('%s/../bin/console', $this->kernel->getRootDir());
+        $console = sprintf('%s/bin/console', $this->kernel->getProjectDir());
         $command = sprintf('%s pegass --structure %s', escapeshellarg($console), $structure->getIdentifier());
         exec(sprintf('%s > /dev/null 2>&1 & echo -n \$!', $command));
 
@@ -183,10 +199,23 @@ class StructuresController extends BaseController
     }
 
     /**
-     * @param Request $request
-     *
-     * @return FormInterface
+     * @Route(name="list_users", path="/list-users")
      */
+    public function listUsers(Request $request)
+    {
+        $structure = $this->getStructureById($request->get('id'));
+        $users     = $this->userManager->getRedCallUsersInStructure($structure);
+
+        return $this->json([
+            'title' => $this->translator->trans('manage_structures.redcall_users', [
+                '%name%' => $structure->getName(),
+            ]),
+            'body'  => $this->renderView('management/structures/users.html.twig', [
+                'users' => $users,
+            ]),
+        ]);
+    }
+
     private function createSearchForm(Request $request) : FormInterface
     {
         return $this->createFormBuilder(null, ['csrf_protection' => false])
@@ -200,5 +229,20 @@ class StructuresController extends BaseController
                     ])
                     ->getForm()
                     ->handleRequest($request);
+    }
+
+    private function getStructureById(?int $id) : Structure
+    {
+        $structure = $this->structureManager->find($id);
+
+        if (null === $id) {
+            throw $this->createNotFoundException();
+        }
+
+        if (!$this->isGranted('STRUCTURE', $structure)) {
+            throw $this->createAccessDeniedException();
+        }
+
+        return $structure;
     }
 }

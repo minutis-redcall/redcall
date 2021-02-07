@@ -8,8 +8,31 @@
 
         <h3>{{ 'admin.pegass.structures'|trans({'%name%': user.username}) }}</h3>
 
-        {% if user.structures.count %}
-            {{ form(form) }}
+        {% if user.structures(false).count %}
+
+            {{ form_start(form) }}
+
+            {{ form_label(form.structures) }}
+
+            {% if user.structures.count >= 1 %}
+                <label class="switch">
+                    <input type="checkbox"
+                           onclick="$('#structures input[type=\'checkbox\']').prop('checked', $(this).is(':checked'));"/>
+                    <span class="slider"></span>
+                </label>
+            {% endif %}
+
+            <div id="structures">
+                {% for child in form.structures %}
+                    <div class="{% if not structures[child.vars.value].enabled %}color-grey{% endif %}">
+                        {{ form_widget(child) }}
+                    </div>
+                {% endfor %}
+            </div>
+
+            <br/>
+
+            {{ form_end(form) }}
 
             <hr/>
         {% endif %}

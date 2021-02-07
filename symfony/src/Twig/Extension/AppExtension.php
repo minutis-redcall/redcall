@@ -6,7 +6,8 @@ use App\Tools\Random;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Twig\Extension\AbstractExtension;
-use Twig_SimpleFunction;
+use Twig\TwigFilter;
+use Twig\TwigFunction;
 
 class AppExtension extends AbstractExtension
 {
@@ -20,10 +21,17 @@ class AppExtension extends AbstractExtension
     public function getFunctions()
     {
         return [
-            new Twig_SimpleFunction('http_build_query', 'http_build_query', ['is_safe' => ['html', 'html_attr']]),
-            new Twig_SimpleFunction('random', [$this, 'random']),
-            new Twig_SimpleFunction('uuid', [$this, 'uuid']),
-            new Twig_SimpleFunction('intval', 'intval'),
+            new TwigFunction('http_build_query', 'http_build_query', ['is_safe' => ['html', 'html_attr']]),
+            new TwigFunction('random', [$this, 'random']),
+            new TwigFunction('uuid', [$this, 'uuid']),
+            new TwigFunction('intval', 'intval'),
+        ];
+    }
+
+    public function getFilters()
+    {
+        return [
+            new TwigFilter('snake', [$this, 'snake']),
         ];
     }
 
@@ -35,6 +43,11 @@ class AppExtension extends AbstractExtension
     public function random(int $size = 16) : string
     {
         return Random::generate($size);
+    }
+
+    public function snake(string $camelCase)
+    {
+        return strtolower(preg_replace('/(?<!^)[A-Z]/', '_$0', $camelCase));
     }
 
     public function getName()

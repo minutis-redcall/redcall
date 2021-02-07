@@ -46,6 +46,9 @@ class CampaignType extends AbstractType
         $resolver->setDefaults([
             'data_class' => CampaignModel::class,
             'type'       => Type::SMS(),
+            'attr'       => [
+                'class' => 'trigger',
+            ],
         ]);
     }
 }

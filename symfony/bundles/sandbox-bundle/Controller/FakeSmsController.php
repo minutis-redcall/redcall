@@ -9,11 +9,11 @@ use App\Manager\VolunteerManager;
 use Bundles\SandboxBundle\Entity\FakeSms;
 use Bundles\SandboxBundle\Manager\FakeSmsManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * @Route("/fake-sms", name="fake_sms_")
@@ -67,7 +67,6 @@ class FakeSmsController extends BaseController
 
     /**
      * @Route("/clear/{csrf}", name="clear")
-     * @Template()
      */
     public function clearAction(string $csrf)
     {

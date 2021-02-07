@@ -13,6 +13,7 @@ use DateTime;
 use Doctrine\ORM\NonUniqueResultException;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class MessageManager
@@ -35,17 +36,19 @@ class MessageManager
     private $tokenStorage;
 
     /**
-     * @param AnswerManager         $answerManager
-     * @param MessageRepository     $messageRepository
-     * @param TokenStorageInterface $tokenStorage
+     * @var LoggerInterface
      */
+    private $logger;
+
     public function __construct(AnswerManager $answerManager,
         MessageRepository $messageRepository,
-        TokenStorageInterface $tokenStorage)
+        TokenStorageInterface $tokenStorage,
+        LoggerInterface $logger)
     {
         $this->answerManager     = $answerManager;
         $this->messageRepository = $messageRepository;
         $this->tokenStorage      = $tokenStorage;
+        $this->logger            = $logger;
     }
 
     public function generateCodes(int $numberOfCodes)
@@ -93,7 +96,8 @@ class MessageManager
         foreach ($volunteers as $volunteer) {
             /** @var Volunteer $volunteer */
             for ($prefix = 'A'; in_array($prefix, $usedPrefixes[$volunteer->getId()] ?? []); $prefix++) {
-                ;
+                // Hack: A+1=B, Z+1=AA, ...
+                // Let me be happy to find a use case for this shit 😅
             }
             $prefixes[$volunteer->getId()] = $prefix;
         }
@@ -179,14 +183,6 @@ class MessageManager
         return $this->messageRepository->getMessageFromPhoneNumber($phoneNumber);
     }
 
-    /**
-     * @param Message $message
-     * @param string  $body
-     * @param bool    $byAdmin
-     *
-     * @throws ORMException
-     * @throws OptimisticLockException
-     */
     public function addAnswer(Message $message, string $body, bool $byAdmin = false) : void
     {
         $choices = [];
@@ -216,6 +212,12 @@ class MessageManager
         $answer->setRaw($body);
         $answer->setReceivedAt(new DateTime());
         $answer->setUnclear($message->getCommunication()->isUnclear($message->getPrefix(), $body));
+
+        // We get the answer sentiment only if the answer is not one or several answer codes:
+        // Answer is a set of answer codes if every word inside has 2 characters
+        if (array_sum(array_map('strlen', explode(' ', $body))) !== 2 * count(explode(' ', $body))) {
+            $this->answerManager->addSentiment($answer, $body);
+        }
 
         if ($byAdmin) {
             $answer->setByAdmin($this->tokenStorage->getToken()->getUsername());
@@ -308,5 +310,15 @@ class MessageManager
         }
 
         return self::DEPLOY_GRACE - $diff;
+    }
+
+    /**
+     * @param Volunteer $volunteer
+     *
+     * @return Message[]
+     */
+    public function getActiveMessagesForVolunteer(Volunteer $volunteer) : array
+    {
+        return $this->messageRepository->getActiveMessagesForVolunteer($volunteer);
     }
 }

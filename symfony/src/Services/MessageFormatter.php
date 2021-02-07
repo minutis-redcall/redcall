@@ -4,14 +4,20 @@ namespace App\Services;
 
 use App\Entity\Communication;
 use App\Entity\Message;
+use App\Entity\Volunteer;
+use App\Manager\CountryManager;
 use App\Tools\GSM;
-use App\Tools\PhoneNumber;
 use Symfony\Component\Routing\RouterInterface;
-use Symfony\Component\Translation\TranslatorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Environment;
 
 class MessageFormatter
 {
+    /**
+     * @var CountryManager
+     */
+    private $countryManager;
+
     /**
      * @var RouterInterface
      */
@@ -27,16 +33,15 @@ class MessageFormatter
      */
     private $templating;
 
-    /**
-     * @param RouterInterface     $router
-     * @param TranslatorInterface $translator
-     * @param Environment         $templating
-     */
-    public function __construct(RouterInterface $router, TranslatorInterface $translator, Environment $templating)
+    public function __construct(CountryManager $countryManager,
+        RouterInterface $router,
+        TranslatorInterface $translator,
+        Environment $templating)
     {
-        $this->router     = $router;
-        $this->translator = $translator;
-        $this->templating = $templating;
+        $this->countryManager = $countryManager;
+        $this->router         = $router;
+        $this->translator     = $translator;
+        $this->templating     = $templating;
     }
 
     public function formatMessageContent(Message $message) : string
@@ -53,6 +58,10 @@ class MessageFormatter
 
     public function formatSMSContent(Message $message) : string
     {
+        if ($country = $this->countryManager->getCountry($message->getVolunteer())) {
+            $this->countryManager->applyContext($country);
+        }
+
         $contentParts  = [];
         $communication = $message->getCommunication();
 
@@ -75,35 +84,63 @@ class MessageFormatter
                 $contentParts[] = sprintf('%s%s: %s', $message->getPrefix(), $choice->getCode(), $choice->getLabel());
             }
 
-            // Twilio does not support two way SMS (reply by sms) in all countries, thus we need to use
-            // an URL instead of simple answer codes where needed.
-            if (in_array($message->getVolunteer()->getPhone()->getCountryCode(), json_decode(getenv('TWO_WAYS_SMS'), true))) {
-                // How to answer
+            // The way to answer depends on the volunteer's phone number because answering directly to sms and
+            // incoming calls are not always supported, see config/countries.yaml for more details.
+            if ($country && $country->isInboundSmsEnabled()) {
                 if (!$message->getCommunication()->isMultipleAnswer()) {
                     $contentParts[] = $this->translator->trans('message.sms.how_to_answer_simple');
                 } else {
                     $contentParts[] = $this->translator->trans('message.sms.how_to_answer_multiple');
                 }
-
-                // Enabled geo location
-                if ($message->getCommunication()->hasGeoLocation()) {
-                    $contentParts[] = $this->translator->trans('message.sms.geo_location', [
-                        '%url%' => trim(getenv('WEBSITE_URL'), '/').$this->router->generate('geo_open', ['code' => $message->getCode()]),
-                    ]);
-                }
-            } else {
+            } elseif ($country && $country->isInboundCallEnabled()) {
                 $contentParts[] = $this->translator->trans('message.sms.how_to_answer_url', [
                     '%url%'    => trim(getenv('WEBSITE_URL'), '/').$this->router->generate('message_open', ['code' => $message->getCode()]),
-                    '%number%' => PhoneNumber::getFormattedSmsSender($message->getVolunteer()->getPhone()),
+                    '%number%' => $country->getInboundCallNumber(),
+                ]);
+            } else {
+                $contentParts[] = $this->translator->trans('message.sms.how_to_answer_url_only', [
+                    '%url%' => trim(getenv('WEBSITE_URL'), '/').$this->router->generate('message_open', ['code' => $message->getCode()]),
                 ]);
             }
         }
+
+        // Enabled geo location
+        if ($message->getCommunication()->hasGeoLocation()) {
+            $contentParts[] = $this->translator->trans('message.sms.geo_location', [
+                '%url%' => trim(getenv('WEBSITE_URL'), '/').$this->router->generate('geo_open', ['code' => $message->getCode()]),
+            ]);
+        }
+
+        $this->countryManager->restoreContext();
+
+        return GSM::enforceGSMAlphabet(implode("\n", $contentParts));
+    }
+
+    public function formatSimpleSMSContent(Volunteer $volunteer, string $content) : string
+    {
+        if ($country = $this->countryManager->getCountry($volunteer)) {
+            $this->countryManager->applyContext($country);
+        }
+
+        $contentParts[] = $this->translator->trans('message.sms.announcement', [
+            '%brand%' => mb_strtoupper(getenv('BRAND')),
+            '%hours%' => date('H'),
+            '%mins%'  => date('i'),
+        ]);
+
+        $contentParts[] = $content;
+
+        $this->countryManager->restoreContext();
 
         return GSM::enforceGSMAlphabet(implode("\n", $contentParts));
     }
 
     public function formatCallContent(Message $message, bool $withChoices = true) : string
     {
+        if ($country = $this->countryManager->getCountry($message->getVolunteer())) {
+            $this->countryManager->applyContext($country);
+        }
+
         $communication = $message->getCommunication();
 
         $contentParts = [];
@@ -129,6 +166,8 @@ class MessageFormatter
         if ($withChoices) {
             $contentParts[] = $this->formatCallChoicesContent($message);
         }
+
+        $this->countryManager->restoreContext();
 
         return implode("\n", $contentParts);
     }
@@ -169,6 +208,10 @@ class MessageFormatter
             $contentParts[] = '';
         }
 
+        if ($country = $this->countryManager->getCountry($message->getVolunteer())) {
+            $this->countryManager->applyContext($country);
+        }
+
         $contentParts[] = $this->translator->trans('message.email.announcement', [
             '%brand%' => mb_strtoupper(getenv('BRAND')),
             '%day%'   => date('d'),
@@ -177,6 +220,7 @@ class MessageFormatter
             '%hours%' => date('H'),
             '%mins%'  => date('i'),
         ]);
+
         $contentParts[] = '';
 
         $contentParts[] = strip_tags($communication->getBody());
@@ -207,24 +251,25 @@ class MessageFormatter
             $contentParts[] = '';
         }
 
+        $this->countryManager->restoreContext();
+
         return implode("\n", $contentParts);
     }
 
-    /**
-     * @param Message $message
-     *
-     * @return string
-     *
-     * @throws \Twig\Error\LoaderError
-     * @throws \Twig\Error\RuntimeError
-     * @throws \Twig\Error\SyntaxError
-     */
     public function formatHtmlEmailContent(Message $message) : string
     {
-        return $this->templating->render('message/email.html.twig', [
+        if ($country = $this->countryManager->getCountry($message->getVolunteer())) {
+            $this->countryManager->applyContext($country);
+        }
+
+        $content = $this->templating->render('message/email.html.twig', [
             'website_url'   => getenv('WEBSITE_URL'),
             'message'       => $message,
             'communication' => $message->getCommunication(),
         ]);
+
+        $this->countryManager->restoreContext();
+
+        return $content;
     }
 }

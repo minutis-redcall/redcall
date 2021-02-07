@@ -4,7 +4,7 @@ namespace App\Task;
 
 use App\Manager\RefreshManager;
 use App\Queues;
-use Bundles\GoogleTaskBundle\Api\TaskInterface;
+use Bundles\GoogleTaskBundle\Contracts\TaskInterface;
 
 class SyncWithPegassTask implements TaskInterface
 {
