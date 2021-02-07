@@ -353,6 +353,8 @@ campaign_status:
     no_phone_mobile: 'No mobile phone number.'
     no_phone_optin: 'Do not want to be triggered through phone.'
     optout_until: 'Temporarily unavailable.'
+    country_no_sms: 'SMS not supported by RedCall for this phone number.'
+    country_no_call: 'Voice calls not supported for this phone number.'
 csv_export:
   answer_time: 'Answered at'
   choice: 'Choice "%choice%"'
@@ -613,6 +615,7 @@ message:
     how_to_answer_multiple: 'Reply by giving your choice(s) code(s), separated by a space.'
     how_to_answer_simple: 'Reply by giving your choice code.'
     how_to_answer_url: 'Answer by following %url% or by calling %number%'
+    how_to_answer_url_only: 'Answer by following %url%'
     type: message(s)
 minutis:
   back: 'Go back to Minutis'
@@ -766,10 +769,11 @@ space:
   logout: 'Sign out'
   phone:
     details_1: 'You may be contacted by your local unit through SMS or voice calls in case of emergency.'
-    details_2: 'All messages and calls are coming from the following number(s): %from%'
     details_3: 'You can already add it to your contacts, and assign it a recognizable ringtone.'
     details_4: 'When you receive a message and an answer is required, directly answer to the message by giving, if possible, only the codes that match your choice.'
     details_5: 'Example: if you''re asked "Are you available?" and possible answers are "A1: Yes" and "A2: No", answer using A1 or A2, this will help processing your message automatically, and ease trigger responsible''s job.'
+    details_6: 'All messages are coming from the following number:'
+    details_7: 'All calls are coming from the following number:'
     title: 'Edit my phone number'
 special_answers:
   stop: 'You have successfully unsubscribed to RedCall messages. Manage your preferences at https://rcl.re using your Pegass credentials and clicking the small RedCall icon at the top left.'

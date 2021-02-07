@@ -7,6 +7,7 @@ use App\Component\HttpFoundation\MpdfResponse;
 use App\Entity\Message;
 use App\Entity\VolunteerSession;
 use App\Form\Type\PhoneCardsType;
+use App\Manager\CountryManager;
 use App\Manager\MessageManager;
 use App\Manager\PhoneManager;
 use App\Manager\VolunteerManager;
@@ -46,6 +47,11 @@ class SpaceController extends BaseController
     private $messageManager;
 
     /**
+     * @var CountryManager
+     */
+    private $countryManager;
+
+    /**
      * @var PhoneManager
      */
     private $phoneManager;
@@ -58,12 +64,14 @@ class SpaceController extends BaseController
     public function __construct(VolunteerSessionManager $volunteerSessionManager,
         VolunteerManager $volunteerManager,
         MessageManager $messageManager,
+        CountryManager $countryManager,
         PhoneManager $phoneManager,
         TranslatorInterface $translator)
     {
         $this->volunteerSessionManager = $volunteerSessionManager;
         $this->volunteerManager        = $volunteerManager;
         $this->messageManager          = $messageManager;
+        $this->countryManager          = $countryManager;
         $this->phoneManager            = $phoneManager;
         $this->translator              = $translator;
     }
@@ -71,8 +79,19 @@ class SpaceController extends BaseController
     /**
      * @Route(path="/", name="home")
      */
-    public function home(VolunteerSession $session)
+    public function home(Request $request, VolunteerSession $session)
     {
+        $country = $this->countryManager->getCountry($session->getVolunteer());
+
+        // What if a volunteer wish to use another supported language?
+        if ($country && $request->getLocale() !== $country->getLocale()) {
+            $this->countryManager->applyLocale($country);
+
+            return $this->redirectToRoute('space_home', [
+                'sessionId' => $session,
+            ]);
+        }
+
         return $this->render('space/index.html.twig', [
             'session'  => $session,
             'messages' => $this->messageManager->getActiveMessagesForVolunteer($session->getVolunteer()),
@@ -129,7 +148,7 @@ class SpaceController extends BaseController
         return $this->render('space/phone.html.twig', [
             'session' => $session,
             'form'    => $form->createView(),
-            'from'    => implode(' / ', PhoneNumber::listAllNumbers()),
+            'country' => $this->countryManager->getCountry($volunteer),
         ]);
     }
 

@@ -11,7 +11,6 @@ use App\Enum\Type;
 use App\Provider\SMS\SMSProvider;
 use App\Repository\AnswerRepository;
 use App\Services\MessageFormatter;
-use App\Tools\PhoneNumber;
 use Doctrine\ORM\QueryBuilder;
 use Google\Cloud\Language\LanguageClient;
 use Psr\Log\LoggerInterface;
@@ -43,6 +42,11 @@ class AnswerManager
      * @var MessageManager
      */
     private $messageManager;
+
+    /**
+     * @var CountryManager
+     */
+    private $countryManager;
 
     /**
      * @var SMSProvider
@@ -79,8 +83,14 @@ class AnswerManager
 
     /**
      * @required
-     *
-     * @param VolunteerManager $volunteerManager
+     */
+    public function setCountryManager(CountryManager $countryManager)
+    {
+        $this->countryManager = $countryManager;
+    }
+
+    /**
+     * @required
      */
     public function setVolunteerManager(VolunteerManager $volunteerManager)
     {
@@ -89,8 +99,6 @@ class AnswerManager
 
     /**
      * @required
-     *
-     * @param CampaignManager $campaignManager
      */
     public function setCampaignManager(CampaignManager $campaignManager)
     {
@@ -99,8 +107,6 @@ class AnswerManager
 
     /**
      * @required
-     *
-     * @param UserManager $userManager
      */
     public function setUserManager(UserManager $userManager)
     {
@@ -109,8 +115,6 @@ class AnswerManager
 
     /**
      * @required
-     *
-     * @param MessageManager $messageManager
      */
     public function setMessageManager(MessageManager $messageManager)
     {
@@ -189,12 +193,15 @@ class AnswerManager
         $message->addAnswser($answer);
         $this->messageManager->save($message);
 
-        $this->smsProvider->send(
-            PhoneNumber::getSmsSender($message->getVolunteer()->getPhone()),
-            $message->getVolunteer()->getPhoneNumber(),
-            $this->formatter->formatSimpleSMSContent($content),
-            ['message_id' => $message->getId()]
-        );
+        $country = $this->countryManager->getCountry($message->getVolunteer());
+        if ($country && $country->isOutboundSmsEnabled() && $country->getOutboundSmsNumber()) {
+            $this->smsProvider->send(
+                $country->getOutboundSmsNumber(),
+                $message->getVolunteer()->getPhoneNumber(),
+                $this->formatter->formatSimpleSMSContent($message->getVolunteer(), $content),
+                ['message_id' => $message->getId()]
+            );
+        }
     }
 
     public function addSentiment(Answer $answer, string $body)
