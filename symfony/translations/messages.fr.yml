@@ -353,6 +353,8 @@ campaign_status:
     no_phone_mobile: 'Pas de numéro de téléphone portable.'
     no_phone_optin: 'Ne souhaite pas recevoir de SMS/appels.'
     optout_until: 'Temporairement indisponible'
+    country_no_sms: 'SMS non supportés par RedCall pour ce numéro.'
+    country_no_call: 'Appels non supportés par RedCall pour ce numéro.'
 csv_export:
   answer_time: 'Date de la reponse la plus recente'
   choice: 'Choix "%choice%"'
@@ -613,6 +615,7 @@ message:
     how_to_answer_multiple: 'Répondez avec les codes de votre choix séparés par un espace'
     how_to_answer_simple: 'Répondez avec le code de votre choix'
     how_to_answer_url: 'Répondez en suivant %url% ou en appelant le %number%'
+    how_to_answer_url_only: 'Répondez en suivant %url%'
     type: message(s)
 minutis:
   back: 'Retourner sur Minutis'
@@ -766,10 +769,11 @@ space:
   logout: 'Me déconnecter de l''espace bénévole'
   phone:
     details_1: 'Vous pourrez être contacté par votre unité locale ou DT par SMS ou par appel vocaux en cas d''urgence.'
-    details_2: 'Tous les messages et appels proviennent du ou des numéro(s): %from%'
     details_3: 'Vous pouvez dès à présent l''ajouter à vos contacts, et lui assigner une sonnerie reconnaissable.'
     details_4: 'Lorsque vous recevez un message et qu''une réponse est demandée, répondez directement au message en ne saisissant, si possible, que le ou les codes des réponses qui correspondent à votre choix.'
     details_5: 'Exemple : si on vous demande "Êtes-vous disponible ?" et que les réponses possibles sont "A1: Oui" ou "A2: Non", répondez le code A1 ou A2, cela permet un traitement automatique de votre choix et aide le responsable du déclenchement.'
+    details_6: 'Tous les messages proviennent du numéro :'
+    details_7: 'Tous les appels proviennent du numéro :'
     title: 'Editer mon numéro de téléphone'
 special_answers:
   stop: 'Vous êtes désormais désabonné(e) des SMS envoyés par RedCall. Gérez vos préférences sur https://rcl.re à l''aide de vos identifiants Pegass, puis en cliquant sur l''icône RedCall en haut à gauche.'

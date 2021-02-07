@@ -36,7 +36,7 @@ abstract class BaseTwilio
     protected $message;
 
     /**
-     * @ORM\Column(type="string", length=16)
+     * @ORM\Column(type="string", length=32)
      */
     protected $fromNumber;
 

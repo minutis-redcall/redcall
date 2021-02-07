@@ -100,6 +100,17 @@ class LocaleManager
     }
 
     /**
+     * @param string $locale
+     */
+    public function changeLocale(string $locale)
+    {
+        $locale = $this->sanitizeLocale($locale);
+
+        $this->requestStack->getMasterRequest()->setLocale($locale);
+        $this->session->set('_locale', $locale);
+    }
+
+    /**
      * @return null|User
      */
     private function getUser() : ?User
@@ -111,17 +122,6 @@ class LocaleManager
         }
 
         return null;
-    }
-
-    /**
-     * @param string $locale
-     */
-    private function changeLocale(string $locale)
-    {
-        $locale = $this->sanitizeLocale($locale);
-
-        $this->requestStack->getMasterRequest()->setLocale($locale);
-        $this->session->set('_locale', $locale);
     }
 
     /**

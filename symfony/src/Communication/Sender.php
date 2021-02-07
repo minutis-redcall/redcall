@@ -4,12 +4,12 @@ namespace App\Communication;
 
 use App\Entity\Communication;
 use App\Entity\Message;
+use App\Manager\CountryManager;
 use App\Manager\MessageManager;
 use App\Provider\Call\CallProvider;
 use App\Provider\Email\EmailProvider;
 use App\Provider\SMS\SMSProvider;
 use App\Services\MessageFormatter;
-use App\Tools\PhoneNumber;
 
 class Sender
 {
@@ -18,6 +18,11 @@ class Sender
     const PAUSE_SMS   = 500000; // 2 sms / second
     const PAUSE_CALL  = 200000; // 5 calls / second
     const PAUSE_EMAIL = 100000; // 10 emails / second
+
+    /**
+     * @var CountryManager
+     */
+    private $countryManager;
 
     /**
      * @var SMSProvider
@@ -44,12 +49,14 @@ class Sender
      */
     private $messageManager;
 
-    public function __construct(SMSProvider $SMSProvider,
+    public function __construct(CountryManager $countryManager,
+        SMSProvider $SMSProvider,
         CallProvider $callProvider,
         EmailProvider $emailProvider,
         MessageFormatter $formatter,
         MessageManager $messageManager)
     {
+        $this->countryManager = $countryManager;
         $this->SMSProvider    = $SMSProvider;
         $this->callProvider   = $callProvider;
         $this->emailProvider  = $emailProvider;
@@ -106,7 +113,13 @@ class Sender
         }
 
         $volunteer = $message->getVolunteer();
-        $sender    = PhoneNumber::getSmsSender($volunteer->getPhone());
+        $country   = $this->countryManager->getCountry($volunteer);
+
+        if (!$country || !$country->isOutboundSmsEnabled() || !$country->getOutboundSmsNumber()) {
+            return;
+        }
+
+        $sender = $country->getOutboundSmsNumber();
 
         try {
             $messageId = $this->SMSProvider->send(
@@ -134,7 +147,13 @@ class Sender
         }
 
         $volunteer = $message->getVolunteer();
-        $sender    = PhoneNumber::getCallSender($volunteer->getPhone());
+        $country   = $this->countryManager->getCountry($volunteer);
+
+        if (!$country || !$country->isOutboundCallEnabled() || !$country->getOutboundCallNumber()) {
+            return;
+        }
+
+        $sender = $country->getOutboundCallNumber();
 
         try {
             $messageId = $this->callProvider->send(
@@ -195,7 +214,19 @@ class Sender
                     $error = 'campaign_status.warning.no_phone_mobile';
                     break;
                 }
-            // No break here as next checks also work for SMSs
+                if (null === $volunteer->getPhoneNumber()) {
+                    $error = 'campaign_status.warning.no_phone';
+                    break;
+                }
+                if (!$volunteer->isPhoneNumberOptin()) {
+                    $error = 'campaign_status.warning.no_phone_optin';
+                    break;
+                }
+                if (!$this->countryManager->isSMSTransmittable($volunteer)) {
+                    $error = 'campaign_status.warning.country_no_sms';
+                    break;
+                }
+                break;
             case Communication::TYPE_CALL:
                 if (null === $volunteer->getPhoneNumber()) {
                     $error = 'campaign_status.warning.no_phone';
@@ -203,6 +234,10 @@ class Sender
                 }
                 if (!$volunteer->isPhoneNumberOptin()) {
                     $error = 'campaign_status.warning.no_phone_optin';
+                    break;
+                }
+                if (!$this->countryManager->isVoiceCallTransmittable($volunteer)) {
+                    $error = 'campaign_status.warning.country_no_call';
                     break;
                 }
                 break;
