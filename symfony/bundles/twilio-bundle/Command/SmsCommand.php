@@ -7,7 +7,6 @@ use Bundles\TwilioBundle\Manager\TwilioMessageManager;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class SmsCommand extends Command
@@ -31,7 +30,7 @@ class SmsCommand extends Command
         $this
             ->setName('twilio:sms')
             ->setDescription('Send an SMS to the given phone number')
-            ->addArgument('from', InputOption::VALUE_REQUIRED, 'Phone number or Alphanumeric SenderID')
+            ->addArgument('from', InputArgument::REQUIRED, 'Phone number or Alphanumeric SenderID')
             ->addArgument('to', InputArgument::REQUIRED, 'Phone number to contact')
             ->addArgument('message', InputArgument::IS_ARRAY | InputArgument::REQUIRED, 'Message to send');
     }
