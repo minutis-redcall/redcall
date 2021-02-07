@@ -1,0 +1,13 @@
+services:
+
+  Bundles\ChartBundle\Manager\ChartManager:
+    arguments:
+      - '@Bundles\ChartBundle\Repository\ChartRepository'
+
+  Bundles\ChartBundle\Manager\PageManager:
+    arguments:
+      - '@Bundles\ChartBundle\Repository\PageRepository'
+
+  Bundles\ChartBundle\Manager\QueryManager:
+    arguments:
+      - '@Bundles\ChartBundle\Repository\QueryRepository'

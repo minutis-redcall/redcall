@@ -1,0 +1,7 @@
+services:
+
+  Bundles\ChartBundle\Controller\QueryController:
+    arguments:
+      - '@Bundles\ChartBundle\Manager\QueryManager'
+    tags:
+      - controller.service_arguments

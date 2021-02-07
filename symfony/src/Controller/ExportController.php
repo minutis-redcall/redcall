@@ -39,6 +39,10 @@ class ExportController extends BaseController
     {
         $this->validateCsrfOrThrowNotFoundException('communication', $request->request->get('csrf'));
 
+        if (!$this->isGranted('CAMPAIGN_ACCESS', $communication->getCampaign())) {
+            throw $this->createAccessDeniedException();
+        }
+
         $selection = json_decode($request->request->get('volunteers'), true);
         if (!$selection && $communication->getMessages()) {
             $selection = array_map(function (Message $message) {
@@ -93,11 +97,15 @@ class ExportController extends BaseController
     }
 
     /**
-     * @Route(path="{id}/pdf", name="pdf", requirements={"id" = "\d+"}, methods={"POST"})
+     * @Route(path="{id}/pdf", name="pdf", requirements={"id" = "\d+"})
      */
     public function pdfAction(Request $request, Communication $communication)
     {
         $this->validateCsrfOrThrowNotFoundException('communication', $request->request->get('csrf'));
+
+        if (!$this->isGranted('CAMPAIGN_ACCESS', $communication->getCampaign())) {
+            throw $this->createAccessDeniedException();
+        }
 
         $selection = $this->getSelection($request, $communication);
         $campaign  = $communication->getCampaign();

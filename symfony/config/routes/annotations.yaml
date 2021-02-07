@@ -17,3 +17,7 @@ twilio:
 google_task:
   resource: '@GoogleTaskBundle/Controller/'
   type: annotation
+
+chart:
+  resource: '@ChartBundle/Controller/'
+  type: annotation

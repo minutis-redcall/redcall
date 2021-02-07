@@ -80,6 +80,7 @@
     "psr-4": {
       "App\\": "src/",
       "Bundles\\ApiBundle\\": "bundles/api-bundle/",
+      "Bundles\\ChartBundle\\": "bundles/chart-bundle/",
       "Bundles\\GoogleTaskBundle\\": "bundles/google-task-bundle/",
       "Bundles\\PaginationBundle\\": "bundles/pagination-bundle/",
       "Bundles\\PasswordLoginBundle\\": "bundles/password-login-bundle/",

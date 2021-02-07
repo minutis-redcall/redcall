@@ -1,0 +1,81 @@
+{% block query_widget %}
+
+    {{ form_row(form.name) }}
+    {{ form_row(form.query) }}
+
+    <div id="context-container">
+        {{ form_row(form.context) }}
+    </div>
+
+    <a id="add-context" href="#" class="btn btn-secondary" data-index="{{ form.context.children|length }}">
+        {{ 'chart.context.add'|trans }}
+    </a>
+
+    <br/><br/>
+
+    <script type="text/javascript">
+
+        (function () {
+
+            var refreshContextSelector = function (typeSelect) {
+                var collectionItem = typeSelect.parent().parent();
+                var selectedType = typeSelect.val();
+                collectionItem.find('.context-type').parent().addClass('d-none');
+                collectionItem.find('.context-type-' + selectedType).parent().removeClass('d-none');
+            };
+
+            var refreshAllSelectors = function () {
+                $('.context-type-selector').each(function () {
+                    refreshContextSelector($(this));
+                });
+            };
+
+            $('#add-context').click(function (e) {
+                e.preventDefault();
+
+                var link = $(this);
+                var form = $('#{{ form.context.vars.id }}');
+                var item = form.data('prototype').replace(/__name__/g, link.data('index'));
+
+                $('#context-container').append(item);
+
+                link.data('index', link.data('index') + 1);
+
+                refreshAllSelectors();
+            });
+
+            $('body').on('change', '.context-type-selector', function () {
+                refreshContextSelector($(this));
+            });
+
+            refreshAllSelectors();
+
+        })();
+
+    </script>
+
+{% endblock %}
+
+{% block context_widget %}
+
+    <div class="card" id="context-card-{{ form.vars.name }}" data-index="{{ form.vars.name }}">
+        <div class="card-header">
+            <div class="h4">
+                {{ 'chart.context.title'|trans({'%nbr%': form.vars.name}) }}
+            </div>
+        </div>
+        <div class="card-body">
+            {{ form_label(form) }}
+            {{ form_widget(form) }}
+        </div>
+        <div class="card-footer">
+            <div class="float-right">
+                <a href="#"
+                   class="btn btn-small btn-secondary"
+                   style="border: 1px solid red!important;"
+                   onclick="$('#context-card-{{ form.vars.name }}').remove();return false;">❌</a>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

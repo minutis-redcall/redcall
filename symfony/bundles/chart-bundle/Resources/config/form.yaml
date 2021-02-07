@@ -1,0 +1,7 @@
+services:
+
+  Bundles\ChartBundle\Form\Type\ContextType:
+    arguments:
+      - '@Bundles\ChartBundle\Context\Bag\FormatBag'
+    tags:
+      - 'form.type'

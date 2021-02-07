@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    <div class="jumbotron text-center">
+
+        {{ block('body', '@!Chart/home/index.html.twig') }}
+
+        <br/><br/><br/>
+
+        <a href="{{ path('admin_home') }}" class="btn btn-secondary">
+            {{ 'base.button.back'|trans }}
+        </a>
+
+    </div>
+
+{% endblock %}

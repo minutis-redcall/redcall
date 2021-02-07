@@ -1,0 +1,19 @@
+services:
+
+  Bundles\ChartBundle\Repository\ChartRepository:
+    arguments:
+      - '@Doctrine\Common\Persistence\ManagerRegistry'
+    tags:
+      - 'doctrine.repository_service'
+
+  Bundles\ChartBundle\Repository\PageRepository:
+    arguments:
+      - '@Doctrine\Common\Persistence\ManagerRegistry'
+    tags:
+      - 'doctrine.repository_service'
+
+  Bundles\ChartBundle\Repository\QueryRepository:
+    arguments:
+      - '@Doctrine\Common\Persistence\ManagerRegistry'
+    tags:
+      - 'doctrine.repository_service'
