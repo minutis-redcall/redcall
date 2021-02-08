@@ -2,16 +2,16 @@
 
 namespace Bundles\ChartBundle\Manager;
 
-use Bundles\ChartBundle\Repository\ChartRepository;
+use Bundles\ChartBundle\Repository\VisualizationRepository;
 
 class ChartManager
 {
     /**
-     * @var ChartRepository
+     * @var VisualizationRepository
      */
     private $chartRepository;
 
-    public function __construct(ChartRepository $chartRepository)
+    public function __construct(VisualizationRepository $chartRepository)
     {
         $this->chartRepository = $chartRepository;
     }

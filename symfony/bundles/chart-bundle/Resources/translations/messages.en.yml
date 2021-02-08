@@ -19,10 +19,12 @@ chart:
     type: 'Data type'
     types:
       string: 'String'
+      integer: 'Integer'
       relative_date: 'Relative date'
     add: 'Add contextual variable'
     labels:
       string: 'Default string value'
+      integer: 'Default value'
       relative_date:
         amount: 'Default amount'
         unit: 'Default unit'

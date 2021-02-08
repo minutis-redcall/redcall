@@ -2,20 +2,20 @@
 
 namespace Bundles\ChartBundle\Repository;
 
-use Bundles\ChartBundle\Entity\StatChart;
+use Bundles\ChartBundle\Entity\StatVisualization;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @method StatChart|null find($id, $lockMode = null, $lockVersion = null)
- * @method StatChart|null findOneBy(array $criteria, array $orderBy = null)
- * @method StatChart[]    findAll()
- * @method StatChart[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method StatVisualization|null find($id, $lockMode = null, $lockVersion = null)
+ * @method StatVisualization|null findOneBy(array $criteria, array $orderBy = null)
+ * @method StatVisualization[]    findAll()
+ * @method StatVisualization[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class ChartRepository extends BaseRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, StatChart::class);
+        parent::__construct($registry, StatVisualization::class);
     }
 
     // /**

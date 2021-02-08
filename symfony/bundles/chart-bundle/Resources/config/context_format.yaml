@@ -11,6 +11,11 @@ services:
     tags:
       - chart.context_format
 
+  Bundles\ChartBundle\Context\Format\IntegerFormat:
+    parent: Bundles\ChartBundle\Context\Format\AbstractContextFormat
+    tags:
+      - chart.context_format
+
   Bundles\ChartBundle\Context\Format\RelativeDateFormat:
     parent: Bundles\ChartBundle\Context\Format\AbstractContextFormat
     tags:

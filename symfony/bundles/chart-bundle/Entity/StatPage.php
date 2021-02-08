@@ -35,7 +35,7 @@ class StatPage
     private $createdAt;
 
     /**
-     * @ORM\OneToMany(targetEntity=StatChart::class, mappedBy="page", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity=StatVisualization::class, mappedBy="page", orphanRemoval=true)
      */
     private $charts;
 
@@ -86,14 +86,14 @@ class StatPage
     }
 
     /**
-     * @return Collection|StatChart[]
+     * @return Collection|StatVisualization[]
      */
     public function getCharts() : Collection
     {
         return $this->charts;
     }
 
-    public function addChart(StatChart $chart) : self
+    public function addChart(StatVisualization $chart) : self
     {
         if (!$this->charts->contains($chart)) {
             $this->charts[] = $chart;
@@ -103,7 +103,7 @@ class StatPage
         return $this;
     }
 
-    public function removeChart(StatChart $chart) : self
+    public function removeChart(StatVisualization $chart) : self
     {
         if ($this->charts->removeElement($chart)) {
             // set the owning side to null (unless already changed)
