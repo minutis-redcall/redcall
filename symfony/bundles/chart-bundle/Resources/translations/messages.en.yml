@@ -21,6 +21,7 @@ chart:
       string: 'String'
       integer: 'Integer'
       relative_date: 'Relative date'
+      absolute_date: 'Absolute date'
     add: 'Add contextual variable'
     labels:
       string: 'Default string value'
@@ -28,6 +29,7 @@ chart:
       relative_date:
         amount: 'Default amount'
         unit: 'Default unit'
+      Absolute date: 'Default value'
     relative_date:
       amount: '%amount% %unit% ago'
       now: 'now'

@@ -22,12 +22,14 @@ chart:
       string: 'Chaîne de caractères'
       integer: 'Nombre entier'
       relative_date: 'Date relative'
+      absolute_date: 'Date absolue'
     labels:
       string: 'Valeur par défaut de la chaîne de caractères'
       integer: 'Valeur par défaut'
       relative_date:
         amount: 'Valeur par défaut'
         unit: 'Unité par défaut'
+      absolute_date: 'Valeur par défaut'
     relative_date:
       amount: 'il y a %amount% %unit%'
       now: 'maintenant'

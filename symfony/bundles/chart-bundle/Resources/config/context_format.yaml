@@ -20,3 +20,8 @@ services:
     parent: Bundles\ChartBundle\Context\Format\AbstractContextFormat
     tags:
       - chart.context_format
+
+  Bundles\ChartBundle\Context\Format\AbsoluteDateFormat:
+    parent: Bundles\ChartBundle\Context\Format\AbstractContextFormat
+    tags:
+      - chart.context_format
