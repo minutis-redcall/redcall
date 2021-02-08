@@ -81,11 +81,17 @@ class MessageFormatter
 
         if ($choices) {
             foreach ($choices as $choice) {
-                $contentParts[] = sprintf('%s%s: %s', $message->getPrefix(), $choice->getCode(), $choice->getLabel());
+                // The way to answer depends on the volunteer's phone number because answering directly to sms and
+                // incoming calls are not always supported, see config/countries.yaml for more details.
+                if ($country && $country->isInboundSmsEnabled()) {
+                    $contentParts[] = sprintf('%s%s: %s', $message->getPrefix(), $choice->getCode(), $choice->getLabel());
+                } elseif ($country && $country->isInboundCallEnabled()) {
+                    $contentParts[] = sprintf('%s: %s', $choice->getCode(), $choice->getLabel());
+                } else {
+                    $contentParts[] = sprintf('- %s', $choice->getLabel());
+                }
             }
 
-            // The way to answer depends on the volunteer's phone number because answering directly to sms and
-            // incoming calls are not always supported, see config/countries.yaml for more details.
             if ($country && $country->isInboundSmsEnabled()) {
                 if (!$message->getCommunication()->isMultipleAnswer()) {
                     $contentParts[] = $this->translator->trans('message.sms.how_to_answer_simple');

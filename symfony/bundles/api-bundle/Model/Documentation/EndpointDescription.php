@@ -2,8 +2,20 @@
 
 namespace Bundles\ApiBundle\Model\Documentation;
 
+use Ramsey\Uuid\Uuid;
+
 class EndpointDescription
 {
+    /**
+     * @var string
+     */
+    private $id;
+
+    /**
+     * @var string
+     */
+    private $category;
+
     /**
      * @var int
      */
@@ -44,10 +56,27 @@ class EndpointDescription
      */
     private $responseFacade;
 
-    /**
-     * @var ErrorDescription[]
-     */
-    private $errors = [];
+    public function __construct()
+    {
+        $this->id = Uuid::uuid4();
+    }
+
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    public function getCategory() : string
+    {
+        return $this->category;
+    }
+
+    public function setCategory(string $category) : EndpointDescription
+    {
+        $this->category = $category;
+
+        return $this;
+    }
 
     public function getPriority() : int
     {
@@ -141,18 +170,6 @@ class EndpointDescription
     public function setResponseFacade(?FacadeDescription $responseFacade) : EndpointDescription
     {
         $this->responseFacade = $responseFacade;
-
-        return $this;
-    }
-
-    public function getErrors() : array
-    {
-        return $this->errors;
-    }
-
-    public function setErrors(array $errors) : EndpointDescription
-    {
-        $this->errors = $errors;
 
         return $this;
     }
