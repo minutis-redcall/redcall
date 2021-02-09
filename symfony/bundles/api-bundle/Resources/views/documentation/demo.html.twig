@@ -1,4 +1,4 @@
-<textarea rows="{{ body|split("\n")|length + 7 }}" style="width: 100%;" readonly>
+<textarea rows="{{ body|split("\n")|length + 6 + (method != 'GET') }}" style="width: 100%;" readonly>
 curl "{{ uri }}" \
 {% if not (method == 'GET') %}     -X '{{ method }}' \
 {% endif %}

@@ -180,33 +180,38 @@
 {% endblock %}
 
 {% block stylesheets %}
+
     {{ parent() }}
+
     <link rel="stylesheet"
           href="https://cdn.rawgit.com/afeld/bootstrap-toc/v1.0.1/dist/bootstrap-toc.min.css"/>
-{% endblock %}
-
-{% block javascripts %}
-
-    {{ parent() }}
-    <script src="https://cdn.rawgit.com/afeld/bootstrap-toc/v1.0.1/dist/bootstrap-toc.min.js"></script>
-
-    <script type="text/javascript">
-        $('#show-secret').click(function (e) {
-            e.preventDefault();
-            $.get('{{ path('developer_token_show_secret', {token: token}) }}', function (data) {
-                $('#secret-container').html(data.secret);
-            });
-        });
-
-        $(function () {
-            var navSelector = '#toc';
-            var $myNav = $(navSelector);
-            Toc.init($myNav);
-            $('body').scrollspy({
-                target: navSelector
-            });
-        });
-
-    </script>
 
 {% endblock %}
+
+ {% block javascripts %}
+
+     {{ parent() }}
+
+     <script src="https://cdn.rawgit.com/afeld/bootstrap-toc/v1.0.1/dist/bootstrap-toc.min.js"></script>
+
+     <script type="text/javascript">
+
+         $('#show-secret').click(function (e) {
+             e.preventDefault();
+             $.get('{{ path('developer_token_show_secret', {token: token}) }}', function (data) {
+                 $('#secret-container').html(data.secret);
+             });
+         });
+
+         $(function () {
+             var navSelector = '#toc';
+             var $myNav = $(navSelector);
+             Toc.init($myNav);
+             $('body').scrollspy({
+                 target: navSelector
+             });
+         });
+
+     </script>
+
+ {% endblock %}

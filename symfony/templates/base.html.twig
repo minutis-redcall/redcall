@@ -6,13 +6,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <title>{% block title %}RedCall{% endblock %}</title>
-    {% block stylesheets %}
+    {% block base_stylesheets %}
         {{ encore_entry_link_tags('css') }}
     {% endblock %}
+    {% block stylesheets %}{% endblock %}
 </head>
 <body>
 
-{{ encore_entry_script_tags('js') }}
+{% block base_javascripts %}
+    {{ encore_entry_script_tags('js') }}
+    <script type="text/javascript">
+        {# It is already defined in assets/js/main.js but doesn't seem to work 😶 #}
+        window.jQuery = $;
+    </script>
+{% endblock %}
 
 <div class="container mt-2">
 

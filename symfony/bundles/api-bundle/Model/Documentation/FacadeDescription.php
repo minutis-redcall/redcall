@@ -20,7 +20,7 @@ class FacadeDescription
     private $properties = [];
 
     /**
-     * @var string|null
+     * @var mixed
      */
     private $example;
 
@@ -65,12 +65,12 @@ class FacadeDescription
         return $this;
     }
 
-    public function getExample() : ?string
+    public function getExample()
     {
         return $this->example;
     }
 
-    public function setExample(?string $example) : FacadeDescription
+    public function setExample($example) : FacadeDescription
     {
         $this->example = $example;
 
