@@ -60,7 +60,7 @@ class FacadeReader
         $example = $class::getExample($decorates);
 
         $serialized = $this->serializer->serialize($example, 'json');
-        $facade->setExample($serialized);
+        $facade->setExample(json_decode($serialized, true));
 
         $properties = $this->propertyCollectionReader->read($example);
         $facade->setProperties($properties);

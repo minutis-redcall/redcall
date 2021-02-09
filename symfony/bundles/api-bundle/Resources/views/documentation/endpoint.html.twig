@@ -2,15 +2,17 @@
 
 <div class="endpoint">
 
+    {# Required permissions #}
     {% if endpoint.roles %}
         <div class="float-right">
             {% for role in endpoint.roles %}
-                <span style="padding:5px;border:1px solid red;">
-                    {% if role.subject %}
-                        {{ '{' ~ role.subject ~ '}' }}
-                    {% endif %}
+                <span class="alert alert-danger" style="padding:5px;">
                     {{ role.attribute }}
-                    {{ '{' ~ 'structure' ~ '}' }}
+                    {% if role.subject %}
+                        <span class="color-grey">
+                            {{ '{' ~ role.subject ~ '}' }}
+                        </span>
+                    {% endif %}
                 </span>
                 {% if not loop.last %}
                     &nbsp;
@@ -21,7 +23,7 @@
 
     <h3>{{ endpoint.title }}</h3>
 
-    <div class="input-group">
+    <div class="input-group align-items-center">
         {% for method in endpoint.methods %}
             <div class="input-group-addon">{{ macros.method(method) }}</div>
         {% endfor %}
@@ -34,16 +36,14 @@
         </div>
     {% endif %}
 
-
+    {# Request #}
     {% if endpoint.requestFacade %}
 
         <div class="card">
             <div class="card-header">
-                <h5 class="mb-0">
-                    <button class="btn btn-secondary" data-toggle="collapse" data-target="#request-{{ endpoint.id }}">
-                        Request
-                    </button>
-                </h5>
+                <a href="#request-{{ endpoint.id }}" class="btn btn-light" data-toggle="collapse" role="button" style="width:100%;">
+                    Request
+                </a>
             </div>
             <div id="request-{{ endpoint.id }}" class="collapse show">
                 <div class="card-body">
@@ -51,18 +51,16 @@
                 </div>
             </div>
         </div>
-
     {% endif %}
 
+    {# Response #}
     {% if endpoint.responseFacade %}
 
         <div class="card">
             <div class="card-header">
-                <h5 class="mb-0">
-                    <button class="btn btn-secondary" data-toggle="collapse" data-target="#response-{{ endpoint.id }}">
-                        Response
-                    </button>
-                </h5>
+                <a href="#response-{{ endpoint.id }}" class="btn btn-light" data-toggle="collapse" style="width:100%;">
+                    Response
+                </a>
             </div>
             <div id="response-{{ endpoint.id }}" class="collapse show">
                 <div class="card-body">
@@ -73,7 +71,23 @@
 
     {% endif %}
 
-    {{ dump(endpoint) }}
+    {# Demo #}
+    <div class="card">
+        <div class="card-header">
+            <a href="#demo-{{ endpoint.id }}" class="btn btn-light" data-toggle="collapse" style="width:100%;">
+                Runnable example
+            </a>
+        </div>
+        <div id="demo-{{ endpoint.id }}" class="collapse show">
+            <div class="card-body">
 
+                {{ api_demo(token, endpoint.methods|first, endpoint.uri, endpoint.requestFacade.example|default({}), false) }}
+
+            </div>
+        </div>
+    </div>
+
+
+    {{ dump(endpoint) }}
 
 </div>

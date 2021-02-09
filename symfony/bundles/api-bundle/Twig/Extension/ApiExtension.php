@@ -42,9 +42,9 @@ class ApiExtension extends AbstractExtension
         ];
     }
 
-    public function apiDemo(Token $token, string $method, string $uri, array $body, bool $prettyPrint = true)
+    public function apiDemo(Token $token, string $method, string $uri, $body, bool $prettyPrint = true)
     {
-        return $this->twig->render('@Api/demo.html.twig', [
+        return $this->twig->render('@Api/documentation/demo.html.twig', [
             'method' => $method,
             'uri'    => $uri,
             'body'   => json_encode($body, $prettyPrint ? JSON_PRETTY_PRINT : 0),

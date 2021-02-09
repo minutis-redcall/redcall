@@ -52,7 +52,11 @@ class EndpointReader
         $reflector   = new \ReflectionMethod($controller->getClass(), $controller->getMethod());
         $annotations = $this->annotationReader->getMethodAnnotations($reflector);
         $docblock    = $this->docblockReader->read($reflector, $annotations);
-        $endpoint->setTitle($docblock->getSummary());
+        if ($docblock->getSummary()) {
+            $endpoint->setTitle($docblock->getSummary());
+        } else {
+            $endpoint->setTitle($this->camelToSpace($controller->getMethod()));
+        }
         $endpoint->setDescription($docblock->getDescription());
 
         $methods = $controller->getRoute()->getMethods() ?: ['GET'];
@@ -82,5 +86,10 @@ class EndpointReader
         }
 
         return $endpoint;
+    }
+
+    private function camelToSpace(string $camelValue)
+    {
+        return strtolower(preg_replace('/(?<!^)[A-Z]/', ' $0', $camelValue));
     }
 }
