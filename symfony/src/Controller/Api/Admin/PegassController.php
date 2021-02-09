@@ -49,7 +49,7 @@ class PegassController
      *   response = @Facade(class     = QueryBuilderFacade::class,
      *                      decorates = @Facade(class = PegassFacade::class))
      * )
-     * @Route(path="/", name="records", methods={"GET"})
+     * @Route(name="records", methods={"GET"})
      */
     public function records(PegassFiltersFacade $filters)
     {

@@ -2,6 +2,7 @@
 
 <div class="endpoint">
 
+    {# Required permissions #}
     {% if endpoint.roles %}
         <div class="float-right">
             {% for role in endpoint.roles %}
@@ -22,7 +23,7 @@
 
     <h3>{{ endpoint.title }}</h3>
 
-    <div class="input-group">
+    <div class="input-group align-items-center">
         {% for method in endpoint.methods %}
             <div class="input-group-addon">{{ macros.method(method) }}</div>
         {% endfor %}
@@ -35,7 +36,7 @@
         </div>
     {% endif %}
 
-
+    {# Request #}
     {% if endpoint.requestFacade %}
 
         <div class="card">
@@ -52,6 +53,7 @@
         </div>
     {% endif %}
 
+    {# Response #}
     {% if endpoint.responseFacade %}
 
         <div class="card">
@@ -69,7 +71,7 @@
 
     {% endif %}
 
-
+    {# Demo #}
     <div class="card">
         <div class="card-header">
             <a href="#demo-{{ endpoint.id }}" class="btn btn-light" data-toggle="collapse" style="width:100%;">

@@ -320,6 +320,10 @@ class CommunicationController extends BaseController
         $message->setPrefix('X');
         $message->setCode('xxxxxxxx');
 
+        $message->setVolunteer(
+            $this->getUser()->getVolunteer()
+        );
+
         $media = $this->mediaManager->createMp3(
             $this->formatter->formatMessageContent($message)
         );
