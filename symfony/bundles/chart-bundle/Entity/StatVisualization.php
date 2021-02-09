@@ -2,13 +2,13 @@
 
 namespace Bundles\ChartBundle\Entity;
 
-use Bundles\ChartBundle\Repository\ChartRepository;
+use Bundles\ChartBundle\Repository\VisualizationRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Entity(repositoryClass=ChartRepository::class)
+ * @ORM\Entity(repositoryClass=VisualizationRepository::class)
  */
-class StatChart
+class StatVisualization
 {
     /**
      * @ORM\Id

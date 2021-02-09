@@ -1,0 +1,79 @@
+{% import '@Api/macros.html.twig' as macros %}
+
+<div class="endpoint">
+
+    {% if endpoint.roles %}
+        <div class="float-right">
+            {% for role in endpoint.roles %}
+                <span style="padding:5px;border:1px solid red;">
+                    {% if role.subject %}
+                        {{ '{' ~ role.subject ~ '}' }}
+                    {% endif %}
+                    {{ role.attribute }}
+                    {{ '{' ~ 'structure' ~ '}' }}
+                </span>
+                {% if not loop.last %}
+                    &nbsp;
+                {% endif %}
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <h3>{{ endpoint.title }}</h3>
+
+    <div class="input-group">
+        {% for method in endpoint.methods %}
+            <div class="input-group-addon">{{ macros.method(method) }}</div>
+        {% endfor %}
+        <p class="form-control" style="font-size:14px;">{{ endpoint.uri }}</p>
+    </div>
+
+    {% if endpoint.description %}
+        <div>
+            <p>{{ endpoint.description }}</p>
+        </div>
+    {% endif %}
+
+
+    {% if endpoint.requestFacade %}
+
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <button class="btn btn-secondary" data-toggle="collapse" data-target="#request-{{ endpoint.id }}">
+                        Request
+                    </button>
+                </h5>
+            </div>
+            <div id="request-{{ endpoint.id }}" class="collapse show">
+                <div class="card-body">
+                    {{ dump(endpoint.requestFacade) }}
+                </div>
+            </div>
+        </div>
+
+    {% endif %}
+
+    {% if endpoint.responseFacade %}
+
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <button class="btn btn-secondary" data-toggle="collapse" data-target="#response-{{ endpoint.id }}">
+                        Response
+                    </button>
+                </h5>
+            </div>
+            <div id="response-{{ endpoint.id }}" class="collapse show">
+                <div class="card-body">
+                    {{ dump(endpoint.responseFacade) }}
+                </div>
+            </div>
+        </div>
+
+    {% endif %}
+
+    {{ dump(endpoint) }}
+
+
+</div>

@@ -5,11 +5,6 @@ namespace Bundles\ApiBundle\Model\Documentation;
 class RoleDescription
 {
     /**
-     * @var string|null
-     */
-    private $method;
-
-    /**
      * @var string
      */
     private $attribute;
@@ -18,23 +13,6 @@ class RoleDescription
      * @var string|null
      */
     private $subject;
-
-    /**
-     * @var string|null
-     */
-    private $channel;
-
-    public function getMethod() : ?string
-    {
-        return $this->method;
-    }
-
-    public function setMethod(?string $method) : RoleDescription
-    {
-        $this->method = $method;
-
-        return $this;
-    }
 
     public function getAttribute() : string
     {
@@ -56,18 +34,6 @@ class RoleDescription
     public function setSubject(?string $subject) : RoleDescription
     {
         $this->subject = $subject;
-
-        return $this;
-    }
-
-    public function getChannel() : ?string
-    {
-        return $this->channel;
-    }
-
-    public function setChannel(?string $channel) : RoleDescription
-    {
-        $this->channel = $channel;
 
         return $this;
     }

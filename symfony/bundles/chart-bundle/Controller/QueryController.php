@@ -62,5 +62,20 @@ class QueryController extends AbstractController
         ];
     }
 
+    public function test(Request $request, ?StatQuery $query)
+    {
+        $form = $this->createForm(QueryType::class, $query);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            // ...
+
+        }
+
+        return $this->json([
+            'success' => false,
+        ]);
+    }
 
 }

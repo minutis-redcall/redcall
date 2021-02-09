@@ -19,13 +19,17 @@ chart:
     type: 'Data type'
     types:
       string: 'String'
+      integer: 'Integer'
       relative_date: 'Relative date'
+      absolute_date: 'Absolute date'
     add: 'Add contextual variable'
     labels:
-      string: 'Default string value'
+      string: 'Enter a value'
+      integer: 'Enter a number'
       relative_date:
-        amount: 'Default amount'
-        unit: 'Default unit'
+        amount: 'Amount'
+        unit: 'Unit'
+      Absolute date: 'Default value'
     relative_date:
       amount: '%amount% %unit% ago'
       now: 'now'

@@ -160,6 +160,11 @@
                     <hr/>
                 </div>
 
+                {{ include('@Api/documentation/endpoint_collection.html.twig', {
+                    token: token,
+                    endpoint_collection: endpoint_collection,
+                }) }}
+
             </div>
         </div>
 

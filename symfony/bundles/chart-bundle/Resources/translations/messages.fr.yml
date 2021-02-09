@@ -20,12 +20,16 @@ chart:
     add: 'Ajouter une variable'
     types:
       string: 'Chaîne de caractères'
+      integer: 'Nombre entier'
       relative_date: 'Date relative'
+      absolute_date: 'Date absolue'
     labels:
-      string: 'Valeur par défaut de la chaîne de caractères'
+      string: 'Saisir une valeur'
+      integer: 'Saisir un nombre'
       relative_date:
-        amount: 'Valeur par défaut'
-        unit: 'Unité par défaut'
+        amount: 'Valeur'
+        unit: 'Unité'
+      absolute_date: 'Valeur par défaut'
     relative_date:
       amount: 'il y a %amount% %unit%'
       now: 'maintenant'

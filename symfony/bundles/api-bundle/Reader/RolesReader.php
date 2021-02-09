@@ -45,13 +45,11 @@ class RolesReader
     {
         foreach ($endpoint->getMethods() as $method) {
             $request = Request::create($endpoint->getUri(), $method);
-            [$attributes, $channel] = $this->accessMap->getPatterns($request);
+            [$attributes] = $this->accessMap->getPatterns($request);
 
             foreach ($attributes ?? [] as $attribute) {
                 $role = new RoleDescription();
-                $role->setMethod(count($endpoint->getMethods()) ? $method : null);
                 $role->setAttribute($attribute);
-                $role->setChannel($channel);
 
                 $endpoint->addRole($role);
             }
