@@ -170,7 +170,7 @@ class Sender
             $message->setError($e->getMessage());
         }
 
-        $this->messageManager->save($message);
+        $this->saveMessaage($message);
     }
 
     public function sendEmail(Message $message)
@@ -196,6 +196,11 @@ class Sender
         }
 
         $this->messageManager->save($message);
+    }
+
+    private function saveMessaage(Message $message)
+    {
+        $this->messageManager->safeSave($message);
     }
 
     private function isMessageNotTransmittable(Message $message) : bool
