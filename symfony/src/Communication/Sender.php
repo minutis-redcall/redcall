@@ -170,7 +170,7 @@ class Sender
             $message->setError($e->getMessage());
         }
 
-        $this->messageManager->save($message);
+        $this->saveMessaage($message);
     }
 
     public function sendEmail(Message $message)
@@ -198,18 +198,22 @@ class Sender
         $this->messageManager->save($message);
     }
 
+    private function saveMessaage(Message $message)
+    {
+        $this->messageManager->updateMessageStatus($message);
+    }
+
     private function isMessageNotTransmittable(Message $message) : bool
     {
         $error     = null;
         $volunteer = $message->getVolunteer();
 
         switch ($message->getCommunication()->getType()) {
-            case $message->getCommunication()->getType():
+            case Communication::TYPE_SMS:
                 if ($volunteer->getOptoutUntil() && $volunteer->getOptoutUntil()->getTimestamp() > time()) {
                     $error = 'campaign_status.warning.optout_until';
                     break;
                 }
-            case Communication::TYPE_SMS:
                 if ($volunteer->getPhoneNumber() && !$volunteer->getPhone()->isMobile()) {
                     $error = 'campaign_status.warning.no_phone_mobile';
                     break;
@@ -228,6 +232,10 @@ class Sender
                 }
                 break;
             case Communication::TYPE_CALL:
+                if ($volunteer->getOptoutUntil() && $volunteer->getOptoutUntil()->getTimestamp() > time()) {
+                    $error = 'campaign_status.warning.optout_until';
+                    break;
+                }
                 if (null === $volunteer->getPhoneNumber()) {
                     $error = 'campaign_status.warning.no_phone';
                     break;
@@ -242,6 +250,10 @@ class Sender
                 }
                 break;
             case Communication::TYPE_EMAIL:
+                if ($volunteer->getOptoutUntil() && $volunteer->getOptoutUntil()->getTimestamp() > time()) {
+                    $error = 'campaign_status.warning.optout_until';
+                    break;
+                }
                 if (null === $volunteer->getEmail()) {
                     $error = 'campaign_status.warning.no_email';
                     break;

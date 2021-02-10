@@ -14,7 +14,7 @@ class PegassFiltersFacade implements FacadeInterface
      *
      * @Assert\Range(min = 1)
      *
-     * @var FacadeInterface[]
+     * @var int
      */
     private $page = 1;
 

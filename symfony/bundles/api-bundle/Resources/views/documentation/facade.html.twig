@@ -1,0 +1,36 @@
+{% if facade.properties %}
+    <table class="table table-striped">
+        <thead>
+        <tr>
+            <th>Property</th>
+            <th>Type</th>
+            <th>Description</th>
+            <th>Constraints</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        {{ include('@Api/documentation/property_collection.html.twig', {
+            properties: facade.properties
+        }) }}
+
+        </tbody>
+    </table>
+    <div class="float-right">
+        <p>* types are nullable</p>
+    </div>
+{% endif %}
+
+<div class="facade-example">
+    <div>
+        <a href="#facade-example-{{ facade.id }}" class="btn btn-secondary" data-toggle="collapse">
+            Example
+        </a>
+    </div>
+    <div id="facade-example-{{ facade.id }}" class="collapse">
+        {{ include('@Api/documentation/facade_example.html.twig', {
+            example: facade.example
+        }) }}
+    </div>
+</div>
+

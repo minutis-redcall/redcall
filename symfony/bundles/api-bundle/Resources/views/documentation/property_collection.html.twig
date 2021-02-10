@@ -1,0 +1,67 @@
+{% import '@Api/macros.html.twig' as macros %}
+
+{% for property in properties.all %}
+
+    <tr>
+        <td class="align-middle">{{ property.fullname }}</td>
+        <td class="align-middle">
+            {% set nullable = false %}
+            {% for type in property.types %}
+                {% if type.nullable %}
+                    {% set nullable = true %}
+                {% endif %}
+            {% endfor %}
+
+            {% for type in property.types %}
+                {% if type.builtinType == 'boolean' or type.builtinType == 'bool' %}
+                    <div class="badge badge-pill badge-warning">boolan{% if nullable %}*{% endif %}</div>
+                {% elseif type.builtinType == 'integer' or type.builtinType == 'int' %}
+                    <div class="badge badge-pill badge-success">integer{% if nullable %}*{% endif %}</div>
+                {% elseif type.builtinType == 'double' or type.builtinType == 'float' %}
+                    <div class="badge badge-pill badge-success">float{% if nullable %}*{% endif %}</div>
+                {% elseif type.builtinType == 'string' %}
+                    <div class="badge badge-pill badge-danger">string{% if nullable %}*{% endif %}</div>
+                {% elseif type.builtinType == 'array' %}
+                    <div class="badge badge-pill badge-primary">array{% if nullable %}*{% endif %}</div>
+                {% elseif type.builtinType == 'object' %}
+                    {% if type.className == 'Bundles\\ApiBundle\\Model\\Facade\\CollectionFacade' %}
+                        <div class="badge badge-pill badge-primary">array{% if nullable %}*{% endif %}</div>
+                    {% elseif type.className == 'DateTime' %}
+                        <div class="badge badge-pill badge-info">datetime{% if nullable %}*{% endif %}</div>
+                    {% else %}
+                        <div class="badge badge-pill badge-dark">object{% if nullable %}*{% endif %}</div>
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+        </td>
+        <td>
+            {% if property.title %}
+                <strong>{{ property.title }}</strong>
+                <br/>
+            {% endif %}
+            {{ property.description|nl2br }}
+        </td>
+        <td>
+            {% for constraint in property.constraints %}
+                <code>{{ constraint.name }}</code>
+                {% if constraint.options %}
+                    <ul>
+                        {% for key, option in constraint.options %}
+                            <li>{{ key }}={{ option|json_encode }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            {% endfor %}
+        </td>
+    </tr>
+
+    {% if property.children %}
+
+        {{ include('@Api/documentation/property_collection.html.twig', {
+            properties: property.children
+        }) }}
+
+    {% endif %}
+
+{% endfor %}
+

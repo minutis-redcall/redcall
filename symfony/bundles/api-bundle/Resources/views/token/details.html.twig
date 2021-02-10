@@ -62,8 +62,9 @@
                     {{ api_demo(token, method, uri, body, false) }}
 
                     <p>&nbsp;</p>
-                    <p>In the above example, <code>HMAC(SHA256, {{ method }}{{ uri }}{{ body|json_encode }},
-                            secret)</code>
+                    <p>
+                        In the above example,
+                        <code>HMAC(SHA256, {{ method }}{{ uri }}{{ body|json_encode }}, secret)</code>
                     </p>
                     <p>= <code>{{ token.sign(method, uri, body|json_encode) }}</code></p>
                 </div>

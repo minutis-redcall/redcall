@@ -284,6 +284,11 @@ class MessageManager
         $this->messageRepository->save($message);
     }
 
+    public function updateMessageStatus(Message $message)
+    {
+        $this->messageRepository->updateMessageStatus($message);
+    }
+
     /**
      * Returns true whether is it possible to deploy, if
      * last message was sent less than N seconds ago,

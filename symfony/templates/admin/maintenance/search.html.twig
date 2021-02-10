@@ -2,6 +2,7 @@
 
 {% block body %}
 
+    <br/>
     <div class="jumbotron">
 
         <h2>{{ 'maintenance.search.title'|trans }}</h2>
@@ -29,18 +30,18 @@
 
     <script type="text/javascript">
 
-        $('#{{ form.nivol.vars.id }}').change(function() {
+        $('#{{ form.nivol.vars.id }}').change(function () {
             $.post('{{ path('admin_maintenance_search_change_nivol') }}', $('#{{ form.nivol.vars.id }}').closest('form').serialize(), function (data) {
                 $('#xml').html(data.content);
             });
         });
 
         var timeout = null;
-        $('#{{ form.expression.vars.id }}').keyup(function() {
+        $('#{{ form.expression.vars.id }}').keyup(function () {
             if (timeout) {
                 clearTimeout(timeout);
             }
-            timeout = setTimeout(function() {
+            timeout = setTimeout(function () {
                 $.post('{{ path('admin_maintenance_search_change_expression') }}', $('#{{ form.expression.vars.id }}').closest('form').serialize(), function (data) {
                     $('#result').html(data.content);
                 });

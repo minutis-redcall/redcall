@@ -22,6 +22,22 @@ class MessageRepository extends BaseRepository
         parent::__construct($registry, Message::class);
     }
 
+    public function updateMessageStatus(Message $message)
+    {
+        $this->createQueryBuilder('m')
+             ->update()
+             ->set('m.messageId', ':message_id')
+             ->setParameter('message_id', $message->getMessageId())
+             ->set('m.sent', ':sent')
+             ->setParameter('sent', $message->isSent())
+             ->set('m.error', ':error')
+             ->setParameter('error', $message->getError())
+             ->where('m.id = :id')
+             ->setParameter('id', $message->getId())
+             ->getQuery()
+             ->execute();
+    }
+
     public function getMessageFromPhoneNumber(string $phoneNumber) : ?Message
     {
         return $this->createQueryBuilder('m')
