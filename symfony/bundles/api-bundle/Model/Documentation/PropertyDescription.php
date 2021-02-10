@@ -39,11 +39,6 @@ class PropertyDescription
      */
     private $children;
 
-    /**
-     * @var bool
-     */
-    private $collection = false;
-
     public function getName() : string
     {
         return $this->name;
@@ -58,7 +53,7 @@ class PropertyDescription
 
     public function getFullname() : string
     {
-        if ($this->parent && $this->parent->isCollection()) {
+        if ($this->parent && $this->parent->getChildren()->isCollection()) {
             $name = sprintf('%s[].%s', $this->getParent()->getFullname(), $this->getName());
         } elseif ($this->parent) {
             $name = sprintf('%s.%s', $this->getParent()->getFullname(), $this->getName());
@@ -137,18 +132,6 @@ class PropertyDescription
     public function setChildren(?PropertyCollectionDescription $children) : PropertyDescription
     {
         $this->children = $children;
-
-        return $this;
-    }
-
-    public function isCollection() : bool
-    {
-        return $this->collection;
-    }
-
-    public function setCollection(bool $collection) : PropertyDescription
-    {
-        $this->collection = $collection;
 
         return $this;
     }

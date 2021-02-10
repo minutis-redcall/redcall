@@ -32,7 +32,7 @@
 
     {% if endpoint.description %}
         <div>
-            <p>{{ endpoint.description }}</p>
+            <p>{{ endpoint.description|nl2br }}</p>
         </div>
     {% endif %}
 
@@ -47,7 +47,9 @@
             </div>
             <div id="request-{{ endpoint.id }}" class="collapse show">
                 <div class="card-body">
-                    {{ dump(endpoint.requestFacade) }}
+                    {{ include('@Api/documentation/facade.html.twig', {
+                        facade: endpoint.requestFacade,
+                    }) }}
                 </div>
             </div>
         </div>
@@ -64,7 +66,9 @@
             </div>
             <div id="response-{{ endpoint.id }}" class="collapse show">
                 <div class="card-body">
-                    {{ dump(endpoint.responseFacade) }}
+                    {{ include('@Api/documentation/facade.html.twig', {
+                        facade: endpoint.responseFacade,
+                    }) }}
                 </div>
             </div>
         </div>

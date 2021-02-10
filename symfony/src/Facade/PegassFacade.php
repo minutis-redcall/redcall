@@ -36,7 +36,7 @@ class PegassFacade implements FacadeInterface
      * Raw Pegass content.
      * Built on top of several Pegass api calls.
      *
-     * @var array|null
+     * @var object|null
      */
     private $content;
 

@@ -4,6 +4,7 @@
 
 {% block body %}
 
+    <br/>
     <div class="jumbotron text-center">
         <div class="text-left">
             <p>{{ 'admin.answer_analysis.search.title'|trans }}</p>
@@ -16,12 +17,12 @@
 
     <table class="table">
         <thead>
-            <tr>
-                <th>{{ 'admin.answer_analysis.table.date'|trans }}</th>
-                <th>{{ 'admin.answer_analysis.table.trigger'|trans }}</th>
-                <th>{{ 'admin.answer_analysis.table.volunteer'|trans }}</th>
-                <th>{{ 'admin.answer_analysis.table.response'|trans }}</th>
-            </tr>
+        <tr>
+            <th>{{ 'admin.answer_analysis.table.date'|trans }}</th>
+            <th>{{ 'admin.answer_analysis.table.trigger'|trans }}</th>
+            <th>{{ 'admin.answer_analysis.table.volunteer'|trans }}</th>
+            <th>{{ 'admin.answer_analysis.table.response'|trans }}</th>
+        </tr>
         </thead>
 
         {% for answer in pager %}
