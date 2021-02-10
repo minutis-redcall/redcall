@@ -284,9 +284,9 @@ class MessageManager
         $this->messageRepository->save($message);
     }
 
-    public function safeSave(Message $message)
+    public function updateMessageStatus(Message $message)
     {
-        $this->messageRepository->safeSave($message);
+        $this->messageRepository->updateMessageStatus($message);
     }
 
     /**

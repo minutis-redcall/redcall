@@ -11,7 +11,6 @@ use App\Entity\Message;
 use App\Entity\Selection;
 use App\Entity\Volunteer;
 use Doctrine\ORM\NoResultException;
-use Doctrine\ORM\ORMException;
 use Doctrine\Persistence\ManagerRegistry;
 
 class MessageRepository extends BaseRepository
@@ -23,23 +22,20 @@ class MessageRepository extends BaseRepository
         parent::__construct($registry, Message::class);
     }
 
-    public function safeSave(Message $message, int $attempt = 0)
+    public function updateMessageStatus(Message $message)
     {
-        try {
-            $this->_em->persist($message);
-            $this->_em->flush();
-        } catch (ORMException $e) {
-            if (!$this->_em->isOpen()) {
-                $this->_em = $this->_em->create(
-                    $this->_em->getConnection(),
-                    $this->_em->getConfiguration()
-                );
-            }
-
-            if ($attempt < 3) {
-                $this->safeSave($message, $attempt + 1);
-            }
-        }
+        $this->createQueryBuilder('m')
+             ->update()
+             ->set('m.messageId', ':message_id')
+             ->setParameter('message_id', $message->getMessageId())
+             ->set('m.sent', ':sent')
+             ->setParameter('sent', $message->isSent())
+             ->set('m.error', ':error')
+             ->setParameter('error', $message->getError())
+             ->where('m.id = :id')
+             ->setParameter('id', $message->getId())
+             ->getQuery()
+             ->execute();
     }
 
     public function getMessageFromPhoneNumber(string $phoneNumber) : ?Message

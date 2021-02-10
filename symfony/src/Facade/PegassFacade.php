@@ -17,7 +17,8 @@ class PegassFacade implements FacadeInterface
     private $type;
 
     /**
-     * Remote resource identifier, used to do the mapping between RedCall and Pegass databases.
+     * Remote resource identifier.
+     * Used to do the mapping between RedCall and Pegass databases.
      *
      * @var string|null
      */
@@ -32,7 +33,8 @@ class PegassFacade implements FacadeInterface
     private $parentIdentifier;
 
     /**
-     * The raw Pegass content, built on top of several Pegass api calls.
+     * Raw Pegass content.
+     * Built on top of several Pegass api calls.
      *
      * @var array|null
      */
