@@ -14,7 +14,7 @@
 
             {% for type in property.types %}
                 {% if type.builtinType == 'boolean' or type.builtinType == 'bool' %}
-                    <div class="badge badge-pill badge-warning">boolan{% if nullable %}*{% endif %}</div>
+                    <div class="badge badge-pill badge-warning">boolean{% if nullable %}*{% endif %}</div>
                 {% elseif type.builtinType == 'integer' or type.builtinType == 'int' %}
                     <div class="badge badge-pill badge-success">integer{% if nullable %}*{% endif %}</div>
                 {% elseif type.builtinType == 'double' or type.builtinType == 'float' %}
@@ -41,18 +41,20 @@
             {% endif %}
             {{ property.description|nl2br }}
         </td>
-        <td>
-            {% for constraint in property.constraints %}
-                <code>{{ constraint.name }}</code>
-                {% if constraint.options %}
-                    <ul>
-                        {% for key, option in constraint.options %}
-                            <li>{{ key }}={{ option|json_encode }}</li>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
-            {% endfor %}
-        </td>
+        {% if constant('\\Bundles\\ApiBundle\\Model\\Documentation\\FacadeDescription::TYPE_REQUEST') == type %}
+            <td>
+                {% for constraint in property.constraints %}
+                    <code>{{ constraint.name }}</code>
+                    {% if constraint.options %}
+                        <ul>
+                            {% for key, option in constraint.options %}
+                                <li>{{ key }}={{ option|json_encode }}</li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                {% endfor %}
+            </td>
+        {% endif %}
     </tr>
 
     {% if property.children %}

@@ -2,12 +2,13 @@ services:
 
   Bundles\ApiBundle\Reader\DocblockReader:
 
-  Bundles\ApiBundle\Reader\EndpointCollectionReader:
+  Bundles\ApiBundle\Reader\CategoryCollectionReader:
     arguments:
       - '@router'
       - '@controller_resolver'
       - '@doctrine.annotation_reader'
       - '@Bundles\ApiBundle\Reader\EndpointReader'
+      - '@Bundles\ApiBundle\Reader\DocblockReader'
 
   Bundles\ApiBundle\Reader\EndpointReader:
     - '@Bundles\ApiBundle\Reader\RolesReader'

@@ -1,0 +1,24 @@
+<div class="category-collection">
+    {% for category in category_collection.categories %}
+
+        <h2>{{ category.name }}</h2>
+
+        {% if category.title %}
+            <div>
+                <strong>{{ category.title }}</strong>
+            </div>
+        {% endif %}
+
+        {% if category.description %}
+            <p>{{ category.description }}</p>
+        {% endif %}
+
+        <hr/>
+
+        {{ include('@Api/documentation/endpoint_collection.html.twig', {
+            token: token,
+            endpoint_collection: category.endpoints,
+        }) }}
+
+    {% endfor %}
+</div>

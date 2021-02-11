@@ -44,9 +44,6 @@ class EndpointReader
     {
         $endpoint = new EndpointDescription();
 
-        $category = substr(substr($controller->getClass(), strrpos($controller->getClass(), '\\') + 1), 0, -10);
-        $endpoint->setCategory($category);
-
         $endpoint->setPriority($controller->getAnnotation()->priority);
 
         $reflector   = new \ReflectionMethod($controller->getClass(), $controller->getMethod());

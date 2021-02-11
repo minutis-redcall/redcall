@@ -4,7 +4,7 @@ namespace Bundles\ApiBundle\Controller;
 
 use Bundles\ApiBundle\Entity\Token;
 use Bundles\ApiBundle\Manager\TokenManager;
-use Bundles\ApiBundle\Reader\EndpointCollectionReader;
+use Bundles\ApiBundle\Reader\CategoryCollectionReader;
 use Bundles\ApiBundle\Util;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
@@ -33,14 +33,14 @@ class TokenController extends AbstractController
     private $tokenManager;
 
     /**
-     * @var EndpointCollectionReader
+     * @var CategoryCollectionReader
      */
-    private $endpointCollectionReader;
+    private $categoryCollectionReader;
 
-    public function __construct(TokenManager $tokenManager, EndpointCollectionReader $endpointCollectionReader)
+    public function __construct(TokenManager $tokenManager, CategoryCollectionReader $categoryCollectionReader)
     {
         $this->tokenManager             = $tokenManager;
-        $this->endpointCollectionReader = $endpointCollectionReader;
+        $this->categoryCollectionReader = $categoryCollectionReader;
     }
 
     /**
@@ -91,7 +91,7 @@ class TokenController extends AbstractController
     {
         return $this->render('@Api/token/details.html.twig', [
             'token'               => $token,
-            'endpoint_collection' => $this->endpointCollectionReader->read(),
+            'category_collection' => $this->categoryCollectionReader->read(),
         ]);
     }
 

@@ -48,6 +48,7 @@
             <div id="request-{{ endpoint.id }}" class="collapse show">
                 <div class="card-body">
                     {{ include('@Api/documentation/facade.html.twig', {
+                        type: constant('\\Bundles\\ApiBundle\\Model\\Documentation\\FacadeDescription::TYPE_REQUEST'),
                         facade: endpoint.requestFacade,
                     }) }}
                 </div>
@@ -67,6 +68,7 @@
             <div id="response-{{ endpoint.id }}" class="collapse show">
                 <div class="card-body">
                     {{ include('@Api/documentation/facade.html.twig', {
+                        type: constant('\\Bundles\\ApiBundle\\Model\\Documentation\\FacadeDescription::TYPE_RESPONSE'),
                         facade: endpoint.responseFacade,
                     }) }}
                 </div>
