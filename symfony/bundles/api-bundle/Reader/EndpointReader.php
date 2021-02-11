@@ -67,8 +67,8 @@ class EndpointReader
         if ($controller->getAnnotation()->request) {
             $endpoint->setRequestFacade(
                 $this->facadeReader->read(
-                    $controller->getAnnotation()->request->class,
-                    $controller->getAnnotation()->request->decorates
+                    $controller->getAnnotation()->request->getClass(),
+                    $controller->getAnnotation()->request->getDecorates()
                 )
             );
         }

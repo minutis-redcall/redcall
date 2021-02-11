@@ -7,22 +7,53 @@ use Bundles\ApiBundle\Contracts\FacadeInterface;
 
 class CollectionFacade extends \ArrayObject implements FacadeInterface
 {
+    public function __construct($array = [], $flags = 0, $iteratorClass = "ArrayIterator")
+    {
+        foreach ($array as $key => $elem) {
+            if (0 === $key) {
+                continue;
+            }
+
+            $this->validate($elem);
+        }
+
+        parent::__construct($array, $flags, $iteratorClass);
+    }
+
     static public function getExample(Facade $decorates = null) : FacadeInterface
     {
         if (null === $decorates) {
             throw new \LogicException('This facade decorates another facade');
         }
 
-        $child = $decorates->class;
+        $child = $decorates->getClass();
 
-        $facade   = [];
-        $facade[] = $child::getExample($decorates->decorates);
-        $facade[] = $child::getExample($decorates->decorates);
+        $array   = [];
+        $array[] = $child::getExample($decorates->getDecorates());
+        $array[] = $child::getExample($decorates->getDecorates());
 
-        return $facade;
+        return new self($array);
     }
 
     public function offsetSet($key, $value)
+    {
+        $this->validate($value);
+
+        parent::offsetSet($key, $value);
+    }
+
+    public function first() : ?FacadeInterface
+    {
+        $key = array_key_first($this->getArrayCopy());
+
+        if (null === $key) {
+            return null;
+        }
+
+        return $this->offsetGet($key);
+    }
+
+    private function validate($value)
     {
         if ($this->count() > 0) {
             $first = $this->offsetGet(array_key_first($this->getArrayCopy()));
@@ -39,18 +70,5 @@ class CollectionFacade extends \ArrayObject implements FacadeInterface
         if (!is_subclass_of($value, FacadeInterface::class)) {
             throw new \InvalidArgumentException(sprintf('A "%s" can only contain "%s" instances.', CollectionFacade::class, FacadeInterface::class));
         }
-
-        parent::offsetSet($key, $value);
-    }
-
-    public function first() : ?FacadeInterface
-    {
-        $key = array_key_first($this->getArrayCopy());
-
-        if (null === $key) {
-            return null;
-        }
-
-        return $this->offsetGet($key);
     }
 }

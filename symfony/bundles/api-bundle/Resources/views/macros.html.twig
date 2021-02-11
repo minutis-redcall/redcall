@@ -12,38 +12,6 @@
     {% endif %}
 {% endmacro %}
 
-{% macro responseProperties(properties) %}
-    <table class="table">
-        {% for property in properties %}
-            {% set name = property[0] %}
-            {% set value = property[1] %}
-            {% set description = property[2] %}
-            <tr>
-                <td width="10%"><code>{{ name }}</code></td>
-                <td width="10%">
-                    {% if value is of type('NULL') %}
-                        <div class="badge badge-pill badge-dark">NULL</div>
-                    {% elseif value is of type('boolean') %}
-                        <div class="badge badge-pill badge-warning">boolean</div>
-                    {% elseif value is of type('integer') %}
-                        <div class="badge badge-pill badge-success">integer</div>
-                    {% elseif value is of type('double') or value is of type('float') %}
-                        <div class="badge badge-pill badge-success">float</div>
-                    {% elseif value is of type('string') %}
-                        <div class="badge badge-pill badge-danger">string</div>
-                    {% elseif value is of type('array') %}
-                        <div class="badge badge-pill badge-primary">array</div>
-                    {% elseif value is of type('object') %}
-                        <div class="badge badge-pill badge-dark">resource</div>
-                    {% endif %}
-                </td>
-                <td width="30%">{{ value|json_encode }}</td>
-                <td width="50%">{{ description }}</td>
-            </tr>
-        {% endfor %}
-    </table>
-{% endmacro %}
-
 {% macro responseSample(response) %}
     <div class="bg-white" style="border: 1px solid lightgrey; padding:8px;">
         <div class="float-right d-block" style="border:1px solid #aaaaaa; background-color:#eeeeee; padding:3px; color:#666666;">

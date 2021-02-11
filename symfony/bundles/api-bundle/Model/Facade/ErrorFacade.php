@@ -8,37 +8,46 @@ use Bundles\ApiBundle\Contracts\FacadeInterface;
 class ErrorFacade implements FacadeInterface
 {
     /**
+     * Always false on error responses
+     *
      * @var bool
      */
     private $success = false;
 
     /**
+     * A code for the given error.
+     *
      * @var string
      */
     private $code;
 
     /**
+     * A human readable error message.
+     *
      * @var string
      */
     private $message;
 
     /**
-     * @var FacadeInterface
+     * Context that will help understand and fix the error.
+     *
+     * @var FacadeInterface|null
      */
     private $context;
 
     static public function getExample(Facade $decorates = null) : FacadeInterface
     {
-        if (null === $decorates) {
-            throw new \LogicException('This facade decorates another facade');
-        }
-
         $facade = new self;
-        $child  = $decorates->class;
 
         $facade->code    = '1234';
         $facade->message = 'Sample message';
-        $facade->context = $child::getExample($decorates->decorates);
+
+        if ($decorates) {
+            $child           = $decorates->getClass();
+            $facade->context = $child::getExample($decorates->getDecorates());
+        } else {
+            $facade->context = new EmptyFacade();
+        }
 
         return $facade;
     }

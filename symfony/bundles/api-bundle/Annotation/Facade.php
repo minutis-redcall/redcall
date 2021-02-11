@@ -13,16 +13,16 @@ final class Facade
     /**
      * @var string
      */
-    public $class;
+    private $class;
 
     /**
      * @var self|null
      */
-    public $decorates;
+    private $decorates;
 
     public function __construct(array $data)
     {
-        $this->class = $data['class'] ?? null;
+        $this->class = $data['class'] ?? $data['value'] ?? null;
 
         if (!is_subclass_of($this->class, FacadeInterface::class)) {
             throw new \InvalidArgumentException(

@@ -2,9 +2,18 @@
 
 namespace Bundles\ApiBundle\Controller;
 
+use Bundles\ApiBundle\Annotation\Facade;
 use Bundles\ApiBundle\Entity\Token;
 use Bundles\ApiBundle\Manager\TokenManager;
+use Bundles\ApiBundle\Model\Facade\CollectionFacade;
+use Bundles\ApiBundle\Model\Facade\EmptyFacade;
+use Bundles\ApiBundle\Model\Facade\ErrorFacade;
+use Bundles\ApiBundle\Model\Facade\PaginedFacade;
+use Bundles\ApiBundle\Model\Facade\SuccessFacade;
+use Bundles\ApiBundle\Model\Facade\ThrowableFacade;
+use Bundles\ApiBundle\Model\Facade\ViolationFacade;
 use Bundles\ApiBundle\Reader\CategoryCollectionReader;
+use Bundles\ApiBundle\Reader\FacadeReader;
 use Bundles\ApiBundle\Util;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
@@ -37,10 +46,18 @@ class TokenController extends AbstractController
      */
     private $categoryCollectionReader;
 
-    public function __construct(TokenManager $tokenManager, CategoryCollectionReader $categoryCollectionReader)
+    /**
+     * @var FacadeReader
+     */
+    private $facadeReader;
+
+    public function __construct(TokenManager $tokenManager,
+        CategoryCollectionReader $categoryCollectionReader,
+        FacadeReader $facadeReader)
     {
         $this->tokenManager             = $tokenManager;
         $this->categoryCollectionReader = $categoryCollectionReader;
+        $this->facadeReader             = $facadeReader;
     }
 
     /**
@@ -92,6 +109,34 @@ class TokenController extends AbstractController
         return $this->render('@Api/token/details.html.twig', [
             'token'               => $token,
             'category_collection' => $this->categoryCollectionReader->read(),
+            'responses'           => [
+                'success'   => $this->facadeReader->read(SuccessFacade::class,
+                    new Facade([
+                        'class' => EmptyFacade::class,
+                    ])),
+                'pagined'   => $this->facadeReader->read(SuccessFacade::class,
+                    new Facade([
+                        'class'     => PaginedFacade::class,
+                        'decorates' => new Facade([
+                            'class' => EmptyFacade::class,
+                        ]),
+                    ])),
+                'error'     => $this->facadeReader->read(ErrorFacade::class,
+                    new Facade([
+                        'class' => EmptyFacade::class,
+                    ])),
+                'violation' => $this->facadeReader->read(ErrorFacade::class,
+                    new Facade([
+                        'class'     => CollectionFacade::class,
+                        'decorates' => new Facade([
+                            'class' => ViolationFacade::class,
+                        ]),
+                    ])),
+                'fatal'     => $this->facadeReader->read(ErrorFacade::class,
+                    new Facade([
+                        'class' => ThrowableFacade::class,
+                    ])),
+            ],
         ]);
     }
 

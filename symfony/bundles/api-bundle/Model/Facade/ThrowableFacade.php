@@ -8,16 +8,23 @@ use Bundles\ApiBundle\Contracts\FacadeInterface;
 class ThrowableFacade implements FacadeInterface
 {
     /**
+     * Internal Server Error
+     * Or the real exception message in development environment.
+     *
      * @var string
      */
     private $message;
 
     /**
+     * The exception stack trace in development environment.
+     *
      * @var string
      */
     private $trace;
 
     /**
+     * The previous exception (if any), rendered only in development environment.
+     *
      * @var ThrowableFacade|null
      */
     private $previous;

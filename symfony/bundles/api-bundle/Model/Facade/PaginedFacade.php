@@ -10,16 +10,22 @@ class PaginedFacade implements FacadeInterface
     const ITEMS_PER_PAGE = 25;
 
     /**
+     * Total number of available pages
+     *
      * @var int
      */
     protected $totalPages;
 
     /**
+     * Current page requested
+     *
      * @var int
      */
     protected $currentPage;
 
     /**
+     * An array of the requested resources
+     *
      * @var CollectionFacade
      */
     protected $entries;
@@ -36,13 +42,13 @@ class PaginedFacade implements FacadeInterface
         }
 
         $facade = new self;
-        $child  = $decorates->class;
+        $child  = $decorates->getClass();
 
         $facade->totalPages  = 5;
         $facade->currentPage = 2;
         for ($i = 0; $i < self::ITEMS_PER_PAGE; $i++) {
             $facade->addEntry(
-                $child::getExample($decorates->decorates)
+                $child::getExample($decorates->getDecorates())
             );
         }
 

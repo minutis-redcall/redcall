@@ -10,6 +10,7 @@ services:
     arguments:
       - '@Bundles\ApiBundle\Manager\TokenManager'
       - '@Bundles\ApiBundle\Reader\CategoryCollectionReader'
+      - '@Bundles\ApiBundle\Reader\FacadeReader'
     calls: [ [ 'setContainer', [ '@Psr\Container\ContainerInterface' ] ] ]
     tags:
       - controller.service_arguments

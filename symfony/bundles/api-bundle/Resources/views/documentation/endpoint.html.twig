@@ -84,7 +84,7 @@
                 Runnable example
             </a>
         </div>
-        <div id="demo-{{ endpoint.id }}" class="collapse show">
+        <div id="demo-{{ endpoint.id }}" class="collapse">
             <div class="card-body">
 
                 {{ api_demo(token, endpoint.methods|first, endpoint.uri, endpoint.requestFacade.example|default({}), false) }}
@@ -92,8 +92,5 @@
             </div>
         </div>
     </div>
-
-
-    {{ dump(endpoint) }}
 
 </div>
