@@ -46,7 +46,7 @@ class PropertyCollectionReader
         $class      = get_class($facade);
         $properties = $this->extractor->getProperties($class);
         $accessor   = PropertyAccess::createPropertyAccessor();
-        foreach ($properties as $property) {
+        foreach ($properties ?? [] as $property) {
             $propertyDescription = $this->propertyReader->read($class, $property, $parent);
             $value               = $accessor->getValue($facade, $property);
 

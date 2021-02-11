@@ -1,13 +1,7 @@
-{# Renders a Bundles\ApiBundle\Model\Documentation\EndpointCollectionDescription #}
-{% set category = null %}
-
 <div class="endpoint-collection">
     {% for endpoint in endpoint_collection.endpoints %}
 
-        {% if category != endpoint.category %}
-            <h2>{{ endpoint.category }}</h2>
-            {% set category = endpoint.category %}
-        {% else %}
+        {% if not loop.first %}
             <hr/>
         {% endif %}
 

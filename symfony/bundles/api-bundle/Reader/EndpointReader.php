@@ -44,9 +44,6 @@ class EndpointReader
     {
         $endpoint = new EndpointDescription();
 
-        $category = substr(substr($controller->getClass(), strrpos($controller->getClass(), '\\') + 1), 0, -10);
-        $endpoint->setCategory($category);
-
         $endpoint->setPriority($controller->getAnnotation()->priority);
 
         $reflector   = new \ReflectionMethod($controller->getClass(), $controller->getMethod());
@@ -70,8 +67,8 @@ class EndpointReader
         if ($controller->getAnnotation()->request) {
             $endpoint->setRequestFacade(
                 $this->facadeReader->read(
-                    $controller->getAnnotation()->request->class,
-                    $controller->getAnnotation()->request->decorates
+                    $controller->getAnnotation()->request->getClass(),
+                    $controller->getAnnotation()->request->getDecorates()
                 )
             );
         }

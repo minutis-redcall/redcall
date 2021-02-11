@@ -8,11 +8,15 @@ use Bundles\ApiBundle\Contracts\FacadeInterface;
 class SuccessFacade implements FacadeInterface
 {
     /**
+     * Always true on successful responses
+     *
      * @var bool
      */
     private $success = true;
 
     /**
+     * Payload of the requested resource
+     *
      * @var FacadeInterface
      */
     private $payload;
@@ -25,8 +29,8 @@ class SuccessFacade implements FacadeInterface
 
         $facade = new self;
 
-        $child           = $decorates->class;
-        $facade->payload = $child::getExample($decorates->decorates);
+        $child           = $decorates->getClass();
+        $facade->payload = $child::getExample($decorates->getDecorates());
 
         return $facade;
     }

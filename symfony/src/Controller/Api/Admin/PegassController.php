@@ -14,6 +14,11 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
+ * RedCall aims to trigger people from the Red Cross, but people arrive, evolve, leave.
+ *
+ * In order to stay sync, RedCall regularly update every entity using the Pegass database, a tool widely used in the
+ * French Red Cross.
+ *
  * @Route("/api/admin/pegass", name="api_admin_pegass_")
  * @IsGranted("ROLE_ADMIN")
  */
@@ -37,11 +42,6 @@ class PegassController
 
     /**
      * Get Pegass records from RedCall cache.
-     *
-     * RedCall aims to trigger people from the Red Cross, but people arrive, evolve, leave.
-     *
-     * In order to stay sync, RedCall regularly update every entity using the Pegass database, a tool
-     * widely used in the French Red Cross.
      *
      * @Endpoint(
      *   priority = 999,

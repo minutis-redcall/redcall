@@ -9,7 +9,8 @@ services:
   Bundles\ApiBundle\Controller\TokenController:
     arguments:
       - '@Bundles\ApiBundle\Manager\TokenManager'
-      - '@Bundles\ApiBundle\Reader\EndpointCollectionReader'
+      - '@Bundles\ApiBundle\Reader\CategoryCollectionReader'
+      - '@Bundles\ApiBundle\Reader\FacadeReader'
     calls: [ [ 'setContainer', [ '@Psr\Container\ContainerInterface' ] ] ]
     tags:
       - controller.service_arguments

@@ -9,16 +9,22 @@ use Symfony\Component\Validator\ConstraintViolation;
 class ViolationFacade implements FacadeInterface
 {
     /**
+     * Property having an invalid value.
+     *
      * @var string
      */
     private $propertyPath;
 
     /**
+     * The invalid value.
+     *
      * @var string|null
      */
     private $invalidValue;
 
     /**
+     * An error message describing the violation.
+     *
      * @var string
      */
     private $message;
@@ -32,7 +38,9 @@ class ViolationFacade implements FacadeInterface
 
     static public function getExample(Facade $decorates = null) : FacadeInterface
     {
-        return new EmptyFacade();
+        return new self(
+            new ConstraintViolation('The amount should be greater than 1', null, [], 'product', 'price', -5)
+        );
     }
 
     public function getPropertyPath() : ?string

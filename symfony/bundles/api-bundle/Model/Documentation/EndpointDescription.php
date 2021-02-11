@@ -12,11 +12,6 @@ class EndpointDescription
     private $id;
 
     /**
-     * @var string
-     */
-    private $category;
-
-    /**
      * @var int
      */
     private $priority = 0;
@@ -64,18 +59,6 @@ class EndpointDescription
     public function getId()
     {
         return $this->id;
-    }
-
-    public function getCategory() : string
-    {
-        return $this->category;
-    }
-
-    public function setCategory(string $category) : EndpointDescription
-    {
-        $this->category = $category;
-
-        return $this;
     }
 
     public function getPriority() : int

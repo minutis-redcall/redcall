@@ -23,20 +23,13 @@ class EndpointCollectionDescription
 
     public function sort()
     {
-        $endpoints = $this->endpoints;
-
-        usort($endpoints, function (EndpointDescription $a, EndpointDescription $b) {
+        usort($this->endpoints, function (EndpointDescription $a, EndpointDescription $b) {
             return $a->getPriority() <=> $b->getPriority();
         });
+    }
 
-        $categories = [];
-        foreach ($endpoints as $endpoint) {
-            if (!in_array($endpoint->getCategory(), $categories)) {
-                $categories[$endpoint->getCategory()] = [];
-            }
-            $categories[$endpoint->getCategory()][] = $endpoint;
-        }
-
-        $this->endpoints = call_user_func_array('array_merge', array_values($categories));
+    public function getPriority() : int
+    {
+        return reset($this->endpoints)->getPriority();
     }
 }

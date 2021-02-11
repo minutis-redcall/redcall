@@ -119,51 +119,54 @@
 
                 <div>
                     <h2>Responses</h2>
-                    <h3>Success</h3>
 
-                    <p>All responses in the API will at least have 2 properties</p>
-
-                    {{ macros.responseProperties([
-                        ['success', true, 'Whether the API call was successful or not'],
-                        ['payload', [], 'The requested resource'],
-                    ]) }}
-
-                    {{ macros.responseSample('{"success":true,"payload":{"demo":"You successfully authenticated!"}}') }}
-                </div>
-
-                <hr/>
-
-                <div>
-                    <h3>Errors</h3>
-                    <p>If <code>success</code> property is false in the API responses, the following properties will be
-                        available.</p>
-
-                    {{ macros.responseProperties([
-                        ['code', 1003, 'A numeric value of the error, meant to ease error handling on your application.'],
-                        ['message', 'X-Signature header is missing.', 'A human readable explanation of the error.'],
-                        ['payload', [], 'Error details (violation of constraints, ...) if any.'],
-                    ]) }}
-
-                    {{ macros.responseSample('{"success":false,"code":1003,"message":"X-Signature header is missing.","payload":{}}') }}
-                </div>
-
-                <hr/>
-
-                <div>
-                    <h3>Pagination</h3>
-                    <br/><br/><br/>
-                    <br/><br/><br/>
-                    <br/><br/><br/>
-                    <br/><br/><br/>
-                    <br/><br/><br/>
-                    <br/><br/><br/>
-                    <br/><br/><br/>
                     <hr/>
+
+                    <h3>Success responses</h3>
+
+                    {{ include('@Api/documentation/facade.html.twig', {
+                        type: constant('\\Bundles\\ApiBundle\\Model\\Documentation\\FacadeDescription::TYPE_RESPONSE'),
+                        token: token,
+                        facade: responses.success,
+                    }) }}
+
+                    <hr/>
+
+                    <h3>Pagined success responses</h3>
+
+                    {{ include('@Api/documentation/facade.html.twig', {
+                        type: constant('\\Bundles\\ApiBundle\\Model\\Documentation\\FacadeDescription::TYPE_RESPONSE'),
+                        token: token,
+                        facade: responses.pagined,
+                    }) }}
+
+                    <hr/>
+
+                    <h3>Simple errors</h3>
+
+                    {{ include('@Api/documentation/facade.html.twig', {
+                        type: constant('\\Bundles\\ApiBundle\\Model\\Documentation\\FacadeDescription::TYPE_RESPONSE'),
+                        token: token,
+                        facade: responses.error,
+                    }) }}
+
+                    <hr/>
+
+                    <h3>Constraint violations</h3>
+
+                    {{ include('@Api/documentation/facade.html.twig', {
+                        type: constant('\\Bundles\\ApiBundle\\Model\\Documentation\\FacadeDescription::TYPE_RESPONSE'),
+                        token: token,
+                        facade: responses.violation,
+                    }) }}
+
                 </div>
 
-                {{ include('@Api/documentation/endpoint_collection.html.twig', {
+                <hr/>
+
+                {{ include('@Api/documentation/category_collection.html.twig', {
                     token: token,
-                    endpoint_collection: endpoint_collection,
+                    category_collection: category_collection,
                 }) }}
 
             </div>

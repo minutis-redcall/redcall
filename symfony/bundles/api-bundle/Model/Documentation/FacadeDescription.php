@@ -6,6 +6,9 @@ use Ramsey\Uuid\Uuid;
 
 class FacadeDescription
 {
+    const TYPE_REQUEST  = 'request';
+    const TYPE_RESPONSE = 'response';
+
     /**
      * @var string
      */
