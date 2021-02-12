@@ -51,6 +51,9 @@ class FacadeReader
     {
         $facade = new FacadeDescription();
 
+        // ou est ma lecture des classes?
+        // todo ...
+
         $reflector   = new \ReflectionClass($class);
         $annotations = $this->annotationReader->getClassAnnotations($reflector);
         $docblock    = $this->docblockReader->read($reflector, $annotations);

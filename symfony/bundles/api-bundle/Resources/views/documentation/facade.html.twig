@@ -1,3 +1,11 @@
+{% if facade.title %}
+    <strong>{{ facade.title }}</strong>
+    <br/>
+{% endif %}
+{% if facade.description %}
+    <p>{{ facade.description|nl2br }}</p>
+{% endif %}
+
 {% if facade.properties %}
     <table class="table table-striped">
         <thead>
@@ -36,4 +44,3 @@
         }) }}
     </div>
 </div>
-
