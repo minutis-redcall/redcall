@@ -806,7 +806,7 @@ class Volunteer
                 return 1;
             }
 
-            return $a->getPriority() <=> $b->getPriority();
+            return $a->getRenderingPriority() <=> $b->getRenderingPriority();
         });
 
         return $badges;
@@ -818,8 +818,8 @@ class Volunteer
 
         foreach ($this->getVisibleBadges() as $badge) {
             /** @var Badge $badge */
-            if ($badge->getPriority() < $lowest) {
-                $lowest = $badge->getPriority();
+            if ($badge->getRenderingPriority() < $lowest) {
+                $lowest = $badge->getRenderingPriority();
             }
         }
 

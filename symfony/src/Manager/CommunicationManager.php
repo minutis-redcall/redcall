@@ -214,7 +214,7 @@ class CommunicationManager
             $prefixes = $this->messageManager->generatePrefixes($volunteers);
         }
 
-        foreach ($volunteers as $volunteer) {
+        foreach ($this->sortAudienceByTriggeringPriority($volunteers) as $volunteer) {
             /** @var Volunteer $volunteer */
             if (!$volunteer->isEnabled()) {
                 // Useless but keep it as a safeguard
@@ -263,5 +263,21 @@ class CommunicationManager
     public function save(Communication $communication)
     {
         $this->communicationRepository->save($communication);
+    }
+
+    public function sortAudienceByTriggeringPriority(array $mixedVolunteers)
+    {
+        $mixedIds = array_map(function (Volunteer $volunteer) {
+            return $volunteer->getId();
+        }, $mixedVolunteers);
+
+        $orderedIds = $this->volunteerManager->orderVolunteerIdsByTriggeringPriority($mixedIds);
+
+        $orderedVolunteers = [];
+        foreach ($orderedIds as $id) {
+            $orderedVolunteers[] = $mixedVolunteers[$id];
+        }
+
+        return $orderedVolunteers;
     }
 }

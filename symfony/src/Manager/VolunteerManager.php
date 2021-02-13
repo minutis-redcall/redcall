@@ -336,8 +336,17 @@ class VolunteerManager
         $this->save($volunteer);
     }
 
-    public function reactivateTemporaryOptouts()
+    public function orderVolunteerIdsByTriggeringPriority(array $volunteerIds) : array
     {
-        $this->volunteerRepository->reactivateTemporaryOptouts();
+        $rows = $this->volunteerRepository->getVolunteerTriggeringPriorities($volunteerIds);
+
+        $priorities = array_combine(
+            array_column($rows, 'id'),
+            array_column($rows, 'priority')
+        );
+
+        asort($priorities);
+
+        return array_keys($priorities);
     }
 }

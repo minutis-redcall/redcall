@@ -483,6 +483,18 @@ class VolunteerRepository extends BaseRepository
             ->getArrayResult();
     }
 
+    public function getVolunteerTriggeringPriorities(array $volunteerIds) : array
+    {
+        return $this->createQueryBuilder('v')
+                    ->select('v.id, MIN(b.triggeringPriority) AS priority')
+                    ->join('v.badges', 'b')
+                    ->where('v.id IN (:volunteer_ids)')
+                    ->setParameter('volunteer_ids', $volunteerIds, Connection::PARAM_INT_ARRAY)
+                    ->groupBy('v.id')
+                    ->getQuery()
+                    ->getArrayResult();
+    }
+
     private function createVolunteerListQueryBuilder(array $volunteerIds, bool $onlyEnabled = true) : QueryBuilder
     {
         return $this

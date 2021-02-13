@@ -44,7 +44,13 @@ class Badge
      * @ORM\Column(type="integer")
      * @Assert\Range(min="0", max="1000")
      */
-    private $priority = 0;
+    private $renderingPriority = 0;
+
+    /**
+     * @ORM\Column(type="integer")
+     * @Assert\Range(min="0", max="1000")
+     */
+    private $triggeringPriority = 500;
 
     /**
      * @ORM\Column(type="boolean")
@@ -134,14 +140,26 @@ class Badge
         return $this;
     }
 
-    public function getPriority() : ?int
+    public function getRenderingPriority() : ?int
     {
-        return $this->priority;
+        return $this->renderingPriority;
     }
 
-    public function setPriority(?int $priority) : self
+    public function setRenderingPriority(?int $renderingPriority) : self
     {
-        $this->priority = $priority;
+        $this->renderingPriority = $renderingPriority;
+
+        return $this;
+    }
+
+    public function getTriggeringPriority() : int
+    {
+        return $this->triggeringPriority;
+    }
+
+    public function setTriggeringPriority(int $triggeringPriority) : Badge
+    {
+        $this->triggeringPriority = $triggeringPriority;
 
         return $this;
     }

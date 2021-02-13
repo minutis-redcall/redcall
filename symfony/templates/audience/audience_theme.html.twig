@@ -375,12 +375,12 @@
         });
 
         {# Opening the list of selected volunteers (large audience) #}
-        $('body').on('click', '#open-large-audience', function (e) {
+        $('body').on('click', '#open-audience', function (e) {
             e.preventDefault();
             $('#audience-modal-title').html('{{ 'audience.classification.selected'|trans }}');
             $('#audience-modal-body').html('<img src="{{ asset('spinner.gif') }}"/>');
             $('#audience-modal').modal();
-            $.post('{{ path('audience_large_selection', {name: form.vars.full_name}) }}', $('form.trigger').serialize(), function (content) {
+            $.post('{{ path('audience_selection', {name: form.vars.full_name}) }}', $('form.trigger').serialize(), function (content) {
                 $('#audience-modal-body').html(content);
             });
         });

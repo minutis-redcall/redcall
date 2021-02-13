@@ -151,8 +151,12 @@ class BadgeController extends BaseController
                 'label'    => 'admin.badge.form.category',
                 'required' => false,
             ])
-            ->add('priority', NumberType::class, [
-                'label'    => 'admin.badge.form.priority',
+            ->add('renderingPriority', NumberType::class, [
+                'label'    => 'admin.badge.form.rendering_priority',
+                'required' => false,
+            ])
+            ->add('triggeringPriority', NumberType::class, [
+                'label'    => 'admin.badge.form.triggering_priority',
                 'required' => false,
             ])
             ->add('parent', BadgeWidgetType::class, [

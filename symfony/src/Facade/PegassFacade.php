@@ -7,6 +7,12 @@ use Bundles\ApiBundle\Annotation\Facade;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
 use Bundles\PegassCrawlerBundle\Entity\Pegass;
 
+/**
+ * A Pegass entity.
+ *
+ * The Pegass payload is not well documented because it relies on an external provider and backward
+ * compatibility is not guaranted.
+ */
 class PegassFacade implements FacadeInterface
 {
     /**

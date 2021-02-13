@@ -9,6 +9,7 @@ use App\Entity\Volunteer;
 use App\Form\Type\AudienceType;
 use App\Manager\AudienceManager;
 use App\Manager\BadgeManager;
+use App\Manager\CommunicationManager;
 use App\Manager\ExpirableManager;
 use App\Manager\VolunteerManager;
 use App\Model\Classification;
@@ -40,15 +41,22 @@ class AudienceController extends BaseController
      */
     private $expirableManager;
 
+    /**
+     * @var CommunicationManager
+     */
+    private $communicationManager;
+
     public function __construct(VolunteerManager $volunteerManager,
         BadgeManager $badgeManager,
         AudienceManager $audienceManager,
-        ExpirableManager $expirableManager)
+        ExpirableManager $expirableManager,
+        CommunicationManager $communicationManager)
     {
-        $this->volunteerManager = $volunteerManager;
-        $this->badgeManager     = $badgeManager;
-        $this->audienceManager  = $audienceManager;
-        $this->expirableManager = $expirableManager;
+        $this->volunteerManager     = $volunteerManager;
+        $this->badgeManager         = $badgeManager;
+        $this->audienceManager      = $audienceManager;
+        $this->expirableManager     = $expirableManager;
+        $this->communicationManager = $communicationManager;
     }
 
     /**
@@ -143,21 +151,23 @@ class AudienceController extends BaseController
     }
 
     /**
-     * @Route(path="/large-selection", name="large_selection")
+     * @Route(path="/selection", name="selection")
      */
-    public function largeSelection(Request $request)
+    public function selection(Request $request)
     {
         $data = AudienceType::getAudienceFormData($request);
 
         $classification = $this->audienceManager->classifyAudience($data);
 
-        $volunteers = $this->volunteerManager->getVolunteerList(
+        $mixedVolunteers = $this->volunteerManager->getVolunteerList(
             array_merge($classification->getExcluded(), $classification->getReachable())
         );
 
-        return $this->render('audience/large_selection.html.twig', [
+        $orderedVolunteers = $this->communicationManager->sortAudienceByTriggeringPriority($mixedVolunteers);
+
+        return $this->render('audience/selection.html.twig', [
             'classification' => $classification,
-            'volunteers'     => $volunteers,
+            'volunteers'     => $orderedVolunteers,
         ]);
     }
 
