@@ -72,5 +72,14 @@ api:
     type: annotation
 ```
 
+In `config/packages/framework.yaml`:
+
+```yaml
+cache:
+  pools:
+    api_documentation:
+      adapter: cache.app
+```
+
 ## Usage
 
