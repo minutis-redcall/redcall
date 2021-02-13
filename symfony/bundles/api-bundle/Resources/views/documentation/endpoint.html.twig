@@ -1,6 +1,6 @@
 {% import '@Api/macros.html.twig' as macros %}
 
-<div class="endpoint">
+<div class="endpoint text-left">
 
     {# Required permissions #}
     {% if endpoint.roles %}
@@ -21,7 +21,7 @@
         </div>
     {% endif %}
 
-    <h3>{{ endpoint.title }}</h3>
+    <div class="h3">{{ endpoint.title }}</div>
 
     <div class="input-group align-items-center">
         {% for method in endpoint.methods %}
@@ -84,7 +84,7 @@
                 Runnable example
             </a>
         </div>
-        <div id="demo-{{ endpoint.id }}" class="collapse">
+        <div id="demo-{{ endpoint.id }}" class="collapse show">
             <div class="card-body">
 
                 {{ api_demo(token, endpoint.methods|first, endpoint.uri, endpoint.requestFacade.example|default({}), false) }}

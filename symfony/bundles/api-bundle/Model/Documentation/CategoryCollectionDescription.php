@@ -14,9 +14,14 @@ class CategoryCollectionDescription
         return $this->categories;
     }
 
+    public function getCategory(string $categoryName) : ?CategoryDescription
+    {
+        return $this->categories[$categoryName] ?? null;
+    }
+
     public function add(CategoryDescription $category) : self
     {
-        $this->categories[] = $category;
+        $this->categories[$category->getName()] = $category;
 
         return $this;
     }
@@ -27,7 +32,7 @@ class CategoryCollectionDescription
             $category->getEndpoints()->sort();
         }
 
-        usort($this->categories, function (CategoryDescription $a, CategoryDescription $b) {
+        uasort($this->categories, function (CategoryDescription $a, CategoryDescription $b) {
             return $a->getEndpoints()->getPriority() <=> $b->getEndpoints()->getPriority();
         });
     }

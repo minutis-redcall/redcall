@@ -32,4 +32,9 @@ class EndpointCollectionDescription
     {
         return reset($this->endpoints)->getPriority();
     }
+
+    public function getEndpoint(int $index) : ?EndpointDescription
+    {
+        return $this->endpoints[$index] ?? null;
+    }
 }

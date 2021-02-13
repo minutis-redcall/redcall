@@ -77,6 +77,11 @@ class CategoryDescription
         return $this;
     }
 
+    public function getEndpoint(int $index) : ?EndpointDescription
+    {
+        return $this->endpoints->getEndpoint($index);
+    }
+
     public function getPriority() : int
     {
         return $this->endpoints->getPriority();

@@ -2,16 +2,8 @@
 
 namespace Bundles\ApiBundle\Controller;
 
-use Bundles\ApiBundle\Annotation\Facade;
 use Bundles\ApiBundle\Entity\Token;
 use Bundles\ApiBundle\Manager\TokenManager;
-use Bundles\ApiBundle\Model\Facade\CollectionFacade;
-use Bundles\ApiBundle\Model\Facade\EmptyFacade;
-use Bundles\ApiBundle\Model\Facade\ErrorFacade;
-use Bundles\ApiBundle\Model\Facade\PaginedFacade;
-use Bundles\ApiBundle\Model\Facade\SuccessFacade;
-use Bundles\ApiBundle\Model\Facade\ThrowableFacade;
-use Bundles\ApiBundle\Model\Facade\ViolationFacade;
 use Bundles\ApiBundle\Reader\CategoryCollectionReader;
 use Bundles\ApiBundle\Reader\FacadeReader;
 use Bundles\ApiBundle\Util;
@@ -109,34 +101,29 @@ class TokenController extends AbstractController
         return $this->render('@Api/token/details.html.twig', [
             'token'               => $token,
             'category_collection' => $this->categoryCollectionReader->read(),
-            'responses'           => [
-                'success'   => $this->facadeReader->read(SuccessFacade::class,
-                    new Facade([
-                        'class' => EmptyFacade::class,
-                    ])),
-                'pagined'   => $this->facadeReader->read(SuccessFacade::class,
-                    new Facade([
-                        'class'     => PaginedFacade::class,
-                        'decorates' => new Facade([
-                            'class' => EmptyFacade::class,
-                        ]),
-                    ])),
-                'error'     => $this->facadeReader->read(ErrorFacade::class,
-                    new Facade([
-                        'class' => EmptyFacade::class,
-                    ])),
-                'violation' => $this->facadeReader->read(ErrorFacade::class,
-                    new Facade([
-                        'class'     => CollectionFacade::class,
-                        'decorates' => new Facade([
-                            'class' => ViolationFacade::class,
-                        ]),
-                    ])),
-                'fatal'     => $this->facadeReader->read(ErrorFacade::class,
-                    new Facade([
-                        'class' => ThrowableFacade::class,
-                    ])),
-            ],
+        ]);
+    }
+
+    /**
+     * @Route(path="/documentation/{token}/{categoryName}/{index}", name="documentation")
+     * @Entity("token", expr="repository.findOneByToken(token)")
+     * @IsGranted("TOKEN", subject="token")
+     */
+    public function endpoint(Token $token, string $categoryName, int $index)
+    {
+        $collection = $this->categoryCollectionReader->read();
+
+        if (!$category = $collection->getCategory($categoryName)) {
+            throw $this->createNotFoundException();
+        }
+
+        if (!$endpoint = $category->getEndpoint($index)) {
+            throw $this->createNotFoundException();
+        }
+
+        return $this->render('@Api/token/endpoint.html.twig', [
+            'token'    => $token,
+            'endpoint' => $endpoint,
         ]);
     }
 

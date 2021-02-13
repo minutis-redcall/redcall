@@ -24,156 +24,59 @@
             </tr>
         </table>
 
+        <div>
+            <hr/>
+            <h2>Authentication</h2>
+            <hr/>
+
+            <p>In order to authenticate, use the following headers:</p>
+            <div class="bg-white" style="padding-left:20px;">
+                <br/>
+                <code>
+                    Authorization: Bearer {{ token }}<br/>
+                    X-Signature: &lt;Request Signature&gt;
+                </code>
+                <br/><br/>
+            </div>
+
+            <p>&nbsp;</p>
+            <p>The <code>Request Signature</code> is a keyed hash of the request with your token secret.</p>
+            <p>
+                It is an hexadecimal <code>SHA256 HMAC</code> of the concatenation without separators of the
+                method, the full uri of the requested endoint (including query string) and the body of the API
+                request.
+            </p>
+            <p>&nbsp;</p>
+
+            {% set method = 'POST' %}
+            {% set uri = app.request.schemeAndHttpHost ~ path("developer_demo", {foo: 'bar'}) %}
+            {% set body = {'name': 'alain'} %}
+            {{ api_demo(token, method, uri, body, false) }}
+
+            <p>&nbsp;</p>
+            <p>
+                In the above example,
+                <code>HMAC(SHA256, {{ method }}{{ uri }}{{ body|json_encode }}, secret)</code>
+            </p>
+            <p>= <code>{{ token.sign(method, uri, body|json_encode) }}</code></p>
+        </div>
+
+        <hr/>
+        <h2>Documentation</h2>
         <hr/>
 
-        <div class="row">
-            <div class="col-md-2">
-                <nav id="toc" class="sticky-top"></nav>
-            </div>
-            <div class="col-md-10">
-
-                {% block introduction %}{% endblock %}
-
-                <div>
-                    <hr/>
-                    <h2>Authentication</h2>
-                    <hr/>
-
-                    <p>In order to authenticate, use the following headers:</p>
-                    <div class="bg-white" style="padding-left:20px;">
-                        <br/>
-                        <code>
-                            Authorization: Bearer {{ token }}<br/>
-                            X-Signature: &lt;Request Signature&gt;
-                        </code>
-                        <br/><br/>
-                    </div>
-
-                    <p>&nbsp;</p>
-                    <p>The <code>Request Signature</code> is a keyed hash of the request with your token secret.</p>
-                    <p>
-                        It is an hexadecimal <code>SHA256 HMAC</code> of the concatenation without separators of the
-                        method, the full uri of the requested endoint (including query string) and the body of the API
-                        request.
-                    </p>
-                    <p>&nbsp;</p>
-
-                    {% set method = 'POST' %}
-                    {% set uri = app.request.schemeAndHttpHost ~ path("developer_demo", {foo: 'bar'}) %}
-                    {% set body = {'name': 'alain'} %}
-                    {{ api_demo(token, method, uri, body, false) }}
-
-                    <p>&nbsp;</p>
-                    <p>
-                        In the above example,
-                        <code>HMAC(SHA256, {{ method }}{{ uri }}{{ body|json_encode }}, secret)</code>
-                    </p>
-                    <p>= <code>{{ token.sign(method, uri, body|json_encode) }}</code></p>
+        {% for category in category_collection.categories %}
+            <div class="h3">{{ category.name }}</div>
+            {% for index, endpoint in category.endpoints.endpoints %}
+                <div class="h4" style="margin-left:15px;">
+                    <a href="{{ path('developer_token_documentation', {
+                        token: token,
+                        categoryName: category.name,
+                        index: index,
+                    }) }}">{{ endpoint.title }}</a>
                 </div>
-
-                <hr/>
-
-                <div>
-                    <h2>Verbs</h2>
-                    <hr/>
-
-                    <p>The API uses the recommanded HTTP verbs on CRUD operations.</p>
-
-                    <ul>
-                        <li>
-                            {{ macros.method('GET') }} for reading
-                        </li>
-                        <li>
-                            {{ macros.method('POST') }} for creating
-                        </li>
-                        <li>
-                            {{ macros.method('PUT') }} for updating
-                        </li>
-                        <li>
-                            {{ macros.method('DELETE') }} for deleting
-                        </li>
-                    </ul>
-
-                    <p>Request parameters should be given by these means:</p>
-
-                    <ul>
-                        <li>
-                            <strong><code>/path/{placeholder}</code></strong>:
-                            in the URI as placeholders when an endpoint affects a particular resource
-                        </li>
-                        <li>
-                            <strong><code>/path?query=string</code></strong>:
-                            in the query string for all other parameters if the endpoint method
-                            is {{ macros.method('GET') }}
-                        </li>
-                        <li>
-                            <strong><code>{"json": "payload"}</code></strong>:
-                            in the request body as a JSON-serialized payload for all other methods
-                        </li>
-                    </ul>
-
-                    <p>
-                        All responses provided are either empty or serialized in JSON.
-                    </p>
-
-                </div>
-
-                <hr/>
-
-                <div>
-                    <h2>Responses</h2>
-
-                    <hr/>
-
-                    <h3>Success responses</h3>
-
-                    {{ include('@Api/documentation/facade.html.twig', {
-                        type: constant('\\Bundles\\ApiBundle\\Model\\Documentation\\FacadeDescription::TYPE_RESPONSE'),
-                        token: token,
-                        facade: responses.success,
-                    }) }}
-
-                    <hr/>
-
-                    <h3>Pagined success responses</h3>
-
-                    {{ include('@Api/documentation/facade.html.twig', {
-                        type: constant('\\Bundles\\ApiBundle\\Model\\Documentation\\FacadeDescription::TYPE_RESPONSE'),
-                        token: token,
-                        facade: responses.pagined,
-                    }) }}
-
-                    <hr/>
-
-                    <h3>Simple errors</h3>
-
-                    {{ include('@Api/documentation/facade.html.twig', {
-                        type: constant('\\Bundles\\ApiBundle\\Model\\Documentation\\FacadeDescription::TYPE_RESPONSE'),
-                        token: token,
-                        facade: responses.error,
-                    }) }}
-
-                    <hr/>
-
-                    <h3>Constraint violations</h3>
-
-                    {{ include('@Api/documentation/facade.html.twig', {
-                        type: constant('\\Bundles\\ApiBundle\\Model\\Documentation\\FacadeDescription::TYPE_RESPONSE'),
-                        token: token,
-                        facade: responses.violation,
-                    }) }}
-
-                </div>
-
-                <hr/>
-
-                {{ include('@Api/documentation/category_collection.html.twig', {
-                    token: token,
-                    category_collection: category_collection,
-                }) }}
-
-            </div>
-        </div>
+            {% endfor %}
+        {% endfor %}
 
         <br/><br/><br/>
 
@@ -183,23 +86,11 @@
 
     </div>
 
-
-{% endblock %}
-
-{% block stylesheets %}
-
-    {{ parent() }}
-
-    <link rel="stylesheet"
-          href="https://cdn.rawgit.com/afeld/bootstrap-toc/v1.0.1/dist/bootstrap-toc.min.css"/>
-
 {% endblock %}
 
  {% block javascripts %}
 
      {{ parent() }}
-
-     <script src="https://cdn.rawgit.com/afeld/bootstrap-toc/v1.0.1/dist/bootstrap-toc.min.js"></script>
 
      <script type="text/javascript">
 
@@ -207,15 +98,6 @@
              e.preventDefault();
              $.get('{{ path('developer_token_show_secret', {token: token}) }}', function (data) {
                  $('#secret-container').html(data.secret);
-             });
-         });
-
-         $(function () {
-             var navSelector = '#toc';
-             var $myNav = $(navSelector);
-             Toc.init($myNav);
-             $('body').scrollspy({
-                 target: navSelector
              });
          });
 
