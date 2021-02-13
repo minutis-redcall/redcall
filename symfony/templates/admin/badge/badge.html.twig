@@ -31,7 +31,9 @@
     <div class="card-body">
         {% if badge.visibility %}
             <div class="float-right">
-                {{ 'admin.badge.priority'|trans({'%priority%': badge.priority}) }}
+                {{ 'admin.badge.rendering_priority'|trans({'%priority%': badge.renderingPriority}) }}
+                <br/>
+                {{ 'admin.badge.triggering_priority'|trans({'%priority%': badge.triggeringPriority}) }}
             </div>
         {% endif %}
 

@@ -27,7 +27,7 @@ class BadgeRepository extends BaseRepository
                    ->leftJoin('b.category', 'c')
                    ->addOrderBy('b.visibility', 'DESC')
                    ->addOrderBy('b.synonym', 'ASC')
-                   ->addOrderBy('(1000 - c.priority) * 1000 + 1000 - b.priority', 'DESC')
+                   ->addOrderBy('(1000 - c.priority) * 1000 + 1000 - b.renderingPriority', 'DESC')
                    ->addOrderBy('b.name', 'ASC')
                    ->groupBy('b.id');
 
