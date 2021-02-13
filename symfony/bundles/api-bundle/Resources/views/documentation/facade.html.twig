@@ -40,7 +40,9 @@
     </div>
     <div id="facade-example-{{ facade.id }}" class="collapse">
         {{ include('@Api/documentation/facade_example.html.twig', {
-            example: facade.example
+            example: facade.example,
+            type: type,
+            method: endpoint.methods[0],
         }) }}
     </div>
 </div>

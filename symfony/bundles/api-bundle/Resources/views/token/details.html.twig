@@ -53,23 +53,22 @@
             <p>&nbsp;</p>
             <p>
                 {% set method = demo.methods[0] %}
-                {% set uri = demo.uri %}
-                {% set body = demo.requestFacade.example|json_encode %}
+                {% set uri = demo.uri ~ '?' ~ demo.requestFacade.example|http_build_query %}
 
                 In the above example,
-                <code>HMAC(SHA256, {{ method }}{{ uri }}{{ body }}, secret)</code>
+                <code>HMAC(SHA256, {{ method }}{{ uri }}, secret)</code>
             </p>
-            <p>= <code>{{ token.sign(method, uri, body) }}</code></p>
+            <p>= <code>{{ token.sign(method, uri) }}</code></p>
         </div>
 
         <hr/>
-        <h2>Documentation</h2>
+        <h2>Endpoints</h2>
         <hr/>
 
         {% for category in category_collection.categories %}
-            <div class="h3">{{ category.name }}</div>
+            <div class="h4">{{ category.name }}</div>
             {% for endpoint in category.endpoints.endpoints %}
-                <div class="h4" style="margin-left:15px;">
+                <div style="margin-left:15px;">
                     <a href="{{ path('developer_token_documentation', {
                         token: token,
                         categoryId: category.id,
