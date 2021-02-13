@@ -11,14 +11,3 @@
         <div class="badge badge-dark" style="margin:5px;">{{ method|upper }}</div>
     {% endif %}
 {% endmacro %}
-
-{% macro responseSample(response) %}
-    <div class="bg-white" style="border: 1px solid lightgrey; padding:8px;">
-        <div class="float-right d-block" style="border:1px solid #aaaaaa; background-color:#eeeeee; padding:3px; color:#666666;">
-            Example
-        </div>
-        <div style="padding-top:15px;">
-            <pre><code>{{ response|json_prettify }}</code></pre>
-        </div>
-    </div>
-{% endmacro %}

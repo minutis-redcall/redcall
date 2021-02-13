@@ -42,7 +42,7 @@ class EndpointReader
 
     public function read(ControllerDescription $controller) : EndpointDescription
     {
-        $endpoint = new EndpointDescription();
+        $endpoint = new EndpointDescription(sha1($controller->getMethod()));
 
         $endpoint->setPriority($controller->getAnnotation()->priority);
 

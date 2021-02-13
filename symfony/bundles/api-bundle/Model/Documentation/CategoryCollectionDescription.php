@@ -14,14 +14,14 @@ class CategoryCollectionDescription
         return $this->categories;
     }
 
-    public function getCategory(string $categoryName) : ?CategoryDescription
+    public function getCategory(string $className) : ?CategoryDescription
     {
-        return $this->categories[$categoryName] ?? null;
+        return $this->categories[$className] ?? $this->categories[sha1($className)] ?? null;
     }
 
     public function add(CategoryDescription $category) : self
     {
-        $this->categories[$category->getName()] = $category;
+        $this->categories[$category->getId()] = $category;
 
         return $this;
     }

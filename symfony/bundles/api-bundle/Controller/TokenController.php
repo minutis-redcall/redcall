@@ -98,26 +98,29 @@ class TokenController extends AbstractController
      */
     public function details(Token $token)
     {
+        $collection = $this->categoryCollectionReader->read();
+
         return $this->render('@Api/token/details.html.twig', [
             'token'               => $token,
-            'category_collection' => $this->categoryCollectionReader->read(),
+            'category_collection' => $collection,
+            'demo'                => $collection->getCategory(DemoController::class)->getEndpoint('hello'),
         ]);
     }
 
     /**
-     * @Route(path="/documentation/{token}/{categoryName}/{index}", name="documentation")
+     * @Route(path="/documentation/{token}/{categoryId}/{endpointId}", name="documentation")
      * @Entity("token", expr="repository.findOneByToken(token)")
      * @IsGranted("TOKEN", subject="token")
      */
-    public function endpoint(Token $token, string $categoryName, int $index)
+    public function endpoint(Token $token, string $categoryId, string $endpointId)
     {
         $collection = $this->categoryCollectionReader->read();
 
-        if (!$category = $collection->getCategory($categoryName)) {
+        if (!$category = $collection->getCategory($categoryId)) {
             throw $this->createNotFoundException();
         }
 
-        if (!$endpoint = $category->getEndpoint($index)) {
+        if (!$endpoint = $category->getEndpoint($endpointId)) {
             throw $this->createNotFoundException();
         }
 

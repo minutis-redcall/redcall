@@ -118,7 +118,7 @@ class CategoryCollectionReader
 
     private function createCategory(string $categoryName, string $class) : CategoryDescription
     {
-        $category = new CategoryDescription();
+        $category = new CategoryDescription(sha1($class));
         $category->setName($categoryName);
 
         $reflector   = new \ReflectionClass($class);

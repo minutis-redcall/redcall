@@ -2,8 +2,6 @@
 
 namespace Bundles\ApiBundle\Model\Documentation;
 
-use Ramsey\Uuid\Uuid;
-
 class EndpointDescription
 {
     /**
@@ -51,12 +49,12 @@ class EndpointDescription
      */
     private $responseFacade;
 
-    public function __construct()
+    public function __construct(string $id)
     {
-        $this->id = Uuid::uuid4();
+        $this->id = $id;
     }
 
-    public function getId()
+    public function getId() : string
     {
         return $this->id;
     }

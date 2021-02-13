@@ -6,24 +6,21 @@ use Bundles\ApiBundle\Annotation\Facade;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class DemoFacade implements FacadeInterface
+class HelloRequestFacade implements FacadeInterface
 {
     /**
+     * What is your name?
+     *
      * @Assert\NotBlank
      *
      * @var string
      */
     private $name;
 
-    /**
-     * @var string
-     */
-    private $demo = 'You successfully authenticated!';
-
     static public function getExample(Facade $decorates = null) : FacadeInterface
     {
         $facade       = new self;
-        $facade->name = 'bob';
+        $facade->name = 'Bob';
 
         return $facade;
     }
@@ -38,10 +35,5 @@ class DemoFacade implements FacadeInterface
         $this->name = $name;
 
         return $this;
-    }
-
-    public function getDemo() : string
-    {
-        return $this->demo;
     }
 }

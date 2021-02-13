@@ -48,17 +48,18 @@
             </p>
             <p>&nbsp;</p>
 
-            {% set method = 'POST' %}
-            {% set uri = app.request.schemeAndHttpHost ~ path("developer_demo", {foo: 'bar'}) %}
-            {% set body = {'name': 'alain'} %}
-            {{ api_demo(token, method, uri, body, false) }}
+            {{ include('@Api/documentation/demo.html.twig', {token: token, endpoint: demo}) }}
 
             <p>&nbsp;</p>
             <p>
+                {% set method = demo.methods[0] %}
+                {% set uri = demo.uri %}
+                {% set body = demo.requestFacade.example|json_encode %}
+
                 In the above example,
-                <code>HMAC(SHA256, {{ method }}{{ uri }}{{ body|json_encode }}, secret)</code>
+                <code>HMAC(SHA256, {{ method }}{{ uri }}{{ body }}, secret)</code>
             </p>
-            <p>= <code>{{ token.sign(method, uri, body|json_encode) }}</code></p>
+            <p>= <code>{{ token.sign(method, uri, body) }}</code></p>
         </div>
 
         <hr/>
@@ -67,12 +68,12 @@
 
         {% for category in category_collection.categories %}
             <div class="h3">{{ category.name }}</div>
-            {% for index, endpoint in category.endpoints.endpoints %}
+            {% for endpoint in category.endpoints.endpoints %}
                 <div class="h4" style="margin-left:15px;">
                     <a href="{{ path('developer_token_documentation', {
                         token: token,
-                        categoryName: category.name,
-                        index: index,
+                        categoryId: category.id,
+                        endpointId: endpoint.id,
                     }) }}">{{ endpoint.title }}</a>
                 </div>
             {% endfor %}
