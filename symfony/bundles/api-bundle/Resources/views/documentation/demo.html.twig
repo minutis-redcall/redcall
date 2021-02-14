@@ -1,11 +1,24 @@
-<textarea rows="{{ body|split("\n")|length + 6 + (method != 'GET') }}" style="width: 100%;" readonly>
+{% set method = endpoint.methods[0] %}
+    {% if method == 'GET' %}
+        {% set uri = endpoint.uri ~ '?' ~ endpoint.requestFacade.example|http_build_query %}
+        <textarea rows="5" style="width: 100%;" readonly>
 curl "{{ uri }}" \
-{% if not (method == 'GET') %}     -X '{{ method }}' \
-{% endif %}
-     -H 'Authorization: Bearer {{ token }}' \
-     -H 'Content-Length: {{ body|length }}' \
-     -H 'Accept: application/json' \
-     -H 'Content-Type: application/json; charset=utf-8' \
-     -H 'X-Signature: {{ token.sign(method, uri, body) }}' \
-     -d $'{{ body }}'
+  -H 'Authorization: Bearer {{ token }}' \
+  -H 'X-Signature: {{ token.sign(method, uri) }}' \
+  -H 'Content-Type: application/json; charset=utf-8' \
+  -H 'Accept: application/json'
 </textarea>
+    {% else %}
+        {% set uri = endpoint.uri %}
+        {% set body = endpoint.requestFacade.example|json_prettify %}
+        <textarea rows="{{ body|split("\n")|length + 7 }}" style="width: 100%;" readonly>
+curl "{{ uri }}" \
+  -X '{{ method }}' \
+  -H 'Authorization: Bearer {{ token }}' \
+  -H 'X-Signature: {{ token.sign(method, uri, body) }}' \
+  -H 'Content-Type: application/json; charset=utf-8' \
+  -H 'Content-Length: {{ body|length }}' \
+  -H 'Accept: application/json' \
+  -d $'{{ body }}'
+</textarea>
+    {% endif %}

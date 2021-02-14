@@ -9,6 +9,8 @@ services:
       - '@doctrine.annotation_reader'
       - '@Bundles\ApiBundle\Reader\EndpointReader'
       - '@Bundles\ApiBundle\Reader\DocblockReader'
+      - '@api_documentation'
+      - '@kernel'
 
   Bundles\ApiBundle\Reader\EndpointReader:
     - '@Bundles\ApiBundle\Reader\RolesReader'

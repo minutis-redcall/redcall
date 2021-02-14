@@ -9,7 +9,10 @@ use Bundles\ApiBundle\Model\Documentation\ControllerDescription;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Controller\ControllerResolverInterface;
+use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Routing\RouterInterface;
+use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\Cache\ItemInterface;
 
 class CategoryCollectionReader
 {
@@ -38,20 +41,45 @@ class CategoryCollectionReader
      */
     private $docblockReader;
 
+    /**
+     * @var CacheInterface
+     */
+    private $cache;
+
+    /**
+     * @var KernelInterface
+     */
+    private $kernel;
+
     public function __construct(RouterInterface $router,
         ControllerResolverInterface $resolver,
         ?AnnotationReader $annotationReader,
         EndpointReader $endpointReader,
-        DocblockReader $docblockReader)
+        DocblockReader $docblockReader,
+        CacheInterface $cache,
+        KernelInterface $kernel)
     {
         $this->router           = $router;
         $this->resolver         = $resolver;
         $this->annotationReader = $annotationReader;
         $this->endpointReader   = $endpointReader;
         $this->docblockReader   = $docblockReader;
+        $this->cache            = $cache;
+        $this->kernel           = $kernel;
     }
 
     public function read() : CategoryCollectionDescription
+    {
+        if ('prod' === $this->kernel->getEnvironment()) {
+            return ($this->cache->get('category_collection', function (ItemInterface $item) {
+                return $this->readCategories();
+            }));
+        }
+
+        return $this->readCategories();
+    }
+
+    private function readCategories() : CategoryCollectionDescription
     {
         $categoryCollection = new CategoryCollectionDescription();
         $categories         = [];
@@ -90,7 +118,7 @@ class CategoryCollectionReader
 
     private function createCategory(string $categoryName, string $class) : CategoryDescription
     {
-        $category = new CategoryDescription();
+        $category = new CategoryDescription(sha1($class));
         $category->setName($categoryName);
 
         $reflector   = new \ReflectionClass($class);

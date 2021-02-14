@@ -16,14 +16,14 @@ class EndpointCollectionDescription
 
     public function add(EndpointDescription $endpoint) : self
     {
-        $this->endpoints[] = $endpoint;
+        $this->endpoints[$endpoint->getId()] = $endpoint;
 
         return $this;
     }
 
     public function sort()
     {
-        usort($this->endpoints, function (EndpointDescription $a, EndpointDescription $b) {
+        uasort($this->endpoints, function (EndpointDescription $a, EndpointDescription $b) {
             return $a->getPriority() <=> $b->getPriority();
         });
     }
@@ -31,5 +31,10 @@ class EndpointCollectionDescription
     public function getPriority() : int
     {
         return reset($this->endpoints)->getPriority();
+    }
+
+    public function getEndpoint(string $methodName) : ?EndpointDescription
+    {
+        return $this->endpoints[$methodName] ?? $this->endpoints[sha1($methodName)] ?? null;
     }
 }

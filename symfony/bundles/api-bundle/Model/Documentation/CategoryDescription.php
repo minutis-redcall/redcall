@@ -7,6 +7,11 @@ class CategoryDescription
     /**
      * @var string
      */
+    private $id;
+
+    /**
+     * @var string
+     */
     private $name;
 
     /**
@@ -24,9 +29,15 @@ class CategoryDescription
      */
     private $endpoints;
 
-    public function __construct()
+    public function __construct(string $id)
     {
+        $this->id        = $id;
         $this->endpoints = new EndpointCollectionDescription();
+    }
+
+    public function getId() : string
+    {
+        return $this->id;
     }
 
     public function getName() : string
@@ -75,6 +86,11 @@ class CategoryDescription
         $this->endpoints = $endpoints;
 
         return $this;
+    }
+
+    public function getEndpoint(string $methodName) : ?EndpointDescription
+    {
+        return $this->endpoints->getEndpoint($methodName);
     }
 
     public function getPriority() : int

@@ -1,0 +1,19 @@
+{% extends '@Api/base.html.twig' %}
+
+{% block body %}
+
+    {{ include('@Api/documentation/endpoint.html.twig', {
+        token: token,
+        endpoint: endpoint,
+    }) }}
+
+    <br/>
+
+    <div class="text-center">
+        <a href="{{ path('developer_token_details', {token: token}) }}" class="btn btn-secondary">Back</a>
+    </div>
+
+    </div>
+
+{% endblock %}
+

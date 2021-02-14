@@ -150,7 +150,7 @@ class Token
         return $this->username === $user->getUsername();
     }
 
-    public function sign(string $method, string $uri, string $body) : string
+    public function sign(string $method, string $uri, string $body = '') : string
     {
         return hash_hmac('sha256', sprintf('%s%s%s', $method, $uri, $body), $this->secret);
     }
