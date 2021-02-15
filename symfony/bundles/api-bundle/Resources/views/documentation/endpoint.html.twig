@@ -6,7 +6,17 @@
     {% if endpoint.roles %}
         <div class="float-right">
             {% for role in endpoint.roles %}
-                <span class="alert alert-danger" style="padding:5px;">
+                {% if not role.subject %}
+                    {% if is_granted(role.attribute) %}
+                        {% set color = 'success' %}
+                    {% else %}
+                        {% set color = 'danger' %}
+                    {% endif %}
+                {% else %}
+                    {% set color = 'info' %}
+                {% endif %}
+
+                <span class="alert alert-{{ color }}" style="padding:5px;">
                     {{ role.attribute }}
                     {% if role.subject %}
                         <span class="color-grey">

@@ -8,7 +8,7 @@
 
     <div class="jumbotron text-center">
 
-        {{ block('body', '@!Api/token/details.html.twig') }}
+        {{ block('body', '@!Api/token/documentation.html.twig') }}
 
     </div>
 
@@ -18,6 +18,6 @@
 
     {{ parent() }}
 
-    {{ block('javascripts', '@!Api/token/details.html.twig') }}
+    {{ block('javascripts', '@!Api/token/documentation.html.twig') }}
 
 {% endblock %}

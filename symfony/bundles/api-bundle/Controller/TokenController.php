@@ -9,17 +9,24 @@ use Bundles\ApiBundle\Reader\FacadeReader;
 use Bundles\ApiBundle\Util;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\UrlType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Validator\Constraints\Callback;
+use Symfony\Component\Validator\Constraints\Choice;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Regex;
+use Symfony\Component\Validator\Constraints\Url;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
@@ -54,6 +61,7 @@ class TokenController extends AbstractController
 
     /**
      * @Route(path="/", name="index")
+     * @Template
      */
     public function index(Request $request)
     {
@@ -64,15 +72,15 @@ class TokenController extends AbstractController
                 $form->get('name')->getData()
             );
 
-            return $this->redirectToRoute('developer_token_details', [
+            return $this->redirectToRoute('developer_token_documentation', [
                 'token' => $token,
             ]);
         }
 
-        return $this->render('@Api/token/index.html.twig', [
+        return [
             'tokens' => $this->tokenManager->getTokensForUser(),
             'form'   => $form->createView(),
-        ]);
+        ];
     }
 
     /**
@@ -92,25 +100,27 @@ class TokenController extends AbstractController
     }
 
     /**
-     * @Route(path="/details/{token}", name="details")
+     * @Route(path="/documentation/{token}", name="documentation")
      * @Entity("token", expr="repository.findOneByToken(token)")
      * @IsGranted("TOKEN", subject="token")
+     * @Template
      */
-    public function details(Token $token)
+    public function documentation(Token $token)
     {
         $collection = $this->categoryCollectionReader->read();
 
-        return $this->render('@Api/token/details.html.twig', [
+        return [
             'token'               => $token,
             'category_collection' => $collection,
             'demo'                => $collection->getCategory(DemoController::class)->getEndpoint('hello'),
-        ]);
+        ];
     }
 
     /**
-     * @Route(path="/documentation/{token}/{categoryId}/{endpointId}", name="documentation")
+     * @Route(path="/documentation/{token}/{categoryId}/{endpointId}", name="endpoint")
      * @Entity("token", expr="repository.findOneByToken(token)")
      * @IsGranted("TOKEN", subject="token")
+     * @Template
      */
     public function endpoint(Token $token, string $categoryId, string $endpointId)
     {
@@ -124,10 +134,10 @@ class TokenController extends AbstractController
             throw $this->createNotFoundException();
         }
 
-        return $this->render('@Api/token/endpoint.html.twig', [
+        return [
             'token'    => $token,
             'endpoint' => $endpoint,
-        ]);
+        ];
     }
 
     /**
@@ -139,6 +149,45 @@ class TokenController extends AbstractController
     {
         return new JsonResponse([
             'secret' => Util::decrypt($token->getSecret(), $this->getUser()->getUsername()),
+        ]);
+    }
+
+    /**
+     * @Route(path="/console/{token}", name="console")
+     * @Entity("token", expr="repository.findOneByToken(token)")
+     * @IsGranted("TOKEN", subject="token")
+     * @Template
+     */
+    public function console(Request $request, Token $token)
+    {
+        return [
+            'token' => $token,
+            'form'  => $this->createConsoleForm($request)->createView(),
+        ];
+    }
+
+    /**
+     * @Route(path="/console/{token}/sign", name="sign", methods={"POST"})
+     * @Entity("token", expr="repository.findOneByToken(token)")
+     * @IsGranted("TOKEN", subject="token")
+     */
+    public function sign(Request $request, Token $token)
+    {
+        $form = $this->createConsoleForm($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            return $this->json([
+                'success'   => true,
+                'signature' => $token->sign(
+                    $form->get('method')->getData(),
+                    $form->get('uri')->getData(),
+                    $form->get('body')->getData() ?? ''
+                ),
+            ]);
+        }
+
+        return $this->json([
+            'success' => false,
         ]);
     }
 
@@ -165,5 +214,47 @@ class TokenController extends AbstractController
                     ])
                     ->getForm()
                     ->handleRequest($request);
+    }
+
+    private function createConsoleForm(Request $request) : FormInterface
+    {
+        $methods = ['GET', 'POST', 'PUT', 'DELETE'];
+
+        return $this
+            ->createFormBuilder([
+                'method' => 'GET',
+                'uri'    => $this->generateUrl('developer_demo_hello', ['name' => 'Bob'], UrlGeneratorInterface::ABSOLUTE_URL),
+            ])
+            ->add('method', ChoiceType::class, [
+                'label'       => false,
+                'choices'     => array_combine($methods, $methods),
+                'constraints' => [
+                    new NotBlank(),
+                    new Choice(['choices' => $methods]),
+                ],
+            ])
+            ->add('uri', UrlType::class, [
+                'label'       => false,
+                'constraints' => [
+                    new NotBlank(),
+                    new Url(),
+                    new Callback(function ($object, ExecutionContextInterface $context, $payload) {
+                        $base = sprintf('%s/', getenv('WEBSITE_URL'));
+                        if (0 !== strpos($object, $base)) {
+                            $context->addViolation(sprintf('Base URI should stay "%s".', $base));
+                        }
+                    }),
+                ],
+            ])
+            ->add('body', TextareaType::class, [
+                'label'    => false,
+                'required' => false,
+                'attr'     => [
+                    'rows' => 6,
+                ],
+            ])
+            ->add('run', SubmitType::class)
+            ->getForm()
+            ->handleRequest($request);
     }
 }

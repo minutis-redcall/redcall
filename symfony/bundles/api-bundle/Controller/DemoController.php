@@ -29,7 +29,7 @@ class DemoController extends AbstractController
      *   request  = @Facade(class = HelloRequestFacade::class),
      *   response = @Facade(class = HelloResponseFacade::class)
      * )
-     * @Route(path="/api/demo", name="hello")
+     * @Route(name="hello")
      */
     public function hello(HelloRequestFacade $demo)
     {
