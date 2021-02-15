@@ -10,6 +10,7 @@ use App\Provider\Call\CallProvider;
 use App\Provider\Email\EmailProvider;
 use App\Provider\SMS\SMSProvider;
 use App\Services\MessageFormatter;
+use Psr\Log\LoggerInterface;
 
 class Sender
 {
@@ -49,12 +50,18 @@ class Sender
      */
     private $messageManager;
 
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
     public function __construct(CountryManager $countryManager,
         SMSProvider $SMSProvider,
         CallProvider $callProvider,
         EmailProvider $emailProvider,
         MessageFormatter $formatter,
-        MessageManager $messageManager)
+        MessageManager $messageManager,
+        LoggerInterface $logger)
     {
         $this->countryManager = $countryManager;
         $this->SMSProvider    = $SMSProvider;
@@ -62,6 +69,7 @@ class Sender
         $this->emailProvider  = $emailProvider;
         $this->formatter      = $formatter;
         $this->messageManager = $messageManager;
+        $this->logger         = $logger;
     }
 
     public function sendCommunication(Communication $communication, bool $force = false)
@@ -168,9 +176,20 @@ class Sender
             }
         } catch (\Exception $e) {
             $message->setError($e->getMessage());
+
+            if ($messageId) {
+                $message->setMessageId($messageId);
+                $message->setSent(true);
+            }
+
+            $this->logger->error('Exception caught when sending a call', [
+                'twilio_id' => $message->getMessageId(),
+                'exception' => $e->getMessage(),
+                'trace'     => $e->getTraceAsString(),
+            ]);
         }
 
-        $this->saveMessaage($message);
+        $this->saveMessaageStatus($message);
     }
 
     public function sendEmail(Message $message)
@@ -198,7 +217,7 @@ class Sender
         $this->messageManager->save($message);
     }
 
-    private function saveMessaage(Message $message)
+    private function saveMessaageStatus(Message $message)
     {
         $this->messageManager->updateMessageStatus($message);
     }

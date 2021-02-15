@@ -114,7 +114,9 @@ class EndpointDescription
 
     public function addRole(RoleDescription $role) : EndpointDescription
     {
-        $this->roles[] = $role;
+        if (!in_array($role, $this->roles)) {
+            $this->roles[] = $role;
+        }
 
         return $this;
     }

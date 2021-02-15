@@ -347,6 +347,10 @@ class VolunteerManager
 
         asort($priorities);
 
-        return array_keys($priorities);
+        $priorities = array_keys($priorities);
+
+        $noBadges = array_diff($volunteerIds, $priorities);
+
+        return array_merge($priorities, $noBadges);
     }
 }

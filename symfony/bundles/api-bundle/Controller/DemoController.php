@@ -22,8 +22,7 @@ class DemoController extends AbstractController
     /**
      * Hello, world!
      *
-     * This endpoint aims to check if your application successfully
-     * signs its requests.
+     * This endpoint aims to check if your application successfully signs its requests.
      *
      * @Endpoint(
      *   priority = 5,

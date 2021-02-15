@@ -485,14 +485,45 @@ class VolunteerRepository extends BaseRepository
 
     public function getVolunteerTriggeringPriorities(array $volunteerIds) : array
     {
-        return $this->createQueryBuilder('v')
-                    ->select('v.id, MIN(b.triggeringPriority) AS priority')
-                    ->join('v.badges', 'b')
-                    ->where('v.id IN (:volunteer_ids)')
-                    ->setParameter('volunteer_ids', $volunteerIds, Connection::PARAM_INT_ARRAY)
-                    ->groupBy('v.id')
-                    ->getQuery()
-                    ->getArrayResult();
+        $rows = $this->createQueryBuilder('v')
+                     ->select('
+                        v.id, 
+                        MIN(b.triggeringPriority) AS t1, 
+                        MIN(x.triggeringPriority) as t2,
+                        MIN(p1.triggeringPriority) as t3,
+                        MIN(p2.triggeringPriority) as t4,
+                        MIN(p3.triggeringPriority) as t5,
+                        MIN(p4.triggeringPriority) as t6
+                    ')
+                     ->join('v.badges', 'b')
+                     ->leftJoin('b.synonym', 'x')
+                     ->leftJoin('b.parent', 'p1')
+                     ->leftJoin('p1.parent', 'p2')
+                     ->leftJoin('p2.parent', 'p3')
+                     ->leftJoin('p3.parent', 'p4')
+                     ->where('v.id IN (:volunteer_ids)')
+                     ->setParameter('volunteer_ids', $volunteerIds, Connection::PARAM_INT_ARRAY)
+                     ->groupBy('v.id')
+                     ->getQuery()
+                     ->getArrayResult();
+
+        $priorities = [];
+        foreach ($rows as $row) {
+            // Excluding null values (min([200, 300, null]) returns null)
+            $values = [1000];
+            for ($i = 1; $i <= 6; $i++) {
+                if (null !== $row[sprintf('t%d', $i)]) {
+                    $values[] = $row[sprintf('t%d', $i)];
+                }
+            }
+
+            $priorities[] = [
+                'id'       => $row['id'],
+                'priority' => min($values),
+            ];
+        }
+
+        return $priorities;
     }
 
     private function createVolunteerListQueryBuilder(array $volunteerIds, bool $onlyEnabled = true) : QueryBuilder
