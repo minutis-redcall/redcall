@@ -47,7 +47,8 @@ class CampaignType extends AbstractType
             'data_class' => CampaignModel::class,
             'type'       => Type::SMS(),
             'attr'       => [
-                'class' => 'trigger',
+                'class'        => 'trigger',
+                'autocomplete' => 'off',
             ],
         ]);
     }

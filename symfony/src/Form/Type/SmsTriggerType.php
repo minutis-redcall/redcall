@@ -83,7 +83,8 @@ class SmsTriggerType extends AbstractType
             'data_class' => SmsTrigger::class,
             'submit'     => true,
             'attr'       => [
-                'class' => 'trigger',
+                'class'        => 'trigger',
+                'autocomplete' => 'off',
             ],
         ]);
     }

@@ -8,6 +8,13 @@ use Bundles\ApiBundle\Contracts\FacadeInterface;
 class ThrowableFacade implements FacadeInterface
 {
     /**
+     * The eception type in development environment.
+     *
+     * @var string
+     */
+    private $type;
+
+    /**
      * Internal Server Error
      * Or the real exception message in development environment.
      *
@@ -31,6 +38,7 @@ class ThrowableFacade implements FacadeInterface
 
     public function __construct(\Throwable $throwable)
     {
+        $this->type    = get_class($throwable);
         $this->message = $throwable->getMessage();
         $this->trace   = $throwable->getTraceAsString();
 
@@ -46,6 +54,11 @@ class ThrowableFacade implements FacadeInterface
         } catch (\Exception $e) {
             return new self($e);
         }
+    }
+
+    public function getType() : string
+    {
+        return $this->type;
     }
 
     public function getMessage() : string

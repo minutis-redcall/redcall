@@ -224,6 +224,10 @@ class TokenController extends AbstractController
             ->createFormBuilder([
                 'method' => 'GET',
                 'uri'    => $this->generateUrl('developer_demo_hello', ['name' => 'Bob'], UrlGeneratorInterface::ABSOLUTE_URL),
+            ], [
+                'attr' => [
+                    'autocomplete' => 'off',
+                ],
             ])
             ->add('method', ChoiceType::class, [
                 'label'       => false,
@@ -250,7 +254,8 @@ class TokenController extends AbstractController
                 'label'    => false,
                 'required' => false,
                 'attr'     => [
-                    'rows' => 6,
+                    'rows'     => 6,
+                    'readonly' => true,
                 ],
             ])
             ->add('run', SubmitType::class)

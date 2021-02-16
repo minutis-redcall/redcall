@@ -31,6 +31,7 @@
     </div>
 
     <div id="result-container" class="text-left bg-white d-none" style="border: 1px solid lightgrey; padding:8px;">
+        <div id="result-status" class="float-right" style="padding:10px;"></div>
         <pre><code id="result"></code></pre>
     </div>
 
@@ -45,6 +46,15 @@
 {% block javascripts %}
 
     <script type="text/javascript">
+
+        {# Set body in "readonly" when GET is selected #}
+        $('body').on('change', '#{{ form.method.vars.id }}', function () {
+            if ('GET' === $('#{{ form.method.vars.id }} option:selected').text()) {
+                $('#{{ form.body.vars.id }}').attr('readonly', true);
+            } else {
+                $('#{{ form.body.vars.id }}').removeAttr('readonly');
+            }
+        });
 
         {# Signature update #}
         var timeout = null;
@@ -65,28 +75,30 @@
             var that = $(this);
             that.attr('disabled', 'disabled');
 
-            {# Running a call to sign in order to check that the form is valid #}
+            var changeResult = function (data) {
+                var pretty = JSON.stringify(JSON.parse(data), null, 2);
+                $('#result-container').removeClass('d-none');
+                $('#result').html(pretty);
+                that.removeAttr('disabled');
+            };
+
             $.post('{{ path('developer_token_sign', {token: token}) }}', $('#console form').serialize(), function (data) {
                 if (data.success) {
                     $.ajax(
                         $('#{{ form.uri.vars.id }}').val(), {
-                            method: $('#{{ form.method.vars.id }}:selected').text(),
+                            method: $('#{{ form.method.vars.id }} option:selected').text(),
                             beforeSend: function (xhr) {
                                 xhr.setRequestHeader('Authorization', 'Bearer {{ token }}');
-                                xhr.setRequestHeader('X-Signature', $('#signature').html());
+                                xhr.setRequestHeader('X-Signature', data.signature);
                             },
                         }
                     ).done(function (data) {
-                        var pretty = JSON.stringify(JSON.parse(data), null, 2);
-                        $('#result-container').removeClass('d-none');
-                        $('#result').html(pretty);
-                        that.removeAttr('disabled');
-                    }).fail(function (jqXHR, status, errorThrown) {
-                        console.log(jqXHR);
-                        console.log(status);
-                        console.log(errorThrown);
+                        $('#result-status').html('✅');
+                        changeResult(data);
+                    }).fail(function (xhr, status, errorThrown) {
+                        $('#result-status').html('❌');
+                        changeResult(xhr.responseText);
                     });
-
                 }
             });
 
