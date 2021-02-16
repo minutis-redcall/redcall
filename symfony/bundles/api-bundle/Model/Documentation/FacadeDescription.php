@@ -97,6 +97,19 @@ class FacadeDescription
         return $this;
     }
 
+    public function getFormattedExample(string $method, bool $isRequest) : ?string
+    {
+        if (!$this->example) {
+            return null;
+        }
+
+        if ('GET' === $method && $isRequest) {
+            return sprintf('?%s', http_build_query($this->example));
+        }
+
+        return json_encode($this->example, JSON_PRETTY_PRINT);
+    }
+
     public function getStatusCode() : int
     {
         return $this->statusCode;

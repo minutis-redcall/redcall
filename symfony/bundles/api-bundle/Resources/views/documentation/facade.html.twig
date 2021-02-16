@@ -39,10 +39,10 @@
         </a>
     </div>
     <div id="facade-example-{{ facade.id }}" class="collapse">
-        {{ include('@Api/documentation/facade_example.html.twig', {
-            example: facade.example,
-            type: type,
-            method: endpoint.methods[0],
-        }) }}
+        {% if facade.example %}
+            <div class="bg-white" style="border: 1px solid lightgrey; padding:8px; margin-top:8px;">
+                <pre><code>{{ facade.formattedExample(endpoint.methods[0], constant('\\Bundles\\ApiBundle\\Model\\Documentation\\FacadeDescription::TYPE_REQUEST') == type) }}</code></pre>
+            </div>
+        {% endif %}
     </div>
 </div>
