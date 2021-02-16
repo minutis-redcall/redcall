@@ -65,6 +65,8 @@
             }
 
             $('#{{ form.method.vars.id }}').change();
+            $('#result-container').addClass('d-none');
+            $('#result').html('');
         });
 
         {# Set body in "readonly" when GET is selected #}
