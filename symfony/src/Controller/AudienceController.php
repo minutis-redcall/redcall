@@ -190,7 +190,7 @@ class AudienceController extends BaseController
         $classification->setReachable([]);
 
         $volunteers = $this->volunteerManager->getVolunteerList(
-            call_user_func_array('array_merge', $classification->toArray())
+            call_user_func_array('array_merge', array_values($classification->toArray()))
         );
 
         return $this->render('audience/resolve.html.twig', [

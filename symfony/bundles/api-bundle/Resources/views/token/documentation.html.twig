@@ -69,7 +69,7 @@
             <div class="h4">{{ category.name }}</div>
             {% for endpoint in category.endpoints.endpoints %}
                 <div style="margin-left:15px;">
-                    <a href="{{ path('developer_token_documentation', {
+                    <a href="{{ path('developer_token_endpoint', {
                         token: token,
                         categoryId: category.id,
                         endpointId: endpoint.id,

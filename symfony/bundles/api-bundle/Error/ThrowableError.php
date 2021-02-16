@@ -29,10 +29,6 @@ class ThrowableError implements ErrorInterface
 
     public function getMessage() : string
     {
-        if ('dev' === getenv('APP_ENV')) {
-            return $this->throwable->getMessage();
-        }
-
         return 'Internal Server Error';
     }
 

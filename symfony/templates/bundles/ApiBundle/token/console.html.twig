@@ -1,0 +1,23 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    {{ parent() }}
+
+    <br/>
+
+    <div class="jumbotron text-center">
+
+        {{ block('body', '@!Api/token/console.html.twig') }}
+
+    </div>
+
+{% endblock %}
+
+{% block javascripts %}
+
+    {{ parent() }}
+
+    {{ block('javascripts', '@!Api/token/console.html.twig') }}
+
+{% endblock %}

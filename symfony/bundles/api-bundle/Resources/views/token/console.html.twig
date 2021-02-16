@@ -1,0 +1,110 @@
+{% extends '@Api/base.html.twig' %}
+
+{% block body %}
+
+    <div class="text-left">
+        <h3>Console</h3>
+    </div>
+
+    <div id="console" class="text-left">
+        {{ form_start(form) }}
+
+        <table style="width:100%;">
+            <tr>
+                <td style="width: 10%;">
+                    {{ form_row(form.method) }}
+                </td>
+                <td style="width: 90%;">
+                    {{ form_row(form.uri) }}
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">{{ form_row(form.body) }}</td>
+            </tr>
+        </table>
+
+        <div class="float-right">
+            <pre><code>X-Signature: <span id="signature">{{ token.sign(form.method.vars.data, form.uri.vars.data|default(''), form.body.vars.data|default('')) }}</span></code></pre>
+        </div>
+
+        {{ form_rest(form) }}
+    </div>
+
+    <div id="result-container" class="text-left bg-white d-none" style="border: 1px solid lightgrey; padding:8px;">
+        <div id="result-status" class="float-right" style="padding:10px;"></div>
+        <pre><code id="result"></code></pre>
+    </div>
+
+    <br/>
+
+    <div class="text-center">
+        <a href="{{ path('developer_token_index') }}" class="btn btn-secondary">Back</a>
+    </div>
+
+{% endblock %}
+
+{% block javascripts %}
+
+    <script type="text/javascript">
+
+        {# Set body in "readonly" when GET is selected #}
+        $('body').on('change', '#{{ form.method.vars.id }}', function () {
+            if ('GET' === $('#{{ form.method.vars.id }} option:selected').text()) {
+                $('#{{ form.body.vars.id }}').attr('readonly', true);
+            } else {
+                $('#{{ form.body.vars.id }}').removeAttr('readonly');
+            }
+        });
+
+        {# Signature update #}
+        var timeout = null;
+        $('body').on('keyup change', '#console input, #console select, #console textarea', function () {
+            clearTimeout(timeout);
+            timeout = setTimeout(function () {
+                $.post('{{ path('developer_token_sign', {token: token}) }}', $('#console form').serialize(), function (data) {
+                    if (data.success) {
+                        $('#signature').html(data.signature);
+                    }
+                });
+            }, 500);
+        });
+
+        {# Click on "run" #}
+        $('body').on('click', '#{{ form.run.vars.id }}', function (e) {
+            e.preventDefault();
+            var that = $(this);
+            that.attr('disabled', 'disabled');
+
+            var changeResult = function (data) {
+                var pretty = JSON.stringify(JSON.parse(data), null, 2);
+                $('#result-container').removeClass('d-none');
+                $('#result').html(pretty);
+                that.removeAttr('disabled');
+            };
+
+            $.post('{{ path('developer_token_sign', {token: token}) }}', $('#console form').serialize(), function (data) {
+                if (data.success) {
+                    $.ajax(
+                        $('#{{ form.uri.vars.id }}').val(), {
+                            method: $('#{{ form.method.vars.id }} option:selected').text(),
+                            beforeSend: function (xhr) {
+                                xhr.setRequestHeader('Authorization', 'Bearer {{ token }}');
+                                xhr.setRequestHeader('X-Signature', data.signature);
+                            },
+                        }
+                    ).done(function (data) {
+                        $('#result-status').html('✅');
+                        changeResult(data);
+                    }).fail(function (xhr, status, errorThrown) {
+                        $('#result-status').html('❌');
+                        changeResult(xhr.responseText);
+                    });
+                }
+            });
+
+        });
+
+    </script>
+
+
+{% endblock %}

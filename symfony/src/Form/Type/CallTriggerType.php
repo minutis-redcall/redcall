@@ -74,7 +74,8 @@ class CallTriggerType extends AbstractType
             'data_class' => CallTrigger::class,
             'submit'     => true,
             'attr'       => [
-                'class' => 'trigger',
+                'class'        => 'trigger',
+                'autocomplete' => 'off',
             ],
         ]);
     }

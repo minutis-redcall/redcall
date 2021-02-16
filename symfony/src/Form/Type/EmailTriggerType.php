@@ -100,7 +100,8 @@ class EmailTriggerType extends AbstractType
             'data_class' => EmailTrigger::class,
             'submit'     => true,
             'attr'       => [
-                'class' => 'trigger',
+                'class'        => 'trigger',
+                'autocomplete' => 'off',
             ],
         ]);
     }
