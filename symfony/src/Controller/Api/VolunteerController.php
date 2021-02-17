@@ -3,12 +3,13 @@
 namespace App\Controller\Api;
 
 use App\Manager\VolunteerManager;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * @Route("/api/volunteer", name="api_volunteer_")
  */
-class VolunteerController
+class VolunteerController extends AbstractController
 {
     /**
      * @var VolunteerManager
