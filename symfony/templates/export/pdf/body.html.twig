@@ -69,7 +69,11 @@
                 {% if communication.choices|length %}
                     <br/>
                     <span style="color:{{ red }};font-size:14px;">
-                        <em>{{ communication.body|nl2br }}</em>
+                        {% if communication.type == constant('App\\Entity\\Communication::TYPE_EMAIL') %}
+                            <em>{{ communication.body|purify }}</em>
+                        {% else %}
+                            <em>{{ communication.body|nl2br }}</em>
+                        {% endif %}
                     </span>
                 {% endif %}
             </h2>
@@ -78,71 +82,71 @@
             {% for label, table in tables %}
                 {% if table|length > 0 %}
 
-                <table width="100%" cellspacing="0">
-                    {% if communication.choices|length %}
-                        <tr>
-                            <td style="background-color:{{ lightgrey }};text-align:center;padding:10px;border: 1px solid black;" colspan="4">
-                                <span style="color:white;font-size:18px;">{{ 'pdf_export.response'|trans({'%choice%': label}) }}</span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td style="padding:10px;text-align:center;color:black;background-color:{{ offwhite }};border: 1px solid black;">
-                                <strong>{{ 'pdf_export.staff_table.name'|trans }}</strong>
-                            </td>
-                            <td style="padding:10px;text-align:center;color:white;background-color:{{ red }};border: 1px solid black;">
-                                <strong>{{ 'pdf_export.staff_table.phone'|trans }}</strong>
-                            </td>
-                            <td style="padding:10px;text-align:center;color:black;background-color:{{ offwhite }};border: 1px solid black;">
-                                <strong>{{ 'pdf_export.staff_table.skills'|trans }}</strong>
-                            </td>
-                            <td style="padding:10px;text-align:center;color:black;background-color:{{ offwhite }};border: 1px solid black;">
-                                <strong>{{ 'pdf_export.staff_table.time'|trans }}</strong>
-                            </td>
-                        </tr>
-                    {% else %}
-                        <tr>
-                            <td style="color:white;background-color:{{ lightgrey }};text-align:center;padding:10px;border: 1px solid black;">
-                                <strong>{{ 'pdf_export.staff_table.name'|trans }}</strong>
-                            </td>
-                            <td style="color:white;background-color:{{ lightgrey }};text-align:center;padding:10px;border: 1px solid black;">
-                                <strong>{{ 'pdf_export.staff_table.phone'|trans }}</strong>
-                            </td>
-                            <td style="color:white;background-color:{{ lightgrey }};text-align:center;padding:10px;border: 1px solid black;">
-                                <strong>{{ 'pdf_export.staff_table.skills'|trans }}</strong>
-                            </td>
-                        </tr>
-                    {% endif %}
-
-                    {% for data in table %}
-                        {% set volunteer = data.volunteer %}
-                        {% set answer = data.answer|default(null) %}
-                        <tr>
-                            <td style="padding:10px;color:black;background-color:{{ offwhite }};border: 1px solid black;">
-                                {{ volunteer.displayName }}
-                                {% if volunteer.structures.count > 0 %}
-                                    <div style="font-size:12px;">{{ volunteer.structures|join(', ') }}</div>
-                                {% endif %}
-                            </td>
-                            <td style="padding:10px;color:white;background-color:{{ red }};border: 1px solid black;">
-                                {{ volunteer.formattedPhoneNumber }}
-                            </td>
-                            <td style="padding:10px;color:black;background-color:{{ offwhite }};border: 1px solid black;">
-                                {% for index, badge in volunteer.visibleBadges %}
-                                    {% if index > 0 %} / {% endif %}
-                                    {{ badge.name }}
-                                {% endfor %}
-                            </td>
-                            {% if communication.choices|length %}
-                                <td style="padding:10px;color:black;background-color:{{ offwhite }};border: 1px solid black;">
-                                    {{ answer ? answer.receivedAt|date('H:i') : '&nbsp;' }}
+                    <table width="100%" cellspacing="0">
+                        {% if communication.choices|length %}
+                            <tr>
+                                <td style="background-color:{{ lightgrey }};text-align:center;padding:10px;border: 1px solid black;" colspan="4">
+                                    <span style="color:white;font-size:18px;">{{ 'pdf_export.response'|trans({'%choice%': label}) }}</span>
                                 </td>
-                            {% endif %}
-                        </tr>
-                    {% endfor %}
+                            </tr>
+                            <tr>
+                                <td style="padding:10px;text-align:center;color:black;background-color:{{ offwhite }};border: 1px solid black;">
+                                    <strong>{{ 'pdf_export.staff_table.name'|trans }}</strong>
+                                </td>
+                                <td style="padding:10px;text-align:center;color:white;background-color:{{ red }};border: 1px solid black;">
+                                    <strong>{{ 'pdf_export.staff_table.phone'|trans }}</strong>
+                                </td>
+                                <td style="padding:10px;text-align:center;color:black;background-color:{{ offwhite }};border: 1px solid black;">
+                                    <strong>{{ 'pdf_export.staff_table.skills'|trans }}</strong>
+                                </td>
+                                <td style="padding:10px;text-align:center;color:black;background-color:{{ offwhite }};border: 1px solid black;">
+                                    <strong>{{ 'pdf_export.staff_table.time'|trans }}</strong>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td style="color:white;background-color:{{ lightgrey }};text-align:center;padding:10px;border: 1px solid black;">
+                                    <strong>{{ 'pdf_export.staff_table.name'|trans }}</strong>
+                                </td>
+                                <td style="color:white;background-color:{{ lightgrey }};text-align:center;padding:10px;border: 1px solid black;">
+                                    <strong>{{ 'pdf_export.staff_table.phone'|trans }}</strong>
+                                </td>
+                                <td style="color:white;background-color:{{ lightgrey }};text-align:center;padding:10px;border: 1px solid black;">
+                                    <strong>{{ 'pdf_export.staff_table.skills'|trans }}</strong>
+                                </td>
+                            </tr>
+                        {% endif %}
 
-                </table>
+                        {% for data in table %}
+                            {% set volunteer = data.volunteer %}
+                            {% set answer = data.answer|default(null) %}
+                            <tr>
+                                <td style="padding:10px;color:black;background-color:{{ offwhite }};border: 1px solid black;">
+                                    {{ volunteer.displayName }}
+                                    {% if volunteer.structures.count > 0 %}
+                                        <div style="font-size:12px;">{{ volunteer.structures|join(', ') }}</div>
+                                    {% endif %}
+                                </td>
+                                <td style="padding:10px;color:white;background-color:{{ red }};border: 1px solid black;">
+                                    {{ volunteer.formattedPhoneNumber }}
+                                </td>
+                                <td style="padding:10px;color:black;background-color:{{ offwhite }};border: 1px solid black;">
+                                    {% for index, badge in volunteer.visibleBadges %}
+                                        {% if index > 0 %} / {% endif %}
+                                        {{ badge.name }}
+                                    {% endfor %}
+                                </td>
+                                {% if communication.choices|length %}
+                                    <td style="padding:10px;color:black;background-color:{{ offwhite }};border: 1px solid black;">
+                                        {{ answer ? answer.receivedAt|date('H:i') : '&nbsp;' }}
+                                    </td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
 
-                <br/>
+                    </table>
+
+                    <br/>
 
                 {% endif %}
 
