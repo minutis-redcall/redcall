@@ -13,12 +13,14 @@ use App\Entity\Message;
 use App\Entity\Volunteer;
 use DateTime;
 use Mpdf\Mpdf;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
- * @Route(name="export_", path="export/")
+ * @Route(name="export_", path="export/{id}", requirements={"id" = "\d+"})
+ * @IsGranted("COMMUNICATION", subject="communication")
  */
 class ExportController extends BaseController
 {
@@ -33,15 +35,11 @@ class ExportController extends BaseController
     }
 
     /**
-     * @Route(path="{id}/csv", name="csv", requirements={"id" = "\d+"}, methods={"POST"})
+     * @Route(path="/csv", name="csv", methods={"POST"})
      */
     public function csvAction(Request $request, Communication $communication)
     {
         $this->validateCsrfOrThrowNotFoundException('communication', $request->request->get('csrf'));
-
-        if (!$this->isGranted('CAMPAIGN_ACCESS', $communication->getCampaign())) {
-            throw $this->createAccessDeniedException();
-        }
 
         $selection = json_decode($request->request->get('volunteers'), true);
         if (!$selection && $communication->getMessages()) {
@@ -97,15 +95,11 @@ class ExportController extends BaseController
     }
 
     /**
-     * @Route(path="{id}/pdf", name="pdf", requirements={"id" = "\d+"})
+     * @Route(path="/pdf", name="pdf")
      */
     public function pdfAction(Request $request, Communication $communication)
     {
         $this->validateCsrfOrThrowNotFoundException('communication', $request->request->get('csrf'));
-
-        if (!$this->isGranted('CAMPAIGN_ACCESS', $communication->getCampaign())) {
-            throw $this->createAccessDeniedException();
-        }
 
         $selection = $this->getSelection($request, $communication);
         $campaign  = $communication->getCampaign();

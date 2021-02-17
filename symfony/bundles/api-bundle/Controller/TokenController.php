@@ -4,6 +4,7 @@ namespace Bundles\ApiBundle\Controller;
 
 use Bundles\ApiBundle\Entity\Token;
 use Bundles\ApiBundle\Manager\TokenManager;
+use Bundles\ApiBundle\Model\Documentation\EndpointDescription;
 use Bundles\ApiBundle\Reader\CategoryCollectionReader;
 use Bundles\ApiBundle\Reader\FacadeReader;
 use Bundles\ApiBundle\Util;
@@ -160,9 +161,12 @@ class TokenController extends AbstractController
      */
     public function console(Request $request, Token $token)
     {
+        $endpoints = $this->extractEndpoints();
+
         return [
-            'token' => $token,
-            'form'  => $this->createConsoleForm($request)->createView(),
+            'token'     => $token,
+            'form'      => $this->createConsoleForm($request, $endpoints)->createView(),
+            'endpoints' => $endpoints,
         ];
     }
 
@@ -173,7 +177,7 @@ class TokenController extends AbstractController
      */
     public function sign(Request $request, Token $token)
     {
-        $form = $this->createConsoleForm($request);
+        $form = $this->createConsoleForm($request, $this->extractEndpoints());
 
         if ($form->isSubmitted() && $form->isValid()) {
             return $this->json([
@@ -216,7 +220,7 @@ class TokenController extends AbstractController
                     ->handleRequest($request);
     }
 
-    private function createConsoleForm(Request $request) : FormInterface
+    private function createConsoleForm(Request $request, array $endpoints) : FormInterface
     {
         $methods = ['GET', 'POST', 'PUT', 'DELETE'];
 
@@ -228,6 +232,10 @@ class TokenController extends AbstractController
                 'attr' => [
                     'autocomplete' => 'off',
                 ],
+            ])
+            ->add('endpoint', ChoiceType::class, [
+                'label'   => false,
+                'choices' => $endpoints,
             ])
             ->add('method', ChoiceType::class, [
                 'label'       => false,
@@ -261,5 +269,25 @@ class TokenController extends AbstractController
             ->add('run', SubmitType::class)
             ->getForm()
             ->handleRequest($request);
+    }
+
+    private function extractEndpoints() : array
+    {
+        $categoryCollection = $this->categoryCollectionReader->read();
+        $endpoints          = [];
+        foreach ($categoryCollection->getCategories() as $category) {
+            foreach ($category->getEndpoints()->getEndpoints() as $endpoint) {
+                /** @var EndpointDescription $endpoint */
+                $method = $endpoint->getMethods()[0];
+
+                $endpoints[$category->getName()][$endpoint->getTitle()] = json_encode([
+                    'method'  => $method,
+                    'uri'     => $endpoint->getUri(),
+                    'example' => $endpoint->getRequestFacade()->getFormattedExample($method, true),
+                ]);
+            }
+        }
+
+        return $endpoints;
     }
 }

@@ -143,6 +143,17 @@ class CommunicationController extends BaseController
     }
 
     /**
+     * @Route(path="campaign/goto/{id}", name="goto", requirements={"id" = "\d+"})
+     * @IsGranted("COMMUNICATION", subject="communication")
+     */
+    public function gotoAction(Communication $communication)
+    {
+        return $this->redirectToRoute('communication_index', [
+            'id' => $communication->getCampaign()->getId(),
+        ]);
+    }
+
+    /**
      * @Route(path="campaign/{id}/short-polling", name="short_polling", requirements={"id" = "\d+"})
      * @IsGranted("CAMPAIGN_ACCESS", subject="campaign")
      */

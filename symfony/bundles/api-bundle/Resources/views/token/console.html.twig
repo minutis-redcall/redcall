@@ -11,6 +11,9 @@
 
         <table style="width:100%;">
             <tr>
+                <td colspan="2">{{ form_row(form.endpoint) }}</td>
+            </tr>
+            <tr>
                 <td style="width: 10%;">
                     {{ form_row(form.method) }}
                 </td>
@@ -47,6 +50,25 @@
 
     <script type="text/javascript">
 
+        {# Endpoint selection #}
+        $('body').on('change', '#{{ form.endpoint.vars.id }}', function () {
+            var data = JSON.parse($(this).val());
+
+            $('#{{ form.method.vars.id }} option[value=' + data.method + ']').attr('selected', 'selected');
+
+            if ('GET' === data.method) {
+                $('#{{ form.uri.vars.id }}').val(data.uri + data.example);
+                $('#{{ form.body.vars.id }}').val('');
+            } else {
+                $('#{{ form.uri.vars.id }}').val(data.uri);
+                $('#{{ form.body.vars.id }}').val(data.example);
+            }
+
+            $('#{{ form.method.vars.id }}').change();
+            $('#result-container').addClass('d-none');
+            $('#result').html('');
+        });
+
         {# Set body in "readonly" when GET is selected #}
         $('body').on('change', '#{{ form.method.vars.id }}', function () {
             if ('GET' === $('#{{ form.method.vars.id }} option:selected').text()) {
@@ -73,7 +95,6 @@
         $('body').on('click', '#{{ form.run.vars.id }}', function (e) {
             e.preventDefault();
             var that = $(this);
-            that.attr('disabled', 'disabled');
 
             var changeResult = function (data) {
                 var pretty = JSON.stringify(JSON.parse(data), null, 2);
@@ -84,6 +105,7 @@
 
             $.post('{{ path('developer_token_sign', {token: token}) }}', $('#console form').serialize(), function (data) {
                 if (data.success) {
+                    that.attr('disabled', 'disabled');
                     $.ajax(
                         $('#{{ form.uri.vars.id }}').val(), {
                             method: $('#{{ form.method.vars.id }} option:selected').text(),

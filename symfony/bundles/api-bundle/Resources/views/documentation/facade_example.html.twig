@@ -1,9 +1,0 @@
-<div class="bg-white" style="border: 1px solid lightgrey; padding:8px; margin-top:5px;">
-    <div style="padding-top:15px;">
-        {% if 'GET' == method and constant('\\Bundles\\ApiBundle\\Model\\Documentation\\FacadeDescription::TYPE_REQUEST') == type and example %}
-            <pre><code>?{{ example|http_build_query }}</code></pre>
-        {% else %}
-            <pre><code>{{ example|json_prettify }}</code></pre>
-        {% endif %}
-    </div>
-</div>
