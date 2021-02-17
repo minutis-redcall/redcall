@@ -179,7 +179,7 @@ class TwilioSubscriber implements EventSubscriberInterface
 
         $message->setError($event->getCall()->getError());
 
-        $this->messageManager->save($message);
+        $this->messageManager->updateMessageStatus($message);
     }
 
     public function onAnsweringMachine(TwilioCallEvent $event)
