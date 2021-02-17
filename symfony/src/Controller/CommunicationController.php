@@ -144,7 +144,7 @@ class CommunicationController extends BaseController
 
     /**
      * @Route(path="campaign/goto/{id}", name="goto", requirements={"id" = "\d+"})
-     * @IsGranted("ROLE_ADMIN")
+     * @IsGranted("COMMUNICATION", subject="communication")
      */
     public function gotoAction(Communication $communication)
     {
