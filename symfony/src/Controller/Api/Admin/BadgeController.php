@@ -23,7 +23,7 @@ class BadgeController extends AbstractController
      * List all badges.
      *
      * Endpoint(
-     *   priority = 10,
+     *   priority = 20,
      *   request  = Facade(class     = BadgeFiltersFacade::class),
      *   response = Facade(class     = QueryBuilderFacade::class,
      *                      decorates = Facade(class = BadgeFacade::class))

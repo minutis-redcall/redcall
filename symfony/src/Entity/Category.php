@@ -22,6 +22,13 @@ class Category
     private $id;
 
     /**
+     * @ORM\Column(type="string", length=64, unique=true)
+     * @Assert\NotNull
+     * @Assert\Length(min=1, max=64)
+     */
+    private $externalId;
+
+    /**
      * @ORM\Column(type="string", length=255)
      * @Assert\NotNull
      * @Assert\Length(min=1, max=255)
@@ -47,6 +54,18 @@ class Category
     public function getId() : ?int
     {
         return $this->id;
+    }
+
+    public function getExternalId()
+    {
+        return $this->externalId;
+    }
+
+    public function setExternalId($externalId)
+    {
+        $this->externalId = $externalId;
+
+        return $this;
     }
 
     public function getName() : ?string

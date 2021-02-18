@@ -10,6 +10,7 @@ use App\Manager\BadgeManager;
 use App\Manager\CategoryManager;
 use App\Model\Csrf;
 use Bundles\PaginationBundle\Manager\PaginationManager;
+use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
@@ -84,6 +85,7 @@ class CategoryController extends BaseController
     {
         if (!$category) {
             $category = new Category();
+            $category->setExternalId(Uuid::uuid4());
         }
 
         $form = $this->createFormBuilder($category)

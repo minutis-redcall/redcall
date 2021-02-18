@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Facade;
+namespace App\Facade\Admin\Badge;
 
 use Bundles\ApiBundle\Annotation\Facade;
 use Bundles\ApiBundle\Contracts\FacadeInterface;

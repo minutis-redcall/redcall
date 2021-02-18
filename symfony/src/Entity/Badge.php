@@ -23,7 +23,7 @@ class Badge
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=64, unique=true, nullable=true)
+     * @ORM\Column(type="string", length=64, unique=true)
      */
     private $externalId;
 

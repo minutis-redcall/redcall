@@ -44,7 +44,10 @@ class PropertyReader
     public function read(string $class, string $propertyName, ?PropertyDescription $parent) : PropertyDescription
     {
         $property = new PropertyDescription();
-        $property->setName($propertyName);
+
+        $property->setName(
+            $this->toSnakeCase($propertyName)
+        );
 
         $types = $this->extractor->getTypes($class, $propertyName);
         foreach ($types ?? [] as $type) {
@@ -81,5 +84,10 @@ class PropertyReader
         $property->setCollection(true);
 
         return $property;
+    }
+
+    private function toSnakeCase(string $propertyName) : string
+    {
+        return strtolower(preg_replace('/[A-Z]/', '_\\0', lcfirst($propertyName)));
     }
 }
