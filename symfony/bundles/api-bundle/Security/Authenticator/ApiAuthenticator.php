@@ -59,11 +59,15 @@ class ApiAuthenticator extends AbstractGuardAuthenticator
             );
         }
 
+        // Cannot use $request->getUri() because Symfony sorts the query string alphabetically,
+        // which may break the request signature.
+        $uri = $request->getSchemeAndHttpHost().$request->getRequestUri();
+
         return [
             'token'     => $this->tokenManager->findToken($matches['uuid']),
             'signature' => $signature,
             'method'    => $request->getMethod(),
-            'uri'       => $request->getSchemeAndHttpHost().$request->getRequestUri(),
+            'uri'       => $uri,
             'body'      => $request->getContent(),
         ];
     }

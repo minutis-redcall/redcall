@@ -214,13 +214,8 @@ class CommunicationManager
             $prefixes = $this->messageManager->generatePrefixes($volunteers);
         }
 
-        foreach ($this->sortAudienceByTriggeringPriority($volunteers) as $volunteer) {
-            /** @var Volunteer $volunteer */
-            if (!$volunteer->isEnabled()) {
-                // Useless but keep it as a safeguard
-                continue;
-            }
-
+        $volunteers = $this->sortAudienceByTriggeringPriority($volunteers);
+        foreach ($volunteers as $volunteer) {
             $message = new Message();
 
             if (1 !== $choiceKey) {
