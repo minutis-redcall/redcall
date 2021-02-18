@@ -63,7 +63,7 @@ class ApiAuthenticator extends AbstractGuardAuthenticator
             'token'     => $this->tokenManager->findToken($matches['uuid']),
             'signature' => $signature,
             'method'    => $request->getMethod(),
-            'uri'       => $request->getUri(),
+            'uri'       => $request->getSchemeAndHttpHost().$request->getRequestUri(),
             'body'      => $request->getContent(),
         ];
     }

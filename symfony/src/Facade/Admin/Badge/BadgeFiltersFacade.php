@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Facade;
+namespace App\Facade\Admin\Badge;
 
 use Bundles\ApiBundle\Annotation\Facade;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
@@ -28,7 +28,8 @@ class BadgeFiltersFacade implements FacadeInterface
     {
         $facade = new self;
 
-        $facade->page = 1;
+        $facade->page     = 1;
+        $facade->criteria = 'urgen';
 
         return $facade;
     }
@@ -38,10 +39,9 @@ class BadgeFiltersFacade implements FacadeInterface
         return $this->page;
     }
 
-    public function setPage(int $page) : BadgeFacade
+    public function setPage(int $page) : BadgeFiltersFacade
     {
-        $this->page     = $page;
-        $this->criteria = 'urgen';
+        $this->page = $page;
 
         return $this;
     }
@@ -51,7 +51,7 @@ class BadgeFiltersFacade implements FacadeInterface
         return $this->criteria;
     }
 
-    public function setCriteria(?string $criteria) : BadgeFacade
+    public function setCriteria(?string $criteria) : BadgeFiltersFacade
     {
         $this->criteria = $criteria;
 

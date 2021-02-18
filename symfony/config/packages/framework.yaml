@@ -16,8 +16,10 @@ framework:
   php_errors:
     log: true
 
-  cache:
+  serializer:
+    name_converter: 'serializer.name_converter.camel_case_to_snake_case'
 
+  cache:
     pools:
       api_documentation:
         adapter: cache.app

@@ -2,9 +2,9 @@
 
 namespace App\Controller\Api\Admin;
 
-use App\Facade\PegassFacade;
-use App\Facade\PegassFiltersFacade;
-use App\Transformer\PegassTransformer;
+use App\Facade\Admin\Pegass\PegassFacade;
+use App\Facade\Admin\Pegass\PegassFiltersFacade;
+use App\Transformer\Admin\PegassTransformer;
 use Bundles\ApiBundle\Annotation\Endpoint;
 use Bundles\ApiBundle\Annotation\Facade;
 use Bundles\ApiBundle\Model\Facade\QueryBuilderFacade;
