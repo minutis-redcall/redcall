@@ -28,6 +28,9 @@
                     &nbsp;
                 {% endif %}
             {% endfor %}
+
+            <a href="{{ path('developer_token_console', {token: token, categoryName: category.name, endpointTitle: endpoint.title}) }}"
+               class="btn btn-light" style="margin-left:5px;">Open in console</a>
         </div>
     {% endif %}
 
@@ -51,11 +54,11 @@
 
         <div class="card">
             <div class="card-header">
-                <a href="#request-{{ endpoint.id }}" class="btn btn-light" data-toggle="collapse" role="button" style="width:100%;">
+                <a href="#request-{{ category.id }}-{{ endpoint.id }}" class="btn btn-light" data-toggle="collapse" role="button" style="width:100%;">
                     Request
                 </a>
             </div>
-            <div id="request-{{ endpoint.id }}" class="collapse show">
+            <div id="request-{{ category.id }}-{{ endpoint.id }}" class="collapse">
                 <div class="card-body">
                     {{ include('@Api/documentation/facade.html.twig', {
                         endpoint: endpoint,
@@ -72,11 +75,11 @@
 
         <div class="card">
             <div class="card-header">
-                <a href="#response-{{ endpoint.id }}" class="btn btn-light" data-toggle="collapse" style="width:100%;">
+                <a href="#response-{{ category.id }}-{{ endpoint.id }}" class="btn btn-light" data-toggle="collapse" style="width:100%;">
                     Response
                 </a>
             </div>
-            <div id="response-{{ endpoint.id }}" class="collapse show">
+            <div id="response-{{ category.id }}-{{ endpoint.id }}" class="collapse">
                 <div class="card-body">
                     {{ include('@Api/documentation/facade.html.twig', {
                         endpoint: endpoint,
@@ -92,11 +95,11 @@
     {# Demo #}
     <div class="card">
         <div class="card-header">
-            <a href="#demo-{{ endpoint.id }}" class="btn btn-light" data-toggle="collapse" style="width:100%;">
-                Runnable example
+            <a href="#demo-{{ category.id }}-{{ endpoint.id }}" class="btn btn-light" data-toggle="collapse" style="width:100%;">
+                cURL example
             </a>
         </div>
-        <div id="demo-{{ endpoint.id }}" class="collapse show">
+        <div id="demo-{{ category.id }}-{{ endpoint.id }}" class="collapse">
             <div class="card-body">
 
                 {{ include('@Api/documentation/demo.html.twig', {token: token, endpoint: endpoint}) }}
