@@ -1,6 +1,6 @@
 {% import '@Api/macros.html.twig' as macros %}
 
-<div class="endpoint text-left">
+<div id="{{ category.name|slug }}-{{ endpoint.title|slug }}" class="endpoint text-left">
 
     {# Required permissions #}
     {% if endpoint.roles %}
@@ -29,8 +29,6 @@
                 {% endif %}
             {% endfor %}
 
-            <a href="{{ path('developer_token_console', {token: token, categoryName: category.name, endpointTitle: endpoint.title}) }}"
-               class="btn btn-light" style="margin-left:5px;">Open in console</a>
         </div>
     {% endif %}
 
@@ -41,6 +39,8 @@
             <div class="input-group-addon">{{ macros.method(method) }}</div>
         {% endfor %}
         <p class="form-control" style="font-size:14px;">{{ endpoint.uri }}</p>
+        <a href="{{ path('developer_token_console', {token: token, categoryName: category.name, endpointTitle: endpoint.title}) }}"
+           class="btn btn-light form-control" style="margin-left:5px;">Open in console</a>
     </div>
 
     {% if endpoint.description %}

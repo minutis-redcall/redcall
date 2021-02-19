@@ -118,30 +118,6 @@ class TokenController extends AbstractController
     }
 
     /**
-     * @Route(path="/documentation/{token}/{categoryId}/{endpointId}", name="endpoint")
-     * @Entity("token", expr="repository.findOneByToken(token)")
-     * @IsGranted("TOKEN", subject="token")
-     * @Template
-     */
-    public function endpoint(Token $token, string $categoryId, string $endpointId)
-    {
-        $collection = $this->categoryCollectionReader->read();
-
-        if (!$category = $collection->getCategory($categoryId)) {
-            throw $this->createNotFoundException();
-        }
-
-        if (!$endpoint = $category->getEndpoint($endpointId)) {
-            throw $this->createNotFoundException();
-        }
-
-        return [
-            'token'    => $token,
-            'endpoint' => $endpoint,
-        ];
-    }
-
-    /**
      * @Route(path="/show-secret/{token}", name="show_secret")
      * @Entity("token", expr="repository.findOneByToken(token)")
      * @IsGranted("TOKEN", subject="token")
