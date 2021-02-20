@@ -118,30 +118,6 @@ class TokenController extends AbstractController
     }
 
     /**
-     * @Route(path="/documentation/{token}/{categoryId}/{endpointId}", name="endpoint")
-     * @Entity("token", expr="repository.findOneByToken(token)")
-     * @IsGranted("TOKEN", subject="token")
-     * @Template
-     */
-    public function endpoint(Token $token, string $categoryId, string $endpointId)
-    {
-        $collection = $this->categoryCollectionReader->read();
-
-        if (!$category = $collection->getCategory($categoryId)) {
-            throw $this->createNotFoundException();
-        }
-
-        if (!$endpoint = $category->getEndpoint($endpointId)) {
-            throw $this->createNotFoundException();
-        }
-
-        return [
-            'token'    => $token,
-            'endpoint' => $endpoint,
-        ];
-    }
-
-    /**
      * @Route(path="/show-secret/{token}", name="show_secret")
      * @Entity("token", expr="repository.findOneByToken(token)")
      * @IsGranted("TOKEN", subject="token")
@@ -154,19 +130,29 @@ class TokenController extends AbstractController
     }
 
     /**
-     * @Route(path="/console/{token}", name="console")
+     * @Route(
+     *     path="/console/{token}/open/{categoryName}/{endpointTitle}",
+     *     name="console",
+     *     defaults={"categoryName" = null, "endpointTitle" = null}
+     * )
      * @Entity("token", expr="repository.findOneByToken(token)")
      * @IsGranted("TOKEN", subject="token")
      * @Template
      */
-    public function console(Request $request, Token $token)
+    public function console(Request $request, Token $token, ?string $categoryName, ?string $endpointTitle)
     {
         $endpoints = $this->extractEndpoints();
 
+        if ($selection = $endpoint = $endpoints[$categoryName][$endpointTitle] ?? null) {
+            $selection             = json_decode($selection, true);
+            $selection['endpoint'] = $endpoint;
+        }
+
         return [
-            'token'     => $token,
-            'form'      => $this->createConsoleForm($request, $endpoints)->createView(),
-            'endpoints' => $endpoints,
+            'token'         => $token,
+            'form'          => $this->createConsoleForm($request, $endpoints, $selection)->createView(),
+            'categoryName'  => $categoryName,
+            'endpointTitle' => $endpointTitle,
         ];
     }
 
@@ -177,7 +163,7 @@ class TokenController extends AbstractController
      */
     public function sign(Request $request, Token $token)
     {
-        $form = $this->createConsoleForm($request, $this->extractEndpoints());
+        $form = $this->createConsoleForm($request, $this->extractEndpoints(), null);
 
         if ($form->isSubmitted() && $form->isValid()) {
             return $this->json([
@@ -220,15 +206,15 @@ class TokenController extends AbstractController
                     ->handleRequest($request);
     }
 
-    private function createConsoleForm(Request $request, array $endpoints) : FormInterface
+    private function createConsoleForm(Request $request, array $endpoints, ?array $selection) : FormInterface
     {
         $methods = ['GET', 'POST', 'PUT', 'DELETE'];
 
         return $this
-            ->createFormBuilder([
+            ->createFormBuilder(array_merge([
                 'method' => 'GET',
                 'uri'    => $this->generateUrl('developer_demo_hello', ['name' => 'Bob'], UrlGeneratorInterface::ABSOLUTE_URL),
-            ], [
+            ], $selection ?? []), [
                 'attr' => [
                     'autocomplete' => 'off',
                 ],
@@ -280,11 +266,19 @@ class TokenController extends AbstractController
                 /** @var EndpointDescription $endpoint */
                 $method = $endpoint->getMethods()[0];
 
-                $endpoints[$category->getName()][$endpoint->getTitle()] = json_encode([
-                    'method'  => $method,
-                    'uri'     => $endpoint->getUri(),
-                    'example' => $endpoint->getRequestFacade()->getFormattedExample($method, true),
-                ]);
+                if ('GET' === $method) {
+                    $endpoints[$category->getName()][$endpoint->getTitle()] = json_encode([
+                        'method' => $method,
+                        'uri'    => $endpoint->getUri().$endpoint->getRequestFacade()->getFormattedExample($method, true),
+                        'body'   => null,
+                    ]);
+                } else {
+                    $endpoints[$category->getName()][$endpoint->getTitle()] = json_encode([
+                        'method' => $method,
+                        'uri'    => $endpoint->getUri(),
+                        'body'   => $endpoint->getRequestFacade()->getFormattedExample($method, true),
+                    ]);
+                }
             }
         }
 

@@ -46,7 +46,7 @@ class PaginedFacade implements FacadeInterface
 
         $facade->totalPages  = 5;
         $facade->currentPage = 2;
-        for ($i = 0; $i < self::ITEMS_PER_PAGE; $i++) {
+        for ($i = 0; $i < 3; $i++) {
             $facade->addEntry(
                 $child::getExample($decorates->getDecorates())
             );

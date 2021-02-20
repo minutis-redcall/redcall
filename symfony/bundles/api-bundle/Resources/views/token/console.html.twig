@@ -41,7 +41,11 @@
     <br/>
 
     <div class="text-center">
-        <a href="{{ path('developer_token_index') }}" class="btn btn-secondary">Back</a>
+        {% if categoryName and endpointTitle %}
+            <a href="{{ path('developer_token_documentation', {token: token}) }}" class="btn btn-secondary">Back</a>
+        {% else %}
+            <a href="{{ path('developer_token_index') }}" class="btn btn-secondary">Back</a>
+        {% endif %}
     </div>
 
 {% endblock %}
@@ -54,28 +58,28 @@
         $('body').on('change', '#{{ form.endpoint.vars.id }}', function () {
             var data = JSON.parse($(this).val());
 
+            $('#{{ form.method.vars.id }} option').removeAttr('selected');
             $('#{{ form.method.vars.id }} option[value=' + data.method + ']').attr('selected', 'selected');
-
-            if ('GET' === data.method) {
-                $('#{{ form.uri.vars.id }}').val(data.uri + data.example);
-                $('#{{ form.body.vars.id }}').val('');
-            } else {
-                $('#{{ form.uri.vars.id }}').val(data.uri);
-                $('#{{ form.body.vars.id }}').val(data.example);
-            }
-
             $('#{{ form.method.vars.id }}').change();
+
+            $('#{{ form.uri.vars.id }}').val(data.uri);
+            $('#{{ form.body.vars.id }}').val(data.body);
+
             $('#result-container').addClass('d-none');
             $('#result').html('');
         });
 
         {# Set body in "readonly" when GET is selected #}
-        $('body').on('change', '#{{ form.method.vars.id }}', function () {
+        var setReadonlyIfGetMethod = function () {
             if ('GET' === $('#{{ form.method.vars.id }} option:selected').text()) {
                 $('#{{ form.body.vars.id }}').attr('readonly', true);
             } else {
                 $('#{{ form.body.vars.id }}').removeAttr('readonly');
             }
+        };
+        $('body').on('change', '#{{ form.method.vars.id }}', setReadonlyIfGetMethod);
+        $(function () {
+            setReadonlyIfGetMethod();
         });
 
         {# Signature update #}

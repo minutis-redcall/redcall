@@ -1,6 +1,8 @@
 <div class="category-collection">
     {% for category in category_collection.categories %}
 
+        <hr/>
+
         <h2>{{ category.name }}</h2>
 
         {% if category.title %}
@@ -18,6 +20,7 @@
         {{ include('@Api/documentation/endpoint_collection.html.twig', {
             token: token,
             endpoint_collection: category.endpoints,
+            category: category,
         }) }}
 
     {% endfor %}
