@@ -4,11 +4,8 @@ namespace App\Repository;
 
 use App\Base\BaseRepository;
 use App\Entity\Answer;
-use App\Entity\Campaign;
 use App\Entity\Message;
 use App\Entity\Volunteer;
-use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\ORMException;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -25,41 +22,6 @@ class AnswerRepository extends BaseRepository
         parent::__construct($registry, Answer::class);
     }
 
-    /**
-     * @param Campaign $campaign
-     *
-     * @return int|null
-     */
-    public function getLastCampaignUpdateTimestamp(Campaign $campaign) : ?int
-    {
-        $lastAnswer = $this->createQueryBuilder('a')
-                           ->join('a.message', 'm')
-                           ->join('m.communication', 'co')
-                           ->join('co.campaign', 'ca')
-                           ->where('ca.id = :campaignId')
-                           ->setParameter('campaignId', $campaign->getId())
-                           ->orderBy('a.updatedAt', 'DESC')
-                           ->setMaxResults(1)
-                           ->getQuery()
-                           ->disableResultCache()
-                           ->getOneOrNullResult();
-
-        if ($lastAnswer) {
-            $this->_em->clear();
-
-            /* @var Answer $lastAnswer */
-            return $lastAnswer->getUpdatedAt()->getTimestamp();
-        }
-
-        return null;
-    }
-
-    /**
-     * @param Message $message
-     *
-     * @throws ORMException
-     * @throws OptimisticLockException
-     */
     public function clearAnswers(Message $message)
     {
         foreach ($message->getAnswers() as $answer) {
@@ -71,13 +33,6 @@ class AnswerRepository extends BaseRepository
         $this->_em->flush();
     }
 
-    /**
-     * @param Message $message
-     * @param array   $choices
-     *
-     * @throws ORMException
-     * @throws OptimisticLockException
-     */
     public function clearChoices(Message $message, array $choices)
     {
         foreach ($choices as $choice) {

@@ -117,6 +117,8 @@
                                 xhr.setRequestHeader('Authorization', 'Bearer {{ token }}');
                                 xhr.setRequestHeader('X-Signature', data.signature);
                             },
+                            data: $('#{{ form.body.vars.id }}').val(),
+                            contentType: 'application/json',
                         }
                     ).done(function (data) {
                         $('#result-status').html('✅');

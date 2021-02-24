@@ -152,6 +152,8 @@ class Token
 
     public function sign(string $method, string $uri, string $body = '') : string
     {
+        $body = trim(str_replace("\r\n", "\n", $body));
+
         return hash_hmac('sha256', sprintf('%s%s%s', $method, $uri, $body), $this->secret);
     }
 
