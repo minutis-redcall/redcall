@@ -13,10 +13,10 @@ This project was initially developed by the BlaBlaCar team as part of a Coding N
 on [that medium blog post](https://medium.com/blablacar-tech/extending-our-principles-outside-blablacar-the-redalert-project-cf50110f0848)
 . It is now maintained and supported by the Minutis team by French Red Cross volunteers.
 
-## Installation
+## Technos
 
-This project runs in PHP >=7.1 with the Symfony4 framework. It requires a MySQL or MariaDB database and Yarn for assets
-management.
+This project runs in PHP 7 with the Symfony 5 framework. It requires a MySQL or MariaDB database and Yarn for assets
+management. Frontend is built with jQuery 3 and Bootstrap 3. In production, this project runs on Cloud App Engine with a MariaDB instance on Cloud SQL. 
 
 ### Development
 
