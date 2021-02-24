@@ -21,4 +21,19 @@ class CategoryTransformer extends BaseTransformer
 
         return $facade;
     }
+
+    public function reconstruct(FacadeInterface $facade, $object = null)
+    {
+        /** @var CategoryFacade $facade */
+
+        $category = $object ?? new Category();
+        $category->setExternalId($facade->getExternalId());
+        $category->setName($facade->getName());
+
+        if ($facade->getPriority()) {
+            $category->setPriority($facade->getPriority());
+        }
+
+        return $category;
+    }
 }

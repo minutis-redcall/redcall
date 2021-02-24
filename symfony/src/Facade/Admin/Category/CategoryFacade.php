@@ -38,7 +38,7 @@ class CategoryFacade implements FacadeInterface
      *
      * @Assert\Range(min = 0, max = 1000)
      *
-     * @var int
+     * @var int|null
      */
     private $priority = 500;
 

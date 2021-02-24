@@ -6,5 +6,5 @@ interface TransformerInterface
 {
     public function expose($object) : FacadeInterface;
 
-    public function reconstruct(FacadeInterface $facade);
+    public function reconstruct(FacadeInterface $facade, $object = null);
 }

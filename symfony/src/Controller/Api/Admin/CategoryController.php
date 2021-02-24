@@ -9,6 +9,7 @@ use App\Manager\CategoryManager;
 use App\Transformer\Admin\CategoryTransformer;
 use Bundles\ApiBundle\Annotation\Endpoint;
 use Bundles\ApiBundle\Annotation\Facade;
+use Bundles\ApiBundle\Model\Facade\Http\HttpCreatedFacade;
 use Bundles\ApiBundle\Model\Facade\QueryBuilderFacade;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -66,8 +67,22 @@ class CategoryController extends AbstractController
         });
     }
 
-    public function create()
+    /**
+     * Create a new badge category.
+     *
+     * @Endpoint(
+     *   priority = 10,
+     *   request  = @Facade(class     = CategoryFacade::class),
+     *   response = @Facade(class     = HttpCreatedFacade::class)
+     * )
+     * @Route(name="create", methods={"POST"})
+     */
+    public function create(CategoryFacade $facade)
     {
+        $category = $this->categoryTransformer->reconstruct($facade);
+
+        // category exists
+        //
 
     }
 
