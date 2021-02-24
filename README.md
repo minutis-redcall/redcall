@@ -16,9 +16,9 @@ on [that medium blog post](https://medium.com/blablacar-tech/extending-our-princ
 ## Technos
 
 This project runs in PHP 7 with the Symfony 5 framework. It requires a MySQL or MariaDB database and Yarn for assets
-management. Frontend is built with jQuery 3 and Bootstrap 3. In production, this project runs on Cloud App Engine with a MariaDB instance on Cloud SQL. 
+management. Frontend is built with jQuery 3 and Bootstrap 3. 
 
-### Development
+In production, this project runs on Cloud App Engine with a MariaDB instance on Cloud SQL. 
 
 This project runs on Docker for development purposes. Many tools have been developed to disable or mock external
 providers, so you can get ready to work in a few seconds.
