@@ -177,8 +177,30 @@ class TokenController extends AbstractController
         }
 
         return $this->json([
-            'success' => false,
+            'success'    => false,
+            'violations' => $this->getErrorMessages($form),
         ]);
+    }
+
+    private function getErrorMessages(FormInterface $form)
+    {
+        $errors = [];
+
+        foreach ($form->getErrors() as $key => $error) {
+            if ($form->isRoot()) {
+                $errors['#'][] = $error->getMessage();
+            } else {
+                $errors[] = $error->getMessage();
+            }
+        }
+
+        foreach ($form->all() as $child) {
+            if (!$child->isValid()) {
+                $errors[$child->getName()] = $this->getErrorMessages($child);
+            }
+        }
+
+        return $errors;
     }
 
     private function createTokenCreationForm(Request $request) : FormInterface
@@ -210,7 +232,7 @@ class TokenController extends AbstractController
     {
         $methods = ['GET', 'POST', 'PUT', 'DELETE'];
 
-        return $this
+        $builder = $this
             ->createFormBuilder(array_merge([
                 'method' => 'GET',
                 'uri'    => $this->generateUrl('developer_demo_hello', ['name' => 'Bob'], UrlGeneratorInterface::ABSOLUTE_URL),
@@ -251,8 +273,14 @@ class TokenController extends AbstractController
                     'rows'     => 6,
                     'readonly' => true,
                 ],
+                'trim'     => false,
             ])
-            ->add('run', SubmitType::class)
+            ->add('run', SubmitType::class);
+
+        // Disable choice mapping
+        $builder->get('endpoint')->resetViewTransformers();
+
+        return $builder
             ->getForm()
             ->handleRequest($request);
     }

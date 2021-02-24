@@ -9,10 +9,11 @@ use App\Manager\CategoryManager;
 use App\Transformer\Admin\CategoryTransformer;
 use Bundles\ApiBundle\Annotation\Endpoint;
 use Bundles\ApiBundle\Annotation\Facade;
+use Bundles\ApiBundle\Base\BaseController;
 use Bundles\ApiBundle\Model\Facade\Http\HttpCreatedFacade;
 use Bundles\ApiBundle\Model\Facade\QueryBuilderFacade;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -27,7 +28,7 @@ use Symfony\Component\Routing\Annotation\Route;
  * @Route("/api/admin/category", name="api_admin_category_")
  * @IsGranted("ROLE_ADMIN")
  */
-class CategoryController extends AbstractController
+class CategoryController extends BaseController
 {
     /**
      * @var CategoryManager
@@ -81,9 +82,13 @@ class CategoryController extends AbstractController
     {
         $category = $this->categoryTransformer->reconstruct($facade);
 
-        // category exists
-        //
+        $this->validate($category, [
+            new UniqueEntity('externalId'),
+        ]);
 
+        $this->categoryManager->save($category);
+
+        return new HttpCreatedFacade();
     }
 
     public function read()

@@ -27,8 +27,14 @@ class CategoryTransformer extends BaseTransformer
         /** @var CategoryFacade $facade */
 
         $category = $object ?? new Category();
-        $category->setExternalId($facade->getExternalId());
-        $category->setName($facade->getName());
+
+        if ($facade->getExternalId()) {
+            $category->setExternalId($facade->getExternalId());
+        }
+
+        if ($facade->getName()) {
+            $category->setName($facade->getName());
+        }
 
         if ($facade->getPriority()) {
             $category->setPriority($facade->getPriority());

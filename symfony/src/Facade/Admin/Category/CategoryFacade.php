@@ -13,7 +13,7 @@ class CategoryFacade implements FacadeInterface
      * An unique identifier for the category.
      * A random UUID or the same identifier as in your own application.
      *
-     * @Assert\NotBlank
+     * @Assert\NotBlank(groups={"create"})
      * @Assert\Length(max = 64)
      *
      * @var string
@@ -24,7 +24,7 @@ class CategoryFacade implements FacadeInterface
      * A name for the given category.
      * Name should be human readable as it may be used in user interfaces.
      *
-     * @Assert\NotBlank
+     * @Assert\NotBlank(groups={"create"})
      * @Assert\Length(max = 64)
      *
      * @var string
