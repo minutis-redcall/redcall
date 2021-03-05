@@ -232,6 +232,11 @@ class VolunteerManager
         return $this->volunteerRepository->getVolunteerCountInStructuresHavingBadges($structureIds, $badgeIds);
     }
 
+    public function getVolunteerCountHavingBadgesQueryBuilder(array $badgeIds) : int
+    {
+        return $this->volunteerRepository->getVolunteerCountHavingBadgesQueryBuilder($badgeIds);
+    }
+
     public function getVolunteerGlobalCounts(array $structureIds) : int
     {
         return $this->volunteerRepository->getVolunteerGlobalCounts($structureIds);

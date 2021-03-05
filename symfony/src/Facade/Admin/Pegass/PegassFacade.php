@@ -64,7 +64,7 @@ class PegassFacade implements FacadeInterface
 
     static public function getExample(Facade $decorates = null) : FacadeInterface
     {
-        $facade = new self;
+        $facade = new static;
 
         $facade->type             = Pegass::TYPE_VOLUNTEER;
         $facade->identifier       = '00000342302R';

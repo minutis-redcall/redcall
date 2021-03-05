@@ -17,7 +17,7 @@ class CategoryFacade implements FacadeInterface
      *
      * @var string
      */
-    private $externalId;
+    protected $externalId;
 
     /**
      * A name for the given category.
@@ -28,7 +28,7 @@ class CategoryFacade implements FacadeInterface
      *
      * @var string
      */
-    private $name;
+    protected $name;
 
     /**
      * The category rendering priority.
@@ -39,15 +39,15 @@ class CategoryFacade implements FacadeInterface
      *
      * @var int|null
      */
-    private $priority = 500;
+    protected $priority = 500;
 
     static public function getExample(Facade $decorates = null) : FacadeInterface
     {
-        $facade = new self;
+        $facade = new static;
 
-        $facade->externalId = 'test';
-        $facade->name       = 'Demo';
-        $facade->priority   = 20;
+        $facade->externalId = 'vehicles';
+        $facade->name       = 'Vehicles';
+        $facade->priority   = 42;
 
         return $facade;
     }

@@ -38,7 +38,7 @@ class ViolationFacade implements FacadeInterface
 
     static public function getExample(Facade $decorates = null) : FacadeInterface
     {
-        return new self(
+        return new static(
             new ConstraintViolation('The amount should be greater than 1', null, [], 'product', 'price', -5)
         );
     }

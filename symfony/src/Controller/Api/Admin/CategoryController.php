@@ -4,9 +4,13 @@ namespace App\Controller\Api\Admin;
 
 use App\Entity\Badge;
 use App\Entity\Category;
+use App\Facade\Admin\Badge\BadgeReadFacade;
 use App\Facade\Admin\Category\CategoryFacade;
 use App\Facade\Admin\Category\CategoryFiltersFacade;
+use App\Facade\PageFilterFacade;
+use App\Manager\BadgeManager;
 use App\Manager\CategoryManager;
+use App\Transformer\Admin\BadgeTransformer;
 use App\Transformer\Admin\CategoryTransformer;
 use Bundles\ApiBundle\Annotation\Endpoint;
 use Bundles\ApiBundle\Annotation\Facade;
@@ -39,14 +43,29 @@ class CategoryController extends BaseController
     private $categoryManager;
 
     /**
+     * @var BadgeManager
+     */
+    private $badgeManager;
+
+    /**
      * @var CategoryTransformer
      */
     private $categoryTransformer;
 
-    public function __construct(CategoryManager $categoryManager, CategoryTransformer $categoryTransformer)
+    /**
+     * @var BadgeTransformer
+     */
+    private $badgeTransformer;
+
+    public function __construct(CategoryManager $categoryManager,
+        BadgeManager $badgeManager,
+        CategoryTransformer $categoryTransformer,
+        BadgeTransformer $badgeTransformer)
     {
         $this->categoryManager     = $categoryManager;
+        $this->badgeManager        = $badgeManager;
         $this->categoryTransformer = $categoryTransformer;
+        $this->badgeTransformer    = $badgeTransformer;
     }
 
     /**
@@ -102,7 +121,7 @@ class CategoryController extends BaseController
      *   response = @Facade(class = CategoryFacade::class)
      * )
      * @Route(name="read", path="/{categoryId}", methods={"GET"})
-     * @Entity("category", expr="repository.find(categoryId)")
+     * @Entity("category", expr="repository.findOneByExternalId(categoryId)")
      * @IsGranted("CATEGORY", subject="category")
      */
     public function read(Category $category)
@@ -119,7 +138,7 @@ class CategoryController extends BaseController
      *   response = @Facade(class = HttpNoContentFacade::class)
      * )
      * @Route(name="update", path="/{categoryId}", methods={"PUT"})
-     * @Entity("category", expr="repository.find(categoryId)")
+     * @Entity("category", expr="repository.findOneByExternalId(categoryId)")
      * @IsGranted("CATEGORY", subject="category")
      */
     public function update(Category $category, CategoryFacade $facade)
@@ -143,7 +162,7 @@ class CategoryController extends BaseController
      *   response = @Facade(class = HttpNoContentFacade::class)
      * )
      * @Route(name="delete", path="/{categoryId}", methods={"DELETE"})
-     * @Entity("category", expr="repository.find(categoryId)")
+     * @Entity("category", expr="repository.findOneByExternalId(categoryId)")
      * @IsGranted("CATEGORY", subject="category")
      */
     public function delete(Category $category)
@@ -153,10 +172,26 @@ class CategoryController extends BaseController
         return new HttpNoContentFacade();
     }
 
-
-    public function badgeRecords(Category $category)
+    /**
+     * List badges in a given category.
+     *
+     * @Endpoint(
+     *   priority = 15,
+     *   request  = @Facade(class     = PageFilterFacade::class),
+     *   response = @Facade(class     = QueryBuilderFacade::class,
+     *                      decorates = @Facade(class = BadgeReadFacade::class))
+     * )
+     * @Route(name="badge_records", path="/badges/{categoryId}", methods={"GET"})
+     * @Entity("category", expr="repository.findOneByExternalId(categoryId)")
+     * @IsGranted("CATEGORY", subject="category")
+     */
+    public function badgeRecords(Category $category, PageFilterFacade $page)
     {
+        $qb = $this->badgeManager->getBadgesInCategoryQueryBuilder($category);
 
+        return new QueryBuilderFacade($qb, $page->getPage(), function (Badge $badge) {
+            return $this->badgeTransformer->expose($badge);
+        });
     }
 
     public function badgeAdd(Category $category, Badge $badge)

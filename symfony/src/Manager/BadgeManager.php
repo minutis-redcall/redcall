@@ -3,6 +3,7 @@
 namespace App\Manager;
 
 use App\Entity\Badge;
+use App\Entity\Category;
 use App\Repository\BadgeRepository;
 use Doctrine\ORM\QueryBuilder;
 use Pagerfanta\Pagerfanta;
@@ -89,5 +90,10 @@ class BadgeManager
             ->getPublicBadgesQueryBuilder()
             ->getQuery()
             ->getResult();
+    }
+
+    public function getBadgesInCategoryQueryBuilder(Category $category) : QueryBuilder
+    {
+        return $this->badgeRepository->getBadgesInCategoryQueryBuilder($category);
     }
 }

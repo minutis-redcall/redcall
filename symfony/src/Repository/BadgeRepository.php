@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Base\BaseRepository;
 use App\Entity\Badge;
+use App\Entity\Category;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
@@ -99,6 +100,16 @@ class BadgeRepository extends BaseRepository
     {
         return $this->getSearchInBadgesQueryBuilder(null)
                     ->andWhere('b.visibility = true');
+    }
+
+    public function getBadgesInCategoryQueryBuilder(Category $category) : QueryBuilder
+    {
+        return $this->createQueryBuilder('b')
+                    ->andWhere('b.visibility = true')
+                    ->andWhere('b.synonym IS NULL')
+                    ->join('b.category', 'c')
+                    ->andWhere('c.id = :category')
+                    ->setParameter('category', $category);
     }
 
     private function addSearchCriteria(QueryBuilder $qb, string $criteria)

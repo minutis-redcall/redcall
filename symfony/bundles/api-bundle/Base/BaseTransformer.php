@@ -5,9 +5,14 @@ namespace Bundles\ApiBundle\Base;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
 use Bundles\ApiBundle\Contracts\TransformerInterface;
 
-class BaseTransformer implements TransformerInterface
+abstract class BaseTransformer extends BaseService implements TransformerInterface
 {
-    public function expose($object) : FacadeInterface
+    public static function getSubscribedServices()
+    {
+        return [];
+    }
+
+    public function expose($object) : ?FacadeInterface
     {
         throw new \RuntimeException('Not implemented');
     }

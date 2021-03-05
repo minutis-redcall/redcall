@@ -19,7 +19,7 @@ class HelloRequestFacade implements FacadeInterface
 
     static public function getExample(Facade $decorates = null) : FacadeInterface
     {
-        $facade       = new self;
+        $facade       = new static;
         $facade->name = 'Bob';
 
         return $facade;

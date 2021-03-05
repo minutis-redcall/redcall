@@ -37,7 +37,7 @@ class ErrorFacade implements FacadeInterface
 
     static public function getExample(Facade $decorates = null) : FacadeInterface
     {
-        $facade = new self;
+        $facade = new static;
 
         $facade->code    = '1234';
         $facade->message = 'Sample message';

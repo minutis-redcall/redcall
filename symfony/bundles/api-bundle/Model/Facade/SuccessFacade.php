@@ -27,7 +27,7 @@ class SuccessFacade implements FacadeInterface
             throw new \LogicException('This facade decorates another facade');
         }
 
-        $facade = new self;
+        $facade = new static;
 
         $child           = $decorates->getClass();
         $facade->payload = $child::getExample($decorates->getDecorates());

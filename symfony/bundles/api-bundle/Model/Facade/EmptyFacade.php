@@ -9,6 +9,6 @@ class EmptyFacade implements FacadeInterface
 {
     static public function getExample(Facade $decorates = null) : FacadeInterface
     {
-        return new self;
+        return new static;
     }
 }
