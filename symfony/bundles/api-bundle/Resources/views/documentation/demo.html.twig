@@ -1,6 +1,10 @@
 {% set method = endpoint.methods[0] %}
     {% if method == 'GET' %}
-        {% set uri = endpoint.uri ~ '?' ~ endpoint.requestFacade.example|http_build_query %}
+        {% if endpoint.requestFacade.example %}
+            {% set uri = endpoint.uri ~ '?' ~ endpoint.requestFacade.example|http_build_query %}
+        {% else %}
+            {% set uri = endpoint.uri %}
+        {% endif %}
         <textarea rows="5" style="width: 100%;" readonly>
 curl "{{ uri }}" \
   -H 'Authorization: Bearer {{ token }}' \
