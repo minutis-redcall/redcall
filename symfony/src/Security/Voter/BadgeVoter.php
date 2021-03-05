@@ -2,12 +2,12 @@
 
 namespace App\Security\Voter;
 
-use App\Entity\Category;
+use App\Entity\Badge;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 use Symfony\Component\Security\Core\Security;
 
-class CategoryVoter extends Voter
+class BadgeVoter extends Voter
 {
     /**
      * @var Security
@@ -24,7 +24,7 @@ class CategoryVoter extends Voter
      */
     protected function supports($attribute, $subject)
     {
-        if (!$subject instanceof Category) {
+        if (!$subject instanceof Badge) {
             return false;
         }
 

@@ -2,6 +2,7 @@
 
 namespace App\Controller\Api\Admin;
 
+use App\Entity\Badge;
 use App\Entity\Category;
 use App\Facade\Admin\Category\CategoryFacade;
 use App\Facade\Admin\Category\CategoryFiltersFacade;
@@ -11,7 +12,9 @@ use Bundles\ApiBundle\Annotation\Endpoint;
 use Bundles\ApiBundle\Annotation\Facade;
 use Bundles\ApiBundle\Base\BaseController;
 use Bundles\ApiBundle\Model\Facade\Http\HttpCreatedFacade;
+use Bundles\ApiBundle\Model\Facade\Http\HttpNoContentFacade;
 use Bundles\ApiBundle\Model\Facade\QueryBuilderFacade;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Routing\Annotation\Route;
@@ -72,7 +75,7 @@ class CategoryController extends BaseController
      * Create a new badge category.
      *
      * @Endpoint(
-     *   priority = 10,
+     *   priority = 11,
      *   request  = @Facade(class     = CategoryFacade::class),
      *   response = @Facade(class     = HttpCreatedFacade::class)
      * )
@@ -91,32 +94,77 @@ class CategoryController extends BaseController
         return new HttpCreatedFacade();
     }
 
-    public function read()
+    /**
+     * Get a badge category.
+     *
+     * @Endpoint(
+     *   priority = 12,
+     *   response = @Facade(class = CategoryFacade::class)
+     * )
+     * @Route(name="read", path="/{categoryId}", methods={"GET"})
+     * @Entity("category", expr="repository.find(categoryId)")
+     * @IsGranted("CATEGORY", subject="category")
+     */
+    public function read(Category $category)
     {
-
+        return $this->categoryTransformer->expose($category);
     }
 
-    public function update(Category $category)
+    /**
+     * Update a badge category.
+     *
+     * @Endpoint(
+     *   priority = 13,
+     *   request  = @Facade(class = CategoryFacade::class),
+     *   response = @Facade(class = HttpNoContentFacade::class)
+     * )
+     * @Route(name="update", path="/{categoryId}", methods={"PUT"})
+     * @Entity("category", expr="repository.find(categoryId)")
+     * @IsGranted("CATEGORY", subject="category")
+     */
+    public function update(Category $category, CategoryFacade $facade)
     {
+        $category = $this->categoryTransformer->reconstruct($facade, $category);
 
+        $this->validate($category, [
+            new UniqueEntity('externalId'),
+        ]);
+
+        $this->categoryManager->save($category);
+
+        return new HttpNoContentFacade();
     }
 
+    /**
+     * Delete a badge category.
+     *
+     * @Endpoint(
+     *   priority = 14,
+     *   response = @Facade(class = HttpNoContentFacade::class)
+     * )
+     * @Route(name="delete", path="/{categoryId}", methods={"DELETE"})
+     * @Entity("category", expr="repository.find(categoryId)")
+     * @IsGranted("CATEGORY", subject="category")
+     */
     public function delete(Category $category)
     {
+        $this->categoryManager->remove($category);
 
+        return new HttpNoContentFacade();
     }
+
 
     public function badgeRecords(Category $category)
     {
 
     }
 
-    public function badgeAdd(Category $category)
+    public function badgeAdd(Category $category, Badge $badge)
     {
 
     }
 
-    public function badgeRemove(Category $category)
+    public function badgeRemove(Category $category, Badge $badge)
     {
 
     }

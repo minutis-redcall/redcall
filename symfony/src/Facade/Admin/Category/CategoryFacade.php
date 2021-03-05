@@ -4,7 +4,6 @@ namespace App\Facade\Admin\Category;
 
 use Bundles\ApiBundle\Annotation\Facade;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
-use Ramsey\Uuid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class CategoryFacade implements FacadeInterface
@@ -46,8 +45,8 @@ class CategoryFacade implements FacadeInterface
     {
         $facade = new self;
 
-        $facade->externalId = Uuid::uuid4();
-        $facade->name       = 'Vehicles';
+        $facade->externalId = 'test';
+        $facade->name       = 'Demo';
         $facade->priority   = 20;
 
         return $facade;
