@@ -21,7 +21,7 @@ class HelloResponseFacade implements FacadeInterface
 
     static public function getExample(Facade $decorates = null) : FacadeInterface
     {
-        $facade = new self('Bob');
+        $facade = new static('Bob');
 
         return $facade;
     }

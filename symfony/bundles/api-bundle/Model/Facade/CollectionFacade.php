@@ -32,7 +32,7 @@ class CollectionFacade extends \ArrayObject implements FacadeInterface
         $array[] = $child::getExample($decorates->getDecorates());
         $array[] = $child::getExample($decorates->getDecorates());
 
-        return new self($array);
+        return new static($array);
     }
 
     public function offsetSet($key, $value)

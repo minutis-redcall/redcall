@@ -127,9 +127,21 @@
                         $('#result-status').html('❌');
                         changeResult(xhr.responseText);
                     });
+                } else {
+                    $('#result-status').html('❌');
+                    var response = "Violations:\n\n";
+                    $.each(data.violations, function (index) {
+                        response += index + "\n";
+                        $.each(this, function () {
+                            response += '- ' + this + "\n";
+                        });
+                        response += "\n";
+                    });
+
+                    $('#result-container').removeClass('d-none');
+                    $('#result').html(response);
                 }
             });
-
         });
 
     </script>

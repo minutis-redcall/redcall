@@ -52,7 +52,7 @@ class ThrowableFacade implements FacadeInterface
         try {
             throw new \Exception('This is a sample exception');
         } catch (\Exception $e) {
-            return new self($e);
+            return new static($e);
         }
     }
 

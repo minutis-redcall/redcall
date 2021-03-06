@@ -80,8 +80,8 @@
                 ✏️ {{ 'base.button.update'|trans }}
             </a>
 
-            {% if badge.canBeRemoved %}
-                <div class="float-right">
+            <div class="float-right">
+                {% if badge.canBeRemoved %}
                     <a href="#"
                        class="btn btn-small btn-secondary delete-badge"
                        style="border: 1px solid red!important;"
@@ -90,8 +90,13 @@
                        data-uri="{{ path('admin_badge_remove', {id: badge.id, token: csrf_token('token')}) }}">
                         ❌
                     </a>
+                {% endif %}
+                <div class="float-control"></div>
+                <div class="float-right">
+                    <span style="color:lightgray">ID: {{ badge.externalId }}</span>
                 </div>
-            {% endif %}
+            </div>
+
         </div>
 
     </div>

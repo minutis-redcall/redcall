@@ -9,7 +9,7 @@ use Bundles\PegassCrawlerBundle\Entity\Pegass;
 
 class PegassTransformer extends BaseTransformer
 {
-    public function expose($object) : FacadeInterface
+    public function expose($object) : ?FacadeInterface
     {
         /** @var Pegass $pegass */
         $pegass = $object;

@@ -35,7 +35,7 @@ class PegassFiltersFacade implements FacadeInterface
 
     static public function getExample(Facade $decorates = null) : FacadeInterface
     {
-        $facade = new self;
+        $facade = new static;
 
         $facade->page = 1;
         $facade->type = Pegass::TYPE_VOLUNTEER;

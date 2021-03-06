@@ -2,48 +2,27 @@
 
 namespace App\Facade\Admin\Badge;
 
+use App\Facade\PageFilterFacade;
 use Bundles\ApiBundle\Annotation\Facade;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
-use Symfony\Component\Validator\Constraints as Assert;
 
-class BadgeFiltersFacade implements FacadeInterface
+class BadgeFiltersFacade extends PageFilterFacade
 {
-    /**
-     * Page number to request
-     *
-     * @Assert\Range(min = 1)
-     *
-     * @var int
-     */
-    private $page = 1;
-
     /**
      * An optional search criteria in order to seek for a badge by name
      *
      * @var string|null
      */
-    private $criteria;
+    protected $criteria;
 
     static public function getExample(Facade $decorates = null) : FacadeInterface
     {
-        $facade = new self;
+        /** @var self $facade */
+        $facade = parent::getExample($decorates);
 
-        $facade->page     = 1;
         $facade->criteria = 'urgen';
 
         return $facade;
-    }
-
-    public function getPage() : int
-    {
-        return $this->page;
-    }
-
-    public function setPage(int $page) : BadgeFiltersFacade
-    {
-        $this->page = $page;
-
-        return $this;
     }
 
     public function getCriteria() : ?string

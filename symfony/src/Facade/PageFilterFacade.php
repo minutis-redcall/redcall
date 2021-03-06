@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Facade\Admin\Category;
+namespace App\Facade;
 
 use Bundles\ApiBundle\Annotation\Facade;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class CategoryFiltersFacade implements FacadeInterface
+class PageFilterFacade implements FacadeInterface
 {
     /**
      * Page number to request
@@ -16,13 +16,6 @@ class CategoryFiltersFacade implements FacadeInterface
      * @var int
      */
     protected $page = 1;
-
-    /**
-     * An optional search criteria in order to seek for a category by name
-     *
-     * @var string|null
-     */
-    protected $criteria;
 
     static public function getExample(Facade $decorates = null) : FacadeInterface
     {
@@ -38,21 +31,9 @@ class CategoryFiltersFacade implements FacadeInterface
         return $this->page;
     }
 
-    public function setPage(int $page) : CategoryFiltersFacade
+    public function setPage(int $page) : PageFilterFacade
     {
         $this->page = $page;
-
-        return $this;
-    }
-
-    public function getCriteria() : ?string
-    {
-        return $this->criteria;
-    }
-
-    public function setCriteria(?string $criteria) : CategoryFiltersFacade
-    {
-        $this->criteria = $criteria;
 
         return $this;
     }

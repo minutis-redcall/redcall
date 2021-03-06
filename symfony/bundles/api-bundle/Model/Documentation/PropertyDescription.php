@@ -69,6 +69,11 @@ class PropertyDescription
         return $this->types;
     }
 
+    public function setTypes(array $types)
+    {
+        $this->types = $types;
+    }
+
     public function addType(TypeDescription $type) : PropertyDescription
     {
         $this->types[] = $type;

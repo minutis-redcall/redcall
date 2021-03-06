@@ -9,10 +9,14 @@ use Bundles\ApiBundle\Contracts\FacadeInterface;
 
 class CategoryTransformer extends BaseTransformer
 {
-    public function expose($object) : FacadeInterface
+    public function expose($object) : ?FacadeInterface
     {
         /** @var Category $category */
         $category = $object;
+
+        if (!$category) {
+            return null;
+        }
 
         $facade = new CategoryFacade();
         $facade->setExternalId($category->getExternalId());

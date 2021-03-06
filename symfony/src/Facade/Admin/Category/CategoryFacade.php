@@ -4,21 +4,21 @@ namespace App\Facade\Admin\Category;
 
 use Bundles\ApiBundle\Annotation\Facade;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
-use Ramsey\Uuid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class CategoryFacade implements FacadeInterface
 {
     /**
      * An unique identifier for the category.
-     * A random UUID or the same identifier as in your own application.
+     *
+     * A random UUID, a name, or the same identifier as in your own application.
      *
      * @Assert\NotBlank(groups={"create"})
      * @Assert\Length(max = 64)
      *
      * @var string
      */
-    private $externalId;
+    protected $externalId;
 
     /**
      * A name for the given category.
@@ -29,7 +29,7 @@ class CategoryFacade implements FacadeInterface
      *
      * @var string
      */
-    private $name;
+    protected $name;
 
     /**
      * The category rendering priority.
@@ -40,15 +40,15 @@ class CategoryFacade implements FacadeInterface
      *
      * @var int|null
      */
-    private $priority = 500;
+    protected $priority = 500;
 
     static public function getExample(Facade $decorates = null) : FacadeInterface
     {
-        $facade = new self;
+        $facade = new static;
 
-        $facade->externalId = Uuid::uuid4();
+        $facade->externalId = 'vehicles';
         $facade->name       = 'Vehicles';
-        $facade->priority   = 20;
+        $facade->priority   = 42;
 
         return $facade;
     }

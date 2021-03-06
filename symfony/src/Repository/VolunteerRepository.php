@@ -345,17 +345,12 @@ class VolunteerRepository extends BaseRepository
             ->getSingleScalarResult();
     }
 
-    public function getVolunteerListInStructuresHavingBadgesQueryBuilder(array $structureIds,
-        array $badgeIds) : QueryBuilder
+    public function getVolunteerListHavingBadgesQueryBuilder(array $badgeIds) : QueryBuilder
     {
         return $this
             ->createQueryBuilder('v')
             ->select('DISTINCT v.id')
             ->where('v.enabled = true')
-            ->join('v.structures', 's')
-            ->andWhere('s.enabled = true')
-            ->andWhere('s.id IN (:structure_ids)')
-            ->setParameter('structure_ids', $structureIds)
             ->join('v.badges', 'b')
             ->leftJoin('b.synonym', 'x')
             ->leftJoin('b.parent', 'p1')
@@ -373,11 +368,30 @@ class VolunteerRepository extends BaseRepository
             ->setParameter('badge_ids', $badgeIds);
     }
 
+    public function getVolunteerListInStructuresHavingBadgesQueryBuilder(array $structureIds,
+        array $badgeIds) : QueryBuilder
+    {
+        return $this
+            ->getVolunteerListHavingBadgesQueryBuilder($badgeIds)
+            ->join('v.structures', 's')
+            ->andWhere('s.enabled = true')
+            ->andWhere('s.id IN (:structure_ids)')
+            ->setParameter('structure_ids', $structureIds);
+    }
+
     public function getVolunteerListInStructuresHavingBadges(array $structureIds, array $badgeIds) : array
     {
         return $this->getVolunteerListInStructuresHavingBadgesQueryBuilder($structureIds, $badgeIds)
                     ->getQuery()
                     ->getArrayResult();
+    }
+
+    public function getVolunteerCountHavingBadgesQueryBuilder(array $badgeIds) : int
+    {
+        return $this->getVolunteerListHavingBadgesQueryBuilder($badgeIds)
+                    ->select('COUNT(DISTINCT v.id)')
+                    ->getQuery()
+                    ->getSingleScalarResult();
     }
 
     public function getVolunteerCountInStructuresHavingBadges(array $structureIds, array $badgeIds) : int

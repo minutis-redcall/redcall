@@ -297,14 +297,14 @@ class TokenController extends AbstractController
                 if ('GET' === $method) {
                     $endpoints[$category->getName()][$endpoint->getTitle()] = json_encode([
                         'method' => $method,
-                        'uri'    => $endpoint->getUri().$endpoint->getRequestFacade()->getFormattedExample($method, true),
+                        'uri'    => $endpoint->getUri().($endpoint->getRequestFacade() ? $endpoint->getRequestFacade()->getFormattedExample($method, true) : null),
                         'body'   => null,
                     ]);
                 } else {
                     $endpoints[$category->getName()][$endpoint->getTitle()] = json_encode([
                         'method' => $method,
                         'uri'    => $endpoint->getUri(),
-                        'body'   => $endpoint->getRequestFacade()->getFormattedExample($method, true),
+                        'body'   => $endpoint->getRequestFacade() ? $endpoint->getRequestFacade()->getFormattedExample($method, true) : null,
                     ]);
                 }
             }

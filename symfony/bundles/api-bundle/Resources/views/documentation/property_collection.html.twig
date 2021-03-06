@@ -45,6 +45,7 @@
             <td>
                 {% for constraint in property.constraints %}
                     <code>{{ constraint.name }}</code>
+                    <br/>
                     {% if constraint.options %}
                         <ul>
                             {% for key, option in constraint.options %}
