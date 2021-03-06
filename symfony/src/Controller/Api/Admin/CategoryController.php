@@ -4,6 +4,7 @@ namespace App\Controller\Api\Admin;
 
 use App\Entity\Badge;
 use App\Entity\Category;
+use App\Enum\Crud;
 use App\Facade\Admin\Badge\BadgeReadFacade;
 use App\Facade\Admin\Badge\BadgeReferenceCollectionFacade;
 use App\Facade\Admin\Badge\BadgeReferenceFacade;
@@ -208,11 +209,35 @@ class CategoryController extends BaseController
      *   response = @Facade(class     = CollectionFacade::class,
      *                      decorates = @Facade(class = UpdateStatusFacade::class))
      * )
-     * @Route(name="badge_add", path="/badges/{categoryId}", methods={"PUT"})
+     * @Route(name="badge_add", path="/badges/{categoryId}", methods={"POST"})
      * @Entity("category", expr="repository.findOneByExternalId(categoryId)")
      * @IsGranted("CATEGORY", subject="category")
      */
     public function badgeAdd(Category $category, BadgeReferenceCollectionFacade $externalIds)
+    {
+        return $this->badgeAddOrRemove($category, $externalIds, Crud::CREATE());
+    }
+
+    /**
+     * Remove a list of badges from the given category.
+     *
+     * @Endpoint(
+     *   priority = 17,
+     *   request  = @Facade(class     = BadgeReferenceCollectionFacade::class,
+     *                      decorates = @Facade(class = BadgeReferenceFacade::class)),
+     *   response = @Facade(class     = CollectionFacade::class,
+     *                      decorates = @Facade(class = UpdateStatusFacade::class))
+     * )
+     * @Route(name="badge_remove", path="/badges/{categoryId}", methods={"DELETE"})
+     * @Entity("category", expr="repository.findOneByExternalId(categoryId)")
+     * @IsGranted("CATEGORY", subject="category")
+     */
+    public function badgeRemove(Category $category, BadgeReferenceCollectionFacade $externalIds)
+    {
+        return $this->badgeAddOrRemove($category, $externalIds, Crud::DELETE());
+    }
+
+    private function badgeAddOrRemove(Category $category, BadgeReferenceCollectionFacade $externalIds, Crud $action)
     {
         $response = new CollectionFacade();
         $changes  = 0;
@@ -220,14 +245,13 @@ class CategoryController extends BaseController
         foreach ($externalIds->getEntries() as $entry) {
             /** @var BadgeReferenceFacade $entry */
             $badge = $this->badgeManager->findOneByExternalId($entry->getExternalId());
+
             if (null === $badge) {
-                $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Badge does not exist');
-                continue;
+                return new UpdateStatusFacade($entry->getExternalId(), false, 'Badge does not exist');
             }
 
             if (!$this->isGranted('BADGE', $badge)) {
-                $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Access denied');
-                continue;
+                return new UpdateStatusFacade($entry->getExternalId(), false, 'Access denied');
             }
 
             if ($category->getBadges()->contains($badge)) {
@@ -235,8 +259,14 @@ class CategoryController extends BaseController
                 continue;
             }
 
-            $category->addBadge($badge);
+            if (Crud::CREATE()->equals($action)) {
+                $category->addBadge($badge);
+            } else {
+                $category->removeBadge($badge);
+            }
+
             $changes++;
+
             $response[] = new UpdateStatusFacade($entry->getExternalId());
         }
 
@@ -245,10 +275,5 @@ class CategoryController extends BaseController
         }
 
         return $response;
-    }
-
-    public function badgeRemove(Category $category, Badge $badge)
-    {
-
     }
 }

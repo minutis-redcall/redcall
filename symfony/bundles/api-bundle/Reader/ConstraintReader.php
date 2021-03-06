@@ -48,9 +48,15 @@ class ConstraintReader
         // Create options after replacing placeholders by real values
         $options = [];
         foreach ($values as $key => $value) {
+
+            // ---------------------------------------------------------------------
+            // TODO: once App Engine supports PHP 8, this should be changed:
+            //       we need to ignore constraints that have their default value
             if (null === $value || false !== stripos($key, 'message')) {
                 continue;
             }
+            // ---------------------------------------------------------------------
+
             if (is_string($value)) {
                 $options[$this->camelToSpace($key)] = str_replace(
                     array_keys($placeholders),
