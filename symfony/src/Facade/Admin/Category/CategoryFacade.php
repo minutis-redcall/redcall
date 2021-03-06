@@ -10,7 +10,8 @@ class CategoryFacade implements FacadeInterface
 {
     /**
      * An unique identifier for the category.
-     * A random UUID or the same identifier as in your own application.
+     *
+     * A random UUID, a name, or the same identifier as in your own application.
      *
      * @Assert\NotBlank(groups={"create"})
      * @Assert\Length(max = 64)

@@ -5,8 +5,11 @@ namespace App\Controller\Api\Admin;
 use App\Entity\Badge;
 use App\Entity\Category;
 use App\Facade\Admin\Badge\BadgeReadFacade;
+use App\Facade\Admin\Badge\BadgeReferenceCollectionFacade;
+use App\Facade\Admin\Badge\BadgeReferenceFacade;
 use App\Facade\Admin\Category\CategoryFacade;
 use App\Facade\Admin\Category\CategoryFiltersFacade;
+use App\Facade\Generic\UpdateStatusFacade;
 use App\Facade\PageFilterFacade;
 use App\Manager\BadgeManager;
 use App\Manager\CategoryManager;
@@ -15,6 +18,7 @@ use App\Transformer\Admin\CategoryTransformer;
 use Bundles\ApiBundle\Annotation\Endpoint;
 use Bundles\ApiBundle\Annotation\Facade;
 use Bundles\ApiBundle\Base\BaseController;
+use Bundles\ApiBundle\Model\Facade\CollectionFacade;
 use Bundles\ApiBundle\Model\Facade\Http\HttpCreatedFacade;
 use Bundles\ApiBundle\Model\Facade\Http\HttpNoContentFacade;
 use Bundles\ApiBundle\Model\Facade\QueryBuilderFacade;
@@ -194,9 +198,53 @@ class CategoryController extends BaseController
         });
     }
 
-    public function badgeAdd(Category $category, Badge $badge)
+    /**
+     * Add a list of badges in the given category.
+     *
+     * @Endpoint(
+     *   priority = 16,
+     *   request  = @Facade(class     = BadgeReferenceCollectionFacade::class,
+     *                      decorates = @Facade(class = BadgeReferenceFacade::class)),
+     *   response = @Facade(class     = CollectionFacade::class,
+     *                      decorates = @Facade(class = UpdateStatusFacade::class))
+     * )
+     * @Route(name="badge_add", path="/badges/{categoryId}", methods={"PUT"})
+     * @Entity("category", expr="repository.findOneByExternalId(categoryId)")
+     * @IsGranted("CATEGORY", subject="category")
+     */
+    public function badgeAdd(Category $category, BadgeReferenceCollectionFacade $externalIds)
     {
+        $response = new CollectionFacade();
+        $changes  = 0;
 
+        foreach ($externalIds->getEntries() as $entry) {
+            /** @var BadgeReferenceFacade $entry */
+            $badge = $this->badgeManager->findOneByExternalId($entry->getExternalId());
+            if (null === $badge) {
+                $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Badge does not exist');
+                continue;
+            }
+
+            if (!$this->isGranted('BADGE', $badge)) {
+                $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Access denied');
+                continue;
+            }
+
+            if ($category->getBadges()->contains($badge)) {
+                $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Category already contains that badge');
+                continue;
+            }
+
+            $category->addBadge($badge);
+            $changes++;
+            $response[] = new UpdateStatusFacade($entry->getExternalId());
+        }
+
+        if ($changes) {
+            $this->categoryManager->save($category);
+        }
+
+        return $response;
     }
 
     public function badgeRemove(Category $category, Badge $badge)

@@ -48,7 +48,7 @@ class ViolationFacade implements FacadeInterface
         return $this->propertyPath;
     }
 
-    public function getInvalidValue() : ?string
+    public function getInvalidValue()
     {
         return $this->invalidValue;
     }

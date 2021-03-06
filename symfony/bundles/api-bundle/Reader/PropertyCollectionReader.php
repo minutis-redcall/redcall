@@ -5,6 +5,7 @@ namespace Bundles\ApiBundle\Reader;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
 use Bundles\ApiBundle\Model\Documentation\PropertyCollectionDescription;
 use Bundles\ApiBundle\Model\Documentation\PropertyDescription;
+use Bundles\ApiBundle\Model\Documentation\TypeDescription;
 use Bundles\ApiBundle\Model\Facade\CollectionFacade;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Symfony\Component\PropertyInfo\PropertyInfoExtractorInterface;
@@ -51,9 +52,15 @@ class PropertyCollectionReader
             $value               = $accessor->getValue($facade, $property);
 
             if ($value instanceof FacadeInterface) {
-                $propertyDescription->setChildren(
-                    $this->read($value, $propertyDescription)
-                );
+                $children = $this->read($value, $propertyDescription);
+                $propertyDescription->setChildren($children);
+
+                // Transforms a FacadeInterface (object) into an array if that facade is a collection.
+                if ($children->isCollection()) {
+                    $propertyDescription->setTypes([
+                        new TypeDescription('array', false, CollectionFacade::class),
+                    ]);
+                }
             }
 
             $collectionDescription->add($propertyDescription);

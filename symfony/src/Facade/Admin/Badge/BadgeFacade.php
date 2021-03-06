@@ -11,7 +11,7 @@ abstract class BadgeFacade implements FacadeInterface
     /**
      * An unique identifier for the badge.
      *
-     * You can use a random UUID or the same identifier as in your own application.
+     * You can use a random UUID, a name or the same identifier as in your own application.
      *
      * @Assert\NotBlank
      * @Assert\Length(max = 64)

@@ -8,6 +8,7 @@ use Bundles\ApiBundle\Exception\ApiException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
 use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -54,7 +55,7 @@ class FacadeParamConverter implements ParamConverterInterface
                 'json'
             );
         } catch (ExceptionInterface $e) {
-            throw new BadRequestException('Bad request');
+            throw new BadRequestHttpException('Bad request');
         }
 
         $violations = $this->validator->validate($facade);
