@@ -54,7 +54,7 @@
                     Request
                 </a>
             </div>
-            <div id="request-{{ category.id }}-{{ endpoint.id }}" class="collapse">
+            <div id="request-{{ category.id }}-{{ endpoint.id }}" class="collapse show">
                 <div class="card-body">
                     {{ include('@Api/documentation/facade.html.twig', {
                         endpoint: endpoint,
@@ -75,7 +75,7 @@
                     Response
                 </a>
             </div>
-            <div id="response-{{ category.id }}-{{ endpoint.id }}" class="collapse">
+            <div id="response-{{ category.id }}-{{ endpoint.id }}" class="collapse show">
                 <div class="card-body">
                     {{ include('@Api/documentation/facade.html.twig', {
                         endpoint: endpoint,
@@ -87,21 +87,5 @@
         </div>
 
     {% endif %}
-
-    {# Demo #}
-    {# <div class="card"> #}
-    {# <div class="card-header"> #}
-    {# <a href="#demo-{{ category.id }}-{{ endpoint.id }}" class="btn btn-light" data-toggle="collapse" style="width:100%;"> #}
-    {# cURL example #}
-    {# </a> #}
-    {# </div> #}
-    {# <div id="demo-{{ category.id }}-{{ endpoint.id }}" class="collapse"> #}
-    {# <div class="card-body"> #}
-
-    {# {{ include('@Api/documentation/demo.html.twig', {token: token, endpoint: endpoint}) }} #}
-
-    {# </div> #}
-    {# </div> #}
-    {# </div> #}
 
 </div>
