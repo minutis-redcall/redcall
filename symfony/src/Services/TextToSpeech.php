@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Model\TextToSpeechConfig;
 use Google\Cloud\TextToSpeech\V1\AudioConfig;
 use Google\Cloud\TextToSpeech\V1\AudioEncoding;
 use Google\Cloud\TextToSpeech\V1\SynthesisInput;
@@ -15,11 +16,11 @@ class TextToSpeech
      */
     private $client;
 
-    public function textToSpeech(string $text, bool $male) : string
+    public function textToSpeech(TextToSpeechConfig $config, string $text, bool $male) : string
     {
         $voice = (new VoiceSelectionParams())
-            ->setLanguageCode('fr-FR')
-            ->setName(sprintf('fr-FR-Wavenet-%s', $male ? 'D' : 'E'));
+            ->setLanguageCode($config->getLanguageCode())
+            ->setName($config->getVoice($male));
 
         $audioConfig = (new AudioConfig())
             ->setAudioEncoding(AudioEncoding::MP3)

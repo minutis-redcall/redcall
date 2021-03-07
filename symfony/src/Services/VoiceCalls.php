@@ -2,9 +2,13 @@
 
 namespace App\Services;
 
+use App\Entity\Communication;
 use App\Entity\Message;
+use App\Manager\LanguageManager;
 use App\Manager\MediaManager;
 use App\Manager\MessageManager;
+use App\Model\TextToSpeechConfig;
+use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Twilio\TwiML\VoiceResponse;
@@ -37,29 +41,30 @@ class VoiceCalls
     private $messageManager;
 
     /**
-     * @param RouterInterface     $router
-     * @param TranslatorInterface $translator
-     * @param MessageFormatter    $formatter
-     * @param MediaManager        $mediaManager
-     * @param MessageManager      $messageManager
+     * @var LanguageManager
      */
+    private $languageManager;
+
     public function __construct(RouterInterface $router,
         TranslatorInterface $translator,
         MessageFormatter $formatter,
         MediaManager $mediaManager,
-        MessageManager $messageManager)
+        MessageManager $messageManager,
+        LanguageManager $languageManager)
     {
-        $this->router         = $router;
-        $this->translator     = $translator;
-        $this->formatter      = $formatter;
-        $this->mediaManager   = $mediaManager;
-        $this->messageManager = $messageManager;
+        $this->router          = $router;
+        $this->translator      = $translator;
+        $this->formatter       = $formatter;
+        $this->mediaManager    = $mediaManager;
+        $this->messageManager  = $messageManager;
+        $this->languageManager = $languageManager;
     }
 
     public function establishCall(string $uuid, Message $message) : VoiceResponse
     {
         return $this->getVoiceResponse(
             $uuid,
+            $this->getTextToSpeechConfig($message->getCommunication()),
             $this->formatter->formatCallContent($message, false),
             $this->formatter->formatCallChoicesContent($message)
         );
@@ -94,31 +99,58 @@ class VoiceCalls
             '%choice%' => $choice->getLabel(),
         ]);
 
-        return $this->getVoiceResponse($uuid, $text);
+        $config = $this->getTextToSpeechConfig($message->getCommunication());
+
+        return $this->getVoiceResponse($uuid, $config, $text);
+    }
+
+    public function prepareMedias(Communication $communication)
+    {
+        $messages = $communication->getMessages();
+        if ($messages instanceof Collection) {
+            $messages = $messages->toArray();
+        }
+        $message = reset($messages);
+
+        $config = $this->getTextToSpeechConfig($communication);
+
+        $this->getMediaUrl($config, $this->formatter->formatCallContent($message, false));
+        if (0 !== $communication->getChoices()->count()) {
+            $this->getMediaUrl($config, $this->formatter->formatCallChoicesContent($message, false), true);
+        }
+    }
+
+    private function getTextToSpeechConfig(Communication $communication) : TextToSpeechConfig
+    {
+        return $this->languageManager->getLanguageConfig($communication)->getTextToSpeech();
     }
 
     private function getInvalidAnswerResponse(string $uuid, Message $message) : VoiceResponse
     {
         return $this->getVoiceResponse(
             $uuid,
+            $this->getTextToSpeechConfig($message->getCommunication()),
             $this->translator->trans('message.call.unknown'),
             $this->formatter->formatCallChoicesContent($message)
         );
     }
 
-    private function getMediaUrl(string $text, bool $male = false) : string
+    private function getMediaUrl(TextToSpeechConfig $config, string $text, bool $male = false) : string
     {
-        $media = $this->mediaManager->createMp3($text, $male);
+        $media = $this->mediaManager->createMp3($config, $text, $male);
 
         return $media->getUrl();
     }
 
-    private function getVoiceResponse(string $uuid, string $text, string $gather = null) : VoiceResponse
+    private function getVoiceResponse(string $uuid,
+        TextToSpeechConfig $config,
+        string $text,
+        string $gather = null) : VoiceResponse
     {
         $response = new VoiceResponse();
 
         $response->play(
-            $this->getMediaUrl($text)
+            $this->getMediaUrl($config, $text)
         );
 
         if ($gather) {
@@ -132,7 +164,7 @@ class VoiceCalls
             ]);
 
             $keypad->play(
-                $this->getMediaUrl($gather, true)
+                $this->getMediaUrl($config, $gather, true)
             );
         }
 

@@ -5,7 +5,8 @@ namespace App\Services;
 use App\Entity\Communication;
 use App\Entity\Message;
 use App\Entity\Volunteer;
-use App\Manager\CountryManager;
+use App\Manager\LanguageManager;
+use App\Manager\PhoneConfigManager;
 use App\Tools\GSM;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -14,9 +15,14 @@ use Twig\Environment;
 class MessageFormatter
 {
     /**
-     * @var CountryManager
+     * @var PhoneConfigManager
      */
-    private $countryManager;
+    private $phoneConfigManager;
+
+    /**
+     * @var LanguageManager
+     */
+    private $languageManager;
 
     /**
      * @var RouterInterface
@@ -33,15 +39,17 @@ class MessageFormatter
      */
     private $templating;
 
-    public function __construct(CountryManager $countryManager,
+    public function __construct(PhoneConfigManager $phoneConfigManager,
+        LanguageManager $languageManager,
         RouterInterface $router,
         TranslatorInterface $translator,
         Environment $templating)
     {
-        $this->countryManager = $countryManager;
-        $this->router         = $router;
-        $this->translator     = $translator;
-        $this->templating     = $templating;
+        $this->phoneConfigManager = $phoneConfigManager;
+        $this->languageManager    = $languageManager;
+        $this->router             = $router;
+        $this->translator         = $translator;
+        $this->templating         = $templating;
     }
 
     public function formatMessageContent(Message $message) : string
@@ -58,18 +66,22 @@ class MessageFormatter
 
     public function formatSMSContent(Message $message) : string
     {
-        if ($country = $this->countryManager->getCountry($message->getVolunteer())) {
-            $this->countryManager->applyContext($country);
+        if ($country = $this->phoneConfigManager->getPhoneConfig($message->getVolunteer())) {
+            $this->phoneConfigManager->applyContext($country);
         }
 
         $contentParts  = [];
         $communication = $message->getCommunication();
 
+        $language = $this->languageManager->getLanguageConfig(
+            $message->getCommunication()
+        );
+
         $contentParts[] = $this->translator->trans('message.sms.announcement', [
-            '%brand%' => mb_strtoupper(getenv('BRAND')),
+            '%brand%' => mb_strtoupper($language->getBrand()),
             '%hours%' => date('H'),
             '%mins%'  => date('i'),
-        ]);
+        ], null, $language->getLocale());
 
         $contentParts[] = $communication->getBody();
 
@@ -94,19 +106,19 @@ class MessageFormatter
 
             if ($country && $country->isInboundSmsEnabled()) {
                 if (!$message->getCommunication()->isMultipleAnswer()) {
-                    $contentParts[] = $this->translator->trans('message.sms.how_to_answer_simple');
+                    $contentParts[] = $this->translator->trans('message.sms.how_to_answer_simple', [], null, $language->getLocale());
                 } else {
-                    $contentParts[] = $this->translator->trans('message.sms.how_to_answer_multiple');
+                    $contentParts[] = $this->translator->trans('message.sms.how_to_answer_multiple', [], null, $language->getLocale());
                 }
             } elseif ($country && $country->isInboundCallEnabled()) {
                 $contentParts[] = $this->translator->trans('message.sms.how_to_answer_url', [
                     '%url%'    => trim(getenv('WEBSITE_URL'), '/').$this->router->generate('message_open', ['code' => $message->getCode()]),
                     '%number%' => $country->getInboundCallNumber(),
-                ]);
+                ], null, $language->getLocale());
             } else {
                 $contentParts[] = $this->translator->trans('message.sms.how_to_answer_url_only', [
                     '%url%' => trim(getenv('WEBSITE_URL'), '/').$this->router->generate('message_open', ['code' => $message->getCode()]),
-                ]);
+                ], null, $language->getLocale());
             }
         }
 
@@ -114,38 +126,43 @@ class MessageFormatter
         if ($message->getCommunication()->hasGeoLocation()) {
             $contentParts[] = $this->translator->trans('message.sms.geo_location', [
                 '%url%' => trim(getenv('WEBSITE_URL'), '/').$this->router->generate('geo_open', ['code' => $message->getCode()]),
-            ]);
+            ], null, $language->getLocale());
         }
 
-        $this->countryManager->restoreContext();
+        $this->phoneConfigManager->restoreContext();
 
         return GSM::enforceGSMAlphabet(implode("\n", $contentParts));
     }
 
     public function formatSimpleSMSContent(Volunteer $volunteer, string $content) : string
     {
-        if ($country = $this->countryManager->getCountry($volunteer)) {
-            $this->countryManager->applyContext($country);
+        if ($country = $this->phoneConfigManager->getPhoneConfig($volunteer)) {
+            $this->phoneConfigManager->applyContext($country);
         }
 
         $contentParts[] = $this->translator->trans('message.sms.announcement', [
-            '%brand%' => mb_strtoupper(getenv('BRAND')),
+            // TODO: choose the right language according to the platform once they will be integrated
+            '%brand%' => mb_strtoupper('Croix-Rouge'),
             '%hours%' => date('H'),
             '%mins%'  => date('i'),
-        ]);
+        ]/*, null, $language->getLocale()*/);
 
         $contentParts[] = $content;
 
-        $this->countryManager->restoreContext();
+        $this->phoneConfigManager->restoreContext();
 
         return GSM::enforceGSMAlphabet(implode("\n", $contentParts));
     }
 
     public function formatCallContent(Message $message, bool $withChoices = true) : string
     {
-        if ($country = $this->countryManager->getCountry($message->getVolunteer())) {
-            $this->countryManager->applyContext($country);
+        if ($country = $this->phoneConfigManager->getPhoneConfig($message->getVolunteer())) {
+            $this->phoneConfigManager->applyContext($country);
         }
+
+        $language = $this->languageManager->getLanguageConfig(
+            $message->getCommunication()
+        );
 
         $communication = $message->getCommunication();
 
@@ -162,10 +179,10 @@ class MessageFormatter
         }
 
         $contentParts[] = $this->translator->trans('message.call.announcement', [
-            '%brand%' => mb_strtoupper(getenv('BRAND')),
+            '%brand%' => mb_strtoupper($language->getBrand()),
             '%hours%' => $hours,
             '%mins%'  => $mins,
-        ]);
+        ], null, $language->getLocale());
 
         $contentParts[] = sprintf('%s.', $communication->getBody());
 
@@ -173,7 +190,7 @@ class MessageFormatter
             $contentParts[] = $this->formatCallChoicesContent($message);
         }
 
-        $this->countryManager->restoreContext();
+        $this->phoneConfigManager->restoreContext();
 
         return implode("\n", $contentParts);
     }
@@ -183,6 +200,10 @@ class MessageFormatter
         $contentParts = [];
 
         $communication = $message->getCommunication();
+
+        $language = $this->languageManager->getLanguageConfig(
+            $message->getCommunication()
+        );
 
         $choices = $communication->getChoices();
         if (is_object($choices)) {
@@ -194,11 +215,11 @@ class MessageFormatter
                 $contentParts[] = $this->translator->trans('message.call.choices', [
                     '%answer%' => $choice->getLabel(),
                     '%code%'   => $choice->getCode(),
-                ]);
+                ], null, $language->getLocale());
             }
         }
 
-        $contentParts[] = $this->translator->trans('message.call.repeat');
+        $contentParts[] = $this->translator->trans('message.call.repeat', [], null, $language->getLocale());
 
         return implode("\n", $contentParts);
     }
@@ -214,18 +235,22 @@ class MessageFormatter
             $contentParts[] = '';
         }
 
-        if ($country = $this->countryManager->getCountry($message->getVolunteer())) {
-            $this->countryManager->applyContext($country);
+        if ($country = $this->phoneConfigManager->getPhoneConfig($message->getVolunteer())) {
+            $this->phoneConfigManager->applyContext($country);
         }
 
+        $language = $this->languageManager->getLanguageConfig(
+            $message->getCommunication()
+        );
+
         $contentParts[] = $this->translator->trans('message.email.announcement', [
-            '%brand%' => mb_strtoupper(getenv('BRAND')),
+            '%brand%' => mb_strtoupper($language->getBrand()),
             '%day%'   => date('d'),
             '%month%' => date('m'),
             '%year%'  => date('Y'),
             '%hours%' => date('H'),
             '%mins%'  => date('i'),
-        ]);
+        ], null, $language->getLocale());
 
         $contentParts[] = '';
 
@@ -238,7 +263,7 @@ class MessageFormatter
         }
         if ($choices) {
 
-            $contentParts[] = $this->translator->trans('message.email.possible_answers');
+            $contentParts[] = $this->translator->trans('message.email.possible_answers', [], null, $language->getLocale());
             foreach ($choices as $choice) {
                 $contentParts[] = sprintf('%s: %s', $choice->getCode(), $choice->getLabel());
             }
@@ -248,33 +273,38 @@ class MessageFormatter
             if (!$communication->isMultipleAnswer()) {
                 $contentParts[] = $this->translator->trans('message.email.how_to_answer_simple', [
                     '%url%' => $url,
-                ]);
+                ], null, $language->getLocale());
             } else {
                 $contentParts[] = $this->translator->trans('message.email.how_to_answer_multiple', [
                     '%url%' => $url,
-                ]);
+                ], null, $language->getLocale());
             }
             $contentParts[] = '';
         }
 
-        $this->countryManager->restoreContext();
+        $this->phoneConfigManager->restoreContext();
 
         return implode("\n", $contentParts);
     }
 
     public function formatHtmlEmailContent(Message $message) : string
     {
-        if ($country = $this->countryManager->getCountry($message->getVolunteer())) {
-            $this->countryManager->applyContext($country);
+        if ($country = $this->phoneConfigManager->getPhoneConfig($message->getVolunteer())) {
+            $this->phoneConfigManager->applyContext($country);
         }
+
+        $language = $this->languageManager->getLanguageConfig(
+            $message->getCommunication()
+        );
 
         $content = $this->templating->render('message/email.html.twig', [
             'website_url'   => getenv('WEBSITE_URL'),
             'message'       => $message,
             'communication' => $message->getCommunication(),
+            'language'      => $language,
         ]);
 
-        $this->countryManager->restoreContext();
+        $this->phoneConfigManager->restoreContext();
 
         return $content;
     }

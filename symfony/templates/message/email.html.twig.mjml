@@ -23,13 +23,13 @@
                         "@type": "EmailMessage",
                         "potentialAction": {
                             "@type": "ConfirmAction",
-                            "name": "{{ 'message.email.in_app_short_answer'|trans({'%choice%': communication.firstChoice.label}) }}",
+                            "name": "{{ 'message.email.in_app_short_answer'|trans({'%choice%': communication.firstChoice.label}, null, language.locale) }}",
                             "handler": {
                                 "@type": "HttpActionHandler",
                                 "url": "{{ website_url }}{{ path('message_action', {code: message.code, action: communication.firstChoice.code, signature: message.signature}) }}"
                             }
                         },
-                        "description": "{{ 'message.email.in_app_long_answer'|trans({'%choice%': communication.firstChoice.label}) }}"
+                        "description": "{{ 'message.email.in_app_long_answer'|trans({'%choice%': communication.firstChoice.label}, null, language.locale) }}"
                     }
 
                 </script>
@@ -42,9 +42,9 @@
                     "potentialAction": {
                         "@type": "ViewAction",
                         "url": "{{ website_url }}{{ path('message_open', {code: message.code}) }}",
-                        "name": "{{ 'message.email.open_in_redcall'|trans }}"
+                        "name": "{{ 'message.email.open_in_redcall'|trans({}, null, language.locale) }}"
                     },
-                    "description": "{{ 'message.email.open_in_redcall'|trans }}"
+                    "description": "{{ 'message.email.open_in_redcall'|trans({}, null, language.locale) }}"
                 }
 
                 </script>
@@ -60,13 +60,13 @@
             <mj-section background-color="#667385" padding-top="10px;">&nbsp;</mj-section>
             <mj-section background-color="#e30613" padding-right="50px;" padding-left="50px;" padding-top="10px" padding-bottom="10px;">
                 <mj-text color="white">{{ 'message.email.announcement'|trans({
-                        '%brand%': brand|upper,
+                        '%brand%': language.brand|upper,
                         '%day%':'now'|date('d'),
                         '%month%':'now'|date('m'),
                         '%year%':'now'|date('Y'),
                         '%hours%':'now'|date('H'),
                         '%mins%':'now'|date('i'),
-                    }) }}
+                    }, null, language.locale) }}
                 </mj-text>
             </mj-section>
             <mj-section background-color="#667385" padding-right="50px;" padding-left="50px;">
@@ -77,7 +77,7 @@
             </mj-section>
             <mj-raw>{% if communication.choices|length %}</mj-raw>
             <mj-section background-color="white" padding-right="50px;" padding-left="50px;">
-                <mj-text color="black" font-size="12px;" align="center">{{ 'message.email.answer_here'|trans }}</mj-text>
+                <mj-text color="black" font-size="12px;" align="center">{{ 'message.email.answer_here'|trans({}, null, language.locale) }}</mj-text>
                 <mj-column width="100%">
                     <mj-raw>{% for choice in communication.choices %}</mj-raw>
                     <mj-button width="100%" height="35px;" align="center" background-color="e30613" color="white" href="{{ website_url }}{{ path('message_action', {code: message.code, action: choice.code, signature: message.signature}) }}">{{ choice.label }}</mj-button>
@@ -87,7 +87,7 @@
             <mj-raw>{% endif %}</mj-raw>
             <mj-section background-color="white" padding-right="50px;" padding-left="50px;">
                 <mj-text color="black" font-size="14px;">
-                    {{ 'message.email.how_to_answer_free'|trans({'%url%': website_url ~ path('message_open', {code: message.code})})|raw }}
+                    {{ 'message.email.how_to_answer_free'|trans({'%url%': website_url ~ path('message_open', {code: message.code})}, null, language.locale)|raw }}
                 </mj-text>
             </mj-section>
         </mj-section>

@@ -186,7 +186,7 @@ class CategoryController extends BaseController
      *   response = @Facade(class     = QueryBuilderFacade::class,
      *                      decorates = @Facade(class = BadgeReadFacade::class))
      * )
-     * @Route(name="badge_records", path="/badges/{categoryId}", methods={"GET"})
+     * @Route(name="badge_records", path="/badge/{categoryId}", methods={"GET"})
      * @Entity("category", expr="repository.findOneByExternalId(categoryId)")
      * @IsGranted("CATEGORY", subject="category")
      */
@@ -209,7 +209,7 @@ class CategoryController extends BaseController
      *   response = @Facade(class     = CollectionFacade::class,
      *                      decorates = @Facade(class = UpdateStatusFacade::class))
      * )
-     * @Route(name="badge_add", path="/badges/{categoryId}", methods={"POST"})
+     * @Route(name="badge_add", path="/badge/{categoryId}", methods={"POST"})
      * @Entity("category", expr="repository.findOneByExternalId(categoryId)")
      * @IsGranted("CATEGORY", subject="category")
      */
@@ -228,7 +228,7 @@ class CategoryController extends BaseController
      *   response = @Facade(class     = CollectionFacade::class,
      *                      decorates = @Facade(class = UpdateStatusFacade::class))
      * )
-     * @Route(name="badge_remove", path="/badges/{categoryId}", methods={"DELETE"})
+     * @Route(name="badge_remove", path="/badge/{categoryId}", methods={"DELETE"})
      * @Entity("category", expr="repository.findOneByExternalId(categoryId)")
      * @IsGranted("CATEGORY", subject="category")
      */

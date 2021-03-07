@@ -1,42 +1,42 @@
 chart:
   base:
-    back: 'Retour'
-    submit: 'Envoyer'
+    back: Retour
+    submit: Envoyer
+  context:
+    add: 'Ajouter une variable'
+    labels:
+      absolute_date: 'Valeur par défaut'
+      integer: 'Saisir un nombre'
+      relative_date:
+        amount: Valeur
+        unit: Unité
+      string: 'Saisir une valeur'
+    name: 'Nom du champ'
+    relative_date:
+      amount: 'il y a %amount% %unit%'
+      now: maintenant
+      unit_day: jour(s)
+      unit_hour: heure(s)
+      unit_minute: minute(s)
+      unit_month: mois
+      unit_second: seconde(s)
+      unit_week: semaine(s)
+      unit_year: année(s)
+    title: 'Variable #%nbr%'
+    type: 'Type de donnée'
+    types:
+      absolute_date: 'Date absolue'
+      integer: 'Nombre entier'
+      relative_date: 'Date relative'
+      string: 'Chaîne de caractères'
   manage:
     queries: 'Gestion des requêtes'
   query:
+    edit:
+      context: 'Contexte requis par la requête'
+      name: 'Nom de la requête'
+      query: Requête
     new: 'Nouvelle requête'
     table:
-      name: 'Nom'
       date: 'Date de création'
-    edit:
-      name: 'Nom de la requête'
-      query: 'Requête'
-      context: 'Contexte requis par la requête'
-  context:
-    title: 'Variable #%nbr%'
-    name: 'Nom du champ'
-    type: 'Type de donnée'
-    add: 'Ajouter une variable'
-    types:
-      string: 'Chaîne de caractères'
-      integer: 'Nombre entier'
-      relative_date: 'Date relative'
-      absolute_date: 'Date absolue'
-    labels:
-      string: 'Saisir une valeur'
-      integer: 'Saisir un nombre'
-      relative_date:
-        amount: 'Valeur'
-        unit: 'Unité'
-      absolute_date: 'Valeur par défaut'
-    relative_date:
-      amount: 'il y a %amount% %unit%'
-      now: 'maintenant'
-      unit_second: 'seconde(s)'
-      unit_minute: 'minute(s)'
-      unit_hour: 'heure(s)'
-      unit_day: 'jour(s)'
-      unit_week: 'semaine(s)'
-      unit_month: 'mois'
-      unit_year: 'année(s)'
+      name: Nom

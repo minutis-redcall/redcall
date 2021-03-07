@@ -44,6 +44,7 @@ class EmailTriggerType extends AbstractType
                 'required' => false,
             ])
             ->add('audience', AudienceType::class)
+            ->add('language', LanguageType::class)
             ->add('subject', TextType::class, [
                 'label'    => 'form.communication.fields.subject',
                 'required' => false,

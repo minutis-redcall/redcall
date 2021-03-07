@@ -1,0 +1,37 @@
+####################################################################################################################################
+# Useful links:
+#
+# Cloud Text To Speech
+# https://cloud.google.com/text-to-speech/docs/voices
+#
+# ⚠️ The "locale" attribute should never be updated without migrations (field communication.language on the db is tied to it)
+####################################################################################################################################
+parameters:
+  languages:
+    fr: # French
+      localized_name: Français
+      english_name: French
+      locale: fr
+      brand: Croix-Rouge
+      text_to_speech:
+        language_code: 'fr-FR'
+        male_voice: 'fr-FR-Wavenet-D'
+        female_voice: 'fr-FR-Wavenet-E'
+    en: # English
+      localized_name: English
+      english_name: English
+      locale: en
+      brand: Red-Cross
+      text_to_speech:
+        language_code: 'en-US'
+        male_voice: 'en-US-Wavenet-B'
+        female_voice: 'en-US-Wavenet-C'
+    es: # Spanish
+      localized_name: Español
+      english_name: Spanish
+      locale: es
+      brand: Cruz-Roja
+      text_to_speech:
+        language_code: 'es-ES'
+        male_voice: 'es-ES-Wavenet-B'
+        female_voice: 'es-ES-Wavenet-B' # No Wavenet female voice yet

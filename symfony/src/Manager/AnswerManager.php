@@ -23,7 +23,7 @@ class AnswerManager extends BaseService
         return [
             AnswerRepository::class,
             CampaignManager::class,
-            CountryManager::class,
+            PhoneConfigManager::class,
             LoggerInterface::class,
             MessageFormatter::class,
             MessageManager::class,
@@ -36,55 +36,55 @@ class AnswerManager extends BaseService
 
     public function clearAnswers(Message $message)
     {
-        $this->get(AnswerRepository::class)->clearAnswers($message);
+        $this->getAnswerRepository()->clearAnswers($message);
     }
 
     public function clearChoices(Message $message, array $choices)
     {
-        $this->get(AnswerRepository::class)->clearChoices($message, $choices);
+        $this->getAnswerRepository()->clearChoices($message, $choices);
     }
 
     public function save(Answer $answer)
     {
-        $this->get(AnswerRepository::class)->save($answer);
+        $this->getAnswerRepository()->save($answer);
     }
 
     public function getSearchQueryBuilder(string $criteria) : QueryBuilder
     {
-        $this->get(AnswerRepository::class)->getSearchQueryBuilder($criteria);
+        return $this->getAnswerRepository()->getSearchQueryBuilder($criteria);
     }
 
     public function handleSpecialAnswers(string $phoneNumber, string $body)
     {
         if (Stop::isValid($body)) {
-            $volunteer = $this->get(VolunteerManager::class)->findOneByPhoneNumber($phoneNumber);
+            $volunteer = $this - $this->getVolunteerManager()->findOneByPhoneNumber($phoneNumber);
             if (!$volunteer || !$volunteer->isPhoneNumberOptin()) {
                 return;
             }
 
-            $this->get(CampaignManager::class)->contact(
+            $this->getCampaignManager()->contact(
                 $volunteer,
                 Type::SMS(),
-                $this->get(TranslatorInterface::class)->trans('special_answers.title', [
+                $this->getTranslator()->trans('special_answers.title', [
                     '%keyword%' => $body,
                 ]),
-                $this->get(TranslatorInterface::class)->trans('special_answers.stop')
+                $this->getTranslator()->trans('special_answers.stop')
             );
 
             $volunteer->setPhoneNumberOptin(false);
 
-            $this->get(VolunteerManager::class)->save($volunteer);
+            $this->getVolunteerManager()->save($volunteer);
         }
     }
 
     public function getVolunteerAnswersQueryBuilder(Volunteer $volunteer) : QueryBuilder
     {
-        return $this->get(AnswerRepository::class)->getVolunteerAnswersQueryBuilder($volunteer);
+        return $this->getAnswerRepository()->getVolunteerAnswersQueryBuilder($volunteer);
     }
 
     public function find(int $answerId) : ?Answer
     {
-        return $this->get(AnswerRepository::class)->find($answerId);
+        return $this->getAnswerRepository()->find($answerId);
     }
 
     public function sendSms(Message $message, string $content)
@@ -94,19 +94,19 @@ class AnswerManager extends BaseService
         $answer->setRaw($content);
         $answer->setReceivedAt(new \DateTime());
         $answer->setUnclear(true);
-        $answer->setByAdmin($this->get(UserManager::class)->findForCurrentUser()->getUsername());
+        $answer->setByAdmin($this->getUserManager()->findForCurrentUser()->getUsername());
 
-        $this->get(AnswerRepository::class)->save($answer);
+        $this->getAnswerRepository()->save($answer);
 
         $message->addAnswser($answer);
-        $this->get(MessageManager::class)->save($message);
+        $this->getMessageManager()->save($message);
 
-        $country = $this->get(CountryManager::class)->getCountry($message->getVolunteer());
+        $country = $this->getPhoneConfigManager()->getPhoneConfig($message->getVolunteer());
         if ($country && $country->isOutboundSmsEnabled() && $country->getOutboundSmsNumber()) {
-            $this->get(SMSProvider::class)->send(
+            $this->getSMSProvider()->send(
                 $country->getOutboundSmsNumber(),
                 $message->getVolunteer()->getPhoneNumber(),
-                $this->get(MessageFormatter::class)->formatSimpleSMSContent($message->getVolunteer(), $content),
+                $this->getMessageFormatter()->formatSimpleSMSContent($message->getVolunteer(), $content),
                 ['message_id' => $message->getId()]
             );
         }
@@ -122,10 +122,60 @@ class AnswerManager extends BaseService
             $answer->setSentiment((int) ($sentiment['score'] * 100));
             $answer->setMagnitude((int) ($sentiment['magnitude'] * 100));
         } catch (\Throwable $e) {
-            $this->get(LoggerInterface::class)->warning('Cannot retrieve answer\'s sentiment', [
+            $this->getLogger()->warning('Cannot retrieve answer\'s sentiment', [
                 'exception' => $e->getMessage(),
                 'trace'     => $e->getTraceAsString(),
             ]);
         }
+    }
+
+    private function getAnswerRepository() : AnswerRepository
+    {
+        return $this->get(AnswerRepository::class);
+    }
+
+    private function getCampaignManager() : CampaignManager
+    {
+        return $this->get(CampaignManager::class);
+    }
+
+    private function getPhoneConfigManager() : PhoneConfigManager
+    {
+        return $this->get(PhoneConfigManager::class);
+    }
+
+    private function getLogger() : LoggerInterface
+    {
+        return $this->get(LoggerInterface::class);
+    }
+
+    private function getMessageFormatter() : MessageFormatter
+    {
+        return $this->get(MessageFormatter::class);
+    }
+
+    private function getMessageManager() : MessageManager
+    {
+        return $this->get(MessageManager::class);
+    }
+
+    private function getSMSProvider() : SMSProvider
+    {
+        return $this->get(SMSProvider::class);
+    }
+
+    private function getTranslator() : TranslatorInterface
+    {
+        return $this->get(TranslatorInterface::class);
+    }
+
+    private function getUserManager() : UserManager
+    {
+        return $this->get(UserManager::class);
+    }
+
+    private function getVolunteerManager() : VolunteerManager
+    {
+        return $this->get(VolunteerManager::class);
     }
 }

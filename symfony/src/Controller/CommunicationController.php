@@ -17,6 +17,7 @@ use App\Manager\BadgeManager;
 use App\Manager\CampaignManager;
 use App\Manager\CommunicationManager;
 use App\Manager\ExpirableManager;
+use App\Manager\LanguageManager;
 use App\Manager\MediaManager;
 use App\Manager\MessageManager;
 use App\Manager\StructureManager;
@@ -100,6 +101,11 @@ class CommunicationController extends BaseController
      */
     private $expirableManager;
 
+    /**
+     * @var LanguageManager
+     */
+    private $languageManager;
+
     public function __construct(CampaignManager $campaignManager,
         CommunicationManager $communicationManager,
         MessageFormatter $formatter,
@@ -110,8 +116,9 @@ class CommunicationController extends BaseController
         UserManager $userManager,
         MediaManager $mediaManager,
         StructureManager $structureManager,
-        ExpirableManager $expirableManager
-    ) {
+        ExpirableManager $expirableManager,
+        LanguageManager $languageManager)
+    {
         $this->campaignManager      = $campaignManager;
         $this->communicationManager = $communicationManager;
         $this->formatter            = $formatter;
@@ -123,6 +130,7 @@ class CommunicationController extends BaseController
         $this->mediaManager         = $mediaManager;
         $this->structureManager     = $structureManager;
         $this->expirableManager     = $expirableManager;
+        $this->languageManager      = $languageManager;
     }
 
     /**
@@ -336,6 +344,7 @@ class CommunicationController extends BaseController
         );
 
         $media = $this->mediaManager->createMp3(
+            $this->languageManager->getLanguageConfig($communicationEntity)->getTextToSpeech(),
             $this->formatter->formatMessageContent($message)
         );
 

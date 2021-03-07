@@ -271,6 +271,10 @@ class CampaignManager
     public function contact(Volunteer $volunteer, Type $type, string $title, string $message) : CampaignEntity
     {
         $communication = $type->getFormData();
+
+        // TODO: choose the right language according to the platform once they will be integrated
+        $communication->setLanguage('fr');
+
         $communication->setAudience(AudienceType::createEmptyData([
             'volunteers' => [$volunteer->getId()],
         ]));

@@ -7,8 +7,8 @@ use App\Component\HttpFoundation\MpdfResponse;
 use App\Entity\Message;
 use App\Entity\VolunteerSession;
 use App\Form\Type\PhoneCardsType;
-use App\Manager\CountryManager;
 use App\Manager\MessageManager;
+use App\Manager\PhoneConfigManager;
 use App\Manager\PhoneManager;
 use App\Manager\VolunteerManager;
 use App\Manager\VolunteerSessionManager;
@@ -47,9 +47,9 @@ class SpaceController extends BaseController
     private $messageManager;
 
     /**
-     * @var CountryManager
+     * @var PhoneConfigManager
      */
-    private $countryManager;
+    private $phoneConfigManager;
 
     /**
      * @var PhoneManager
@@ -64,14 +64,14 @@ class SpaceController extends BaseController
     public function __construct(VolunteerSessionManager $volunteerSessionManager,
         VolunteerManager $volunteerManager,
         MessageManager $messageManager,
-        CountryManager $countryManager,
+        PhoneConfigManager $phoneConfigManager,
         PhoneManager $phoneManager,
         TranslatorInterface $translator)
     {
         $this->volunteerSessionManager = $volunteerSessionManager;
         $this->volunteerManager        = $volunteerManager;
         $this->messageManager          = $messageManager;
-        $this->countryManager          = $countryManager;
+        $this->phoneConfigManager      = $phoneConfigManager;
         $this->phoneManager            = $phoneManager;
         $this->translator              = $translator;
     }
@@ -81,16 +81,20 @@ class SpaceController extends BaseController
      */
     public function home(Request $request, VolunteerSession $session)
     {
-        $country = $this->countryManager->getCountry($session->getVolunteer());
-
-        // What if a volunteer wish to use another supported language?
-        if ($country && $request->getLocale() !== $country->getLocale()) {
-            $this->countryManager->applyLocale($country);
-
-            return $this->redirectToRoute('space_home', [
-                'sessionId' => $session,
-            ]);
-        }
+        // TODO: apply according to the platform, not to the phone (keeping the old code as this will be very
+        //       similar once platforms will be integrated in all resources (user, category, badge, structure,
+        //       volunteer)
+        //
+        //        $country = $this->phoneConfigManager->getPhoneConfig($session->getVolunteer());
+        //
+        //        // What if a volunteer wish to use another supported language?
+        //        if ($country && $request->getLocale() !== $country->getLocale()) {
+        //            $this->phoneConfigManager->applyLocale($country);
+        //
+        //            return $this->redirectToRoute('space_home', [
+        //                'sessionId' => $session,
+        //            ]);
+        //        }
 
         return $this->render('space/index.html.twig', [
             'session'  => $session,
@@ -136,7 +140,8 @@ class SpaceController extends BaseController
                 // If a user removes his phone and put the same, Doctrine will insert
                 // the new one before removing the other. As a result, an exception
                 // is thrown because of the unique constraint. I was not able to manage
-                // correctly that behavior, so I just render a generic error message.
+                // correctly that behavior and didn't want to spend time on it, so I just
+                // render a generic error message.
                 $this->addFlash('alert', $this->translator->trans('base.error'));
             }
 
@@ -148,7 +153,7 @@ class SpaceController extends BaseController
         return $this->render('space/phone.html.twig', [
             'session' => $session,
             'form'    => $form->createView(),
-            'country' => $this->countryManager->getCountry($volunteer),
+            'country' => $this->phoneConfigManager->getPhoneConfig($volunteer),
         ]);
     }
 

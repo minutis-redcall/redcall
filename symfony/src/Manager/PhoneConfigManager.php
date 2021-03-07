@@ -3,16 +3,11 @@
 namespace App\Manager;
 
 use App\Entity\Volunteer;
-use App\Model\Country;
+use App\Model\PhoneConfig;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
-class CountryManager
+class PhoneConfigManager
 {
-    /**
-     * @var LocaleManager
-     */
-    private $localeManager;
-
     /**
      * @var ParameterBagInterface
      */
@@ -23,21 +18,13 @@ class CountryManager
         $this->parameterBag = $parameterBag;
     }
 
-    /**
-     * @required
-     */
-    public function setLocaleManager(LocaleManager $localeManager)
-    {
-        $this->localeManager = $localeManager;
-    }
-
-    public function getCountry(Volunteer $volunteer) : ?Country
+    public function getPhoneConfig(Volunteer $volunteer) : ?PhoneConfig
     {
         if (!$phone = $volunteer->getPhone()) {
             return null;
         }
 
-        $countries = array_change_key_case($this->parameterBag->get('countries'), CASE_LOWER);
+        $countries = array_change_key_case($this->parameterBag->get('phones'), CASE_LOWER);
 
         $country = $countries[strtolower($phone->getCountryCode())] ?? null;
         if (!$country) {
@@ -47,23 +34,9 @@ class CountryManager
         return $this->createCountryObject($country);
     }
 
-    /**
-     * @return Country[]
-     */
-    public function getCountries() : array
-    {
-        $countries = [];
-
-        foreach ($this->parameterBag->get('countries') as $key => $row) {
-            $countries[$key] = $this->createCountryObject($row);
-        }
-
-        return $countries;
-    }
-
     public function isSMSTransmittable(Volunteer $volunteer) : bool
     {
-        if (!$country = $this->getCountry($volunteer)) {
+        if (!$country = $this->getPhoneConfig($volunteer)) {
             return false;
         }
 
@@ -72,25 +45,16 @@ class CountryManager
 
     public function isVoiceCallTransmittable(Volunteer $volunteer) : bool
     {
-        if (!$country = $this->getCountry($volunteer)) {
+        if (!$country = $this->getPhoneConfig($volunteer)) {
             return false;
         }
 
         return $country->isOutboundCallEnabled();
     }
 
-    public function applyContext(Country $country)
+    public function applyContext(PhoneConfig $country)
     {
-        $this->applyLocale($country);
-
         date_default_timezone_set($country->getTimezone());
-    }
-
-    public function applyLocale(?Country $country)
-    {
-        if ($country) {
-            $this->localeManager->changeLocale($country->getLocale());
-        }
     }
 
     public function restoreContext()
@@ -101,10 +65,9 @@ class CountryManager
         date_default_timezone_set('Europe/Paris');
     }
 
-    private function createCountryObject(array $row) : Country
+    private function createCountryObject(array $row) : PhoneConfig
     {
-        return new Country(
-            $row['locale'],
+        return new PhoneConfig(
             $row['timezone'],
             $row['outbound_call_enabled'],
             $row['outbound_call_number'],

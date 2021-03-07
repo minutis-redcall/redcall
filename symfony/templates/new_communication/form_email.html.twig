@@ -6,6 +6,8 @@
 <div id="message-container">
     <div class="h3">{{ 'form.communication.fields.message'|trans }}</div>
 
+    {{ form_row(form.language) }}
+
     {{ form_row(form.subject) }}
 
     {{ form_label(form.message) }}

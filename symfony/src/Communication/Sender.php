@@ -4,8 +4,8 @@ namespace App\Communication;
 
 use App\Entity\Communication;
 use App\Entity\Message;
-use App\Manager\CountryManager;
 use App\Manager\MessageManager;
+use App\Manager\PhoneConfigManager;
 use App\Provider\Call\CallProvider;
 use App\Provider\Email\EmailProvider;
 use App\Provider\SMS\SMSProvider;
@@ -21,9 +21,9 @@ class Sender
     const PAUSE_EMAIL = 100000; // 10 emails / second
 
     /**
-     * @var CountryManager
+     * @var PhoneConfigManager
      */
-    private $countryManager;
+    private $phoneConfigManager;
 
     /**
      * @var SMSProvider
@@ -55,7 +55,7 @@ class Sender
      */
     private $logger;
 
-    public function __construct(CountryManager $countryManager,
+    public function __construct(PhoneConfigManager $phoneConfigManager,
         SMSProvider $SMSProvider,
         CallProvider $callProvider,
         EmailProvider $emailProvider,
@@ -63,13 +63,13 @@ class Sender
         MessageManager $messageManager,
         LoggerInterface $logger)
     {
-        $this->countryManager = $countryManager;
-        $this->SMSProvider    = $SMSProvider;
-        $this->callProvider   = $callProvider;
-        $this->emailProvider  = $emailProvider;
-        $this->formatter      = $formatter;
-        $this->messageManager = $messageManager;
-        $this->logger         = $logger;
+        $this->phoneConfigManager = $phoneConfigManager;
+        $this->SMSProvider        = $SMSProvider;
+        $this->callProvider       = $callProvider;
+        $this->emailProvider      = $emailProvider;
+        $this->formatter          = $formatter;
+        $this->messageManager     = $messageManager;
+        $this->logger             = $logger;
     }
 
     public function sendCommunication(Communication $communication, bool $force = false)
@@ -121,7 +121,7 @@ class Sender
         }
 
         $volunteer = $message->getVolunteer();
-        $country   = $this->countryManager->getCountry($volunteer);
+        $country   = $this->phoneConfigManager->getPhoneConfig($volunteer);
 
         if (!$country || !$country->isOutboundSmsEnabled() || !$country->getOutboundSmsNumber()) {
             return;
@@ -155,7 +155,7 @@ class Sender
         }
 
         $volunteer = $message->getVolunteer();
-        $country   = $this->countryManager->getCountry($volunteer);
+        $country   = $this->phoneConfigManager->getPhoneConfig($volunteer);
 
         if (!$country || !$country->isOutboundCallEnabled() || !$country->getOutboundCallNumber()) {
             return;
@@ -245,7 +245,7 @@ class Sender
                     $error = 'campaign_status.warning.no_phone_optin';
                     break;
                 }
-                if (!$this->countryManager->isSMSTransmittable($volunteer)) {
+                if (!$this->phoneConfigManager->isSMSTransmittable($volunteer)) {
                     $error = 'campaign_status.warning.country_no_sms';
                     break;
                 }
@@ -263,7 +263,7 @@ class Sender
                     $error = 'campaign_status.warning.no_phone_optin';
                     break;
                 }
-                if (!$this->countryManager->isVoiceCallTransmittable($volunteer)) {
+                if (!$this->phoneConfigManager->isVoiceCallTransmittable($volunteer)) {
                     $error = 'campaign_status.warning.country_no_call';
                     break;
                 }

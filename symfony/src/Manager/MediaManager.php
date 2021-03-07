@@ -3,6 +3,7 @@
 namespace App\Manager;
 
 use App\Entity\Media;
+use App\Model\TextToSpeechConfig;
 use App\Provider\Storage\StorageProvider;
 use App\Repository\MediaRepository;
 use App\Services\TextToSpeech;
@@ -41,10 +42,10 @@ class MediaManager
         return $this->getMedia($extension, $text, $callback);
     }
 
-    public function createMp3(string $text, bool $male = false) : Media
+    public function createMp3(TextToSpeechConfig $config, string $text, bool $male = false) : Media
     {
-        $callback = function ($text) use ($male) {
-            return $this->textToSpeech->textToSpeech($text, $male);
+        $callback = function ($text) use ($config, $male) {
+            return $this->textToSpeech->textToSpeech($config, $text, $male);
         };
 
         return $this->getMedia('mp3', $text, $callback);
