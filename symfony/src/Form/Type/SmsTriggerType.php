@@ -21,6 +21,7 @@ class SmsTriggerType extends AbstractType
 
         $builder
             ->add('audience', AudienceType::class)
+            ->add('language', LanguageType::class)
             ->add('message', TextareaType::class, [
                 'label'    => 'form.communication.fields.body',
                 'required' => false,

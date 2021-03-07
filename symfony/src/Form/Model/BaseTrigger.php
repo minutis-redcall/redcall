@@ -4,6 +4,7 @@ namespace App\Form\Model;
 
 use App\Entity\Media;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 abstract class BaseTrigger implements \JsonSerializable
 {
@@ -28,6 +29,13 @@ abstract class BaseTrigger implements \JsonSerializable
      * @Assert\Count(min=1, minMessage="form.campaign.errors.volunteers.min")
      */
     private $audience = [];
+
+    /**
+     * @var string
+     *
+     * @Assert\NotNull
+     */
+    private $language;
 
     /**
      * @var string|null
@@ -123,6 +131,18 @@ abstract class BaseTrigger implements \JsonSerializable
     public function setAudience(array $audience) : BaseTrigger
     {
         $this->audience = $audience;
+
+        return $this;
+    }
+
+    public function getLanguage() : string
+    {
+        return $this->language;
+    }
+
+    public function setLanguage(string $language) : BaseTrigger
+    {
+        $this->language = $language;
 
         return $this;
     }
@@ -248,5 +268,9 @@ abstract class BaseTrigger implements \JsonSerializable
         }, $this->images);
 
         return $vars;
+    }
+
+    public function validate(ExecutionContextInterface $context, $payload)
+    {
     }
 }

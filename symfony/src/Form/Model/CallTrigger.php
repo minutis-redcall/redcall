@@ -19,6 +19,8 @@ class CallTrigger extends BaseTrigger
      */
     public function validate(ExecutionContextInterface $context, $payload)
     {
+        parent::validate($context, $payload);
+
         if (mb_strlen($this->getMessage()) > Message::MAX_LENGTH_CALL) {
             $context->buildViolation('form.communication.errors.too_large_sms')
                     ->atPath('message')

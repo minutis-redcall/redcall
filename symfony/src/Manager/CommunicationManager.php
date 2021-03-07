@@ -178,11 +178,12 @@ class CommunicationManager
         $communication
             ->setVolunteer($volunteer)
             ->setType($trigger->getType())
+            ->setLanguage($trigger->getLanguage())
+            ->setSubject($trigger->getSubject())
             ->setBody($trigger->getMessage())
             ->setGeoLocation($trigger->isGeoLocation())
             ->setCreatedAt(new DateTime())
-            ->setMultipleAnswer($trigger->isMultipleAnswer())
-            ->setSubject($trigger->getSubject());
+            ->setMultipleAnswer($trigger->isMultipleAnswer());
 
         foreach ($trigger->getImages() as $image) {
             $communication->addImage($image);

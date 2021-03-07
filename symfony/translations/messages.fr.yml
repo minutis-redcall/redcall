@@ -34,14 +34,14 @@ admin:
       name: 'Nom du badge'
       parent: 'Badge de niveau inférieur (ex: chauffeur VPSP a pour badge de niveau inférieur chauffeur VL car si un chauffeur conduit une ambulance, il peut conduire une voiture)'
       rendering_priority: 'Priorité d''affichage du badge'
-      triggering_priority: 'Priorité lors des déclenchements'
       synonyms: 'Badges synonymes (ce badge remplacera l''ensemble des badges ci-dessous)'
+      triggering_priority: 'Priorité lors des déclenchements'
     rendering_priority: 'Prio. visuelle: %priority%'
-    triggering_priority: 'Prio. déclenchement: %priority%'
     replace: 'Remplace les badges suivants'
     search: 'Chercher un badge'
     synonym_of: 'Synonyme de %name%'
     title: 'Gestion des badges'
+    triggering_priority: 'Prio. déclenchement: %priority%'
     used_by: 'Utilisé par %count% bénévoles'
   category:
     badges: Badges
@@ -350,14 +350,14 @@ campaign_status:
   table:
     other: 'Autre réponse'
   warning:
+    country_no_call: 'Appels non supportés par RedCall pour ce numéro.'
+    country_no_sms: 'SMS non supportés par RedCall pour ce numéro.'
     no_email: 'Pas d''email'
     no_email_optin: 'Ne souhaite pas recevoir d''emails.'
     no_phone: 'Pas de numéro de téléphone'
     no_phone_mobile: 'Pas de numéro de téléphone portable.'
     no_phone_optin: 'Ne souhaite pas recevoir de SMS/appels.'
     optout_until: 'Temporairement indisponible'
-    country_no_sms: 'SMS non supportés par RedCall pour ce numéro.'
-    country_no_call: 'Appels non supportés par RedCall pour ce numéro.'
 csv_export:
   answer_time: 'Date de la reponse la plus recente'
   choice: 'Choix "%choice%"'
@@ -392,6 +392,7 @@ form:
       body: Contenu
       cost: 'La longueur du message multiplie son prix par :'
       geo_location: 'Les destinataires de ce message pourront se géo-localiser entre eux'
+      language: 'En quelle langue écrivez-vous votre message ?'
       length: 'Longueur du message :'
       message: Message
       multiple_answer: 'Les destinataires peuvent choisir plusieurs réponses'
@@ -547,6 +548,7 @@ manage_volunteers:
     title: 'Suppression des données de %name%'
     volunteer_asked_for_it: 'Ce bénévole vous a demandé de supprimer ses données ?'
   can_trigger: 'Structures que %name% peut déclencher'
+  can_trigger_button: 'Rôles RedCall'
   columns:
     never_updated: 'Pas encore importé'
     update: 'MàJ le %date%'
@@ -586,7 +588,6 @@ manage_volunteers:
     only_users: 'Afficher seulement les bénévoles pouvant utiliser RedCall'
   title: 'Gestion des bénévoles'
   title_with_structure: 'Gestion des bénévoles de %name%'
-  can_trigger_button: 'Rôles RedCall'
 management:
   current_structures: 'Vous pouvez actuellement déclencher les structures suivantes :'
   home:

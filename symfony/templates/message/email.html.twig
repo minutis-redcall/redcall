@@ -67,13 +67,13 @@
                         "@type": "EmailMessage",
                         "potentialAction": {
                             "@type": "ConfirmAction",
-                            "name": "{{ 'message.email.in_app_short_answer'|trans({'%choice%': communication.firstChoice.label}) }}",
+                            "name": "{{ 'message.email.in_app_short_answer'|trans({'%choice%': communication.firstChoice.label}, null, language.locale) }}",
                             "handler": {
                                 "@type": "HttpActionHandler",
                                 "url": "{{ website_url }}{{ path('message_action', {code: message.code, action: communication.firstChoice.code, signature: message.signature}) }}"
                             }
                         },
-                        "description": "{{ 'message.email.in_app_long_answer'|trans({'%choice%': communication.firstChoice.label}) }}"
+                        "description": "{{ 'message.email.in_app_long_answer'|trans({'%choice%': communication.firstChoice.label, null, language.locale}) }}"
                     }
 
                 </script>
@@ -86,9 +86,9 @@
                     "potentialAction": {
                         "@type": "ViewAction",
                         "url": "{{ website_url }}{{ path('message_open', {code: message.code}) }}",
-                        "name": "{{ 'message.email.open_in_redcall'|trans }}"
+                        "name": "{{ 'message.email.open_in_redcall'|trans({}, null, language.locale) }}"
                     },
-                    "description": "{{ 'message.email.open_in_redcall'|trans }}"
+                    "description": "{{ 'message.email.open_in_redcall'|trans({}, null, language.locale) }}"
                 }
 
                 </script>
@@ -257,7 +257,7 @@
                         '%year%':'now'|date('Y'),
                         '%hours%':'now'|date('H'),
                         '%mins%':'now'|date('i'),
-                    }) }}</div>
+                    }, null, language.locale) }}</div>
     
           <!--[if mso | IE]>
             </td>
@@ -433,7 +433,7 @@
             
       <div
          style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:12px;;line-height:1;text-align:center;color:black;"
-      >{{ 'message.email.answer_here'|trans }}</div>
+      >{{ 'message.email.answer_here'|trans({}, null, language.locale) }}</div>
     
           <!--[if mso | IE]>
             </td>
@@ -537,7 +537,7 @@
             
       <div
          style="font-family:Ubuntu, Helvetica, Arial, sans-serif;font-size:14px;;line-height:1;text-align:left;color:black;"
-      >{{ 'message.email.how_to_answer_free'|trans({'%url%': website_url ~ path('message_open', {code: message.code})})|raw }}</div>
+      >{{ 'message.email.how_to_answer_free'|trans({'%url%': website_url ~ path('message_open', {code: message.code})}, null, language.locale)|raw }}</div>
     
           <!--[if mso | IE]>
             </td>

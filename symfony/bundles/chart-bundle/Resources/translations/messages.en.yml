@@ -1,42 +1,43 @@
 chart:
   base:
-    back: 'Back'
-    submit: 'Submit'
+    back: Back
+    submit: Submit
+  context:
+    add: 'Add contextual variable'
+    labels:
+      absolute_date: 'Default value'
+      integer: 'Enter a number'
+      relative_date:
+        amount: Amount
+        unit: Unit
+      string: 'Enter a value'
+      'Absolute date': 'Default value'
+    name: 'Placeholder name'
+    relative_date:
+      amount: '%amount% %unit% ago'
+      now: now
+      unit_day: day(s)
+      unit_hour: hour(s)
+      unit_minute: minute(s)
+      unit_month: month(s)
+      unit_second: second(s)
+      unit_week: semaine(s)
+      unit_year: year(s)
+    title: 'Variable #%nbr%'
+    type: 'Data type'
+    types:
+      absolute_date: 'Absolute date'
+      integer: Integer
+      relative_date: 'Relative date'
+      string: String
   manage:
     queries: 'Manage queries'
   query:
+    edit:
+      context: 'Required query context'
+      name: 'Query name'
+      query: Query
     new: 'New query'
     table:
-      name: 'Name'
       date: 'Creation date'
-    edit:
-      name: 'Query name'
-      query: 'Query'
-      context: 'Required query context'
-  context:
-    title: 'Variable #%nbr%'
-    name: 'Placeholder name'
-    type: 'Data type'
-    types:
-      string: 'String'
-      integer: 'Integer'
-      relative_date: 'Relative date'
-      absolute_date: 'Absolute date'
-    add: 'Add contextual variable'
-    labels:
-      string: 'Enter a value'
-      integer: 'Enter a number'
-      relative_date:
-        amount: 'Amount'
-        unit: 'Unit'
-      Absolute date: 'Default value'
-    relative_date:
-      amount: '%amount% %unit% ago'
-      now: 'now'
-      unit_second: 'second(s)'
-      unit_minute: 'minute(s)'
-      unit_hour: 'hour(s)'
-      unit_day: 'day(s)'
-      unit_week: 'semaine(s)'
-      unit_month: 'month(s)'
-      unit_year: 'year(s)'
+      name: Name

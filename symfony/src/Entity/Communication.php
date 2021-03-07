@@ -124,6 +124,11 @@ class Communication
      */
     private $images;
 
+    /**
+     * @ORM\Column(type="string", length=5)
+     */
+    private $language;
+
     public function __construct()
     {
         $this->images = new ArrayCollection();
@@ -731,6 +736,18 @@ class Communication
                 $image->setCommunication(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getLanguage(): ?string
+    {
+        return $this->language;
+    }
+
+    public function setLanguage(string $language): self
+    {
+        $this->language = $language;
 
         return $this;
     }

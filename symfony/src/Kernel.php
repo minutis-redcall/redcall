@@ -53,6 +53,7 @@ class Kernel extends BaseKernel
         $confDir = $this->getProjectDir().'/config';
 
         $loader->load($confDir.'/phones.yaml');
+        $loader->load($confDir.'/languages.yaml');
 
         $loader->load($confDir.'/{packages}/*'.self::CONFIG_EXTS, 'glob');
         $loader->load($confDir.'/{packages}/'.$this->environment.'/**/*'.self::CONFIG_EXTS, 'glob');

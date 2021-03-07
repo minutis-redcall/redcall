@@ -34,14 +34,14 @@ admin:
       name: 'Badge name'
       parent: 'Badge of the pevious level (ex: a "truck driver" has "vehicle driver" as previous level badge, because if someone can ride a truck, he also can ride a car)'
       rendring_priority: 'Badge rendering priority'
-      triggering_priority: 'Badge triggering priority'
       synonyms: 'Synonym badges (this badge should replace all badges given on the following field)'
+      triggering_priority: 'Badge triggering priority'
     rendering_priority: 'Rendering prio.: %priority%'
-    triggering_priority: 'Triggering prio.: %priority%'
     replace: 'Replace the following badges'
     search: 'Chercher un badge'
     synonym_of: 'Synonym of %name%'
     title: 'Gestion des badges'
+    triggering_priority: 'Triggering prio.: %priority%'
     used_by: 'Used by %count% volunteers'
   category:
     badges: Badges
@@ -350,14 +350,14 @@ campaign_status:
   table:
     other: 'Other response'
   warning:
+    country_no_call: 'Voice calls not supported for this phone number.'
+    country_no_sms: 'SMS not supported by RedCall for this phone number.'
     no_email: 'No email'
     no_email_optin: 'Do not want to be triggered through email.'
     no_phone: 'No phone number'
     no_phone_mobile: 'No mobile phone number.'
     no_phone_optin: 'Do not want to be triggered through phone.'
     optout_until: 'Temporarily unavailable.'
-    country_no_sms: 'SMS not supported by RedCall for this phone number.'
-    country_no_call: 'Voice calls not supported for this phone number.'
 csv_export:
   answer_time: 'Answered at'
   choice: 'Choice "%choice%"'
@@ -411,6 +411,7 @@ form:
       type_email: 'Message sent by email'
       type_sms: 'Emergency message sent through SMS'
       volunteers: Audience
+      language: 'In which language is written your message?'
     nivols_search: 'Copy/paste a list of nivols'
     nivols_separator: 'You can use any separator you want.'
     sms: SMS
@@ -547,6 +548,7 @@ manage_volunteers:
     title: 'Data deletion for %name%'
     volunteer_asked_for_it: 'This volunteer asked you to remove his personal data?'
   can_trigger: 'Structures %name% can trigger'
+  can_trigger_button: 'RedCall roles'
   columns:
     never_updated: 'Skills never imported'
     update: 'Updated on %date%'
@@ -586,7 +588,6 @@ manage_volunteers:
     only_users: 'Only show volunteers having RedCall access'
   title: 'Manage volunteers'
   title_with_structure: 'Manage volunteers from %name%'
-  can_trigger_button: 'RedCall roles'
 management:
   current_structures: 'You are currently able to trigger the following structures:'
   home:

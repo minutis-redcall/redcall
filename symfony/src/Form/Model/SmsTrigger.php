@@ -20,6 +20,8 @@ class SmsTrigger extends BaseTrigger
      */
     public function validate(ExecutionContextInterface $context, $payload)
     {
+        parent::validate($context, $payload);
+
         foreach ($this->getAnswers() as $answer) {
             if (mb_strlen($answer) > Choice::MAX_LENGTH_SMS) {
                 $context->buildViolation('form.communication.errors.too_large_choice')
