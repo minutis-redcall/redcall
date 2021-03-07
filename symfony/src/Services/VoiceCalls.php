@@ -6,6 +6,7 @@ use App\Entity\Communication;
 use App\Entity\Message;
 use App\Manager\MediaManager;
 use App\Manager\MessageManager;
+use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Twilio\TwiML\VoiceResponse;
@@ -101,11 +102,14 @@ class VoiceCalls
     public function prepareMedias(Communication $communication)
     {
         $messages = $communication->getMessages();
-        $message  = reset($messages);
+        if ($messages instanceof Collection) {
+            $messages = $messages->toArray();
+        }
+        $message = reset($messages);
 
-        $this->getMediaUrl($this->formatter->formatCallContent($message, false), true);
+        $this->getMediaUrl($this->formatter->formatCallContent($message, false));
         if (0 !== $communication->getChoices()->count()) {
-            $this->getMediaUrl($this->formatter->formatCallChoicesContent($message, false));
+            $this->getMediaUrl($this->formatter->formatCallChoicesContent($message, false), true);
         }
     }
 

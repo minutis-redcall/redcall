@@ -14,9 +14,8 @@
 # https://www.twilio.com/voice/pricing/pm
 ####################################################################################################################################
 parameters:
-  countries:
+  phones:
     fr: # +33, France
-      locale: fr
       timezone: 'Europe/Paris'
       outbound_call_enabled: true
       outbound_call_number: '%env(TWILIO_FROM_LONG_FR)%'
@@ -26,7 +25,6 @@ parameters:
       inbound_call_number: '%env(TWILIO_FROM_LONG_FR)%'
       inbound_sms_enabled: true
     gp: # +590, Guadeloupe
-      locale: fr
       timezone: 'America/Guadeloupe'
       outbound_call_enabled: true
       outbound_call_number: '%env(TWILIO_FROM_LONG_FR)%'
@@ -36,7 +34,6 @@ parameters:
       inbound_call_number: ~
       inbound_sms_enabled: false
     gf: # +594, Guyane Française
-      locale: fr
       timezone: 'America/Cayenne'
       outbound_call_enabled: true
       outbound_call_number: '%env(TWILIO_FROM_LONG_FR)%'
@@ -46,7 +43,6 @@ parameters:
       inbound_call_number: ~
       inbound_sms_enabled: false
     mq: # +596, Martinique
-      locale: fr
       timezone: 'America/Martinique'
       outbound_call_enabled: true
       outbound_call_number: '%env(TWILIO_FROM_LONG_FR)%'
@@ -56,7 +52,6 @@ parameters:
       inbound_call_number: ~
       inbound_sms_enabled: false
     yt: # +262, Mayotte
-      locale: fr
       timezone: 'Indian/Mayotte'
       outbound_call_enabled: true
       outbound_call_number: '%env(TWILIO_FROM_LONG_FR)%'
@@ -66,7 +61,6 @@ parameters:
       inbound_call_number: ~
       inbound_sms_enabled: false
     pf: # +689, Polynésie Française
-      locale: fr
       timezone: 'Pacific/Tahiti'
       outbound_call_enabled: true
       outbound_call_number: '%env(TWILIO_FROM_LONG_FR)%'
@@ -76,7 +70,6 @@ parameters:
       inbound_call_number: ~
       inbound_sms_enabled: false
     re: # +262, Réunion
-      locale: fr
       timezone: 'Indian/Reunion'
       outbound_call_enabled: true
       outbound_call_number: '%env(TWILIO_FROM_LONG_FR)%'
@@ -86,7 +79,6 @@ parameters:
       inbound_call_number: ~
       inbound_sms_enabled: false
     nc: # +687, Nouvelle-Calédonie
-      locale: fr
       timezone: 'Pacific/Noumea'
       outbound_call_enabled: true
       outbound_call_number: '%env(TWILIO_FROM_LONG_FR)%'
@@ -96,7 +88,6 @@ parameters:
       inbound_call_number: ~
       inbound_sms_enabled: false
     pm: # +508, Saint-Pierre-et-Miquelon
-      locale: fr
       timezone: 'America/Miquelon'
       outbound_call_enabled: true
       outbound_call_number: '%env(TWILIO_FROM_LONG_FR)%'
@@ -106,7 +97,6 @@ parameters:
       inbound_call_number: ~
       inbound_sms_enabled: false
     bl: # +590, Saint-Barthélemy
-      locale: fr
       timezone: 'America/St_Barthelemy'
       outbound_call_enabled: false
       outbound_call_number: ~
@@ -116,7 +106,6 @@ parameters:
       inbound_call_number: ~
       inbound_sms_enabled: false
     mf: # +590, Saint-Martin
-      locale: fr
       timezone: 'America/Marigot'
       outbound_call_enabled: false
       outbound_call_number: ~
@@ -126,7 +115,6 @@ parameters:
       inbound_call_number: ~
       inbound_sms_enabled: false
     wf: # +681, Wallis-et-Futuna
-      locale: fr
       timezone: 'Pacific/Wallis'
       outbound_call_enabled: false
       outbound_call_number: ~

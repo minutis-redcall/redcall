@@ -2,13 +2,8 @@
 
 namespace App\Model;
 
-class Country
+class PhoneConfig
 {
-    /**
-     * @var string
-     */
-    private $locale;
-
     /**
      * @var string
      */
@@ -49,8 +44,7 @@ class Country
      */
     private $inboundSmsEnabled;
 
-    public function __construct(string $locale,
-        string $timezone,
+    public function __construct(string $timezone,
         bool $outboundCallEnabled,
         ?string $outboundCallNumber,
         bool $outboundSmsEnabled,
@@ -59,7 +53,6 @@ class Country
         ?string $inboundCallNumber,
         bool $inboundSmsEnabled)
     {
-        $this->locale              = $locale;
         $this->timezone            = $timezone;
         $this->outboundCallEnabled = $outboundCallEnabled;
         $this->outboundCallNumber  = $outboundCallNumber;
@@ -68,11 +61,6 @@ class Country
         $this->inboundCallEnabled  = $inboundCallEnabled;
         $this->inboundCallNumber   = $inboundCallNumber;
         $this->inboundSmsEnabled   = $inboundSmsEnabled;
-    }
-
-    public function getLocale() : string
-    {
-        return $this->locale;
     }
 
     public function getTimezone() : string

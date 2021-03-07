@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Entity\Communication;
 use App\Entity\Message;
 use App\Entity\Volunteer;
-use App\Manager\CountryManager;
+use App\Manager\PhoneConfigManager;
 use App\Tools\GSM;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -14,9 +14,9 @@ use Twig\Environment;
 class MessageFormatter
 {
     /**
-     * @var CountryManager
+     * @var PhoneConfigManager
      */
-    private $countryManager;
+    private $phoneConfigManager;
 
     /**
      * @var RouterInterface
@@ -33,15 +33,15 @@ class MessageFormatter
      */
     private $templating;
 
-    public function __construct(CountryManager $countryManager,
+    public function __construct(PhoneConfigManager $phoneConfigManager,
         RouterInterface $router,
         TranslatorInterface $translator,
         Environment $templating)
     {
-        $this->countryManager = $countryManager;
-        $this->router         = $router;
-        $this->translator     = $translator;
-        $this->templating     = $templating;
+        $this->phoneConfigManager = $phoneConfigManager;
+        $this->router             = $router;
+        $this->translator         = $translator;
+        $this->templating         = $templating;
     }
 
     public function formatMessageContent(Message $message) : string
@@ -58,8 +58,8 @@ class MessageFormatter
 
     public function formatSMSContent(Message $message) : string
     {
-        if ($country = $this->countryManager->getCountry($message->getVolunteer())) {
-            $this->countryManager->applyContext($country);
+        if ($country = $this->phoneConfigManager->getPhoneConfig($message->getVolunteer())) {
+            $this->phoneConfigManager->applyContext($country);
         }
 
         $contentParts  = [];
@@ -117,15 +117,15 @@ class MessageFormatter
             ]);
         }
 
-        $this->countryManager->restoreContext();
+        $this->phoneConfigManager->restoreContext();
 
         return GSM::enforceGSMAlphabet(implode("\n", $contentParts));
     }
 
     public function formatSimpleSMSContent(Volunteer $volunteer, string $content) : string
     {
-        if ($country = $this->countryManager->getCountry($volunteer)) {
-            $this->countryManager->applyContext($country);
+        if ($country = $this->phoneConfigManager->getPhoneConfig($volunteer)) {
+            $this->phoneConfigManager->applyContext($country);
         }
 
         $contentParts[] = $this->translator->trans('message.sms.announcement', [
@@ -136,15 +136,15 @@ class MessageFormatter
 
         $contentParts[] = $content;
 
-        $this->countryManager->restoreContext();
+        $this->phoneConfigManager->restoreContext();
 
         return GSM::enforceGSMAlphabet(implode("\n", $contentParts));
     }
 
     public function formatCallContent(Message $message, bool $withChoices = true) : string
     {
-        if ($country = $this->countryManager->getCountry($message->getVolunteer())) {
-            $this->countryManager->applyContext($country);
+        if ($country = $this->phoneConfigManager->getPhoneConfig($message->getVolunteer())) {
+            $this->phoneConfigManager->applyContext($country);
         }
 
         $communication = $message->getCommunication();
@@ -173,7 +173,7 @@ class MessageFormatter
             $contentParts[] = $this->formatCallChoicesContent($message);
         }
 
-        $this->countryManager->restoreContext();
+        $this->phoneConfigManager->restoreContext();
 
         return implode("\n", $contentParts);
     }
@@ -214,8 +214,8 @@ class MessageFormatter
             $contentParts[] = '';
         }
 
-        if ($country = $this->countryManager->getCountry($message->getVolunteer())) {
-            $this->countryManager->applyContext($country);
+        if ($country = $this->phoneConfigManager->getPhoneConfig($message->getVolunteer())) {
+            $this->phoneConfigManager->applyContext($country);
         }
 
         $contentParts[] = $this->translator->trans('message.email.announcement', [
@@ -257,15 +257,15 @@ class MessageFormatter
             $contentParts[] = '';
         }
 
-        $this->countryManager->restoreContext();
+        $this->phoneConfigManager->restoreContext();
 
         return implode("\n", $contentParts);
     }
 
     public function formatHtmlEmailContent(Message $message) : string
     {
-        if ($country = $this->countryManager->getCountry($message->getVolunteer())) {
-            $this->countryManager->applyContext($country);
+        if ($country = $this->phoneConfigManager->getPhoneConfig($message->getVolunteer())) {
+            $this->phoneConfigManager->applyContext($country);
         }
 
         $content = $this->templating->render('message/email.html.twig', [
@@ -274,7 +274,7 @@ class MessageFormatter
             'communication' => $message->getCommunication(),
         ]);
 
-        $this->countryManager->restoreContext();
+        $this->phoneConfigManager->restoreContext();
 
         return $content;
     }
