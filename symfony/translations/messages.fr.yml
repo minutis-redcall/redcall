@@ -34,6 +34,7 @@ admin:
       name: 'Nom du badge'
       parent: 'Badge de niveau inférieur (ex: chauffeur VPSP a pour badge de niveau inférieur chauffeur VL car si un chauffeur conduit une ambulance, il peut conduire une voiture)'
       rendering_priority: 'Priorité d''affichage du badge'
+      rendring_priority: 'Priorité d''''affichage du badge'
       synonyms: 'Badges synonymes (ce badge remplacera l''ensemble des badges ci-dessous)'
       triggering_priority: 'Priorité lors des déclenchements'
     rendering_priority: 'Prio. visuelle: %priority%'
@@ -553,7 +554,7 @@ manage_volunteers:
     never_updated: 'Pas encore importé'
     update: 'MàJ le %date%'
   contact:
-    mail_subject: '⚠️ %brand%: Vous avez un message RedCall'
+    mail_subject: '⚠️ RedCall: Vous avez un message'
   form:
     added: 'Le bénévole a correctement été ajouté.'
     create: 'Ajouter un nouveau bénévole'
@@ -576,7 +577,6 @@ manage_volunteers:
     update: 'Mettre à jour un bénévole'
     updated: 'Le bénévole a correctement été modifié.'
     visible_badges: 'Badges principaux'
-    optout_until: 'Bénévole indisponible jusqu''au...'
   others: 'et %count% autre(s)'
   redcall:
     action_structures: 'Structures déclenchables par %name%'

@@ -1,10 +1,10 @@
 twig:
-  paths: ['%kernel.project_dir%/templates']
+  paths: [ '%kernel.project_dir%/templates' ]
   debug: '%kernel.debug%'
   strict_variables: '%kernel.debug%'
   form_themes:
-  - 'bootstrap_4_layout.html.twig'
-  - 'form_theme.html.twig'
+    - 'bootstrap_4_layout.html.twig'
+    - 'form_theme.html.twig'
   globals:
     minutis_url: '%env(MINUTIS_URL)%'
     red: '%env(COLOR_RED)%'
@@ -13,4 +13,3 @@ twig:
     coolgrey: '%env(COLOR_COOLGREY)%'
     offwhite: '%env(COLOR_OFFWHITE)%'
     logo: '%env(LOGO)%'
-    brand: '%env(BRAND)%'

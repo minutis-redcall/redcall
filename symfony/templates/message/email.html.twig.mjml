@@ -29,7 +29,7 @@
                                 "url": "{{ website_url }}{{ path('message_action', {code: message.code, action: communication.firstChoice.code, signature: message.signature}) }}"
                             }
                         },
-                        "description": "{{ 'message.email.in_app_long_answer'|trans({'%choice%': communication.firstChoice.label, null, language.locale}) }}"
+                        "description": "{{ 'message.email.in_app_long_answer'|trans({'%choice%': communication.firstChoice.label}, null, language.locale) }}"
                     }
 
                 </script>
@@ -60,7 +60,7 @@
             <mj-section background-color="#667385" padding-top="10px;">&nbsp;</mj-section>
             <mj-section background-color="#e30613" padding-right="50px;" padding-left="50px;" padding-top="10px" padding-bottom="10px;">
                 <mj-text color="white">{{ 'message.email.announcement'|trans({
-                        '%brand%': brand|upper,
+                        '%brand%': language.brand|upper,
                         '%day%':'now'|date('d'),
                         '%month%':'now'|date('m'),
                         '%year%':'now'|date('Y'),

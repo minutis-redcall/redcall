@@ -33,6 +33,7 @@ admin:
       description: 'Complete description'
       name: 'Badge name'
       parent: 'Badge of the pevious level (ex: a "truck driver" has "vehicle driver" as previous level badge, because if someone can ride a truck, he also can ride a car)'
+      rendering_priority: 'Badge rendering priority'
       rendring_priority: 'Badge rendering priority'
       synonyms: 'Synonym badges (this badge should replace all badges given on the following field)'
       triggering_priority: 'Badge triggering priority'
@@ -386,12 +387,13 @@ form:
     fields:
       add: Add
       add_answer: 'Add an answer'
-      answer: 'Enter responsef'
+      answer: 'Enter response'
       answers: 'Possible responses'
       back: Back
       body: Body
       cost: 'Message length multiplies its cost by:'
       geo_location: 'Message recipients will be able to geo locate each others'
+      language: 'In which language is written your message?'
       length: 'Message length:'
       message: Message
       multiple_answer: 'Volunteers can choose several answers'
@@ -411,7 +413,6 @@ form:
       type_email: 'Message sent by email'
       type_sms: 'Emergency message sent through SMS'
       volunteers: Audience
-      language: 'In which language is written your message?'
     nivols_search: 'Copy/paste a list of nivols'
     nivols_separator: 'You can use any separator you want.'
     sms: SMS
@@ -553,7 +554,7 @@ manage_volunteers:
     never_updated: 'Skills never imported'
     update: 'Updated on %date%'
   contact:
-    mail_subject: '⚠️ %brand%: You have a RedCall Message'
+    mail_subject: '⚠️ RedCall: You have a message'
   form:
     added: 'Volunteer has properly been added.'
     create: 'Create a new volunteer'
@@ -576,7 +577,6 @@ manage_volunteers:
     update: 'Update volunteer'
     updated: 'Volunteer has properly been updated.'
     visible_badges: 'Main badges'
-    optout_until: 'Volunteer not available until...'
   others: 'and %count% other(s)'
   redcall:
     action_structures: 'Structures that %name% can trigger'

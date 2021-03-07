@@ -56,7 +56,7 @@
                                                             <br/>
                                                             {% if volunteer.email %}
                                                                 {% if not volunteer.emailOptin %}<strike>{% endif %}
-                                                                <a href="mailto:{{ volunteer.email }}?subject={{ 'manage_volunteers.contact.mail_subject'|trans({'%brand%': brand|upper})|e('html_attr') }}">{{ volunteer.email }}</a>
+                                                                <a href="mailto:{{ volunteer.email }}?subject={{ 'manage_volunteers.contact.mail_subject'|trans }}">{{ volunteer.email }}</a>
                                                                 {% if not volunteer.emailOptin %}</strike>{% endif %}
                                                                 <br/>
                                                             {% endif %}

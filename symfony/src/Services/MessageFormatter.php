@@ -106,9 +106,9 @@ class MessageFormatter
 
             if ($country && $country->isInboundSmsEnabled()) {
                 if (!$message->getCommunication()->isMultipleAnswer()) {
-                    $contentParts[] = $this->translator->trans('message.sms.how_to_answer_simple', null, $language->getLocale());
+                    $contentParts[] = $this->translator->trans('message.sms.how_to_answer_simple', [], null, $language->getLocale());
                 } else {
-                    $contentParts[] = $this->translator->trans('message.sms.how_to_answer_multiple', null, $language->getLocale());
+                    $contentParts[] = $this->translator->trans('message.sms.how_to_answer_multiple', [], null, $language->getLocale());
                 }
             } elseif ($country && $country->isInboundCallEnabled()) {
                 $contentParts[] = $this->translator->trans('message.sms.how_to_answer_url', [
