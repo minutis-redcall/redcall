@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Entity\Communication;
 use App\Entity\Message;
 use App\Manager\MediaManager;
 use App\Manager\MessageManager;
@@ -95,6 +96,17 @@ class VoiceCalls
         ]);
 
         return $this->getVoiceResponse($uuid, $text);
+    }
+
+    public function prepareMedias(Communication $communication)
+    {
+        $messages = $communication->getMessages();
+        $message  = reset($messages);
+
+        $this->getMediaUrl($this->formatter->formatCallContent($message, false), true);
+        if (0 !== $communication->getChoices()->count()) {
+            $this->getMediaUrl($this->formatter->formatCallChoicesContent($message, false));
+        }
     }
 
     private function getInvalidAnswerResponse(string $uuid, Message $message) : VoiceResponse

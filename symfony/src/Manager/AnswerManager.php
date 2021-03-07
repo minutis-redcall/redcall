@@ -51,7 +51,7 @@ class AnswerManager extends BaseService
 
     public function getSearchQueryBuilder(string $criteria) : QueryBuilder
     {
-        $this->get(AnswerRepository::class)->getSearchQueryBuilder($criteria);
+        return $this->get(AnswerRepository::class)->getSearchQueryBuilder($criteria);
     }
 
     public function handleSpecialAnswers(string $phoneNumber, string $body)
