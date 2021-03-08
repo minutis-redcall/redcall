@@ -9,6 +9,11 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
+ * @ORM\Table(
+ *     uniqueConstraints={
+ *         @ORM\UniqueConstraint(name="pf_extid_idx", columns={"platform", "external_id"})
+ *     }
+ * )
  * @ORM\Entity(repositoryClass=CategoryRepository::class)
  * @ORM\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
  */
@@ -22,7 +27,12 @@ class Category
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=64, unique=true)
+     * @ORM\Column(type="string", length=5)
+     */
+    private $platform;
+
+    /**
+     * @ORM\Column(type="string", length=64)
      * @Assert\NotNull
      * @Assert\Length(min=1, max=64)
      */
@@ -54,6 +64,18 @@ class Category
     public function getId() : ?int
     {
         return $this->id;
+    }
+
+    public function getPlatform()
+    {
+        return $this->platform;
+    }
+
+    public function setPlatform($platform)
+    {
+        $this->platform = $platform;
+
+        return $this;
     }
 
     public function getExternalId()

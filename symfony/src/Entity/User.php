@@ -9,9 +9,11 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Table(
- * indexes={
- *    @ORM\Index(name="nivol_idx", columns={"nivol"})
- * })
+ *    indexes={
+ *        @ORM\Index(name="platform_idx", columns={"platform"}),
+ *        @ORM\Index(name="nivol_idx", columns={"nivol"})
+ *     }
+ * )
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  * @ORM\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
  *
@@ -20,6 +22,11 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class User extends AbstractUser
 {
+    /**
+     * @ORM\Column(type="string", length=5)
+     */
+    private $platform;
+
     /**
      * @ORM\Column(type="string", length=10, nullable=true)
      */
@@ -56,6 +63,18 @@ class User extends AbstractUser
         parent::__construct();
 
         $this->structures = new ArrayCollection();
+    }
+
+    public function getPlatform()
+    {
+        return $this->platform;
+    }
+
+    public function setPlatform($platform)
+    {
+        $this->platform = $platform;
+
+        return $this;
     }
 
     public function getLocale() : ?string

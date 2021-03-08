@@ -14,14 +14,19 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
- * @ORM\Table(indexes={
- *     @ORM\Index(name="nivolx", columns={"nivol"}),
- *     @ORM\Index(name="emailx", columns={"email"}),
- *     @ORM\Index(name="enabledx", columns={"enabled"}),
- *     @ORM\Index(name="phone_number_optinx", columns={"phone_number_optin"}),
- *     @ORM\Index(name="email_optinx", columns={"email_optin"}),
- *     @ORM\Index(name="optout_untilx", columns={"optout_until"})
- * })
+ * @ORM\Table(
+ *     uniqueConstraints={
+ *         @ORM\UniqueConstraint(name="pf_extid_idx", columns={"platform", "identifier"})
+ *     },
+ *     indexes={
+ *         @ORM\Index(name="nivolx", columns={"nivol"}),
+ *         @ORM\Index(name="emailx", columns={"email"}),
+ *         @ORM\Index(name="enabledx", columns={"enabled"}),
+ *         @ORM\Index(name="phone_number_optinx", columns={"phone_number_optin"}),
+ *         @ORM\Index(name="email_optinx", columns={"email_optin"}),
+ *         @ORM\Index(name="optout_untilx", columns={"optout_until"})
+ *     }
+ * )
  * @ORM\Entity(repositoryClass="App\Repository\VolunteerRepository")
  * @ORM\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
  * @UniqueEntity("nivol")
@@ -37,6 +42,11 @@ class Volunteer
      * @ORM\Column(type="integer")
      */
     private $id;
+
+    /**
+     * @ORM\Column(type="string", length=5)
+     */
+    private $platform;
 
     /**
      * @var string
@@ -207,6 +217,18 @@ class Volunteer
     public function setId(int $id)
     {
         $this->id = $id;
+
+        return $this;
+    }
+
+    public function getPlatform()
+    {
+        return $this->platform;
+    }
+
+    public function setPlatform($platform)
+    {
+        $this->platform = $platform;
 
         return $this;
     }

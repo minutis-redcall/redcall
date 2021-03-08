@@ -10,6 +10,11 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
+ * @ORM\Table(
+ *     uniqueConstraints={
+ *         @ORM\UniqueConstraint(name="pf_extid_idx", columns={"platform", "external_id"})
+ *     }
+ * )
  * @ORM\Entity(repositoryClass=BadgeRepository::class)
  * @ORM\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
  */
@@ -21,6 +26,11 @@ class Badge
      * @ORM\Column(type="integer")
      */
     private $id;
+
+    /**
+     * @ORM\Column(type="string", length=5)
+     */
+    private $platform;
 
     /**
      * @ORM\Column(type="string", length=64, unique=true)
@@ -97,6 +107,18 @@ class Badge
     public function getId() : ?int
     {
         return $this->id;
+    }
+
+    public function getPlatform()
+    {
+        return $this->platform;
+    }
+
+    public function setPlatform($platform)
+    {
+        $this->platform = $platform;
+
+        return $this;
     }
 
     public function getExternalId() : ?string

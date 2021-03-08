@@ -15,12 +15,13 @@ use Exception;
 /**
  * @ORM\Entity(repositoryClass="App\Repository\StructureRepository")
  * @ORM\Table(
- * uniqueConstraints={
- *     @ORM\UniqueConstraint(name="identifier_idx", columns={"identifier"})
- * },
- * indexes={
- *     @ORM\Index(name="name_idx", columns={"name"})
- * })
+ *     uniqueConstraints={
+ *         @ORM\UniqueConstraint(name="pf_extid_idx", columns={"platform", "identifier"})
+ *     },
+ *     indexes={
+ *         @ORM\Index(name="name_idx", columns={"name"})
+ *     }
+ * )
  */
 class Structure
 {
@@ -30,6 +31,11 @@ class Structure
      * @ORM\Column(type="integer")
      */
     private $id;
+
+    /**
+     * @ORM\Column(type="string", length=5)
+     */
+    private $platform;
 
     /**
      * @ORM\Column(type="integer", nullable=true)
@@ -95,6 +101,18 @@ class Structure
     public function getId() : ?int
     {
         return $this->id;
+    }
+
+    public function getPlatform()
+    {
+        return $this->platform;
+    }
+
+    public function setPlatform($platform)
+    {
+        $this->platform = $platform;
+
+        return $this;
     }
 
     /**
