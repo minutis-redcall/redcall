@@ -1,0 +1,8 @@
+parameters:
+  platform:
+    france:
+      language: fr
+      phone: fr
+    spain:
+      language: es
+      phone: es
