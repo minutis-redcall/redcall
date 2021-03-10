@@ -118,7 +118,7 @@ class ExportController extends BaseController
 
                     /* @var Answer|null $answer */
                     if (!$communication->isMultipleAnswer()) {
-                        $answer = $message->getLastAnswer();
+                        $answer = $message->getLastAnswer(true);
                         if ($answer && $answer->hasChoice($choice)) {
                             $tables[$label][] = [
                                 'volunteer' => $message->getVolunteer(),
@@ -149,6 +149,7 @@ class ExportController extends BaseController
                 ];
             }, $messages));
         }
+
         foreach ($tables as $label => $table) {
             usort($tables[$label], function (array $rowA, array $rowB) {
                 /* @var Volunteer $volunteerA */

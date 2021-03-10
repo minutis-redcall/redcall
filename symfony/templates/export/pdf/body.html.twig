@@ -66,16 +66,14 @@
                         '%time%': communication.createdAt|date('H:i')
                     }) }}
                 {% endif %}
-                {% if communication.choices|length %}
-                    <br/>
-                    <span style="color:{{ red }};font-size:14px;">
-                        {% if communication.type == constant('App\\Entity\\Communication::TYPE_EMAIL') %}
-                            <em>{{ communication.body|purify }}</em>
-                        {% else %}
-                            <em>{{ communication.body|nl2br }}</em>
-                        {% endif %}
-                    </span>
-                {% endif %}
+                <br/>
+                <div style="color:black;font-weight:normal;font-size:14px;">
+                    {% if communication.type == constant('App\\Entity\\Communication::TYPE_EMAIL') %}
+                        {{ communication.body|purify }}
+                    {% else %}
+                        {{ communication.body|nl2br }}
+                    {% endif %}
+                </div>
             </h2>
 
             {# Tables by choices #}

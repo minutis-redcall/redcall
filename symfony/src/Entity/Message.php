@@ -353,10 +353,10 @@ class Message
     /**
      * @return Answer|null
      */
-    public function getLastAnswer() : ?Answer
+    public function getLastAnswer(bool $includingAdmins = false) : ?Answer
     {
         foreach ($this->answers as $answer) {
-            if ($answer->getByAdmin()) {
+            if (!$includingAdmins && $answer->getByAdmin()) {
                 continue;
             }
 
