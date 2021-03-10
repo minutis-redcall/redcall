@@ -88,6 +88,10 @@ class ExportController extends BaseController
 
             $row[$this->trans('csv_export.other')] = $message->getInvalidAnswer() ? $message->getInvalidAnswer()->getRaw() : null;
 
+            if ($message->getVolunteer()->getMainStructure()) {
+                $row[$this->trans('csv_export.structure')] = $message->getVolunteer()->getMainStructure()->getDisplayName();
+            }
+
             $rows[] = $row;
         }
 

@@ -371,6 +371,7 @@ csv_export:
   received: 'Message received'
   sent: 'Message sent'
   tags: Skills
+  structure: Structure
 developer:
   home:
     link: 'Developer space'
