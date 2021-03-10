@@ -123,3 +123,12 @@ parameters:
       inbound_call_enabled: false
       inbound_call_number: ~
       inbound_sms_enabled: false
+    es: # +34, Spain
+      timezone: 'Europe/Madrid'
+      outbound_call_enabled: true
+      outbound_call_number: '%env(TWILIO_FROM_LONG_ES)%'
+      outbound_sms_enabled: true
+      outbound_sms_number: '%env(TWILIO_FROM_LONG_ES)%'
+      inbound_call_enabled: true
+      inbound_call_number: '%env(TWILIO_FROM_LONG_ES)%'
+      inbound_sms_enabled: true
