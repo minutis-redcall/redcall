@@ -88,6 +88,10 @@ class ExportController extends BaseController
 
             $row[$this->trans('csv_export.other')] = $message->getInvalidAnswer() ? $message->getInvalidAnswer()->getRaw() : null;
 
+            if ($message->getVolunteer()->getMainStructure()) {
+                $row[$this->trans('csv_export.structure')] = $message->getVolunteer()->getMainStructure()->getDisplayName();
+            }
+
             $rows[] = $row;
         }
 
@@ -118,7 +122,7 @@ class ExportController extends BaseController
 
                     /* @var Answer|null $answer */
                     if (!$communication->isMultipleAnswer()) {
-                        $answer = $message->getLastAnswer();
+                        $answer = $message->getLastAnswer(true);
                         if ($answer && $answer->hasChoice($choice)) {
                             $tables[$label][] = [
                                 'volunteer' => $message->getVolunteer(),
@@ -149,6 +153,7 @@ class ExportController extends BaseController
                 ];
             }, $messages));
         }
+
         foreach ($tables as $label => $table) {
             usort($tables[$label], function (array $rowA, array $rowB) {
                 /* @var Volunteer $volunteerA */

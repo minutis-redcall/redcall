@@ -370,6 +370,7 @@ csv_export:
   phone_number: 'Numero de telephone'
   received: 'Message reçu'
   sent: 'Message envoye'
+  structure: Structure
   tags: Competences
 developer:
   home:
