@@ -17,7 +17,7 @@ use App\Manager\BadgeManager;
 use App\Manager\CampaignManager;
 use App\Manager\CommunicationManager;
 use App\Manager\ExpirableManager;
-use App\Manager\LanguageManager;
+use App\Manager\LanguageConfigManager;
 use App\Manager\MediaManager;
 use App\Manager\MessageManager;
 use App\Manager\StructureManager;
@@ -102,7 +102,7 @@ class CommunicationController extends BaseController
     private $expirableManager;
 
     /**
-     * @var LanguageManager
+     * @var LanguageConfigManager
      */
     private $languageManager;
 
@@ -117,7 +117,7 @@ class CommunicationController extends BaseController
         MediaManager $mediaManager,
         StructureManager $structureManager,
         ExpirableManager $expirableManager,
-        LanguageManager $languageManager)
+        LanguageConfigManager $languageManager)
     {
         $this->campaignManager      = $campaignManager;
         $this->communicationManager = $communicationManager;

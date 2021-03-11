@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Entity\Communication;
 use App\Entity\Message;
 use App\Entity\Volunteer;
-use App\Manager\LanguageManager;
+use App\Manager\LanguageConfigManager;
 use App\Manager\PhoneConfigManager;
 use App\Tools\GSM;
 use Symfony\Component\Routing\RouterInterface;
@@ -20,7 +20,7 @@ class MessageFormatter
     private $phoneConfigManager;
 
     /**
-     * @var LanguageManager
+     * @var LanguageConfigManager
      */
     private $languageManager;
 
@@ -40,7 +40,7 @@ class MessageFormatter
     private $templating;
 
     public function __construct(PhoneConfigManager $phoneConfigManager,
-        LanguageManager $languageManager,
+        LanguageConfigManager $languageManager,
         RouterInterface $router,
         TranslatorInterface $translator,
         Environment $templating)

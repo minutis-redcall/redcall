@@ -7,7 +7,7 @@ use App\Model\LanguageConfig;
 use App\Model\TextToSpeechConfig;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
-class LanguageManager
+class LanguageConfigManager
 {
     /**
      * @var ParameterBagInterface
