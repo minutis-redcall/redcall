@@ -101,7 +101,7 @@ class AnswerManager extends BaseService
         $message->addAnswser($answer);
         $this->getMessageManager()->save($message);
 
-        $country = $this->getPhoneConfigManager()->getPhoneConfig($message->getVolunteer());
+        $country = $this->getPhoneConfigManager()->getPhoneConfigForVolunteer($message->getVolunteer());
         if ($country && $country->isOutboundSmsEnabled() && $country->getOutboundSmsNumber()) {
             $this->getSMSProvider()->send(
                 $country->getOutboundSmsNumber(),

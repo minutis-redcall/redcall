@@ -262,6 +262,7 @@ base:
   simple_no: 'No'
   simple_yes: 'Yes'
   wait: 'One moment...'
+  ok: OK
 button:
   submit: Submit
 campaign:
@@ -370,8 +371,8 @@ csv_export:
   phone_number: 'Phone number'
   received: 'Message received'
   sent: 'Message sent'
-  tags: Skills
   structure: Structure
+  tags: Skills
 developer:
   home:
     link: 'Developer space'

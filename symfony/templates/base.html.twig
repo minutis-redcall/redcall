@@ -96,6 +96,12 @@
 
                     {% endif %}
 
+                    {% if app.user.root %}
+                        <div class="float-right">
+                            {{ render(controller('\\App\\Controller\\Admin\\PlatformController::renderSwitch')) }}
+                        </div>
+                    {% endif %}
+
                 {% endif %}
 
             {% endblock %}

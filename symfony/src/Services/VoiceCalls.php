@@ -122,7 +122,7 @@ class VoiceCalls
 
     private function getTextToSpeechConfig(Communication $communication) : TextToSpeechConfig
     {
-        return $this->languageManager->getLanguageConfig($communication)->getTextToSpeech();
+        return $this->languageManager->getLanguageConfigForCommunication($communication)->getTextToSpeech();
     }
 
     private function getInvalidAnswerResponse(string $uuid, Message $message) : VoiceResponse

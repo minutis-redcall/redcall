@@ -344,7 +344,7 @@ class CommunicationController extends BaseController
         );
 
         $media = $this->mediaManager->createMp3(
-            $this->languageManager->getLanguageConfig($communicationEntity)->getTextToSpeech(),
+            $this->languageManager->getLanguageConfigForCommunication($communicationEntity)->getTextToSpeech(),
             $this->formatter->formatMessageContent($message)
         );
 

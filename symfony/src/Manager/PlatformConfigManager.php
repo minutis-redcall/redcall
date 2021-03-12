@@ -36,16 +36,13 @@ class PlatformConfigManager
      */
     public function getAvailablePlatforms() : array
     {
-        $platforms = [];
-
-        foreach (array_change_key_case($this->parameterBag->get('platforms'), CASE_LOWER) as $name => $row) {
-            $platforms[] = new PlatformConfig(
-                $name,
+        return array_map(function (array $row) {
+            return new PlatformConfig(
+                $row['name'],
+                $row['label'],
                 $this->languageManager->getLanguageConfig($row['language']),
                 $this->phoneManager->getPhoneConfig($row['phone'])
             );
-        }
-
-        return $platforms;
+        }, $this->parameterBag->get('platforms'));
     }
 }

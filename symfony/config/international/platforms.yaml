@@ -1,0 +1,19 @@
+####################################################################################################################################
+# Useful links:
+#
+# Cloud Text To Speech
+# https://cloud.google.com/text-to-speech/docs/voices
+#
+# ⚠️ The "name" attribute should never be updated without migrations (fields user.platform, category.platform, badge.platform,
+#    structure.platform, volunteer.platform on the db are tied to it).
+####################################################################################################################################
+parameters:
+  platforms:
+    - name: fr
+      label: France
+      language: fr
+      phone: fr
+    - name: es
+      label: Spain
+      language: es
+      phone: es

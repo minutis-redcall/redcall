@@ -66,14 +66,14 @@ class MessageFormatter
 
     public function formatSMSContent(Message $message) : string
     {
-        if ($country = $this->phoneConfigManager->getPhoneConfig($message->getVolunteer())) {
+        if ($country = $this->phoneConfigManager->getPhoneConfigForVolunteer($message->getVolunteer())) {
             $this->phoneConfigManager->applyContext($country);
         }
 
         $contentParts  = [];
         $communication = $message->getCommunication();
 
-        $language = $this->languageManager->getLanguageConfig(
+        $language = $this->languageManager->getLanguageConfigForCommunication(
             $message->getCommunication()
         );
 
@@ -136,7 +136,7 @@ class MessageFormatter
 
     public function formatSimpleSMSContent(Volunteer $volunteer, string $content) : string
     {
-        if ($country = $this->phoneConfigManager->getPhoneConfig($volunteer)) {
+        if ($country = $this->phoneConfigManager->getPhoneConfigForVolunteer($volunteer)) {
             $this->phoneConfigManager->applyContext($country);
         }
 
@@ -156,11 +156,11 @@ class MessageFormatter
 
     public function formatCallContent(Message $message, bool $withChoices = true) : string
     {
-        if ($country = $this->phoneConfigManager->getPhoneConfig($message->getVolunteer())) {
+        if ($country = $this->phoneConfigManager->getPhoneConfigForVolunteer($message->getVolunteer())) {
             $this->phoneConfigManager->applyContext($country);
         }
 
-        $language = $this->languageManager->getLanguageConfig(
+        $language = $this->languageManager->getLanguageConfigForCommunication(
             $message->getCommunication()
         );
 
@@ -201,7 +201,7 @@ class MessageFormatter
 
         $communication = $message->getCommunication();
 
-        $language = $this->languageManager->getLanguageConfig(
+        $language = $this->languageManager->getLanguageConfigForCommunication(
             $message->getCommunication()
         );
 
@@ -235,11 +235,11 @@ class MessageFormatter
             $contentParts[] = '';
         }
 
-        if ($country = $this->phoneConfigManager->getPhoneConfig($message->getVolunteer())) {
+        if ($country = $this->phoneConfigManager->getPhoneConfigForVolunteer($message->getVolunteer())) {
             $this->phoneConfigManager->applyContext($country);
         }
 
-        $language = $this->languageManager->getLanguageConfig(
+        $language = $this->languageManager->getLanguageConfigForCommunication(
             $message->getCommunication()
         );
 
@@ -289,11 +289,11 @@ class MessageFormatter
 
     public function formatHtmlEmailContent(Message $message) : string
     {
-        if ($country = $this->phoneConfigManager->getPhoneConfig($message->getVolunteer())) {
+        if ($country = $this->phoneConfigManager->getPhoneConfigForVolunteer($message->getVolunteer())) {
             $this->phoneConfigManager->applyContext($country);
         }
 
-        $language = $this->languageManager->getLanguageConfig(
+        $language = $this->languageManager->getLanguageConfigForCommunication(
             $message->getCommunication()
         );
 

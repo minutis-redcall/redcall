@@ -262,6 +262,7 @@ base:
   simple_no: Non
   simple_yes: Oui
   wait: 'Un petit instant...'
+  ok: OK
 button:
   submit: Valider
 campaign:

@@ -121,7 +121,7 @@ class Sender
         }
 
         $volunteer = $message->getVolunteer();
-        $country   = $this->phoneConfigManager->getPhoneConfig($volunteer);
+        $country   = $this->phoneConfigManager->getPhoneConfigForVolunteer($volunteer);
 
         if (!$country || !$country->isOutboundSmsEnabled() || !$country->getOutboundSmsNumber()) {
             return;
@@ -155,7 +155,7 @@ class Sender
         }
 
         $volunteer = $message->getVolunteer();
-        $country   = $this->phoneConfigManager->getPhoneConfig($volunteer);
+        $country   = $this->phoneConfigManager->getPhoneConfigForVolunteer($volunteer);
 
         if (!$country || !$country->isOutboundCallEnabled() || !$country->getOutboundCallNumber()) {
             return;

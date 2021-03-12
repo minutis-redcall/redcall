@@ -10,6 +10,11 @@ class PlatformConfig
     private $name;
 
     /**
+     * @var string
+     */
+    private $label;
+
+    /**
      * @var LanguageConfig
      */
     private $defaultLanguage;
@@ -19,9 +24,10 @@ class PlatformConfig
      */
     private $defaultPhone;
 
-    public function __construct(string $name, LanguageConfig $defaultLanguage, PhoneConfig $defaultPhone)
+    public function __construct(string $name, string $label, LanguageConfig $defaultLanguage, PhoneConfig $defaultPhone)
     {
         $this->name            = $name;
+        $this->label           = $label;
         $this->defaultLanguage = $defaultLanguage;
         $this->defaultPhone    = $defaultPhone;
     }
@@ -31,11 +37,9 @@ class PlatformConfig
         return $this->name;
     }
 
-    public function setName(string $name) : PlatformConfig
+    public function getLabel() : string
     {
-        $this->name = $name;
-
-        return $this;
+        return $this->label;
     }
 
     public function getDefaultLanguage() : LanguageConfig
@@ -43,22 +47,8 @@ class PlatformConfig
         return $this->defaultLanguage;
     }
 
-    public function setDefaultLanguage(LanguageConfig $defaultLanguage) : PlatformConfig
-    {
-        $this->defaultLanguage = $defaultLanguage;
-
-        return $this;
-    }
-
     public function getDefaultPhone() : PhoneConfig
     {
         return $this->defaultPhone;
-    }
-
-    public function setDefaultPhone(PhoneConfig $defaultPhone) : PlatformConfig
-    {
-        $this->defaultPhone = $defaultPhone;
-
-        return $this;
     }
 }

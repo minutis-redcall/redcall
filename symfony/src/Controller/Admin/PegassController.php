@@ -7,6 +7,7 @@ use App\Entity\Structure;
 use App\Entity\User;
 use App\Form\Type\UserStructuresType;
 use App\Form\Type\VolunteerWidgetType;
+use App\Manager\PlatformConfigManager;
 use App\Manager\StructureManager;
 use App\Manager\UserManager;
 use App\Manager\VolunteerManager;
@@ -48,6 +49,11 @@ class PegassController extends BaseController
     private $paginationManager;
 
     /**
+     * @var PlatformConfigManager
+     */
+    private $platformManager;
+
+    /**
      * @var RequestStack
      */
     private $requestStack;
@@ -56,12 +62,14 @@ class PegassController extends BaseController
         StructureManager $structureManager,
         VolunteerManager $volunteerManager,
         PaginationManager $paginationManager,
+        PlatformConfigManager $platformManager,
         RequestStack $requestStack)
     {
         $this->userManager       = $userManager;
         $this->structureManager  = $structureManager;
         $this->volunteerManager  = $volunteerManager;
         $this->paginationManager = $paginationManager;
+        $this->platformManager   = $platformManager;
         $this->requestStack      = $requestStack;
     }
 
@@ -77,6 +85,11 @@ class PegassController extends BaseController
             $criteria       = $search->get('criteria')->getData();
             $onlyAdmins     = $search->get('only_admins')->getData();
             $onlyDevelopers = $search->get('only_developers')->getData();
+        }
+
+        $platforms = null;
+        if ($this->getUser()->isRoot()) {
+            $platforms = $this->platformManager->getAvailablePlatforms();
         }
 
         return $this->render('admin/pegass/index.html.twig', [
@@ -356,24 +369,25 @@ class PegassController extends BaseController
 
     private function createSearchForm(Request $request)
     {
-        return $this->createFormBuilder(null, ['csrf_protection' => false])
-                    ->setMethod('GET')
-                    ->add('criteria', TextType::class, [
-                        'label'    => 'password_login.user_list.search.criteria',
-                        'required' => false,
-                    ])
-                    ->add('only_admins', CheckboxType::class, [
-                        'label'    => 'admin.pegass.only_admins',
-                        'required' => false,
-                    ])
-                    ->add('only_developers', CheckboxType::class, [
-                        'label'    => 'admin.pegass.only_developers',
-                        'required' => false,
-                    ])
-                    ->add('submit', SubmitType::class, [
-                        'label' => 'password_login.user_list.search.submit',
-                    ])
-                    ->getForm()
-                    ->handleRequest($request);
+        return $this
+            ->createFormBuilder(null, ['csrf_protection' => false])
+            ->setMethod('GET')
+            ->add('criteria', TextType::class, [
+                'label'    => 'password_login.user_list.search.criteria',
+                'required' => false,
+            ])
+            ->add('only_admins', CheckboxType::class, [
+                'label'    => 'admin.pegass.only_admins',
+                'required' => false,
+            ])
+            ->add('only_developers', CheckboxType::class, [
+                'label'    => 'admin.pegass.only_developers',
+                'required' => false,
+            ])
+            ->add('submit', SubmitType::class, [
+                'label' => 'password_login.user_list.search.submit',
+            ])
+            ->getForm()
+            ->handleRequest($request);
     }
 }

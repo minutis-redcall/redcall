@@ -43,6 +43,11 @@ class User extends AbstractUser
     private $isDeveloper = false;
 
     /**
+     * @ORM\Column(type="boolean", options={"default" : 0})
+     */
+    private $isRoot = false;
+
+    /**
      * @ORM\OneToOne(targetEntity="App\Entity\Volunteer", inversedBy="user")
      */
     private $volunteer;
@@ -109,6 +114,18 @@ class User extends AbstractUser
     public function setIsDeveloper(bool $isDeveloper) : self
     {
         $this->isDeveloper = $isDeveloper;
+
+        return $this;
+    }
+
+    public function isRoot() : bool
+    {
+        return $this->isRoot;
+    }
+
+    public function setIsRoot(bool $isRoot) : User
+    {
+        $this->isRoot = $isRoot;
 
         return $this;
     }
@@ -251,12 +268,17 @@ class User extends AbstractUser
         return $this;
     }
 
+
     public function getRoles() : array
     {
         $roles = parent::getRoles();
 
         if ($this->isDeveloper) {
             $roles[] = 'ROLE_DEVELOPER';
+        }
+
+        if ($this->isRoot) {
+            $roles[] = 'ROLE_ROOT';
         }
 
         return $roles;

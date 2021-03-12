@@ -153,7 +153,7 @@ class SpaceController extends BaseController
         return $this->render('space/phone.html.twig', [
             'session' => $session,
             'form'    => $form->createView(),
-            'country' => $this->phoneConfigManager->getPhoneConfig($volunteer),
+            'country' => $this->phoneConfigManager->getPhoneConfigForVolunteer($volunteer),
         ]);
     }
 

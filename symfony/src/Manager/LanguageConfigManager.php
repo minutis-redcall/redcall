@@ -39,11 +39,16 @@ class LanguageConfigManager
         return $available;
     }
 
-    public function getLanguageConfig(Communication $communication) : ?LanguageConfig
+    public function getLanguageConfigForCommunication(Communication $communication) : ?LanguageConfig
+    {
+        return $this->getLanguageConfig($communication->getLanguage());
+    }
+
+    public function getLanguageConfig(string $lang)
     {
         $languages = array_change_key_case($this->parameterBag->get('languages'), CASE_LOWER);
 
-        $language = $languages[strtolower($communication->getLanguage())] ?? null;
+        $language = $languages[strtolower($lang)] ?? null;
         if (!$language) {
             return null;
         }
