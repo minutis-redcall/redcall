@@ -15,6 +15,11 @@ class PlatformConfig
     private $label;
 
     /**
+     * @var string
+     */
+    private $timezone;
+
+    /**
      * @var LanguageConfig
      */
     private $defaultLanguage;
@@ -24,10 +29,15 @@ class PlatformConfig
      */
     private $defaultPhone;
 
-    public function __construct(string $name, string $label, LanguageConfig $defaultLanguage, PhoneConfig $defaultPhone)
+    public function __construct(string $name,
+        string $label,
+        string $timezone,
+        LanguageConfig $defaultLanguage,
+        PhoneConfig $defaultPhone)
     {
         $this->name            = $name;
         $this->label           = $label;
+        $this->timezone        = $timezone;
         $this->defaultLanguage = $defaultLanguage;
         $this->defaultPhone    = $defaultPhone;
     }
@@ -40,6 +50,11 @@ class PlatformConfig
     public function getLabel() : string
     {
         return $this->label;
+    }
+
+    public function getTimezone() : string
+    {
+        return $this->timezone;
     }
 
     public function getDefaultLanguage() : LanguageConfig

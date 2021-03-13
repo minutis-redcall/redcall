@@ -37,12 +37,7 @@ class PlatformConfigManager
     public function getAvailablePlatforms() : array
     {
         return array_map(function (array $row) {
-            return new PlatformConfig(
-                $row['name'],
-                $row['label'],
-                $this->languageManager->getLanguageConfig($row['language']),
-                $this->phoneManager->getPhoneConfig($row['phone'])
-            );
+            return $this->createFromRow($row);
         }, $this->parameterBag->get('platforms'));
     }
 
@@ -51,12 +46,7 @@ class PlatformConfigManager
         $config = $this->parameterBag->get('platforms');
         foreach ($config as $row) {
             if ($platformName === $row['name']) {
-                return new PlatformConfig(
-                    $row['name'],
-                    $row['label'],
-                    $this->languageManager->getLanguageConfig($row['language']),
-                    $this->phoneManager->getPhoneConfig($row['phone'])
-                );
+                return $this->createFromRow($row);
             }
         }
 
@@ -68,5 +58,16 @@ class PlatformConfigManager
         $platform = $this->getPlaform($platformName);
 
         return $platform->getDefaultLanguage()->getLocale();
+    }
+
+    private function createFromRow(array $row)
+    {
+        return new PlatformConfig(
+            $row['name'],
+            $row['label'],
+            $row['timezone'],
+            $this->languageManager->getLanguageConfig($row['language']),
+            $this->phoneManager->getPhoneConfig($row['phone'])
+        );
     }
 }

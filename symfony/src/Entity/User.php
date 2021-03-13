@@ -28,9 +28,14 @@ class User extends AbstractUser
     private $platform;
 
     /**
-     * @ORM\Column(type="string", length=10, nullable=true)
+     * @ORM\Column(type="string", length=10)
      */
     private $locale;
+
+    /**
+     * @ORM\Column(type="string", length=32)
+     */
+    private $timezone;
 
     /**
      * @ORM\Column(type="string", length=80, nullable=true)
@@ -90,6 +95,18 @@ class User extends AbstractUser
     public function setLocale(?string $locale) : self
     {
         $this->locale = $locale;
+
+        return $this;
+    }
+
+    public function getTimezone() : string
+    {
+        return $this->timezone;
+    }
+
+    public function setTimezone(string $timezone)
+    {
+        $this->timezone = $timezone;
 
         return $this;
     }

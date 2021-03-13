@@ -13,7 +13,9 @@ parameters:
       label: France
       language: fr
       phone: fr
+      timezone: 'Europe/Paris'
     - name: es
       label: Spain
       language: es
       phone: es
+      timezone: 'Europe/Madrid'
