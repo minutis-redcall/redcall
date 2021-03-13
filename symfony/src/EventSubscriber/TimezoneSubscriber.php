@@ -31,6 +31,8 @@ class TimezoneSubscriber implements EventSubscriberInterface
     {
         if (!$this->security->getUser()) {
             date_default_timezone_set('Europe/Paris');
+
+            return;
         }
 
         /** @var User $me */

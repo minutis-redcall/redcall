@@ -36,9 +36,13 @@ class PlatformConfigManager
      */
     public function getAvailablePlatforms() : array
     {
-        return array_map(function (array $row) {
-            return $this->createFromRow($row);
-        }, $this->parameterBag->get('platforms'));
+        $platforms = [];
+        foreach ($this->parameterBag->get('platforms') as $row) {
+            $platform                        = $this->createFromRow($row);
+            $platforms[$platform->getName()] = $platform;
+        }
+
+        return $platforms;
     }
 
     public function getPlaform(string $platformName) : PlatformConfig
