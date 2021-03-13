@@ -45,4 +45,28 @@ class PlatformConfigManager
             );
         }, $this->parameterBag->get('platforms'));
     }
+
+    public function getPlaform(string $platformName) : PlatformConfig
+    {
+        $config = $this->parameterBag->get('platforms');
+        foreach ($config as $row) {
+            if ($platformName === $row['name']) {
+                return new PlatformConfig(
+                    $row['name'],
+                    $row['label'],
+                    $this->languageManager->getLanguageConfig($row['language']),
+                    $this->phoneManager->getPhoneConfig($row['phone'])
+                );
+            }
+        }
+
+        throw new \RuntimeException(sprintf('Platform "%s" not found', $platformName));
+    }
+
+    public function getLocale(string $platformName) : string
+    {
+        $platform = $this->getPlaform($platformName);
+
+        return $platform->getDefaultLanguage()->getLocale();
+    }
 }

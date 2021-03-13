@@ -7,9 +7,11 @@ use App\Component\HttpFoundation\MpdfResponse;
 use App\Entity\Message;
 use App\Entity\VolunteerSession;
 use App\Form\Type\PhoneCardsType;
+use App\Manager\LocaleManager;
 use App\Manager\MessageManager;
 use App\Manager\PhoneConfigManager;
 use App\Manager\PhoneManager;
+use App\Manager\PlatformConfigManager;
 use App\Manager\VolunteerManager;
 use App\Manager\VolunteerSessionManager;
 use App\Tools\PhoneNumber;
@@ -52,6 +54,11 @@ class SpaceController extends BaseController
     private $phoneConfigManager;
 
     /**
+     * @var PlatformConfigManager
+     */
+    private $platformConfigManager;
+
+    /**
      * @var PhoneManager
      */
     private $phoneManager;
@@ -65,6 +72,7 @@ class SpaceController extends BaseController
         VolunteerManager $volunteerManager,
         MessageManager $messageManager,
         PhoneConfigManager $phoneConfigManager,
+        PlatformConfigManager $platformConfigManager,
         PhoneManager $phoneManager,
         TranslatorInterface $translator)
     {
@@ -72,6 +80,7 @@ class SpaceController extends BaseController
         $this->volunteerManager        = $volunteerManager;
         $this->messageManager          = $messageManager;
         $this->phoneConfigManager      = $phoneConfigManager;
+        $this->platformConfigManager   = $platformConfigManager;
         $this->phoneManager            = $phoneManager;
         $this->translator              = $translator;
     }
@@ -79,22 +88,14 @@ class SpaceController extends BaseController
     /**
      * @Route(path="/", name="home")
      */
-    public function home(Request $request, VolunteerSession $session)
+    public function home(Request $request, LocaleManager $localeManager, VolunteerSession $session)
     {
-        // TODO: apply according to the platform, not to the phone (keeping the old code as this will be very
-        //       similar once platforms will be integrated in all resources (user, category, badge, structure,
-        //       volunteer)
-        //
-        //        $country = $this->phoneConfigManager->getPhoneConfig($session->getVolunteer());
-        //
-        //        // What if a volunteer wish to use another supported language?
-        //        if ($country && $request->getLocale() !== $country->getLocale()) {
-        //            $this->phoneConfigManager->applyLocale($country);
-        //
-        //            return $this->redirectToRoute('space_home', [
-        //                'sessionId' => $session,
-        //            ]);
-        //        }
+        if (!$this->getUser()) {
+            $locale = $this->platformConfigManager->getLocale($session->getVolunteer()->getPlatform());
+            if ($locale !== $request->getLocale()) {
+                $localeManager->changeLocale($locale);
+            }
+        }
 
         return $this->render('space/index.html.twig', [
             'session'  => $session,

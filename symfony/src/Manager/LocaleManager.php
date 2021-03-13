@@ -28,7 +28,7 @@ class LocaleManager
     /**
      * @var array
      */
-    private $availableLocales = [];
+    private $availableLocales;
 
     /**
      * @var TokenStorageInterface
@@ -71,15 +71,15 @@ class LocaleManager
     {
         $request = $this->requestStack->getMasterRequest();
 
-        // Set locale from the request
-        if ($locale = $request->attributes->get('_locale')) {
+        // Set locale from the session
+        if ($locale = $this->session->get('_locale')) {
             $this->changeLocale($locale);
 
             return;
         }
 
-        // Set locale from the session
-        if ($locale = $this->session->get('_locale')) {
+        // Set locale from the request
+        if ($locale = $request->attributes->get('_locale')) {
             $this->changeLocale($locale);
 
             return;

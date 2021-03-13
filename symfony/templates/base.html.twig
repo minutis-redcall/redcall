@@ -209,6 +209,9 @@
                     {% if app.request.locale != 'fr' %}
                         <a href="{{ path('locale', {locale: 'fr'}) }}"> 🇫🇷 Français</a>
                     {% endif %}
+                    {% if app.request.locale != 'es' %}
+                        <a href="{{ path('locale', {locale: 'es'}) }}"> 🇪🇸 Spanish</a>
+                    {% endif %}
                 </div>
             {% endblock %}
 
