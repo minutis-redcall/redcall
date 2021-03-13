@@ -38,22 +38,27 @@ class StructureVoter extends Voter
      */
     protected function voteOnAttribute($attribute, $subject, TokenInterface $token)
     {
-        if ($this->security->isGranted('ROLE_ADMIN')) {
+        if ($this->security->isGranted('ROLE_ROOT')) {
             return true;
         }
 
-        /** @var User $user */
-        $user = $this->security->getUser();
-        if (!$user || !($user instanceof UserInterface)) {
+        /** @var User $me */
+        $me = $this->security->getUser();
+        if (!$me || !($me instanceof UserInterface)) {
             return false;
         }
 
         /** @var Structure $structure */
         $structure = $subject;
-        if (0 === $structure->getIdentifier()) {
+
+        if ($me->getPlatform() !== $structure->getPlatform()) {
             return false;
         }
 
-        return $user->getStructures()->contains($structure);
+        if ($this->security->isGranted('ROLE_ADMIN')) {
+            return true;
+        }
+
+        return $me->getStructures()->contains($structure);
     }
 }

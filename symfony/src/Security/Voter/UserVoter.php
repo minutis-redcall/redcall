@@ -6,6 +6,7 @@ use App\Entity\User;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 use Symfony\Component\Security\Core\Security;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 class UserVoter extends Voter
 {
@@ -40,10 +41,23 @@ class UserVoter extends Voter
             return true;
         }
 
+        /** @var User $me */
+        $me = $this->security->getUser();
+        if (!$me || !($me instanceof UserInterface)) {
+            return false;
+        }
+
         /** @var User $user */
         $user = $subject;
 
-        return $this->security->isGranted('ROLE_ADMIN')
-               && $this->security->getUser()->getPlatform() === $user->getPlatform();
+        if ($me->getPlatform() !== $user->getPlatform()) {
+            return false;
+        }
+
+        if ($this->security->isGranted('ROLE_ADMIN')) {
+            return true;
+        }
+
+        return false;
     }
 }

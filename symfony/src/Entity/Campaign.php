@@ -9,6 +9,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 /**
  * @ORM\Entity(repositoryClass="App\Repository\CampaignRepository")
  * @ORM\Table(indexes={
+ *     @ORM\Index(name="platformx", columns={"platform"}),
  *     @ORM\Index(name="expires_atx", columns={"expires_at"})
  * })
  */
@@ -48,6 +49,11 @@ class Campaign
      * @ORM\Column(type="integer")
      */
     private $id;
+
+    /**
+     * @ORM\Column(type="string", length=5)
+     */
+    private $platform;
 
     /**
      * @var string
@@ -112,6 +118,18 @@ class Campaign
     public function setId($id)
     {
         $this->id = $id;
+
+        return $this;
+    }
+
+    public function getPlatform()
+    {
+        return $this->platform;
+    }
+
+    public function setPlatform($platform)
+    {
+        $this->platform = $platform;
 
         return $this;
     }
