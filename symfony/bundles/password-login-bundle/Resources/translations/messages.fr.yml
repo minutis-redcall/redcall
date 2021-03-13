@@ -70,6 +70,7 @@ password_login:
     submit: 'Effectuer les changements'
     success: 'Votre profile est sauvegardé.'
     title: 'Changement de vos informations'
+    email_by_admin: 'Saisissez le nouvel email (ou laissez l''ancien s''il n''a pas changé)'
   register:
     already_exists: 'Cet email est déjà connu dans notre base.'
     already_have_account: 'Vous avez déjà un compte ?'

@@ -85,6 +85,10 @@ admin:
     title: 'Bindings between RedCall users and volunteer database'
     undeveloper: 'Remove developer access'
     unlock: Unlock
+    is_root: 'Countries manager'
+    root_details: 'A "countries manaer" can change user''s platform country.'
+    root: 'Make countries manager'
+    unroot: 'Remove from countries manager'
   statistics:
     buttons:
       general: 'General statistics'
@@ -240,6 +244,7 @@ base:
   home: Home
   modal:
     close: Close
+  ok: OK
   open: Open
   order_by:
     asc: Ascendant
@@ -262,7 +267,6 @@ base:
   simple_no: 'No'
   simple_yes: 'Yes'
   wait: 'One moment...'
-  ok: OK
 button:
   submit: Submit
 campaign:

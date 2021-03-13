@@ -66,21 +66,30 @@
                                     {{ 'password_login.user_list.is_trusted'|trans }} <sup>(2)</sup>
                                 </div>
                                 <div class="text-small">
+                                    {% if user.developer %}
+                                        <span class="h4">✅</span>
+                                    {% else %}
+                                        <span class="h4">❌</span>
+                                    {% endif %}
+                                    {{ 'admin.pegass.developered'|trans }} <sup>(3)</sup>
+                                </div>
+                                <div class="text-small">
                                     {% if user.admin %}
                                         <span class="h4">✅</span>
                                     {% else %}
                                         <span class="h4">❌</span>
                                     {% endif %}
 
-                                    {{ 'password_login.user_list.is_admin'|trans }} <sup>(3)</sup>
+                                    {{ 'password_login.user_list.is_admin'|trans }} <sup>(4)</sup>
                                 </div>
                                 <div class="text-small">
-                                    {% if user.developer %}
+                                    {% if user.root %}
                                         <span class="h4">✅</span>
                                     {% else %}
                                         <span class="h4">❌</span>
                                     {% endif %}
-                                    {{ 'admin.pegass.developered'|trans }} <sup>(4)</sup>
+
+                                    {{ 'admin.pegass.is_root'|trans }} <sup>(5)</sup>
                                 </div>
                                 <div class="text-small">
                                     {% if user.locked %}
@@ -88,7 +97,7 @@
                                     {% else %}
                                         <span class="h4">❌</span>
                                     {% endif %}
-                                    {{ 'admin.pegass.locked'|trans }} <sup>(5)</sup>
+                                    {{ 'admin.pegass.locked'|trans }} <sup>(6)</sup>
                                 </div>
                             </div>
                             <div class="col-md-4">
@@ -145,6 +154,16 @@
                                                 </a>
                                             {% endif %}
 
+                                            {% if user.developer %}
+                                                <a class="dropdown-item text-danger" href="{{ path('admin_pegass_toggle_developer', {id: user.id, csrf: csrf_token('pegass')}) }}">
+                                                    {{ 'admin.pegass.undeveloper'|trans }}
+                                                </a>
+                                            {% else %}
+                                                <a class="dropdown-item text-success" href="{{ path('admin_pegass_toggle_developer', {id: user.id, csrf: csrf_token('pegass')}) }}">
+                                                    {{ 'admin.pegass.developer'|trans }}
+                                                </a>
+                                            {% endif %}
+
                                             {% if user.admin %}
                                                 <a class="dropdown-item text-danger" href="{{ path('admin_pegass_toggle_admin', {id: user.id, csrf: csrf_token('pegass')}) }}">
                                                     {{ 'password_login.user_list.unadmin'|trans }}
@@ -155,14 +174,16 @@
                                                 </a>
                                             {% endif %}
 
-                                            {% if user.developer %}
-                                                <a class="dropdown-item text-danger" href="{{ path('admin_pegass_toggle_developer', {id: user.id, csrf: csrf_token('pegass')}) }}">
-                                                    {{ 'admin.pegass.undeveloper'|trans }}
-                                                </a>
-                                            {% else %}
-                                                <a class="dropdown-item text-success" href="{{ path('admin_pegass_toggle_developer', {id: user.id, csrf: csrf_token('pegass')}) }}">
-                                                    {{ 'admin.pegass.developer'|trans }}
-                                                </a>
+                                            {% if app.user.root %}
+                                                {% if user.root %}
+                                                    <a class="dropdown-item text-danger" href="{{ path('admin_pegass_toggle_root', {id: user.id, csrf: csrf_token('pegass')}) }}">
+                                                        {{ 'admin.pegass.unroot'|trans }}
+                                                    </a>
+                                                {% else %}
+                                                    <a class="dropdown-item text-success" href="{{ path('admin_pegass_toggle_root', {id: user.id, csrf: csrf_token('pegass')}) }}">
+                                                        {{ 'admin.pegass.root'|trans }}
+                                                    </a>
+                                                {% endif %}
                                             {% endif %}
 
                                             <div class="dropdown-divider"></div>
@@ -202,14 +223,16 @@
             <sup>(2)</sup> {{ 'password_login.user_list.description_trusted'|trans }}
         </div>
         <div class="text-left">
-            <sup>(3)</sup> {{ 'password_login.user_list.description_admin'|trans }}
+            <sup>(3)</sup> {{ 'admin.pegass.developered_details'|trans }}
         </div>
         <div class="text-left">
-            <sup>(4)</sup> {{ 'admin.pegass.developered_details'|trans }}
+            <sup>(4)</sup> {{ 'password_login.user_list.description_admin'|trans }}
         </div>
-
         <div class="text-left">
-            <sup>(5)</sup> {{ 'admin.pegass.locked_details'|trans }}
+            <sup>(5)</sup> {{ 'admin.pegass.root_details'|trans }}
+        </div>
+        <div class="text-left">
+            <sup>(6)</sup> {{ 'admin.pegass.locked_details'|trans }}
         </div>
 
         <br/>

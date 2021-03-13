@@ -103,7 +103,7 @@ class ProfileType extends AbstractType
 
         $builder
             ->add('username', Type\EmailType::class, [
-                'label'       => 'password_login.profile.email',
+                'label'       => $options['admin'] ? 'password_login.profile.email_by_admin' : 'password_login.profile.email',
                 'required'    => true,
                 'constraints' => [
                     new Constraints\Email(),

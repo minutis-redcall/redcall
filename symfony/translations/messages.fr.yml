@@ -85,6 +85,10 @@ admin:
     title: 'Connexions entre les utilisateurs de RedCall et la base de données bénévole'
     undeveloper: 'Retirer l''accès développeur'
     unlock: Dégeler
+    is_root: 'Gestion des pays'
+    root_details: 'Un "gestionnaire de pays" peut changer le pays d''action d''un utilisateur.'
+    root: 'Activer la gestion des pays'
+    unroot: 'Desactiver la gestion des pays'
   statistics:
     buttons:
       general: 'Statistiques générales'
@@ -240,6 +244,7 @@ base:
   home: Accueil
   modal:
     close: Fermer
+  ok: OK
   open: Ouvert
   order_by:
     asc: Croissant
@@ -262,7 +267,6 @@ base:
   simple_no: Non
   simple_yes: Oui
   wait: 'Un petit instant...'
-  ok: OK
 button:
   submit: Valider
 campaign:

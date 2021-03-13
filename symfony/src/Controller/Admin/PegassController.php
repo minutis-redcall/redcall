@@ -12,6 +12,7 @@ use App\Manager\StructureManager;
 use App\Manager\UserManager;
 use App\Manager\VolunteerManager;
 use Bundles\PaginationBundle\Manager\PaginationManager;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
@@ -119,6 +120,7 @@ class PegassController extends BaseController
 
     /**
      * @Route(name="update", path="/update/{csrf}/{id}")
+     * @IsGranted("USER", subject="user")
      */
     public function updateNivol(Request $request, string $csrf, User $user)
     {
@@ -141,6 +143,7 @@ class PegassController extends BaseController
 
     /**
      * @Route(name="update_structures", path="/update-structures/{id}")
+     * @IsGranted("USER", subject="user")
      */
     public function updateStructures(Request $request, User $user)
     {
@@ -182,6 +185,7 @@ class PegassController extends BaseController
 
     /**
      * @Route(name="add_structure", path="/add-structure/{csrf}/{id}")
+     * @IsGranted("USER", subject="user")
      */
     public function addStructure(Request $request, string $csrf, User $user)
     {
@@ -254,34 +258,8 @@ class PegassController extends BaseController
     }
 
     /**
-     * @Route(name="submit_user", path="/submit-user/{csrf}")
-     */
-    public function submitUser(Request $request, KernelInterface $kernel, string $csrf)
-    {
-        $this->validateCsrfOrThrowNotFoundException('pegass', $csrf);
-
-        $volunteer = $this->volunteerManager->findOneByNivol($request->get('nivol'));
-        if (!$volunteer) {
-            throw $this->createNotFoundException();
-        }
-
-        $application = new Application($kernel);
-        $application->setAutoExit(false);
-
-        $input = new ArrayInput([
-            'command' => 'user:create',
-            'nivol'   => [$volunteer->getNivol()],
-        ]);
-
-        $application->run($input, new NullOutput());
-
-        return $this->redirectToRoute('admin_pegass_index', [
-            'form[criteria]' => $volunteer->getNivol(),
-        ]);
-    }
-
-    /**
      * @Route(name="toggle_verify", path="/toggle-verify/{csrf}/{id}")
+     * @IsGranted("USER", subject="user")
      */
     public function toggleVerifyAction(User $user, string $csrf)
     {
@@ -297,6 +275,7 @@ class PegassController extends BaseController
 
     /**
      * @Route(name="toggle_trust", path="/toggle-trust/{csrf}/{id}")
+     * @IsGranted("USER", subject="user")
      */
     public function toggleTrustAction(User $user, string $csrf)
     {
@@ -312,6 +291,7 @@ class PegassController extends BaseController
 
     /**
      * @Route(name="toggle_admin", path="/toggle-admin/{csrf}/{id}")
+     * @IsGranted("USER", subject="user")
      */
     public function toggleAdminAction(User $user, string $csrf)
     {
@@ -327,6 +307,7 @@ class PegassController extends BaseController
 
     /**
      * @Route(name="toggle_lock", path="/toggle-lock/{csrf}/{id}")
+     * @IsGranted("USER", subject="user")
      */
     public function toggleLockAction(User $user, string $csrf)
     {
@@ -342,6 +323,7 @@ class PegassController extends BaseController
 
     /**
      * @Route(name="toggle_developer", path="/toggle-developer/{csrf}/{id}")
+     * @IsGranted("USER", subject="user")
      */
     public function toggleDeveloperAction(User $user, $csrf)
     {
@@ -356,7 +338,24 @@ class PegassController extends BaseController
     }
 
     /**
+     * @Route(name="toggle_root", path="/toggle-root/{csrf}/{id}")
+     * @IsGranted("USER", subject="user")
+     */
+    public function toggleRootAction(User $user, string $csrf)
+    {
+        $this->validateCsrfOrThrowNotFoundException('pegass', $csrf);
+
+        $user->setIsRoot(1 - $user->isRoot());
+        $this->userManager->save($user);
+
+        return $this->redirectToRoute('admin_pegass_index', [
+            'form[criteria]' => $user->getNivol(),
+        ]);
+    }
+
+    /**
      * @Route(name="delete", path="/delete/{csrf}/{id}")
+     * @IsGranted("USER", subject="user")
      */
     public function deleteAction(User $user, $csrf)
     {
