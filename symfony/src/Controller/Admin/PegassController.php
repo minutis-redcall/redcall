@@ -11,6 +11,8 @@ use App\Manager\PlatformConfigManager;
 use App\Manager\StructureManager;
 use App\Manager\UserManager;
 use App\Manager\VolunteerManager;
+use App\Model\Csrf;
+use App\Model\PlatformConfig;
 use Bundles\PaginationBundle\Manager\PaginationManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
@@ -94,11 +96,12 @@ class PegassController extends BaseController
         }
 
         return $this->render('admin/pegass/index.html.twig', [
-            'search' => $search->createView(),
-            'type'   => $request->get('type'),
-            'users'  => $this->paginationManager->getPager(
+            'search'    => $search->createView(),
+            'type'      => $request->get('type'),
+            'users'     => $this->paginationManager->getPager(
                 $this->userManager->searchQueryBuilder($criteria ?? null, $onlyAdmins ?? false, $onlyDevelopers ?? false)
             ),
+            'platforms' => $platforms,
         ]);
     }
 
@@ -364,6 +367,22 @@ class PegassController extends BaseController
         $this->userManager->remove($user);
 
         return $this->redirectToRoute('admin_pegass_index');
+    }
+
+    /**
+     * @Route(name="update_platform", path="/change-platform/{csrf}/{id}/{platform}")
+     * @IsGranted("ROLE_ROOT")
+     * @IsGranted("USER", subject="user")
+     */
+    public function changePlatform(User $user, Csrf $csrf, PlatformConfig $platform)
+    {
+        $user->setPlatform($platform);
+
+        $this->userManager->save($user);
+
+        return $this->redirectToRoute('admin_pegass_index', [
+            'form[criteria]' => $user->getNivol(),
+        ]);
     }
 
     private function createSearchForm(Request $request)

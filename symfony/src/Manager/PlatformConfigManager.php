@@ -66,6 +66,7 @@ class PlatformConfigManager
             $row['name'],
             $row['label'],
             $row['timezone'],
+            $row['flag'],
             $this->languageManager->getLanguageConfig($row['language']),
             $this->phoneManager->getPhoneConfig($row['phone'])
         );

@@ -9,6 +9,7 @@
     <br/>
 
     <div class="col-md-12 jumbotron">
+
         <div class="float-right">
             <div class="iti__flag iti__{{ app.user.platform }} float-left"></div>
         </div>
@@ -198,9 +199,22 @@
                                                 </a>
                                             {% endif %}
 
+                                            {% if app.user.root %}
+
+                                                <div class="dropdown-divider"></div>
+
+                                                <div class="dropdown-header">{{ 'admin.pegass.change_platform_title'|trans }}</div>
+                                                {% for platform in platforms %}
+                                                    <a class="dropdown-item {% if platform == user.platform %}disabled{% else %}text-primary{% endif %}" href="{{ path('admin_pegass_update_platform', {id: user.id, csrf: csrf_token('csrf'), platform: platform}) }}">
+                                                        {{ 'admin.pegass.change_platform'|trans({'%platform%': platform.flag ~ ' ' ~ platform.label}) }}
+                                                    </a>
+                                                {% endfor %}
+
+                                            {% endif %}
+
                                             <div class="dropdown-divider"></div>
 
-                                            <a class="dropdown-item text-danger" href="{{ path('admin_pegass_delete', {id: user.id, csrf: csrf_token('pegass')}) }}">
+                                            <a class="dropdown-item text-danger" href="{{ path('admin_pegass_delete', {id: user.id, csrf: csrf_token('pegass')}) }}" onclick="return confirm('{{ 'admin.pegass.delete_confirm'|trans({'%email%': user.username})|e('js') }}');">
                                                 {{ 'password_login.user_list.delete'|trans }}
                                             </a>
                                         </div>

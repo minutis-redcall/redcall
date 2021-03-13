@@ -14,8 +14,10 @@ parameters:
       language: fr
       phone: fr
       timezone: 'Europe/Paris'
+      flag: 🇫🇷
     - name: es
       label: Spain
       language: es
       phone: es
       timezone: 'Europe/Madrid'
+      flag: 🇪🇸

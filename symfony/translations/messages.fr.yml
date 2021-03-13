@@ -89,6 +89,9 @@ admin:
     root_details: 'Un "gestionnaire de pays" peut changer le pays d''action d''un utilisateur.'
     root: 'Activer la gestion des pays'
     unroot: 'Desactiver la gestion des pays'
+    change_platform_title: 'Changement de plateforme'
+    change_platform: 'Transférer vers %platform%'
+    delete_confirm: 'Vraiment supprimer "%email%" ?'
   statistics:
     buttons:
       general: 'Statistiques générales'
