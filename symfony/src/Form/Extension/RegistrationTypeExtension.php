@@ -3,15 +3,13 @@
 namespace App\Form\Extension;
 
 use App\Entity\User;
+use App\Form\Type\PlatformType;
 use App\Manager\PlatformConfigManager;
 use Bundles\PasswordLoginBundle\Form\Type\RegistrationType;
 use Symfony\Component\Form\AbstractTypeExtension;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
-use Symfony\Component\Validator\Constraints\Choice;
-use Symfony\Component\Validator\Constraints\NotNull;
 
 class RegistrationTypeExtension extends AbstractTypeExtension
 {
@@ -37,16 +35,8 @@ class RegistrationTypeExtension extends AbstractTypeExtension
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $choices = $this->platformManager->getPlatformChoices();
-
-        $builder->add('platform', ChoiceType::class, [
-            'label'       => 'security.registration.platform',
-            'expanded'    => true,
-            'choices'     => $choices,
-            'constraints' => [
-                new NotNull(),
-                new Choice(['choices' => $choices]),
-            ],
+        $builder->add('platform', PlatformType::class, [
+            'label' => 'security.registration.platform',
         ]);
 
         $builder->addEventListener(FormEvents::POST_SUBMIT, function (FormEvent $event) {

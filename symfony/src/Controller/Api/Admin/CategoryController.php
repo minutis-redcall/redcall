@@ -151,7 +151,7 @@ class CategoryController extends BaseController
         $category = $this->categoryTransformer->reconstruct($facade, $category);
 
         $this->validate($category, [
-            new UniqueEntity('externalId'),
+            new UniqueEntity(['platform', 'externalId']),
         ]);
 
         $this->categoryManager->save($category);

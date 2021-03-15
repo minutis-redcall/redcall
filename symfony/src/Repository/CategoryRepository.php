@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Base\BaseRepository;
 use App\Entity\Category;
+use App\Security\Helper\Security;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -14,14 +15,31 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class CategoryRepository extends BaseRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    /**
+     * @var Security
+     */
+    private $security;
+
+    public function __construct(ManagerRegistry $registry, Security $security)
     {
+        $this->security = $security;
+
         parent::__construct($registry, Category::class);
+    }
+
+    public function findOneByExternalId(string $externalId) : ?Category
+    {
+        return $this->findOneBy([
+            'platform'   => $this->security->getPlatform(),
+            'externalId' => $externalId,
+        ]);
     }
 
     public function getSearchInCategoriesQueryBuilder(?string $criteria) : QueryBuilder
     {
         $qb = $this->createQueryBuilder('c')
+                   ->andWhere('c.platform = :platform')
+                   ->setParameter('platform', $this->security->getPlatform())
                    ->orderBy('c.priority', 'ASC');
 
         if ($criteria) {
@@ -41,11 +59,12 @@ class CategoryRepository extends BaseRepository
 
     private function addSearchCriteria(QueryBuilder $qb, string $criteria)
     {
-        $qb->andWhere(
-            $qb->expr()->orX(
-                'c.name LIKE :criteria'
+        $qb
+            ->andWhere(
+                $qb->expr()->orX(
+                    'c.name LIKE :criteria'
+                )
             )
-        )
-           ->setParameter('criteria', sprintf('%%%s%%', str_replace(' ', '%', $criteria)));
+            ->setParameter('criteria', sprintf('%%%s%%', str_replace(' ', '%', $criteria)));
     }
 }

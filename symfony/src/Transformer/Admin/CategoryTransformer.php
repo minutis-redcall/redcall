@@ -4,11 +4,22 @@ namespace App\Transformer\Admin;
 
 use App\Entity\Category;
 use App\Facade\Admin\Category\CategoryFacade;
+use App\Security\Helper\Security;
 use Bundles\ApiBundle\Base\BaseTransformer;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
 
 class CategoryTransformer extends BaseTransformer
 {
+    /**
+     * @var Security
+     */
+    private $security;
+
+    public function __construct(Security $security)
+    {
+        $this->security = $security;
+    }
+
     public function expose($object) : ?FacadeInterface
     {
         /** @var Category $category */
@@ -28,10 +39,13 @@ class CategoryTransformer extends BaseTransformer
 
     public function reconstruct(FacadeInterface $facade, $object = null)
     {
+        $category = $object;
+        if (!$category) {
+            $category = new Category();
+            $category->setPlatform($this->security->getPlatform());
+        }
+
         /** @var CategoryFacade $facade */
-
-        $category = $object ?? new Category();
-
         if ($facade->getExternalId()) {
             $category->setExternalId($facade->getExternalId());
         }
