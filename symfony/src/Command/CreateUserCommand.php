@@ -4,6 +4,7 @@ namespace App\Command;
 
 use App\Base\BaseCommand;
 use App\Entity\User;
+use App\Manager\PlatformConfigManager;
 use App\Manager\UserManager;
 use App\Manager\VolunteerManager;
 use Ramsey\Uuid\Uuid;
@@ -23,12 +24,20 @@ class CreateUserCommand extends BaseCommand
      */
     private $volunteerManager;
 
-    public function __construct(UserManager $userManager, VolunteerManager $volunteerManager)
+    /**
+     * @var PlatformConfigManager
+     */
+    private $platformConfigManager;
+
+    public function __construct(UserManager $userManager,
+        VolunteerManager $volunteerManager,
+        PlatformConfigManager $platformConfigManager)
     {
         parent::__construct();
 
-        $this->userManager      = $userManager;
-        $this->volunteerManager = $volunteerManager;
+        $this->userManager           = $userManager;
+        $this->volunteerManager      = $volunteerManager;
+        $this->platformConfigManager = $platformConfigManager;
     }
 
     /**
@@ -71,6 +80,13 @@ class CreateUserCommand extends BaseCommand
             }
 
             $user = new User();
+
+            $platform = $this->platformConfigManager->getPlaform($volunteer->getPlatform());
+
+            $user->setPlatform($platform->getName());
+            $user->setLocale($platform->getDefaultLanguage()->getLocale());
+            $user->setTimezone($platform->getTimezone());
+
             $user->setUsername($volunteer->getEmail());
             $user->setPassword(Uuid::uuid4());
             $user->setIsVerified(true);

@@ -73,6 +73,7 @@ admin:
     developered: Developer
     developered_details: 'A developer can integrate RedCall APIs and access technical features.'
     edit: 'Open volunteer record'
+    is_root: 'Countries manager'
     list_users: 'List user nivols'
     list_users_explain: 'In order to contact all users, copy/paste this nivol list in a new campaign.'
     lock: Lock
@@ -81,14 +82,13 @@ admin:
     only_admins: 'Search among administrators only'
     only_developers: 'Search among developers only'
     open: 'Open Pegass entity'
+    root_details: 'A "countries manaer" can change user''s platform country.'
     structures: 'Update structures for %name%'
     title: 'Bindings between RedCall users and volunteer database'
     undeveloper: 'Remove developer access'
     unlock: Unlock
-    is_root: 'Countries manager'
-    root_details: 'A "countries manaer" can change user''s platform country.'
-    root: 'Make countries manager'
     unroot: 'Remove from countries manager'
+    root: 'Make countries manager'
     change_platform_title: 'Platform update'
     change_platform: 'Switch platform to: %platform%'
     delete_confirm: 'Really remove "%email%"?'
@@ -799,3 +799,6 @@ title:
   campaigns: Campaigns
   costs: Costs
   messages: Messages
+security:
+  registration:
+    platform: 'In which platform would you like to subscribe?'

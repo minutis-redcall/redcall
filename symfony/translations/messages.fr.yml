@@ -73,6 +73,7 @@ admin:
     developered: Développeur
     developered_details: 'Un développeur peut intégrer les APIs de RedCall et accéder à des fonctionnalités techniques.'
     edit: 'Ouvrir la fiche bénévole'
+    is_root: 'Gestion des pays'
     list_users: 'Envoyer un message à tous les utilisateurs'
     list_users_explain: 'Afin de contacter tous les utilisateurs, copiez/collez cette liste de nivols dans un nouveau déclenchement.'
     lock: Geler
@@ -81,14 +82,13 @@ admin:
     only_admins: 'Rechercher parmi les administrateurs'
     only_developers: 'Rechercher parmi les développeurs'
     open: 'Ouvrir l''entrée Pegass'
+    root_details: 'Un "gestionnaire de pays" peut changer le pays d''action d''un utilisateur.'
     structures: 'Mise à jour des structures pour %name%'
     title: 'Connexions entre les utilisateurs de RedCall et la base de données bénévole'
     undeveloper: 'Retirer l''accès développeur'
     unlock: Dégeler
-    is_root: 'Gestion des pays'
-    root_details: 'Un "gestionnaire de pays" peut changer le pays d''action d''un utilisateur.'
-    root: 'Activer la gestion des pays'
     unroot: 'Desactiver la gestion des pays'
+    root: 'Activer la gestion des pays'
     change_platform_title: 'Changement de plateforme'
     change_platform: 'Transférer vers %platform%'
     delete_confirm: 'Vraiment supprimer "%email%" ?'
@@ -799,3 +799,6 @@ title:
   campaigns: Déclenchements
   costs: Coûts
   messages: Messages
+security:
+  registration:
+    platform: 'Sur quelle plateforme souhaitez-vous vous inscrire ?'

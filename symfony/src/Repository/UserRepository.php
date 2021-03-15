@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Entity\Structure;
 use App\Entity\User;
+use App\Security\Helper\Security;
 use Bundles\PasswordLoginBundle\Entity\AbstractUser;
 use Bundles\PasswordLoginBundle\Repository\AbstractUserRepository;
 use Bundles\PasswordLoginBundle\Repository\UserRepositoryInterface;
@@ -13,13 +14,19 @@ use Doctrine\Persistence\ManagerRegistry;
 /**
  * @method User|null find($id, $lockMode = null, $lockVersion = null)
  * @method User|null findOneBy(array $criteria, array $orderBy = null)
- * @method User[]    findAll()
  * @method User[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class UserRepository extends AbstractUserRepository implements UserRepositoryInterface
 {
-    public function __construct(ManagerRegistry $registry)
+    /**
+     * @var Security
+     */
+    private $security;
+
+    public function __construct(ManagerRegistry $registry, Security $security)
     {
+        $this->security = $security;
+
         parent::__construct($registry, User::class);
     }
 
@@ -33,6 +40,21 @@ class UserRepository extends AbstractUserRepository implements UserRepositoryInt
     {
         $this->_em->remove($user);
         $this->_em->flush();
+    }
+
+    public function findAll()
+    {
+        return $this->findBy([
+            'platform' => $this->security->getPlatform(),
+        ]);
+    }
+
+    public function findOneByUsername(string $username) : ?AbstractUser
+    {
+        return $this->findBy([
+            'platform' => $this->security->getPlatform(),
+            'username' => $username,
+        ]);
     }
 
     public function searchQueryBuilder(?string $criteria, ?bool $onlyAdmins, ?bool $onlyDevelopers) : QueryBuilder
@@ -57,6 +79,8 @@ class UserRepository extends AbstractUserRepository implements UserRepositoryInt
                 )
             )
             ->setParameter('criteria', sprintf('%%%s%%', $criteria))
+            ->andWhere('u.platform = :platform')
+            ->setParameter('platform', $this->security->getPlatform())
             ->addOrderBy('u.registeredAt', 'DESC')
             ->addOrderBy('u.username', 'ASC');
 
@@ -79,6 +103,8 @@ class UserRepository extends AbstractUserRepository implements UserRepositoryInt
                     ->andWhere('s.id = :structure')
                     ->setParameter('structure', $structure)
                     ->andWhere('u.isTrusted = true')
+                    ->andWhere('u.platform = :platform')
+                    ->setParameter('platform', $this->security->getPlatform())
                     ->getQuery()
                     ->getResult();
     }

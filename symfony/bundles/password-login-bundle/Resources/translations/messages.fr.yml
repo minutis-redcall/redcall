@@ -60,6 +60,7 @@ password_login:
     captcha: 'Merci de cocher la case ci-dessous'
     current_password: 'Pour des raisons de sécurité, veuillez saisir votre mot de passe actuel'
     email: 'Saisissez votre nouvel email (ou laissez l''ancien s''il n''a pas changé)'
+    email_by_admin: 'Saisissez le nouvel email (ou laissez l''ancien s''il n''a pas changé)'
     home: 'Retourner à la page d''accueil'
     invalid_current_password: 'Le mot de passe que vous avez saisi est invalide.'
     logout: 'Vous avez été déconnecté car vous devez cliquer dans le lien qui vient de vous être envoyé à votre nouvel email. Si votre boîte emails est protégée par un anti-spam, pensez à vérifier que celui-ci n''ait pas été bloqué.'
@@ -70,7 +71,6 @@ password_login:
     submit: 'Effectuer les changements'
     success: 'Votre profile est sauvegardé.'
     title: 'Changement de vos informations'
-    email_by_admin: 'Saisissez le nouvel email (ou laissez l''ancien s''il n''a pas changé)'
   register:
     already_exists: 'Cet email est déjà connu dans notre base.'
     already_have_account: 'Vous avez déjà un compte ?'

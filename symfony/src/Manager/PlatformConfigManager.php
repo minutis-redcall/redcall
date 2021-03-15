@@ -45,6 +45,16 @@ class PlatformConfigManager
         return $platforms;
     }
 
+    public function getPlatformChoices() : array
+    {
+        $platforms = [];
+        foreach ($this->getAvailablePlatforms() as $name => $platform) {
+            $platforms[sprintf('%s %s', $platform->getFlag(), $platform->getLabel())] = $name;
+        }
+
+        return $platforms;
+    }
+
     public function getPlaform(string $platformName) : PlatformConfig
     {
         $config = $this->parameterBag->get('platforms');

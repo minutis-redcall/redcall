@@ -60,6 +60,7 @@ password_login:
     captcha: 'Please tick the checkbox below'
     current_password: 'For security reasons, please enter your current password.'
     email: 'Enter your new email (leave the current one if it didn''t change)'
+    email_by_admin: 'Enter new email (leave the current one if it didn''t change)'
     home: 'Go back home'
     invalid_current_password: 'Entered password is invalid.'
     logout: 'You have been signed out because you need to click on the link you will soon receive on the new email address you entered. If your inbox is behind an anti-spam protection, check that it has not been blocked.'
@@ -70,7 +71,6 @@ password_login:
     submit: 'Save changes'
     success: 'Your profile have been saved.'
     title: 'Change your information'
-    email_by_admin: 'Enter new email (leave the current one if it didn''t change)'
   register:
     already_exists: 'This email is already known in our database.'
     already_have_account: 'Already have an account?'

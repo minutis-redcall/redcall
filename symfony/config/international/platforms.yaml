@@ -16,7 +16,7 @@ parameters:
       timezone: 'Europe/Paris'
       flag: 🇫🇷
     - name: es
-      label: Spain
+      label: España
       language: es
       phone: es
       timezone: 'Europe/Madrid'
