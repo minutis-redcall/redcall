@@ -10,6 +10,7 @@ use App\Form\Type\CategoryWigetType;
 use App\Manager\BadgeManager;
 use App\Model\Csrf;
 use Bundles\PaginationBundle\Manager\PaginationManager;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -63,6 +64,7 @@ class BadgeController extends BaseController
 
     /**
      * @Route(path="/remove-{id}/{token}", name="remove")
+     * @IsGranted("BADGE", subject="badge")
      */
     public function remove(Badge $badge, Csrf $token)
     {
@@ -76,6 +78,7 @@ class BadgeController extends BaseController
     /**
      * @Route(path="/manage-{id}", name="manage")
      * @Template("admin/badge/manage.html.twig")
+     * @IsGranted("BADGE", subject="badge")
      */
     public function manage(Request $request, ?Badge $badge = null)
     {
@@ -108,6 +111,7 @@ class BadgeController extends BaseController
 
     /**
      * @Route(path="/toggle-visibility-{id}/{token}", name="toggle_visibility")
+     * @IsGranted("BADGE", subject="badge")
      */
     public function toggleVisibility(Badge $badge, Csrf $token)
     {

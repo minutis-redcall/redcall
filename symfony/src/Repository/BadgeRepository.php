@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Base\BaseRepository;
 use App\Entity\Badge;
 use App\Entity\Category;
+use App\Security\Helper\Security;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
@@ -17,14 +18,31 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class BadgeRepository extends BaseRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    /**
+     * @var Security
+     */
+    private $security;
+
+    public function __construct(ManagerRegistry $registry, Security $security)
     {
+        $this->security = $security;
+
         parent::__construct($registry, Badge::class);
+    }
+
+    public function findOneByExternalId(string $externalId) : ?Badge
+    {
+        return $this->findOneBy([
+            'platform'   => $this->security->getPlatform(),
+            'externalId' => $externalId,
+        ]);
     }
 
     public function getSearchInBadgesQueryBuilder(?string $criteria) : QueryBuilder
     {
         $qb = $this->createQueryBuilder('b')
+                   ->andWhere('b.platform = :platform')
+                   ->setParameter('platform', $this->security->getPlatform())
                    ->leftJoin('b.category', 'c')
                    ->addOrderBy('b.visibility', 'DESC')
                    ->addOrderBy('b.synonym', 'ASC')
@@ -42,6 +60,8 @@ class BadgeRepository extends BaseRepository
     public function getVolunteerCountInBadgeList(array $ids) : array
     {
         $rows = $this->createQueryBuilder('b')
+                     ->andWhere('b.platform = :platform')
+                     ->setParameter('platform', $this->security->getPlatform())
                      ->select('b.id, COUNT(v) AS count')
                      ->join('b.volunteers', 'v')
                      ->andWhere('b.id IN (:ids)')
@@ -105,6 +125,8 @@ class BadgeRepository extends BaseRepository
     public function getBadgesInCategoryQueryBuilder(Category $category) : QueryBuilder
     {
         return $this->createQueryBuilder('b')
+                    ->andWhere('b.platform = :platform')
+                    ->setParameter('platform', $this->security->getPlatform())
                     ->andWhere('b.visibility = true')
                     ->andWhere('b.synonym IS NULL')
                     ->join('b.category', 'c')
