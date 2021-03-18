@@ -62,12 +62,16 @@ admin:
       priority: 'Rendering priority'
     search: 'Search for a category'
     title: 'Manage badge categories'
+    lock: 'Lock category'
+    unlock: 'Unlock category'
   home:
     link: Administration
   pegass:
     add_structure: 'Add a structure'
     bound_volunteer: 'Bound volunteer: %name%'
+    change_platform_title: 'Platform update'
     create_user: 'Add a new user'
+    delete_confirm: 'Really remove "%email%"?'
     delete_structures: 'Delete one or several structures'
     developer: 'Grant developer access'
     developered: Developer
@@ -89,9 +93,7 @@ admin:
     unlock: Unlock
     unroot: 'Remove from countries manager'
     root: 'Make countries manager'
-    change_platform_title: 'Platform update'
     change_platform: 'Switch platform to: %platform%'
-    delete_confirm: 'Really remove "%email%"?'
   statistics:
     buttons:
       general: 'General statistics'
@@ -681,6 +683,9 @@ report:
       prices: Costs
       structure: Structure
     title: 'Implicated structures'
+security:
+  registration:
+    platform: 'In which platform would you like to subscribe?'
 space:
   consult_data:
     announcement_email: '📧 Message sent by email on %day%/%month%/%year% at %hours%h%mins%'
@@ -799,6 +804,3 @@ title:
   campaigns: Campaigns
   costs: Costs
   messages: Messages
-security:
-  registration:
-    platform: 'In which platform would you like to subscribe?'

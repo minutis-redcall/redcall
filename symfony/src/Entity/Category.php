@@ -20,6 +20,8 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Category
 {
     /**
+     * @var int
+     *
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
@@ -27,11 +29,15 @@ class Category
     private $id;
 
     /**
+     * @var string
+     *
      * @ORM\Column(type="string", length=5)
      */
     private $platform;
 
     /**
+     * @var string
+     *
      * @ORM\Column(type="string", length=64)
      * @Assert\NotNull
      * @Assert\Length(min=1, max=64)
@@ -39,6 +45,8 @@ class Category
     private $externalId;
 
     /**
+     * @var string
+     *
      * @ORM\Column(type="string", length=255)
      * @Assert\NotNull
      * @Assert\Length(min=1, max=255)
@@ -46,6 +54,8 @@ class Category
     private $name;
 
     /**
+     * @var int
+     *
      * @ORM\Column(type="integer", nullable=true)
      * @Assert\Regex(pattern="/\d+/")
      */
@@ -55,6 +65,20 @@ class Category
      * @ORM\OneToMany(targetEntity=Badge::class, mappedBy="category", cascade={"persist"})
      */
     private $badges;
+
+    /**
+     * @var bool
+     *
+     * @ORM\Column(type="boolean", options={"default" : 1})
+     */
+    private $enabled = true;
+
+    /**
+     * @var bool
+     *
+     * @ORM\Column(type="boolean", options={"default" : 0})
+     */
+    private $locked = false;
 
     public function __construct()
     {
@@ -66,24 +90,24 @@ class Category
         return $this->id;
     }
 
-    public function getPlatform()
+    public function getPlatform() : string
     {
         return $this->platform;
     }
 
-    public function setPlatform($platform)
+    public function setPlatform(string $platform)
     {
         $this->platform = $platform;
 
         return $this;
     }
 
-    public function getExternalId()
+    public function getExternalId() : ?string
     {
         return $this->externalId;
     }
 
-    public function setExternalId($externalId)
+    public function setExternalId(?string $externalId)
     {
         $this->externalId = $externalId;
 
@@ -141,6 +165,30 @@ class Category
                 $badge->setCategory(null);
             }
         }
+
+        return $this;
+    }
+
+    public function isEnabled() : bool
+    {
+        return $this->enabled;
+    }
+
+    public function setEnabled(bool $enabled) : Category
+    {
+        $this->enabled = $enabled;
+
+        return $this;
+    }
+
+    public function isLocked() : bool
+    {
+        return $this->locked;
+    }
+
+    public function setLocked(bool $locked) : Category
+    {
+        $this->locked = $locked;
 
         return $this;
     }

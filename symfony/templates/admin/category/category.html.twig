@@ -1,6 +1,15 @@
 <div class="card">
     <div class="card-header">
-        <div class="card-title h3">{{ category.name }}</div>
+        <div class="card-title h3" style="{% if not category.enabled %}color:darkgray;{% endif %}">
+            {{ category.name }}
+            <div class="float-right">
+                {% if category.locked %}
+                    <a href="#" class="toggle-lock" data-id="{{ category.id }}" title="{{ 'admin.category.unlock'|trans }}">🔒</a>
+                {% else %}
+                    <a href="#" class="toggle-lock" data-id="{{ category.id }}" title="{{ 'admin.category.lock'|trans }}">🔓</a>
+                {% endif %}
+            </div>
+        </div>
     </div>
     <div class="card-body">
         <p>{{ 'admin.category.card.badge_count'|trans({'%badge_count%': category.badges.count}) }}</p>
@@ -10,10 +19,12 @@
 
         <div>
 
-            <a href="#" class="btn btn-small btn-secondary open-category-form"
-               data-uri="{{ path('admin_category_form', {id: category.id}) }}">
-                ✏️ {{ 'base.button.update'|trans }}
-            </a>
+            <span class="{% if category.locked %}d-none{% endif %}">
+                <a href="#" class="btn btn-small btn-secondary open-category-form"
+                   data-uri="{{ path('admin_category_form', {id: category.id}) }}">
+                    ✏️ {{ 'base.button.update'|trans }}
+                </a>
+            </span>
 
             <a href="#" class="btn btn-small btn-secondary open-category-badges"
                data-uri="{{ path('admin_category_badges', {id: category.id}) }}">
@@ -21,14 +32,16 @@
             </a>
 
             <div class="float-right">
-                <a href="#"
-                   class="btn btn-small btn-secondary delete-category"
-                   style="border: 1px solid red!important;"
-                   data-id="{{ category.id }}"
-                   data-name="{{ category.name|e('js') }}"
-                   data-uri="{{ path('admin_category_delete', {id: category.id, token: csrf_token('token')}) }}">
-                    ❌
-                </a>
+                <span class="{% if category.locked %}d-none{% endif %}">
+                    <a href="#"
+                       class="btn btn-small btn-secondary delete-category"
+                       style="border: 1px solid red!important;"
+                       data-id="{{ category.id }}"
+                       data-name="{{ category.name|e('js') }}"
+                       data-uri="{{ path('admin_category_delete', {id: category.id, token: csrf_token('token')}) }}">
+                        ❌
+                    </a>
+                </span>
             </div>
 
         </div>

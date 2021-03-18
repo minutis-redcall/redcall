@@ -142,6 +142,23 @@ class CategoryController extends BaseController
     }
 
     /**
+     * @Route(name="toggle_lock", path="/lock-unlock-{id}/{token}"))
+     * @IsGranted("CATEGORY", subject="category")
+     */
+    public function toggleLockCategory(Category $category, Csrf $token)
+    {
+        $category->setLocked(1 - $category->isLocked());
+
+        $this->categoryManager->save($category);
+
+        return $this->json([
+            'view' => $this->renderView('admin/category/category.html.twig', [
+                'category' => $category,
+            ]),
+        ]);
+    }
+
+    /**
      * @Route(name="badges", path="/list-badges-in-category-{id}")
      * @IsGranted("CATEGORY", subject="category")
      */

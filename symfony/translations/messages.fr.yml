@@ -62,12 +62,16 @@ admin:
       priority: 'Priorité d''affichage'
     search: 'Rechercher une catégorie'
     title: 'Gestion des catégories de badge'
+    lock: 'Geler la catégorie'
+    unlock: 'Dégeler la catégorie'
   home:
     link: Administration
   pegass:
     add_structure: 'Ajouter une structure'
     bound_volunteer: 'Bénévole associé : %name%'
+    change_platform_title: 'Changement de plateforme'
     create_user: 'Ajouter un nouvel utilisateur'
+    delete_confirm: 'Vraiment supprimer "%email%" ?'
     delete_structures: 'Effacer une ou plusieurs structures'
     developer: 'Donner l''accès développeur'
     developered: Développeur
@@ -89,9 +93,7 @@ admin:
     unlock: Dégeler
     unroot: 'Desactiver la gestion des pays'
     root: 'Activer la gestion des pays'
-    change_platform_title: 'Changement de plateforme'
     change_platform: 'Transférer vers %platform%'
-    delete_confirm: 'Vraiment supprimer "%email%" ?'
   statistics:
     buttons:
       general: 'Statistiques générales'
@@ -681,6 +683,9 @@ report:
       prices: Coûts
       structure: Structure
     title: 'Structures impliquées'
+security:
+  registration:
+    platform: 'Sur quelle plateforme souhaitez-vous vous inscrire ?'
 space:
   consult_data:
     announcement_email: '📧 Message envoyé par email le %day%/%month%/%year% à %hours%h%mins%'
@@ -799,6 +804,3 @@ title:
   campaigns: Déclenchements
   costs: Coûts
   messages: Messages
-security:
-  registration:
-    platform: 'Sur quelle plateforme souhaitez-vous vous inscrire ?'

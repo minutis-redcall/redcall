@@ -40,7 +40,8 @@ class CategoryRepository extends BaseRepository
         $qb = $this->createQueryBuilder('c')
                    ->andWhere('c.platform = :platform')
                    ->setParameter('platform', $this->security->getPlatform())
-                   ->orderBy('c.priority', 'ASC');
+                   ->addOrderBy('c.enabled', 'DESC')
+                   ->addOrderBy('c.priority', 'ASC');
 
         if ($criteria) {
             $this->addSearchCriteria($qb, $criteria);
