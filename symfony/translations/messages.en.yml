@@ -64,6 +64,8 @@ admin:
     title: 'Manage badge categories'
     lock: 'Lock category'
     unlock: 'Unlock category'
+    enable: 'Enable category'
+    disable: 'Disable category'
   home:
     link: Administration
   pegass:

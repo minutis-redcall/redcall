@@ -88,6 +88,10 @@ class CategoryController extends BaseController
             throw $this->createAccessDeniedException();
         }
 
+        if ($category->isLocked()) {
+            throw $this->createNotFoundException();
+        }
+
         if (!$category) {
             $category = new Category();
             $category->setPlatform($this->getPlatform());
@@ -136,6 +140,10 @@ class CategoryController extends BaseController
      */
     public function deleteCategory(Category $category, Csrf $token)
     {
+        if ($category->isLocked()) {
+            throw $this->createNotFoundException();
+        }
+
         $this->categoryManager->remove($category);
 
         return new NoContentResponse();
@@ -147,7 +155,28 @@ class CategoryController extends BaseController
      */
     public function toggleLockCategory(Category $category, Csrf $token)
     {
+        if (!$category->isEnabled()) {
+            throw $this->createNotFoundException();
+        }
+
         $category->setLocked(1 - $category->isLocked());
+
+        $this->categoryManager->save($category);
+
+        return $this->json([
+            'view' => $this->renderView('admin/category/category.html.twig', [
+                'category' => $category,
+            ]),
+        ]);
+    }
+
+    /**
+     * @Route(name="toggle_enable", path="/enable-disable-{id}/{token}"))
+     * @IsGranted("CATEGORY", subject="category")
+     */
+    public function toggleEnableCategory(Category $category, Csrf $token)
+    {
+        $category->setEnabled(1 - $category->isEnabled());
 
         $this->categoryManager->save($category);
 

@@ -64,6 +64,8 @@ admin:
     title: 'Gestion des catégories de badge'
     lock: 'Geler la catégorie'
     unlock: 'Dégeler la catégorie'
+    enable: 'Activer la catéogrie'
+    disable: 'Desactiver la catégorie'
   home:
     link: Administration
   pegass:

@@ -33,6 +33,8 @@ class CategoryTransformer extends BaseTransformer
         $facade->setExternalId($category->getExternalId());
         $facade->setName($category->getName());
         $facade->setPriority($category->getPriority());
+        $facade->setLocked($category->isLocked());
+        $facade->setEnabled($category->isEnabled());
 
         return $facade;
     }
@@ -46,16 +48,24 @@ class CategoryTransformer extends BaseTransformer
         }
 
         /** @var CategoryFacade $facade */
-        if ($facade->getExternalId()) {
+        if (null !== $facade->getExternalId()) {
             $category->setExternalId($facade->getExternalId());
         }
 
-        if ($facade->getName()) {
+        if (null !== $facade->getName()) {
             $category->setName($facade->getName());
         }
 
-        if ($facade->getPriority()) {
+        if (null !== $facade->getPriority()) {
             $category->setPriority($facade->getPriority());
+        }
+
+        if (null !== $facade->isLocked()) {
+            $category->setLocked($facade->isLocked());
+        }
+
+        if (null !== $facade->isEnabled()) {
+            $category->setEnabled($facade->isEnabled());
         }
 
         return $category;

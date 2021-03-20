@@ -266,7 +266,7 @@ class CategoryController extends BaseController
      *   response = @Facade(class     = CollectionFacade::class,
      *                      decorates = @Facade(class = UpdateStatusFacade::class))
      * )
-     * @Route(name="lock", path="/badge/lock", methods={"PUT"})
+     * @Route(name="lock", path="/bulk/lock", methods={"PUT"})
      */
     public function lock(CategoryReferenceCollectionFacade $externalIds)
     {
@@ -283,11 +283,45 @@ class CategoryController extends BaseController
      *   response = @Facade(class     = CollectionFacade::class,
      *                      decorates = @Facade(class = UpdateStatusFacade::class))
      * )
-     * @Route(name="unlock", path="/badge/unlock", methods={"PUT"})
+     * @Route(name="unlock", path="/bulk/unlock", methods={"PUT"})
      */
     public function unlock(CategoryReferenceCollectionFacade $externalIds)
     {
         return $this->bulkUpdateCategories($externalIds, Crud::LOCK());
+    }
+
+    /**
+     * Disable a list of categories.
+     *
+     * @Endpoint(
+     *   priority = 19,
+     *   request  = @Facade(class     = CategoryReferenceCollectionFacade::class,
+     *                      decorates = @Facade(class = CategoryReferenceFacade::class)),
+     *   response = @Facade(class     = CollectionFacade::class,
+     *                      decorates = @Facade(class = UpdateStatusFacade::class))
+     * )
+     * @Route(name="disable", path="/bulk/disable", methods={"PUT"})
+     */
+    public function disable(CategoryReferenceCollectionFacade $externalIds)
+    {
+        return $this->bulkUpdateCategories($externalIds, Crud::DISABLE());
+    }
+
+    /**
+     * Enable a list of categories.
+     *
+     * @Endpoint(
+     *   priority = 20,
+     *   request  = @Facade(class     = CategoryReferenceCollectionFacade::class,
+     *                      decorates = @Facade(class = CategoryReferenceFacade::class)),
+     *   response = @Facade(class     = CollectionFacade::class,
+     *                      decorates = @Facade(class = UpdateStatusFacade::class))
+     * )
+     * @Route(name="enable", path="/bulk/enable", methods={"PUT"})
+     */
+    public function enable(CategoryReferenceCollectionFacade $externalIds)
+    {
+        return $this->bulkUpdateCategories($externalIds, Crud::ENABLE());
     }
 
     private function bulkUpdateCategories(CategoryReferenceCollectionFacade $externalIds, Crud $action)
@@ -319,11 +353,27 @@ class CategoryController extends BaseController
                     break;
                 case Crud::UNLOCK():
                     if (!$category->isLocked()) {
-                        $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Category is not locked');
+                        $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Category already unlocked');
                         continue 2;
                     }
 
                     $category->setLocked(false);
+                    break;
+                case Crud::ENABLE():
+                    if ($category->isEnabled()) {
+                        $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Category already enabled');
+                        continue 2;
+                    }
+
+                    $category->setEnabled(true);
+                    break;
+                case Crud::DISABLE():
+                    if (!$category->isEnabled()) {
+                        $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Category already disabled');
+                        continue 2;
+                    }
+
+                    $category->setEnabled(false);
                     break;
             }
 

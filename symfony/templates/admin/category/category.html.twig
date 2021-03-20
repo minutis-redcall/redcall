@@ -3,10 +3,14 @@
         <div class="card-title h3" style="{% if not category.enabled %}color:darkgray;{% endif %}">
             {{ category.name }}
             <div class="float-right">
-                {% if category.locked %}
-                    <a href="#" class="toggle-lock" data-id="{{ category.id }}" title="{{ 'admin.category.unlock'|trans }}">🔒</a>
-                {% else %}
-                    <a href="#" class="toggle-lock" data-id="{{ category.id }}" title="{{ 'admin.category.lock'|trans }}">🔓</a>
+                {% if not category.locked %}
+                    <label class="switch">
+                        <input type="checkbox"
+                               class="toggle-enable"
+                               {% if category.enabled %}checked{% endif %}
+                               data-id="{{ category.id }}"/>
+                        <span class="slider"></span>
+                    </label>
                 {% endif %}
             </div>
         </div>
@@ -17,7 +21,7 @@
 
         <br/>
 
-        <div>
+        <div {% if not category.enabled %}class="d-none"{% endif %}>
 
             <span class="{% if category.locked %}d-none{% endif %}">
                 <a href="#" class="btn btn-small btn-secondary open-category-form"
@@ -30,6 +34,14 @@
                data-uri="{{ path('admin_category_badges', {id: category.id}) }}">
                 🎫 {{ 'admin.category.badges'|trans }}
             </a>
+
+            {% if category.enabled %}
+                {% if category.locked %}
+                    <a href="#" class="toggle-lock btn btn-secondary" data-id="{{ category.id }}" title="{{ 'admin.category.unlock'|trans }}">🔓</a>
+                {% else %}
+                    <a href="#" class="toggle-lock btn btn-secondary" data-id="{{ category.id }}" title="{{ 'admin.category.lock'|trans }}">🔒</a>
+                {% endif %}
+            {% endif %}
 
             <div class="float-right">
                 <span class="{% if category.locked %}d-none{% endif %}">
