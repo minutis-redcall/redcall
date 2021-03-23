@@ -10,6 +10,7 @@ use App\Form\Type\CategoryWigetType;
 use App\Manager\BadgeManager;
 use App\Model\Csrf;
 use Bundles\PaginationBundle\Manager\PaginationManager;
+use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
@@ -76,12 +77,21 @@ class BadgeController extends BaseController
     }
 
     /**
-     * @Route(path="/manage-{id}", name="manage")
+     * @Route(path="/manage-{id}", name="manage", defaults={"id"=null})
      * @Template("admin/badge/manage.html.twig")
-     * @IsGranted("BADGE", subject="badge")
      */
     public function manage(Request $request, ?Badge $badge = null)
     {
+        if (null !== $badge && !$this->isGranted('BADGE', $badge)) {
+            throw $this->createNotFoundException();
+        }
+
+        if (!$badge) {
+            $badge = new Badge();
+            $badge->setPlatform($this->getPlatform());
+            $badge->setExternalId(Uuid::uuid4());
+        }
+
         $collection = clone $badge->getSynonyms();
         $form       = $this->createManageForm($request, $badge);
 

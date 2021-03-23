@@ -7,7 +7,6 @@
     <h1>{{ 'admin.badge.title'|trans }}</h1>
 
     <div>
-        {{ 'admin.badge.description.1'|trans }}
         <ul>
             {% for i in 10..18 %}
                 <li>{{ ('admin.badge.description.' ~ i)|trans }}</li>
@@ -16,6 +15,10 @@
     </div>
 
     <div class="text-right">
+        <a class="btn btn-secondary" href="{{ path('admin_badge_manage') }}">
+            {{ 'admin.badge.create'|trans }}
+        </a>
+
         <a class="btn btn-secondary" href="{{ path('admin_category_index') }}">
             {{ 'admin.category.title'|trans }}
         </a>

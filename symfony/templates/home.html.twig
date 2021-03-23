@@ -3,6 +3,13 @@
 {% block menu %}
     <div class="text-center">
         <img src="{{ asset('minutis.png') }}" style="max-width: 100px;"/>
+
+        {% if app.user.root %}
+            <div class="float-right" style="margin-top:-5px;">
+                {{ render(controller('\\App\\Controller\\Admin\\PlatformController::renderSwitch')) }}
+            </div>
+        {% endif %}
+
     </div>
 {% endblock %}
 

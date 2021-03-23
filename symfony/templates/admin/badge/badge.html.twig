@@ -29,6 +29,7 @@
         </div>
     </div>
     <div class="card-body">
+
         {% if badge.visibility %}
             <div class="float-right">
                 {{ 'admin.badge.rendering_priority'|trans({'%priority%': badge.renderingPriority}) }}
@@ -91,12 +92,13 @@
                         ❌
                     </a>
                 {% endif %}
+
                 <div class="float-control"></div>
+
                 <div class="float-right">
-                    <span style="color:lightgray">ID: {{ badge.externalId }}</span>
+                    <span style="color:lightgray;">ID: {{ badge.externalId }}</span>
                 </div>
             </div>
-
         </div>
 
     </div>
