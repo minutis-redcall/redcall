@@ -18,7 +18,6 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -92,6 +91,10 @@ class BadgeController extends BaseController
             $badge->setExternalId(Uuid::uuid4());
         }
 
+        if ($badge->isLocked()) {
+            throw $this->createNotFoundException();
+        }
+
         $collection = clone $badge->getSynonyms();
         $form       = $this->createManageForm($request, $badge);
 
@@ -122,16 +125,46 @@ class BadgeController extends BaseController
     /**
      * @Route(path="/toggle-visibility-{id}/{token}", name="toggle_visibility")
      * @IsGranted("BADGE", subject="badge")
+     * @Template("admin/badge/badge.html.twig")
      */
     public function toggleVisibility(Badge $badge, Csrf $token)
     {
+        if ($badge->isLocked()) {
+            throw $this->createNotFoundException();
+        }
+
         if ($badge->isUsable()) {
             $badge->setVisibility(1 - $badge->getVisibility());
 
             $this->badgeManager->save($badge);
         }
 
-        return new Response('', Response::HTTP_NO_CONTENT);
+        return $this->getContext($badge);
+    }
+
+    /**
+     * @Route(path="/toggle-lock-{id}/{token}", name="toggle_lock")
+     * @IsGranted("BADGE", subject="badge")
+     * @Template("admin/badge/badge.html.twig")
+     */
+    public function toggleLock(Badge $badge, Csrf $token)
+    {
+        $badge->setLocked(1 - $badge->isLocked());
+
+        $this->badgeManager->save($badge);
+
+        return $this->getContext($badge);
+    }
+
+    private function getContext(Badge $badge)
+    {
+        $counts = $this->badgeManager->getVolunteerCountInBadgeList([$badge->getId()]);
+        $count  = $counts ? reset($counts) : 0;
+
+        return [
+            'badge' => $badge,
+            'count' => $count,
+        ];
     }
 
     private function createSearchForm(Request $request, string $label) : FormInterface

@@ -44,6 +44,8 @@ admin:
     title: 'Gestion des badges'
     triggering_priority: 'Prio. déclenchement: %priority%'
     used_by: 'Utilisé par %count% bénévoles'
+    lock: 'Geler le badge'
+    unlock: 'Dégeler le badge'
   category:
     badges: Badges
     badges_add: 'Ajouter un badge'

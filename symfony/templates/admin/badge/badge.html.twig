@@ -15,12 +15,13 @@
                 &nbsp;
                 <span class="badge badge-pill badge-secondary">{{ badge.category.name }}</span>
             {% endif %}
-            {% if badge.usable %}
+            {% if badge.usable and not badge.locked %}
                 <div class="float-right" style="margin-top:-15px;margin-right:-10px;">
                     <label class="switch">
                         <input type="checkbox"
                                class="toggle-visibility"
                                {% if badge.visibility %}checked{% endif %}
+                               data-id="{{ badge.id }}"
                                data-href="{{ path('admin_badge_toggle_visibility', {id: badge.id, token: csrf_token('token')}) }}"/>
                         <span class="slider"></span>
                     </label>
@@ -30,13 +31,13 @@
     </div>
     <div class="card-body">
 
-        {% if badge.visibility %}
-            <div class="float-right">
+        <div class="float-right">
+            {% if badge.visibility %}
                 {{ 'admin.badge.rendering_priority'|trans({'%priority%': badge.renderingPriority}) }}
                 <br/>
-                {{ 'admin.badge.triggering_priority'|trans({'%priority%': badge.triggeringPriority}) }}
-            </div>
-        {% endif %}
+            {% endif %}
+            {{ 'admin.badge.triggering_priority'|trans({'%priority%': badge.triggeringPriority}) }}
+        </div>
 
         <strong>{{ badge.description }}</strong>
 
@@ -76,31 +77,41 @@
 
         <br/>
 
-        <div>
-            <a href="{{ path('admin_badge_manage', app.request.query.all|merge({id: badge.id})) }}" class="btn btn-small btn-secondary open-category-form" data-uri="">
-                ✏️ {{ 'base.button.update'|trans }}
-            </a>
-
-            <div class="float-right">
-                {% if badge.canBeRemoved %}
-                    <a href="#"
-                       class="btn btn-small btn-secondary delete-badge"
-                       style="border: 1px solid red!important;"
-                       data-id="{{ badge.id }}"
-                       data-name="{{ badge.name|e('js') }}"
-                       data-uri="{{ path('admin_badge_remove', {id: badge.id, token: csrf_token('token')}) }}">
-                        ❌
-                    </a>
-                {% endif %}
-
-                <div class="float-control"></div>
+        {% if not badge.locked %}
+            <div>
+                <a href="{{ path('admin_badge_manage', app.request.query.all|merge({id: badge.id})) }}" class="btn btn-small btn-secondary open-category-form" data-uri="">
+                    ✏️ {{ 'base.button.update'|trans }}
+                </a>
 
                 <div class="float-right">
-                    <span style="color:lightgray;">ID: {{ badge.externalId }}</span>
+                    {% if badge.canBeRemoved %}
+                        <a href="#"
+                           class="btn btn-small btn-secondary delete-badge"
+                           style="border: 1px solid red!important;"
+                           data-id="{{ badge.id }}"
+                           data-name="{{ badge.name|e('js') }}"
+                           data-href="{{ path('admin_badge_remove', {id: badge.id, token: csrf_token('token')}) }}">
+                            ❌
+                        </a>
+                    {% endif %}
                 </div>
             </div>
-        </div>
+        {% endif %}
 
+    </div>
+    <div class="card-footer">
+
+        <a href="#"
+           class="toggle-lock"
+           style="text-decoration: none;"
+           data-id="{{ badge.id }}"
+           data-href="{{ path('admin_badge_toggle_lock', {id: badge.id, token: csrf_token('token')}) }}" title="{% if badge.locked %}{{ 'admin.badge.unlock'|trans }}{% else %}{{ 'admin.badge.lock'|trans }}{% endif %}">
+            {% if badge.locked %}🔒{% else %}🔓{% endif %}
+        </a>
+
+        <div class="float-right">
+            <span style="color:lightgray;">ID: {{ badge.externalId }}</span>
+        </div>
     </div>
 </div>
 

@@ -98,12 +98,13 @@ class Badge
     /**
      * @var self|null
      *
-     * @ORM\ManyToOne(targetEntity=Badge::class, inversedBy="children", cascade="all")
+     * @ORM\ManyToOne(targetEntity=Badge::class, inversedBy="children")
+     * @ORM\JoinColumn(onDelete="SET NULL")
      */
     private $parent;
 
     /**
-     * @ORM\OneToMany(targetEntity=Badge::class, mappedBy="parent", cascade="all")
+     * @ORM\OneToMany(targetEntity=Badge::class, mappedBy="parent")
      */
     private $children;
 
@@ -394,7 +395,15 @@ class Badge
 
     public function canBeRemoved() : bool
     {
-        return null === $this->externalId;
+        if ($this->locked) {
+            return false;
+        }
+
+        if ($this->parent || $this->children->count()) {
+            return false;
+        }
+
+        return true;
     }
 
     public function getCoveringBadges(int $stop = null) : array

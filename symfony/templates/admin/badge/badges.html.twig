@@ -45,8 +45,16 @@
 
     <script type="text/javascript">
 
-        $('.toggle-visibility').click(function () {
-            $.post($(this).data('href'));
+        $('body').on('click', '.toggle-visibility, .toggle-lock', function (e) {
+            var that = $(this);
+
+            if (that.hasClass('toggle-lock')) {
+                e.preventDefault();
+            }
+
+            $.post(that.data('href'), function (data) {
+                $('#badge-' + that.data('id')).html(data);
+            });
         });
 
         $('body').on('click', '.delete-badge', function (e) {
@@ -58,7 +66,7 @@
                 return;
             }
 
-            $.post(that.data('uri'), function () {
+            $.post(that.data('href'), function () {
                 $('#badge-' + that.data('id')).remove();
             });
         });
