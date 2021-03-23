@@ -88,14 +88,14 @@ class CategoryController extends BaseController
             throw $this->createAccessDeniedException();
         }
 
-        if ($category->isLocked()) {
-            throw $this->createNotFoundException();
-        }
-
         if (!$category) {
             $category = new Category();
             $category->setPlatform($this->getPlatform());
             $category->setExternalId(Uuid::uuid4());
+        }
+
+        if ($category->isLocked()) {
+            throw $this->createNotFoundException();
         }
 
         $form = $this->createFormBuilder($category)
