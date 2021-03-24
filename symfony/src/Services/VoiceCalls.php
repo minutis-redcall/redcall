@@ -97,7 +97,7 @@ class VoiceCalls
         // Answer saved, thanks
         $text = $this->translator->trans('message.call.answer', [
             '%choice%' => $choice->getLabel(),
-        ]);
+        ], null, $message->getCommunication()->getLanguage());
 
         $config = $this->getTextToSpeechConfig($message->getCommunication());
 

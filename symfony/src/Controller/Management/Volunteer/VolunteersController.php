@@ -25,6 +25,7 @@ use Bundles\PegassCrawlerBundle\Manager\PegassManager;
 use DateTime;
 use DateTimeZone;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
+use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -276,7 +277,11 @@ class VolunteersController extends BaseController
      */
     public function createAction(Request $request)
     {
-        return $this->manualUpdateAction($request, new Volunteer());
+        $volunteer = new Volunteer();
+        $volunteer->setPlatform($this->getPlatform());
+        $volunteer->setIdentifier(Uuid::uuid4());
+
+        return $this->manualUpdateAction($request, $volunteer);
     }
 
     /**
