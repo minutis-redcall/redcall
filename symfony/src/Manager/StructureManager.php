@@ -135,7 +135,7 @@ class StructureManager
         return $this->structureRepository->countRedCallUsersQueryBuilder($queryBuilder);
     }
 
-    public function countRedCallUsers(Pagerfanta $pagerfanta) : array
+    public function countRedCallUsersInPager(Pagerfanta $pagerfanta) : array
     {
         $counts = [];
         foreach ($pagerfanta->getIterator() as $row) {

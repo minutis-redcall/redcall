@@ -53,6 +53,11 @@ class Structure
     private $enabled = true;
 
     /**
+     * @ORM\Column(type="boolean")
+     */
+    private $locked = false;
+
+    /**
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     private $president;
@@ -191,6 +196,18 @@ class Structure
     public function setEnabled(bool $enabled) : self
     {
         $this->enabled = $enabled;
+
+        return $this;
+    }
+
+    public function isLocked() : bool
+    {
+        return $this->locked;
+    }
+
+    public function setLocked(bool $locked) : Structure
+    {
+        $this->locked = $locked;
 
         return $this;
     }

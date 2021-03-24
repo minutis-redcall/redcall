@@ -1,0 +1,95 @@
+<div class="card">
+    <div class="card-header">
+        <div class="card-title">
+            <a href="{{ path('management_volunteers_list', {id: structure.id}) }}">
+                <strong style="{% if not structure.enabled %}color:grey;{% endif %}">{{ structure.name }}</strong>
+            </a>
+            {% if not structure.enabled %}🚫{% endif %}
+        </div>
+    </div>
+    <div class="card-body">
+
+        {% set president = structure.presidentVolunteer %}
+        {% if president %}
+            {{ 'manage_structures.president'|trans({'%president%': president.displayName}) }}
+            <br/>
+        {% endif %}
+
+        {{ 'manage_structures.volunteers'|trans({'%count%': structure.activeVolunteers|length}) }}
+        <br/>
+
+        {{ 'manage_structures.users'|trans({'%count%': redcallUsers[structure.id]|default(0)}) }}
+        {% if redcallUsers[structure.id]|default(0) %}
+            (<a href="#"
+                class="show-structure-users"
+                data-structure-id="{{ structure.id }}">{{ 'base.button.details'|trans }}</a>)
+        {% endif %}
+
+        {% if 'fr' == app.user.platform %}
+            <br/>
+            {{ 'manage_structures.last_update'|trans({'%last_update%': structure.lastPegassUpdate|date('d/m/Y H:i')}) }}
+
+            {% if structure.nextPegassUpdate %}
+                <br/>
+                {{ 'manage_structures.next_update'|trans({'%next_update%': structure.nextPegassUpdate|date('d/m/Y H:i')}) }}
+            {% endif %}
+        {% endif %}
+
+        <br/><br/>
+
+        <div class="float-right">
+            {% if is_granted('ROLE_ADMIN') and not structure.locked %}
+                <a href="#" class="btn btn-small btn-secondary">
+                    ✏️ {{ 'base.button.update'|trans }}
+                </a>
+            {% endif %}
+        </div>
+
+        <div>
+            <div class="dropdown">
+                <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    {{ 'manage_structures.action.title'|trans }}
+                </button>
+
+                <div class="dropdown-menu">
+                    {% if app.user.platform == 'fr' and is_granted('ROLE_ADMIN') and not structure.locked %}
+                        <a class="dropdown-item" href="{{ path('management_structures_pegass', {id: structure.id}) }}" target="_blank">
+                            {{ 'manage_structures.force_update'|trans }}
+                        </a>
+                        <div class="dropdown-divider"></div>
+                    {% endif %}
+
+                    <a class="dropdown-item" href="{{ path('management_structures_export', {id: structure.id} ) }}">
+                        {{ 'manage_structures.export'|trans }}
+                    </a>
+
+                    <a class="dropdown-item" href="{{ path('management_structures_prefilled_answers_list', {structure: structure.id}) }}">
+                        {{ 'manage_structures.manage_prefilled_answers'| trans }}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer">
+        {% if is_granted('ROLE_ADMIN') %}
+            {% if structure.locked %}
+                <a href="#"
+                   class="toggle-lock"
+                   style="text-decoration: none;"
+                   data-id="{{ structure.id }}"
+                   data-href="{{ path('management_structures_toggle_lock', {id: structure.id, token: csrf_token('token')}) }}" title="{{ 'manage_structures.unlock'|trans }}">🔒</a>
+            {% else %}
+                <a href="#"
+                   class="toggle-lock"
+                   style="text-decoration: none;"
+                   data-id="{{ structure.id }}"
+                   data-href="{{ path('management_structures_toggle_lock', {id: structure.id, token: csrf_token('token')}) }}" title="{{ 'manage_structures.lock'|trans }}">🔓</a>
+            {% endif %}
+        {% endif %}
+
+        <div class="float-right">
+            <span style="color:lightgray;">ID: {{ structure.identifier }}</span>
+        </div>
+    </div>
+</div>
+

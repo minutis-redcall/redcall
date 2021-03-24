@@ -62,9 +62,9 @@ admin:
     form:
       name: 'Nom de la catégorie'
       priority: 'Priorité d''affichage'
+    lock: 'Geler la catégorie'
     search: 'Rechercher une catégorie'
     title: 'Gestion des catégories de badge'
-    lock: 'Geler la catégorie'
     unlock: 'Dégeler la catégorie'
     enable: 'Activer la catéogrie'
     disable: 'Desactiver la catégorie'
@@ -517,9 +517,14 @@ manage_structures:
   search:
     button: Rechercher
     label: 'Rechercher une structure'
+    only_enabled: 'Masquer les structures desactivées'
   title: 'Gestion des structures'
   users: 'Nombre d''utilisateurs RedCall : %count%'
   volunteers: 'Nombre de bénévoles : %count%'
+  action:
+    title: Actions
+  lock: 'Geler la structure'
+  unlock: 'Dégeler la structure'
 manage_volunteers:
   access_denied: 'Vous ne pouvez pas ouvrir le profil d''un(e) bénévole ne faisant pas partie des structures que vous pouvez déclencher.'
   action:

@@ -140,12 +140,15 @@ class StructureRepository extends BaseRepository
                     ->orderBy('s.identifier', 'asc');
     }
 
-    public function searchAllQueryBuilder(?string $criteria, bool $enabled = true) : QueryBuilder
+    public function searchAllQueryBuilder(?string $criteria, bool $onlyEnabled = true) : QueryBuilder
     {
         $qb = $this
-            ->createQueryBuilder('s')
-            ->andWhere('s.enabled = :enabled')
-            ->setParameter('enabled', $enabled);
+            ->createQueryBuilder('s');
+
+        if ($onlyEnabled) {
+            $qb->andWhere('s.enabled = :enabled')
+               ->setParameter('enabled', true);
+        }
 
         if ($criteria) {
             $qb->andWhere('s.identifier LIKE :criteria OR s.name LIKE :criteria')
@@ -166,16 +169,16 @@ class StructureRepository extends BaseRepository
             ->getResult();
     }
 
-    public function searchForUserQueryBuilder(User $user, ?string $criteria, ?bool $enabled = null) : QueryBuilder
+    public function searchForUserQueryBuilder(User $user, ?string $criteria, bool $onlyEnabled = true) : QueryBuilder
     {
         $qb = $this->createQueryBuilder('s')
                    ->join('s.users', 'u')
                    ->where('u.id = :user_id')
                    ->setParameter('user_id', $user->getId());
 
-        if (null !== $enabled) {
+        if ($onlyEnabled) {
             $qb->andWhere('s.enabled = :enabled')
-               ->setParameter('enabled', $enabled);
+               ->setParameter('enabled', true);
         }
 
         if ($criteria) {

@@ -10,6 +10,7 @@ use App\Form\Type\StructureType;
 use App\Import\StructureImporter;
 use App\Manager\StructureManager;
 use App\Manager\UserManager;
+use App\Model\Csrf;
 use Bundles\PaginationBundle\Manager\PaginationManager;
 use Bundles\PegassCrawlerBundle\Entity\Pegass;
 use Bundles\PegassCrawlerBundle\Manager\PegassManager;
@@ -18,6 +19,7 @@ use DateTimeZone;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormInterface;
@@ -81,12 +83,12 @@ class StructuresController extends BaseController
      */
     public function listAction(Request $request, bool $enabled)
     {
-        // Search form.
         $search = $this->createSearchForm($request);
 
         $criteria = null;
         if ($search->isSubmitted() && $search->isValid()) {
             $criteria = $search->get('criteria')->getData();
+            $enabled  = $search->get('only_enabled')->getData();
         }
 
         if ($this->isGranted('ROLE_ADMIN')) {
@@ -95,7 +97,7 @@ class StructuresController extends BaseController
             $queryBuilder = $this->structureManager->searchForCurrentUserQueryBuilder($criteria, $enabled);
         }
 
-        $redcallUsers = $this->structureManager->countRedCallUsers(
+        $redcallUsers = $this->structureManager->countRedCallUsersInPager(
             $this->paginationManager->getPager(
                 $this->structureManager->countRedCallUsersQueryBuilder($queryBuilder)
             )
@@ -216,12 +218,36 @@ class StructuresController extends BaseController
         ]);
     }
 
+    /**
+     * @Route(path="/toggle-lock-{id}/{token}", name="toggle_lock")
+     * @IsGranted("STRUCTURE", subject="structure")
+     * @IsGranted("ROLE_ADMIN")
+     * @Template("management/structures/structure.html.twig")
+     */
+    public function toggleLock(Structure $structure, Csrf $token)
+    {
+        $structure->setLocked(1 - $structure->isLocked());
+
+        $this->structureManager->save($structure);
+
+        return [
+            'structure'    => $structure,
+            'redcallUsers' => [
+                $structure->getId() => count($structure->getUsers()),
+            ],
+        ];
+    }
+
     private function createSearchForm(Request $request) : FormInterface
     {
-        return $this->createFormBuilder(null, ['csrf_protection' => false])
+        return $this->createFormBuilder(['only_enabled' => true], ['csrf_protection' => false])
                     ->setMethod('GET')
                     ->add('criteria', TextType::class, [
                         'label'    => 'manage_structures.search.label',
+                        'required' => false,
+                    ])
+                    ->add('only_enabled', CheckboxType::class, [
+                        'label'    => 'manage_structures.search.only_enabled',
                         'required' => false,
                     ])
                     ->add('submit', SubmitType::class, [

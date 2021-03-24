@@ -79,35 +79,40 @@
 
         {% if not badge.locked %}
             <div>
-                <a href="{{ path('admin_badge_manage', app.request.query.all|merge({id: badge.id})) }}" class="btn btn-small btn-secondary open-category-form" data-uri="">
+                <a href="{{ path('admin_badge_manage', app.request.query.all|merge({id: badge.id})) }}" class="btn btn-small btn-secondary">
                     ✏️ {{ 'base.button.update'|trans }}
                 </a>
 
-                <div class="float-right">
-                    {% if badge.canBeRemoved %}
-                        <a href="#"
-                           class="btn btn-small btn-secondary delete-badge"
-                           style="border: 1px solid red!important;"
-                           data-id="{{ badge.id }}"
-                           data-name="{{ badge.name|e('js') }}"
-                           data-href="{{ path('admin_badge_remove', {id: badge.id, token: csrf_token('token')}) }}">
-                            ❌
-                        </a>
-                    {% endif %}
-                </div>
+                {% if badge.canBeRemoved %}
+                    &nbsp;&nbsp;
+                    <a href="#"
+                       class="btn btn-small btn-secondary delete-badge"
+                       style="border: 1px solid red!important;"
+                       data-id="{{ badge.id }}"
+                       data-name="{{ badge.name|e('js') }}"
+                       data-href="{{ path('admin_badge_remove', {id: badge.id, token: csrf_token('token')}) }}">
+                        ❌
+                    </a>
+                {% endif %}
             </div>
         {% endif %}
 
     </div>
     <div class="card-footer">
 
-        <a href="#"
-           class="toggle-lock"
-           style="text-decoration: none;"
-           data-id="{{ badge.id }}"
-           data-href="{{ path('admin_badge_toggle_lock', {id: badge.id, token: csrf_token('token')}) }}" title="{% if badge.locked %}{{ 'admin.badge.unlock'|trans }}{% else %}{{ 'admin.badge.lock'|trans }}{% endif %}">
-            {% if badge.locked %}🔒{% else %}🔓{% endif %}
-        </a>
+        {% if badge.locked %}
+            <a href="#"
+               class="toggle-lock"
+               style="text-decoration: none;"
+               data-id="{{ badge.id }}"
+               data-href="{{ path('admin_badge_toggle_lock', {id: badge.id, token: csrf_token('token')}) }}" title="{{ 'admin.badge.unlock'|trans }}">🔒</a>
+        {% else %}
+            <a href="#"
+               class="toggle-lock"
+               style="text-decoration: none;"
+               data-id="{{ badge.id }}"
+               data-href="{{ path('admin_badge_toggle_lock', {id: badge.id, token: csrf_token('token')}) }}" title="{{ 'admin.badge.lock'|trans }}">🔓</a>
+        {% endif %}
 
         <div class="float-right">
             <span style="color:lightgray;">ID: {{ badge.externalId }}</span>

@@ -62,9 +62,9 @@ admin:
     form:
       name: 'Category name'
       priority: 'Rendering priority'
+    lock: 'Lock category'
     search: 'Search for a category'
     title: 'Manage badge categories'
-    lock: 'Lock category'
     unlock: 'Unlock category'
     enable: 'Enable category'
     disable: 'Disable category'
@@ -517,9 +517,14 @@ manage_structures:
   search:
     button: Search
     label: 'Search structure'
+    only_enabled: 'Hide disabled structures'
   title: 'Manage structures'
   users: 'RedCall users count: %count%'
   volunteers: 'Volunteers count: %count%'
+  action:
+    title: Actions
+  lock: 'Lock structure'
+  unlock: 'Unlock structure'
 manage_volunteers:
   access_denied: 'Cannot edit this volunteer details, (s)he does not belong to any structure you are managing.'
   action:

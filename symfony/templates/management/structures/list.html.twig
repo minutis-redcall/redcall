@@ -9,15 +9,6 @@
     </h1>
 
     <div class="text-right">
-        {% if enabled %}
-            <a href="{{ path('management_structures_list', {enabled: 0}) }}" class="btn btn-secondary">
-                {{ 'manage_structures.form.disabled'|trans }}
-            </a>
-        {% else %}
-            <a href="{{ path('management_structures_list', {enabled: 1}) }}" class="btn btn-secondary">
-                {{ 'manage_structures.form.enabled'|trans }}
-            </a>
-        {% endif %}
         {% if is_granted('ROLE_ADMIN') %}
             <a href="{{ path('management_structures_create') }}" class="btn btn-secondary">
                 {{ 'manage_structures.form.create'|trans }}
@@ -27,72 +18,13 @@
 
     {{ form(search) }}
 
-    <table class="table">
-        <tbody>
+    <div class="row">
         {% for structure in structures %}
-            <tr>
-                <td>
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div>
-                                <div class="h4 {% if not structure.enabled %}text-black-50{% endif %}">
-                                    <a href="{{ path('management_volunteers_list', {id: structure.id}) }}">{{ structure.name }}</a>
-                                    {% if not structure.enabled %}🚫{% endif %}
-                                    {% if is_granted('ROLE_ADMIN') %}
-                                        <a href="{{ path('management_structures_pegass', {id: structure.id}) }}" target="_blank">🛠</a>
-                                    {% endif %}
-                                </div>
-                                <div class="text-small">
-                                    {% set president = structure.presidentVolunteer %}
-                                    {% if president %}
-                                        {{ 'manage_structures.president'|trans({'%president%': president.displayName}) }}
-                                        <br/>
-                                    {% endif %}
-                                    {{ 'manage_structures.volunteers'|trans({'%count%': structure.activeVolunteers|length}) }}
-                                    <br/>
-                                    {{ 'manage_structures.users'|trans({'%count%': redcallUsers[structure.id]|default(0)}) }}
-                                    {% if redcallUsers[structure.id]|default(0) %}
-                                        (<a href="#"
-                                            class="show-structure-users"
-                                            data-structure-id="{{ structure.id }}">{{ 'base.button.details'|trans }}</a>)
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-
-                            {{ 'manage_structures.last_update'|trans({'%last_update%': structure.lastPegassUpdate|date('d/m/Y H:i')}) }}
-
-                            {% if structure.nextPegassUpdate %}
-                                <br/>
-                                {{ 'manage_structures.next_update'|trans({'%next_update%': structure.nextPegassUpdate|date('d/m/Y H:i')}) }}
-                            {% endif %}
-
-                            {% if structure.canForcePegassUpdate %}
-                                <br/>
-                                <a href="{{ path('management_structures_force_update', app.request.query.all|merge({id: structure.id, csrf: csrf_token('structures')})) }}">
-                                    {{ 'manage_structures.force_update'|trans }}
-                                </a>
-                            {% endif %}
-
-                            <br/>
-                            <a href="{{ path('management_structures_export', {id: structure.id} ) }}">
-                                {{ 'manage_structures.export'|trans }}
-                            </a>
-
-                            <br>
-
-                            <a href="{{ path('management_structures_prefilled_answers_list', {structure: structure.id}) }}">
-                                {{ 'manage_structures.manage_prefilled_answers'| trans }}
-
-                            </a>
-                        </div>
-                    </div>
-                </td>
-            </tr>
+            <div class="col-6" id="structure-{{ structure.id }}" style="padding:5px;">
+                {{ include('management/structures/structure.html.twig', {structure: structure}) }}
+            </div>
         {% endfor %}
-        </tbody>
-    </table>
+    </div>
 
     {{ macros.pager(structures) }}
 
@@ -127,6 +59,15 @@
     {{ parent() }}
 
     <script type="text/javascript">
+
+        $('body').on('click', '.toggle-lock', function (e) {
+            e.preventDefault();
+            var that = $(this);
+
+            $.post(that.data('href'), function (data) {
+                $('#structure-' + that.data('id')).html(data);
+            });
+        });
 
         $('.show-structure-users').click(function (e) {
             e.preventDefault();
