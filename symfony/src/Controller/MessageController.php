@@ -11,7 +11,6 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Constraints\Length;
-use Symfony\Component\Validator\Constraints\NotBlank;
 
 /**
  * Class MessageController
@@ -38,8 +37,8 @@ class MessageController extends BaseController
     public function openAction(Request $request, Message $message)
     {
         $form = $this->createFreeAnswerForm($request);
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->messageManager->addAnswer($message, $form->get('freeAnswer')->getData());
+        if ($form->isSubmitted() && $form->isValid() && $answer = $form->get('freeAnswer')->getData()) {
+            $this->messageManager->addAnswer($message, $answer);
 
             return $this->redirectToRoute('message_open', [
                 'code' => $message->getCode(),
@@ -109,9 +108,9 @@ class MessageController extends BaseController
             ->add('freeAnswer', TextType::class, [
                 'label'       => 'campaign_status.free_answer',
                 'constraints' => [
-                    new NotBlank(),
                     new Length(['max' => 1024]),
                 ],
+                'required'    => false,
             ])
             ->add('submit', SubmitType::class, [
                 'label' => 'base.button.submit',
