@@ -6,6 +6,7 @@ use App\Base\BaseController;
 use App\Component\HttpFoundation\ArrayToCsvResponse;
 use App\Entity\Structure;
 use App\Entity\Volunteer;
+use App\Enum\Platform;
 use App\Form\Type\StructureType;
 use App\Import\StructureImporter;
 use App\Manager\StructureManager;
@@ -141,6 +142,14 @@ class StructuresController extends BaseController
     {
         $this->validateCsrfOrThrowNotFoundException('structures', $csrf);
 
+        if ($structure->isLocked()) {
+            throw $this->createNotFoundException();
+        }
+
+        if (Platform::FR !== $structure->getPlatform()) {
+            throw $this->createNotFoundException();
+        }
+
         if (!$structure->canForcePegassUpdate()) {
             return $this->redirectToRoute('management_structures_list', $request->query->all());
         }
@@ -168,6 +177,10 @@ class StructuresController extends BaseController
      */
     public function pegass(Structure $structure, Request $request)
     {
+        if (Platform::FR !== $structure->getPlatform()) {
+            throw $this->createNotFoundException();
+        }
+
         $entity = $this->pegassManager->getEntity(Pegass::TYPE_STRUCTURE, $structure->getIdentifier(), false);
         if (!$entity) {
             throw $this->createNotFoundException();

@@ -25,7 +25,7 @@
                 data-structure-id="{{ structure.id }}">{{ 'base.button.details'|trans }}</a>)
         {% endif %}
 
-        {% if 'fr' == app.user.platform %}
+        {% if constant('\\App\\Enum\\Platform::FR') == app.user.platform %}
             <br/>
             {{ 'manage_structures.last_update'|trans({'%last_update%': structure.lastPegassUpdate|date('d/m/Y H:i')}) }}
 
@@ -52,7 +52,7 @@
                 </button>
 
                 <div class="dropdown-menu">
-                    {% if app.user.platform == 'fr' and is_granted('ROLE_ADMIN') and not structure.locked %}
+                    {% if constant('\\App\\Enum\\Platform::FR') == app.user.platform and is_granted('ROLE_ADMIN') and not structure.locked %}
                         <a class="dropdown-item" href="{{ path('management_structures_pegass', {id: structure.id}) }}" target="_blank">
                             {{ 'manage_structures.force_update'|trans }}
                         </a>

@@ -6,6 +6,8 @@
 #
 # ⚠️ The "name" attribute should never be updated without migrations (fields user.platform, category.platform, badge.platform,
 #    structure.platform, volunteer.platform on the db are tied to it).
+#
+# ⚠️ When adding a new platform, do not forget to add it in the platform enum, App\Enum\Platform
 ####################################################################################################################################
 parameters:
   platforms:

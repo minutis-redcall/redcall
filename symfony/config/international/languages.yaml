@@ -5,6 +5,7 @@
 # https://cloud.google.com/text-to-speech/docs/voices
 #
 # ⚠️ The "locale" attribute should never be updated without migrations (field communication.language on the db is tied to it)
+# ⚠️ Locales should also be modified in services.yaml (locale, locale_list, locale_matcher)
 ####################################################################################################################################
 parameters:
   languages:

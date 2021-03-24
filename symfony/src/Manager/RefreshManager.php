@@ -152,6 +152,11 @@ class RefreshManager
         }
 
         $structure = $this->structureManager->findOneByIdentifier($pegass->getIdentifier());
+
+        if ($structure && $structure->isLocked()) {
+            return;
+        }
+
         if (!$structure) {
             $structure = new Structure();
         }
