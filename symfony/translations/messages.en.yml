@@ -500,6 +500,7 @@ maintenance:
   title: Maintenance
 manage_structures:
   export: 'Export volunteers contact information'
+  disable_confirm: 'Do you really want to disable this structure?'
   force_update: 'Force update now'
   form:
     create: 'Create new structure'

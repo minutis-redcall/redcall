@@ -140,7 +140,7 @@ class CategoryController extends BaseController
      */
     public function deleteCategory(Category $category, Csrf $token)
     {
-        if ($category->isLocked()) {
+        if ($category->isLocked() || $category->isEnabled()) {
             throw $this->createNotFoundException();
         }
 

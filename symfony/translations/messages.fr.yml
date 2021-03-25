@@ -499,6 +499,7 @@ maintenance:
     title: 'Recherche avancée de nivols dans Pegass'
   title: Maintenance
 manage_structures:
+  disable_confirm: 'Voulez-vous vraiment desactiver cette structure ?'
   export: 'Exporter les informations de contact des bénévoles'
   force_update: 'Forcer la mise à jour maintenant'
   form:

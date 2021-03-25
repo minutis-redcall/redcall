@@ -239,7 +239,32 @@ class StructuresController extends BaseController
      */
     public function toggleLock(Structure $structure, Csrf $token)
     {
+
         $structure->setLocked(1 - $structure->isLocked());
+
+        $this->structureManager->save($structure);
+
+        return [
+            'structure'    => $structure,
+            'redcallUsers' => [
+                $structure->getId() => count($structure->getUsers()),
+            ],
+        ];
+    }
+
+    /**
+     * @Route(path="/toggle-enable-{id}/{token}", name="toggle_enable")
+     * @IsGranted("STRUCTURE", subject="structure")
+     * @IsGranted("ROLE_ADMIN")
+     * @Template("management/structures/structure.html.twig")
+     */
+    public function toggleEnable(Structure $structure, Csrf $token)
+    {
+        if ($structure->isLocked()) {
+            throw $this->createNotFoundException();
+        }
+
+        $structure->setEnabled(1 - $structure->isEnabled());
 
         $this->structureManager->save($structure);
 
