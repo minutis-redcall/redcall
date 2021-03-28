@@ -27,7 +27,7 @@ class StructureWidgetType extends TextType
     public function buildView(FormView $view, FormInterface $form, array $options)
     {
         if ($view->vars['value']) {
-            $structure = $this->structureManager->findOneByName($view->vars['value']);
+            $structure = $this->structureManager->find($view->vars['value']);
             if ($structure) {
                 $view->vars['data'] = [$structure->toSearchResults()];
             }

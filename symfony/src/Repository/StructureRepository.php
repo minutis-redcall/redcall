@@ -7,6 +7,7 @@ use App\Entity\Campaign;
 use App\Entity\Structure;
 use App\Entity\User;
 use App\Entity\Volunteer;
+use App\Enum\Platform;
 use App\Security\Helper\Security;
 use Bundles\PegassCrawlerBundle\Entity\Pegass;
 use Doctrine\DBAL\Connection;
@@ -33,6 +34,14 @@ class StructureRepository extends BaseRepository
         parent::__construct($registry, Structure::class);
 
         $this->security = $security;
+    }
+
+    public function findOneByIdentifier(string $identifier) : ?Structure
+    {
+        return $this->findOneBy([
+            'platform'   => $this->security->getPlatform(),
+            'identifier' => $identifier,
+        ]);
     }
 
     /**
@@ -228,7 +237,7 @@ class StructureRepository extends BaseRepository
             ->set('s.enabled', ':enabled')
             ->where($qb->expr()->in('s.identifier', $sub->getDQL()))
             ->andWhere('s.platform = :platform')
-            ->setParameter('platform', $this->security->getPlatform())
+            ->setParameter('platform', Platform::FR)
             ->getQuery()
             ->execute();
     }

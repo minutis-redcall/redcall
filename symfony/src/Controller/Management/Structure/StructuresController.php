@@ -8,7 +8,6 @@ use App\Entity\Structure;
 use App\Entity\Volunteer;
 use App\Enum\Platform;
 use App\Form\Type\StructureType;
-use App\Import\StructureImporter;
 use App\Manager\StructureManager;
 use App\Manager\UserManager;
 use App\Model\Csrf;

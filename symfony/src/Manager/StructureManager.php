@@ -111,13 +111,6 @@ class StructureManager
         return $structures;
     }
 
-    public function getStructuresForCurrrentUser() : array
-    {
-        return $this->getStructuresForUser(
-            $this->userManager->findForCurrentUser()
-        );
-    }
-
     public function getStructureHierarchyForCurrentUser()
     {
         return $this->structureRepository->getStructureHierarchyForCurrentUser(
