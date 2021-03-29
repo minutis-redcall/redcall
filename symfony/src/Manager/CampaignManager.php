@@ -42,6 +42,11 @@ class CampaignManager
     private $structureManager;
 
     /**
+     * @var PlatformConfigManager
+     */
+    private $platformManager;
+
+    /**
      * @var SimpleProcessor
      */
     private $processor;
@@ -60,6 +65,7 @@ class CampaignManager
         CommunicationManager $communicationManager,
         MessageManager $messageManager,
         StructureManager $structureManager,
+        PlatformConfigManager $platformManager,
         SimpleProcessor $processor,
         TokenStorageInterface $tokenStorage,
         Security $security)
@@ -68,6 +74,7 @@ class CampaignManager
         $this->communicationManager = $communicationManager;
         $this->messageManager       = $messageManager;
         $this->structureManager     = $structureManager;
+        $this->platformManager      = $platformManager;
         $this->processor            = $processor;
         $this->tokenStorage         = $tokenStorage;
         $this->security             = $security;
@@ -281,8 +288,13 @@ class CampaignManager
     {
         $communication = $type->getFormData();
 
-        // TODO: choose the right language according to the platform once they will be integrated
-        $communication->setLanguage('fr');
+        $platform = $this->platformManager->getPlaform(
+            $volunteer->getPlatform()
+        );
+
+        $communication->setLanguage(
+            $platform->getDefaultLanguage()->getLocale()
+        );
 
         $communication->setAudience(AudienceType::createEmptyData([
             'volunteers' => [$volunteer->getId()],

@@ -7,6 +7,7 @@ use App\Entity\Message;
 use App\Entity\Volunteer;
 use App\Manager\LanguageConfigManager;
 use App\Manager\PhoneConfigManager;
+use App\Manager\PlatformConfigManager;
 use App\Tools\GSM;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -25,6 +26,11 @@ class MessageFormatter
     private $languageManager;
 
     /**
+     * @var PlatformConfigManager
+     */
+    private $platformManager;
+
+    /**
      * @var RouterInterface
      */
     private $router;
@@ -41,12 +47,14 @@ class MessageFormatter
 
     public function __construct(PhoneConfigManager $phoneConfigManager,
         LanguageConfigManager $languageManager,
+        PlatformConfigManager $platformManager,
         RouterInterface $router,
         TranslatorInterface $translator,
         Environment $templating)
     {
         $this->phoneConfigManager = $phoneConfigManager;
         $this->languageManager    = $languageManager;
+        $this->platformManager    = $platformManager;
         $this->router             = $router;
         $this->translator         = $translator;
         $this->templating         = $templating;
@@ -140,12 +148,15 @@ class MessageFormatter
             $this->phoneConfigManager->applyContext($country);
         }
 
+        $platform = $this->platformManager->getPlaform(
+            $volunteer->getPlatform()
+        );
+
         $contentParts[] = $this->translator->trans('message.sms.announcement', [
-            // TODO: choose the right language according to the platform once they will be integrated
-            '%brand%' => mb_strtoupper('Croix-Rouge'),
+            '%brand%' => mb_strtoupper($platform->getDefaultLanguage()->getBrand()),
             '%hours%' => date('H'),
             '%mins%'  => date('i'),
-        ]/*, null, $language->getLocale()*/);
+        ], null, $platform->getDefaultLanguage()->getLocale());
 
         $contentParts[] = $content;
 
