@@ -33,6 +33,12 @@ Sample:
 
 ## Installation
 
+In `.env`, add the base url of your website, it will be used for CORS (relying on Host header is not safe):
+
+```
+WEBSITE_URL=http://127.0.0.1:8000
+```
+
 In `config/bundles.php`:
 
 ```php
@@ -79,6 +85,14 @@ cache:
   pools:
     api_documentation:
       adapter: cache.app
+```
+
+In `config/packages.twig.yaml`:
+
+```
+twig:
+  globals:
+    website_url: '%env(WEBSITE_URL)%'
 ```
 
 ## Usage

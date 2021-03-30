@@ -1,52 +1,63 @@
 {% extends '@Api/base.html.twig' %}
 
 {% block body %}
+    {% set cors_ok = website_url == app.request.schemeAndHttpHost %}
 
     <div class="text-left">
         <h3>Console</h3>
     </div>
 
-    <div id="console" class="text-left">
-        {{ form_start(form) }}
+    {% if cors_ok %}
 
-        <table style="width:100%;">
-            <tr>
-                <td colspan="2">{{ form_row(form.endpoint) }}</td>
-            </tr>
-            <tr>
-                <td style="width: 10%;">
-                    {{ form_row(form.method) }}
-                </td>
-                <td style="width: 90%;">
-                    {{ form_row(form.uri) }}
-                </td>
-            </tr>
-            <tr>
-                <td colspan="2">{{ form_row(form.body) }}</td>
-            </tr>
-        </table>
+        <div id="console" class="text-left">
+            {{ form_start(form) }}
 
-        <div class="float-right">
-            <pre><code>X-Signature: <span id="signature">{{ token.sign(form.method.vars.data, form.uri.vars.data|default(''), form.body.vars.data|default('')) }}</span></code></pre>
+            <table style="width:100%;">
+                <tr>
+                    <td colspan="2">{{ form_row(form.endpoint) }}</td>
+                </tr>
+                <tr>
+                    <td style="width: 10%;">
+                        {{ form_row(form.method) }}
+                    </td>
+                    <td style="width: 90%;">
+                        {{ form_row(form.uri) }}
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">{{ form_row(form.body) }}</td>
+                </tr>
+            </table>
+
+            <div class="float-right">
+                <pre><code>X-Signature: <span id="signature">{{ token.sign(form.method.vars.data, form.uri.vars.data|default(''), form.body.vars.data|default('')) }}</span></code></pre>
+            </div>
+
+            {{ form_rest(form) }}
         </div>
 
-        {{ form_rest(form) }}
-    </div>
+        <div id="result-container" class="text-left bg-white d-none" style="border: 1px solid lightgrey; padding:8px;">
+            <div id="result-status" class="float-right" style="padding:10px;"></div>
+            <pre><code id="result"></code></pre>
+        </div>
 
-    <div id="result-container" class="text-left bg-white d-none" style="border: 1px solid lightgrey; padding:8px;">
-        <div id="result-status" class="float-right" style="padding:10px;"></div>
-        <pre><code id="result"></code></pre>
-    </div>
+        <br/>
 
-    <br/>
+        <div class="text-center">
+            {% if categoryName and endpointTitle %}
+                <a href="{{ path('developer_token_documentation', {token: token}) }}" class="btn btn-secondary">Back</a>
+            {% else %}
+                <a href="{{ path('developer_token_index') }}" class="btn btn-secondary">Back</a>
+            {% endif %}
+        </div>
 
-    <div class="text-center">
-        {% if categoryName and endpointTitle %}
-            <a href="{{ path('developer_token_documentation', {token: token}) }}" class="btn btn-secondary">Back</a>
-        {% else %}
-            <a href="{{ path('developer_token_index') }}" class="btn btn-secondary">Back</a>
-        {% endif %}
-    </div>
+    {% else %}
+
+        <div class="alert alert-warning text-left">
+            Console is only available at: <a href="{{ website_url }}">{{ website_url }}</a>
+        </div>
+
+    {% endif %}
 
 {% endblock %}
 

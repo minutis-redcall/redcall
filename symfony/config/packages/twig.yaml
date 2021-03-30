@@ -13,3 +13,4 @@ twig:
     coolgrey: '%env(COLOR_COOLGREY)%'
     offwhite: '%env(COLOR_OFFWHITE)%'
     logo: '%env(LOGO)%'
+    website_url: '%env(WEBSITE_URL)%'

@@ -214,13 +214,23 @@ class PegassRepository extends ServiceEntityRepository
             ->getArrayResult();
     }
 
-    public function getEnabledEntitiesQueryBuilder(string $type) : QueryBuilder
+    public function getEnabledEntitiesQueryBuilder(?string $type, ?string $identifier) : QueryBuilder
     {
-        return $this
+        $qb = $this
             ->createQueryBuilder('p')
-            ->where('p.enabled = true')
-            ->andWhere('p.type = :type')
-            ->setParameter('type', $type);
+            ->where('p.enabled = true');
+
+        if ($type) {
+            $qb->andWhere('p.type = :type')
+               ->setParameter('type', $type);
+        }
+
+        if ($identifier) {
+            $qb->andWhere('p.identifier = :identifier')
+               ->setParameter('identifier', $identifier);
+        }
+
+        return $qb;
     }
 
     /**
