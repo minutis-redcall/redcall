@@ -54,7 +54,8 @@ class PegassController
     public function records(PegassFiltersFacade $filters)
     {
         $qb = $this->pegassManager->getEnabledEntitiesQueryBuilder(
-            $filters->getType()
+            $filters->getType(),
+            $filters->getIdentifier()
         );
 
         return new QueryBuilderFacade($qb, $filters->getPage(), function (Pegass $pegass) {

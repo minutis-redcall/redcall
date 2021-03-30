@@ -33,12 +33,23 @@ class PegassFiltersFacade implements FacadeInterface
      */
     private $type;
 
+    /**
+     * Identifier of a resource (aka. "nivol" for a volunteer)
+     *
+     * @Assert\NotBlank
+     * @Assert\Length(max = 64)
+     *
+     * @var string|null
+     */
+    private $identifier;
+
     static public function getExample(Facade $decorates = null) : FacadeInterface
     {
         $facade = new static;
 
-        $facade->page = 1;
-        $facade->type = Pegass::TYPE_VOLUNTEER;
+        $facade->page       = 1;
+        $facade->type       = Pegass::TYPE_VOLUNTEER;
+        $facade->identifier = null;
 
         return $facade;
     }
@@ -63,6 +74,18 @@ class PegassFiltersFacade implements FacadeInterface
     public function setType(?string $type) : PegassFiltersFacade
     {
         $this->type = $type;
+
+        return $this;
+    }
+
+    public function getIdentifier() : ?string
+    {
+        return $this->identifier;
+    }
+
+    public function setIdentifier(?string $identifier) : PegassFiltersFacade
+    {
+        $this->identifier = $identifier;
 
         return $this;
     }

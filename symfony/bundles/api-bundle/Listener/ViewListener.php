@@ -41,7 +41,9 @@ class ViewListener
         $event->setResponse(
             new Response(
                 $this->serializer->serialize($facade, 'json'),
-                $this->statusCodeReader->getStatusCode($facade)
+                $this->statusCodeReader->getStatusCode($facade), [
+                    'Access-Control-Allow-Origin' => getenv('WEBSITE_URL'),
+                ]
             )
         );
     }

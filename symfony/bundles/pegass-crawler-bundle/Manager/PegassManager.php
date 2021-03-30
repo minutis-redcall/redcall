@@ -62,9 +62,9 @@ class PegassManager
         return $this->pegassRepository->getAllEnabledEntities();
     }
 
-    public function getEnabledEntitiesQueryBuilder(string $type) : QueryBuilder
+    public function getEnabledEntitiesQueryBuilder(?string $type, ?string $identifier) : QueryBuilder
     {
-        return $this->pegassRepository->getEnabledEntitiesQueryBuilder($type);
+        return $this->pegassRepository->getEnabledEntitiesQueryBuilder($type, $identifier);
     }
 
     /**
