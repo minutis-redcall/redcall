@@ -58,7 +58,7 @@ class FixturesManager
 
         $structure = new Structure();
         $structure->setName($name);
-        $structure->setIdentifier(Random::generate(8, '0123456789'));
+        $structure->setExternalId(Random::generate(8));
         $structure->setEnabled(true);
         if ($parent && $parentStructure = $this->structureManager->find($parent)) {
             $structure->setParentStructure($parentStructure);

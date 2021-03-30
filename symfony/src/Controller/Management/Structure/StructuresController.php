@@ -16,6 +16,7 @@ use Bundles\PegassCrawlerBundle\Entity\Pegass;
 use Bundles\PegassCrawlerBundle\Manager\PegassManager;
 use DateTime;
 use DateTimeZone;
+use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -119,6 +120,8 @@ class StructuresController extends BaseController
     public function createStructure(Request $request)
     {
         $structure = new Structure();
+        $structure->setExternalId(Uuid::uuid4());
+        $structure->setPlatform($this->getPlatform());
 
         $form = $this->createForm(StructureType::class, $structure);
 
@@ -154,7 +157,7 @@ class StructuresController extends BaseController
         }
 
         // Just in case Pegass database would contain some RCE?
-        if (!preg_match('/^[a-zA-Z0-9]+$/', $structure->getIdentifier())) {
+        if (!preg_match('/^[a-zA-Z0-9]+$/', $structure->getExternalId())) {
             return $this->redirectToRoute('management_structures_list', $request->query->all());
         }
 
@@ -180,7 +183,7 @@ class StructuresController extends BaseController
             throw $this->createNotFoundException();
         }
 
-        $entity = $this->pegassManager->getEntity(Pegass::TYPE_STRUCTURE, $structure->getIdentifier(), false);
+        $entity = $this->pegassManager->getEntity(Pegass::TYPE_STRUCTURE, $structure->getExternalId(), false);
         if (!$entity) {
             throw $this->createNotFoundException();
         }

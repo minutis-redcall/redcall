@@ -45,9 +45,9 @@ class StructureManager
         return $this->structureRepository->findOneByName($name);
     }
 
-    public function findOneByIdentifier(string $identifier) : ?Structure
+    public function findOneByExternalId(string $externalId) : ?Structure
     {
-        return $this->structureRepository->findOneByIdentifier($identifier);
+        return $this->structureRepository->findOneByExternalId($externalId);
     }
 
     public function save(Structure $structure)

@@ -33,6 +33,10 @@ class StructureType extends AbstractType
                 'required' => false,
                 'label'    => 'structure.form.parent',
             ])
+            ->add('president', VolunteerWidgetType::class, [
+                'required' => false,
+                'label'    => 'structure.form.president',
+            ])
             ->add('submit', SubmitType::class, [
                 'label' => 'base.button.submit',
             ]);

@@ -810,6 +810,7 @@ structure:
   form:
     name: 'Nom de la structure'
     parent: 'Structure parente (optionnelle)'
+    president: 'Président (optionnel)'
 title:
   campaigns: Déclenchements
   costs: Coûts

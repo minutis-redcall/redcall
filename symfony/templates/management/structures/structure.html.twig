@@ -14,7 +14,7 @@
                     <div class="dropdown-menu dropdown-menu-right">
                         {% if structure.enabled %}
 
-                            {% if constant('\\App\\Enum\\Platform::FR') == app.user.platform and is_granted('ROLE_ADMIN') and not structure.locked %}
+                            {% if constant('\\App\\Enum\\Platform::FR') == app.user.platform and is_granted('ROLE_ADMIN') and not structure.locked and structure.lastPegassUpdate %}
                                 <a class="dropdown-item" href="{{ path('management_structures_pegass', {id: structure.id}) }}" target="_blank">
                                     {{ 'manage_structures.force_update'|trans }}
                                 </a>
@@ -79,13 +79,16 @@
             {% endif %}
 
             {% if constant('\\App\\Enum\\Platform::FR') == app.user.platform %}
-                <br/>
-                {{ 'manage_structures.last_update'|trans({'%last_update%': structure.lastPegassUpdate|date('d/m/Y H:i')}) }}
+                {% if structure.lastPegassUpdate %}
+                    <br/>
+                    {{ 'manage_structures.last_update'|trans({'%last_update%': structure.lastPegassUpdate|date('d/m/Y H:i')}) }}
+                {% endif %}
 
                 {% if structure.nextPegassUpdate %}
                 <br/>
                 {{ 'manage_structures.next_update'|trans({'%next_update%': structure.nextPegassUpdate|date('d/m/Y H:i')}) }}
             {% endif %}
+
             {% endif %}
         </span>
 
@@ -108,7 +111,7 @@
         {% endif %}
 
         <div class="float-right">
-            <span style="color:lightgray;">ID: {{ structure.identifier }}</span>
+            <span style="color:lightgray;">ID: {{ structure.externalId }}</span>
         </div>
     </div>
 </div>

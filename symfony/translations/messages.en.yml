@@ -810,6 +810,7 @@ structure:
   form:
     name: 'Structure name'
     parent: 'Optional parent structure'
+    president: 'Optional president'
 title:
   campaigns: Campaigns
   costs: Costs

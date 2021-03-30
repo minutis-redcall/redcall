@@ -36,11 +36,11 @@ class StructureRepository extends BaseRepository
         $this->security = $security;
     }
 
-    public function findOneByIdentifier(string $identifier) : ?Structure
+    public function findOneByExternalId(string $externalId) : ?Structure
     {
         return $this->findOneBy([
             'platform'   => $this->security->getPlatform(),
-            'identifier' => $identifier,
+            'externalId' => $externalId,
         ]);
     }
 
@@ -160,7 +160,7 @@ class StructureRepository extends BaseRepository
                     ->andWhere('s.enabled = true')
                     ->andWhere('s.platform = :platform')
                     ->setParameter('platform', $this->security->getPlatform())
-                    ->orderBy('s.identifier', 'asc');
+                    ->orderBy('s.externalId', 'asc');
     }
 
     public function searchAllQueryBuilder(?string $criteria, bool $onlyEnabled = true) : QueryBuilder
@@ -176,7 +176,7 @@ class StructureRepository extends BaseRepository
         }
 
         if ($criteria) {
-            $qb->andWhere('s.identifier LIKE :criteria OR s.name LIKE :criteria')
+            $qb->andWhere('s.externalId LIKE :criteria OR s.name LIKE :criteria')
                ->setParameter('criteria', sprintf('%%%s%%', str_replace(' ', '%', $criteria)));
         }
 
@@ -209,7 +209,7 @@ class StructureRepository extends BaseRepository
         }
 
         if ($criteria) {
-            $qb->andWhere('s.identifier LIKE :criteria OR s.name LIKE :criteria')
+            $qb->andWhere('s.externalId LIKE :criteria OR s.name LIKE :criteria')
                ->setParameter('criteria', sprintf('%%%s%%', str_replace(' ', '%', $criteria)));
         }
 
@@ -235,7 +235,7 @@ class StructureRepository extends BaseRepository
         $qb
             ->update()
             ->set('s.enabled', ':enabled')
-            ->where($qb->expr()->in('s.identifier', $sub->getDQL()))
+            ->where($qb->expr()->in('s.externalId', $sub->getDQL()))
             ->andWhere('s.platform = :platform')
             ->setParameter('platform', Platform::FR)
             ->getQuery()

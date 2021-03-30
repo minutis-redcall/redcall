@@ -441,7 +441,7 @@ class Volunteer
         $structures    = $onlyEnabled ? $this->getStructures() : $this->structures;
         foreach ($structures as $structure) {
             /** @var Structure $structure */
-            if (!$mainStructure || $structure->getIdentifier() < $mainStructure->getIdentifier()) {
+            if (!$mainStructure || $structure->getExternalId() < $mainStructure->getExternalId()) {
                 $mainStructure = $structure;
             }
         }
