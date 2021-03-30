@@ -3,6 +3,7 @@
 namespace Bundles\ApiBundle\Entity;
 
 use Bundles\ApiBundle\Repository\TokenRepository;
+use Bundles\ApiBundle\Util;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -154,7 +155,7 @@ class Token
     {
         $body = trim(str_replace("\r\n", "\n", $body));
 
-        return hash_hmac('sha256', sprintf('%s%s%s', $method, $uri, $body), $this->secret);
+        return hash_hmac('sha256', sprintf('%s%s%s', $method, $uri, $body), Util::decrypt($this->secret, $this->username));
     }
 
     public function incrementHitCount() : int
