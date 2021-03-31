@@ -16,7 +16,12 @@
 
                             {% if constant('\\App\\Enum\\Platform::FR') == app.user.platform and is_granted('ROLE_ADMIN') and not structure.locked and structure.lastPegassUpdate %}
                                 <a class="dropdown-item" href="{{ path('management_structures_pegass', {id: structure.id}) }}" target="_blank">
-                                    {{ 'manage_structures.force_update'|trans }}
+                                    {{ 'manage_structures.force_pegass_update'|trans }}
+                                </a>
+                            {% endif %}
+                            {% if is_granted('ROLE_ADMIN') %}
+                                <a class="dropdown-item" href="{{ path('management_structures_create', {id: structure.id}) }}" target="_blank">
+                                    {{ 'manage_structures.manual_update'|trans }}
                                 </a>
                                 <div class="dropdown-divider"></div>
                             {% endif %}

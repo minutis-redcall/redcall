@@ -59,7 +59,7 @@ class User extends AbstractUser
 
     /**
      * @ORM\ManyToMany(targetEntity="App\Entity\Structure", inversedBy="users")
-     * @ORM\OrderBy({"enabled" = "DESC", "identifier" = "ASC"})
+     * @ORM\OrderBy({"enabled" = "DESC", "externalId" = "ASC"})
      */
     private $structures;
 

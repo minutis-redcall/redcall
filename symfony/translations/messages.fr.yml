@@ -37,15 +37,15 @@ admin:
       rendring_priority: 'Priorité d''''affichage du badge'
       synonyms: 'Badges synonymes (ce badge remplacera l''ensemble des badges ci-dessous)'
       triggering_priority: 'Priorité lors des déclenchements'
+    lock: 'Geler le badge'
     rendering_priority: 'Prio. visuelle: %priority%'
     replace: 'Remplace les badges suivants'
     search: 'Chercher un badge'
     synonym_of: 'Synonyme de %name%'
     title: 'Gestion des badges'
     triggering_priority: 'Prio. déclenchement: %priority%'
-    used_by: 'Utilisé par %count% bénévoles'
-    lock: 'Geler le badge'
     unlock: 'Dégeler le badge'
+    used_by: 'Utilisé par %count% bénévoles'
   category:
     badges: Badges
     badges_add: 'Ajouter un badge'
@@ -58,7 +58,9 @@ admin:
     create: 'Créer une nouvelle catégorie'
     delete: 'Voulez-vous vraiment supprimer la catégorie %name% ?'
     description: 'Les catégories permettent de regrouper et d''organiser l''affichage des badges.'
+    disable: 'Desactiver la catégorie'
     edit: 'Editer une catégorie'
+    enable: 'Activer la catéogrie'
     form:
       name: 'Nom de la catégorie'
       priority: 'Priorité d''affichage'
@@ -66,8 +68,6 @@ admin:
     search: 'Rechercher une catégorie'
     title: 'Gestion des catégories de badge'
     unlock: 'Dégeler la catégorie'
-    enable: 'Activer la catéogrie'
-    disable: 'Desactiver la catégorie'
   home:
     link: Administration
   pegass:
@@ -499,14 +499,15 @@ maintenance:
     title: 'Recherche avancée de nivols dans Pegass'
   title: Maintenance
 manage_structures:
-  disable_confirm: 'Voulez-vous vraiment desactiver cette structure ?'
+  action:
+    title: Actions
   export: 'Exporter les informations de contact des bénévoles'
-  force_update: 'Forcer la mise à jour maintenant'
   form:
     create: 'Créer une nouvelle structure'
     disabled: 'Afficher les structures desactivées'
     enabled: 'Afficher les structures actives'
   last_update: 'Dernière synchro avec Pegass : %last_update% UTC'
+  lock: 'Geler la structure'
   manage_prefilled_answers: 'Gérer les réponses pré-remplies'
   next_update: 'Prochaine synchro avec Pegass : %next_update% UTC'
   prefilled_answers:
@@ -520,12 +521,12 @@ manage_structures:
     label: 'Rechercher une structure'
     only_enabled: 'Masquer les structures desactivées'
   title: 'Gestion des structures'
+  unlock: 'Dégeler la structure'
   users: 'Nombre d''utilisateurs RedCall : %count%'
   volunteers: 'Nombre de bénévoles : %count%'
-  action:
-    title: Actions
-  lock: 'Geler la structure'
-  unlock: 'Dégeler la structure'
+  disable_confirm: 'Voulez-vous vraiment desactiver cette structure ?'
+  force_pegass_update: 'Forcer la mise à jour maintenant'
+  manual_update: 'Mise à jour manuelle'
 manage_volunteers:
   access_denied: 'Vous ne pouvez pas ouvrir le profil d''un(e) bénévole ne faisant pas partie des structures que vous pouvez déclencher.'
   action:

@@ -113,15 +113,17 @@ class StructuresController extends BaseController
     }
 
     /**
-     * @Route("/create", name="create")
+     * @Route("/create/{id}", name="create", defaults={"id" = null})
      * @Security("is_granted('ROLE_ADMIN')")
      * @Template("management/structures/form.html.twig")
      */
-    public function createStructure(Request $request)
+    public function createStructure(Request $request, ?Structure $structure = null)
     {
-        $structure = new Structure();
-        $structure->setExternalId(Uuid::uuid4());
-        $structure->setPlatform($this->getPlatform());
+        if (null === $structure) {
+            $structure = new Structure();
+            $structure->setExternalId(Uuid::uuid4());
+            $structure->setPlatform($this->getPlatform());
+        }
 
         $form = $this->createForm(StructureType::class, $structure);
 

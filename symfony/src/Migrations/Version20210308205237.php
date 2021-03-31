@@ -46,6 +46,7 @@ final class Version20210308205237 extends AbstractMigration
 
         $this->addSql('ALTER TABLE volunteer ADD platform VARCHAR(5) NOT NULL DEFAULT "fr"');
         $this->addSql('ALTER TABLE volunteer CHANGE platform platform VARCHAR(5) NOT NULL');
+        $this->addSql('UPDATE volunteer SET IDENTIFIER = "01100000193I-2" WHERE id = 53350');
         $this->addSql('CREATE UNIQUE INDEX pf_extid_idx ON volunteer (platform, identifier)');
     }
 

@@ -51,8 +51,16 @@ class UserRepository extends AbstractUserRepository implements UserRepositoryInt
 
     public function findOneByUsername(string $username) : ?AbstractUser
     {
-        return $this->findBy([
-            'platform' => $this->security->getPlatform(),
+        $platform = $this->security->getPlatform();
+
+        if ($platform) {
+            return $this->findOneBy([
+                'platform' => $platform,
+                'username' => $username,
+            ]);
+        }
+
+        return $this->findOneBy([
             'username' => $username,
         ]);
     }

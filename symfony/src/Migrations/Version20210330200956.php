@@ -29,6 +29,7 @@ final class Version20210330200956 extends AbstractMigration
 
         $this->addSql('DROP INDEX UNIQ_FEF0481D9F75D7B0 ON badge');
         $this->addSql('ALTER TABLE structure ADD external_id VARCHAR(64) NOT NULL');
+        $this->addSql('UPDATE structure SET identifier = 424242 WHERE id = 1244');
         $this->addSql('UPDATE structure SET external_id = identifier');
         $this->addSql('ALTER TABLE structure CHANGE name name VARCHAR(64) NOT NULL');
     }

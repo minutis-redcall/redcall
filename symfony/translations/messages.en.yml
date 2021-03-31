@@ -37,15 +37,15 @@ admin:
       rendring_priority: 'Badge rendering priority'
       synonyms: 'Synonym badges (this badge should replace all badges given on the following field)'
       triggering_priority: 'Badge triggering priority'
+    lock: 'Lock badge'
     rendering_priority: 'Rendering prio.: %priority%'
     replace: 'Replace the following badges'
     search: 'Chercher un badge'
     synonym_of: 'Synonym of %name%'
     title: 'Gestion des badges'
     triggering_priority: 'Triggering prio.: %priority%'
-    used_by: 'Used by %count% volunteers'
-    lock: 'Lock badge'
     unlock: 'Unlock badge'
+    used_by: 'Used by %count% volunteers'
   category:
     badges: Badges
     badges_add: 'Add a badge'
@@ -58,7 +58,9 @@ admin:
     create: 'Create a new category'
     delete: 'Do you really want to remove %name% category?'
     description: 'Categories are used to regroup and sort out how badges are rendered in the platform.'
+    disable: 'Disable category'
     edit: 'Edit a category'
+    enable: 'Enable category'
     form:
       name: 'Category name'
       priority: 'Rendering priority'
@@ -66,8 +68,6 @@ admin:
     search: 'Search for a category'
     title: 'Manage badge categories'
     unlock: 'Unlock category'
-    enable: 'Enable category'
-    disable: 'Disable category'
   home:
     link: Administration
   pegass:
@@ -499,14 +499,15 @@ maintenance:
     title: 'Advanced nivols search in Pegass'
   title: Maintenance
 manage_structures:
+  action:
+    title: Actions
   export: 'Export volunteers contact information'
-  disable_confirm: 'Do you really want to disable this structure?'
-  force_update: 'Force update now'
   form:
     create: 'Create new structure'
     disabled: 'Show disabled structures'
     enabled: 'Show enabled structures'
   last_update: 'Last Pegass synchro on: %last_update% UTC'
+  lock: 'Lock structure'
   manage_prefilled_answers: 'Manage prefilled answers'
   next_update: 'Next Pegass synchro on: %next_update% UTC'
   prefilled_answers:
@@ -520,12 +521,12 @@ manage_structures:
     label: 'Search structure'
     only_enabled: 'Hide disabled structures'
   title: 'Manage structures'
+  unlock: 'Unlock structure'
   users: 'RedCall users count: %count%'
   volunteers: 'Volunteers count: %count%'
-  action:
-    title: Actions
-  lock: 'Lock structure'
-  unlock: 'Unlock structure'
+  disable_confirm: 'Do you really want to disable this structure?'
+  force_pegass_update: 'Force Pegass update now'
+  manual_update: 'Manual update'
 manage_volunteers:
   access_denied: 'Cannot edit this volunteer details, (s)he does not belong to any structure you are managing.'
   action:
