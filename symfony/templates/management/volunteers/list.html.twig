@@ -20,6 +20,14 @@
 
     {{ form(search) }}
 
+    <div class="row">
+        {% for volunteer in volunteers %}
+            <div class="col-md-6" id="volunteer-{{ volunteer.id }}" style="padding:5px;">
+                {{ include('management/volunteers/volunteer.html.twig', {volunteer: volunteer}) }}
+            </div>
+        {% endfor %}
+    </div>
+
     <table class="table">
         <tbody>
 
@@ -171,10 +179,6 @@
     {{ parent() }}
 
     <script type="text/javascript">
-
-        $('#{{ search.only_enabled.vars.id }}, #{{ search.only_users.vars.id }}').change(function () {
-            $(this).closest('form').submit();
-        });
 
         $('.show-structure-users').click(function (e) {
             e.preventDefault();

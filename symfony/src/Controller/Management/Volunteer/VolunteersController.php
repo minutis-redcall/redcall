@@ -12,7 +12,6 @@ use App\Form\Model\EmailTrigger;
 use App\Form\Model\SmsTrigger;
 use App\Form\Type\AudienceType;
 use App\Form\Type\VolunteerType;
-use App\Import\VolunteerImporter;
 use App\Manager\AnswerManager;
 use App\Manager\CampaignManager;
 use App\Manager\CommunicationManager;
@@ -570,9 +569,6 @@ class VolunteersController extends BaseController
                     ])
                     ->add('submit', SubmitType::class, [
                         'label' => 'manage_volunteers.search.button',
-                        'attr'  => [
-                            'class' => 'd-none',
-                        ],
                     ])
                     ->getForm()
                     ->handleRequest($request);
