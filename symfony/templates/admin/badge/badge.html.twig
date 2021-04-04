@@ -11,8 +11,12 @@
             {% else %}
                 <span class="h3">
                     {% if badge.enabled %}
-                        {{ badge.name }}
-                    {% else %}
+                        {% if badge.visible %}
+                            <span style="color:red;">{{ badge.name }}</span>
+                        {% else %}
+                            {{ badge.name }}
+                        {% endif %}
+                {% else %}
                         <span style="color:grey;">{{ badge.name }}</span> 🚫
                     {% endif %}
                 </span>

@@ -11,6 +11,9 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
  * @ORM\Table(
+ *     indexes={
+ *         @ORM\Index(name="enabledx", columns={"enabled"}),
+ *     },
  *     uniqueConstraints={
  *         @ORM\UniqueConstraint(name="pf_extid_idx", columns={"platform", "external_id"})
  *     }

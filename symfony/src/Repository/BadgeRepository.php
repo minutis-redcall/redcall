@@ -38,7 +38,7 @@ class BadgeRepository extends BaseRepository
         ]);
     }
 
-    public function getSearchInBadgesQueryBuilder(?string $criteria, bool $onlyEnabled) : QueryBuilder
+    public function getSearchInBadgesQueryBuilder(?string $criteria, bool $onlyEnabled = true) : QueryBuilder
     {
         $qb = $this->createQueryBuilder('b')
                    ->andWhere('b.platform = :platform')
