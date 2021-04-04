@@ -14,16 +14,21 @@
                     <div class="dropdown-menu dropdown-menu-right">
                         {% if structure.enabled %}
 
-                            {% if constant('\\App\\Enum\\Platform::FR') == app.user.platform and is_granted('ROLE_ADMIN') and not structure.locked and structure.lastPegassUpdate %}
-                                <a class="dropdown-item" href="{{ path('management_structures_pegass', {id: structure.id}) }}" target="_blank">
-                                    {{ 'manage_structures.force_pegass_update'|trans }}
-                                </a>
-                            {% endif %}
-                            {% if is_granted('ROLE_ADMIN') %}
-                                <a class="dropdown-item" href="{{ path('management_structures_create', {id: structure.id}) }}" target="_blank">
-                                    {{ 'manage_structures.manual_update'|trans }}
-                                </a>
-                                <div class="dropdown-divider"></div>
+                            {% if not structure.locked %}
+                                {% if constant('\\App\\Enum\\Platform::FR') == app.user.platform and is_granted('ROLE_ADMIN') and structure.lastPegassUpdate %}
+                                    <a class="dropdown-item" href="{{ path('management_structures_pegass', {id: structure.id}) }}" target="_blank">
+                                        {{ 'manage_structures.view_pegass_entry'|trans }}
+                                    </a>
+                                    <a class="dropdown-item" href="{{ path('management_structures_force_update', {id: structure.id, csrf: csrf_token('structures')}) }}">
+                                        {{ 'manage_structures.force_pegass_update'|trans }}
+                                    </a>
+                                {% endif %}
+                                {% if is_granted('ROLE_ADMIN') %}
+                                    <a class="dropdown-item" href="{{ path('management_structures_create', {id: structure.id}) }}">
+                                        {{ 'manage_structures.manual_update'|trans }}
+                                    </a>
+                                    <div class="dropdown-divider"></div>
+                                {% endif %}
                             {% endif %}
 
                             <a class="dropdown-item" href="{{ path('management_structures_export', {id: structure.id} ) }}">
@@ -46,7 +51,8 @@
                                 <a href="#"
                                    class="dropdown-item text-danger toggle-action"
                                    data-href="{{ path('management_structures_toggle_enable', {id: structure.id, token: csrf_token('token')}) }}"
-                                   data-id="{{ structure.id }}">
+                                   data-id="{{ structure.id }}"
+                                   data-confirm="{{ 'manage_structures.disable_confirm'|trans }}">
                                     {{ 'base.button.disable'| trans }}
                                 </a>
                             {% else %}

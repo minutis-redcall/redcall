@@ -36,7 +36,15 @@
 
     <br/>
     {{ macros.pager(badges, '', app.request.query.all) }}
+
+    <div>{{ 'locked_resources'|trans }}</div>
     <br/>
+
+    <div class="text-center">
+        <a href="{{ path('management_home') }}" class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+    </div>
+
+    <br/><br/>
 
 {% endblock %}
 

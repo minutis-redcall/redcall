@@ -501,7 +501,9 @@ maintenance:
 manage_structures:
   action:
     title: Actions
+  disable_confirm: 'Do you really want to disable this structure?'
   export: 'Export volunteers contact information'
+  force_pegass_update: 'Force Pegass update now'
   form:
     create: 'Create new structure'
     disabled: 'Show disabled structures'
@@ -509,6 +511,7 @@ manage_structures:
   last_update: 'Last Pegass synchro on: %last_update% UTC'
   lock: 'Lock structure'
   manage_prefilled_answers: 'Manage prefilled answers'
+  manual_update: 'Manual update'
   next_update: 'Next Pegass synchro on: %next_update% UTC'
   prefilled_answers:
     form:
@@ -523,20 +526,20 @@ manage_structures:
   title: 'Manage structures'
   unlock: 'Unlock structure'
   users: 'RedCall users count: %count%'
+  view_pegass_entry: 'Open Pegass database entry'
   volunteers: 'Volunteers count: %count%'
-  disable_confirm: 'Do you really want to disable this structure?'
-  force_pegass_update: 'Force Pegass update now'
-  manual_update: 'Manual update'
 manage_volunteers:
   access_denied: 'Cannot edit this volunteer details, (s)he does not belong to any structure you are managing.'
   action:
     disable: Disable
+    disable_confirm: 'Do you really want to disable this volunteer?'
     enable: Enable
     lock: Lock
-    manual_update: 'Manual update'
-    pegass_update: 'Pegass update'
     title: Actions
     unlock: Unlock
+    update_manual: 'Update volunteer information'
+    update_pegass: 'Force Pegass update now'
+    view_pegass_entry: 'Open Pegass database entry'
   admin_structures:
     create: 'You will be able to set volunteer''s structures after creating it.'
     edit: 'Edit structures'
@@ -816,3 +819,4 @@ title:
   campaigns: Campaigns
   costs: Costs
   messages: Messages
+locked_resources: 'Locked resources (🔒) cannot be updated by external sources (Pegass database, APIs, ...)'

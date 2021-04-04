@@ -107,7 +107,6 @@ class UserRepository extends AbstractUserRepository implements UserRepositoryInt
     {
         return $this->createQueryBuilder('u')
                     ->join('u.structures', 's')
-                    ->andWhere('s.enabled = true')
                     ->andWhere('s.id = :structure')
                     ->setParameter('structure', $structure)
                     ->andWhere('u.isTrusted = true')

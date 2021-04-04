@@ -18,6 +18,7 @@ use App\Manager\CommunicationManager;
 use App\Manager\PhoneManager;
 use App\Manager\StructureManager;
 use App\Manager\VolunteerManager;
+use App\Model\Csrf;
 use Bundles\PaginationBundle\Manager\PaginationManager;
 use Bundles\PegassCrawlerBundle\Entity\Pegass;
 use Bundles\PegassCrawlerBundle\Manager\PegassManager;
@@ -313,46 +314,6 @@ class VolunteersController extends BaseController
     }
 
     /**
-     * @Route(path="/disable/{csrf}/{id}", name="disable")
-     * @IsGranted("VOLUNTEER", subject="volunteer")
-     */
-    public function disableAction(Request $request, Volunteer $volunteer, string $csrf)
-    {
-        $this->validateCsrfOrThrowNotFoundException('volunteers', $csrf);
-
-        // Do not disable volunteers tied to RedCall users
-        if ($volunteer->getUser()) {
-            throw $this->createNotFoundException();
-        }
-
-        $volunteer->setEnabled(false);
-        $volunteer->setLocked(true);
-        $this->volunteerManager->save($volunteer);
-
-        return $this->redirectToRoute('management_volunteers_list', $request->query->all());
-    }
-
-    /**
-     * @Route(path="/enable/{csrf}/{id}", name="enable")
-     * @IsGranted("VOLUNTEER", subject="volunteer")
-     */
-    public function enableAction(Request $request, Volunteer $volunteer, string $csrf)
-    {
-        $this->validateCsrfOrThrowNotFoundException('volunteers', $csrf);
-
-        // Do not disable volunteers tied to RedCall users
-        if ($volunteer->getUser()) {
-            throw $this->createNotFoundException();
-        }
-
-        $volunteer->setEnabled(true);
-        $volunteer->setLocked(true);
-        $this->volunteerManager->save($volunteer);
-
-        return $this->redirectToRoute('management_volunteers_list', $request->query->all());
-    }
-
-    /**
      * @Route(path="/pegass/{id}", name="pegass")
      * @IsGranted("ROLE_ADMIN")
      */
@@ -493,6 +454,53 @@ class VolunteersController extends BaseController
         ]);
     }
 
+    /**
+     * @Route(path="/toggle-lock-{id}/{token}", name="toggle_lock")
+     * @IsGranted("VOLUNTEER", subject="volunteer")
+     * @Template("management/volunteers/volunteer.html.twig")
+     */
+    public function toggleLock(Volunteer $volunteer, Csrf $token)
+    {
+        if (!$volunteer->isEnabled()) {
+            throw $this->createNotFoundException();
+        }
+
+        $volunteer->setLocked(1 - $volunteer->isLocked());
+
+        if (!$volunteer->isLocked()) {
+
+        }
+
+        $this->volunteerManager->save($volunteer);
+
+        return [
+            'volunteer' => $volunteer,
+        ];
+    }
+
+    /**
+     * @Route(path="/toggle-enable-{id}/{token}", name="toggle_enable")
+     * @IsGranted("VOLUNTEER", subject="volunteer")
+     * @Template("management/volunteers/volunteer.html.twig")
+     */
+    public function toggleEnable(Volunteer $volunteer, Csrf $token)
+    {
+        if ($volunteer->isLocked()) {
+            throw $this->createNotFoundException();
+        }
+
+        if ($volunteer->getUser() && $volunteer->isEnabled()) {
+            throw $this->createNotFoundException();
+        }
+
+        $volunteer->setEnabled(1 - $volunteer->isEnabled());
+
+        $this->volunteerManager->save($volunteer);
+
+        return [
+            'volunteer' => $volunteer,
+        ];
+    }
 
     private function deleteVolunteer(Volunteer $volunteer,
         Answer $answer,

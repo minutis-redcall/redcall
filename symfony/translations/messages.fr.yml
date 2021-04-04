@@ -501,7 +501,9 @@ maintenance:
 manage_structures:
   action:
     title: Actions
+  disable_confirm: 'Voulez-vous vraiment desactiver cette structure ?'
   export: 'Exporter les informations de contact des bénévoles'
+  force_pegass_update: 'Forcer la mise à jour Pegass maintenant'
   form:
     create: 'Créer une nouvelle structure'
     disabled: 'Afficher les structures desactivées'
@@ -509,6 +511,7 @@ manage_structures:
   last_update: 'Dernière synchro avec Pegass : %last_update% UTC'
   lock: 'Geler la structure'
   manage_prefilled_answers: 'Gérer les réponses pré-remplies'
+  manual_update: 'Mise à jour manuelle'
   next_update: 'Prochaine synchro avec Pegass : %next_update% UTC'
   prefilled_answers:
     form:
@@ -523,20 +526,22 @@ manage_structures:
   title: 'Gestion des structures'
   unlock: 'Dégeler la structure'
   users: 'Nombre d''utilisateurs RedCall : %count%'
+  view_pegass_entry: 'Ouvir l''entrée de la base de données Pegass'
   volunteers: 'Nombre de bénévoles : %count%'
-  disable_confirm: 'Voulez-vous vraiment desactiver cette structure ?'
-  force_pegass_update: 'Forcer la mise à jour maintenant'
-  manual_update: 'Mise à jour manuelle'
 manage_volunteers:
   access_denied: 'Vous ne pouvez pas ouvrir le profil d''un(e) bénévole ne faisant pas partie des structures que vous pouvez déclencher.'
   action:
     disable: Desactiver
+    disable_confirm: 'Voulez-vous vraiment desactiver ce bénévole ?'
+    disable_volunteer: 'Desactiver le bénévole'
     enable: Activer
+    enable_volunteer: 'Réactiver le bénévole'
     lock: Geler
-    manual_update: 'MàJ manuelle'
-    pegass_update: 'MàJ Pegass'
     title: Actions
     unlock: Dégeler
+    update_manual: 'Mettre à jour les informations bénévoles'
+    update_pegass: 'Forcer la mise à jour Pegass maintenant'
+    view_pegass_entry: 'Ouvir l''entrée de la base de données Pegass'
   admin_structures:
     create: 'Vous serez en mesure d''éditer les structures du bénévole après sa création.'
     edit: 'Editer les structures'
@@ -816,3 +821,4 @@ title:
   campaigns: Déclenchements
   costs: Coûts
   messages: Messages
+locked_resources: 'Les ressources gelées (🔒) ne peuvent pas être modifiées par des sources extérieures à RedCall (synchro Pegass, APIs, ...)'

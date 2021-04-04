@@ -80,10 +80,6 @@ class VolunteerType extends AbstractType
                 'label'    => 'manage_volunteers.form.minor',
                 'required' => false,
             ])
-            ->add('enabled', CheckboxType::class, [
-                'label'    => 'manage_volunteers.form.enabled',
-                'required' => false,
-            ])
             ->add('badges', BadgeSelectionType::class, [
                 'label' => false,
             ])

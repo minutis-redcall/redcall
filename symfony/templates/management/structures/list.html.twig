@@ -28,6 +28,7 @@
 
     {{ macros.pager(structures) }}
 
+    <div>{{ 'locked_resources'|trans }}</div>
     <br/>
 
     <div class="text-center">
@@ -64,12 +65,14 @@
             e.preventDefault();
             var that = $(this);
 
-            $.post(that.data('href'), function (data) {
-                $('#structure-' + that.data('id')).html(data);
-            });
+            if (!that.data('confirm') || confirm(that.data('confirm'))) {
+                $.post(that.data('href'), function (data) {
+                    $('#structure-' + that.data('id')).html(data);
+                });
+            }
         });
 
-        $('.show-structure-users').click(function (e) {
+        $('body').on('click', '.show-structure-users', function (e) {
             e.preventDefault();
             $('#redcall-user-modal-title').html('');
             $('#redcall-user-modal-body').html('<img src="{{ asset('spinner.gif') }}"/>');

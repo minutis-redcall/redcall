@@ -119,6 +119,10 @@ class StructuresController extends BaseController
      */
     public function createStructure(Request $request, ?Structure $structure = null)
     {
+        if (null !== $structure && $structure->isLocked()) {
+            throw $this->createNotFoundException();
+        }
+
         if (null === $structure) {
             $structure = new Structure();
             $structure->setExternalId(Uuid::uuid4());
@@ -243,6 +247,9 @@ class StructuresController extends BaseController
      */
     public function toggleLock(Structure $structure, Csrf $token)
     {
+        if (!$structure->isEnabled()) {
+            throw $this->createNotFoundException();
+        }
 
         $structure->setLocked(1 - $structure->isLocked());
 
