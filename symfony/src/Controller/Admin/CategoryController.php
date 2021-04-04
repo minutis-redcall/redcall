@@ -94,10 +94,6 @@ class CategoryController extends BaseController
             $category->setExternalId(Uuid::uuid4());
         }
 
-        if ($category->isLocked()) {
-            throw $this->createNotFoundException();
-        }
-
         $form = $this->createFormBuilder($category)
                      ->add('name', TextType::class, [
                          'label' => 'admin.category.form.name',
@@ -140,7 +136,7 @@ class CategoryController extends BaseController
      */
     public function deleteCategory(Category $category, Csrf $token)
     {
-        if ($category->isLocked() || $category->isEnabled()) {
+        if ($category->isEnabled()) {
             throw $this->createNotFoundException();
         }
 

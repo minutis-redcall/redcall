@@ -119,7 +119,10 @@
                    class="toggle-action"
                    style="text-decoration: none;"
                    data-id="{{ volunteer.id }}"
-                   data-href="{{ path('management_volunteers_toggle_lock', {id: volunteer.id, token: csrf_token('token')}) }}" title="{{ 'manage_volunteers.action.unlock'|trans }}">🔒</a>
+                   data-href="{{ path('management_volunteers_toggle_lock', {id: volunteer.id, token: csrf_token('token')}) }}" title="{{ 'manage_volunteers.action.unlock'|trans }}">
+                    🔒
+                    <span style="color:grey;">{{ 'lock.locked'|trans }}</span>
+                </a>
             {% else %}
                 <a href="#"
                    class="toggle-action"

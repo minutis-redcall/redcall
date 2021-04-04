@@ -467,10 +467,6 @@ class VolunteersController extends BaseController
 
         $volunteer->setLocked(1 - $volunteer->isLocked());
 
-        if (!$volunteer->isLocked()) {
-
-        }
-
         $this->volunteerManager->save($volunteer);
 
         return [

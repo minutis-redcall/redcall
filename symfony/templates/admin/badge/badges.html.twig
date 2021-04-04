@@ -53,21 +53,19 @@
 
     <script type="text/javascript">
 
-        $('body').on('click', '.toggle-visibility, .toggle-lock', function (e) {
+        $('body').on('click', '.toggle-action', function (e) {
+            e.preventDefault();
             var that = $(this);
 
-            if (that.hasClass('toggle-lock')) {
-                e.preventDefault();
+            if (!that.data('confirm') || confirm(that.data('confirm'))) {
+                $.post(that.data('href'), function (data) {
+                    $('#badge-' + that.data('id')).html(data);
+                });
             }
-
-            $.post(that.data('href'), function (data) {
-                $('#badge-' + that.data('id')).html(data);
-            });
         });
 
         $('body').on('click', '.delete-badge', function (e) {
             e.preventDefault();
-
             var that = $(this);
 
             if (!confirm('{{ 'admin.badge.delete'|trans }}'.replace('%name%', that.data('name')))) {

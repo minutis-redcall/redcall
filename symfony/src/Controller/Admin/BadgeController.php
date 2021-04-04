@@ -3,7 +3,6 @@
 namespace App\Controller\Admin;
 
 use App\Base\BaseController;
-use App\Component\HttpFoundation\NoContentResponse;
 use App\Entity\Badge;
 use App\Form\Type\BadgeWidgetType;
 use App\Form\Type\CategoryWigetType;
@@ -13,6 +12,7 @@ use Bundles\PaginationBundle\Manager\PaginationManager;
 use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -47,11 +47,12 @@ class BadgeController extends BaseController
      */
     public function index(Request $request) : array
     {
-        $searchForm = $this->createSearchForm($request, 'admin.badge.search');
+        $searchForm = $this->createSearchForm($request);
 
         $badges = $this->paginationManager->getPager(
             $this->badgeManager->getSearchInPublicBadgesQueryBuilder(
-                $searchForm->get('criteria')->getData()
+                $searchForm->get('criteria')->getData(),
+                $searchForm->get('only_enabled')->getData()
             )
         );
 
@@ -60,19 +61,6 @@ class BadgeController extends BaseController
             'counts' => $this->badgeManager->getVolunteerCountInSearch($badges),
             'search' => $searchForm->createView(),
         ];
-    }
-
-    /**
-     * @Route(path="/remove-{id}/{token}", name="remove")
-     * @IsGranted("BADGE", subject="badge")
-     */
-    public function remove(Badge $badge, Csrf $token)
-    {
-        if ($badge->canBeRemoved()) {
-            $this->badgeManager->remove($badge);
-        }
-
-        return new NoContentResponse();
     }
 
     /**
@@ -89,10 +77,6 @@ class BadgeController extends BaseController
             $badge = new Badge();
             $badge->setPlatform($this->getPlatform());
             $badge->setExternalId(Uuid::uuid4());
-        }
-
-        if ($badge->isLocked()) {
-            throw $this->createNotFoundException();
         }
 
         $collection = clone $badge->getSynonyms();
@@ -129,10 +113,6 @@ class BadgeController extends BaseController
      */
     public function toggleVisibility(Badge $badge, Csrf $token)
     {
-        if ($badge->isLocked()) {
-            throw $this->createNotFoundException();
-        }
-
         if ($badge->isUsable()) {
             $badge->setVisibility(1 - $badge->getVisibility());
 
@@ -156,6 +136,20 @@ class BadgeController extends BaseController
         return $this->getContext($badge);
     }
 
+    /**
+     * @Route(path="/toggle-enable-{id}/{token}", name="toggle_enable")
+     * @IsGranted("BADGE", subject="badge")
+     * @Template("admin/badge/badge.html.twig")
+     */
+    public function toggleEnable(Badge $badge, Csrf $token)
+    {
+        $badge->setEnabled(1 - $badge->isEnabled());
+
+        $this->badgeManager->save($badge);
+
+        return $this->getContext($badge);
+    }
+
     private function getContext(Badge $badge)
     {
         $counts = $this->badgeManager->getVolunteerCountInBadgeList([$badge->getId()]);
@@ -167,19 +161,28 @@ class BadgeController extends BaseController
         ];
     }
 
-    private function createSearchForm(Request $request, string $label) : FormInterface
+    private function createSearchForm(Request $request) : FormInterface
     {
-        return $this->createFormBuilder(null, ['csrf_protection' => false])
-                    ->setMethod('GET')
-                    ->add('criteria', TextType::class, [
-                        'label'    => $label,
-                        'required' => false,
-                    ])
-                    ->add('submit', SubmitType::class, [
-                        'label' => 'base.button.search',
-                    ])
-                    ->getForm()
-                    ->handleRequest($request);
+        return $this
+            ->createFormBuilder([
+                'only_enabled' => true,
+            ], [
+                'csrf_protection' => false,
+            ])
+            ->setMethod('GET')
+            ->add('criteria', TextType::class, [
+                'label'    => 'admin.badge.search',
+                'required' => false,
+            ])
+            ->add('only_enabled', CheckboxType::class, [
+                'label'    => 'admin.badge.only_enabled',
+                'required' => false,
+            ])
+            ->add('submit', SubmitType::class, [
+                'label' => 'base.button.search',
+            ])
+            ->getForm()
+            ->handleRequest($request);
     }
 
     private function createManageForm(Request $request, ?Badge $badge) : FormInterface

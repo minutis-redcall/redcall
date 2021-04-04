@@ -38,9 +38,9 @@ class BadgeManager
         $this->badgeRepository->save($badge);
     }
 
-    public function getSearchInPublicBadgesQueryBuilder(?string $criteria)
+    public function getSearchInPublicBadgesQueryBuilder(?string $criteria, bool $onlyEnabled)
     {
-        return $this->badgeRepository->getSearchInBadgesQueryBuilder($criteria);
+        return $this->badgeRepository->getSearchInBadgesQueryBuilder($criteria, $onlyEnabled);
     }
 
     public function search(?string $criteria, int $limit = 0) : array

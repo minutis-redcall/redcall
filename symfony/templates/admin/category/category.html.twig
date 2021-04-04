@@ -3,15 +3,13 @@
         <div class="card-title h3" style="{% if not category.enabled %}color:darkgray;{% endif %}">
             {{ category.name }}
             <div class="float-right">
-                {% if not category.locked %}
-                    <label class="switch">
-                        <input type="checkbox"
-                               class="toggle-enable"
-                               {% if category.enabled %}checked{% endif %}
-                               data-id="{{ category.id }}"/>
-                        <span class="slider"></span>
-                    </label>
-                {% endif %}
+                <label class="switch">
+                    <input type="checkbox"
+                           class="toggle-enable"
+                           {% if category.enabled %}checked{% endif %}
+                           data-id="{{ category.id }}"/>
+                    <span class="slider"></span>
+                </label>
             </div>
         </div>
     </div>
@@ -24,12 +22,10 @@
         <div>
 
             {% if category.enabled %}
-                <span class="{% if category.locked %}d-none{% endif %}">
-                    <a href="#" class="btn btn-small btn-secondary open-category-form"
-                       data-uri="{{ path('admin_category_form', {id: category.id}) }}">
-                        ✏️ {{ 'base.button.update'|trans }}
-                    </a>
-                </span>
+                <a href="#" class="btn btn-small btn-secondary open-category-form"
+                   data-uri="{{ path('admin_category_form', {id: category.id}) }}">
+                    ✏️ {{ 'base.button.update'|trans }}
+                </a>
 
                 <a href="#" class="btn btn-small btn-secondary open-category-badges"
                    data-uri="{{ path('admin_category_badges', {id: category.id}) }}">
@@ -39,16 +35,14 @@
 
             {% if not category.enabled %}
                 <div class="float-right">
-                    <span class="{% if category.locked %}d-none{% endif %}">
-                        <a href="#"
-                           class="btn btn-small btn-secondary delete-category"
-                           style="border: 1px solid red!important;"
-                           data-id="{{ category.id }}"
-                           data-name="{{ category.name|e('js') }}"
-                           data-uri="{{ path('admin_category_delete', {id: category.id, token: csrf_token('token')}) }}">
-                            ❌
-                        </a>
-                    </span>
+                    <a href="#"
+                       class="btn btn-small btn-secondary delete-category"
+                       style="border: 1px solid red!important;"
+                       data-id="{{ category.id }}"
+                       data-name="{{ category.name|e('js') }}"
+                       data-uri="{{ path('admin_category_delete', {id: category.id, token: csrf_token('token')}) }}">
+                        ❌
+                    </a>
                 </div>
             {% endif %}
 
@@ -59,7 +53,10 @@
     <div class="card-footer">
         {% if category.enabled %}
             {% if category.locked %}
-                <a href="#" class="toggle-lock" style="text-decoration: none;" data-id="{{ category.id }}" title="{{ 'admin.category.unlock'|trans }}">🔒</a>
+                <a href="#" class="toggle-lock" style="text-decoration: none;" data-id="{{ category.id }}" title="{{ 'admin.category.unlock'|trans }}">
+                    🔒
+                    <span style="color:grey;">{{ 'lock.locked'|trans }}</span>
+                </a>
             {% else %}
                 <a href="#" class="toggle-lock" style="text-decoration: none;" data-id="{{ category.id }}" title="{{ 'admin.category.lock'|trans }}">🔓</a>
             {% endif %}

@@ -38,7 +38,7 @@ class BadgeRepository extends BaseRepository
         ]);
     }
 
-    public function getSearchInBadgesQueryBuilder(?string $criteria) : QueryBuilder
+    public function getSearchInBadgesQueryBuilder(?string $criteria, bool $onlyEnabled) : QueryBuilder
     {
         $qb = $this->createQueryBuilder('b')
                    ->andWhere('b.platform = :platform')
@@ -52,6 +52,10 @@ class BadgeRepository extends BaseRepository
 
         if ($criteria) {
             $this->addSearchCriteria($qb, $criteria);
+        }
+
+        if ($onlyEnabled) {
+            $qb->andWhere('b.enabled = true');
         }
 
         return $qb;
@@ -90,6 +94,7 @@ class BadgeRepository extends BaseRepository
     {
         return $this->getSearchInBadgesQueryBuilder($criteria)
                     ->andWhere('b.synonym IS NULL')
+                    ->andWhere('b.enabled = true')
                     ->setMaxResults($limit)
                     ->getQuery()
                     ->getResult();
@@ -100,6 +105,7 @@ class BadgeRepository extends BaseRepository
         return $this->getSearchInBadgesQueryBuilder($criteria)
                     ->andWhere('b.synonym IS NULL')
                     ->andWhere('b.visibility = false')
+                    ->andWhere('b.enabled = true')
                     ->setMaxResults($limit)
                     ->getQuery()
                     ->getResult();
@@ -110,6 +116,7 @@ class BadgeRepository extends BaseRepository
         return $this->getSearchInBadgesQueryBuilder(null)
                     ->andWhere('b.synonym IS NULL')
                     ->andWhere('b.visibility = false')
+                    ->andWhere('b.enabled = true')
                     ->andWhere('b.id IN (:ids)')
                     ->setParameter('ids', $ids, Connection::PARAM_INT_ARRAY)
                     ->getQuery()
@@ -119,7 +126,8 @@ class BadgeRepository extends BaseRepository
     public function getPublicBadgesQueryBuilder() : QueryBuilder
     {
         return $this->getSearchInBadgesQueryBuilder(null)
-                    ->andWhere('b.visibility = true');
+                    ->andWhere('b.visibility = true')
+                    ->andWhere('b.enabled = true');
     }
 
     public function getBadgesInCategoryQueryBuilder(Category $category) : QueryBuilder
@@ -127,6 +135,7 @@ class BadgeRepository extends BaseRepository
         return $this->createQueryBuilder('b')
                     ->andWhere('b.platform = :platform')
                     ->setParameter('platform', $this->security->getPlatform())
+                    ->andWhere('b.enabled = true')
                     ->andWhere('b.visibility = true')
                     ->andWhere('b.synonym IS NULL')
                     ->join('b.category', 'c')

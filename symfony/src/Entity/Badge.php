@@ -123,6 +123,13 @@ class Badge
     /**
      * @var bool
      *
+     * @ORM\Column(type="boolean", options={"default" : 1})
+     */
+    private $enabled = true;
+
+    /**
+     * @var bool
+     *
      * @ORM\Column(type="boolean", options={"default" : 0})
      */
     private $locked = false;
@@ -425,6 +432,18 @@ class Badge
         }
 
         return true;
+    }
+
+    public function isEnabled() : bool
+    {
+        return $this->enabled;
+    }
+
+    public function setEnabled(bool $enabled) : Badge
+    {
+        $this->enabled = $enabled;
+
+        return $this;
     }
 
     public function isLocked() : bool

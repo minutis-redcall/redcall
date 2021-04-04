@@ -12,10 +12,16 @@ admin:
       volunteer: Volunteer
     title: 'Answers analysis'
   badge:
+    action:
+      title: 'Actions'
+      disable: 'Disable badge'
+      enable: 'Enable badge'
+      disable_confirm: 'Do you really want to disable this badge?'
+      visible: 'Show this badge in the audience selection form'
+      invisible: 'Hide this badge in the audience selection form'
     covered_by: 'Covered by the following badges:'
     covers: 'Covers the following badges:'
     create: 'Create a new badge'
-    delete: 'Do you really want to remove %name% badge?'
     description:
       10: 'Badges aim to filter out who to trigger.'
       11: 'Badge name should be small because it is rendered everywhere where a volunteer is rendered.'
@@ -40,9 +46,10 @@ admin:
     lock: 'Lock badge'
     rendering_priority: 'Rendering prio.: %priority%'
     replace: 'Replace the following badges'
-    search: 'Chercher un badge'
+    search: 'Search for a badge'
+    only_enabled: 'Hide disabled badges'
     synonym_of: 'Synonym of %name%'
-    title: 'Gestion des badges'
+    title: 'Manage badges '
     triggering_priority: 'Triggering prio.: %priority%'
     unlock: 'Unlock badge'
     used_by: 'Used by %count% volunteers'
@@ -819,4 +826,6 @@ title:
   campaigns: Campaigns
   costs: Costs
   messages: Messages
-locked_resources: 'Locked resources (🔒) cannot be updated by external sources (Pegass database, APIs, ...)'
+lock:
+  explanation: 'Locked resources (🔒) cannot be updated by external sources (Pegass database, APIs, ...)'
+  locked: 'Locked'

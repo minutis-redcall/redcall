@@ -12,10 +12,16 @@ admin:
       volunteer: Bénévole
     title: 'Analyser les réponses'
   badge:
+    action:
+      title: 'Actions'
+      disable: 'Desactiver le badge'
+      enable: 'Activer le badge'
+      visible: 'Ajouter sur le formulaire de déclenchement'
+      invisible: 'Retirer du formulaire de déclenchement'
+      disable_confirm: 'Voulez-vous vraiment desactiver ce badge ?'
     covered_by: 'Couvert par les badges suivants :'
     covers: 'Couvre les badges suivants :'
     create: 'Création d''un nouveau badge'
-    delete: 'Voulez-vous vraiment supprimer le badge %name% ?'
     description:
       10: 'Les badges permettent de filtrer les bénévoles à déclencher.'
       11: 'Le nom du badge doit-être petit car il est affiché partout où le bénévole est affiché (ex: US pour Urgence Secours).'
@@ -42,6 +48,7 @@ admin:
     replace: 'Remplace les badges suivants'
     search: 'Chercher un badge'
     synonym_of: 'Synonyme de %name%'
+    only_enabled: 'Masquer les badges desactivés'
     title: 'Gestion des badges'
     triggering_priority: 'Prio. déclenchement: %priority%'
     unlock: 'Dégeler le badge'
@@ -821,4 +828,6 @@ title:
   campaigns: Déclenchements
   costs: Coûts
   messages: Messages
-locked_resources: 'Les ressources gelées (🔒) ne peuvent pas être modifiées par des sources extérieures à RedCall (synchro Pegass, APIs, ...)'
+lock:
+  explanation: 'Les ressources gelées (🔒) ne peuvent pas être modifiées par des sources extérieures à RedCall (synchro Pegass, APIs, ...)'
+  locked: 'Gelé'
