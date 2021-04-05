@@ -37,7 +37,7 @@ class VolunteerType extends AbstractType
 
         $builder
             ->add('nivol', TextType::class, [
-                'label' => 'manage_volunteers.form.nivol',
+                'label' => 'manage_volunteers.form.external_id',
             ])
             ->add('firstName', TextType::class, [
                 'label' => 'manage_volunteers.form.first_name',
@@ -45,13 +45,9 @@ class VolunteerType extends AbstractType
             ->add('lastName', TextType::class, [
                 'label' => 'manage_volunteers.form.last_name',
             ])
-            ->add('optoutUntil', DateType::class, [
-                'label'       => 'manage_volunteers.form.optout_until',
-                'widget'      => 'single_text',
-                'required'    => false,
-                'constraints' => [
-                    new GreaterThan('tomorrow'),
-                ],
+            ->add('minor', CheckboxType::class, [
+                'label'    => 'manage_volunteers.form.minor',
+                'required' => false,
             ])
             ->add('phones', PhoneCardsType::class, [
                 'label' => false,
@@ -76,9 +72,13 @@ class VolunteerType extends AbstractType
                 'label'    => 'manage_volunteers.form.email_locked',
                 'required' => false,
             ])
-            ->add('minor', CheckboxType::class, [
-                'label'    => 'manage_volunteers.form.minor',
-                'required' => false,
+            ->add('optoutUntil', DateType::class, [
+                'label'       => 'manage_volunteers.form.optout_until',
+                'widget'      => 'single_text',
+                'required'    => false,
+                'constraints' => [
+                    new GreaterThan('tomorrow'),
+                ],
             ])
             ->add('badges', BadgeSelectionType::class, [
                 'label' => false,

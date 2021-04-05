@@ -12,6 +12,13 @@ admin:
       volunteer: Bénévole
     title: 'Analyser les réponses'
   badge:
+    action:
+      disable: 'Desactiver le badge'
+      disable_confirm: 'Voulez-vous vraiment desactiver ce badge ?'
+      enable: 'Activer le badge'
+      invisible: 'Retirer du formulaire de déclenchement'
+      title: Actions
+      visible: 'Ajouter sur le formulaire de déclenchement'
     covered_by: 'Couvert par les badges suivants :'
     covers: 'Couvre les badges suivants :'
     create: 'Création d''un nouveau badge'
@@ -37,6 +44,7 @@ admin:
       synonyms: 'Badges synonymes (ce badge remplacera l''ensemble des badges ci-dessous)'
       triggering_priority: 'Priorité lors des déclenchements'
     lock: 'Geler le badge'
+    only_enabled: 'Masquer les badges desactivés'
     rendering_priority: 'Prio. visuelle: %priority%'
     replace: 'Remplace les badges suivants'
     search: 'Chercher un badge'
@@ -45,14 +53,6 @@ admin:
     triggering_priority: 'Prio. déclenchement: %priority%'
     unlock: 'Dégeler le badge'
     used_by: 'Utilisé par %count% bénévoles'
-    action:
-      title: Actions
-      disable: 'Desactiver le badge'
-      enable: 'Activer le badge'
-      visible: 'Ajouter sur le formulaire de déclenchement'
-      invisible: 'Retirer du formulaire de déclenchement'
-      disable_confirm: 'Voulez-vous vraiment desactiver ce badge ?'
-    only_enabled: 'Masquer les badges desactivés'
   category:
     badges: Badges
     badges_add: 'Ajouter un badge'
@@ -481,6 +481,9 @@ label:
   structures: structures
   to: Au
   volunteers: bénévoles
+lock:
+  explanation: 'Les ressources gelées (🔒) ne peuvent pas être modifiées par des sources extérieures à RedCall (synchro Pegass, APIs, ...)'
+  locked: Gelé
 maintenance:
   message:
     content: 'Contenu du message (sauts de lignes acceptés)'
@@ -602,9 +605,7 @@ manage_volunteers:
     last_name: 'Nom de famille'
     lock_info: '* Les nᵒˢ de téléphone et emails gelés ne sont plus mis à jour automatiquement par Pegass.'
     minor: 'Mineur(e) (-18 ans)'
-    nivol: Nivol
     optout_until_me: 'Je suis indisponible jusqu''au...'
-    optout_until: 'Bénévole indisponible jusqu''au...'
     phone_number: Téléphone
     phone_number_locked: 'Geler le nᵒ de téléphone *'
     phone_number_optin: 'Disponible par téléphone et SMS'
@@ -613,6 +614,12 @@ manage_volunteers:
     update: 'Mettre à jour un bénévole'
     updated: 'Le bénévole a correctement été modifié.'
     visible_badges: 'Badges principaux'
+    section_general: 'Informations générales'
+    section_structures: 'Structures de rattachement'
+    section_contact: 'Informations de contact'
+    section_badges: 'Compétences & nominations'
+    external_id: 'Identifiant externe (NIVOL)'
+    optout_until: 'Bénévole indisponible jusqu''au...'
   others: 'et %count% autre(s)'
   redcall:
     action_structures: 'Structures déclenchables par %name%'
@@ -830,6 +837,3 @@ title:
   campaigns: Déclenchements
   costs: Coûts
   messages: Messages
-lock:
-  explanation: 'Les ressources gelées (🔒) ne peuvent pas être modifiées par des sources extérieures à RedCall (synchro Pegass, APIs, ...)'
-  locked: Gelé

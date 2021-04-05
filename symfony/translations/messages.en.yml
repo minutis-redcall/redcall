@@ -12,6 +12,13 @@ admin:
       volunteer: Volunteer
     title: 'Answers analysis'
   badge:
+    action:
+      disable: 'Disable badge'
+      disable_confirm: 'Do you really want to disable this badge?'
+      enable: 'Enable badge'
+      invisible: 'Hide this badge in the audience selection form'
+      title: Actions
+      visible: 'Show this badge in the audience selection form'
     covered_by: 'Covered by the following badges:'
     covers: 'Covers the following badges:'
     create: 'Create a new badge'
@@ -37,6 +44,7 @@ admin:
       synonyms: 'Synonym badges (this badge should replace all badges given on the following field)'
       triggering_priority: 'Badge triggering priority'
     lock: 'Lock badge'
+    only_enabled: 'Hide disabled badges'
     rendering_priority: 'Rendering prio.: %priority%'
     replace: 'Replace the following badges'
     search: 'Search for a badge'
@@ -45,14 +53,6 @@ admin:
     triggering_priority: 'Triggering prio.: %priority%'
     unlock: 'Unlock badge'
     used_by: 'Used by %count% volunteers'
-    action:
-      title: Actions
-      disable: 'Disable badge'
-      enable: 'Enable badge'
-      disable_confirm: 'Do you really want to disable this badge?'
-      visible: 'Show this badge in the audience selection form'
-      invisible: 'Hide this badge in the audience selection form'
-    only_enabled: 'Hide disabled badges'
   category:
     badges: Badges
     badges_add: 'Add a badge'
@@ -481,6 +481,9 @@ label:
   structures: structures
   to: To
   volunteers: volunteers
+lock:
+  explanation: 'Locked resources (🔒) cannot be updated by external sources (Pegass database, APIs, ...)'
+  locked: Locked
 maintenance:
   message:
     content: 'Message content (newlines allowed)'
@@ -602,9 +605,7 @@ manage_volunteers:
     last_name: 'Last name'
     lock_info: '* Locked phones and emails are not automatically refreshed by Pegass updates.'
     minor: 'Minor (under 18)'
-    nivol: Nivol
-    optout_until_me: 'I am not available until...'
-    optout_until: 'Volunteer not available until...'
+    optout_until_me: 'Volunteer not available until...'
     phone_number: 'Phone number'
     phone_number_locked: 'Locked phone number *'
     phone_number_optin: 'Available by phone number'
@@ -613,6 +614,12 @@ manage_volunteers:
     update: 'Update volunteer'
     updated: 'Volunteer has properly been updated.'
     visible_badges: 'Main badges'
+    section_general: 'General information'
+    section_structures: 'Membership structures'
+    section_contact: 'Contact information'
+    section_badges: 'Skills, interests and nominations'
+    external_id: 'External ID (NIVOL)'
+    optout_until: 'Volunteer not available until...'
   others: 'and %count% other(s)'
   redcall:
     action_structures: 'Structures that %name% can trigger'
@@ -830,6 +837,3 @@ title:
   campaigns: Campaigns
   costs: Costs
   messages: Messages
-lock:
-  explanation: 'Locked resources (🔒) cannot be updated by external sources (Pegass database, APIs, ...)'
-  locked: Locked
