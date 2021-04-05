@@ -35,6 +35,8 @@ class BadgeTransformer extends BaseTransformer
             ->setVisibility($badge->getVisibility())
             ->setRenderingPriority($badge->getRenderingPriority())
             ->setTriggeringPriority($badge->getTriggeringPriority())
+            ->setEnabled($badge->isEnabled())
+            ->setLocked($badge->isLocked())
             ->setCategory(
                 $this->getCategoryTransformer()->expose($badge->getCategory())
             )

@@ -4,6 +4,7 @@ namespace Bundles\SandboxBundle\Command;
 
 use App\Base\BaseCommand;
 use Bundles\SandboxBundle\Manager\AnonymizeManager;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -32,6 +33,7 @@ class AnonymizeCommand extends BaseCommand
     {
         $this
             ->setName('anonymize')
+            ->addArgument('platform', InputArgument::REQUIRED, 'Platform in which volunteers are stored')
             ->addOption('volunteer', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Volunteer nivol to anonymize')
             ->setDescription('Anonymize a specified volunteer, or the whole RedCall database');
     }
@@ -43,10 +45,10 @@ class AnonymizeCommand extends BaseCommand
     {
         if ($volunteers = $input->getOption('volunteer')) {
             foreach ($volunteers as $nivol) {
-                $this->anonymizeManager->anonymizeVolunteer(ltrim($nivol, '0'));
+                $this->anonymizeManager->anonymizeVolunteer(ltrim($nivol, '0'), $input->getArgument('platform'));
             }
         } else {
-            $this->anonymizeManager->anonymizeDatabase();
+            $this->anonymizeManager->anonymizeDatabase($input->getArgument('platform'));
         }
 
         return 0;

@@ -5,6 +5,7 @@ namespace Bundles\SandboxBundle\Manager;
 use App\Entity\Phone;
 use App\Entity\Volunteer;
 use App\Manager\VolunteerManager;
+use App\Security\Helper\Security;
 use App\Settings;
 use Bundles\SettingsBundle\Manager\SettingManager;
 use libphonenumber\PhoneNumberFormat;
@@ -34,6 +35,11 @@ class AnonymizeManager
     private $fakeEmailManager;
 
     /**
+     * @var Security
+     */
+    private $security;
+
+    /**
      * @var KernelInterface
      */
     private $kernel;
@@ -61,7 +67,7 @@ class AnonymizeManager
     /**
      * Only used for pen-test environments
      */
-    public function anonymizeDatabase()
+    public function anonymizeDatabase(string $platform)
     {
         if ('cli' === php_sapi_name()) {
             $this->fakeSmsManager->truncate();
@@ -75,7 +81,7 @@ class AnonymizeManager
 
             // Executing asynchronous task to prevent against interruptions
             $console = sprintf('%s/bin/console', $this->kernel->getProjectDir());
-            $command = sprintf('%s anonymize', escapeshellarg($console));
+            $command = sprintf('%s anonymize %s', escapeshellarg($console), $platform);
             exec(sprintf('%s > /dev/null 2>&1 & echo -n \$!', $command));
         }
     }
@@ -83,9 +89,9 @@ class AnonymizeManager
     /**
      * @param string $nivol
      */
-    public function anonymizeVolunteer(string $nivol)
+    public function anonymizeVolunteer(string $nivol, string $platform)
     {
-        $volunteer = $this->volunteerManager->findOneByNivol($nivol);
+        $volunteer = $this->volunteerManager->findOneByNivol($platform, $nivol);
         if ($volunteer) {
             $this->anonymize($volunteer);
         }

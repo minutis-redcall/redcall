@@ -48,6 +48,7 @@ class CreateUserCommand extends BaseCommand
         $this
             ->setName('user:create')
             ->setDescription('Create users based on volunteer nivols')
+            ->addArgument('platform', InputArgument::REQUIRED, 'Platform for which to create user')
             ->addArgument('nivol', InputArgument::REQUIRED | InputArgument::IS_ARRAY, 'Nivol from which to create a new user');
     }
 
@@ -56,8 +57,10 @@ class CreateUserCommand extends BaseCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $platform = $input->getArgument('platform');
+
         foreach ($input->getArgument('nivol') as $nivol) {
-            $volunteer = $this->volunteerManager->findOneByNivol($nivol);
+            $volunteer = $this->volunteerManager->findOneByNivol($platform, $nivol);
 
             if (!$volunteer) {
                 $output->writeln(sprintf('KO %s: nivol do not exist', $nivol));

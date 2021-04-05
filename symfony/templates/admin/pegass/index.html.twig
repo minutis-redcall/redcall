@@ -111,7 +111,9 @@
                                 </div>
                                 <div id="structures-{{ user.id }}">
                                     {% for structure in user.structures %}
-                                        <div>{{ structure.name }}</div>
+                                        {% if structure.platform == user.platform %}
+                                            <div>{{ structure.name }}</div>
+                                        {% endif %}
                                     {% endfor %}
                                 </div>
 

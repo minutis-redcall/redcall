@@ -136,6 +136,10 @@ class PegassController extends BaseController
         }
 
         $structureNames = array_filter(array_map(function (Structure $structure) {
+            if ($structure->getPlatform() !== $this->getPlatform()) {
+                return null;
+            }
+
             return $structure->getName();
         }, $user->getStructures()->toArray()));
 
@@ -235,7 +239,10 @@ class PegassController extends BaseController
                      ->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $volunteer = $this->volunteerManager->findOneByNivol($form->get('nivol')->getData());
+            $volunteer = $this->volunteerManager->findOneByNivol(
+                $this->getPlatform(),
+                $form->get('nivol')->getData()
+            );
             if (!$volunteer) {
                 throw $this->createNotFoundException();
             }
@@ -244,8 +251,9 @@ class PegassController extends BaseController
             $application->setAutoExit(false);
 
             $input = new ArrayInput([
-                'command' => 'user:create',
-                'nivol'   => [$volunteer->getNivol()],
+                'command'  => 'user:create',
+                'platform' => $this->getPlatform(),
+                'nivol'    => [$volunteer->getNivol()],
             ]);
 
             $application->run($input, new NullOutput());

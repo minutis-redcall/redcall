@@ -6,7 +6,6 @@ use App\Manager\AudienceManager;
 use App\Manager\BadgeManager;
 use App\Manager\ExpirableManager;
 use App\Manager\StructureManager;
-use App\Manager\UserManager;
 use App\Manager\VolunteerManager;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\CallbackTransformer;
@@ -39,11 +38,6 @@ class AudienceType extends AbstractType
     private $audienceManager;
 
     /**
-     * @var UserManager
-     */
-    private $userManager;
-
-    /**
      * @var VolunteerManager
      */
     private $volunteerManager;
@@ -69,7 +63,6 @@ class AudienceType extends AbstractType
     private $security;
 
     public function __construct(AudienceManager $audienceManager,
-        UserManager $userManager,
         VolunteerManager $volunteerManager,
         StructureManager $structureManager,
         BadgeManager $badgeManager,
@@ -77,7 +70,6 @@ class AudienceType extends AbstractType
         Security $security)
     {
         $this->audienceManager  = $audienceManager;
-        $this->userManager      = $userManager;
         $this->volunteerManager = $volunteerManager;
         $this->structureManager = $structureManager;
         $this->badgeManager     = $badgeManager;
@@ -131,7 +123,7 @@ class AudienceType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $structures      = $this->userManager->findForCurrentUser()->getStructures();
+        $structures      = $this->security->getUser()->getStructures();
         $hasOneStructure = 1 === $structures->count();
 
         $builder

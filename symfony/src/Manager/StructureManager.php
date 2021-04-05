@@ -7,32 +7,26 @@ use App\Entity\Structure;
 use App\Entity\User;
 use App\Entity\Volunteer;
 use App\Repository\StructureRepository;
+use App\Security\Helper\Security;
 use Doctrine\ORM\QueryBuilder;
 use Pagerfanta\Pagerfanta;
 
 class StructureManager
 {
     /**
-     * @var UserManager
-     */
-    private $userManager;
-
-    /**
      * @var StructureRepository
      */
     private $structureRepository;
 
-    public function __construct(StructureRepository $structureRepository)
+    /**
+     * @var Security
+     */
+    private $security;
+
+    public function __construct(StructureRepository $structureRepository, Security $security)
     {
         $this->structureRepository = $structureRepository;
-    }
-
-    /**
-     * @required
-     */
-    public function setUserManager(UserManager $userManager)
-    {
-        $this->userManager = $userManager;
+        $this->security            = $security;
     }
 
     public function find(int $id) : ?Structure
@@ -78,7 +72,7 @@ class StructureManager
     public function searchForCurrentUserQueryBuilder(?string $criteria, bool $enabled) : QueryBuilder
     {
         return $this->structureRepository->searchForUserQueryBuilder(
-            $this->userManager->findForCurrentUser(),
+            $this->security->getUser(),
             $criteria,
             $enabled
         );
@@ -114,7 +108,7 @@ class StructureManager
     public function getStructureHierarchyForCurrentUser()
     {
         return $this->structureRepository->getStructureHierarchyForCurrentUser(
-            $this->userManager->findForCurrentUser()
+            $this->security->getUser()
         );
     }
 

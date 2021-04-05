@@ -8,6 +8,7 @@ use App\Manager\BadgeManager;
 use App\Manager\StructureManager;
 use App\Manager\UserManager;
 use App\Manager\VolunteerManager;
+use App\Security\Helper\Security;
 use App\Tools\Random;
 
 class FixturesManager
@@ -37,17 +38,24 @@ class FixturesManager
      */
     private $anonymizeManager;
 
+    /**
+     * @var Security
+     */
+    private $security;
+
     public function __construct(StructureManager $structureManager,
         VolunteerManager $volunteerManager,
         BadgeManager $badgeManager,
         UserManager $userManager,
-        AnonymizeManager $anonymizeManager)
+        AnonymizeManager $anonymizeManager,
+        Security $security)
     {
         $this->structureManager = $structureManager;
         $this->volunteerManager = $volunteerManager;
         $this->badgeManager     = $badgeManager;
         $this->userManager      = $userManager;
         $this->anonymizeManager = $anonymizeManager;
+        $this->security         = $security;
     }
 
     public function createStructure(string $name, ?int $parent, int $numberOfVolunteers, bool $bindToUser) : Structure
@@ -69,7 +77,7 @@ class FixturesManager
         $this->createVolunteers($numberOfVolunteers, $structure->getId());
 
         if ($bindToUser) {
-            $me = $this->userManager->findForCurrentUser();
+            $me = $this->security->getUser();
             $me->addStructure($structure);
             $this->userManager->save($me);
         }
@@ -105,9 +113,12 @@ class FixturesManager
      */
     private function createVolunteer(array $allBadges) : Volunteer
     {
-        $nivol = $this->generateNivol();
+        $platform = $this->security->getPlatform();
+
+        $nivol = $this->generateNivol($platform);
 
         $volunteer = new Volunteer();
+        $volunteer->setPlatform($platform);
         $volunteer->setNivol($nivol);
         $volunteer->setEnabled(true);
         $volunteer->setIdentifier($nivol);
@@ -125,23 +136,19 @@ class FixturesManager
 
         $this->volunteerManager->save($volunteer);
 
-        $this->anonymizeManager->anonymizeVolunteer($volunteer->getNivol());
+        $this->anonymizeManager->anonymizeVolunteer($volunteer->getNivol(), $platform);
 
         return $volunteer;
     }
 
-    /**
-     * @return string
-     */
-    private function generateNivol() : string
+    private function generateNivol(string $platform) : string
     {
         $nivol = Random::generate(12, '0123456789ABCDEF');
 
-        if ($this->volunteerManager->findOneByNivol($nivol)) {
-            return $this->generateNivol();
+        if ($this->volunteerManager->findOneByNivol($platform, $nivol)) {
+            return $this->generateNivol($platform);
         }
 
         return $nivol;
     }
-
 }

@@ -6,6 +6,7 @@ use App\Base\BaseRepository;
 use App\Entity\Structure;
 use App\Entity\User;
 use App\Entity\Volunteer;
+use App\Security\Helper\Security;
 use Bundles\PegassCrawlerBundle\Entity\Pegass;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\QueryBuilder;
@@ -18,9 +19,16 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class VolunteerRepository extends BaseRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    /**
+     * @var Security
+     */
+    private $security;
+
+    public function __construct(ManagerRegistry $registry, Security $security)
     {
         parent::__construct($registry, Volunteer::class);
+
+        $this->security = $security;
     }
 
     public function disable(Volunteer $volunteer)
@@ -55,20 +63,14 @@ class VolunteerRepository extends BaseRepository
         }
     }
 
-    public function findOneByNivol(string $nivol) : ?Volunteer
+    public function findOneByNivol(string $platform, string $nivol) : ?Volunteer
     {
         return $this->findOneBy([
-            'nivol' => ltrim($nivol, '0'),
+            'platform' => $platform,
+            'nivol'    => ltrim($nivol, '0'),
         ]);
     }
 
-    /**
-     * @param string $keyword
-     * @param int    $maxResults
-     * @param User   $user
-     *
-     * @return Volunteer[]
-     */
     public function searchForUser(User $user, ?string $keyword, int $maxResults, bool $onlyEnabled = false) : array
     {
         return $this->searchForUserQueryBuilder($user, $keyword, $onlyEnabled, false)
@@ -272,20 +274,6 @@ class VolunteerRepository extends BaseRepository
                     ->setParameter('nivols', $nivols, Connection::PARAM_STR_ARRAY);
     }
 
-    public function filterReachableNivols(array $nivols, User $user) : array
-    {
-        $valid = $this->createAcessibleNivolsFilterQueryBuilder($nivols, $user)
-                      ->leftJoin('v.phones', 'p')
-                      ->andWhere('p.id IS NOT NULL')
-                      ->andWhere('v.phoneNumberOptin = true')
-                      ->andWhere('v.email IS NOT NULL')
-                      ->andWhere('v.emailOptin = true')
-                      ->getQuery()
-                      ->getArrayResult();
-
-        return array_column($valid, 'nivol');
-    }
-
     public function filterInvalidNivols(array $nivols) : array
     {
         $valid = $this->createVolunteersQueryBuilder(false)
@@ -295,7 +283,7 @@ class VolunteerRepository extends BaseRepository
                       ->getQuery()
                       ->getArrayResult();
 
-        return array_diff($nivols, array_column($valid, 'nivol'));
+        return array_diff($nivols, array_map('mb_strtolower', array_column($valid, 'nivol')));
     }
 
     public function getVolunteerList(array $volunteerIds, bool $onlyEnabled = true) : array
@@ -557,6 +545,13 @@ class VolunteerRepository extends BaseRepository
     {
         $qb = $this->createQueryBuilder('v')
                    ->distinct();
+
+        // Asynchronous calls may not have any platform selected
+        if ($platform = $this->security->getPlatform()) {
+            $qb
+                ->andWhere('v.platform = :platform')
+                ->setParameter('platform', $this->security->getPlatform());
+        }
 
         if ($enabled) {
             $qb->andWhere('v.enabled = true');

@@ -6,6 +6,7 @@ use App\Entity\Badge;
 use App\Entity\Phone;
 use App\Entity\Structure;
 use App\Entity\Volunteer;
+use App\Enum\Platform;
 use App\Task\SyncOneWithPegass;
 use Bundles\GoogleTaskBundle\Service\TaskSender;
 use Bundles\PegassCrawlerBundle\Entity\Pegass;
@@ -235,7 +236,7 @@ class RefreshManager
     public function refreshVolunteer(Pegass $pegass, bool $force)
     {
         // Create or update?
-        $volunteer = $this->volunteerManager->findOneByNivol($pegass->getIdentifier());
+        $volunteer = $this->volunteerManager->findOneByNivol(Platform::FR, $pegass->getIdentifier());
         if (!$volunteer) {
             $volunteer = new Volunteer();
         }

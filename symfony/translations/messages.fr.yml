@@ -604,6 +604,7 @@ manage_volunteers:
     minor: 'Mineur(e) (-18 ans)'
     nivol: Nivol
     optout_until_me: 'Je suis indisponible jusqu''au...'
+    optout_until: 'Bénévole indisponible jusqu''au...'
     phone_number: Téléphone
     phone_number_locked: 'Geler le nᵒ de téléphone *'
     phone_number_optin: 'Disponible par téléphone et SMS'

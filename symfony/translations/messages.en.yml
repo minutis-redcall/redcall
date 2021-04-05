@@ -603,7 +603,8 @@ manage_volunteers:
     lock_info: '* Locked phones and emails are not automatically refreshed by Pegass updates.'
     minor: 'Minor (under 18)'
     nivol: Nivol
-    optout_until_me: 'Volunteer not available until...'
+    optout_until_me: 'I am not available until...'
+    optout_until: 'Volunteer not available until...'
     phone_number: 'Phone number'
     phone_number_locked: 'Locked phone number *'
     phone_number_optin: 'Available by phone number'

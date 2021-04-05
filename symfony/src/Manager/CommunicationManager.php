@@ -10,6 +10,7 @@ use App\Entity\Message;
 use App\Entity\Volunteer;
 use App\Form\Model\BaseTrigger;
 use App\Repository\CommunicationRepository;
+use App\Security\Helper\Security;
 use DateTime;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Routing\RouterInterface;
@@ -42,11 +43,6 @@ class CommunicationManager
     private $processor;
 
     /**
-     * @var UserManager
-     */
-    private $userManager;
-
-    /**
      * @var VolunteerManager
      */
     private $volunteerManager;
@@ -72,6 +68,11 @@ class CommunicationManager
     private $slackLogger;
 
     /**
+     * @var Security
+     */
+    private $security;
+
+    /**
      * @var LoggerInterface
      */
     private $logger;
@@ -79,19 +80,18 @@ class CommunicationManager
     public function __construct(MessageManager $messageManager,
         CommunicationRepository $communicationRepository,
         ProcessorInterface $processor,
-        UserManager $userManager,
         VolunteerManager $volunteerManager,
         AudienceManager $audienceManager,
         StructureManager $structureManager,
         MediaManager $mediaManager,
         RouterInterface $router,
         LoggerInterface $slackLogger,
-        LoggerInterface $logger)
+        LoggerInterface $logger,
+        Security $security)
     {
         $this->messageManager          = $messageManager;
         $this->communicationRepository = $communicationRepository;
         $this->processor               = $processor;
-        $this->userManager             = $userManager;
         $this->volunteerManager        = $volunteerManager;
         $this->audienceManager         = $audienceManager;
         $this->structureManager        = $structureManager;
@@ -99,6 +99,7 @@ class CommunicationManager
         $this->router                  = $router;
         $this->slackLogger             = $slackLogger;
         $this->logger                  = $logger;
+        $this->security                = $security;
     }
 
     /**
@@ -165,7 +166,7 @@ class CommunicationManager
     public function createCommunication(BaseTrigger $trigger) : Communication
     {
         $volunteer = null;
-        if ($user = $this->userManager->findForCurrentUser()) {
+        if ($user = $this->security->getUser()) {
             $id        = null;
             $volunteer = $user->getVolunteer();
         } else {
