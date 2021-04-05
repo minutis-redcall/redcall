@@ -140,8 +140,8 @@
                 {% endif %}
                 {% if not clickable and is_granted('ROLE_ADMIN') and volunteer.identifier %}
                     <a href="{{ path('management_volunteers_pegass', {id: volunteer.id}) }}" target="_blank">
-                    🛠
-                </a>
+                        🛠
+                    </a>
                 {% endif %}
             </span>
         </div>

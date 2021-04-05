@@ -12,6 +12,7 @@ use App\Model\Csrf;
 use Bundles\PaginationBundle\Manager\PaginationManager;
 use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -83,8 +84,13 @@ class CategoryController extends BaseController
      */
     public function categoryForm(Request $request, Category $category = null) : Response
     {
+        if ($category && !$this->isGranted('CATEGORY', $category)) {
+            throw $this->createAccessDeniedException();
+        }
+
         if (!$category) {
             $category = new Category();
+            $category->setPlatform($this->getPlatform());
             $category->setExternalId(Uuid::uuid4());
         }
 
@@ -126,16 +132,60 @@ class CategoryController extends BaseController
 
     /**
      * @Route(name="delete", path="/delete-category-{id}/{token}"))
+     * @IsGranted("CATEGORY", subject="category")
      */
     public function deleteCategory(Category $category, Csrf $token)
     {
+        if ($category->isEnabled()) {
+            throw $this->createNotFoundException();
+        }
+
         $this->categoryManager->remove($category);
 
         return new NoContentResponse();
     }
 
     /**
+     * @Route(name="toggle_lock", path="/lock-unlock-{id}/{token}"))
+     * @IsGranted("CATEGORY", subject="category")
+     */
+    public function toggleLockCategory(Category $category, Csrf $token)
+    {
+        if (!$category->isEnabled()) {
+            throw $this->createNotFoundException();
+        }
+
+        $category->setLocked(1 - $category->isLocked());
+
+        $this->categoryManager->save($category);
+
+        return $this->json([
+            'view' => $this->renderView('admin/category/category.html.twig', [
+                'category' => $category,
+            ]),
+        ]);
+    }
+
+    /**
+     * @Route(name="toggle_enable", path="/enable-disable-{id}/{token}"))
+     * @IsGranted("CATEGORY", subject="category")
+     */
+    public function toggleEnableCategory(Category $category, Csrf $token)
+    {
+        $category->setEnabled(1 - $category->isEnabled());
+
+        $this->categoryManager->save($category);
+
+        return $this->json([
+            'view' => $this->renderView('admin/category/category.html.twig', [
+                'category' => $category,
+            ]),
+        ]);
+    }
+
+    /**
      * @Route(name="badges", path="/list-badges-in-category-{id}")
+     * @IsGranted("CATEGORY", subject="category")
      */
     public function listBadgeInCategory(Category $category)
     {
@@ -151,6 +201,7 @@ class CategoryController extends BaseController
 
     /**
      * @Route(name="add_badge", path="/add-badge-in-category-{id}/{token}"))
+     * @IsGranted("CATEGORY", subject="category")
      */
     public function addBadgeInCategory(Request $request, Category $category, Csrf $token)
     {
@@ -171,6 +222,7 @@ class CategoryController extends BaseController
 
     /**
      * @Route(name="refresh", path="/refresh-category-category-{id}")
+     * @IsGranted("CATEGORY", subject="category")
      */
     public function refreshCategoryCard(Category $category)
     {
@@ -183,6 +235,8 @@ class CategoryController extends BaseController
      * @Route(name="delete_badge", path="/delete-badge-{badgeId}-in-category-{categoryId}/{token}"))
      * @Entity("category", expr="repository.find(categoryId)")
      * @Entity("badge", expr="repository.find(badgeId)")
+     * @IsGranted("CATEGORY", subject="category")
+     * @IsGranted("BADGE", subject="badge")
      */
     public function deleteBadgeInCategory(Category $category, Badge $badge, Csrf $token)
     {

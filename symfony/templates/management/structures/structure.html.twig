@@ -1,0 +1,130 @@
+<div class="card">
+    <div class="card-header">
+        <div class="card-title">
+            <a href="{{ path('management_volunteers_list', {id: structure.id}) }}">
+                <strong style="{% if not structure.enabled %}color:grey;{% endif %}">{{ structure.name }}</strong>
+            </a>
+            {% if not structure.enabled %}🚫{% endif %}
+            <div class="float-right">
+                <div class="dropdown">
+                    <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        {{ 'manage_structures.action.title'|trans }}
+                    </button>
+
+                    <div class="dropdown-menu dropdown-menu-right">
+                        {% if structure.enabled %}
+
+                            {% if not structure.locked and constant('\\App\\Enum\\Platform::FR') == app.user.platform and is_granted('ROLE_ADMIN') and structure.lastPegassUpdate %}
+                                <a class="dropdown-item" href="{{ path('management_structures_pegass', {id: structure.id}) }}" target="_blank">
+                                    {{ 'manage_structures.view_pegass_entry'|trans }}
+                                </a>
+                                <a class="dropdown-item" href="{{ path('management_structures_force_update', {id: structure.id, csrf: csrf_token('structures')}) }}">
+                                    {{ 'manage_structures.force_pegass_update'|trans }}
+                                </a>
+                            {% endif %}
+                            {% if is_granted('ROLE_ADMIN') %}
+                                <a class="dropdown-item" href="{{ path('management_structures_create', {id: structure.id}) }}">
+                                    {{ 'manage_structures.manual_update'|trans }}
+                                </a>
+                                <div class="dropdown-divider"></div>
+                            {% endif %}
+
+                            <a class="dropdown-item" href="{{ path('management_structures_export', {id: structure.id} ) }}">
+                                {{ 'manage_structures.export'|trans }}
+                            </a>
+
+                            <a class="dropdown-item" href="{{ path('management_structures_prefilled_answers_list', {structure: structure.id}) }}">
+                                {{ 'manage_structures.manage_prefilled_answers'| trans }}
+                            </a>
+
+                        {% endif %}
+
+                        {% if is_granted('ROLE_ADMIN') %}
+
+                            {% if structure.enabled %}
+                                <div class="dropdown-divider"></div>
+                            {% endif %}
+
+                            {% if structure.enabled %}
+                                <a href="#"
+                                   class="dropdown-item text-danger toggle-action"
+                                   data-href="{{ path('management_structures_toggle_enable', {id: structure.id, token: csrf_token('token')}) }}"
+                                   data-id="{{ structure.id }}"
+                                   data-confirm="{{ 'manage_structures.disable_confirm'|trans }}">
+                                    {{ 'base.button.disable'| trans }}
+                                </a>
+                            {% else %}
+                                <a href="#"
+                                   class="dropdown-item text-success toggle-action"
+                                   data-href="{{ path('management_structures_toggle_enable', {id: structure.id, token: csrf_token('token')}) }}"
+                                   data-id="{{ structure.id }}">
+                                    {{ 'base.button.enable'| trans }}
+                                </a>
+                            {% endif %}
+
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-body">
+
+        <span style="{% if not structure.enabled %}color:grey;{% endif %}">
+            {% set president = structure.presidentVolunteer %}
+            {% if president %}
+                {{ 'manage_structures.president'|trans({'%president%': president.displayName}) }}
+                <br/>
+            {% endif %}
+
+            {{ 'manage_structures.volunteers'|trans({'%count%': structure.activeVolunteers|length}) }}
+            <br/>
+
+            {{ 'manage_structures.users'|trans({'%count%': redcallUsers[structure.id]|default(0)}) }}
+            {% if redcallUsers[structure.id]|default(0) %}
+                (<a href="#"
+                    class="show-structure-users"
+                    data-structure-id="{{ structure.id }}">{{ 'base.button.details'|trans }}</a>)
+            {% endif %}
+
+            {% if constant('\\App\\Enum\\Platform::FR') == app.user.platform %}
+                {% if structure.lastPegassUpdate %}
+                    <br/>
+                    {{ 'manage_structures.last_update'|trans({'%last_update%': structure.lastPegassUpdate|date('d/m/Y H:i')}) }}
+                {% endif %}
+
+                {% if structure.nextPegassUpdate %}
+                <br/>
+                {{ 'manage_structures.next_update'|trans({'%next_update%': structure.nextPegassUpdate|date('d/m/Y H:i')}) }}
+            {% endif %}
+
+            {% endif %}
+        </span>
+
+    </div>
+    <div class="card-footer">
+        {% if is_granted('ROLE_ADMIN') %}
+            {% if structure.locked %}
+                <a href="#"
+                   class="toggle-action"
+                   style="text-decoration: none;"
+                   data-id="{{ structure.id }}"
+                   data-href="{{ path('management_structures_toggle_lock', {id: structure.id, token: csrf_token('token')}) }}" title="{{ 'manage_structures.unlock'|trans }}">
+                    🔒
+                    <span style="color:grey;">{{ 'lock.locked'|trans }}</span>
+                </a>
+            {% else %}
+                <a href="#"
+                   class="toggle-action"
+                   style="text-decoration: none;"
+                   data-id="{{ structure.id }}"
+                   data-href="{{ path('management_structures_toggle_lock', {id: structure.id, token: csrf_token('token')}) }}" title="{{ 'manage_structures.lock'|trans }}">🔓</a>
+            {% endif %}
+        {% endif %}
+
+        <div class="float-right">
+            <span style="color:lightgray;">ID: {{ structure.externalId }}</span>
+        </div>
+    </div>
+</div>
+

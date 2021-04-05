@@ -4,7 +4,7 @@ namespace App\Services;
 
 use App\Entity\Communication;
 use App\Entity\Message;
-use App\Manager\LanguageManager;
+use App\Manager\LanguageConfigManager;
 use App\Manager\MediaManager;
 use App\Manager\MessageManager;
 use App\Model\TextToSpeechConfig;
@@ -41,7 +41,7 @@ class VoiceCalls
     private $messageManager;
 
     /**
-     * @var LanguageManager
+     * @var LanguageConfigManager
      */
     private $languageManager;
 
@@ -50,7 +50,7 @@ class VoiceCalls
         MessageFormatter $formatter,
         MediaManager $mediaManager,
         MessageManager $messageManager,
-        LanguageManager $languageManager)
+        LanguageConfigManager $languageManager)
     {
         $this->router          = $router;
         $this->translator      = $translator;
@@ -97,7 +97,7 @@ class VoiceCalls
         // Answer saved, thanks
         $text = $this->translator->trans('message.call.answer', [
             '%choice%' => $choice->getLabel(),
-        ]);
+        ], null, $message->getCommunication()->getLanguage());
 
         $config = $this->getTextToSpeechConfig($message->getCommunication());
 
@@ -122,7 +122,7 @@ class VoiceCalls
 
     private function getTextToSpeechConfig(Communication $communication) : TextToSpeechConfig
     {
-        return $this->languageManager->getLanguageConfig($communication)->getTextToSpeech();
+        return $this->languageManager->getLanguageConfigForCommunication($communication)->getTextToSpeech();
     }
 
     private function getInvalidAnswerResponse(string $uuid, Message $message) : VoiceResponse

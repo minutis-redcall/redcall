@@ -3,14 +3,13 @@
 namespace App\Security\Authenticator;
 
 use App\Entity\Volunteer;
+use App\Manager\PlatformConfigManager;
 use App\Manager\UserManager;
 use App\Manager\VolunteerManager;
 use App\Manager\VolunteerSessionManager;
-use Exception;
 use Firebase\JWT\JWT;
 use Goutte\Client;
 use Psr\Log\LoggerInterface;
-use Psr\Log\NullLogger;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -35,6 +34,11 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
      * @var VolunteerSessionManager
      */
     private $volunteerSessionManager;
+
+    /**
+     * @var PlatformConfigManager
+     */
+    private $platformManager;
 
     /**
      * @var UserManager
@@ -68,19 +72,21 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
 
     public function __construct(VolunteerManager $volunteerManager,
         VolunteerSessionManager $volunteerSessionManager,
+        PlatformConfigManager $platformManager,
         UserManager $userManager,
         RouterInterface $router,
+        LoggerInterface $logger,
         KernelInterface $kernel,
-        SessionInterface $session,
-        LoggerInterface $logger = null)
+        SessionInterface $session)
     {
         $this->volunteerManager        = $volunteerManager;
         $this->volunteerSessionManager = $volunteerSessionManager;
+        $this->platformManager         = $platformManager;
         $this->userManager             = $userManager;
         $this->router                  = $router;
+        $this->logger                  = $logger;
         $this->kernel                  = $kernel;
         $this->session                 = $session;
-        $this->logger                  = $logger ?? new NullLogger();
     }
 
     public function supports(Request $request)
@@ -116,7 +122,7 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
         // Decode and verify JWT token
         try {
             $decoded = (array) JWT::decode($jwt, $this->getMinutisPublicKey(), ['RS256']);
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             // Either invalid JWT, invalid algo, expired token...
             $this->logger->warning('Minutis authenticator: unable to decode JWT', [
                 'token'     => $jwt,
@@ -139,8 +145,16 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
         }
 
         // Seek for a volunteer attached to that nivol
-        $nivol     = ltrim($decoded['nivol'], '0');
-        $volunteer = $this->volunteerManager->findOneByNivol($nivol);
+        // TODO / SECURITY: if 2 nivols are the same in 2 distinct platforms, a volunteer could connect to someone else's account
+        $volunteer = null;
+        foreach ($this->platformManager->getPlatformChoices() as $platform) {
+            $nivol     = ltrim($decoded['nivol'], '0');
+            $volunteer = $this->volunteerManager->findOneByNivol($platform, $nivol);
+            if ($volunteer) {
+                break;
+            }
+        }
+
         if (null === $volunteer) {
             $this->logger->warning('Minutis authenticator: nivol not associated with a volunteer', [
                 'nivol' => $nivol,

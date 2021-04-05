@@ -18,15 +18,20 @@ class PhoneConfigManager
         $this->parameterBag = $parameterBag;
     }
 
-    public function getPhoneConfig(Volunteer $volunteer) : ?PhoneConfig
+    public function getPhoneConfigForVolunteer(Volunteer $volunteer) : ?PhoneConfig
     {
         if (!$phone = $volunteer->getPhone()) {
             return null;
         }
 
+        return $this->getPhoneConfig($phone->getCountryCode());
+    }
+
+    public function getPhoneConfig(string $countryCode)
+    {
         $countries = array_change_key_case($this->parameterBag->get('phones'), CASE_LOWER);
 
-        $country = $countries[strtolower($phone->getCountryCode())] ?? null;
+        $country = $countries[strtolower($countryCode)] ?? null;
         if (!$country) {
             return null;
         }
@@ -36,7 +41,7 @@ class PhoneConfigManager
 
     public function isSMSTransmittable(Volunteer $volunteer) : bool
     {
-        if (!$country = $this->getPhoneConfig($volunteer)) {
+        if (!$country = $this->getPhoneConfigForVolunteer($volunteer)) {
             return false;
         }
 
@@ -45,7 +50,7 @@ class PhoneConfigManager
 
     public function isVoiceCallTransmittable(Volunteer $volunteer) : bool
     {
-        if (!$country = $this->getPhoneConfig($volunteer)) {
+        if (!$country = $this->getPhoneConfigForVolunteer($volunteer)) {
             return false;
         }
 

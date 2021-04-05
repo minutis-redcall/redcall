@@ -6,6 +6,7 @@ use App\Entity\Badge;
 use App\Entity\Phone;
 use App\Entity\Structure;
 use App\Entity\Volunteer;
+use App\Enum\Platform;
 use App\Task\SyncOneWithPegass;
 use Bundles\GoogleTaskBundle\Service\TaskSender;
 use Bundles\PegassCrawlerBundle\Entity\Pegass;
@@ -151,7 +152,12 @@ class RefreshManager
             return;
         }
 
-        $structure = $this->structureManager->findOneByIdentifier($pegass->getIdentifier());
+        $structure = $this->structureManager->findOneByExternalId($pegass->getIdentifier());
+
+        if ($structure && $structure->isLocked()) {
+            return;
+        }
+
         if (!$structure) {
             $structure = new Structure();
         }
@@ -171,7 +177,7 @@ class RefreshManager
             'parent-identifier' => $pegass->getParentIdentifier(),
         ]);
 
-        $structure->setIdentifier($pegass->evaluate('structure.id'));
+        $structure->setExternalId($pegass->evaluate('structure.id'));
         $structure->setName($pegass->evaluate('structure.libelle'));
         $structure->setPresident(ltrim($pegass->evaluate('responsible.responsableId'), '0'));
         $this->structureManager->save($structure);
@@ -186,13 +192,13 @@ class RefreshManager
             ]);
 
             if ($parentId = $pegass->evaluate('structure.parent.id')) {
-                $structure = $this->structureManager->findOneByIdentifier($pegass->getIdentifier());
+                $structure = $this->structureManager->findOneByExternalId($pegass->getIdentifier());
 
-                if ($structure->getParentStructure() && $parentId === $structure->getParentStructure()->getIdentifier()) {
+                if ($structure->getParentStructure() && $parentId === $structure->getParentStructure()->getExternalId()) {
                     return;
                 }
 
-                if ($parent = $this->structureManager->findOneByIdentifier($parentId)) {
+                if ($parent = $this->structureManager->findOneByExternalId($parentId)) {
                     if (!in_array($structure, $parent->getAncestors())) {
                         $structure->setParentStructure($parent);
                         $this->structureManager->save($structure);
@@ -230,7 +236,7 @@ class RefreshManager
     public function refreshVolunteer(Pegass $pegass, bool $force)
     {
         // Create or update?
-        $volunteer = $this->volunteerManager->findOneByNivol($pegass->getIdentifier());
+        $volunteer = $this->volunteerManager->findOneByNivol(Platform::FR, $pegass->getIdentifier());
         if (!$volunteer) {
             $volunteer = new Volunteer();
         }
@@ -242,7 +248,7 @@ class RefreshManager
         // Update structures based on where volunteer was found while crawling structures
         $structureIdsVolunteerBelongsTo = [];
         foreach (array_filter(explode('|', $pegass->getParentIdentifier())) as $identifier) {
-            if ($structure = $this->structureManager->findOneByIdentifier($identifier)) {
+            if ($structure = $this->structureManager->findOneByExternalId($identifier)) {
                 $volunteer->addStructure($structure);
                 $structureIdsVolunteerBelongsTo[] = $structure->getId();
             }
@@ -252,7 +258,7 @@ class RefreshManager
         $identifiers = [];
         foreach ($pegass->evaluate('actions') ?? [] as $action) {
             if (isset($action['structure']['id']) && !in_array($action['structure']['id'], $identifiers)) {
-                if ($structure = $this->structureManager->findOneByIdentifier($action['structure']['id'])) {
+                if ($structure = $this->structureManager->findOneByExternalId($action['structure']['id'])) {
                     $volunteer->addStructure($structure);
                     $structureIdsVolunteerBelongsTo[] = $structure->getId();
                 }

@@ -10,6 +10,8 @@ use App\Facade\Admin\Badge\BadgeReferenceCollectionFacade;
 use App\Facade\Admin\Badge\BadgeReferenceFacade;
 use App\Facade\Admin\Category\CategoryFacade;
 use App\Facade\Admin\Category\CategoryFiltersFacade;
+use App\Facade\Admin\Category\CategoryReferenceCollectionFacade;
+use App\Facade\Admin\Category\CategoryReferenceFacade;
 use App\Facade\Generic\UpdateStatusFacade;
 use App\Facade\PageFilterFacade;
 use App\Manager\BadgeManager;
@@ -27,6 +29,8 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\Constraints\Callback;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
  * Badges can be grouped in categories, so they are rendered
@@ -151,7 +155,13 @@ class CategoryController extends BaseController
         $category = $this->categoryTransformer->reconstruct($facade, $category);
 
         $this->validate($category, [
-            new UniqueEntity('externalId'),
+            new UniqueEntity(['platform', 'externalId']),
+            new Callback(function ($object, ExecutionContextInterface $context, $payload) {
+                /** @var Category $object */
+                if ($object->isLocked()) {
+                    $context->addViolation('This category is locked.');
+                }
+            }),
         ]);
 
         $this->categoryManager->save($category);
@@ -172,6 +182,15 @@ class CategoryController extends BaseController
      */
     public function delete(Category $category)
     {
+        $this->validate($category, [
+            new Callback(function ($object, ExecutionContextInterface $context, $payload) {
+                /** @var Category $object */
+                if ($object->isLocked()) {
+                    $context->addViolation('This category is locked.');
+                }
+            }),
+        ]);
+
         $this->categoryManager->remove($category);
 
         return new HttpNoContentFacade();
@@ -215,7 +234,7 @@ class CategoryController extends BaseController
      */
     public function badgeAdd(Category $category, BadgeReferenceCollectionFacade $externalIds)
     {
-        return $this->badgeAddOrRemove($category, $externalIds, Crud::CREATE());
+        return $this->bulkUpdateBadges($category, $externalIds, Crud::CREATE());
     }
 
     /**
@@ -234,10 +253,139 @@ class CategoryController extends BaseController
      */
     public function badgeRemove(Category $category, BadgeReferenceCollectionFacade $externalIds)
     {
-        return $this->badgeAddOrRemove($category, $externalIds, Crud::DELETE());
+        return $this->bulkUpdateBadges($category, $externalIds, Crud::DELETE());
     }
 
-    private function badgeAddOrRemove(Category $category, BadgeReferenceCollectionFacade $externalIds, Crud $action)
+    /**
+     * Lock a list of categories.
+     *
+     * @Endpoint(
+     *   priority = 18,
+     *   request  = @Facade(class     = CategoryReferenceCollectionFacade::class,
+     *                      decorates = @Facade(class = CategoryReferenceFacade::class)),
+     *   response = @Facade(class     = CollectionFacade::class,
+     *                      decorates = @Facade(class = UpdateStatusFacade::class))
+     * )
+     * @Route(name="lock", path="/bulk/lock", methods={"PUT"})
+     */
+    public function lock(CategoryReferenceCollectionFacade $externalIds)
+    {
+        return $this->bulkUpdateCategories($externalIds, Crud::LOCK());
+    }
+
+    /**
+     * Unlock a list of categories.
+     *
+     * @Endpoint(
+     *   priority = 18,
+     *   request  = @Facade(class     = CategoryReferenceCollectionFacade::class,
+     *                      decorates = @Facade(class = CategoryReferenceFacade::class)),
+     *   response = @Facade(class     = CollectionFacade::class,
+     *                      decorates = @Facade(class = UpdateStatusFacade::class))
+     * )
+     * @Route(name="unlock", path="/bulk/unlock", methods={"PUT"})
+     */
+    public function unlock(CategoryReferenceCollectionFacade $externalIds)
+    {
+        return $this->bulkUpdateCategories($externalIds, Crud::LOCK());
+    }
+
+    /**
+     * Disable a list of categories.
+     *
+     * @Endpoint(
+     *   priority = 19,
+     *   request  = @Facade(class     = CategoryReferenceCollectionFacade::class,
+     *                      decorates = @Facade(class = CategoryReferenceFacade::class)),
+     *   response = @Facade(class     = CollectionFacade::class,
+     *                      decorates = @Facade(class = UpdateStatusFacade::class))
+     * )
+     * @Route(name="disable", path="/bulk/disable", methods={"PUT"})
+     */
+    public function disable(CategoryReferenceCollectionFacade $externalIds)
+    {
+        return $this->bulkUpdateCategories($externalIds, Crud::DISABLE());
+    }
+
+    /**
+     * Enable a list of categories.
+     *
+     * @Endpoint(
+     *   priority = 20,
+     *   request  = @Facade(class     = CategoryReferenceCollectionFacade::class,
+     *                      decorates = @Facade(class = CategoryReferenceFacade::class)),
+     *   response = @Facade(class     = CollectionFacade::class,
+     *                      decorates = @Facade(class = UpdateStatusFacade::class))
+     * )
+     * @Route(name="enable", path="/bulk/enable", methods={"PUT"})
+     */
+    public function enable(CategoryReferenceCollectionFacade $externalIds)
+    {
+        return $this->bulkUpdateCategories($externalIds, Crud::ENABLE());
+    }
+
+    private function bulkUpdateCategories(CategoryReferenceCollectionFacade $externalIds, Crud $action)
+    {
+        $response = new CollectionFacade();
+
+        foreach ($externalIds->getEntries() as $entry) {
+            /** @var CategoryReferenceFacade $entry */
+            $category = $this->categoryManager->findOneByExternalId($entry->getExternalId());
+
+            if (null === $category) {
+                $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Category does not exist');
+                continue;
+            }
+
+            if (!$this->isGranted('CATEGORY', $category)) {
+                $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Access denied');
+                continue;
+            }
+
+            switch ($action) {
+                case Crud::LOCK():
+                    if ($category->isLocked()) {
+                        $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Category already locked');
+                        continue 2;
+                    }
+
+                    $category->setLocked(true);
+                    break;
+                case Crud::UNLOCK():
+                    if (!$category->isLocked()) {
+                        $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Category already unlocked');
+                        continue 2;
+                    }
+
+                    $category->setLocked(false);
+                    break;
+                case Crud::ENABLE():
+                    if ($category->isEnabled()) {
+                        $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Category already enabled');
+                        continue 2;
+                    }
+
+                    $category->setEnabled(true);
+                    break;
+                case Crud::DISABLE():
+                    if (!$category->isEnabled()) {
+                        $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Category already disabled');
+                        continue 2;
+                    }
+
+                    $category->setEnabled(false);
+                    break;
+            }
+
+            $this->categoryManager->save($category);
+
+            $response[] = new UpdateStatusFacade($entry->getExternalId());
+        }
+
+        return $response;
+    }
+
+    private function bulkUpdateBadges(Category $category, BadgeReferenceCollectionFacade $externalIds, Crud $action)
     {
         $response = new CollectionFacade();
         $changes  = 0;
@@ -247,22 +395,32 @@ class CategoryController extends BaseController
             $badge = $this->badgeManager->findOneByExternalId($entry->getExternalId());
 
             if (null === $badge) {
-                return new UpdateStatusFacade($entry->getExternalId(), false, 'Badge does not exist');
-            }
-
-            if (!$this->isGranted('BADGE', $badge)) {
-                return new UpdateStatusFacade($entry->getExternalId(), false, 'Access denied');
-            }
-
-            if ($category->getBadges()->contains($badge)) {
-                $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Category already contains that badge');
+                $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Badge does not exist');
                 continue;
             }
 
-            if (Crud::CREATE()->equals($action)) {
-                $category->addBadge($badge);
-            } else {
-                $category->removeBadge($badge);
+            if (!$this->isGranted('BADGE', $badge)) {
+                $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Access denied');
+                continue;
+            }
+
+            switch ($action) {
+                case Crud::CREATE():
+                    if ($category->getBadges()->contains($badge)) {
+                        $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Category already contains that badge');
+                        continue 2;
+                    }
+
+                    $category->addBadge($badge);
+                    break;
+                case Crud::DELETE():
+                    if (!$category->getBadges()->contains($badge)) {
+                        $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Category does not contain that badge');
+                        continue 2;
+                    }
+
+                    $category->removeBadge($badge);
+                    break;
             }
 
             $changes++;

@@ -20,6 +20,12 @@
     {# Modal: Badge list #}
     {{ macros.modal('category-badges', 'base.wait'|trans, '') }}
 
+    <div class="text-right">
+        <a href="#" class="btn btn-secondary open-category-form" data-uri="{{ path('admin_category_form') }}">
+            {{ 'admin.category.create'|trans }}
+        </a>
+    </div>
+
     {{ form(search) }}
 
     <div id="categories" class="row">
@@ -32,13 +38,8 @@
 
     {{ macros.pager(categories) }}
 
+    <div>{{ 'lock.explanation'|trans }}</div>
     <br/>
-
-    <div class="text-right">
-        <a href="#" class="btn btn-secondary open-category-form" data-uri="{{ path('admin_category_form') }}">
-            {{ 'admin.category.create'|trans }}
-        </a>
-    </div>
 
     <div class="text-center">
         <a href="{{ path('admin_badge_index') }}" class="btn btn-secondary">
@@ -143,10 +144,25 @@
             }
         });
 
-        $('body')
-            .on('click', '.toggle-visibility', function () {
-                $.post($(this).data('href'));
+        $('body').on('click', '.toggle-visibility', function () {
+            $.post($(this).data('href'));
+        });
+
+        $('body').on('click', '.toggle-lock', function (e) {
+            e.preventDefault();
+            var that = $(this);
+            $.post('{{ path('admin_category_toggle_lock', {id: 'categoryId', token: csrf_token('token')}) }}'.replace('categoryId', that.data('id')), function (data) {
+                $('#category-' + that.data('id')).html(data.view);
             });
+        });
+
+        $('body').on('click', '.toggle-enable', function (e) {
+            e.preventDefault();
+            var that = $(this);
+            $.post('{{ path('admin_category_toggle_enable', {id: 'categoryId', token: csrf_token('token')}) }}'.replace('categoryId', that.data('id')), function (data) {
+                $('#category-' + that.data('id')).html(data.view);
+            });
+        });
 
     </script>
 

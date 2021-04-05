@@ -10,14 +10,16 @@
             <div class="col-5 category-badge-{{ badge.id }} text-right" style="padding:5px;">
                 <div class="float-right">
 
-                    <span class="{% if badge.visibility %}d-none{% endif %}" id="enable-{{ badge.id }}">
-                        <a href="{{ path('admin_badge_toggle_visibility', {id: badge.id, token: csrf_token('token')}) }}"
-                           class="btn btn-primary toggle-visibility enable" data-id="{{ badge.id }}">{{ 'base.button.enable'|trans }}</a>
-                    </span>
-                    <span class="{% if not badge.visibility %}d-none{% endif %}" data-id="{{ badge.id }}" id="disable-{{ badge.id }}">
-                        <a href="{{ path('admin_badge_toggle_visibility', {id: badge.id, token: csrf_token('token')}) }}"
-                           class="btn btn-secondary toggle-visibility disable" data-id="{{ badge.id }}">{{ 'base.button.disable'|trans }}</a>
-                    </span>
+                    {% if not badge.locked %}
+                        <span class="{% if badge.visibility %}d-none{% endif %}" id="enable-{{ badge.id }}">
+                            <a href="{{ path('admin_badge_toggle_visibility', {id: badge.id, token: csrf_token('token')}) }}"
+                               class="btn btn-primary toggle-visibility enable" data-id="{{ badge.id }}">{{ 'base.button.enable'|trans }}</a>
+                        </span>
+                        <span class="{% if not badge.visibility %}d-none{% endif %}" data-id="{{ badge.id }}" id="disable-{{ badge.id }}">
+                            <a href="{{ path('admin_badge_toggle_visibility', {id: badge.id, token: csrf_token('token')}) }}"
+                               class="btn btn-secondary toggle-visibility disable" data-id="{{ badge.id }}">{{ 'base.button.disable'|trans }}</a>
+                        </span>
+                    {% endif %}
 
                     <a href="#"
                        data-id="{{ category.id }}"

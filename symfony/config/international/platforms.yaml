@@ -1,0 +1,25 @@
+####################################################################################################################################
+# Useful links:
+#
+# Cloud Text To Speech
+# https://cloud.google.com/text-to-speech/docs/voices
+#
+# ⚠️ The "name" attribute should never be updated without migrations (fields user.platform, category.platform, badge.platform,
+#    structure.platform, volunteer.platform on the db are tied to it).
+#
+# ⚠️ When adding a new platform, do not forget to add it in the platform enum, App\Enum\Platform
+####################################################################################################################################
+parameters:
+  platforms:
+    - name: fr
+      label: France
+      language: fr
+      phone: fr
+      timezone: 'Europe/Paris'
+      flag: 🇫🇷
+    - name: es
+      label: España
+      language: es
+      phone: es
+      timezone: 'Europe/Madrid'
+      flag: 🇪🇸

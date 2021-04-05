@@ -1,0 +1,18 @@
+<div class="float-right">
+    <span class="dropdown">
+        <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="margin: 5px;">
+            {{ platforms[app.user.platform].flag }}
+            {{ platforms[app.user.platform].label }}
+        </button>
+        <span class="dropdown-menu" style="padding-left:5px;">
+            {% for platform in platforms %}
+                {% if platform.name != app.user.platform %}
+                    <a href="{{ path('admin_platform_switch_me', {csrf: csrf_token('csrf'), platform: platform.name}) }}">
+                        {{ platform.flag }}
+                        {{ platform.label }}
+                    </a>
+                {% endif %}
+            {% endfor %}
+        </span>
+    </span>
+</div>

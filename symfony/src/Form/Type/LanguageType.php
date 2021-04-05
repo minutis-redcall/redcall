@@ -2,7 +2,7 @@
 
 namespace App\Form\Type;
 
-use App\Manager\LanguageManager;
+use App\Manager\LanguageConfigManager;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -12,11 +12,11 @@ use Symfony\Component\Validator\Constraints\NotNull;
 class LanguageType extends AbstractType
 {
     /**
-     * @var LanguageManager
+     * @var LanguageConfigManager
      */
     private $languageManager;
 
-    public function __construct(LanguageManager $languageManager)
+    public function __construct(LanguageConfigManager $languageManager)
     {
         $this->languageManager = $languageManager;
     }

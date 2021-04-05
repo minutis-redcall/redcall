@@ -7,32 +7,26 @@ use App\Entity\Structure;
 use App\Entity\User;
 use App\Entity\Volunteer;
 use App\Repository\StructureRepository;
+use App\Security\Helper\Security;
 use Doctrine\ORM\QueryBuilder;
 use Pagerfanta\Pagerfanta;
 
 class StructureManager
 {
     /**
-     * @var UserManager
-     */
-    private $userManager;
-
-    /**
      * @var StructureRepository
      */
     private $structureRepository;
 
-    public function __construct(StructureRepository $structureRepository)
+    /**
+     * @var Security
+     */
+    private $security;
+
+    public function __construct(StructureRepository $structureRepository, Security $security)
     {
         $this->structureRepository = $structureRepository;
-    }
-
-    /**
-     * @required
-     */
-    public function setUserManager(UserManager $userManager)
-    {
-        $this->userManager = $userManager;
+        $this->security            = $security;
     }
 
     public function find(int $id) : ?Structure
@@ -45,9 +39,9 @@ class StructureManager
         return $this->structureRepository->findOneByName($name);
     }
 
-    public function findOneByIdentifier(string $identifier) : ?Structure
+    public function findOneByExternalId(string $externalId) : ?Structure
     {
-        return $this->structureRepository->findOneByIdentifier($identifier);
+        return $this->structureRepository->findOneByExternalId($externalId);
     }
 
     public function save(Structure $structure)
@@ -78,7 +72,7 @@ class StructureManager
     public function searchForCurrentUserQueryBuilder(?string $criteria, bool $enabled) : QueryBuilder
     {
         return $this->structureRepository->searchForUserQueryBuilder(
-            $this->userManager->findForCurrentUser(),
+            $this->security->getUser(),
             $criteria,
             $enabled
         );
@@ -111,17 +105,10 @@ class StructureManager
         return $structures;
     }
 
-    public function getStructuresForCurrrentUser() : array
-    {
-        return $this->getStructuresForUser(
-            $this->userManager->findForCurrentUser()
-        );
-    }
-
     public function getStructureHierarchyForCurrentUser()
     {
         return $this->structureRepository->getStructureHierarchyForCurrentUser(
-            $this->userManager->findForCurrentUser()
+            $this->security->getUser()
         );
     }
 
@@ -135,7 +122,7 @@ class StructureManager
         return $this->structureRepository->countRedCallUsersQueryBuilder($queryBuilder);
     }
 
-    public function countRedCallUsers(Pagerfanta $pagerfanta) : array
+    public function countRedCallUsersInPager(Pagerfanta $pagerfanta) : array
     {
         $counts = [];
         foreach ($pagerfanta->getIterator() as $row) {

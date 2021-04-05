@@ -54,29 +54,6 @@
 {% endblock %}
 
 {% block volunteer_widget_row %}
-
-    {{ form_label(form) }}
-
-    {{ form_widget(form, {
-        attr: {
-            'class': 'flexdatalist',
-            'placeholder': 'base.search.placeholder'|trans,
-            'data-data': data ? data|json_encode : '[]',
-            'data-url': path('widget_nivol_search', {searchAll: true}),
-            'data-search-disabled': true,
-            'data-min-length': 1,
-            'data-visible-properties': '["human"]',
-            'data-no-results-text': 'base.search.no_results'|trans,
-            'data-focus-first-result': true,
-            'data-selection-required': true,
-            'data-text-property': 'nivol',
-            'data-value-property': 'nivol',
-        }
-    }) }}
-
-{% endblock %}
-
-{% block structure_widget_row %}
     <div class="form-group">
         {{ form_label(form) }}
 
@@ -85,19 +62,42 @@
                 'class': 'flexdatalist',
                 'placeholder': 'base.search.placeholder'|trans,
                 'data-data': data ? data|json_encode : '[]',
-                'data-url': path('widget_structure_search', {searchAll: true}),
+                'data-url': path('widget_nivol_search', {searchAll: true}),
                 'data-search-disabled': true,
                 'data-min-length': 1,
-                'data-visible-properties': '["name"]',
+                'data-visible-properties': '["human"]',
                 'data-no-results-text': 'base.search.no_results'|trans,
                 'data-focus-first-result': true,
                 'data-selection-required': true,
-                'data-text-property': 'name',
-                'data-value-property': 'id',
+                'data-text-property': 'nivol',
+                'data-value-property': 'nivol',
             }
         }) }}
     </div>
 {% endblock %}
+
+ {% block structure_widget_row %}
+     <div class="form-group">
+         {{ form_label(form) }}
+
+         {{ form_widget(form, {
+             attr: {
+                 'class': 'flexdatalist',
+                 'placeholder': 'base.search.placeholder'|trans,
+                 'data-data': data ? data|json_encode : '[]',
+                 'data-url': path('widget_structure_search', {searchAll: true}),
+                 'data-search-disabled': true,
+                 'data-min-length': 1,
+                 'data-visible-properties': '["name"]',
+                 'data-no-results-text': 'base.search.no_results'|trans,
+                 'data-focus-first-result': true,
+                 'data-selection-required': true,
+                 'data-text-property': 'name',
+                 'data-value-property': 'id',
+             }
+         }) }}
+     </div>
+ {% endblock %}
 
 {% block badge_widget_row %}
     <div class="form-group">
@@ -149,13 +149,13 @@
 
 {% block phone_card_row %}
 
-    <div class="col-md-4 phone-row" id="form-row-{{ form.vars.id }}">
+    <div class="col-md-6 phone-row" id="form-row-{{ form.vars.id }}">
         <div class="card">
             <div class="card-header">
-                <div class="card-title h3">
+                <div class="card-title h4">
                     {{ 'phone_card.title'|trans({'%index%': intval(name) + 1}) }}
                     <div class="float-right phone-main {% if not form.preferred.vars.data %}d-none{% endif %}">
-                        <div class="badge badge-success" style="background-color:#48C765;">
+                        <div class="badge badge-pill badge-success" style="background-color:#48C765;">
                             {{ 'phone_card.main'|trans }}
                         </div>
                     </div>
@@ -206,7 +206,7 @@
             var iti = intlTelInput(tel, {
                 nationalMode: true,
                 defaultCountry: 'FR',
-                preferredCountries: ['FR', 'GP', 'GF', 'MQ', 'YT', 'PF', 'RE', 'NC', 'PM', 'BL', 'MF', 'WF'],
+                preferredCountries: ['FR', 'ES', 'GP', 'GF', 'MQ', 'YT', 'PF', 'RE', 'NC', 'PM', 'BL', 'MF', 'WF'],
             });
 
             var handleChange = function () {

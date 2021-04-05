@@ -3,9 +3,11 @@
 namespace App\Security\Voter;
 
 use App\Entity\Badge;
+use App\Entity\User;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 use Symfony\Component\Security\Core\Security;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 class BadgeVoter extends Voter
 {
@@ -36,6 +38,23 @@ class BadgeVoter extends Voter
      */
     protected function voteOnAttribute($attribute, $subject, TokenInterface $token)
     {
+        if ($this->security->isGranted('ROLE_ROOT')) {
+            return true;
+        }
+
+        /** @var User $me */
+        $me = $this->security->getUser();
+        if (!$me || !($me instanceof UserInterface)) {
+            return false;
+        }
+
+        /** @var Badge $badge */
+        $badge = $subject;
+
+        if ($me->getPlatform() !== $badge->getPlatform()) {
+            return false;
+        }
+
         if ($this->security->isGranted('ROLE_ADMIN')) {
             return true;
         }

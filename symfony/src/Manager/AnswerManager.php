@@ -10,6 +10,7 @@ use App\Enum\Stop;
 use App\Enum\Type;
 use App\Provider\SMS\SMSProvider;
 use App\Repository\AnswerRepository;
+use App\Security\Helper\Security;
 use App\Services\MessageFormatter;
 use Doctrine\ORM\QueryBuilder;
 use Google\Cloud\Language\LanguageClient;
@@ -29,8 +30,8 @@ class AnswerManager extends BaseService
             MessageManager::class,
             SMSProvider::class,
             TranslatorInterface::class,
-            UserManager::class,
             VolunteerManager::class,
+            Security::class,
         ];
     }
 
@@ -94,14 +95,14 @@ class AnswerManager extends BaseService
         $answer->setRaw($content);
         $answer->setReceivedAt(new \DateTime());
         $answer->setUnclear(true);
-        $answer->setByAdmin($this->getUserManager()->findForCurrentUser()->getUsername());
+        $answer->setByAdmin($this->getSecurity()->getUser()->getUsername());
 
         $this->getAnswerRepository()->save($answer);
 
         $message->addAnswser($answer);
         $this->getMessageManager()->save($message);
 
-        $country = $this->getPhoneConfigManager()->getPhoneConfig($message->getVolunteer());
+        $country = $this->getPhoneConfigManager()->getPhoneConfigForVolunteer($message->getVolunteer());
         if ($country && $country->isOutboundSmsEnabled() && $country->getOutboundSmsNumber()) {
             $this->getSMSProvider()->send(
                 $country->getOutboundSmsNumber(),
@@ -169,13 +170,13 @@ class AnswerManager extends BaseService
         return $this->get(TranslatorInterface::class);
     }
 
-    private function getUserManager() : UserManager
-    {
-        return $this->get(UserManager::class);
-    }
-
     private function getVolunteerManager() : VolunteerManager
     {
         return $this->get(VolunteerManager::class);
+    }
+
+    private function getSecurity() : Security
+    {
+        return $this->get(Security::class);
     }
 }

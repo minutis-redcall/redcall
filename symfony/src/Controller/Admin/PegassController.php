@@ -7,10 +7,14 @@ use App\Entity\Structure;
 use App\Entity\User;
 use App\Form\Type\UserStructuresType;
 use App\Form\Type\VolunteerWidgetType;
+use App\Manager\PlatformConfigManager;
 use App\Manager\StructureManager;
 use App\Manager\UserManager;
 use App\Manager\VolunteerManager;
+use App\Model\Csrf;
+use App\Model\PlatformConfig;
 use Bundles\PaginationBundle\Manager\PaginationManager;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
@@ -48,6 +52,11 @@ class PegassController extends BaseController
     private $paginationManager;
 
     /**
+     * @var PlatformConfigManager
+     */
+    private $platformManager;
+
+    /**
      * @var RequestStack
      */
     private $requestStack;
@@ -56,12 +65,14 @@ class PegassController extends BaseController
         StructureManager $structureManager,
         VolunteerManager $volunteerManager,
         PaginationManager $paginationManager,
+        PlatformConfigManager $platformManager,
         RequestStack $requestStack)
     {
         $this->userManager       = $userManager;
         $this->structureManager  = $structureManager;
         $this->volunteerManager  = $volunteerManager;
         $this->paginationManager = $paginationManager;
+        $this->platformManager   = $platformManager;
         $this->requestStack      = $requestStack;
     }
 
@@ -79,12 +90,18 @@ class PegassController extends BaseController
             $onlyDevelopers = $search->get('only_developers')->getData();
         }
 
+        $platforms = null;
+        if ($this->getUser()->isRoot()) {
+            $platforms = $this->platformManager->getAvailablePlatforms();
+        }
+
         return $this->render('admin/pegass/index.html.twig', [
-            'search' => $search->createView(),
-            'type'   => $request->get('type'),
-            'users'  => $this->paginationManager->getPager(
+            'search'    => $search->createView(),
+            'type'      => $request->get('type'),
+            'users'     => $this->paginationManager->getPager(
                 $this->userManager->searchQueryBuilder($criteria ?? null, $onlyAdmins ?? false, $onlyDevelopers ?? false)
             ),
+            'platforms' => $platforms,
         ]);
     }
 
@@ -106,6 +123,7 @@ class PegassController extends BaseController
 
     /**
      * @Route(name="update", path="/update/{csrf}/{id}")
+     * @IsGranted("USER", subject="user")
      */
     public function updateNivol(Request $request, string $csrf, User $user)
     {
@@ -118,6 +136,10 @@ class PegassController extends BaseController
         }
 
         $structureNames = array_filter(array_map(function (Structure $structure) {
+            if ($structure->getPlatform() !== $this->getPlatform()) {
+                return null;
+            }
+
             return $structure->getName();
         }, $user->getStructures()->toArray()));
 
@@ -128,6 +150,7 @@ class PegassController extends BaseController
 
     /**
      * @Route(name="update_structures", path="/update-structures/{id}")
+     * @IsGranted("USER", subject="user")
      */
     public function updateStructures(Request $request, User $user)
     {
@@ -169,6 +192,7 @@ class PegassController extends BaseController
 
     /**
      * @Route(name="add_structure", path="/add-structure/{csrf}/{id}")
+     * @IsGranted("USER", subject="user")
      */
     public function addStructure(Request $request, string $csrf, User $user)
     {
@@ -215,7 +239,10 @@ class PegassController extends BaseController
                      ->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $volunteer = $this->volunteerManager->findOneByNivol($form->get('nivol')->getData());
+            $volunteer = $this->volunteerManager->findOneByNivol(
+                $this->getPlatform(),
+                $form->get('nivol')->getData()
+            );
             if (!$volunteer) {
                 throw $this->createNotFoundException();
             }
@@ -224,8 +251,9 @@ class PegassController extends BaseController
             $application->setAutoExit(false);
 
             $input = new ArrayInput([
-                'command' => 'user:create',
-                'nivol'   => [$volunteer->getNivol()],
+                'command'  => 'user:create',
+                'platform' => $this->getPlatform(),
+                'nivol'    => [$volunteer->getNivol()],
             ]);
 
             $application->run($input, new NullOutput());
@@ -241,34 +269,8 @@ class PegassController extends BaseController
     }
 
     /**
-     * @Route(name="submit_user", path="/submit-user/{csrf}")
-     */
-    public function submitUser(Request $request, KernelInterface $kernel, string $csrf)
-    {
-        $this->validateCsrfOrThrowNotFoundException('pegass', $csrf);
-
-        $volunteer = $this->volunteerManager->findOneByNivol($request->get('nivol'));
-        if (!$volunteer) {
-            throw $this->createNotFoundException();
-        }
-
-        $application = new Application($kernel);
-        $application->setAutoExit(false);
-
-        $input = new ArrayInput([
-            'command' => 'user:create',
-            'nivol'   => [$volunteer->getNivol()],
-        ]);
-
-        $application->run($input, new NullOutput());
-
-        return $this->redirectToRoute('admin_pegass_index', [
-            'form[criteria]' => $volunteer->getNivol(),
-        ]);
-    }
-
-    /**
      * @Route(name="toggle_verify", path="/toggle-verify/{csrf}/{id}")
+     * @IsGranted("USER", subject="user")
      */
     public function toggleVerifyAction(User $user, string $csrf)
     {
@@ -284,6 +286,7 @@ class PegassController extends BaseController
 
     /**
      * @Route(name="toggle_trust", path="/toggle-trust/{csrf}/{id}")
+     * @IsGranted("USER", subject="user")
      */
     public function toggleTrustAction(User $user, string $csrf)
     {
@@ -299,6 +302,7 @@ class PegassController extends BaseController
 
     /**
      * @Route(name="toggle_admin", path="/toggle-admin/{csrf}/{id}")
+     * @IsGranted("USER", subject="user")
      */
     public function toggleAdminAction(User $user, string $csrf)
     {
@@ -314,6 +318,7 @@ class PegassController extends BaseController
 
     /**
      * @Route(name="toggle_lock", path="/toggle-lock/{csrf}/{id}")
+     * @IsGranted("USER", subject="user")
      */
     public function toggleLockAction(User $user, string $csrf)
     {
@@ -329,6 +334,7 @@ class PegassController extends BaseController
 
     /**
      * @Route(name="toggle_developer", path="/toggle-developer/{csrf}/{id}")
+     * @IsGranted("USER", subject="user")
      */
     public function toggleDeveloperAction(User $user, $csrf)
     {
@@ -343,7 +349,24 @@ class PegassController extends BaseController
     }
 
     /**
+     * @Route(name="toggle_root", path="/toggle-root/{csrf}/{id}")
+     * @IsGranted("USER", subject="user")
+     */
+    public function toggleRootAction(User $user, string $csrf)
+    {
+        $this->validateCsrfOrThrowNotFoundException('pegass', $csrf);
+
+        $user->setIsRoot(1 - $user->isRoot());
+        $this->userManager->save($user);
+
+        return $this->redirectToRoute('admin_pegass_index', [
+            'form[criteria]' => $user->getNivol(),
+        ]);
+    }
+
+    /**
      * @Route(name="delete", path="/delete/{csrf}/{id}")
+     * @IsGranted("USER", subject="user")
      */
     public function deleteAction(User $user, $csrf)
     {
@@ -354,26 +377,43 @@ class PegassController extends BaseController
         return $this->redirectToRoute('admin_pegass_index');
     }
 
+    /**
+     * @Route(name="update_platform", path="/change-platform/{csrf}/{id}/{platform}")
+     * @IsGranted("ROLE_ROOT")
+     * @IsGranted("USER", subject="user")
+     */
+    public function changePlatform(User $user, Csrf $csrf, PlatformConfig $platform)
+    {
+        $user->setPlatform($platform);
+
+        $this->userManager->save($user);
+
+        return $this->redirectToRoute('admin_pegass_index', [
+            'form[criteria]' => $user->getNivol(),
+        ]);
+    }
+
     private function createSearchForm(Request $request)
     {
-        return $this->createFormBuilder(null, ['csrf_protection' => false])
-                    ->setMethod('GET')
-                    ->add('criteria', TextType::class, [
-                        'label'    => 'password_login.user_list.search.criteria',
-                        'required' => false,
-                    ])
-                    ->add('only_admins', CheckboxType::class, [
-                        'label'    => 'admin.pegass.only_admins',
-                        'required' => false,
-                    ])
-                    ->add('only_developers', CheckboxType::class, [
-                        'label'    => 'admin.pegass.only_developers',
-                        'required' => false,
-                    ])
-                    ->add('submit', SubmitType::class, [
-                        'label' => 'password_login.user_list.search.submit',
-                    ])
-                    ->getForm()
-                    ->handleRequest($request);
+        return $this
+            ->createFormBuilder(null, ['csrf_protection' => false])
+            ->setMethod('GET')
+            ->add('criteria', TextType::class, [
+                'label'    => 'password_login.user_list.search.criteria',
+                'required' => false,
+            ])
+            ->add('only_admins', CheckboxType::class, [
+                'label'    => 'admin.pegass.only_admins',
+                'required' => false,
+            ])
+            ->add('only_developers', CheckboxType::class, [
+                'label'    => 'admin.pegass.only_developers',
+                'required' => false,
+            ])
+            ->add('submit', SubmitType::class, [
+                'label' => 'password_login.user_list.search.submit',
+            ])
+            ->getForm()
+            ->handleRequest($request);
     }
 }

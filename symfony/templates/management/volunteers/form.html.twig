@@ -12,40 +12,73 @@
         {% endif %}
     </h1>
 
-    {% if is_granted('ROLE_ADMIN') %}
-        {% if isCreate %}
-            <p>{{ 'manage_volunteers.admin_structures.create'|trans }}</p>
-        {% else %}
-            <div class="jumbotron">
-                <h3>{{ 'manage_volunteers.admin_structures.structures'|trans({'%name%': volunteer.displayName}) }}</h3>
+    <div id="form-container">
+        {{ form_start(form) }}
+        {{ form_errors(form) }}
 
-                <br/>
+        <div class="row">
+            <div class="col-md-6">
+                <h3>{{ 'manage_volunteers.form.section_general'|trans }}</h3>
+                {{ form_row(form.nivol) }}
+                {{ form_row(form.firstName) }}
+                {{ form_row(form.lastName) }}
+                {{ form_row(form.minor) }}
+                {{ form_row(form.optoutUntil) }}
+                <hr/>
+            </div>
 
-                {% for structure in volunteer.structures %}
-                    {{ structure.displayName }}<br/>
-                {% endfor %}
+            <div class="col-md-6">
+                {% if form.structures|default(false) %}
+                    <h3>{{ 'manage_volunteers.form.section_structures'|trans }}</h3>
+                    {{ form_row(form.structures) }}
+                    <hr/>
+                {% else %}
+                    {% if is_granted('ROLE_ADMIN') %}
+                        {% if isCreate %}
+                            <p>{{ 'manage_volunteers.admin_structures.create'|trans }}</p>
+                        {% else %}
+                            <div class="jumbotron">
+                                <h3>{{ 'manage_volunteers.admin_structures.structures'|trans({'%name%': volunteer.displayName}) }}</h3>
 
-                <div class="text-center">
-                    <a href="{{ path('management_volunteers_edit_structures', {id: volunteer.id}) }}" class="btn btn-secondary">
-                        {{ 'manage_volunteers.admin_structures.edit'|trans }}
-                    </a>
+                                <br/>
+
+                                {% for structure in volunteer.structures %}
+                                    {{ structure.displayName }}<br/>
+                                {% endfor %}
+
+                                <div class="text-center">
+                                    <a href="{{ path('management_volunteers_edit_structures', {id: volunteer.id}) }}" class="btn btn-secondary">
+                                        {{ 'manage_volunteers.admin_structures.edit'|trans }}
+                                    </a>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
+            </div>
+
+            <div class="col-md-6">
+                <h3>{{ 'manage_volunteers.form.section_contact'|trans }}</h3>
+                {{ form_row(form.phones) }}
+                {{ form_row(form.phoneNumberOptin) }}
+                {{ form_row(form.phoneNumberLocked) }}
+                <hr/>
+                {{ form_row(form.email) }}
+                {{ form_row(form.emailOptin) }}
+                {{ form_row(form.emailLocked) }}
+                <hr/>
+                <div>
+                    {{ 'manage_volunteers.form.lock_info'|trans }}
                 </div>
             </div>
-        {% endif %}
-    {% endif %}
-    <br/>
 
-    {{ form_start(form) }}
-    {{ form_errors(form) }}
-    {{ form_row(form.nivol) }}
-    {% if form.structures|default(false) %}
-        {{ form_row(form.structures) }}
-    {% endif %}
-    {{ form_end(form) }}
+            <div class="col-md-6">
+                <h3>{{ 'manage_volunteers.form.section_badges'|trans }}</h3>
+                {{ form_row(form.badges) }}
+            </div>
+        </div>
 
-    <div>
-        {{ 'manage_volunteers.form.lock_info'|trans }}
-        <br/><br/>
+        {{ form_end(form) }}
     </div>
 
     {% if (not volunteer.user or not volunteer.user.trusted) and delete and delete.answer.vars.choices|length %}

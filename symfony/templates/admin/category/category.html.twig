@@ -1,6 +1,17 @@
 <div class="card">
     <div class="card-header">
-        <div class="card-title h3">{{ category.name }}</div>
+        <div class="card-title h3" style="{% if not category.enabled %}color:darkgray;{% endif %}">
+            {{ category.name }}
+            <div class="float-right">
+                <label class="switch">
+                    <input type="checkbox"
+                           class="toggle-enable"
+                           {% if category.enabled %}checked{% endif %}
+                           data-id="{{ category.id }}"/>
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
     </div>
     <div class="card-body">
         <p>{{ 'admin.category.card.badge_count'|trans({'%badge_count%': category.badges.count}) }}</p>
@@ -10,29 +21,50 @@
 
         <div>
 
-            <a href="#" class="btn btn-small btn-secondary open-category-form"
-               data-uri="{{ path('admin_category_form', {id: category.id}) }}">
-                ✏️ {{ 'base.button.update'|trans }}
-            </a>
-
-            <a href="#" class="btn btn-small btn-secondary open-category-badges"
-               data-uri="{{ path('admin_category_badges', {id: category.id}) }}">
-                🎫 {{ 'admin.category.badges'|trans }}
-            </a>
-
-            <div class="float-right">
-                <a href="#"
-                   class="btn btn-small btn-secondary delete-category"
-                   style="border: 1px solid red!important;"
-                   data-id="{{ category.id }}"
-                   data-name="{{ category.name|e('js') }}"
-                   data-uri="{{ path('admin_category_delete', {id: category.id, token: csrf_token('token')}) }}">
-                    ❌
+            {% if category.enabled %}
+                <a href="#" class="btn btn-small btn-secondary open-category-form"
+                   data-uri="{{ path('admin_category_form', {id: category.id}) }}">
+                    ✏️ {{ 'base.button.update'|trans }}
                 </a>
-            </div>
+
+                <a href="#" class="btn btn-small btn-secondary open-category-badges"
+                   data-uri="{{ path('admin_category_badges', {id: category.id}) }}">
+                    🎫 {{ 'admin.category.badges'|trans }}
+                </a>
+            {% endif %}
+
+            {% if not category.enabled %}
+                <div class="float-right">
+                    <a href="#"
+                       class="btn btn-small btn-secondary delete-category"
+                       style="border: 1px solid red!important;"
+                       data-id="{{ category.id }}"
+                       data-name="{{ category.name|e('js') }}"
+                       data-uri="{{ path('admin_category_delete', {id: category.id, token: csrf_token('token')}) }}">
+                        ❌
+                    </a>
+                </div>
+            {% endif %}
 
         </div>
 
+    </div>
+
+    <div class="card-footer">
+        {% if category.enabled %}
+            {% if category.locked %}
+                <a href="#" class="toggle-lock" style="text-decoration: none;" data-id="{{ category.id }}" title="{{ 'admin.category.unlock'|trans }}">
+                    🔒
+                    <span style="color:grey;">{{ 'lock.locked'|trans }}</span>
+                </a>
+            {% else %}
+                <a href="#" class="toggle-lock" style="text-decoration: none;" data-id="{{ category.id }}" title="{{ 'admin.category.lock'|trans }}">🔓</a>
+            {% endif %}
+        {% endif %}
+
+        <div class="float-right">
+            <span style="color:lightgray;">ID: {{ category.externalId }}</span>
+        </div>
     </div>
 </div>
 

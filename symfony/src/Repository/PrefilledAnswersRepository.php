@@ -6,6 +6,7 @@ use App\Base\BaseRepository;
 use App\Entity\PrefilledAnswers;
 use App\Entity\Structure;
 use App\Entity\User;
+use App\Security\Helper\Security;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -16,16 +17,27 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class PrefilledAnswersRepository extends BaseRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    /**
+     * @var Security
+     */
+    private $security;
+
+    public function __construct(Security $security, ManagerRegistry $registry)
     {
         parent::__construct($registry, PrefilledAnswers::class);
+
+        $this->security = $security;
     }
 
     public function getPrefilledAnswersByStructure(Structure $structure)
     {
-        $qb = $this->createQueryBuilder('pa');
-        $qb->where($qb->expr()->eq('pa.structure', ':structure'))
-           ->setParameter('structure', $structure);
+        $qb = $this->createQueryBuilder('pa')
+                   ->join('pa.structure', 's')
+                   ->where('s.id = :id')
+                   ->setParameter('id', $structure->getId())
+                   ->andWhere('s.platform = :platform')
+                   ->setParameter('platform', $this->security->getPlatform())
+                   ->andWhere('pa.platform = :platform');
 
         return $qb;
     }
@@ -33,15 +45,21 @@ class PrefilledAnswersRepository extends BaseRepository
     public function findByUserForStructureAndGlobal(User $user)
     {
         $qb = $this->createQueryBuilder('pa')
-                   ->where('pa.structure is null')
-                   ->orWhere('pa.structure in (:ids)')
-                   ->setParameter('ids', $user->getStructures());
+                   ->leftJoin('pa.structure', 's')
+                   ->where('s.id IS NULL OR s.id IN (:id)')
+                   ->setParameter('id', $user->getStructures())
+                   ->andWhere('s.platform IS NULL OR s.platform = :platform')
+                   ->setParameter('platform', $this->security->getPlatform())
+                   ->andWhere('pa.platform = :platform');
 
         return $qb->getQuery()->getResult();
     }
 
     public function getGlobalPrefilledAnswers()
     {
-        return $this->createQueryBuilder('pa')->where('pa.structure is null');
+        return $this->createQueryBuilder('pa')
+                    ->where('pa.structure is null')
+                    ->andWhere('pa.platform = :platform')
+                    ->setParameter('platform', $this->security->getPlatform());
     }
 }

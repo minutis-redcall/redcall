@@ -12,10 +12,16 @@ admin:
       volunteer: Volunteer
     title: 'Answers analysis'
   badge:
+    action:
+      disable: 'Disable badge'
+      disable_confirm: 'Do you really want to disable this badge?'
+      enable: 'Enable badge'
+      invisible: 'Hide this badge in the audience selection form'
+      title: Actions
+      visible: 'Show this badge in the audience selection form'
     covered_by: 'Covered by the following badges:'
     covers: 'Covers the following badges:'
     create: 'Create a new badge'
-    delete: 'Do you really want to remove %name% badge?'
     description:
       10: 'Badges aim to filter out who to trigger.'
       11: 'Badge name should be small because it is rendered everywhere where a volunteer is rendered.'
@@ -37,12 +43,15 @@ admin:
       rendring_priority: 'Badge rendering priority'
       synonyms: 'Synonym badges (this badge should replace all badges given on the following field)'
       triggering_priority: 'Badge triggering priority'
+    lock: 'Lock badge'
+    only_enabled: 'Hide disabled badges'
     rendering_priority: 'Rendering prio.: %priority%'
     replace: 'Replace the following badges'
-    search: 'Chercher un badge'
+    search: 'Search for a badge'
     synonym_of: 'Synonym of %name%'
-    title: 'Gestion des badges'
+    title: 'Manage badges'
     triggering_priority: 'Triggering prio.: %priority%'
+    unlock: 'Unlock badge'
     used_by: 'Used by %count% volunteers'
   category:
     badges: Badges
@@ -56,23 +65,30 @@ admin:
     create: 'Create a new category'
     delete: 'Do you really want to remove %name% category?'
     description: 'Categories are used to regroup and sort out how badges are rendered in the platform.'
+    disable: 'Disable category'
     edit: 'Edit a category'
+    enable: 'Enable category'
     form:
       name: 'Category name'
       priority: 'Rendering priority'
+    lock: 'Lock category'
     search: 'Search for a category'
     title: 'Manage badge categories'
+    unlock: 'Unlock category'
   home:
     link: Administration
   pegass:
     add_structure: 'Add a structure'
     bound_volunteer: 'Bound volunteer: %name%'
+    change_platform_title: 'Platform update'
     create_user: 'Add a new user'
+    delete_confirm: 'Really remove "%email%"?'
     delete_structures: 'Delete one or several structures'
     developer: 'Grant developer access'
     developered: Developer
     developered_details: 'A developer can integrate RedCall APIs and access technical features.'
     edit: 'Open volunteer record'
+    is_root: 'Countries manager'
     list_users: 'List user nivols'
     list_users_explain: 'In order to contact all users, copy/paste this nivol list in a new campaign.'
     lock: Lock
@@ -81,10 +97,14 @@ admin:
     only_admins: 'Search among administrators only'
     only_developers: 'Search among developers only'
     open: 'Open Pegass entity'
+    root_details: 'A "countries manaer" can change user''s platform country.'
     structures: 'Update structures for %name%'
     title: 'Bindings between RedCall users and volunteer database'
     undeveloper: 'Remove developer access'
     unlock: Unlock
+    unroot: 'Remove from countries manager'
+    root: 'Make countries manager'
+    change_platform: 'Switch platform to: %platform%'
   statistics:
     buttons:
       general: 'General statistics'
@@ -240,6 +260,7 @@ base:
   home: Home
   modal:
     close: Close
+  ok: OK
   open: Open
   order_by:
     asc: Ascendant
@@ -274,9 +295,6 @@ campaign:
   cannot_reopen: 'Impossible to reopen the campaign: since it was closed, one or several volunteers were triggered and prefix used for their answers was reused.'
   errors:
     inactive: 'This campaign has ended, thank you for your participation.'
-  no_nivol:
-    description: 'Your RedCall account is not bound to your Pegass account, please contact us in order to use the platform.'
-    title: 'No nivol bound'
   order:
     created_at: 'Creation date'
     label: Label
@@ -302,6 +320,9 @@ campaign:
     2_light_orange: 'Preparation (UL)'
     3_dark_orange: 'Preparation (DT)'
     4_red: Engagement
+  no_structures:
+    description: 'Your RedCall account is not bound to any structures, please contact us in order to use the platform.'
+    title: 'You cannot trigger any structures yet.s'
 campaign_status:
   answer: Responses
   answer_history: 'Replies history'
@@ -370,8 +391,8 @@ csv_export:
   phone_number: 'Phone number'
   received: 'Message received'
   sent: 'Message sent'
-  tags: Skills
   structure: Structure
+  tags: Skills
 developer:
   home:
     link: 'Developer space'
@@ -460,6 +481,9 @@ label:
   structures: structures
   to: To
   volunteers: volunteers
+lock:
+  explanation: 'Locked resources (🔒) cannot be updated by external sources (Pegass database, APIs, ...)'
+  locked: Locked
 maintenance:
   message:
     content: 'Message content (newlines allowed)'
@@ -485,14 +509,20 @@ maintenance:
     title: 'Advanced nivols search in Pegass'
   title: Maintenance
 manage_structures:
+  action:
+    title: Actions
+  disable_confirm: 'Do you really want to disable this structure?'
   export: 'Export volunteers contact information'
-  force_update: 'Force update now'
+  force_pegass_update: 'Force Pegass update now'
   form:
     create: 'Create new structure'
     disabled: 'Show disabled structures'
     enabled: 'Show enabled structures'
+    update: 'Update structure %name%'
   last_update: 'Last Pegass synchro on: %last_update% UTC'
+  lock: 'Lock structure'
   manage_prefilled_answers: 'Manage prefilled answers'
+  manual_update: 'Manual update'
   next_update: 'Next Pegass synchro on: %next_update% UTC'
   prefilled_answers:
     form:
@@ -503,19 +533,26 @@ manage_structures:
   search:
     button: Search
     label: 'Search structure'
+    only_enabled: 'Hide disabled structures'
   title: 'Manage structures'
+  unlock: 'Unlock structure'
   users: 'RedCall users count: %count%'
+  view_pegass_entry: 'Open Pegass database entry'
   volunteers: 'Volunteers count: %count%'
 manage_volunteers:
   access_denied: 'Cannot edit this volunteer details, (s)he does not belong to any structure you are managing.'
   action:
     disable: Disable
+    disable_confirm: 'Do you really want to disable this volunteer?'
+    disable_volunteer: 'Disable volunteer'
     enable: Enable
+    enable_volunteer: 'Enable volunteer'
     lock: Lock
-    manual_update: 'Manual update'
-    pegass_update: 'Pegass update'
     title: Actions
     unlock: Unlock
+    update_manual: 'Update volunteer information'
+    update_pegass: 'Force Pegass update now'
+    view_pegass_entry: 'Open Pegass database entry'
   admin_structures:
     create: 'You will be able to set volunteer''s structures after creating it.'
     edit: 'Edit structures'
@@ -563,21 +600,26 @@ manage_volunteers:
     email_locked: 'Locked email *'
     email_optin: 'Available by email'
     enabled: Callable
+    external_id: 'External ID (NIVOL)'
     first_name: 'First name'
     invisible_badges: 'Other badges'
     last_name: 'Last name'
     lock_info: '* Locked phones and emails are not automatically refreshed by Pegass updates.'
     minor: 'Minor (under 18)'
-    nivol: Nivol
     optout_until_me: 'Volunteer not available until...'
     phone_number: 'Phone number'
     phone_number_locked: 'Locked phone number *'
     phone_number_optin: 'Available by phone number'
+    section_badges: 'Skills, interests and nominations'
+    section_contact: 'Contact information'
+    section_general: 'General information'
+    section_structures: 'Membership structures'
     structures: 'Affiliate structure(s)'
     tags: Skills
     update: 'Update volunteer'
     updated: 'Volunteer has properly been updated.'
     visible_badges: 'Main badges'
+    optout_until: 'Volunteer not available until...'
   others: 'and %count% other(s)'
   redcall:
     action_structures: 'Structures that %name% can trigger'
@@ -673,6 +715,9 @@ report:
       prices: Costs
       structure: Structure
     title: 'Implicated structures'
+security:
+  registration:
+    platform: 'In which platform would you like to subscribe?'
 space:
   consult_data:
     announcement_email: '📧 Message sent by email on %day%/%month%/%year% at %hours%h%mins%'
@@ -787,6 +832,7 @@ structure:
   form:
     name: 'Structure name'
     parent: 'Optional parent structure'
+    president: 'Optional president'
 title:
   campaigns: Campaigns
   costs: Costs

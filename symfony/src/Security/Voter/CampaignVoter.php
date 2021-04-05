@@ -46,23 +46,31 @@ class CampaignVoter extends Voter
 
     protected function voteOnAttribute($attribute, $subject, TokenInterface $token)
     {
-        if ($this->security->isGranted('ROLE_ADMIN')) {
+        if ($this->security->isGranted('ROLE_ROOT')) {
             return true;
         }
 
-        /** @var User $user */
-        $user = $this->security->getUser();
-        if (!$user || !($user instanceof UserInterface)) {
+        /** @var User $me */
+        $me = $this->security->getUser();
+        if (!$me || !($me instanceof UserInterface)) {
             return false;
         }
 
         /** @var Campaign $campaign */
         $campaign = $subject;
 
+        if ($me->getPlatform() !== $campaign->getPlatform()) {
+            return false;
+        }
+
+        if ($this->security->isGranted('ROLE_ADMIN')) {
+            return true;
+        }
+
         if ($campaign->getVolunteer() && $campaign->getVolunteer()->getUser()) {
             // A user has ownership of a campaign if he shares one structure with
             // user who triggered the campaign.
-            $isOwner = $user->hasCommonStructure(
+            $isOwner = $me->hasCommonStructure(
                 $campaign->getVolunteer()->getUser()->getStructures()
             );
 
@@ -73,7 +81,7 @@ class CampaignVoter extends Voter
 
         // A user can access a campaign if any of the triggered volunteer has a
         // common structure with that user.
-        return $user->hasCommonStructure(
+        return $me->hasCommonStructure(
             $this->structureManager->getCampaignStructures($campaign)
         );
     }

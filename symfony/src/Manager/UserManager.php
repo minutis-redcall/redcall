@@ -71,17 +71,6 @@ class UserManager extends BaseUserManager
         return $this->userRepository->findAll();
     }
 
-    public function findForCurrentUser() : ?User
-    {
-        $user = $this->tokenStorage->getToken()->getUser();
-
-        if (!$user || is_scalar($user)) {
-            return null;
-        }
-
-        return $user;
-    }
-
     public function findOneByNivol(string $nivol) : ?User
     {
         return $this->userRepository->findOneByNivol($nivol);
@@ -96,7 +85,7 @@ class UserManager extends BaseUserManager
 
     public function updateNivol(User $user, string $nivol)
     {
-        $volunteer = $this->volunteerManager->findOneByNivol($nivol);
+        $volunteer = $this->volunteerManager->findOneByNivol($user->getPlatform(), $nivol);
 
         if (!$volunteer) {
             $user->setNivol(null);

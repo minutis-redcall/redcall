@@ -39,6 +39,9 @@ security:
           - Bundles\PasswordLoginBundle\Security\Authenticator\FormLoginAuthenticator
         entry_point: App\Security\Authenticator\MinutisAuthenticator
 
+  role_hierarchy:
+    ROLE_ROOT: ROLE_ADMIN
+
   access_control:
 
     # Technical

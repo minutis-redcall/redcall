@@ -3,6 +3,13 @@
 {% block menu %}
     <div class="text-center">
         <img src="{{ asset('minutis.png') }}" style="max-width: 100px;"/>
+
+        {% if app.user.root %}
+            <div class="float-right" style="margin-top:-5px;">
+                {{ render(controller('\\App\\Controller\\Admin\\PlatformController::renderSwitch')) }}
+            </div>
+        {% endif %}
+
     </div>
 {% endblock %}
 
@@ -17,9 +24,9 @@
 
                 <div class="col-md-12 jumbotron">
 
-                    <h3>{{ 'campaign.no_nivol.title'|trans }}</h3>
+                    <h3>{{ 'campaign.no_structures.title'|trans }}</h3>
 
-                    {{ 'campaign.no_nivol.description'|trans }}
+                    {{ 'campaign.no_structures.description'|trans }}
 
                 </div>
 

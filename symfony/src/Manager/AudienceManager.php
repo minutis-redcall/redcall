@@ -10,11 +10,6 @@ use Symfony\Component\Security\Core\Security;
 class AudienceManager
 {
     /**
-     * @var UserManager
-     */
-    private $userManager;
-
-    /**
      * @var VolunteerManager
      */
     private $volunteerManager;
@@ -39,14 +34,12 @@ class AudienceManager
      */
     private $security;
 
-    public function __construct(UserManager $userManager,
-        VolunteerManager $volunteerManager,
+    public function __construct(VolunteerManager $volunteerManager,
         StructureManager $structureManager,
         BadgeManager $badgeManager,
         ExpirableManager $expirableManager,
         Security $security)
     {
-        $this->userManager      = $userManager;
         $this->volunteerManager = $volunteerManager;
         $this->structureManager = $structureManager;
         $this->badgeManager     = $badgeManager;
@@ -82,7 +75,7 @@ class AudienceManager
 
         if (true === ($data['test_on_me'] ?? false)) {
             $classification->setReachable([
-                $this->userManager->findForCurrentUser()->getVolunteer()->getId(),
+                $this->security->getUser()->getVolunteer()->getId(),
             ]);
 
             return $classification;

@@ -15,7 +15,7 @@
 
                 {{ form(form) }}
 
-                <div class="text-right">
+                <div class="text-left">
                     <a href="{{ path('password_login_admin_reset_password', {username: user.username, csrf: csrf_token('password_login')}) }}" class="btn btn-secondary">
                         {{ 'password_login.forgot_password.reset_by_admin'|trans }}
                     </a>

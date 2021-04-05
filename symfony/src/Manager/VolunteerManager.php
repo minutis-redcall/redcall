@@ -8,6 +8,7 @@ use App\Entity\Message;
 use App\Entity\Structure;
 use App\Entity\Volunteer;
 use App\Repository\VolunteerRepository;
+use App\Security\Helper\Security;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -43,17 +44,24 @@ class VolunteerManager
      */
     private $translator;
 
+    /**
+     * @var Security
+     */
+    private $security;
+
     public function __construct(VolunteerRepository $volunteerRepository,
         AnswerManager $answerManager,
         GeoLocationManager $geoLocationManager,
         PhoneManager $phoneManager,
-        TranslatorInterface $translator)
+        TranslatorInterface $translator,
+        Security $security)
     {
         $this->volunteerRepository = $volunteerRepository;
         $this->answerManager       = $answerManager;
         $this->geoLocationManager  = $geoLocationManager;
         $this->phoneManager        = $phoneManager;
         $this->translator          = $translator;
+        $this->security            = $security;
     }
 
     /**
@@ -69,9 +77,9 @@ class VolunteerManager
         return $this->volunteerRepository->find($volunteerId);
     }
 
-    public function findOneByNivol(string $nivol) : ?Volunteer
+    public function findOneByNivol(string $platform, string $nivol) : ?Volunteer
     {
-        return $this->volunteerRepository->findOneByNivol($nivol);
+        return $this->volunteerRepository->findOneByNivol($platform, $nivol);
     }
 
     public function findOneByPhoneNumber(string $phoneNumber) : ?Volunteer
@@ -101,7 +109,7 @@ class VolunteerManager
     public function searchForCurrentUser(?string $criteria, int $limit, bool $onlyEnabled = false)
     {
         return $this->volunteerRepository->searchForUser(
-            $this->userManager->findForCurrentUser(),
+            $this->security->getUser(),
             $criteria,
             $limit,
             $onlyEnabled
@@ -129,7 +137,7 @@ class VolunteerManager
     public function getVolunteerListForCurrentUser(array $volunteerIds) : array
     {
         return $this->volunteerRepository->getVolunteerListForUser(
-            $this->userManager->findForCurrentUser(),
+            $this->security->getUser(),
             $volunteerIds
         );
     }
@@ -152,7 +160,7 @@ class VolunteerManager
         bool $onlyUsers) : QueryBuilder
     {
         return $this->volunteerRepository->searchForUserQueryBuilder(
-            $this->userManager->findForCurrentUser(),
+            $this->security->getUser(),
             $criteria,
             $onlyEnabled,
             $onlyUsers
@@ -164,34 +172,10 @@ class VolunteerManager
         $this->volunteerRepository->foreach($callback, $onlyEnabled);
     }
 
-    public function findIssues() : array
-    {
-        $volunteers = $this->volunteerRepository->getIssues(
-            $this->userManager->findForCurrentUser()
-        );
-
-        $issues = [
-            'phones' => 0,
-            'emails' => 0,
-        ];
-
-        foreach ($volunteers as $volunteer) {
-            /** @var Volunteer $volunteer */
-            if (!$volunteer->getPhoneNumber()) {
-                $issues['phones']++;
-            }
-            if (!$volunteer->getEmail()) {
-                $issues['emails']++;
-            }
-        }
-
-        return $issues;
-    }
-
     public function getIssues() : array
     {
         return $this->volunteerRepository->getIssues(
-            $this->userManager->findForCurrentUser()
+            $this->security->getUser()
         );
     }
 
@@ -254,7 +238,7 @@ class VolunteerManager
     public function filterInaccessibles(array $volunteerIds) : array
     {
         return $this->volunteerRepository->filterInaccessibles(
-            $this->userManager->findForCurrentUser(),
+            $this->security->getUser(),
             $volunteerIds
         );
     }

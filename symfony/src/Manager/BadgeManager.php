@@ -38,9 +38,9 @@ class BadgeManager
         $this->badgeRepository->save($badge);
     }
 
-    public function getSearchInPublicBadgesQueryBuilder(?string $criteria)
+    public function getSearchInPublicBadgesQueryBuilder(?string $criteria, bool $onlyEnabled)
     {
-        return $this->badgeRepository->getSearchInBadgesQueryBuilder($criteria);
+        return $this->badgeRepository->getSearchInBadgesQueryBuilder($criteria, $onlyEnabled);
     }
 
     public function search(?string $criteria, int $limit = 0) : array
@@ -68,7 +68,7 @@ class BadgeManager
         $this->badgeRepository->remove($badge);
     }
 
-    public function getVolunteerCountInSearch(Pagerfanta $pager)
+    public function getVolunteerCountInSearch(Pagerfanta $pager) : array
     {
         $ids = [];
         foreach ($pager->getIterator() as $badge) {
@@ -76,6 +76,11 @@ class BadgeManager
             $ids[] = $badge->getId();
         }
 
+        return $this->getVolunteerCountInBadgeList($ids);
+    }
+
+    public function getVolunteerCountInBadgeList(array $ids) : array
+    {
         return $this->badgeRepository->getVolunteerCountInBadgeList($ids);
     }
 

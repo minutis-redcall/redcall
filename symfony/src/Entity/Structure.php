@@ -11,20 +11,24 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Exception;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\StructureRepository")
  * @ORM\Table(
- * uniqueConstraints={
- *     @ORM\UniqueConstraint(name="identifier_idx", columns={"identifier"})
- * },
- * indexes={
- *     @ORM\Index(name="name_idx", columns={"name"})
- * })
+ *     uniqueConstraints={
+ *         @ORM\UniqueConstraint(name="pf_extid_idx", columns={"platform", "external_id"})
+ *     },
+ *     indexes={
+ *         @ORM\Index(name="name_idx", columns={"name"})
+ *     }
+ * )
  */
 class Structure
 {
     /**
+     * @var int
+     *
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
@@ -32,51 +36,90 @@ class Structure
     private $id;
 
     /**
-     * @ORM\Column(type="integer", nullable=true)
+     * @var string
+     *
+     * @ORM\Column(type="string", length=5)
      */
-    private $identifier;
+    private $platform;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @var string
+     *
+     * @ORM\Column(type="string", length=64)
+     * @Assert\NotBlank
+     * @Assert\Length(max="64")
+     */
+    private $externalId;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=64)
+     * @Assert\NotBlank
+     * @Assert\Length(max="64")
      */
     private $name;
 
     /**
+     * @var bool
+     *
      * @ORM\Column(type="boolean")
      */
     private $enabled = true;
 
     /**
+     * @var bool
+     *
+     * @ORM\Column(type="boolean")
+     */
+    private $locked = false;
+
+    /**
+     * @var string
+     *
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Assert\Length(max="255")
      */
     private $president;
 
     /**
+     * @var Volunteer[]
+     *
      * @ORM\ManyToMany(targetEntity="App\Entity\Volunteer", mappedBy="structures")
      */
     private $volunteers;
 
     /**
+     * @var Structure|null
+     *
      * @ORM\ManyToOne(targetEntity="App\Entity\Structure", inversedBy="childrenStructures")
      */
     private $parentStructure;
 
     /**
+     * @var Structure[]
+     *
      * @ORM\OneToMany(targetEntity="App\Entity\Structure", mappedBy="parentStructure")
      */
     private $childrenStructures;
 
     /**
+     * @var \DateTime
+     *
      * @ORM\Column(type="datetime", nullable=true)
      */
     private $lastPegassUpdate;
 
     /**
+     * @var User[]
+     *
      * @ORM\ManyToMany(targetEntity="App\Entity\User", mappedBy="structures")
      */
     private $users;
 
     /**
+     * @var PrefilledAnswers[]
+     *
      * @ORM\OneToMany(targetEntity="App\Entity\PrefilledAnswers", mappedBy="structure")
      */
     private $prefilledAnswers;
@@ -97,22 +140,26 @@ class Structure
         return $this->id;
     }
 
-    /**
-     * @return int|null
-     */
-    public function getIdentifier() : ?int
+    public function getPlatform()
     {
-        return $this->identifier;
+        return $this->platform;
     }
 
-    /**
-     * @param int $identifier
-     *
-     * @return Structure
-     */
-    public function setIdentifier(int $identifier) : self
+    public function setPlatform($platform)
     {
-        $this->identifier = $identifier;
+        $this->platform = $platform;
+
+        return $this;
+    }
+
+    public function getExternalId() : string
+    {
+        return $this->externalId;
+    }
+
+    public function setExternalId(string $externalId) : Structure
+    {
+        $this->externalId = $externalId;
 
         return $this;
     }
@@ -132,7 +179,7 @@ class Structure
      */
     public function setName(string $name) : self
     {
-        $this->name = $name;
+        $this->name = mb_strtoupper($name);
 
         return $this;
     }
@@ -173,6 +220,18 @@ class Structure
     public function setEnabled(bool $enabled) : self
     {
         $this->enabled = $enabled;
+
+        return $this;
+    }
+
+    public function isLocked() : bool
+    {
+        return $this->locked;
+    }
+
+    public function setLocked(bool $locked) : Structure
+    {
+        $this->locked = $locked;
 
         return $this;
     }
@@ -453,6 +512,14 @@ class Structure
             'id'   => (string) $this->getId(),
             'name' => $this->getDisplayName(),
         ];
+    }
+
+    /**
+     * @Assert\Callback
+     */
+    public function validate()
+    {
+
     }
 
     /**

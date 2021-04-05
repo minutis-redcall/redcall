@@ -6,6 +6,15 @@
 
     <div class="jumbotron text-center">
 
+        {% if is_granted('ROLE_ADMIN') %}
+
+            <a href="{{ path('admin_badge_index') }}"
+               class="text-lg-center large-button btn btn-secondary">{{ 'admin.badge.title' |trans }}</a>
+
+            <br><br>
+
+        {% endif %}
+
         <a href="{{ path('management_structures_list') }}"
            class="text-lg-center large-button btn btn-secondary">{{ 'manage_structures.title'|trans }}</a>
 

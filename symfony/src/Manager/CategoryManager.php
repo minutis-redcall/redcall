@@ -31,6 +31,11 @@ class CategoryManager
         return $this->categoryRepository->find($id);
     }
 
+    public function findOneByExternalId(string $externalId) : ?Category
+    {
+        return $this->categoryRepository->findOneByExternalId($externalId);
+    }
+
     public function save(Category $category)
     {
         $this->categoryRepository->save($category);

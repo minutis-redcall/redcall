@@ -3,7 +3,7 @@
 {% block body %}
 
     <h1>
-        {% if badge %}
+        {% if badge.id %}
             {{ 'admin.badge.edit'|trans({'%name%': badge.name}) }}
         {% else %}
             {{ 'admin.badge.create'|trans }}

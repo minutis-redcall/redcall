@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Base\BaseRepository;
 use App\Entity\Campaign;
+use App\Security\Helper\Security;
 use Bundles\PasswordLoginBundle\Entity\AbstractUser;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
@@ -16,9 +17,16 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class CampaignRepository extends BaseRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    /**
+     * @var Security
+     */
+    private $security;
+
+    public function __construct(Security $security, ManagerRegistry $registry)
     {
         parent::__construct($registry, Campaign::class);
+
+        $this->security = $security;
     }
 
     /**
@@ -50,6 +58,8 @@ class CampaignRepository extends BaseRepository
             ->where('u.id = :user')
             ->setParameter('user', $user)
             ->andWhere('s.enabled = true')
+            ->andWhere('c.platform = :platform')
+            ->setParameter('platform', $this->security->getPlatform())
             ->andWhere('c.active = true');
     }
 
@@ -66,6 +76,8 @@ class CampaignRepository extends BaseRepository
             ->where('u.id = :user')
             ->setParameter('user', $user)
             ->andWhere('s.enabled = true')
+            ->andWhere('c.platform = :platform')
+            ->setParameter('platform', $this->security->getPlatform())
             ->andWhere('c.active = true');
     }
 
@@ -87,6 +99,8 @@ class CampaignRepository extends BaseRepository
             ->where('u.id = :user')
             ->setParameter('user', $user)
             ->andWhere('s.enabled = true')
+            ->andWhere('c.platform = :platform')
+            ->setParameter('platform', $this->security->getPlatform())
             ->andWhere('c.active = false');
     }
 
@@ -270,6 +284,8 @@ class CampaignRepository extends BaseRepository
                     ->where('c.id = :campaign_id')
                     ->setParameter('campaign_id', $campaign->getId())
                     ->andWhere('s.enabled = true')
+                    ->andWhere('s.platform = :platform')
+                    ->setParameter('platform', $this->security->getPlatform())
                     ->orderBy('volunteer_count', 'DESC')
                     ->groupBy('s.id')
                     ->getQuery()

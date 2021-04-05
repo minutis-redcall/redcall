@@ -2,6 +2,7 @@
 
 namespace App\Base;
 
+use App\Entity\User;
 use Doctrine\ORM\QueryBuilder;
 use LogicException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -57,5 +58,13 @@ class BaseController extends AbstractController
         if (!$token || !is_scalar($token) || !$this->isCsrfTokenValid($id, $token)) {
             throw $this->createNotFoundException();
         }
+    }
+
+    protected function getPlatform() : string
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+
+        return $user->getPlatform();
     }
 }

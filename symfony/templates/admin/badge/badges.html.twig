@@ -7,7 +7,6 @@
     <h1>{{ 'admin.badge.title'|trans }}</h1>
 
     <div>
-        {{ 'admin.badge.description.1'|trans }}
         <ul>
             {% for i in 10..18 %}
                 <li>{{ ('admin.badge.description.' ~ i)|trans }}</li>
@@ -16,6 +15,10 @@
     </div>
 
     <div class="text-right">
+        <a class="btn btn-secondary" href="{{ path('admin_badge_manage') }}">
+            {{ 'admin.badge.create'|trans }}
+        </a>
+
         <a class="btn btn-secondary" href="{{ path('admin_category_index') }}">
             {{ 'admin.category.title'|trans }}
         </a>
@@ -33,7 +36,15 @@
 
     <br/>
     {{ macros.pager(badges, '', app.request.query.all) }}
+
+    <div>{{ 'locked_resources'|trans }}</div>
     <br/>
+
+    <div class="text-center">
+        <a href="{{ path('management_home') }}" class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+    </div>
+
+    <br/><br/>
 
 {% endblock %}
 
@@ -42,20 +53,26 @@
 
     <script type="text/javascript">
 
-        $('.toggle-visibility').click(function () {
-            $.post($(this).data('href'));
+        $('body').on('click', '.toggle-action', function (e) {
+            e.preventDefault();
+            var that = $(this);
+
+            if (!that.data('confirm') || confirm(that.data('confirm'))) {
+                $.post(that.data('href'), function (data) {
+                    $('#badge-' + that.data('id')).html(data);
+                });
+            }
         });
 
         $('body').on('click', '.delete-badge', function (e) {
             e.preventDefault();
-
             var that = $(this);
 
             if (!confirm('{{ 'admin.badge.delete'|trans }}'.replace('%name%', that.data('name')))) {
                 return;
             }
 
-            $.post(that.data('uri'), function () {
+            $.post(that.data('href'), function () {
                 $('#badge-' + that.data('id')).remove();
             });
         });

@@ -9,9 +9,11 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Table(
- * indexes={
- *    @ORM\Index(name="nivol_idx", columns={"nivol"})
- * })
+ *    indexes={
+ *        @ORM\Index(name="platform_idx", columns={"platform"}),
+ *        @ORM\Index(name="nivol_idx", columns={"nivol"})
+ *     }
+ * )
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  * @ORM\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
  *
@@ -21,9 +23,19 @@ use Doctrine\ORM\Mapping as ORM;
 class User extends AbstractUser
 {
     /**
-     * @ORM\Column(type="string", length=10, nullable=true)
+     * @ORM\Column(type="string", length=5)
+     */
+    private $platform;
+
+    /**
+     * @ORM\Column(type="string", length=10)
      */
     private $locale;
+
+    /**
+     * @ORM\Column(type="string", length=32)
+     */
+    private $timezone;
 
     /**
      * @ORM\Column(type="string", length=80, nullable=true)
@@ -36,13 +48,18 @@ class User extends AbstractUser
     private $isDeveloper = false;
 
     /**
+     * @ORM\Column(type="boolean", options={"default" : 0})
+     */
+    private $isRoot = false;
+
+    /**
      * @ORM\OneToOne(targetEntity="App\Entity\Volunteer", inversedBy="user")
      */
     private $volunteer;
 
     /**
      * @ORM\ManyToMany(targetEntity="App\Entity\Structure", inversedBy="users")
-     * @ORM\OrderBy({"enabled" = "DESC", "identifier" = "ASC"})
+     * @ORM\OrderBy({"enabled" = "DESC", "externalId" = "ASC"})
      */
     private $structures;
 
@@ -58,6 +75,18 @@ class User extends AbstractUser
         $this->structures = new ArrayCollection();
     }
 
+    public function getPlatform()
+    {
+        return $this->platform;
+    }
+
+    public function setPlatform($platform)
+    {
+        $this->platform = $platform;
+
+        return $this;
+    }
+
     public function getLocale() : ?string
     {
         return $this->locale;
@@ -66,6 +95,18 @@ class User extends AbstractUser
     public function setLocale(?string $locale) : self
     {
         $this->locale = $locale;
+
+        return $this;
+    }
+
+    public function getTimezone() : string
+    {
+        return $this->timezone;
+    }
+
+    public function setTimezone(string $timezone)
+    {
+        $this->timezone = $timezone;
 
         return $this;
     }
@@ -94,6 +135,18 @@ class User extends AbstractUser
         return $this;
     }
 
+    public function isRoot() : bool
+    {
+        return $this->isRoot;
+    }
+
+    public function setIsRoot(bool $isRoot) : User
+    {
+        $this->isRoot = $isRoot;
+
+        return $this;
+    }
+
     public function getVolunteer() : ?Volunteer
     {
         return $this->volunteer;
@@ -108,11 +161,15 @@ class User extends AbstractUser
 
     public function getStructures(bool $onlyEnabled = true) : Collection
     {
+        $structures = $this->structures;
+
         if ($onlyEnabled) {
-            return $this->getEnabledStructures();
+            $structures = $this->getEnabledStructures();
         }
 
-        return $this->structures;
+        return $structures->filter(function (Structure $structure) {
+            return $structure->getPlatform() === $this->platform;
+        });
     }
 
     public function getEnabledStructures() : Collection
@@ -232,12 +289,17 @@ class User extends AbstractUser
         return $this;
     }
 
+
     public function getRoles() : array
     {
         $roles = parent::getRoles();
 
         if ($this->isDeveloper) {
             $roles[] = 'ROLE_DEVELOPER';
+        }
+
+        if ($this->isRoot) {
+            $roles[] = 'ROLE_ROOT';
         }
 
         return $roles;

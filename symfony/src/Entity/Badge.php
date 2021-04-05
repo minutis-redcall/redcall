@@ -10,12 +10,22 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
+ * @ORM\Table(
+ *     indexes={
+ *         @ORM\Index(name="enabledx", columns={"enabled"}),
+ *     },
+ *     uniqueConstraints={
+ *         @ORM\UniqueConstraint(name="pf_extid_idx", columns={"platform", "external_id"})
+ *     }
+ * )
  * @ORM\Entity(repositoryClass=BadgeRepository::class)
  * @ORM\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
  */
 class Badge
 {
     /**
+     * @var int
+     *
      * @ORM\Id
      * @ORM\GeneratedValue
      * @ORM\Column(type="integer")
@@ -23,11 +33,22 @@ class Badge
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=64, unique=true)
+     * @var string
+     *
+     * @ORM\Column(type="string", length=5)
+     */
+    private $platform;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=64)
      */
     private $externalId;
 
     /**
+     * @var string
+     *
      * @ORM\Column(type="string", length=64)
      * @Assert\NotBlank
      * @Assert\Length(max="64")
@@ -35,29 +56,39 @@ class Badge
     private $name;
 
     /**
+     * @var string
+     *
      * @ORM\Column(type="string", length=255, nullable=true)
      * @Assert\Length(max="255")
      */
     private $description;
 
     /**
+     * @var int
+     *
      * @ORM\Column(type="integer")
      * @Assert\Range(min="0", max="1000")
      */
     private $renderingPriority = 0;
 
     /**
+     * @var int
+     *
      * @ORM\Column(type="integer")
      * @Assert\Range(min="0", max="1000")
      */
     private $triggeringPriority = 500;
 
     /**
+     * @var bool
+     *
      * @ORM\Column(type="boolean")
      */
     private $visibility = false;
 
     /**
+     * @var Category|null
+     *
      * @ORM\ManyToOne(targetEntity=Category::class, inversedBy="badges")
      */
     private $category;
@@ -68,16 +99,21 @@ class Badge
     private $volunteers;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Badge::class, inversedBy="children", cascade="all")
+     * @var self|null
+     *
+     * @ORM\ManyToOne(targetEntity=Badge::class, inversedBy="children")
+     * @ORM\JoinColumn(onDelete="SET NULL")
      */
     private $parent;
 
     /**
-     * @ORM\OneToMany(targetEntity=Badge::class, mappedBy="parent", cascade="all")
+     * @ORM\OneToMany(targetEntity=Badge::class, mappedBy="parent")
      */
     private $children;
 
     /**
+     * @var self
+     *
      * @ORM\ManyToOne(targetEntity=Badge::class, inversedBy="synonyms", cascade="all")
      */
     private $synonym;
@@ -86,6 +122,20 @@ class Badge
      * @ORM\OneToMany(targetEntity=Badge::class, mappedBy="synonym", cascade="all")
      */
     private $synonyms;
+
+    /**
+     * @var bool
+     *
+     * @ORM\Column(type="boolean", options={"default" : 1})
+     */
+    private $enabled = true;
+
+    /**
+     * @var bool
+     *
+     * @ORM\Column(type="boolean", options={"default" : 0})
+     */
+    private $locked = false;
 
     public function __construct()
     {
@@ -97,6 +147,18 @@ class Badge
     public function getId() : ?int
     {
         return $this->id;
+    }
+
+    public function getPlatform()
+    {
+        return $this->platform;
+    }
+
+    public function setPlatform($platform)
+    {
+        $this->platform = $platform;
+
+        return $this;
     }
 
     public function getExternalId() : ?string
@@ -336,7 +398,11 @@ class Badge
 
     public function canBeRemoved() : bool
     {
-        return null === $this->externalId;
+        if ($this->locked) {
+            return false;
+        }
+
+        return true;
     }
 
     public function getCoveringBadges(int $stop = null) : array
@@ -369,6 +435,30 @@ class Badge
         }
 
         return true;
+    }
+
+    public function isEnabled() : bool
+    {
+        return $this->enabled;
+    }
+
+    public function setEnabled(bool $enabled) : Badge
+    {
+        $this->enabled = $enabled;
+
+        return $this;
+    }
+
+    public function isLocked() : bool
+    {
+        return $this->locked;
+    }
+
+    public function setLocked(bool $locked) : Badge
+    {
+        $this->locked = $locked;
+
+        return $this;
     }
 
     /**

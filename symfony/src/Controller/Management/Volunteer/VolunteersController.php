@@ -12,19 +12,20 @@ use App\Form\Model\EmailTrigger;
 use App\Form\Model\SmsTrigger;
 use App\Form\Type\AudienceType;
 use App\Form\Type\VolunteerType;
-use App\Import\VolunteerImporter;
 use App\Manager\AnswerManager;
 use App\Manager\CampaignManager;
 use App\Manager\CommunicationManager;
 use App\Manager\PhoneManager;
 use App\Manager\StructureManager;
 use App\Manager\VolunteerManager;
+use App\Model\Csrf;
 use Bundles\PaginationBundle\Manager\PaginationManager;
 use Bundles\PegassCrawlerBundle\Entity\Pegass;
 use Bundles\PegassCrawlerBundle\Manager\PegassManager;
 use DateTime;
 use DateTimeZone;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
+use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -165,6 +166,10 @@ class VolunteersController extends BaseController
     {
         $this->validateCsrfOrThrowNotFoundException('volunteers', $csrf);
 
+        if ($volunteer->isLocked()) {
+            throw $this->createNotFoundException();
+        }
+
         if (!$volunteer->canForcePegassUpdate()) {
             return $this->redirectToRoute('management_volunteers_list', $request->query->all());
         }
@@ -276,76 +281,11 @@ class VolunteersController extends BaseController
      */
     public function createAction(Request $request)
     {
-        return $this->manualUpdateAction($request, new Volunteer());
-    }
+        $volunteer = new Volunteer();
+        $volunteer->setPlatform($this->getPlatform());
+        $volunteer->setIdentifier(Uuid::uuid4());
 
-    /**
-     * @Route(path="/lock/{csrf}/{id}", name="lock")
-     * @IsGranted("VOLUNTEER", subject="volunteer")
-     */
-    public function lockAction(Request $request, Volunteer $volunteer, string $csrf)
-    {
-        $this->validateCsrfOrThrowNotFoundException('volunteers', $csrf);
-
-        $volunteer->setLocked(true);
-        $this->volunteerManager->save($volunteer);
-
-        return $this->redirectToRoute('management_volunteers_list', $request->query->all());
-    }
-
-    /**
-     * @Route(path="/unlock/{csrf}/{id}", name="unlock")
-     * @IsGranted("VOLUNTEER", subject="volunteer")
-     */
-    public function unlockAction(Request $request, Volunteer $volunteer, string $csrf)
-    {
-        $this->validateCsrfOrThrowNotFoundException('volunteers', $csrf);
-
-        $volunteer->setLocked(false);
-        $volunteer->setLastPegassUpdate(new \DateTime('1984-07-10'));
-        $this->volunteerManager->save($volunteer);
-
-        return $this->redirectToRoute('management_volunteers_list', $request->query->all());
-    }
-
-    /**
-     * @Route(path="/disable/{csrf}/{id}", name="disable")
-     * @IsGranted("VOLUNTEER", subject="volunteer")
-     */
-    public function disableAction(Request $request, Volunteer $volunteer, string $csrf)
-    {
-        $this->validateCsrfOrThrowNotFoundException('volunteers', $csrf);
-
-        // Do not disable volunteers tied to RedCall users
-        if ($volunteer->getUser()) {
-            throw $this->createNotFoundException();
-        }
-
-        $volunteer->setEnabled(false);
-        $volunteer->setLocked(true);
-        $this->volunteerManager->save($volunteer);
-
-        return $this->redirectToRoute('management_volunteers_list', $request->query->all());
-    }
-
-    /**
-     * @Route(path="/enable/{csrf}/{id}", name="enable")
-     * @IsGranted("VOLUNTEER", subject="volunteer")
-     */
-    public function enableAction(Request $request, Volunteer $volunteer, string $csrf)
-    {
-        $this->validateCsrfOrThrowNotFoundException('volunteers', $csrf);
-
-        // Do not disable volunteers tied to RedCall users
-        if ($volunteer->getUser()) {
-            throw $this->createNotFoundException();
-        }
-
-        $volunteer->setEnabled(true);
-        $volunteer->setLocked(true);
-        $this->volunteerManager->save($volunteer);
-
-        return $this->redirectToRoute('management_volunteers_list', $request->query->all());
+        return $this->manualUpdateAction($request, $volunteer);
     }
 
     /**
@@ -354,6 +294,10 @@ class VolunteersController extends BaseController
      */
     public function pegass(Volunteer $volunteer)
     {
+        if ($volunteer->isLocked()) {
+            throw $this->createNotFoundException();
+        }
+
         $entity = $this->pegassManager->getEntity(Pegass::TYPE_VOLUNTEER, $volunteer->getIdentifier(), false);
         if (!$entity) {
             throw $this->createNotFoundException();
@@ -489,6 +433,41 @@ class VolunteersController extends BaseController
         ]);
     }
 
+    /**
+     * @Route(path="/toggle-lock-{id}/{token}", name="toggle_lock")
+     * @IsGranted("VOLUNTEER", subject="volunteer")
+     * @Template("management/volunteers/volunteer.html.twig")
+     */
+    public function toggleLock(Volunteer $volunteer, Csrf $token)
+    {
+        $volunteer->setLocked(1 - $volunteer->isLocked());
+
+        $this->volunteerManager->save($volunteer);
+
+        return [
+            'volunteer' => $volunteer,
+        ];
+    }
+
+    /**
+     * @Route(path="/toggle-enable-{id}/{token}", name="toggle_enable")
+     * @IsGranted("VOLUNTEER", subject="volunteer")
+     * @Template("management/volunteers/volunteer.html.twig")
+     */
+    public function toggleEnable(Volunteer $volunteer, Csrf $token)
+    {
+        if ($volunteer->getUser() && $volunteer->isEnabled()) {
+            throw $this->createNotFoundException();
+        }
+
+        $volunteer->setEnabled(1 - $volunteer->isEnabled());
+
+        $this->volunteerManager->save($volunteer);
+
+        return [
+            'volunteer' => $volunteer,
+        ];
+    }
 
     private function deleteVolunteer(Volunteer $volunteer,
         Answer $answer,
@@ -565,9 +544,6 @@ class VolunteersController extends BaseController
                     ])
                     ->add('submit', SubmitType::class, [
                         'label' => 'manage_volunteers.search.button',
-                        'attr'  => [
-                            'class' => 'd-none',
-                        ],
                     ])
                     ->getForm()
                     ->handleRequest($request);

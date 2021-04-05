@@ -7,6 +7,8 @@ use App\Entity\Campaign;
 use App\Entity\Structure;
 use App\Entity\User;
 use App\Entity\Volunteer;
+use App\Enum\Platform;
+use App\Security\Helper\Security;
 use Bundles\PegassCrawlerBundle\Entity\Pegass;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\QueryBuilder;
@@ -22,9 +24,24 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class StructureRepository extends BaseRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    /**
+     * @var Security
+     */
+    private $security;
+
+    public function __construct(Security $security, ManagerRegistry $registry)
     {
         parent::__construct($registry, Structure::class);
+
+        $this->security = $security;
+    }
+
+    public function findOneByExternalId(string $externalId) : ?Structure
+    {
+        return $this->findOneBy([
+            'platform'   => $this->security->getPlatform(),
+            'externalId' => $externalId,
+        ]);
     }
 
     /**
@@ -75,6 +92,8 @@ class StructureRepository extends BaseRepository
         return $this->createQueryBuilder('s')
                     ->where('s.id IN (:ids)')
                     ->setParameter('ids', $ids)
+                    ->andWhere('s.platform = :platform')
+                    ->setParameter('platform', $this->security->getPlatform())
                     ->getQuery()
                     ->getResult();
     }
@@ -126,6 +145,8 @@ class StructureRepository extends BaseRepository
         return $this->createQueryBuilder('s')
                     ->where('s.id IN (:ids)')
                     ->setParameter('ids', $ids)
+                    ->andWhere('s.platform = :platform')
+                    ->setParameter('platform', $this->security->getPlatform())
                     ->getQuery()
                     ->getResult();
     }
@@ -137,18 +158,25 @@ class StructureRepository extends BaseRepository
                     ->where('u.id = :id')
                     ->setParameter('id', $user->getId())
                     ->andWhere('s.enabled = true')
-                    ->orderBy('s.identifier', 'asc');
+                    ->andWhere('s.platform = :platform')
+                    ->setParameter('platform', $this->security->getPlatform())
+                    ->orderBy('s.externalId', 'asc');
     }
 
-    public function searchAllQueryBuilder(?string $criteria, bool $enabled = true) : QueryBuilder
+    public function searchAllQueryBuilder(?string $criteria, bool $onlyEnabled = true) : QueryBuilder
     {
         $qb = $this
             ->createQueryBuilder('s')
-            ->andWhere('s.enabled = :enabled')
-            ->setParameter('enabled', $enabled);
+            ->andWhere('s.platform = :platform')
+            ->setParameter('platform', $this->security->getPlatform());
+
+        if ($onlyEnabled) {
+            $qb->andWhere('s.enabled = :enabled')
+               ->setParameter('enabled', true);
+        }
 
         if ($criteria) {
-            $qb->andWhere('s.identifier LIKE :criteria OR s.name LIKE :criteria')
+            $qb->andWhere('s.externalId LIKE :criteria OR s.name LIKE :criteria')
                ->setParameter('criteria', sprintf('%%%s%%', str_replace(' ', '%', $criteria)));
         }
 
@@ -166,20 +194,22 @@ class StructureRepository extends BaseRepository
             ->getResult();
     }
 
-    public function searchForUserQueryBuilder(User $user, ?string $criteria, ?bool $enabled = null) : QueryBuilder
+    public function searchForUserQueryBuilder(User $user, ?string $criteria, bool $onlyEnabled = true) : QueryBuilder
     {
         $qb = $this->createQueryBuilder('s')
                    ->join('s.users', 'u')
                    ->where('u.id = :user_id')
-                   ->setParameter('user_id', $user->getId());
+                   ->setParameter('user_id', $user->getId())
+                   ->andWhere('s.platform = :platform')
+                   ->setParameter('platform', $this->security->getPlatform());
 
-        if (null !== $enabled) {
+        if ($onlyEnabled) {
             $qb->andWhere('s.enabled = :enabled')
-               ->setParameter('enabled', $enabled);
+               ->setParameter('enabled', true);
         }
 
         if ($criteria) {
-            $qb->andWhere('s.identifier LIKE :criteria OR s.name LIKE :criteria')
+            $qb->andWhere('s.externalId LIKE :criteria OR s.name LIKE :criteria')
                ->setParameter('criteria', sprintf('%%%s%%', str_replace(' ', '%', $criteria)));
         }
 
@@ -205,7 +235,9 @@ class StructureRepository extends BaseRepository
         $qb
             ->update()
             ->set('s.enabled', ':enabled')
-            ->where($qb->expr()->in('s.identifier', $sub->getDQL()))
+            ->where($qb->expr()->in('s.externalId', $sub->getDQL()))
+            ->andWhere('s.platform = :platform')
+            ->setParameter('platform', Platform::FR)
             ->getQuery()
             ->execute();
     }
@@ -220,6 +252,8 @@ class StructureRepository extends BaseRepository
             ->join('m.communication', 'co')
             ->join('co.campaign', 'c')
             ->where('s.enabled = true')
+            ->andWhere('s.platform = :platform')
+            ->setParameter('platform', $this->security->getPlatform())
             ->andWhere('c.id = :campaign_id')
             ->setParameter('campaign_id', $campaign->getId())
             ->getQuery()
@@ -231,6 +265,8 @@ class StructureRepository extends BaseRepository
         return (clone $qb)
             ->select('s.id as structure_id, COUNT(su) AS count')
             ->join('s.users', 'su')
+            ->andWhere('s.platform = :platform')
+            ->setParameter('platform', $this->security->getPlatform())
             ->andWhere('su.isTrusted = true')
             ->groupBy('s.id');
     }
@@ -254,6 +290,8 @@ class StructureRepository extends BaseRepository
             ->where('s.id IN (:ids)')
             ->setParameter('ids', $structureIds, Connection::PARAM_INT_ARRAY)
             ->andWhere('s.enabled = true')
+            ->andWhere('s.platform = :platform')
+            ->setParameter('platform', $this->security->getPlatform())
             ->leftJoin('s.volunteers', 'v')
             ->andWhere('v.enabled = true OR v.enabled IS NULL')
             ->groupBy('s.id')
@@ -270,6 +308,8 @@ class StructureRepository extends BaseRepository
                     ->createQueryBuilder('s')
                     ->select('s.id')
                     ->where('s.enabled = true')
+                    ->andWhere('s.platform = :platform')
+                    ->setParameter('platform', $this->security->getPlatform())
                     ->join('s.parentStructure', 'p')
                     ->andWhere('p.id IN (:ids)')
                     ->setParameter('ids', $structureIds, Connection::PARAM_INT_ARRAY)

@@ -9,33 +9,82 @@
                 </span>
                 <span class="h4">({{ 'admin.badge.synonym_of'|trans({'%name%': macros.badge(badge.synonym)})|raw }})</span>
             {% else %}
-                <span class="h3">{{ badge.name }}</span>
+                <span class="h3">
+                    {% if badge.enabled %}
+                        {% if badge.visible %}
+                            <span style="color:red;">{{ badge.name }}</span>
+                        {% else %}
+                            {{ badge.name }}
+                        {% endif %}
+                {% else %}
+                        <span style="color:grey;">{{ badge.name }}</span> 🚫
+                    {% endif %}
+                </span>
             {% endif %}
             {% if badge.category %}
                 &nbsp;
                 <span class="badge badge-pill badge-secondary">{{ badge.category.name }}</span>
             {% endif %}
-            {% if badge.usable %}
-                <div class="float-right" style="margin-top:-15px;margin-right:-10px;">
-                    <label class="switch">
-                        <input type="checkbox"
-                               class="toggle-visibility"
-                               {% if badge.visibility %}checked{% endif %}
-                               data-href="{{ path('admin_badge_toggle_visibility', {id: badge.id, token: csrf_token('token')}) }}"/>
-                        <span class="slider"></span>
-                    </label>
+
+            <div class="float-right">
+                <div class="dropdown">
+                    <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        {{ 'admin.badge.action.title'|trans }}
+                    </button>
+
+                    <div class="dropdown-menu dropdown-menu-right">
+                        {# Toggle visibility #}
+                        {% if badge.usable %}
+                            {% if badge.visible %}
+                                <a href="#"
+                                   class="dropdown-item text-danger toggle-action"
+                                   data-href="{{ path('admin_badge_toggle_visibility', {id: badge.id, token: csrf_token('token')}) }}"
+                                   data-id="{{ badge.id }}">
+                                    {{ 'admin.badge.action.invisible'|trans }}
+                                </a>
+                            {% else %}
+                                <a href="#"
+                                   class="dropdown-item text-success toggle-action"
+                                   data-href="{{ path('admin_badge_toggle_visibility', {id: badge.id, token: csrf_token('token')}) }}"
+                                   data-id="{{ badge.id }}">
+                                    {{ 'admin.badge.action.visible'|trans }}
+                                </a>
+                            {% endif %}
+                        {% endif %}
+
+                        {# Toggle enabled #}
+                        {% if badge.enabled %}
+                            <a href="#"
+                               class="dropdown-item text-danger toggle-action"
+                               data-href="{{ path('admin_badge_toggle_enable', {id: badge.id, token: csrf_token('token')}) }}"
+                               data-id="{{ badge.id }}"
+                               data-confirm="{{ 'admin.badge.action.disable_confirm'|trans }}">
+                                {{ 'admin.badge.action.disable'|trans }}
+                            </a>
+                        {% else %}
+                            <a href="#"
+                               class="dropdown-item text-success toggle-action"
+                               data-href="{{ path('admin_badge_toggle_enable', {id: badge.id, token: csrf_token('token')}) }}"
+                               data-id="{{ badge.id }}">
+                                {{ 'admin.badge.action.enable'|trans }}
+                            </a>
+                        {% endif %}
+
+                    </div>
                 </div>
-            {% endif %}
+            </div>
+
         </div>
     </div>
     <div class="card-body">
-        {% if badge.visibility %}
-            <div class="float-right">
+
+        <div class="float-right">
+            {% if badge.visibility %}
                 {{ 'admin.badge.rendering_priority'|trans({'%priority%': badge.renderingPriority}) }}
                 <br/>
-                {{ 'admin.badge.triggering_priority'|trans({'%priority%': badge.triggeringPriority}) }}
-            </div>
-        {% endif %}
+            {% endif %}
+            {{ 'admin.badge.triggering_priority'|trans({'%priority%': badge.triggeringPriority}) }}
+        </div>
 
         <strong>{{ badge.description }}</strong>
 
@@ -76,29 +125,34 @@
         <br/>
 
         <div>
-            <a href="{{ path('admin_badge_manage', app.request.query.all|merge({id: badge.id})) }}" class="btn btn-small btn-secondary open-category-form" data-uri="">
+            <a href="{{ path('admin_badge_manage', app.request.query.all|merge({id: badge.id})) }}" class="btn btn-small btn-secondary">
                 ✏️ {{ 'base.button.update'|trans }}
             </a>
-
-            <div class="float-right">
-                {% if badge.canBeRemoved %}
-                    <a href="#"
-                       class="btn btn-small btn-secondary delete-badge"
-                       style="border: 1px solid red!important;"
-                       data-id="{{ badge.id }}"
-                       data-name="{{ badge.name|e('js') }}"
-                       data-uri="{{ path('admin_badge_remove', {id: badge.id, token: csrf_token('token')}) }}">
-                        ❌
-                    </a>
-                {% endif %}
-                <div class="float-control"></div>
-                <div class="float-right">
-                    <span style="color:lightgray">ID: {{ badge.externalId }}</span>
-                </div>
-            </div>
-
         </div>
 
+    </div>
+    <div class="card-footer">
+
+        {% if badge.locked %}
+            <a href="#"
+               class="toggle-action"
+               style="text-decoration: none;"
+               data-id="{{ badge.id }}"
+               data-href="{{ path('admin_badge_toggle_lock', {id: badge.id, token: csrf_token('token')}) }}" title="{{ 'admin.badge.unlock'|trans }}">
+                🔒
+                <span style="color:grey;">{{ 'lock.locked'|trans }}</span>
+            </a>
+        {% else %}
+            <a href="#"
+               class="toggle-action"
+               style="text-decoration: none;"
+               data-id="{{ badge.id }}"
+               data-href="{{ path('admin_badge_toggle_lock', {id: badge.id, token: csrf_token('token')}) }}" title="{{ 'admin.badge.lock'|trans }}">🔓</a>
+        {% endif %}
+
+        <div class="float-right">
+            <span style="color:lightgray;">ID: {{ badge.externalId }}</span>
+        </div>
     </div>
 </div>
 
