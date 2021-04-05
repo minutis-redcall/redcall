@@ -295,9 +295,6 @@ campaign:
   cannot_reopen: 'Impossible de réouvrir le déclenchement : depuis sa fermeure, un ou plusieurs bénévoles ont été déclenchés et le préfixe associé à leur réponse a été réuilisé.'
   errors:
     inactive: 'Ce déclenchement est terminé, merci pour votre participation.'
-  no_nivol:
-    description: 'Votre compte RedCall n''est pas relié à votre compte Pegass, merci de nous contacter afin de pouvoir utiliser la plateforme.'
-    title: 'Pas de Nivol relié'
   order:
     created_at: 'Date de création'
     label: Intitulé
@@ -323,6 +320,9 @@ campaign:
     2_light_orange: 'Préparation (UL)'
     3_dark_orange: 'Préparation (DT)'
     4_red: Engagement
+  no_structures:
+    description: 'Votre compte RedCall n''est pour le moment pas rattaché a une structure, merci de nous contacter afin de pouvoir utiliser la plateforme.'
+    title: 'Vous ne pouvez pas encore alerter de bénévoles.'
 campaign_status:
   answer: 'Réponses libres'
   answer_history: 'Historique de vos réponsess'
@@ -600,6 +600,7 @@ manage_volunteers:
     email_locked: 'Geler l''email *'
     email_optin: 'Disponible par email'
     enabled: Déclenchable
+    external_id: 'Identifiant externe (NIVOL)'
     first_name: Prénom
     invisible_badges: 'Autres badges'
     last_name: 'Nom de famille'
@@ -609,16 +610,15 @@ manage_volunteers:
     phone_number: Téléphone
     phone_number_locked: 'Geler le nᵒ de téléphone *'
     phone_number_optin: 'Disponible par téléphone et SMS'
+    section_badges: 'Compétences & nominations'
+    section_contact: 'Informations de contact'
+    section_general: 'Informations générales'
+    section_structures: 'Structures de rattachement'
     structures: 'Structure(s) de rattachement'
     tags: Compétences
     update: 'Mettre à jour un bénévole'
     updated: 'Le bénévole a correctement été modifié.'
     visible_badges: 'Badges principaux'
-    section_general: 'Informations générales'
-    section_structures: 'Structures de rattachement'
-    section_contact: 'Informations de contact'
-    section_badges: 'Compétences & nominations'
-    external_id: 'Identifiant externe (NIVOL)'
     optout_until: 'Bénévole indisponible jusqu''au...'
   others: 'et %count% autre(s)'
   redcall:

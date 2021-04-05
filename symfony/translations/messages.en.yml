@@ -295,9 +295,6 @@ campaign:
   cannot_reopen: 'Impossible to reopen the campaign: since it was closed, one or several volunteers were triggered and prefix used for their answers was reused.'
   errors:
     inactive: 'This campaign has ended, thank you for your participation.'
-  no_nivol:
-    description: 'Your RedCall account is not bound to your Pegass account, please contact us in order to use the platform.'
-    title: 'No nivol bound'
   order:
     created_at: 'Creation date'
     label: Label
@@ -323,6 +320,9 @@ campaign:
     2_light_orange: 'Preparation (UL)'
     3_dark_orange: 'Preparation (DT)'
     4_red: Engagement
+  no_structures:
+    description: 'Your RedCall account is not bound to any structures, please contact us in order to use the platform.'
+    title: 'You cannot trigger any structures yet.s'
 campaign_status:
   answer: Responses
   answer_history: 'Replies history'
@@ -600,6 +600,7 @@ manage_volunteers:
     email_locked: 'Locked email *'
     email_optin: 'Available by email'
     enabled: Callable
+    external_id: 'External ID (NIVOL)'
     first_name: 'First name'
     invisible_badges: 'Other badges'
     last_name: 'Last name'
@@ -609,16 +610,15 @@ manage_volunteers:
     phone_number: 'Phone number'
     phone_number_locked: 'Locked phone number *'
     phone_number_optin: 'Available by phone number'
+    section_badges: 'Skills, interests and nominations'
+    section_contact: 'Contact information'
+    section_general: 'General information'
+    section_structures: 'Membership structures'
     structures: 'Affiliate structure(s)'
     tags: Skills
     update: 'Update volunteer'
     updated: 'Volunteer has properly been updated.'
     visible_badges: 'Main badges'
-    section_general: 'General information'
-    section_structures: 'Membership structures'
-    section_contact: 'Contact information'
-    section_badges: 'Skills, interests and nominations'
-    external_id: 'External ID (NIVOL)'
     optout_until: 'Volunteer not available until...'
   others: 'and %count% other(s)'
   redcall:

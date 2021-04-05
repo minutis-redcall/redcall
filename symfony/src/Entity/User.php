@@ -161,11 +161,15 @@ class User extends AbstractUser
 
     public function getStructures(bool $onlyEnabled = true) : Collection
     {
+        $structures = $this->structures;
+
         if ($onlyEnabled) {
-            return $this->getEnabledStructures();
+            $structures = $this->getEnabledStructures();
         }
 
-        return $this->structures;
+        return $structures->filter(function (Structure $structure) {
+            return $structure->getPlatform() === $this->platform;
+        });
     }
 
     public function getEnabledStructures() : Collection
