@@ -40,10 +40,6 @@ class PrefilledAnswersController extends BaseController
     /**
      * @Route("/", name="list")
      * @Template("management/structures/prefilled_answers/list.html.twig")
-     *
-     * @param Structure $structure
-     *
-     * @return array
      */
     public function listPrefilledAnswers(Structure $structure)
     {
@@ -56,15 +52,12 @@ class PrefilledAnswersController extends BaseController
      * @Route("/{prefilledAnswers}/editor", requirements={"prefilledAnswers" = "\d+"}, name="edit")
      * @Route("/new", name="new")
      * @Template("management/structures/prefilled_answers/editor.html.twig")
-     *
-     * @param Structure $structure
-     *
-     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function editorPrefilledAnswers(Request $request, Structure $structure)
     {
         if ($request->get('prefilledAnswers') === null) {
             $prefilledAnswers = new PrefilledAnswers();
+            $prefilledAnswers->setPlatform($this->getPlatform());
             $prefilledAnswers->setStructure($structure);
         } else {
             $prefilledAnswers = $this->prefilledAnswersManager->findById($request->get('prefilledAnswers'));

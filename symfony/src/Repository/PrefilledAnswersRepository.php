@@ -36,7 +36,8 @@ class PrefilledAnswersRepository extends BaseRepository
                    ->where('s.id = :id')
                    ->setParameter('id', $structure->getId())
                    ->andWhere('s.platform = :platform')
-                   ->setParameter('platform', $this->security->getPlatform());
+                   ->setParameter('platform', $this->security->getPlatform())
+                   ->andWhere('pa.platform = :platform');
 
         return $qb;
     }
@@ -45,16 +46,20 @@ class PrefilledAnswersRepository extends BaseRepository
     {
         $qb = $this->createQueryBuilder('pa')
                    ->leftJoin('pa.structure', 's')
-                   ->where('s.id IS NULL or s.id IN (:id)')
+                   ->where('s.id IS NULL OR s.id IN (:id)')
                    ->setParameter('id', $user->getStructures())
-                   ->andWhere('s.platform IS NULL or s.platform = :platform')
-                   ->setParameter('platform', $this->security->getPlatform());
+                   ->andWhere('s.platform IS NULL OR s.platform = :platform')
+                   ->setParameter('platform', $this->security->getPlatform())
+                   ->andWhere('pa.platform = :platform');
 
         return $qb->getQuery()->getResult();
     }
 
     public function getGlobalPrefilledAnswers()
     {
-        return $this->createQueryBuilder('pa')->where('pa.structure is null');
+        return $this->createQueryBuilder('pa')
+                    ->where('pa.structure is null')
+                    ->andWhere('pa.platform = :platform')
+                    ->setParameter('platform', $this->security->getPlatform());
     }
 }

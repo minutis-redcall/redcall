@@ -6,6 +6,11 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
+ * @ORM\Table(
+ *     indexes={
+ *         @ORM\Index(name="platformx", columns={"platform"}),
+ *     }
+ * )
  * @ORM\Entity(repositoryClass="App\Repository\PrefilledAnswersRepository")
  * @ORM\HasLifecycleCallbacks()
  * @ORM\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
@@ -24,6 +29,13 @@ class PrefilledAnswers
      * @ORM\Column(type="integer")
      */
     private $id;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=5)
+     */
+    private $platform;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -61,6 +73,18 @@ class PrefilledAnswers
     public function getId() : ?int
     {
         return $this->id;
+    }
+
+    public function getPlatform() : string
+    {
+        return $this->platform;
+    }
+
+    public function setPlatform(string $platform) : PrefilledAnswers
+    {
+        $this->platform = $platform;
+
+        return $this;
     }
 
     /**

@@ -55,6 +55,7 @@ class PrefilledAnswersController extends BaseController
     public function editorAction(Request $request, ?int $pfaId = null)
     {
         $pfa = new PrefilledAnswers();
+        $pfa->setPlatform($this->getPlatform());
 
         if ($pfaId) {
             $pfa = $this->prefilledAnswersManager->findById($pfaId);
