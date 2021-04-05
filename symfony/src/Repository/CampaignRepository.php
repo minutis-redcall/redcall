@@ -58,7 +58,7 @@ class CampaignRepository extends BaseRepository
             ->where('u.id = :user')
             ->setParameter('user', $user)
             ->andWhere('s.enabled = true')
-            ->andWhere('s.platform = :platform')
+            ->andWhere('c.platform = :platform')
             ->setParameter('platform', $this->security->getPlatform())
             ->andWhere('c.active = true');
     }
@@ -76,7 +76,7 @@ class CampaignRepository extends BaseRepository
             ->where('u.id = :user')
             ->setParameter('user', $user)
             ->andWhere('s.enabled = true')
-            ->andWhere('s.platform = :platform')
+            ->andWhere('c.platform = :platform')
             ->setParameter('platform', $this->security->getPlatform())
             ->andWhere('c.active = true');
     }
@@ -99,7 +99,7 @@ class CampaignRepository extends BaseRepository
             ->where('u.id = :user')
             ->setParameter('user', $user)
             ->andWhere('s.enabled = true')
-            ->andWhere('s.platform = :platform')
+            ->andWhere('c.platform = :platform')
             ->setParameter('platform', $this->security->getPlatform())
             ->andWhere('c.active = false');
     }

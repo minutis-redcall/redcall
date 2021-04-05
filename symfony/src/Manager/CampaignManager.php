@@ -204,27 +204,11 @@ class CampaignManager
         return $this->messageManager->canUsePrefixesForEveryone($volunteersTakenPrefixes);
     }
 
-    /**
-     * Return all active campaign
-     *
-     * @return QueryBuilder
-     */
-    public function getAllOpenCampaignsQueryBuilder()
-    {
-        return $this->campaignRepository->getActiveCampaignsQueryBuilder();
-    }
-
     public function getAllCampaignsQueryBuilder() : QueryBuilder
     {
         return $this->campaignRepository->getAllCampaignsQueryBuilder();
     }
 
-    /**
-     * @return int
-     *
-     * @throws \Doctrine\ORM\NoResultException
-     * @throws \Doctrine\ORM\NonUniqueResultException
-     */
     public function countAllOpenCampaigns() : int
     {
         return $this->campaignRepository->countAllOpenCampaigns();

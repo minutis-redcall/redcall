@@ -27,3 +27,4 @@ services:
       - '@App\Manager\BadgeManager'
       - '@App\Manager\UserManager'
       - '@Bundles\SandboxBundle\Manager\AnonymizeManager'
+      - '@App\Security\Helper\Security'
