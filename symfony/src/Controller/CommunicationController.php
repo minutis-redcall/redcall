@@ -20,6 +20,7 @@ use App\Manager\ExpirableManager;
 use App\Manager\LanguageConfigManager;
 use App\Manager\MediaManager;
 use App\Manager\MessageManager;
+use App\Manager\PlatformConfigManager;
 use App\Manager\StructureManager;
 use App\Manager\UserManager;
 use App\Manager\VolunteerManager;
@@ -106,6 +107,11 @@ class CommunicationController extends BaseController
      */
     private $languageManager;
 
+    /**
+     * @var PlatformConfigManager
+     */
+    private $platformManager;
+
     public function __construct(CampaignManager $campaignManager,
         CommunicationManager $communicationManager,
         MessageFormatter $formatter,
@@ -117,7 +123,8 @@ class CommunicationController extends BaseController
         MediaManager $mediaManager,
         StructureManager $structureManager,
         ExpirableManager $expirableManager,
-        LanguageConfigManager $languageManager)
+        LanguageConfigManager $languageManager,
+        PlatformConfigManager $platformManager)
     {
         $this->campaignManager      = $campaignManager;
         $this->communicationManager = $communicationManager;
@@ -131,6 +138,7 @@ class CommunicationController extends BaseController
         $this->structureManager     = $structureManager;
         $this->expirableManager     = $expirableManager;
         $this->languageManager      = $languageManager;
+        $this->platformManager      = $platformManager;
     }
 
     /**
@@ -260,6 +268,9 @@ class CommunicationController extends BaseController
         $communication->setAudience([
             'preselection_key' => $key,
         ]);
+        $communication->setLanguage(
+            $this->platformManager->getPlaform($this->getPlatform())->getDefaultLanguage()->getLocale()
+        );
         $communication->setAnswers([]);
 
         $form = $this

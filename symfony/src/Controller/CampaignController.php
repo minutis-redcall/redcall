@@ -10,6 +10,7 @@ use App\Form\Model\SmsTrigger;
 use App\Form\Type\CampaignType;
 use App\Manager\CampaignManager;
 use App\Manager\CommunicationManager;
+use App\Manager\PlatformConfigManager;
 use App\Manager\UserManager;
 use Bundles\PaginationBundle\Manager\PaginationManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
@@ -44,6 +45,11 @@ class CampaignController extends BaseController
     private $userManager;
 
     /**
+     * @var PlatformConfigManager
+     */
+    private $platformManager;
+
+    /**
      * @var TranslatorInterface
      */
     private $translator;
@@ -52,12 +58,14 @@ class CampaignController extends BaseController
         CampaignManager $campaignManager,
         CommunicationManager $communicationManager,
         UserManager $userManager,
+        PlatformConfigManager $platformManager,
         TranslatorInterface $translator)
     {
         $this->paginationManager    = $paginationManager;
         $this->campaignManager      = $campaignManager;
         $this->communicationManager = $communicationManager;
         $this->userManager          = $userManager;
+        $this->platformManager      = $platformManager;
         $this->translator           = $translator;
     }
 
@@ -101,6 +109,10 @@ class CampaignController extends BaseController
 
         $campaignModel = new CampaignModel(
             $type->getFormData()
+        );
+
+        $campaignModel->trigger->setLanguage(
+            $this->platformManager->getPlaform($this->getPlatform())->getDefaultLanguage()->getLocale()
         );
 
         $form = $this
