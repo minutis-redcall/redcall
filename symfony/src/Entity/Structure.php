@@ -78,7 +78,6 @@ class Structure
      * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
-     * @Assert\NotBlank
      * @Assert\Length(max="255")
      */
     private $president;
@@ -180,7 +179,7 @@ class Structure
      */
     public function setName(string $name) : self
     {
-        $this->name = $name;
+        $this->name = mb_strtoupper($name);
 
         return $this;
     }

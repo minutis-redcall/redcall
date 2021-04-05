@@ -5,7 +5,11 @@
 {% block body %}
 
     <h1>
-        {{ 'manage_structures.form.create'|trans }}
+        {% if structure.id %}
+            {{ 'manage_structures.form.update'|trans({'%name%': structure.displayName}) }}
+        {% else %}
+            {{ 'manage_structures.form.create'|trans }}
+        {% endif %}
     </h1>
 
     {{ form(form) }}

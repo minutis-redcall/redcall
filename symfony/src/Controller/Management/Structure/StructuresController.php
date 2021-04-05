@@ -119,10 +119,6 @@ class StructuresController extends BaseController
      */
     public function createStructure(Request $request, ?Structure $structure = null)
     {
-        if (null !== $structure && $structure->isLocked()) {
-            throw $this->createNotFoundException();
-        }
-
         if (null === $structure) {
             $structure = new Structure();
             $structure->setExternalId(Uuid::uuid4());
@@ -139,7 +135,10 @@ class StructuresController extends BaseController
             return $this->redirectToRoute('management_structures_list');
         }
 
-        return ['form' => $form->createView()];
+        return [
+            'structure' => $structure,
+            'form'      => $form->createView(),
+        ];
     }
 
     /**
@@ -247,10 +246,6 @@ class StructuresController extends BaseController
      */
     public function toggleLock(Structure $structure, Csrf $token)
     {
-        if (!$structure->isEnabled()) {
-            throw $this->createNotFoundException();
-        }
-
         $structure->setLocked(1 - $structure->isLocked());
 
         $this->structureManager->save($structure);
@@ -271,10 +266,6 @@ class StructuresController extends BaseController
      */
     public function toggleEnable(Structure $structure, Csrf $token)
     {
-        if ($structure->isLocked()) {
-            throw $this->createNotFoundException();
-        }
-
         $structure->setEnabled(1 - $structure->isEnabled());
 
         $this->structureManager->save($structure);

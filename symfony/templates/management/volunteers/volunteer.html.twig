@@ -29,53 +29,48 @@
                                 {{ 'manage_volunteers.can_trigger_button'|trans({'%name%': volunteer.displayName}) }}
                             </a>
 
-                            {% if not volunteer.locked %}
-                                <div class="dropdown-divider"></div>
-                            {% endif %}
+                            <div class="dropdown-divider"></div>
                         {% endif %}
 
-                        {% if not volunteer.locked %}
+                        {% if constant('\\App\\Enum\\Platform::FR') == app.user.platform and not volunteer.locked %}
 
-                            {% if constant('\\App\\Enum\\Platform::FR') == app.user.platform %}
-
-                                <a class="dropdown-item" href="{{ path('management_volunteers_pegass', app.request.query.all|merge({id: volunteer.id})) }}" target="_blank">
-                                    {{ 'manage_volunteers.action.view_pegass_entry'|trans }}
-                                </a>
-
-                                {% if volunteer.canForcePegassUpdate %}
-                                    <a class="dropdown-item" href="{{ path('management_volunteers_pegass_update', app.request.query.all|merge({id: volunteer.id, csrf: csrf_token('volunteers')})) }}" onclick="$(this).addClass('disabled');">
-                                        {{ 'manage_volunteers.action.update_pegass'|trans }}
-                                    </a>
-                                {% endif %}
-
-                            {% endif %}
-
-                            <a class="dropdown-item" href="{{ path('management_volunteers_manual_update', app.request.query.all|merge({id: volunteer.id})) }}">
-                                {{ 'manage_volunteers.action.update_manual'|trans }}
+                            <a class="dropdown-item" href="{{ path('management_volunteers_pegass', app.request.query.all|merge({id: volunteer.id})) }}" target="_blank">
+                                {{ 'manage_volunteers.action.view_pegass_entry'|trans }}
                             </a>
 
-                            {% if not volunteer.user %}
-                                <div class="dropdown-divider"></div>
-
-                                {% if volunteer.enabled %}
-                                    <a href="#"
-                                       class="dropdown-item text-danger toggle-action"
-                                       data-href="{{ path('management_volunteers_toggle_enable', app.request.query.all|merge({id: volunteer.id, token: csrf_token('token')})) }}"
-                                       data-id="{{ volunteer.id }}"
-                                       data-confirm="{{ 'manage_volunteers.action.disable_confirm'|trans }}">
-                                        {{ 'manage_volunteers.action.disable_volunteer'|trans }}
-                                    </a>
-                                {% else %}
-                                    <a href="#"
-                                       class="dropdown-item text-success toggle-action"
-                                       data-href="{{ path('management_volunteers_toggle_enable', app.request.query.all|merge({id: volunteer.id, token: csrf_token('token')})) }}"
-                                       data-id="{{ volunteer.id }}">
-                                        {{ 'manage_volunteers.action.enable_volunteer'|trans }}
-                                    </a>
-                                {% endif %}
+                            {% if volunteer.canForcePegassUpdate %}
+                                <a class="dropdown-item" href="{{ path('management_volunteers_pegass_update', app.request.query.all|merge({id: volunteer.id, csrf: csrf_token('volunteers')})) }}" onclick="$(this).addClass('disabled');">
+                                    {{ 'manage_volunteers.action.update_pegass'|trans }}
+                                </a>
                             {% endif %}
 
                         {% endif %}
+
+                        <a class="dropdown-item" href="{{ path('management_volunteers_manual_update', app.request.query.all|merge({id: volunteer.id})) }}">
+                            {{ 'manage_volunteers.action.update_manual'|trans }}
+                        </a>
+
+                        {% if not volunteer.user %}
+                            <div class="dropdown-divider"></div>
+
+                            {% if volunteer.enabled %}
+                                <a href="#"
+                                   class="dropdown-item text-danger toggle-action"
+                                   data-href="{{ path('management_volunteers_toggle_enable', app.request.query.all|merge({id: volunteer.id, token: csrf_token('token')})) }}"
+                                   data-id="{{ volunteer.id }}"
+                                   data-confirm="{{ 'manage_volunteers.action.disable_confirm'|trans }}">
+                                    {{ 'manage_volunteers.action.disable_volunteer'|trans }}
+                                </a>
+                            {% else %}
+                                <a href="#"
+                                   class="dropdown-item text-success toggle-action"
+                                   data-href="{{ path('management_volunteers_toggle_enable', app.request.query.all|merge({id: volunteer.id, token: csrf_token('token')})) }}"
+                                   data-id="{{ volunteer.id }}">
+                                    {{ 'manage_volunteers.action.enable_volunteer'|trans }}
+                                </a>
+                            {% endif %}
+                        {% endif %}
+
                     </div>
                 </div>
             </div>
@@ -84,10 +79,14 @@
 
     <div class="card-body row">
         <div class="col-md-6">
-            <div>
-                {{ macros.volunteerBadges(volunteer) }}
-            </div>
-
+            {% if volunteer.structures.count %}
+                {% for structure in volunteer.structures %}
+                    <div>{{ structure.displayName }}</div>
+                {% endfor %}
+            {% endif %}
+            {{ macros.volunteerBadges(volunteer) }}
+        </div>
+        <div class="col-md-6">
             {% if volunteer.email %}
                 {% if not volunteer.emailOptin %}<strike>{% endif %}
                 <a href="mailto:{{ volunteer.email }}?subject={{ 'manage_volunteers.contact.mail_subject'|trans }}">{{ volunteer.email }}</a>
@@ -102,34 +101,24 @@
                 <br/>
             {% endif %}
         </div>
-
-        <div class="col-md-6">
-            {% if volunteer.structures.count %}
-                {% for structure in volunteer.structures %}
-                    <div>{{ structure.displayName }}</div>
-                {% endfor %}
-            {% endif %}
-        </div>
     </div>
 
     <div class="card-footer">
-        {% if volunteer.enabled %}
-            {% if volunteer.locked %}
-                <a href="#"
-                   class="toggle-action"
-                   style="text-decoration: none;"
-                   data-id="{{ volunteer.id }}"
-                   data-href="{{ path('management_volunteers_toggle_lock', {id: volunteer.id, token: csrf_token('token')}) }}" title="{{ 'manage_volunteers.action.unlock'|trans }}">
-                    🔒
-                    <span style="color:grey;">{{ 'lock.locked'|trans }}</span>
-                </a>
-            {% else %}
-                <a href="#"
-                   class="toggle-action"
-                   style="text-decoration: none;"
-                   data-id="{{ volunteer.id }}"
-                   data-href="{{ path('management_volunteers_toggle_lock', {id: volunteer.id, token: csrf_token('token')}) }}" title="{{ 'manage_volunteers.action.lock'|trans }}">🔓</a>
-            {% endif %}
+        {% if volunteer.locked %}
+            <a href="#"
+               class="toggle-action"
+               style="text-decoration: none;"
+               data-id="{{ volunteer.id }}"
+               data-href="{{ path('management_volunteers_toggle_lock', {id: volunteer.id, token: csrf_token('token')}) }}" title="{{ 'manage_volunteers.action.unlock'|trans }}">
+                🔒
+                <span style="color:grey;">{{ 'lock.locked'|trans }}</span>
+            </a>
+        {% else %}
+            <a href="#"
+               class="toggle-action"
+               style="text-decoration: none;"
+               data-id="{{ volunteer.id }}"
+               data-href="{{ path('management_volunteers_toggle_lock', {id: volunteer.id, token: csrf_token('token')}) }}" title="{{ 'manage_volunteers.action.lock'|trans }}">🔓</a>
         {% endif %}
 
         <div class="float-right">

@@ -12,13 +12,6 @@ admin:
       volunteer: Bénévole
     title: 'Analyser les réponses'
   badge:
-    action:
-      title: 'Actions'
-      disable: 'Desactiver le badge'
-      enable: 'Activer le badge'
-      visible: 'Ajouter sur le formulaire de déclenchement'
-      invisible: 'Retirer du formulaire de déclenchement'
-      disable_confirm: 'Voulez-vous vraiment desactiver ce badge ?'
     covered_by: 'Couvert par les badges suivants :'
     covers: 'Couvre les badges suivants :'
     create: 'Création d''un nouveau badge'
@@ -48,11 +41,18 @@ admin:
     replace: 'Remplace les badges suivants'
     search: 'Chercher un badge'
     synonym_of: 'Synonyme de %name%'
-    only_enabled: 'Masquer les badges desactivés'
     title: 'Gestion des badges'
     triggering_priority: 'Prio. déclenchement: %priority%'
     unlock: 'Dégeler le badge'
     used_by: 'Utilisé par %count% bénévoles'
+    action:
+      title: Actions
+      disable: 'Desactiver le badge'
+      enable: 'Activer le badge'
+      visible: 'Ajouter sur le formulaire de déclenchement'
+      invisible: 'Retirer du formulaire de déclenchement'
+      disable_confirm: 'Voulez-vous vraiment desactiver ce badge ?'
+    only_enabled: 'Masquer les badges desactivés'
   category:
     badges: Badges
     badges_add: 'Ajouter un badge'
@@ -515,6 +515,7 @@ manage_structures:
     create: 'Créer une nouvelle structure'
     disabled: 'Afficher les structures desactivées'
     enabled: 'Afficher les structures actives'
+    update: 'Modifier la structure %name%'
   last_update: 'Dernière synchro avec Pegass : %last_update% UTC'
   lock: 'Geler la structure'
   manage_prefilled_answers: 'Gérer les réponses pré-remplies'
@@ -830,4 +831,4 @@ title:
   messages: Messages
 lock:
   explanation: 'Les ressources gelées (🔒) ne peuvent pas être modifiées par des sources extérieures à RedCall (synchro Pegass, APIs, ...)'
-  locked: 'Gelé'
+  locked: Gelé

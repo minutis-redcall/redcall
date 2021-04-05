@@ -166,6 +166,10 @@ class VolunteersController extends BaseController
     {
         $this->validateCsrfOrThrowNotFoundException('volunteers', $csrf);
 
+        if ($volunteer->isLocked()) {
+            throw $this->createNotFoundException();
+        }
+
         if (!$volunteer->canForcePegassUpdate()) {
             return $this->redirectToRoute('management_volunteers_list', $request->query->all());
         }
@@ -285,40 +289,15 @@ class VolunteersController extends BaseController
     }
 
     /**
-     * @Route(path="/lock/{csrf}/{id}", name="lock")
-     * @IsGranted("VOLUNTEER", subject="volunteer")
-     */
-    public function lockAction(Request $request, Volunteer $volunteer, string $csrf)
-    {
-        $this->validateCsrfOrThrowNotFoundException('volunteers', $csrf);
-
-        $volunteer->setLocked(true);
-        $this->volunteerManager->save($volunteer);
-
-        return $this->redirectToRoute('management_volunteers_list', $request->query->all());
-    }
-
-    /**
-     * @Route(path="/unlock/{csrf}/{id}", name="unlock")
-     * @IsGranted("VOLUNTEER", subject="volunteer")
-     */
-    public function unlockAction(Request $request, Volunteer $volunteer, string $csrf)
-    {
-        $this->validateCsrfOrThrowNotFoundException('volunteers', $csrf);
-
-        $volunteer->setLocked(false);
-        $volunteer->setLastPegassUpdate(new \DateTime('1984-07-10'));
-        $this->volunteerManager->save($volunteer);
-
-        return $this->redirectToRoute('management_volunteers_list', $request->query->all());
-    }
-
-    /**
      * @Route(path="/pegass/{id}", name="pegass")
      * @IsGranted("ROLE_ADMIN")
      */
     public function pegass(Volunteer $volunteer)
     {
+        if ($volunteer->isLocked()) {
+            throw $this->createNotFoundException();
+        }
+
         $entity = $this->pegassManager->getEntity(Pegass::TYPE_VOLUNTEER, $volunteer->getIdentifier(), false);
         if (!$entity) {
             throw $this->createNotFoundException();
@@ -461,10 +440,6 @@ class VolunteersController extends BaseController
      */
     public function toggleLock(Volunteer $volunteer, Csrf $token)
     {
-        if (!$volunteer->isEnabled()) {
-            throw $this->createNotFoundException();
-        }
-
         $volunteer->setLocked(1 - $volunteer->isLocked());
 
         $this->volunteerManager->save($volunteer);
@@ -481,10 +456,6 @@ class VolunteersController extends BaseController
      */
     public function toggleEnable(Volunteer $volunteer, Csrf $token)
     {
-        if ($volunteer->isLocked()) {
-            throw $this->createNotFoundException();
-        }
-
         if ($volunteer->getUser() && $volunteer->isEnabled()) {
             throw $this->createNotFoundException();
         }
