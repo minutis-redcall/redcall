@@ -69,6 +69,7 @@ class CategoryController extends BaseController
 
         $categories = $this->paginationManager->getPager(
             $this->categoryManager->getSearchInCategoriesQueryBuilder(
+                $this->getPlatform(),
                 $searchForm->get('criteria')->getData()
             )
         );

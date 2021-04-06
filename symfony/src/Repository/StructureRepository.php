@@ -38,9 +38,24 @@ class StructureRepository extends BaseRepository
 
     public function findOneByExternalId(string $externalId) : ?Structure
     {
+        if ($this->security->getPlatform()) {
+            return $this->findOneBy([
+                'platform'   => $this->security->getPlatform(),
+                'externalId' => $externalId,
+            ]);
+        }
+
+        // Asynchronous cron "pegass" does not have a platform in its context
         return $this->findOneBy([
-            'platform'   => $this->security->getPlatform(),
             'externalId' => $externalId,
+        ]);
+    }
+
+    public function findOneByName(string $name)
+    {
+        return $this->findOneBy([
+            'platform' => $this->security->getPlatform(),
+            'name'     => $name,
         ]);
     }
 

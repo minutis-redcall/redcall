@@ -91,6 +91,7 @@ class CategoryController extends BaseController
     public function records(CategoryFiltersFacade $filters)
     {
         $qb = $this->categoryManager->getSearchInCategoriesQueryBuilder(
+            $this->getPlatform(),
             $filters->getCriteria()
         );
 
@@ -147,7 +148,7 @@ class CategoryController extends BaseController
      *   response = @Facade(class = HttpNoContentFacade::class)
      * )
      * @Route(name="update", path="/{categoryId}", methods={"PUT"})
-     * @Entity("category", expr="repository.findOneByExternalId(categoryId)")
+     * @Entity("category", expr="repository.findOneByExternalIdAndCurrentPlatform(categoryId)")
      * @IsGranted("CATEGORY", subject="category")
      */
     public function update(Category $category, CategoryFacade $facade)
@@ -177,7 +178,7 @@ class CategoryController extends BaseController
      *   response = @Facade(class = HttpNoContentFacade::class)
      * )
      * @Route(name="delete", path="/{categoryId}", methods={"DELETE"})
-     * @Entity("category", expr="repository.findOneByExternalId(categoryId)")
+     * @Entity("category", expr="repository.findOneByExternalIdAndCurrentPlatform(categoryId)")
      * @IsGranted("CATEGORY", subject="category")
      */
     public function delete(Category $category)
@@ -206,7 +207,7 @@ class CategoryController extends BaseController
      *                      decorates = @Facade(class = BadgeReadFacade::class))
      * )
      * @Route(name="badge_records", path="/badge/{categoryId}", methods={"GET"})
-     * @Entity("category", expr="repository.findOneByExternalId(categoryId)")
+     * @Entity("category", expr="repository.findOneByExternalIdAndCurrentPlatform(categoryId)")
      * @IsGranted("CATEGORY", subject="category")
      */
     public function badgeRecords(Category $category, PageFilterFacade $page)
@@ -229,7 +230,7 @@ class CategoryController extends BaseController
      *                      decorates = @Facade(class = UpdateStatusFacade::class))
      * )
      * @Route(name="badge_add", path="/badge/{categoryId}", methods={"POST"})
-     * @Entity("category", expr="repository.findOneByExternalId(categoryId)")
+     * @Entity("category", expr="repository.findOneByExternalIdAndCurrentPlatform(categoryId)")
      * @IsGranted("CATEGORY", subject="category")
      */
     public function badgeAdd(Category $category, BadgeReferenceCollectionFacade $externalIds)
@@ -248,7 +249,7 @@ class CategoryController extends BaseController
      *                      decorates = @Facade(class = UpdateStatusFacade::class))
      * )
      * @Route(name="badge_remove", path="/badge/{categoryId}", methods={"DELETE"})
-     * @Entity("category", expr="repository.findOneByExternalId(categoryId)")
+     * @Entity("category", expr="repository.findOneByExternalIdAndCurrentPlatform(categoryId)")
      * @IsGranted("CATEGORY", subject="category")
      */
     public function badgeRemove(Category $category, BadgeReferenceCollectionFacade $externalIds)
@@ -330,7 +331,7 @@ class CategoryController extends BaseController
 
         foreach ($externalIds->getEntries() as $entry) {
             /** @var CategoryReferenceFacade $entry */
-            $category = $this->categoryManager->findOneByExternalId($entry->getExternalId());
+            $category = $this->categoryManager->findOneByExternalIdAndCurrentPlatform($entry->getExternalId());
 
             if (null === $category) {
                 $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Category does not exist');
@@ -392,7 +393,7 @@ class CategoryController extends BaseController
 
         foreach ($externalIds->getEntries() as $entry) {
             /** @var BadgeReferenceFacade $entry */
-            $badge = $this->badgeManager->findOneByExternalId($entry->getExternalId());
+            $badge = $this->badgeManager->findOneByExternalId($this->getPlatform(), $entry->getExternalId());
 
             if (null === $badge) {
                 $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Badge does not exist');

@@ -6,6 +6,7 @@ use App\Base\BaseRepository;
 use App\Entity\Structure;
 use App\Entity\User;
 use App\Entity\Volunteer;
+use App\Enum\Platform;
 use App\Security\Helper\Security;
 use Bundles\PegassCrawlerBundle\Entity\Pegass;
 use Doctrine\DBAL\Connection;
@@ -235,6 +236,8 @@ class VolunteerRepository extends BaseRepository
             ->update()
             ->set('v.enabled', ':enabled')
             ->where($qb->expr()->in('v.identifier', $sub->getDQL()))
+            ->andWhere('v.platform = :platform')
+            ->setParameter('platform', Platform::FR)
             ->getQuery()
             ->execute();
     }
