@@ -30,7 +30,15 @@ class BadgeRepository extends BaseRepository
         parent::__construct($registry, Badge::class);
     }
 
-    public function findOneByExternalId(string $externalId) : ?Badge
+    public function findOneByExternalId(string $platform, string $externalId) : ?Badge
+    {
+        return $this->findOneBy([
+            'platform'   => $platform,
+            'externalId' => $externalId,
+        ]);
+    }
+
+    public function findOneByExternalIdAndCurrentPlatform(string $externalId) : ?Badge
     {
         return $this->findOneBy([
             'platform'   => $this->security->getPlatform(),

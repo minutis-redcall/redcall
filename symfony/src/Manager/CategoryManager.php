@@ -21,9 +21,9 @@ class CategoryManager
         $this->categoryRepository = $categoryRepository;
     }
 
-    public function getSearchInCategoriesQueryBuilder(?string $criteria) : QueryBuilder
+    public function getSearchInCategoriesQueryBuilder(string $platform, ?string $criteria) : QueryBuilder
     {
-        return $this->categoryRepository->getSearchInCategoriesQueryBuilder($criteria);
+        return $this->categoryRepository->getSearchInCategoriesQueryBuilder($platform, $criteria);
     }
 
     public function find(int $id) : ?Category
@@ -31,9 +31,9 @@ class CategoryManager
         return $this->categoryRepository->find($id);
     }
 
-    public function findOneByExternalId(string $externalId) : ?Category
+    public function findOneByExternalIdAndCurrentPlatform(string $externalId) : ?Category
     {
-        return $this->categoryRepository->findOneByExternalId($externalId);
+        return $this->categoryRepository->findOneByExternalIdAndCurrentPlatform($externalId);
     }
 
     public function save(Category $category)
@@ -46,8 +46,8 @@ class CategoryManager
         $this->categoryRepository->remove($category);
     }
 
-    public function search(?string $criteria, int $limit = 0) : array
+    public function search(string $platform, ?string $criteria, int $limit = 0) : array
     {
-        return $this->categoryRepository->search($criteria, $limit);
+        return $this->categoryRepository->search($platform, $criteria, $limit);
     }
 }

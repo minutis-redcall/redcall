@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Base\BaseRepository;
+use App\Entity\Badge;
 use App\Entity\Category;
 use App\Security\Helper\Security;
 use Doctrine\ORM\QueryBuilder;
@@ -27,7 +28,7 @@ class CategoryRepository extends BaseRepository
         parent::__construct($registry, Category::class);
     }
 
-    public function findOneByExternalId(string $externalId) : ?Category
+    public function findOneByExternalIdAndCurrentPlatform(string $externalId) : ?Badge
     {
         return $this->findOneBy([
             'platform'   => $this->security->getPlatform(),
@@ -35,11 +36,11 @@ class CategoryRepository extends BaseRepository
         ]);
     }
 
-    public function getSearchInCategoriesQueryBuilder(?string $criteria) : QueryBuilder
+    public function getSearchInCategoriesQueryBuilder(string $platform, ?string $criteria) : QueryBuilder
     {
         $qb = $this->createQueryBuilder('c')
                    ->andWhere('c.platform = :platform')
-                   ->setParameter('platform', $this->security->getPlatform())
+                   ->setParameter('platform', $platform)
                    ->addOrderBy('c.enabled', 'DESC')
                    ->addOrderBy('c.priority', 'ASC');
 
@@ -50,9 +51,9 @@ class CategoryRepository extends BaseRepository
         return $qb;
     }
 
-    public function search(?string $criteria, int $limit) : array
+    public function search(string $platform, ?string $criteria, int $limit) : array
     {
-        return $this->getSearchInCategoriesQueryBuilder($criteria)
+        return $this->getSearchInCategoriesQueryBuilder($platform, $criteria)
                     ->setMaxResults($limit)
                     ->getQuery()
                     ->getResult();

@@ -274,7 +274,7 @@ class WidgetController extends BaseController
     {
         $criteria = trim($request->query->get('keyword'));
 
-        $categories = $this->categoryManager->search($criteria, 20);
+        $categories = $this->categoryManager->search($this->getPlatform(), $criteria, 20);
 
         $results = [];
         foreach ($categories as $category) {

@@ -28,9 +28,9 @@ class BadgeManager
         return $this->badgeRepository->find($id);
     }
 
-    public function findOneByExternalId(string $externalId) : ?Badge
+    public function findOneByExternalId(string $platform, string $externalId) : ?Badge
     {
-        return $this->badgeRepository->findOneByExternalId($externalId);
+        return $this->badgeRepository->findOneByExternalId($platform, $externalId);
     }
 
     public function save(Badge $badge)

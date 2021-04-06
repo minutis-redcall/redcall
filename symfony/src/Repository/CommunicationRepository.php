@@ -4,6 +4,7 @@ namespace App\Repository;
 
 use App\Base\BaseRepository;
 use App\Entity\Communication;
+use App\Security\Helper\Security;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -14,9 +15,16 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class CommunicationRepository extends BaseRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    /**
+     * @var Security
+     */
+    private $security;
+
+    public function __construct(ManagerRegistry $registry, Security $security)
     {
         parent::__construct($registry, Communication::class);
+
+        $this->security = $security;
     }
 
     /**

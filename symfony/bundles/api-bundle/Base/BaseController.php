@@ -2,6 +2,7 @@
 
 namespace Bundles\ApiBundle\Base;
 
+use App\Security\Helper\Security;
 use Bundles\ApiBundle\Error\ViolationError;
 use Bundles\ApiBundle\Exception\ApiException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -13,10 +14,11 @@ abstract class BaseController extends AbstractController
     {
         return array_merge(parent::getSubscribedServices(), [
             'validator' => ValidatorInterface::class,
+            Security::class,
         ]);
     }
 
-    public function validate($value, array $constraints)
+    protected function validate($value, array $constraints)
     {
         $violations = $this->get('validator')->validate($value, $constraints);
 
@@ -25,5 +27,15 @@ abstract class BaseController extends AbstractController
                 new ViolationError($violations)
             );
         }
+    }
+
+    protected function getPlatform() : ?string
+    {
+        return $this->getSecurity()->getPlatform();
+    }
+
+    protected function getSecurity() : Security
+    {
+        return $this->get(Security::class);
     }
 }

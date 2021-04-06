@@ -160,6 +160,7 @@ class RefreshManager
 
         if (!$structure) {
             $structure = new Structure();
+            $structure->setPlatform(Platform::FR);
         }
 
         // Structure already up to date
@@ -239,6 +240,7 @@ class RefreshManager
         $volunteer = $this->volunteerManager->findOneByNivol(Platform::FR, $pegass->getIdentifier());
         if (!$volunteer) {
             $volunteer = new Volunteer();
+            $volunteer->setPlatform(Platform::FR);
         }
 
         $volunteer->setIdentifier($pegass->getIdentifier());
@@ -478,7 +480,7 @@ class RefreshManager
                 }
 
                 $externalId = sprintf('%s-%d', $type, $action[$type]['id']);
-                $badge      = $this->badgeManager->findOneByExternalId($externalId);
+                $badge      = $this->badgeManager->findOneByExternalId(Platform::FR, $externalId);
 
                 if (!$badge) {
                     $badge = $this->createBadge($externalId, $action[$type]['libelle']);
@@ -501,7 +503,7 @@ class RefreshManager
             }
 
             $externalId = sprintf('skill-%d', $skill['id']);
-            $badge      = $this->badgeManager->findOneByExternalId($externalId);
+            $badge      = $this->badgeManager->findOneByExternalId(Platform::FR, $externalId);
 
             if (!$badge) {
                 $badge = $this->createBadge($externalId, $skill['libelle']);
@@ -531,7 +533,7 @@ class RefreshManager
             }
 
             $externalId = sprintf('training-%d', $training['formation']['id']);
-            $badge      = $this->badgeManager->findOneByExternalId($externalId);
+            $badge      = $this->badgeManager->findOneByExternalId(Platform::FR, $externalId);
 
             if (!$badge) {
                 $badge = $this->createBadge($externalId, $training['formation']['code'], $training['formation']['libelle']);
@@ -553,7 +555,7 @@ class RefreshManager
             }
 
             $externalId = sprintf('nomination-%d', $nomination['id']);
-            $badge      = $this->badgeManager->findOneByExternalId($externalId);
+            $badge      = $this->badgeManager->findOneByExternalId(Platform::FR, $externalId);
 
             if (!$badge) {
                 $badge = $this->createBadge($externalId, $nomination['libelleCourt'], $nomination['libelleLong']);
@@ -572,6 +574,7 @@ class RefreshManager
         }
 
         $badge = new Badge();
+        $badge->setPlatform(Platform::FR);
         $badge->setExternalId($externalId);
         $badge->setName(substr($name, 0, 64));
         $badge->setDescription(substr($description, 0, 255));

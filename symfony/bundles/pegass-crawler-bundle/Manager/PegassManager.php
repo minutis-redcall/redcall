@@ -153,6 +153,43 @@ class PegassManager
     }
 
     /**
+     * If that's the first time resources are fully loaded, we will update
+     * all resource update dates in order to spread out their refreshing
+     * on the whole timeframe of their type.
+     *
+     * Example, if I have 48 volunteers having a TTL of 24h, the first one will
+     * be immediately refreshed, the second one 30 mins later, the third one 1h
+     * later, etc.
+     */
+    public function spreadUpdateDatesInTTL()
+    {
+        $area = $this->pegassRepository->getEntity(Pegass::TYPE_AREA);
+        if (!$area || $area->getIdentifier()) {
+            return;
+        }
+
+        $area->setIdentifier(date('d/m/Y H:i:s'));
+        $this->pegassRepository->save($area);
+
+        foreach (Pegass::TTL as $type => $ttl) {
+            $count = $this->pegassRepository->countEntities($type);
+            $date  = (new DateTime())->sub(new DateInterval(sprintf('PT%dS', $ttl)));
+            $step  = intval(($ttl * 24 * 60 * 60) / $count);
+            $this->pegassRepository->foreach($type, function (Pegass $entity) use ($date, $step) {
+                $updateAt = new DateInterval(sprintf('PT%dS', $step));
+                $date->add($updateAt);
+
+                $this->debug($entity, 'Change updatedAt date', [
+                    'new-updated-at' => $date->format('d/m/Y H:i:s'),
+                ]);
+
+                $entity->setUpdatedAt($date);
+                $this->pegassRepository->save($entity);
+            });
+        }
+    }
+
+    /**
      * @throws Exception
      */
     private function initialize()
@@ -345,43 +382,6 @@ class PegassManager
         $entity->setUpdatedAt(new DateTime());
 
         $this->pegassRepository->save($entity);
-    }
-
-    /**
-     * If that's the first time resources are fully loaded, we will update
-     * all resource update dates in order to spread out their refreshing
-     * on the whole timeframe of their type.
-     *
-     * Example, if I have 48 volunteers having a TTL of 24h, the first one will
-     * be immediately refreshed, the second one 30 mins later, the third one 1h
-     * later, etc.
-     */
-    private function spreadUpdateDatesInTTL()
-    {
-        $area = $this->pegassRepository->getEntity(Pegass::TYPE_AREA);
-        if (!$area || $area->getIdentifier()) {
-            return;
-        }
-
-        $area->setIdentifier(date('d/m/Y H:i:s'));
-        $this->pegassRepository->save($area);
-
-        foreach (Pegass::TTL as $type => $ttl) {
-            $count = $this->pegassRepository->countEntities($type);
-            $date  = (new DateTime())->sub(new DateInterval(sprintf('PT%dS', $ttl)));
-            $step  = intval(($ttl * 24 * 60 * 60) / $count);
-            $this->pegassRepository->foreach($type, function (Pegass $entity) use ($date, $step) {
-                $updateAt = new DateInterval(sprintf('PT%dS', $step));
-                $date->add($updateAt);
-
-                $this->debug($entity, 'Change updatedAt date', [
-                    'new-updated-at' => $date->format('d/m/Y H:i:s'),
-                ]);
-
-                $entity->setUpdatedAt($date);
-                $this->pegassRepository->save($entity);
-            });
-        }
     }
 
     /**
