@@ -151,7 +151,7 @@ class CommunicationController extends BaseController
 
         return $this->render('status_communication/index.html.twig', [
             'campaign'           => $campaign,
-            'skills'             => $this->badgeManager->getPublicBadges(),
+            'skills'             => $this->badgeManager->getPublicBadges($this->getPlatform()),
             'progress'           => $campaign->getCampaignProgression(),
             'hash'               => $this->campaignManager->getHash($campaign->getId()),
             'campaignStructures' => $this->structureManager->getCampaignStructures($campaign),

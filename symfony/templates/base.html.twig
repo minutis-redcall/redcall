@@ -184,7 +184,7 @@
 
             {% if app.user|default(false) and (is_granted('ROLE_ADMIN') or app.user.structures.count) %}
 
-                <a href="{{ path('management_home') }}" class="btn btn-secondary">{{ 'management.home.link'|trans }}</a>
+                <a href="{{ path('management_home') }}" class="btn btn-secondary">{{ 'management.home.resources'|trans }}</a>
                 &nbsp;&nbsp;
 
             {% endif %}

@@ -4,6 +4,7 @@ namespace App\Form\Type;
 
 use App\Entity\Badge;
 use App\Manager\BadgeManager;
+use App\Security\Helper\Security;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\CallbackTransformer;
@@ -16,9 +17,15 @@ class BadgeSelectionType extends AbstractType
      */
     private $badgeManager;
 
-    public function __construct(BadgeManager $badgeManager)
+    /**
+     * @var Security
+     */
+    private $security;
+
+    public function __construct(BadgeManager $badgeManager, Security $security)
     {
         $this->badgeManager = $badgeManager;
+        $this->security     = $security;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -32,7 +39,7 @@ class BadgeSelectionType extends AbstractType
                 },
                 'expanded'      => true,
                 'multiple'      => true,
-                'query_builder' => $this->badgeManager->getPublicBadgesQueryBuilder(),
+                'query_builder' => $this->badgeManager->getPublicBadgesQueryBuilder($this->security->getPlatform()),
             ])
             ->add('invisible', BadgeWidgetType::class, [
                 'label'          => 'manage_volunteers.form.invisible_badges',

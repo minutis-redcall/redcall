@@ -68,8 +68,6 @@ class BadgeRepository extends BaseRepository
     public function getVolunteerCountInBadgeList(array $ids) : array
     {
         $rows = $this->createQueryBuilder('b')
-                     ->andWhere('b.platform = :platform')
-                     ->setParameter('platform', $this->security->getPlatform())
                      ->select('b.id, COUNT(v) AS count')
                      ->join('b.volunteers', 'v')
                      ->andWhere('b.id IN (:ids)')

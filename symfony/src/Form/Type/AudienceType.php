@@ -7,6 +7,7 @@ use App\Manager\BadgeManager;
 use App\Manager\ExpirableManager;
 use App\Manager\StructureManager;
 use App\Manager\VolunteerManager;
+use App\Security\Helper\Security;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -17,7 +18,6 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Form\FormView;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Security\Core\Security;
 
 class AudienceType extends AbstractType
 {
@@ -190,7 +190,7 @@ class AudienceType extends AbstractType
         $this->buildStructureView($view);
 
         // Badge view
-        $publicBadges                  = $this->badgeManager->getPublicBadges();
+        $publicBadges                  = $this->badgeManager->getPublicBadges($this->security->getPlatform());
         $view->vars['badges_public']   = $publicBadges;
         $view->vars['badges_searched'] = [];
         if ($ids = $form->get('badges_searched')->getData()) {

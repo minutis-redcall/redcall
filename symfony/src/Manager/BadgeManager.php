@@ -79,15 +79,15 @@ class BadgeManager
         return $this->badgeRepository->getVolunteerCountInBadgeList($ids);
     }
 
-    public function getPublicBadgesQueryBuilder() : QueryBuilder
+    public function getPublicBadgesQueryBuilder(string $platform) : QueryBuilder
     {
-        return $this->badgeRepository->getPublicBadgesQueryBuilder();
+        return $this->badgeRepository->getPublicBadgesQueryBuilder($platform);
     }
 
-    public function getPublicBadges() : array
+    public function getPublicBadges(string $platform) : array
     {
         return $this
-            ->getPublicBadgesQueryBuilder()
+            ->getPublicBadgesQueryBuilder($platform)
             ->getQuery()
             ->getResult();
     }
