@@ -38,24 +38,19 @@ class BadgeManager
         $this->badgeRepository->save($badge);
     }
 
-    public function getSearchInPublicBadgesQueryBuilder(?string $criteria, bool $onlyEnabled)
+    public function getSearchInBadgesQueryBuilder(string $platform, ?string $criteria, bool $onlyEnabled)
     {
-        return $this->badgeRepository->getSearchInBadgesQueryBuilder($criteria, $onlyEnabled);
+        return $this->badgeRepository->getSearchInBadgesQueryBuilder($platform, $criteria, $onlyEnabled);
     }
 
-    public function search(?string $criteria, int $limit = 0) : array
+    public function searchForCompletion(string $platform, ?string $criteria, int $limit = 0) : array
     {
-        return $this->badgeRepository->search($criteria, $limit);
+        return $this->badgeRepository->searchForCompletion($platform, $criteria, $limit);
     }
 
-    public function searchForCompletion(?string $criteria, int $limit = 0) : array
+    public function searchNonVisibleUsableBadge(string $platform, ?string $criteria, int $limit = 0) : array
     {
-        return $this->badgeRepository->searchForCompletion($criteria, $limit);
-    }
-
-    public function searchNonVisibleUsableBadge(?string $criteria, int $limit = 0) : array
-    {
-        return $this->badgeRepository->searchNonVisibleUsableBadge($criteria, $limit);
+        return $this->badgeRepository->searchNonVisibleUsableBadge($platform, $criteria, $limit);
     }
 
     public function getNonVisibleUsableBadgesList(array $ids)
@@ -97,8 +92,8 @@ class BadgeManager
             ->getResult();
     }
 
-    public function getBadgesInCategoryQueryBuilder(Category $category) : QueryBuilder
+    public function getBadgesInCategoryQueryBuilder(string $platform, Category $category) : QueryBuilder
     {
-        return $this->badgeRepository->getBadgesInCategoryQueryBuilder($category);
+        return $this->badgeRepository->getBadgesInCategoryQueryBuilder($platform, $category);
     }
 }

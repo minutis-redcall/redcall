@@ -87,6 +87,7 @@ class AudienceController extends BaseController
     public function searchBadge(Request $request)
     {
         $badges = $this->badgeManager->searchNonVisibleUsableBadge(
+            $this->getPlatform(),
             $request->get('keyword'),
             20
         );

@@ -50,7 +50,8 @@ class BadgeController extends BaseController
         $searchForm = $this->createSearchForm($request);
 
         $badges = $this->paginationManager->getPager(
-            $this->badgeManager->getSearchInPublicBadgesQueryBuilder(
+            $this->badgeManager->getSearchInBadgesQueryBuilder(
+                $this->getPlatform(),
                 $searchForm->get('criteria')->getData(),
                 $searchForm->get('only_enabled')->getData()
             )

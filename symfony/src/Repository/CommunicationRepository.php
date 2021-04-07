@@ -57,20 +57,19 @@ class CommunicationRepository extends BaseRepository
 
     public function getCommunicationStructures(Communication $communication) : array
     {
-        $rows = $this->createQueryBuilder('c')
-                     ->select('s.id, COUNT(DISTINCT v) AS volunteer_count')
-                     ->join('c.messages', 'm')
-                     ->join('m.volunteer', 'v')
-                     ->join('v.structures', 's')
-                     ->where('c.id = :communication_id')
-                     ->setParameter('communication_id', $communication->getId())
-                     ->andWhere('s.enabled = true')
-                     ->andWhere('s.platform = :platform')
-                     ->setParameter('platform', $this->security->getPlatform())
-                     ->orderBy('volunteer_count', 'DESC')
-                     ->groupBy('s.id')
-                     ->getQuery()
-                     ->getArrayResult();
+        $rows = $this
+            ->createQueryBuilder('c')
+            ->select('s.id, COUNT(DISTINCT v) AS volunteer_count')
+            ->join('c.messages', 'm')
+            ->join('m.volunteer', 'v')
+            ->join('v.structures', 's')
+            ->where('c.id = :communication_id')
+            ->setParameter('communication_id', $communication->getId())
+            ->andWhere('s.enabled = true')
+            ->orderBy('volunteer_count', 'DESC')
+            ->groupBy('s.id')
+            ->getQuery()
+            ->getArrayResult();
 
         return array_column($rows, 'id');
     }

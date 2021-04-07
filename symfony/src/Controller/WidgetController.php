@@ -244,7 +244,7 @@ class WidgetController extends BaseController
     {
         $criteria = trim($request->query->get('keyword'));
 
-        $badges = $this->badgeManager->searchForCompletion($criteria, 20);
+        $badges = $this->badgeManager->searchForCompletion($this->getPlatform(), $criteria, 20);
 
         $results = [];
         foreach ($badges as $badge) {
