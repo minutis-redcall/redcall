@@ -34,14 +34,14 @@ class StructureManager
         return $this->structureRepository->find($id);
     }
 
-    public function findOneByName(string $name) : ?Structure
+    public function findOneByName(string $platform, string $name) : ?Structure
     {
-        return $this->structureRepository->findOneByName($name);
+        return $this->structureRepository->findOneByName($platform, $name);
     }
 
-    public function findOneByExternalId(string $externalId) : ?Structure
+    public function findOneByExternalId(string $platform, string $externalId) : ?Structure
     {
-        return $this->structureRepository->findOneByExternalId($externalId);
+        return $this->structureRepository->findOneByExternalId($platform, $externalId);
     }
 
     public function save(Structure $structure)
@@ -49,29 +49,30 @@ class StructureManager
         $this->structureRepository->save($structure);
     }
 
-    public function findCallableStructuresForVolunteer(Volunteer $volunteer) : array
+    public function findCallableStructuresForVolunteer(string $platform, Volunteer $volunteer) : array
     {
-        return $this->structureRepository->findCallableStructuresForVolunteer($volunteer);
+        return $this->structureRepository->findCallableStructuresForVolunteer($platform, $volunteer);
     }
 
-    public function findCallableStructuresForStructure(Structure $structure) : array
+    public function findCallableStructuresForStructure(string $platform, Structure $structure) : array
     {
-        return $this->structureRepository->findCallableStructuresForStructure($structure);
+        return $this->structureRepository->findCallableStructuresForStructure($platform, $structure);
     }
 
-    public function searchAllQueryBuilder(?string $criteria, bool $enabled) : QueryBuilder
+    public function searchAllQueryBuilder(string $platform, ?string $criteria, bool $enabled) : QueryBuilder
     {
-        return $this->structureRepository->searchAllQueryBuilder($criteria, $enabled);
+        return $this->structureRepository->searchAllQueryBuilder($platform, $criteria, $enabled);
     }
 
-    public function searchAll(?string $criteria, int $maxResults) : array
+    public function searchAll(string $platform, ?string $criteria, int $maxResults) : array
     {
-        return $this->structureRepository->searchAll($criteria, $maxResults);
+        return $this->structureRepository->searchAll($platform, $criteria, $maxResults);
     }
 
     public function searchForCurrentUserQueryBuilder(?string $criteria, bool $enabled) : QueryBuilder
     {
         return $this->structureRepository->searchForUserQueryBuilder(
+            $this->security->getPlatform(),
             $this->security->getUser(),
             $criteria,
             $enabled
@@ -83,16 +84,16 @@ class StructureManager
         $this->structureRepository->synchronizeWithPegass();
     }
 
-    public function getStructuresQueryBuilderForUser(User $user) : QueryBuilder
+    public function getStructuresQueryBuilderForUser(string $platform, User $user) : QueryBuilder
     {
-        return $this->structureRepository->searchForUserQueryBuilder($user, null);
+        return $this->structureRepository->searchForUserQueryBuilder($platform, $user, null);
     }
 
-    public function getStructuresForUser(User $user) : array
+    public function getStructuresForUser(string $platform, User $user) : array
     {
         $entities = $this
             ->structureRepository
-            ->searchForUserQueryBuilder($user, null)
+            ->searchForUserQueryBuilder($platform, $user, null)
             ->getQuery()
             ->getResult();
 
@@ -108,18 +109,19 @@ class StructureManager
     public function getStructureHierarchyForCurrentUser()
     {
         return $this->structureRepository->getStructureHierarchyForCurrentUser(
+            $this->security->getPlatform(),
             $this->security->getUser()
         );
     }
 
-    public function getCampaignStructures(Campaign $campaign) : array
+    public function getCampaignStructures(string $platform, Campaign $campaign) : array
     {
-        return $this->structureRepository->getCampaignStructures($campaign);
+        return $this->structureRepository->getCampaignStructures($platform, $campaign);
     }
 
-    public function countRedCallUsersQueryBuilder(QueryBuilder $queryBuilder) : QueryBuilder
+    public function countRedCallUsersQueryBuilder(string $platform, QueryBuilder $queryBuilder) : QueryBuilder
     {
-        return $this->structureRepository->countRedCallUsersQueryBuilder($queryBuilder);
+        return $this->structureRepository->countRedCallUsersQueryBuilder($platform, $queryBuilder);
     }
 
     public function countRedCallUsersInPager(Pagerfanta $pagerfanta) : array
@@ -132,14 +134,14 @@ class StructureManager
         return $counts;
     }
 
-    public function getVolunteerLocalCounts(array $structureIds) : array
+    public function getVolunteerLocalCounts(string $platform, array $structureIds) : array
     {
-        return $this->structureRepository->getVolunteerLocalCounts($structureIds);
+        return $this->structureRepository->getVolunteerLocalCounts($platform, $structureIds);
     }
 
-    public function getDescendantStructures(array $structureIds) : array
+    public function getDescendantStructures(string $platform, array $structureIds) : array
     {
-        return $this->structureRepository->getDescendantStructures($structureIds);
+        return $this->structureRepository->getDescendantStructures($platform, $structureIds);
     }
 }
 

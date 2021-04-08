@@ -150,7 +150,7 @@ class CommunicationManager
                 $communication->getVolunteer()->getDisplayName(),
                 $structureName,
                 count($communication->getMessages()),
-                count($this->structureManager->getCampaignStructures($campaign)),
+                count($this->structureManager->getCampaignStructures($campaign->getPlatform(), $campaign)),
                 PHP_EOL,
                 $campaign->getLabel(),
                 PHP_EOL,

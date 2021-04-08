@@ -83,7 +83,7 @@ class UserManager extends BaseUserManager
         $this->userRepository->save($user);
     }
 
-    public function updateNivol(User $user, string $nivol)
+    public function updateNivol(string $platform, User $user, string $nivol)
     {
         $volunteer = $this->volunteerManager->findOneByNivol($user->getPlatform(), $nivol);
 
@@ -104,15 +104,16 @@ class UserManager extends BaseUserManager
         $user->setNivol($nivol);
         $user->setVolunteer($volunteer);
 
-        $structures = $this->structureManager->findCallableStructuresForVolunteer($volunteer);
+        $structures = $this->structureManager->findCallableStructuresForVolunteer($platform, $volunteer);
         $user->updateStructures($structures);
 
         $this->save($user);
     }
 
-    public function getUserStructuresQueryBuilder(User $user) : QueryBuilder
+    public function getUserStructuresQueryBuilder(string $platform, User $user) : QueryBuilder
     {
         return $this->structureManager->getStructuresQueryBuilderForUser(
+            $platform,
             $user
         );
     }

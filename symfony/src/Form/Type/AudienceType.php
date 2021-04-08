@@ -256,7 +256,7 @@ class AudienceType extends AbstractType
             $children
         );
         $information = [];
-        foreach ($this->structureManager->getVolunteerLocalCounts($ids) as $entry) {
+        foreach ($this->structureManager->getVolunteerLocalCounts($this->security->getPlatform(), $ids) as $entry) {
             $information[$entry['id']] = [
                 'name'         => $entry['name'],
                 'local_count'  => intval($entry['count']),

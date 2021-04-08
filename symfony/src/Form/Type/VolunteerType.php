@@ -5,6 +5,7 @@ namespace App\Form\Type;
 use App\Entity\Structure;
 use App\Entity\Volunteer;
 use App\Repository\StructureRepository;
+use App\Security\Helper\Security;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\CallbackTransformer;
@@ -16,7 +17,6 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Validator\Constraints\GreaterThan;
 
 class VolunteerType extends AbstractType
@@ -111,7 +111,7 @@ class VolunteerType extends AbstractType
                         'label'         => 'manage_volunteers.form.structures',
                         'class'         => Structure::class,
                         'query_builder' => function (StructureRepository $er) use ($currentUser) {
-                            return $er->getStructuresForUserQueryBuilder($currentUser);
+                            return $er->getStructuresForUserQueryBuilder($this->security->getPlatform(), $currentUser);
                         },
                         'choice_label'  => function (Structure $structure) {
                             return $structure->getName();

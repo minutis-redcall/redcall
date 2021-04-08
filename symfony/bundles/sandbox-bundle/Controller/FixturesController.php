@@ -48,6 +48,7 @@ class FixturesController extends BaseController
         $structure = $this->getStructureForm($request);
         if ($structure->isSubmitted() && $structure->isValid()) {
             $this->fixturesManager->createStructure(
+                $this->getPlatform(),
                 $structure->get('name')->getData(),
                 $structure->get('parent')->getData(),
                 $structure->get('number_volunteers')->getData(),

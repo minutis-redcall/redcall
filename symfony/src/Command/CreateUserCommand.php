@@ -96,7 +96,7 @@ class CreateUserCommand extends BaseCommand
             $user->setIsTrusted(true);
             $this->userManager->save($user);
 
-            $this->userManager->updateNivol($user, $nivol);
+            $this->userManager->updateNivol($platform, $user, $nivol);
 
             $output->writeln(sprintf('OK %s: user created', $nivol));
         }

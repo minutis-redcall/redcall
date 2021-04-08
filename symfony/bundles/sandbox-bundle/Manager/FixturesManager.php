@@ -58,9 +58,13 @@ class FixturesManager
         $this->security         = $security;
     }
 
-    public function createStructure(string $name, ?int $parent, int $numberOfVolunteers, bool $bindToUser) : Structure
+    public function createStructure(string $platform,
+        string $name,
+        ?int $parent,
+        int $numberOfVolunteers,
+        bool $bindToUser) : Structure
     {
-        if ($structure = $this->structureManager->findOneByName($name)) {
+        if ($structure = $this->structureManager->findOneByName($platform, $name)) {
             return $structure;
         }
 

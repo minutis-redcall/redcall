@@ -93,14 +93,14 @@ class StructuresController extends BaseController
         }
 
         if ($this->isGranted('ROLE_ADMIN')) {
-            $queryBuilder = $this->structureManager->searchAllQueryBuilder($criteria, $enabled);
+            $queryBuilder = $this->structureManager->searchAllQueryBuilder($this->getPlatform(), $criteria, $enabled);
         } else {
             $queryBuilder = $this->structureManager->searchForCurrentUserQueryBuilder($criteria, $enabled);
         }
 
         $redcallUsers = $this->structureManager->countRedCallUsersInPager(
             $this->paginationManager->getPager(
-                $this->structureManager->countRedCallUsersQueryBuilder($queryBuilder)
+                $this->structureManager->countRedCallUsersQueryBuilder($this->getPlatform(), $queryBuilder)
             )
         );
 

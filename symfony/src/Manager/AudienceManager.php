@@ -5,7 +5,7 @@ namespace App\Manager;
 use App\Entity\Badge;
 use App\Entity\Volunteer;
 use App\Model\Classification;
-use Symfony\Component\Security\Core\Security;
+use App\Security\Helper\Security;
 
 class AudienceManager
 {
@@ -186,7 +186,7 @@ class AudienceManager
         if ($data['structures_global']) {
             $structureIds = array_merge(
                 $structureIds,
-                $this->structureManager->getDescendantStructures($data['structures_global'])
+                $this->structureManager->getDescendantStructures($this->security->getPlatform(), $data['structures_global'])
             );
         }
 
