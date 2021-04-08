@@ -634,7 +634,7 @@ manage_volunteers:
 management:
   current_structures: 'You are currently able to trigger the following structures:'
   home:
-    link: 'Workforce Management'
+    resources: 'Resources Management'
   support_email: 'If there is a mistake, please contact support team at %email%'
   update_structures: 'Update structures'
 message:

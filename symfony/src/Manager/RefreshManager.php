@@ -152,7 +152,7 @@ class RefreshManager
             return;
         }
 
-        $structure = $this->structureManager->findOneByExternalId($pegass->getIdentifier());
+        $structure = $this->structureManager->findOneByExternalId(Platform::FR, $pegass->getIdentifier());
 
         if ($structure && $structure->isLocked()) {
             return;
@@ -193,13 +193,13 @@ class RefreshManager
             ]);
 
             if ($parentId = $pegass->evaluate('structure.parent.id')) {
-                $structure = $this->structureManager->findOneByExternalId($pegass->getIdentifier());
+                $structure = $this->structureManager->findOneByExternalId(Platform::FR, $pegass->getIdentifier());
 
                 if ($structure->getParentStructure() && $parentId === $structure->getParentStructure()->getExternalId()) {
                     return;
                 }
 
-                if ($parent = $this->structureManager->findOneByExternalId($parentId)) {
+                if ($parent = $this->structureManager->findOneByExternalId(Platform::FR, $parentId)) {
                     if (!in_array($structure, $parent->getAncestors())) {
                         $structure->setParentStructure($parent);
                         $this->structureManager->save($structure);
@@ -250,7 +250,7 @@ class RefreshManager
         // Update structures based on where volunteer was found while crawling structures
         $structureIdsVolunteerBelongsTo = [];
         foreach (array_filter(explode('|', $pegass->getParentIdentifier())) as $identifier) {
-            if ($structure = $this->structureManager->findOneByExternalId($identifier)) {
+            if ($structure = $this->structureManager->findOneByExternalId(Platform::FR, $identifier)) {
                 $volunteer->addStructure($structure);
                 $structureIdsVolunteerBelongsTo[] = $structure->getId();
             }
@@ -260,7 +260,7 @@ class RefreshManager
         $identifiers = [];
         foreach ($pegass->evaluate('actions') ?? [] as $action) {
             if (isset($action['structure']['id']) && !in_array($action['structure']['id'], $identifiers)) {
-                if ($structure = $this->structureManager->findOneByExternalId($action['structure']['id'])) {
+                if ($structure = $this->structureManager->findOneByExternalId(Platform::FR, $action['structure']['id'])) {
                     $volunteer->addStructure($structure);
                     $structureIdsVolunteerBelongsTo[] = $structure->getId();
                 }
@@ -276,7 +276,7 @@ class RefreshManager
             // If volunteer is bound to a RedCall user, update its structures
             $user = $this->userManager->findOneByNivol($volunteer->getNivol());
             if ($user) {
-                $this->userManager->updateNivol($user, $volunteer->getNivol());
+                $this->userManager->updateNivol(Platform::FR, $user, $volunteer->getNivol());
             }
 
             return;
@@ -359,7 +359,7 @@ class RefreshManager
         // If volunteer is bound to a RedCall user, update its structures
         $user = $this->userManager->findOneByNivol($volunteer->getNivol());
         if ($user) {
-            $this->userManager->updateNivol($user, $volunteer->getNivol());
+            $this->userManager->updateNivol(Platform::FR, $user, $volunteer->getNivol());
         }
     }
 

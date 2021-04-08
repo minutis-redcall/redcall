@@ -634,7 +634,7 @@ manage_volunteers:
 management:
   current_structures: 'Vous pouvez actuellement déclencher les structures suivantes :'
   home:
-    link: 'Gestion des effectifs'
+    resources: 'Gestion des ressources'
   support_email: 'Si cette information est erronée, merci de contacter l''équipe à %email%'
   update_structures: 'Modifier les structures'
 message:

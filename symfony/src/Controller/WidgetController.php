@@ -211,7 +211,7 @@ class WidgetController extends BaseController
         $criteria = trim($request->query->get('keyword'));
 
         if ($searchAll) {
-            $structures = $this->structureManager->searchAll($criteria, 20);
+            $structures = $this->structureManager->searchAll($this->getPlatform(), $criteria, 20);
         } else {
             $structures = $this->structureManager->searchForCurrentUser($criteria, 20);
         }
@@ -244,7 +244,7 @@ class WidgetController extends BaseController
     {
         $criteria = trim($request->query->get('keyword'));
 
-        $badges = $this->badgeManager->searchForCompletion($criteria, 20);
+        $badges = $this->badgeManager->searchForCompletion($this->getPlatform(), $criteria, 20);
 
         $results = [];
         foreach ($badges as $badge) {

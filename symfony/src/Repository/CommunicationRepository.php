@@ -4,7 +4,6 @@ namespace App\Repository;
 
 use App\Base\BaseRepository;
 use App\Entity\Communication;
-use App\Security\Helper\Security;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -15,16 +14,9 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class CommunicationRepository extends BaseRepository
 {
-    /**
-     * @var Security
-     */
-    private $security;
-
-    public function __construct(ManagerRegistry $registry, Security $security)
+    public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Communication::class);
-
-        $this->security = $security;
     }
 
     /**
@@ -57,20 +49,19 @@ class CommunicationRepository extends BaseRepository
 
     public function getCommunicationStructures(Communication $communication) : array
     {
-        $rows = $this->createQueryBuilder('c')
-                     ->select('s.id, COUNT(DISTINCT v) AS volunteer_count')
-                     ->join('c.messages', 'm')
-                     ->join('m.volunteer', 'v')
-                     ->join('v.structures', 's')
-                     ->where('c.id = :communication_id')
-                     ->setParameter('communication_id', $communication->getId())
-                     ->andWhere('s.enabled = true')
-                     ->andWhere('s.platform = :platform')
-                     ->setParameter('platform', $this->security->getPlatform())
-                     ->orderBy('volunteer_count', 'DESC')
-                     ->groupBy('s.id')
-                     ->getQuery()
-                     ->getArrayResult();
+        $rows = $this
+            ->createQueryBuilder('c')
+            ->select('s.id, COUNT(DISTINCT v) AS volunteer_count')
+            ->join('c.messages', 'm')
+            ->join('m.volunteer', 'v')
+            ->join('v.structures', 's')
+            ->where('c.id = :communication_id')
+            ->setParameter('communication_id', $communication->getId())
+            ->andWhere('s.enabled = true')
+            ->orderBy('volunteer_count', 'DESC')
+            ->groupBy('s.id')
+            ->getQuery()
+            ->getArrayResult();
 
         return array_column($rows, 'id');
     }

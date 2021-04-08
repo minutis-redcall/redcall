@@ -58,9 +58,13 @@ class FixturesManager
         $this->security         = $security;
     }
 
-    public function createStructure(string $name, ?int $parent, int $numberOfVolunteers, bool $bindToUser) : Structure
+    public function createStructure(string $platform,
+        string $name,
+        ?int $parent,
+        int $numberOfVolunteers,
+        bool $bindToUser) : Structure
     {
-        if ($structure = $this->structureManager->findOneByName($name)) {
+        if ($structure = $this->structureManager->findOneByName($platform, $name)) {
             return $structure;
         }
 
@@ -87,7 +91,9 @@ class FixturesManager
 
     public function createVolunteers(int $numberOfVolunteers, ?int $structureId) : array
     {
-        $badges = $this->badgeManager->getPublicBadges();
+        $badges = $this->badgeManager->getPublicBadges(
+            $this->security->getPlatform()
+        );
 
         if ($structureId) {
             $structure = $this->structureManager->find($structureId);

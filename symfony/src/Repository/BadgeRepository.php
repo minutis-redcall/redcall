@@ -46,17 +46,13 @@ class BadgeRepository extends BaseRepository
         ]);
     }
 
-    public function getSearchInBadgesQueryBuilder(?string $criteria, bool $onlyEnabled = true) : QueryBuilder
+    public function getSearchInBadgesQueryBuilder(string $platform,
+        ?string $criteria,
+        bool $onlyEnabled = true) : QueryBuilder
     {
-        $qb = $this->createQueryBuilder('b')
+        $qb = $this->getBadgesQueryBuilder()
                    ->andWhere('b.platform = :platform')
-                   ->setParameter('platform', $this->security->getPlatform())
-                   ->leftJoin('b.category', 'c')
-                   ->addOrderBy('b.visibility', 'DESC')
-                   ->addOrderBy('b.synonym', 'ASC')
-                   ->addOrderBy('(1000 - c.priority) * 1000 + 1000 - b.renderingPriority', 'DESC')
-                   ->addOrderBy('b.name', 'ASC')
-                   ->groupBy('b.id');
+                   ->setParameter('platform', $platform);
 
         if ($criteria) {
             $this->addSearchCriteria($qb, $criteria);
@@ -72,8 +68,6 @@ class BadgeRepository extends BaseRepository
     public function getVolunteerCountInBadgeList(array $ids) : array
     {
         $rows = $this->createQueryBuilder('b')
-                     ->andWhere('b.platform = :platform')
-                     ->setParameter('platform', $this->security->getPlatform())
                      ->select('b.id, COUNT(v) AS count')
                      ->join('b.volunteers', 'v')
                      ->andWhere('b.id IN (:ids)')
@@ -90,17 +84,9 @@ class BadgeRepository extends BaseRepository
         return $counts;
     }
 
-    public function search(?string $criteria, int $limit) : array
+    public function searchForCompletion(string $platform, ?string $criteria, int $limit) : array
     {
-        return $this->getSearchInBadgesQueryBuilder($criteria)
-                    ->setMaxResults($limit)
-                    ->getQuery()
-                    ->getResult();
-    }
-
-    public function searchForCompletion(?string $criteria, int $limit) : array
-    {
-        return $this->getSearchInBadgesQueryBuilder($criteria)
+        return $this->getSearchInBadgesQueryBuilder($platform, $criteria)
                     ->andWhere('b.synonym IS NULL')
                     ->andWhere('b.enabled = true')
                     ->setMaxResults($limit)
@@ -108,9 +94,9 @@ class BadgeRepository extends BaseRepository
                     ->getResult();
     }
 
-    public function searchNonVisibleUsableBadge(?string $criteria, int $limit = 0) : array
+    public function searchNonVisibleUsableBadge(string $platform, ?string $criteria, int $limit = 0) : array
     {
-        return $this->getSearchInBadgesQueryBuilder($criteria)
+        return $this->getSearchInBadgesQueryBuilder($platform, $criteria)
                     ->andWhere('b.synonym IS NULL')
                     ->andWhere('b.visibility = false')
                     ->andWhere('b.enabled = true')
@@ -121,7 +107,7 @@ class BadgeRepository extends BaseRepository
 
     public function getNonVisibleUsableBadgesList(array $ids)
     {
-        return $this->getSearchInBadgesQueryBuilder(null)
+        return $this->getBadgesQueryBuilder()
                     ->andWhere('b.synonym IS NULL')
                     ->andWhere('b.visibility = false')
                     ->andWhere('b.enabled = true')
@@ -131,24 +117,36 @@ class BadgeRepository extends BaseRepository
                     ->getResult();
     }
 
-    public function getPublicBadgesQueryBuilder() : QueryBuilder
+    public function getPublicBadgesQueryBuilder(string $platform) : QueryBuilder
     {
-        return $this->getSearchInBadgesQueryBuilder(null)
+        return $this->getSearchInBadgesQueryBuilder($platform, null)
                     ->andWhere('b.visibility = true')
                     ->andWhere('b.enabled = true');
     }
 
-    public function getBadgesInCategoryQueryBuilder(Category $category) : QueryBuilder
+    public function getBadgesInCategoryQueryBuilder(string $platform, Category $category) : QueryBuilder
     {
         return $this->createQueryBuilder('b')
                     ->andWhere('b.platform = :platform')
-                    ->setParameter('platform', $this->security->getPlatform())
+                    ->setParameter('platform', $platform)
                     ->andWhere('b.enabled = true')
                     ->andWhere('b.visibility = true')
                     ->andWhere('b.synonym IS NULL')
                     ->join('b.category', 'c')
                     ->andWhere('c.id = :category')
                     ->setParameter('category', $category);
+    }
+
+    private function getBadgesQueryBuilder() : QueryBuilder
+    {
+        return $this
+            ->createQueryBuilder('b')
+            ->leftJoin('b.category', 'c')
+            ->addOrderBy('b.visibility', 'DESC')
+            ->addOrderBy('b.synonym', 'ASC')
+            ->addOrderBy('(1000 - c.priority) * 1000 + 1000 - b.renderingPriority', 'DESC')
+            ->addOrderBy('b.name', 'ASC')
+            ->groupBy('b.id');
     }
 
     private function addSearchCriteria(QueryBuilder $qb, string $criteria)

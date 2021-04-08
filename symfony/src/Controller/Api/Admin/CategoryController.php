@@ -212,7 +212,7 @@ class CategoryController extends BaseController
      */
     public function badgeRecords(Category $category, PageFilterFacade $page)
     {
-        $qb = $this->badgeManager->getBadgesInCategoryQueryBuilder($category);
+        $qb = $this->badgeManager->getBadgesInCategoryQueryBuilder($this->getPlatform(), $category);
 
         return new QueryBuilderFacade($qb, $page->getPage(), function (Badge $badge) {
             return $this->badgeTransformer->expose($badge);

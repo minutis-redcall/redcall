@@ -186,7 +186,7 @@ class PegassController extends BaseController
         return $this->render('admin/pegass/structures.html.twig', [
             'user'       => $user,
             'form'       => $form->createView(),
-            'structures' => $this->structureManager->getStructuresForUser($user),
+            'structures' => $this->structureManager->getStructuresForUser($this->getPlatform(), $user),
         ]);
     }
 
@@ -208,7 +208,7 @@ class PegassController extends BaseController
             throw $this->createNotFoundException();
         }
 
-        $structures = $this->structureManager->findCallableStructuresForStructure($parentStructure);
+        $structures = $this->structureManager->findCallableStructuresForStructure($this->getPlatform(), $parentStructure);
         foreach ($structures as $structure) {
             $user->addStructure($structure);
         }

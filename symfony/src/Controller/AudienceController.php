@@ -87,6 +87,7 @@ class AudienceController extends BaseController
     public function searchBadge(Request $request)
     {
         $badges = $this->badgeManager->searchNonVisibleUsableBadge(
+            $this->getPlatform(),
             $request->get('keyword'),
             20
         );
@@ -112,7 +113,9 @@ class AudienceController extends BaseController
         if ('false' !== $request->get('badge_counts', true)) {
             $badgeCounts = $this->audienceManager->extractBadgeCounts(
                 $data,
-                $this->badgeManager->getPublicBadges()
+                $this->badgeManager->getPublicBadges(
+                    $this->getPlatform()
+                )
             );
 
             $response['badge_counts'] = $badgeCounts;
