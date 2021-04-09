@@ -29,10 +29,13 @@ class ChangePasswordType extends AbstractType
                 'required'        => true,
                 'first_options'   => [
                     'label'       => 'password_login.change_password.password',
-                    'constraints' => new Constraints\Length([
-                        'min' => 8,
-                        'max' => 4096,
-                    ]),
+                    'constraints' => [
+                        new Constraints\Length([
+                            'min' => 8,
+                            'max' => 4096,
+                        ]),
+                        new Constraints\NotCompromisedPassword(),
+                    ],
                 ],
                 'second_options'  => ['label' => 'password_login.change_password.repeat_password'],
             ])

@@ -642,16 +642,16 @@
         },
         {
             "name": "doctrine/doctrine-bundle",
-            "version": "2.3.0",
+            "version": "2.3.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/DoctrineBundle.git",
-                "reference": "8b922578bdee2243a26202b13df795e170efaef8"
+                "reference": "a08bc3b4d8567cdff05e89b272ba1e06e9d71c21"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/DoctrineBundle/zipball/8b922578bdee2243a26202b13df795e170efaef8",
-                "reference": "8b922578bdee2243a26202b13df795e170efaef8",
+                "url": "https://api.github.com/repos/doctrine/DoctrineBundle/zipball/a08bc3b4d8567cdff05e89b272ba1e06e9d71c21",
+                "reference": "a08bc3b4d8567cdff05e89b272ba1e06e9d71c21",
                 "shasum": ""
             },
             "require": {
@@ -663,7 +663,7 @@
                 "symfony/config": "^4.3.3|^5.0",
                 "symfony/console": "^3.4.30|^4.3.3|^5.0",
                 "symfony/dependency-injection": "^4.3.3|^5.0",
-                "symfony/doctrine-bridge": "^4.3.7|^5.0",
+                "symfony/doctrine-bridge": "^4.4.7|^5.0",
                 "symfony/framework-bundle": "^3.4.30|^4.3.3|^5.0",
                 "symfony/service-contracts": "^1.1.1|^2.0"
             },
@@ -676,25 +676,25 @@
                 "doctrine/orm": "^2.6",
                 "friendsofphp/proxy-manager-lts": "^1.0",
                 "phpunit/phpunit": "^7.5 || ^8.0 || ^9.3",
-                "symfony/phpunit-bridge": "^4.2",
+                "psalm/plugin-phpunit": "^0.15.1",
+                "psalm/plugin-symfony": "^2.2.4",
+                "symfony/phpunit-bridge": "^5.2",
                 "symfony/property-info": "^4.3.3|^5.0",
                 "symfony/proxy-manager-bridge": "^3.4|^4.3.3|^5.0",
+                "symfony/security-bundle": "^4.4|5.0",
                 "symfony/twig-bridge": "^3.4.30|^4.3.3|^5.0",
                 "symfony/validator": "^3.4.30|^4.3.3|^5.0",
                 "symfony/web-profiler-bundle": "^3.4.30|^4.3.3|^5.0",
                 "symfony/yaml": "^3.4.30|^4.3.3|^5.0",
-                "twig/twig": "^1.34|^2.12|^3.0"
+                "twig/twig": "^1.34|^2.12|^3.0",
+                "vimeo/psalm": "^4.7"
             },
             "suggest": {
                 "doctrine/orm": "The Doctrine ORM integration is optional in the bundle.",
+                "ext-pdo": "*",
                 "symfony/web-profiler-bundle": "To use the data collector."
             },
             "type": "symfony-bundle",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "2.3.x-dev"
-                }
-            },
             "autoload": {
                 "psr-4": {
                     "Doctrine\\Bundle\\DoctrineBundle\\": ""
@@ -732,7 +732,7 @@
             ],
             "support": {
                 "issues": "https://github.com/doctrine/DoctrineBundle/issues",
-                "source": "https://github.com/doctrine/DoctrineBundle/tree/2.3.0"
+                "source": "https://github.com/doctrine/DoctrineBundle/tree/2.3.1"
             },
             "funding": [
                 {
@@ -748,7 +748,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2021-03-16T16:24:04+00:00"
+            "time": "2021-04-05T14:21:02+00:00"
         },
         {
             "name": "doctrine/doctrine-migrations-bundle",
@@ -1276,16 +1276,16 @@
         },
         {
             "name": "doctrine/orm",
-            "version": "2.8.3",
+            "version": "2.8.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/orm.git",
-                "reference": "657a30f8ceef2a78c2ff36a9fe6c6a6717c1c448"
+                "reference": "a588555ecd837b8d7e89355d9a13902e54d529c7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/orm/zipball/657a30f8ceef2a78c2ff36a9fe6c6a6717c1c448",
-                "reference": "657a30f8ceef2a78c2ff36a9fe6c6a6717c1c448",
+                "url": "https://api.github.com/repos/doctrine/orm/zipball/a588555ecd837b8d7e89355d9a13902e54d529c7",
+                "reference": "a588555ecd837b8d7e89355d9a13902e54d529c7",
                 "shasum": ""
             },
             "require": {
@@ -1357,9 +1357,9 @@
             ],
             "support": {
                 "issues": "https://github.com/doctrine/orm/issues",
-                "source": "https://github.com/doctrine/orm/tree/2.8.3"
+                "source": "https://github.com/doctrine/orm/tree/2.8.4"
             },
-            "time": "2021-04-01T21:16:53+00:00"
+            "time": "2021-04-05T18:38:36+00:00"
         },
         {
             "name": "doctrine/persistence",
@@ -1994,16 +1994,16 @@
         },
         {
             "name": "giggsey/libphonenumber-for-php",
-            "version": "8.12.20",
+            "version": "8.12.21",
             "source": {
                 "type": "git",
                 "url": "https://github.com/giggsey/libphonenumber-for-php.git",
-                "reference": "743585979ef96f2be123518c0a58083cf678bd47"
+                "reference": "272b8123ba7f1b7975620c6389e7206281b4a3ce"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/giggsey/libphonenumber-for-php/zipball/743585979ef96f2be123518c0a58083cf678bd47",
-                "reference": "743585979ef96f2be123518c0a58083cf678bd47",
+                "url": "https://api.github.com/repos/giggsey/libphonenumber-for-php/zipball/272b8123ba7f1b7975620c6389e7206281b4a3ce",
+                "reference": "272b8123ba7f1b7975620c6389e7206281b4a3ce",
                 "shasum": ""
             },
             "require": {
@@ -2063,7 +2063,7 @@
                 "issues": "https://github.com/giggsey/libphonenumber-for-php/issues",
                 "source": "https://github.com/giggsey/libphonenumber-for-php"
             },
-            "time": "2021-03-17T11:05:55+00:00"
+            "time": "2021-04-06T08:37:32+00:00"
         },
         {
             "name": "giggsey/locale",
@@ -2189,7 +2189,7 @@
         },
         {
             "name": "google/apiclient-services",
-            "version": "v0.166.0",
+            "version": "v0.167.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/googleapis/google-api-php-client-services.git",
@@ -2224,7 +2224,7 @@
             ],
             "support": {
                 "issues": "https://github.com/googleapis/google-api-php-client-services/issues",
-                "source": "https://github.com/googleapis/google-api-php-client-services/tree/v0.166.0"
+                "source": "https://github.com/googleapis/google-api-php-client-services/tree/v0.167.0"
             },
             "time": "2021-03-22T11:26:04+00:00"
         },
@@ -2707,16 +2707,16 @@
         },
         {
             "name": "google/protobuf",
-            "version": "v3.15.7",
+            "version": "v3.15.8",
             "source": {
                 "type": "git",
                 "url": "https://github.com/protocolbuffers/protobuf-php.git",
-                "reference": "96b613b0de4a96ef423404ea893b19e7e2cfe474"
+                "reference": "cae7735e67acf738881c02ca12604cc4a7ad2e5a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/protocolbuffers/protobuf-php/zipball/96b613b0de4a96ef423404ea893b19e7e2cfe474",
-                "reference": "96b613b0de4a96ef423404ea893b19e7e2cfe474",
+                "url": "https://api.github.com/repos/protocolbuffers/protobuf-php/zipball/cae7735e67acf738881c02ca12604cc4a7ad2e5a",
+                "reference": "cae7735e67acf738881c02ca12604cc4a7ad2e5a",
                 "shasum": ""
             },
             "require": {
@@ -2746,9 +2746,9 @@
             ],
             "support": {
                 "issues": "https://github.com/protocolbuffers/protobuf-php/issues",
-                "source": "https://github.com/protocolbuffers/protobuf-php/tree/v3.15.7"
+                "source": "https://github.com/protocolbuffers/protobuf-php/tree/v3.15.8"
             },
-            "time": "2021-04-02T21:19:22+00:00"
+            "time": "2021-04-08T17:17:35+00:00"
         },
         {
             "name": "google/recaptcha",
@@ -10761,16 +10761,16 @@
         },
         {
             "name": "twilio/sdk",
-            "version": "6.20.0",
+            "version": "6.21.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twilio/twilio-php.git",
-                "reference": "7494b78da4f5af5b761dd7b4fd9bbe52bd746f55"
+                "reference": "bccca0cf5d853c29cbc8b676558e249b0132404f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twilio/twilio-php/zipball/7494b78da4f5af5b761dd7b4fd9bbe52bd746f55",
-                "reference": "7494b78da4f5af5b761dd7b4fd9bbe52bd746f55",
+                "url": "https://api.github.com/repos/twilio/twilio-php/zipball/bccca0cf5d853c29cbc8b676558e249b0132404f",
+                "reference": "bccca0cf5d853c29cbc8b676558e249b0132404f",
                 "shasum": ""
             },
             "require": {
@@ -10809,9 +10809,9 @@
             ],
             "support": {
                 "issues": "https://github.com/twilio/twilio-php/issues",
-                "source": "https://github.com/twilio/twilio-php/tree/6.20.0"
+                "source": "https://github.com/twilio/twilio-php/tree/6.21.0"
             },
-            "time": "2021-03-24T21:42:05+00:00"
+            "time": "2021-04-07T19:07:34+00:00"
         },
         {
             "name": "webmozart/assert",

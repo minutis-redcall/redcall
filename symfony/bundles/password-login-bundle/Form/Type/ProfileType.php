@@ -15,6 +15,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\Validator\Constraints\UserPassword;
 use Symfony\Component\Validator\Constraints;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -86,15 +87,8 @@ class ProfileType extends AbstractType
                             'min' => 8,
                             'max' => 4096,
                         ]),
-                        new Constraints\Callback([
-                            'callback' => function ($object, ExecutionContextInterface $context, $payload) {
-                                if (!$this->encoder->isPasswordValid($this->getUser(), $object)) {
-                                    $context
-                                        ->buildViolation($this->translator->trans('password_login.profile.invalid_current_password'))
-                                        ->atPath('current_password')
-                                        ->addViolation();
-                                }
-                            },
+                        new UserPassword([
+                            'message' => $this->translator->trans('password_login.profile.invalid_current_password'),
                         ]),
                     ],
                     'mapped'      => false,
@@ -132,10 +126,13 @@ class ProfileType extends AbstractType
                     'required'        => false,
                     'first_options'   => [
                         'label'       => 'password_login.profile.password',
-                        'constraints' => new Constraints\Length([
-                            'min' => 8,
-                            'max' => 4096,
-                        ]),
+                        'constraints' => [
+                            new Constraints\Length([
+                                'min' => 8,
+                                'max' => 4096,
+                            ]),
+                            new Constraints\NotCompromisedPassword(),
+                        ],
                     ],
                     'second_options'  => ['label' => 'password_login.register.repeat_password'],
                 ]);
