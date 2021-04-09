@@ -377,19 +377,24 @@ class Communication
      */
     public function getChoiceByCode(?string $prefix, string $code) : ?Choice
     {
+        // Direct answer (used the word instead of the code)
+        foreach ($this->getChoices() as $choice) {
+            if (mb_strtolower($code) === mb_strtolower($choice->getLabel())) {
+                return $choice;
+            }
+        }
+
         if (!$prefix) {
             return null;
         }
 
-        $code = preg_replace('/([a-zA-Z]+)\s*(\d)/', '$1$2', $code);
+        $code = preg_replace('/([a-z]+)\s*(\d)/ui', '$1$2', $code);
 
         $codes = explode(' ', trim($code));
         foreach ($codes as $code) {
-
             $matches = [];
             preg_match('/^([a-zA-Z]+)(\d)/', $code, $matches);
             if (3 === count($matches)) {
-
                 // Invalid prefix: do not take any choice
                 $codePrefix = strtoupper($matches[1]);
                 if ($prefix !== $codePrefix) {
@@ -740,12 +745,12 @@ class Communication
         return $this;
     }
 
-    public function getLanguage(): ?string
+    public function getLanguage() : ?string
     {
         return $this->language;
     }
 
-    public function setLanguage(string $language): self
+    public function setLanguage(string $language) : self
     {
         $this->language = $language;
 
