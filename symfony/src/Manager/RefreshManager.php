@@ -243,8 +243,7 @@ class RefreshManager
             $volunteer->setPlatform(Platform::FR);
         }
 
-        $volunteer->setIdentifier($pegass->getIdentifier());
-        $volunteer->setNivol(ltrim($pegass->getIdentifier(), '0'));
+        $volunteer->setExternalId(ltrim($pegass->getIdentifier(), '0'));
         $volunteer->setReport([]);
 
         // Update structures based on where volunteer was found while crawling structures

@@ -149,6 +149,10 @@ class PegassManager
      */
     public function getEntity(string $type, string $identifier, bool $onlyEnabled = true) : ?Pegass
     {
+        if (Pegass::TYPE_VOLUNTEER === $type) {
+            $identifier = str_pad($identifier, 13, '0', STR_PAD_LEFT);
+        }
+
         return $this->pegassRepository->getEntity($type, $identifier, $onlyEnabled);
     }
 

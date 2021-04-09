@@ -52,7 +52,7 @@
                                                         <div class="col-md-5">
                                                             #{{ volunteer.nivol }}
                                                             /
-                                                            <a target="_blank" href="{{ gaia|replace({'%nivol%': volunteer.identifier}) }}">{{ 'audience.classification.resolve.details.gaia'|trans }}</a>
+                                                            <a target="_blank" href="{{ gaia|replace({'%nivol%': volunteer.externalId}) }}">{{ 'audience.classification.resolve.details.gaia'|trans }}</a>
                                                             <br/>
                                                             {% if volunteer.email %}
                                                                 {% if not volunteer.emailOptin %}<strike>{% endif %}

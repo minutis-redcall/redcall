@@ -223,7 +223,7 @@ class VolunteerRepository extends BaseRepository
         $qb = $this->createQueryBuilder('v');
 
         $sub = $this->_em->createQueryBuilder()
-                         ->select('p.identifier')
+                         ->select('TRIM(LEADING \'0\' FROM p.identifier)')
                          ->from(Pegass::class, 'p')
                          ->where('p.type = :type')
                          ->andWhere('p.enabled = :enabled');
@@ -235,7 +235,7 @@ class VolunteerRepository extends BaseRepository
         $qb
             ->update()
             ->set('v.enabled', ':enabled')
-            ->where($qb->expr()->in('v.identifier', $sub->getDQL()))
+            ->where($qb->expr()->in('v.externalId', $sub->getDQL()))
             ->andWhere('v.platform = :platform')
             ->setParameter('platform', Platform::FR)
             ->getQuery()
@@ -267,14 +267,6 @@ class VolunteerRepository extends BaseRepository
                             ->getArrayResult();
 
         return array_diff($volunteerIds, array_column($accessibles, 'id'));
-    }
-
-    public function createAcessibleNivolsFilterQueryBuilder(array $nivols, User $user) : QueryBuilder
-    {
-        return $this->createAccessibleVolunteersQueryBuilder($user)
-                    ->select('v.nivol')
-                    ->andWhere("TRIM(LEADING '0' FROM v.nivol) IN (:nivols)")
-                    ->setParameter('nivols', $nivols, Connection::PARAM_STR_ARRAY);
     }
 
     public function filterInvalidNivols(array $nivols) : array
