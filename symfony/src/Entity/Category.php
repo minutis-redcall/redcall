@@ -141,9 +141,20 @@ class Category
     /**
      * @return Collection|Badge[]
      */
-    public function getBadges() : Collection
+    public function getBadges(bool $onlyEnabled = true) : Collection
     {
+        if ($onlyEnabled) {
+            return $this->getEnabledBadges();
+        }
+
         return $this->badges;
+    }
+
+    public function getEnabledBadges()
+    {
+        return $this->badges->filter(function (Badge $badge) {
+            return $badge->isEnabled();
+        });
     }
 
     public function addBadge(Badge $badge) : self

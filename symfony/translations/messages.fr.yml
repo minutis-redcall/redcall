@@ -295,6 +295,9 @@ campaign:
   cannot_reopen: 'Impossible de réouvrir le déclenchement : depuis sa fermeure, un ou plusieurs bénévoles ont été déclenchés et le préfixe associé à leur réponse a été réuilisé.'
   errors:
     inactive: 'Ce déclenchement est terminé, merci pour votre participation.'
+  no_structures:
+    description: 'Votre compte RedCall n''est pour le moment pas rattaché a une structure, merci de nous contacter afin de pouvoir utiliser la plateforme.'
+    title: 'Vous ne pouvez pas encore alerter de bénévoles.'
   order:
     created_at: 'Date de création'
     label: Intitulé
@@ -320,9 +323,6 @@ campaign:
     2_light_orange: 'Préparation (UL)'
     3_dark_orange: 'Préparation (DT)'
     4_red: Engagement
-  no_structures:
-    description: 'Votre compte RedCall n''est pour le moment pas rattaché a une structure, merci de nous contacter afin de pouvoir utiliser la plateforme.'
-    title: 'Vous ne pouvez pas encore alerter de bénévoles.'
 campaign_status:
   answer: 'Réponses libres'
   answer_history: 'Historique de vos réponsess'
@@ -634,6 +634,7 @@ manage_volunteers:
 management:
   current_structures: 'Vous pouvez actuellement déclencher les structures suivantes :'
   home:
+    link: 'Gestion des effectifs'
     resources: 'Gestion des ressources'
   support_email: 'Si cette information est erronée, merci de contacter l''équipe à %email%'
   update_structures: 'Modifier les structures'

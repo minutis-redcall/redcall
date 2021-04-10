@@ -51,8 +51,10 @@
                                                         </div>
                                                         <div class="col-md-5">
                                                             #{{ volunteer.nivol }}
-                                                            /
-                                                            <a target="_blank" href="{{ gaia|replace({'%nivol%': volunteer.externalId}) }}">{{ 'audience.classification.resolve.details.gaia'|trans }}</a>
+                                                            {% if constant('\\App\\Enum\\Platform::FR') == volunteer.platform %}
+                                                                /
+                                                                <a target="_blank" href="{{ gaia|replace({'%nivol%': volunteer.externalId}) }}">{{ 'audience.classification.resolve.details.gaia'|trans }}</a>
+                                                            {% endif %}
                                                             <br/>
                                                             {% if volunteer.email %}
                                                                 {% if not volunteer.emailOptin %}<strike>{% endif %}

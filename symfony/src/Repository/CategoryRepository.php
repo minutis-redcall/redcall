@@ -3,7 +3,6 @@
 namespace App\Repository;
 
 use App\Base\BaseRepository;
-use App\Entity\Badge;
 use App\Entity\Category;
 use App\Security\Helper\Security;
 use Doctrine\ORM\QueryBuilder;
@@ -28,7 +27,7 @@ class CategoryRepository extends BaseRepository
         parent::__construct($registry, Category::class);
     }
 
-    public function findOneByExternalIdAndCurrentPlatform(string $externalId) : ?Badge
+    public function findOneByExternalIdAndCurrentPlatform(string $externalId) : ?Category
     {
         return $this->findOneBy([
             'platform'   => $this->security->getPlatform(),
