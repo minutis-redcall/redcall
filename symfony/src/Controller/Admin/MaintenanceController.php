@@ -218,7 +218,7 @@ class MaintenanceController extends BaseController
             throw $this->createNotFoundException();
         }
 
-        $entity = $this->pegassManager->getEntity(Pegass::TYPE_VOLUNTEER, $volunteer->getIdentifier());
+        $entity = $this->pegassManager->getEntity(Pegass::TYPE_VOLUNTEER, $volunteer->getExternalId());
         if (!$entity) {
             throw $this->createNotFoundException();
         }

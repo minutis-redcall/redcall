@@ -175,7 +175,7 @@ class VolunteersController extends BaseController
         }
 
         // Just in case Pegass database would contain some RCE?
-        if (!preg_match('/^[a-zA-Z0-9]+$/', $volunteer->getIdentifier())) {
+        if (!preg_match('/^[a-zA-Z0-9]+$/', $volunteer->getExternalId())) {
             return $this->redirectToRoute('management_volunteers_list', $request->query->all());
         }
 
@@ -185,7 +185,7 @@ class VolunteersController extends BaseController
 
         // Executing asynchronous task to prevent against interruptions
         $console = sprintf('%s/bin/console', $this->kernel->getProjectDir());
-        $command = sprintf('%s pegass --volunteer %s', escapeshellarg($console), $volunteer->getIdentifier());
+        $command = sprintf('%s pegass --volunteer %s', escapeshellarg($console), $volunteer->getExternalId());
         exec(sprintf('%s > /dev/null 2>&1 & echo -n \$!', $command));
 
         return $this->redirectToRoute('management_volunteers_list', $request->query->all());
@@ -283,7 +283,7 @@ class VolunteersController extends BaseController
     {
         $volunteer = new Volunteer();
         $volunteer->setPlatform($this->getPlatform());
-        $volunteer->setIdentifier(Uuid::uuid4());
+        $volunteer->setExternalId(Uuid::uuid4());
 
         return $this->manualUpdateAction($request, $volunteer);
     }
@@ -298,7 +298,7 @@ class VolunteersController extends BaseController
             throw $this->createNotFoundException();
         }
 
-        $entity = $this->pegassManager->getEntity(Pegass::TYPE_VOLUNTEER, $volunteer->getIdentifier(), false);
+        $entity = $this->pegassManager->getEntity(Pegass::TYPE_VOLUNTEER, $volunteer->getExternalId(), false);
         if (!$entity) {
             throw $this->createNotFoundException();
         }

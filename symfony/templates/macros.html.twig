@@ -138,7 +138,7 @@
                 {% else %}
                     👤
                 {% endif %}
-                {% if not clickable and is_granted('ROLE_ADMIN') and volunteer.identifier %}
+                {% if not clickable and is_granted('ROLE_ADMIN') and constant('\\App\\Enum\\Platform::FR') == app.user.platform %}
                     <a href="{{ path('management_volunteers_pegass', {id: volunteer.id}) }}" target="_blank">
                         🛠
                     </a>
@@ -179,7 +179,7 @@
                     <br/>
                 {% endif %}
 
-                {% if is_granted('ROLE_ADMIN') and volunteer.identifier %}
+                {% if is_granted('ROLE_ADMIN') and constant('\\App\\Enum\\Platform::FR') == app.user.platform %}
                     <div>
                         <a href="{{ path('management_volunteers_pegass', {id: volunteer.id}) }}" target="_blank">
                             🛠 {{ 'admin.pegass.open'|trans }}

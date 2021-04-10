@@ -76,10 +76,13 @@ class RegistrationType extends AbstractType
                 'required'        => true,
                 'first_options'   => [
                     'label'       => 'password_login.register.password',
-                    'constraints' => new Constraints\Length([
-                        'min' => 8,
-                        'max' => 4096,
-                    ]),
+                    'constraints' => [
+                        new Constraints\Length([
+                            'min' => 8,
+                            'max' => 4096,
+                        ]),
+                        new Constraints\NotCompromisedPassword(),
+                    ],
                 ],
                 'second_options'  => ['label' => 'password_login.register.repeat_password'],
             ]);

@@ -127,7 +127,7 @@ class FixturesManager
         $volunteer->setPlatform($platform);
         $volunteer->setNivol($nivol);
         $volunteer->setEnabled(true);
-        $volunteer->setIdentifier($nivol);
+        $volunteer->setExternalId($nivol);
         $volunteer->setLocked(true);
         $volunteer->setMinor(false);
 

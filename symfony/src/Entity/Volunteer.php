@@ -16,7 +16,7 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 /**
  * @ORM\Table(
  *     uniqueConstraints={
- *         @ORM\UniqueConstraint(name="pf_extid_idx", columns={"platform", "identifier"})
+ *         @ORM\UniqueConstraint(name="pf_extid_idx", columns={"platform", "external_id"})
  *     },
  *     indexes={
  *         @ORM\Index(name="nivolx", columns={"nivol"}),
@@ -51,9 +51,11 @@ class Volunteer
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=80, nullable=true)
+     * @ORM\Column(type="string", length=64)
+     * @Assert\NotBlank
+     * @Assert\Length(max="64")
      */
-    private $identifier;
+    private $externalId;
 
     /**
      * @var string
@@ -233,14 +235,14 @@ class Volunteer
         return $this;
     }
 
-    public function getIdentifier() : ?string
+    public function getExternalId() : string
     {
-        return $this->identifier;
+        return $this->externalId;
     }
 
-    public function setIdentifier(string $identifier) : self
+    public function setExternalId(string $externalId) : Volunteer
     {
-        $this->identifier = $identifier;
+        $this->externalId = $externalId;
 
         return $this;
     }

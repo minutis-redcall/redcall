@@ -31,6 +31,7 @@ cat deploy/${ENV}/dotenv | grep -v DATABASE_URL > symfony/.env
     if [[ "${GREENLIGHT}" != "0" ]]
     then
       echo "A communication has recently been triggered, cannot deploy before ${GREENLIGHT} seconds"
+      cd ..
       cp deploying/.env symfony/.env
       rm -r deploying
       exit 1
