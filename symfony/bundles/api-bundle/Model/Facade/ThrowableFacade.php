@@ -25,7 +25,7 @@ class ThrowableFacade implements FacadeInterface
     /**
      * The exception stack trace in development environment.
      *
-     * @var string
+     * @var array
      */
     private $trace;
 
@@ -40,7 +40,7 @@ class ThrowableFacade implements FacadeInterface
     {
         $this->type    = get_class($throwable);
         $this->message = $throwable->getMessage();
-        $this->trace   = $throwable->getTraceAsString();
+        $this->trace   = explode(PHP_EOL, $throwable->getTraceAsString());
 
         if ($throwable->getPrevious()) {
             $this->previous = new self($throwable->getPrevious());
@@ -66,7 +66,7 @@ class ThrowableFacade implements FacadeInterface
         return $this->message;
     }
 
-    public function getTrace() : string
+    public function getTrace() : array
     {
         return $this->trace;
     }
