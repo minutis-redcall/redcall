@@ -1,1 +1,13 @@
-{  }
+message:
+  call:
+    announcement: '%brand% a las %hours% horas %mins%.'
+    answer: 'Respondiste: "%choice%". Gracias por su participación. '
+    choices: 'Para responder "%answer%", escriba %code%. '
+    repeat: 'Para volver a escuchar el mensaje, escriba 0. '
+    unknown: 'Respuesta invalida.'
+  email:
+    how_to_answer_free: 'Puede responder libremente a este mensaje haciendo clic <a href="%url%">aquí</a>.'
+  sms:
+    geo_location: 'Geolocalización de tu equipo: %url%'
+    how_to_answer_multiple: 'Responde con los códigos de tu elección separados por un espacio'
+    how_to_answer_simple: 'Responde con el código de tu elección'

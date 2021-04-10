@@ -295,6 +295,9 @@ campaign:
   cannot_reopen: 'Impossible to reopen the campaign: since it was closed, one or several volunteers were triggered and prefix used for their answers was reused.'
   errors:
     inactive: 'This campaign has ended, thank you for your participation.'
+  no_structures:
+    description: 'Your RedCall account is not bound to any structures, please contact us in order to use the platform.'
+    title: 'You cannot trigger any structures yet.s'
   order:
     created_at: 'Creation date'
     label: Label
@@ -320,9 +323,6 @@ campaign:
     2_light_orange: 'Preparation (UL)'
     3_dark_orange: 'Preparation (DT)'
     4_red: Engagement
-  no_structures:
-    description: 'Your RedCall account is not bound to any structures, please contact us in order to use the platform.'
-    title: 'You cannot trigger any structures yet.s'
 campaign_status:
   answer: Responses
   answer_history: 'Replies history'
@@ -634,6 +634,7 @@ manage_volunteers:
 management:
   current_structures: 'You are currently able to trigger the following structures:'
   home:
+    link: 'Workforce Management'
     resources: 'Resources Management'
   support_email: 'If there is a mistake, please contact support team at %email%'
   update_structures: 'Update structures'
