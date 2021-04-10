@@ -190,7 +190,7 @@ class MessageFormatter
         }
 
         $contentParts[] = $this->translator->trans('message.call.announcement', [
-            '%brand%' => mb_strtoupper($language->getBrand()),
+            '%brand%' => $language->getBrand(),
             '%hours%' => $hours,
             '%mins%'  => $mins,
         ], null, $language->getLocale());
