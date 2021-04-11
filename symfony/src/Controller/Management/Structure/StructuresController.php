@@ -8,9 +8,11 @@ use App\Entity\Structure;
 use App\Entity\Volunteer;
 use App\Enum\Platform;
 use App\Form\Type\StructureType;
+use App\Manager\PlatformConfigManager;
 use App\Manager\StructureManager;
 use App\Manager\UserManager;
 use App\Model\Csrf;
+use App\Model\PlatformConfig;
 use Bundles\PaginationBundle\Manager\PaginationManager;
 use Bundles\PegassCrawlerBundle\Entity\Pegass;
 use Bundles\PegassCrawlerBundle\Manager\PegassManager;
@@ -55,6 +57,11 @@ class StructuresController extends BaseController
     private $userManager;
 
     /**
+     * @var PlatformConfigManager
+     */
+    private $platformManager;
+
+    /**
      * @var KernelInterface
      */
     private $kernel;
@@ -68,6 +75,7 @@ class StructuresController extends BaseController
         PaginationManager $paginationManager,
         PegassManager $pegassManager,
         UserManager $userManager,
+        PlatformConfigManager $platformManager,
         KernelInterface $kernel,
         TranslatorInterface $translator)
     {
@@ -75,6 +83,7 @@ class StructuresController extends BaseController
         $this->paginationManager = $paginationManager;
         $this->pegassManager     = $pegassManager;
         $this->userManager       = $userManager;
+        $this->platformManager   = $platformManager;
         $this->kernel            = $kernel;
         $this->translator        = $translator;
     }
@@ -104,11 +113,17 @@ class StructuresController extends BaseController
             )
         );
 
+        $platforms = null;
+        if ($this->getUser()->isRoot()) {
+            $platforms = $this->platformManager->getAvailablePlatforms();
+        }
+
         return $this->render('management/structures/list.html.twig', [
             'search'       => $search->createView(),
             'structures'   => $this->paginationManager->getPager($queryBuilder),
             'redcallUsers' => $redcallUsers,
             'enabled'      => $enabled,
+            'platforms'    => $platforms,
         ]);
     }
 
@@ -250,12 +265,7 @@ class StructuresController extends BaseController
 
         $this->structureManager->save($structure);
 
-        return [
-            'structure'    => $structure,
-            'redcallUsers' => [
-                $structure->getId() => count($structure->getUsers()),
-            ],
-        ];
+        return $this->getContext($structure);
     }
 
     /**
@@ -270,7 +280,32 @@ class StructuresController extends BaseController
 
         $this->structureManager->save($structure);
 
+        return $this->getContext($structure);
+    }
+
+    /**
+     * @Route(name="update_platform", path="/change-platform/{csrf}/{id}/{platform}")
+     * @IsGranted("ROLE_ROOT")
+     * @IsGranted("STRUCTURE", subject="structure")
+     */
+    public function changePlatform(Structure $structure, Csrf $csrf, PlatformConfig $platform)
+    {
+        $structure->setPlatform($platform);
+
+        $this->structureManager->save($structure);
+
+        return $this->redirectToRoute('management_structures_list');
+    }
+
+    private function getContext(Structure $structure)
+    {
+        $platforms = null;
+        if ($this->getUser()->isRoot()) {
+            $platforms = $this->platformManager->getAvailablePlatforms();
+        }
+
         return [
+            'platforms'    => $platforms,
             'structure'    => $structure,
             'redcallUsers' => [
                 $structure->getId() => count($structure->getUsers()),

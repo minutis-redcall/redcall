@@ -16,9 +16,11 @@ use App\Manager\AnswerManager;
 use App\Manager\CampaignManager;
 use App\Manager\CommunicationManager;
 use App\Manager\PhoneManager;
+use App\Manager\PlatformConfigManager;
 use App\Manager\StructureManager;
 use App\Manager\VolunteerManager;
 use App\Model\Csrf;
+use App\Model\PlatformConfig;
 use Bundles\PaginationBundle\Manager\PaginationManager;
 use Bundles\PegassCrawlerBundle\Entity\Pegass;
 use Bundles\PegassCrawlerBundle\Manager\PegassManager;
@@ -88,6 +90,11 @@ class VolunteersController extends BaseController
     private $paginationManager;
 
     /**
+     * @var PlatformConfigManager
+     */
+    private $platformManager;
+
+    /**
      * @var KernelInterface
      */
     private $kernel;
@@ -110,6 +117,7 @@ class VolunteersController extends BaseController
         PhoneManager $phoneManager,
         AnswerManager $answerManager,
         PaginationManager $paginationManager,
+        PlatformConfigManager $platformConfigManager,
         KernelInterface $kernel,
         TranslatorInterface $translator,
         Environment $templating)
@@ -122,6 +130,7 @@ class VolunteersController extends BaseController
         $this->phoneManager         = $phoneManager;
         $this->answerManager        = $answerManager;
         $this->paginationManager    = $paginationManager;
+        $this->platformManager      = $platformConfigManager;
         $this->kernel               = $kernel;
         $this->translator           = $translator;
         $this->templating           = $templating;
@@ -151,10 +160,16 @@ class VolunteersController extends BaseController
             $queryBuilder = $this->volunteerManager->searchForCurrentUserQueryBuilder($criteria, $hideDisabled, $filterUsers);
         }
 
+        $platforms = null;
+        if ($this->getUser()->isRoot()) {
+            $platforms = $this->platformManager->getAvailablePlatforms();
+        }
+
         return $this->render('management/volunteers/list.html.twig', [
             'search'     => $search->createView(),
             'volunteers' => $this->paginationManager->getPager($queryBuilder),
             'structure'  => $structure,
+            'platforms'  => $platforms,
         ]);
     }
 
@@ -444,9 +459,7 @@ class VolunteersController extends BaseController
 
         $this->volunteerManager->save($volunteer);
 
-        return [
-            'volunteer' => $volunteer,
-        ];
+        return $this->getContext($volunteer);
     }
 
     /**
@@ -464,7 +477,32 @@ class VolunteersController extends BaseController
 
         $this->volunteerManager->save($volunteer);
 
+        return $this->getContext($volunteer);
+    }
+
+    /**
+     * @Route(name="update_platform", path="/change-platform/{csrf}/{id}/{platform}")
+     * @IsGranted("ROLE_ROOT")
+     * @IsGranted("VOLUNTEER", subject="volunteer")
+     */
+    public function changePlatform(Volunteer $volunteer, Csrf $csrf, PlatformConfig $platform)
+    {
+        $volunteer->setPlatform($platform);
+
+        $this->volunteerManager->save($volunteer);
+
+        return $this->redirectToRoute('management_volunteers_list');
+    }
+
+    private function getContext(Volunteer $volunteer)
+    {
+        $platforms = null;
+        if ($this->getUser()->isRoot()) {
+            $platforms = $this->platformManager->getAvailablePlatforms();
+        }
+
         return [
+            'platforms' => $platforms,
             'volunteer' => $volunteer,
         ];
     }

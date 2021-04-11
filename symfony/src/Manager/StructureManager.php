@@ -69,6 +69,14 @@ class StructureManager
         return $this->structureRepository->searchAll($platform, $criteria, $maxResults);
     }
 
+    public function searchForCurrentUser(?string $criteria, int $maxResults)
+    {
+        return $this
+            ->searchForCurrentUserQueryBuilder($criteria, $maxResults)
+            ->getQuery()
+            ->getResult();
+    }
+
     public function searchForCurrentUserQueryBuilder(?string $criteria, bool $enabled) : QueryBuilder
     {
         return $this->structureRepository->searchForUserQueryBuilder(
