@@ -80,7 +80,6 @@ admin:
   pegass:
     add_structure: 'Ajouter une structure'
     bound_volunteer: 'Bénévole associé : %name%'
-    change_platform_title: 'Changement de plateforme'
     create_user: 'Ajouter un nouvel utilisateur'
     delete_confirm: 'Vraiment supprimer "%email%" ?'
     delete_structures: 'Effacer une ou plusieurs structures'
@@ -104,7 +103,9 @@ admin:
     unlock: Dégeler
     unroot: 'Desactiver la gestion des pays'
     root: 'Activer la gestion des pays'
+  resources:
     change_platform: 'Transférer vers %platform%'
+    change_platform_title: 'Changement de plateforme'
   statistics:
     buttons:
       general: 'Statistiques générales'

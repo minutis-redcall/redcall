@@ -4,10 +4,13 @@ namespace App\Controller\Admin;
 
 use App\Base\BaseController;
 use App\Entity\Badge;
+use App\Entity\Structure;
 use App\Form\Type\BadgeWidgetType;
 use App\Form\Type\CategoryWigetType;
 use App\Manager\BadgeManager;
+use App\Manager\PlatformConfigManager;
 use App\Model\Csrf;
+use App\Model\PlatformConfig;
 use Bundles\PaginationBundle\Manager\PaginationManager;
 use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
@@ -35,10 +38,18 @@ class BadgeController extends BaseController
      */
     private $badgeManager;
 
-    public function __construct(PaginationManager $paginationManager, BadgeManager $badgeManager)
+    /**
+     * @var PlatformConfigManager
+     */
+    private $platformManager;
+
+    public function __construct(PaginationManager $paginationManager,
+        BadgeManager $badgeManager,
+        PlatformConfigManager $platformManager)
     {
         $this->paginationManager = $paginationManager;
         $this->badgeManager      = $badgeManager;
+        $this->platformManager   = $platformManager;
     }
 
     /**
@@ -57,10 +68,16 @@ class BadgeController extends BaseController
             )
         );
 
+        $platforms = null;
+        if ($this->getUser()->isRoot()) {
+            $platforms = $this->platformManager->getAvailablePlatforms();
+        }
+
         return [
-            'badges' => $badges,
-            'counts' => $this->badgeManager->getVolunteerCountInSearch($badges),
-            'search' => $searchForm->createView(),
+            'badges'    => $badges,
+            'counts'    => $this->badgeManager->getVolunteerCountInSearch($badges),
+            'search'    => $searchForm->createView(),
+            'platforms' => $platforms,
         ];
     }
 
@@ -151,14 +168,34 @@ class BadgeController extends BaseController
         return $this->getContext($badge);
     }
 
+    /**
+     * @Route(name="update_platform", path="/change-platform/{csrf}/{id}/{platform}")
+     * @IsGranted("ROLE_ROOT")
+     * @IsGranted("BADGE", subject="badge")
+     */
+    public function changePlatform(Badge $badge, Csrf $csrf, PlatformConfig $platform)
+    {
+        $badge->setPlatform($platform);
+
+        $this->badgeManager->save($badge);
+
+        return $this->redirectToRoute('admin_badge_index');
+    }
+
     private function getContext(Badge $badge)
     {
         $counts = $this->badgeManager->getVolunteerCountInBadgeList([$badge->getId()]);
         $count  = $counts ? reset($counts) : 0;
 
+        $platforms = null;
+        if ($this->getUser()->isRoot()) {
+            $platforms = $this->platformManager->getAvailablePlatforms();
+        }
+
         return [
-            'badge' => $badge,
-            'count' => $count,
+            'badge'     => $badge,
+            'count'     => $count,
+            'platforms' => $platforms,
         ];
     }
 

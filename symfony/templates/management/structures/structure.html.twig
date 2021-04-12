@@ -39,6 +39,19 @@
 
                         {% endif %}
 
+                        {% if app.user.root %}
+
+                            <div class="dropdown-divider"></div>
+
+                            <div class="dropdown-header">{{ 'admin.resources.change_platform_title'|trans }}</div>
+                            {% for platform in platforms %}
+                                <a class="dropdown-item {% if platform == structure.platform %}disabled{% else %}text-primary{% endif %}" href="{{ path('management_structures_update_platform', {id: structure.id, csrf: csrf_token('csrf'), platform: platform}) }}" {% if platform == structure.platform %}onclick="return false;"{% endif %}>
+                                    {{ 'admin.resources.change_platform'|trans({'%platform%': platform.flag ~ ' ' ~ platform.label}) }}
+                                </a>
+                            {% endfor %}
+
+                        {% endif %}
+
                         {% if is_granted('ROLE_ADMIN') %}
 
                             {% if structure.enabled %}
