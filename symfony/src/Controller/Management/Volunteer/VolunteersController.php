@@ -415,9 +415,13 @@ class VolunteersController extends BaseController
         if ($form->isSubmitted() && $form->isValid()) {
             $trigger = $this->deleteVolunteer($volunteer, $answer, $processor);
 
-            return $this->redirectToRoute('communication_index', [
-                'id' => $trigger->getId(),
-            ]);
+            if ($trigger) {
+                return $this->redirectToRoute('communication_index', [
+                    'id' => $trigger->getId(),
+                ]);
+            }
+
+            $this->addFlash('danger', 'manage_volunteers.anonymize.not_linked');
         }
 
         return [
@@ -509,10 +513,14 @@ class VolunteersController extends BaseController
 
     private function deleteVolunteer(Volunteer $volunteer,
         Answer $answer,
-        SimpleProcessor $processor) : \App\Entity\Campaign
+        SimpleProcessor $processor) : ?\App\Entity\Campaign
     {
         // Sending a message to the volunteer to let him know he is now removed
-        $sms      = new SmsTrigger();
+        $sms = new SmsTrigger();
+        $sms->setLanguage(
+            $this->platformManager->getLocale($volunteer->getPlatform())
+        );
+
         $campaign = new Campaign($sms);
 
         $campaign->label = $this->translator->trans('manage_volunteers.anonymize.campaign.title', [
@@ -529,8 +537,15 @@ class VolunteersController extends BaseController
 
         $trigger = $this->campaignManager->launchNewCampaign($campaign, $processor);
 
+        if (!$trigger) {
+            return null;
+        }
+
         // Sending a message inviting redcall users managing volunteer's structure to complete data deletion
         $email = new EmailTrigger();
+        $email->setLanguage(
+            $this->platformManager->getLocale($this->getPlatform())
+        );
 
         $audience = [];
         foreach ($volunteer->getStructures() as $structure) {

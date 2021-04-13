@@ -578,6 +578,7 @@ manage_volunteers:
     cancel: Cancel
     choose_answer: 'Choose the volunteer''s answer asking for his data deletion.'
     confirm: Confirm
+    not_linked: 'You cannot create any alerts because your account is not linked to any volunteer.'
     continue: 'Continue here'
     delete_button: 'Delete his/her data'
     details_1: 'In accordance with the Data Protection Act and General Data Protection Regulations (GDPR), volunteers have the right to access, modify, delete and object to the processing of their personal data.'

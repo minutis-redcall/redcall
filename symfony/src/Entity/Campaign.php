@@ -51,6 +51,8 @@ class Campaign
     private $id;
 
     /**
+     * @var string
+     *
      * @ORM\Column(type="string", length=5)
      */
     private $platform;
@@ -122,12 +124,12 @@ class Campaign
         return $this;
     }
 
-    public function getPlatform()
+    public function getPlatform() : string
     {
         return $this->platform;
     }
 
-    public function setPlatform($platform)
+    public function setPlatform(string $platform) : Campaign
     {
         $this->platform = $platform;
 
