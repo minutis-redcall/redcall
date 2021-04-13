@@ -578,6 +578,7 @@ manage_volunteers:
     cancel: Annuler
     choose_answer: 'Sélectionnez la réponse du bénévole demendant la suppression de ses données personnelles.'
     confirm: Confirmer
+    not_linked: 'Vous ne pouvez pas créer d''alerte car votre compte n''est relié à aucun bénévole.'
     continue: 'Continuez ici'
     delete_button: 'Supprimer ses données'
     details_1: 'Conformément à la Loi Informatique et Libertés et Règlement général sur la protection des données (RGPD), tout bénévole dispose d’un droit d’accès, de modification, de suppression et d’opposition au traitement de ses données à caractère personnel.'
