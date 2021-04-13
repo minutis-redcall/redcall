@@ -10,10 +10,7 @@ use Bundles\PegassCrawlerBundle\Service\PegassClient;
 use DateInterval;
 use DateTime;
 use Doctrine\Common\Persistence\Mapping\MappingException;
-use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\ORMException;
 use Doctrine\ORM\QueryBuilder;
-use Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
@@ -67,12 +64,6 @@ class PegassManager
         return $this->pegassRepository->getEnabledEntitiesQueryBuilder($type, $identifier);
     }
 
-    /**
-     * @param int  $limit
-     * @param bool $fromCache
-     *
-     * @throws Exception
-     */
     public function heat(int $limit, bool $fromCache = false)
     {
         $entity = null;
@@ -97,12 +88,6 @@ class PegassManager
         }
     }
 
-    /**
-     * @param Pegass $entity
-     * @param bool   $fromCache
-     *
-     * @throws Exception
-     */
     public function updateEntity(Pegass $entity, bool $fromCache)
     {
         // Just in case entity would not be managed anymore
@@ -126,31 +111,15 @@ class PegassManager
         $this->dispatchEvent($entity);
     }
 
-    /**
-     * @param string   $type
-     * @param callable $callback
-     * @param bool     $onlyEnabled
-     *
-     * @throws MappingException
-     * @throws ORMException
-     * @throws OptimisticLockException
-     */
     public function foreach(string $type, callable $callback, bool $onlyEnabled = true)
     {
         $this->pegassRepository->foreach($type, $callback, $onlyEnabled);
     }
 
-    /**
-     * @param string $type
-     * @param string $identifier
-     * @param bool   $onlyEnabled
-     *
-     * @return Pegass|null
-     */
     public function getEntity(string $type, string $identifier, bool $onlyEnabled = true) : ?Pegass
     {
         if (Pegass::TYPE_VOLUNTEER === $type) {
-            $identifier = str_pad($identifier, 13, '0', STR_PAD_LEFT);
+            $identifier = str_pad($identifier, 12, '0', STR_PAD_LEFT);
         }
 
         return $this->pegassRepository->getEntity($type, $identifier, $onlyEnabled);
@@ -193,9 +162,6 @@ class PegassManager
         }
     }
 
-    /**
-     * @throws Exception
-     */
     private function initialize()
     {
         // Add a sleep of 1 sec between every Pegass API calls
@@ -212,9 +178,6 @@ class PegassManager
         }
     }
 
-    /**
-     * @throws Exception
-     */
     private function updateArea(Pegass $entity, bool $fromCache)
     {
         if (!$fromCache) {
@@ -249,12 +212,6 @@ class PegassManager
         }
     }
 
-    /**
-     * @param Pegass $entity
-     * @param bool   $fromCache
-     *
-     * @throws Exception
-     */
     private function updateDepartment(Pegass $entity, bool $fromCache)
     {
         if (!$fromCache) {
@@ -301,12 +258,6 @@ class PegassManager
         }
     }
 
-    /**
-     * @param Pegass $entity
-     * @param bool   $fromCache
-     *
-     * @throws Exception
-     */
     private function updateStructure(Pegass $entity, bool $fromCache)
     {
         if (!$fromCache) {
@@ -366,12 +317,6 @@ class PegassManager
         }
     }
 
-    /**
-     * @param Pegass $entity
-     * @param bool   $fromCache
-     *
-     * @throws Exception
-     */
     private function updateVolunteer(Pegass $entity, bool $fromCache)
     {
         if (!$fromCache) {
@@ -388,9 +333,6 @@ class PegassManager
         $this->pegassRepository->save($entity);
     }
 
-    /**
-     * @param Pegass $entity
-     */
     private function debug(Pegass $entity, string $message, array $data = [])
     {
         $params = array_merge($data, [
@@ -405,9 +347,6 @@ class PegassManager
         echo sprintf('%s %s (%s)', date('d/m/Y H:i:s'), $message, json_encode($params)), PHP_EOL;
     }
 
-    /**
-     * @param Pegass $entity
-     */
     private function dispatchEvent(Pegass $entity)
     {
         switch ($entity->getType()) {

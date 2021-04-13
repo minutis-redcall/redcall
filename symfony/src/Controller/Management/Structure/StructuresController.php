@@ -197,7 +197,7 @@ class StructuresController extends BaseController
      * @Route(name="pegass", path="/pegass/{id}")
      * @IsGranted("ROLE_ADMIN")
      */
-    public function pegass(Structure $structure, Request $request)
+    public function pegass(Structure $structure)
     {
         if (Platform::FR !== $structure->getPlatform()) {
             throw $this->createNotFoundException();
@@ -211,6 +211,7 @@ class StructuresController extends BaseController
         return $this->render('management/structures/pegass.html.twig', [
             'structure' => $structure,
             'pegass'    => json_encode($entity->getContent(), JSON_PRETTY_PRINT),
+            'entity'    => $entity,
         ]);
     }
 

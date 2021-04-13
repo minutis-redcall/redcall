@@ -55,7 +55,7 @@ class PropertyReader
             $property->addType($type);
         }
 
-        $reflector   = new \ReflectionProperty($class, $propertyName);
+        $reflector   = $this->getProperty($class, $propertyName);
         $annotations = $this->annotationReader->getPropertyAnnotations($reflector);
         $docblock    = $this->docblockReader->read($reflector, $annotations);
 
@@ -81,9 +81,33 @@ class PropertyReader
     {
         $property = new PropertyDescription();
         $property->setName($propertyName);
-        $property->setCollection(true);
 
         return $property;
+    }
+
+    private function getProperty(string $class, string $propertyName) : \ReflectionProperty
+    {
+        // https://stackoverflow.com/a/30878285/731138
+        $properties = [];
+        try {
+            $rc = new \ReflectionClass($class);
+            do {
+                $rp = [];
+                /* @var $p \ReflectionProperty */
+                foreach ($rc->getProperties() as $p) {
+                    $p->setAccessible(true);
+                    $rp[$p->getName()] = $p;
+                }
+                $properties = array_merge($rp, $properties);
+            } while ($rc = $rc->getParentClass());
+        } catch (\ReflectionException $e) {
+        }
+
+        if (!array_key_exists($propertyName, $properties)) {
+            throw new \ReflectionException(sprintf('Property %s::$%s does not exist', $class, $propertyName));
+        }
+
+        return $properties[$propertyName];
     }
 
     private function toSnakeCase(string $propertyName) : string
