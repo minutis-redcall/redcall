@@ -311,6 +311,8 @@ class PegassManager
                         $volunteer->setParentIdentifier(
                             sprintf('%s%s|', $volunteer->getParentIdentifier(), $entity->getIdentifier())
                         );
+                        $this->updateVolunteer($volunteer, $fromCache);
+                        $this->dispatchEvent($volunteer);
                     }
                 }
             }
