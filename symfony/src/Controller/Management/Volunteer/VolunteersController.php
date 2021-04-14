@@ -309,10 +309,6 @@ class VolunteersController extends BaseController
      */
     public function pegass(Volunteer $volunteer)
     {
-        if ($volunteer->isLocked()) {
-            throw $this->createNotFoundException();
-        }
-
         $entity = $this->pegassManager->getEntity(Pegass::TYPE_VOLUNTEER, $volunteer->getExternalId(), false);
         if (!$entity) {
             throw $this->createNotFoundException();
@@ -321,6 +317,7 @@ class VolunteersController extends BaseController
         return $this->render('management/volunteers/pegass.html.twig', [
             'volunteer' => $volunteer,
             'pegass'    => json_encode($entity->getContent(), JSON_PRETTY_PRINT),
+            'entity'    => $entity,
         ]);
     }
 

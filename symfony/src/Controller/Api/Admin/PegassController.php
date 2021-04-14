@@ -4,9 +4,12 @@ namespace App\Controller\Api\Admin;
 
 use App\Facade\Admin\Pegass\PegassFacade;
 use App\Facade\Admin\Pegass\PegassFiltersFacade;
+use App\Facade\Admin\Pegass\PegassResourceFacade;
 use App\Transformer\Admin\PegassTransformer;
 use Bundles\ApiBundle\Annotation\Endpoint;
 use Bundles\ApiBundle\Annotation\Facade;
+use Bundles\ApiBundle\Model\Facade\Http\HttpNoContentFacade;
+use Bundles\ApiBundle\Model\Facade\Http\HttpNotFoundFacade;
 use Bundles\ApiBundle\Model\Facade\QueryBuilderFacade;
 use Bundles\PegassCrawlerBundle\Entity\Pegass;
 use Bundles\PegassCrawlerBundle\Manager\PegassManager;
@@ -44,7 +47,7 @@ class PegassController
      * Get Pegass records from RedCall cache.
      *
      * @Endpoint(
-     *   priority = 999,
+     *   priority = 990,
      *   request  = @Facade(class     = PegassFiltersFacade::class),
      *   response = @Facade(class     = QueryBuilderFacade::class,
      *                      decorates = @Facade(class = PegassFacade::class))
@@ -61,5 +64,28 @@ class PegassController
         return new QueryBuilderFacade($qb, $filters->getPage(), function (Pegass $pegass) {
             return $this->pegassTransformer->expose($pegass);
         });
+    }
+
+    /**
+     * Force refresh a resource ogainst the Pegass database
+     *
+     * @Endpoint(
+     *   priority = 991,
+     *   request = @Facade(class = PegassResourceFacade::class),
+     *   response = @Facade(class = HttpNoContentFacade::class)
+     * )
+     * @Route(path="/refresh", name="refresh", methods={"PUT"})
+     */
+    public function refresh(PegassResourceFacade $resource)
+    {
+        $entity = $this->pegassManager->getEntity($resource->getType(), $resource->getIdentifier());
+
+        if (!$entity) {
+            return new HttpNotFoundFacade();
+        }
+
+        $this->pegassManager->updateEntity($entity, false);
+
+        return new HttpNoContentFacade();
     }
 }

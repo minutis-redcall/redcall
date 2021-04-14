@@ -187,7 +187,7 @@ class StructuresController extends BaseController
 
         // Executing asynchronous task to prevent against interruptions
         $console = sprintf('%s/bin/console', $this->kernel->getProjectDir());
-        $command = sprintf('%s pegass --structure %s', escapeshellarg($console), $structure->getIdentifier());
+        $command = sprintf('%s pegass --structure %s', escapeshellarg($console), $structure->getExternalId());
         exec(sprintf('%s > /dev/null 2>&1 & echo -n \$!', $command));
 
         return $this->redirectToRoute('management_structures_list', $request->query->all());
@@ -197,7 +197,7 @@ class StructuresController extends BaseController
      * @Route(name="pegass", path="/pegass/{id}")
      * @IsGranted("ROLE_ADMIN")
      */
-    public function pegass(Structure $structure, Request $request)
+    public function pegass(Structure $structure)
     {
         if (Platform::FR !== $structure->getPlatform()) {
             throw $this->createNotFoundException();
@@ -211,6 +211,7 @@ class StructuresController extends BaseController
         return $this->render('management/structures/pegass.html.twig', [
             'structure' => $structure,
             'pegass'    => json_encode($entity->getContent(), JSON_PRETTY_PRINT),
+            'entity'    => $entity,
         ]);
     }
 
