@@ -269,16 +269,16 @@ class VolunteerRepository extends BaseRepository
         return array_diff($volunteerIds, array_column($accessibles, 'id'));
     }
 
-    public function filterInvalidNivols(array $nivols) : array
+    public function filterInvalidNivols(array $externalIds) : array
     {
         $valid = $this->createVolunteersQueryBuilder(false)
-                      ->select('v.nivol')
-                      ->andWhere('v.nivol IN (:nivols)')
-                      ->setParameter('nivols', $nivols)
+                      ->select('v.externalId')
+                      ->andWhere('v.externalId IN (:external_ids)')
+                      ->setParameter('external_ids', $externalIds)
                       ->getQuery()
                       ->getArrayResult();
 
-        return array_diff($nivols, array_map('mb_strtolower', array_column($valid, 'nivol')));
+        return array_diff(array_map('mb_strtolower', $externalIds), array_map('mb_strtolower', array_column($valid, 'externalId')));
     }
 
     public function getVolunteerList(array $volunteerIds, bool $onlyEnabled = true) : array
