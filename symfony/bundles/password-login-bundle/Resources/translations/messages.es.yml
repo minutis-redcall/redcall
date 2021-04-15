@@ -1,1 +1,121 @@
-{  }
+password_login:
+  change_password:
+    captcha: 'Por favor, marca la casilla de abajo'
+    password: 'Elige una nueva contraseña'
+    password_should_match: 'Las contraseñas introducidas no coinciden.'
+    repeat_password: 'Vuelve a introducirla'
+    submit: 'Cambiar la contraseña'
+    success: 'Se ha actualizado tu contraseña.'
+    title: 'Cambiar la contraseña'
+  connect:
+    captcha: 'Por favor, marca la casilla de abajo'
+    connect: 'Iniciar sesión'
+    email: 'Introduce tu email'
+    forgot_password: 'He olvidado mi contraseña.'
+    incorrect: 'El email o la contraseña que has introducido son incorrectos.'
+    no_account_yet: 'Aún no tengo cuenta.'
+    password: 'Introduce tu contraseña'
+    title: 'Conectarse a la plataforma'
+    who_am_i: '%username%'
+  error:
+    invalid_csrf:
+      body: 'Tu sesión ha caducado. Por favor, vuelve a intentarlo.'
+      title: 'Token CSRF no válido'
+  forgot_password:
+    captcha: 'Por favor, marca la casilla de abajo'
+    mail:
+      1: 'Hola,'
+      2: 'Has solicitado un restablecimiento de contraseña.'
+      3: 'Para ello, haz clic en el siguiente enlace:'
+      4: 'SI piensa que este mail a sido enviado por error, no lo tenga en cuenta.'
+      5: 'Buenos días,'
+      6: 'El equipo RedCall.'
+    remember: 'En realidad, ¡sí que recuerdo mi contraseña!'
+    reset_by_admin: 'Enviar un email de restablecimiento de contraseña'
+    sent: 'Si existe una cuenta con el email %email%, recibirás próximamente un email que contiene el enlace que te permitirá restablecer tu contraseña. Si tu buzón cuenta con una protección anti-spam, acuérdate de comprobar que el mensaje no haya sido bloqueado.'
+    sent_by_admin: 'Se ha enviado un email a %email%.'
+    subject: '☎️ Restablecimiento de contraseña'
+    submit: 'Solicitar un cambio de contraseña'
+    title: '¿Has olvidado tu contraseña?'
+    username: 'Introduce tu email para restablecer tu contraseña.'
+  logout:
+    button: 'Cerrar sesión'
+  not_trusted:
+    description: 'Contacte un administrador para que le autorice a utilizar la plataforma.'
+    title: '¡Tu cuenta no se ha activado!'
+  notice_administrators:
+    mail:
+      1: 'Hola,'
+      2: 'Acaba de inscribirse un nuevo usuario en la plataforma.'
+      3: 'No podrá acceder antes de que un administrador active su cuenta. Se trata del motivo de este mensaje.'
+      4: 'Atención: ¡es OBLIGATORIO que conozcas a esta persona antes de activarla!'
+      5: 'Estos son los datos introducidos por el usuario:'
+      6: 'Email: %email%'
+      7: 'Un saludo,'
+      8: 'El equipo RedCall.'
+    subject: '☎️ Nueva inscripción en redcall.io'
+  profile:
+    already_exists: 'Este email corresponde a otro usuario.'
+    button: 'Mi cuenta'
+    captcha: 'Por favor, marca la casilla de abajo'
+    current_password: 'Por motivos de seguridad, introduce tu contraseña actual'
+    email: 'Introduce tu nuevo email (o deja el antiguo si no quieres cambiarlo)'
+    email_by_admin: 'Introduce el nuevo email (o deja el anterior si no se debe cambiar)'
+    home: 'Volver a la página de inicio'
+    invalid_current_password: 'La contraseña que has introducido no es válida.'
+    logout: 'Has sido desconectado porque debes hacer clic en el enlace que te hemos enviado a tu nuevo email. Si tu buzón cuenta con protección anti-spam, acuérdate de comprobar que el mensaje no haya sido bloqueado.'
+    password: 'Introduce tu nueva contraseña (o deja el campo vacío si no deseas cambiarla)'
+    password_should_match: 'Las contraseñas introducidas no coinciden.'
+    repeat_password: 'Vuelve a introducir tu nueva contraseña'
+    saved: 'Se han guardado los cambios'
+    submit: 'Efectuar los cambios'
+    success: 'Se ha guardado tu perfil.'
+    title: 'Cambiar tus datos'
+  register:
+    already_exists: 'Este email ya existe en nuestra base de datos.'
+    already_have_account: '¿Tienes ya una cuenta?'
+    captcha: 'Para terminar, por favor marca la casilla de abajo'
+    email: 'Introduce tu email'
+    password: 'Elije una contraseña'
+    password_should_match: 'Las contraseñas introducidas no coinciden.'
+    please_connect: '¡Conéctate aquí!'
+    register: 'Confirmar mi inscripción'
+    repeat_password: 'Vuelve a introducirla'
+    success: '¡Te has registrado correctamente! Próximamente recibirás un email que te permirá completar tu inscripción. Si tu buzón tiene protección anti-spam, no olvides comprobar si el mensaje ha sido bloqueado.'
+    title: Inscripción
+  user_list:
+    admin: 'Otorgar privilegios de administrador'
+    button: 'Gestión de usuarios'
+    delete: Eliminar
+    description_admin: 'Un administrador puede autorizar nuevas inscripciones y configurar la plataforma.'
+    description_trusted: 'Cualquiera puede registrarse en la plataforma, pero sólo las personas autorizadas pueden acceder a las herramientas disponibles.'
+    description_verified: 'Durante su inscripción, cada usuario/a recibe un email de verificación. El email se considera válido a partir del momento en que la persona hace clic en el enlace del mensaje.'
+    edit_profile: 'Editar el perfil de %user%'
+    home: 'Volver a la página de inicio'
+    is_admin: Administrador/a
+    is_trusted: 'Usuario/a autorizado/a'
+    is_valid: 'Email verificado'
+    profile: 'Editar el perfil'
+    registered_at: 'Registrado/a desde el %date%'
+    search:
+      criteria: 'Buscar usuario/a'
+      submit: Buscar
+    title: 'Lista de usuarios/as'
+    trust: 'Activar el acceso a las herramientas'
+    unadmin: 'Retirar los privilegios de administrador'
+    untrust: 'Desactivar el acceso a las herramientas'
+    unverify: 'Invalidar el email de este/a usuario/a'
+    username: Email
+    verify: 'Validar el email de este/a usuario/a'
+  verify_email:
+    failure: 'Durante tu inscripción, se te envió un email que contenía un enlace: debes hacer clic en él para poder conectarte a la plataforma.'
+    mail:
+      1: Hola
+      2: 'Has solicitado la inscripción en nuestra plataforma.'
+      3: 'Has solicitado un cambio de email.'
+      4: 'Para continuar, haz clic en el siguiente enlace:'
+      5: 'Si piensas haber recibido este mensaje por error, por favor ignóralo.'
+      6: 'Un saludo,'
+      7: 'El equipo RedCall.'
+    subject: '☎️ Verificación de tu email'
+    success: 'Tu email ha sido verificado.'

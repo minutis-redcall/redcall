@@ -1,13 +1,838 @@
+admin:
+  answer_analysis:
+    search:
+      button: Buscar
+      details: 'Utiliza el botón RGPD para eliminar a la persona voluntaria enviándole un mensaje.'
+      label: 'Criterios de búsqueda en las respuestas de voluntarios/as'
+      title: 'Esta herramienta permite encontrar a las personas voluntarias que hayan respondido que ya no quieren ser molestadas.'
+    table:
+      date: Fecha
+      response: Respuesta
+      trigger: Movilización
+      volunteer: 'Persona voluntaria'
+    title: 'Analizar las respuestas'
+  badge:
+    action:
+      disable: 'Desactivar la insignia'
+      disable_confirm: '¿Seguro que quieres desactivar esta insignia?'
+      enable: 'Activar la credencial'
+      invisible: 'Sacar del formulario de movilización'
+      title: Acciones
+      visible: 'Añadir en el formulario de movilización'
+    covered_by: 'Cubierto por las insignias siguientes:'
+    covers: 'Cubre las insignias siguientes:'
+    create: 'Crear una nueva insignia'
+    description:
+      10: 'Las insignias permiten filtrar el voluntariado a movilizar.'
+      11: 'El nombre de la insignia debe ser corto porque aparece allí donde aparece la persona voluntaria (por ejemplo: SU en lugar de Servicio de Urgencias)'
+      12: 'La descripción de la insignia debe permitir entender de qué se trata.'
+      13: 'Una insignia (REC-PSE1) puede tener un sinónimo (PSE1) de manera que toda persona voluntaria que tenga REC-PSE1 mostrará PSE1.'
+      14: 'Una insignia (PSE2) puede pertenecer a otra (PSE1), de manera que toda persona voluntaria que tenga PSE2 tendrá implícitamente también PSE1.'
+      15: 'Una insignia se puede categorizar (por ejemplo: VL y VPSP son competencias relacionadas con vehículos; PSC, PSE, CI tienen que ver con primeros auxilios)'
+      16: 'Se puede priorizar la visualización de una insignia (esto cambia el orden en el que aparece en la lista de competencias).'
+      17: 'Se puede priorizar una insignia durante una movilización (el voluntariado que cuente con las competencias clave recibirá antes los envíos)'
+      18: 'Puedes elegir las insignias visibles por defecto en la plataforma.'
+    edit: 'Editar la insignia "%name%"'
+    form:
+      add_synonym: 'Añadir un sinónimo'
+      category: 'Categoría de la insignia (p.ej. acciones, vehículos, formación de primeros auxilios...)'
+      description: 'Descripción completa'
+      name: 'Nombre de la insignia'
+      parent: 'Insignia de nivel inferior (p.ej. la insignia de conductor de vehículos ligeros es inferior a la de un conductor de ambulancia, porque este último puede también conducir un coche)'
+      rendering_priority: 'Prioridad de visualización de la insignia'
+      rendring_priority: 'Prioridad de aparición de la insignia'
+      synonyms: 'Insignias sinónimas (la nueva insignia sustituirá todas éstas)'
+      triggering_priority: 'Prioridad en movilizaciones'
+    lock: 'Bloquear la insignia'
+    only_enabled: 'Ocultar las insignias desactivadas'
+    rendering_priority: 'Prio. visual: %priority%'
+    replace: 'Sustituye las insignias siguientes'
+    search: 'Buscar una insignia'
+    synonym_of: 'Sinónimo de %name%'
+    title: 'Gestión de las insignias'
+    triggering_priority: 'Prio. movilización: %priority%'
+    unlock: 'Desbloquear la insignia'
+    used_by: 'Utilizado por %count% personas voluntarias'
+  category:
+    badges: Insignias
+    badges_add: 'Añadir una insignia'
+    badges_delete: '¿Eliminar realmente la insignia %name% de esta categoría?'
+    badges_list: 'Lista de insignias en %name%'
+    card:
+      badge_count: 'Número de insignias: %badge_count%'
+      badges: 'Modificar las insignias'
+      priority: 'Prioridad: %priority%'
+    create: 'Crear una nueva categoría'
+    delete: '¿Seguro que quieres eliminar la categoría %name%?'
+    description: 'Las categorías que permiten regrupar y organizar las insignias'
+    disable: 'Desactivar la categoría'
+    edit: 'Editar una categoría'
+    enable: 'Activar la categoría'
+    form:
+      name: 'Nombre de la categoría'
+      priority: 'Prioridad de visualización'
+    lock: 'Congelar la categoría'
+    search: 'Buscar una categoría'
+    title: 'Gestionar las categorías de insignias'
+    unlock: 'Desbloquear la categoría'
+  home:
+    link: Administración
+  pegass:
+    add_structure: 'Añadir una estructura'
+    bound_volunteer: 'Persona voluntaria asociada: %name%'
+    create_user: 'Añadir un nuevo usuario'
+    delete_confirm: '¿Realmente eliminar "%email%"?'
+    delete_structures: 'Eliminar una o varias estructuras'
+    developer: 'Dar acceso a un/a desarrollador/a'
+    developered: Desarrollador/a
+    developered_details: 'Un desarrolador puede integrar las APIs de RedCall y acceder a funciones técnicas.'
+    edit: 'Abrir la ficha de la persona voluntaria'
+    is_root: 'Gestion de países'
+    list_users: 'Enviar un mensaje a todas las personas usuarias'
+    list_users_explain: 'Para ponerte en contacto con todos los usuarios, copia/pega esta lista de nivols en una nueva movilización.'
+    lock: Bloquear
+    locked: Bloqueado
+    locked_details: 'Las estructuras de un usuario bloqueado no se actualizarán con la actualización de Pegass de su voluntario/a adjunto/a.'
+    only_admins: 'Buscar entre los/as administradores/as'
+    only_developers: 'Buscar entre los desarrolladores'
+    open: 'Abrir la entrada Pegass'
+    root_details: 'Un "gestor de país" puede cambiar el país de acción de un/a usuario/a.'
+    structures: 'Actualizacion de estructuras de %name%'
+    title: 'Conexiones entre usuarios/as de RedCall y la base de datos de voluntariado'
+    undeveloper: 'Desactivar el acceso de desarrolador'
+    unlock: Desbloquear
+    unroot: 'Desactivar la gestión de países'
+  resources:
+    change_platform: 'Transferir a %platform%'
+    change_platform_title: 'Cambio de plataforma'
+  statistics:
+    buttons:
+      general: 'Estadísticas generales'
+      main: Estadísticas
+      structure: 'Informes por estructura'
+    campaign:
+      period: 'En este periodo se han creado <b>%created%</b> movilizaciones, de las cuales <b>%active%</b> siguen activas.'
+      stats: 'movilizaciones siguen activas en este momento.'
+      title: Movilizaciones
+    costs:
+      received: 'de recepción'
+      sent: 'de envío'
+      title: Coste
+      total: 'El coste total del periodo es de'
+    messages:
+      answers_received: 'Se han recibido <b>%answers%</b> respuestas.'
+      messages_sent: 'se han enviado <b>%stat%</b> mensajes de los cuáles'
+      title: Mensajes
+      to_volunteers: 'a <b>%volunteers%</b> personas voluntarias.'
+    no_stats: 'Este periodo no cuenta con ninguna estadística.'
+    pegass:
+      newest_update: 'Última actualización'
+      oldest_update: 'Actualización más antigua'
+      title: 'Actualización Pegass'
+    structure:
+      form:
+        from: 'Entre el:'
+        min: 'Contar las movilizaciones que tengan al menos X mensajes:'
+        title: 'Elegir el periodo'
+        to: 'Y el:'
+      report:
+        answers: Resp.
+        campaigns: Mov.
+        communications: Comunicaciones
+        costs: Gastos
+        errors: Err.
+        id: '#'
+        messages: Msgs
+        name: Estructura
+        questions: Preguntas
+        type: Tipo
+    volunteers:
+      both: '<b>%both_number% (%both_percent%%)</b> que no tienen ninguno'
+      description: 'El filtro de periodo no se aplica a todos los datos.'
+      email: '<b>%email_number% (%email_percent%%)</b> que no tienen email'
+      phone: '<b>%phone_number% (%phone_percent%%)</b> que no tiene número de teléfono'
+      summary: 'La base de datos RedCall contiene <b>%total_number% (%total_percent%%)</b> personas voluntarias que podrían no estar localizables'
+      title: Voluntariado
+  user:
+    list: 'Lista de usuarios/as'
+    pegass: 'Conexiones a Pegass'
+audience:
+  audience: Audiencia
+  audience_help: 'Puedes seleccionar las personas voluntarias que quieras movilizar introduciéndolas manualmente, o filtrando por estructura y competencias.'
+  badges: 'Competencias y nominaciones'
+  classification:
+    audience: 'Mostrar la lista de personas voluntarias seleccionadas'
+    disabled: '<strong>%nbr%</strong> personas voluntarias están desactivadas'
+    email_missing: '<strong>%nbr%</strong> personas voluntarias no tienen email'
+    email_optout: '<strong>%nbr%</strong> personas voluntarias no desean recibir emails'
+    excluded: '<strong>%nbr%</strong> personas voluntarias han sido manualmente excluídas de la movilización'
+    home: 'Es posible que no puedas ponerte en contacto con todo el voluntariado.'
+    inaccessible: '<strong>%nbr%</strong> personas voluntarias no forman parte de tu perímetro'
+    invalid: '<strong>%nbr%</strong> nivols no existen'
+    optout_until: '<strong>%nbr%</strong> personas voluntarias no disponibles temporalmente'
+    phone_landline: '<strong>%nbr%</strong> personas voluntarias sólo tienen un número de teléfono fijo'
+    phone_missing: '<strong>%nbr%</strong> personas voluntarias no tienen número de teléfono'
+    phone_optout: '<strong>%nbr%</strong> personas voluntarias no desean recibir llamadas o SMS'
+    problems: 'Obtenir más detalles acerca de la lista de problemas'
+    reachable: '<strong>%nbr%</strong> personas voluntarias seleccionadas'
+    resolve:
+      button: 'Resolver los problemas'
+      details:
+        gaia: 'Abrir en Gaia'
+        info1: 'RedCall sólo puede funcionar si los datos de contacto de las personas voluntarias son correctas y están al día.'
+        info2: 'Cuidado: aunque una persona voluntaria cuente con un número y un email, esto no garantiza que esté actualizada en la base de datos Gaia.'
+        info3: 'Tan pronto como puedas, invita a los miembros de tu estructura a consultar sus datos de contacto en Gaia, sobre todo su "email preferido" y su "número de teléfono preferido", para aumentar tus probabilidades de movilizar a un máximo de personas.'
+        redcall: Abrir
+      title: 'Fichas de voluntarios con problemas'
+    selected: 'Lista de personas voluntarias seleccionadas'
+    title: 'Resumen de la selección'
+  copy_paste: 'O pegar una lista de nivols'
+  copy_paste_details: 'O pegar una lista de nivols en el campo de baajo.'
+  large_audience:
+    title: '%nbr% personas voluntarias seleccionadas'
+  manual_selection: 'Añadir personas voluntarias manualmente'
+  pre_selection:
+    close_standard_form: 'Cerrar el formulario clásico'
+    description: 'En una comunicación anterior, seleccionaste <strong>%nbr%</strong> personas voluntarias.'
+    remove_volunteer: 'Utilice las casillas para eliminar los voluntarios de la selección.'
+    selected_volunteers: 'Personas voluntarias seleccionadas'
+    title: 'Preselección de voluntariado'
+    use_standard_form: 'Abrir el formulario clásico'
+  problem_details:
+    disabled: 'Es probable que estas personas voluntarias no formen parte de la Cruz Roja.'
+    email_missing: 'Estas personas voluntarias no podrán recibir comunicaciones por email.'
+    email_optout: 'Estas personas voluntarias no desean recibir movilizaciones por email.'
+    excluded: 'Puedes volver a incluir a estas personas voluntarias mostrando tu selección.'
+    inaccessible: 'Estas personas voluntarias forman parte de estructuras que no puedes movilizar.'
+    invalid: 'Estas identidades de benévolos son inválidas o aún no integradas.'
+    optout_until: 'Estas personas voluntarias han indicado que no están disponibles en este momento.'
+    phone_landline: 'Estas personas voluntarias podrán recibir llamadas, pero no SMS.'
+    phone_missing: 'Estas personas voluntarias no podrán recibir comunicaciones por SMS o llamada vocal.'
+    phone_optout: 'Estas personas voluntarias no desean recibir movilizaciones por SMS o llamada vocal.'
+  problems:
+    disabled: Desactivadas
+    email_missing: 'Sin email'
+    email_optout: 'Emails rechazados'
+    excluded: 'Manualmente excluídas'
+    inaccessible: 'Fuera de perímetro'
+    invalid: 'No válidos'
+    optout_until: 'Temp. indispo.'
+    phone_landline: 'Sólo fijo'
+    phone_missing: 'Sin tel.'
+    phone_optout: 'Llamadas/SMS rechazadas'
+    title: 'Detalle de problemas encontrados en la selección'
+  search_for_volunteers: 'Buscar personas voluntarias para la movilización:'
+  search_other_badge: 'Buscar otra competencia:'
+  select_all_badges: 'Movilizar a todo el voluntariado independientemente de las competencias'
+  structures: 'Estructura(s) a movilizar'
+backlinks:
+  blablacar: 'Patrocinado por'
+  minutis: 'Desarrollado por personas voluntarias'
+  phpstorm: 'Desarrollado con'
+  phrase: 'Traducciones proporcionadas por'
+  redcross: 'de Minutis'
+base:
+  actions: Acciones
+  button:
+    back: Volver
+    create: 'Añadir una nueva entrada'
+    delete: Borrar
+    details: Detalles
+    disable: Desactivar
+    enable: Activar
+    more: Más...
+    open: Abrir
+    refresh: Actualizar
+    save: Guardar
+    search: Buscar
+    submit: Enviar
+    update: Editar
+  clear_selection: 'Eliminar la selección'
+  closed: Cerrado
+  crud:
+    create_title: 'Añadir una entrada'
+    delete_confirm: '¿Seguro que quieres eliminar "%entity%"?'
+    update_title: 'Editar "%entity%"'
+  documentation: Documentación
+  error: 'Se ha producido un error. Por favor, vuelve a intentarlo.'
+  form:
+    change: Cambiar
+  home: Inicio
+  modal:
+    close: Cerrar
+  ok: OK
+  open: Abierto
+  order_by:
+    asc: Creciente
+    desc: Descendente
+    order: Orden
+    order_by: 'Ordenar los resultados por:'
+  pager:
+    current: '-'
+    go: Go
+    go_to: 'Ir a la página'
+    next: →
+    per_page: 'Resultados por página'
+    prev: ←
+    result: '[0,1] resultado | ]1,Inf[ resultados'
+  play: Reproducir
+  search:
+    no_results: 'No se ha encontrado ningún resultado con "{keyword}".'
+    placeholder: Buscar...
+  select_all: 'Seleccionar todo'
+  simple_no: 'No'
+  simple_yes: Sí
+  wait: 'Un momento...'
+button:
+  submit: Confirmar
+campaign:
+  actions:
+    classify: Clasificar
+    close: 'Cerrar la movilización'
+    continue: Continuar
+    expires: 'Cerrado auto. el'
+    open: 'Volver a abrir la movilización'
+  cannot_reopen: 'No se puede abrir la movilización: desde su cierre, una o varias personas voluntarias han sido movilizadas y el prefijo asociado a su respuesta ha sido reutilizado.'
+  errors:
+    inactive: 'Esta movilización ha terminado. Gracias por tu participación.'
+  no_structures:
+    description: 'Tu cuenta RedCall no pertenece a ninguna estructura por el momento. Por favor, ponte en contacto con nosotros para poder utilizar la plataforma.'
+    title: 'Aún no puedes alertar a personas voluntarias.'
+  order:
+    created_at: 'Fecha de creación'
+    label: Título
+    type: Color
+  statuses:
+    finished: Terminados
+    my_structures: 'No hay personas voluntarias en tus estructuras'
+    my_volunteers: 'Implica al voluntariado de tus estructuras'
+  titles:
+    call: Llamada
+    create_full: 'Crear una movilización'
+    created_by: 'Creado por %name%'
+    email: Email
+    implicated_structures: 'Estructuras implicadas'
+    list_admin: 'Lista de todas las movilizaciones'
+    list_full: 'Lista de movilizaciones'
+    new: 'Crear una movilización: %type%'
+    report: 'Ver el informe'
+    sms: SMS
+    volunteers: voluntario(s)
+  types:
+    1_green: Información
+    2_light_orange: 'Preparación (UL)'
+    3_dark_orange: 'Preparación (DT)'
+    4_red: Compromiso
+campaign_status:
+  answer: 'Respuestas libres'
+  answer_history: 'Histórico de tus respuestas'
+  answer_invalid: 'Otras res.'
+  answer_no: 'Respuesta %choice%'
+  answers:
+    answer_link: Responder
+    change: 'Cambiar las respuestas'
+    history: Histórico
+    label: 'Respuesta "%label%"'
+    labels: 'Respuestas %label%'
+    new: 'Enviar un nuevo SMS'
+    new_message: 'Ha llegado un nuevo mensaje.'
+    prefix: 'Prefijo de la respuesta: %prefix%'
+    unclear: Ambigua
+  by: 'Enviada por %name% (%structure%)'
+  by_admin: 'Equipo Minutis'
+  by_no_structures: 'Enviado por %name%'
+  communication_short_title: '%date% a las %time%'
+  communication_tabs: Comunicaciones
+  communication_title: 'Comunicación del %date% a las %time%'
+  filter:
+    by_response: 'por respuesta'
+    by_skill: 'por competencia'
+    by_structure: 'por estructura'
+    by_unreachable: 'personas ilocalizables'
+    or: y/o
+    title: Filtrar
+  finish: 'Envío terminado: %sent% %type% enviado(s) (%replies% réponse(s) recibido(s), %replies_pct%%)'
+  free_answer: 'Enviar una respuesta libre'
+  legend:
+    sms_received: '"SMS recibido" indica si el mensaje se ha entregado a la persona voluntaria. Puede quedar en blanco si la persona ha apagado su teléfono.'
+    sms_sent: '"SMS enviado" indica si el mensaje se ha enviado a la persona voluntaria. Si esta columna se queda vacía, es probable que haya un problema técnico.'
+  message: 'Tu mensaje:'
+  no_notes_yet: 'Esta movilización no contiene ninguna nota por el momento.'
+  notes_updated_at: 'Última actualización de notas del %date% a las %time%'
+  progress: 'Envío: %sent% %type% / %total% (%progress%%).'
+  relaunch_communication: 'Reenviar la comunicación'
+  relaunch_communication_confirm: '¿Quiere realmente reenviar la comunicación?'
+  selection:
+    call: '📞Llamada de voz'
+    download_csv: 'Descargar en CSV'
+    download_portrait_pdf: 'Descargar PDF'
+    email: '✉️ Email'
+    new_message: 'Escribir un nuevo mensaje'
+    sms: '📱 SMS'
+  warning:
+    country_no_call: 'Llamadas no soportadas por RedCall para este número.'
+    country_no_sms: 'RedCall no soporta los SMS a este número.'
+    no_email: 'Sin email'
+    no_email_optin: 'No desea recibir emails.'
+    no_phone: 'Sin número de teléfono'
+    no_phone_mobile: 'Sin número de teléfono móvil.'
+    no_phone_optin: 'No desea recibir SMS/llamadas'
+    optout_until: 'Temporalmente indisponible'
+csv_export:
+  answer_time: 'Fecha de la respuesta más reciente'
+  choice: 'Opción "%choice%"'
+  email: Email
+  firstname: Nombre
+  lastname: Apellidos
+  nivol: Nivol
+  other: 'Otras respuestas'
+  phone_number: 'Número de teléfono'
+  received: 'Mensaje recibido'
+  sent: 'Mensaje enviado'
+  structure: Estructura
+  tags: Competencias
+developer:
+  home:
+    link: 'Espacio de desarrollo'
+form:
+  campaign:
+    fields:
+      label: 'Nombre de la movilización'
+      notes: 'Notas opcionales enviadas a otras personas que utilizan RedCall'
+      notes_title: Notas
+      submit: Enviar
+  communication:
+    call: 'llamada de voz'
+    email: email
+    fields:
+      add: +
+      add_answer: 'Añadir una respuesta'
+      answer: 'Introducir una respuesta'
+      answers: 'Respuestas posibles'
+      back: Volver
+      body: Contenido
+      cost: 'La longitud del mensaje multiplica su precio por:'
+      geo_location: 'Los destinatarios de este mensaje se podrán geolocalizar entre sí'
+      language: '¿En qué idioma estás escribiendo tu mensaje?'
+      length: 'Longitud del mensaje:'
+      message: Mensaje
+      multiple_answer: 'Los destinatarios pueden elegir varias respuestas'
+      other_options: 'Otras opciones'
+      preview: 'Vista previa'
+      price: 'Precio estimado de la comunicación:'
+      remove: X
+      response_title: Respuestas
+      selection: 'Selección:'
+      selection_count: voluntariado
+      structures: 'Estructuras a movilizar'
+      subject: Asunto
+      submit: Enviar
+      submit_to: 'Enviar un %type% a %nbr% voluntarios/as'
+      test: 'Probar conmigo'
+      type_call: 'Mensaje urgente enviado por llamada vocal'
+      type_email: 'Mensaje enviado por email'
+      type_sms: 'Mensaje urgente enviado por SMS'
+      volunteers: Destinatarios
+    nivols_search: 'Copiar/pegar una lista de nivols'
+    nivols_separator: 'Puedes utilizar cualquier separador.'
+    sms: SMS
+    toggle:
+      by_filters: 'Volver a los filtros de selección'
+      by_nivol: 'Introducir una lista de nivol'
+    too_long:
+      explaination_1: 'Los mensajes largos tienen menos probabilidades de llegar a su destino.'
+      explaination_2: 'Trata de enviar mensajes cortos como:'
+      explaination_3: 'Urgente. Fuego en el barrio de Peñaflor, se necesita un centro de apoyo.'
+      explaination_4: 'Necesito una mano para limpiar material. Si eres nuevo puedes venir a aprender!'
+      explaination_5: 'Refuerzos SAMU en previsión de una manifestación el sábado. Se necesitan dos vehículos de primeros auxilios completos.'
+      explaination_6: 'Los SMS se dividen en segmentos de 160 caracteres, y cuantos más segmentos haya, menos probabilidades de que el mensaje llegue íntegro a su destino. Debemos acostumbrarnos a enviar mensajes cortos para garantizar que todo el mundo los reciba.'
+      title: 'Su mensaje es largo'
+geolocation:
+  error: 'Ha ocurrido un error.'
+  error_permission: 'Has rechazado compartir tu posición (o lo ha hecho la configuración de tu dispositivo).'
+  error_timeout: 'Se ha superado el límite de espera para la geolocalización.'
+  error_unavailable: 'No hay ningún dato de localización disponible.'
+  last_data: 'Posición recibida a las %time% (a %accuracy% de precisión)'
+  last_update: 'Última actualización:'
+  na: 'No disp.'
+  not_supported: 'Tu navegador no soporta la geolocalización .'
+  share: 'Compartir mi posición'
+  share_explains: 'Esto permitirá que le localicen otros miembros del equipo.'
+  started: 'Geolocalización activada'
+  stop: 'Parar la geolocalización'
+  subtitle: Geolocalización
+  title: 'Geolocalización de un equipo'
+  waiting: 'En espera...'
+import_report:
+  disable_locked: 'Imposible desactivar un voluntario congelado.'
+  disabled: 'El voluntario está desactivado en Pegass.'
+  failed: 'Ha fallado la sincronización con Pegass.'
+  minor: 'La persona voluntaria es menor de edad.'
+  no_contact: 'El voluntario no tiene ni número de teléfono ni mail.'
+  no_email: 'La persona voluntaria no tiene email.'
+  no_phone: 'El voluntario no tiene número de teléfono.'
+  removed: 'Persona voluntaria anonimizada.'
+  update_locked: 'Imposible actualizar un voluntario congelado.'
+label:
+  and: 'y'
+  from: Del
+  structures: estructuras
+  to: Al
+  volunteers: voluntarios
+lock:
+  explanation: 'Los recursos bloqueados (🔒) no se pueden modificar desde fuentes externas a RedCall (sincronización Pegass, APIs, ...)'
+  locked: Bloqueado
+maintenance:
+  message:
+    content: 'Contenido del mensaje (se aceptan saltos de línea)'
+    title: 'Poner un mensaje al principio de cada página'
+    type:
+      alert: 'Amarillo (alerta)'
+      danger: 'Rojo (peligro)'
+      info: 'Azul (información)'
+      label: 'Color de inserción'
+      success: 'Verde (éxito)'
+  modal:
+    for_dev_only: 'Esta funcionalidad está destinada a solamente a desarrolladores/as, ya que esta acción no tendrá ningún efecto sin cambiar la lógica de importación de Pegass. La resincronización con Pegass ocurre cuando hay un cambio importante en el código que modifica la manera de importar una persona voluntaria, por ejemplo si queremos importar nuevas competencias.'
+    refresh_button: 'Refrescar los datos'
+  refresh: 'Sincronizar completamente la base de datos RedCall con la de Pegass.'
+  refresh_started: 'Sincronizando datos. Este proceso tardará un tiempo.'
+  search:
+    description: 'Esta herramiente te ayuda a crear la sintaxis XPath que necesitas para buscar nivols.'
+    expression: 'Introduce la expresión XPath que quieras probar'
+    invalid: 'La expresión no es válida: %error%.'
+    match: 'La expresión coincide con este documento: %data%.'
+    nivol: 'Introduce un nivol para ver su contenido en XML'
+    notmatch: 'La expresión no coincide con este documento.'
+    title: 'Búsqueda avanzada de nivols en Pegass'
+  title: Mantenimiento
+manage_structures:
+  action:
+    title: Acciones
+  disable_confirm: '¿Seguro que quieres desactivar esta estructura?'
+  export: 'Exportar los datos de contacto de las personas voluntarias'
+  force_pegass_update: 'Forzar la actualización de Pegass ahora'
+  form:
+    create: 'Crear una nueva estructura'
+    disabled: 'Mostrar las estructuras desactivadas'
+    enabled: 'Mostrar las estructuras activas'
+    update: 'Modificar la estructura %name%'
+  last_update: 'Última sincronización con Pegass: %last_update% UTC'
+  lock: 'Bloquear la estructura'
+  manage_prefilled_answers: 'Gestionar las respuestas predefinidas'
+  manual_update: 'Actualización manual'
+  next_update: 'Próxima sincronización con Pegass: %next_update% UTC'
+  prefilled_answers:
+    form:
+      title: 'Añadir/Editar respuestas predefinidas'
+    list_title: 'Lista de respuestas predefinidas'
+  president: 'Presidente/a: %president%'
+  redcall_users: 'Lista de personas que pueden movilizar %name%'
+  search:
+    button: 'Buscar:'
+    label: 'Buscar una estructura'
+    only_enabled: 'Ocultar las estructuras desactivadas'
+  title: 'Gestión de estructuras'
+  unlock: 'Desbloquear la estructura'
+  users: 'Número de usuarios/as RedCall: %count%'
+  view_pegass_entry: 'Abrir la entrada de la base de datos Pegass'
+  volunteers: 'Número de personas voluntarias: %count%'
+manage_volunteers:
+  access_denied: 'No puedes abrir el perfil de una persona voluntaria que no forme parte de las estructuras que puedes movilizar.'
+  action:
+    disable: Desactivar
+    disable_confirm: '¿Seguro que quieres desactivar esta persona voluntaria?'
+    disable_volunteer: 'Desactivar la persona voluntaria'
+    enable: Activar
+    enable_volunteer: 'Reactivar la persona voluntaria'
+    lock: Bloquear
+    title: Acciones
+    unlock: Desbloquear
+    update_manual: 'Actualizar los datos de voluntariado'
+    update_pegass: 'Forzar la actualización de Pegass ahora'
+    view_pegass_entry: 'Abrir la entrada de la base de datos Pegass'
+  admin_structures:
+    create: 'Podrá editar las estructuras del voluntario después de su creación.'
+    edit: 'Editar las estructuras'
+    structures: 'Actualizacion de estructuras de %name%'
+  anonymize:
+    campaign:
+      email:
+        content_1: 'RedCall ha recibido un mensaje de la persona mencionada a continuación indicando que no es, o ha dejado de ser, parte del voluntariado de la Cruz Roja. La Cruz Roja debe respetar la <a href="https://www.aepd.es/sites/default/files/2019-09/guia-rgpd-para-responsables-de-tratamiento.pdf">RGPD</a> y deberías actualizar GAIA en este sentido.'
+        content_2: 'Desde RedCall se ha hecho lo necesario para que no vuelva a recibir ninguna movilización, y la persona ha recibido el siguiente mensaje:'
+        email: 'Email: %email%'
+        firstname: 'Nombre: %firstname%'
+        greetings: 'Hola,'
+        lastname: 'Apellidos: %lastname%'
+        message_received: 'Mensaje recibido que ha llevado a eliminar esta persona voluntaria el %date% a las %time% en la movilización <a href="%url%">%trigger%</a>:'
+        nivol: 'NIVOL: %nivol%'
+        phone: 'Teléfono: %phone%'
+        subject: '[RGPD] RedCall - Actualizar GAIA para #%nivol%'
+        target: 'Este mensaje debe ser reenviado al secretariado o a la presidencia de la unidad local.'
+        who: 'La persona en cuestión:'
+      sms_content: 'Hola, tenemos en cuenta tu petición. No volverás a recibir mensajes de nuestra parte. Disculpa las molestias.'
+      title: '[RGPD] Petición de eliminación de datos de %nivol%'
+    cancel: Cancelar
+    choose_answer: 'Selecciona la respuesta de la persona voluntaria que solicita eliminar sus datos personales.'
+    confirm: Confirmar
+    continue: 'Continúa aquí'
+    delete_button: 'Eliminar sus datos'
+    details_1: 'En aplicación de la Ley Orgánica de Protección de Datos Personales  y el Reglamento General de Protección de Datos (RGPD), toda persona voluntaria dispone de un derecho de acceso, modificación, eliminación y oposición al tratamiento de sus datos de carácter personal.'
+    details_2: 'Cuando hagas clic en el siguiente botón, se anonimizarán todos los datos relativos a esta persona voluntaria, pero se conservarán aquellos necesarios a las obligaciones relativas a la contabilidad (gastos relacionados con el envío de comunicaciones).'
+    details_3: 'Su identificador externo (NIVOL) es el único dato que se conservará íntegramente, para impedir la actualización de sus datos en las bases de datos y en otros servicios externos.'
+    gdpr: RGPD
+    message: 'Por favor, lee con atención el mensaje causante de la supresión de datos antes de continuar.'
+    not_linked: 'No puedes crear alertas porque tu cuenta no está vinculada a ninguna persona voluntaria.'
+    title: 'Eliminación de datos de %name%'
+    volunteer_asked_for_it: '¿Esta persona voluntaria te ha pedido que elimines sus datos?'
+  can_trigger: 'Estructuras que %name% puede movilizar'
+  can_trigger_button: 'Roles RedCall'
+  columns:
+    never_updated: 'Aún sin importar'
+    update: 'Act. el %date%'
+  contact:
+    mail_subject: '⚠️ RedCall: Tienes un mensaje'
+  form:
+    added: 'La persona voluntaria se ha añadido correctamente.'
+    create: 'Añadir una nueva persona voluntaria'
+    email: Email
+    email_locked: 'Blockear el email *'
+    email_optin: 'Disponible por email'
+    enabled: Movilizable
+    external_id: 'Identificador externo (NIVOL)'
+    first_name: Nombre
+    invisible_badges: 'Otras credenciales'
+    last_name: Apellidos
+    lock_info: '* Los números de teléfono y emails bloqueados no se actualizan automáticamente desde Pegass.'
+    minor: 'Menor de edad (-18 años)'
+    optout_until_me: 'No estaré disponible hasta el...'
+    phone_number: Teléfono
+    phone_number_locked: 'Bloquear el nº de teléfono *'
+    phone_number_optin: 'Disponible por teléfono y SMS'
+    section_badges: 'Competencias y nominaciones'
+    section_contact: 'Información de contacto'
+    section_general: 'Información general'
+    section_structures: 'Estructuras a las que pertenece'
+    structures: 'Estructura(s) a la(s) que pertenece'
+    tags: Competencias
+    update: 'Actualizar una persona voluntaria'
+    updated: 'Se ha modificado correctamente la persona voluntaria.'
+    visible_badges: 'Insignias principales'
+  others: 'y otros %count%'
+  redcall:
+    action_structures: 'Estructuras que %name% puede movilizar'
+    redcall_user: 'Puede acceder a RedCall'
+  search:
+    button: Buscar
+    label: 'Buscar un voluntario (presione Entrar para continuar)'
+    only_enabled: 'Ocultar los voluntarios desactivados'
+    only_users: 'Mostrar sólo las personas voluntarias con acceso a RedCall'
+  title: 'Gestión del voluntariado'
+  title_with_structure: 'Gestión del voluntariado de %name%'
+management:
+  current_structures: 'Ahora puedes movilizar las estructuras siguientes:'
+  home:
+    link: 'Gestión de efectivos'
+    resources: 'Gestión de recursos'
+  support_email: 'Si esta información es incorrecta, por favor ponte en contacto con el equipo en %email%'
+  update_structures: 'Modificar las estructuras'
 message:
   call:
     announcement: '%brand% a las %hours% horas %mins%.'
-    answer: 'Respondiste: "%choice%". Gracias por su participación. '
-    choices: 'Para responder "%answer%", escriba %code%. '
-    repeat: 'Para volver a escuchar el mensaje, escriba 0. '
-    unknown: 'Respuesta invalida.'
+    answer: 'Has respondido: "%choice%". Gracias por participar. '
+    choices: 'Para responder "%answer%", escribe %code%. '
+    repeat: 'Para volver a escuchar el mensaje, pulsa 0. '
+    type: llamada(s)
+    unknown: 'Respuesta inválida.'
   email:
+    announcement: '%brand% el %day%/%month%/%year% a las %hours%:%mins%'
+    answer_here: 'Haz clic en el botón o los botones que elijas para responder.'
     how_to_answer_free: 'Puede responder libremente a este mensaje haciendo clic <a href="%url%">aquí</a>.'
+    how_to_answer_multiple: 'Para responder, haz clic en el siguiente enlace: %url%'
+    how_to_answer_simple: 'Para responder, haz clic en el siguiente enlace: %url%'
+    in_app_long_answer: 'Si lo deseas, puedes responder directamente "%choice%" a este mensaje.'
+    in_app_short_answer: 'Responder "%choice%"'
+    open_in_redcall: 'Abrir en RedCall'
+    possible_answers: 'Respuestas posibles:'
+    type: email(s)
   sms:
+    announcement: '%brand% %hours%h%mins%'
     geo_location: 'Geolocalización de tu equipo: %url%'
     how_to_answer_multiple: 'Responde con los códigos de tu elección separados por un espacio'
     how_to_answer_simple: 'Responde con el código de tu elección'
+    how_to_answer_url: 'Responde siguiendo %url% o llamando al %number%'
+    how_to_answer_url_only: 'Responde siguiendo %url%'
+    type: mensaje(s)
+minutis:
+  back: 'Volver a Minutis'
+modal:
+  answers: Respuestas
+  change_campaign_label: 'Cambiar el nombre...'
+  change_campaign_notes: 'Cambiar las notas...'
+  change_color: 'Cambiar el color...'
+new_communication:
+  subtitle: 'Relacionado con la movilización "%label%"'
+  title_call: 'Escribir un nuevo mensaje de voz'
+  title_email: 'Escribir un nuevo email'
+  title_sms: 'Escribir un nuevo SMS'
+pdf_export:
+  communication: 'Comunicación del %date% a las %time%'
+  confidential: 'DOCUMENTO INTERNO'
+  generated: 'Generado el %date% a las %time%'
+  others: 'y %others% otro(s)'
+  response: '%choice%'
+  staff: PERSONAL
+  staff_table:
+    email: Email
+    name: NOMBRE
+    nivol: Nivol
+    phone: Teléfono
+    skills: Competencias
+    time: 'Hora res.'
+phone_card:
+  add: 'Añadir un número de teléfono'
+  error_invalid: 'El formato de este número de teléfono no es válido'
+  error_taken: 'Este número de teléfono ya está siendo utilizado por %truncated_name% (%nivol%).'
+  main: Principal
+  title: 'Teléfono #%index%'
+  use: 'Establecer como principal'
+prefilled_answers:
+  editor:
+    answers: 'Respuestas por crear'
+    colors: 'Colores de la movilización donde se puede seleccionar este grupo'
+    label: 'Nombre del grupo de respuestas'
+  title: 'Gestión de respuestas predefinidas'
+report:
+  campaign:
+    communication:
+      with_title: 'Comunicación #%nbr% "%title%" del day%/%month%/%year% a las %hours%:%mins%'
+      without_title: "Comunicación #%nbr% del %day%/%month%/%year% a las %hours%h%mins%\n\n"
+    headers:
+      answers: Respuestas
+      errors: Errores
+      messages: Mensajes
+      prices: Costes
+      structure: Estructura
+    title: 'Estructuras implicadas'
+security:
+  registration:
+    platform: '¿En qué plataforma quieres inscribirte?'
+space:
+  consult_data:
+    announcement_email: '📧 Mensaje enviado por email el %day%/%month%/%year% a las %hours%:%mins%'
+    announcement_sms: '📱 Mensaje enviado por SMS el %day%/%month%/%year% a las %hours%:%mins%'
+    announcement_voice: '📞 Mensaje enviado por llamada vocal el %day%/%month%/%year% a las %hours%:%mins%'
+    answers: 'Respuesta(s) recibida(s)'
+    choices: 'Opciones posibles'
+    communications: 'Comunicaciones y movilizaciones'
+    download: 'Descargar en formato PDF'
+    geo: 'Datos de geolocalización'
+    geo_accuracy: 'Precisión (m)'
+    geo_date: Fecha
+    geo_heading: Dirección
+    geo_latitude: Latitud
+    geo_longitude: Longitud
+    identity_email: Email
+    identity_email_locked: 'Email bloqueado'
+    identity_email_optin: 'Contactos por email autorizados'
+    identity_external: 'ID externo'
+    identity_firstname: Nombre
+    identity_id: 'ID RedCall'
+    identity_identifier: 'ID de sincronización'
+    identity_last_update: 'Última sincronización'
+    identity_lastname: Apellidos
+    identity_locked: 'Sincronización activa'
+    identity_main: 'Ficha de persona voluntaria'
+    identity_minor: 'Menor de edad'
+    identity_next_update: 'Próxima sincronización'
+    identity_phone: 'Número de teléfono'
+    identity_phone_locked: 'Teléfono congelado'
+    identity_phone_optin: 'Contacto por teléfono/SMS autorizado'
+    identity_report_update: 'Último informe de sincronización'
+    identity_skills: 'Intereses y competencias'
+    identity_structures: 'Estructura(s) a la(s) que pertenece'
+    identity_sync: 'Sincronización con la base de datos Pegass'
+    identity_user: 'Usuario/a en RedCall'
+    identity_user_access: 'Acceso usuario/a'
+    identity_user_admin: 'Acceso de administrador'
+    identity_user_developer: 'Acceso desarrollador'
+    identity_user_locale: 'Idioma de la plataforma'
+    identity_user_structures: 'Estructura(s) de acción'
+    title: 'Mis datos personales en RedCall'
+  delete_data:
+    cancel: Cancelar
+    confirm: Confirmar
+    delete_button: 'Borrar mis datos'
+    details_1: 'En aplicación de la Ley Orgánica de Protección de Datos Personales  y el Reglamento General de Protección de Datos (RGPD), dispones de un derecho de acceso, modificación, eliminación y oposición al tratamiento de tus datos de carácter personal.'
+    details_2: 'Cuando hagas clic en el siguiente botón, se anonimizarán todos los datos relacionados contigo, pero se conservarán aquellos necesarios a las obligaciones relativas a la contabilidad (gastos relacionados con el envío de comunicaciones).'
+    details_3: 'Tu identificador externo (NIVOL) es el único dato que se conservará íntegramente, para impedir la actualización de tus datos en las bases de datos y en otros servicios externos.'
+    details_4: 'Si quieres anonimizar tus datos, tu espacio de voluntariado dejará de ser accesible y no podrás ser movilizado. Deberás ponerte en contacto con una unidad local a la que vincularte para solicitar la reactivación del servicio.'
+    title: 'Eliminar mis datos'
+  email:
+    details_1: 'Es posible que tu unidad local o DT se ponga en contacto contigo por email cuando necesiten darte información o para registrar tu disponibilidad en los próximos días.'
+    details_2: 'Todos los emails tendrán como origen: %from%'
+    details_3: 'Cuando se soliciten una o varias respuestas, haz clic en los botones situados bajo el mensaje.'
+    details_4: 'Las respuestas enviadas directamente por mail no se tendrán en cuenta; ponte en contacto con los responsables si necesitas más información.'
+    title: 'Editar mi email'
+  enabled:
+    details_1: 'Utiliza las casillas de abajo para evitar recibir comunicaciones de parte de tu unidad local.'
+    details_2: 'Podrás volver a esta página en todo momento para cambiar tus preferencias'
+    title: 'Cambiar mi disponibilidad'
+  home:
+    add_email: 'Indicar un email para iniciralo por este medio.'
+    add_phone: 'Introducir un número de teléfono para ser movilizado por SMS o llamada vocal'
+    callable: movilizable
+    contact: 'Preferencias de contacto'
+    data: 'Datos personales'
+    data_access: 'Consultar o descargar mis datos'
+    data_delete: 'Solicitar la supresión completa de mis datos.'
+    link: 'Espacio de voluntariado'
+    no_tracking: 'Esta web no rastrea tu navegación.'
+    not_callable: 'no disponible'
+    toggle_callable: 'Cambiar mis preferencias de movilización (en este momento estoy'
+    triggers:
+      call: 'llamada vocal'
+      email: email
+      sms: SMS
+      subject: 'Mensaje enviado por %type% el %date% a las %time%'
+      title: 'Tus mensajes recientes'
+    update_email: 'Cambiar mi email, que actualmente es:'
+    update_phone: 'Cambiar mi número de teléfono, que actualmente es:'
+    user_details: 'Cuando una persona voluntaria se conecta a RedCall sin tener acceso, se encuentra por defecto en esta página que le permite actualizar sus preferencias de contacto y gestionar sus datos personales. No dudes en insistir, dentro de tu estructura, para que el voluntariado a tu cargo actualice correctamente estos datos.'
+    user_title: 'Tienes acceso a la funcionalidad de movilización de RedCall.'
+  infos:
+    context_1: 'La Cruz Roja francesa cuenta con más de mil estructuras con diversas funciones, sobre todo dirigidas a la acción social y los primeros auxilios.'
+    context_10: '- Apellidos'
+    context_11: '- Nombre'
+    context_12: '- Nivol'
+    context_13: 'Estructuras que requieren permisos RedCall.'
+    context_2: 'Si por ejemplo ocurre un accidente grave en un edificio y varias decenas de personas se encuentran en la calle, la Acción Social les proporciona asistencia, mantas y comida si es necesario, así como soluciones de urgencia.'
+    context_3: 'O si, por ejemplo, una manifestación se desborda y el SAMU está demasiado solicitado, pueden contactar con nosotros para que acudamos a prestar ayuda con nuestras ambulancias.'
+    context_4: 'Para reunir los efectivos necesarios para una intervención, el responsable de cada unidad local debe solicitar a su voluntariado de forma eficaz.'
+    context_5: 'Ahí es donde RedCall interviene: permite a estos responsables ponerse en contacto con los recursos que necesitan por SMS o email.'
+    context_6: 'Lo que ve la persona voluntaria:'
+    context_7: 'Lo que ve el o la responsable:'
+    context_8: 'Cuando los equipos están formados, el responsable puede enviar un PDF con toda la información relacionada a su dirección territorial.'
+    context_9: 'RedCall se activa por defecto en todos los DLUS, STUS y PDT, que pueden alertar sus estructuras adjuntas y de acción. En caso de necesitar permisos adicionales, la solicitud se puede realizar por correo electrónico al soporte de Minutis especificando lo siguiente:'
+    title: '¿Qué es RedCall?'
+  logout: 'Desconectarle del espacio de voluntarios'
+  phone:
+    details_1: 'Es posible que tu unidad local o DT se ponga en contacto contigo por SMS o llamada vocal en caso de urgencia.'
+    details_3: 'Ya puedes añadirlo a tus contactos y atribuirle un timbre distintivo.'
+    details_4: 'Cuando recibas un mensaje que te pida una respuesta, responde directamente introduciendo sólo, si es posible, el código o los códigos de la respuesta que elijas.'
+    details_5: 'Ejemplo: si se te pregunta "¿Estás disponible?" y las posibles respuestas son "A1: Sí" o "A2: No", responde con el código A2 o A2. Esto permite que tu respuesta sea tratada automáticamente y ayuda al responsable de la respuesta.'
+    details_6: 'Todos los mensajes vienen del número:'
+    details_7: 'Todas las llamadas vienen del número:'
+    title: 'Editar mi número de teléfono'
+special_answers:
+  stop: 'Se ha desactivado tu suscripción a los SMS enviados por RedCall. Puedes gestionar tus preferencias en https://rcl.re con ayuda de tus credenciales Pegass, haciendo clic a continuación en el icono RedCall en la parte superior izquierda.'
+  title: 'Palabra clave "%keyword%" recibida de una persona voluntaria'
+structure:
+  form:
+    name: 'Nombre de la estructura'
+    parent: 'Estructura matriz (opcional)'
+    president: 'Presidente (opcional)'
+title:
+  campaigns: Movilizaciones
+  costs: Coste
+  messages: Mensajes

@@ -1,1 +1,48 @@
-{  }
+sandbox:
+  anonymize:
+    button: 'Anonimizar la base de datos'
+  fake_call:
+    button: 'Simulador de llamadas'
+    clear: 'Borrar todas las llamadas'
+    read: 'Llamadas al %phoneNumber%(%name%)'
+    send: Enviar
+    title: 'Simulador de llamadas - Lista de destinatarios'
+    your_message: Código
+  fake_email:
+    button: 'Simulador de emails'
+    clear: 'Eliminar todos los mensajes'
+    read: 'Buzón de %email%(%name%)'
+    title: 'Simulador de emails - Lista de destinatarios'
+  fake_sms:
+    button: 'Simulador de SMS'
+    clear: 'Eliminar todos los mensajes'
+    geo: 'Abrir la geolocalización para "%text"'
+    send: Enviar
+    thread: 'Buzón de %phoneNumber% (%name%)'
+    title: 'Simulador de SMS - Lista de destinatarios'
+    your_message: 'Tu mensaje'
+  fixtures:
+    structure:
+      bind_to_user: 'Vincular la estructura a tu cuenta'
+      created: 'Estructura creada'
+      name: 'Nombre de la estructura'
+      number_volunteers: 'Número de personas voluntarias en la estructura'
+      parent: 'Estructura matriz (opcional)'
+      title: 'Generar una estructura'
+    title: 'Crear estructuras y voluntariado'
+    volunteer:
+      created: '%nbr% personas voluntarias creadas'
+      number_volunteers: 'Número de personas voluntarias que generar'
+      structure: 'Estructura a la que pertenece'
+      title: 'Gestionar el voluntariado'
+  home:
+    link: Sandbox
+  spinner:
+    button: 'Generador de spinner'
+    result: Resultado
+    splits: Splits
+    upload: 'Subir una imagen'
+  volunteer_generator:
+    button: 'Generador de voluntariado'
+    label: 'Número de personas voluntarias que crear'
+    title: 'General personas voluntarias falsas'

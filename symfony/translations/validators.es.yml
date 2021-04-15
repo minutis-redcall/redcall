@@ -1,1 +1,35 @@
-{  }
+form:
+  badge:
+    errors:
+      parent:
+        loop: 'Esta insignia es de nivel superior (%hierarchy%) y no la puedes utilizar como insignia de nivel inferior.'
+        synonym: 'Esta insignia es sinónimo de "%name%". Utiliza "%name%" directamente.'
+      synonym:
+        has_parent: 'La insignia "%name%" tiene una insignia de nivel anterior y no puede ser sustituído por otra insignia.'
+        has_synonyms: 'La insignia "%name%" tiene sinónimos. Es necesario que suprimas estos sinónimos antes de poder marcar la propia insignia como sinónimo de otra.'
+        visible: 'La insignia "%name%" está activa y no se puede sustituir por otra.'
+  campaign:
+    errors:
+      message:
+        empty: 'Introduce un mensaje'
+      type:
+        empty: 'Selecciona un tipo de movilización'
+      volunteers:
+        min: 'Selecciona al menos una persona voluntaria'
+  communication:
+    errors:
+      call_multiple: 'Las respuesta múltiples no son posibles por teléfono.'
+      email_geolocation: 'No es posible geolocalizar durante el envío de un email.'
+      no_subject: 'Debes definir un asunto para el mail'
+      prefix_already_used: 'El prefijo "{{string}}" ya se utiliza en una comunicación que tiene una movilización activa.'
+      too_large_call: 'Este mensaje vocal es demasiado largo.'
+      too_large_choice: 'Una o varias respuestas tienen un tamaño demasiado importante.'
+      too_large_email: 'Este email es demasiado largo.'
+      too_large_sms: 'Este SMS es demasiado largo.'
+  phone_card:
+    error_duplicate: 'Has introducido el mismo número varias veces.'
+    error_multi_preferred: 'Sólo puedes tener un único número de teléfono principal.'
+    error_no_preferred: 'No has elegido un número principal.'
+  volunteer:
+    errors:
+      redcall_user: 'Esta persona voluntaria está vinculada a un usuario RedCall. Elimina primero el usuario para poder desactivar la persona voluntaria.'
