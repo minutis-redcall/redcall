@@ -1,1 +1,8 @@
-{  }
+pagination:
+  current: '-'
+  go: Go
+  go_to: 'Ir a la página'
+  next: →
+  per_page: 'Resultados por página'
+  prev: ←
+  result: '[0,1] resultado |]1,Inf[ resultados'

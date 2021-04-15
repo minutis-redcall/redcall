@@ -293,7 +293,7 @@ campaign:
     continue: Continuer
     expires: 'Fermé auto. le'
     open: 'Réouvrir le déclenchement'
-  cannot_reopen: 'Impossible de réouvrir le déclenchement : depuis sa fermeure, un ou plusieurs bénévoles ont été déclenchés et le préfixe associé à leur réponse a été réuilisé.'
+  cannot_reopen: 'Impossible de réouvrir le déclenchement : depuis sa fermeture, un ou plusieurs bénévoles ont été déclenchés et le préfixe associé à leur réponse a été réutilisé.'
   errors:
     inactive: 'Ce déclenchement est terminé, merci pour votre participation.'
   no_structures:
@@ -305,7 +305,7 @@ campaign:
     type: Couleur
   statuses:
     finished: Terminés
-    my_structures: 'Par des bénévoles de vos structures'
+    my_structures: 'Pas des bénévoles de vos structures'
     my_volunteers: 'Implicant des bénévoles de vos structures'
   titles:
     call: Appel
@@ -576,9 +576,8 @@ manage_volunteers:
       sms_content: 'Bonjour, nous avons pris en compte votre demande. Vous ne recevrez plus de message de notre part. Toutes nos excuses pour la gêne occasionnée.'
       title: '[RGPD] Demande de suppression de données pour %nivol%'
     cancel: Annuler
-    choose_answer: 'Sélectionnez la réponse du bénévole demendant la suppression de ses données personnelles.'
+    choose_answer: 'Sélectionnez la réponse du bénévole demandant la suppression de ses données personnelles.'
     confirm: Confirmer
-    not_linked: 'Vous ne pouvez pas créer d''alerte car votre compte n''est relié à aucun bénévole.'
     continue: 'Continuez ici'
     delete_button: 'Supprimer ses données'
     details_1: 'Conformément à la Loi Informatique et Libertés et Règlement général sur la protection des données (RGPD), tout bénévole dispose d’un droit d’accès, de modification, de suppression et d’opposition au traitement de ses données à caractère personnel.'
@@ -586,6 +585,7 @@ manage_volunteers:
     details_3: 'Son identifiant externe (NIVOL) est la seule information qui sera conservée intègre, afin de bloquer les mises à jour de ses données auprès des bases de données et autres services externes.'
     gdpr: RGPD
     message: 'Merci de bien vouloir relire attentivement le message causant la suppression de données avant de continuer.'
+    not_linked: 'Vous ne pouvez pas créer d''alerte car votre compte n''est relié à aucun bénévole.'
     title: 'Suppression des données de %name%'
     volunteer_asked_for_it: 'Ce bénévole vous a demandé de supprimer ses données ?'
   can_trigger: 'Structures que %name% peut déclencher'

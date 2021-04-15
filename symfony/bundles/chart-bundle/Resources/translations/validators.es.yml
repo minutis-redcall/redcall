@@ -1,1 +1,6 @@
-{  }
+chart:
+  violations:
+    context:
+      value: 'Este valor no contiene JSON válido.'
+    query:
+      select: 'La consulta debe comenzar obligatoriamente por la palabra clave "SELECT".'

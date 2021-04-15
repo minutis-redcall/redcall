@@ -1,1 +1,42 @@
-{  }
+chart:
+  base:
+    back: Volver
+    submit: Enviar
+  context:
+    add: 'Añadir una variable'
+    labels:
+      absolute_date: 'Valor por defecto'
+      integer: 'Introducir un número'
+      relative_date:
+        amount: Valor
+        unit: Unidad
+      string: 'Introducir un valor'
+    name: 'Nombre del campo'
+    relative_date:
+      amount: 'hay %amount%%unit%'
+      now: ahora
+      unit_day: día(s)
+      unit_hour: hora(s)
+      unit_minute: Minuto(s)
+      unit_month: mes
+      unit_second: segundo(s)
+      unit_week: semana(s)
+      unit_year: año(s)
+    title: 'Variable #%nbr%'
+    type: 'Tipo de dato'
+    types:
+      absolute_date: 'Fecha absoluta'
+      integer: 'Número entero'
+      relative_date: 'Fecha relativa'
+      string: 'Cadena de caracteres'
+  manage:
+    queries: 'Gestión de solicitudes'
+  query:
+    edit:
+      context: 'La consulta requiere contexto'
+      name: 'Nombre de la petición'
+      query: Petición
+    new: 'Nueva petición'
+    table:
+      date: 'Fecha de creación'
+      name: Nombre
