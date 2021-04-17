@@ -166,9 +166,11 @@ class CampaignRepository extends BaseRepository
                     ->setParameter('active', true);
     }
 
-    public function getAllCampaignsQueryBuilder() : QueryBuilder
+    public function getAllCampaignsQueryBuilder(string $platform) : QueryBuilder
     {
-        return $this->createQueryBuilder('c');
+        return $this->createQueryBuilder('c')
+                    ->where('c.platform = :platform')
+                    ->setParameter('platform', $platform);
     }
 
     /**

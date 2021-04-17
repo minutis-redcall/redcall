@@ -38,7 +38,9 @@ class CampaignController extends BaseController
      */
     public function index() : array
     {
-        $all = $this->campaignManager->getAllCampaignsQueryBuilder();
+        $all = $this->campaignManager->getAllCampaignsQueryBuilder(
+            $this->getPlatform()
+        );
 
         return [
             'type'  => 'all',
