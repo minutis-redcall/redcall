@@ -204,9 +204,9 @@ class CampaignManager
         return $this->messageManager->canUsePrefixesForEveryone($volunteersTakenPrefixes);
     }
 
-    public function getAllCampaignsQueryBuilder() : QueryBuilder
+    public function getAllCampaignsQueryBuilder(string $platform) : QueryBuilder
     {
-        return $this->campaignRepository->getAllCampaignsQueryBuilder();
+        return $this->campaignRepository->getAllCampaignsQueryBuilder($platform);
     }
 
     public function countAllOpenCampaigns() : int
