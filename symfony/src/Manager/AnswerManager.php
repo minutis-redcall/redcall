@@ -13,7 +13,6 @@ use App\Repository\AnswerRepository;
 use App\Security\Helper\Security;
 use App\Services\MessageFormatter;
 use Doctrine\ORM\QueryBuilder;
-use Google\Cloud\Language\LanguageClient;
 use Psr\Log\LoggerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -110,23 +109,6 @@ class AnswerManager extends BaseService
                 $this->getMessageFormatter()->formatSimpleSMSContent($message->getVolunteer(), $content),
                 ['message_id' => $message->getId()]
             );
-        }
-    }
-
-    public function addSentiment(Answer $answer, string $body)
-    {
-        try {
-            $client     = new LanguageClient();
-            $annotation = $client->analyzeSentiment($body);
-            $sentiment  = $annotation->sentiment();
-
-            $answer->setSentiment((int) ($sentiment['score'] * 100));
-            $answer->setMagnitude((int) ($sentiment['magnitude'] * 100));
-        } catch (\Throwable $e) {
-            $this->getLogger()->warning('Cannot retrieve answer\'s sentiment', [
-                'exception' => $e->getMessage(),
-                'trace'     => $e->getTraceAsString(),
-            ]);
         }
     }
 

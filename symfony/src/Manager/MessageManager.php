@@ -216,12 +216,6 @@ class MessageManager
         $answer->setReceivedAt(new DateTime());
         $answer->setUnclear($message->getCommunication()->isUnclear($message->getPrefix(), $body));
 
-        // We get the answer sentiment only if the answer is not one or several answer codes:
-        // Answer is a set of answer codes if every word inside has 2 characters
-        if (array_sum(array_map('strlen', explode(' ', $body))) !== 2 * count(explode(' ', $body))) {
-            $this->answerManager->addSentiment($answer, $body);
-        }
-
         if ($byAdmin) {
             $answer->setByAdmin($this->tokenStorage->getToken()->getUsername());
         }
