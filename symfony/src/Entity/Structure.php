@@ -242,7 +242,7 @@ class Structure
     public function getVolunteers() : Collection
     {
         return $this->volunteers->filter(function (Volunteer $volunteer) {
-            return $volunteer->isEnabled();
+            return $this->platform === $volunteer->getPlatform() && $volunteer->isEnabled();
         });
     }
 
@@ -379,7 +379,9 @@ class Structure
      */
     public function getUsers() : Collection
     {
-        return $this->users;
+        return $this->users->filter(function (User $user) {
+            return $this->platform === $user->getPlatform();
+        });
     }
 
     public function addUser(User $user) : self
@@ -446,16 +448,6 @@ class Structure
     }
 
     /**
-     * @return array
-     */
-    public function getActiveVolunteers()
-    {
-        return array_filter($this->volunteers->toArray(), function (Volunteer $volunteer) {
-            return $volunteer->isEnabled();
-        });
-    }
-
-    /**
      * @return DateTime|null
      *
      * @throws Exception
@@ -519,7 +511,7 @@ class Structure
      */
     public function validate()
     {
-
+        // TODO: check that parent structure is not a structure's child
     }
 
     /**

@@ -260,7 +260,9 @@ class Badge
      */
     public function getVolunteers() : Collection
     {
-        return $this->volunteers;
+        return $this->volunteers->filter(function (Volunteer $volunteer) {
+            return $this->platform === $volunteer->getPlatform();
+        });
     }
 
     public function addVolunteer(Volunteer $volunteer) : self
@@ -314,7 +316,9 @@ class Badge
      */
     public function getChildren() : Collection
     {
-        return $this->children;
+        return $this->children->filter(function (Badge $badge) {
+            return $this->platform === $badge->getPlatform();
+        });
     }
 
     public function addChild(self $child) : self
@@ -370,7 +374,9 @@ class Badge
      */
     public function getSynonyms() : Collection
     {
-        return $this->synonyms;
+        return $this->synonyms->filter(function (Badge $badge) {
+            return $this->platform === $badge->getPlatform();
+        });
     }
 
     public function addSynonym(self $synonym) : self

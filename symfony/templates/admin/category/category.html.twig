@@ -1,6 +1,25 @@
 <div class="card">
     <div class="card-header">
         <div class="card-title h3" style="{% if not category.enabled %}color:darkgray;{% endif %}">
+            {% if app.user.root %}
+
+                <span class="dropdown">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="margin: 5px;">
+                        {{ platforms[category.platform].flag }}
+                    </button>
+                    <span class="dropdown-menu" style="padding-left:5px;">
+                        {% for platform in platforms %}
+                            {% if platform.name != category.platform %}
+                                <a class="update-platform" href="#" data-id="{{ category.id }}"
+                                   data-uri="{{ path('admin_category_update_platform', {id: category.id, csrf: csrf_token('csrf'), platform: platform.name}) }}">
+                                    {{ platform.flag }}
+                                </a>
+                            {% endif %}
+                        {% endfor %}
+                    </span>
+                </span>
+
+            {% endif %}
             {{ category.name }}
             <div class="float-right">
                 <label class="switch">

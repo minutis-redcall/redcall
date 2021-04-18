@@ -90,7 +90,7 @@
                 <br/>
             {% endif %}
 
-            {{ 'manage_structures.volunteers'|trans({'%count%': structure.activeVolunteers|length}) }}
+            {{ 'manage_structures.volunteers'|trans({'%count%': structure.volunteers|length}) }}
             <br/>
 
             {{ 'manage_structures.users'|trans({'%count%': redcallUsers[structure.id]|default(0)}) }}

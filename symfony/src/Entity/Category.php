@@ -147,13 +147,15 @@ class Category
             return $this->getEnabledBadges();
         }
 
-        return $this->badges;
+        return $this->badges->filter(function (Badge $badge) {
+            return $this->platform === $badge->getPlatform();
+        });
     }
 
     public function getEnabledBadges()
     {
         return $this->badges->filter(function (Badge $badge) {
-            return $badge->isEnabled();
+            return $this->platform === $badge->getPlatform() && $badge->isEnabled();
         });
     }
 

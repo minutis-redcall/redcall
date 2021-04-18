@@ -160,16 +160,11 @@ class VolunteersController extends BaseController
             $queryBuilder = $this->volunteerManager->searchForCurrentUserQueryBuilder($criteria, $hideDisabled, $filterUsers);
         }
 
-        $platforms = null;
-        if ($this->getUser()->isRoot()) {
-            $platforms = $this->platformManager->getAvailablePlatforms();
-        }
-
         return $this->render('management/volunteers/list.html.twig', [
             'search'     => $search->createView(),
             'volunteers' => $this->paginationManager->getPager($queryBuilder),
             'structure'  => $structure,
-            'platforms'  => $platforms,
+            'platforms'  => $this->getPlatforms(),
         ]);
     }
 
@@ -495,15 +490,19 @@ class VolunteersController extends BaseController
         return $this->redirectToRoute('management_volunteers_list');
     }
 
-    private function getContext(Volunteer $volunteer)
+    protected function getPlatforms() : ?array
     {
-        $platforms = null;
-        if ($this->getUser()->isRoot()) {
-            $platforms = $this->platformManager->getAvailablePlatforms();
+        if (!$this->getUser()->isRoot()) {
+            return null;
         }
 
+        return $this->platformManager->getAvailablePlatforms();
+    }
+
+    private function getContext(Volunteer $volunteer)
+    {
         return [
-            'platforms' => $platforms,
+            'platforms' => $this->getPlatforms(),
             'volunteer' => $volunteer,
         ];
     }
