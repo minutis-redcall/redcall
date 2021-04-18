@@ -111,11 +111,11 @@ class Volunteer
     private $locked = false;
 
     /**
-     * @var bool
+     * @var \DateTime|null
      *
-     * @ORM\Column(type="boolean", options={"default" : 0})
+     * @ORM\Column(type="datetime", nullable=true)
      */
-    private $minor = false;
+    private $birthday;
 
     /**
      * @var DateTime
@@ -338,14 +338,23 @@ class Volunteer
         return $this;
     }
 
-    public function isMinor() : ?bool
+    public function isMinor() : bool
     {
-        return $this->minor;
+        if (!$this->birthday) {
+            return false;
+        }
+
+        return strtotime('+18 years', $this->birthday->getTimestamp()) > time();
     }
 
-    public function setMinor(bool $minor) : Volunteer
+    public function getBirthday() : ?DateTime
     {
-        $this->minor = $minor;
+        return $this->birthday;
+    }
+
+    public function setBirthday(?DateTime $birthday) : Volunteer
+    {
+        $this->birthday = $birthday;
 
         return $this;
     }

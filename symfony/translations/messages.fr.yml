@@ -597,6 +597,7 @@ manage_volunteers:
     mail_subject: '⚠️ RedCall: Vous avez un message'
   form:
     added: 'Le bénévole a correctement été ajouté.'
+    birthday: 'Date de naissance'
     create: 'Ajouter un nouveau bénévole'
     email: Email
     email_locked: 'Geler l''email *'

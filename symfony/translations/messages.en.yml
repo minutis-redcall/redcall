@@ -597,6 +597,7 @@ manage_volunteers:
     mail_subject: '⚠️ RedCall: You have a message'
   form:
     added: 'Volunteer has properly been added.'
+    birthday: 'Birth day'
     create: 'Create a new volunteer'
     email: Email
     email_locked: 'Locked email *'
@@ -607,7 +608,6 @@ manage_volunteers:
     invisible_badges: 'Other badges'
     last_name: 'Last name'
     lock_info: '* Locked phones and emails are not automatically refreshed by Pegass updates.'
-    minor: 'Minor (under 18)'
     optout_until_me: 'Volunteer not available until...'
     phone_number: 'Phone number'
     phone_number_locked: 'Locked phone number *'

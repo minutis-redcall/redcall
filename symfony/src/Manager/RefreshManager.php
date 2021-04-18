@@ -331,6 +331,13 @@ class RefreshManager
         $volunteer->setFirstName($this->normalizeName($pegass->evaluate('user.prenom')));
         $volunteer->setLastName($this->normalizeName($pegass->evaluate('user.nom')));
 
+        // Update birth day
+        $birthday = substr($pegass->evaluate('infos.dateNaissance'), 0, 10);
+
+        if (preg_match('/^\d{4}\-\d{2}\-\d{2}$/', $birthday)) {
+            $volunteer->setBirthday(new \DateTime($birthday));
+        }
+
         if (!$volunteer->isPhoneNumberLocked()) {
             $this->fetchPhoneNumber($volunteer, $pegass->evaluate('contact'));
         }
