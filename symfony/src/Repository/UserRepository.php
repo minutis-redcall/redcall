@@ -42,26 +42,18 @@ class UserRepository extends AbstractUserRepository implements UserRepositoryInt
         $this->_em->flush();
     }
 
+    public function findOneByExternalId(string $platform, string $externalId) : ?User
+    {
+        return $this->findOneBy([
+            'platform'   => $platform,
+            'externalId' => $externalId,
+        ]);
+    }
+
     public function findAll()
     {
         return $this->findBy([
             'platform' => $this->security->getPlatform(),
-        ]);
-    }
-
-    public function findOneByUsername(string $username) : ?AbstractUser
-    {
-        $platform = $this->security->getPlatform();
-
-        if ($platform) {
-            return $this->findOneBy([
-                'platform' => $platform,
-                'username' => $username,
-            ]);
-        }
-
-        return $this->findOneBy([
-            'username' => $username,
         ]);
     }
 
@@ -75,7 +67,7 @@ class UserRepository extends AbstractUserRepository implements UserRepositoryInt
             ->where(
                 $qb->expr()->orX(
                     'u.username LIKE :criteria',
-                    'v.nivol LIKE :criteria',
+                    'v.externalId LIKE :criteria',
                     'v.firstName LIKE :criteria',
                     'v.lastName LIKE :criteria',
                     'v.email LIKE :criteria',
@@ -111,7 +103,7 @@ class UserRepository extends AbstractUserRepository implements UserRepositoryInt
                     ->setParameter('structure', $structure)
                     ->andWhere('u.isTrusted = true')
                     ->andWhere('u.platform = :platform')
-                    ->setParameter('platform', $this->security->getPlatform())
+                    ->setParameter('platform', $structure->getPlatform())
                     ->getQuery()
                     ->getResult();
     }

@@ -71,9 +71,9 @@ class UserManager extends BaseUserManager
         return $this->userRepository->findAll();
     }
 
-    public function findOneByNivol(string $nivol) : ?User
+    public function findOneByExternalId(string $platform, string $externalId) : ?User
     {
-        return $this->userRepository->findOneByNivol($nivol);
+        return $this->userRepository->findOneByExternalId($platform, $externalId);
     }
 
     public function changeLocale(User $user, string $locale)
@@ -83,12 +83,11 @@ class UserManager extends BaseUserManager
         $this->userRepository->save($user);
     }
 
-    public function updateNivol(string $platform, User $user, string $nivol)
+    public function changeVolunteer(string $platform, User $user, string $externalId)
     {
-        $volunteer = $this->volunteerManager->findOneByNivol($user->getPlatform(), $nivol);
+        $volunteer = $this->volunteerManager->findOneByNivol($user->getPlatform(), $externalId);
 
         if (!$volunteer) {
-            $user->setNivol(null);
             $user->setVolunteer(null);
             $user->getStructures()->clear();
 
@@ -101,7 +100,6 @@ class UserManager extends BaseUserManager
             return;
         }
 
-        $user->setNivol($nivol);
         $user->setVolunteer($volunteer);
 
         $structures = $this->structureManager->findCallableStructuresForVolunteer($platform, $volunteer);

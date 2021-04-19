@@ -113,7 +113,7 @@ class PegassController extends BaseController
         $users = $this->userManager->findAll();
 
         $list = array_filter(array_map(function (User $user) {
-            return $user->getNivol();
+            return $user->getExternalId();
         }, $users));
 
         return $this->render('admin/pegass/user_list.html.twig', [
@@ -132,7 +132,7 @@ class PegassController extends BaseController
         $nivol = $request->request->get('nivol');
 
         if (!$user->isLocked()) {
-            $this->userManager->updateNivol($this->getPlatform(), $user, $nivol);
+            $this->userManager->changeVolunteer($this->getPlatform(), $user, $nivol);
         }
 
         $structureNames = array_filter(array_map(function (Structure $structure) {
@@ -251,9 +251,9 @@ class PegassController extends BaseController
             $application->setAutoExit(false);
 
             $input = new ArrayInput([
-                'command'  => 'user:create',
-                'platform' => $this->getPlatform(),
-                'nivol'    => [$volunteer->getNivol()],
+                'command'     => 'user:create',
+                'platform'    => $this->getPlatform(),
+                'external-id' => [$volunteer->getNivol()],
             ]);
 
             $application->run($input, new NullOutput());
@@ -280,7 +280,7 @@ class PegassController extends BaseController
         $this->userManager->save($user);
 
         return $this->redirectToRoute('admin_pegass_index', [
-            'form[criteria]' => $user->getNivol(),
+            'form[criteria]' => $user->getExternalId(),
         ]);
     }
 
@@ -296,7 +296,7 @@ class PegassController extends BaseController
         $this->userManager->save($user);
 
         return $this->redirectToRoute('admin_pegass_index', [
-            'form[criteria]' => $user->getNivol(),
+            'form[criteria]' => $user->getExternalId(),
         ]);
     }
 
@@ -312,7 +312,7 @@ class PegassController extends BaseController
         $this->userManager->save($user);
 
         return $this->redirectToRoute('admin_pegass_index', [
-            'form[criteria]' => $user->getNivol(),
+            'form[criteria]' => $user->getExternalId(),
         ]);
     }
 
@@ -328,7 +328,7 @@ class PegassController extends BaseController
         $this->userManager->save($user);
 
         return $this->redirectToRoute('admin_pegass_index', [
-            'form[criteria]' => $user->getNivol(),
+            'form[criteria]' => $user->getExternalId(),
         ]);
     }
 
@@ -344,7 +344,7 @@ class PegassController extends BaseController
         $this->userManager->save($user);
 
         return $this->redirectToRoute('admin_pegass_index', [
-            'form[criteria]' => $user->getNivol(),
+            'form[criteria]' => $user->getExternalId(),
         ]);
     }
 
@@ -360,7 +360,7 @@ class PegassController extends BaseController
         $this->userManager->save($user);
 
         return $this->redirectToRoute('admin_pegass_index', [
-            'form[criteria]' => $user->getNivol(),
+            'form[criteria]' => $user->getExternalId(),
         ]);
     }
 
@@ -389,7 +389,7 @@ class PegassController extends BaseController
         $this->userManager->save($user);
 
         return $this->redirectToRoute('admin_pegass_index', [
-            'form[criteria]' => $user->getNivol(),
+            'form[criteria]' => $user->getExternalId(),
         ]);
     }
 

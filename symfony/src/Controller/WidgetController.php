@@ -147,7 +147,7 @@ class WidgetController extends BaseController
         $form = $this
             ->createNamedFormBuilder(sprintf('nivol-%s', Uuid::uuid4()))
             ->add('nivol', VolunteerWidgetType::class, [
-                'data'  => $user ? $user->getNivol() : null,
+                'data'  => $user ? $user->getExternalId() : null,
                 'label' => false,
             ])
             ->getForm();

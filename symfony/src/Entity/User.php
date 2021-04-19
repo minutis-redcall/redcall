@@ -10,8 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * @ORM\Table(
  *    indexes={
- *        @ORM\Index(name="platform_idx", columns={"platform"}),
- *        @ORM\Index(name="nivol_idx", columns={"nivol"})
+ *        @ORM\Index(name="platform_idx", columns={"platform"})
  *     }
  * )
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
@@ -38,11 +37,6 @@ class User extends AbstractUser
     private $timezone;
 
     /**
-     * @ORM\Column(type="string", length=80, nullable=true)
-     */
-    private $nivol;
-
-    /**
      * @ORM\Column(type="boolean", options={"default" : 0})
      */
     private $isDeveloper = false;
@@ -53,6 +47,8 @@ class User extends AbstractUser
     private $isRoot = false;
 
     /**
+     * @var Volunteer|null
+     *
      * @ORM\OneToOne(targetEntity="App\Entity\Volunteer", inversedBy="user")
      */
     private $volunteer;
@@ -111,16 +107,9 @@ class User extends AbstractUser
         return $this;
     }
 
-    public function getNivol() : ?string
+    public function getExternalId() : ?string
     {
-        return $this->nivol;
-    }
-
-    public function setNivol(?string $nivol) : self
-    {
-        $this->nivol = $nivol;
-
-        return $this;
+        return $this->volunteer ? $this->volunteer->getExternalId() : null;
     }
 
     public function isDeveloper() : bool

@@ -148,8 +148,8 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
         // TODO / SECURITY: if 2 nivols are the same in 2 distinct platforms, a volunteer could connect to someone else's account
         $volunteer = null;
         foreach ($this->platformManager->getPlatformChoices() as $platform) {
-            $nivol     = ltrim($decoded['nivol'], '0');
-            $volunteer = $this->volunteerManager->findOneByNivol($platform, $nivol);
+            $externalId = ltrim($decoded['nivol'], '0');
+            $volunteer  = $this->volunteerManager->findOneByNivol($platform, $externalId);
             if ($volunteer) {
                 break;
             }
@@ -157,7 +157,7 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
 
         if (null === $volunteer) {
             $this->logger->warning('Minutis authenticator: nivol not associated with a volunteer', [
-                'nivol' => $nivol,
+                'nivol' => $externalId,
             ]);
 
             throw new BadCredentialsException();
@@ -165,7 +165,7 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
 
         if (!$volunteer->isEnabled()) {
             $this->logger->warning('Minutis authenticator: nivol associated to a disabled volunteer', [
-                'nivol' => $nivol,
+                'nivol' => $externalId,
             ]);
 
             throw new BadCredentialsException();
@@ -175,10 +175,10 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
         $this->volunteer = $volunteer;
 
         // Seek for a RedCall user attached to that volunteer
-        $user = $this->userManager->findOneByNivol($nivol);
+        $user = $this->userManager->findOneByExternalId($volunteer->getPlatform(), $externalId);
         if (null === $user) {
             $this->logger->info('Minutis authenticator: a volunteer without RedCall access clicked on Minutis link', [
-                'nivol' => $nivol,
+                'nivol' => $externalId,
             ]);
 
             throw new BadCredentialsException();

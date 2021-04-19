@@ -273,9 +273,9 @@ class RefreshManager
             $this->volunteerManager->save($volunteer);
 
             // If volunteer is bound to a RedCall user, update its structures
-            $user = $this->userManager->findOneByNivol($volunteer->getNivol());
+            $user = $this->userManager->findOneByExternalId(Platform::FR, $volunteer->getExternalId());
             if ($user) {
-                $this->userManager->updateNivol(Platform::FR, $user, $volunteer->getNivol());
+                $this->userManager->changeVolunteer(Platform::FR, $user, $volunteer->getExternalId());
             }
 
             return;
@@ -363,9 +363,9 @@ class RefreshManager
         $this->volunteerManager->save($volunteer);
 
         // If volunteer is bound to a RedCall user, update its structures
-        $user = $this->userManager->findOneByNivol($volunteer->getNivol());
+        $user = $this->userManager->findOneByExternalId(Platform::FR, $volunteer->getExternalId());
         if ($user) {
-            $this->userManager->updateNivol(Platform::FR, $user, $volunteer->getNivol());
+            $this->userManager->changeVolunteer(Platform::FR, $user, $volunteer->getExternalId());
         }
     }
 
