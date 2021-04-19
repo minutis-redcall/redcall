@@ -9,6 +9,7 @@ use App\Security\Helper\Security;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\CallbackTransformer;
+use Symfony\Component\Form\Extension\Core\Type\BirthdayType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -18,6 +19,7 @@ use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\GreaterThan;
+use Symfony\Component\Validator\Constraints\LessThan;
 
 class VolunteerType extends AbstractType
 {
@@ -45,9 +47,13 @@ class VolunteerType extends AbstractType
             ->add('lastName', TextType::class, [
                 'label' => 'manage_volunteers.form.last_name',
             ])
-            ->add('minor', CheckboxType::class, [
-                'label'    => 'manage_volunteers.form.minor',
-                'required' => false,
+            ->add('birthday', BirthdayType::class, [
+                'label'       => 'manage_volunteers.form.birthday',
+                'widget'      => 'single_text',
+                'required'    => false,
+                'constraints' => [
+                    new LessThan('today'),
+                ],
             ])
             ->add('phones', PhoneCardsType::class, [
                 'label' => false,

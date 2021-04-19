@@ -129,7 +129,7 @@ class FixturesManager
         $volunteer->setEnabled(true);
         $volunteer->setExternalId($nivol);
         $volunteer->setLocked(true);
-        $volunteer->setMinor(false);
+        $volunteer->setBirthday(new \DateTime(sprintf('%d-%d-%d', 1970 + rand() % 50, 1 + rand() % 12, 1 + rand() % 31)));
 
         $badges = [];
         for ($i = 0; $i < 4; $i++) {

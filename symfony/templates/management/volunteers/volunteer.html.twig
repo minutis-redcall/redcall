@@ -116,6 +116,14 @@
                 <br/>
             {% endif %}
         </div>
+        {% if volunteer.report %}
+            <div class="col-md-12">
+                <hr/>
+                {% for report in volunteer.report %}
+                    <code>{{ report|trans }}</code>
+                {% endfor %}
+            </div>
+        {% endif %}
     </div>
 
     <div class="card-footer">

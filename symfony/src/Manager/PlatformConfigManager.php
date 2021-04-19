@@ -22,6 +22,11 @@ class PlatformConfigManager
      */
     private $phoneManager;
 
+    /**
+     * @var array
+     */
+    private $platforms;
+
     public function __construct(ParameterBagInterface $parameterBag,
         LanguageConfigManager $languageManager,
         PhoneConfigManager $phoneManager)
@@ -36,13 +41,17 @@ class PlatformConfigManager
      */
     public function getAvailablePlatforms() : array
     {
-        $platforms = [];
-        foreach ($this->parameterBag->get('platforms') as $row) {
-            $platform                        = $this->createFromRow($row);
-            $platforms[$platform->getName()] = $platform;
+        if ($this->platforms) {
+            return $this->platforms;
         }
 
-        return $platforms;
+        $this->platforms = [];
+        foreach ($this->parameterBag->get('platforms') as $row) {
+            $platform                              = $this->createFromRow($row);
+            $this->platforms[$platform->getName()] = $platform;
+        }
+
+        return $this->platforms;
     }
 
     public function getPlatformChoices() : array

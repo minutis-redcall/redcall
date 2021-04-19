@@ -621,6 +621,7 @@ manage_volunteers:
     update: 'Update volunteer'
     updated: 'Volunteer has properly been updated.'
     visible_badges: 'Main badges'
+    birthday: 'Birth day'
     optout_until: 'Volunteer not available until...'
   others: 'and %count% other(s)'
   redcall:

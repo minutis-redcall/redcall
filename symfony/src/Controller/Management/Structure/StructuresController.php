@@ -113,17 +113,12 @@ class StructuresController extends BaseController
             )
         );
 
-        $platforms = null;
-        if ($this->getUser()->isRoot()) {
-            $platforms = $this->platformManager->getAvailablePlatforms();
-        }
-
         return $this->render('management/structures/list.html.twig', [
             'search'       => $search->createView(),
             'structures'   => $this->paginationManager->getPager($queryBuilder),
             'redcallUsers' => $redcallUsers,
             'enabled'      => $enabled,
-            'platforms'    => $platforms,
+            'platforms'    => $this->getPlatforms(),
         ]);
     }
 
@@ -300,13 +295,8 @@ class StructuresController extends BaseController
 
     private function getContext(Structure $structure)
     {
-        $platforms = null;
-        if ($this->getUser()->isRoot()) {
-            $platforms = $this->platformManager->getAvailablePlatforms();
-        }
-
         return [
-            'platforms'    => $platforms,
+            'platforms'    => $this->getPlatforms(),
             'structure'    => $structure,
             'redcallUsers' => [
                 $structure->getId() => count($structure->getUsers()),
@@ -346,5 +336,14 @@ class StructuresController extends BaseController
         }
 
         return $structure;
+    }
+
+    private function getPlatforms() : ?array
+    {
+        if (!$this->getUser()->isRoot()) {
+            return null;
+        }
+
+        return $this->platformManager->getAvailablePlatforms();
     }
 }

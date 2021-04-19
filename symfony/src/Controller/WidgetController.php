@@ -211,7 +211,7 @@ class WidgetController extends BaseController
         $criteria = trim($request->query->get('keyword'));
 
         if ($searchAll) {
-            $structures = $this->structureManager->searchAll($criteria, 20);
+            $structures = $this->structureManager->searchAll($this->getPlatform(), $criteria, 20);
         } else {
             $structures = $this->structureManager->searchForCurrentUser($this->getPlatform(), $criteria, 20);
         }

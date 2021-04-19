@@ -111,11 +111,11 @@ class Volunteer
     private $locked = false;
 
     /**
-     * @var bool
+     * @var \DateTime|null
      *
-     * @ORM\Column(type="boolean", options={"default" : 0})
+     * @ORM\Column(type="datetime", nullable=true)
      */
-    private $minor = false;
+    private $birthday;
 
     /**
      * @var DateTime
@@ -338,14 +338,23 @@ class Volunteer
         return $this;
     }
 
-    public function isMinor() : ?bool
+    public function isMinor() : bool
     {
-        return $this->minor;
+        if (!$this->birthday) {
+            return false;
+        }
+
+        return strtotime('+18 years', $this->birthday->getTimestamp()) > time();
     }
 
-    public function setMinor(bool $minor) : Volunteer
+    public function getBirthday() : ?DateTime
     {
-        $this->minor = $minor;
+        return $this->birthday;
+    }
+
+    public function setBirthday(?DateTime $birthday) : Volunteer
+    {
+        $this->birthday = $birthday;
 
         return $this;
     }
@@ -401,13 +410,15 @@ class Volunteer
             return $this->getEnabledStructures();
         }
 
-        return $this->structures;
+        return $this->structures->filter(function (Structure $structure) {
+            return $this->platform === $structure->getPlatform();
+        });
     }
 
     public function getEnabledStructures() : Collection
     {
         return $this->structures->filter(function (Structure $structure) {
-            return $structure->isEnabled();
+            return $this->platform === $structure->getPlatform() && $structure->isEnabled();
         });
     }
 
@@ -690,7 +701,9 @@ class Volunteer
      */
     public function getBadges() : Collection
     {
-        return $this->badges;
+        return $this->badges->filter(function (Badge $badge) {
+            return $this->platform === $badge->getPlatform();
+        });
     }
 
     public function setBadges(array $badges)
@@ -788,7 +801,7 @@ class Volunteer
 
     public function getVisibleBadges() : array
     {
-        $badges = $this->badges->toArray();
+        $badges = $this->getBadges()->toArray();
 
         // Only use synonyms
         foreach ($badges as $key => $badge) {

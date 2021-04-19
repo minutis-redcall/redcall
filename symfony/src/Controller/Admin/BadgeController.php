@@ -4,7 +4,6 @@ namespace App\Controller\Admin;
 
 use App\Base\BaseController;
 use App\Entity\Badge;
-use App\Entity\Structure;
 use App\Form\Type\BadgeWidgetType;
 use App\Form\Type\CategoryWigetType;
 use App\Manager\BadgeManager;
@@ -68,16 +67,11 @@ class BadgeController extends BaseController
             )
         );
 
-        $platforms = null;
-        if ($this->getUser()->isRoot()) {
-            $platforms = $this->platformManager->getAvailablePlatforms();
-        }
-
         return [
             'badges'    => $badges,
             'counts'    => $this->badgeManager->getVolunteerCountInSearch($badges),
             'search'    => $searchForm->createView(),
-            'platforms' => $platforms,
+            'platforms' => $this->getPlatforms(),
         ];
     }
 
@@ -182,20 +176,24 @@ class BadgeController extends BaseController
         return $this->redirectToRoute('admin_badge_index');
     }
 
+    protected function getPlatforms() : ?array
+    {
+        if (!$this->getUser()->isRoot()) {
+            return null;
+        }
+
+        return $this->platformManager->getAvailablePlatforms();
+    }
+
     private function getContext(Badge $badge)
     {
         $counts = $this->badgeManager->getVolunteerCountInBadgeList([$badge->getId()]);
         $count  = $counts ? reset($counts) : 0;
 
-        $platforms = null;
-        if ($this->getUser()->isRoot()) {
-            $platforms = $this->platformManager->getAvailablePlatforms();
-        }
-
         return [
             'badge'     => $badge,
             'count'     => $count,
-            'platforms' => $platforms,
+            'platforms' => $this->getPlatforms(),
         ];
     }
 
