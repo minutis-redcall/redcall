@@ -49,7 +49,7 @@ class CreateUserCommand extends BaseCommand
             ->setName('user:create')
             ->setDescription('Create users based on volunteer nivols')
             ->addArgument('platform', InputArgument::REQUIRED, 'Platform for which to create user')
-            ->addArgument('nivol', InputArgument::REQUIRED | InputArgument::IS_ARRAY, 'Nivol from which to create a new user');
+            ->addArgument('external-id', InputArgument::REQUIRED | InputArgument::IS_ARRAY, 'External IDs from which to create a new user');
     }
 
     /**
@@ -59,26 +59,26 @@ class CreateUserCommand extends BaseCommand
     {
         $platform = $input->getArgument('platform');
 
-        foreach ($input->getArgument('nivol') as $nivol) {
-            $volunteer = $this->volunteerManager->findOneByNivol($platform, $nivol);
+        foreach ($input->getArgument('nivol') as $externalId) {
+            $volunteer = $this->volunteerManager->findOneByNivol($platform, $externalId);
 
             if (!$volunteer) {
-                $output->writeln(sprintf('KO %s: nivol do not exist', $nivol));
+                $output->writeln(sprintf('KO %s: nivol do not exist', $externalId));
                 continue;
             }
 
             if (!$volunteer->getEmail()) {
-                $output->writeln(sprintf('KO: %s: volunteer has no email', $nivol));
+                $output->writeln(sprintf('KO: %s: volunteer has no email', $externalId));
                 continue;
             }
 
             if ($this->userManager->findOneByUsername($volunteer->getEmail())) {
-                $output->writeln(sprintf('KO %s: user having this email already exist', $nivol));
+                $output->writeln(sprintf('KO %s: user having this email already exist', $externalId));
                 continue;
             }
 
-            if ($this->userManager->findOneByNivol($nivol)) {
-                $output->writeln(sprintf('KO %s: nivol already connected to a user', $nivol));
+            if ($this->userManager->findOneByExternalId($platform, $externalId)) {
+                $output->writeln(sprintf('KO %s: nivol already connected to a user', $externalId));
                 continue;
             }
 
@@ -96,9 +96,9 @@ class CreateUserCommand extends BaseCommand
             $user->setIsTrusted(true);
             $this->userManager->save($user);
 
-            $this->userManager->updateNivol($platform, $user, $nivol);
+            $this->userManager->changeVolunteer($platform, $user, $externalId);
 
-            $output->writeln(sprintf('OK %s: user created', $nivol));
+            $output->writeln(sprintf('OK %s: user created', $externalId));
         }
 
         return 0;
