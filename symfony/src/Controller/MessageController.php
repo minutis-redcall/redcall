@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Base\BaseController;
 use App\Entity\Message;
+use App\Manager\LanguageConfigManager;
 use App\Manager\MessageManager;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -26,9 +27,15 @@ class MessageController extends BaseController
      */
     protected $messageManager;
 
-    public function __construct(MessageManager $messageRepository)
+    /**
+     * @var LanguageConfigManager
+     */
+    protected $languageManager;
+
+    public function __construct(MessageManager $messageRepository, LanguageConfigManager $languageManager)
     {
-        $this->messageManager = $messageRepository;
+        $this->messageManager  = $messageRepository;
+        $this->languageManager = $languageManager;
     }
 
     /**
@@ -45,12 +52,17 @@ class MessageController extends BaseController
             ]);
         }
 
+        $language = $this->languageManager->getLanguageConfigForCommunication(
+            $message->getCommunication()
+        );
+
         return $this->render('message/index.html.twig', [
             'campaign'      => $message->getCommunication()->getCampaign(),
             'communication' => $message->getCommunication(),
             'message'       => $message,
             'website_url'   => getenv('WEBSITE_URL'),
             'form'          => $form->createView(),
+            'language'      => $language,
         ]);
     }
 
