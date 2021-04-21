@@ -246,6 +246,7 @@ class RefreshManager
             $volunteer->setPlatform(Platform::FR);
         }
 
+        $volunteer->setNivol(ltrim($pegass->getIdentifier(), '0'));
         $volunteer->setExternalId(ltrim($pegass->getIdentifier(), '0'));
         $volunteer->setReport([]);
 
@@ -278,7 +279,7 @@ class RefreshManager
             // If volunteer is bound to a RedCall user, update its structures
             $user = $this->userManager->findOneByExternalId(Platform::FR, $volunteer->getExternalId());
             if ($user) {
-                $this->userManager->changeVolunteer(Platform::FR, $user, $volunteer->getExternalId());
+                $this->userManager->changeVolunteer($user, Platform::FR, $volunteer->getExternalId());
             }
 
             $this->checkAdminRole($volunteer);
@@ -378,7 +379,7 @@ class RefreshManager
         // If volunteer is bound to a RedCall user, update its structures
         $user = $volunteer->getUser();
         if ($user) {
-            $this->userManager->changeVolunteer(Platform::FR, $user, $volunteer->getExternalId());
+            $this->userManager->changeVolunteer($user, Platform::FR, $volunteer->getExternalId());
         }
 
         $this->checkAdminRole($volunteer);
@@ -394,8 +395,11 @@ class RefreshManager
         }
 
         if ($volunteer->hasBadge(Platform::FR, self::BADGE_ADMIN)) {
-            $this->volunteerManager->save($volunteer);
-            $this->userManager->createUser(Platform::FR, $volunteer->getNivol());
+            if (!$volunteer->getUser()) {
+                $this->volunteerManager->save($volunteer);
+                $this->userManager->createUser(Platform::FR, $volunteer->getNivol());
+            }
+
             $user = $this->userManager->findOneByExternalId(Platform::FR, $volunteer->getNivol());
             $user->setIsAdmin(true);
             $this->userManager->save($user);

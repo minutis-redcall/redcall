@@ -15,9 +15,11 @@
                         {% if structure.enabled %}
 
                             {% if not structure.locked and constant('\\App\\Enum\\Platform::FR') == app.user.platform and structure.lastPegassUpdate %}
-                                <a class="dropdown-item" href="{{ path('management_structures_pegass', {id: structure.id}) }}" target="_blank">
-                                    {{ 'manage_structures.view_pegass_entry'|trans }}
-                                </a>
+                                {% if is_granted('ROLE_ADMIN') %}
+                                    <a class="dropdown-item" href="{{ path('management_structures_pegass', {id: structure.id}) }}" target="_blank">
+                                        {{ 'manage_structures.view_pegass_entry'|trans }}
+                                    </a>
+                                {% endif %}
                                 <a class="dropdown-item" href="{{ path('management_structures_force_update', {id: structure.id, csrf: csrf_token('structures')}) }}">
                                     {{ 'manage_structures.force_pegass_update'|trans }}
                                 </a>

@@ -89,9 +89,9 @@ class UserManager extends BaseUserManager
         $this->userRepository->save($user);
     }
 
-    public function changeVolunteer(string $platform, User $user, string $externalId)
+    public function changeVolunteer(User $user, string $volunteerPlatform, string $volunteerExternalId)
     {
-        $volunteer = $this->volunteerManager->findOneByNivol($user->getPlatform(), $externalId);
+        $volunteer = $this->volunteerManager->findOneByNivol($user->getPlatform(), $volunteerExternalId);
 
         if (!$volunteer) {
             $user->setVolunteer(null);
@@ -108,7 +108,7 @@ class UserManager extends BaseUserManager
 
         $user->setVolunteer($volunteer);
 
-        $structures = $this->structureManager->findCallableStructuresForVolunteer($platform, $volunteer);
+        $structures = $this->structureManager->findCallableStructuresForVolunteer($volunteerPlatform, $volunteer);
         $user->updateStructures($structures);
 
         $this->save($user);

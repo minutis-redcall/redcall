@@ -138,6 +138,17 @@ class PegassClient
 
         $this->getClient()->request('GET', $url);
 
+        $body = $this->getClient()->getResponse()->getContent();
+
+        if (!$array = json_decode($body)) {
+            throw new \RuntimeException(
+                sprintf('Unable to update a Pegass entity: %s. Response body: %s', $url, str_replace([
+                    "\r",
+                    "\n",
+                ], ' ', $body))
+            );
+        }
+
         return json_decode($this->getClient()->getResponse()->getContent(), true);
     }
 

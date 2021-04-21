@@ -129,7 +129,7 @@ class PegassController extends BaseController
         $nivol = $request->request->get('nivol');
 
         if (!$user->isLocked()) {
-            $this->userManager->changeVolunteer($this->getPlatform(), $user, $nivol);
+            $this->userManager->changeVolunteer($user, $this->getPlatform(), $nivol);
         }
 
         $structureNames = array_filter(array_map(function (Structure $structure) {
