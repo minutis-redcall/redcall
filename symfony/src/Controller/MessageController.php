@@ -118,15 +118,12 @@ class MessageController extends BaseController
         return $this
             ->createFormBuilder()
             ->add('freeAnswer', TextType::class, [
-                'label'       => 'campaign_status.free_answer',
                 'constraints' => [
                     new Length(['max' => 1024]),
                 ],
                 'required'    => false,
             ])
-            ->add('submit', SubmitType::class, [
-                'label' => 'base.button.submit',
-            ])
+            ->add('submit', SubmitType::class)
             ->getForm()
             ->handleRequest($request);
     }
