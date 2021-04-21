@@ -11,7 +11,7 @@
     <div class="card">
         <div class="card-header">
             <div class="card-title">
-                {{ 'campaign_status.communication_short_title'|trans({'%date%': communication.createdAt|date('d/m/Y'), '%time%': communication.createdAt|date('H:i')}) }}
+                {{ 'campaign_status.communication_short_title'|trans({'%date%': communication.createdAt|date('d/m/Y'), '%time%': communication.createdAt|date('H:i')}, null, language.locale) }}
                 {% if communication.subject %}
                     <div class="h3">
                         {{ communication.subject }}
@@ -65,12 +65,19 @@
                 {% endif %}
             </div>
             <div id="free-answer">
-                {{ form(form) }}
+                {{ form_start(form) }}
+                {{ form_row(form.freeAnswer, {
+                    label: 'campaign_status.free_answer'|trans({}, null, language.locale)
+                }) }}
+                {{ form_row(form.submit, {
+                    label: 'base.button.submit'|trans({}, null, language.locale)
+                }) }}
+                {{ form_end(form) }}
             </div>
             <div id="answers-history">
                 {% if message.answers|length %}
                     <hr/>
-                    <h4>{{ 'campaign_status.answer_history'|trans }}</h4>
+                    <h4>{{ 'campaign_status.answer_history'|trans({}, null, language.locale) }}</h4>
                     <table class="table table-striped">
                         {% for answer in message.answers %}
                             <tr>
