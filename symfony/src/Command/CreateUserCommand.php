@@ -96,7 +96,7 @@ class CreateUserCommand extends BaseCommand
             $user->setIsTrusted(true);
             $this->userManager->save($user);
 
-            $this->userManager->changeVolunteer($platform, $user, $externalId);
+            $this->userManager->changeVolunteer($user, $platform, $externalId);
 
             $output->writeln(sprintf('OK %s: user created', $externalId));
         }

@@ -44,10 +44,15 @@ class UserRepository extends AbstractUserRepository implements UserRepositoryInt
 
     public function findOneByExternalId(string $platform, string $externalId) : ?User
     {
-        return $this->findOneBy([
-            'platform'   => $platform,
-            'externalId' => $externalId,
-        ]);
+        return $this
+            ->createQueryBuilder('u')
+            ->join('u.volunteer', 'v')
+            ->where('v.platform = :platform')
+            ->setParameter('platform', $platform)
+            ->andWhere('v.externalId = :externalId')
+            ->setParameter('externalId', $externalId)
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 
     public function findAll()

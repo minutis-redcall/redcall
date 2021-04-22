@@ -7,6 +7,10 @@ use App\Entity\User;
 use App\Repository\UserRepository;
 use Bundles\PasswordLoginBundle\Manager\UserManager as BaseUserManager;
 use Doctrine\ORM\QueryBuilder;
+use Symfony\Bundle\FrameworkBundle\Console\Application;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Output\NullOutput;
+use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class UserManager extends BaseUserManager
@@ -27,20 +31,22 @@ class UserManager extends BaseUserManager
     private $tokenStorage;
 
     /**
-     * @param VolunteerManager      $volunteerManager
-     * @param StructureManager      $structureManager
-     * @param TokenStorageInterface $tokenStorage
+     * @var KernelInterface
      */
+    private $kernel;
+
     public function __construct(UserRepository $userRepository,
         VolunteerManager $volunteerManager,
         StructureManager $structureManager,
-        TokenStorageInterface $tokenStorage)
+        TokenStorageInterface $tokenStorage,
+        KernelInterface $kernel)
     {
         parent::__construct($userRepository);
 
         $this->volunteerManager = $volunteerManager;
         $this->structureManager = $structureManager;
         $this->tokenStorage     = $tokenStorage;
+        $this->kernel           = $kernel;
     }
 
     /**
@@ -83,9 +89,9 @@ class UserManager extends BaseUserManager
         $this->userRepository->save($user);
     }
 
-    public function changeVolunteer(string $platform, User $user, string $externalId)
+    public function changeVolunteer(User $user, string $volunteerPlatform, string $volunteerExternalId)
     {
-        $volunteer = $this->volunteerManager->findOneByNivol($user->getPlatform(), $externalId);
+        $volunteer = $this->volunteerManager->findOneByNivol($user->getPlatform(), $volunteerExternalId);
 
         if (!$volunteer) {
             $user->setVolunteer(null);
@@ -102,7 +108,7 @@ class UserManager extends BaseUserManager
 
         $user->setVolunteer($volunteer);
 
-        $structures = $this->structureManager->findCallableStructuresForVolunteer($platform, $volunteer);
+        $structures = $this->structureManager->findCallableStructuresForVolunteer($volunteerPlatform, $volunteer);
         $user->updateStructures($structures);
 
         $this->save($user);
@@ -124,5 +130,19 @@ class UserManager extends BaseUserManager
     public function getRedCallUsersInStructure(Structure $structure) : array
     {
         return $this->userRepository->getRedCallUsersInStructure($structure);
+    }
+
+    public function createUser(string $platform, string $externalId)
+    {
+        $application = new Application($this->kernel);
+        $application->setAutoExit(false);
+
+        $input = new ArrayInput([
+            'command'     => 'user:create',
+            'platform'    => $platform,
+            'external-id' => [$externalId],
+        ]);
+
+        $application->run($input, new NullOutput());
     }
 }

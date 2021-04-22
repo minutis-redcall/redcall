@@ -15,9 +15,6 @@ use App\Model\Csrf;
 use App\Model\PlatformConfig;
 use Bundles\PaginationBundle\Manager\PaginationManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
-use Symfony\Bundle\FrameworkBundle\Console\Application;
-use Symfony\Component\Console\Input\ArrayInput;
-use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -132,7 +129,7 @@ class PegassController extends BaseController
         $nivol = $request->request->get('nivol');
 
         if (!$user->isLocked()) {
-            $this->userManager->changeVolunteer($this->getPlatform(), $user, $nivol);
+            $this->userManager->changeVolunteer($user, $this->getPlatform(), $nivol);
         }
 
         $structureNames = array_filter(array_map(function (Structure $structure) {
@@ -247,16 +244,7 @@ class PegassController extends BaseController
                 throw $this->createNotFoundException();
             }
 
-            $application = new Application($kernel);
-            $application->setAutoExit(false);
-
-            $input = new ArrayInput([
-                'command'     => 'user:create',
-                'platform'    => $this->getPlatform(),
-                'external-id' => [$volunteer->getNivol()],
-            ]);
-
-            $application->run($input, new NullOutput());
+            $this->userManager->createUser($this->getPlatform(), $volunteer->getNivol());
 
             return $this->redirectToRoute('admin_pegass_index', [
                 'form[criteria]' => $volunteer->getNivol(),

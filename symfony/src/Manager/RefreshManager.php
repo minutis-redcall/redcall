@@ -36,6 +36,9 @@ class RefreshManager
         'croix-rouge.fr',
     ];
 
+    // People having that badge should be enabled as RedCall users, and set as admin
+    const BADGE_ADMIN = 'RTMR';
+
     /**
      * @var PegassManager
      */
@@ -243,6 +246,7 @@ class RefreshManager
             $volunteer->setPlatform(Platform::FR);
         }
 
+        $volunteer->setNivol(ltrim($pegass->getIdentifier(), '0'));
         $volunteer->setExternalId(ltrim($pegass->getIdentifier(), '0'));
         $volunteer->setReport([]);
 
@@ -275,8 +279,10 @@ class RefreshManager
             // If volunteer is bound to a RedCall user, update its structures
             $user = $this->userManager->findOneByExternalId(Platform::FR, $volunteer->getExternalId());
             if ($user) {
-                $this->userManager->changeVolunteer(Platform::FR, $user, $volunteer->getExternalId());
+                $this->userManager->changeVolunteer($user, Platform::FR, $volunteer->getExternalId());
             }
+
+            $this->checkAdminRole($volunteer);
 
             return;
         }
@@ -299,6 +305,8 @@ class RefreshManager
             $volunteer->setEnabled(false);
             $this->volunteerManager->save($volunteer);
 
+            $this->checkAdminRole($volunteer);
+
             return;
         }
 
@@ -306,6 +314,8 @@ class RefreshManager
         if (!$force && $volunteer->getLastPegassUpdate()
             && $volunteer->getLastPegassUpdate()->getTimestamp() === $pegass->getUpdatedAt()->getTimestamp()) {
             $this->volunteerManager->save($volunteer);
+
+            $this->checkAdminRole($volunteer);
 
             return;
         }
@@ -321,6 +331,8 @@ class RefreshManager
         if (!$pegass->evaluate('user.id')) {
             $volunteer->addReport('import_report.failed');
             $this->volunteerManager->save($volunteer);
+
+            $this->checkAdminRole($volunteer);
 
             return;
         }
@@ -357,16 +369,44 @@ class RefreshManager
             $volunteer->setEnabled(false);
             $this->volunteerManager->save($volunteer);
 
+            $this->checkAdminRole($volunteer);
+
             return;
         }
 
         $this->volunteerManager->save($volunteer);
 
         // If volunteer is bound to a RedCall user, update its structures
-        $user = $this->userManager->findOneByExternalId(Platform::FR, $volunteer->getExternalId());
+        $user = $volunteer->getUser();
         if ($user) {
-            $this->userManager->changeVolunteer(Platform::FR, $user, $volunteer->getExternalId());
+            $this->userManager->changeVolunteer($user, Platform::FR, $volunteer->getExternalId());
         }
+
+        $this->checkAdminRole($volunteer);
+    }
+
+    private function checkAdminRole(Volunteer $volunteer)
+    {
+        if (!$volunteer->isEnabled() && $user = $volunteer->getUser()) {
+            $user->setIsTrusted(false);
+            $this->userManager->save($user);
+
+            return;
+        }
+
+        if ($volunteer->hasBadge(Platform::FR, self::BADGE_ADMIN)) {
+            if (!$volunteer->getUser()) {
+                $this->volunteerManager->save($volunteer);
+                $this->userManager->createUser(Platform::FR, $volunteer->getNivol());
+            }
+
+            $user = $this->userManager->findOneByExternalId(Platform::FR, $volunteer->getNivol());
+            $user->setIsAdmin(true);
+            $this->userManager->save($user);
+        }
+
+        // TODO: once current admins have the RTMR badge, automate the admin desactivation
+
     }
 
     private function normalizeName(string $name) : string

@@ -734,6 +734,18 @@ class Volunteer
         return $this;
     }
 
+    public function hasBadge(string $platform, string $badgeName) : bool
+    {
+        foreach ($this->badges as $badge) {
+            /** @var Badge $badge */
+            if ($platform === $badge->getPlatform() && $badgeName === $badge->getName()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     /**
      * @param Badge[] $badges
      */

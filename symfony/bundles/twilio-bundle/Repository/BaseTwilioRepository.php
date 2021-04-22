@@ -11,13 +11,14 @@ class BaseTwilioRepository extends BaseRepository
      *
      * @return BaseTwilio[]
      */
-    public function findEntitiesWithoutPrice(int $retries): array
+    public function findEntitiesWithoutPrice(int $retries) : array
     {
         return $this->createQueryBuilder('t')
                     ->where('t.price IS NULL')
                     ->andWhere('t.sid IS NOT NULL')
                     ->andWhere('t.retry < :retries')
                     ->setParameter('retries', $retries)
+                    ->setMaxResults(1000)
                     ->getQuery()
                     ->getResult();
     }
