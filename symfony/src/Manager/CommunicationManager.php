@@ -138,9 +138,12 @@ class CommunicationManager
             $this->processor->process($communication);
         }
 
-        $structureName = $communication->getVolunteer()->getMainStructure()->getDisplayName();
         if ($communication->getVolunteer()->getUser() && $communication->getVolunteer()->getUser()->getMainStructure()) {
             $structureName = $communication->getVolunteer()->getUser()->getMainStructure()->getDisplayName();
+        } elseif ($communication->getVolunteer()->getMainStructure()) {
+            $structureName = $communication->getVolunteer()->getMainStructure()->getDisplayName();
+        } else {
+            $structureName = '?';
         }
 
         $this->slackLogger->info(
