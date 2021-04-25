@@ -1,0 +1,80 @@
+{% if context %}
+
+    <div class="h4">{{ 'campaign_status.provider.context'|trans }}</div>
+
+    <table class="table table-striped">
+        <tbody>
+        <tr>
+            <td>{{ 'campaign_status.provider.context_data.type'|trans }}</td>
+            <td>{{ context.type }}</td>
+        </tr>
+        <tr>
+            <td>{{ 'campaign_status.provider.context_data.direction'|trans }}</td>
+            <td>{{ context.direction }}</td>
+        </tr>
+        <tr>
+            <td>{{ 'campaign_status.provider.context_data.from_number'|trans }}</td>
+            <td>{{ context.fromNumber }}</td>
+        </tr>
+        <tr>
+            <td>{{ 'campaign_status.provider.context_data.to_number'|trans }}</td>
+            <td>{{ context.toNumber }}</td>
+        </tr>
+        <tr>
+            <td>{{ 'campaign_status.provider.context_data.status'|trans }}</td>
+            <td>{{ context.status }}</td>
+        </tr>
+        <tr>
+            <td>{{ 'campaign_status.provider.context_data.price'|trans }}</td>
+            <td>{{ context.price }}</td>
+        </tr>
+        <tr>
+            <td>{{ 'campaign_status.provider.context_data.unit'|trans }}</td>
+            <td>{{ context.unit }}</td>
+        </tr>
+        <tr>
+            <td>{{ 'campaign_status.provider.context_data.retry'|trans }}</td>
+            <td>{{ context.retry }}</td>
+        </tr>
+        <tr>
+            <td>{{ 'campaign_status.provider.context_data.error'|trans }}</td>
+            <td>{{ context.error }}</td>
+        </tr>
+        <tr>
+            <td>{{ 'campaign_status.provider.context_data.created_at'|trans }}</td>
+            <td>{{ context.createdAt|date('d/m/Y H:i') }}</td>
+        </tr>
+        <tr>
+            <td>{{ 'campaign_status.provider.context_data.updated_at'|trans }}</td>
+            <td>{{ context.updatedAt|date('d/m/Y H:i') }}</td>
+        </tr>
+        <tr>
+            <td></td>
+            <td>
+                <code>{{ context.context|json_encode }}</code>
+            </td>
+        </tr>
+
+        </tbody>
+    </table>
+
+{% endif %}
+
+{% if statuses|length %}
+
+    <div class="h4">{{ 'campaign_status.provider.status'|trans }}</div>
+
+    <table class="table table-striped">
+        <tbody>
+
+        {% for status in statuses %}
+            <tr>
+                <td>{{ status.receivedAt|date('d/m/Y H:i') }}</td>
+                <td>{{ status.status }}</td>
+            </tr>
+        {% endfor %}
+
+        </tbody>
+    </table>
+
+{% endif %}

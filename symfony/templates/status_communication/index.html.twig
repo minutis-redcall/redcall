@@ -326,6 +326,13 @@
                                             {% endif %}
                                         {% endif %}
 
+                                        {% if is_granted('ROLE_ADMIN') and message.messageId %}
+                                            <a href="#" class="provider-modal" data-href="{{ path('communication_provider_information', {
+                                                campaignId: campaign.id,
+                                                messageId: message.id,
+                                            }) }}">ℹ️</a>
+                                        {% endif %}
+
                                         {# Answer codes when volunteer answered them #}
                                         {% if answerCount %}
                                             {% for choice in communication.choices %}
@@ -695,6 +702,28 @@
         {% endset %}
 
         {{ macros.modal('edit-answer', 'modal.answers'|trans, body) }}
+    {% endif %}
+
+    {# -------------------------------------------------------------------------------- #}
+    {# See provider details #}
+    {# -------------------------------------------------------------------------------- #}
+    {% if is_granted('ROLE_ADMIN') %}
+        <div class="modal fade" id="provider-modal" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 id="provider-modal-title" class="modal-title"></h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div id="provider-modal-body" class="modal-body"></div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ 'base.modal.close'|trans }}</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     {% endif %}
 
 {% endblock %}
@@ -1287,6 +1316,27 @@
             });
         });
 
+
     </script>
+
+    {# -------------------------------------------------------------------------------- #}
+    {# Render provider details #}
+    {# -------------------------------------------------------------------------------- #}
+    {% if is_granted('ROLE_ADMIN') %}
+
+        <script type="text/javascript">
+            $('body').on('click', '.provider-modal', function (e) {
+                e.preventDefault();
+                $('#provider-modal-title').html('');
+                $('#provider-modal-body').html('<img src="{{ asset('spinner.gif') }}"/>');
+                $('#provider-modal').modal();
+                $.post($(this).data('href'), function (data) {
+                    $('#provider-modal-title').html(data.title);
+                    $('#provider-modal-body').html(data.body);
+                });
+            });
+        </script>
+
+    {% endif %}
 
 {% endblock %}

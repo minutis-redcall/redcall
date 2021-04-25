@@ -381,6 +381,23 @@ campaign_status:
     no_phone_mobile: 'No mobile phone number.'
     no_phone_optin: 'Do not want to be triggered through phone.'
     optout_until: 'Temporarily unavailable.'
+  provider:
+    message_id: 'Message ID: %id%'
+    status: Status
+    context: Context
+    context_data:
+      type: Type
+      direction: Direction
+      from: From
+      to: To
+      status: Status
+      price: Price
+      unit: Unit
+      retry: 'Price retries'
+      error: Error(s)
+      created_at: 'Created at'
+      updated_at: 'Updated at'
+      context: Context
 csv_export:
   answer_time: 'Answered at'
   choice: 'Choice "%choice%"'
@@ -597,6 +614,7 @@ manage_volunteers:
     mail_subject: '⚠️ RedCall: You have a message'
   form:
     added: 'Volunteer has properly been added.'
+    birthday: 'Birth day'
     create: 'Create a new volunteer'
     email: Email
     email_locked: 'Locked email *'
@@ -621,7 +639,6 @@ manage_volunteers:
     update: 'Update volunteer'
     updated: 'Volunteer has properly been updated.'
     visible_badges: 'Main badges'
-    birthday: 'Birth day'
     optout_until: 'Volunteer not available until...'
   others: 'and %count% other(s)'
   redcall:

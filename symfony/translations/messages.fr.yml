@@ -381,6 +381,23 @@ campaign_status:
     no_phone_mobile: 'Pas de numéro de téléphone portable.'
     no_phone_optin: 'Ne souhaite pas recevoir de SMS/appels.'
     optout_until: 'Temporairement indisponible'
+  provider:
+    message_id: 'ID de message : %id%'
+    status: Status
+    context: Contexte
+    context_data:
+      type: Type
+      direction: Direction
+      from: De
+      to: Vers
+      status: Status
+      price: Coût
+      unit: Devise
+      retry: 'Tentatives prix'
+      error: Erreur(s)
+      created_at: 'Créé le'
+      updated_at: 'Mis à jour le'
+      context: Contexte
 csv_export:
   answer_time: 'Date de la reponse la plus recente'
   choice: 'Choix "%choice%"'
@@ -597,6 +614,7 @@ manage_volunteers:
     mail_subject: '⚠️ RedCall: Vous avez un message'
   form:
     added: 'Le bénévole a correctement été ajouté.'
+    birthday: 'Date de naissance'
     create: 'Ajouter un nouveau bénévole'
     email: Email
     email_locked: 'Geler l''email *'
@@ -621,7 +639,6 @@ manage_volunteers:
     update: 'Mettre à jour un bénévole'
     updated: 'Le bénévole a correctement été modifié.'
     visible_badges: 'Badges principaux'
-    birthday: 'Date de naissance'
     optout_until: 'Bénévole indisponible jusqu''au...'
   others: 'et %count% autre(s)'
   redcall:

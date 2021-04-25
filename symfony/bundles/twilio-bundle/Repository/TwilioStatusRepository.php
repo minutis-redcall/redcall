@@ -17,4 +17,15 @@ class TwilioStatusRepository extends BaseRepository
     {
         parent::__construct($registry, TwilioStatus::class);
     }
+
+    public function getStatuses(string $sid) : array
+    {
+        return $this
+            ->createQueryBuilder('s')
+            ->where('s.sid = :sid')
+            ->setParameter('sid', $sid)
+            ->orderBy('s.receivedAt', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
 }

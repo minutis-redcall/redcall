@@ -60,6 +60,11 @@ class TwilioMessageManager
         return $this->messageRepository->findOneByUuid($uuid);
     }
 
+    public function getBySid(string $sid) : ?TwilioMessage
+    {
+        return $this->messageRepository->findOneBySid($sid);
+    }
+
     /**
      * @param TwilioMessage $outbound
      */

@@ -369,6 +369,8 @@ campaign_status:
     email: '✉️ Email'
     new_message: 'Escribir un nuevo mensaje'
     sms: '📱 SMS'
+  table:
+    zero: 'Sin respuesta'
   warning:
     country_no_call: 'Llamadas no soportadas por RedCall para este número.'
     country_no_sms: 'RedCall no soporta los SMS a este número.'

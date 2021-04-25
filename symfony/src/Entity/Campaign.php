@@ -382,4 +382,9 @@ class Campaign
 
         return true;
     }
+
+    public function equals(Campaign $campaign)
+    {
+        return $this->id === $campaign->getId();
+    }
 }

@@ -26,6 +26,9 @@ use App\Manager\UserManager;
 use App\Manager\VolunteerManager;
 use App\Services\MessageFormatter;
 use App\Tools\GSM;
+use Bundles\TwilioBundle\Manager\TwilioCallManager;
+use Bundles\TwilioBundle\Manager\TwilioMessageManager;
+use Bundles\TwilioBundle\Manager\TwilioStatusManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -491,6 +494,34 @@ class CommunicationController extends BaseController
         $processor->process($communication);
 
         return $this->redirectToRoute('communication_index', ['id' => $campaign->getId()]);
+    }
+
+    /**
+     * @Route(path="campaign/{campaignId}/provider-information/{messageId}", name="provider_information")
+     * @Entity("campaign", expr="repository.find(campaignId)")
+     * @Entity("message", expr="repository.find(messageId)")
+     * @IsGranted("CAMPAIGN_ACCESS", subject="campaign")
+     */
+    public function getProviderInformation(Campaign $campaign,
+        Message $message,
+        TranslatorInterface $translator,
+        TwilioStatusManager $statusManager,
+        TwilioMessageManager $messageManager,
+        TwilioCallManager $callManager)
+    {
+        if (!$message->getCommunication()->getCampaign()->equals($campaign)) {
+            throw $this->createNotFoundException();
+        }
+
+        return $this->json([
+            'title' => $translator->trans('campaign_status.provider.message_id', [
+                '%id%' => $message->getMessageId(),
+            ]),
+            'body'  => $this->renderView('status_communication/provider.html.twig', [
+                'context'  => $messageManager->getBySid($message->getMessageId()) ?? $callManager->getBySid($message->getMessageId()),
+                'statuses' => $statusManager->getStatuses($message->getMessageId()),
+            ]),
+        ]);
     }
 
     private function getCommunicationFromRequest(Request $request, Type $type) : BaseTrigger

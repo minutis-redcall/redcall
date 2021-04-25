@@ -78,7 +78,6 @@ class StatusController extends BaseController
         }
 
         $status = new TwilioStatus();
-        $status->setType(TwilioStatus::TYPE_MESSAGE);
         $status->setSid($request->get('MessageSid'));
         $status->setStatus($request->get('MessageStatus'));
         $this->statusManager->save($status);

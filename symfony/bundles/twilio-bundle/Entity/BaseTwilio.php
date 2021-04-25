@@ -291,4 +291,6 @@ abstract class BaseTwilio
     {
         $this->setUpdatedAt(new DateTime());
     }
+
+    abstract public function getType() : string;
 }

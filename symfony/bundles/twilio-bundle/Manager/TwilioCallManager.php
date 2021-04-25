@@ -68,6 +68,11 @@ class TwilioCallManager
         return $this->callRepository->findOneByUuid($uuid);
     }
 
+    public function getBySid(string $sid) : ?TwilioCall
+    {
+        return $this->callRepository->findOneBySid($sid);
+    }
+
     public function save(TwilioCall $call)
     {
         $this->callRepository->save($call);
