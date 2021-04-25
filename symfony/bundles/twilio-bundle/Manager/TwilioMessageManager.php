@@ -152,7 +152,6 @@ class TwilioMessageManager
     {
         $entities = $this->messageRepository->findEntitiesWithoutPrice($retries);
         foreach ($entities as $entity) {
-
             try {
                 $message = $this->getClient()->messages($entity->getSid())->fetch();
             } catch (\Exception $e) {

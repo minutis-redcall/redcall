@@ -17,8 +17,10 @@ class BaseTwilioRepository extends BaseRepository
                     ->where('t.price IS NULL')
                     ->andWhere('t.sid IS NOT NULL')
                     ->andWhere('t.retry < :retries')
+                    ->andWhere('t.updatedAt < :one_day_ago')
                     ->setParameter('retries', $retries)
-                    ->setMaxResults(1000)
+                    ->setParameter('one_day_ago', date('Y-m-d 00:00:00', strtotime('-1 day')))
+                    ->setMaxResults(10000)
                     ->getQuery()
                     ->getResult();
     }
