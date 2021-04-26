@@ -13,11 +13,11 @@
             <td>{{ context.direction }}</td>
         </tr>
         <tr>
-            <td>{{ 'campaign_status.provider.context_data.from_number'|trans }}</td>
+            <td>{{ 'campaign_status.provider.context_data.from'|trans }}</td>
             <td>{{ context.fromNumber }}</td>
         </tr>
         <tr>
-            <td>{{ 'campaign_status.provider.context_data.to_number'|trans }}</td>
+            <td>{{ 'campaign_status.provider.context_data.to'|trans }}</td>
             <td>{{ context.toNumber }}</td>
         </tr>
         <tr>
@@ -40,6 +40,22 @@
             <td>{{ 'campaign_status.provider.context_data.error'|trans }}</td>
             <td>{{ context.error }}</td>
         </tr>
+
+        {% if constant('\\Bundles\\TwilioBundle\\Entity\\TwilioCall::TYPE') == context.type %}
+            <tr>
+                <td>{{ 'campaign_status.provider.context_data.started_at'|trans }}</td>
+                <td>{{ context.startedAt|date('d/m/Y H:i:s') }}</td>
+            </tr>
+            <tr>
+                <td>{{ 'campaign_status.provider.context_data.ended_at'|trans }}</td>
+                <td>{{ context.endedAt|date('d/m/Y H:i:s') }}</td>
+            </tr>
+            <tr>
+                <td>{{ 'campaign_status.provider.context_data.duration'|trans }}</td>
+                <td>{{ context.duration }}</td>
+            </tr>
+        {% endif %}
+
         <tr>
             <td>{{ 'campaign_status.provider.context_data.created_at'|trans }}</td>
             <td>{{ context.createdAt|date('d/m/Y H:i') }}</td>
@@ -49,7 +65,7 @@
             <td>{{ context.updatedAt|date('d/m/Y H:i') }}</td>
         </tr>
         <tr>
-            <td></td>
+            <td>{{ 'campaign_status.provider.context_data.context'|trans }}</td>
             <td>
                 <code>{{ context.context|json_encode }}</code>
             </td>

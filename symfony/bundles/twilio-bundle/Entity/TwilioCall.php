@@ -19,7 +19,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class TwilioCall extends BaseTwilio
 {
-    private const TYPE = 'call';
+    public const TYPE = 'call';
 
     /**
      * @ORM\Column(type="datetime", nullable=true)

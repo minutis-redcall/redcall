@@ -4,7 +4,6 @@ namespace App\Security\Authenticator;
 
 use App\Entity\Volunteer;
 use App\Manager\PlatformConfigManager;
-use App\Manager\UserManager;
 use App\Manager\VolunteerManager;
 use App\Manager\VolunteerSessionManager;
 use Firebase\JWT\JWT;
@@ -41,11 +40,6 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
     private $platformManager;
 
     /**
-     * @var UserManager
-     */
-    private $userManager;
-
-    /**
      * @var RouterInterface
      */
     private $router;
@@ -73,7 +67,6 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
     public function __construct(VolunteerManager $volunteerManager,
         VolunteerSessionManager $volunteerSessionManager,
         PlatformConfigManager $platformManager,
-        UserManager $userManager,
         RouterInterface $router,
         LoggerInterface $logger,
         KernelInterface $kernel,
@@ -82,7 +75,6 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
         $this->volunteerManager        = $volunteerManager;
         $this->volunteerSessionManager = $volunteerSessionManager;
         $this->platformManager         = $platformManager;
-        $this->userManager             = $userManager;
         $this->router                  = $router;
         $this->logger                  = $logger;
         $this->kernel                  = $kernel;
@@ -144,6 +136,10 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
             }
         }
 
+        $this->logger->notice('Received valid Minutis authentication', [
+            'decoded' => $decoded,
+        ]);
+
         // Seek for a volunteer attached to that nivol
         // TODO / SECURITY: if 2 nivols are the same in 2 distinct platforms, a volunteer could connect to someone else's account
         $volunteer = null;
@@ -175,7 +171,7 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
         $this->volunteer = $volunteer;
 
         // Seek for a RedCall user attached to that volunteer
-        $user = $this->userManager->findOneByExternalId($volunteer->getPlatform(), $externalId);
+        $user = $volunteer->getUser();
         if (null === $user) {
             $this->logger->info('Minutis authenticator: a volunteer without RedCall access clicked on Minutis link', [
                 'nivol' => $externalId,

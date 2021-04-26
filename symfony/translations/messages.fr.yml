@@ -361,6 +361,26 @@ campaign_status:
   no_notes_yet: 'Ce déclenchement ne contient aucune note pour le moment.'
   notes_updated_at: 'Dernière mise à jour des notes le %date% à %time%'
   progress: 'Envoi: %sent% %type% / %total% (%progress%%).'
+  provider:
+    context: Contexte
+    context_data:
+      context: Contexte
+      created_at: 'Créé le'
+      direction: Direction
+      error: Erreur(s)
+      from: De
+      price: Coût
+      retry: 'Tentatives prix'
+      status: Status
+      to: Vers
+      type: Type
+      unit: Devise
+      updated_at: 'Mis à jour le'
+      started_at: 'Commencé à'
+      ended_at: 'Terminé à'
+      duration: Durée
+    message_id: 'ID de message : %id%'
+    status: Status
   relaunch_communication: 'Relancer la communication'
   relaunch_communication_confirm: 'Voulez-vous vraiment relancer la communication ?'
   selection:
@@ -381,23 +401,6 @@ campaign_status:
     no_phone_mobile: 'Pas de numéro de téléphone portable.'
     no_phone_optin: 'Ne souhaite pas recevoir de SMS/appels.'
     optout_until: 'Temporairement indisponible'
-  provider:
-    message_id: 'ID de message : %id%'
-    status: Status
-    context: Contexte
-    context_data:
-      type: Type
-      direction: Direction
-      from: De
-      to: Vers
-      status: Status
-      price: Coût
-      unit: Devise
-      retry: 'Tentatives prix'
-      error: Erreur(s)
-      created_at: 'Créé le'
-      updated_at: 'Mis à jour le'
-      context: Contexte
 csv_export:
   answer_time: 'Date de la reponse la plus recente'
   choice: 'Choix "%choice%"'
