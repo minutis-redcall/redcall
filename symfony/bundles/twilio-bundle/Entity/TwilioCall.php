@@ -19,6 +19,8 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class TwilioCall extends BaseTwilio
 {
+    private const TYPE = 'call';
+
     /**
      * @ORM\Column(type="datetime", nullable=true)
      */
@@ -68,5 +70,10 @@ class TwilioCall extends BaseTwilio
         $this->duration = $duration;
 
         return $this;
+    }
+
+    public function getType() : string
+    {
+        return self::TYPE;
     }
 }

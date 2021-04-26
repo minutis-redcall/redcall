@@ -40,7 +40,7 @@ class PriceCommand extends Command
         $this
             ->setName('twilio:price')
             ->setDescription('Fetch missing SMS prices')
-            ->addArgument('retry', InputArgument::OPTIONAL, 'Number of retries on Twilio before skipping', 48);
+            ->addArgument('retry', InputArgument::OPTIONAL, 'Number of retries on Twilio before skipping', 50);
     }
 
     /**

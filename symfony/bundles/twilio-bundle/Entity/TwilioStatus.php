@@ -9,10 +9,9 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class TwilioStatus
 {
-    const TYPE_MESSAGE = 'message';
-    const TYPE_CALL    = 'call';
-
     /**
+     * @var int
+     *
      * @ORM\Id()
      * @ORM\GeneratedValue()
      * @ORM\Column(type="integer")
@@ -20,21 +19,22 @@ class TwilioStatus
     private $id;
 
     /**
-     * @ORM\Column(type="string", length=32)
-     */
-    private $type;
-
-    /**
+     * @var string
+     *
      * @ORM\Column(type="string", length=64)
      */
     private $sid;
 
     /**
+     * @var string
+     *
      * @ORM\Column(type="string", length=64)
      */
     private $status;
 
     /**
+     * @var \DateTime
+     *
      * @ORM\Column(type="datetime")
      */
     private $receivedAt;
@@ -44,53 +44,41 @@ class TwilioStatus
         $this->receivedAt = new \DateTime();
     }
 
-    public function getId(): ?int
+    public function getId() : ?int
     {
         return $this->id;
     }
 
-    public function getType(): ?string
-    {
-        return $this->type;
-    }
-
-    public function setType($type): self
-    {
-        $this->type = $type;
-
-        return $this;
-    }
-
-    public function getSid(): ?string
+    public function getSid() : ?string
     {
         return $this->sid;
     }
 
-    public function setSid(string $sid): self
+    public function setSid(string $sid) : self
     {
         $this->sid = $sid;
 
         return $this;
     }
 
-    public function getStatus(): ?string
+    public function getStatus() : ?string
     {
         return $this->status;
     }
 
-    public function setStatus(string $status): self
+    public function setStatus(string $status) : self
     {
         $this->status = $status;
 
         return $this;
     }
 
-    public function getReceivedAt(): ?string
+    public function getReceivedAt() : ?\DateTime
     {
         return $this->receivedAt;
     }
 
-    public function setReceivedAt(string $receivedAt): self
+    public function setReceivedAt(\DateTime $receivedAt) : self
     {
         $this->receivedAt = $receivedAt;
 

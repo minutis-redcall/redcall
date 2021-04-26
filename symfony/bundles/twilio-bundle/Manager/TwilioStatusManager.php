@@ -20,6 +20,11 @@ class TwilioStatusManager
         $this->statusRepository = $statusRepository;
     }
 
+    public function getStatuses(string $sid) : array
+    {
+        return $this->statusRepository->getStatuses($sid);
+    }
+
     public function save(TwilioStatus $status)
     {
         $this->statusRepository->save($status);

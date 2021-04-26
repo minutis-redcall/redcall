@@ -60,6 +60,11 @@ class TwilioMessageManager
         return $this->messageRepository->findOneByUuid($uuid);
     }
 
+    public function getBySid(string $sid) : ?TwilioMessage
+    {
+        return $this->messageRepository->findOneBySid($sid);
+    }
+
     /**
      * @param TwilioMessage $outbound
      */
@@ -147,7 +152,6 @@ class TwilioMessageManager
     {
         $entities = $this->messageRepository->findEntitiesWithoutPrice($retries);
         foreach ($entities as $entity) {
-
             try {
                 $message = $this->getClient()->messages($entity->getSid())->fetch();
             } catch (\Exception $e) {
