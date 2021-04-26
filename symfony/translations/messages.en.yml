@@ -361,6 +361,26 @@ campaign_status:
   no_notes_yet: 'This trigger does not contain any notes yet.'
   notes_updated_at: 'Last notes updates on %date% at %time%'
   progress: 'Sending: %sent% %type% / %total% (%progress%%).'
+  provider:
+    context: Context
+    context_data:
+      context: Context
+      created_at: 'Created at'
+      direction: Direction
+      error: Error(s)
+      from: From
+      price: Price
+      retry: 'Price retries'
+      status: Status
+      to: To
+      type: Type
+      unit: Unit
+      updated_at: 'Updated at'
+      started_at: 'Started at'
+      ended_at: 'Ended at'
+      duration: Duration
+    message_id: 'Message ID: %id%'
+    status: Status
   relaunch_communication: 'Relaunch communication'
   relaunch_communication_confirm: 'Are you sure you wish to relaunch the communication?'
   selection:
@@ -381,23 +401,6 @@ campaign_status:
     no_phone_mobile: 'No mobile phone number.'
     no_phone_optin: 'Do not want to be triggered through phone.'
     optout_until: 'Temporarily unavailable.'
-  provider:
-    message_id: 'Message ID: %id%'
-    status: Status
-    context: Context
-    context_data:
-      type: Type
-      direction: Direction
-      from: From
-      to: To
-      status: Status
-      price: Price
-      unit: Unit
-      retry: 'Price retries'
-      error: Error(s)
-      created_at: 'Created at'
-      updated_at: 'Updated at'
-      context: Context
 csv_export:
   answer_time: 'Answered at'
   choice: 'Choice "%choice%"'

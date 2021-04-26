@@ -19,7 +19,7 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class TwilioMessage extends BaseTwilio
 {
-    private const TYPE = 'message';
+    public const TYPE = 'message';
 
     public function getType() : string
     {

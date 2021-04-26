@@ -27,11 +27,11 @@ parameters:
     gp: # +590, Guadeloupe
       timezone: 'America/Guadeloupe'
       outbound_call_enabled: true
-      outbound_call_number: '%env(TWILIO_FROM_LONG_FR)%'
+      outbound_call_number: '%env(TWILIO_FROM_LONG_GP)%'
       outbound_sms_enabled: true
       outbound_sms_number: '%env(TWILIO_SENDER_ID_FR)%'
-      inbound_call_enabled: false
-      inbound_call_number: ~
+      inbound_call_enabled: true
+      inbound_call_number: '%env(TWILIO_FROM_LONG_GP)%'
       inbound_sms_enabled: false
     gf: # +594, Guyane Française
       timezone: 'America/Cayenne'
@@ -45,11 +45,11 @@ parameters:
     mq: # +596, Martinique
       timezone: 'America/Martinique'
       outbound_call_enabled: true
-      outbound_call_number: '%env(TWILIO_FROM_LONG_FR)%'
+      outbound_call_number: '%env(TWILIO_FROM_LONG_MQ)%'
       outbound_sms_enabled: true
       outbound_sms_number: '%env(TWILIO_SENDER_ID_FR)%'
-      inbound_call_enabled: false
-      inbound_call_number: ~
+      inbound_call_enabled: true
+      inbound_call_number: '%env(TWILIO_FROM_LONG_MQ)%'
       inbound_sms_enabled: false
     yt: # +262, Mayotte
       timezone: 'Indian/Mayotte'
