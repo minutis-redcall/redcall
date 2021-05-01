@@ -59,7 +59,7 @@ class CreateUserCommand extends BaseCommand
     {
         $platform = $input->getArgument('platform');
 
-        foreach ($input->getArgument('nivol') as $externalId) {
+        foreach ($input->getArgument('external-id') as $externalId) {
             $volunteer = $this->volunteerManager->findOneByNivol($platform, $externalId);
 
             if (!$volunteer) {
