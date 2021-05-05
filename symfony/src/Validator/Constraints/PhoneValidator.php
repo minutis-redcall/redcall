@@ -41,7 +41,7 @@ class PhoneValidator extends ConstraintValidator
         // This phone number is invalid
         $phoneUtil = PhoneNumberUtil::getInstance();
         try {
-            $parsed = $phoneUtil->parse($value->getE164(), \App\Entity\Phone::DEFAULT_LANG);
+            $phoneUtil->parse($value->getE164(), \App\Entity\Phone::DEFAULT_LANG);
         } catch (NumberParseException $e) {
             $this->context
                 ->buildViolation(
@@ -66,7 +66,7 @@ class PhoneValidator extends ConstraintValidator
                 $this->context
                     ->buildViolation(
                         $this->translator->trans('phone_card.error_taken', [
-                            '%externalId%'     => $phone->getVolunteer()->getNivol(),
+                            '%externalId%'     => $phone->getVolunteer()->getExternalId(),
                             '%truncated_name%' => $phone->getVolunteer()->getTruncatedName(),
                         ])
                     )

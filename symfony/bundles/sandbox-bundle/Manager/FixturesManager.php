@@ -121,13 +121,12 @@ class FixturesManager
     {
         $platform = $this->security->getPlatform();
 
-        $nivol = $this->generateExternalId($platform);
+        $externalId = $this->generateExternalId($platform);
 
         $volunteer = new Volunteer();
         $volunteer->setPlatform($platform);
-        $volunteer->setNivol($nivol);
+        $volunteer->setExternalId($externalId);
         $volunteer->setEnabled(true);
-        $volunteer->setExternalId($nivol);
         $volunteer->setLocked(true);
         $volunteer->setBirthday(new \DateTime(sprintf('%d-%d-%d', 1970 + rand() % 50, 1 + rand() % 12, 1 + rand() % 31)));
 
@@ -142,7 +141,7 @@ class FixturesManager
 
         $this->volunteerManager->save($volunteer);
 
-        $this->anonymizeManager->anonymizeVolunteer($volunteer->getNivol(), $platform);
+        $this->anonymizeManager->anonymizeVolunteer($volunteer->getExternalId(), $platform);
 
         return $volunteer;
     }
