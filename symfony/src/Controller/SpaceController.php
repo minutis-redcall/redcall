@@ -265,7 +265,7 @@ class SpaceController extends BaseController
 
         return new MpdfResponse(
             $mpdf,
-            sprintf('data-%s-%s.pdf', $session->getVolunteer()->getNivol(), date('Y-m-d'))
+            sprintf('data-%s-%s.pdf', $session->getVolunteer()->getExternalId(), date('Y-m-d'))
         );
     }
 

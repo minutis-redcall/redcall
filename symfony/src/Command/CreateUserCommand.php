@@ -47,7 +47,7 @@ class CreateUserCommand extends BaseCommand
     {
         $this
             ->setName('user:create')
-            ->setDescription('Create users based on volunteer nivols')
+            ->setDescription('Create users based on volunteer\'s external id')
             ->addArgument('platform', InputArgument::REQUIRED, 'Platform for which to create user')
             ->addArgument('external-id', InputArgument::REQUIRED | InputArgument::IS_ARRAY, 'External IDs from which to create a new user');
     }
@@ -60,10 +60,10 @@ class CreateUserCommand extends BaseCommand
         $platform = $input->getArgument('platform');
 
         foreach ($input->getArgument('external-id') as $externalId) {
-            $volunteer = $this->volunteerManager->findOneByNivol($platform, $externalId);
+            $volunteer = $this->volunteerManager->findOneByExternalId($platform, $externalId);
 
             if (!$volunteer) {
-                $output->writeln(sprintf('KO %s: nivol do not exist', $externalId));
+                $output->writeln(sprintf('KO %s: external id do not exist', $externalId));
                 continue;
             }
 
@@ -78,7 +78,7 @@ class CreateUserCommand extends BaseCommand
             }
 
             if ($this->userManager->findOneByExternalId($platform, $externalId)) {
-                $output->writeln(sprintf('KO %s: nivol already connected to a user', $externalId));
+                $output->writeln(sprintf('KO %s: external id already connected to a user', $externalId));
                 continue;
             }
 

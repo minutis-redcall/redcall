@@ -28,7 +28,7 @@
                             {% for id in list %}
                                 <div class="col-md-6" style="padding:5px;">
                                     {% if 'invalid' == key %}
-                                        {{ id }} {# it is a nivol for which we didn't find a volunteer #}
+                                        {{ id }} {# it is an external identifier for which we didn't find a volunteer #}
                                     {% else %}
                                         {{ macros.volunteer(volunteers[id]) }}
                                     {% endif %}

@@ -439,7 +439,7 @@ class Structure
     public function getPresidentVolunteer() : ?Volunteer
     {
         foreach ($this->getVolunteers() as $volunteer) {
-            if ($volunteer->getNivol() === $this->getPresident()) {
+            if ($volunteer->getExternalId() === $this->getPresident()) {
                 return $volunteer;
             }
         }

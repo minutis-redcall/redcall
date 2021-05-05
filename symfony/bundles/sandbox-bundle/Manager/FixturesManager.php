@@ -121,7 +121,7 @@ class FixturesManager
     {
         $platform = $this->security->getPlatform();
 
-        $nivol = $this->generateNivol($platform);
+        $nivol = $this->generateExternalId($platform);
 
         $volunteer = new Volunteer();
         $volunteer->setPlatform($platform);
@@ -147,14 +147,14 @@ class FixturesManager
         return $volunteer;
     }
 
-    private function generateNivol(string $platform) : string
+    private function generateExternalId(string $platform) : string
     {
-        $nivol = Random::generate(12, '0123456789ABCDEF');
+        $externalId = Random::generate(12, '0123456789ABCDEF');
 
-        if ($this->volunteerManager->findOneByNivol($platform, $nivol)) {
-            return $this->generateNivol($platform);
+        if ($this->volunteerManager->findOneByExternalId($platform, $externalId)) {
+            return $this->generateExternalId($platform);
         }
 
-        return $nivol;
+        return $externalId;
     }
 }

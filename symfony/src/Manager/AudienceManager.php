@@ -81,9 +81,9 @@ class AudienceManager
             return $classification;
         }
 
-        if ($data['nivols']) {
+        if ($data['external_ids']) {
             $classification->setInvalid(
-                $this->volunteerManager->filterInvalidNivols($data['nivols'])
+                $this->volunteerManager->filterInvalidExternalIds($data['external_ids'])
             );
         }
 
@@ -146,7 +146,7 @@ class AudienceManager
     {
         $volunteerIds = array_merge(
             $data['volunteers'] ?? [],
-            $data['nivols'] ? $this->volunteerManager->getIdsByNivols($data['nivols']) : [],
+            $data['external_ids'] ? $this->volunteerManager->getIdsByExternalIds($data['external_ids']) : [],
             $data['preselection_key'] ? $this->expirableManager->get($data['preselection_key'])['volunteers'] : []
         );
 

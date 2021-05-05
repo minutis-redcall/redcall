@@ -18,18 +18,6 @@ use libphonenumber\PhoneNumberUtil;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
-/**
- * Refreshes Redcall database based on Pegass cache
- *
- * Query to check inconsistencies:
- *
- * select count(*)
- * from pegass p
- * left join volunteer v on v.nivol = trim(leading '0' from p.identifier)
- * where p.type = 'volunteer'
- * and p.enabled = 1
- * and v.id is null
- */
 class RefreshManager
 {
     private const RED_CROSS_DOMAINS = [
@@ -240,13 +228,12 @@ class RefreshManager
     public function refreshVolunteer(Pegass $pegass, bool $force)
     {
         // Create or update?
-        $volunteer = $this->volunteerManager->findOneByNivol(Platform::FR, $pegass->getIdentifier());
+        $volunteer = $this->volunteerManager->findOneByExternalId(Platform::FR, $pegass->getIdentifier());
         if (!$volunteer) {
             $volunteer = new Volunteer();
             $volunteer->setPlatform(Platform::FR);
         }
 
-        $volunteer->setNivol(ltrim($pegass->getIdentifier(), '0'));
         $volunteer->setExternalId(ltrim($pegass->getIdentifier(), '0'));
         $volunteer->setReport([]);
 
@@ -397,10 +384,10 @@ class RefreshManager
         if ($volunteer->hasBadge(Platform::FR, self::BADGE_ADMIN)) {
             if (!$volunteer->getUser()) {
                 $this->volunteerManager->save($volunteer);
-                $this->userManager->createUser(Platform::FR, $volunteer->getNivol());
+                $this->userManager->createUser(Platform::FR, $volunteer->getExternalId());
             }
 
-            $user = $this->userManager->findOneByExternalId(Platform::FR, $volunteer->getNivol());
+            $user = $this->userManager->findOneByExternalId(Platform::FR, $volunteer->getExternalId());
             $user->setIsAdmin(true);
             $this->userManager->save($user);
         }

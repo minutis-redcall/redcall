@@ -91,7 +91,7 @@ class AnonymizeManager
      */
     public function anonymizeVolunteer(string $nivol, string $platform)
     {
-        $volunteer = $this->volunteerManager->findOneByNivol($platform, $nivol);
+        $volunteer = $this->volunteerManager->findOneByExternalId($platform, $nivol);
         if ($volunteer) {
             $this->anonymize($volunteer);
         }

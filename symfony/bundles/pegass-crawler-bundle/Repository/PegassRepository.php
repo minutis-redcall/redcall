@@ -6,8 +6,6 @@ use Bundles\PegassCrawlerBundle\Entity\Pegass;
 use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\Mapping\MappingException;
-use Doctrine\ORM\OptimisticLockException;
-use Doctrine\ORM\ORMException;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -24,11 +22,6 @@ class PegassRepository extends ServiceEntityRepository
         parent::__construct($registry, Pegass::class);
     }
 
-    /**
-     * @param string $type
-     *
-     * @return Pegass[]
-     */
     public function getEntities(string $type) : array
     {
         return $this->findBy([
@@ -36,12 +29,6 @@ class PegassRepository extends ServiceEntityRepository
         ]);
     }
 
-    /**
-     * @param string $type
-     *
-     * @return int
-     * @throws \Doctrine\ORM\NonUniqueResultException
-     */
     public function countEntities(string $type) : int
     {
         return $this->createQueryBuilder('p')
@@ -69,11 +56,6 @@ class PegassRepository extends ServiceEntityRepository
         return $this->findOneBy($filters);
     }
 
-    /**
-     * @param int $limit
-     *
-     * @return array
-     */
     public function findExpiredEntities(int $limit) : array
     {
         return $this->createQueryBuilder('p')
@@ -90,17 +72,12 @@ class PegassRepository extends ServiceEntityRepository
                     ->setParameter('type_volunteer', Pegass::TYPE_VOLUNTEER)
                     ->setParameter('expire_volunteer', $this->getExpireDate(Pegass::TYPE_VOLUNTEER))
                     ->orderBy('p.type', 'ASC')
+                    ->addOrderBy('p.updatedAt', 'ASC')
                     ->setMaxResults($limit)
                     ->getQuery()
                     ->getResult();
     }
 
-    /**
-     * @param string $type
-     * @param array  $identifiers
-     *
-     * @return array
-     */
     public function removeMissingEntities(string $type, array $identifiers, string $parentIdentifier = null)
     {
         $qb = $this->createQueryBuilder('p');
@@ -142,15 +119,6 @@ class PegassRepository extends ServiceEntityRepository
                     ->execute();
     }
 
-    /**
-     * @param string   $type
-     * @param callable $callback
-     * @param bool     $onlyEnabled
-     *
-     * @throws MappingException
-     * @throws ORMException
-     * @throws OptimisticLockException
-     */
     public function foreach(string $type, callable $callback, bool $onlyEnabled = true)
     {
         $qb = $this->createQueryBuilder('p')
@@ -233,23 +201,12 @@ class PegassRepository extends ServiceEntityRepository
         return $qb;
     }
 
-    /**
-     * @param Pegass $entity
-     *
-     * @throws ORMException
-     * @throws OptimisticLockException
-     */
     public function save(Pegass $entity)
     {
         $this->_em->persist($entity);
         $this->_em->flush();
     }
 
-    /**
-     * @param string $type
-     *
-     * @return DateTime
-     */
     private function getExpireDate(string $type) : DateTime
     {
         return DateTime::createFromFormat('U', time() - (Pegass::TTL[$type] * 24 * 60 * 60));

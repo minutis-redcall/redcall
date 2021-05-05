@@ -50,7 +50,7 @@
                                                             {{ macros.volunteer(volunteer, false) }}
                                                         </div>
                                                         <div class="col-md-5">
-                                                            #{{ volunteer.nivol }}
+                                                            #{{ volunteer.externalId }}
                                                             {% if constant('\\App\\Enum\\Platform::FR') == volunteer.platform %}
                                                                 /
                                                                 <a target="_blank" href="{{ gaia|replace({'%nivol%': volunteer.externalId}) }}">{{ 'audience.classification.resolve.details.gaia'|trans }}</a>

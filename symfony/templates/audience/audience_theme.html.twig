@@ -74,15 +74,15 @@
 
             <br/>
 
-            <div id="show-copy-paste-nivols">
+            <div id="show-copy-paste-external-ids">
                 <a href="#" class="btn btn-sm btn-secondary"
-                   onclick="$('#copy-paste-nivols').removeClass('d-none');$('#show-copy-paste-nivols').addClass('d-none');return false;">
+                   onclick="$('#copy-paste-external-ids').removeClass('d-none');$('#show-copy-paste-external-ids').addClass('d-none');return false;">
                     {{ 'audience.copy_paste'|trans }}
                 </a>
             </div>
 
-            <div id="copy-paste-nivols" class="d-none">
-                {{ form_row(form.nivols, {
+            <div id="copy-paste-external-ids" class="d-none">
+                {{ form_row(form.external_ids, {
                     'attr': {
                         'class': 'numbers no-badge-counts'
                     }

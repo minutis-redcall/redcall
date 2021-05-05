@@ -20,7 +20,7 @@ class GdprManager
     }
 
     /**
-     * Keep volunteer's nivol & skills, anonymize everything else.
+     * Keep volunteer's external id & skills, anonymize everything else.
      * Volunteer gets automatically locked & disabled.
      *
      * @param Volunteer $volunteer
@@ -29,7 +29,7 @@ class GdprManager
     {
         $volunteer->setFirstName('Anonymous');
         $volunteer->setLastName('Anonymous');
-        $volunteer->setPhoneNumber(null);
+        $volunteer->getPhones()->clear();
         $volunteer->setEmail(null);
         $volunteer->setLocked(true);
         $volunteer->setEnabled(false);

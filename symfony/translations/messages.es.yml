@@ -386,7 +386,6 @@ csv_export:
   email: Email
   firstname: Nombre
   lastname: Apellidos
-  nivol: Nivol
   other: 'Otras respuestas'
   phone_number: 'Número de teléfono'
   received: 'Mensaje recibido'
@@ -569,11 +568,11 @@ manage_volunteers:
         message_received: 'Mensaje recibido que ha llevado a eliminar esta persona voluntaria el %date% a las %time% en la movilización <a href="%url%">%trigger%</a>:'
         nivol: 'NIVOL: %nivol%'
         phone: 'Teléfono: %phone%'
-        subject: '[RGPD] RedCall - Actualizar GAIA para #%nivol%'
+        title: '[RGPD] RedCall - Actualizar GAIA para #%external-id%'
         target: 'Este mensaje debe ser reenviado al secretariado o a la presidencia de la unidad local.'
         who: 'La persona en cuestión:'
       sms_content: 'Hola, tenemos en cuenta tu petición. No volverás a recibir mensajes de nuestra parte. Disculpa las molestias.'
-      title: '[RGPD] Petición de eliminación de datos de %nivol%'
+      subject: '[RGPD] Petición de eliminación de datos de %external-id%'
     cancel: Cancelar
     choose_answer: 'Selecciona la respuesta de la persona voluntaria que solicita eliminar sus datos personales.'
     confirm: Confirmar
@@ -694,7 +693,7 @@ pdf_export:
 phone_card:
   add: 'Añadir un número de teléfono'
   error_invalid: 'El formato de este número de teléfono no es válido'
-  error_taken: 'Este número de teléfono ya está siendo utilizado por %truncated_name% (%nivol%).'
+  error_already_taken: 'Este número de teléfono ya está siendo utilizado por %truncated_name% (%externalId%).'
   main: Principal
   title: 'Teléfono #%index%'
   use: 'Establecer como principal'

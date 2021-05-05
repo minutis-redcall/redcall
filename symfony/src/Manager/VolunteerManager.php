@@ -77,9 +77,9 @@ class VolunteerManager
         return $this->volunteerRepository->find($volunteerId);
     }
 
-    public function findOneByNivol(string $platform, string $nivol) : ?Volunteer
+    public function findOneByExternalId(string $platform, string $externalId) : ?Volunteer
     {
-        return $this->volunteerRepository->findOneByNivol($platform, $nivol);
+        return $this->volunteerRepository->findOneByExternalId($platform, $externalId);
     }
 
     public function findOneByPhoneNumber(string $phoneNumber) : ?Volunteer
@@ -184,13 +184,13 @@ class VolunteerManager
         $this->volunteerRepository->synchronizeWithPegass();
     }
 
-    public function getIdsByNivols(array $nivols) : array
+    public function getIdsByExternalIds(array $externalIds) : array
     {
         return array_column(
-            $this->volunteerRepository->getIdsByNivols(
-                array_map(function ($nivol) {
-                    return ltrim($nivol, '0');
-                }, $nivols)
+            $this->volunteerRepository->getIdsByExternalIds(
+                array_map(function ($externalId) {
+                    return ltrim($externalId, '0');
+                }, $externalIds)
             ),
             'id'
         );
@@ -226,12 +226,12 @@ class VolunteerManager
         return $this->volunteerRepository->getVolunteerGlobalCounts($structureIds);
     }
 
-    public function filterInvalidNivols(array $nivols) : array
+    public function filterInvalidExternalIds(array $externalIds) : array
     {
-        return $this->volunteerRepository->filterInvalidNivols(
-            array_map(function ($nivol) {
-                return ltrim($nivol, '0');
-            }, $nivols)
+        return $this->volunteerRepository->filterInvalidExternalIds(
+            array_map(function ($externalId) {
+                return ltrim($externalId, '0');
+            }, $externalIds)
         );
     }
 

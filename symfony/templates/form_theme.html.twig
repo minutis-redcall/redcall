@@ -62,15 +62,15 @@
                 'class': 'flexdatalist',
                 'placeholder': 'base.search.placeholder'|trans,
                 'data-data': data ? data|json_encode : '[]',
-                'data-url': path('widget_nivol_search', {searchAll: true}),
+                'data-url': path('widget_volunteer_search', {searchAll: true}),
                 'data-search-disabled': true,
                 'data-min-length': 1,
                 'data-visible-properties': '["human"]',
                 'data-no-results-text': 'base.search.no_results'|trans,
                 'data-focus-first-result': true,
                 'data-selection-required': true,
-                'data-text-property': 'nivol',
-                'data-value-property': 'nivol',
+                'data-text-property': 'external-id',
+                'data-value-property': 'external-id',
             }
         }) }}
     </div>

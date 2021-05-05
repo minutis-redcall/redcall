@@ -64,11 +64,11 @@ class VolunteerRepository extends BaseRepository
         }
     }
 
-    public function findOneByNivol(string $platform, string $nivol) : ?Volunteer
+    public function findOneByExternalId(string $platform, string $externalId) : ?Volunteer
     {
         return $this->findOneBy([
-            'platform' => $platform,
-            'nivol'    => ltrim($nivol, '0'),
+            'platform'   => $platform,
+            'externalId' => ltrim($externalId, '0'),
         ]);
     }
 
@@ -243,16 +243,16 @@ class VolunteerRepository extends BaseRepository
     }
 
     /**
-     * @param array $nivols
+     * @param array $externalIds
      *
      * @return Volunteer[]
      */
-    public function getIdsByNivols(array $nivols) : array
+    public function getIdsByExternalIds(array $externalIds) : array
     {
         return $this->createQueryBuilder('v')
                     ->select('v.id')
-                    ->andWhere('v.nivol IN (:nivols)')
-                    ->setParameter('nivols', $nivols, Connection::PARAM_STR_ARRAY)
+                    ->andWhere('v.externalId IN (:external_ids)')
+                    ->setParameter('external_ids', $externalIds, Connection::PARAM_STR_ARRAY)
                     ->getQuery()
                     ->getArrayResult();
     }
@@ -269,7 +269,7 @@ class VolunteerRepository extends BaseRepository
         return array_diff($volunteerIds, array_column($accessibles, 'id'));
     }
 
-    public function filterInvalidNivols(array $externalIds) : array
+    public function filterInvalidExternalIds(array $externalIds) : array
     {
         $valid = $this->createVolunteersQueryBuilder(false)
                       ->select('v.externalId')
@@ -570,7 +570,7 @@ class VolunteerRepository extends BaseRepository
             ->leftJoin('v.phones', 'p')
             ->andWhere(
                 $qb->expr()->orX(
-                    'v.nivol LIKE :criteria',
+                    'v.externalId LIKE :criteria',
                     'v.firstName LIKE :criteria',
                     'v.lastName LIKE :criteria',
                     'p.e164 LIKE :criteria',

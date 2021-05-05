@@ -47,7 +47,7 @@ class VolunteerWidgetType extends TextType
     public function buildView(FormView $view, FormInterface $form, array $options)
     {
         if ($view->vars['value']) {
-            $volunteer = $this->volunteerManager->findOneByNivol(
+            $volunteer = $this->volunteerManager->findOneByExternalId(
                 $this->security->getPlatform(),
                 $view->vars['value']
             );
