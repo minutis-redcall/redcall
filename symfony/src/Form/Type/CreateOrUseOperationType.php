@@ -20,8 +20,8 @@ class CreateOrUseOperationType extends AbstractType
                 'label'    => false,
                 'expanded' => true,
                 'choices'  => [
-                    'form.operation.fields.choices.create' => true,
-                    'form.operation.fields.choices.use'    => false,
+                    'form.operation.fields.choices.create' => Campaign::CREATE_OPERATION,
+                    'form.operation.fields.choices.use'    => Campaign::USE_OPERATION,
                 ],
             ])
             ->add('continue', SubmitType::class, [

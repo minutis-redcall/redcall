@@ -42,7 +42,7 @@ class CampaignFlow extends FormFlow
                     /** @var Campaign $data */
                     $data = $flow->getFormData();
 
-                    return !$data->hasOperation || !$data->createOperation;
+                    return !$data->hasOperation || Campaign::CREATE_OPERATION !== $data->createOperation;
                 },
             ],
             4 => [
@@ -54,7 +54,7 @@ class CampaignFlow extends FormFlow
                     /** @var Campaign $data */
                     $data = $flow->getFormData();
 
-                    return !$data->hasOperation || $data->createOperation;
+                    return !$data->hasOperation || Campaign::USE_OPERATION !== $data->createOperation;
                 },
             ],
         ];

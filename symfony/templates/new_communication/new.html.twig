@@ -52,3 +52,21 @@
         </div>
     </div>
 {% endblock %}
+
+{% block javascripts %}
+
+    {% if flow.currentStepNumber == 4 %}
+
+        <script type="text/javascript">
+
+            $('#{{ form.structure.vars.id }}').change(function () {
+
+
+            });
+
+
+        </script>
+
+    {% endif %}
+
+{% endblock %}

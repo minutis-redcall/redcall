@@ -30,7 +30,7 @@ class CreateOperationType extends BaseCreateOrUseOperationType
 
         $builder
             ->add('structure', ChoiceType::class, [
-                'label'       => 'form.operation.fields.structure',
+                'label'       => 'form.operation.fields.structure_create',
                 'choices'     => array_flip($this->security->getUser()->getStructuresAsList()),
                 'constraints' => [
                     new Choice(['choices' => array_flip($this->security->getUser()->getStructuresAsList())]),

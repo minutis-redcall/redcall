@@ -7,6 +7,9 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class Campaign
 {
+    const CREATE_OPERATION = 'create';
+    const USE_OPERATION    = 'use';
+
     /**
      * @var string
      *
@@ -46,7 +49,7 @@ class Campaign
     public $hasOperation;
 
     /**
-     * @var bool
+     * @var string
      */
     public $createOperation;
 
@@ -63,7 +66,7 @@ class Campaign
         $this->label               = '';
         $this->trigger             = $trigger;
         $this->hasOperation        = false;
-        $this->createOperation     = true;
+        $this->createOperation     = self::CREATE_OPERATION;
         $this->operation           = new CampaignOperation();
         $this->operation->campaign = $this;
     }

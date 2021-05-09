@@ -15,7 +15,7 @@ class UseCampaignOperationType extends AbstractType
         parent::buildForm($builder, $options);
 
         $builder
-            ->add('operation', CreateOperationType::class, [
+            ->add('operation', UseOperationType::class, [
                 'label' => false,
             ])
             ->add('submit', SubmitType::class, [

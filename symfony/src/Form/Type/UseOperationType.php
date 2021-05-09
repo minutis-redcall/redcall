@@ -3,35 +3,47 @@
 namespace App\Form\Type;
 
 use App\Form\Model\CampaignOperation;
+use App\Security\Helper\Security;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Choice;
+use Symfony\Component\Validator\Constraints\NotBlank;
 
 class UseOperationType extends AbstractType
 {
+    /**
+     * @var Security
+     */
+    private $security;
+
+    public function __construct(Security $security)
+    {
+        $this->security = $security;
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         parent::buildForm($builder, $options);
 
         $builder
-            ->add('name', TextType::class, [
-                'label'    => 'form.operation.fields.name',
-                'required' => false,
+            ->add('structure', ChoiceType::class, [
+                'label'       => 'form.operation.fields.structure_use',
+                'choices'     => array_flip($this->security->getUser()->getStructuresAsList()),
+                'required'    => false,
+                'constraints' => [
+                    new NotBlank(),
+                    new Choice(['choices' => array_flip($this->security->getUser()->getStructuresAsList())]),
+                ],
             ])
-            ->add('ownerExternalId', VolunteerWidgetType::class, [
-                'label' => 'form.operation.fields.owner_external_id',
-
+            ->add('operation', ChoiceType::class, [
+                'label'  => 'form.operation.fields.operation_use',
+                'mapped' => false,
             ])
             ->add('operationExternalId', TextType::class, [
-
-            ])
-            ->add('choices', TextType::class, [
-
-            ])
-            ->add('submit', SubmitType::class, [
-                'label' => 'form.operation.fields.submit',
+                'label' => 'form.operation.fields.operation_id',
             ]);
     }
 

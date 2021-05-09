@@ -166,7 +166,7 @@ class User extends AbstractUser
         $structures = [];
         foreach ($this->getStructures() as $structure) {
             /** @var Structure $structure */
-            $structures[$structure->getId()] = $structure->getName();
+            $structures[$structure->getExternalId()] = $structure->getName();
         }
 
         return $structures;

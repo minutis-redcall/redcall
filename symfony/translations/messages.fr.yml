@@ -421,10 +421,13 @@ form:
   operation:
     title: 'Opération Minutis'
     buttons:
-      continue: 'Continuer...'
+      continue: 'Continuer'
       return: 'Revenir à l''étape précédente'
     fields:
-      structure: 'Structure à laquelle rattacher l''opération'
+      structure_create: 'Structure à laquelle rattacher l''opération'
+      structure_use: 'Structure à laquelle est rattachée l''opération'
+      operation_use: 'Opération à rattacher au déclenchement'
+      operation_id: 'Ou vous pouvez aussi saisir directement l''ID numérique de l''opération'
       name: 'Nom de l''opération'
       create: 'Créer l''opération et effectuer le déclenchement'
       use: 'Relier l''opération et effectuer le déclenchement'
