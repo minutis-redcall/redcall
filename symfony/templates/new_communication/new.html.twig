@@ -14,17 +14,34 @@
                 {{ form_start(form) }}
                 {{ form_errors(form) }}
 
-                {{ form_row(form.label) }}
-                {{ form_row(form.type) }}
-                {{ form_row(form.hasOperation) }}
+                {% if flow.currentStepNumber == 1 %}
+                    {{ form_row(form.label) }}
+                    {{ form_row(form.type) }}
+                    {{ form_row(form.hasOperation) }}
 
-                <hr/>
+                    <hr/>
 
-                {{ include(type.formView, _context|merge({form: form.trigger})) }}
+                    {{ include(type.formView, _context|merge({form: form.trigger})) }}
 
-                <hr/>
-                <div class="h4">{{ 'form.campaign.fields.notes_title'|trans }}</div>
-                {{ form_row(form.notes) }}
+                    <hr/>
+                    <div class="h4">{{ 'form.campaign.fields.notes_title'|trans }}</div>
+                    {{ form_row(form.notes) }}
+                {% endif %}
+
+                {% if flow.currentStepNumber > 1 %}
+                    <h2>{{ 'form.operation.title'|trans }}</h2>
+
+                    <hr/>
+
+                    {{ form_rest(form) }}
+
+                    <button type="submit" name="{{ flow.formTransitionKey }}" value="back" class="btn btn-secondary trigger-launch" formnovalidate="formnovalidate">
+                        {{ 'form.operation.buttons.return'|trans }}
+                    </button>
+
+                    <br/><br/>
+
+                {% endif %}
 
                 {{ form_end(form) }}
 

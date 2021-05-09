@@ -8,6 +8,12 @@ class Operation
 {
     /**
      * @Assert\NotBlank()
+     * @Assert\Length(max=255)
+     */
+    public $name;
+
+    /**
+     * @Assert\NotBlank()
      * @Assert\Length(max=64)
      */
     public $operationExternalId;
@@ -18,11 +24,10 @@ class Operation
      */
     public $ownerExternalId;
 
-    /**
-     * @Assert\NotBlank()
-     * @Assert\Length(max=255)
-     */
-    public $name;
-
     public $choices = [];
+
+    /**
+     * @var Campaign
+     */
+    public $campaign;
 }

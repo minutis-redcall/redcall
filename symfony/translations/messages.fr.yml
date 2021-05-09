@@ -418,6 +418,20 @@ developer:
   home:
     link: 'Espace développeur'
 form:
+  operation:
+    title: 'Opération Minutis'
+    buttons:
+      continue: 'Continuer...'
+      return: 'Revenir à l''étape précédente'
+    fields:
+      name: 'Nom de l''opération'
+      create: 'Créer l''opération et effectuer le déclenchement'
+      use: 'Relier l''opération et effectuer le déclenchement'
+      owner_external_id: 'Sélectionnez l''ID externe (NIVOL) du propriétaire de l''opération'
+      choices:
+        list: 'Choisir les réponses pour lesquelles les bénévoles seront intégrés automatiquement dans Minutis'
+        create: 'Créer une nouvelle opération dans Minutis'
+        use: 'Rattacher ce déclenchement à une opération existante'
   campaign:
     fields:
       label: 'Nom du déclenchement'

@@ -46,16 +46,23 @@ class Campaign
     public $hasOperation;
 
     /**
-     * @var Operation|null
+     * @var bool
+     */
+    public $createOperation;
+
+    /**
+     * @var Operation
      */
     public $operation;
 
     public function __construct(BaseTrigger $trigger)
     {
-        $this->type         = CampaignEntity::TYPE_GREEN;
-        $this->label        = '';
-        $this->trigger      = $trigger;
-        $this->hasOperation = false;
-        $this->operation    = null;
+        $this->type                = CampaignEntity::TYPE_GREEN;
+        $this->label               = '';
+        $this->trigger             = $trigger;
+        $this->hasOperation        = false;
+        $this->createOperation     = true;
+        $this->operation           = new Operation();
+        $this->operation->campaign = $this;
     }
 }

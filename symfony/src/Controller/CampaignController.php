@@ -5,9 +5,9 @@ namespace App\Controller;
 use App\Base\BaseController;
 use App\Entity\Campaign;
 use App\Enum\Type;
+use App\Form\Flow\CampaignFlow;
 use App\Form\Model\Campaign as CampaignModel;
 use App\Form\Model\SmsTrigger;
-use App\Form\Type\CampaignType;
 use App\Manager\CampaignManager;
 use App\Manager\CommunicationManager;
 use App\Manager\PlatformConfigManager;
@@ -99,7 +99,7 @@ class CampaignController extends BaseController
     /**
      * @Route(path="campaign/new/{type}", name="create_campaign")
      */
-    public function createCampaign(Request $request, Type $type)
+    public function createCampaign(Request $request, Type $type, CampaignFlow $flow)
     {
         $user = $this->getUser();
 
@@ -115,25 +115,29 @@ class CampaignController extends BaseController
             $this->platformManager->getPlaform($this->getPlatform())->getDefaultLanguage()->getLocale()
         );
 
-        $form = $this
-            ->createForm(CampaignType::class, $campaignModel, [
-                'type' => $type,
-            ])
-            ->handleRequest($request);
+        $flow->bind($campaignModel);
+        $form = $flow->createForm();
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $campaignEntity = $this->campaignManager->launchNewCampaign($campaignModel);
+        if ($flow->isValid($form)) {
+            $flow->saveCurrentStepData($form);
 
-            if (!$campaignEntity) {
-                return $this->redirectToRoute('home');
+            if ($flow->nextStep()) {
+                $form = $flow->createForm();
+            } else {
+                $campaignEntity = $this->campaignManager->launchNewCampaign($campaignModel);
+
+                if (!$campaignEntity) {
+                    return $this->redirectToRoute('home');
+                }
+
+                return $this->redirect($this->generateUrl('communication_index', [
+                    'id' => $campaignEntity->getId(),
+                ]));
             }
-
-            return $this->redirect($this->generateUrl('communication_index', [
-                'id' => $campaignEntity->getId(),
-            ]));
         }
 
         return $this->render('new_communication/new.html.twig', [
+            'flow' => $flow,
             'form' => $form->createView(),
             'type' => $type,
         ]);

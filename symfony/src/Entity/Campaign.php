@@ -112,6 +112,11 @@ class Campaign
      */
     private $expiresAt;
 
+    /**
+     * @ORM\OneToOne(targetEntity=Operation::class, inversedBy="campaign")
+     */
+    private $operation;
+
     public function getId()
     {
         return $this->id;

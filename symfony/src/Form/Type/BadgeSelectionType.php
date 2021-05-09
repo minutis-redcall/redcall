@@ -52,7 +52,7 @@ class BadgeSelectionType extends AbstractType
             function ($fromModel) {
                 $visibles   = [];
                 $invisibles = [];
-                foreach ($fromModel as $badge) {
+                foreach ($fromModel ?? [] as $badge) {
                     /** @var Badge $badge */
                     if ($badge->isVisible()) {
                         $visibles[] = $badge;
