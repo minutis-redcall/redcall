@@ -16,11 +16,17 @@ class CampaignFlow extends FormFlow
     {
         return [
             1 => [
-                'form_type' => CampaignType::class,
+                'form_type'    => CampaignType::class,
+                'form_options' => [
+                    'validation_groups' => ['Default'],
+                ],
             ],
             2 => [
-                'form_type' => CreateOrUseOperationType::class,
-                'skip'      => function ($estimatedCurrentStepNumber, FormFlowInterface $flow) {
+                'form_type'    => CreateOrUseOperationType::class,
+                'form_options' => [
+                    'validation_groups' => ['Default'],
+                ],
+                'skip'         => function ($estimatedCurrentStepNumber, FormFlowInterface $flow) {
                     /** @var Campaign $data */
                     $data = $flow->getFormData();
 
@@ -28,8 +34,11 @@ class CampaignFlow extends FormFlow
                 },
             ],
             3 => [
-                'form_type' => CreateCampaignOperationType::class,
-                'skip'      => function ($estimatedCurrentStepNumber, FormFlowInterface $flow) {
+                'form_type'    => CreateCampaignOperationType::class,
+                'form_options' => [
+                    'validation_groups' => ['Create'],
+                ],
+                'skip'         => function ($estimatedCurrentStepNumber, FormFlowInterface $flow) {
                     /** @var Campaign $data */
                     $data = $flow->getFormData();
 
@@ -37,8 +46,11 @@ class CampaignFlow extends FormFlow
                 },
             ],
             4 => [
-                'form_type' => UseCampaignOperationType::class,
-                'skip'      => function ($estimatedCurrentStepNumber, FormFlowInterface $flow) {
+                'form_type'    => UseCampaignOperationType::class,
+                'form_options' => [
+                    'validation_groups' => ['Use'],
+                ],
+                'skip'         => function ($estimatedCurrentStepNumber, FormFlowInterface $flow) {
                     /** @var Campaign $data */
                     $data = $flow->getFormData();
 

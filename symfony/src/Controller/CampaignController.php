@@ -9,9 +9,7 @@ use App\Form\Flow\CampaignFlow;
 use App\Form\Model\Campaign as CampaignModel;
 use App\Form\Model\SmsTrigger;
 use App\Manager\CampaignManager;
-use App\Manager\CommunicationManager;
 use App\Manager\PlatformConfigManager;
-use App\Manager\UserManager;
 use Bundles\PaginationBundle\Manager\PaginationManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -35,16 +33,6 @@ class CampaignController extends BaseController
     private $campaignManager;
 
     /**
-     * @var CommunicationManager
-     */
-    private $communicationManager;
-
-    /**
-     * @var UserManager
-     */
-    private $userManager;
-
-    /**
      * @var PlatformConfigManager
      */
     private $platformManager;
@@ -56,17 +44,13 @@ class CampaignController extends BaseController
 
     public function __construct(PaginationManager $paginationManager,
         CampaignManager $campaignManager,
-        CommunicationManager $communicationManager,
-        UserManager $userManager,
         PlatformConfigManager $platformManager,
         TranslatorInterface $translator)
     {
-        $this->paginationManager    = $paginationManager;
-        $this->campaignManager      = $campaignManager;
-        $this->communicationManager = $communicationManager;
-        $this->userManager          = $userManager;
-        $this->platformManager      = $platformManager;
-        $this->translator           = $translator;
+        $this->paginationManager = $paginationManager;
+        $this->campaignManager   = $campaignManager;
+        $this->platformManager   = $platformManager;
+        $this->translator        = $translator;
     }
 
     /**

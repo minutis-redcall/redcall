@@ -424,6 +424,7 @@ form:
       continue: 'Continuer...'
       return: 'Revenir à l''étape précédente'
     fields:
+      structure: 'Structure à laquelle rattacher l''opération'
       name: 'Nom de l''opération'
       create: 'Créer l''opération et effectuer le déclenchement'
       use: 'Relier l''opération et effectuer le déclenchement'

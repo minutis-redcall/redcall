@@ -115,14 +115,8 @@ class CommunicationManager
         return $this->communicationRepository->find($communicationId);
     }
 
-    public function launchNewCommunication(Campaign $campaign,
-        BaseTrigger $trigger,
-        ProcessorInterface $processor = null) : Communication
+    public function createNewCommunication(Campaign $campaign, BaseTrigger $trigger)
     {
-        $this->logger->info('Launching a new communication', [
-            'model' => $trigger,
-        ]);
-
         $communication = $this->createCommunication($trigger);
         $communication->setRaw(json_encode($trigger, JSON_PRETTY_PRINT));
 
@@ -132,6 +126,13 @@ class CommunicationManager
 
         $this->communicationRepository->save($communication);
 
+        return $communication;
+    }
+
+    public function launchNewCommunication(Campaign $campaign,
+        Communication $communication,
+        ProcessorInterface $processor = null) : Communication
+    {
         if ($processor) {
             $processor->process($communication);
         } else {
@@ -148,7 +149,7 @@ class CommunicationManager
 
         $this->slackLogger->info(
             sprintf(
-                'New %s trigger by %s (%s) on %d volunteers from %d structures.%s%s%sLink: %s',
+                'New %s trigger by %s (%s) on %d volunteers from %d structures.%s%s%sLink: %s%s%s',
                 strtoupper($communication->getType()),
                 $communication->getVolunteer()->getDisplayName(),
                 $structureName,
@@ -159,7 +160,9 @@ class CommunicationManager
                 PHP_EOL,
                 sprintf('%s%s', getenv('WEBSITE_URL'), $this->router->generate('communication_index', [
                     'id' => $campaign->getId(),
-                ]))
+                ])),
+                $campaign->getOperation() ? PHP_EOL : '',
+                $campaign->getOperation() ? sprintf('Operation: %soperation/%s/moyens', getenv('MINUTIS_URL'), $campaign->getOperation()->getOperationExternalId()) : ''
             )
         );
 

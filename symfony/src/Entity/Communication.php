@@ -450,6 +450,17 @@ class Communication
         return null;
     }
 
+    public function getChoiceByLabel(string $label) : ?Choice
+    {
+        foreach ($this->choices as $choice) {
+            if ($label === $choice->getLabel()) {
+                return $choice;
+            }
+        }
+
+        return null;
+    }
+
     /**
      * @return bool
      */

@@ -37,14 +37,14 @@ class CampaignManager
     private $messageManager;
 
     /**
-     * @var StructureManager
-     */
-    private $structureManager;
-
-    /**
      * @var PlatformConfigManager
      */
     private $platformManager;
+
+    /**
+     * @var OperationManager
+     */
+    private $operationManager;
 
     /**
      * @var SimpleProcessor
@@ -64,8 +64,8 @@ class CampaignManager
     public function __construct(CampaignRepository $campaignRepository,
         CommunicationManager $communicationManager,
         MessageManager $messageManager,
-        StructureManager $structureManager,
         PlatformConfigManager $platformManager,
+        OperationManager $operationManager,
         SimpleProcessor $processor,
         TokenStorageInterface $tokenStorage,
         Security $security)
@@ -73,8 +73,8 @@ class CampaignManager
         $this->campaignRepository   = $campaignRepository;
         $this->communicationManager = $communicationManager;
         $this->messageManager       = $messageManager;
-        $this->structureManager     = $structureManager;
         $this->platformManager      = $platformManager;
+        $this->operationManager     = $operationManager;
         $this->processor            = $processor;
         $this->tokenStorage         = $tokenStorage;
         $this->security             = $security;
@@ -115,7 +115,19 @@ class CampaignManager
 
         $this->campaignRepository->save($campaignEntity);
 
-        $this->communicationManager->launchNewCommunication($campaignEntity, $campaignModel->trigger, $processor);
+        $communication = $this->communicationManager->createNewCommunication($campaignEntity, $campaignModel->trigger);
+
+        if ($campaignModel->hasOperation) {
+            if ($campaignModel->createOperation) {
+                $this->operationManager->createOperation($campaignModel, $campaignEntity, $communication);
+            } else {
+                $this->operationManager->bindOperation($campaignModel, $campaignEntity);
+            }
+
+            $this->campaignRepository->save($campaignEntity);
+        }
+
+        $this->communicationManager->launchNewCommunication($campaignEntity, $communication, $processor);
 
         return $campaignEntity;
     }

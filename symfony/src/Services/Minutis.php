@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Model\MinutisId;
 use App\Model\MinutisToken;
 use App\Settings;
 use Bundles\SettingsBundle\Manager\SettingManager;
@@ -70,7 +71,7 @@ class Minutis
         return reset($result);
     }
 
-    public function createOperation(string $structureExternalId, string $name, string $ownerEmail) : int
+    public function createOperation(string $structureExternalId, string $name, string $ownerEmail) : MinutisId
     {
         $response = $this->getClient()->post('/api/regulation', $this->populateAuthentication([
             'json' => [
@@ -80,7 +81,9 @@ class Minutis
             ],
         ]));
 
-        return json_decode($response->getBody()->getContents(), true)['id'];
+        $payload = json_decode($response->getBody()->getContents(), true);
+
+        return new MinutisId($payload['id'], $payload['publicId']);
     }
 
     public function addResourceToOperation(int $externalOperationId, string $volunteerExternalId)

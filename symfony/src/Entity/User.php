@@ -161,6 +161,17 @@ class User extends AbstractUser
         });
     }
 
+    public function getStructuresAsList() : array
+    {
+        $structures = [];
+        foreach ($this->getStructures() as $structure) {
+            /** @var Structure $structure */
+            $structures[$structure->getId()] = $structure->getName();
+        }
+
+        return $structures;
+    }
+
     public function getEnabledStructures() : Collection
     {
         return $this->structures->filter(function (Structure $structure) {

@@ -25,19 +25,9 @@ class Operation
     private $operationExternalId;
 
     /**
-     * @ORM\Column(type="string", length=64)
+     * @ORM\Column(type="string", length=36)
      */
-    private $ownerExternalId;
-
-    /**
-     * @ORM\Column(type="string", length=80)
-     */
-    private $ownerEmail;
-
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
-    private $name;
+    private $operationExternalPublicId;
 
     /**
      * @ORM\OneToMany(targetEntity=Choice::class, mappedBy="operation")
@@ -71,33 +61,16 @@ class Operation
         return $this;
     }
 
-    public function getOwnerExternalId() : ?string
+    public function getOperationExternalPublicId()
     {
-        return $this->ownerExternalId;
+        return $this->operationExternalPublicId;
     }
 
-    public function setOwnerExternalId(string $ownerExternalId) : self
+    public function setOperationExternalPublicId($operationExternalPublicId)
     {
-        $this->ownerExternalId = $ownerExternalId;
+        $this->operationExternalPublicId = $operationExternalPublicId;
 
         return $this;
-    }
-
-    public function getOwnerEmail() : ?string
-    {
-        return $this->ownerEmail;
-    }
-
-    public function setOwnerEmail(string $ownerEmail) : self
-    {
-        $this->ownerEmail = $ownerEmail;
-
-        return $this;
-    }
-
-    public function getName() : ?string
-    {
-        return $this->name;
     }
 
     public function setName(string $name) : self
