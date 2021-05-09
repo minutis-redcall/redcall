@@ -25,7 +25,7 @@ class AudienceType extends AbstractType
     const LISTS = [
         'volunteers',
         'excluded_volunteers',
-        'nivols',
+        'external_ids',
         'structures_global',
         'structures_local',
         'badges_ticked',
@@ -83,7 +83,7 @@ class AudienceType extends AbstractType
             'preselection_key'    => null,
             'volunteers'          => [],
             'excluded_volunteers' => [],
-            'nivols'              => [],
+            'external_ids'        => [],
             'structures_global'   => [],
             'structures_local'    => [],
             'badges_all'          => false,
@@ -136,7 +136,7 @@ class AudienceType extends AbstractType
             ->add('excluded_volunteers', TextType::class, [
                 'label' => false,
             ])
-            ->add('nivols', TextareaType::class, [
+            ->add('external_ids', TextareaType::class, [
                 'label'    => 'audience.copy_paste_details',
                 'required' => false,
                 'attr'     => [

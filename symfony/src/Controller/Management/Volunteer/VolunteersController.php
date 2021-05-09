@@ -519,8 +519,8 @@ class VolunteersController extends BaseController
 
         $campaign = new Campaign($sms);
 
-        $campaign->label = $this->translator->trans('manage_volunteers.anonymize.campaign.title', [
-            '%nivol%' => $volunteer->getNivol(),
+        $campaign->label = $this->translator->trans('manage_volunteers.anonymize.campaign.subject', [
+            '%external-id%' => $volunteer->getExternalId(),
         ]);
 
         $sms->setAudience(AudienceType::createEmptyData([
@@ -558,8 +558,8 @@ class VolunteersController extends BaseController
             'volunteers' => array_unique($audience),
         ]));
 
-        $email->setSubject($this->translator->trans('manage_volunteers.anonymize.campaign.email.subject', [
-            '%nivol%' => $volunteer->getNivol(),
+        $email->setSubject($this->translator->trans('manage_volunteers.anonymize.campaign.email.title', [
+            '%external-id%' => $volunteer->getExternalId(),
         ]));
 
         $email->setMessage($this->templating->render('management/volunteers/delete_email.html.twig', [

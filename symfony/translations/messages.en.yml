@@ -407,7 +407,7 @@ csv_export:
   email: Email
   firstname: Firstname
   lastname: Lastname
-  nivol: Nivol
+  external_id: External ID
   other: 'Other responses'
   phone_number: 'Phone number'
   received: 'Message received'
@@ -590,11 +590,11 @@ manage_volunteers:
         message_received: 'Message received that conducted the volunteer data deletion received on %date% at %time% on trigger <a href="%url%">%trigger%</a>:'
         nivol: 'NIVOL : %nivol%'
         phone: 'Phone number : %phone%'
-        subject: '[GDPR] RedCall - Update GAIA for #%nivol%'
+        title: '[GDPR] RedCall - Update GAIA for #%external-id%'
         target: 'This message should be forwarded to the Local Unit secretary or its president.'
         who: 'Involved person:'
       sms_content: 'Hello, we taken your request into account. You won''t receive messages from us. Sorry for the inconvenience.'
-      title: '[GDPR] Data deletion request for %nivol%'
+      subject: '[GDPR] Data deletion request for %external-id%'
     cancel: Cancel
     choose_answer: 'Choose the volunteer''s answer asking for his data deletion.'
     confirm: Confirm
@@ -717,7 +717,7 @@ pdf_export:
 phone_card:
   add: 'Add a phone number'
   error_invalid: 'This phone number format is invalid.'
-  error_taken: 'This phone number is already taken by %truncated_name% (%nivol%).'
+  error_already_taken: 'This phone number is already taken by %truncated_name% (%externalId%).'
   main: Main
   title: 'Phone #%index%'
   use: 'Set as main'

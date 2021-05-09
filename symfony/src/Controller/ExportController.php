@@ -62,7 +62,7 @@ class ExportController extends BaseController
             }, $volunteer->getVisibleBadges()));
 
             $row = [
-                $this->trans('csv_export.nivol')        => $volunteer->getNivol(),
+                $this->trans('csv_export.external_id')  => $volunteer->getExternalId(),
                 $this->trans('csv_export.firstname')    => $volunteer->getFirstName(),
                 $this->trans('csv_export.lastname')     => $volunteer->getLastName(),
                 $this->trans('csv_export.email')        => $volunteer->getEmail(),

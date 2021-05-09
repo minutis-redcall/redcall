@@ -145,23 +145,23 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
         $volunteer = null;
         foreach ($this->platformManager->getPlatformChoices() as $platform) {
             $externalId = ltrim($decoded['nivol'], '0');
-            $volunteer  = $this->volunteerManager->findOneByNivol($platform, $externalId);
+            $volunteer  = $this->volunteerManager->findOneByExternalId($platform, $externalId);
             if ($volunteer) {
                 break;
             }
         }
 
         if (null === $volunteer) {
-            $this->logger->warning('Minutis authenticator: nivol not associated with a volunteer', [
-                'nivol' => $externalId,
+            $this->logger->warning('Minutis authenticator: external id not associated with a volunteer', [
+                'external-id' => $externalId,
             ]);
 
             throw new BadCredentialsException();
         }
 
         if (!$volunteer->isEnabled()) {
-            $this->logger->warning('Minutis authenticator: nivol associated to a disabled volunteer', [
-                'nivol' => $externalId,
+            $this->logger->warning('Minutis authenticator: external id associated to a disabled volunteer', [
+                'external-id' => $externalId,
             ]);
 
             throw new BadCredentialsException();
@@ -174,7 +174,7 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
         $user = $volunteer->getUser();
         if (null === $user) {
             $this->logger->info('Minutis authenticator: a volunteer without RedCall access clicked on Minutis link', [
-                'nivol' => $externalId,
+                'external-id' => $externalId,
             ]);
 
             throw new BadCredentialsException();

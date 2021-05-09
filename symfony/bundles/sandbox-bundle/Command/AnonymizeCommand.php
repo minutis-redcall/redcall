@@ -34,7 +34,7 @@ class AnonymizeCommand extends BaseCommand
         $this
             ->setName('anonymize')
             ->addArgument('platform', InputArgument::REQUIRED, 'Platform in which volunteers are stored')
-            ->addOption('volunteer', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Volunteer nivol to anonymize')
+            ->addOption('volunteer', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Volunteer\'s external id to anonymize')
             ->setDescription('Anonymize a specified volunteer, or the whole RedCall database');
     }
 
@@ -44,8 +44,8 @@ class AnonymizeCommand extends BaseCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         if ($volunteers = $input->getOption('volunteer')) {
-            foreach ($volunteers as $nivol) {
-                $this->anonymizeManager->anonymizeVolunteer(ltrim($nivol, '0'), $input->getArgument('platform'));
+            foreach ($volunteers as $externalId) {
+                $this->anonymizeManager->anonymizeVolunteer(ltrim($externalId, '0'), $input->getArgument('platform'));
             }
         } else {
             $this->anonymizeManager->anonymizeDatabase($input->getArgument('platform'));

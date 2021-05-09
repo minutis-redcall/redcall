@@ -91,7 +91,7 @@ class UserManager extends BaseUserManager
 
     public function changeVolunteer(User $user, string $volunteerPlatform, string $volunteerExternalId)
     {
-        $volunteer = $this->volunteerManager->findOneByNivol($user->getPlatform(), $volunteerExternalId);
+        $volunteer = $this->volunteerManager->findOneByExternalId($user->getPlatform(), $volunteerExternalId);
 
         if (!$volunteer) {
             $user->setVolunteer(null);

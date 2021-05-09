@@ -220,11 +220,11 @@ class StructuresController extends BaseController
         foreach ($structure->getVolunteers() as $volunteer) {
             /** @var Volunteer $volunteer */
             $rows[] = [
-                'nivol'     => $volunteer->getNivol(),
-                'firstname' => $volunteer->getFirstName(),
-                'lastname'  => $volunteer->getLastName(),
-                'phone'     => $volunteer->getPhoneNumber() ?: null,
-                'email'     => $volunteer->getEmail(),
+                'externalId' => $volunteer->getExternalId(),
+                'firstname'  => $volunteer->getFirstName(),
+                'lastname'   => $volunteer->getLastName(),
+                'phone'      => $volunteer->getPhoneNumber() ?: null,
+                'email'      => $volunteer->getEmail(),
             ];
         }
 

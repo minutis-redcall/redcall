@@ -38,7 +38,7 @@ class VolunteerType extends AbstractType
         parent::buildForm($builder, $options);
 
         $builder
-            ->add('nivol', TextType::class, [
+            ->add('externalId', TextType::class, [
                 'label' => 'manage_volunteers.form.external_id',
             ])
             ->add('firstName', TextType::class, [
@@ -97,7 +97,7 @@ class VolunteerType extends AbstractType
                 ],
             ]);
 
-        $builder->get('nivol')->addModelTransformer(new CallbackTransformer(
+        $builder->get('externalId')->addModelTransformer(new CallbackTransformer(
             function ($fromBase) {
                 return $fromBase;
             },

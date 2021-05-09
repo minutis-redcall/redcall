@@ -213,7 +213,7 @@ class MaintenanceController extends BaseController
             throw $this->createNotFoundException();
         }
 
-        $volunteer = $this->volunteerManager->findOneByNivol($this->getPlatform(), $nivol);
+        $volunteer = $this->volunteerManager->findOneByExternalId($this->getPlatform(), $nivol);
         if (!$volunteer) {
             throw $this->createNotFoundException();
         }

@@ -122,14 +122,14 @@ class PegassController extends BaseController
      * @Route(name="update", path="/update/{csrf}/{id}")
      * @IsGranted("USER", subject="user")
      */
-    public function updateNivol(Request $request, string $csrf, User $user)
+    public function updateBoundVolunteer(Request $request, string $csrf, User $user)
     {
         $this->validateCsrfOrThrowNotFoundException('pegass', $csrf);
 
-        $nivol = $request->request->get('nivol');
+        $externalId = $request->request->get('externalId');
 
         if (!$user->isLocked()) {
-            $this->userManager->changeVolunteer($user, $this->getPlatform(), $nivol);
+            $this->userManager->changeVolunteer($user, $this->getPlatform(), $externalId);
         }
 
         $structureNames = array_filter(array_map(function (Structure $structure) {
@@ -226,7 +226,7 @@ class PegassController extends BaseController
     public function createUser(Request $request, KernelInterface $kernel)
     {
         $form = $this->createFormBuilder()
-                     ->add('nivol', VolunteerWidgetType::class, [
+                     ->add('externalId', VolunteerWidgetType::class, [
                          'label' => false,
                      ])
                      ->add('submit', SubmitType::class, [
@@ -236,18 +236,19 @@ class PegassController extends BaseController
                      ->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $volunteer = $this->volunteerManager->findOneByNivol(
+            $volunteer = $this->volunteerManager->findOneByExternalId(
                 $this->getPlatform(),
-                $form->get('nivol')->getData()
+                $form->get('externalId')->getData()
             );
+
             if (!$volunteer) {
                 throw $this->createNotFoundException();
             }
 
-            $this->userManager->createUser($this->getPlatform(), $volunteer->getNivol());
+            $this->userManager->createUser($this->getPlatform(), $volunteer->getExternalId());
 
             return $this->redirectToRoute('admin_pegass_index', [
-                'form[criteria]' => $volunteer->getNivol(),
+                'form[criteria]' => $volunteer->getExternalId(),
             ]);
         }
 

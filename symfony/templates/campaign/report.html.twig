@@ -68,7 +68,7 @@
 
     {% if report.repartitions.count > 0 %}
 
-        <div class="float-right color-grey" style="font-weight: normal;" {% if communication.volunteer %}title="{{ communication.volunteer.nivol }}"{% endif %}>
+        <div class="float-right color-grey" style="font-weight: normal;" {% if communication.volunteer %}title="{{ communication.volunteer.externalId }}"{% endif %}>
             {{ macros.communicationBy(communication) }}
         </div>
 

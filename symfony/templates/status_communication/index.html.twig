@@ -161,7 +161,7 @@
                             <a href="#" class="show-complete-body" data-communication-id="{{ communication.id }}">🔽️</a>
                         {% endif %}
                         {% if communication.volunteer or is_granted('ROLE_ADMIN') %}
-                            <div class="float-right color-grey" style="font-weight: normal;" {% if communication.volunteer %}title="{{ communication.volunteer.nivol }}"{% endif %}>
+                            <div class="float-right color-grey" style="font-weight: normal;" {% if communication.volunteer %}title="{{ communication.volunteer.externalId }}"{% endif %}>
                                 {{ macros.communicationBy(communication) }}
 
                                 {% if communication.volunteer and is_granted('ROLE_ADMIN') %}

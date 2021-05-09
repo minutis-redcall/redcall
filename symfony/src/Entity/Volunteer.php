@@ -19,7 +19,6 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
  *         @ORM\UniqueConstraint(name="pf_extid_idx", columns={"platform", "external_id"})
  *     },
  *     indexes={
- *         @ORM\Index(name="nivolx", columns={"nivol"}),
  *         @ORM\Index(name="emailx", columns={"email"}),
  *         @ORM\Index(name="enabledx", columns={"enabled"}),
  *         @ORM\Index(name="phone_number_optinx", columns={"phone_number_optin"}),
@@ -29,7 +28,6 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
  * )
  * @ORM\Entity(repositoryClass="App\Repository\VolunteerRepository")
  * @ORM\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
- * @UniqueEntity("nivol")
  * @UniqueEntity("email")
  */
 class Volunteer
@@ -56,16 +54,6 @@ class Volunteer
      * @Assert\Length(max="64")
      */
     private $externalId;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(type="string", length=80, unique=true)
-     * @Assert\NotNull
-     * @Assert\NotBlank
-     * @Assert\Length(max=80)
-     */
-    private $nivol;
 
     /**
      * @var string
@@ -243,18 +231,6 @@ class Volunteer
     public function setExternalId(string $externalId) : Volunteer
     {
         $this->externalId = $externalId;
-
-        return $this;
-    }
-
-    public function getNivol() : ?string
-    {
-        return $this->nivol;
-    }
-
-    public function setNivol(string $nivol) : self
-    {
-        $this->nivol = $nivol;
 
         return $this;
     }
@@ -469,9 +445,9 @@ class Volunteer
         }, $this->getVisibleBadges()));
 
         return [
-            'id'    => strval($this->getId()),
-            'nivol' => strval($this->getNivol()),
-            'human' => sprintf('%s %s%s', $this->getFirstName(), $this->getLastName(), $badges ? sprintf(' (%s)', $badges) : null),
+            'id'          => strval($this->getId()),
+            'external-id' => $this->getExternalId(),
+            'human'       => sprintf('%s %s%s', $this->getFirstName(), $this->getLastName(), $badges ? sprintf(' (%s)', $badges) : null),
         ];
     }
 
@@ -516,7 +492,7 @@ class Volunteer
             return sprintf('%s %s', $this->toName($this->firstName), $this->toName($this->lastName));
         }
 
-        return sprintf('#%s', mb_strtoupper($this->nivol));
+        return sprintf('#%s', mb_strtoupper($this->externalId));
     }
 
     public function getTruncatedName() : string
@@ -525,7 +501,7 @@ class Volunteer
             return sprintf('%s %s', $this->toName($this->firstName), strtoupper(substr($this->lastName, 0, 1)));
         }
 
-        return sprintf('#%s', mb_strtoupper($this->nivol));
+        return sprintf('#%s', mb_strtoupper($this->externalId));
     }
 
     public function __toString()

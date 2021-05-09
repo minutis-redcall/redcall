@@ -164,7 +164,7 @@
         </div>
         {% if clickable %}
             <div id="volunteer-details-{{ uuid }}" class="d-none">
-                #{{ volunteer.nivol }}
+                #{{ volunteer.externalId }}
                 <br/>
                 {% if volunteer.email %}
                     {% if not volunteer.emailOptin %}<strike>{% endif %}

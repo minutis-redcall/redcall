@@ -142,11 +142,11 @@ class WidgetController extends BaseController
         ]);
     }
 
-    public function nivolEditor(User $user = null)
+    public function volunteerEditor(User $user = null)
     {
         $form = $this
-            ->createNamedFormBuilder(sprintf('nivol-%s', Uuid::uuid4()))
-            ->add('nivol', VolunteerWidgetType::class, [
+            ->createNamedFormBuilder(sprintf('external-id-%s', Uuid::uuid4()))
+            ->add('external-id', VolunteerWidgetType::class, [
                 'data'  => $user ? $user->getExternalId() : null,
                 'label' => false,
             ])
@@ -158,9 +158,9 @@ class WidgetController extends BaseController
     }
 
     /**
-     * @Route(path="/nivol-search/{searchAll}", name="nivol_search")
+     * @Route(path="/volunteer-search/{searchAll}", name="volunteer_search")
      */
-    public function nivolSearch(Request $request, bool $searchAll = false)
+    public function volunteerSearch(Request $request, bool $searchAll = false)
     {
         if ($searchAll && !$this->isGranted('ROLE_ADMIN')) {
             throw $this->createAccessDeniedException();

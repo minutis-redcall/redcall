@@ -98,13 +98,13 @@
                                 </div>
                             </div>
                             <div class="col-md-4">
-                                <div class="nivol"
+                                <div class="external-id"
                                      data-id="{{ user.id }}"
                                      data-uri="{{ path('admin_pegass_update', {csrf: csrf_token('pegass'), id: user.id}) }}">
                                     {% if user.locked %}
                                         <strong>{{ user.externalId }}</strong>
                                     {% else %}
-                                        {{ render(controller('\\App\\Controller\\WidgetController::nivolEditor', {
+                                        {{ render(controller('\\App\\Controller\\WidgetController::volunteerEditor', {
                                             user: user
                                         })) }}
                                     {% endif %}
@@ -258,12 +258,12 @@
 
     <script type="text/javascript">
 
-        $('.nivol input').change(function () {
-            var container = $(this).closest('.nivol');
+        $('.external-id input').change(function () {
+            var container = $(this).closest('.external-id');
             var input = $(this);
 
             $.post(container.data('uri'), {
-                nivol: input.val(),
+                externalId: input.val(),
             }, function (data) {
                 var structuresContainer = $('#structures-' + container.data('id'));
                 structuresContainer.html('');
