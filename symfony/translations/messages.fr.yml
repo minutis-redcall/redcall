@@ -423,6 +423,7 @@ form:
       label: 'Nom du déclenchement'
       notes: 'Notes facultatives adressées aux autres cadres utilisant RedCall'
       notes_title: Notes
+      operation: 'Créer ou rattacher ce déclenchement avec une opération dans Minutis'
       submit: Envoyer
   communication:
     call: 'appel vocal'

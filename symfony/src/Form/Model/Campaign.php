@@ -40,10 +40,22 @@ class Campaign
      */
     public $notes;
 
+    /**
+     * @var bool
+     */
+    public $hasOperation;
+
+    /**
+     * @var Operation|null
+     */
+    public $operation;
+
     public function __construct(BaseTrigger $trigger)
     {
-        $this->type    = CampaignEntity::TYPE_GREEN;
-        $this->label   = '';
-        $this->trigger = $trigger;
+        $this->type         = CampaignEntity::TYPE_GREEN;
+        $this->label        = '';
+        $this->trigger      = $trigger;
+        $this->hasOperation = false;
+        $this->operation    = null;
     }
 }

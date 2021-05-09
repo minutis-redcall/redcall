@@ -423,6 +423,7 @@ form:
       label: 'Campaign name'
       notes: 'Optional notes rendered to other RedCall users'
       notes_title: Notes
+      operation: 'Create or bind this trigger to a Minutis operation'
       submit: Send
   communication:
     call: 'voice call'

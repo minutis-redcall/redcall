@@ -11,6 +11,7 @@
     "ext-mbstring": "*",
     "ext-openssl": "*",
     "babdev/pagerfanta-bundle": "^2.8",
+    "craue/formflow-bundle": "^3.4",
     "doctrine/doctrine-bundle": "^2",
     "excelwebzone/recaptcha-bundle": "^1.5",
     "exercise/htmlpurifier-bundle": "^3.0",
