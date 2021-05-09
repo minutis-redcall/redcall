@@ -387,4 +387,16 @@ class Campaign
     {
         return $this->id === $campaign->getId();
     }
+
+    public function getOperation() : ?Operation
+    {
+        return $this->operation;
+    }
+
+    public function setOperation(?Operation $operation) : self
+    {
+        $this->operation = $operation;
+
+        return $this;
+    }
 }

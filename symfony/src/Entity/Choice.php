@@ -41,6 +41,11 @@ class Choice
     private $communication;
 
     /**
+     * @ORM\ManyToOne(targetEntity=Operation::class, inversedBy="choices")
+     */
+    private $operation;
+
+    /**
      * @return mixed
      */
     public function getId()
@@ -132,5 +137,17 @@ class Choice
         }
 
         return $count;
+    }
+
+    public function getOperation(): ?Operation
+    {
+        return $this->operation;
+    }
+
+    public function setOperation(?Operation $operation): self
+    {
+        $this->operation = $operation;
+
+        return $this;
     }
 }
