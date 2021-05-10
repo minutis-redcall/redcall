@@ -29,7 +29,7 @@ class CreateOperationType extends BaseCreateOrUseOperationType
         parent::buildForm($builder, $options);
 
         $builder
-            ->add('structure', ChoiceType::class, [
+            ->add('structureExternalId', ChoiceType::class, [
                 'label'       => 'form.operation.fields.structure_create',
                 'choices'     => array_flip($this->security->getUser()->getStructuresAsList()),
                 'constraints' => [

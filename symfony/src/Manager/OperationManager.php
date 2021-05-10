@@ -5,7 +5,9 @@ namespace App\Manager;
 use App\Entity\Campaign as CampaignEntity;
 use App\Entity\Communication;
 use App\Entity\Operation;
+use App\Entity\Structure;
 use App\Form\Model\Campaign as CampaignModel;
+use App\Model\MinutisId;
 use App\Repository\OperationRepository;
 use App\Services\Minutis;
 use Psr\Log\LoggerInterface;
@@ -54,23 +56,50 @@ class OperationManager
             return;
         }
 
-        $id = $this->minutis->createOperation($operationModel->structure, $operationModel->name, $email);
+        $id = $this->minutis->createOperation($operationModel->structureExternalId, $operationModel->name, $email);
 
+        $this->saveCampaignOperation($campaignModel, $campaignEntity, $communication, $id);
+    }
+
+    public function bindOperation(CampaignModel $campaignModel,
+        CampaignEntity $campaignEntity,
+        Communication $communication)
+    {
+        $operationExternalId = $campaignModel->operation->operationExternalId;
+
+        $this->saveCampaignOperation($campaignModel, $campaignEntity, $communication, $operationExternalId);
+    }
+
+    public function isOperationExisting(int $operationExternalId) : bool
+    {
+        return $this->minutis->isOperationExisting($operationExternalId);
+    }
+
+    public function listOperations(Structure $structure) : array
+    {
+        $operations = $this->minutis->searchForOperations($structure->getExternalId());
+
+        uksort($operations, function (int $a, int $b) {
+            return $b <=> $a;
+        });
+
+        return $operations;
+    }
+
+    private function saveCampaignOperation(CampaignModel $campaignModel,
+        CampaignEntity $campaignEntity,
+        Communication $communication,
+        int $id)
+    {
         $operationEntity = new Operation();
-        $operationEntity->setName($campaignModel->operation->name);
         $operationEntity->setCampaign($campaignEntity);
-        $operationEntity->setOperationExternalId($id->getId());
-        $operationEntity->setOperationExternalPublicId($id->getPublicId());
+        $operationEntity->setOperationExternalId($id);
 
+        $operationModel = $campaignModel->operation;
         foreach ($operationModel->choices as $choice) {
             $operationEntity->addChoice($communication->getChoiceByLabel($choice));
         }
 
         $this->operationRepository->save($operationEntity);
-    }
-
-    public function bindOperation(CampaignModel $campaignModel, CampaignEntity $campaignEntity)
-    {
-
     }
 }

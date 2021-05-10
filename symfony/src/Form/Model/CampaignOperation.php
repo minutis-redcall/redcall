@@ -9,7 +9,7 @@ class CampaignOperation
     /**
      * @var int
      */
-    public $structure;
+    public $structureExternalId;
 
     /**
      * @var string

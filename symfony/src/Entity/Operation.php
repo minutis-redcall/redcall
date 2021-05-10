@@ -25,11 +25,6 @@ class Operation
     private $operationExternalId;
 
     /**
-     * @ORM\Column(type="string", length=36)
-     */
-    private $operationExternalPublicId;
-
-    /**
      * @ORM\OneToMany(targetEntity=Choice::class, mappedBy="operation")
      */
     private $choices;
@@ -57,25 +52,6 @@ class Operation
     public function setOperationExternalId(int $operationExternalId) : self
     {
         $this->operationExternalId = $operationExternalId;
-
-        return $this;
-    }
-
-    public function getOperationExternalPublicId()
-    {
-        return $this->operationExternalPublicId;
-    }
-
-    public function setOperationExternalPublicId($operationExternalPublicId)
-    {
-        $this->operationExternalPublicId = $operationExternalPublicId;
-
-        return $this;
-    }
-
-    public function setName(string $name) : self
-    {
-        $this->name = $name;
 
         return $this;
     }

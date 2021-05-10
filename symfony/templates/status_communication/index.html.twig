@@ -8,7 +8,7 @@
     {# Campaign label and color #}
     {# -------------------------------------------------------------------------------- #}
     <br/>
-    <div class="row skip-line">
+    <div class="row">
         <div class="col-12 h1" {% if campaign.active and is_granted('CAMPAIGN_OWNER', campaign) %}onclick="$('#change-campaign-label').modal();"{% endif %} style="cursor: pointer;">
             {% if not campaign.active %}
                 <strike>{{ campaign.label }}</strike>
@@ -21,7 +21,12 @@
                 <span class="float-right badge badge-light" style="cursor:pointer;">✏️</span>
             {% endif %}
         </div>
-        <div class="col-12" {% if campaign.active and is_granted('CAMPAIGN_OWNER', campaign) %}onclick="$('#change-color').modal();"{% endif %} style="cursor:pointer;">
+        {% if operationUrl %}
+            <div class="col-12 skip-line">
+                {{ 'form.operation.url'|trans }} <a href="{{ operationUrl }}">{{ operationUrl }}</a>
+            </div>
+        {% endif %}
+        <div class="col-12 skip-line" {% if campaign.active and is_granted('CAMPAIGN_OWNER', campaign) %}onclick="$('#change-color').modal();"{% endif %} style="cursor:pointer;">
             {% set hexColor = constant('App\\Entity\\Campaign::COLORS')[campaign.type] %}
             <div id="current-color" class="w-100 text-center text-white badge" style="background-color:{{ hexColor }};">
                 {{ ('campaign.types.' ~ campaign.type)|trans }}

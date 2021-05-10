@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Services\Minutis;
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -403,5 +404,10 @@ class Campaign
         $this->operation = $operation;
 
         return $this;
+    }
+
+    public function getOperationUrl() : ?string
+    {
+        return $this->getOperation() ? Minutis::getOperationUrl($this->getOperation()->getOperationExternalId()) : null;
     }
 }

@@ -22,8 +22,6 @@ use App\Manager\MediaManager;
 use App\Manager\MessageManager;
 use App\Manager\PlatformConfigManager;
 use App\Manager\StructureManager;
-use App\Manager\UserManager;
-use App\Manager\VolunteerManager;
 use App\Services\MessageFormatter;
 use App\Tools\GSM;
 use Bundles\TwilioBundle\Manager\TwilioCallManager;
@@ -71,11 +69,6 @@ class CommunicationController extends BaseController
     private $badgeManager;
 
     /**
-     * @var VolunteerManager
-     */
-    private $volunteerManager;
-
-    /**
      * @var MessageManager
      */
     private $messageManager;
@@ -84,11 +77,6 @@ class CommunicationController extends BaseController
      * @var AnswerManager
      */
     private $answerManager;
-
-    /**
-     * @var UserManager
-     */
-    private $userManager;
 
     /**
      * @var MediaManager
@@ -119,10 +107,8 @@ class CommunicationController extends BaseController
         CommunicationManager $communicationManager,
         MessageFormatter $formatter,
         BadgeManager $badgeManager,
-        VolunteerManager $volunteerManager,
         MessageManager $messageManager,
         AnswerManager $answerManager,
-        UserManager $userManager,
         MediaManager $mediaManager,
         StructureManager $structureManager,
         ExpirableManager $expirableManager,
@@ -133,10 +119,8 @@ class CommunicationController extends BaseController
         $this->communicationManager = $communicationManager;
         $this->formatter            = $formatter;
         $this->badgeManager         = $badgeManager;
-        $this->volunteerManager     = $volunteerManager;
         $this->messageManager       = $messageManager;
         $this->answerManager        = $answerManager;
-        $this->userManager          = $userManager;
         $this->mediaManager         = $mediaManager;
         $this->structureManager     = $structureManager;
         $this->expirableManager     = $expirableManager;
@@ -158,6 +142,7 @@ class CommunicationController extends BaseController
             'progress'           => $campaign->getCampaignProgression(),
             'hash'               => $this->campaignManager->getHash($campaign->getId()),
             'campaignStructures' => $this->structureManager->getCampaignStructures($this->getPlatform(), $campaign),
+            'operationUrl'       => $campaign->getOperationUrl(),
         ]);
     }
 

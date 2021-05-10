@@ -2,7 +2,6 @@
 
 namespace App\Services;
 
-use App\Model\MinutisId;
 use App\Model\MinutisToken;
 use App\Settings;
 use Bundles\SettingsBundle\Manager\SettingManager;
@@ -32,7 +31,13 @@ class Minutis
         $this->logger         = $logger;
     }
 
-    public function searchForOperations(string $structureExternalId, string $criteria = null) : array
+    static public function getOperationUrl(int $operationExternalId) : string
+    {
+        return sprintf('%soperation/%s/moyens', getenv('MINUTIS_URL'), $operationExternalId);
+    }
+
+    public function searchForOperations(string $structureExternalId,
+        string $criteria = null) : array
     {
         $response = $this->getClient()->get('/api/regulation', $this->populateAuthentication([
             'query' => [
@@ -41,12 +46,25 @@ class Minutis
             ],
         ]));
 
-        return array_map(function (array $row) {
-            return [
-                'id'    => $row['id'],
-                'human' => sprintf('%s (%s)', $row['nom'], $row['owner']),
+        $operations = [];
+        foreach (json_decode($response->getBody()->getContents(), true) as $operation) {
+            $operations[] = [
+                'id'   => $operation['id'],
+                'name' => sprintf('%s (%s)', $operation['nom'], $operation['owner']),
             ];
-        }, json_decode($response->getBody()->getContents(), true));
+        }
+
+        usort($operations, function ($a, $b) {
+            return $b['id'] <=> $a['id'];
+        });
+
+        return $operations;
+    }
+
+    public function isOperationExisting(int $operationExternalId) : bool
+    {
+        $response = $this->getClient()->get(sprintf('/api/regulation/%d', $operationExternalId), $this->populateAuthentication([]));
+
     }
 
     public function searchForVolunteer(string $volunteerExternalId) : ?array
@@ -71,7 +89,7 @@ class Minutis
         return reset($result);
     }
 
-    public function createOperation(string $structureExternalId, string $name, string $ownerEmail) : MinutisId
+    public function createOperation(string $structureExternalId, string $name, string $ownerEmail) : int
     {
         $response = $this->getClient()->post('/api/regulation', $this->populateAuthentication([
             'json' => [
@@ -83,7 +101,7 @@ class Minutis
 
         $payload = json_decode($response->getBody()->getContents(), true);
 
-        return new MinutisId($payload['id'], $payload['publicId']);
+        return $payload['id'];
     }
 
     public function addResourceToOperation(int $externalOperationId, string $volunteerExternalId)

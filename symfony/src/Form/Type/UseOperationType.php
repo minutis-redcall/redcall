@@ -4,7 +4,6 @@ namespace App\Form\Type;
 
 use App\Form\Model\CampaignOperation;
 use App\Security\Helper\Security;
-use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -12,7 +11,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Choice;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
-class UseOperationType extends AbstractType
+class UseOperationType extends BaseCreateOrUseOperationType
 {
     /**
      * @var Security
@@ -29,7 +28,7 @@ class UseOperationType extends AbstractType
         parent::buildForm($builder, $options);
 
         $builder
-            ->add('structure', ChoiceType::class, [
+            ->add('structureExternalId', ChoiceType::class, [
                 'label'       => 'form.operation.fields.structure_use',
                 'choices'     => array_flip($this->security->getUser()->getStructuresAsList()),
                 'required'    => false,
@@ -39,12 +38,22 @@ class UseOperationType extends AbstractType
                 ],
             ])
             ->add('operation', ChoiceType::class, [
-                'label'  => 'form.operation.fields.operation_use',
-                'mapped' => false,
+                'label'    => 'form.operation.fields.operation_use',
+                'mapped'   => false,
+                'required' => false,
             ])
             ->add('operationExternalId', TextType::class, [
-                'label' => 'form.operation.fields.operation_id',
+                'label'       => 'form.operation.fields.operation_id',
+                'constraints' => [
+                    new NotBlank(),
+                ],
             ]);
+
+        // The ChoiceToValue transformer search for entries on the empty pre-declared list
+        // when form is submitted, so we jsut disable it to allow multiple values.
+        $builder->get('operation')->resetViewTransformers();
+
+        $this->prepareChoices($builder);
     }
 
     public function configureOptions(OptionsResolver $resolver)

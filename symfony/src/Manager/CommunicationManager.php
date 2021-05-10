@@ -162,7 +162,7 @@ class CommunicationManager
                     'id' => $campaign->getId(),
                 ])),
                 $campaign->getOperation() ? PHP_EOL : '',
-                $campaign->getOperation() ? sprintf('Operation: %soperation/%s/moyens', getenv('MINUTIS_URL'), $campaign->getOperation()->getOperationExternalId()) : ''
+                $campaign->getOperation() ? sprintf('Operation: %s', $campaign->getOperationUrl()) : ''
             )
         );
 

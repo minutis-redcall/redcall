@@ -9,7 +9,9 @@ use App\Form\Flow\CampaignFlow;
 use App\Form\Model\Campaign as CampaignModel;
 use App\Form\Model\SmsTrigger;
 use App\Manager\CampaignManager;
+use App\Manager\OperationManager;
 use App\Manager\PlatformConfigManager;
+use App\Manager\StructureManager;
 use Bundles\PaginationBundle\Manager\PaginationManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -38,6 +40,16 @@ class CampaignController extends BaseController
     private $platformManager;
 
     /**
+     * @var StructureManager
+     */
+    private $structureManager;
+
+    /**
+     * @var OperationManager
+     */
+    private $operationManager;
+
+    /**
      * @var TranslatorInterface
      */
     private $translator;
@@ -45,11 +57,15 @@ class CampaignController extends BaseController
     public function __construct(PaginationManager $paginationManager,
         CampaignManager $campaignManager,
         PlatformConfigManager $platformManager,
+        StructureManager $structureManager,
+        OperationManager $operationManager,
         TranslatorInterface $translator)
     {
         $this->paginationManager = $paginationManager;
         $this->campaignManager   = $campaignManager;
         $this->platformManager   = $platformManager;
+        $this->structureManager  = $structureManager;
+        $this->operationManager  = $operationManager;
         $this->translator        = $translator;
     }
 
@@ -274,5 +290,25 @@ class CampaignController extends BaseController
         ];
     }
 
-    public function
+    /**
+     * @Route(path="campaign/operations", name="campaign_search_for_operation")
+     */
+    public function searchForOperation(Request $request)
+    {
+        $structure = $this->structureManager->findOneByExternalId($this->getPlatform(), $request->get('externalId'));
+        if (!$structure || !$this->isGranted('STRUCTURE', $structure)) {
+            throw $this->createNotFoundException();
+        }
+
+        $operations = array_map(function (array $operation) {
+            return [
+                'id'   => $operation['id'],
+                'name' => strip_tags($operation['name']),
+            ];
+        }, $this->operationManager->listOperations($structure));
+
+        return $this->json([
+            'operations' => $operations,
+        ]);
+    }
 }
