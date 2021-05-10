@@ -367,18 +367,18 @@ campaign_status:
       context: Context
       created_at: 'Created at'
       direction: Direction
+      duration: Duration
+      ended_at: 'Ended at'
       error: Error(s)
       from: From
       price: Price
       retry: 'Price retries'
+      started_at: 'Started at'
       status: Status
       to: To
       type: Type
       unit: Unit
       updated_at: 'Updated at'
-      started_at: 'Started at'
-      ended_at: 'Ended at'
-      duration: Duration
     message_id: 'Message ID: %id%'
     status: Status
   relaunch_communication: 'Relaunch communication'
@@ -405,9 +405,9 @@ csv_export:
   answer_time: 'Answered at'
   choice: 'Choice "%choice%"'
   email: Email
+  external_id: 'External ID'
   firstname: Firstname
   lastname: Lastname
-  external_id: External ID
   other: 'Other responses'
   phone_number: 'Phone number'
   received: 'Message received'
@@ -471,6 +471,25 @@ form:
       explaination_5: 'Ambulances required next Sunday during protests in case of troubles.'
       explaination_6: 'SMS are divided in 160 characters segments, and more there are segments, less there are chances that message reach out its destination. Let''s send small messages in order to secure their delivery to everyone.'
       title: 'Your message length is long'
+  operation:
+    buttons:
+      continue: Continue
+      return: 'Go back to the previous step'
+    fields:
+      choices:
+        create: 'Create a new operation in Minutis'
+        list: 'Choose answers for which volunteers will be automatically enrolled in Minutis'
+        use: 'Link this trigger to an existing Minutis operation'
+      create: 'Create the operation and send the trigger'
+      name: 'Operation name'
+      operation_id: 'Or you can directly set the numeric ID of the Minutis operation'
+      operation_use: 'Which operation you want to bind to the trigger?'
+      owner_external_id: 'Choose the operation owner''s external ID (NIVOL)'
+      structure_create: 'Create the operation in which structure?'
+      structure_use: 'Link the trigger to an operation from which structure?'
+      use: 'Link the operation and send the trigger'
+    title: 'Minutis Operation'
+    url: 'Minutis operation:'
 geolocation:
   error: 'An error occured.'
   error_permission: 'You (or a setting in your device) refused to share your location.'
@@ -591,8 +610,8 @@ manage_volunteers:
         message_received: 'Message received that conducted the volunteer data deletion received on %date% at %time% on trigger <a href="%url%">%trigger%</a>:'
         nivol: 'NIVOL : %nivol%'
         phone: 'Phone number : %phone%'
-        title: '[GDPR] RedCall - Update GAIA for #%external-id%'
         target: 'This message should be forwarded to the Local Unit secretary or its president.'
+        title: '[GDPR] RedCall - Update GAIA for #%external-id%'
         who: 'Involved person:'
       sms_content: 'Hello, we taken your request into account. You won''t receive messages from us. Sorry for the inconvenience.'
       subject: '[GDPR] Data deletion request for %external-id%'
@@ -717,8 +736,8 @@ pdf_export:
     time: 'Answer''s time'
 phone_card:
   add: 'Add a phone number'
-  error_invalid: 'This phone number format is invalid.'
   error_already_taken: 'This phone number is already taken by %truncated_name% (%externalId%).'
+  error_invalid: 'This phone number format is invalid.'
   main: Main
   title: 'Phone #%index%'
   use: 'Set as main'
