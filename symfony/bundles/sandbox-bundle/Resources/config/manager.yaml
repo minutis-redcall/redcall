@@ -28,3 +28,11 @@ services:
       - '@App\Manager\UserManager'
       - '@Bundles\SandboxBundle\Manager\AnonymizeManager'
       - '@App\Security\Helper\Security'
+
+  Bundles\SandboxBundle\Manager\FakeOperationManager:
+    arguments:
+      - '@Bundles\SandboxBundle\Repository\FakeOperationRepository'
+
+  Bundles\SandboxBundle\Manager\FakeOperationResourceManager:
+    arguments:
+      - '@Bundles\SandboxBundle\Repository\FakeOperationResourceRepository'

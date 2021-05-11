@@ -25,3 +25,11 @@ services:
     class: 'Bundles\SandboxBundle\Provider\FakeStorageProvider'
     arguments: [ '@kernel', '@router' ]
     public: true
+
+  App\Provider\Minutis\MinutisProvider:
+    class: 'Bundles\SandboxBundle\Provider\FakeMinutisProvider'
+    arguments:
+      - '@Bundles\SandboxBundle\Manager\FakeOperationManager'
+      - '@Bundles\SandboxBundle\Manager\FakeOperationResourceManager'
+      - '@App\Manager\VolunteerManager'
+    public: true

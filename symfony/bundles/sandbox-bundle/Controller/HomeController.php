@@ -2,7 +2,7 @@
 
 namespace Bundles\SandboxBundle\Controller;
 
-use App\Base\BaseController;
+use Bundles\SandboxBundle\Base\BaseController;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\Routing\Annotation\Route;
 

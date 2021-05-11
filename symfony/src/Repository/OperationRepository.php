@@ -4,12 +4,12 @@ namespace App\Repository;
 
 use App\Base\BaseRepository;
 use App\Entity\Operation;
+use Bundles\SandboxBundle\Entity\FakeOperation;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @method Operation|null find($id, $lockMode = null, $lockVersion = null)
  * @method Operation|null findOneBy(array $criteria, array $orderBy = null)
- * @method Operation[]    findAll()
  * @method Operation[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class OperationRepository extends BaseRepository
@@ -17,6 +17,16 @@ class OperationRepository extends BaseRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Operation::class);
+    }
+
+    /**
+     * @return FakeOperation[]
+     */
+    public function findAll()
+    {
+        return $this->findBy([], [
+            'updatedAt' => 'DESC',
+        ]);
     }
 
     // /**
