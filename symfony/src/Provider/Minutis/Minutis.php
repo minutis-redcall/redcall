@@ -123,6 +123,13 @@ class Minutis implements MinutisProvider
         ]));
     }
 
+    public function removeResourceFromOperation(int $externalOperationId, string $volunteerExternalId)
+    {
+
+        // TODO
+
+    }
+
     private function populateAuthentication(array $config)
     {
         return array_merge_recursive($config, [

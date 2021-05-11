@@ -61,4 +61,21 @@ class FakeMinutisProvider implements MinutisProvider
         $this->operationManager->save($operation);
     }
 
+    public function removeResourceFromOperation(int $externalOperationId, string $volunteerExternalId)
+    {
+        $operation = $this->operationManager->find($externalOperationId);
+
+        if (null === $operation) {
+            throw new \RuntimeException(sprintf('External operation #%d does not exist', $externalOperationId));
+        }
+
+        foreach ($operation->getResources() as $resource) {
+            if ($volunteerExternalId === $resource->getVolunteerExternalId()) {
+                $operation->removeResource($resource);
+                $this->operationResourceManager->remove($resource);
+                $this->operationManager->save($operation);
+                break;
+            }
+        }
+    }
 }

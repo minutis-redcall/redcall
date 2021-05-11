@@ -9,4 +9,5 @@ interface MinutisProvider
     public function isOperationExisting(int $operationExternalId) : bool;
     public function createOperation(string $structureExternalId, string $name, string $ownerEmail) : int;
     public function addResourceToOperation(int $externalOperationId, string $volunteerExternalId);
+    public function removeResourceFromOperation(int $externalOperationId, string $volunteerExternalId);
 }

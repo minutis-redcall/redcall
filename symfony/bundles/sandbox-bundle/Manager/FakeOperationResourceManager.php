@@ -34,4 +34,8 @@ class FakeOperationResourceManager
         return $resource;
     }
 
+    public function remove(FakeOperationResource $resource)
+    {
+        $this->operationResourceRepository->remove($resource);
+    }
 }
