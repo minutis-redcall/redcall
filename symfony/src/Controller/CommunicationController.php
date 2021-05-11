@@ -22,6 +22,8 @@ use App\Manager\MediaManager;
 use App\Manager\MessageManager;
 use App\Manager\PlatformConfigManager;
 use App\Manager\StructureManager;
+use App\Provider\Minutis\Minutis;
+use App\Provider\Minutis\MinutisProvider;
 use App\Services\MessageFormatter;
 use App\Tools\GSM;
 use Bundles\TwilioBundle\Manager\TwilioCallManager;
@@ -132,7 +134,7 @@ class CommunicationController extends BaseController
      * @Route(path="campaign/{id}", name="index", requirements={"id" = "\d+"})
      * @IsGranted("CAMPAIGN_ACCESS", subject="campaign")
      */
-    public function indexAction(Campaign $campaign)
+    public function indexAction(Campaign $campaign, MinutisProvider $minutis)
     {
         $this->get('session')->save();
 
@@ -142,7 +144,7 @@ class CommunicationController extends BaseController
             'progress'           => $campaign->getCampaignProgression(),
             'hash'               => $this->campaignManager->getHash($campaign->getId()),
             'campaignStructures' => $this->structureManager->getCampaignStructures($this->getPlatform(), $campaign),
-            'operationUrl'       => $campaign->getOperationUrl(),
+            'operationUrl'       => $campaign->getOperationUrl($minutis),
         ]);
     }
 

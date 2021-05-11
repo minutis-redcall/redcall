@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services;
+namespace App\Provider\Minutis;
 
 use App\Model\MinutisToken;
 use App\Settings;
@@ -8,7 +8,7 @@ use Bundles\SettingsBundle\Manager\SettingManager;
 use GuzzleHttp\Client;
 use Psr\Log\LoggerInterface;
 
-class Minutis
+class Minutis implements MinutisProvider
 {
     /**
      * @var SettingManager
@@ -64,6 +64,8 @@ class Minutis
     public function isOperationExisting(int $operationExternalId) : bool
     {
         $response = $this->getClient()->get(sprintf('/api/regulation/%d', $operationExternalId), $this->populateAuthentication([]));
+
+        // TODO handle 404s
 
     }
 

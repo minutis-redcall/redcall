@@ -9,6 +9,7 @@ use App\Entity\Communication;
 use App\Entity\Message;
 use App\Entity\Volunteer;
 use App\Form\Model\BaseTrigger;
+use App\Provider\Minutis\MinutisProvider;
 use App\Repository\CommunicationRepository;
 use App\Security\Helper\Security;
 use DateTime;
@@ -58,6 +59,11 @@ class CommunicationManager
     private $mediaManager;
 
     /**
+     * @var MinutisProvider
+     */
+    private $minutis;
+
+    /**
      * @var RouterInterface
      */
     private $router;
@@ -78,28 +84,30 @@ class CommunicationManager
     private $logger;
 
     public function __construct(MessageManager $messageManager,
+        StructureManager $structureManager,
         CommunicationRepository $communicationRepository,
         ProcessorInterface $processor,
         VolunteerManager $volunteerManager,
         AudienceManager $audienceManager,
-        StructureManager $structureManager,
         MediaManager $mediaManager,
+        MinutisProvider $minutis,
         RouterInterface $router,
         LoggerInterface $slackLogger,
-        LoggerInterface $logger,
-        Security $security)
+        Security $security,
+        LoggerInterface $logger)
     {
         $this->messageManager          = $messageManager;
+        $this->structureManager        = $structureManager;
         $this->communicationRepository = $communicationRepository;
         $this->processor               = $processor;
         $this->volunteerManager        = $volunteerManager;
         $this->audienceManager         = $audienceManager;
-        $this->structureManager        = $structureManager;
         $this->mediaManager            = $mediaManager;
+        $this->minutis                 = $minutis;
         $this->router                  = $router;
         $this->slackLogger             = $slackLogger;
-        $this->logger                  = $logger;
         $this->security                = $security;
+        $this->logger                  = $logger;
     }
 
     /**
@@ -162,7 +170,7 @@ class CommunicationManager
                     'id' => $campaign->getId(),
                 ])),
                 $campaign->getOperation() ? PHP_EOL : '',
-                $campaign->getOperation() ? sprintf('Operation: %s', $campaign->getOperationUrl()) : ''
+                $campaign->getOperation() ? sprintf('Operation: %s', $campaign->getOperationUrl($this->minutis)) : ''
             )
         );
 

@@ -7,9 +7,8 @@ use App\Entity\Communication;
 use App\Entity\Operation;
 use App\Entity\Structure;
 use App\Form\Model\Campaign as CampaignModel;
-use App\Model\MinutisId;
+use App\Provider\Minutis\MinutisProvider;
 use App\Repository\OperationRepository;
-use App\Services\Minutis;
 use Psr\Log\LoggerInterface;
 
 class OperationManager
@@ -20,7 +19,7 @@ class OperationManager
     private $operationRepository;
 
     /**
-     * @var Minutis
+     * @var MinutisProvider
      */
     private $minutis;
 
@@ -29,7 +28,7 @@ class OperationManager
      */
     private $logger;
 
-    public function __construct(OperationRepository $operationRepository, Minutis $minutis, LoggerInterface $logger)
+    public function __construct(OperationRepository $operationRepository, MinutisProvider $minutis, LoggerInterface $logger)
     {
         $this->operationRepository = $operationRepository;
         $this->minutis             = $minutis;
