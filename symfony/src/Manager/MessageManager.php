@@ -222,6 +222,14 @@ class MessageManager
 
         foreach ($choices as $choice) {
             $answer->addChoice($choice);
+
+            if ($message->shoudAddMinutisResource($choice)) {
+
+            }
+
+            if ($message->shoudRemoveMinutisResource($choice)) {
+
+            }
         }
 
         $message->addAnswser($answer);

@@ -107,4 +107,9 @@ class Operation
 
         return $this;
     }
+
+    public function hasChoice(Choice $choice) : bool
+    {
+        return $this->choices->contains($choice);
+    }
 }

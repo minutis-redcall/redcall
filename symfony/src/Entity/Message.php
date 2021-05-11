@@ -559,4 +559,24 @@ class Message
                 return false;
         }
     }
+
+    public function shoudAddMinutisResource(Choice $choice) : bool
+    {
+        if (!($operation = $this->getCommunication()->getCampaign()->getOperation())) {
+            return false;
+        }
+
+
+        return $operation->hasChoice($choice);
+    }
+
+    public function shoudRemoveMinutisResource(Choice $choice) : bool
+    {
+        if (!($operation = $this->getCommunication()->getCampaign()->getOperation())) {
+            return false;
+        }
+
+
+        return !$operation->hasChoice($choice);
+    }
 }

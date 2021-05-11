@@ -121,6 +121,8 @@ class Minutis implements MinutisProvider
                 'ressource'    => $resource,
             ],
         ]));
+
+        // TODO: warning, I may need an OperationResourceId to store in Message in order to remove it
     }
 
     public function removeResourceFromOperation(int $externalOperationId, string $volunteerExternalId)
