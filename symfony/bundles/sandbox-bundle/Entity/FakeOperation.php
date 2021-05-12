@@ -8,6 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * @ORM\Entity(repositoryClass="Bundles\SandboxBundle\Repository\FakeOperationRepository")
+ * @ORM\HasLifecycleCallbacks()
  */
 class FakeOperation
 {

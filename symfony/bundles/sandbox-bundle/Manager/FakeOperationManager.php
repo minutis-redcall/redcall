@@ -28,12 +28,17 @@ class FakeOperationManager
 
     public function clear()
     {
-        $this->operationRepository->clear();
+        $this->operationRepository->truncate();
     }
 
     public function search(string $structureExternalId, string $criteria = null): array
     {
-        return $this->operationRepository->search($structureExternalId, $criteria);
+        return array_map(function(FakeOperation $operation) {
+            return [
+                'id' => $operation->getId(),
+                'name' => $operation->getName(),
+            ];
+        }, $this->operationRepository->search($structureExternalId, $criteria));
     }
 
     public function exists(int $operationExternalId): bool

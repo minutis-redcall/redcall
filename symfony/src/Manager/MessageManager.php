@@ -26,6 +26,11 @@ class MessageManager
     private $answerManager;
 
     /**
+     * @var OperationManager
+     */
+    private $operationManager;
+
+    /**
      * @var MessageRepository
      */
     private $messageRepository;
@@ -35,20 +40,15 @@ class MessageManager
      */
     private $tokenStorage;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
     public function __construct(AnswerManager $answerManager,
+        OperationManager $operationManager,
         MessageRepository $messageRepository,
-        TokenStorageInterface $tokenStorage,
-        LoggerInterface $logger)
+        TokenStorageInterface $tokenStorage)
     {
         $this->answerManager     = $answerManager;
+        $this->operationManager  = $operationManager;
         $this->messageRepository = $messageRepository;
         $this->tokenStorage      = $tokenStorage;
-        $this->logger            = $logger;
     }
 
     public function generateCodes(int $numberOfCodes)
@@ -68,21 +68,11 @@ class MessageManager
         return array_values($codes);
     }
 
-    /**
-     * @param int $messageId
-     *
-     * @return Message|null
-     */
     public function find(int $messageId) : ?Message
     {
         return $this->messageRepository->find($messageId);
     }
 
-    /**
-     * @param Campaign $campaign
-     *
-     * @return int
-     */
     public function getNumberOfSentMessages(Campaign $campaign) : int
     {
         return $this->messageRepository->getNumberOfSentMessages($campaign);
@@ -105,16 +95,6 @@ class MessageManager
         return $prefixes;
     }
 
-    /**
-     * @param string $phoneNumber
-     * @param string $body
-     *
-     * @return int|null
-     *
-     * @throws ORMException
-     * @throws OptimisticLockException
-     * @throws NonUniqueResultException
-     */
     public function handleAnswer(string $phoneNumber, string $body) : ?int
     {
         $this->answerManager->handleSpecialAnswers($phoneNumber, $body);
@@ -157,14 +137,6 @@ class MessageManager
         return reset($messages)->getId();
     }
 
-    /**
-     * @param string      $phoneNumber
-     * @param string|null $body
-     *
-     * @return Message|null
-     *
-     * @throws NonUniqueResultException
-     */
     public function getMessageFromPhoneNumber(string $phoneNumber, ?string $body = null) : ?Message
     {
         if ($body) {
@@ -223,12 +195,12 @@ class MessageManager
         foreach ($choices as $choice) {
             $answer->addChoice($choice);
 
-            if ($message->shoudAddMinutisResource($choice)) {
-
+            if ($message->shouldAddMinutisResource($choice)) {
+                $this->operationManager->addResourceToOperation($message);
             }
 
-            if ($message->shoudRemoveMinutisResource($choice)) {
-
+            if ($message->shouldRemoveMinutisResource($choice)) {
+                $this->operationManager->removeResourceFromOperation($message);
             }
         }
 

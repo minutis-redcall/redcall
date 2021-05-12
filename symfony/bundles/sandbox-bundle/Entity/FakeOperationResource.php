@@ -49,7 +49,7 @@ class FakeOperationResource
         return $this->operation;
     }
 
-    public function setOperation(FakeOperation $operation): FakeOperationResource
+    public function setOperation(?FakeOperation $operation): FakeOperationResource
     {
         $this->operation = $operation;
 

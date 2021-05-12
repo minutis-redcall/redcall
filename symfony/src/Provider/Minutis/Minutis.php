@@ -106,15 +106,15 @@ class Minutis implements MinutisProvider
         return $payload['id'];
     }
 
-    public function addResourceToOperation(int $externalOperationId, string $volunteerExternalId)
+    public function addResourceToOperation(int $externalOperationId, string $volunteerExternalId) : ?int
     {
         $resource = $this->searchForVolunteer($volunteerExternalId);
 
         if (!$resource) {
-            return;
+            return null;
         }
 
-        $this->getClient()->post(sprintf('/api/regulation/%d/ressource', $externalOperationId), $this->populateAuthentication([
+        $response = $this->getClient()->post(sprintf('/api/regulation/%d/ressource', $externalOperationId), $this->populateAuthentication([
             'json' => [
                 'locked'       => true,
                 'regulationId' => $externalOperationId,
@@ -122,10 +122,14 @@ class Minutis implements MinutisProvider
             ],
         ]));
 
-        // TODO: warning, I may need an OperationResourceId to store in Message in order to remove it
+        // TODO test me in preprod
+
+        $payload = json_decode($response->getBody()->getContents(), true);
+
+        return $payload['id'];
     }
 
-    public function removeResourceFromOperation(int $externalOperationId, string $volunteerExternalId)
+    public function removeResourceFromOperation(int $externalOperationId, int $resourceExternalId)
     {
 
         // TODO

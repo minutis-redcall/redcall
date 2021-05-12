@@ -9,7 +9,6 @@ use Doctrine\Persistence\ManagerRegistry;
 /**
  * @method FakeOperation|null find($id, $lockMode = null, $lockVersion = null)
  * @method FakeOperation|null findOneBy(array $criteria, array $orderBy = null)
- * @method FakeOperation[]    findAll()
  * @method FakeOperation[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
 class FakeOperationRepository extends BaseRepository
@@ -33,5 +32,10 @@ class FakeOperationRepository extends BaseRepository
             ->orderBy('o.updatedAt', 'DESC')
             ->getQuery()
             ->getResult();
+    }
+
+    public function findAll()
+    {
+        return $this->findBy([], ['updatedAt' => 'DESC']);
     }
 }

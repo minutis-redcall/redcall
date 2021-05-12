@@ -32,13 +32,14 @@ class FakeMinutisController extends BaseController
     }
 
     /**
-     * @Route("/", name="list")
+     * @Route("/{id}", name="list", defaults={"id"=null}, requirements={"id"="\d+"})
      * @Template()
      */
-    public function listAction()
+    public function listAction(?int $id)
     {
         return [
             'operations' => $this->operationManager->all(),
+            'id' => $id,
         ];
     }
 
@@ -50,6 +51,6 @@ class FakeMinutisController extends BaseController
         $this->operationResourceManager->clear();
         $this->operationManager->clear();
 
-        return $this->redirectToRoute('fake_minutis_list');
+        return $this->redirectToRoute('sandbox_fake_minutis_list');
     }
 }

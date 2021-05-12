@@ -2,8 +2,10 @@
 
 namespace App\Manager;
 
+use App\Entity\Campaign;
 use App\Entity\Campaign as CampaignEntity;
 use App\Entity\Communication;
+use App\Entity\Message;
 use App\Entity\Operation;
 use App\Entity\Structure;
 use App\Form\Model\Campaign as CampaignModel;
@@ -83,6 +85,24 @@ class OperationManager
         });
 
         return $operations;
+    }
+
+    public function addResourceToOperation(Message $message)
+    {
+        $resourceExternalId = $this->minutis->addResourceToOperation(
+            $message->getCommunication()->getCampaign()->getOperation()->getOperationExternalId(),
+            $message->getVolunteer()->getExternalId()
+        );
+
+        $message->setResourceExternalId($resourceExternalId);
+    }
+
+    public function removeResourceFromOperation(Message $message)
+    {
+        $this->minutis->removeResourceFromOperation(
+            $message->getCommunication()->getCampaign()->getOperation()->getOperationExternalId(),
+            $message->getResourceExternalId()
+        );
     }
 
     private function saveCampaignOperation(CampaignModel $campaignModel,

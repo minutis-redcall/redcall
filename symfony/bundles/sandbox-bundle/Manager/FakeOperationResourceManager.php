@@ -20,7 +20,7 @@ class FakeOperationResourceManager
 
     public function clear()
     {
-        $this->operationResourceRepository->clear();
+        $this->operationResourceRepository->truncate();
     }
 
     public function create(FakeOperation $operation, string $volunteerExternalId) : FakeOperationResource
@@ -32,6 +32,11 @@ class FakeOperationResourceManager
         $this->operationResourceRepository->save($resource);
 
         return $resource;
+    }
+
+    public function find(int $resourceExternallId) : ?FakeOperationResource
+    {
+        return $this->operationResourceRepository->find($resourceExternallId);
     }
 
     public function remove(FakeOperationResource $resource)

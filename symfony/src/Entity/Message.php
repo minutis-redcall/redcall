@@ -101,6 +101,13 @@ class Message
     private $error;
 
     /**
+     * @var int
+     *
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $resourceExternalId;
+
+    /**
      * @ORM\Column(type="datetime")
      */
     private $updatedAt;
@@ -516,6 +523,18 @@ class Message
         return $this;
     }
 
+    public function getResourceExternalId(): ?int
+    {
+        return $this->resourceExternalId;
+    }
+
+    public function setResourceExternalId(?int $resourceExternalId): self
+    {
+        $this->resourceExternalId = $resourceExternalId;
+
+        return $this;
+    }
+
     public function getUpdatedAt() : \DateTimeInterface
     {
         return $this->updatedAt;
@@ -560,23 +579,13 @@ class Message
         }
     }
 
-    public function shoudAddMinutisResource(Choice $choice) : bool
+    public function shouldAddMinutisResource(Choice $choice) : bool
     {
-        if (!($operation = $this->getCommunication()->getCampaign()->getOperation())) {
-            return false;
-        }
-
-
-        return $operation->hasChoice($choice);
+        return !$this->resourceExternalId && $this->getCommunication()->getCampaign()->shouldAddMinutisResource($choice);
     }
 
-    public function shoudRemoveMinutisResource(Choice $choice) : bool
+    public function shouldRemoveMinutisResource(Choice $choice) : bool
     {
-        if (!($operation = $this->getCommunication()->getCampaign()->getOperation())) {
-            return false;
-        }
-
-
-        return !$operation->hasChoice($choice);
+        return $this->resourceExternalId && $this->getCommunication()->getCampaign()->shouldRemoveMinutisResource($choice);
     }
 }

@@ -2,7 +2,10 @@
 
 namespace Bundles\SandboxBundle\Provider;
 
+use App\Enum\Platform;
+use App\Manager\VolunteerManager;
 use App\Provider\Minutis\MinutisProvider;
+use Bundles\SandboxBundle\Manager\AnonymizeManager;
 use Bundles\SandboxBundle\Manager\FakeOperationManager;
 use Bundles\SandboxBundle\Manager\FakeOperationResourceManager;
 
@@ -18,17 +21,23 @@ class FakeMinutisProvider implements MinutisProvider
      */
     private $operationResourceManager;
 
+    /**
+     * @var VolunteerManager
+     */
+    private $volunteerManager;
+
     public function __construct(FakeOperationManager $operationManager,
-        FakeOperationResourceManager $operationResourceManager)
+        FakeOperationResourceManager $operationResourceManager,
+        VolunteerManager $volunteerManager)
     {
         $this->operationManager         = $operationManager;
         $this->operationResourceManager = $operationResourceManager;
+        $this->volunteerManager         = $volunteerManager;
     }
-
 
     static public function getOperationUrl(int $operationExternalId): string
     {
-        return sprintf('%s/fake-minutis', getenv('WEBSITE_URL'));
+        return sprintf('%s/sandbox/fake-minutis/%d', getenv('WEBSITE_URL'), $operationExternalId);
     }
 
     public function searchForOperations(string $structureExternalId, string $criteria = null): array
@@ -41,12 +50,33 @@ class FakeMinutisProvider implements MinutisProvider
         return $this->operationManager->exists($operationExternalId);
     }
 
-    public function createOperation(string $structureExternalId, string $name, string $ownerEmail): int
+    public function searchForVolunteer(string $volunteerExternalId): ?array
     {
-        $this->operationManager->create($structureExternalId, $name, $ownerEmail);
+        $volunteer = $this->volunteerManager->findOneByExternalId(Platform::FR, $volunteerExternalId);
+        if ($volunteer) {
+            $email = $volunteer->getEmail();
+        } else {
+            $email = AnonymizeManager::generateEmail(
+                strtolower(AnonymizeManager::generateFirstname()),
+                strtolower(AnonymizeManager::generateLastname())
+            );
+        }
+
+        return [
+            'attributes' => [
+                'mail' => [
+                    'value' => $email,
+                ],
+            ],
+        ];
     }
 
-    public function addResourceToOperation(int $externalOperationId, string $volunteerExternalId)
+    public function createOperation(string $structureExternalId, string $name, string $ownerEmail) : int
+    {
+        return $this->operationManager->create($structureExternalId, $name, $ownerEmail);
+    }
+
+    public function addResourceToOperation(int $externalOperationId, string $volunteerExternalId) : ?int
     {
         $operation = $this->operationManager->find($externalOperationId);
 
@@ -59,9 +89,11 @@ class FakeMinutisProvider implements MinutisProvider
         $operation->addResource($resource);
 
         $this->operationManager->save($operation);
+
+        return $resource->getId();
     }
 
-    public function removeResourceFromOperation(int $externalOperationId, string $volunteerExternalId)
+    public function removeResourceFromOperation(int $externalOperationId, int $resourceExternalId)
     {
         $operation = $this->operationManager->find($externalOperationId);
 
@@ -69,13 +101,12 @@ class FakeMinutisProvider implements MinutisProvider
             throw new \RuntimeException(sprintf('External operation #%d does not exist', $externalOperationId));
         }
 
-        foreach ($operation->getResources() as $resource) {
-            if ($volunteerExternalId === $resource->getVolunteerExternalId()) {
-                $operation->removeResource($resource);
-                $this->operationResourceManager->remove($resource);
-                $this->operationManager->save($operation);
-                break;
-            }
+        $resource = $this->operationResourceManager->find($resourceExternalId);
+
+        if ($resource) {
+            $operation->removeResource($resource);
+            $this->operationResourceManager->remove($resource);
+            $this->operationManager->save($operation);
         }
     }
 }
