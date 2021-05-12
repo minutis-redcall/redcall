@@ -2,6 +2,9 @@
 
 namespace App\Enum;
 
+use App\Form\Flow\CallTriggerFlow;
+use App\Form\Flow\EmailTriggerFlow;
+use App\Form\Flow\SmsTriggerFlow;
 use App\Form\Model\BaseTrigger;
 use App\Form\Model\CallTrigger;
 use App\Form\Model\EmailTrigger;
@@ -9,6 +12,7 @@ use App\Form\Model\SmsTrigger;
 use App\Form\Type\CallTriggerType;
 use App\Form\Type\EmailTriggerType;
 use App\Form\Type\SmsTriggerType;
+use Craue\FormFlowBundle\Form\FormFlow;
 use MyCLabs\Enum\Enum;
 
 /**
@@ -43,6 +47,18 @@ final class Type extends Enum
                 return new CallTrigger();
             case self::EMAIL:
                 return new EmailTrigger();
+        }
+    }
+
+    public function getFormFlow() : string
+    {
+        switch ($this->value) {
+            case self::SMS:
+                return SmsTriggerFlow::class;
+            case self::CALL:
+                return CallTriggerFlow::class;
+            case self::EMAIL:
+                return EmailTriggerFlow::class;
         }
     }
 

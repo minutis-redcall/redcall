@@ -394,6 +394,11 @@ class Campaign
         return $this->id === $campaign->getId();
     }
 
+    public function hasOperation() : bool
+    {
+        return null !== $this->operation;
+    }
+
     public function getOperation() : ?Operation
     {
         return $this->operation;

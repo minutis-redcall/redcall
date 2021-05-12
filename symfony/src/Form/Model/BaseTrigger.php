@@ -59,6 +59,13 @@ abstract class BaseTrigger implements \JsonSerializable
     private $multipleAnswer = false;
 
     /**
+     * Only used when adding a new communication to an existing campaign
+     *
+     * @var bool
+     */
+    private $operation = false;
+
+    /**
      * @var string[]
      */
     private $operationAnswers = [];
@@ -166,6 +173,26 @@ abstract class BaseTrigger implements \JsonSerializable
         if (false !== $index) {
             unset($this->operationAnswers[$index]);
         }
+    }
+
+    /**
+     * @return bool
+     */
+    public function isOperation(): bool
+    {
+        return $this->operation;
+    }
+
+    /**
+     * @param bool $operation
+     *
+     * @return BaseTrigger
+     */
+    public function setOperation(bool $operation): BaseTrigger
+    {
+        $this->operation = $operation;
+
+        return $this;
     }
 
     public function jsonSerialize()
