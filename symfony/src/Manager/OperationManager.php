@@ -114,10 +114,10 @@ class OperationManager
         $operationEntity->setCampaign($campaignEntity);
         $operationEntity->setOperationExternalId($id);
 
-        $operationModel = $campaignModel->operation;
-        foreach ($operationModel->choices as $choice) {
-            $operationEntity->addChoice($communication->getChoiceByLabel($choice));
-        }
+//        $operationModel = $campaignModel->operation;
+//        foreach ($operationModel->choices as $choice) {
+//            $operationEntity->addChoice($communication->getChoiceByLabel($choice));
+//        }
 
         $this->operationRepository->save($operationEntity);
     }

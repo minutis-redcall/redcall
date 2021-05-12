@@ -54,7 +54,7 @@ class Campaign
     public $createOperation;
 
     /**
-     * @var CampaignOperation
+     * @var Operation
      *
      * @Assert\Valid
      */
@@ -67,7 +67,7 @@ class Campaign
         $this->trigger             = $trigger;
         $this->hasOperation        = false;
         $this->createOperation     = self::CREATE_OPERATION;
-        $this->operation           = new CampaignOperation();
+        $this->operation           = new Operation();
         $this->operation->campaign = $this;
     }
 }

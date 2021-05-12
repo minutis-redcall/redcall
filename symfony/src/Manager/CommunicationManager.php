@@ -9,6 +9,8 @@ use App\Entity\Communication;
 use App\Entity\Message;
 use App\Entity\Volunteer;
 use App\Form\Model\BaseTrigger;
+use App\Form\Model\EmailTrigger;
+use App\Form\Model\SmsTrigger;
 use App\Provider\Minutis\MinutisProvider;
 use App\Repository\CommunicationRepository;
 use App\Security\Helper\Security;
@@ -194,14 +196,20 @@ class CommunicationManager
             ->setVolunteer($volunteer)
             ->setType($trigger->getType())
             ->setLanguage($trigger->getLanguage())
-            ->setSubject($trigger->getSubject())
             ->setBody($trigger->getMessage())
-            ->setGeoLocation($trigger->isGeoLocation())
             ->setCreatedAt(new DateTime())
             ->setMultipleAnswer($trigger->isMultipleAnswer());
 
-        foreach ($trigger->getImages() as $image) {
-            $communication->addImage($image);
+        if ($trigger instanceof SmsTrigger) {
+            $communication->setGeoLocation($trigger->isGeoLocation());
+        }
+
+        if ($trigger instanceof EmailTrigger) {
+            $communication->setSubject($trigger->getSubject());
+
+            foreach ($trigger->getImages() as $image) {
+                $communication->addImage($image);
+            }
         }
 
         // The first choice key is always "1"

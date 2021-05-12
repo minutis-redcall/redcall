@@ -4,7 +4,7 @@ namespace App\Form\Model;
 
 use Symfony\Component\Validator\Constraints as Assert;
 
-class CampaignOperation
+class Operation
 {
     /**
      * @var int
@@ -34,11 +34,6 @@ class CampaignOperation
      * @Assert\Length(max=64, groups={"Create"})
      */
     public $ownerExternalId;
-
-    /**
-     * @var string[]
-     */
-    public $choices = [];
 
     /**
      * @var Campaign

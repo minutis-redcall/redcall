@@ -3,7 +3,7 @@
 namespace App\Form\Type;
 
 use App\Form\Model\Campaign;
-use App\Form\Model\CampaignOperation;
+use App\Form\Model\Operation;
 use App\Manager\OperationManager;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -33,7 +33,7 @@ class UseCampaignOperationType extends AbstractType
                 'label'       => false,
                 'constraints' => [
                     new Callback(function ($object, ExecutionContextInterface $context, $payload) {
-                        /** @var CampaignOperation $object */
+                        /** @var Operation $object */
                         if (!$this->operationManager->isOperationExisting($object->operationExternalId)) {
                             $context
                                 ->buildViolation('form.operation.does_not_exist')

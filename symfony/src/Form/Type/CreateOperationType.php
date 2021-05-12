@@ -2,8 +2,9 @@
 
 namespace App\Form\Type;
 
-use App\Form\Model\CampaignOperation;
+use App\Form\Model\Operation;
 use App\Security\Helper\Security;
+use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -12,7 +13,7 @@ use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\Choice;
 
-class CreateOperationType extends BaseCreateOrUseOperationType
+class CreateOperationType extends AbstractType
 {
     /**
      * @var Security
@@ -45,19 +46,17 @@ class CreateOperationType extends BaseCreateOrUseOperationType
             ]);
 
         $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
-            /** @var CampaignOperation $data */
+            /** @var Operation $data */
             $data                  = $event->getData();
             $data->name            = $data->campaign->label;
             $data->ownerExternalId = $this->security->getUser()->getExternalId();
         });
-
-        $this->prepareChoices($builder);
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => CampaignOperation::class,
+            'data_class' => Operation::class,
         ]);
     }
 }
