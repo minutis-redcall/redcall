@@ -565,27 +565,45 @@ class Message
 
         switch ($this->communication->getType()) {
             case Communication::TYPE_SMS:
-                return boolval($this->volunteer->getPhoneNumber())
+                return $this->volunteer->getPhoneNumber()
                        && $this->volunteer->isPhoneNumberOptin()
                        && $this->volunteer->getPhone()->isMobile();
             case Communication::TYPE_CALL:
-                return boolval($this->volunteer->getPhoneNumber())
+                return $this->volunteer->getPhoneNumber()
                        && $this->volunteer->isPhoneNumberOptin();
             case Communication::TYPE_EMAIL:
-                return boolval($this->volunteer->getEmail())
+                return $this->volunteer->getEmail()
                        && $this->volunteer->isEmailOptin();
             default:
                 return false;
         }
     }
 
-    public function shouldAddMinutisResource(Choice $choice) : bool
+    public function shouldAddMinutisResource() : bool
     {
-        return !$this->resourceExternalId && $this->getCommunication()->getCampaign()->shouldAddMinutisResource($choice);
+        $communication = $this->getCommunication();
+
+        $isAddResourceNeeded = false;
+        foreach ($communication->getChoices() as $choice) {
+            if ($this->getAnswerByChoice($choice) && $communication->getCampaign()->isChoiceShouldCreateResource($choice)) {
+                $isAddResourceNeeded = true;
+            }
+        }
+
+        return $isAddResourceNeeded && !$this->resourceExternalId;
     }
 
-    public function shouldRemoveMinutisResource(Choice $choice) : bool
+    public function shouldRemoveMinutisResource() : bool
     {
-        return $this->resourceExternalId && $this->getCommunication()->getCampaign()->shouldRemoveMinutisResource($choice);
+        $communication = $this->getCommunication();
+
+        $isRemoveResourceNeeded = true;
+        foreach ($communication->getChoices() as $choice) {
+            if ($this->getAnswerByChoice($choice) && $communication->getCampaign()->isChoiceShouldCreateResource($choice)) {
+                $isRemoveResourceNeeded = false;
+            }
+        }
+
+        return $isRemoveResourceNeeded && $this->resourceExternalId;
     }
 }

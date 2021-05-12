@@ -215,6 +215,9 @@
                                             {{ choice.label }}
                                         </a>
                                         (<span id="choice-count-{{ choice.id }}" data-count="{{ choice.count }}">{{ choice.count }}</span>)
+                                        {% if campaign.choiceShouldCreateResource(choice) %}
+                                            🚑
+                                        {% endif %}
                                     </div>
                                 </td>
                             </tr>

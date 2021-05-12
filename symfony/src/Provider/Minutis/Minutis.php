@@ -127,6 +127,12 @@ class Minutis implements MinutisProvider
         return $payload['id'];
     }
 
+    public function removeResourceFromOperation(int $externalOperationId, int $resourceExternalId)
+    {
+        // TODO
+        throw new \LogicException('not implemented');
+    }
+
     private function populateAuthentication(array $config)
     {
         return array_merge_recursive($config, [

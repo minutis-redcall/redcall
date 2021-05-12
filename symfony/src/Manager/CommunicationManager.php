@@ -15,6 +15,7 @@ use App\Provider\Minutis\MinutisProvider;
 use App\Repository\CommunicationRepository;
 use App\Security\Helper\Security;
 use DateTime;
+use GuzzleHttp\Exception\ClientException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -80,6 +81,11 @@ class CommunicationManager
      */
     private $security;
 
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
     public function __construct(MessageManager $messageManager,
         StructureManager $structureManager,
         CommunicationRepository $communicationRepository,
@@ -90,7 +96,8 @@ class CommunicationManager
         MinutisProvider $minutis,
         RouterInterface $router,
         LoggerInterface $slackLogger,
-        Security $security)
+        Security $security,
+        LoggerInterface $logger)
     {
         $this->messageManager          = $messageManager;
         $this->structureManager        = $structureManager;
@@ -103,6 +110,7 @@ class CommunicationManager
         $this->router                  = $router;
         $this->slackLogger             = $slackLogger;
         $this->security                = $security;
+        $this->logger                  = $logger;
     }
 
     /**
@@ -152,24 +160,31 @@ class CommunicationManager
             $structureName = '?';
         }
 
-        $this->slackLogger->info(
-            sprintf(
-                'New %s trigger by %s (%s) on %d volunteers from %d structures.%s%s%sLink: %s%s%s',
-                strtoupper($communication->getType()),
-                $communication->getVolunteer()->getDisplayName(),
-                $structureName,
-                count($communication->getMessages()),
-                count($this->structureManager->getCampaignStructures($campaign->getPlatform(), $campaign)),
-                PHP_EOL,
-                $campaign->getLabel(),
-                PHP_EOL,
-                sprintf('%s%s', getenv('WEBSITE_URL'), $this->router->generate('communication_index', [
-                    'id' => $campaign->getId(),
-                ])),
-                $campaign->getOperation() ? PHP_EOL : '',
-                $campaign->getOperation() ? sprintf('Operation: %s', $campaign->getOperationUrl($this->minutis)) : ''
-            )
-        );
+        try {
+            $this->slackLogger->info(
+                sprintf(
+                    'New %s trigger by %s (%s) on %d volunteers from %d structures.%s%s%sLink: %s%s%s',
+                    strtoupper($communication->getType()),
+                    $communication->getVolunteer()->getDisplayName(),
+                    $structureName,
+                    count($communication->getMessages()),
+                    count($this->structureManager->getCampaignStructures($campaign->getPlatform(), $campaign)),
+                    PHP_EOL,
+                    $campaign->getLabel(),
+                    PHP_EOL,
+                    sprintf('%s%s', getenv('WEBSITE_URL'), $this->router->generate('communication_index', [
+                        'id' => $campaign->getId(),
+                    ])),
+                    $campaign->getOperation() ? PHP_EOL : '',
+                    $campaign->getOperation() ? sprintf('Operation: %s', $campaign->getOperationUrl($this->minutis)) : ''
+                )
+            );
+        } catch (\Throwable $exception) {
+            $this->logger->warning('Cannot reach out Slack', [
+                'campaign-id' => $campaign->getId(),
+                'communication-id' => $communication->getId(),
+            ]);
+        }
 
         return $communication;
     }

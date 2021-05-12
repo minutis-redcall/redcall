@@ -194,16 +194,20 @@ class MessageManager
 
         foreach ($choices as $choice) {
             $answer->addChoice($choice);
-
-            if ($message->shouldAddMinutisResource($choice)) {
-                $this->operationManager->addResourceToOperation($message);
-            }
         }
 
         $message->addAnswser($answer);
         $message->setUpdatedAt(new \DateTime());
 
         $this->answerManager->save($answer);
+
+        // Handling resource creation / deletion
+        if ($message->shouldAddMinutisResource()) {
+            $this->operationManager->addResourceToOperation($message);
+        } elseif ($message->shouldRemoveMinutisResource()) {
+            $this->operationManager->removeResourceFromOperation($message);
+        }
+
         $this->messageRepository->save($message);
     }
 
@@ -214,37 +218,26 @@ class MessageManager
             $answer->getChoices()->removeElement($choice);
             $this->answerManager->save($answer);
 
+            if ($message->shouldRemoveMinutisResource()) {
+                $this->operationManager->removeResourceFromOperation($message);
+            }
+
             return;
         }
 
         $this->addAnswer($message, sprintf('%s%d', $message->getPrefix(), $choice->getCode()), true);
     }
 
-    /**
-     * @param Message $message
-     * @param Choice  $choice
-     *
-     * @throws ORMException
-     * @throws OptimisticLockException
-     */
     public function cancelAnswerByChoice(Message $message, Choice $choice) : void
     {
         $this->messageRepository->cancelAnswerByChoice($message, $choice);
     }
 
-    /**
-     * @param array $volunteersTakenPrefixes
-     *
-     * @return bool
-     */
     public function canUsePrefixesForEveryone(array $volunteersTakenPrefixes) : bool
     {
         return $this->messageRepository->canUsePrefixesForEveryone($volunteersTakenPrefixes);
     }
 
-    /**
-     * @param Message $message
-     */
     public function save(Message $message)
     {
         $this->messageRepository->save($message);

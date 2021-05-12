@@ -416,13 +416,8 @@ class Campaign
         return $this->getOperation() ? $minutis->getOperationUrl($this->getOperation()->getOperationExternalId()) : null;
     }
 
-    public function shouldAddMinutisResource(Choice $choice) : bool
+    public function isChoiceShouldCreateResource(Choice $choice) : bool
     {
         return $this->operation && $this->operation->hasChoice($choice);
-    }
-
-    public function shouldRemoveMinutisResource(Choice $choice) : bool
-    {
-        return $this->operation && !$this->operation->hasChoice($choice);
     }
 }
