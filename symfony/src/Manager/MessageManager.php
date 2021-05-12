@@ -198,10 +198,6 @@ class MessageManager
             if ($message->shouldAddMinutisResource($choice)) {
                 $this->operationManager->addResourceToOperation($message);
             }
-
-            if ($message->shouldRemoveMinutisResource($choice)) {
-                $this->operationManager->removeResourceFromOperation($message);
-            }
         }
 
         $message->addAnswser($answer);
@@ -211,13 +207,6 @@ class MessageManager
         $this->messageRepository->save($message);
     }
 
-    /**
-     * @param Message $message
-     * @param Choice  $choice
-     *
-     * @throws ORMException
-     * @throws OptimisticLockException
-     */
     public function toggleAnswer(Message $message, Choice $choice)
     {
         // If choice currently selected, remove it

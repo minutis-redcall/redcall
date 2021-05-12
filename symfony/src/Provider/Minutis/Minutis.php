@@ -122,18 +122,9 @@ class Minutis implements MinutisProvider
             ],
         ]));
 
-        // TODO test me in preprod
-
         $payload = json_decode($response->getBody()->getContents(), true);
 
         return $payload['id'];
-    }
-
-    public function removeResourceFromOperation(int $externalOperationId, int $resourceExternalId)
-    {
-
-        // TODO
-
     }
 
     private function populateAuthentication(array $config)

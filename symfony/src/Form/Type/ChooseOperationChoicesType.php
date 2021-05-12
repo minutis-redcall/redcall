@@ -40,6 +40,9 @@ class ChooseOperationChoicesType extends AbstractType
                 ])
                 ->add('submit', SubmitType::class, [
                     'label' => 'form.operation.buttons.submit',
+                    'attr'  => [
+                        'class' => 'btn btn-primary trigger-launch',
+                    ],
                 ]);
         });
     }
