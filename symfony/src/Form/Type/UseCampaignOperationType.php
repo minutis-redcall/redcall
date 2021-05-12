@@ -44,7 +44,10 @@ class UseCampaignOperationType extends AbstractType
                 ],
             ])
             ->add('submit', SubmitType::class, [
-                'label' => 'form.operation.fields.use',
+                'label' => 'form.operation.buttons.continue',
+                'attr'  => [
+                    'class' => 'btn btn-primary trigger-launch',
+                ],
             ]);
     }
 

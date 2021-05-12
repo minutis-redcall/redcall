@@ -4,6 +4,7 @@ namespace App\Form\Flow;
 
 use App\Form\Model\Campaign;
 use App\Form\Type\CampaignType;
+use App\Form\Type\ChooseCampaignOperationChoicesType;
 use App\Form\Type\CreateCampaignOperationType;
 use App\Form\Type\CreateOrUseOperationType;
 use App\Form\Type\UseCampaignOperationType;
@@ -55,6 +56,18 @@ class CampaignFlow extends FormFlow
                     $data = $flow->getFormData();
 
                     return !$data->hasOperation || Campaign::USE_OPERATION !== $data->createOperation;
+                },
+            ],
+            5 => [
+                'form_type'    => ChooseCampaignOperationChoicesType::class,
+                'form_options' => [
+                    'validation_groups' => ['Use'],
+                ],
+                'skip'         => function ($estimatedCurrentStepNumber, FormFlowInterface $flow) {
+                    /** @var Campaign $data */
+                    $data = $flow->getFormData();
+
+                    return !$data->hasOperation;
                 },
             ],
         ];
