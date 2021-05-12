@@ -115,17 +115,17 @@ class CampaignManager
 
         $this->campaignRepository->save($campaignEntity);
 
-        $communication = $this->communicationManager->createNewCommunication($campaignEntity, $campaignModel->trigger);
-
         if ($campaignModel->hasOperation) {
             if (CampaignModel::CREATE_OPERATION === $campaignModel->createOperation) {
-                $this->operationManager->createOperation($campaignModel, $campaignEntity, $communication);
+                $this->operationManager->createOperation($campaignModel, $campaignEntity);
             } else {
-                $this->operationManager->bindOperation($campaignModel, $campaignEntity, $communication);
+                $this->operationManager->bindOperation($campaignModel, $campaignEntity);
             }
 
             $this->campaignRepository->save($campaignEntity);
         }
+
+        $communication = $this->communicationManager->createNewCommunication($campaignEntity, $campaignModel->trigger);
 
         $this->communicationManager->launchNewCommunication($campaignEntity, $communication, $processor);
 

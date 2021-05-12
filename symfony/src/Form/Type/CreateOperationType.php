@@ -27,8 +27,6 @@ class CreateOperationType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        parent::buildForm($builder, $options);
-
         $builder
             ->add('structureExternalId', ChoiceType::class, [
                 'label'       => 'form.operation.fields.structure_create',

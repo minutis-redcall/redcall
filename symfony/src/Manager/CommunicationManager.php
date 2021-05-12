@@ -56,9 +56,9 @@ class CommunicationManager
     private $audienceManager;
 
     /**
-     * @var MediaManager
+     * @var OperationManager
      */
-    private $mediaManager;
+    private $operationManager;
 
     /**
      * @var MinutisProvider
@@ -80,23 +80,17 @@ class CommunicationManager
      */
     private $security;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
     public function __construct(MessageManager $messageManager,
         StructureManager $structureManager,
         CommunicationRepository $communicationRepository,
         ProcessorInterface $processor,
         VolunteerManager $volunteerManager,
         AudienceManager $audienceManager,
-        MediaManager $mediaManager,
+        OperationManager $operationManager,
         MinutisProvider $minutis,
         RouterInterface $router,
         LoggerInterface $slackLogger,
-        Security $security,
-        LoggerInterface $logger)
+        Security $security)
     {
         $this->messageManager          = $messageManager;
         $this->structureManager        = $structureManager;
@@ -104,12 +98,11 @@ class CommunicationManager
         $this->processor               = $processor;
         $this->volunteerManager        = $volunteerManager;
         $this->audienceManager         = $audienceManager;
-        $this->mediaManager            = $mediaManager;
+        $this->operationManager        = $operationManager;
         $this->minutis                 = $minutis;
         $this->router                  = $router;
         $this->slackLogger             = $slackLogger;
         $this->security                = $security;
-        $this->logger                  = $logger;
     }
 
     /**
@@ -131,6 +124,8 @@ class CommunicationManager
         $communication->setRaw(json_encode($trigger, JSON_PRETTY_PRINT));
 
         $campaign->addCommunication($communication);
+
+        $this->operationManager->addChoicesToOperation($communication, $trigger);
 
         $this->campaignManager->save($campaign);
 

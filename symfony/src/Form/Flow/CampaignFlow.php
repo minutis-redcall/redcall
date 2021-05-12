@@ -61,13 +61,13 @@ class CampaignFlow extends FormFlow
             5 => [
                 'form_type'    => ChooseCampaignOperationChoicesType::class,
                 'form_options' => [
-                    'validation_groups' => ['Use'],
+                    'validation_groups' => ['Default'],
                 ],
                 'skip'         => function ($estimatedCurrentStepNumber, FormFlowInterface $flow) {
                     /** @var Campaign $data */
                     $data = $flow->getFormData();
 
-                    return !$data->hasOperation;
+                    return !$data->hasOperation || 0 === count($data->trigger->getAnswers());
                 },
             ],
         ];

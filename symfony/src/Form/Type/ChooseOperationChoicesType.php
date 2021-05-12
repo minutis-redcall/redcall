@@ -3,43 +3,46 @@
 namespace App\Form\Type;
 
 use App\Form\Model\BaseTrigger;
+use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Choice;
 
-class ChooseOperationChoicesType
+class ChooseOperationChoicesType extends AbstractType
 {
-
-    /*
-            ->add('submit', SubmitType::class, [
-
-                // define the field in a PRE_SET event depending on the
-                //'label' => 'form.operation.fields.use',
-                //'label' => 'form.operation.fields.create',
-
-
-                'label' => 'form.operation.fields.create',
-                'attr'  => [
-                    'class' => 'btn btn-primary trigger-launch',
-                ],
-            ])     */
-
-    /*
+    public function buildForm(FormBuilderInterface $builder, array $options)
+    {
+        // Dynamically creating the "operation choices" field based on given answers
         $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
-            $answers = $event->getData()->campaign->trigger->getAnswers();
+            /** @var BaseTrigger $trigger */
+            $trigger = $event->getData();
+
+            $answers = $trigger->getAnswers();
             $choices = array_combine($answers, $answers);
 
-            if ($answers) {
-                $event->getForm()->add('choices', ChoiceType::class, [
+            $event
+                ->getForm()
+                ->add('operationAnswers', ChoiceType::class, [
                     'label'       => 'form.operation.fields.choices.list',
                     'choices'     => $choices,
                     'constraints' => [
-                        new Choice(['choices' => $choices]),
+                        new Choice([
+                            'choices' => $choices,
+                            'multiple' => true,
+                        ]),
                     ],
                     'expanded'    => true,
                     'multiple'    => true,
+                ])
+                ->add('submit', SubmitType::class, [
+                    'label' => 'form.operation.buttons.submit',
                 ]);
-            }
         });
-     */
+    }
 
     public function configureOptions(OptionsResolver $resolver)
     {

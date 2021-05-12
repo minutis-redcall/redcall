@@ -159,6 +159,15 @@ abstract class BaseTrigger implements \JsonSerializable
         return $this;
     }
 
+    public function removeOperationAnswer(string $answer) : self
+    {
+        $index = array_search($answer, $this->operationAnswers);
+
+        if (false !== $index) {
+            unset($this->operationAnswers[$index]);
+        }
+    }
+
     public function jsonSerialize()
     {
         $vars = get_object_vars($this);

@@ -475,19 +475,18 @@ form:
     buttons:
       continue: Continuer
       return: 'Revenir à l''étape précédente'
+      submit: 'Synchroniser l''opération et effectuer le déclenchement'
     fields:
       choices:
         create: 'Créer une nouvelle opération dans Minutis'
         list: 'Choisir les réponses pour lesquelles les bénévoles seront intégrés automatiquement dans Minutis'
         use: 'Rattacher ce déclenchement à une opération existante'
-      create: 'Créer l''opération et effectuer le déclenchement'
       name: 'Nom de l''opération'
       operation_id: 'Ou vous pouvez aussi saisir directement l''ID numérique Minutis de l''opération'
       operation_use: 'Opération à rattacher au déclenchement'
       owner_external_id: 'Sélectionnez l''ID externe (NIVOL) du propriétaire de l''opération'
       structure_create: 'Structure à laquelle rattacher l''opération'
       structure_use: 'Structure à laquelle est rattachée l''opération'
-      use: 'Relier l''opération et effectuer le déclenchement'
     title: 'Opération Minutis'
     url: 'Opération Minutis :'
 geolocation:

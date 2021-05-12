@@ -8,6 +8,7 @@ use App\Entity\Communication;
 use App\Entity\Message;
 use App\Entity\Operation;
 use App\Entity\Structure;
+use App\Form\Model\BaseTrigger;
 use App\Form\Model\Campaign as CampaignModel;
 use App\Provider\Minutis\MinutisProvider;
 use App\Repository\OperationRepository;
@@ -37,9 +38,7 @@ class OperationManager
         $this->logger              = $logger;
     }
 
-    public function createOperation(CampaignModel $campaignModel,
-        CampaignEntity $campaignEntity,
-        Communication $communication)
+    public function createOperation(CampaignModel $campaignModel, CampaignEntity $campaignEntity)
     {
         $operationModel = $campaignModel->operation;
 
@@ -59,16 +58,14 @@ class OperationManager
 
         $id = $this->minutis->createOperation($operationModel->structureExternalId, $operationModel->name, $email);
 
-        $this->saveCampaignOperation($campaignModel, $campaignEntity, $communication, $id);
+        $this->saveCampaignOperation($campaignEntity, $id);
     }
 
-    public function bindOperation(CampaignModel $campaignModel,
-        CampaignEntity $campaignEntity,
-        Communication $communication)
+    public function bindOperation(CampaignModel $campaignModel, CampaignEntity $campaignEntity)
     {
         $operationExternalId = $campaignModel->operation->operationExternalId;
 
-        $this->saveCampaignOperation($campaignModel, $campaignEntity, $communication, $operationExternalId);
+        $this->saveCampaignOperation($campaignEntity, $operationExternalId);
     }
 
     public function isOperationExisting(int $operationExternalId) : bool
@@ -105,19 +102,22 @@ class OperationManager
         );
     }
 
-    private function saveCampaignOperation(CampaignModel $campaignModel,
-        CampaignEntity $campaignEntity,
-        Communication $communication,
-        int $id)
+    public function addChoicesToOperation(Communication $communication, BaseTrigger $trigger)
+    {
+        $operation = $communication->getCampaign()->getOperation();
+
+        foreach ($trigger->getOperationAnswers() as $choice) {
+            $operation->addChoice($communication->getChoiceByLabel($choice));
+        }
+
+        $this->operationRepository->save($operation);
+    }
+
+    private function saveCampaignOperation(CampaignEntity $campaignEntity, int $id)
     {
         $operationEntity = new Operation();
         $operationEntity->setCampaign($campaignEntity);
         $operationEntity->setOperationExternalId($id);
-
-//        $operationModel = $campaignModel->operation;
-//        foreach ($operationModel->choices as $choice) {
-//            $operationEntity->addChoice($communication->getChoiceByLabel($choice));
-//        }
 
         $this->operationRepository->save($operationEntity);
     }

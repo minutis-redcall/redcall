@@ -475,19 +475,18 @@ form:
     buttons:
       continue: Continue
       return: 'Go back to the previous step'
+      submit: 'Sync the operation and send the trigger'
     fields:
       choices:
         create: 'Create a new operation in Minutis'
         list: 'Choose answers for which volunteers will be automatically enrolled in Minutis'
         use: 'Link this trigger to an existing Minutis operation'
-      create: 'Create the operation and send the trigger'
       name: 'Operation name'
       operation_id: 'Or you can directly set the numeric ID of the Minutis operation'
       operation_use: 'Which operation you want to bind to the trigger?'
       owner_external_id: 'Choose the operation owner''s external ID (NIVOL)'
       structure_create: 'Create the operation in which structure?'
       structure_use: 'Link the trigger to an operation from which structure?'
-      use: 'Link the operation and send the trigger'
     title: 'Minutis Operation'
     url: 'Minutis operation:'
 geolocation:
