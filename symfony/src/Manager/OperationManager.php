@@ -100,6 +100,8 @@ class OperationManager
             $message->getCommunication()->getCampaign()->getOperation()->getOperationExternalId(),
             $message->getResourceExternalId()
         );
+
+        $message->setResourceExternalId(null);
     }
 
     public function addChoicesToOperation(Communication $communication, BaseTrigger $trigger)

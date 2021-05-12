@@ -214,13 +214,20 @@ class MessageManager
     public function toggleAnswer(Message $message, Choice $choice)
     {
         // If choice currently selected, remove it
-        if ($answer = $message->getAnswerByChoice($choice)) {
+        $removed = false;
+        while ($answer = $message->getAnswerByChoice($choice)) {
             $answer->getChoices()->removeElement($choice);
             $this->answerManager->save($answer);
 
-            if ($message->shouldRemoveMinutisResource()) {
+            if (!$removed && $message->shouldRemoveMinutisResource()) {
                 $this->operationManager->removeResourceFromOperation($message);
             }
+
+            $removed = true;
+        }
+
+        if ($removed) {
+            $this->messageRepository->save($message);
 
             return;
         }

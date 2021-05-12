@@ -6,7 +6,9 @@ use App\Model\MinutisToken;
 use App\Settings;
 use Bundles\SettingsBundle\Manager\SettingManager;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\ClientException;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\HttpFoundation\Response;
 
 class Minutis implements MinutisProvider
 {
@@ -63,10 +65,17 @@ class Minutis implements MinutisProvider
 
     public function isOperationExisting(int $operationExternalId) : bool
     {
-        $response = $this->getClient()->get(sprintf('/api/regulation/%d', $operationExternalId), $this->populateAuthentication([]));
+        try {
+            $this->getClient()->get(sprintf('/api/regulation/%d', $operationExternalId), $this->populateAuthentication([]));
 
-        // TODO handle 404s
+            return true;
+        } catch (ClientException $exception) {
+            if (Response::HTTP_NOT_FOUND === $exception->getResponse()->getStatusCode()) {
+                return false;
+            }
 
+            throw $exception;
+        }
     }
 
     public function searchForVolunteer(string $volunteerExternalId) : ?array
@@ -129,8 +138,7 @@ class Minutis implements MinutisProvider
 
     public function removeResourceFromOperation(int $externalOperationId, int $resourceExternalId)
     {
-        // TODO
-        throw new \LogicException('not implemented');
+        $this->getClient()->delete(sprintf('/api/regulation/%d/ressource/%d', $externalOperationId, $resourceExternalId));
     }
 
     private function populateAuthentication(array $config)
