@@ -100,13 +100,13 @@ class MessageManager
         $this->answerManager->handleSpecialAnswers($phoneNumber, $body);
 
         // Replaces "A 2" by "A2"
-        $body = preg_replace('/([a-z]+)\s(\d+)/ui', '${1}${2}', $body);
+        $body = preg_replace('/([a-z]+)\s*(\d+)/ui', '${1}${2}', $body);
 
         // In case of multiple calls, we should handle the "A1 B2" body case.
         $messages = [];
         foreach (explode(' ', $body) as $word) {
             $matches = [];
-            preg_match('/^([a-zA-Z]+)(\d)/', $word, $matches);
+            preg_match('/^([a-zA-Z]+)(\d+)/', $word, $matches);
             if (3 === count($matches)) {
                 $message = $this->getMessageFromPhoneNumber($phoneNumber, $word);
                 if ($message && !array_key_exists($message->getId(), $messages)) {
@@ -117,7 +117,7 @@ class MessageManager
 
         // Answer is invalid, we seek for latest active campaign for the phone number
         if (!$messages) {
-            $message = $this->getMessageFromPhoneNumber($phoneNumber, $word);
+            $message = $this->getMessageFromPhoneNumber($phoneNumber, $body);
             if ($message) {
                 $messages[] = $message;
             }
@@ -141,7 +141,7 @@ class MessageManager
     {
         if ($body) {
             $matches = [];
-            preg_match('/^([a-zA-Z]+)(\d)/', $body, $matches);
+            preg_match('/^([a-zA-Z]+)(\d+)/', $body, $matches);
 
             // Prefix not found, getting the latest message sent to volunteer on active campaigns
             if (3 === count($matches)) {

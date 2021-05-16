@@ -6,25 +6,9 @@ use App\Settings;
 use App\Task\SyncWithPegassTask;
 use Bundles\GoogleTaskBundle\Service\TaskSender;
 use Bundles\SettingsBundle\Manager\SettingManager;
-use Symfony\Component\HttpKernel\KernelInterface;
 
 class MaintenanceManager
 {
-    /**
-     * @var KernelInterface
-     */
-    private $kernel;
-
-    /**
-     * @var StructureManager
-     */
-    private $structureManager;
-
-    /**
-     * @var VolunteerManager
-     */
-    private $volunteerManager;
-
     /**
      * @var SettingManager
      */
@@ -35,15 +19,8 @@ class MaintenanceManager
      */
     private $async;
 
-    public function __construct(KernelInterface $kernel,
-        StructureManager $structureManager,
-        VolunteerManager $volunteerManager,
-        SettingManager $settingManager,
-        TaskSender $async)
+    public function __construct(SettingManager $settingManager, TaskSender $async)
     {
-        $this->kernel           = $kernel;
-        $this->structureManager = $structureManager;
-        $this->volunteerManager = $volunteerManager;
         $this->settingManager   = $settingManager;
         $this->async            = $async;
     }

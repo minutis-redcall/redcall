@@ -15,9 +15,6 @@ class BadgeManager
      */
     private $badgeRepository;
 
-    /**
-     * @param BadgeRepository $badgeRepository
-     */
     public function __construct(BadgeRepository $badgeRepository)
     {
         $this->badgeRepository = $badgeRepository;
