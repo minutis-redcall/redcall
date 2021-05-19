@@ -138,10 +138,10 @@ class Minutis implements MinutisProvider
 
     public function removeResourceFromOperation(int $externalOperationId, int $resourceExternalId)
     {
-        $this->getClient()->delete(sprintf('/api/regulation/%d/ressource/%d', $externalOperationId, $resourceExternalId));
+        $this->getClient()->delete(sprintf('/api/regulation/%d/ressource/%d', $externalOperationId, $resourceExternalId), $this->populateAuthentication());
     }
 
-    private function populateAuthentication(array $config)
+    private function populateAuthentication(array $config = [])
     {
         return array_merge_recursive($config, [
             'headers' => [
