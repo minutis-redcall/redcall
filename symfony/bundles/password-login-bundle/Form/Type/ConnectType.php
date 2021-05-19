@@ -45,6 +45,10 @@ class ConnectType extends AbstractType
                     'min' => 8,
                     'max' => 4096,
                 ]),
+            ])
+            ->add('_remember_me', Type\CheckboxType::class, [
+                'label'    => 'password_login.connect.remember_me',
+                'required' => false,
             ]);
 
         $ip = $this->requestStack->getMasterRequest()->getClientIp();
@@ -62,5 +66,10 @@ class ConnectType extends AbstractType
             ->add('submit', Type\SubmitType::class, [
                 'label' => 'password_login.connect.connect',
             ]);
+    }
+
+    public function getBlockPrefix()
+    {
+        return '';
     }
 }

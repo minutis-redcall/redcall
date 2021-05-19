@@ -15,6 +15,7 @@ password_login:
     incorrect: 'L''email ou le mot de passe que vous avez saisi est incorrect.'
     no_account_yet: 'Je n''ai pas encore de compte.'
     password: 'Veuillez saisir votre mot de passe'
+    remember_me: 'Faire confiance à cet appareil et laisser la session ouverte'
     title: 'Connexion à la plateforme'
     who_am_i: '%username%'
   error:

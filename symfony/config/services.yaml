@@ -26,6 +26,8 @@ services:
       - '@Doctrine\DBAL\Driver\PDOConnection'
       - { lock_mode: 1 }
 
+  Symfony\Bridge\Doctrine\Security\RememberMe\DoctrineTokenProvider: ~
+
   Doctrine\DBAL\Driver\PDOConnection:
     factory: [ '@doctrine.dbal.default_connection', 'getWrappedConnection' ]
 

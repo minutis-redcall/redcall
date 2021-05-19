@@ -15,6 +15,7 @@ password_login:
     incorrect: 'Credentials you entered are incorrect.'
     no_account_yet: 'I do not have an account yet.'
     password: 'Please enter your password'
+    remember_me: 'This device is trusted, keep me signed in'
     title: 'Connect to the platform'
     who_am_i: '%username%'
   error:
