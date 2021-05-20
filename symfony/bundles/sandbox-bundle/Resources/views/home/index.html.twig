@@ -25,6 +25,11 @@
 
         <br/><br/>
 
+        <a href="{{ path('sandbox_fake_minutis_list') }}"
+           class="text-lg-center large-button btn btn-secondary">{{ 'sandbox.fake_minutis.button'|trans }}</a>
+
+        <br/><br/>
+
         <a href="{{ path('sandbox_anonymize', {csrf: csrf_token('anonymize')}) }}"
            class="text-lg-center large-button btn btn-secondary">{{ 'sandbox.anonymize.button'|trans }}</a>
 

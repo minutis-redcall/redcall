@@ -13,7 +13,19 @@
     <div id="form-container">
 
         {{ form_start(form, {attr: {'action': path('communication_new', {id: campaign.id, type: type})}}) }}
-        {{ include(type.formView) }}
+
+        {% if flow.currentStepNumber == 1 %}
+            {{ include(type.formView) }}
+        {% else %}
+            {{ form_rest(form) }}
+
+            <button type="submit" name="{{ flow.formTransitionKey }}" value="back" class="btn btn-secondary trigger-launch" formnovalidate="formnovalidate">
+                {{ 'form.operation.buttons.return'|trans }}
+            </button>
+
+            <br/><br/>
+        {% endif %}
+
         {{ form_end(form) }}
 
         <a href="{{ path('communication_index', {id: campaign.id, key: key}) }}" class="btn btn-light">

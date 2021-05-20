@@ -101,6 +101,13 @@ class Message
     private $error;
 
     /**
+     * @var int
+     *
+     * @ORM\Column(type="integer", nullable=true)
+     */
+    private $resourceExternalId;
+
+    /**
      * @ORM\Column(type="datetime")
      */
     private $updatedAt;
@@ -516,6 +523,18 @@ class Message
         return $this;
     }
 
+    public function getResourceExternalId(): ?int
+    {
+        return $this->resourceExternalId;
+    }
+
+    public function setResourceExternalId(?int $resourceExternalId): self
+    {
+        $this->resourceExternalId = $resourceExternalId;
+
+        return $this;
+    }
+
     public function getUpdatedAt() : \DateTimeInterface
     {
         return $this->updatedAt;
@@ -546,17 +565,45 @@ class Message
 
         switch ($this->communication->getType()) {
             case Communication::TYPE_SMS:
-                return boolval($this->volunteer->getPhoneNumber())
+                return $this->volunteer->getPhoneNumber()
                        && $this->volunteer->isPhoneNumberOptin()
                        && $this->volunteer->getPhone()->isMobile();
             case Communication::TYPE_CALL:
-                return boolval($this->volunteer->getPhoneNumber())
+                return $this->volunteer->getPhoneNumber()
                        && $this->volunteer->isPhoneNumberOptin();
             case Communication::TYPE_EMAIL:
-                return boolval($this->volunteer->getEmail())
+                return $this->volunteer->getEmail()
                        && $this->volunteer->isEmailOptin();
             default:
                 return false;
         }
+    }
+
+    public function shouldAddMinutisResource() : bool
+    {
+        $communication = $this->getCommunication();
+
+        $isAddResourceNeeded = false;
+        foreach ($communication->getChoices() as $choice) {
+            if ($this->getAnswerByChoice($choice) && $communication->getCampaign()->isChoiceShouldCreateResource($choice)) {
+                $isAddResourceNeeded = true;
+            }
+        }
+
+        return $isAddResourceNeeded && !$this->resourceExternalId;
+    }
+
+    public function shouldRemoveMinutisResource() : bool
+    {
+        $communication = $this->getCommunication();
+
+        $isRemoveResourceNeeded = true;
+        foreach ($communication->getChoices() as $choice) {
+            if ($this->getAnswerByChoice($choice) && $communication->getCampaign()->isChoiceShouldCreateResource($choice)) {
+                $isRemoveResourceNeeded = false;
+            }
+        }
+
+        return $isRemoveResourceNeeded && $this->resourceExternalId;
     }
 }

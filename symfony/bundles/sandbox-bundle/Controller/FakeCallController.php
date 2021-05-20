@@ -2,7 +2,7 @@
 
 namespace Bundles\SandboxBundle\Controller;
 
-use App\Base\BaseController;
+use Bundles\SandboxBundle\Base\BaseController;
 use App\Entity\Phone;
 use App\Manager\VolunteerManager;
 use App\Provider\Call\CallProvider;

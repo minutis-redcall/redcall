@@ -2,7 +2,7 @@
 
 namespace Bundles\SandboxBundle\Controller;
 
-use App\Base\BaseController;
+use Bundles\SandboxBundle\Base\BaseController;
 use Bundles\SandboxBundle\Manager\AnonymizeManager;
 use Symfony\Component\Routing\Annotation\Route;
 

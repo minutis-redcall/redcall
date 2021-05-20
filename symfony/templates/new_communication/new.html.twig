@@ -14,17 +14,34 @@
                 {{ form_start(form) }}
                 {{ form_errors(form) }}
 
-                {{ form_row(form.label) }}
+                {% if flow.currentStepNumber == 1 %}
+                    {{ form_row(form.label) }}
+                    {{ form_row(form.type) }}
+                    {{ form_row(form.hasOperation) }}
 
-                {{ form_row(form.type) }}
+                    <hr/>
 
-                <hr/>
+                    {{ include(type.formView, _context|merge({form: form.trigger})) }}
 
-                {{ include(type.formView, _context|merge({form: form.trigger})) }}
+                    <hr/>
+                    <div class="h4">{{ 'form.campaign.fields.notes_title'|trans }}</div>
+                    {{ form_row(form.notes) }}
+                {% endif %}
 
-                <hr/>
-                <div class="h4">{{ 'form.campaign.fields.notes_title'|trans }}</div>
-                {{ form_row(form.notes) }}
+                {% if flow.currentStepNumber > 1 %}
+                    <h2>{{ 'form.operation.title'|trans }}</h2>
+
+                    <hr/>
+
+                    {{ form_rest(form) }}
+
+                    <button type="submit" name="{{ flow.formTransitionKey }}" value="back" class="btn btn-secondary trigger-launch" formnovalidate="formnovalidate">
+                        {{ 'form.operation.buttons.return'|trans }}
+                    </button>
+
+                    <br/><br/>
+
+                {% endif %}
 
                 {{ form_end(form) }}
 
@@ -34,4 +51,51 @@
 
         </div>
     </div>
+{% endblock %}
+
+{% block javascripts %}
+
+    {% if flow.currentStepNumber == 4 %}
+
+        <script type="text/javascript">
+
+            var listOperationsInStructure = function () {
+                var that = $('#{{ form.operation.structureExternalId.vars.id }}');
+
+                var value = that.val();
+                if (!value) {
+                    return;
+                }
+
+                that.attr('disabled', 'disabled');
+                $.post('{{ path('campaign_search_for_operation') }}', {externalId: value}, function (data) {
+                    that.removeAttr('disabled');
+
+                    var operations = $('#{{ form.operation.operation.vars.id }}');
+
+                    operations.find('option').remove();
+
+                    $.each(data.operations, function (index, operation) {
+                        operations.append('<option value="' + operation.id + '">[' + operation.id + '] ' + operation.name + '</option>');
+                    });
+
+                    $('#{{ form.operation.operation.vars.id }}').change();
+                });
+            };
+
+            listOperationsInStructure();
+            $('#{{ form.operation.structureExternalId.vars.id }}').change(function () {
+                listOperationsInStructure();
+            });
+
+            $('#{{ form.operation.operation.vars.id }}').change(function () {
+                $('#{{ form.operation.operationExternalId.vars.id }}').val(
+                    $(this).val()
+                );
+            });
+
+        </script>
+
+    {% endif %}
+
 {% endblock %}

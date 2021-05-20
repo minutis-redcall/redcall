@@ -2,7 +2,7 @@
 
 namespace Bundles\SandboxBundle\Controller;
 
-use App\Base\BaseController;
+use Bundles\SandboxBundle\Base\BaseController;
 use App\Form\Type\StructureWidgetType;
 use Bundles\SandboxBundle\Manager\FixturesManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;

@@ -121,10 +121,7 @@ class AnonymizeManager
         $this->volunteerManager->save($volunteer);
     }
 
-    /**
-     * @return string
-     */
-    private function generateFirstname() : string
+    public static function generateFirstname() : string
     {
         $names = [
             'Marie',
@@ -324,10 +321,7 @@ class AnonymizeManager
         return $names[rand() % count($names)];
     }
 
-    /**
-     * @return string
-     */
-    private function generateLastname() : string
+    public static function generateLastname() : string
     {
         $names = [
             'ADAM',
@@ -535,10 +529,7 @@ class AnonymizeManager
         return $names[rand() % count($names)];
     }
 
-    /**
-     * @return string
-     */
-    private function generatePhoneNumber() : string
+    public static function generatePhoneNumber() : string
     {
         $phone = sprintf(
             '0%d %d%d %d%d %d%d %d%d',
@@ -555,13 +546,7 @@ class AnonymizeManager
         return $phoneUtil->format($parsed, PhoneNumberFormat::E164);
     }
 
-    /**
-     * @param string $firstname
-     * @param string $lastname
-     *
-     * @return string
-     */
-    private function generateEmail(string $firstname, string $lastname) : string
+    public static function generateEmail(string $firstname, string $lastname) : string
     {
         $providers = [
             'gmail.com',
@@ -578,6 +563,4 @@ class AnonymizeManager
 
         return strtolower(sprintf('%s.%s@%s', substr($firstname, 0, 1), $lastname, $providers[rand() % count($providers)]));
     }
-
-
 }

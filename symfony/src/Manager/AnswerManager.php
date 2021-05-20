@@ -24,7 +24,6 @@ class AnswerManager extends BaseService
             AnswerRepository::class,
             CampaignManager::class,
             PhoneConfigManager::class,
-            LoggerInterface::class,
             MessageFormatter::class,
             MessageManager::class,
             SMSProvider::class,
@@ -57,7 +56,7 @@ class AnswerManager extends BaseService
     public function handleSpecialAnswers(string $phoneNumber, string $body)
     {
         if (Stop::isValid($body)) {
-            $volunteer = $this - $this->getVolunteerManager()->findOneByPhoneNumber($phoneNumber);
+            $volunteer = $this->getVolunteerManager()->findOneByPhoneNumber($phoneNumber);
             if (!$volunteer || !$volunteer->isPhoneNumberOptin()) {
                 return;
             }
@@ -125,11 +124,6 @@ class AnswerManager extends BaseService
     private function getPhoneConfigManager() : PhoneConfigManager
     {
         return $this->get(PhoneConfigManager::class);
-    }
-
-    private function getLogger() : LoggerInterface
-    {
-        return $this->get(LoggerInterface::class);
     }
 
     private function getMessageFormatter() : MessageFormatter

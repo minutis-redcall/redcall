@@ -59,6 +59,10 @@ services:
     class: App\Provider\Storage\GoogleCloudStorage
     public: true
 
+  App\Provider\Minutis\MinutisProvider:
+    class: App\Provider\Minutis\Minutis
+    public: true
+
   App\Communication\Processor\ProcessorInterface:
     class: '%communication.processor%'
 

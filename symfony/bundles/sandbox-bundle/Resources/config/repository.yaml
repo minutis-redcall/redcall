@@ -1,20 +1,31 @@
 services:
 
-  Bundles\SandboxBundle\Repository\FakeSmsRepository:
+  Bundles\SandboxBundle\Base\BaseRepository:
+    abstract:  true
     arguments:
       - '@Doctrine\Common\Persistence\ManagerRegistry'
+
+  Bundles\SandboxBundle\Repository\FakeSmsRepository:
+    parent: 'Bundles\SandboxBundle\Base\BaseRepository'
     tags:
       - doctrine.repository_service
 
   Bundles\SandboxBundle\Repository\FakeCallRepository:
-    arguments:
-      - '@Doctrine\Common\Persistence\ManagerRegistry'
+    parent: 'Bundles\SandboxBundle\Base\BaseRepository'
     tags:
       - doctrine.repository_service
 
   Bundles\SandboxBundle\Repository\FakeEmailRepository:
-    arguments:
-      - '@Doctrine\Common\Persistence\ManagerRegistry'
+    parent: 'Bundles\SandboxBundle\Base\BaseRepository'
     tags:
       - doctrine.repository_service
 
+  Bundles\SandboxBundle\Repository\FakeOperationRepository:
+    parent: 'Bundles\SandboxBundle\Base\BaseRepository'
+    tags:
+      - doctrine.repository_service
+
+  Bundles\SandboxBundle\Repository\FakeOperationResourceRepository:
+    parent: 'Bundles\SandboxBundle\Base\BaseRepository'
+    tags:
+      - doctrine.repository_service

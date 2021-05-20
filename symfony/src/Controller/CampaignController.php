@@ -5,13 +5,13 @@ namespace App\Controller;
 use App\Base\BaseController;
 use App\Entity\Campaign;
 use App\Enum\Type;
+use App\Form\Flow\CampaignFlow;
 use App\Form\Model\Campaign as CampaignModel;
 use App\Form\Model\SmsTrigger;
-use App\Form\Type\CampaignType;
 use App\Manager\CampaignManager;
-use App\Manager\CommunicationManager;
+use App\Manager\OperationManager;
 use App\Manager\PlatformConfigManager;
-use App\Manager\UserManager;
+use App\Manager\StructureManager;
 use Bundles\PaginationBundle\Manager\PaginationManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -35,19 +35,19 @@ class CampaignController extends BaseController
     private $campaignManager;
 
     /**
-     * @var CommunicationManager
-     */
-    private $communicationManager;
-
-    /**
-     * @var UserManager
-     */
-    private $userManager;
-
-    /**
      * @var PlatformConfigManager
      */
     private $platformManager;
+
+    /**
+     * @var StructureManager
+     */
+    private $structureManager;
+
+    /**
+     * @var OperationManager
+     */
+    private $operationManager;
 
     /**
      * @var TranslatorInterface
@@ -56,17 +56,17 @@ class CampaignController extends BaseController
 
     public function __construct(PaginationManager $paginationManager,
         CampaignManager $campaignManager,
-        CommunicationManager $communicationManager,
-        UserManager $userManager,
         PlatformConfigManager $platformManager,
+        StructureManager $structureManager,
+        OperationManager $operationManager,
         TranslatorInterface $translator)
     {
-        $this->paginationManager    = $paginationManager;
-        $this->campaignManager      = $campaignManager;
-        $this->communicationManager = $communicationManager;
-        $this->userManager          = $userManager;
-        $this->platformManager      = $platformManager;
-        $this->translator           = $translator;
+        $this->paginationManager = $paginationManager;
+        $this->campaignManager   = $campaignManager;
+        $this->platformManager   = $platformManager;
+        $this->structureManager  = $structureManager;
+        $this->operationManager  = $operationManager;
+        $this->translator        = $translator;
     }
 
     /**
@@ -99,7 +99,7 @@ class CampaignController extends BaseController
     /**
      * @Route(path="campaign/new/{type}", name="create_campaign")
      */
-    public function createCampaign(Request $request, Type $type)
+    public function createCampaign(Request $request, Type $type, CampaignFlow $flow)
     {
         $user = $this->getUser();
 
@@ -115,25 +115,29 @@ class CampaignController extends BaseController
             $this->platformManager->getPlaform($this->getPlatform())->getDefaultLanguage()->getLocale()
         );
 
-        $form = $this
-            ->createForm(CampaignType::class, $campaignModel, [
-                'type' => $type,
-            ])
-            ->handleRequest($request);
+        $flow->bind($campaignModel);
+        $form = $flow->createForm();
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $campaignEntity = $this->campaignManager->launchNewCampaign($campaignModel);
+        if ($flow->isValid($form)) {
+            $flow->saveCurrentStepData($form);
 
-            if (!$campaignEntity) {
-                return $this->redirectToRoute('home');
+            if ($flow->nextStep()) {
+                $form = $flow->createForm();
+            } else {
+                $campaignEntity = $this->campaignManager->launchNewCampaign($campaignModel);
+
+                if (!$campaignEntity) {
+                    return $this->redirectToRoute('home');
+                }
+
+                return $this->redirect($this->generateUrl('communication_index', [
+                    'id' => $campaignEntity->getId(),
+                ]));
             }
-
-            return $this->redirect($this->generateUrl('communication_index', [
-                'id' => $campaignEntity->getId(),
-            ]));
         }
 
         return $this->render('new_communication/new.html.twig', [
+            'flow' => $flow,
             'form' => $form->createView(),
             'type' => $type,
         ]);
@@ -284,5 +288,27 @@ class CampaignController extends BaseController
         return [
             'campaign' => $campaign,
         ];
+    }
+
+    /**
+     * @Route(path="campaign/operations", name="campaign_search_for_operation")
+     */
+    public function searchForOperation(Request $request)
+    {
+        $structure = $this->structureManager->findOneByExternalId($this->getPlatform(), $request->get('externalId'));
+        if (!$structure || !$this->isGranted('STRUCTURE', $structure)) {
+            throw $this->createNotFoundException();
+        }
+
+        $operations = array_map(function (array $operation) {
+            return [
+                'id'   => $operation['id'],
+                'name' => strip_tags($operation['name']),
+            ];
+        }, $this->operationManager->listOperations($structure));
+
+        return $this->json([
+            'operations' => $operations,
+        ]);
     }
 }

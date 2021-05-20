@@ -9,9 +9,13 @@ use App\Entity\Communication;
 use App\Entity\Message;
 use App\Entity\Volunteer;
 use App\Form\Model\BaseTrigger;
+use App\Form\Model\EmailTrigger;
+use App\Form\Model\SmsTrigger;
+use App\Provider\Minutis\MinutisProvider;
 use App\Repository\CommunicationRepository;
 use App\Security\Helper\Security;
 use DateTime;
+use GuzzleHttp\Exception\ClientException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -53,9 +57,14 @@ class CommunicationManager
     private $audienceManager;
 
     /**
-     * @var MediaManager
+     * @var OperationManager
      */
-    private $mediaManager;
+    private $operationManager;
+
+    /**
+     * @var MinutisProvider
+     */
+    private $minutis;
 
     /**
      * @var RouterInterface
@@ -78,28 +87,30 @@ class CommunicationManager
     private $logger;
 
     public function __construct(MessageManager $messageManager,
+        StructureManager $structureManager,
         CommunicationRepository $communicationRepository,
         ProcessorInterface $processor,
         VolunteerManager $volunteerManager,
         AudienceManager $audienceManager,
-        StructureManager $structureManager,
-        MediaManager $mediaManager,
+        OperationManager $operationManager,
+        MinutisProvider $minutis,
         RouterInterface $router,
         LoggerInterface $slackLogger,
-        LoggerInterface $logger,
-        Security $security)
+        Security $security,
+        LoggerInterface $logger)
     {
         $this->messageManager          = $messageManager;
+        $this->structureManager        = $structureManager;
         $this->communicationRepository = $communicationRepository;
         $this->processor               = $processor;
         $this->volunteerManager        = $volunteerManager;
         $this->audienceManager         = $audienceManager;
-        $this->structureManager        = $structureManager;
-        $this->mediaManager            = $mediaManager;
+        $this->operationManager        = $operationManager;
+        $this->minutis                 = $minutis;
         $this->router                  = $router;
         $this->slackLogger             = $slackLogger;
-        $this->logger                  = $logger;
         $this->security                = $security;
+        $this->logger                  = $logger;
     }
 
     /**
@@ -115,23 +126,26 @@ class CommunicationManager
         return $this->communicationRepository->find($communicationId);
     }
 
-    public function launchNewCommunication(Campaign $campaign,
-        BaseTrigger $trigger,
-        ProcessorInterface $processor = null) : Communication
+    public function createNewCommunication(Campaign $campaign, BaseTrigger $trigger)
     {
-        $this->logger->info('Launching a new communication', [
-            'model' => $trigger,
-        ]);
-
         $communication = $this->createCommunication($trigger);
         $communication->setRaw(json_encode($trigger, JSON_PRETTY_PRINT));
 
         $campaign->addCommunication($communication);
 
+        $this->operationManager->addChoicesToOperation($communication, $trigger);
+
         $this->campaignManager->save($campaign);
 
         $this->communicationRepository->save($communication);
 
+        return $communication;
+    }
+
+    public function launchNewCommunication(Campaign $campaign,
+        Communication $communication,
+        ProcessorInterface $processor = null) : Communication
+    {
         if ($processor) {
             $processor->process($communication);
         } else {
@@ -146,22 +160,31 @@ class CommunicationManager
             $structureName = '?';
         }
 
-        $this->slackLogger->info(
-            sprintf(
-                'New %s trigger by %s (%s) on %d volunteers from %d structures.%s%s%sLink: %s',
-                strtoupper($communication->getType()),
-                $communication->getVolunteer()->getDisplayName(),
-                $structureName,
-                count($communication->getMessages()),
-                count($this->structureManager->getCampaignStructures($campaign->getPlatform(), $campaign)),
-                PHP_EOL,
-                $campaign->getLabel(),
-                PHP_EOL,
-                sprintf('%s%s', getenv('WEBSITE_URL'), $this->router->generate('communication_index', [
-                    'id' => $campaign->getId(),
-                ]))
-            )
-        );
+        try {
+            $this->slackLogger->info(
+                sprintf(
+                    'New %s trigger by %s (%s) on %d volunteers from %d structures.%s%s%sLink: %s%s%s',
+                    strtoupper($communication->getType()),
+                    $communication->getVolunteer()->getDisplayName(),
+                    $structureName,
+                    count($communication->getMessages()),
+                    count($this->structureManager->getCampaignStructures($campaign->getPlatform(), $campaign)),
+                    PHP_EOL,
+                    $campaign->getLabel(),
+                    PHP_EOL,
+                    sprintf('%s%s', getenv('WEBSITE_URL'), $this->router->generate('communication_index', [
+                        'id' => $campaign->getId(),
+                    ])),
+                    $campaign->getOperation() ? PHP_EOL : '',
+                    $campaign->getOperation() ? sprintf('Operation: %s', $campaign->getOperationUrl($this->minutis)) : ''
+                )
+            );
+        } catch (\Throwable $exception) {
+            $this->logger->warning('Cannot reach out Slack', [
+                'campaign-id' => $campaign->getId(),
+                'communication-id' => $communication->getId(),
+            ]);
+        }
 
         return $communication;
     }
@@ -183,14 +206,20 @@ class CommunicationManager
             ->setVolunteer($volunteer)
             ->setType($trigger->getType())
             ->setLanguage($trigger->getLanguage())
-            ->setSubject($trigger->getSubject())
             ->setBody($trigger->getMessage())
-            ->setGeoLocation($trigger->isGeoLocation())
             ->setCreatedAt(new DateTime())
             ->setMultipleAnswer($trigger->isMultipleAnswer());
 
-        foreach ($trigger->getImages() as $image) {
-            $communication->addImage($image);
+        if ($trigger instanceof SmsTrigger) {
+            $communication->setGeoLocation($trigger->isGeoLocation());
+        }
+
+        if ($trigger instanceof EmailTrigger) {
+            $communication->setSubject($trigger->getSubject());
+
+            foreach ($trigger->getImages() as $image) {
+                $communication->addImage($image);
+            }
         }
 
         // The first choice key is always "1"

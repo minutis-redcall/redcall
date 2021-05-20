@@ -21,6 +21,16 @@ sandbox:
     thread: 'Messagerie du %phoneNumber% (%name%)'
     title: 'Simulateur de SMS - Liste des destinataires'
     your_message: 'Votre message'
+  fake_minutis:
+    button: 'Opérations Minutis'
+    clear: 'Effacer toutes les opérations'
+    title: 'Simulateur d''opérations Minutis'
+    table:
+      none: 'Pas d''opérations pour le moment.'
+      structure_id: 'Structure ID'
+      name: 'Nom'
+      owner: 'Propriétaire'
+      resources: 'Ressources'
   fixtures:
     structure:
       bind_to_user: 'Relier la structure à votre compte'

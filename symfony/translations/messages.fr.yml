@@ -367,18 +367,18 @@ campaign_status:
       context: Contexte
       created_at: 'Créé le'
       direction: Direction
+      duration: Durée
+      ended_at: 'Terminé à'
       error: Erreur(s)
       from: De
       price: Coût
       retry: 'Tentatives prix'
+      started_at: 'Commencé à'
       status: Status
       to: Vers
       type: Type
       unit: Devise
       updated_at: 'Mis à jour le'
-      started_at: 'Commencé à'
-      ended_at: 'Terminé à'
-      duration: Durée
     message_id: 'ID de message : %id%'
     status: Status
   relaunch_communication: 'Relancer la communication'
@@ -405,9 +405,9 @@ csv_export:
   answer_time: 'Date de la reponse la plus recente'
   choice: 'Choix "%choice%"'
   email: Email
+  external_id: 'ID externe'
   firstname: Prenom
   lastname: Nom
-  external_id: ID externe
   other: 'Autre reponses'
   phone_number: 'Numero de telephone'
   received: 'Message reçu'
@@ -423,6 +423,7 @@ form:
       label: 'Nom du déclenchement'
       notes: 'Notes facultatives adressées aux autres cadres utilisant RedCall'
       notes_title: Notes
+      operation: 'Créer ou rattacher ce déclenchement avec une opération dans Minutis'
       submit: Envoyer
   communication:
     call: 'appel vocal'
@@ -470,6 +471,24 @@ form:
       explaination_5: 'Renfort SAMU prévision manif ce samedi. Besoin de 2 équipages VPSP complets.'
       explaination_6: 'Les SMS sont divisés en segments de 160 caractères, et plus il y a de segments, moins il y a de chances que le message arrive entier à son destinataire. Il faut que nous nous habituons à envoyer des petits messages pour en garantir la bonne réception par tout le monde.'
       title: 'Votre message est long.'
+  operation:
+    buttons:
+      continue: Continuer
+      return: 'Revenir à l''étape précédente'
+      submit: 'Synchroniser l''opération et effectuer le déclenchement'
+    fields:
+      choices:
+        create: 'Créer une nouvelle opération dans Minutis'
+        list: 'Choisir les réponses pour lesquelles les bénévoles seront intégrés automatiquement dans Minutis'
+        use: 'Rattacher ce déclenchement à une opération existante'
+      name: 'Nom de l''opération'
+      operation_id: 'Ou vous pouvez aussi saisir directement l''ID numérique Minutis de l''opération'
+      operation_use: 'Opération à rattacher au déclenchement'
+      owner_external_id: 'Sélectionnez l''ID externe (NIVOL) du propriétaire de l''opération'
+      structure_create: 'Structure à laquelle rattacher l''opération'
+      structure_use: 'Structure à laquelle est rattachée l''opération'
+    title: 'Opération Minutis'
+    url: 'Opération Minutis :'
 geolocation:
   error: 'Une erreur est survenue.'
   error_permission: 'Vous avez refusé (ou un paramètre de votre appareil) de partager votre position.'
@@ -590,8 +609,8 @@ manage_volunteers:
         message_received: 'Message reçu ayant conduit à la suppression de ce bénévole le %date% à %time% sur le déclenchement <a href="%url%">%trigger%</a> :'
         nivol: 'NIVOL : %nivol%'
         phone: 'Téléphone : %phone%'
-        title: '[RGPD] RedCall - Mettre à jour GAIA pour #%external-id%'
         target: 'Ce message doit être transféré au secrétaire de l''unité locale ou au président.'
+        title: '[RGPD] RedCall - Mettre à jour GAIA pour #%external-id%'
         who: 'La personne concernée :'
       sms_content: 'Bonjour, nous avons pris en compte votre demande. Vous ne recevrez plus de message de notre part. Toutes nos excuses pour la gêne occasionnée.'
       subject: '[RGPD] Demande de suppression de données pour %external-id%'
@@ -716,8 +735,8 @@ pdf_export:
     time: 'Heure rép.'
 phone_card:
   add: 'Ajouter un numéro de téléphone'
-  error_invalid: 'Le format de ce numéro de téléphone n''est pas valide.'
   error_already_taken: 'Ce numéro de téléphone est déjà utilisé par %truncated_name% (%externalId%).'
+  error_invalid: 'Le format de ce numéro de téléphone n''est pas valide.'
   main: Principal
   title: 'Téléphone #%index%'
   use: 'Définir comme principal'

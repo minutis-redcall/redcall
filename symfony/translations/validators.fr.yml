@@ -26,6 +26,8 @@ form:
       too_large_choice: 'La taille d''une ou plusieurs réponses est trop grande.'
       too_large_email: 'Cet email est trop long.'
       too_large_sms: 'Ce SMS est trop long.'
+  operation:
+    does_not_exist: 'Cette opération est introuvable sur Minutis.'
   phone_card:
     error_duplicate: 'Vous avez saisi plusieurs fois le même numéro.'
     error_multi_preferred: 'Vous ne pouvez avoir qu''un seul numéro de téléphone principal.'

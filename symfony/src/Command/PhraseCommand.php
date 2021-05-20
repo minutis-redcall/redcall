@@ -57,6 +57,9 @@ class PhraseCommand extends Command
         $localFiles        = $this->searchTranslationFilesInProject();
         foreach ($localFiles as $localFile) {
             $tag = $this->getPhraseTagFromFilename($localFile);
+            if (!$tag) {
+                continue;
+            }
             if (!in_array($tag, $tags)) {
                 $tags[] = $tag;
             }
@@ -77,13 +80,19 @@ class PhraseCommand extends Command
 
         // Searching for missing keys on Phrase
         foreach ($localFiles as $file) {
+            if (!($localTranslations[$file] ?? false)) {
+                continue;
+            }
             $localKeys  = array_keys($localTranslations[$file]);
             $remoteKeys = array_keys($remoteTranslations[$file]);
             $keysToAdd  = array_diff($localKeys, $remoteKeys);
             foreach ($keysToAdd as $key) {
                 $tag    = $this->getPhraseTagFromFilename($file);
                 $locale = $this->getLocaleFromFileName($file);
-                $value  = $localTranslations[$file][$key];
+                if (!$tag || !$locale) {
+                    continue;
+                }
+                $value = $localTranslations[$file][$key];
                 if ($input->getOption('create')) {
                     $output->writeln(sprintf('<info>Creating missing translation %s for locale %s</info>', $key, $locale));
                     $this->phrase->createTranslation($tag, array_search($locale, $locales), $key, $value);
@@ -149,17 +158,28 @@ class PhraseCommand extends Command
      *
      * @return string
      */
-    private function getPhraseTagFromFilename(string $absolutePath) : string
+    private function getPhraseTagFromFilename(string $absolutePath) : ?string
     {
-        [$location, $domain, $locale] = $this->getContextFromFilename($absolutePath);
+        $context = $this->getContextFromFilename($absolutePath);
+
+        if (!$context) {
+            return null;
+        }
+
+        [$location, $domain, $locale] = $context;
 
         return sprintf('%s_%s', $location, $domain);
     }
 
-    private function getContextFromFilename(string $absolutePath) : array
+    private function getContextFromFilename(string $absolutePath) : ?array
     {
         $relativePath = substr($absolutePath, strlen($this->kernel->getProjectDir()) + 1);
         $matches      = [];
+
+        if (0 === strpos($relativePath, 'vendor/')) {
+            return null;
+        }
+
         if (0 === strpos($relativePath, 'bundles')) {
             preg_match('|^bundles/(?<bundle>[^/]+)/Resources/translations/(?<domain>.*)\.(?<locale>.*).ya?ml$|', $relativePath, $matches);
             $location = $matches['bundle'];
@@ -175,9 +195,15 @@ class PhraseCommand extends Command
         return [$location, $domain, $locale];
     }
 
-    private function getLocaleFromFileName(string $file) : string
+    private function getLocaleFromFileName(string $file) : ?string
     {
-        [$location, $domain, $locale] = $this->getContextFromFilename($file);
+        $context = $this->getContextFromFilename($file);
+
+        if (!$context) {
+            return null;
+        }
+
+        [$location, $domain, $locale] = $context;
 
         return $locale;
     }

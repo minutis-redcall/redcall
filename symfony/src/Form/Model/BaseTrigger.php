@@ -38,13 +38,6 @@ abstract class BaseTrigger implements \JsonSerializable
     private $language;
 
     /**
-     * @var string|null
-     *
-     * @Assert\Length(max=80)
-     */
-    private $subject = null;
-
-    /**
      * @var string
      *
      * @Assert\NotNull()
@@ -63,31 +56,25 @@ abstract class BaseTrigger implements \JsonSerializable
     /**
      * @var boolean
      */
-    private $geoLocation = false;
-
-    /**
-     * @var boolean
-     */
     private $multipleAnswer = false;
 
     /**
-     * @var array
+     * Only used when adding a new communication to an existing campaign
+     *
+     * @var bool
      */
-    private $images = [];
+    private $operation = false;
 
     /**
-     * @return string
+     * @var string[]
      */
+    private $operationAnswers = [];
+
     public function getLabel() : string
     {
         return $this->label;
     }
 
-    /**
-     * @param string $label
-     *
-     * @return BaseTrigger
-     */
     public function setLabel(string $label) : BaseTrigger
     {
         $this->label = $label;
@@ -95,19 +82,11 @@ abstract class BaseTrigger implements \JsonSerializable
         return $this;
     }
 
-    /**
-     * @return string
-     */
     public function getType() : string
     {
         return $this->type;
     }
 
-    /**
-     * @param string $type
-     *
-     * @return BaseTrigger
-     */
     public function setType(string $type) : BaseTrigger
     {
         $this->type = $type;
@@ -115,19 +94,11 @@ abstract class BaseTrigger implements \JsonSerializable
         return $this;
     }
 
-    /**
-     * @return array
-     */
     public function getAudience() : array
     {
         return $this->audience;
     }
 
-    /**
-     * @param array $audience
-     *
-     * @return BaseTrigger
-     */
     public function setAudience(array $audience) : BaseTrigger
     {
         $this->audience = $audience;
@@ -147,39 +118,11 @@ abstract class BaseTrigger implements \JsonSerializable
         return $this;
     }
 
-    /**
-     * @return string|null
-     */
-    public function getSubject() : ?string
-    {
-        return $this->subject;
-    }
-
-    /**
-     * @param string|null $subject
-     *
-     * @return BaseTrigger
-     */
-    public function setSubject(?string $subject) : BaseTrigger
-    {
-        $this->subject = $subject;
-
-        return $this;
-    }
-
-    /**
-     * @return string|null
-     */
     public function getMessage() : ?string
     {
         return $this->message;
     }
 
-    /**
-     * @param string|null $message
-     *
-     * @return BaseTrigger
-     */
     public function setMessage(?string $message) : BaseTrigger
     {
         $this->message = $message;
@@ -187,19 +130,11 @@ abstract class BaseTrigger implements \JsonSerializable
         return $this;
     }
 
-    /**
-     * @return array
-     */
     public function getAnswers() : array
     {
         return $this->answers;
     }
 
-    /**
-     * @param array $answers
-     *
-     * @return BaseTrigger
-     */
     public function setAnswers(array $answers) : BaseTrigger
     {
         $this->answers = $answers;
@@ -207,39 +142,11 @@ abstract class BaseTrigger implements \JsonSerializable
         return $this;
     }
 
-    /**
-     * @return bool
-     */
-    public function isGeoLocation() : bool
-    {
-        return $this->geoLocation;
-    }
-
-    /**
-     * @param bool $geoLocation
-     *
-     * @return BaseTrigger
-     */
-    public function setGeoLocation(bool $geoLocation) : BaseTrigger
-    {
-        $this->geoLocation = $geoLocation;
-
-        return $this;
-    }
-
-    /**
-     * @return bool
-     */
     public function isMultipleAnswer() : bool
     {
         return $this->multipleAnswer;
     }
 
-    /**
-     * @param bool $multipleAnswer
-     *
-     * @return BaseTrigger
-     */
     public function setMultipleAnswer(bool $multipleAnswer) : BaseTrigger
     {
         $this->multipleAnswer = $multipleAnswer;
@@ -247,14 +154,43 @@ abstract class BaseTrigger implements \JsonSerializable
         return $this;
     }
 
-    public function getImages() : array
+    public function getOperationAnswers() : array
     {
-        return $this->images;
+        return $this->operationAnswers;
     }
 
-    public function addImage(Media $media) : EmailTrigger
+    public function addOperationAnswer(string $answer) : self
     {
-        $this->images[] = $media;
+        $this->operationAnswers[] = $answer;
+
+        return $this;
+    }
+
+    public function removeOperationAnswer(string $answer) : self
+    {
+        $index = array_search($answer, $this->operationAnswers);
+
+        if (false !== $index) {
+            unset($this->operationAnswers[$index]);
+        }
+    }
+
+    /**
+     * @return bool
+     */
+    public function isOperation(): bool
+    {
+        return $this->operation;
+    }
+
+    /**
+     * @param bool $operation
+     *
+     * @return BaseTrigger
+     */
+    public function setOperation(bool $operation): BaseTrigger
+    {
+        $this->operation = $operation;
 
         return $this;
     }
@@ -262,10 +198,6 @@ abstract class BaseTrigger implements \JsonSerializable
     public function jsonSerialize()
     {
         $vars = get_object_vars($this);
-
-        $vars['images'] = array_map(function (Media $media) {
-            return $media->getUuid();
-        }, $this->images);
 
         return $vars;
     }

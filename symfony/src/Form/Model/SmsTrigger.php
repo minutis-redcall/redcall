@@ -10,9 +10,34 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 class SmsTrigger extends BaseTrigger
 {
+    /**
+     * @var boolean
+     */
+    private $geoLocation = false;
+
     public function __construct()
     {
         $this->setType(Communication::TYPE_SMS);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isGeoLocation() : bool
+    {
+        return $this->geoLocation;
+    }
+
+    /**
+     * @param bool $geoLocation
+     *
+     * @return BaseTrigger
+     */
+    public function setGeoLocation(bool $geoLocation) : BaseTrigger
+    {
+        $this->geoLocation = $geoLocation;
+
+        return $this;
     }
 
     /**

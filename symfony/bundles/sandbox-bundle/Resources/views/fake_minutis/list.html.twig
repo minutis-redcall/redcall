@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'sandbox.fake_minutis.title'|trans }}{% endblock %}
+
+{% block body %}
+
+    <h1>{{ block('title') }}</h1>
+
+    {% if operations|length %}
+
+        <table class="table">
+            <thead>
+            <tr>
+                <th>{{ 'sandbox.fake_minutis.table.structure_id'|trans }}</th>
+                <th>{{ 'sandbox.fake_minutis.table.name'|trans }}</th>
+                <th>{{ 'sandbox.fake_minutis.table.owner'|trans }}</th>
+                <th>{{ 'sandbox.fake_minutis.table.resources'|trans }}</th>
+            </tr>
+            </thead>
+            <tbody>
+                {% for operation in operations %}
+                    <tr {% if operation.id == id %}style="background-color:#FFFFAA;"{% endif %}>
+                        <td>{{ operation.structureExternalId }}</td>
+                        <td>{{ operation.name }}</td>
+                        <td>{{ operation.ownerEmail }}</td>
+                        <td>
+                            {% for resource in operation.resources %}
+                                <p>{{ resource.volunteerExternalId }}</p>
+                            {% endfor %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    {% else %}
+
+        <p>{{ 'sandbox.fake_minutis.table.none'|trans }}</p>
+
+    {% endif %}
+
+    <div class="text-center">
+        <a href="{{ path('sandbox_fake_minutis_clear', {token: csrf_token('token')}) }}"
+           class="btn btn-danger">{{ 'sandbox.fake_minutis.clear'|trans }}</a>
+
+        &nbsp;&nbsp;&nbsp;&nbsp;
+
+        <a href="{{ path('sandbox_home') }}"
+           class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+    </div>
+
+    <br/>
+
+{% endblock %}

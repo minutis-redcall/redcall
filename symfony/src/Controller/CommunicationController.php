@@ -8,6 +8,9 @@ use App\Entity\Campaign;
 use App\Entity\Communication;
 use App\Entity\Message;
 use App\Enum\Type;
+use App\Form\Flow\CallTriggerFlow;
+use App\Form\Flow\EmailTriggerFlow;
+use App\Form\Flow\SmsTriggerFlow;
 use App\Form\Model\BaseTrigger;
 use App\Form\Model\Campaign as CampaignModel;
 use App\Form\Model\SmsTrigger;
@@ -22,13 +25,14 @@ use App\Manager\MediaManager;
 use App\Manager\MessageManager;
 use App\Manager\PlatformConfigManager;
 use App\Manager\StructureManager;
-use App\Manager\UserManager;
-use App\Manager\VolunteerManager;
+use App\Provider\Minutis\Minutis;
+use App\Provider\Minutis\MinutisProvider;
 use App\Services\MessageFormatter;
 use App\Tools\GSM;
 use Bundles\TwilioBundle\Manager\TwilioCallManager;
 use Bundles\TwilioBundle\Manager\TwilioMessageManager;
 use Bundles\TwilioBundle\Manager\TwilioStatusManager;
+use Craue\FormFlowBundle\Form\FormFlow;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -71,11 +75,6 @@ class CommunicationController extends BaseController
     private $badgeManager;
 
     /**
-     * @var VolunteerManager
-     */
-    private $volunteerManager;
-
-    /**
      * @var MessageManager
      */
     private $messageManager;
@@ -84,11 +83,6 @@ class CommunicationController extends BaseController
      * @var AnswerManager
      */
     private $answerManager;
-
-    /**
-     * @var UserManager
-     */
-    private $userManager;
 
     /**
      * @var MediaManager
@@ -119,10 +113,8 @@ class CommunicationController extends BaseController
         CommunicationManager $communicationManager,
         MessageFormatter $formatter,
         BadgeManager $badgeManager,
-        VolunteerManager $volunteerManager,
         MessageManager $messageManager,
         AnswerManager $answerManager,
-        UserManager $userManager,
         MediaManager $mediaManager,
         StructureManager $structureManager,
         ExpirableManager $expirableManager,
@@ -133,10 +125,8 @@ class CommunicationController extends BaseController
         $this->communicationManager = $communicationManager;
         $this->formatter            = $formatter;
         $this->badgeManager         = $badgeManager;
-        $this->volunteerManager     = $volunteerManager;
         $this->messageManager       = $messageManager;
         $this->answerManager        = $answerManager;
-        $this->userManager          = $userManager;
         $this->mediaManager         = $mediaManager;
         $this->structureManager     = $structureManager;
         $this->expirableManager     = $expirableManager;
@@ -148,7 +138,7 @@ class CommunicationController extends BaseController
      * @Route(path="campaign/{id}", name="index", requirements={"id" = "\d+"})
      * @IsGranted("CAMPAIGN_ACCESS", subject="campaign")
      */
-    public function indexAction(Campaign $campaign)
+    public function indexAction(Campaign $campaign, MinutisProvider $minutis)
     {
         $this->get('session')->save();
 
@@ -158,6 +148,7 @@ class CommunicationController extends BaseController
             'progress'           => $campaign->getCampaignProgression(),
             'hash'               => $this->campaignManager->getHash($campaign->getId()),
             'campaignStructures' => $this->structureManager->getCampaignStructures($this->getPlatform(), $campaign),
+            'operationUrl'       => $campaign->getOperationUrl($minutis),
         ]);
     }
 
@@ -256,8 +247,24 @@ class CommunicationController extends BaseController
      * )
      * @IsGranted("CAMPAIGN_ACCESS", subject="campaign")
      */
-    public function newCommunicationAction(Request $request, Campaign $campaign, Type $type, ?string $key)
+    public function newCommunicationAction(
+        Request $request,
+        Campaign $campaign,
+        Type $type,
+        ?string $key,
+        SmsTriggerFlow $smsTriggerFlow,
+        CallTriggerFlow $callTriggerFlow,
+        EmailTriggerFlow $emailTriggerFlow)
     {
+        $flows = [
+            SmsTriggerFlow::class => $smsTriggerFlow,
+            CallTriggerFlow::class => $callTriggerFlow,
+            EmailTriggerFlow::class => $emailTriggerFlow,
+        ];
+
+        /** @var FormFlow $flow */
+        $flow = $flows[$type->getFormFlow()];
+
         $user = $this->getUser();
 
         if (!$user->getVolunteer() || !$user->getStructures()->count()) {
@@ -267,31 +274,39 @@ class CommunicationController extends BaseController
         /**
          * @var BaseTrigger
          */
-        $communication = $type->getFormData();
-        $communication->setAudience([
+        $trigger = $type->getFormData();
+        $trigger->setOperation($campaign->hasOperation());
+        $trigger->setAudience([
             'preselection_key' => $key,
         ]);
-        $communication->setLanguage(
+        $trigger->setLanguage(
             $this->platformManager->getPlaform($this->getPlatform())->getDefaultLanguage()->getLocale()
         );
-        $communication->setAnswers([]);
+        $trigger->setAnswers([]);
 
-        $form = $this
-            ->createForm($type->getFormType(), $communication)
-            ->handleRequest($request);
+        $flow->bind($trigger);
+        $form = $flow->createForm();
 
-        // Creating the new communication is form has been submitted
-        if ($form->isSubmitted() && $form->isValid()) {
-            $this->communicationManager->launchNewCommunication($campaign, $communication);
+        if ($flow->isValid($form)) {
+            $flow->saveCurrentStepData($form);
 
-            return $this->redirect($this->generateUrl('communication_index', [
-                'id' => $campaign->getId(),
-            ]));
+            if ($flow->nextStep()) {
+                $form = $flow->createForm();
+            } else {
+                $communication = $this->communicationManager->createNewCommunication($campaign, $trigger);
+
+                $this->communicationManager->launchNewCommunication($campaign, $communication);
+
+                return $this->redirect($this->generateUrl('communication_index', [
+                    'id' => $campaign->getId(),
+                ]));
+            }
         }
 
         return $this->render('new_communication/add.html.twig', [
             'campaign' => $campaign,
             'form'     => $form->createView(),
+            'flow'     => $flow,
             'type'     => $type,
             'key'      => $key,
         ]);

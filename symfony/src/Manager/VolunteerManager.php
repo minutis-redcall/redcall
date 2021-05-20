@@ -40,11 +40,6 @@ class VolunteerManager
     private $phoneManager;
 
     /**
-     * @var TranslatorInterface
-     */
-    private $translator;
-
-    /**
      * @var Security
      */
     private $security;
@@ -53,14 +48,12 @@ class VolunteerManager
         AnswerManager $answerManager,
         GeoLocationManager $geoLocationManager,
         PhoneManager $phoneManager,
-        TranslatorInterface $translator,
         Security $security)
     {
         $this->volunteerRepository = $volunteerRepository;
         $this->answerManager       = $answerManager;
         $this->geoLocationManager  = $geoLocationManager;
         $this->phoneManager        = $phoneManager;
-        $this->translator          = $translator;
         $this->security            = $security;
     }
 

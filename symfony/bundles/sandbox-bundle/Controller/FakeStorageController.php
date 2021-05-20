@@ -2,8 +2,8 @@
 
 namespace Bundles\SandboxBundle\Controller;
 
+use Bundles\SandboxBundle\Base\BaseController;
 use Bundles\SandboxBundle\Provider\FakeStorageProvider;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Routing\Annotation\Route;
@@ -11,7 +11,7 @@ use Symfony\Component\Routing\Annotation\Route;
 /**
  * @Route("/fake-storage", name="fake_storage_")
  */
-class FakeStorageController extends AbstractController
+class FakeStorageController extends BaseController
 {
     /**
      * @var KernelInterface

@@ -568,8 +568,8 @@ manage_volunteers:
         message_received: 'Mensaje recibido que ha llevado a eliminar esta persona voluntaria el %date% a las %time% en la movilización <a href="%url%">%trigger%</a>:'
         nivol: 'NIVOL: %nivol%'
         phone: 'Teléfono: %phone%'
-        title: '[RGPD] RedCall - Actualizar GAIA para #%external-id%'
         target: 'Este mensaje debe ser reenviado al secretariado o a la presidencia de la unidad local.'
+        title: '[RGPD] RedCall - Actualizar GAIA para #%external-id%'
         who: 'La persona en cuestión:'
       sms_content: 'Hola, tenemos en cuenta tu petición. No volverás a recibir mensajes de nuestra parte. Disculpa las molestias.'
       subject: '[RGPD] Petición de eliminación de datos de %external-id%'
@@ -692,8 +692,8 @@ pdf_export:
     time: 'Hora res.'
 phone_card:
   add: 'Añadir un número de teléfono'
-  error_invalid: 'El formato de este número de teléfono no es válido'
   error_already_taken: 'Este número de teléfono ya está siendo utilizado por %truncated_name% (%externalId%).'
+  error_invalid: 'El formato de este número de teléfono no es válido'
   main: Principal
   title: 'Teléfono #%index%'
   use: 'Establecer como principal'

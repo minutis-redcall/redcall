@@ -48,11 +48,6 @@ class RefreshManager
     private $badgeManager;
 
     /**
-     * @var CategoryManager
-     */
-    private $categoryManager;
-
-    /**
      * @var UserManager
      */
     private $userManager;
@@ -76,7 +71,6 @@ class RefreshManager
         StructureManager $structureManager,
         VolunteerManager $volunteerManager,
         BadgeManager $badgeManager,
-        CategoryManager $categoryManager,
         UserManager $userManager,
         PhoneManager $phoneManager,
         TaskSender $async,
@@ -86,7 +80,6 @@ class RefreshManager
         $this->structureManager = $structureManager;
         $this->volunteerManager = $volunteerManager;
         $this->badgeManager     = $badgeManager;
-        $this->categoryManager  = $categoryManager;
         $this->userManager      = $userManager;
         $this->phoneManager     = $phoneManager;
         $this->async            = $async;

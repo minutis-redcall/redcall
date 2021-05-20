@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Provider\Minutis\MinutisProvider;
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -111,6 +112,11 @@ class Campaign
      * @ORM\Column(type="datetime")
      */
     private $expiresAt;
+
+    /**
+     * @ORM\OneToOne(targetEntity=Operation::class, inversedBy="campaign")
+     */
+    private $operation;
 
     public function getId()
     {
@@ -386,5 +392,32 @@ class Campaign
     public function equals(Campaign $campaign)
     {
         return $this->id === $campaign->getId();
+    }
+
+    public function hasOperation() : bool
+    {
+        return null !== $this->operation;
+    }
+
+    public function getOperation() : ?Operation
+    {
+        return $this->operation;
+    }
+
+    public function setOperation(?Operation $operation) : self
+    {
+        $this->operation = $operation;
+
+        return $this;
+    }
+
+    public function getOperationUrl(MinutisProvider $minutis) : ?string
+    {
+        return $this->getOperation() ? $minutis->getOperationUrl($this->getOperation()->getOperationExternalId()) : null;
+    }
+
+    public function isChoiceShouldCreateResource(Choice $choice) : bool
+    {
+        return $this->operation && $this->operation->hasChoice($choice);
     }
 }

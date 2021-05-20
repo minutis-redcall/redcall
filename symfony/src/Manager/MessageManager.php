@@ -26,6 +26,11 @@ class MessageManager
     private $answerManager;
 
     /**
+     * @var OperationManager
+     */
+    private $operationManager;
+
+    /**
      * @var MessageRepository
      */
     private $messageRepository;
@@ -35,20 +40,15 @@ class MessageManager
      */
     private $tokenStorage;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
     public function __construct(AnswerManager $answerManager,
+        OperationManager $operationManager,
         MessageRepository $messageRepository,
-        TokenStorageInterface $tokenStorage,
-        LoggerInterface $logger)
+        TokenStorageInterface $tokenStorage)
     {
         $this->answerManager     = $answerManager;
+        $this->operationManager  = $operationManager;
         $this->messageRepository = $messageRepository;
         $this->tokenStorage      = $tokenStorage;
-        $this->logger            = $logger;
     }
 
     public function generateCodes(int $numberOfCodes)
@@ -68,21 +68,11 @@ class MessageManager
         return array_values($codes);
     }
 
-    /**
-     * @param int $messageId
-     *
-     * @return Message|null
-     */
     public function find(int $messageId) : ?Message
     {
         return $this->messageRepository->find($messageId);
     }
 
-    /**
-     * @param Campaign $campaign
-     *
-     * @return int
-     */
     public function getNumberOfSentMessages(Campaign $campaign) : int
     {
         return $this->messageRepository->getNumberOfSentMessages($campaign);
@@ -105,28 +95,18 @@ class MessageManager
         return $prefixes;
     }
 
-    /**
-     * @param string $phoneNumber
-     * @param string $body
-     *
-     * @return int|null
-     *
-     * @throws ORMException
-     * @throws OptimisticLockException
-     * @throws NonUniqueResultException
-     */
     public function handleAnswer(string $phoneNumber, string $body) : ?int
     {
         $this->answerManager->handleSpecialAnswers($phoneNumber, $body);
 
         // Replaces "A 2" by "A2"
-        $body = preg_replace('/([a-z]+)\s(\d+)/ui', '${1}${2}', $body);
+        $body = preg_replace('/([a-z]+)\s*(\d+)/ui', '${1}${2}', $body);
 
         // In case of multiple calls, we should handle the "A1 B2" body case.
         $messages = [];
         foreach (explode(' ', $body) as $word) {
             $matches = [];
-            preg_match('/^([a-zA-Z]+)(\d)/', $word, $matches);
+            preg_match('/^([a-zA-Z]+)(\d+)/', $word, $matches);
             if (3 === count($matches)) {
                 $message = $this->getMessageFromPhoneNumber($phoneNumber, $word);
                 if ($message && !array_key_exists($message->getId(), $messages)) {
@@ -137,7 +117,7 @@ class MessageManager
 
         // Answer is invalid, we seek for latest active campaign for the phone number
         if (!$messages) {
-            $message = $this->getMessageFromPhoneNumber($phoneNumber, $word);
+            $message = $this->getMessageFromPhoneNumber($phoneNumber, $body);
             if ($message) {
                 $messages[] = $message;
             }
@@ -157,19 +137,11 @@ class MessageManager
         return reset($messages)->getId();
     }
 
-    /**
-     * @param string      $phoneNumber
-     * @param string|null $body
-     *
-     * @return Message|null
-     *
-     * @throws NonUniqueResultException
-     */
     public function getMessageFromPhoneNumber(string $phoneNumber, ?string $body = null) : ?Message
     {
         if ($body) {
             $matches = [];
-            preg_match('/^([a-zA-Z]+)(\d)/', $body, $matches);
+            preg_match('/^([a-zA-Z]+)(\d+)/', $body, $matches);
 
             // Prefix not found, getting the latest message sent to volunteer on active campaigns
             if (3 === count($matches)) {
@@ -228,22 +200,34 @@ class MessageManager
         $message->setUpdatedAt(new \DateTime());
 
         $this->answerManager->save($answer);
+
+        // Handling resource creation / deletion
+        if ($message->shouldAddMinutisResource()) {
+            $this->operationManager->addResourceToOperation($message);
+        } elseif ($message->shouldRemoveMinutisResource()) {
+            $this->operationManager->removeResourceFromOperation($message);
+        }
+
         $this->messageRepository->save($message);
     }
 
-    /**
-     * @param Message $message
-     * @param Choice  $choice
-     *
-     * @throws ORMException
-     * @throws OptimisticLockException
-     */
     public function toggleAnswer(Message $message, Choice $choice)
     {
         // If choice currently selected, remove it
-        if ($answer = $message->getAnswerByChoice($choice)) {
+        $removed = false;
+        while ($answer = $message->getAnswerByChoice($choice)) {
             $answer->getChoices()->removeElement($choice);
             $this->answerManager->save($answer);
+
+            if (!$removed && $message->shouldRemoveMinutisResource()) {
+                $this->operationManager->removeResourceFromOperation($message);
+            }
+
+            $removed = true;
+        }
+
+        if ($removed) {
+            $this->messageRepository->save($message);
 
             return;
         }
@@ -251,31 +235,16 @@ class MessageManager
         $this->addAnswer($message, sprintf('%s%d', $message->getPrefix(), $choice->getCode()), true);
     }
 
-    /**
-     * @param Message $message
-     * @param Choice  $choice
-     *
-     * @throws ORMException
-     * @throws OptimisticLockException
-     */
     public function cancelAnswerByChoice(Message $message, Choice $choice) : void
     {
         $this->messageRepository->cancelAnswerByChoice($message, $choice);
     }
 
-    /**
-     * @param array $volunteersTakenPrefixes
-     *
-     * @return bool
-     */
     public function canUsePrefixesForEveryone(array $volunteersTakenPrefixes) : bool
     {
         return $this->messageRepository->canUsePrefixesForEveryone($volunteersTakenPrefixes);
     }
 
-    /**
-     * @param Message $message
-     */
     public function save(Message $message)
     {
         $this->messageRepository->save($message);
