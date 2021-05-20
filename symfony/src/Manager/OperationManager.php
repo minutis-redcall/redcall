@@ -31,7 +31,9 @@ class OperationManager
      */
     private $logger;
 
-    public function __construct(OperationRepository $operationRepository, MinutisProvider $minutis, LoggerInterface $logger)
+    public function __construct(OperationRepository $operationRepository,
+        MinutisProvider $minutis,
+        LoggerInterface $logger)
     {
         $this->operationRepository = $operationRepository;
         $this->minutis             = $minutis;
@@ -107,6 +109,10 @@ class OperationManager
     public function addChoicesToOperation(Communication $communication, BaseTrigger $trigger)
     {
         $operation = $communication->getCampaign()->getOperation();
+
+        if (!$operation) {
+            return;
+        }
 
         foreach ($trigger->getOperationAnswers() as $choice) {
             $operation->addChoice($communication->getChoiceByLabel($choice));
