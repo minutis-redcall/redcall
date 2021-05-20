@@ -2,6 +2,7 @@
 
 namespace App\Form\Flow;
 
+use App\Enum\Type;
 use App\Form\Model\Campaign;
 use App\Form\Type\CampaignType;
 use App\Form\Type\ChooseCampaignOperationChoicesType;
@@ -13,6 +14,23 @@ use Craue\FormFlowBundle\Form\FormFlowInterface;
 
 class CampaignFlow extends FormFlow
 {
+    /**
+     * @var Type
+     */
+    private $type;
+
+    public function getType() : Type
+    {
+        return $this->type;
+    }
+
+    public function setType(Type $type) : CampaignFlow
+    {
+        $this->type = $type;
+
+        return $this;
+    }
+
     protected function loadStepsConfig()
     {
         return [
@@ -20,6 +38,7 @@ class CampaignFlow extends FormFlow
                 'form_type'    => CampaignType::class,
                 'form_options' => [
                     'validation_groups' => ['Default'],
+                    'type'              => $this->getType(),
                 ],
             ],
             2 => [

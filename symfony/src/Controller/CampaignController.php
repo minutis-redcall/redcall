@@ -99,7 +99,7 @@ class CampaignController extends BaseController
     /**
      * @Route(path="campaign/new/{type}", name="create_campaign")
      */
-    public function createCampaign(Request $request, Type $type, CampaignFlow $flow)
+    public function createCampaign(Type $type, CampaignFlow $flow)
     {
         $user = $this->getUser();
 
@@ -115,6 +115,7 @@ class CampaignController extends BaseController
             $this->platformManager->getPlaform($this->getPlatform())->getDefaultLanguage()->getLocale()
         );
 
+        $flow->setType($type);
         $flow->bind($campaignModel);
         $form = $flow->createForm();
 

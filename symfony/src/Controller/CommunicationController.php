@@ -25,7 +25,6 @@ use App\Manager\MediaManager;
 use App\Manager\MessageManager;
 use App\Manager\PlatformConfigManager;
 use App\Manager\StructureManager;
-use App\Provider\Minutis\Minutis;
 use App\Provider\Minutis\MinutisProvider;
 use App\Services\MessageFormatter;
 use App\Tools\GSM;
@@ -257,8 +256,8 @@ class CommunicationController extends BaseController
         EmailTriggerFlow $emailTriggerFlow)
     {
         $flows = [
-            SmsTriggerFlow::class => $smsTriggerFlow,
-            CallTriggerFlow::class => $callTriggerFlow,
+            SmsTriggerFlow::class   => $smsTriggerFlow,
+            CallTriggerFlow::class  => $callTriggerFlow,
             EmailTriggerFlow::class => $emailTriggerFlow,
         ];
 
