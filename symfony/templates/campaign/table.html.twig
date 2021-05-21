@@ -38,6 +38,9 @@
                     {% else %}
                         {{ campaign.label }}
                     {% endif %}
+                    {% if campaign.operation %}
+                        <a href="{{ campaign.operationUrl(minutis) }}" class="btn btn-light" target="_blank">🚑</a>
+                    {% endif %}
                 </a>
             </div>
 

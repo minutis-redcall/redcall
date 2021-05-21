@@ -45,8 +45,10 @@ class CreateOperationType extends AbstractType
 
         $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
             /** @var Operation $data */
-            $data                  = $event->getData();
-            $data->name            = $data->campaign->label;
+            $data = $event->getData();
+
+            $name                  = sprintf('%s: %s', date('d/m/Y'), $data->campaign->label);
+            $data->name            = $name;
             $data->ownerExternalId = $this->security->getUser()->getExternalId();
         });
     }

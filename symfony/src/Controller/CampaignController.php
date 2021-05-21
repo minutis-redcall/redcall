@@ -12,6 +12,7 @@ use App\Manager\CampaignManager;
 use App\Manager\OperationManager;
 use App\Manager\PlatformConfigManager;
 use App\Manager\StructureManager;
+use App\Provider\Minutis\MinutisProvider;
 use Bundles\PaginationBundle\Manager\PaginationManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -72,14 +73,15 @@ class CampaignController extends BaseController
     /**
      * @Route(path="campaign/list", name="list_campaigns")
      */
-    public function listCampaigns()
+    public function listCampaigns(MinutisProvider $minutis)
     {
         $byMyCrew      = $this->campaignManager->getCampaignsOpenedByMeOrMyCrew($this->getUser());
         $byMyTeammates = $this->campaignManager->getCampaignImpactingMyVolunteers($this->getUser());
         $finished      = $this->campaignManager->getInactiveCampaignsForUserQueryBuilder($this->getUser());
 
         return $this->render('campaign/list.html.twig', [
-            'data' => [
+            'minutis' => $minutis,
+            'data'    => [
                 'my_structures' => [
                     'orderBy' => $this->orderBy($byMyCrew, Campaign::class, 'c.createdAt', 'DESC', 'crew'),
                     'pager'   => $this->paginationManager->getPager($byMyCrew, 'my_structures'),
