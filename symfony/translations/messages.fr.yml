@@ -709,6 +709,7 @@ message:
     type: message(s)
 minutis:
   back: 'Retourner sur Minutis'
+  open: 'Ouvrir dans Minutis'
 modal:
   answers: Réponses
   change_campaign_label: 'Changer de nom...'
