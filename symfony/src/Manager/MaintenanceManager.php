@@ -21,8 +21,8 @@ class MaintenanceManager
 
     public function __construct(SettingManager $settingManager, TaskSender $async)
     {
-        $this->settingManager   = $settingManager;
-        $this->async            = $async;
+        $this->settingManager = $settingManager;
+        $this->async          = $async;
     }
 
     public function refresh()

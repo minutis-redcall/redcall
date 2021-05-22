@@ -523,12 +523,12 @@ class Message
         return $this;
     }
 
-    public function getResourceExternalId(): ?int
+    public function getResourceExternalId() : ?int
     {
         return $this->resourceExternalId;
     }
 
-    public function setResourceExternalId(?int $resourceExternalId): self
+    public function setResourceExternalId(?int $resourceExternalId) : self
     {
         $this->resourceExternalId = $resourceExternalId;
 

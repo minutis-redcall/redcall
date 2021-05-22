@@ -20,12 +20,12 @@ class EmailVerificationManager
         $this->emailVerificationRepository = $emailVerificationRepository;
     }
 
-    public function find(string $username): ?EmailVerification
+    public function find(string $username) : ?EmailVerification
     {
         return $this->emailVerificationRepository->find($username);
     }
 
-    public function getExpiredUsernames(): array
+    public function getExpiredUsernames() : array
     {
         return $this->emailVerificationRepository->getExpiredUsernames();
     }
@@ -35,12 +35,12 @@ class EmailVerificationManager
         $this->emailVerificationRepository->clearExpired();
     }
 
-    public function generateToken(string $username, string $type): string
+    public function generateToken(string $username, string $type) : string
     {
         return $this->emailVerificationRepository->generateToken($username, $type);
     }
 
-    public function getByToken(string $token): ?EmailVerification
+    public function getByToken(string $token) : ?EmailVerification
     {
         return $this->emailVerificationRepository->getByToken($token);
     }

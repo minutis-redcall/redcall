@@ -64,63 +64,6 @@ class AnonymizeManager
         $this->kernel           = $kernel;
     }
 
-    /**
-     * Only used for pen-test environments
-     */
-    public function anonymizeDatabase(string $platform)
-    {
-        if ('cli' === php_sapi_name()) {
-            $this->fakeSmsManager->truncate();
-            $this->fakeEmailManager->truncate();
-
-            $this->volunteerManager->foreach(function (Volunteer $volunteer) {
-                $this->anonymize($volunteer);
-            }, false);
-        } elseif (time() - $this->settingManager->get(Settings::SANDBOX_LAST_ANONYMIZE, 0) > 86400) {
-            $this->settingManager->set(Settings::SANDBOX_LAST_ANONYMIZE, time());
-
-            // Executing asynchronous task to prevent against interruptions
-            $console = sprintf('%s/bin/console', $this->kernel->getProjectDir());
-            $command = sprintf('%s anonymize %s', escapeshellarg($console), $platform);
-            exec(sprintf('%s > /dev/null 2>&1 & echo -n \$!', $command));
-        }
-    }
-
-    public function anonymizeVolunteer(string $externalId, string $platform)
-    {
-        $volunteer = $this->volunteerManager->findOneByExternalId($platform, $externalId);
-        if ($volunteer) {
-            $this->anonymize($volunteer);
-        }
-    }
-
-    /**
-     * Keep volunteer's nivol & skills, anonymize everything else.
-     * Volunteer gets automatically locked & disabled.
-     *
-     * @param Volunteer $volunteer
-     */
-    private function anonymize(Volunteer $volunteer)
-    {
-        $volunteer->setFirstName($this->generateFirstname());
-        $volunteer->setLastName($this->generateLastname());
-
-        $volunteer->setEmail($this->generateEmail($volunteer->getFirstName(), $volunteer->getLastName()));
-
-        if (!$volunteer->getId()) {
-            $this->volunteerManager->save($volunteer);
-        }
-
-        $phone = new Phone();
-        $phone->setVolunteer($volunteer);
-        $phone->setE164($this->generatePhoneNumber());
-        $phone->setMobile(true);
-        $phone->setPreferred(true);
-        $volunteer->getPhones()->add($phone);
-
-        $this->volunteerManager->save($volunteer);
-    }
-
     public static function generateFirstname() : string
     {
         $names = [
@@ -562,5 +505,62 @@ class AnonymizeManager
         ];
 
         return strtolower(sprintf('%s.%s@%s', substr($firstname, 0, 1), $lastname, $providers[rand() % count($providers)]));
+    }
+
+    /**
+     * Only used for pen-test environments
+     */
+    public function anonymizeDatabase(string $platform)
+    {
+        if ('cli' === php_sapi_name()) {
+            $this->fakeSmsManager->truncate();
+            $this->fakeEmailManager->truncate();
+
+            $this->volunteerManager->foreach(function (Volunteer $volunteer) {
+                $this->anonymize($volunteer);
+            }, false);
+        } elseif (time() - $this->settingManager->get(Settings::SANDBOX_LAST_ANONYMIZE, 0) > 86400) {
+            $this->settingManager->set(Settings::SANDBOX_LAST_ANONYMIZE, time());
+
+            // Executing asynchronous task to prevent against interruptions
+            $console = sprintf('%s/bin/console', $this->kernel->getProjectDir());
+            $command = sprintf('%s anonymize %s', escapeshellarg($console), $platform);
+            exec(sprintf('%s > /dev/null 2>&1 & echo -n \$!', $command));
+        }
+    }
+
+    public function anonymizeVolunteer(string $externalId, string $platform)
+    {
+        $volunteer = $this->volunteerManager->findOneByExternalId($platform, $externalId);
+        if ($volunteer) {
+            $this->anonymize($volunteer);
+        }
+    }
+
+    /**
+     * Keep volunteer's nivol & skills, anonymize everything else.
+     * Volunteer gets automatically locked & disabled.
+     *
+     * @param Volunteer $volunteer
+     */
+    private function anonymize(Volunteer $volunteer)
+    {
+        $volunteer->setFirstName($this->generateFirstname());
+        $volunteer->setLastName($this->generateLastname());
+
+        $volunteer->setEmail($this->generateEmail($volunteer->getFirstName(), $volunteer->getLastName()));
+
+        if (!$volunteer->getId()) {
+            $this->volunteerManager->save($volunteer);
+        }
+
+        $phone = new Phone();
+        $phone->setVolunteer($volunteer);
+        $phone->setE164($this->generatePhoneNumber());
+        $phone->setMobile(true);
+        $phone->setPreferred(true);
+        $volunteer->getPhones()->add($phone);
+
+        $this->volunteerManager->save($volunteer);
     }
 }

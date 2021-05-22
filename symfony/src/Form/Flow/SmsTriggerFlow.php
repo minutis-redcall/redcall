@@ -2,17 +2,9 @@
 
 namespace App\Form\Flow;
 
-use App\Entity\Communication;
-use App\Form\Model\BaseTrigger;
-use App\Form\Model\Campaign;
 use App\Form\Model\SmsTrigger;
-use App\Form\Type\CampaignType;
-use App\Form\Type\ChooseCampaignOperationChoicesType;
 use App\Form\Type\ChooseOperationChoicesType;
-use App\Form\Type\CreateCampaignOperationType;
-use App\Form\Type\CreateOrUseOperationType;
 use App\Form\Type\SmsTriggerType;
-use App\Form\Type\UseCampaignOperationType;
 use Craue\FormFlowBundle\Form\FormFlow;
 use Craue\FormFlowBundle\Form\FormFlowInterface;
 

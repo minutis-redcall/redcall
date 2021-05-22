@@ -20,7 +20,7 @@ class PasswordRecoveryManager
         $this->passwordRecoveryRepository = $passwordRecoveryRepository;
     }
 
-    public function find(string $username): ?PasswordRecovery
+    public function find(string $username) : ?PasswordRecovery
     {
         return $this->passwordRecoveryRepository->find($username);
     }
@@ -30,12 +30,12 @@ class PasswordRecoveryManager
         $this->passwordRecoveryRepository->clearExpired();
     }
 
-    public function generateToken(string $username): string
+    public function generateToken(string $username) : string
     {
         return $this->passwordRecoveryRepository->generateToken($username);
     }
 
-    public function getByToken(string $token): ?PasswordRecovery
+    public function getByToken(string $token) : ?PasswordRecovery
     {
         return $this->passwordRecoveryRepository->getByToken($token);
     }

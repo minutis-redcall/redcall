@@ -9,13 +9,13 @@
     <table class="table">
         {% for row in emails %}
             {% if row.volunteer %}
-            <tr>
-                <td>
-                    {{ row.volunteer.firstName }} {{ row.volunteer.lastName }}
-                    <a href="{{ path('sandbox_fake_email_read', {email: row.email}) }}">{{ row.email }}</a>
-                    <span class="badge badge-primary">{{ row.countMsg }}</span>
-                </td>
-            </tr>
+                <tr>
+                    <td>
+                        {{ row.volunteer.firstName }} {{ row.volunteer.lastName }}
+                        <a href="{{ path('sandbox_fake_email_read', {email: row.email}) }}">{{ row.email }}</a>
+                        <span class="badge badge-primary">{{ row.countMsg }}</span>
+                    </td>
+                </tr>
             {% endif %}
         {% endfor %}
     </table>

@@ -6,8 +6,8 @@ use App\Model\Csrf;
 use Bundles\SandboxBundle\Base\BaseController;
 use Bundles\SandboxBundle\Manager\FakeOperationManager;
 use Bundles\SandboxBundle\Manager\FakeOperationResourceManager;
-use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\Routing\Annotation\Route;
 
 /**
  * @Route("/fake-minutis", name="fake_minutis_")
@@ -39,7 +39,7 @@ class FakeMinutisController extends BaseController
     {
         return [
             'operations' => $this->operationManager->all(),
-            'id' => $id,
+            'id'         => $id,
         ];
     }
 

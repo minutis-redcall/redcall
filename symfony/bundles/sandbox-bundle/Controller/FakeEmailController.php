@@ -2,9 +2,9 @@
 
 namespace Bundles\SandboxBundle\Controller;
 
-use Bundles\SandboxBundle\Base\BaseController;
 use App\Entity\Volunteer;
 use App\Manager\VolunteerManager;
+use Bundles\SandboxBundle\Base\BaseController;
 use Bundles\SandboxBundle\Manager\FakeEmailManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\Routing\Annotation\Route;

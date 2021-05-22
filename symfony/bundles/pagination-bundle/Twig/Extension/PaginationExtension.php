@@ -23,7 +23,7 @@ class PaginationExtension extends AbstractExtension
         ];
     }
 
-    public function masterRequest(): Request
+    public function masterRequest() : Request
     {
         return $this->requestStack->getMasterRequest();
     }

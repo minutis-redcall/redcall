@@ -2,7 +2,6 @@
 
 namespace App\Form\Model;
 
-use App\Entity\Media;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
@@ -178,7 +177,7 @@ abstract class BaseTrigger implements \JsonSerializable
     /**
      * @return bool
      */
-    public function isOperation(): bool
+    public function isOperation() : bool
     {
         return $this->operation;
     }
@@ -188,7 +187,7 @@ abstract class BaseTrigger implements \JsonSerializable
      *
      * @return BaseTrigger
      */
-    public function setOperation(bool $operation): BaseTrigger
+    public function setOperation(bool $operation) : BaseTrigger
     {
         $this->operation = $operation;
 

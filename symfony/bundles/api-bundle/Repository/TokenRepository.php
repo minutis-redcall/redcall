@@ -21,8 +21,8 @@ class TokenRepository extends BaseRepository
     public function getTokensForUserQueryBuilder(string $username)
     {
         return $this->createQueryBuilder('t')
-            ->where('t.username = :username')
-            ->setParameter('username', $username);
+                    ->where('t.username = :username')
+                    ->setParameter('username', $username);
     }
 
     public function getTokensForUser(string $username) : array

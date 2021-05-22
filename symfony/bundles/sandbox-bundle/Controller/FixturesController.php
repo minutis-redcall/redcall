@@ -2,8 +2,8 @@
 
 namespace Bundles\SandboxBundle\Controller;
 
-use Bundles\SandboxBundle\Base\BaseController;
 use App\Form\Type\StructureWidgetType;
+use Bundles\SandboxBundle\Base\BaseController;
 use Bundles\SandboxBundle\Manager\FixturesManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;

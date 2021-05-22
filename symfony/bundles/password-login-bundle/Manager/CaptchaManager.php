@@ -25,12 +25,12 @@ class CaptchaManager
         $this->captchaRepository->clearExpired();
     }
 
-    public function isAllowed(string $ip): bool
+    public function isAllowed(string $ip) : bool
     {
         return $this->captchaRepository->isAllowed($ip);
     }
 
-    public function isGracePeriod(string $ip): bool
+    public function isGracePeriod(string $ip) : bool
     {
         return $this->captchaRepository->isGracePeriod($ip);
     }

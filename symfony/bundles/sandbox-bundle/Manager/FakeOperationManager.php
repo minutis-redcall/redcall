@@ -2,7 +2,6 @@
 
 namespace Bundles\SandboxBundle\Manager;
 
-use App\Manager\OperationManager;
 use Bundles\SandboxBundle\Entity\FakeOperation;
 use Bundles\SandboxBundle\Repository\FakeOperationRepository;
 
@@ -31,22 +30,22 @@ class FakeOperationManager
         $this->operationRepository->truncate();
     }
 
-    public function search(string $structureExternalId, string $criteria = null): array
+    public function search(string $structureExternalId, string $criteria = null) : array
     {
-        return array_map(function(FakeOperation $operation) {
+        return array_map(function (FakeOperation $operation) {
             return [
-                'id' => $operation->getId(),
+                'id'   => $operation->getId(),
                 'name' => $operation->getName(),
             ];
         }, $this->operationRepository->search($structureExternalId, $criteria));
     }
 
-    public function exists(int $operationExternalId): bool
+    public function exists(int $operationExternalId) : bool
     {
         return null !== $this->operationRepository->find($operationExternalId);
     }
 
-    public function create(string $structureExternalId, string $name, string $ownerEmail): int
+    public function create(string $structureExternalId, string $name, string $ownerEmail) : int
     {
         $operation = new FakeOperation();
         $operation->setStructureExternalId($structureExternalId);

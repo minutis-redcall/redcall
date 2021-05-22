@@ -35,22 +35,22 @@ class FakeMinutisProvider implements MinutisProvider
         $this->volunteerManager         = $volunteerManager;
     }
 
-    static public function getOperationUrl(int $operationExternalId): string
+    static public function getOperationUrl(int $operationExternalId) : string
     {
         return sprintf('%s/sandbox/fake-minutis/%d', getenv('WEBSITE_URL'), $operationExternalId);
     }
 
-    public function searchForOperations(string $structureExternalId, string $criteria = null): array
+    public function searchForOperations(string $structureExternalId, string $criteria = null) : array
     {
         return $this->operationManager->search($structureExternalId, $criteria);
     }
 
-    public function isOperationExisting(int $operationExternalId): bool
+    public function isOperationExisting(int $operationExternalId) : bool
     {
         return $this->operationManager->exists($operationExternalId);
     }
 
-    public function searchForVolunteer(string $volunteerExternalId): ?array
+    public function searchForVolunteer(string $volunteerExternalId) : ?array
     {
         $volunteer = $this->volunteerManager->findOneByExternalId(Platform::FR, $volunteerExternalId);
         if ($volunteer) {

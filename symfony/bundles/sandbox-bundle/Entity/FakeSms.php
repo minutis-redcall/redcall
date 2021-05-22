@@ -45,17 +45,17 @@ class FakeSms
      */
     private $createdAt;
 
-    public function getId(): ?int
+    public function getId() : ?int
     {
         return $this->id;
     }
 
-    public function getPhoneNumber(): ?string
+    public function getPhoneNumber() : ?string
     {
         return $this->phoneNumber;
     }
 
-    public function setPhoneNumber(string $phoneNumber): self
+    public function setPhoneNumber(string $phoneNumber) : self
     {
         $this->phoneNumber = $phoneNumber;
 
@@ -65,48 +65,48 @@ class FakeSms
     /**
      * @return string
      */
-    public function getName(): ?string
+    public function getName() : ?string
     {
         return $this->name;
     }
 
-    public function setName($name): self
+    public function setName($name) : self
     {
         $this->name = $name;
 
         return $this;
     }
 
-    public function getDirection(): ?string
+    public function getDirection() : ?string
     {
         return $this->direction;
     }
 
-    public function setDirection(string $direction): self
+    public function setDirection(string $direction) : self
     {
         $this->direction = $direction;
 
         return $this;
     }
 
-    public function getContent(): ?string
+    public function getContent() : ?string
     {
         return $this->content;
     }
 
-    public function setContent(string $content): self
+    public function setContent(string $content) : self
     {
         $this->content = $content;
 
         return $this;
     }
 
-    public function getCreatedAt(): ?DateTimeInterface
+    public function getCreatedAt() : ?DateTimeInterface
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(DateTimeInterface $createdAt): self
+    public function setCreatedAt(DateTimeInterface $createdAt) : self
     {
         $this->createdAt = $createdAt;
 

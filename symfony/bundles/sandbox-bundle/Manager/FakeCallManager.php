@@ -25,12 +25,12 @@ class FakeCallManager
         $this->fakeCallRepository->save($fakeCall);
     }
 
-    public function findAllPhones(): array
+    public function findAllPhones() : array
     {
         return $this->fakeCallRepository->findAllPhones();
     }
 
-    public function findMessagesForPhone(string $phoneNumber): array
+    public function findMessagesForPhone(string $phoneNumber) : array
     {
         return $this->fakeCallRepository->findMessagesForPhone($phoneNumber);
     }
