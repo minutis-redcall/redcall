@@ -37,53 +37,53 @@ class FakeEmail
      */
     private $createdAt;
 
-    public function getId(): ?int
+    public function getId() : ?int
     {
         return $this->id;
     }
 
-    public function getEmail(): ?string
+    public function getEmail() : ?string
     {
         return $this->email;
     }
 
-    public function setEmail(string $email): self
+    public function setEmail(string $email) : self
     {
         $this->email = $email;
 
         return $this;
     }
 
-    public function getSubject(): ?string
+    public function getSubject() : ?string
     {
         return $this->subject;
     }
 
-    public function setSubject(?string $subject): self
+    public function setSubject(?string $subject) : self
     {
         $this->subject = $subject;
 
         return $this;
     }
 
-    public function getBody(): ?string
+    public function getBody() : ?string
     {
         return $this->body;
     }
 
-    public function setBody(string $body): self
+    public function setBody(string $body) : self
     {
         $this->body = $body;
 
         return $this;
     }
 
-    public function getCreatedAt(): ?DateTime
+    public function getCreatedAt() : ?DateTime
     {
         return $this->createdAt;
     }
 
-    public function setCreatedAt(DateTime $createdAt): self
+    public function setCreatedAt(DateTime $createdAt) : self
     {
         $this->createdAt = $createdAt;
 

@@ -24,7 +24,7 @@ class SettingManager
     /**
      * @return array
      */
-    public function all(): array
+    public function all() : array
     {
         return $this->settingRepository->all();
     }
@@ -35,7 +35,7 @@ class SettingManager
      *
      * @return string|null
      */
-    public function get(string $property, ?string $default = null): ?string
+    public function get(string $property, ?string $default = null) : ?string
     {
         return $this->settingRepository->get($property, $default);
     }

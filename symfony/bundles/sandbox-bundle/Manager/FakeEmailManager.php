@@ -38,7 +38,7 @@ class FakeEmailManager
     /**
      * @return array
      */
-    public function findAllEmails(): array
+    public function findAllEmails() : array
     {
         return $this->fakeEmailRepository->findAllEmails();
     }
@@ -48,7 +48,7 @@ class FakeEmailManager
      *
      * @return FakeEmail[]
      */
-    public function findMessagesForEmail(string $email): array
+    public function findMessagesForEmail(string $email) : array
     {
         return $this->fakeEmailRepository->findMessagesForEmail($email);
     }

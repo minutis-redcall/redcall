@@ -32,36 +32,36 @@ class FakeOperationResource
      */
     private $volunteerExternalId;
 
-    public function getId(): int
+    public function getId() : int
     {
         return $this->id;
     }
 
-    public function setId(int $id): FakeOperationResource
+    public function setId(int $id) : FakeOperationResource
     {
         $this->id = $id;
 
         return $this;
     }
 
-    public function getOperation(): FakeOperation
+    public function getOperation() : FakeOperation
     {
         return $this->operation;
     }
 
-    public function setOperation(?FakeOperation $operation): FakeOperationResource
+    public function setOperation(?FakeOperation $operation) : FakeOperationResource
     {
         $this->operation = $operation;
 
         return $this;
     }
 
-    public function getVolunteerExternalId(): string
+    public function getVolunteerExternalId() : string
     {
         return $this->volunteerExternalId;
     }
 
-    public function setVolunteerExternalId(string $volunteerExternalId): FakeOperationResource
+    public function setVolunteerExternalId(string $volunteerExternalId) : FakeOperationResource
     {
         $this->volunteerExternalId = $volunteerExternalId;
 

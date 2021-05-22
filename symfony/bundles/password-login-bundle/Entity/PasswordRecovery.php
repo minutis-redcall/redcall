@@ -34,43 +34,43 @@ class PasswordRecovery
         $this->timestamp = time();
     }
 
-    public function getUsername(): string
+    public function getUsername() : string
     {
         return $this->username;
     }
 
-    public function setUsername(string $username): PasswordRecovery
+    public function setUsername(string $username) : PasswordRecovery
     {
         $this->username = $username;
 
         return $this;
     }
 
-    public function getUuid(): string
+    public function getUuid() : string
     {
         return $this->uuid;
     }
 
-    public function setUuid(string $uuid): PasswordRecovery
+    public function setUuid(string $uuid) : PasswordRecovery
     {
         $this->uuid = $uuid;
 
         return $this;
     }
 
-    public function getTimestamp(): int
+    public function getTimestamp() : int
     {
         return $this->timestamp;
     }
 
-    public function setTimestamp(int $timestamp): PasswordRecovery
+    public function setTimestamp(int $timestamp) : PasswordRecovery
     {
         $this->timestamp = $timestamp;
 
         return $this;
     }
 
-    public function hasExpired(): bool
+    public function hasExpired() : bool
     {
         return $this->timestamp + strtotime(self::EXPIRATION) - time() < time();
     }

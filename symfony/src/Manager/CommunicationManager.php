@@ -15,7 +15,6 @@ use App\Provider\Minutis\MinutisProvider;
 use App\Repository\CommunicationRepository;
 use App\Security\Helper\Security;
 use DateTime;
-use GuzzleHttp\Exception\ClientException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Routing\RouterInterface;
 
@@ -181,7 +180,7 @@ class CommunicationManager
             );
         } catch (\Throwable $exception) {
             $this->logger->warning('Cannot reach out Slack', [
-                'campaign-id' => $campaign->getId(),
+                'campaign-id'      => $campaign->getId(),
                 'communication-id' => $communication->getId(),
             ]);
         }

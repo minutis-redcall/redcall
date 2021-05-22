@@ -42,31 +42,31 @@ class EmailVerification
         $this->timestamp = time();
     }
 
-    public function getUsername(): string
+    public function getUsername() : string
     {
         return $this->username;
     }
 
-    public function setUsername(string $username): EmailVerification
+    public function setUsername(string $username) : EmailVerification
     {
         $this->username = $username;
 
         return $this;
     }
 
-    public function getUuid(): string
+    public function getUuid() : string
     {
         return $this->uuid;
     }
 
-    public function setUuid(string $uuid): EmailVerification
+    public function setUuid(string $uuid) : EmailVerification
     {
         $this->uuid = $uuid;
 
         return $this;
     }
 
-    public function getType(): string
+    public function getType() : string
     {
         return $this->type;
     }
@@ -78,19 +78,19 @@ class EmailVerification
         return $this;
     }
 
-    public function getTimestamp(): int
+    public function getTimestamp() : int
     {
         return $this->timestamp;
     }
 
-    public function setTimestamp(int $timestamp): EmailVerification
+    public function setTimestamp(int $timestamp) : EmailVerification
     {
         $this->timestamp = $timestamp;
 
         return $this;
     }
 
-    public function hasExpired(): bool
+    public function hasExpired() : bool
     {
         return $this->timestamp + strtotime(self::EXPIRATION) - time() < time();
     }

@@ -10,7 +10,6 @@ use App\Entity\Volunteer;
 use App\Repository\VolunteerRepository;
 use App\Security\Helper\Security;
 use Doctrine\ORM\QueryBuilder;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 class VolunteerManager
 {

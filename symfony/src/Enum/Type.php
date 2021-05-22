@@ -12,7 +12,6 @@ use App\Form\Model\SmsTrigger;
 use App\Form\Type\CallTriggerType;
 use App\Form\Type\EmailTriggerType;
 use App\Form\Type\SmsTriggerType;
-use Craue\FormFlowBundle\Form\FormFlow;
 use MyCLabs\Enum\Enum;
 
 /**

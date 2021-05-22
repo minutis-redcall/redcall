@@ -31,7 +31,7 @@ class ChooseOperationChoicesType extends AbstractType
                     'choices'     => $choices,
                     'constraints' => [
                         new Choice([
-                            'choices' => $choices,
+                            'choices'  => $choices,
                             'multiple' => true,
                         ]),
                     ],

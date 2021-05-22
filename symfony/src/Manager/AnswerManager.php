@@ -13,7 +13,6 @@ use App\Repository\AnswerRepository;
 use App\Security\Helper\Security;
 use App\Services\MessageFormatter;
 use Doctrine\ORM\QueryBuilder;
-use Psr\Log\LoggerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class AnswerManager extends BaseService

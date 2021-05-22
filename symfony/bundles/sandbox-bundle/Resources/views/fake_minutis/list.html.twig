@@ -18,18 +18,18 @@
             </tr>
             </thead>
             <tbody>
-                {% for operation in operations %}
-                    <tr {% if operation.id == id %}style="background-color:#FFFFAA;"{% endif %}>
-                        <td>{{ operation.structureExternalId }}</td>
-                        <td>{{ operation.name }}</td>
-                        <td>{{ operation.ownerEmail }}</td>
-                        <td>
-                            {% for resource in operation.resources %}
-                                <p>{{ resource.volunteerExternalId }}</p>
-                            {% endfor %}
-                        </td>
-                    </tr>
-                {% endfor %}
+            {% for operation in operations %}
+                <tr {% if operation.id == id %}style="background-color:#FFFFAA;"{% endif %}>
+                    <td>{{ operation.structureExternalId }}</td>
+                    <td>{{ operation.name }}</td>
+                    <td>{{ operation.ownerEmail }}</td>
+                    <td>
+                        {% for resource in operation.resources %}
+                            <p>{{ resource.volunteerExternalId }}</p>
+                        {% endfor %}
+                    </td>
+                </tr>
+            {% endfor %}
             </tbody>
         </table>
 

@@ -60,7 +60,7 @@ class Captcha
     /**
      * @return mixed
      */
-    public function getIp(): string
+    public function getIp() : string
     {
         return long2ip($this->ip);
     }
@@ -76,7 +76,7 @@ class Captcha
     /**
      * @return int
      */
-    public function getTimestamp(): int
+    public function getTimestamp() : int
     {
         return $this->timestamp;
     }
@@ -92,7 +92,7 @@ class Captcha
     /**
      * @return int
      */
-    public function getGrace(): int
+    public function getGrace() : int
     {
         return $this->grace;
     }
@@ -108,7 +108,7 @@ class Captcha
     /**
      * @return bool
      */
-    public function getWhitelisted(): bool
+    public function getWhitelisted() : bool
     {
         return $this->whitelisted;
     }
@@ -116,7 +116,7 @@ class Captcha
     /**
      * @param bool $whitelisted
      */
-    public function setWhitelisted(bool $whitelisted): void
+    public function setWhitelisted(bool $whitelisted) : void
     {
         $this->whitelisted = $whitelisted;
     }
@@ -124,7 +124,7 @@ class Captcha
     /**
      * @return bool
      */
-    public function isAllowed(): bool
+    public function isAllowed() : bool
     {
         return $this->isGracePeriod() || $this->whitelisted && !$this->hasExpired();
     }
@@ -132,7 +132,7 @@ class Captcha
     /**
      * @return bool
      */
-    public function hasExpired(): bool
+    public function hasExpired() : bool
     {
         return $this->timestamp + strtotime(self::WHITELIST_EXPIRATION) - time() < time();
     }
@@ -140,7 +140,7 @@ class Captcha
     /**
      * @return bool
      */
-    public function isGracePeriod(): bool
+    public function isGracePeriod() : bool
     {
         return $this->grace > 0;
     }

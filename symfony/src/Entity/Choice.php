@@ -139,12 +139,12 @@ class Choice
         return $count;
     }
 
-    public function getOperation(): ?Operation
+    public function getOperation() : ?Operation
     {
         return $this->operation;
     }
 
-    public function setOperation(?Operation $operation): self
+    public function setOperation(?Operation $operation) : self
     {
         $this->operation = $operation;
 

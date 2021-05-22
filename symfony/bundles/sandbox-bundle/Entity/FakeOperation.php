@@ -52,7 +52,8 @@ class FakeOperation
     /**
      * @var Collection}FakeOperationResource[]
      *
-     * @ORM\OneToMany(targetEntity="Bundles\SandboxBundle\Entity\FakeOperationResource", mappedBy="operation", cascade={"persist"})
+     * @ORM\OneToMany(targetEntity="Bundles\SandboxBundle\Entity\FakeOperationResource", mappedBy="operation",
+     *                                                                                   cascade={"persist"})
      */
     private $resources;
 
@@ -61,60 +62,60 @@ class FakeOperation
         $this->resources = new ArrayCollection();
     }
 
-    public function getId(): int
+    public function getId() : int
     {
         return $this->id;
     }
 
-    public function setId(int $id): FakeOperation
+    public function setId(int $id) : FakeOperation
     {
         $this->id = $id;
 
         return $this;
     }
 
-    public function getStructureExternalId(): int
+    public function getStructureExternalId() : int
     {
         return $this->structureExternalId;
     }
 
-    public function setStructureExternalId(int $structureExternalId): FakeOperation
+    public function setStructureExternalId(int $structureExternalId) : FakeOperation
     {
         $this->structureExternalId = $structureExternalId;
 
         return $this;
     }
 
-    public function getName(): string
+    public function getName() : string
     {
         return $this->name;
     }
 
-    public function setName(string $name): FakeOperation
+    public function setName(string $name) : FakeOperation
     {
         $this->name = $name;
 
         return $this;
     }
 
-    public function getOwnerEmail(): string
+    public function getOwnerEmail() : string
     {
         return $this->ownerEmail;
     }
 
-    public function setOwnerEmail(string $ownerEmail): FakeOperation
+    public function setOwnerEmail(string $ownerEmail) : FakeOperation
     {
         $this->ownerEmail = $ownerEmail;
 
         return $this;
     }
 
-    public function getUpdatedAt(): \DateTime
+    public function getUpdatedAt() : \DateTime
     {
         return $this->updatedAt;
     }
 
-    public function setUpdatedAt(\DateTime $updatedAt): FakeOperation
+    public function setUpdatedAt(\DateTime $updatedAt) : FakeOperation
     {
         $this->updatedAt = $updatedAt;
 

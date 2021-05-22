@@ -120,12 +120,12 @@ class Media
         return $this;
     }
 
-    public function getCommunication(): ?Communication
+    public function getCommunication() : ?Communication
     {
         return $this->communication;
     }
 
-    public function setCommunication(?Communication $communication): self
+    public function setCommunication(?Communication $communication) : self
     {
         $this->communication = $communication;
 

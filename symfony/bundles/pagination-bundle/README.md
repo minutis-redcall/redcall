@@ -1,14 +1,12 @@
 # pagination-bundle
 
-This bundle provides helpers for Pagerfanta with Bootstrap 4, in
-order to add several paginations in a single page quickly.
+This bundle provides helpers for Pagerfanta with Bootstrap 4, in order to add several paginations in a single page
+quickly.
 
 ## Demo
 
-This demo shows the code required to render, in the same page,
-ongoing and finished emergency campaigns for first aiders, or
-in your case ad campaigns for a marketing team.
-
+This demo shows the code required to render, in the same page, ongoing and finished emergency campaigns for first
+aiders, or in your case ad campaigns for a marketing team.
 
 ### Controller
 

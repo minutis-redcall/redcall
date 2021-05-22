@@ -1,9 +1,9 @@
 services:
 
   Bundles\PaginationBundle\Pagerfanta\View\BootstrapLightView:
-    arguments: ['@Bundles\PaginationBundle\Pagerfanta\Template\BootstrapLightTemplate']
+    arguments: [ '@Bundles\PaginationBundle\Pagerfanta\Template\BootstrapLightTemplate' ]
     tags:
       - { name: pagerfanta.view, alias: bootstrap_light }
 
   Bundles\PaginationBundle\Pagerfanta\Template\BootstrapLightTemplate:
-    arguments: ['@translator']
+    arguments: [ '@translator' ]
