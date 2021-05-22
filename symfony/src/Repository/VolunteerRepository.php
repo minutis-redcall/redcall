@@ -7,7 +7,6 @@ use App\Entity\Structure;
 use App\Entity\User;
 use App\Entity\Volunteer;
 use App\Enum\Platform;
-use App\Security\Helper\Security;
 use Bundles\PegassCrawlerBundle\Entity\Pegass;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\QueryBuilder;
@@ -20,16 +19,9 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class VolunteerRepository extends BaseRepository
 {
-    /**
-     * @var Security
-     */
-    private $security;
-
-    public function __construct(ManagerRegistry $registry, Security $security)
+    public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Volunteer::class);
-
-        $this->security = $security;
     }
 
     public function disable(Volunteer $volunteer)
@@ -99,25 +91,23 @@ class VolunteerRepository extends BaseRepository
     }
 
     /**
-     * @param string|null $keyword
-     * @param int         $maxResults
-     *
      * @return Volunteer[]
      */
-    public function searchAll(?string $keyword, int $maxResults) : array
+    public function searchAll(string $platform, ?string $keyword, int $maxResults) : array
     {
-        return $this->searchAllQueryBuilder($keyword)
+        return $this->searchAllQueryBuilder($platform, $keyword)
                     ->getQuery()
                     ->setMaxResults($maxResults)
                     ->getResult();
     }
 
-    public function searchInStructureQueryBuilder(Structure $structure,
+    public function searchInStructureQueryBuilder(string $platform,
+        Structure $structure,
         ?string $keyword,
         bool $onlyEnabled = true,
         bool $onlyUsers = false) : QueryBuilder
     {
-        $qb = $this->searchAllQueryBuilder($keyword, $onlyEnabled)
+        $qb = $this->searchAllQueryBuilder($platform, $keyword, $onlyEnabled)
                    ->join('v.structures', 's')
                    ->andWhere('s.id = :structure')
                    ->setParameter('structure', $structure);
@@ -129,9 +119,9 @@ class VolunteerRepository extends BaseRepository
         return $qb;
     }
 
-    public function searchAllQueryBuilder(?string $keyword, bool $enabled = false) : QueryBuilder
+    public function searchAllQueryBuilder(string $platform, ?string $keyword, bool $enabled = false) : QueryBuilder
     {
-        $qb = $this->createVolunteersQueryBuilder($enabled);
+        $qb = $this->createVolunteersQueryBuilder($platform, $enabled);
 
         if ($keyword) {
             $this->addSearchCriteria($qb, $keyword);
@@ -140,11 +130,12 @@ class VolunteerRepository extends BaseRepository
         return $qb;
     }
 
-    public function searchAllWithFiltersQueryBuilder(?string $criteria,
+    public function searchAllWithFiltersQueryBuilder(string $platform,
+        ?string $criteria,
         bool $onlyEnabled,
         bool $onlyUsers) : QueryBuilder
     {
-        $qb = $this->searchAllQueryBuilder($criteria, $onlyEnabled);
+        $qb = $this->searchAllQueryBuilder($platform, $criteria, $onlyEnabled);
 
         if ($onlyUsers) {
             $this->addUserCriteria($qb);
@@ -269,9 +260,9 @@ class VolunteerRepository extends BaseRepository
         return array_diff($volunteerIds, array_column($accessibles, 'id'));
     }
 
-    public function filterInvalidExternalIds(array $externalIds) : array
+    public function filterInvalidExternalIds(string $platform, array $externalIds) : array
     {
-        $valid = $this->createVolunteersQueryBuilder(false)
+        $valid = $this->createVolunteersQueryBuilder($platform, false)
                       ->select('v.externalId')
                       ->andWhere('v.externalId IN (:external_ids)')
                       ->setParameter('external_ids', $externalIds)
@@ -281,10 +272,10 @@ class VolunteerRepository extends BaseRepository
         return array_diff(array_map('mb_strtolower', $externalIds), array_map('mb_strtolower', array_column($valid, 'externalId')));
     }
 
-    public function getVolunteerList(array $volunteerIds, bool $onlyEnabled = true) : array
+    public function getVolunteerList(string $platform, array $volunteerIds, bool $onlyEnabled = true) : array
     {
         return $this
-            ->createVolunteerListQueryBuilder($volunteerIds, $onlyEnabled)
+            ->createVolunteerListQueryBuilder($platform, $volunteerIds, $onlyEnabled)
             ->getQuery()
             ->getResult();
     }
@@ -399,7 +390,7 @@ class VolunteerRepository extends BaseRepository
             ->getSingleScalarResult();
     }
 
-    public function filterDisabled(array $volunteerIds) : array
+    public function filterDisabled(string $platform, array $volunteerIds) : array
     {
         return $this
             ->createQueryBuilder('v')
@@ -407,11 +398,13 @@ class VolunteerRepository extends BaseRepository
             ->where('v.enabled = false')
             ->andWhere('v.id IN (:volunteer_ids)')
             ->setParameter('volunteer_ids', $volunteerIds)
+            ->andWhere('v.platform = :platform')
+            ->setParameter('platform', $platform)
             ->getQuery()
             ->getArrayResult();
     }
 
-    public function filterOptoutUntil(array $volunteerIds) : array
+    public function filterOptoutUntil(string $platform, array $volunteerIds) : array
     {
         return $this
             ->createQueryBuilder('v')
@@ -421,14 +414,16 @@ class VolunteerRepository extends BaseRepository
             ->setParameter('now', new \DateTime())
             ->andWhere('v.id IN (:volunteer_ids)')
             ->setParameter('volunteer_ids', $volunteerIds)
+            ->andWhere('v.platform = :platform')
+            ->setParameter('platform', $platform)
             ->getQuery()
             ->getArrayResult();
     }
 
-    public function filterPhoneLandline(array $volunteerIds) : array
+    public function filterPhoneLandline(string $platform, array $volunteerIds) : array
     {
         return $this
-            ->createVolunteerListQueryBuilder($volunteerIds)
+            ->createVolunteerListQueryBuilder($platform, $volunteerIds)
             ->select('v.id')
             ->join('v.phones', 'p')
             ->andWhere('v.phoneNumberOptin = true')
@@ -438,10 +433,10 @@ class VolunteerRepository extends BaseRepository
             ->getArrayResult();
     }
 
-    public function filterPhoneMissing(array $volunteerIds) : array
+    public function filterPhoneMissing(string $platform, array $volunteerIds) : array
     {
         return $this
-            ->createVolunteerListQueryBuilder($volunteerIds)
+            ->createVolunteerListQueryBuilder($platform, $volunteerIds)
             ->leftJoin('v.phones', 'p')
             ->andWhere('v.phoneNumberOptin = true')
             ->andWhere('p.id IS NULL')
@@ -449,10 +444,10 @@ class VolunteerRepository extends BaseRepository
             ->getArrayResult();
     }
 
-    public function filterPhoneOptout(array $volunteerIds) : array
+    public function filterPhoneOptout(string $platform, array $volunteerIds) : array
     {
         return $this
-            ->createVolunteerListQueryBuilder($volunteerIds)
+            ->createVolunteerListQueryBuilder($platform, $volunteerIds)
             ->leftJoin('v.phones', 'p')
             ->andWhere('v.phoneNumberOptin = false')
             ->andWhere('p.preferred = true')
@@ -460,20 +455,20 @@ class VolunteerRepository extends BaseRepository
             ->getArrayResult();
     }
 
-    public function filterEmailMissing(array $volunteerIds) : array
+    public function filterEmailMissing(string $platform, array $volunteerIds) : array
     {
         return $this
-            ->createVolunteerListQueryBuilder($volunteerIds)
+            ->createVolunteerListQueryBuilder($platform, $volunteerIds)
             ->andWhere('v.email IS NULL')
             ->andWhere('v.emailOptin = true')
             ->getQuery()
             ->getArrayResult();
     }
 
-    public function filterEmailOptout(array $volunteerIds) : array
+    public function filterEmailOptout(string $platform, array $volunteerIds) : array
     {
         return $this
-            ->createVolunteerListQueryBuilder($volunteerIds)
+            ->createVolunteerListQueryBuilder($platform, $volunteerIds)
             ->andWhere('v.email IS NOT NULL')
             ->andWhere('v.emailOptin = false')
             ->getQuery()
@@ -528,25 +523,22 @@ class VolunteerRepository extends BaseRepository
         return $priorities;
     }
 
-    private function createVolunteerListQueryBuilder(array $volunteerIds, bool $onlyEnabled = true) : QueryBuilder
+    private function createVolunteerListQueryBuilder(string $platform,
+        array $volunteerIds,
+        bool $onlyEnabled = true) : QueryBuilder
     {
         return $this
-            ->createVolunteersQueryBuilder($onlyEnabled)
+            ->createVolunteersQueryBuilder($platform, $onlyEnabled)
             ->andWhere('v.id IN (:volunteer_ids)')
             ->setParameter('volunteer_ids', $volunteerIds);
     }
 
-    private function createVolunteersQueryBuilder(bool $enabled = true) : QueryBuilder
+    private function createVolunteersQueryBuilder(string $platform, bool $enabled = true) : QueryBuilder
     {
         $qb = $this->createQueryBuilder('v')
-                   ->distinct();
-
-        // Asynchronous calls may not have any platform selected
-        if ($platform = $this->security->getPlatform()) {
-            $qb
-                ->andWhere('v.platform = :platform')
-                ->setParameter('platform', $this->security->getPlatform());
-        }
+                   ->distinct()
+                   ->andWhere('v.platform = :platform')
+                   ->setParameter('platform', $platform);
 
         if ($enabled) {
             $qb->andWhere('v.enabled = true');
@@ -557,7 +549,7 @@ class VolunteerRepository extends BaseRepository
 
     private function createAccessibleVolunteersQueryBuilder(User $user, bool $enabled = true) : QueryBuilder
     {
-        return $this->createVolunteersQueryBuilder($enabled)
+        return $this->createVolunteersQueryBuilder($user->getPlatform(), $enabled)
                     ->join('v.structures', 's')
                     ->join('s.users', 'u')
                     ->andWhere('u.id = :user')

@@ -153,9 +153,9 @@ class VolunteersController extends BaseController
         }
 
         if ($structure) {
-            $queryBuilder = $this->volunteerManager->searchInStructureQueryBuilder($structure, $criteria, $hideDisabled, $filterUsers);
+            $queryBuilder = $this->volunteerManager->searchInStructureQueryBuilder($this->getPlatform(), $structure, $criteria, $hideDisabled, $filterUsers);
         } elseif ($this->isGranted('ROLE_ADMIN')) {
-            $queryBuilder = $this->volunteerManager->searchAllQueryBuilder($criteria, $hideDisabled, $filterUsers);
+            $queryBuilder = $this->volunteerManager->searchAllQueryBuilder($this->getPlatform(), $criteria, $hideDisabled, $filterUsers);
         } else {
             $queryBuilder = $this->volunteerManager->searchForCurrentUserQueryBuilder($criteria, $hideDisabled, $filterUsers);
         }
