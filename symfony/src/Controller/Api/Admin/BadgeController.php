@@ -5,6 +5,7 @@ namespace App\Controller\Api\Admin;
 use App\Entity\Badge;
 use App\Facade\Admin\Badge\BadgeFacade;
 use App\Facade\Admin\Badge\BadgeFiltersFacade;
+use App\Facade\Admin\Badge\BadgeReadFacade;
 use App\Manager\BadgeManager;
 use App\Transformer\Admin\BadgeTransformer;
 use Bundles\ApiBundle\Annotation\Endpoint;
@@ -12,6 +13,7 @@ use Bundles\ApiBundle\Annotation\Facade;
 use Bundles\ApiBundle\Base\BaseController;
 use Bundles\ApiBundle\Model\Facade\Http\HttpCreatedFacade;
 use Bundles\ApiBundle\Model\Facade\QueryBuilderFacade;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Routing\Annotation\Route;
@@ -92,9 +94,20 @@ class BadgeController extends BaseController
         return new HttpCreatedFacade();
     }
 
-    public function read()
+    /**
+     * Get a badge.
+     *
+     * @Endpoint(
+     *   priority = 22,
+     *   response = @Facade(class = BadgeReadFacade::class)
+     * )
+     * @Route(name="read", path="/{badgeId}", methods={"GET"})
+     * @Entity("badge", expr="repository.findOneByExternalIdAndCurrentPlatform(badgeId)")
+     * @IsGranted("BADGE", subject="badge")
+     */
+    public function read(Badge $badge)
     {
-
+        return $this->badgeTransformer->expose($badge);
     }
 
     public function update()
