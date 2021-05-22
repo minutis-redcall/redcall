@@ -83,7 +83,7 @@ class CategoryFacade implements FacadeInterface
         return $facade;
     }
 
-    public function getExternalId() : string
+    public function getExternalId() : ?string
     {
         return $this->externalId;
     }
@@ -95,7 +95,7 @@ class CategoryFacade implements FacadeInterface
         return $this;
     }
 
-    public function getName() : string
+    public function getName() : ?string
     {
         return $this->name;
     }
@@ -107,7 +107,7 @@ class CategoryFacade implements FacadeInterface
         return $this;
     }
 
-    public function getPriority() : int
+    public function getPriority() : ?int
     {
         return $this->priority;
     }

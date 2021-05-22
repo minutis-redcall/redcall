@@ -10,8 +10,10 @@ use App\Transformer\Admin\BadgeTransformer;
 use Bundles\ApiBundle\Annotation\Endpoint;
 use Bundles\ApiBundle\Annotation\Facade;
 use Bundles\ApiBundle\Base\BaseController;
+use Bundles\ApiBundle\Model\Facade\Http\HttpCreatedFacade;
 use Bundles\ApiBundle\Model\Facade\QueryBuilderFacade;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -67,9 +69,27 @@ class BadgeController extends BaseController
         });
     }
 
-    public function create()
+    /**
+     * Create a new badge category.
+     *
+     * @Endpoint(
+     *   priority = 21,
+     *   request  = @Facade(class     = BadgeFacade::class),
+     *   response = @Facade(class     = HttpCreatedFacade::class)
+     * )
+     * @Route(name="create", methods={"POST"})
+     */
+    public function create(BadgeFacade $facade)
     {
+        $badge = $this->badgeTransformer->reconstruct($facade);
 
+        $this->validate($badge, [
+            new UniqueEntity('externalId'),
+        ]);
+
+        $this->badgeManager->save($badge);
+
+        return new HttpCreatedFacade();
     }
 
     public function read()

@@ -3,8 +3,10 @@
 namespace App\Transformer\Admin;
 
 use App\Entity\Badge;
+use App\Facade\Admin\Badge\BadgeFacade;
 use App\Facade\Admin\Badge\BadgeReadFacade;
 use App\Manager\VolunteerManager;
+use App\Security\Helper\Security;
 use Bundles\ApiBundle\Base\BaseTransformer;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
 
@@ -14,6 +16,7 @@ class BadgeTransformer extends BaseTransformer
     {
         return [
             CategoryTransformer::class,
+            Security::class,
             VolunteerManager::class,
         ];
     }
@@ -61,13 +64,51 @@ class BadgeTransformer extends BaseTransformer
 
     public function reconstruct(FacadeInterface $facade, $object = null)
     {
-        /** @var BadgeWriteFacade $facade */
+        /** @var BadgeFacade $facade */
+        $badge = $object;
+        if (!$badge) {
+            $badge = new Badge();
+            $badge->setPlatform($this->getSecurity()->getPlatform());
+        }
 
-        //$badge = $object ?? new BadgeWriteFacade();
+        if (null !== $facade->getExternalId()) {
+            $badge->setExternalId($facade->getExternalId());
+        }
 
-        // ...
+        if (null !== $facade->getName()) {
+            $badge->setName($facade->getName());
+        }
 
-        // return $badge;
+        if (null !== $facade->getDescription()) {
+            $badge->setDescription($facade->getDescription());
+        }
+
+        if (null !== $facade->getVisibility()) {
+            $badge->setVisibility($facade->getVisibility());
+        }
+
+        if (null !== $facade->getRenderingPriority()) {
+            $badge->setRenderingPriority($facade->getRenderingPriority());
+        }
+
+        if (null !== $facade->getTriggeringPriority()) {
+            $badge->setTriggeringPriority($facade->getTriggeringPriority());
+        }
+
+        if (null !== $facade->getLocked()) {
+            $badge->setLocked($facade->getLocked());
+        }
+
+        if (null !== $facade->getEnabled()) {
+            $badge->setEnabled($facade->getEnabled());
+        }
+
+        return $badge;
+    }
+
+    private function getSecurity() : Security
+    {
+        return $this->get(Security::class);
     }
 
     private function getCategoryTransformer() : CategoryTransformer
