@@ -65,7 +65,7 @@ class PhoneValidator extends ConstraintValidator
             } else {
                 $this->context
                     ->buildViolation(
-                        $this->translator->trans('phone_card.error_taken', [
+                        $this->translator->trans('phone_card.error_already_taken', [
                             '%externalId%'     => $phone->getVolunteer()->getExternalId(),
                             '%truncated_name%' => $phone->getVolunteer()->getTruncatedName(),
                         ])

@@ -675,8 +675,12 @@ class Volunteer
     /**
      * @return Collection|Badge[]
      */
-    public function getBadges() : Collection
+    public function getBadges(bool $onlyEnabled = true) : Collection
     {
+        if ($onlyEnabled) {
+            return $this->getEnabledBadges();
+        }
+
         return $this->badges->filter(function (Badge $badge) {
             return $this->platform === $badge->getPlatform();
         });
@@ -688,6 +692,13 @@ class Volunteer
         foreach ($badges as $badge) {
             $this->badges->add($badge);
         }
+    }
+
+    public function getEnabledBadges() : Collection
+    {
+        return $this->badges->filter(function (Badge $badge) {
+            return $this->platform === $badge->getPlatform() && $badge->isEnabled();
+        });
     }
 
     public function addBadge(Badge $badge) : self

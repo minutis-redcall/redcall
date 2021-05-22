@@ -595,7 +595,7 @@ manage_volunteers:
     mail_subject: '⚠️ RedCall: Tienes un mensaje'
   form:
     added: 'La persona voluntaria se ha añadido correctamente.'
-    create: 'Añadir una nueva persona voluntaria'
+    add: 'Añadir una nueva persona voluntaria'
     email: Email
     email_locked: 'Blockear el email *'
     email_optin: 'Disponible por email'

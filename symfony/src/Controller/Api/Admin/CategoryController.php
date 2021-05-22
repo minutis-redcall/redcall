@@ -131,7 +131,7 @@ class CategoryController extends BaseController
      *   response = @Facade(class = CategoryFacade::class)
      * )
      * @Route(name="read", path="/{categoryId}", methods={"GET"})
-     * @Entity("category", expr="repository.findOneByExternalId(categoryId)")
+     * @Entity("category", expr="repository.findOneByExternalIdAndCurrentPlatform(categoryId)")
      * @IsGranted("CATEGORY", subject="category")
      */
     public function read(Category $category)

@@ -637,7 +637,7 @@ manage_volunteers:
   form:
     added: 'Le bénévole a correctement été ajouté.'
     birthday: 'Date de naissance'
-    create: 'Ajouter un nouveau bénévole'
+    add: 'Créer un nouveau bénévole'
     email: Email
     email_locked: 'Geler l''email *'
     email_optin: 'Disponible par email'
