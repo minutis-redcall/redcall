@@ -171,7 +171,7 @@ class TokenController extends AbstractController
                 'signature' => $token->sign(
                     $form->get('method')->getData(),
                     $form->get('uri')->getData(),
-                    $form->get('body')->getData() ?? ''
+                    str_replace("\r", '', $form->get('body')->getData() ?? '')
                 ),
             ]);
         }

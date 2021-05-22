@@ -62,7 +62,7 @@ class AudienceManager
 
     public function getBadgeList(array $ids) : array
     {
-        $badges = $this->badgeManager->getNonVisibleUsableBadgesList($ids);
+        $badges = $this->badgeManager->getNonVisibleUsableBadgesList($this->security->getPlatform(), $ids);
 
         return array_map(function (Badge $badge) {
             return $badge->toSearchResults();

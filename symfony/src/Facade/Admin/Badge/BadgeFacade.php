@@ -110,7 +110,7 @@ abstract class BadgeFacade implements FacadeInterface
 
     static public function getExample(Facade $decorates = null) : FacadeInterface
     {
-        $facade = new static;
+        $facade = new BadgeReadFacade();
 
         $facade->externalId  = 'demo-truck';
         $facade->name        = 'TD';

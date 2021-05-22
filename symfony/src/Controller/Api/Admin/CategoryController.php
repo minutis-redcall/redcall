@@ -239,7 +239,7 @@ class CategoryController extends BaseController
     }
 
     /**
-     * Remove a list of badges from the given category.
+     * Delete a list of badges from the given category.
      *
      * @Endpoint(
      *   priority = 17,
@@ -252,7 +252,7 @@ class CategoryController extends BaseController
      * @Entity("category", expr="repository.findOneByExternalIdAndCurrentPlatform(categoryId)")
      * @IsGranted("CATEGORY", subject="category")
      */
-    public function badgeRemove(Category $category, BadgeReferenceCollectionFacade $externalIds)
+    public function badgeDelete(Category $category, BadgeReferenceCollectionFacade $externalIds)
     {
         return $this->bulkUpdateBadges($category, $externalIds, Crud::DELETE());
     }
