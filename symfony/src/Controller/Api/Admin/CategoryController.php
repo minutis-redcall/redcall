@@ -21,6 +21,7 @@ use App\Transformer\Admin\CategoryTransformer;
 use Bundles\ApiBundle\Annotation\Endpoint;
 use Bundles\ApiBundle\Annotation\Facade;
 use Bundles\ApiBundle\Base\BaseController;
+use Bundles\ApiBundle\Contracts\FacadeInterface;
 use Bundles\ApiBundle\Model\Facade\CollectionFacade;
 use Bundles\ApiBundle\Model\Facade\Http\HttpCreatedFacade;
 use Bundles\ApiBundle\Model\Facade\Http\HttpNoContentFacade;
@@ -88,7 +89,7 @@ class CategoryController extends BaseController
      * )
      * @Route(name="records", methods={"GET"})
      */
-    public function records(CategoryFiltersFacade $filters)
+    public function records(CategoryFiltersFacade $filters) : FacadeInterface
     {
         $qb = $this->categoryManager->getSearchInCategoriesQueryBuilder(
             $this->getPlatform(),
@@ -110,13 +111,13 @@ class CategoryController extends BaseController
      * )
      * @Route(name="create", methods={"POST"})
      */
-    public function create(CategoryFacade $facade)
+    public function create(CategoryFacade $facade) : FacadeInterface
     {
         $category = $this->categoryTransformer->reconstruct($facade);
 
         $this->validate($category, [
-            new UniqueEntity('externalId'),
-        ]);
+            new UniqueEntity(['platform', 'externalId']),
+        ], ['create']);
 
         $this->categoryManager->save($category);
 
@@ -134,7 +135,7 @@ class CategoryController extends BaseController
      * @Entity("category", expr="repository.findOneByExternalIdAndCurrentPlatform(categoryId)")
      * @IsGranted("CATEGORY", subject="category")
      */
-    public function read(Category $category)
+    public function read(Category $category) : FacadeInterface
     {
         return $this->categoryTransformer->expose($category);
     }
@@ -151,7 +152,7 @@ class CategoryController extends BaseController
      * @Entity("category", expr="repository.findOneByExternalIdAndCurrentPlatform(categoryId)")
      * @IsGranted("CATEGORY", subject="category")
      */
-    public function update(Category $category, CategoryFacade $facade)
+    public function update(Category $category, CategoryFacade $facade) : FacadeInterface
     {
         $category = $this->categoryTransformer->reconstruct($facade, $category);
 
@@ -181,7 +182,7 @@ class CategoryController extends BaseController
      * @Entity("category", expr="repository.findOneByExternalIdAndCurrentPlatform(categoryId)")
      * @IsGranted("CATEGORY", subject="category")
      */
-    public function delete(Category $category)
+    public function delete(Category $category) : FacadeInterface
     {
         $this->validate($category, [
             new Callback(function ($object, ExecutionContextInterface $context, $payload) {
@@ -210,7 +211,7 @@ class CategoryController extends BaseController
      * @Entity("category", expr="repository.findOneByExternalIdAndCurrentPlatform(categoryId)")
      * @IsGranted("CATEGORY", subject="category")
      */
-    public function badgeRecords(Category $category, PageFilterFacade $page)
+    public function badgeRecords(Category $category, PageFilterFacade $page) : FacadeInterface
     {
         $qb = $this->badgeManager->getBadgesInCategoryQueryBuilder($this->getPlatform(), $category);
 
@@ -233,7 +234,7 @@ class CategoryController extends BaseController
      * @Entity("category", expr="repository.findOneByExternalIdAndCurrentPlatform(categoryId)")
      * @IsGranted("CATEGORY", subject="category")
      */
-    public function badgeAdd(Category $category, BadgeReferenceCollectionFacade $externalIds)
+    public function badgeAdd(Category $category, BadgeReferenceCollectionFacade $externalIds) : FacadeInterface
     {
         return $this->bulkUpdateBadges($category, $externalIds, Crud::CREATE());
     }
@@ -252,7 +253,7 @@ class CategoryController extends BaseController
      * @Entity("category", expr="repository.findOneByExternalIdAndCurrentPlatform(categoryId)")
      * @IsGranted("CATEGORY", subject="category")
      */
-    public function badgeDelete(Category $category, BadgeReferenceCollectionFacade $externalIds)
+    public function badgeDelete(Category $category, BadgeReferenceCollectionFacade $externalIds) : FacadeInterface
     {
         return $this->bulkUpdateBadges($category, $externalIds, Crud::DELETE());
     }
@@ -269,7 +270,7 @@ class CategoryController extends BaseController
      * )
      * @Route(name="lock", path="/bulk/lock", methods={"PUT"})
      */
-    public function lock(CategoryReferenceCollectionFacade $externalIds)
+    public function lock(CategoryReferenceCollectionFacade $externalIds) : FacadeInterface
     {
         return $this->bulkUpdateCategories($externalIds, Crud::LOCK());
     }
@@ -286,7 +287,7 @@ class CategoryController extends BaseController
      * )
      * @Route(name="unlock", path="/bulk/unlock", methods={"PUT"})
      */
-    public function unlock(CategoryReferenceCollectionFacade $externalIds)
+    public function unlock(CategoryReferenceCollectionFacade $externalIds) : FacadeInterface
     {
         return $this->bulkUpdateCategories($externalIds, Crud::LOCK());
     }
@@ -303,7 +304,7 @@ class CategoryController extends BaseController
      * )
      * @Route(name="disable", path="/bulk/disable", methods={"PUT"})
      */
-    public function disable(CategoryReferenceCollectionFacade $externalIds)
+    public function disable(CategoryReferenceCollectionFacade $externalIds) : FacadeInterface
     {
         return $this->bulkUpdateCategories($externalIds, Crud::DISABLE());
     }
@@ -320,12 +321,13 @@ class CategoryController extends BaseController
      * )
      * @Route(name="enable", path="/bulk/enable", methods={"PUT"})
      */
-    public function enable(CategoryReferenceCollectionFacade $externalIds)
+    public function enable(CategoryReferenceCollectionFacade $externalIds) : FacadeInterface
     {
         return $this->bulkUpdateCategories($externalIds, Crud::ENABLE());
     }
 
-    private function bulkUpdateCategories(CategoryReferenceCollectionFacade $externalIds, Crud $action)
+    private function bulkUpdateCategories(CategoryReferenceCollectionFacade $externalIds,
+        Crud $action) : FacadeInterface
     {
         $response = new CollectionFacade();
 

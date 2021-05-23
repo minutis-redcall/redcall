@@ -11,12 +11,16 @@ use App\Transformer\Admin\BadgeTransformer;
 use Bundles\ApiBundle\Annotation\Endpoint;
 use Bundles\ApiBundle\Annotation\Facade;
 use Bundles\ApiBundle\Base\BaseController;
+use Bundles\ApiBundle\Contracts\FacadeInterface;
 use Bundles\ApiBundle\Model\Facade\Http\HttpCreatedFacade;
+use Bundles\ApiBundle\Model\Facade\Http\HttpNoContentFacade;
 use Bundles\ApiBundle\Model\Facade\QueryBuilderFacade;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\Constraints\Callback;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
  * Badges can be skills, nominations, trainings, or whatever
@@ -58,7 +62,7 @@ class BadgeController extends BaseController
      * )
      * @Route(name="records", methods={"GET"})
      */
-    public function records(BadgeFiltersFacade $filters)
+    public function records(BadgeFiltersFacade $filters) : FacadeInterface
     {
         $qb = $this->badgeManager->getSearchInBadgesQueryBuilder(
             $this->getPlatform(),
@@ -81,13 +85,13 @@ class BadgeController extends BaseController
      * )
      * @Route(name="create", methods={"POST"})
      */
-    public function create(BadgeFacade $facade)
+    public function create(BadgeFacade $facade) : FacadeInterface
     {
         $badge = $this->badgeTransformer->reconstruct($facade);
 
         $this->validate($badge, [
-            new UniqueEntity('externalId'),
-        ]);
+            new UniqueEntity(['platform', 'externalId']),
+        ], ['create']);
 
         $this->badgeManager->save($badge);
 
@@ -105,14 +109,40 @@ class BadgeController extends BaseController
      * @Entity("badge", expr="repository.findOneByExternalIdAndCurrentPlatform(badgeId)")
      * @IsGranted("BADGE", subject="badge")
      */
-    public function read(Badge $badge)
+    public function read(Badge $badge) : FacadeInterface
     {
         return $this->badgeTransformer->expose($badge);
     }
 
-    public function update()
+    /**
+     * Update a badge.
+     *
+     * @Endpoint(
+     *   priority = 23,
+     *   request  = @Facade(class = BadgeFacade::class),
+     *   response = @Facade(class = HttpNoContentFacade::class)
+     * )
+     * @Route(name="update", path="/{badgeId}", methods={"PUT"})
+     * @Entity("badge", expr="repository.findOneByExternalIdAndCurrentPlatform(badgeId)")
+     * @IsGranted("BADGE", subject="badge")
+     */
+    public function update(Badge $badge, BadgeFacade $facade)
     {
+        $badge = $this->badgeTransformer->reconstruct($facade, $badge);
 
+        $this->validate($badge, [
+            new UniqueEntity(['platform', 'externalId']),
+            new Callback(function ($object, ExecutionContextInterface $context, $payload) {
+                /** @var Badge $object */
+                if ($object->isLocked()) {
+                    $context->addViolation('This badge is locked.');
+                }
+            }),
+        ]);
+
+        $this->badgeManager->save($badge);
+
+        return new HttpNoContentFacade();
     }
 
     public function delete()

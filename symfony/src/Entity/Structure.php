@@ -23,6 +23,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *         @ORM\Index(name="name_idx", columns={"name"})
  *     }
  * )
+ * @ORM\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
  */
 class Structure
 {
