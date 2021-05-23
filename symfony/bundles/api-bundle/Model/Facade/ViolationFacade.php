@@ -32,8 +32,13 @@ class ViolationFacade implements FacadeInterface
     public function __construct(ConstraintViolation $violation)
     {
         $this->propertyPath = $violation->getPropertyPath();
-        $this->invalidValue = $violation->getInvalidValue();
+        $this->invalidValue = null;
         $this->message      = $violation->getMessage();
+
+        $invalidValue = $violation->getInvalidValue();
+        if (!is_object($invalidValue) || $invalidValue instanceof FacadeInterface) {
+            $this->invalidValue = $invalidValue;
+        }
     }
 
     static public function getExample(Facade $decorates = null) : FacadeInterface

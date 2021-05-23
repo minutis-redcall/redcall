@@ -132,12 +132,7 @@ class BadgeController extends BaseController
 
         $this->validate($badge, [
             new UniqueEntity(['platform', 'externalId']),
-            new Callback(function ($object, ExecutionContextInterface $context, $payload) {
-                /** @var Badge $object */
-                if ($object->isLocked()) {
-                    $context->addViolation('This badge is locked.');
-                }
-            }),
+            $this->getLockValidationCallback(),
         ]);
 
         $this->badgeManager->save($badge);
@@ -145,9 +140,26 @@ class BadgeController extends BaseController
         return new HttpNoContentFacade();
     }
 
-    public function delete()
+    /**
+     * Delete a badge.
+     *
+     * @Endpoint(
+     *   priority = 24,
+     *   response = @Facade(class = HttpNoContentFacade::class)
+     * )
+     * @Route(name="delete", path="/{badgeId}", methods={"DELETE"})
+     * @Entity("badge", expr="repository.findOneByExternalIdAndCurrentPlatform(badgeId)")
+     * @IsGranted("BADGE", subject="badge")
+     */
+    public function delete(Badge $badge)
     {
+        $this->validate($badge, [
+            $this->getLockValidationCallback(),
+        ]);
 
+        $this->badgeManager->remove($badge);
+
+        return new HttpNoContentFacade();
     }
 
     public function volunteerRecords()
@@ -183,5 +195,15 @@ class BadgeController extends BaseController
     public function disable()
     {
 
+    }
+
+    private function getLockValidationCallback() : Callback
+    {
+        return new Callback(function ($object, ExecutionContextInterface $context, $payload) {
+            /** @var Badge $object */
+            if ($object->isLocked()) {
+                $context->addViolation('This badge is locked.');
+            }
+        });
     }
 }

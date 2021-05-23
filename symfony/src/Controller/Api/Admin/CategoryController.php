@@ -158,12 +158,7 @@ class CategoryController extends BaseController
 
         $this->validate($category, [
             new UniqueEntity(['platform', 'externalId']),
-            new Callback(function ($object, ExecutionContextInterface $context, $payload) {
-                /** @var Category $object */
-                if ($object->isLocked()) {
-                    $context->addViolation('This category is locked.');
-                }
-            }),
+            $this->getLockValidationCallback(),
         ]);
 
         $this->categoryManager->save($category);
@@ -185,12 +180,7 @@ class CategoryController extends BaseController
     public function delete(Category $category) : FacadeInterface
     {
         $this->validate($category, [
-            new Callback(function ($object, ExecutionContextInterface $context, $payload) {
-                /** @var Category $object */
-                if ($object->isLocked()) {
-                    $context->addViolation('This category is locked.');
-                }
-            }),
+            $this->getLockValidationCallback(),
         ]);
 
         $this->categoryManager->remove($category);
@@ -324,6 +314,16 @@ class CategoryController extends BaseController
     public function enable(CategoryReferenceCollectionFacade $externalIds) : FacadeInterface
     {
         return $this->bulkUpdateCategories($externalIds, Crud::ENABLE());
+    }
+
+    private function getLockValidationCallback() : Callback
+    {
+        return new Callback(function ($object, ExecutionContextInterface $context, $payload) {
+            /** @var Category $object */
+            if ($object->isLocked()) {
+                $context->addViolation('This category is locked.');
+            }
+        });
     }
 
     private function bulkUpdateCategories(CategoryReferenceCollectionFacade $externalIds,
