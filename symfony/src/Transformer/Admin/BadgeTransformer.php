@@ -3,8 +3,8 @@
 namespace App\Transformer\Admin;
 
 use App\Entity\Badge;
-use App\Facade\Admin\Badge\BadgeFacade;
-use App\Facade\Admin\Badge\BadgeReadFacade;
+use App\Facade\Badge\BadgeFacade;
+use App\Facade\Badge\BadgeReadFacade;
 use App\Manager\VolunteerManager;
 use App\Security\Helper\Security;
 use Bundles\ApiBundle\Base\BaseTransformer;
@@ -43,7 +43,7 @@ class BadgeTransformer extends BaseTransformer
             ->setCategory(
                 $this->getCategoryTransformer()->expose($badge->getCategory())
             )
-            ->setCoveredBy(
+            ->setCoveredByCount(
                 count($badge->getCoveringBadges())
             )
             ->setCoversCount(

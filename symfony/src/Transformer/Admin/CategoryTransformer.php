@@ -3,7 +3,7 @@
 namespace App\Transformer\Admin;
 
 use App\Entity\Category;
-use App\Facade\Admin\Category\CategoryFacade;
+use App\Facade\Category\CategoryFacade;
 use App\Security\Helper\Security;
 use Bundles\ApiBundle\Base\BaseTransformer;
 use Bundles\ApiBundle\Contracts\FacadeInterface;

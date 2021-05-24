@@ -27,7 +27,10 @@
         </div>
     {% endif %}
 
-    <div class="h3">{{ endpoint.title }}</div>
+    <div class="h3">
+        <a href="#{{ category.name|slug }}-{{ endpoint.title|slug }}">🔗</a>
+        {{ endpoint.title }}
+    </div>
 
     <div class="input-group align-items-center">
         {% for method in endpoint.methods %}
@@ -36,7 +39,7 @@
         <p class="form-control" style="font-size:14px;">{{ endpoint.uri }}</p>
         <a href="{{ path('developer_token_console', {token: token, categoryName: category.name, endpointTitle: endpoint.title}) }}"
            target="_blank"
-           class="btn btn-light form-control" style="margin-left:5px;">Open in console</a>
+           class="btn btn-secondary form-control" style="margin-left:5px;">Open in console</a>
     </div>
 
     {% if endpoint.description %}

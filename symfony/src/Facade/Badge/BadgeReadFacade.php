@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Facade\Admin\Badge;
+namespace App\Facade\Badge;
 
-use App\Facade\Admin\Category\CategoryFacade;
+use App\Facade\Category\CategoryFacade;
 use Bundles\ApiBundle\Annotation\Facade;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
 
@@ -26,7 +26,7 @@ class BadgeReadFacade extends BadgeFacade
      *
      * @var int
      */
-    protected $coveredBy = 0;
+    protected $coveredByCount = 0;
 
     /**
      * Number of badges that this one covers.
@@ -91,14 +91,14 @@ class BadgeReadFacade extends BadgeFacade
         return $this;
     }
 
-    public function getCoveredBy() : int
+    public function getCoveredByCount() : int
     {
-        return $this->coveredBy;
+        return $this->coveredByCount;
     }
 
-    public function setCoveredBy(int $coveredBy) : BadgeReadFacade
+    public function setCoveredByCount(int $coveredByCount) : BadgeReadFacade
     {
-        $this->coveredBy = $coveredBy;
+        $this->coveredByCount = $coveredByCount;
 
         return $this;
     }

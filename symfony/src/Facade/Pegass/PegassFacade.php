@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Facade\Admin\Pegass;
+namespace App\Facade\Pegass;
 
 use Bundles\ApiBundle\Annotation as Api;
 use Bundles\ApiBundle\Annotation\Facade;

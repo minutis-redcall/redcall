@@ -3,9 +3,11 @@
 namespace App\Controller\Api\Admin;
 
 use App\Entity\Badge;
-use App\Facade\Admin\Badge\BadgeFacade;
-use App\Facade\Admin\Badge\BadgeFiltersFacade;
-use App\Facade\Admin\Badge\BadgeReadFacade;
+use App\Facade\Badge\BadgeFacade;
+use App\Facade\Badge\BadgeFiltersFacade;
+use App\Facade\Badge\BadgeReadFacade;
+use App\Facade\PageFilterFacade;
+use App\Facade\Volunteer\VolunteerReadFacade;
 use App\Manager\BadgeManager;
 use App\Transformer\Admin\BadgeTransformer;
 use Bundles\ApiBundle\Annotation\Endpoint;
@@ -76,7 +78,7 @@ class BadgeController extends BaseController
     }
 
     /**
-     * Create a new badge category.
+     * Create a new badge.
      *
      * @Endpoint(
      *   priority = 21,
@@ -162,7 +164,20 @@ class BadgeController extends BaseController
         return new HttpNoContentFacade();
     }
 
-    public function volunteerRecords()
+    /**
+     * List volunteers having the given badge.
+     *
+     * @Endpoint(
+     *   priority = 25,
+     *   request  = @Facade(class     = PageFilterFacade::class),
+     *   response = @Facade(class     = QueryBuilderFacade::class,
+     *                      decorates = @Facade(class = VolunteerReadFacade::class))
+     * )
+     * @Route(name="volunteer_records", path="/volunteer/{badgeId}", methods={"GET"})
+     * @Entity("badge", expr="repository.findOneByExternalIdAndCurrentPlatform(badgeId)")
+     * @IsGranted("BADGE", subject="badge")
+     */
+    public function volunteerRecords(Badge $badge)
     {
 
     }
