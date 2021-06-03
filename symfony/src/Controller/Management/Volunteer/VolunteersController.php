@@ -568,7 +568,8 @@ class VolunteersController extends BaseController
             'website_url' => getenv('WEBSITE_URL'),
         ]));
 
-        $this->communicationManager->launchNewCommunication($trigger, $email);
+        $communication = $this->communicationManager->createNewCommunication($trigger, $email);
+        $this->communicationManager->launchNewCommunication($trigger, $communication);
 
         $this->volunteerManager->anonymize($volunteer);
 
