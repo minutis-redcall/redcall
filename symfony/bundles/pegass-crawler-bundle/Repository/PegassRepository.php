@@ -100,10 +100,6 @@ class PegassRepository extends ServiceEntityRepository
     }
 
     /**
-     * @param string $type
-     * @param array  $identifiers
-     * @param string $parentIdentifier
-     *
      * @return Pegass[]
      */
     public function findMissingEntities(string $type, array $identifiers, string $parentIdentifier) : array
@@ -113,6 +109,20 @@ class PegassRepository extends ServiceEntityRepository
                     ->setParameter('type', $type)
                     ->andWhere('p.identifier NOT IN (:identifiers)')
                     ->setParameter('identifiers', $identifiers)
+                    ->andWhere('p.parentIdentifier LIKE :parentIdentifier')
+                    ->setParameter('parentIdentifier', sprintf('%%%s%%', $parentIdentifier))
+                    ->getQuery()
+                    ->execute();
+    }
+
+    /**
+     * @return Pegass[]
+     */
+    public function findAllChildrenEntities(string $type, string $parentIdentifier) : array
+    {
+        return $this->createQueryBuilder('p')
+                    ->where('p.type = :type')
+                    ->setParameter('type', $type)
                     ->andWhere('p.parentIdentifier LIKE :parentIdentifier')
                     ->setParameter('parentIdentifier', sprintf('%%%s%%', $parentIdentifier))
                     ->getQuery()
