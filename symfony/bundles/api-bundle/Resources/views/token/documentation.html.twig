@@ -65,16 +65,15 @@
         <h2>Endpoints</h2>
         <hr/>
 
+
         {% for category in category_collection.categories %}
             <div class="h4">{{ category.name }}</div>
             {% for endpoint in category.endpoints.endpoints %}
                 <div style="margin-left:15px;">
-                    <a href="#{{ category.name|slug }}-{{ endpoint.title|slug }}">{{ endpoint.title }}</a>
+                    <a href="{{ path('developer_token_endpoint', {token: token, categoryId: category.id, endpointId: endpoint.id}) }}">{{ endpoint.title }}</a>
                 </div>
             {% endfor %}
         {% endfor %}
-
-        {{ include('@Api/documentation/category_collection.html.twig', {token: token, category_collection: category_collection}) }}
 
         <br/><br/><br/>
 
