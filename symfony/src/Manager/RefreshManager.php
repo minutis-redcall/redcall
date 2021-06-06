@@ -154,7 +154,7 @@ class RefreshManager
         }
 
         $structure->setLastPegassUpdate(clone $pegass->getUpdatedAt());
-        $structure->setEnabled(true);
+        $structure->setEnabled($pegass->getEnabled());
 
         $this->debug('Updating a structure', [
             'type'              => $pegass->getType(),

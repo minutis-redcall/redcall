@@ -273,7 +273,6 @@ class PegassManager
         $entity->setContent($structure);
         $entity->setUpdatedAt(new DateTime());
         $entity->setEnabled(true);
-        $this->pegassRepository->save($entity);
 
         $parentIdentifier = sprintf('|%s|', $entity->getIdentifier());
 
@@ -290,9 +289,14 @@ class PegassManager
                     $missingEntity->setParentIdentifier(null);
                     $missingEntity->setEnabled(false);
                 }
-                $this->pegassRepository->save($entity);
+                $missingEntity->setUpdatedAt(new \DateTime('1984-07-10')); // Expired
+                $this->pegassRepository->save($missingEntity);
             }
+        } else {
+            $entity->setEnabled(false);
         }
+
+        $this->pegassRepository->save($entity);
 
         foreach ($pages as $page) {
             $list = $page['list'] ?? $page['content'] ?? [];

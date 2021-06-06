@@ -114,12 +114,12 @@ class Badge
     /**
      * @var self
      *
-     * @ORM\ManyToOne(targetEntity=Badge::class, inversedBy="synonyms", cascade="all")
+     * @ORM\ManyToOne(targetEntity=Badge::class, inversedBy="synonyms", cascade={"all"})
      */
     private $synonym;
 
     /**
-     * @ORM\OneToMany(targetEntity=Badge::class, mappedBy="synonym", cascade="all")
+     * @ORM\OneToMany(targetEntity=Badge::class, mappedBy="synonym", cascade={"all"})
      */
     private $synonyms;
 
