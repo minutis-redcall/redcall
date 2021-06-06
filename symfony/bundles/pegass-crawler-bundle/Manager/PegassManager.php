@@ -283,6 +283,7 @@ class PegassManager
         }
         if ($identifiers) {
             $missingEntities = $this->pegassRepository->findMissingEntities(Pegass::TYPE_VOLUNTEER, $identifiers, $parentIdentifier);
+
             foreach ($missingEntities as $missingEntity) {
                 $missingEntity->setParentIdentifier(str_replace($parentIdentifier, '|', $missingEntity->getParentIdentifier()));
                 if ('|' === $missingEntity->getParentIdentifier()) {
@@ -294,6 +295,12 @@ class PegassManager
             }
         } else {
             $entity->setEnabled(false);
+
+            $this->slackLogger->warning(sprintf(
+                'Disabling structure %s (%s)',
+                $entity->evaluate('structure.libelle'),
+                $entity->getIdentifier()
+            ));
         }
 
         $this->pegassRepository->save($entity);
