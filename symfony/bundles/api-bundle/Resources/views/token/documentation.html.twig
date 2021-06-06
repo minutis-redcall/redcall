@@ -14,11 +14,11 @@
             <tr>
                 <td><strong>Secret</strong></td>
                 <td>
-                    <div id="secret-container">
-                        {% for i in 0..64 %}*{% endfor %}
-                        <div class="float-right">
-                            <a href="#" id="show-secret" class="btn btn-sm btn-primary">Show</a>
-                        </div>
+                    <div id="star-container">{% for i in 0..64 %}*{% endfor %}</div>
+                    <div id="secret-container" class="d-none"></div>
+                    <div class="float-right">
+                        <a href="#" id="show-secret" class="btn btn-sm btn-primary">Show</a>
+                        <a href="#" id="hide-secret" class="btn btn-sm btn-primary d-none">Hide</a>
                     </div>
                 </td>
             </tr>
@@ -65,16 +65,15 @@
         <h2>Endpoints</h2>
         <hr/>
 
+
         {% for category in category_collection.categories %}
             <div class="h4">{{ category.name }}</div>
             {% for endpoint in category.endpoints.endpoints %}
                 <div style="margin-left:15px;">
-                    <a href="#{{ category.name|slug }}-{{ endpoint.title|slug }}">{{ endpoint.title }}</a>
+                    <a href="{{ path('developer_token_endpoint', {token: token, categoryId: category.id, endpointId: endpoint.id}) }}">{{ endpoint.title }}</a>
                 </div>
             {% endfor %}
         {% endfor %}
-
-        {{ include('@Api/documentation/category_collection.html.twig', {token: token, category_collection: category_collection}) }}
 
         <br/><br/><br/>
 
@@ -96,7 +95,19 @@
              e.preventDefault();
              $.get('{{ path('developer_token_show_secret', {token: token}) }}', function (data) {
                  $('#secret-container').html(data.secret);
+                 $('#hide-secret').removeClass('d-none');
+                 $('#star-container').addClass('d-none');
+                 $('#secret-container').removeClass('d-none');
              });
+             $('#show-secret').addClass('d-none');
+         });
+
+         $('#hide-secret').click(function (e) {
+             e.preventDefault();
+             $('#show-secret').removeClass('d-none');
+             $('#hide-secret').addClass('d-none');
+             $('#star-container').removeClass('d-none');
+             $('#secret-container').addClass('d-none');
          });
 
      </script>

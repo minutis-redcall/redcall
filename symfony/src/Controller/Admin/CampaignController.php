@@ -5,6 +5,7 @@ namespace App\Controller\Admin;
 use App\Base\BaseController;
 use App\Entity\Campaign;
 use App\Manager\CampaignManager;
+use App\Provider\Minutis\MinutisProvider;
 use Bundles\PaginationBundle\Manager\PaginationManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\Routing\Annotation\Route;
@@ -36,15 +37,16 @@ class CampaignController extends BaseController
      *
      * @return array
      */
-    public function index() : array
+    public function index(MinutisProvider $minutis) : array
     {
         $all = $this->campaignManager->getAllCampaignsQueryBuilder(
             $this->getPlatform()
         );
 
         return [
-            'type'  => 'all',
-            'table' => [
+            'minutis' => $minutis,
+            'type'    => 'all',
+            'table'   => [
                 'orderBy' => $this->orderBy($all, Campaign::class, 'c.createdAt', 'DESC', 'all'),
                 'pager'   => $this->paginationManager->getPager($all, 'all'),
             ],

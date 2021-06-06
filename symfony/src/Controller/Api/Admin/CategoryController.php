@@ -5,13 +5,13 @@ namespace App\Controller\Api\Admin;
 use App\Entity\Badge;
 use App\Entity\Category;
 use App\Enum\Crud;
-use App\Facade\Admin\Badge\BadgeReadFacade;
-use App\Facade\Admin\Badge\BadgeReferenceCollectionFacade;
-use App\Facade\Admin\Badge\BadgeReferenceFacade;
-use App\Facade\Admin\Category\CategoryFacade;
-use App\Facade\Admin\Category\CategoryFiltersFacade;
-use App\Facade\Admin\Category\CategoryReferenceCollectionFacade;
-use App\Facade\Admin\Category\CategoryReferenceFacade;
+use App\Facade\Badge\BadgeReadFacade;
+use App\Facade\Badge\BadgeReferenceCollectionFacade;
+use App\Facade\Badge\BadgeReferenceFacade;
+use App\Facade\Category\CategoryFacade;
+use App\Facade\Category\CategoryFiltersFacade;
+use App\Facade\Category\CategoryReferenceCollectionFacade;
+use App\Facade\Category\CategoryReferenceFacade;
 use App\Facade\Generic\UpdateStatusFacade;
 use App\Facade\PageFilterFacade;
 use App\Manager\BadgeManager;
@@ -21,6 +21,7 @@ use App\Transformer\Admin\CategoryTransformer;
 use Bundles\ApiBundle\Annotation\Endpoint;
 use Bundles\ApiBundle\Annotation\Facade;
 use Bundles\ApiBundle\Base\BaseController;
+use Bundles\ApiBundle\Contracts\FacadeInterface;
 use Bundles\ApiBundle\Model\Facade\CollectionFacade;
 use Bundles\ApiBundle\Model\Facade\Http\HttpCreatedFacade;
 use Bundles\ApiBundle\Model\Facade\Http\HttpNoContentFacade;
@@ -88,7 +89,7 @@ class CategoryController extends BaseController
      * )
      * @Route(name="records", methods={"GET"})
      */
-    public function records(CategoryFiltersFacade $filters)
+    public function records(CategoryFiltersFacade $filters) : FacadeInterface
     {
         $qb = $this->categoryManager->getSearchInCategoriesQueryBuilder(
             $this->getPlatform(),
@@ -110,13 +111,13 @@ class CategoryController extends BaseController
      * )
      * @Route(name="create", methods={"POST"})
      */
-    public function create(CategoryFacade $facade)
+    public function create(CategoryFacade $facade) : FacadeInterface
     {
         $category = $this->categoryTransformer->reconstruct($facade);
 
         $this->validate($category, [
-            new UniqueEntity('externalId'),
-        ]);
+            new UniqueEntity(['platform', 'externalId']),
+        ], ['create']);
 
         $this->categoryManager->save($category);
 
@@ -131,10 +132,10 @@ class CategoryController extends BaseController
      *   response = @Facade(class = CategoryFacade::class)
      * )
      * @Route(name="read", path="/{categoryId}", methods={"GET"})
-     * @Entity("category", expr="repository.findOneByExternalId(categoryId)")
+     * @Entity("category", expr="repository.findOneByExternalIdAndCurrentPlatform(categoryId)")
      * @IsGranted("CATEGORY", subject="category")
      */
-    public function read(Category $category)
+    public function read(Category $category) : FacadeInterface
     {
         return $this->categoryTransformer->expose($category);
     }
@@ -151,18 +152,13 @@ class CategoryController extends BaseController
      * @Entity("category", expr="repository.findOneByExternalIdAndCurrentPlatform(categoryId)")
      * @IsGranted("CATEGORY", subject="category")
      */
-    public function update(Category $category, CategoryFacade $facade)
+    public function update(Category $category, CategoryFacade $facade) : FacadeInterface
     {
         $category = $this->categoryTransformer->reconstruct($facade, $category);
 
         $this->validate($category, [
             new UniqueEntity(['platform', 'externalId']),
-            new Callback(function ($object, ExecutionContextInterface $context, $payload) {
-                /** @var Category $object */
-                if ($object->isLocked()) {
-                    $context->addViolation('This category is locked.');
-                }
-            }),
+            $this->getLockValidationCallback(),
         ]);
 
         $this->categoryManager->save($category);
@@ -181,15 +177,10 @@ class CategoryController extends BaseController
      * @Entity("category", expr="repository.findOneByExternalIdAndCurrentPlatform(categoryId)")
      * @IsGranted("CATEGORY", subject="category")
      */
-    public function delete(Category $category)
+    public function delete(Category $category) : FacadeInterface
     {
         $this->validate($category, [
-            new Callback(function ($object, ExecutionContextInterface $context, $payload) {
-                /** @var Category $object */
-                if ($object->isLocked()) {
-                    $context->addViolation('This category is locked.');
-                }
-            }),
+            $this->getLockValidationCallback(),
         ]);
 
         $this->categoryManager->remove($category);
@@ -210,7 +201,7 @@ class CategoryController extends BaseController
      * @Entity("category", expr="repository.findOneByExternalIdAndCurrentPlatform(categoryId)")
      * @IsGranted("CATEGORY", subject="category")
      */
-    public function badgeRecords(Category $category, PageFilterFacade $page)
+    public function badgeRecords(Category $category, PageFilterFacade $page) : FacadeInterface
     {
         $qb = $this->badgeManager->getBadgesInCategoryQueryBuilder($this->getPlatform(), $category);
 
@@ -233,13 +224,13 @@ class CategoryController extends BaseController
      * @Entity("category", expr="repository.findOneByExternalIdAndCurrentPlatform(categoryId)")
      * @IsGranted("CATEGORY", subject="category")
      */
-    public function badgeAdd(Category $category, BadgeReferenceCollectionFacade $externalIds)
+    public function badgeAdd(Category $category, BadgeReferenceCollectionFacade $externalIds) : FacadeInterface
     {
         return $this->bulkUpdateBadges($category, $externalIds, Crud::CREATE());
     }
 
     /**
-     * Remove a list of badges from the given category.
+     * Delete a list of badges from the given category.
      *
      * @Endpoint(
      *   priority = 17,
@@ -252,7 +243,7 @@ class CategoryController extends BaseController
      * @Entity("category", expr="repository.findOneByExternalIdAndCurrentPlatform(categoryId)")
      * @IsGranted("CATEGORY", subject="category")
      */
-    public function badgeRemove(Category $category, BadgeReferenceCollectionFacade $externalIds)
+    public function badgeDelete(Category $category, BadgeReferenceCollectionFacade $externalIds) : FacadeInterface
     {
         return $this->bulkUpdateBadges($category, $externalIds, Crud::DELETE());
     }
@@ -269,7 +260,7 @@ class CategoryController extends BaseController
      * )
      * @Route(name="lock", path="/bulk/lock", methods={"PUT"})
      */
-    public function lock(CategoryReferenceCollectionFacade $externalIds)
+    public function lock(CategoryReferenceCollectionFacade $externalIds) : FacadeInterface
     {
         return $this->bulkUpdateCategories($externalIds, Crud::LOCK());
     }
@@ -286,7 +277,7 @@ class CategoryController extends BaseController
      * )
      * @Route(name="unlock", path="/bulk/unlock", methods={"PUT"})
      */
-    public function unlock(CategoryReferenceCollectionFacade $externalIds)
+    public function unlock(CategoryReferenceCollectionFacade $externalIds) : FacadeInterface
     {
         return $this->bulkUpdateCategories($externalIds, Crud::LOCK());
     }
@@ -303,7 +294,7 @@ class CategoryController extends BaseController
      * )
      * @Route(name="disable", path="/bulk/disable", methods={"PUT"})
      */
-    public function disable(CategoryReferenceCollectionFacade $externalIds)
+    public function disable(CategoryReferenceCollectionFacade $externalIds) : FacadeInterface
     {
         return $this->bulkUpdateCategories($externalIds, Crud::DISABLE());
     }
@@ -320,12 +311,23 @@ class CategoryController extends BaseController
      * )
      * @Route(name="enable", path="/bulk/enable", methods={"PUT"})
      */
-    public function enable(CategoryReferenceCollectionFacade $externalIds)
+    public function enable(CategoryReferenceCollectionFacade $externalIds) : FacadeInterface
     {
         return $this->bulkUpdateCategories($externalIds, Crud::ENABLE());
     }
 
-    private function bulkUpdateCategories(CategoryReferenceCollectionFacade $externalIds, Crud $action)
+    private function getLockValidationCallback() : Callback
+    {
+        return new Callback(function ($object, ExecutionContextInterface $context, $payload) {
+            /** @var Category $object */
+            if ($object->isLocked()) {
+                $context->addViolation('This category is locked.');
+            }
+        });
+    }
+
+    private function bulkUpdateCategories(CategoryReferenceCollectionFacade $externalIds,
+        Crud $action) : FacadeInterface
     {
         $response = new CollectionFacade();
 

@@ -18,9 +18,9 @@ abstract class BaseController extends AbstractController
         ]);
     }
 
-    protected function validate($value, array $constraints)
+    protected function validate($value, array $constraints, array $groups = ['Default'])
     {
-        $violations = $this->get('validator')->validate($value, $constraints);
+        $violations = $this->get('validator')->validate($value, $constraints, $groups);
 
         if (count($violations)) {
             throw new ApiException(

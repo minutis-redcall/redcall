@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Facade\Admin\Badge;
+namespace App\Facade\Badge;
 
 use App\Facade\PageFilterFacade;
 use Bundles\ApiBundle\Annotation\Facade;

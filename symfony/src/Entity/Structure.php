@@ -23,6 +23,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *         @ORM\Index(name="name_idx", columns={"name"})
  *     }
  * )
+ * @ORM\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
  */
 class Structure
 {
@@ -239,7 +240,21 @@ class Structure
     /**
      * @return Collection|Volunteer[]
      */
-    public function getVolunteers() : Collection
+    public function getVolunteers(bool $onlyEnabled = true) : Collection
+    {
+        if ($onlyEnabled) {
+            return $this->getEnabledVolunteers();
+        }
+
+        return $this->volunteers->filter(function (Volunteer $volunteer) {
+            return $this->platform === $volunteer->getPlatform();
+        });
+    }
+
+    /**
+     * @return Collection|Volunteer[]
+     */
+    public function getEnabledVolunteers() : Collection
     {
         return $this->volunteers->filter(function (Volunteer $volunteer) {
             return $this->platform === $volunteer->getPlatform() && $volunteer->isEnabled();

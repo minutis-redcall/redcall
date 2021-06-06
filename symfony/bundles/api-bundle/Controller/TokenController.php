@@ -4,6 +4,7 @@ namespace Bundles\ApiBundle\Controller;
 
 use Bundles\ApiBundle\Entity\Token;
 use Bundles\ApiBundle\Manager\TokenManager;
+use Bundles\ApiBundle\Model\Documentation\CategoryDescription;
 use Bundles\ApiBundle\Model\Documentation\EndpointDescription;
 use Bundles\ApiBundle\Reader\CategoryCollectionReader;
 use Bundles\ApiBundle\Reader\FacadeReader;
@@ -101,7 +102,7 @@ class TokenController extends AbstractController
     }
 
     /**
-     * @Route(path="/documentation/{token}", name="documentation")
+     * @Route(path="/documentation/home/{token}", name="documentation")
      * @Entity("token", expr="repository.findOneByToken(token)")
      * @IsGranted("TOKEN", subject="token")
      * @Template
@@ -130,29 +131,27 @@ class TokenController extends AbstractController
     }
 
     /**
-     * @Route(
-     *     path="/console/{token}/open/{categoryName}/{endpointTitle}",
-     *     name="console",
-     *     defaults={"categoryName" = null, "endpointTitle" = null}
-     * )
+     * @Route(path="/documentation/endpoint/{token}/{categoryId}/{endpointId}", name="endpoint")
      * @Entity("token", expr="repository.findOneByToken(token)")
      * @IsGranted("TOKEN", subject="token")
      * @Template
      */
-    public function console(Request $request, Token $token, ?string $categoryName, ?string $endpointTitle)
+    public function endpoint(Request $request, Token $token, string $categoryId, string $endpointId)
     {
-        $endpoints = $this->extractEndpoints();
+        /** @var CategoryDescription $category */
+        /** @var EndpointDescription $endpoint */
+        [$category, $endpoint] = $this->extractCategoryAndEndpointFromTheirIds($categoryId, $endpointId);
 
-        if ($selection = $endpoint = $endpoints[$categoryName][$endpointTitle] ?? null) {
-            $selection             = json_decode($selection, true);
-            $selection['endpoint'] = $endpoint;
-        }
+        $consoleMaterial = $this->extractConsoleEndpoints();
+
+        $consoleSelection             = json_decode($consoleMaterial[$category->getName()][$endpoint->getTitle()], true);
+        $consoleSelection['endpoint'] = $endpoint;
 
         return [
-            'token'         => $token,
-            'form'          => $this->createConsoleForm($request, $endpoints, $selection)->createView(),
-            'categoryName'  => $categoryName,
-            'endpointTitle' => $endpointTitle,
+            'token'    => $token,
+            'console'  => $this->createConsoleForm($request, $consoleMaterial, $consoleSelection)->createView(),
+            'category' => $category,
+            'endpoint' => $endpoint,
         ];
     }
 
@@ -163,7 +162,7 @@ class TokenController extends AbstractController
      */
     public function sign(Request $request, Token $token)
     {
-        $form = $this->createConsoleForm($request, $this->extractEndpoints(), null);
+        $form = $this->createConsoleForm($request, $this->extractConsoleEndpoints(), null);
 
         if ($form->isSubmitted() && $form->isValid()) {
             return $this->json([
@@ -171,7 +170,7 @@ class TokenController extends AbstractController
                 'signature' => $token->sign(
                     $form->get('method')->getData(),
                     $form->get('uri')->getData(),
-                    $form->get('body')->getData() ?? ''
+                    str_replace("\r", '', $form->get('body')->getData() ?? '')
                 ),
             ]);
         }
@@ -180,6 +179,33 @@ class TokenController extends AbstractController
             'success'    => false,
             'violations' => $this->getErrorMessages($form),
         ]);
+    }
+
+    private function extractCategoryAndEndpointFromTheirIds(string $categoryId, string $endpointId) : array
+    {
+        $category   = null;
+        $endpoint   = null;
+        $collection = $this->categoryCollectionReader->read();
+        foreach ($collection->getCategories() as $currentCategory) {
+            if ($categoryId !== $currentCategory->getId()) {
+                continue;
+            }
+
+            $category = $currentCategory;
+            foreach ($currentCategory->getEndpoints()->getEndpoints() as $currentEndpoint) {
+                if ($endpointId !== $currentEndpoint->getId()) {
+                    continue;
+                }
+
+                $endpoint = $currentEndpoint;
+                break 2;
+            }
+        }
+        if (null === $category || null === $endpoint) {
+            throw $this->createNotFoundException();
+        }
+
+        return [$category, $endpoint];
     }
 
     private function getErrorMessages(FormInterface $form)
@@ -285,7 +311,7 @@ class TokenController extends AbstractController
             ->handleRequest($request);
     }
 
-    private function extractEndpoints() : array
+    private function extractConsoleEndpoints() : array
     {
         $categoryCollection = $this->categoryCollectionReader->read();
         $endpoints          = [];

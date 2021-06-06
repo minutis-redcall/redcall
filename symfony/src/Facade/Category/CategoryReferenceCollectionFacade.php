@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Facade\Admin\Category;
+namespace App\Facade\Category;
 
 use Bundles\ApiBundle\Annotation as Api;
 use Bundles\ApiBundle\Contracts\FacadeInterface;

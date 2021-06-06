@@ -50,9 +50,9 @@ class BadgeManager
         return $this->badgeRepository->searchNonVisibleUsableBadge($platform, $criteria, $limit);
     }
 
-    public function getNonVisibleUsableBadgesList(array $ids)
+    public function getNonVisibleUsableBadgesList(string $platform, array $ids)
     {
-        return $this->badgeRepository->getNonVisibleUsableBadgesList($ids);
+        return $this->badgeRepository->getNonVisibleUsableBadgesList($platform, $ids);
     }
 
     public function remove(Badge $badge)

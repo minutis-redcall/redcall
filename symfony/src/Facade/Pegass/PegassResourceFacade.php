@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Facade\Admin\Pegass;
+namespace App\Facade\Pegass;
 
 use Bundles\ApiBundle\Annotation\Facade;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
