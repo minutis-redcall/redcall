@@ -88,6 +88,11 @@ class OperationManager
 
     public function addResourceToOperation(Message $message)
     {
+        // Volunteer answered more than once
+        if ($message->getResourceExternalId()) {
+            return;
+        }
+
         $resourceExternalId = $this->minutis->addResourceToOperation(
             $message->getCommunication()->getCampaign()->getOperation()->getOperationExternalId(),
             $message->getVolunteer()->getExternalId()
