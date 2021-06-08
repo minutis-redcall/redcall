@@ -37,15 +37,15 @@ class ContextProcessor
     {
         $record['extra']['env']      = $this->kernel->getEnvironment();
         $record['extra']['platform'] = php_sapi_name();
-        if ($request = $this->requestStack->getMasterRequest()) {
+        if ($request = $this->requestStack->getMainRequest()) {
             $record['extra']['uri'] = $request->getUri();
             if ($request->getContent()) {
                 $record['extra']['body'] = $request->getContent();
             }
-        }
 
-        if ($this->tokenStorage->getToken() && $this->tokenStorage->getToken()->getUser() instanceof UserInterface) {
-            $record['extra']['user'] = $this->tokenStorage->getToken()->getUser()->getUsername();
+            if ($this->tokenStorage->getToken() && $this->tokenStorage->getToken()->getUser() instanceof UserInterface) {
+                $record['extra']['user'] = $this->tokenStorage->getToken()->getUser()->getUsername();
+            }
         }
 
         return $record;
