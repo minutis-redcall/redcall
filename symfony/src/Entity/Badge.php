@@ -114,12 +114,12 @@ class Badge
     /**
      * @var self
      *
-     * @ORM\ManyToOne(targetEntity=Badge::class, inversedBy="synonyms", cascade="all")
+     * @ORM\ManyToOne(targetEntity=Badge::class, inversedBy="synonyms", cascade={"all"})
      */
     private $synonym;
 
     /**
-     * @ORM\OneToMany(targetEntity=Badge::class, mappedBy="synonym", cascade="all")
+     * @ORM\OneToMany(targetEntity=Badge::class, mappedBy="synonym", cascade={"all"})
      */
     private $synonyms;
 
@@ -258,10 +258,24 @@ class Badge
     /**
      * @return Collection|Volunteer[]
      */
-    public function getVolunteers() : Collection
+    public function getVolunteers(bool $onlyEnabled = true) : Collection
     {
+        if ($onlyEnabled) {
+            return $this->getEnabledVolunteers();
+        }
+
         return $this->volunteers->filter(function (Volunteer $volunteer) {
             return $this->platform === $volunteer->getPlatform();
+        });
+    }
+
+    /**
+     * @return Collection|Volunteer[]
+     */
+    public function getEnabledVolunteers() : Collection
+    {
+        return $this->volunteers->filter(function (Volunteer $volunteer) {
+            return $this->platform === $volunteer->getPlatform() && $volunteer->isEnabled();
         });
     }
 
@@ -314,10 +328,24 @@ class Badge
     /**
      * @return Collection|self[]
      */
-    public function getChildren() : Collection
+    public function getChildren(bool $onlyEnabled = true) : Collection
     {
+        if ($onlyEnabled) {
+            return $this->getEnabledChildren();
+        }
+
         return $this->children->filter(function (Badge $badge) {
             return $this->platform === $badge->getPlatform();
+        });
+    }
+
+    /**
+     * @return Collection|self[]
+     */
+    public function getEnabledChildren() : Collection
+    {
+        return $this->children->filter(function (Badge $badge) {
+            return $this->platform === $badge->getPlatform() && $badge->isEnabled();
         });
     }
 
@@ -372,10 +400,24 @@ class Badge
     /**
      * @return Collection|self[]
      */
-    public function getSynonyms() : Collection
+    public function getSynonyms(bool $onlyEnabled = true) : Collection
     {
+        if ($onlyEnabled) {
+            return $this->getEnabledSynonyms();
+        }
+
         return $this->synonyms->filter(function (Badge $badge) {
             return $this->platform === $badge->getPlatform();
+        });
+    }
+
+    /**
+     * @return Collection|self[]
+     */
+    public function getEnabledSynonyms() : Collection
+    {
+        return $this->synonyms->filter(function (Badge $badge) {
+            return $this->platform === $badge->getPlatform() && $badge->isEnabled();
         });
     }
 

@@ -153,9 +153,9 @@ class VolunteersController extends BaseController
         }
 
         if ($structure) {
-            $queryBuilder = $this->volunteerManager->searchInStructureQueryBuilder($structure, $criteria, $hideDisabled, $filterUsers);
+            $queryBuilder = $this->volunteerManager->searchInStructureQueryBuilder($this->getPlatform(), $structure, $criteria, $hideDisabled, $filterUsers);
         } elseif ($this->isGranted('ROLE_ADMIN')) {
-            $queryBuilder = $this->volunteerManager->searchAllQueryBuilder($criteria, $hideDisabled, $filterUsers);
+            $queryBuilder = $this->volunteerManager->searchAllQueryBuilder($this->getPlatform(), $criteria, $hideDisabled, $filterUsers);
         } else {
             $queryBuilder = $this->volunteerManager->searchForCurrentUserQueryBuilder($criteria, $hideDisabled, $filterUsers);
         }
@@ -568,7 +568,8 @@ class VolunteersController extends BaseController
             'website_url' => getenv('WEBSITE_URL'),
         ]));
 
-        $this->communicationManager->launchNewCommunication($trigger, $email);
+        $communication = $this->communicationManager->createNewCommunication($trigger, $email);
+        $this->communicationManager->launchNewCommunication($trigger, $communication);
 
         $this->volunteerManager->anonymize($volunteer);
 

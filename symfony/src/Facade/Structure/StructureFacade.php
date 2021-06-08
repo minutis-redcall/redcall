@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Facade\Admin\Category;
+namespace App\Facade\Structure;
 
 use Bundles\ApiBundle\Annotation\Facade;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class CategoryFacade implements FacadeInterface
+class StructureFacade implements FacadeInterface
 {
     /**
-     * An unique identifier for the category.
+     * An unique identifier for the volunteer.
      *
-     * A random UUID, a name, or the same identifier as in your own application.
+     * You can use a random UUID, a name or the same identifier as in your own application.
      *
      * @Assert\NotBlank(groups={"create"})
      * @Assert\Length(max = 64)
@@ -21,8 +21,7 @@ class CategoryFacade implements FacadeInterface
     protected $externalId;
 
     /**
-     * A name for the given category.
-     * Name should be human readable as it may be used in user interfaces.
+     * Structure name.
      *
      * @Assert\NotBlank(groups={"create"})
      * @Assert\Length(max = 64)
@@ -32,20 +31,23 @@ class CategoryFacade implements FacadeInterface
     protected $name;
 
     /**
-     * The category rendering priority.
-     * You may want to see "First Aid" category before "Vehicles" in the audience selection form,
-     * or when listing volunteers badge.
+     * Structure representative's external id.
      *
-     * @Assert\Range(min = 0, max = 1000)
+     * In the French Red Cross, every structure has a president, elected
+     * every 4 years. Providing the structure's representative can be useful
+     * for redcall users (data deletion request, question about people allowed
+     * to trigger its volunteers...)
      *
-     * @var int|null
+     * @Assert\Length(max = 64)
+     *
+     * @var string
      */
-    protected $priority = 500;
+    protected $presidentExternalId;
 
     /**
-     * Whether the category is locked or not.
+     * Whether the structure is locked or not.
      *
-     * A "locked" category cannot be modified through APIs, this is useful when
+     * A "locked" structure cannot be modified through APIs, this is useful when
      * there are divergences between your own database and the RedCall database.
      *
      * @Assert\Choice(choices={false, true})
@@ -55,7 +57,7 @@ class CategoryFacade implements FacadeInterface
     protected $locked;
 
     /**
-     * Whether the category is enabled or not.
+     * Whether the structure is enabled or not.
      *
      * RedCall resources (categories, badges, structures, volunteers) may have relations with
      * other sensible parts of the application (triggers, communications, messages, answers, etc.),
@@ -70,17 +72,9 @@ class CategoryFacade implements FacadeInterface
      */
     protected $enabled;
 
-    static public function getExample(Facade $decorates = null) : FacadeInterface
+    static public function getExample(Facade $decorates = null): FacadeInterface
     {
-        $facade = new static;
-
-        $facade->externalId = 'vehicles';
-        $facade->name       = 'Vehicles';
-        $facade->priority   = 42;
-        $facade->locked     = false;
-        $facade->enabled    = true;
-
-        return $facade;
+        // TODO: Implement getExample() method.
     }
 
     public function getExternalId() : string
@@ -88,7 +82,7 @@ class CategoryFacade implements FacadeInterface
         return $this->externalId;
     }
 
-    public function setExternalId(string $externalId) : CategoryFacade
+    public function setExternalId(string $externalId) : StructureFacade
     {
         $this->externalId = $externalId;
 
@@ -100,43 +94,43 @@ class CategoryFacade implements FacadeInterface
         return $this->name;
     }
 
-    public function setName(string $name) : CategoryFacade
+    public function setName(string $name) : StructureFacade
     {
         $this->name = $name;
 
         return $this;
     }
 
-    public function getPriority() : int
+    public function getPresidentExternalId() : string
     {
-        return $this->priority;
+        return $this->presidentExternalId;
     }
 
-    public function setPriority(int $priority) : CategoryFacade
+    public function setPresidentExternalId(string $presidentExternalId) : StructureFacade
     {
-        $this->priority = $priority;
+        $this->presidentExternalId = $presidentExternalId;
 
         return $this;
     }
 
-    public function isLocked() : ?bool
+    public function getLocked() : ?bool
     {
         return $this->locked;
     }
 
-    public function setLocked(?bool $locked) : CategoryFacade
+    public function setLocked(?bool $locked) : StructureFacade
     {
         $this->locked = $locked;
 
         return $this;
     }
 
-    public function isEnabled() : ?bool
+    public function getEnabled() : ?bool
     {
         return $this->enabled;
     }
 
-    public function setEnabled(?bool $enabled) : CategoryFacade
+    public function setEnabled(?bool $enabled) : StructureFacade
     {
         $this->enabled = $enabled;
 

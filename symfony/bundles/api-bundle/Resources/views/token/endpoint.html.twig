@@ -1,0 +1,38 @@
+{% extends '@Api/base.html.twig' %}
+
+{% block body %}
+    {% import '@Api/macros.html.twig' as macros %}
+
+    <div class="text-left">
+
+        <div>
+            <div class="text-center">
+                <a href="{{ path('developer_token_documentation', {token: token}) }}" class="btn btn-secondary">Back</a>
+            </div>
+
+            <hr/>
+            <h2>{{ category.name }}</h2>
+            <hr/>
+
+            {{ include('@Api/documentation/endpoint.html.twig', {
+                token: token,
+                category: category,
+                endpoint: endpoint,
+            }) }}
+
+        </div>
+
+        <br/><br/>
+
+        {# Render console #}
+        {{ include('@Api/documentation/console.html.twig', {token: token, console: console, category: category, endpoint: endpoint}) }}
+
+        <br/>
+
+        <div class="text-center">
+            <a href="{{ path('developer_token_documentation', {token: token}) }}" class="btn btn-secondary">Back</a>
+        </div>
+
+    </div>
+
+{% endblock %}

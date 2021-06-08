@@ -84,7 +84,7 @@ class UserRepository extends AbstractUserRepository implements UserRepositoryInt
                 )
             )
             ->setParameter('criteria', sprintf('%%%s%%', $criteria))
-            ->andWhere('u.platform = :platform')
+            ->andWhere('u.isRoot = true OR u.platform = :platform')
             ->setParameter('platform', $this->security->getPlatform())
             ->addOrderBy('u.registeredAt', 'DESC')
             ->addOrderBy('u.username', 'ASC');

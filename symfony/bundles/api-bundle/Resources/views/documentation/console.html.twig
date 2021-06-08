@@ -1,0 +1,141 @@
+{% set cors_ok = website_url == app.request.schemeAndHttpHost %}
+
+<div class="text-left">
+    <h3>Console</h3>
+</div>
+
+{% if cors_ok %}
+
+    <div id="console" class="text-left">
+        {{ form_start(console) }}
+
+        <table style="width:100%;">
+            <tr>
+                <td colspan="2">{{ form_row(console.endpoint) }}</td>
+            </tr>
+            <tr>
+                <td style="width: 10%;">
+                    {{ form_row(console.method) }}
+                </td>
+                <td style="width: 90%;">
+                    {{ form_row(console.uri) }}
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">{{ form_row(console.body) }}</td>
+            </tr>
+        </table>
+
+        <div class="float-right">
+            <pre><code>X-Signature: <span id="signature">{{ token.sign(console.method.vars.data, console.uri.vars.data|default(''), console.body.vars.data|default('')) }}</span></code></pre>
+        </div>
+
+        {{ form_rest(console) }}
+    </div>
+
+    <div id="result-container" class="text-left bg-white d-none" style="border: 1px solid lightgrey; padding:8px;">
+        <div id="result-status" class="float-right" style="padding:10px;"></div>
+        <pre><code id="result"></code></pre>
+    </div>
+
+{% else %}
+
+    <div class="alert alert-warning text-left">
+        Console is only available at: <a href="{{ website_url }}">{{ website_url }}</a>
+    </div>
+
+{% endif %}
+
+<script type="text/javascript">
+
+    {# Endpoint selection #}
+    $('body').on('change', '#{{ console.endpoint.vars.id }}', function () {
+        var data = JSON.parse($(this).val());
+
+        $('#{{ console.method.vars.id }} option').removeAttr('selected');
+        $('#{{ console.method.vars.id }} option[value=' + data.method + ']').attr('selected', 'selected');
+        $('#{{ console.method.vars.id }}').change();
+
+        $('#{{ console.uri.vars.id }}').val(data.uri);
+        $('#{{ console.body.vars.id }}').val(data.body);
+
+        $('#result-container').addClass('d-none');
+        $('#result').html('');
+    });
+
+    {# Set body in "readonly" when GET is selected #}
+    var setReadonlyIfGetMethod = function () {
+        if ('GET' === $('#{{ console.method.vars.id }} option:selected').text()) {
+            $('#{{ console.body.vars.id }}').attr('readonly', true);
+        } else {
+            $('#{{ console.body.vars.id }}').removeAttr('readonly');
+        }
+    };
+    $('body').on('change', '#{{ console.method.vars.id }}', setReadonlyIfGetMethod);
+    $(function () {
+        setReadonlyIfGetMethod();
+    });
+
+    {# Signature update #}
+    var timeout = null;
+    $('body').on('keyup change', '#console input, #console select, #console textarea', function () {
+        clearTimeout(timeout);
+        timeout = setTimeout(function () {
+            $.post('{{ path('developer_token_sign', {token: token}) }}', $('#console form').serialize(), function (data) {
+                if (data.success) {
+                    $('#signature').html(data.signature);
+                }
+            });
+        }, 500);
+    });
+
+    {# Click on "run" #}
+    $('body').on('click', '#{{ console.run.vars.id }}', function (e) {
+        e.preventDefault();
+        var that = $(this);
+
+        var changeResult = function (data) {
+            var pretty = JSON.stringify(JSON.parse(data), null, 2);
+            $('#result-container').removeClass('d-none');
+            $('#result').html(pretty);
+            that.removeAttr('disabled');
+        };
+
+        $.post('{{ path('developer_token_sign', {token: token}) }}', $('#console form').serialize(), function (data) {
+            if (data.success) {
+                that.attr('disabled', 'disabled');
+                $.ajax(
+                    $('#{{ console.uri.vars.id }}').val(), {
+                        method: $('#{{ console.method.vars.id }} option:selected').text(),
+                        beforeSend: function (xhr) {
+                            xhr.setRequestHeader('Authorization', 'Bearer {{ token }}');
+                            xhr.setRequestHeader('X-Signature', data.signature);
+                        },
+                        data: $('#{{ console.body.vars.id }}').val(),
+                        contentType: 'application/json',
+                    }
+                ).done(function (data) {
+                    $('#result-status').html('✅');
+                    changeResult(data);
+                }).fail(function (xhr, status, errorThrown) {
+                    $('#result-status').html('❌');
+                    changeResult(xhr.responseText);
+                });
+            } else {
+                $('#result-status').html('❌');
+                var response = "Cannot sign URL, violations:\n\n";
+                $.each(data.violations, function (index) {
+                    response += index + "\n";
+                    $.each(this, function () {
+                        response += '- ' + this + "\n";
+                    });
+                    response += "\n";
+                });
+
+                $('#result-container').removeClass('d-none');
+                $('#result').html(response);
+            }
+        });
+    });
+
+</script>

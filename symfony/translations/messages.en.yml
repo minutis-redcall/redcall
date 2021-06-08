@@ -637,7 +637,7 @@ manage_volunteers:
   form:
     added: 'Volunteer has properly been added.'
     birthday: 'Birth day'
-    create: 'Create a new volunteer'
+    add: 'Create a new volunteer'
     email: Email
     email_locked: 'Locked email *'
     email_optin: 'Available by email'

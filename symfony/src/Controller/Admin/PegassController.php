@@ -87,18 +87,13 @@ class PegassController extends BaseController
             $onlyDevelopers = $search->get('only_developers')->getData();
         }
 
-        $platforms = null;
-        if ($this->getUser()->isRoot()) {
-            $platforms = $this->platformManager->getAvailablePlatforms();
-        }
-
         return $this->render('admin/pegass/index.html.twig', [
             'search'    => $search->createView(),
             'type'      => $request->get('type'),
             'users'     => $this->paginationManager->getPager(
                 $this->userManager->searchQueryBuilder($criteria ?? null, $onlyAdmins ?? false, $onlyDevelopers ?? false)
             ),
-            'platforms' => $platforms,
+            'platforms' => $this->platformManager->getAvailablePlatforms(),
         ]);
     }
 

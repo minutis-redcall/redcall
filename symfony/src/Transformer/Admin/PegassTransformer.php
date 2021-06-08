@@ -2,7 +2,7 @@
 
 namespace App\Transformer\Admin;
 
-use App\Facade\Admin\Pegass\PegassFacade;
+use App\Facade\Pegass\PegassFacade;
 use Bundles\ApiBundle\Base\BaseTransformer;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
 use Bundles\PegassCrawlerBundle\Entity\Pegass;

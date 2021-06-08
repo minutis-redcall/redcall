@@ -50,9 +50,7 @@ class BadgeRepository extends BaseRepository
         ?string $criteria,
         bool $onlyEnabled = true) : QueryBuilder
     {
-        $qb = $this->getBadgesQueryBuilder()
-                   ->andWhere('b.platform = :platform')
-                   ->setParameter('platform', $platform);
+        $qb = $this->getBadgesQueryBuilder($platform);
 
         if ($criteria) {
             $this->addSearchCriteria($qb, $criteria);
@@ -105,9 +103,9 @@ class BadgeRepository extends BaseRepository
                     ->getResult();
     }
 
-    public function getNonVisibleUsableBadgesList(array $ids)
+    public function getNonVisibleUsableBadgesList(string $platform, array $ids)
     {
-        return $this->getBadgesQueryBuilder()
+        return $this->getBadgesQueryBuilder($platform)
                     ->andWhere('b.synonym IS NULL')
                     ->andWhere('b.visibility = false')
                     ->andWhere('b.enabled = true')
@@ -137,13 +135,16 @@ class BadgeRepository extends BaseRepository
                     ->setParameter('category', $category);
     }
 
-    private function getBadgesQueryBuilder() : QueryBuilder
+    private function getBadgesQueryBuilder(string $platform) : QueryBuilder
     {
         return $this
             ->createQueryBuilder('b')
+            ->andWhere('b.platform = :platform')
+            ->setParameter('platform', $platform)
             ->leftJoin('b.category', 'c')
             ->addOrderBy('b.visibility', 'DESC')
-            ->addOrderBy('b.synonym', 'ASC')
+            ->leftJoin('b.synonym', 's')
+            ->addOrderBy('s.id', 'ASC')
             ->addOrderBy('(1000 - c.priority) * 1000 + 1000 - b.renderingPriority', 'DESC')
             ->addOrderBy('b.name', 'ASC')
             ->groupBy('b.id');

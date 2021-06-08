@@ -1,19 +1,19 @@
 <?php
 
-namespace App\Facade\Admin\Badge;
+namespace App\Facade\Badge;
 
 use Bundles\ApiBundle\Annotation\Facade;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
-abstract class BadgeFacade implements FacadeInterface
+class BadgeFacade implements FacadeInterface
 {
     /**
      * An unique identifier for the badge.
      *
      * You can use a random UUID, a name or the same identifier as in your own application.
      *
-     * @Assert\NotBlank
+     * @Assert\NotBlank(groups={"create"})
      * @Assert\Length(max = 64)
      *
      * @var string
@@ -25,7 +25,7 @@ abstract class BadgeFacade implements FacadeInterface
      *
      * Badge name should be small because it is rendered everywhere where a volunteer is rendered.
      *
-     * @Assert\NotBlank
+     * @Assert\NotBlank(groups={"create"})
      * @Assert\Length(max = 64)
      *
      * @var string
@@ -122,7 +122,7 @@ abstract class BadgeFacade implements FacadeInterface
         return $facade;
     }
 
-    public function getExternalId() : string
+    public function getExternalId() : ?string
     {
         return $this->externalId;
     }
@@ -134,7 +134,7 @@ abstract class BadgeFacade implements FacadeInterface
         return $this;
     }
 
-    public function getName() : string
+    public function getName() : ?string
     {
         return $this->name;
     }
