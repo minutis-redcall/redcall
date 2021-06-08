@@ -154,7 +154,7 @@ class RefreshManager
         }
 
         $structure->setLastPegassUpdate(clone $pegass->getUpdatedAt());
-        $structure->setEnabled(true);
+        $structure->setEnabled($pegass->getEnabled());
 
         $this->debug('Updating a structure', [
             'type'              => $pegass->getType(),
@@ -269,7 +269,7 @@ class RefreshManager
 
         // Remove volunteer from structures he does not belong to anymore
         $structuresToRemove = [];
-        foreach ($volunteer->getStructures() as $structure) {
+        foreach ($volunteer->getStructures(false) as $structure) {
             if (!in_array($structure->getId(), $structureIdsVolunteerBelongsTo)) {
                 $structuresToRemove[] = $structure;
             }

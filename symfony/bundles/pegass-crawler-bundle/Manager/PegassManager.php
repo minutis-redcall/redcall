@@ -272,8 +272,9 @@ class PegassManager
 
         $entity->setContent($structure);
         $entity->setUpdatedAt(new DateTime());
+
+        $wasEnabled = $entity->getEnabled();
         $entity->setEnabled(true);
-        $this->pegassRepository->save($entity);
 
         $parentIdentifier = sprintf('|%s|', $entity->getIdentifier());
 
@@ -282,17 +283,37 @@ class PegassManager
             $list        = $page['list'] ?? $page['content'] ?? [];
             $identifiers = array_merge($identifiers, array_column($list, 'id'));
         }
+
         if ($identifiers) {
             $missingEntities = $this->pegassRepository->findMissingEntities(Pegass::TYPE_VOLUNTEER, $identifiers, $parentIdentifier);
-            foreach ($missingEntities as $missingEntity) {
-                $missingEntity->setParentIdentifier(str_replace($parentIdentifier, '|', $missingEntity->getParentIdentifier()));
-                if ('|' === $missingEntity->getParentIdentifier()) {
-                    $missingEntity->setParentIdentifier(null);
-                    $missingEntity->setEnabled(false);
-                }
-                $this->pegassRepository->save($entity);
+        } else {
+            $missingEntities = $this->pegassRepository->findAllChildrenEntities(Pegass::TYPE_VOLUNTEER, $parentIdentifier);
+
+            $entity->setEnabled(false);
+
+            if ($wasEnabled) {
+                $this->slackLogger->warning(sprintf(
+                    'Disabling structure %s (%s)',
+                    $entity->evaluate('structure.libelle'),
+                    $entity->getIdentifier()
+                ));
             }
         }
+
+        // Removing the structure from volunteers that do not belong to it anymore
+        foreach ($missingEntities as $missingEntity) {
+            $missingEntity->setParentIdentifier(str_replace($parentIdentifier, '|', $missingEntity->getParentIdentifier()));
+
+            if ('|' === $missingEntity->getParentIdentifier()) {
+                $missingEntity->setParentIdentifier(null);
+                $missingEntity->setEnabled(false);
+            }
+
+            $missingEntity->setUpdatedAt(new \DateTime('1984-07-10')); // Expired
+            $this->pegassRepository->save($missingEntity);
+        }
+
+        $this->pegassRepository->save($entity);
 
         foreach ($pages as $page) {
             $list = $page['list'] ?? $page['content'] ?? [];
