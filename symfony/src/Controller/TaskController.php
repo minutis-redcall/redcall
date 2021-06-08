@@ -3,10 +3,9 @@
 namespace App\Controller;
 
 use App\Base\BaseController;
-use App\Communication\Sender;
-use App\Manager\MessageManager;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\RouterInterface;
@@ -17,16 +16,6 @@ use Symfony\Component\Routing\RouterInterface;
 class TaskController extends BaseController
 {
     /**
-     * @var MessageManager
-     */
-    private $messageManager;
-
-    /**
-     * @var Sender
-     */
-    private $sender;
-
-    /**
      * @var HttpKernelInterface
      */
     private $httpKernel;
@@ -36,15 +25,16 @@ class TaskController extends BaseController
      */
     private $router;
 
-    public function __construct(MessageManager $messageManager,
-        Sender $sender,
-        HttpKernelInterface $httpKernel,
-        RouterInterface $router)
+    /**
+     * @var RequestStack
+     */
+    private $requestStack;
+
+    public function __construct(HttpKernelInterface $httpKernel, RouterInterface $router, RequestStack $requestStack)
     {
-        $this->messageManager = $messageManager;
-        $this->sender         = $sender;
-        $this->httpKernel     = $httpKernel;
-        $this->router         = $router;
+        $this->httpKernel   = $httpKernel;
+        $this->router       = $router;
+        $this->requestStack = $requestStack;
     }
 
     /**
@@ -81,9 +71,14 @@ class TaskController extends BaseController
         }
 
         $subRequest = Request::create($uri);
+
         $subRequest->query->add($params['queryParams']);
         $subRequest->request->add($params['body']);
         $subRequest->headers->add($params['headers']);
+
+        $subRequest->setSession(
+            $this->requestStack->getMainRequest()->getSession()
+        );
 
         return $this->httpKernel->handle($subRequest, HttpKernelInterface::SUB_REQUEST);
     }
