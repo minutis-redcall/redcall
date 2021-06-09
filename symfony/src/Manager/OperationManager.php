@@ -103,6 +103,10 @@ class OperationManager
 
     public function removeResourceFromOperation(Message $message)
     {
+        if (!$message->getResourceExternalId()) {
+            return;
+        }
+
         $this->minutis->removeResourceFromOperation(
             $message->getCommunication()->getCampaign()->getOperation()->getOperationExternalId(),
             $message->getResourceExternalId()
