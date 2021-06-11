@@ -9,7 +9,7 @@ use App\Facade\Badge\BadgeReadFacade;
 use App\Facade\PageFilterFacade;
 use App\Facade\Volunteer\VolunteerReadFacade;
 use App\Manager\BadgeManager;
-use App\Transformer\Admin\BadgeTransformer;
+use App\Transformer\BadgeTransformer;
 use Bundles\ApiBundle\Annotation\Endpoint;
 use Bundles\ApiBundle\Annotation\Facade;
 use Bundles\ApiBundle\Base\BaseController;

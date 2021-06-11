@@ -56,32 +56,26 @@ class AbstractUser implements UserInterface, EquatableInterface
         $this->id = Uuid::uuid4();
     }
 
-    /**
-     * @return string
-     */
     public function getId() : string
     {
         return $this->id;
     }
 
-    /**
-     * @return string
-     */
     public function getUsername() : ?string
     {
         return $this->username;
     }
 
-    /**
-     * @param string $username
-     *
-     * @return $this
-     */
     public function setUsername(string $username) : AbstractUser
     {
         $this->username = $username;
 
         return $this;
+    }
+
+    public function getUserIdentifier() : string
+    {
+        return $this->username;
     }
 
     public function getPassword() : ?string
@@ -156,11 +150,6 @@ class AbstractUser implements UserInterface, EquatableInterface
     {
     }
 
-    public function hasRole($role) : bool
-    {
-        return in_array($role, $this->roles);
-    }
-
     public function getRoles() : array
     {
         $roles = $this->roles;
@@ -184,7 +173,7 @@ class AbstractUser implements UserInterface, EquatableInterface
     public function isEqualTo(UserInterface $user) : bool
     {
         return $user instanceof AbstractUser
-               && $user->getUsername() === $this->getUsername()
+               && $user->getUserIdentifier() === $this->getUserIdentifier()
                && $user->getPassword() === $this->getPassword()
                && $user->isVerified() === $this->isVerified()
                && $user->isTrusted() === $this->isTrusted()

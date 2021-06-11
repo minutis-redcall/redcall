@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Transformer\Admin;
+namespace App\Transformer;
 
 use App\Facade\Pegass\PegassFacade;
 use Bundles\ApiBundle\Base\BaseTransformer;
