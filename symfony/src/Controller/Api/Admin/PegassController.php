@@ -5,7 +5,7 @@ namespace App\Controller\Api\Admin;
 use App\Facade\Pegass\PegassFacade;
 use App\Facade\Pegass\PegassFiltersFacade;
 use App\Facade\Pegass\PegassResourceFacade;
-use App\Transformer\Admin\PegassTransformer;
+use App\Transformer\PegassTransformer;
 use Bundles\ApiBundle\Annotation\Endpoint;
 use Bundles\ApiBundle\Annotation\Facade;
 use Bundles\ApiBundle\Model\Facade\Http\HttpNoContentFacade;

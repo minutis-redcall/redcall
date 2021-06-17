@@ -211,7 +211,7 @@ class FormLoginAuthenticator extends AbstractFormLoginAuthenticator
     private function decreaseGrace()
     {
         $this->captchaManager->decreaseGrace(
-            $this->requestStack->getMasterRequest()->getClientIp()
+            $this->requestStack->getMainRequest()->getClientIp()
         );
     }
 }
