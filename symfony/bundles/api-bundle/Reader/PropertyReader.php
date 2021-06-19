@@ -104,7 +104,7 @@ class PropertyReader
         }
 
         if (!array_key_exists($propertyName, $properties)) {
-            throw new \ReflectionException(sprintf('Property %s::$%s does not exist', $class, $propertyName));
+            throw new \ReflectionException(sprintf('Property %s::$%s does not exist (check the name of your getters/setters)', $class, $propertyName));
         }
 
         return $properties[$propertyName];

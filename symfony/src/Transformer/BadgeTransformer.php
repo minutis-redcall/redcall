@@ -15,95 +15,114 @@ class BadgeTransformer extends BaseTransformer
     public static function getSubscribedServices()
     {
         return [
-            CategoryTransformer::class,
             Security::class,
             VolunteerManager::class,
+            ResourceTransformer::class,
         ];
     }
 
+    /**
+     * @param Badge|null $object
+     *
+     * @return BadgeReadFacade|null
+     */
     public function expose($object) : ?FacadeInterface
     {
-        /** @var Badge $badge */
-        $badge = $object;
-
-        if (!$badge) {
+        if (!$object) {
             return null;
         }
 
         $facade = new BadgeReadFacade();
+        $facade->setExternalId($object->getExternalId());
         $facade
-            ->setExternalId($badge->getExternalId())
-            ->setName($badge->getName())
-            ->setDescription($badge->getDescription())
-            ->setVisibility($badge->getVisibility())
-            ->setRenderingPriority($badge->getRenderingPriority())
-            ->setTriggeringPriority($badge->getTriggeringPriority())
-            ->setEnabled($badge->isEnabled())
-            ->setLocked($badge->isLocked())
-            ->setCategory(
-                $this->getCategoryTransformer()->expose($badge->getCategory())
-            )
-            ->setCoveredByCount(
-                count($badge->getCoveringBadges())
-            )
-            ->setCoversCount(
-                count($badge->getCoveredBadges())
-            )
-            ->setReplacedBy(
-                $this->expose($badge->getSynonym())
-            )
-            ->setReplacesCount(
-                count($badge->getSynonyms())
-            )
-            ->setPeopleCount(
-                $this->getVolunteerManager()->getVolunteerCountHavingBadgesQueryBuilder([$badge->getId()])
+            ->setName($object->getName());
+
+        $facade->setDescription($object->getDescription());
+        $facade->setVisibility($object->getVisibility());
+        $facade->setRenderingPriority($object->getRenderingPriority());
+        $facade->setTriggeringPriority($object->getTriggeringPriority());
+        $facade->setEnabled($object->isEnabled());
+
+        $facade->setLocked($object->isLocked());
+        $facade->setCategory(
+            $this->getResourceTransformer()->expose($object->getCategory())
+        );
+
+        foreach ($object->getCoveringBadges() as $badge) {
+            $facade->addCovers(
+                $this->getResourceTransformer()->expose($badge)
             );
+        }
+
+        foreach ($object->getCoveredBadges() as $badge) {
+            $facade->addCoveredBy(
+                $this->getResourceTransformer()->expose($badge)
+            );
+        }
+
+        $facade->setReplacedBy(
+            $this->getResourceTransformer()->expose($object->getSynonym())
+        );
+
+        foreach ($object->getSynonyms() as $synonym) {
+            $facade->addReplaces(
+                $this->getResourceTransformer()->expose($synonym)
+            );
+        }
+
+        $facade->setPeopleCount(
+            $this->getVolunteerManager()->getVolunteerCountHavingBadgesQueryBuilder([$object->getId()])
+        );
 
         return $facade;
     }
 
+    /**
+     * @param BadgeFacade $facade
+     * @param Badge|null  $object
+     *
+     * @return Badge
+     */
     public function reconstruct(FacadeInterface $facade, $object = null)
     {
-        /** @var BadgeFacade $facade */
-        $badge = $object;
-        if (!$badge) {
-            $badge = new Badge();
-            $badge->setPlatform($this->getSecurity()->getPlatform());
+        if (!$object) {
+            $object = new Badge();
+            $object->setPlatform($this->getSecurity()->getPlatform());
         }
 
         if (null !== $facade->getExternalId()) {
-            $badge->setExternalId($facade->getExternalId());
+            $object->setExternalId($facade->getExternalId());
         }
 
         if (null !== $facade->getName()) {
-            $badge->setName($facade->getName());
+            $object->setName($facade->getName());
         }
 
         if (null !== $facade->getDescription()) {
-            $badge->setDescription($facade->getDescription());
+            $object->setDescription($facade->getDescription());
         }
 
         if (null !== $facade->getVisibility()) {
-            $badge->setVisibility($facade->getVisibility());
+            $object->setVisibility($facade->getVisibility());
         }
 
         if (null !== $facade->getRenderingPriority()) {
-            $badge->setRenderingPriority($facade->getRenderingPriority());
+            $object->setRenderingPriority($facade->getRenderingPriority());
         }
 
         if (null !== $facade->getTriggeringPriority()) {
-            $badge->setTriggeringPriority($facade->getTriggeringPriority());
+            $object->setTriggeringPriority($facade->getTriggeringPriority());
         }
 
         if (null !== $facade->getLocked()) {
-            $badge->setLocked($facade->getLocked());
+            $object->setLocked($facade->getLocked());
         }
 
         if (null !== $facade->getEnabled()) {
-            $badge->setEnabled($facade->getEnabled());
+            $object->setEnabled($facade->getEnabled());
         }
 
-        return $badge;
+        return $object;
     }
 
     private function getSecurity() : Security
@@ -111,13 +130,13 @@ class BadgeTransformer extends BaseTransformer
         return $this->get(Security::class);
     }
 
-    private function getCategoryTransformer() : CategoryTransformer
-    {
-        return $this->get(CategoryTransformer::class);
-    }
-
     private function getVolunteerManager() : VolunteerManager
     {
         return $this->get(VolunteerManager::class);
+    }
+
+    private function getResourceTransformer() : ResourceTransformer
+    {
+        return $this->get(ResourceTransformer::class);
     }
 }

@@ -2,9 +2,11 @@
 
 namespace App\Facade\Volunteer;
 
-use App\Facade\Badge\BadgeReadFacade;
 use App\Facade\Phone\PhoneFacade;
-use App\Facade\Structure\StructureFacade;
+use App\Facade\Phone\PhoneReadFacade;
+use App\Facade\Resource\BadgeResourceFacade;
+use App\Facade\Resource\StructureResourceFacade;
+use App\Facade\Resource\UserResourceFacade;
 use App\Facade\User\UserFacade;
 use Bundles\ApiBundle\Annotation\Facade;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
@@ -15,21 +17,21 @@ class VolunteerReadFacade extends VolunteerFacade
     /**
      * Structures from which volunteer can be triggered
      *
-     * @var StructureFacade[]
+     * @var StructureResourceFacade[]
      */
     protected $structures;
 
     /**
      * Volunteer phone numbers
      *
-     * @var PhoneFacade[]
+     * @var PhoneReadFacade[]
      */
     protected $phones;
 
     /**
      * Volunteer badges
      *
-     * @var BadgeReadFacade[]
+     * @var BadgeResourceFacade[]
      */
     protected $badges;
 
@@ -49,10 +51,60 @@ class VolunteerReadFacade extends VolunteerFacade
 
     static public function getExample(Facade $decorates = null) : FacadeInterface
     {
-        $facade = parent::getExample($decorates);
+        /** @var self $facade */
+        $facade = new self;
+        foreach (get_object_vars(parent::getExample($decorates)) as $property => $value) {
+            $facade->{$property} = $value;
+        }
 
-        // ...
+        $facade->addStructure(StructureResourceFacade::getExample());
+        $facade->addPhone(PhoneReadFacade::getExample());
+        $facade->addBadge(BadgeResourceFacade::getExample());
 
         return $facade;
+    }
+
+    public function getStructures() : CollectionFacade
+    {
+        return $this->structures;
+    }
+
+    public function addStructure(StructureResourceFacade $facade)
+    {
+        $this->structures[] = $facade;
+    }
+
+    public function getPhones() : CollectionFacade
+    {
+        return $this->phones;
+    }
+
+    public function addPhone(PhoneFacade $facade)
+    {
+        $this->phones[] = $facade;
+    }
+
+    public function getBadges() : CollectionFacade
+    {
+        return $this->badges;
+    }
+
+    public function addBadge(BadgeResourceFacade $badge)
+    {
+        $this->badges[] = $badge;
+
+        return $this;
+    }
+
+    public function getUser() : ?UserResourceFacade
+    {
+        return $this->user;
+    }
+
+    public function setUser(?UserResourceFacade $user) : VolunteerReadFacade
+    {
+        $this->user = $user;
+
+        return $this;
     }
 }

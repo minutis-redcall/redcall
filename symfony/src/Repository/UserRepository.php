@@ -42,6 +42,12 @@ class UserRepository extends AbstractUserRepository implements UserRepositoryInt
         $this->_em->flush();
     }
 
+    public function createTrustedUserQueryBuilder() : QueryBuilder
+    {
+        return $this->createQueryBuilder('u')
+                    ->where('u.isTrusted = true');
+    }
+
     public function findOneByExternalId(string $platform, string $externalId) : ?User
     {
         return $this
@@ -102,15 +108,27 @@ class UserRepository extends AbstractUserRepository implements UserRepositoryInt
 
     public function getRedCallUsersInStructure(Structure $structure) : array
     {
-        return $this->createQueryBuilder('u')
+        return $this->createTrustedUserQueryBuilder()
                     ->join('u.structures', 's')
                     ->andWhere('s.id = :structure')
                     ->setParameter('structure', $structure)
-                    ->andWhere('u.isTrusted = true')
                     ->andWhere('u.platform = :platform')
                     ->setParameter('platform', $structure->getPlatform())
                     ->getQuery()
                     ->getResult();
+    }
+
+    public function getUserCountInStructure(Structure $structure) : int
+    {
+        return $this->createTrustedUserQueryBuilder()
+                    ->select('COUNT(u.id)')
+                    ->join('u.structures', 's')
+                    ->andWhere('s.id = :structure')
+                    ->setParameter('structure', $structure)
+                    ->andWhere('u.platform = :platform')
+                    ->setParameter('platform', $structure->getPlatform())
+                    ->getQuery()
+                    ->getSingleScalarResult();
     }
 }
 

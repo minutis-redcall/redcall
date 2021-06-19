@@ -9,17 +9,23 @@ use Bundles\PegassCrawlerBundle\Entity\Pegass;
 
 class PegassTransformer extends BaseTransformer
 {
+    /**
+     * @param Pegass $object
+     *
+     * @return PegassFacade|null
+     */
     public function expose($object) : ?FacadeInterface
     {
-        /** @var Pegass $pegass */
-        $pegass = $object;
+        if (!$object) {
+            return null;
+        }
 
         $facade = new PegassFacade();
-        $facade->setType($pegass->getType());
-        $facade->setIdentifier($pegass->getIdentifier());
-        $facade->setParentIdentifier($pegass->getParentIdentifier());
-        $facade->setContent($pegass->getContent());
-        $facade->setUpdatedAt($pegass->getUpdatedAt());
+        $facade->setType($object->getType());
+        $facade->setIdentifier($object->getIdentifier());
+        $facade->setParentIdentifier($object->getParentIdentifier());
+        $facade->setContent($object->getContent());
+        $facade->setUpdatedAt($object->getUpdatedAt());
 
         return $facade;
     }

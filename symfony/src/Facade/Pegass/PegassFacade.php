@@ -137,7 +137,7 @@ class PegassFacade implements FacadeInterface
         return $this->updatedAt;
     }
 
-    public function setUpdatedAt(\DateTime $updatedAt) : PegassFacade
+    public function setUpdatedAt(\DateTimeInterface $updatedAt) : PegassFacade
     {
         $this->updatedAt = $updatedAt;
 

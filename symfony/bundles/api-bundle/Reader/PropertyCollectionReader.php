@@ -66,6 +66,8 @@ class PropertyCollectionReader
             $collectionDescription->add($propertyDescription);
         }
 
+        $collectionDescription->sort();
+
         return $collectionDescription;
     }
 }

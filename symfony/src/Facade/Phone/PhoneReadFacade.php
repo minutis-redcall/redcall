@@ -41,17 +41,21 @@ class PhoneReadFacade extends PhoneFacade
      *
      * @var bool
      */
-    protected $isMobile;
+    protected $mobile;
 
     static public function getExample(Api\Facade $decorates = null) : FacadeInterface
     {
-        $facade = parent::getExample($decorates);
+        /** @var self $facade */
+        $facade = new self;
+        foreach (get_object_vars(parent::getExample($decorates)) as $property => $value) {
+            $facade->{$property} = $value;
+        }
 
         $facade->countryCode         = 'FR';
         $facade->prefix              = 33;
         $facade->nationalNumber      = '06 12 34 56 78';
         $facade->internationalNumber = '+33 6 12 34 56 78';
-        $facade->isMobile            = true;
+        $facade->mobile              = true;
 
         return $facade;
     }
@@ -106,12 +110,12 @@ class PhoneReadFacade extends PhoneFacade
 
     public function isMobile() : bool
     {
-        return $this->isMobile;
+        return $this->mobile;
     }
 
-    public function setIsMobile(bool $isMobile) : PhoneFacade
+    public function setMobile(bool $mobile) : PhoneFacade
     {
-        $this->isMobile = $isMobile;
+        $this->mobile = $mobile;
 
         return $this;
     }

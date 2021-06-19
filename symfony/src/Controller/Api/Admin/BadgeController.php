@@ -3,13 +3,16 @@
 namespace App\Controller\Api\Admin;
 
 use App\Entity\Badge;
+use App\Entity\Volunteer;
 use App\Facade\Badge\BadgeFacade;
 use App\Facade\Badge\BadgeFiltersFacade;
 use App\Facade\Badge\BadgeReadFacade;
 use App\Facade\PageFilterFacade;
 use App\Facade\Volunteer\VolunteerReadFacade;
 use App\Manager\BadgeManager;
+use App\Manager\VolunteerManager;
 use App\Transformer\BadgeTransformer;
+use App\Transformer\VolunteerTransformer;
 use Bundles\ApiBundle\Annotation\Endpoint;
 use Bundles\ApiBundle\Annotation\Facade;
 use Bundles\ApiBundle\Base\BaseController;
@@ -47,10 +50,25 @@ class BadgeController extends BaseController
      */
     private $badgeTransformer;
 
-    public function __construct(BadgeManager $badgeManager, BadgeTransformer $badgeTransformer)
+    /**
+     * @var VolunteerTransformer
+     */
+    private $volunteerTransformer;
+
+    /**
+     * @var VolunteerManager
+     */
+    private $volunteerManager;
+
+    public function __construct(BadgeManager $badgeManager,
+        BadgeTransformer $badgeTransformer,
+        VolunteerTransformer $volunteerTransformer,
+        VolunteerManager $volunteerManager)
     {
-        $this->badgeManager     = $badgeManager;
-        $this->badgeTransformer = $badgeTransformer;
+        $this->badgeManager         = $badgeManager;
+        $this->badgeTransformer     = $badgeTransformer;
+        $this->volunteerTransformer = $volunteerTransformer;
+        $this->volunteerManager     = $volunteerManager;
     }
 
     /**
@@ -177,9 +195,13 @@ class BadgeController extends BaseController
      * @Entity("badge", expr="repository.findOneByExternalIdAndCurrentPlatform(badgeId)")
      * @IsGranted("BADGE", subject="badge")
      */
-    public function volunteerRecords(Badge $badge)
+    public function volunteerRecords(Badge $badge, PageFilterFacade $filters)
     {
+        $qb = $this->volunteerManager->getVolunteersHavingBadgeQueryBuilder($badge);
 
+        return new QueryBuilderFacade($qb, $filters->getPage(), function (Volunteer $volunteer) {
+            return $this->volunteerTransformer->expose($volunteer);
+        });
     }
 
     public function volunteerAdd()

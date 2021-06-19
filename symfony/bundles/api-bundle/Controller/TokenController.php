@@ -7,7 +7,6 @@ use Bundles\ApiBundle\Manager\TokenManager;
 use Bundles\ApiBundle\Model\Documentation\CategoryDescription;
 use Bundles\ApiBundle\Model\Documentation\EndpointDescription;
 use Bundles\ApiBundle\Reader\CategoryCollectionReader;
-use Bundles\ApiBundle\Reader\FacadeReader;
 use Bundles\ApiBundle\Util;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
@@ -47,18 +46,11 @@ class TokenController extends AbstractController
      */
     private $categoryCollectionReader;
 
-    /**
-     * @var FacadeReader
-     */
-    private $facadeReader;
-
     public function __construct(TokenManager $tokenManager,
-        CategoryCollectionReader $categoryCollectionReader,
-        FacadeReader $facadeReader)
+        CategoryCollectionReader $categoryCollectionReader)
     {
         $this->tokenManager             = $tokenManager;
         $this->categoryCollectionReader = $categoryCollectionReader;
-        $this->facadeReader             = $facadeReader;
     }
 
     /**
@@ -145,7 +137,7 @@ class TokenController extends AbstractController
         $consoleMaterial = $this->extractConsoleEndpoints();
 
         $consoleSelection             = json_decode($consoleMaterial[$category->getName()][$endpoint->getTitle()], true);
-        $consoleSelection['endpoint'] = $endpoint;
+        $consoleSelection['endpoint'] = $consoleMaterial[$category->getName()][$endpoint->getTitle()];
 
         return [
             'token'    => $token,

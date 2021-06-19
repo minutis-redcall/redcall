@@ -20,54 +20,60 @@ class CategoryTransformer extends BaseTransformer
         $this->security = $security;
     }
 
+    /**
+     * @param Category $object
+     *
+     * @return CategoryFacade|null
+     */
     public function expose($object) : ?FacadeInterface
     {
-        /** @var Category $category */
-        $category = $object;
-
-        if (!$category) {
+        if (!$object) {
             return null;
         }
 
         $facade = new CategoryFacade();
-        $facade->setExternalId($category->getExternalId());
-        $facade->setName($category->getName());
-        $facade->setPriority($category->getPriority());
-        $facade->setLocked($category->isLocked());
-        $facade->setEnabled($category->isEnabled());
+        $facade->setExternalId($object->getExternalId());
+        $facade->setName($object->getName());
+        $facade->setPriority($object->getPriority());
+        $facade->setLocked($object->isLocked());
+        $facade->setEnabled($object->isEnabled());
 
         return $facade;
     }
 
+    /**
+     * @param CategoryFacade $facade
+     * @param Category|null  $object
+     *
+     * @return Category
+     */
     public function reconstruct(FacadeInterface $facade, $object = null)
     {
-        $category = $object;
-        if (!$category) {
-            $category = new Category();
-            $category->setPlatform($this->security->getPlatform());
+        if (!$object) {
+            $object = new Category();
+            $object->setPlatform($this->security->getPlatform());
         }
 
-        /** @var CategoryFacade $facade */
         if (null !== $facade->getExternalId()) {
-            $category->setExternalId($facade->getExternalId());
+            $object->setExternalId($facade->getExternalId());
         }
 
         if (null !== $facade->getName()) {
-            $category->setName($facade->getName());
+            $object->setName($facade->getName());
         }
 
         if (null !== $facade->getPriority()) {
-            $category->setPriority($facade->getPriority());
+            $object->setPriority($facade->getPriority());
         }
 
         if (null !== $facade->isLocked()) {
-            $category->setLocked($facade->isLocked());
+            $object->setLocked($facade->isLocked());
         }
 
         if (null !== $facade->isEnabled()) {
-            $category->setEnabled($facade->isEnabled());
+            $object->setEnabled($facade->isEnabled());
         }
 
-        return $category;
+        return $object;
     }
 }

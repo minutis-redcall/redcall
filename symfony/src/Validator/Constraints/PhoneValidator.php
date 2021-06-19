@@ -2,6 +2,7 @@
 
 namespace App\Validator\Constraints;
 
+use App\Contract\PhoneInterface;
 use App\Manager\PhoneManager;
 use libphonenumber\NumberParseException;
 use libphonenumber\PhoneNumberUtil;
@@ -29,8 +30,8 @@ class PhoneValidator extends ConstraintValidator
     }
 
     /**
-     * @param \App\Entity\Phone $value
-     * @param Constraint        $constraint
+     * @param PhoneInterface $value
+     * @param Constraint     $constraint
      */
     public function validate($value, Constraint $constraint)
     {
@@ -53,25 +54,27 @@ class PhoneValidator extends ConstraintValidator
             return;
         }
 
-        $phone = $this->phoneManager->findOneByPhoneNumber($value);
+        if ($value instanceof \App\Entity\Phone) {
+            $phone = $this->phoneManager->findOneByPhoneNumber($value);
 
-        // This phone number is already taken by someone else
-        if ($phone && $phone->getVolunteer() && $value->getVolunteer()
-            && $phone->getVolunteer()->getId() !== $value->getVolunteer()->getId()) {
-            // If it is taken by a disabled volunteer, allow to reuse it anyway
-            if (!$phone->getVolunteer()->isEnabled()) {
-                $phone->getVolunteer()->removePhone($phone);
-                $this->phoneManager->save($phone);
-            } else {
-                $this->context
-                    ->buildViolation(
-                        $this->translator->trans('phone_card.error_already_taken', [
-                            '%externalId%'     => $phone->getVolunteer()->getExternalId(),
-                            '%truncated_name%' => $phone->getVolunteer()->getTruncatedName(),
-                        ])
-                    )
-                    ->atPath('editor')
-                    ->addViolation();
+            // This phone number is already taken by someone else
+            if ($phone && $phone->getVolunteer() && $value->getVolunteer()
+                && $phone->getVolunteer()->getId() !== $value->getVolunteer()->getId()) {
+                // If it is taken by a disabled volunteer, allow to reuse it anyway
+                if (!$phone->getVolunteer()->isEnabled()) {
+                    $phone->getVolunteer()->removePhone($phone);
+                    $this->phoneManager->save($phone);
+                } else {
+                    $this->context
+                        ->buildViolation(
+                            $this->translator->trans('phone_card.error_already_taken', [
+                                '%externalId%'     => $phone->getVolunteer()->getExternalId(),
+                                '%truncated_name%' => $phone->getVolunteer()->getTruncatedName(),
+                            ])
+                        )
+                        ->atPath('editor')
+                        ->addViolation();
+                }
             }
         }
     }

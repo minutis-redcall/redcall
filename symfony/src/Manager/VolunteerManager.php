@@ -3,6 +3,7 @@
 namespace App\Manager;
 
 use App\Entity\Answer;
+use App\Entity\Badge;
 use App\Entity\GeoLocation;
 use App\Entity\Message;
 use App\Entity\Structure;
@@ -338,5 +339,15 @@ class VolunteerManager
         $noBadges = array_diff($volunteerIds, $priorities);
 
         return array_merge($priorities, $noBadges);
+    }
+
+    public function getVolunteerCountInStructure(Structure $structure) : int
+    {
+        return $this->volunteerRepository->getVolunteerCountInStructure($structure);
+    }
+
+    public function getVolunteersHavingBadgeQueryBuilder(Badge $badge)
+    {
+        return $this->volunteerRepository->getVolunteersHavingBadgeQueryBuilder($badge);
     }
 }

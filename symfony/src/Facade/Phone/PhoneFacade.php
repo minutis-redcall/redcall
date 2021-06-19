@@ -2,20 +2,28 @@
 
 namespace App\Facade\Phone;
 
+use App\Contract\PhoneInterface;
+use App\Validator\Constraints as CustomAssert;
 use Bundles\ApiBundle\Annotation as Api;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
-class PhoneFacade implements FacadeInterface
+class PhoneFacade implements PhoneInterface, FacadeInterface
 {
     /**
      * Whether this number is currently selected by the volunteer.
      *
+     * @Assert\NotBlank
+     * @Assert\Choice(choices={false, true})
+     *
      * @var bool
      */
-    protected $preferred;
+    protected $preferred = true;
 
     /**
      * The phone number in the international format E.164.
+     *
+     * @CustomAssert\Phone
      *
      * @var string
      */

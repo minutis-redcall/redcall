@@ -137,4 +137,9 @@ class UserManager extends BaseUserManager
 
         $application->run($input, new NullOutput());
     }
+
+    public function getUserCountInStructure(Structure $structure) : int
+    {
+        return $this->userRepository->getUserCountInStructure($structure);
+    }
 }
