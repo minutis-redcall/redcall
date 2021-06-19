@@ -91,10 +91,10 @@ class CampaignManager
     }
 
     public function launchNewCampaign(CampaignModel $campaignModel,
-        ProcessorInterface $processor = null) : ?CampaignEntity
+        ProcessorInterface $processor = null,
+        Volunteer $volunteer = null) : ?CampaignEntity
     {
-        $volunteer = null;
-        if ($this->tokenStorage->getToken()->getUser() instanceof UserInterface) {
+        if (!$volunteer && ($this->tokenStorage->getToken()->getUser() instanceof UserInterface)) {
             $volunteer = $this->tokenStorage->getToken()->getUser()->getVolunteer();
             if (!$volunteer) {
                 return null;
@@ -104,7 +104,7 @@ class CampaignManager
         $campaignEntity = new CampaignEntity();
         $campaignEntity
             ->setVolunteer($volunteer)
-            ->setPlatform($this->security->getPlatform())
+            ->setPlatform($volunteer->getPlatform())
             ->setLabel($campaignModel->label)
             ->setType($campaignModel->type)
             ->setNotes($campaignModel->notes)
@@ -300,6 +300,6 @@ class CampaignManager
         $campaign        = new CampaignModel($communication);
         $campaign->label = $title;
 
-        return $this->launchNewCampaign($campaign, $this->processor);
+        return $this->launchNewCampaign($campaign, $this->processor, $volunteer);
     }
 }
