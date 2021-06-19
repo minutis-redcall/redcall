@@ -40,7 +40,7 @@ security:
         entry_point: App\Security\Authenticator\MinutisAuthenticator
       remember_me:
         token_provider: 'Symfony\Bridge\Doctrine\Security\RememberMe\DoctrineTokenProvider'
-        secret: '%env(APP_SECRET)%'
+        secret: '%kernel.secret%'
 
   role_hierarchy:
     ROLE_ROOT: ROLE_ADMIN

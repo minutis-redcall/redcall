@@ -251,10 +251,7 @@ class AudienceType extends AbstractType
         }
 
         // Basic information
-        $ids         = array_merge(
-            array_keys($hierarchy),
-            $children
-        );
+        $ids         = array_merge(array_keys($hierarchy), $children) ?? [];
         $information = [];
         foreach ($this->structureManager->getVolunteerLocalCounts($this->security->getPlatform(), $ids) as $entry) {
             $information[$entry['id']] = [

@@ -19,13 +19,11 @@ use App\Manager\CampaignManager;
 use App\Manager\CategoryManager;
 use App\Manager\PrefilledAnswersManager;
 use App\Manager\StructureManager;
-use App\Manager\UserManager;
 use App\Manager\VolunteerManager;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * @Route(path="/widget", name="widget_")
@@ -62,24 +60,12 @@ class WidgetController extends BaseController
      */
     private $categoryManager;
 
-    /**
-     * @var UserManager
-     */
-    private $userManager;
-
-    /**
-     * @var TranslatorInterface
-     */
-    private $translator;
-
     public function __construct(CampaignManager $campaignManager,
         PrefilledAnswersManager $prefilledAnswersManager,
         VolunteerManager $volunteerManager,
         StructureManager $structureManager,
         BadgeManager $badgeManager,
-        CategoryManager $categoryManager,
-        UserManager $userManager,
-        TranslatorInterface $translator)
+        CategoryManager $categoryManager)
     {
         $this->campaignManager         = $campaignManager;
         $this->prefilledAnswersManager = $prefilledAnswersManager;
@@ -87,8 +73,6 @@ class WidgetController extends BaseController
         $this->structureManager        = $structureManager;
         $this->badgeManager            = $badgeManager;
         $this->categoryManager         = $categoryManager;
-        $this->userManager             = $userManager;
-        $this->translator              = $translator;
     }
 
     public function prefilledAnswers(?int $campaignId = null)

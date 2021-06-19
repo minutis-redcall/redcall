@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Transformer\Admin;
+namespace App\Transformer;
 
 use App\Entity\Category;
 use App\Facade\Category\CategoryFacade;

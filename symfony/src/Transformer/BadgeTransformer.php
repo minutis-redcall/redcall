@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Transformer\Admin;
+namespace App\Transformer;
 
 use App\Entity\Badge;
 use App\Facade\Badge\BadgeFacade;

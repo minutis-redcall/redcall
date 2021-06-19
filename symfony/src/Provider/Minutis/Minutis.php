@@ -7,6 +7,7 @@ use App\Settings;
 use Bundles\SettingsBundle\Manager\SettingManager;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Exception\ServerException;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -123,13 +124,22 @@ class Minutis implements MinutisProvider
             return null;
         }
 
-        $response = $this->getClient()->post(sprintf('/api/regulation/%d/ressource', $externalOperationId), $this->populateAuthentication([
-            'json' => [
-                'locked'       => true,
-                'regulationId' => $externalOperationId,
-                'ressource'    => $resource,
-            ],
-        ]));
+        try {
+            $response = $this->getClient()->post(sprintf('/api/regulation/%d/ressource', $externalOperationId), $this->populateAuthentication([
+                'json' => [
+                    'locked'       => true,
+                    'regulationId' => $externalOperationId,
+                    'ressource'    => $resource,
+                ],
+            ]));
+        } catch (ClientException | ServerException $e) {
+            $this->logger->warning('Cannot add a Minutis resource to an operation', [
+                'operation_id' => $externalOperationId,
+                'volunteer_id' => $volunteerExternalId,
+            ]);
+
+            return null;
+        }
 
         $payload = json_decode($response->getBody()->getContents(), true);
 
@@ -138,7 +148,14 @@ class Minutis implements MinutisProvider
 
     public function removeResourceFromOperation(int $externalOperationId, int $resourceExternalId)
     {
-        $this->getClient()->delete(sprintf('/api/regulation/%d/ressource/%d', $externalOperationId, $resourceExternalId), $this->populateAuthentication());
+        try {
+            $this->getClient()->delete(sprintf('/api/regulation/%d/ressource/%d', $externalOperationId, $resourceExternalId), $this->populateAuthentication());
+        } catch (ClientException $e) {
+            $this->logger->warning('Cannot remove a Minutis resource from an operation', [
+                'operation_id' => $externalOperationId,
+                'resource_id'  => $resourceExternalId,
+            ]);
+        }
     }
 
     private function populateAuthentication(array $config = [])
