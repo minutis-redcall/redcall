@@ -224,9 +224,9 @@ class CategoryController extends BaseController
      * @Entity("category", expr="repository.findOneByExternalIdAndCurrentPlatform(categoryId)")
      * @IsGranted("CATEGORY", subject="category")
      */
-    public function badgeAdd(Category $category, BadgeReferenceCollectionFacade $externalIds) : FacadeInterface
+    public function badgeAdd(Category $category, BadgeReferenceCollectionFacade $collection) : FacadeInterface
     {
-        return $this->bulkUpdateBadges($category, $externalIds, Crud::CREATE());
+        return $this->bulkUpdateBadges($category, $collection, Crud::CREATE());
     }
 
     /**
@@ -388,12 +388,12 @@ class CategoryController extends BaseController
         return $response;
     }
 
-    private function bulkUpdateBadges(Category $category, BadgeReferenceCollectionFacade $externalIds, Crud $action)
+    private function bulkUpdateBadges(Category $category, BadgeReferenceCollectionFacade $collection, Crud $action)
     {
         $response = new CollectionFacade();
         $changes  = 0;
 
-        foreach ($externalIds->getEntries() as $entry) {
+        foreach ($collection->getEntries() as $entry) {
             /** @var BadgeReferenceFacade $entry */
             $badge = $this->badgeManager->findOneByExternalId($this->getPlatform(), $entry->getExternalId());
 
@@ -415,6 +415,8 @@ class CategoryController extends BaseController
                     }
 
                     $category->addBadge($badge);
+                    $this->badgeManager->save($badge);
+
                     break;
                 case Crud::DELETE():
                     if (!$category->getBadges()->contains($badge)) {
@@ -423,6 +425,8 @@ class CategoryController extends BaseController
                     }
 
                     $category->removeBadge($badge);
+                    $this->badgeManager->save($badge);
+
                     break;
             }
 

@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Facade\Badge;
+namespace App\Facade\Volunteer;
 
 use Bundles\ApiBundle\Annotation as Api;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class BadgeReferenceFacade implements FacadeInterface
+class VolunteerReferenceFacade implements FacadeInterface
 {
     /**
-     * The identifier you've set to identify a badge.
+     * The identifier you've set to identify a volunteer.
      *
      * @Assert\NotBlank()
      * @Assert\Length(max = 64)
@@ -22,7 +22,7 @@ class BadgeReferenceFacade implements FacadeInterface
     {
         $facade = new static;
 
-        $facade->externalId = sprintf('badge-%d', rand() % 100);
+        $facade->externalId = sprintf('volunteer-%d', rand() % 100);
 
         return $facade;
     }
@@ -32,7 +32,7 @@ class BadgeReferenceFacade implements FacadeInterface
         return $this->externalId;
     }
 
-    public function setExternalId(string $externalId) : BadgeReferenceFacade
+    public function setExternalId(string $externalId) : VolunteerReferenceFacade
     {
         $this->externalId = $externalId;
 

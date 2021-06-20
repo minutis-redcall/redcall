@@ -1,21 +1,21 @@
 <?php
 
-namespace App\Facade\Badge;
+namespace App\Facade\Volunteer;
 
 use Bundles\ApiBundle\Annotation as Api;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
 use Bundles\ApiBundle\Model\Facade\CollectionFacade;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class BadgeReferenceCollectionFacade implements FacadeInterface
+class VolunteerReferenceCollectionFacade implements FacadeInterface
 {
     /**
-     * Contains an array of badge external ids.
+     * Contains an array of volunteer external ids.
      *
      * @Assert\NotNull
      * @Assert\Count(min=1, max=100)
      *
-     * @var BadgeReferenceFacade[]
+     * @var VolunteerReferenceFacade[]
      */
     protected $entries;
 
@@ -29,9 +29,9 @@ class BadgeReferenceCollectionFacade implements FacadeInterface
         $facade = new static;
 
         $facade->setEntries([
-            BadgeReferenceFacade::getExample(),
-            BadgeReferenceFacade::getExample(),
-            BadgeReferenceFacade::getExample(),
+            VolunteerReferenceFacade::getExample(),
+            VolunteerReferenceFacade::getExample(),
+            VolunteerReferenceFacade::getExample(),
         ]);
 
         return $facade;
