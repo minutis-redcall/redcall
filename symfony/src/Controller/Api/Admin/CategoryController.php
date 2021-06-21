@@ -258,32 +258,15 @@ class CategoryController extends BaseController
      *   response = @Facade(class     = CollectionFacade::class,
      *                      decorates = @Facade(class = UpdateStatusFacade::class))
      * )
-     * @Route(name="lock", path="/bulk/lock", methods={"PUT"})
+     * @Route(name="lock", path="/lock", methods={"PUT"})
      */
-    public function lock(CategoryReferenceCollectionFacade $externalIds) : FacadeInterface
+    public function lock(CategoryReferenceCollectionFacade $collection) : FacadeInterface
     {
-        return $this->bulkUpdateCategories($externalIds, Crud::LOCK());
+        return $this->bulkUpdateCategories($collection, Crud::LOCK());
     }
 
     /**
      * Unlock a list of categories.
-     *
-     * @Endpoint(
-     *   priority = 18,
-     *   request  = @Facade(class     = CategoryReferenceCollectionFacade::class,
-     *                      decorates = @Facade(class = CategoryReferenceFacade::class)),
-     *   response = @Facade(class     = CollectionFacade::class,
-     *                      decorates = @Facade(class = UpdateStatusFacade::class))
-     * )
-     * @Route(name="unlock", path="/bulk/unlock", methods={"PUT"})
-     */
-    public function unlock(CategoryReferenceCollectionFacade $externalIds) : FacadeInterface
-    {
-        return $this->bulkUpdateCategories($externalIds, Crud::LOCK());
-    }
-
-    /**
-     * Disable a list of categories.
      *
      * @Endpoint(
      *   priority = 19,
@@ -292,15 +275,15 @@ class CategoryController extends BaseController
      *   response = @Facade(class     = CollectionFacade::class,
      *                      decorates = @Facade(class = UpdateStatusFacade::class))
      * )
-     * @Route(name="disable", path="/bulk/disable", methods={"PUT"})
+     * @Route(name="unlock", path="/unlock", methods={"PUT"})
      */
-    public function disable(CategoryReferenceCollectionFacade $externalIds) : FacadeInterface
+    public function unlock(CategoryReferenceCollectionFacade $collection) : FacadeInterface
     {
-        return $this->bulkUpdateCategories($externalIds, Crud::DISABLE());
+        return $this->bulkUpdateCategories($collection, Crud::LOCK());
     }
 
     /**
-     * Enable a list of categories.
+     * Disable a list of categories.
      *
      * @Endpoint(
      *   priority = 20,
@@ -309,11 +292,28 @@ class CategoryController extends BaseController
      *   response = @Facade(class     = CollectionFacade::class,
      *                      decorates = @Facade(class = UpdateStatusFacade::class))
      * )
-     * @Route(name="enable", path="/bulk/enable", methods={"PUT"})
+     * @Route(name="disable", path="/disable", methods={"PUT"})
      */
-    public function enable(CategoryReferenceCollectionFacade $externalIds) : FacadeInterface
+    public function disable(CategoryReferenceCollectionFacade $collection) : FacadeInterface
     {
-        return $this->bulkUpdateCategories($externalIds, Crud::ENABLE());
+        return $this->bulkUpdateCategories($collection, Crud::DISABLE());
+    }
+
+    /**
+     * Enable a list of categories.
+     *
+     * @Endpoint(
+     *   priority = 21,
+     *   request  = @Facade(class     = CategoryReferenceCollectionFacade::class,
+     *                      decorates = @Facade(class = CategoryReferenceFacade::class)),
+     *   response = @Facade(class     = CollectionFacade::class,
+     *                      decorates = @Facade(class = UpdateStatusFacade::class))
+     * )
+     * @Route(name="enable", path="/enable", methods={"PUT"})
+     */
+    public function enable(CategoryReferenceCollectionFacade $collection) : FacadeInterface
+    {
+        return $this->bulkUpdateCategories($collection, Crud::ENABLE());
     }
 
     private function getLockValidationCallback() : Callback
@@ -324,68 +324,6 @@ class CategoryController extends BaseController
                 $context->addViolation('This category is locked.');
             }
         });
-    }
-
-    private function bulkUpdateCategories(CategoryReferenceCollectionFacade $externalIds,
-        Crud $action) : FacadeInterface
-    {
-        $response = new CollectionFacade();
-
-        foreach ($externalIds->getEntries() as $entry) {
-            /** @var CategoryReferenceFacade $entry */
-            $category = $this->categoryManager->findOneByExternalIdAndCurrentPlatform($entry->getExternalId());
-
-            if (null === $category) {
-                $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Category does not exist');
-                continue;
-            }
-
-            if (!$this->isGranted('CATEGORY', $category)) {
-                $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Access denied');
-                continue;
-            }
-
-            switch ($action) {
-                case Crud::LOCK():
-                    if ($category->isLocked()) {
-                        $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Category already locked');
-                        continue 2;
-                    }
-
-                    $category->setLocked(true);
-                    break;
-                case Crud::UNLOCK():
-                    if (!$category->isLocked()) {
-                        $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Category already unlocked');
-                        continue 2;
-                    }
-
-                    $category->setLocked(false);
-                    break;
-                case Crud::ENABLE():
-                    if ($category->isEnabled()) {
-                        $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Category already enabled');
-                        continue 2;
-                    }
-
-                    $category->setEnabled(true);
-                    break;
-                case Crud::DISABLE():
-                    if (!$category->isEnabled()) {
-                        $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Category already disabled');
-                        continue 2;
-                    }
-
-                    $category->setEnabled(false);
-                    break;
-            }
-
-            $this->categoryManager->save($category);
-
-            $response[] = new UpdateStatusFacade($entry->getExternalId());
-        }
-
-        return $response;
     }
 
     private function bulkUpdateBadges(Category $category, BadgeReferenceCollectionFacade $collection, Crud $action)
@@ -437,6 +375,67 @@ class CategoryController extends BaseController
 
         if ($changes) {
             $this->categoryManager->save($category);
+        }
+
+        return $response;
+    }
+
+    private function bulkUpdateCategories(CategoryReferenceCollectionFacade $collection, Crud $action) : FacadeInterface
+    {
+        $response = new CollectionFacade();
+
+        foreach ($collection->getEntries() as $entry) {
+            /** @var CategoryReferenceFacade $entry */
+            $category = $this->categoryManager->findOneByExternalIdAndCurrentPlatform($entry->getExternalId());
+
+            if (null === $category) {
+                $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Category does not exist');
+                continue;
+            }
+
+            if (!$this->isGranted('CATEGORY', $category)) {
+                $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Access denied');
+                continue;
+            }
+
+            switch ($action) {
+                case Crud::LOCK():
+                    if ($category->isLocked()) {
+                        $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Category already locked');
+                        continue 2;
+                    }
+
+                    $category->setLocked(true);
+                    break;
+                case Crud::UNLOCK():
+                    if (!$category->isLocked()) {
+                        $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Category already unlocked');
+                        continue 2;
+                    }
+
+                    $category->setLocked(false);
+                    break;
+                case Crud::ENABLE():
+                    if ($category->isEnabled()) {
+                        $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Category already enabled');
+                        continue 2;
+                    }
+
+                    $category->setEnabled(true);
+                    break;
+                case Crud::DISABLE():
+                    if (!$category->isEnabled()) {
+                        $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Category already disabled');
+                        continue 2;
+                    }
+
+                    $category->setEnabled(false);
+                    break;
+            }
+
+            $this->categoryManager->save($category);
+
+            $response[] = new UpdateStatusFacade($entry->getExternalId());
         }
 
         return $response;
