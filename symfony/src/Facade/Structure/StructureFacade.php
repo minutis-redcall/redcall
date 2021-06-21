@@ -72,9 +72,17 @@ class StructureFacade implements FacadeInterface
      */
     protected $enabled;
 
-    static public function getExample(Facade $decorates = null): FacadeInterface
+    static public function getExample(Facade $decorates = null) : FacadeInterface
     {
-        // TODO: Implement getExample() method.
+        $facade = new self;
+
+        $facade->setExternalId('demo-paris');
+        $facade->setName('Paris');
+        $facade->setPresidentExternalId('demo-volunteer');
+        $facade->setLocked(false);
+        $facade->setEnabled(true);
+
+        return $facade;
     }
 
     public function getExternalId() : string

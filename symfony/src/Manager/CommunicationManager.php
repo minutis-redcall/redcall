@@ -309,6 +309,6 @@ class CommunicationManager
             $orderedVolunteers[] = $mixedVolunteers[$id];
         }
 
-        return $orderedVolunteers;
+        return array_filter($orderedVolunteers);
     }
 }

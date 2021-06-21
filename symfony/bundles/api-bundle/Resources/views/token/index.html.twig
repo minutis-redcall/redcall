@@ -30,8 +30,6 @@
                             <div class="text-right">
                                 <a href="{{ path('developer_token_documentation', {token: token}) }}" class="btn btn-primary">Documentation</a>
                                 &nbsp;&nbsp;
-                                <a href="{{ path('developer_token_console', {token: token}) }}" class="btn btn-info">Console</a>
-                                &nbsp;&nbsp;
                                 <a href="{{ path('developer_token_remove', {token: token, csrf: csrf_token('api')}) }}" onclick="return confirm('Really remove that token?');" class="btn btn-danger">Delete</a>
                             </div>
                         </td>

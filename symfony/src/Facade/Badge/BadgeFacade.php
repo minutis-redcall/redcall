@@ -112,9 +112,9 @@ class BadgeFacade implements FacadeInterface
     {
         $facade = new static;
 
-        $facade->externalId  = 'demo-truck';
-        $facade->name        = 'TD';
-        $facade->description = 'Truck Driver';
+        $facade->externalId  = 'demo-car';
+        $facade->name        = 'CD';
+        $facade->description = 'Car Driver';
         $facade->visibility  = true;
         $facade->locked      = false;
         $facade->enabled     = true;

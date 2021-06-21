@@ -39,7 +39,11 @@
                                         {{ 'password_login.user_list.registered_at'|trans({'%date%': user.registeredAt|date('d/m/Y H:i')}) }}
                                     </div>
                                     {% if user.volunteer %}
-                                        <div>{{ 'admin.pegass.bound_volunteer'|trans({'%name%': user.volunteer.displayName}) }}</div>
+                                        <div>
+                                            <a href="{{ path('management_volunteers_manual_update', {'id': user.volunteer.id}) }}" target="_blank">
+                                                {{ 'admin.pegass.bound_volunteer'|trans({'%name%': user.volunteer.displayName}) }}
+                                            </a>
+                                        </div>
                                     {% endif %}
                                 </div>
                             </div>

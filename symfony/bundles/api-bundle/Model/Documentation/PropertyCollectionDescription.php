@@ -42,4 +42,9 @@ class PropertyCollectionDescription
 
         return $this;
     }
+
+    public function sort()
+    {
+        ksort($this->properties);
+    }
 }

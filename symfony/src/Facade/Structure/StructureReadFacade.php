@@ -2,8 +2,10 @@
 
 namespace App\Facade\Structure;
 
+use App\Facade\Resource\StructureResourceFacade;
 use Bundles\ApiBundle\Annotation\Facade;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
+use Bundles\ApiBundle\Model\Facade\CollectionFacade;
 
 class StructureReadFacade extends StructureFacade
 {
@@ -27,25 +29,91 @@ class StructureReadFacade extends StructureFacade
     protected $usersCount = 0;
 
     /**
-     * The parent structure's external id.
+     * The parent structure.
      *
-     * @var string
+     * A local unit may be attached to a territory, which itself is attached to a department,
+     * then a region, or a full country.
+     *
+     * @var StructureResourceFacade|null
      */
-    protected $parentStructureExternalId;
+    protected $parentStructure;
 
     /**
-     * Chlidren structures' external ids.
+     * Chlidren structures if any.
      *
-     * @var string[]
+     * People having access to that structure can trigger any of its children and sub-children.
+     *
+     * @var StructureResourceFacade[]
      */
-    protected $childrenStructureExternalIds = [];
+    protected $childrenStructures;
+
+    public function __construct()
+    {
+        $this->childrenStructures = new CollectionFacade();
+    }
 
     static public function getExample(Facade $decorates = null) : FacadeInterface
     {
-        $facade = parent::getExample($decorates);
+        /** @var self $facade */
+        $facade = new self;
+        foreach (get_object_vars(parent::getExample($decorates)) as $property => $value) {
+            $facade->{$property} = $value;
+        }
 
-        // ...
+        $facade->setVolunteersCount(123);
+        $facade->setUsersCount(7);
+        $facade->setParentStructure(
+            StructureResourceFacade::getExample()
+        );
 
         return $facade;
+    }
+
+    public function getVolunteersCount() : int
+    {
+        return $this->volunteersCount;
+    }
+
+    public function setVolunteersCount(int $volunteersCount) : StructureReadFacade
+    {
+        $this->volunteersCount = $volunteersCount;
+
+        return $this;
+    }
+
+    public function getUsersCount() : int
+    {
+        return $this->usersCount;
+    }
+
+    public function setUsersCount(int $usersCount) : StructureReadFacade
+    {
+        $this->usersCount = $usersCount;
+
+        return $this;
+    }
+
+    public function getParentStructure() : ?StructureResourceFacade
+    {
+        return $this->parentStructure;
+    }
+
+    public function setParentStructure(?StructureResourceFacade $parentStructure) : StructureReadFacade
+    {
+        $this->parentStructure = $parentStructure;
+
+        return $this;
+    }
+
+    public function getChildrenStructures() : CollectionFacade
+    {
+        return $this->childrenStructures;
+    }
+
+    public function addChildrenStructure(StructureResourceFacade $facade)
+    {
+        $this->childrenStructures[] = $facade;
+
+        return $this;
     }
 }

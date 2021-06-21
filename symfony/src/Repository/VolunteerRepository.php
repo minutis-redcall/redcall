@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Base\BaseRepository;
+use App\Entity\Badge;
 use App\Entity\Structure;
 use App\Entity\User;
 use App\Entity\Volunteer;
@@ -521,6 +522,27 @@ class VolunteerRepository extends BaseRepository
         }
 
         return $priorities;
+    }
+
+    public function getVolunteerCountInStructure(Structure $structure) : int
+    {
+        return $this->createVolunteersQueryBuilder($structure->getPlatform())
+                    ->select('COUNT(v.id)')
+                    ->join('v.structures', 's')
+                    ->andWhere('s.id = :structure')
+                    ->setParameter('structure', $structure)
+                    ->getQuery()
+                    ->getSingleScalarResult();
+    }
+
+    public function getVolunteersHavingBadgeQueryBuilder(Badge $badge)
+    {
+        return $this->createVolunteersQueryBuilder($badge->getPlatform())
+                    ->join('v.badges', 'b')
+                    ->andWhere('b.id = :badge')
+                    ->setParameter('badge', $badge)
+                    ->andWhere('b.platform = :platform')
+                    ->setParameter('platform', $badge->getPlatform());
     }
 
     private function createVolunteerListQueryBuilder(string $platform,

@@ -224,9 +224,9 @@ class CategoryController extends BaseController
      * @Entity("category", expr="repository.findOneByExternalIdAndCurrentPlatform(categoryId)")
      * @IsGranted("CATEGORY", subject="category")
      */
-    public function badgeAdd(Category $category, BadgeReferenceCollectionFacade $externalIds) : FacadeInterface
+    public function badgeAdd(Category $category, BadgeReferenceCollectionFacade $collection) : FacadeInterface
     {
-        return $this->bulkUpdateBadges($category, $externalIds, Crud::CREATE());
+        return $this->bulkUpdateBadges($category, $collection, Crud::CREATE());
     }
 
     /**
@@ -258,32 +258,15 @@ class CategoryController extends BaseController
      *   response = @Facade(class     = CollectionFacade::class,
      *                      decorates = @Facade(class = UpdateStatusFacade::class))
      * )
-     * @Route(name="lock", path="/bulk/lock", methods={"PUT"})
+     * @Route(name="lock", path="/lock", methods={"PUT"})
      */
-    public function lock(CategoryReferenceCollectionFacade $externalIds) : FacadeInterface
+    public function lock(CategoryReferenceCollectionFacade $collection) : FacadeInterface
     {
-        return $this->bulkUpdateCategories($externalIds, Crud::LOCK());
+        return $this->bulkUpdateCategories($collection, Crud::LOCK());
     }
 
     /**
      * Unlock a list of categories.
-     *
-     * @Endpoint(
-     *   priority = 18,
-     *   request  = @Facade(class     = CategoryReferenceCollectionFacade::class,
-     *                      decorates = @Facade(class = CategoryReferenceFacade::class)),
-     *   response = @Facade(class     = CollectionFacade::class,
-     *                      decorates = @Facade(class = UpdateStatusFacade::class))
-     * )
-     * @Route(name="unlock", path="/bulk/unlock", methods={"PUT"})
-     */
-    public function unlock(CategoryReferenceCollectionFacade $externalIds) : FacadeInterface
-    {
-        return $this->bulkUpdateCategories($externalIds, Crud::LOCK());
-    }
-
-    /**
-     * Disable a list of categories.
      *
      * @Endpoint(
      *   priority = 19,
@@ -292,15 +275,15 @@ class CategoryController extends BaseController
      *   response = @Facade(class     = CollectionFacade::class,
      *                      decorates = @Facade(class = UpdateStatusFacade::class))
      * )
-     * @Route(name="disable", path="/bulk/disable", methods={"PUT"})
+     * @Route(name="unlock", path="/unlock", methods={"PUT"})
      */
-    public function disable(CategoryReferenceCollectionFacade $externalIds) : FacadeInterface
+    public function unlock(CategoryReferenceCollectionFacade $collection) : FacadeInterface
     {
-        return $this->bulkUpdateCategories($externalIds, Crud::DISABLE());
+        return $this->bulkUpdateCategories($collection, Crud::LOCK());
     }
 
     /**
-     * Enable a list of categories.
+     * Disable a list of categories.
      *
      * @Endpoint(
      *   priority = 20,
@@ -309,11 +292,28 @@ class CategoryController extends BaseController
      *   response = @Facade(class     = CollectionFacade::class,
      *                      decorates = @Facade(class = UpdateStatusFacade::class))
      * )
-     * @Route(name="enable", path="/bulk/enable", methods={"PUT"})
+     * @Route(name="disable", path="/disable", methods={"PUT"})
      */
-    public function enable(CategoryReferenceCollectionFacade $externalIds) : FacadeInterface
+    public function disable(CategoryReferenceCollectionFacade $collection) : FacadeInterface
     {
-        return $this->bulkUpdateCategories($externalIds, Crud::ENABLE());
+        return $this->bulkUpdateCategories($collection, Crud::DISABLE());
+    }
+
+    /**
+     * Enable a list of categories.
+     *
+     * @Endpoint(
+     *   priority = 21,
+     *   request  = @Facade(class     = CategoryReferenceCollectionFacade::class,
+     *                      decorates = @Facade(class = CategoryReferenceFacade::class)),
+     *   response = @Facade(class     = CollectionFacade::class,
+     *                      decorates = @Facade(class = UpdateStatusFacade::class))
+     * )
+     * @Route(name="enable", path="/enable", methods={"PUT"})
+     */
+    public function enable(CategoryReferenceCollectionFacade $collection) : FacadeInterface
+    {
+        return $this->bulkUpdateCategories($collection, Crud::ENABLE());
     }
 
     private function getLockValidationCallback() : Callback
@@ -326,12 +326,65 @@ class CategoryController extends BaseController
         });
     }
 
-    private function bulkUpdateCategories(CategoryReferenceCollectionFacade $externalIds,
-        Crud $action) : FacadeInterface
+    private function bulkUpdateBadges(Category $category, BadgeReferenceCollectionFacade $collection, Crud $action)
+    {
+        $response = new CollectionFacade();
+        $changes  = 0;
+
+        foreach ($collection->getEntries() as $entry) {
+            /** @var BadgeReferenceFacade $entry */
+            $badge = $this->badgeManager->findOneByExternalId($this->getPlatform(), $entry->getExternalId());
+
+            if (null === $badge) {
+                $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Badge does not exist');
+                continue;
+            }
+
+            if (!$this->isGranted('BADGE', $badge)) {
+                $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Access denied');
+                continue;
+            }
+
+            switch ($action) {
+                case Crud::CREATE():
+                    if ($category->getBadges()->contains($badge)) {
+                        $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Category already contains that badge');
+                        continue 2;
+                    }
+
+                    $category->addBadge($badge);
+                    $this->badgeManager->save($badge);
+
+                    break;
+                case Crud::DELETE():
+                    if (!$category->getBadges()->contains($badge)) {
+                        $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Category does not contain that badge');
+                        continue 2;
+                    }
+
+                    $category->removeBadge($badge);
+                    $this->badgeManager->save($badge);
+
+                    break;
+            }
+
+            $changes++;
+
+            $response[] = new UpdateStatusFacade($entry->getExternalId());
+        }
+
+        if ($changes) {
+            $this->categoryManager->save($category);
+        }
+
+        return $response;
+    }
+
+    private function bulkUpdateCategories(CategoryReferenceCollectionFacade $collection, Crud $action) : FacadeInterface
     {
         $response = new CollectionFacade();
 
-        foreach ($externalIds->getEntries() as $entry) {
+        foreach ($collection->getEntries() as $entry) {
             /** @var CategoryReferenceFacade $entry */
             $category = $this->categoryManager->findOneByExternalIdAndCurrentPlatform($entry->getExternalId());
 
@@ -383,56 +436,6 @@ class CategoryController extends BaseController
             $this->categoryManager->save($category);
 
             $response[] = new UpdateStatusFacade($entry->getExternalId());
-        }
-
-        return $response;
-    }
-
-    private function bulkUpdateBadges(Category $category, BadgeReferenceCollectionFacade $externalIds, Crud $action)
-    {
-        $response = new CollectionFacade();
-        $changes  = 0;
-
-        foreach ($externalIds->getEntries() as $entry) {
-            /** @var BadgeReferenceFacade $entry */
-            $badge = $this->badgeManager->findOneByExternalId($this->getPlatform(), $entry->getExternalId());
-
-            if (null === $badge) {
-                $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Badge does not exist');
-                continue;
-            }
-
-            if (!$this->isGranted('BADGE', $badge)) {
-                $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Access denied');
-                continue;
-            }
-
-            switch ($action) {
-                case Crud::CREATE():
-                    if ($category->getBadges()->contains($badge)) {
-                        $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Category already contains that badge');
-                        continue 2;
-                    }
-
-                    $category->addBadge($badge);
-                    break;
-                case Crud::DELETE():
-                    if (!$category->getBadges()->contains($badge)) {
-                        $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Category does not contain that badge');
-                        continue 2;
-                    }
-
-                    $category->removeBadge($badge);
-                    break;
-            }
-
-            $changes++;
-
-            $response[] = new UpdateStatusFacade($entry->getExternalId());
-        }
-
-        if ($changes) {
-            $this->categoryManager->save($category);
         }
 
         return $response;

@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Contract\PhoneInterface;
 use App\Repository\PhoneRepository;
 use App\Validator\Constraints as CustomAssert;
 use Doctrine\ORM\Mapping as ORM;
@@ -21,7 +22,7 @@ use libphonenumber\PhoneNumberUtil;
  *
  * @CustomAssert\Phone
  */
-class Phone
+class Phone implements PhoneInterface
 {
     public const DEFAULT_LANG = 'FR';
 
