@@ -8,10 +8,12 @@ use App\Entity\Communication;
 use App\Entity\Message;
 use App\Entity\Operation;
 use App\Entity\Structure;
+use App\Entity\Volunteer;
 use App\Form\Model\BaseTrigger;
 use App\Form\Model\Campaign as CampaignModel;
 use App\Provider\Minutis\MinutisProvider;
 use App\Repository\OperationRepository;
+use GuzzleHttp\Exception\ClientException;
 use Psr\Log\LoggerInterface;
 
 class OperationManager
@@ -61,6 +63,26 @@ class OperationManager
         $id = $this->minutis->createOperation($operationModel->structureExternalId, $operationModel->name, $email);
 
         $this->saveCampaignOperation($campaignEntity, $id);
+    }
+
+    public function canBindOperation(Volunteer $volunteer, CampaignModel $campaignModel) : bool
+    {
+        if (!($user = $volunteer->getUser())) {
+            return false;
+        }
+
+        try {
+            $operation = $this->minutis->getOperation(
+                $campaignModel->operation->operationExternalId
+            );
+        } catch (ClientException $e) {
+            return false;
+        }
+
+        $structureExternalId = substr($operation['parentExternalId'], strrpos($operation['parentExternalId'], '_') + 1);
+        $structure           = $user->getStructuresAsList()[$structureExternalId] ?? null;
+
+        return null !== $structure;
     }
 
     public function bindOperation(CampaignModel $campaignModel, CampaignEntity $campaignEntity)

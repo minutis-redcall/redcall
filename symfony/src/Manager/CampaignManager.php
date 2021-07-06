@@ -118,7 +118,7 @@ class CampaignManager
         if ($campaignModel->hasOperation) {
             if (CampaignModel::CREATE_OPERATION === $campaignModel->createOperation) {
                 $this->operationManager->createOperation($campaignModel, $campaignEntity);
-            } else {
+            } elseif ($this->operationManager->canBindOperation($volunteer, $campaignModel)) {
                 $this->operationManager->bindOperation($campaignModel, $campaignEntity);
             }
 

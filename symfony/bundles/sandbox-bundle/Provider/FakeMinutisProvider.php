@@ -50,6 +50,22 @@ class FakeMinutisProvider implements MinutisProvider
         return $this->operationManager->exists($operationExternalId);
     }
 
+    public function getOperation(int $operationExternalId) : array
+    {
+        $operation = $this->operationManager->get($operationExternalId);
+
+        if (!$operation) {
+            throw new \RuntimeException('Operation not found');
+        }
+
+        return [
+            'id'               => $operation->getId(),
+            'owner'            => $operation->getOwnerEmail(),
+            'nom'              => $operation->getName(),
+            'parentExternalId' => sprintf('red_cross_france_leaf_%d', $operation->getStructureExternalId()),
+        ];
+    }
+
     public function searchForVolunteer(string $volunteerExternalId) : ?array
     {
         $volunteer = $this->volunteerManager->findOneByExternalId(Platform::FR, $volunteerExternalId);
@@ -78,7 +94,7 @@ class FakeMinutisProvider implements MinutisProvider
 
     public function addResourceToOperation(int $externalOperationId, string $volunteerExternalId) : ?int
     {
-        $operation = $this->operationManager->find($externalOperationId);
+        $operation = $this->operationManager->get($externalOperationId);
 
         if (null === $operation) {
             throw new \RuntimeException(sprintf('External operation #%d does not exist', $externalOperationId));
@@ -95,7 +111,7 @@ class FakeMinutisProvider implements MinutisProvider
 
     public function removeResourceFromOperation(int $externalOperationId, int $resourceExternalId)
     {
-        $operation = $this->operationManager->find($externalOperationId);
+        $operation = $this->operationManager->get($externalOperationId);
 
         if (null === $operation) {
             throw new \RuntimeException(sprintf('External operation #%d does not exist', $externalOperationId));

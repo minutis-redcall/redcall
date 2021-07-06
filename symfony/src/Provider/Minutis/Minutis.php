@@ -64,10 +64,17 @@ class Minutis implements MinutisProvider
         return $operations;
     }
 
+    public function getOperation(int $operationExternalId) : array
+    {
+        $response = $this->getClient()->get(sprintf('/api/regulation/%d', $operationExternalId), $this->populateAuthentication([]));;
+
+        return json_decode($response->getBody()->getContents(), true);
+    }
+
     public function isOperationExisting(int $operationExternalId) : bool
     {
         try {
-            $this->getClient()->get(sprintf('/api/regulation/%d', $operationExternalId), $this->populateAuthentication([]));
+            $this->getOperation($operationExternalId);
 
             return true;
         } catch (ClientException $exception) {
