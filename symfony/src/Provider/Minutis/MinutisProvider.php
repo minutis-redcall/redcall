@@ -12,6 +12,8 @@ interface MinutisProvider
 
     public function searchForVolunteer(string $volunteerExternalId) : ?array;
 
+    public function getOperation(int $operationExternalId) : array;
+
     public function createOperation(string $structureExternalId, string $name, string $ownerEmail) : int;
 
     public function addResourceToOperation(int $externalOperationId, string $volunteerExternalId) : ?int;

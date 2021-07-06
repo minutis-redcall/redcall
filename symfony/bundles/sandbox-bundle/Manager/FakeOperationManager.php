@@ -57,7 +57,7 @@ class FakeOperationManager
         return $operation->getId();
     }
 
-    public function find(int $operationExternalId) : ?FakeOperation
+    public function get(int $operationExternalId) : ?FakeOperation
     {
         return $this->operationRepository->find($operationExternalId);
     }
