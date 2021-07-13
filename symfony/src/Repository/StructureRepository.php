@@ -88,11 +88,6 @@ class StructureRepository extends BaseRepository
                            ->leftJoin('sss.childrenStructures', 'ssss')
                            ->leftJoin('ssss.childrenStructures', 'sssss')
                            ->where('v.id = :id')
-                           ->andWhere('s.enabled IS NULL OR s.enabled = true')
-                           ->andWhere('ss.enabled IS NULL OR ss.enabled = true')
-                           ->andWhere('sss.enabled IS NULL OR sss.enabled = true')
-                           ->andWhere('ssss.enabled IS NULL OR ssss.enabled = true')
-                           ->andWhere('sssss.enabled IS NULL OR sssss.enabled = true')
                            ->setParameter('id', $volunteer->getId())
                            ->getQuery()
                            ->getArrayResult();
@@ -110,6 +105,7 @@ class StructureRepository extends BaseRepository
                     ->setParameter('ids', $ids)
                     ->andWhere('s.platform = :platform')
                     ->setParameter('platform', $platform)
+                    ->andWhere('s.enabled = true')
                     ->getQuery()
                     ->getResult();
     }
@@ -141,11 +137,6 @@ class StructureRepository extends BaseRepository
                            ->leftJoin('sss.childrenStructures', 'ssss')
                            ->leftJoin('ssss.childrenStructures', 'sssss')
                            ->where('s.id = :id')
-                           ->andWhere('s.enabled IS NULL OR s.enabled = true')
-                           ->andWhere('ss.enabled IS NULL OR ss.enabled = true')
-                           ->andWhere('sss.enabled IS NULL OR sss.enabled = true')
-                           ->andWhere('ssss.enabled IS NULL OR ssss.enabled = true')
-                           ->andWhere('sssss.enabled IS NULL OR sssss.enabled = true')
                            ->setParameter('id', $structure->getId())
                            ->getQuery()
                            ->getArrayResult();
@@ -163,6 +154,7 @@ class StructureRepository extends BaseRepository
                     ->setParameter('ids', $ids)
                     ->andWhere('s.platform = :platform')
                     ->setParameter('platform', $platform)
+                    ->andWhere('s.enabled = true')
                     ->getQuery()
                     ->getResult();
     }
