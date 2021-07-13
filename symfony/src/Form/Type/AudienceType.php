@@ -123,7 +123,8 @@ class AudienceType extends AbstractType
 
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $structures      = $this->security->getUser()->getStructures();
+        $structures = $this->security->getUser()->getStructures();
+
         $hasOneStructure = 1 === $structures->count();
 
         $builder
@@ -236,8 +237,10 @@ class AudienceType extends AbstractType
             if (!array_key_exists($row['id'], $hierarchy)) {
                 $hierarchy[$row['id']] = [];
             }
+
             if ($row['child_id']) {
-                $hierarchy[$row['id']][] = $row['child_id'];
+                $hierarchy[$row['child_id']] = [];
+                $hierarchy[$row['id']][]     = $row['child_id'];
             }
         }
 
