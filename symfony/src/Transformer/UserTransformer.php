@@ -6,12 +6,21 @@ use App\Entity\Structure;
 use App\Entity\User;
 use App\Facade\Resource\StructureResourceFacade;
 use App\Facade\Resource\VolunteerResourceFacade;
+use App\Facade\User\UserFacade;
 use App\Facade\User\UserReadFacade;
+use App\Security\Helper\Security;
 use Bundles\ApiBundle\Base\BaseTransformer;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
 
 class UserTransformer extends BaseTransformer
 {
+    public static function getSubscribedServices()
+    {
+        return [
+            Security::class,
+        ];
+    }
+
     /**
      * @param User $object
      *
@@ -50,5 +59,49 @@ class UserTransformer extends BaseTransformer
         $facade->setStructures($structures);
 
         return $facade;
+    }
+
+    /**
+     * @param UserFacade $facade
+     * @param User|null  $object
+     */
+    public function reconstruct(FacadeInterface $facade, $object = null)
+    {
+        $user = $object;
+        if (null === $object) {
+            $user = new User();
+            $user->setPlatform($this->getSecurity()->getPlatform());
+        }
+
+        if (null !== $facade->getIdentifier()) {
+            $user->setUsername($facade->getIdentifier());
+        }
+
+        if (null !== $facade->isVerified()) {
+            $user->setIsVerified($facade->isVerified());
+        }
+
+        if (null !== $facade->isTrusted()) {
+            $user->setIsTrusted($facade->isTrusted());
+        }
+
+        if (null != $facade->isDeveloper()) {
+            $user->setIsDeveloper($facade->isDeveloper());
+        }
+
+        if (null !== $facade->isAdministrator()) {
+            $user->setIsAdmin($facade->isAdministrator());
+        }
+
+        if (null !== $facade->isRoot()) {
+            $user->setIsRoot($facade->isRoot());
+        }
+
+        return $user;
+    }
+
+    private function getSecurity() : Security
+    {
+        return $this->get(Security::class);
     }
 }

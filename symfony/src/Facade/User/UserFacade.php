@@ -2,17 +2,18 @@
 
 namespace App\Facade\User;
 
-use App\Facade\Generic\ResourceFacade;
-use App\Facade\Resource\StructureResourceFacade;
-use App\Facade\Resource\VolunteerResourceFacade;
 use Bundles\ApiBundle\Annotation as Api;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class UserFacade implements FacadeInterface
 {
     /**
      * User's identifier, generally this is the email (s)he used to sign-up to the platform. When using
      * external connectors, it may also be the email tied to the external resource (eg. a Red Cross volunteer).
+     *
+     * @Assert\Length(max=64)
+     * @Assert\Email
      *
      * @var string
      */
@@ -22,6 +23,8 @@ class UserFacade implements FacadeInterface
      * When registering, every user receive a verification email. User''s email is considered valid once user clicked
      * on the link it contains. Non-verified users cannot connect to the platform.
      *
+     * @Assert\Choice(choices={false, true})
+     *
      * @var bool
      */
     protected $verified = true;
@@ -30,6 +33,8 @@ class UserFacade implements FacadeInterface
      * Anyone can subscribe to the platform, but only the ones trusted (activated manually by an administrator)
      * can access the provided tools.
      *
+     * @Assert\Choice(choices={false, true})
+     *
      * @var bool
      */
     protected $trusted = true;
@@ -37,12 +42,16 @@ class UserFacade implements FacadeInterface
     /**
      * A developer can integrate RedCall APIs and access technical features.
      *
+     * @Assert\Choice(choices={false, true})
+     *
      * @var bool
      */
     protected $developer = false;
 
     /**
      * An administrator can trust new users and configure the platform.
+     *
+     * @Assert\Choice(choices={false, true})
      *
      * @var bool
      */
@@ -52,6 +61,8 @@ class UserFacade implements FacadeInterface
      * A root has the same capabilities as an administrator, but can switch between the different platforms
      * (eg. France, Spain, ...), and can also change all resources' platform.
      *
+     * @Assert\Choice(choices={false, true})
+     *
      * @var bool
      */
     protected $root = false;
@@ -59,6 +70,8 @@ class UserFacade implements FacadeInterface
     /**
      * A locked user is not synchronized anymore with its associated volunteer. If volunteer's scope change
      * it won't be reflected.
+     *
+     * @Assert\Choice(choices={false, true})
      *
      * @var bool
      */

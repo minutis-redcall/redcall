@@ -106,8 +106,8 @@ class LocaleManager
     {
         $locale = $this->sanitizeLocale($locale);
 
-        if ($this->requestStack->getMasterRequest()) {
-            $this->requestStack->getMasterRequest()->setLocale($locale);
+        if ($this->requestStack->getMainRequest()) {
+            $this->requestStack->getMainRequest()->setLocale($locale);
         }
 
         $this->session->set('_locale', $locale);

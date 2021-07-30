@@ -2,18 +2,23 @@
 
 namespace App\Controller\Api\Admin;
 
-use App\Base\BaseController;
 use App\Entity\User;
-use App\Manager\UserManager;
-use App\Transformer\UserTransformer;
-use Bundles\ApiBundle\Contracts\FacadeInterface;
-use Bundles\ApiBundle\Model\Facade\QueryBuilderFacade;
-use Symfony\Component\Routing\Annotation\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
-use Bundles\ApiBundle\Annotation\Endpoint;
+use App\Facade\User\UserFacade;
 use App\Facade\User\UserFiltersFacade;
 use App\Facade\User\UserReadFacade;
+use App\Manager\UserManager;
+use App\Transformer\UserTransformer;
+use Bundles\ApiBundle\Annotation\Endpoint;
 use Bundles\ApiBundle\Annotation\Facade;
+use Bundles\ApiBundle\Base\BaseController;
+use Bundles\ApiBundle\Contracts\FacadeInterface;
+use Bundles\ApiBundle\Model\Facade\Http\HttpCreatedFacade;
+use Bundles\ApiBundle\Model\Facade\QueryBuilderFacade;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Validator\Constraints\Callback;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
  * Users are the ones using the RedCall application to trigger
@@ -63,6 +68,50 @@ class UserController extends BaseController
 
         return new QueryBuilderFacade($qb, $filters->getPage(), function (User $user) {
             return $this->userTransformer->expose($user);
+        });
+    }
+
+    /**
+     * Create a new user.
+     *
+     * @Endpoint(
+     *   priority = 205,
+     *   request  = @Facade(class     = UserFacade::class),
+     *   response = @Facade(class     = HttpCreatedFacade::class)
+     * )
+     * @Route(name="create", methods={"POST"})
+     */
+    public function create(UserFacade $facade) : FacadeInterface
+    {
+        $user = $this->userTransformer->reconstruct($facade);
+
+        $this->validate($user, [
+            new UniqueEntity(['username']),
+            $this->getRootValidationCallback(),
+        ]);
+
+        $this->userManager->save($user);
+
+        return new HttpCreatedFacade();
+    }
+
+    private function getMeValidationCallback() : Callback
+    {
+        return new Callback(function ($object, ExecutionContextInterface $context) {
+            /** @var User $object */
+            if ($this->getSecurity()->getUser()->equalsTo($object)) {
+                $context->addViolation('Users are not allowed to update themselves.');
+            }
+        });
+    }
+
+    private function getRootValidationCallback() : Callback
+    {
+        return new Callback(function ($object, ExecutionContextInterface $context) {
+            /** @var User $object */
+            if (!$this->getSecurity()->getUser()->isRoot() && $object->isRoot()) {
+                $context->addViolation('Only root users can set other users as root');
+            }
         });
     }
 
