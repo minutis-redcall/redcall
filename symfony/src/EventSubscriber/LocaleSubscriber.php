@@ -28,11 +28,15 @@ class LocaleSubscriber implements EventSubscriberInterface
 
     public function onKernelRequest(RequestEvent $event)
     {
-        $this->locale->restoreFromSession();
+        if (0 !== strpos($event->getRequest()->getPathInfo(), '/api')) {
+            $this->locale->restoreFromSession();
+        }
     }
 
     public function onInteractiveLogin(InteractiveLoginEvent $event)
     {
-        $this->locale->restoreFromUser();
+        if (0 !== strpos($event->getRequest()->getPathInfo(), '/api')) {
+            $this->locale->restoreFromUser();
+        }
     }
 }
