@@ -231,9 +231,10 @@ class AudienceType extends AbstractType
 
     private function buildStructureView(FormView $view)
     {
-        // Structures hierarchy
-        $hierarchy = [];
-        foreach ($this->structureManager->getStructureHierarchyForCurrentUser() as $row) {
+        // Retrieving structures hierarchy
+        $hierarchyForUser = $this->structureManager->getStructureHierarchyForCurrentUser();
+        $hierarchy        = [];
+        foreach ($hierarchyForUser as $row) {
             if (!array_key_exists($row['id'], $hierarchy)) {
                 $hierarchy[$row['id']] = [];
             }
