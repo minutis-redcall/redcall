@@ -292,7 +292,7 @@ class StructureRepository extends BaseRepository
             ->getArrayResult();
 
         foreach ($rows as $index => $row) {
-            if (false === $row['child_enabled']) {
+            if (!$row['child_enabled']) {
                 $rows[$index]['child_id'] = null;
             }
         }
