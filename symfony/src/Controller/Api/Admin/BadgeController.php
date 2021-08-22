@@ -13,12 +13,13 @@ use App\Facade\Badge\BadgeReferenceFacade;
 use App\Facade\Category\CategoryReferenceFacade;
 use App\Facade\Generic\UpdateStatusFacade;
 use App\Facade\PageFilterFacade;
-use App\Facade\Volunteer\VolunteerReadFacade;
+use App\Facade\Resource\VolunteerResourceFacade;
 use App\Facade\Volunteer\VolunteerReferenceCollectionFacade;
 use App\Facade\Volunteer\VolunteerReferenceFacade;
 use App\Manager\BadgeManager;
 use App\Manager\VolunteerManager;
 use App\Transformer\BadgeTransformer;
+use App\Transformer\ResourceTransformer;
 use App\Transformer\VolunteerTransformer;
 use App\Validator\Constraints\Unlocked;
 use Bundles\ApiBundle\Annotation\Endpoint;
@@ -67,15 +68,22 @@ class BadgeController extends BaseController
      */
     private $volunteerManager;
 
+    /**
+     * @var ResourceTransformer
+     */
+    private $resourceTransformer;
+
     public function __construct(BadgeManager $badgeManager,
         BadgeTransformer $badgeTransformer,
         VolunteerTransformer $volunteerTransformer,
-        VolunteerManager $volunteerManager)
+        VolunteerManager $volunteerManager,
+        ResourceTransformer $resourceTransformer)
     {
         $this->badgeManager         = $badgeManager;
         $this->badgeTransformer     = $badgeTransformer;
         $this->volunteerTransformer = $volunteerTransformer;
         $this->volunteerManager     = $volunteerManager;
+        $this->resourceTransformer  = $resourceTransformer;
     }
 
     /**
@@ -196,7 +204,7 @@ class BadgeController extends BaseController
      *   priority = 25,
      *   request  = @Facade(class     = PageFilterFacade::class),
      *   response = @Facade(class     = QueryBuilderFacade::class,
-     *                      decorates = @Facade(class = VolunteerReadFacade::class))
+     *                      decorates = @Facade(class = VolunteerResourceFacade::class))
      * )
      * @Route(name="volunteer_records", path="/volunteer/{badgeId}", methods={"GET"})
      * @Entity("badge", expr="repository.findOneByExternalIdAndCurrentPlatform(badgeId)")
@@ -207,7 +215,7 @@ class BadgeController extends BaseController
         $qb = $this->volunteerManager->getVolunteersHavingBadgeQueryBuilder($badge);
 
         return new QueryBuilderFacade($qb, $filters->getPage(), function (Volunteer $volunteer) {
-            return $this->volunteerTransformer->expose($volunteer);
+            return $this->resourceTransformer->expose($volunteer);
         });
     }
 
