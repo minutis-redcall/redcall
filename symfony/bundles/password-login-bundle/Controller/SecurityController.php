@@ -352,15 +352,7 @@ class SecurityController extends AbstractController
             $username = $forgotPassword->getData()['username'];
 
             if ($this->userManager->findOneByUsername($username)) {
-                $uuid = $this->passwordRecoveryManager->generateToken($username);
-                $url  = trim(getenv('WEBSITE_URL'), '/').$this->generateUrl('password_login_change_password', ['uuid' => $uuid]);
-
-                $this->mail->send(
-                    $username,
-                    'password_login.forgot_password.subject',
-                    '@PasswordLogin/security/forgot_password_mail.txt.twig',
-                    ['url' => $url, 'type' => 'register']
-                );
+                $this->passwordRecoveryManager->sendPasswordRecoveryEmail($username);
             }
 
             $this->addFlash('success', $this->translator->trans('password_login.forgot_password.sent', ['%email%' => $username]));

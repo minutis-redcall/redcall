@@ -28,6 +28,16 @@ class PasswordRecoveryRepository extends BaseRepository
     {
         $passwordRecovery = $this->find($username);
         if ($passwordRecovery && !$passwordRecovery->hasExpired()) {
+
+            // Password has already been sent recently
+            if ($passwordRecovery->hasBeenSentRecently()) {
+                return null;
+            }
+
+            $passwordRecovery->setSent(time());
+
+            $this->save($passwordRecovery);
+
             return $passwordRecovery->getUuid();
         }
 
@@ -38,6 +48,7 @@ class PasswordRecoveryRepository extends BaseRepository
         $passwordRecovery->setUsername($username);
         $passwordRecovery->setUuid($uuid = Uuid::uuid4());
         $passwordRecovery->setTimestamp(time());
+        $passwordRecovery->setSent(time());
 
         $this->save($passwordRecovery);
 

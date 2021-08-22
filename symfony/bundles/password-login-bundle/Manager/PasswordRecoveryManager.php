@@ -4,6 +4,8 @@ namespace Bundles\PasswordLoginBundle\Manager;
 
 use Bundles\PasswordLoginBundle\Entity\PasswordRecovery;
 use Bundles\PasswordLoginBundle\Repository\PasswordRecoveryRepository;
+use Bundles\PasswordLoginBundle\Services\Mail;
+use Symfony\Component\Routing\RouterInterface;
 
 class PasswordRecoveryManager
 {
@@ -13,11 +15,22 @@ class PasswordRecoveryManager
     private $passwordRecoveryRepository;
 
     /**
-     * @param PasswordRecoveryRepository $passwordRecoveryRepository
+     * @var Mail
      */
-    public function __construct(PasswordRecoveryRepository $passwordRecoveryRepository)
+    private $mail;
+
+    /**
+     * @var RouterInterface
+     */
+    private $router;
+
+    public function __construct(PasswordRecoveryRepository $passwordRecoveryRepository,
+        Mail $mail,
+        RouterInterface $router)
     {
         $this->passwordRecoveryRepository = $passwordRecoveryRepository;
+        $this->mail                       = $mail;
+        $this->router                     = $router;
     }
 
     public function find(string $username) : ?PasswordRecovery
@@ -30,11 +43,6 @@ class PasswordRecoveryManager
         $this->passwordRecoveryRepository->clearExpired();
     }
 
-    public function generateToken(string $username) : string
-    {
-        return $this->passwordRecoveryRepository->generateToken($username);
-    }
-
     public function getByToken(string $token) : ?PasswordRecovery
     {
         return $this->passwordRecoveryRepository->getByToken($token);
@@ -43,5 +51,24 @@ class PasswordRecoveryManager
     public function remove(PasswordRecovery $passwordRecovery)
     {
         $this->passwordRecoveryRepository->remove($passwordRecovery);
+    }
+
+    public function sendPasswordRecoveryEmail(string $username)
+    {
+        $uuid = $this->passwordRecoveryRepository->generateToken($username);
+
+        // Flood protection
+        if (!$uuid) {
+            return;
+        }
+
+        $url = trim(getenv('WEBSITE_URL'), '/').$this->router->generate('password_login_change_password', ['uuid' => $uuid]);
+
+        $this->mail->send(
+            $username,
+            'password_login.forgot_password.subject',
+            '@PasswordLogin/security/forgot_password_mail.txt.twig',
+            ['url' => $url, 'type' => 'register']
+        );
     }
 }

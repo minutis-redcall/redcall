@@ -28,6 +28,7 @@ use Bundles\ApiBundle\Model\Facade\Http\HttpCreatedFacade;
 use Bundles\ApiBundle\Model\Facade\Http\HttpNoContentFacade;
 use Bundles\ApiBundle\Model\Facade\Http\HttpNotFoundFacade;
 use Bundles\ApiBundle\Model\Facade\QueryBuilderFacade;
+use Bundles\PasswordLoginBundle\Manager\PasswordRecoveryManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -66,15 +67,22 @@ class UserController extends BaseController
      */
     private $structureManager;
 
+    /**
+     * @var PasswordRecoveryManager
+     */
+    private $passwordRecoveryManager;
+
     public function __construct(UserManager $userManager,
         UserTransformer $userTransformer,
         ResourceTransformer $resourceTransformer,
-        StructureManager $structureManager)
+        StructureManager $structureManager,
+        PasswordRecoveryManager $passwordRecoveryManager)
     {
-        $this->userManager         = $userManager;
-        $this->userTransformer     = $userTransformer;
-        $this->resourceTransformer = $resourceTransformer;
-        $this->structureManager    = $structureManager;
+        $this->userManager             = $userManager;
+        $this->userTransformer         = $userTransformer;
+        $this->resourceTransformer     = $resourceTransformer;
+        $this->structureManager        = $structureManager;
+        $this->passwordRecoveryManager = $passwordRecoveryManager;
     }
 
     /**
@@ -322,6 +330,26 @@ class UserController extends BaseController
         ]);
 
         $this->userManager->changeVolunteer($user);
+
+        return new HttpNoContentFacade();
+    }
+
+    /**
+     * Send a "password recovery" email to the given user.
+     *
+     * @Endpoint(
+     *   priority = 233,
+     *   response = @Facade(class = HttpNoContentFacade::class)
+     * )
+     * @Route(name="password_recovery", path="/password-recovery/{email}", methods={"PUT"})
+     * @Entity("user", expr="repository.findByUsernameAndCurrentPlatform(email)")
+     * @IsGranted("USER", subject="user")
+     */
+    public function passwordRecovery(User $user)
+    {
+        $this->passwordRecoveryManager->sendPasswordRecoveryEmail(
+            $user->getUsername()
+        );
 
         return new HttpNoContentFacade();
     }

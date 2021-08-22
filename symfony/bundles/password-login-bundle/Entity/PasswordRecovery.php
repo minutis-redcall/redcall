@@ -13,6 +13,8 @@ class PasswordRecovery
 {
     const EXPIRATION = '3 hours';
 
+    const FLOOD_PROTECTION = '3 minutes';
+
     /**
      * @ORM\Column(name="username", type="string", length=64)
      * @ORM\Id
@@ -28,6 +30,11 @@ class PasswordRecovery
      * @ORM\Column(name="timestamp", type="integer", options={"unsigned"=true})
      */
     private $timestamp;
+
+    /**
+     * @ORM\Column(name="sent", type="integer", options={"unsigned"=true})
+     */
+    private $sent;
 
     public function __construct()
     {
@@ -70,8 +77,25 @@ class PasswordRecovery
         return $this;
     }
 
+    public function getSent()
+    {
+        return $this->sent;
+    }
+
+    public function setSent($sent)
+    {
+        $this->sent = $sent;
+
+        return $this;
+    }
+
     public function hasExpired() : bool
     {
         return $this->timestamp + strtotime(self::EXPIRATION) - time() < time();
+    }
+
+    public function hasBeenSentRecently() : bool
+    {
+        return $this->timestamp + strtotime(self::FLOOD_PROTECTION) - time() > time();
     }
 }
