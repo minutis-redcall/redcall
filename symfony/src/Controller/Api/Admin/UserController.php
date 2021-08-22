@@ -8,12 +8,15 @@ use App\Facade\User\UserFiltersFacade;
 use App\Facade\User\UserReadFacade;
 use App\Manager\UserManager;
 use App\Transformer\UserTransformer;
+use App\Validator\Constraints\Unlocked;
 use Bundles\ApiBundle\Annotation\Endpoint;
 use Bundles\ApiBundle\Annotation\Facade;
 use Bundles\ApiBundle\Base\BaseController;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
 use Bundles\ApiBundle\Model\Facade\Http\HttpCreatedFacade;
+use Bundles\ApiBundle\Model\Facade\Http\HttpNoContentFacade;
 use Bundles\ApiBundle\Model\Facade\QueryBuilderFacade;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Routing\Annotation\Route;
@@ -75,7 +78,7 @@ class UserController extends BaseController
      * Create a new user.
      *
      * @Endpoint(
-     *   priority = 205,
+     *   priority = 203,
      *   request  = @Facade(class     = UserFacade::class),
      *   response = @Facade(class     = HttpCreatedFacade::class)
      * )
@@ -95,11 +98,76 @@ class UserController extends BaseController
         return new HttpCreatedFacade();
     }
 
+    /**
+     * Get a user.
+     *
+     * @Endpoint(
+     *   priority = 206,
+     *   response = @Facade(class = UserReadFacade::class)
+     * )
+     * @Route(name="read", path="/{email}", methods={"GET"})
+     * @Entity("user", expr="repository.findByUsernameAndCurrentPlatform(email)")
+     * @IsGranted("USER", subject="user")
+     */
+    public function read(User $user)
+    {
+        return $this->userTransformer->expose($user);
+    }
+
+    /**
+     * Update a user.
+     *
+     * @Endpoint(
+     *   priority = 209,
+     *   request  = @Facade(class = UserFacade::class),
+     *   response = @Facade(class = HttpNoContentFacade::class)
+     * )
+     * @Route(name="update", path="/{email}", methods={"PUT"})
+     * @Entity("user", expr="repository.findByUsernameAndCurrentPlatform(email)")
+     * @IsGranted("USER", subject="user")
+     */
+    public function update(User $user, UserFacade $facade)
+    {
+        $user = $this->userTransformer->reconstruct($facade, $user);
+
+        $this->validate($user, [
+            new UniqueEntity(['username']),
+            $this->getMeValidationCallback(),
+            $this->getRootValidationCallback(),
+        ]);
+
+        $this->userManager->save($user);
+
+        return new HttpNoContentFacade();
+    }
+
+    /**
+     * Delete a user.
+     *
+     * @Endpoint(
+     *   priority = 212,
+     *   response = @Facade(class = HttpNoContentFacade::class)
+     * )
+     * @Route(name="delete", path="/{email}", methods={"DELETE"})
+     * @Entity("user", expr="repository.findByUsernameAndCurrentPlatform(email)")
+     * @IsGranted("USER", subject="user")
+     */
+    public function delete(User $user)
+    {
+        $this->validate($user, [
+            new Unlocked(),
+        ]);
+
+        $this->userManager->remove($user);
+
+        return new HttpNoContentFacade();
+    }
+
     private function getMeValidationCallback() : Callback
     {
         return new Callback(function ($object, ExecutionContextInterface $context) {
             /** @var User $object */
-            if ($this->getSecurity()->getUser()->equalsTo($object)) {
+            if ($this->getSecurity()->getUser()->isEqualTo($object)) {
                 $context->addViolation('Users are not allowed to update themselves.');
             }
         });
@@ -110,9 +178,8 @@ class UserController extends BaseController
         return new Callback(function ($object, ExecutionContextInterface $context) {
             /** @var User $object */
             if (!$this->getSecurity()->getUser()->isRoot() && $object->isRoot()) {
-                $context->addViolation('Only root users can set other users as root');
+                $context->addViolation('Only root users can set other users as root or update them');
             }
         });
     }
-
 }

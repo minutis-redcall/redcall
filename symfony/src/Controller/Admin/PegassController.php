@@ -128,10 +128,6 @@ class PegassController extends BaseController
         }
 
         $structureNames = array_filter(array_map(function (Structure $structure) {
-            if ($structure->getPlatform() !== $this->getPlatform()) {
-                return null;
-            }
-
             return $structure->getName();
         }, $user->getStructures()->toArray()));
 
@@ -260,6 +256,10 @@ class PegassController extends BaseController
     {
         $this->validateCsrfOrThrowNotFoundException('pegass', $csrf);
 
+        if ($user->isEqualTo($this->getUser())) {
+            throw $this->createNotFoundException();
+        }
+
         $user->setIsVerified(1 - $user->isVerified());
         $this->userManager->save($user);
 
@@ -275,6 +275,10 @@ class PegassController extends BaseController
     public function toggleTrustAction(User $user, string $csrf)
     {
         $this->validateCsrfOrThrowNotFoundException('pegass', $csrf);
+
+        if ($user->isEqualTo($this->getUser())) {
+            throw $this->createNotFoundException();
+        }
 
         $user->setIsTrusted(1 - $user->isTrusted());
         $this->userManager->save($user);
@@ -292,6 +296,10 @@ class PegassController extends BaseController
     {
         $this->validateCsrfOrThrowNotFoundException('pegass', $csrf);
 
+        if ($user->isEqualTo($this->getUser())) {
+            throw $this->createNotFoundException();
+        }
+
         $user->setIsAdmin(1 - $user->isAdmin());
         $this->userManager->save($user);
 
@@ -307,6 +315,10 @@ class PegassController extends BaseController
     public function toggleLockAction(User $user, string $csrf)
     {
         $this->validateCsrfOrThrowNotFoundException('pegass', $csrf);
+
+        if ($user->isEqualTo($this->getUser())) {
+            throw $this->createNotFoundException();
+        }
 
         $user->setLocked(1 - $user->isLocked());
         $this->userManager->save($user);
@@ -324,6 +336,10 @@ class PegassController extends BaseController
     {
         $this->validateCsrfOrThrowNotFoundException('pegass', $csrf);
 
+        if ($user->isEqualTo($this->getUser())) {
+            throw $this->createNotFoundException();
+        }
+
         $user->setIsDeveloper(1 - $user->isDeveloper());
         $this->userManager->save($user);
 
@@ -339,6 +355,10 @@ class PegassController extends BaseController
     public function toggleRootAction(User $user, string $csrf)
     {
         $this->validateCsrfOrThrowNotFoundException('pegass', $csrf);
+
+        if ($user->isEqualTo($this->getUser())) {
+            throw $this->createNotFoundException();
+        }
 
         $user->setIsRoot(1 - $user->isRoot());
         $this->userManager->save($user);
@@ -356,6 +376,10 @@ class PegassController extends BaseController
     {
         $this->validateCsrfOrThrowNotFoundException('pegass', $csrf);
 
+        if ($user->isEqualTo($this->getUser())) {
+            throw $this->createNotFoundException();
+        }
+
         $this->userManager->remove($user);
 
         return $this->redirectToRoute('admin_pegass_index');
@@ -368,6 +392,10 @@ class PegassController extends BaseController
      */
     public function changePlatform(User $user, Csrf $csrf, PlatformConfig $platform)
     {
+        if ($user->isEqualTo($this->getUser())) {
+            throw $this->createNotFoundException();
+        }
+
         $user->setPlatform($platform);
 
         $this->userManager->save($user);

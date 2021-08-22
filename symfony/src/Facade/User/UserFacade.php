@@ -92,7 +92,7 @@ class UserFacade implements FacadeInterface
         return $facade;
     }
 
-    public function getIdentifier() : string
+    public function getIdentifier() : ?string
     {
         return $this->identifier;
     }

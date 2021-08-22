@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Contract\LockableInterface;
 use Bundles\PegassCrawlerBundle\Entity\Pegass;
 use DateInterval;
 use DateTime;
@@ -25,7 +26,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * )
  * @ORM\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
  */
-class Structure
+class Structure implements LockableInterface
 {
     /**
      * @var int

@@ -18,6 +18,7 @@ use App\Manager\BadgeManager;
 use App\Manager\CategoryManager;
 use App\Transformer\BadgeTransformer;
 use App\Transformer\CategoryTransformer;
+use App\Validator\Constraints\Unlocked;
 use Bundles\ApiBundle\Annotation\Endpoint;
 use Bundles\ApiBundle\Annotation\Facade;
 use Bundles\ApiBundle\Base\BaseController;
@@ -30,8 +31,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Validator\Constraints\Callback;
-use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
  * Badges can be grouped in categories, so they are rendered
@@ -158,7 +157,7 @@ class CategoryController extends BaseController
 
         $this->validate($category, [
             new UniqueEntity(['platform', 'externalId']),
-            $this->getLockValidationCallback(),
+            new Unlocked(),
         ]);
 
         $this->categoryManager->save($category);
@@ -180,7 +179,7 @@ class CategoryController extends BaseController
     public function delete(Category $category) : FacadeInterface
     {
         $this->validate($category, [
-            $this->getLockValidationCallback(),
+            new Unlocked(),
         ]);
 
         $this->categoryManager->remove($category);
@@ -314,16 +313,6 @@ class CategoryController extends BaseController
     public function enable(CategoryReferenceCollectionFacade $collection) : FacadeInterface
     {
         return $this->bulkUpdateCategories($collection, Crud::ENABLE());
-    }
-
-    private function getLockValidationCallback() : Callback
-    {
-        return new Callback(function ($object, ExecutionContextInterface $context, $payload) {
-            /** @var Category $object */
-            if ($object->isLocked()) {
-                $context->addViolation('This category is locked.');
-            }
-        });
     }
 
     private function bulkUpdateBadges(Category $category, BadgeReferenceCollectionFacade $collection, Crud $action)

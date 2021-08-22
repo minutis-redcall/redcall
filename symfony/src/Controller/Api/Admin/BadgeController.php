@@ -20,6 +20,7 @@ use App\Manager\BadgeManager;
 use App\Manager\VolunteerManager;
 use App\Transformer\BadgeTransformer;
 use App\Transformer\VolunteerTransformer;
+use App\Validator\Constraints\Unlocked;
 use Bundles\ApiBundle\Annotation\Endpoint;
 use Bundles\ApiBundle\Annotation\Facade;
 use Bundles\ApiBundle\Base\BaseController;
@@ -32,8 +33,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Validator\Constraints\Callback;
-use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
  * Badges can be skills, nominations, trainings, or whatever
@@ -160,7 +159,7 @@ class BadgeController extends BaseController
 
         $this->validate($badge, [
             new UniqueEntity(['platform', 'externalId']),
-            $this->getLockValidationCallback(),
+            new Unlocked(),
         ]);
 
         $this->badgeManager->save($badge);
@@ -182,7 +181,7 @@ class BadgeController extends BaseController
     public function delete(Badge $badge)
     {
         $this->validate($badge, [
-            $this->getLockValidationCallback(),
+            new Unlocked(),
         ]);
 
         $this->badgeManager->remove($badge);
@@ -318,16 +317,6 @@ class BadgeController extends BaseController
         return $this->bulkUpdateBadges($collection, Crud::DISABLE());
     }
 
-    private function getLockValidationCallback() : Callback
-    {
-        return new Callback(function ($object, ExecutionContextInterface $context, $payload) {
-            /** @var Badge $object */
-            if ($object->isLocked()) {
-                $context->addViolation('This badge is locked.');
-            }
-        });
-    }
-
     private function bulkUpdateVolunteers(Badge $badge, VolunteerReferenceCollectionFacade $collection, Crud $action)
     {
         $response = new CollectionFacade();
@@ -344,6 +333,11 @@ class BadgeController extends BaseController
 
             if (!$this->isGranted('VOLUNTEER', $volunteer)) {
                 $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Access denied');
+                continue;
+            }
+
+            if ($volunteer->isLocked()) {
+                $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Volunteer is locked');
                 continue;
             }
 
