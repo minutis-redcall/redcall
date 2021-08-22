@@ -96,6 +96,6 @@ class PasswordRecovery
 
     public function hasBeenSentRecently() : bool
     {
-        return $this->timestamp + strtotime(self::FLOOD_PROTECTION) - time() > time();
+        return $this->sent + strtotime(self::FLOOD_PROTECTION) - time() > time();
     }
 }
