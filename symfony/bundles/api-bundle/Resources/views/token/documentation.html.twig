@@ -48,18 +48,38 @@
             </p>
             <p>&nbsp;</p>
 
-            {{ include('@Api/documentation/demo.html.twig', {token: token, endpoint: demo}) }}
-
+            {# Demo using the query string #}
+            <h4>When using a <code>GET</code> verb</h4>
+            <br/>
+            {{ include('@Api/documentation/demo.html.twig', {token: token, endpoint: demo_get}) }}
             <p>&nbsp;</p>
             <p>
-                {% set method = demo.methods[0] %}
-                {% set uri = demo.uri ~ '?' ~ demo.requestFacade.example|http_build_query %}
+                {% set method = demo_get.methods[0] %}
+                {% set uri = demo_get.uri ~ '?' ~ demo_get.requestFacade.example|http_build_query %}
 
                 In the above example,
                 <code>HMAC(SHA256, {{ method }}{{ uri }}, secret)</code>
             </p>
             <p>= <code>{{ token.sign(method, uri) }}</code></p>
+
+            <br/>
+
+            {# Demo using a payload #}
+            <h4>When using a <code>POST</code>, <code>PUT</code> or <code>DELETE</code> verb</h4>
+            <br/>
+            {{ include('@Api/documentation/demo.html.twig', {token: token, endpoint: demo_post, prettify: false}) }}
+            <p>&nbsp;</p>
+            <p>
+                {% set method = demo_post.methods[0] %}
+                {% set uri = demo_post.uri %}
+                {% set payload = demo_post.requestFacade.example|json_encode %}
+
+                In the above example,
+                <code>HMAC(SHA256, {{ method }}{{ uri }}{{ payload }}, secret)</code>
+            </p>
+            <p>= <code>{{ token.sign(method, uri, payload) }}</code></p>
         </div>
+
 
         <hr/>
         <h2>Endpoints</h2>
@@ -68,11 +88,17 @@
 
         {% for category in category_collection.categories %}
             <div class="h4">{{ category.name }}</div>
+            <p>{{ category.title }}</p>
+            {% if category.description %}
+                <p>{{ category.description }}</p>
+            {% endif %}
+            <br/>
             {% for endpoint in category.endpoints.endpoints %}
                 <div style="margin-left:15px;">
                     <a href="{{ path('developer_token_endpoint', {token: token, categoryId: category.id, endpointId: endpoint.id}) }}">{{ endpoint.title }}</a>
                 </div>
             {% endfor %}
+            <hr/>
         {% endfor %}
 
         <br/><br/><br/>

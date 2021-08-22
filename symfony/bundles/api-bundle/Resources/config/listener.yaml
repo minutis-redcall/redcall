@@ -13,3 +13,9 @@ services:
       - '@logger'
     tags:
       - { name: kernel.event_listener, event: kernel.exception }
+
+  Bundles\ApiBundle\Listener\RequestListener:
+    arguments:
+      - '@translator'
+    tags:
+      - { name: kernel.event_listener, event: kernel.request }

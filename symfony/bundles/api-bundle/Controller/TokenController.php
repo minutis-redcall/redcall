@@ -106,7 +106,8 @@ class TokenController extends AbstractController
         return [
             'token'               => $token,
             'category_collection' => $collection,
-            'demo'                => $collection->getCategory(DemoController::class)->getEndpoint('hello'),
+            'demo_get'            => $collection->getCategory(DemoController::class)->getEndpoint('helloGet'),
+            'demo_post'           => $collection->getCategory(DemoController::class)->getEndpoint('helloPost'),
         ];
     }
 
@@ -253,7 +254,7 @@ class TokenController extends AbstractController
         $builder = $this
             ->createFormBuilder(array_merge([
                 'method' => 'GET',
-                'uri'    => $this->generateUrl('developer_demo_hello', ['name' => 'Bob'], UrlGeneratorInterface::ABSOLUTE_URL),
+                'uri'    => $this->generateUrl('developer_demo_hello_get', ['name' => 'Bob'], UrlGeneratorInterface::ABSOLUTE_URL),
             ], $selection ?? []), [
                 'attr' => [
                     'autocomplete' => 'off',

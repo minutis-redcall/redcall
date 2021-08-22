@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Contract\LockableInterface;
 use Bundles\PasswordLoginBundle\Entity\AbstractUser;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -19,7 +20,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Parent class has callbacks
  * @ORM\HasLifecycleCallbacks()
  */
-class User extends AbstractUser
+class User extends AbstractUser implements LockableInterface
 {
     /**
      * @ORM\Column(type="string", length=5)

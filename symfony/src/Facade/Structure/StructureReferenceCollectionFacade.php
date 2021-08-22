@@ -1,21 +1,21 @@
 <?php
 
-namespace App\Facade\Category;
+namespace App\Facade\Structure;
 
 use Bundles\ApiBundle\Annotation as Api;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
 use Bundles\ApiBundle\Model\Facade\CollectionFacade;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class CategoryReferenceCollectionFacade implements FacadeInterface
+class StructureReferenceCollectionFacade implements FacadeInterface
 {
     /**
-     * Contains an array of external ids.
+     * Contains an array of structure external ids.
      *
      * @Assert\NotNull
      * @Assert\Count(min=1, max=100)
      *
-     * @var CategoryReferenceFacade[]
+     * @var StructureReferenceFacade[]
      */
     protected $entries;
 
@@ -29,9 +29,9 @@ class CategoryReferenceCollectionFacade implements FacadeInterface
         $facade = new static;
 
         $facade->setEntries([
-            CategoryReferenceFacade::getExample(),
-            CategoryReferenceFacade::getExample(),
-            CategoryReferenceFacade::getExample(),
+            StructureReferenceFacade::getExample(),
+            StructureReferenceFacade::getExample(),
+            StructureReferenceFacade::getExample(),
         ]);
 
         return $facade;

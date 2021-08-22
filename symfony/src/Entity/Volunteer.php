@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Contract\LockableInterface;
 use Bundles\PegassCrawlerBundle\Entity\Pegass;
 use DateInterval;
 use DateTime;
@@ -30,7 +31,7 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
  * @ORM\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
  * @UniqueEntity("email")
  */
-class Volunteer
+class Volunteer implements LockableInterface
 {
     /**
      * @var int

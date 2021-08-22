@@ -284,13 +284,20 @@ class StructureRepository extends BaseRepository
 
     public function getStructureHierarchyForCurrentUser(string $platform, User $user) : array
     {
-        return $this
+        $rows = $this
             ->getStructuresForUserQueryBuilder($platform, $user)
-            ->select('s.id, c.id as child_id')
+            ->select('s.id, c.id as child_id, c.enabled as child_enabled')
             ->leftJoin('s.childrenStructures', 'c')
-            ->andWhere('c.enabled IS NULL OR c.enabled = true')
             ->getQuery()
             ->getArrayResult();
+
+        foreach ($rows as $index => $row) {
+            if (!$row['child_enabled']) {
+                $rows[$index]['child_id'] = null;
+            }
+        }
+
+        return $rows;
     }
 
     public function getVolunteerLocalCounts(string $platform, array $structureIds) : array

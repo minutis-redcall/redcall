@@ -7,20 +7,15 @@ use Bundles\PasswordLoginBundle\Event\PasswordLoginEvents;
 use Bundles\PasswordLoginBundle\Event\PostEditProfileEvent;
 use Bundles\PasswordLoginBundle\Event\PreEditProfileEvent;
 use Bundles\PasswordLoginBundle\Form\Type\ProfileType;
-use Bundles\PasswordLoginBundle\Manager\CaptchaManager;
 use Bundles\PasswordLoginBundle\Manager\EmailVerificationManager;
 use Bundles\PasswordLoginBundle\Manager\PasswordRecoveryManager;
 use Bundles\PasswordLoginBundle\Manager\UserManager;
-use Bundles\PasswordLoginBundle\Services\Mail;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -29,11 +24,6 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  */
 class AdminController extends AbstractController
 {
-    /**
-     * @var CaptchaManager
-     */
-    private $captchaManager;
-
     /**
      * @var EmailVerificationManager
      */
@@ -55,26 +45,6 @@ class AdminController extends AbstractController
     private $dispatcher;
 
     /**
-     * @var Mail
-     */
-    private $mail;
-
-    /**
-     * @var UserPasswordEncoderInterface
-     */
-    private $encoder;
-
-    /**
-     * @var TokenStorageInterface
-     */
-    private $tokenStorage;
-
-    /**
-     * @var Session
-     */
-    private $session;
-
-    /**
      * @var TranslatorInterface
      */
     private $translator;
@@ -84,27 +54,17 @@ class AdminController extends AbstractController
      */
     private $homeRoute;
 
-    public function __construct(CaptchaManager $captchaManager,
-        EmailVerificationManager $emailVerificationManager,
+    public function __construct(EmailVerificationManager $emailVerificationManager,
         PasswordRecoveryManager $passwordRecoveryManager,
         UserManager $userManager,
         EventDispatcherInterface $dispatcher,
-        Mail $mail,
-        UserPasswordEncoderInterface $encoder,
-        TokenStorageInterface $tokenStorage,
-        Session $session,
         TranslatorInterface $translator,
         string $homeRoute)
     {
-        $this->captchaManager           = $captchaManager;
         $this->emailVerificationManager = $emailVerificationManager;
         $this->passwordRecoveryManager  = $passwordRecoveryManager;
         $this->userManager              = $userManager;
         $this->dispatcher               = $dispatcher;
-        $this->mail                     = $mail;
-        $this->encoder                  = $encoder;
-        $this->tokenStorage             = $tokenStorage;
-        $this->session                  = $session;
         $this->translator               = $translator;
         $this->homeRoute                = $homeRoute;
     }
@@ -235,15 +195,7 @@ class AdminController extends AbstractController
     public function resetPassword($username, $csrf)
     {
         if ($this->checkCsrfAndUser($username, $csrf)) {
-            $uuid = $this->passwordRecoveryManager->generateToken($username);
-            $url  = trim(getenv('WEBSITE_URL'), '/').$this->generateUrl('password_login_change_password', ['uuid' => $uuid]);
-
-            $this->mail->send(
-                $username,
-                'password_login.forgot_password.subject',
-                '@PasswordLogin/security/forgot_password_mail.txt.twig',
-                ['url' => $url, 'type' => 'register']
-            );
+            $this->passwordRecoveryManager->sendPasswordRecoveryEmail($username);
         }
 
         $this->addFlash('success', $this->translator->trans('password_login.forgot_password.sent_by_admin', ['%email%' => $username]));

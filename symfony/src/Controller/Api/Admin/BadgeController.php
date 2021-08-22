@@ -8,18 +8,17 @@ use App\Enum\Crud;
 use App\Facade\Badge\BadgeFacade;
 use App\Facade\Badge\BadgeFiltersFacade;
 use App\Facade\Badge\BadgeReadFacade;
-use App\Facade\Badge\BadgeReferenceCollectionFacade;
-use App\Facade\Badge\BadgeReferenceFacade;
-use App\Facade\Category\CategoryReferenceFacade;
 use App\Facade\Generic\UpdateStatusFacade;
 use App\Facade\PageFilterFacade;
-use App\Facade\Volunteer\VolunteerReadFacade;
+use App\Facade\Resource\VolunteerResourceFacade;
 use App\Facade\Volunteer\VolunteerReferenceCollectionFacade;
 use App\Facade\Volunteer\VolunteerReferenceFacade;
 use App\Manager\BadgeManager;
 use App\Manager\VolunteerManager;
 use App\Transformer\BadgeTransformer;
+use App\Transformer\ResourceTransformer;
 use App\Transformer\VolunteerTransformer;
+use App\Validator\Constraints\Unlocked;
 use Bundles\ApiBundle\Annotation\Endpoint;
 use Bundles\ApiBundle\Annotation\Facade;
 use Bundles\ApiBundle\Base\BaseController;
@@ -32,8 +31,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Validator\Constraints\Callback;
-use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
  * Badges can be skills, nominations, trainings, or whatever
@@ -68,15 +65,22 @@ class BadgeController extends BaseController
      */
     private $volunteerManager;
 
+    /**
+     * @var ResourceTransformer
+     */
+    private $resourceTransformer;
+
     public function __construct(BadgeManager $badgeManager,
         BadgeTransformer $badgeTransformer,
         VolunteerTransformer $volunteerTransformer,
-        VolunteerManager $volunteerManager)
+        VolunteerManager $volunteerManager,
+        ResourceTransformer $resourceTransformer)
     {
         $this->badgeManager         = $badgeManager;
         $this->badgeTransformer     = $badgeTransformer;
         $this->volunteerTransformer = $volunteerTransformer;
         $this->volunteerManager     = $volunteerManager;
+        $this->resourceTransformer  = $resourceTransformer;
     }
 
     /**
@@ -160,7 +164,7 @@ class BadgeController extends BaseController
 
         $this->validate($badge, [
             new UniqueEntity(['platform', 'externalId']),
-            $this->getLockValidationCallback(),
+            new Unlocked(),
         ]);
 
         $this->badgeManager->save($badge);
@@ -182,7 +186,7 @@ class BadgeController extends BaseController
     public function delete(Badge $badge)
     {
         $this->validate($badge, [
-            $this->getLockValidationCallback(),
+            new Unlocked(),
         ]);
 
         $this->badgeManager->remove($badge);
@@ -197,7 +201,7 @@ class BadgeController extends BaseController
      *   priority = 25,
      *   request  = @Facade(class     = PageFilterFacade::class),
      *   response = @Facade(class     = QueryBuilderFacade::class,
-     *                      decorates = @Facade(class = VolunteerReadFacade::class))
+     *                      decorates = @Facade(class = VolunteerResourceFacade::class))
      * )
      * @Route(name="volunteer_records", path="/volunteer/{badgeId}", methods={"GET"})
      * @Entity("badge", expr="repository.findOneByExternalIdAndCurrentPlatform(badgeId)")
@@ -208,7 +212,7 @@ class BadgeController extends BaseController
         $qb = $this->volunteerManager->getVolunteersHavingBadgeQueryBuilder($badge);
 
         return new QueryBuilderFacade($qb, $filters->getPage(), function (Volunteer $volunteer) {
-            return $this->volunteerTransformer->expose($volunteer);
+            return $this->resourceTransformer->expose($volunteer);
         });
     }
 
@@ -250,84 +254,6 @@ class BadgeController extends BaseController
         return $this->bulkUpdateVolunteers($badge, $collection, Crud::DELETE());
     }
 
-    /**
-     * Lock a list of badges.
-     *
-     * @Endpoint(
-     *   priority = 28,
-     *   request  = @Facade(class     = BadgeReferenceCollectionFacade::class,
-     *                      decorates = @Facade(class = BadgeReferenceFacade::class)),
-     *   response = @Facade(class     = CollectionFacade::class,
-     *                      decorates = @Facade(class = UpdateStatusFacade::class))
-     * )
-     * @Route(name="lock", path="/lock", methods={"PUT"})
-     */
-    public function lock(BadgeReferenceCollectionFacade $collection) : FacadeInterface
-    {
-        return $this->bulkUpdateBadges($collection, Crud::LOCK());
-    }
-
-    /**
-     * Unlock a list of badges.
-     *
-     * @Endpoint(
-     *   priority = 29,
-     *   request  = @Facade(class     = BadgeReferenceCollectionFacade::class,
-     *                      decorates = @Facade(class = BadgeReferenceFacade::class)),
-     *   response = @Facade(class     = CollectionFacade::class,
-     *                      decorates = @Facade(class = UpdateStatusFacade::class))
-     * )
-     * @Route(name="unlock", path="/unlock", methods={"PUT"})
-     */
-    public function unlock(BadgeReferenceCollectionFacade $collection) : FacadeInterface
-    {
-        return $this->bulkUpdateBadges($collection, Crud::UNLOCK());
-    }
-
-    /**
-     * Enable a list of badges.
-     *
-     * @Endpoint(
-     *   priority = 30,
-     *   request  = @Facade(class     = BadgeReferenceCollectionFacade::class,
-     *                      decorates = @Facade(class = BadgeReferenceFacade::class)),
-     *   response = @Facade(class     = CollectionFacade::class,
-     *                      decorates = @Facade(class = UpdateStatusFacade::class))
-     * )
-     * @Route(name="enable", path="/enable", methods={"PUT"})
-     */
-    public function enable(BadgeReferenceCollectionFacade $collection) : FacadeInterface
-    {
-        return $this->bulkUpdateBadges($collection, Crud::ENABLE());
-    }
-
-    /**
-     * Disable a list of badges.
-     *
-     * @Endpoint(
-     *   priority = 31,
-     *   request  = @Facade(class     = BadgeReferenceCollectionFacade::class,
-     *                      decorates = @Facade(class = BadgeReferenceFacade::class)),
-     *   response = @Facade(class     = CollectionFacade::class,
-     *                      decorates = @Facade(class = UpdateStatusFacade::class))
-     * )
-     * @Route(name="disable", path="/disable", methods={"PUT"})
-     */
-    public function disable(BadgeReferenceCollectionFacade $collection) : FacadeInterface
-    {
-        return $this->bulkUpdateBadges($collection, Crud::DISABLE());
-    }
-
-    private function getLockValidationCallback() : Callback
-    {
-        return new Callback(function ($object, ExecutionContextInterface $context, $payload) {
-            /** @var Badge $object */
-            if ($object->isLocked()) {
-                $context->addViolation('This badge is locked.');
-            }
-        });
-    }
-
     private function bulkUpdateVolunteers(Badge $badge, VolunteerReferenceCollectionFacade $collection, Crud $action)
     {
         $response = new CollectionFacade();
@@ -344,6 +270,11 @@ class BadgeController extends BaseController
 
             if (!$this->isGranted('VOLUNTEER', $volunteer)) {
                 $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Access denied');
+                continue;
+            }
+
+            if ($volunteer->isLocked()) {
+                $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Volunteer is locked');
                 continue;
             }
 
@@ -377,67 +308,6 @@ class BadgeController extends BaseController
 
         if ($changes) {
             $this->badgeManager->save($badge);
-        }
-
-        return $response;
-    }
-
-    private function bulkUpdateBadges(BadgeReferenceCollectionFacade $collection, Crud $action) : FacadeInterface
-    {
-        $response = new CollectionFacade();
-
-        foreach ($collection->getEntries() as $entry) {
-            /** @var CategoryReferenceFacade $entry */
-            $badge = $this->badgeManager->findOneByExternalId($this->getPlatform(), $entry->getExternalId());
-
-            if (null === $badge) {
-                $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Badge does not exist');
-                continue;
-            }
-
-            if (!$this->isGranted('BADGE', $badge)) {
-                $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Access denied');
-                continue;
-            }
-
-            switch ($action) {
-                case Crud::LOCK():
-                    if ($badge->isLocked()) {
-                        $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Badge already locked');
-                        continue 2;
-                    }
-
-                    $badge->setLocked(true);
-                    break;
-                case Crud::UNLOCK():
-                    if (!$badge->isLocked()) {
-                        $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Badge already unlocked');
-                        continue 2;
-                    }
-
-                    $badge->setLocked(false);
-                    break;
-                case Crud::ENABLE():
-                    if ($badge->isEnabled()) {
-                        $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Badge already enabled');
-                        continue 2;
-                    }
-
-                    $badge->setEnabled(true);
-                    break;
-                case Crud::DISABLE():
-                    if (!$badge->isEnabled()) {
-                        $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Badge already disabled');
-                        continue 2;
-                    }
-
-                    $badge->setEnabled(false);
-                    break;
-            }
-
-            $this->badgeManager->save($badge);
-
-            $response[] = new UpdateStatusFacade($entry->getExternalId());
         }
 
         return $response;

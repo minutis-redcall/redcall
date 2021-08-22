@@ -2,15 +2,18 @@
 
 namespace App\Facade\User;
 
-use App\Facade\Generic\ResourceFacade;
 use Bundles\ApiBundle\Annotation as Api;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class UserFacade implements FacadeInterface
 {
     /**
      * User's identifier, generally this is the email (s)he used to sign-up to the platform. When using
      * external connectors, it may also be the email tied to the external resource (eg. a Red Cross volunteer).
+     *
+     * @Assert\Length(max=64)
+     * @Assert\Email
      *
      * @var string
      */
@@ -20,6 +23,8 @@ class UserFacade implements FacadeInterface
      * When registering, every user receive a verification email. User''s email is considered valid once user clicked
      * on the link it contains. Non-verified users cannot connect to the platform.
      *
+     * @Assert\Choice(choices={false, true})
+     *
      * @var bool
      */
     protected $verified = true;
@@ -28,6 +33,8 @@ class UserFacade implements FacadeInterface
      * Anyone can subscribe to the platform, but only the ones trusted (activated manually by an administrator)
      * can access the provided tools.
      *
+     * @Assert\Choice(choices={false, true})
+     *
      * @var bool
      */
     protected $trusted = true;
@@ -35,12 +42,16 @@ class UserFacade implements FacadeInterface
     /**
      * A developer can integrate RedCall APIs and access technical features.
      *
+     * @Assert\Choice(choices={false, true})
+     *
      * @var bool
      */
     protected $developer = false;
 
     /**
      * An administrator can trust new users and configure the platform.
+     *
+     * @Assert\Choice(choices={false, true})
      *
      * @var bool
      */
@@ -50,6 +61,8 @@ class UserFacade implements FacadeInterface
      * A root has the same capabilities as an administrator, but can switch between the different platforms
      * (eg. France, Spain, ...), and can also change all resources' platform.
      *
+     * @Assert\Choice(choices={false, true})
+     *
      * @var bool
      */
     protected $root = false;
@@ -58,24 +71,11 @@ class UserFacade implements FacadeInterface
      * A locked user is not synchronized anymore with its associated volunteer. If volunteer's scope change
      * it won't be reflected.
      *
+     * @Assert\Choice(choices={false, true})
+     *
      * @var bool
      */
     protected $locked = false;
-
-    /**
-     * A user is a resource that only helps in the authentication and authorization process. In order to create
-     * triggers, a user should be bound to its volunteer, containing all its context at the Red Cross.
-     *
-     * @var ResourceFacade
-     */
-    protected $volunteer = null;
-
-    /**
-     * Structures that a user can trigger, by default the same of its tied volunteer.
-     *
-     * @var ResourceFacade[]
-     */
-    protected $structures = [];
 
     static public function getExample(Api\Facade $decorates = null) : FacadeInterface
     {
@@ -89,31 +89,10 @@ class UserFacade implements FacadeInterface
         $facade->setRoot(false);
         $facade->setLocked(false);
 
-        $volunteer = new ResourceFacade();
-        $volunteer->setType(ResourceFacade::TYPE_VOLUNTEER);
-        $volunteer->setLabel('John Doe');
-        $volunteer->setExternalId('demo-volunteer');
-        $facade->setVolunteer($volunteer);
-
-        $structureA = new ResourceFacade();
-        $structureA->setType(ResourceFacade::TYPE_STRUCTURE);
-        $structureA->setLabel('UNITE LOCALE DE PARIS 1ER');
-        $structureA->setExternalId('demo-structure-1');
-
-        $structureB = new ResourceFacade();
-        $structureB->setType(ResourceFacade::TYPE_STRUCTURE);
-        $structureB->setLabel('UNITE LOCALE DE PARIS 2EME');
-        $structureB->setExternalId('demo-structure-1');
-
-        $facade->setStructures([
-            $structureA,
-            $structureB,
-        ]);
-
         return $facade;
     }
 
-    public function getIdentifier() : string
+    public function getIdentifier() : ?string
     {
         return $this->identifier;
     }
@@ -193,30 +172,6 @@ class UserFacade implements FacadeInterface
     public function setLocked(bool $locked) : UserFacade
     {
         $this->locked = $locked;
-
-        return $this;
-    }
-
-    public function getVolunteer() : ?ResourceFacade
-    {
-        return $this->volunteer;
-    }
-
-    public function setVolunteer(?ResourceFacade $volunteer) : UserFacade
-    {
-        $this->volunteer = $volunteer;
-
-        return $this;
-    }
-
-    public function getStructures() : array
-    {
-        return $this->structures;
-    }
-
-    public function setStructures(array $structures) : UserFacade
-    {
-        $this->structures = $structures;
 
         return $this;
     }

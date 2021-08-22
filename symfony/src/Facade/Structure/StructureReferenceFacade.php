@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Facade\Category;
+namespace App\Facade\Structure;
 
 use Bundles\ApiBundle\Annotation as Api;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class CategoryReferenceFacade implements FacadeInterface
+class StructureReferenceFacade implements FacadeInterface
 {
     /**
-     * The identifier you've set to identify a resource.
+     * The identifier you've set to identify a structure.
      *
      * @Assert\NotBlank()
      * @Assert\Length(max = 64)
@@ -22,7 +22,7 @@ class CategoryReferenceFacade implements FacadeInterface
     {
         $facade = new static;
 
-        $facade->externalId = sprintf('demo-%d', rand() % 100);
+        $facade->externalId = sprintf('structure-%d', rand() % 100);
 
         return $facade;
     }
@@ -32,7 +32,7 @@ class CategoryReferenceFacade implements FacadeInterface
         return $this->externalId;
     }
 
-    public function setExternalId(string $externalId) : CategoryReferenceFacade
+    public function setExternalId(string $externalId) : StructureReferenceFacade
     {
         $this->externalId = $externalId;
 
