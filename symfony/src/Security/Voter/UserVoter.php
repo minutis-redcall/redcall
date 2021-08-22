@@ -54,6 +54,10 @@ class UserVoter extends Voter
             return false;
         }
 
+        //        if ($me->isEqualTo($user)) {
+        //            return false;
+        //        }
+
         if ($this->security->isGranted('ROLE_ADMIN')) {
             return true;
         }

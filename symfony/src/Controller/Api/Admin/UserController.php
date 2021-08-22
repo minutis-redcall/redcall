@@ -4,9 +4,11 @@ namespace App\Controller\Api\Admin;
 
 use App\Entity\Structure;
 use App\Entity\User;
+use App\Entity\Volunteer;
 use App\Enum\Crud;
 use App\Facade\Generic\UpdateStatusFacade;
 use App\Facade\PageFilterFacade;
+use App\Facade\Resource\VolunteerResourceFacade;
 use App\Facade\Structure\StructureReferenceCollectionFacade;
 use App\Facade\Structure\StructureReferenceFacade;
 use App\Facade\User\UserFacade;
@@ -24,6 +26,7 @@ use Bundles\ApiBundle\Contracts\FacadeInterface;
 use Bundles\ApiBundle\Model\Facade\CollectionFacade;
 use Bundles\ApiBundle\Model\Facade\Http\HttpCreatedFacade;
 use Bundles\ApiBundle\Model\Facade\Http\HttpNoContentFacade;
+use Bundles\ApiBundle\Model\Facade\Http\HttpNotFoundFacade;
 use Bundles\ApiBundle\Model\Facade\QueryBuilderFacade;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
@@ -255,6 +258,74 @@ class UserController extends BaseController
         return $this->bulkUpdateStructures($user, $collection, Crud::DELETE());
     }
 
+    /**
+     * Get volunteer tied to the user.
+     *
+     * @Endpoint(
+     *   priority = 224,
+     *   response = @Facade(class = VolunteerResourceFacade::class)
+     * )
+     * @Route(name="volunteer_record", path="/volunteer/{email}", methods={"GET"})
+     * @Entity("user", expr="repository.findByUsernameAndCurrentPlatform(email)")
+     * @IsGranted("USER", subject="user")
+     */
+    public function volunteerRecord(User $user)
+    {
+        if (!$user->getVolunteer()) {
+            return new HttpNotFoundFacade();
+        }
+
+        return $this->resourceTransformer->expose(
+            $user->getVolunteer()
+        );
+    }
+
+    /**
+     * Attach a volunteer to the given user.
+     *
+     * @Endpoint(
+     *   priority = 227,
+     *   response = @Facade(class = HttpNoContentFacade::class)
+     * )
+     * @Route(name="volunteer_set", path="/volunteer/{email}/{volunteerExternalId}", methods={"POST"})
+     * @Entity("user", expr="repository.findByUsernameAndCurrentPlatform(email)")
+     * @IsGranted("USER", subject="user")
+     * @Entity("volunteer", expr="repository.findOneByExternalIdAndCurrentPlatform(volunteerExternalId)")
+     * @IsGranted("VOLUNTEER", subject="volunteer")
+     */
+    public function volunteerSet(User $user, Volunteer $volunteer)
+    {
+        $this->validate($user, [
+            new Unlocked(),
+        ]);
+
+        $this->userManager->changeVolunteer($user, $this->getPlatform(), $volunteer->getExternalId());
+
+        return new HttpNoContentFacade();
+    }
+
+    /**
+     * Remove volunteer tied to the user.
+     *
+     * @Endpoint(
+     *   priority = 230,
+     *   response = @Facade(class = HttpNoContentFacade::class)
+     * )
+     * @Route(name="volunteer_clear", path="/volunteer/{email}", methods={"DELETE"})
+     * @Entity("user", expr="repository.findByUsernameAndCurrentPlatform(email)")
+     * @IsGranted("USER", subject="user")
+     */
+    public function volunteerClear(User $user)
+    {
+        $this->validate($user, [
+            new Unlocked(),
+        ]);
+
+        $this->userManager->changeVolunteer($user);
+
+        return new HttpNoContentFacade();
+    }
+
     private function getMeValidationCallback() : Callback
     {
         return new Callback(function ($object, ExecutionContextInterface $context) {
@@ -306,7 +377,9 @@ class UserController extends BaseController
                         $user->addStructure($structureToAdd);
                     }
 
-                    $response[] = new UpdateStatusFacade($entry->getExternalId(), true, sprintf('Added %d structure(s)', count($structuresToAdd)));
+                    $count      = count($structuresToAdd);
+                    $response[] = new UpdateStatusFacade($entry->getExternalId(), true, sprintf('Added %d structure(s)', $count));
+                    $changes    += $count;
 
                     break;
                 case Crud::DELETE():
@@ -318,11 +391,10 @@ class UserController extends BaseController
                     $user->removeStructure($structure);
 
                     $response[] = new UpdateStatusFacade($entry->getExternalId());
+                    $changes++;
 
                     break;
             }
-
-            $changes++;
 
             break;
         }

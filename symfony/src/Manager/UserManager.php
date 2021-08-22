@@ -81,9 +81,17 @@ class UserManager extends BaseUserManager
         $this->userRepository->save($user);
     }
 
-    public function changeVolunteer(User $user, string $volunteerPlatform, string $volunteerExternalId)
+    public function changeVolunteer(User $user, ?string $volunteerPlatform = null, ?string $volunteerExternalId = null)
     {
-        $volunteer = $this->volunteerManager->findOneByExternalId($user->getPlatform(), $volunteerExternalId);
+        if ($user->isLocked()) {
+            return;
+        }
+
+        $volunteer = null;
+
+        if ($volunteerPlatform && $volunteerExternalId) {
+            $volunteer = $this->volunteerManager->findOneByExternalId($user->getPlatform(), $volunteerExternalId);
+        }
 
         if (!$volunteer) {
             $user->setVolunteer(null);
@@ -91,10 +99,6 @@ class UserManager extends BaseUserManager
 
             $this->save($user);
 
-            return;
-        }
-
-        if ($user->isLocked()) {
             return;
         }
 

@@ -8,6 +8,7 @@ use App\Entity\Structure;
 use App\Entity\User;
 use App\Entity\Volunteer;
 use App\Enum\Platform;
+use App\Security\Helper\Security;
 use Bundles\PegassCrawlerBundle\Entity\Pegass;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\QueryBuilder;
@@ -20,9 +21,24 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class VolunteerRepository extends BaseRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    /**
+     * @var Security
+     */
+    private $security;
+
+    public function __construct(ManagerRegistry $registry, Security $security)
     {
+        $this->security = $security;
+
         parent::__construct($registry, Volunteer::class);
+    }
+
+    public function findOneByExternalIdAndCurrentPlatform(string $externalId) : ?Volunteer
+    {
+        return $this->findOneBy([
+            'platform'   => $this->security->getPlatform(),
+            'externalId' => $externalId,
+        ]);
     }
 
     public function disable(Volunteer $volunteer)
@@ -480,8 +496,8 @@ class VolunteerRepository extends BaseRepository
     {
         $rows = $this->createQueryBuilder('v')
                      ->select('
-                        v.id, 
-                        MIN(b.triggeringPriority) AS t1, 
+                        v.id,
+                        MIN(b.triggeringPriority) AS t1,
                         MIN(x.triggeringPriority) as t2,
                         MIN(p1.triggeringPriority) as t3,
                         MIN(p2.triggeringPriority) as t4,
