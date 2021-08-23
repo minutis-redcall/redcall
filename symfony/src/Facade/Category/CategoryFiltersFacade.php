@@ -2,21 +2,12 @@
 
 namespace App\Facade\Category;
 
+use App\Facade\Generic\PageFilterFacade;
 use Bundles\ApiBundle\Annotation\Facade;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
-use Symfony\Component\Validator\Constraints as Assert;
 
-class CategoryFiltersFacade implements FacadeInterface
+class CategoryFiltersFacade extends PageFilterFacade
 {
-    /**
-     * Page number to request
-     *
-     * @Assert\Range(min = 1)
-     *
-     * @var int
-     */
-    protected $page = 1;
-
     /**
      * An optional search criteria in order to seek for a category by name
      *
@@ -26,23 +17,11 @@ class CategoryFiltersFacade implements FacadeInterface
 
     static public function getExample(Facade $decorates = null) : FacadeInterface
     {
-        $facade = new static;
+        $facade = parent::getExample($decorates);
 
-        $facade->page = 1;
+        $facade->setCriteria('vehicl');
 
         return $facade;
-    }
-
-    public function getPage() : int
-    {
-        return $this->page;
-    }
-
-    public function setPage(int $page) : CategoryFiltersFacade
-    {
-        $this->page = $page;
-
-        return $this;
     }
 
     public function getCriteria() : ?string

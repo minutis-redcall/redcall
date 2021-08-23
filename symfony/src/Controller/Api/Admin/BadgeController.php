@@ -8,8 +8,8 @@ use App\Enum\Crud;
 use App\Facade\Badge\BadgeFacade;
 use App\Facade\Badge\BadgeFiltersFacade;
 use App\Facade\Badge\BadgeReadFacade;
+use App\Facade\Generic\PageFilterFacade;
 use App\Facade\Generic\UpdateStatusFacade;
-use App\Facade\PageFilterFacade;
 use App\Facade\Resource\VolunteerResourceFacade;
 use App\Facade\Volunteer\VolunteerReferenceCollectionFacade;
 use App\Facade\Volunteer\VolunteerReferenceFacade;
@@ -17,7 +17,6 @@ use App\Manager\BadgeManager;
 use App\Manager\VolunteerManager;
 use App\Transformer\BadgeTransformer;
 use App\Transformer\ResourceTransformer;
-use App\Transformer\VolunteerTransformer;
 use App\Validator\Constraints\Unlocked;
 use Bundles\ApiBundle\Annotation\Endpoint;
 use Bundles\ApiBundle\Annotation\Facade;
@@ -33,8 +32,8 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * Badges can be skills, nominations, trainings, or whatever
- * information used to categorize volunteers.
+ * A badge is a skill, a nomination, a training certificate, or anything
+ * that helps you filter out which people is needed in a given situation.
  *
  * During a trigger, a RedCall user can either select all the
  * volunteers, or filter out a list of people having the required
@@ -56,11 +55,6 @@ class BadgeController extends BaseController
     private $badgeTransformer;
 
     /**
-     * @var VolunteerTransformer
-     */
-    private $volunteerTransformer;
-
-    /**
      * @var VolunteerManager
      */
     private $volunteerManager;
@@ -72,15 +66,13 @@ class BadgeController extends BaseController
 
     public function __construct(BadgeManager $badgeManager,
         BadgeTransformer $badgeTransformer,
-        VolunteerTransformer $volunteerTransformer,
         VolunteerManager $volunteerManager,
         ResourceTransformer $resourceTransformer)
     {
-        $this->badgeManager         = $badgeManager;
-        $this->badgeTransformer     = $badgeTransformer;
-        $this->volunteerTransformer = $volunteerTransformer;
-        $this->volunteerManager     = $volunteerManager;
-        $this->resourceTransformer  = $resourceTransformer;
+        $this->badgeManager        = $badgeManager;
+        $this->badgeTransformer    = $badgeTransformer;
+        $this->volunteerManager    = $volunteerManager;
+        $this->resourceTransformer = $resourceTransformer;
     }
 
     /**

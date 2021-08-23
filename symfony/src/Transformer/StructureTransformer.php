@@ -56,6 +56,11 @@ class StructureTransformer extends BaseTransformer
         return $facade;
     }
 
+    public function reconstruct(FacadeInterface $facade, $object = null)
+    {
+
+    }
+
     private function getVolunteerManager() : VolunteerManager
     {
         return $this->get(VolunteerManager::class);
