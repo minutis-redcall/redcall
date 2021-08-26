@@ -549,6 +549,7 @@ class AnonymizeManager
         $volunteer->setLastName($this->generateLastname());
 
         $volunteer->setEmail($this->generateEmail($volunteer->getFirstName(), $volunteer->getLastName()));
+        $volunteer->getPhones()->clear();
 
         if (!$volunteer->getId()) {
             $this->volunteerManager->save($volunteer);
