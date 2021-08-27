@@ -87,6 +87,15 @@ class StructureManager
         );
     }
 
+    public function searchQueryBuilder(?string $criteria, bool $enabled) : QueryBuilder
+    {
+        if ($this->security->isGranted('ROLE_ADMIN')) {
+            return $this->searchAllQueryBuilder($this->security->getPlatform(), $criteria, $enabled);
+        } else {
+            return $this->searchForCurrentUserQueryBuilder($criteria, $enabled);
+        }
+    }
+
     public function synchronizeWithPegass()
     {
         $this->structureRepository->synchronizeWithPegass();

@@ -59,11 +59,7 @@ class StructureController extends BaseController
      */
     public function records(StructureFiltersFacade $filters) : FacadeInterface
     {
-        if ($this->isGranted('ROLE_ADMIN')) {
-            $qb = $this->structureManager->searchAllQueryBuilder($this->getPlatform(), $filters->getCriteria(), $filters->isOnlyEnabled());
-        } else {
-            $qb = $this->structureManager->searchForCurrentUserQueryBuilder($filters->getCriteria(), $filters->isOnlyEnabled());
-        }
+        $qb = $this->structureManager->searchQueryBuilder($filters->getCriteria(), $filters->isOnlyEnabled());
 
         return new QueryBuilderFacade($qb, $filters->getPage(), function (Structure $structure) {
             return $this->structureTransformer->expose($structure);
