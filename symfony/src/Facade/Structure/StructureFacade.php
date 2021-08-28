@@ -137,12 +137,12 @@ class StructureFacade implements FacadeInterface
         return $this;
     }
 
-    public function getPresidentExternalId() : string
+    public function getPresidentExternalId() : ?string
     {
         return $this->presidentExternalId;
     }
 
-    public function setPresidentExternalId(string $presidentExternalId) : StructureFacade
+    public function setPresidentExternalId(?string $presidentExternalId) : StructureFacade
     {
         $this->presidentExternalId = $presidentExternalId;
 

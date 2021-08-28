@@ -3,7 +3,6 @@
 namespace App\Controller\Api;
 
 use App\Entity\Structure;
-use App\Facade\Badge\BadgeFacade;
 use App\Facade\Structure\StructureFacade;
 use App\Facade\Structure\StructureFiltersFacade;
 use App\Facade\Structure\StructureReadFacade;
@@ -16,6 +15,8 @@ use Bundles\ApiBundle\Base\BaseController;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
 use Bundles\ApiBundle\Model\Facade\Http\HttpCreatedFacade;
 use Bundles\ApiBundle\Model\Facade\QueryBuilderFacade;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -91,5 +92,21 @@ class StructureController extends BaseController
         $this->structureManager->save($structure);
 
         return new HttpCreatedFacade();
+    }
+
+    /**
+     * Get a structure.
+     *
+     * @Endpoint(
+     *   priority = 206,
+     *   response = @Facade(class = StructureReadFacade::class)
+     * )
+     * @Route(name="read", path="/{externalId}", methods={"GET"})
+     * @Entity("structure", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
+     * @IsGranted("STRUCTURE", subject="structure")
+     */
+    public function read(Structure $structure)
+    {
+        return $this->structureTransformer->expose($structure);
     }
 }
