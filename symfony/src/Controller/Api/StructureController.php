@@ -9,11 +9,13 @@ use App\Facade\Structure\StructureReadFacade;
 use App\Manager\StructureManager;
 use App\Transformer\ResourceTransformer;
 use App\Transformer\StructureTransformer;
+use App\Validator\Constraints\Unlocked;
 use Bundles\ApiBundle\Annotation\Endpoint;
 use Bundles\ApiBundle\Annotation\Facade;
 use Bundles\ApiBundle\Base\BaseController;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
 use Bundles\ApiBundle\Model\Facade\Http\HttpCreatedFacade;
+use Bundles\ApiBundle\Model\Facade\Http\HttpNoContentFacade;
 use Bundles\ApiBundle\Model\Facade\QueryBuilderFacade;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
@@ -80,6 +82,7 @@ class StructureController extends BaseController
      *   response = @Facade(class     = HttpCreatedFacade::class)
      * )
      * @Route(name="create", methods={"POST"})
+     * @IsGranted("ROLE_ADMIN")
      */
     public function create(StructureFacade $facade) : FacadeInterface
     {
@@ -98,7 +101,7 @@ class StructureController extends BaseController
      * Get a structure.
      *
      * @Endpoint(
-     *   priority = 206,
+     *   priority = 310,
      *   response = @Facade(class = StructureReadFacade::class)
      * )
      * @Route(name="read", path="/{externalId}", methods={"GET"})
@@ -109,4 +112,32 @@ class StructureController extends BaseController
     {
         return $this->structureTransformer->expose($structure);
     }
+
+    /**
+     * Update a structure.
+     *
+     * @Endpoint(
+     *   priority = 315,
+     *   request  = @Facade(class = StructureFacade::class),
+     *   response = @Facade(class = HttpNoContentFacade::class)
+     * )
+     * @Route(name="update", path="/{externalId}", methods={"PUT"})
+     * @Entity("structure", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
+     * @IsGranted("STRUCTURE", subject="structure")
+     * @IsGranted("ROLE_ADMIN")
+     */
+    public function update(Structure $structure, StructureFacade $facade)
+    {
+        $badge = $this->structureTransformer->reconstruct($facade, $structure);
+
+        $this->validate($badge, [
+            new UniqueEntity(['platform', 'externalId']),
+            new Unlocked(),
+        ]);
+
+        $this->structureManager->save($badge);
+
+        return new HttpNoContentFacade();
+    }
+
 }

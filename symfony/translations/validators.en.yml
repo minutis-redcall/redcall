@@ -34,7 +34,7 @@ form:
     error_no_preferred: 'You didn''t choose any main phone number.'
   structure:
     parent:
-      loop: 'This structure structure est de niveau supérieur (%hierarchy%), vous ne pouvez donc pas l''utiliser en structure de niveau inférieur.'
+      loop: 'You are currently creating a loop in the structure hierarchy (%hierarchy%), you cannot set a child structure as parent.'
   volunteer:
     errors:
       redcall_user: 'This volunteer is bound to a RedCall user, remove first the user and then remove this volunteer.'

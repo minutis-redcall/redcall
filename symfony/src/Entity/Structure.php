@@ -533,6 +533,7 @@ class Structure implements LockableInterface
                 ->buildViolation('form.structure.parent.loop', [
                     '%hierarchy%' => implode(' -> ', $this->getParentHierarchy($this->id)),
                 ])
+                ->setInvalidValue($this->getDisplayName())
                 ->atPath('parentStructure')
                 ->addViolation();
         }
@@ -548,12 +549,17 @@ class Structure implements LockableInterface
 
     public function getParentHierarchy(int $stop = null) : array
     {
-        $parents = [];
-        $ref     = $this->getParentStructure();
-        while ($ref && (null === $stop || $ref->getId() !== $stop)) {
+        $parents = [$this];
+
+        $ref = $this->getParentStructure();
+        do {
             array_unshift($parents, $ref);
             $ref = $ref->getParentStructure();
-        }
+            if ($ref && $ref->getId() === $stop) {
+                array_unshift($parents, $ref);
+                break;
+            }
+        } while ($ref);
 
         return $parents;
     }

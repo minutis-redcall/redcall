@@ -129,8 +129,8 @@ class BadgeController extends BaseController
      *   priority = 22,
      *   response = @Facade(class = BadgeReadFacade::class)
      * )
-     * @Route(name="read", path="/{badgeId}", methods={"GET"})
-     * @Entity("badge", expr="repository.findOneByExternalIdAndCurrentPlatform(badgeId)")
+     * @Route(name="read", path="/{externalId}", methods={"GET"})
+     * @Entity("badge", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
      * @IsGranted("BADGE", subject="badge")
      */
     public function read(Badge $badge) : FacadeInterface
@@ -146,8 +146,8 @@ class BadgeController extends BaseController
      *   request  = @Facade(class = BadgeFacade::class),
      *   response = @Facade(class = HttpNoContentFacade::class)
      * )
-     * @Route(name="update", path="/{badgeId}", methods={"PUT"})
-     * @Entity("badge", expr="repository.findOneByExternalIdAndCurrentPlatform(badgeId)")
+     * @Route(name="update", path="/{externalId}", methods={"PUT"})
+     * @Entity("badge", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
      * @IsGranted("BADGE", subject="badge")
      */
     public function update(Badge $badge, BadgeFacade $facade)
@@ -171,8 +171,8 @@ class BadgeController extends BaseController
      *   priority = 24,
      *   response = @Facade(class = HttpNoContentFacade::class)
      * )
-     * @Route(name="delete", path="/{badgeId}", methods={"DELETE"})
-     * @Entity("badge", expr="repository.findOneByExternalIdAndCurrentPlatform(badgeId)")
+     * @Route(name="delete", path="/{externalId}", methods={"DELETE"})
+     * @Entity("badge", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
      * @IsGranted("BADGE", subject="badge")
      */
     public function delete(Badge $badge)
@@ -195,8 +195,8 @@ class BadgeController extends BaseController
      *   response = @Facade(class     = QueryBuilderFacade::class,
      *                      decorates = @Facade(class = VolunteerResourceFacade::class))
      * )
-     * @Route(name="volunteer_records", path="/volunteer/{badgeId}", methods={"GET"})
-     * @Entity("badge", expr="repository.findOneByExternalIdAndCurrentPlatform(badgeId)")
+     * @Route(name="volunteer_records", path="/volunteer/{externalId}", methods={"GET"})
+     * @Entity("badge", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
      * @IsGranted("BADGE", subject="badge")
      */
     public function volunteerRecords(Badge $badge, PageFilterFacade $filters)
@@ -218,8 +218,8 @@ class BadgeController extends BaseController
      *   response = @Facade(class     = CollectionFacade::class,
      *                      decorates = @Facade(class = UpdateStatusFacade::class))
      * )
-     * @Route(name="volunteer_add", path="/volunteer/{badgeId}", methods={"POST"})
-     * @Entity("badge", expr="repository.findOneByExternalIdAndCurrentPlatform(badgeId)")
+     * @Route(name="volunteer_add", path="/volunteer/{externalId}", methods={"POST"})
+     * @Entity("badge", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
      * @IsGranted("BADGE", subject="badge")
      */
     public function volunteerAdd(Badge $badge, VolunteerReferenceCollectionFacade $collection) : FacadeInterface
@@ -237,8 +237,8 @@ class BadgeController extends BaseController
      *   response = @Facade(class     = CollectionFacade::class,
      *                      decorates = @Facade(class = UpdateStatusFacade::class))
      * )
-     * @Route(name="volunteer_delete", path="/volunteer/{badgeId}", methods={"DELETE"})
-     * @Entity("badge", expr="repository.findOneByExternalIdAndCurrentPlatform(badgeId)")
+     * @Route(name="volunteer_delete", path="/volunteer/{externalId}", methods={"DELETE"})
+     * @Entity("badge", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
      * @IsGranted("BADGE", subject="badge")
      */
     public function volunteerDelete(Badge $badge, VolunteerReferenceCollectionFacade $collection) : FacadeInterface

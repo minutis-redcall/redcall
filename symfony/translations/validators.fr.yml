@@ -34,7 +34,7 @@ form:
     error_no_preferred: 'Vous n''avez pas choisi de numéro principal.'
   structure:
     parent:
-      loop: 'Cette structure est de niveau supérieur (%hierarchy%), vous ne pouvez donc pas l''utiliser en structure de niveau inférieur.'
+      loop: 'Vous êtes en train de créer une boucle dans la hiérarchie des structures (%hierarchy%), vous ne pouvez pas mettre une structure enfant comme structure parente.'
   volunteer:
     errors:
       redcall_user: 'Ce bénévole est rattaché à un utilisateur RedCall, supprimez d''abord l''utilisateur afin de pouvoir désactiver le bénévole.'

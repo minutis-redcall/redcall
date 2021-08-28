@@ -101,7 +101,7 @@ class StructureFacade implements FacadeInterface
         return $facade;
     }
 
-    public function getExternalId() : string
+    public function getExternalId() : ?string
     {
         return $this->externalId;
     }
@@ -125,7 +125,7 @@ class StructureFacade implements FacadeInterface
         return $this;
     }
 
-    public function getName() : string
+    public function getName() : ?string
     {
         return $this->name;
     }
