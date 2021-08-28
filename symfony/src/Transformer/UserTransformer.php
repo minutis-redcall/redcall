@@ -64,6 +64,8 @@ class UserTransformer extends BaseTransformer
     /**
      * @param UserFacade $facade
      * @param User|null  $object
+     *
+     * @return User
      */
     public function reconstruct(FacadeInterface $facade, $object = null)
     {

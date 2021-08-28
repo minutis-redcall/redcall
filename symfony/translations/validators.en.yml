@@ -2,7 +2,7 @@ form:
   badge:
     errors:
       parent:
-        loop: 'This badge is on the next level, so you can''t set it on the previous level.'
+        loop: 'This badge is a parent on the hierarchy (%hierarchy), so you can''t use it as a child badge.'
         synonym: 'This badge is a synonym of "%name%", use "%name%" directy.'
       synonym:
         has_parent: 'Badge "%name%" has a previous level badge, so it cannot be replaced.'
@@ -32,6 +32,9 @@ form:
     error_duplicate: 'You entered the same number several times.'
     error_multi_preferred: 'You can only have one main phone number.'
     error_no_preferred: 'You didn''t choose any main phone number.'
+  structure:
+    parent:
+      loop: 'This structure structure est de niveau supérieur (%hierarchy%), vous ne pouvez donc pas l''utiliser en structure de niveau inférieur.'
   volunteer:
     errors:
       redcall_user: 'This volunteer is bound to a RedCall user, remove first the user and then remove this volunteer.'

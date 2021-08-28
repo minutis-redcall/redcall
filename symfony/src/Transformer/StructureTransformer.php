@@ -3,9 +3,12 @@
 namespace App\Transformer;
 
 use App\Entity\Structure;
+use App\Facade\Structure\StructureFacade;
 use App\Facade\Structure\StructureReadFacade;
+use App\Manager\StructureManager;
 use App\Manager\UserManager;
 use App\Manager\VolunteerManager;
+use App\Security\Helper\Security;
 use Bundles\ApiBundle\Base\BaseTransformer;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
 
@@ -14,8 +17,10 @@ class StructureTransformer extends BaseTransformer
     public static function getSubscribedServices()
     {
         return [
+            Security::class,
             VolunteerManager::class,
             UserManager::class,
+            StructureManager::class,
             ResourceTransformer::class,
         ];
     }
@@ -30,6 +35,7 @@ class StructureTransformer extends BaseTransformer
         $facade = new StructureReadFacade();
 
         $facade->setExternalId($object->getExternalId());
+        $facade->setParentExternalId($object->getParentStructure() ? $object->getParentStructure()->getExternalId() : null);
         $facade->setName($object->getName());
         $facade->setPresidentExternalId($object->getPresident());
         $facade->setLocked($object->isLocked());
@@ -56,9 +62,57 @@ class StructureTransformer extends BaseTransformer
         return $facade;
     }
 
+    /**
+     * @param StructureFacade $facade
+     * @param Structure|null  $object
+     *
+     * @return Structure
+     */
     public function reconstruct(FacadeInterface $facade, $object = null)
     {
+        $structure = $object;
+        if (null === $object) {
+            $structure = new Structure();
+            $structure->setPlatform($this->getSecurity()->getPlatform());
+        }
 
+        if (null !== $facade->getExternalId()) {
+            $structure->setExternalId($facade->getExternalId());
+        }
+
+        if (null !== $facade->getParentExternalId()) {
+            $parent = $this->getStructureManager()->findOneByExternalId(
+                $this->getSecurity()->getPlatform(),
+                $facade->getParentExternalId()
+            );
+
+            $structure->setParentStructure($parent);
+        }
+
+        if (null !== $facade->getName()) {
+            $structure->setName($facade->getName());
+        }
+
+        if (null !== $facade->getPresidentExternalId()) {
+            $volunteer = $this->getVolunteerManager()->findOneByExternalId(
+                $this->getSecurity()->getPlatform(),
+                $facade->getExternalId()
+            );
+
+            if ($volunteer) {
+                $structure->setPresident($facade->getExternalId());
+            }
+        }
+
+        if (null !== $facade->getLocked()) {
+            $structure->setLocked($facade->getLocked());
+        }
+
+        if (null !== $facade->getEnabled()) {
+            $structure->setEnabled($facade->getEnabled());
+        }
+
+        return $structure;
     }
 
     private function getVolunteerManager() : VolunteerManager
@@ -74,5 +128,15 @@ class StructureTransformer extends BaseTransformer
     private function getResourceTransformer() : ResourceTransformer
     {
         return $this->get(ResourceTransformer::class);
+    }
+
+    private function getStructureManager() : StructureManager
+    {
+        return $this->get(StructureManager::class);
+    }
+
+    private function getSecurity() : Security
+    {
+        return $this->get(Security::class);
     }
 }

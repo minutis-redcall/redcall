@@ -4,7 +4,6 @@ namespace App\Facade\User;
 
 use App\Facade\Resource\StructureResourceFacade;
 use App\Facade\Resource\VolunteerResourceFacade;
-use App\Facade\Volunteer\VolunteerReadFacade;
 use Bundles\ApiBundle\Annotation as Api;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
 
@@ -39,12 +38,12 @@ class UserReadFacade extends UserFacade
         $facade->setVolunteer($volunteer);
 
         $structureA = new StructureResourceFacade();
-        $structureA->setLabel('UNITE LOCALE DE PARIS 1ER');
+        $structureA->setLabel('UNITE LOCALE DE PARIS 5EME');
         $structureA->setExternalId('demo-structure-1');
 
         $structureB = new StructureResourceFacade();
-        $structureB->setLabel('UNITE LOCALE DE PARIS 2EME');
-        $structureB->setExternalId('demo-structure-1');
+        $structureB->setLabel('UNITE LOCALE DE PARIS 7EME');
+        $structureB->setExternalId('demo-structure-2');
 
         $facade->setStructures([
             $structureA,

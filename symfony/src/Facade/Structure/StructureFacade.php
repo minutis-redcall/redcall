@@ -9,7 +9,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 class StructureFacade implements FacadeInterface
 {
     /**
-     * An unique identifier for the volunteer.
+     * An unique identifier for the structure.
      *
      * You can use a random UUID, a name or the same identifier as in your own application.
      *
@@ -21,12 +21,28 @@ class StructureFacade implements FacadeInterface
     protected $externalId;
 
     /**
+     * Identifier of the parent structure.
+     *
+     * Structures can be organized in a hierarchy, so that a region can trigger all
+     * its departments, a department can trigger all its cities, a city can trigger
+     * all its districts.
+     *
+     * For example, in France, "DT de Paris" can trigger "UL de Paris 1&2", "UL de
+     * Paris 3&4" and 14 others.
+     *
+     * @Assert\Length(max = 64)
+     *
+     * @var string|null
+     */
+    protected $parentExternalId;
+
+    /**
      * Structure name.
      *
      * @Assert\NotBlank(groups={"create"})
      * @Assert\Length(max = 64)
      *
-     * @var string
+     * @var string|null
      */
     protected $name;
 
@@ -40,7 +56,7 @@ class StructureFacade implements FacadeInterface
      *
      * @Assert\Length(max = 64)
      *
-     * @var string
+     * @var string|null
      */
     protected $presidentExternalId;
 
@@ -93,6 +109,18 @@ class StructureFacade implements FacadeInterface
     public function setExternalId(string $externalId) : StructureFacade
     {
         $this->externalId = $externalId;
+
+        return $this;
+    }
+
+    public function getParentExternalId() : ?string
+    {
+        return $this->parentExternalId;
+    }
+
+    public function setParentExternalId(?string $parentExternalId) : StructureFacade
+    {
+        $this->parentExternalId = $parentExternalId;
 
         return $this;
     }

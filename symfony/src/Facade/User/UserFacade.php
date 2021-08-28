@@ -25,9 +25,9 @@ class UserFacade implements FacadeInterface
      *
      * @Assert\Choice(choices={false, true})
      *
-     * @var bool
+     * @var bool|null
      */
-    protected $verified = true;
+    protected $verified;
 
     /**
      * Anyone can subscribe to the platform, but only the ones trusted (activated manually by an administrator)
@@ -35,27 +35,27 @@ class UserFacade implements FacadeInterface
      *
      * @Assert\Choice(choices={false, true})
      *
-     * @var bool
+     * @var bool|null
      */
-    protected $trusted = true;
+    protected $trusted;
 
     /**
      * A developer can integrate RedCall APIs and access technical features.
      *
      * @Assert\Choice(choices={false, true})
      *
-     * @var bool
+     * @var bool|null
      */
-    protected $developer = false;
+    protected $developer;
 
     /**
      * An administrator can trust new users and configure the platform.
      *
      * @Assert\Choice(choices={false, true})
      *
-     * @var bool
+     * @var bool|null
      */
-    protected $administrator = false;
+    protected $administrator;
 
     /**
      * A root has the same capabilities as an administrator, but can switch between the different platforms
@@ -63,9 +63,9 @@ class UserFacade implements FacadeInterface
      *
      * @Assert\Choice(choices={false, true})
      *
-     * @var bool
+     * @var bool|null
      */
-    protected $root = false;
+    protected $root;
 
     /**
      * A locked user is not synchronized anymore with its associated volunteer. If volunteer's scope change
@@ -73,9 +73,9 @@ class UserFacade implements FacadeInterface
      *
      * @Assert\Choice(choices={false, true})
      *
-     * @var bool
+     * @var bool|null
      */
-    protected $locked = false;
+    protected $locked;
 
     static public function getExample(Api\Facade $decorates = null) : FacadeInterface
     {
@@ -104,72 +104,72 @@ class UserFacade implements FacadeInterface
         return $this;
     }
 
-    public function isVerified() : bool
+    public function isVerified() : ?bool
     {
         return $this->verified;
     }
 
-    public function setVerified(bool $verified) : UserFacade
+    public function setVerified(?bool $verified) : UserFacade
     {
         $this->verified = $verified;
 
         return $this;
     }
 
-    public function isTrusted() : bool
+    public function isTrusted() : ?bool
     {
         return $this->trusted;
     }
 
-    public function setTrusted(bool $trusted) : UserFacade
+    public function setTrusted(?bool $trusted) : UserFacade
     {
         $this->trusted = $trusted;
 
         return $this;
     }
 
-    public function isDeveloper() : bool
+    public function isDeveloper() : ?bool
     {
         return $this->developer;
     }
 
-    public function setDeveloper(bool $developer) : UserFacade
+    public function setDeveloper(?bool $developer) : UserFacade
     {
         $this->developer = $developer;
 
         return $this;
     }
 
-    public function isAdministrator() : bool
+    public function isAdministrator() : ?bool
     {
         return $this->administrator;
     }
 
-    public function setAdministrator(bool $administrator) : UserFacade
+    public function setAdministrator(?bool $administrator) : UserFacade
     {
         $this->administrator = $administrator;
 
         return $this;
     }
 
-    public function isRoot() : bool
+    public function isRoot() : ?bool
     {
         return $this->root;
     }
 
-    public function setRoot(bool $root) : UserFacade
+    public function setRoot(?bool $root) : UserFacade
     {
         $this->root = $root;
 
         return $this;
     }
 
-    public function isLocked() : bool
+    public function isLocked() : ?bool
     {
         return $this->locked;
     }
 
-    public function setLocked(bool $locked) : UserFacade
+    public function setLocked(?bool $locked) : UserFacade
     {
         $this->locked = $locked;
 

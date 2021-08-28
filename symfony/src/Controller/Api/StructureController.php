@@ -3,6 +3,8 @@
 namespace App\Controller\Api;
 
 use App\Entity\Structure;
+use App\Facade\Badge\BadgeFacade;
+use App\Facade\Structure\StructureFacade;
 use App\Facade\Structure\StructureFiltersFacade;
 use App\Facade\Structure\StructureReadFacade;
 use App\Manager\StructureManager;
@@ -12,7 +14,9 @@ use Bundles\ApiBundle\Annotation\Endpoint;
 use Bundles\ApiBundle\Annotation\Facade;
 use Bundles\ApiBundle\Base\BaseController;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
+use Bundles\ApiBundle\Model\Facade\Http\HttpCreatedFacade;
 use Bundles\ApiBundle\Model\Facade\QueryBuilderFacade;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -64,5 +68,28 @@ class StructureController extends BaseController
         return new QueryBuilderFacade($qb, $filters->getPage(), function (Structure $structure) {
             return $this->structureTransformer->expose($structure);
         });
+    }
+
+    /**
+     * Create a new structure.
+     *
+     * @Endpoint(
+     *   priority = 305,
+     *   request  = @Facade(class     = StructureFacade::class),
+     *   response = @Facade(class     = HttpCreatedFacade::class)
+     * )
+     * @Route(name="create", methods={"POST"})
+     */
+    public function create(StructureFacade $facade) : FacadeInterface
+    {
+        $structure = $this->structureTransformer->reconstruct($facade);
+
+        $this->validate($structure, [
+            new UniqueEntity(['platform', 'externalId']),
+        ], ['create']);
+
+        $this->structureManager->save($structure);
+
+        return new HttpCreatedFacade();
     }
 }

@@ -13,6 +13,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Exception;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\StructureRepository")
@@ -525,9 +526,16 @@ class Structure implements LockableInterface
     /**
      * @Assert\Callback
      */
-    public function validate()
+    public function validate(ExecutionContextInterface $context, $payload)
     {
-        // TODO: check that parent structure is not a structure's child
+        if ($this->isParentLooping()) {
+            $context
+                ->buildViolation('form.structure.parent.loop', [
+                    '%hierarchy%' => implode(' -> ', $this->getParentHierarchy($this->id)),
+                ])
+                ->atPath('parentStructure')
+                ->addViolation();
+        }
     }
 
     /**
@@ -536,5 +544,31 @@ class Structure implements LockableInterface
     public function __toString()
     {
         return $this->getDisplayName();
+    }
+
+    public function getParentHierarchy(int $stop = null) : array
+    {
+        $parents = [];
+        $ref     = $this->getParentStructure();
+        while ($ref && (null === $stop || $ref->getId() !== $stop)) {
+            array_unshift($parents, $ref);
+            $ref = $ref->getParentStructure();
+        }
+
+        return $parents;
+    }
+
+    private function isParentLooping() : bool
+    {
+        $ref = $this->getParentStructure();
+        while ($ref) {
+            if ($ref->id === $this->id) {
+                return true;
+            }
+
+            $ref = $ref->getParentStructure();
+        }
+
+        return false;
     }
 }
