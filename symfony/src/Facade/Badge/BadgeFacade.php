@@ -21,6 +21,19 @@ class BadgeFacade implements FacadeInterface
     protected $externalId;
 
     /**
+     * The badge's category, if any.
+     *
+     * On the UX, sorting badges by category may ease reading.
+     * - first aider level 1, 2, 3 are all first aid trainings
+     * - ambulance, car and truck are vehicles
+     *
+     * @Assert\Length(max = 64)
+     *
+     * @var string|null
+     */
+    protected $categoryExternalId;
+
+    /**
      * Badge's name.
      *
      * Badge name should be small because it is rendered everywhere where a volunteer is rendered.
@@ -130,6 +143,18 @@ class BadgeFacade implements FacadeInterface
     public function setExternalId(string $externalId) : BadgeFacade
     {
         $this->externalId = $externalId;
+
+        return $this;
+    }
+
+    public function getCategoryExternalId() : ?string
+    {
+        return $this->categoryExternalId;
+    }
+
+    public function setCategoryExternalId(?string $categoryExternalId) : BadgeFacade
+    {
+        $this->categoryExternalId = $categoryExternalId;
 
         return $this;
     }

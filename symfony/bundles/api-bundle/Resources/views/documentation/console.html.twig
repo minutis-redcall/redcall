@@ -72,12 +72,15 @@
     {# Set body in "readonly" when GET is selected #}
     var setReadonlyIfGetMethod = function () {
         if ('GET' === $('#{{ console.method.vars.id }} option:selected').text()) {
+            $('#{{ console.body.vars.id }}').val('');
             $('#{{ console.body.vars.id }}').attr('readonly', true);
         } else {
             $('#{{ console.body.vars.id }}').removeAttr('readonly');
         }
     };
+
     $('body').on('change', '#{{ console.method.vars.id }}', setReadonlyIfGetMethod);
+
     $(function () {
         setReadonlyIfGetMethod();
     });
