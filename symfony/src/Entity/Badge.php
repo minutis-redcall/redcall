@@ -398,6 +398,11 @@ class Badge implements LockableInterface
         return $this->getFullName();
     }
 
+    public function getDisplayName() : string
+    {
+        return $this->getFullName();
+    }
+
     /**
      * @return Collection|self[]
      */

@@ -2,11 +2,12 @@
 
 namespace App\Facade\Structure;
 
+use App\Facade\Resource\ResourceReferenceFacadeInterface;
 use Bundles\ApiBundle\Annotation as Api;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class StructureReferenceFacade implements FacadeInterface
+class StructureReferenceFacade implements ResourceReferenceFacadeInterface
 {
     /**
      * The identifier you've set to identify a structure.

@@ -6,6 +6,8 @@ use App\Entity\Structure;
 use App\Entity\User;
 use App\Entity\Volunteer;
 use App\Enum\Crud;
+use App\Enum\Resource;
+use App\Enum\ResourceOwnership;
 use App\Facade\Generic\PageFilterFacade;
 use App\Facade\Generic\UpdateStatusFacade;
 use App\Facade\Resource\VolunteerResourceFacade;
@@ -207,7 +209,7 @@ class UserController extends BaseController
      *   response = @Facade(class     = QueryBuilderFacade::class,
      *                      decorates = @Facade(class = StructureReferenceFacade::class))
      * )
-     * @Route(name="structure_records", path="/structure/{email}", methods={"GET"})
+     * @Route(name="structure_records", path="/{email}/structure", methods={"GET"})
      * @Entity("user", expr="repository.findByUsernameAndCurrentPlatform(email)")
      * @IsGranted("USER", subject="user")
      */
@@ -230,7 +232,7 @@ class UserController extends BaseController
      *   response = @Facade(class     = CollectionFacade::class,
      *                      decorates = @Facade(class = UpdateStatusFacade::class))
      * )
-     * @Route(name="structure_add", path="/structure/{email}", methods={"POST"})
+     * @Route(name="structure_add", path="/{email}/structure", methods={"POST"})
      * @Entity("user", expr="repository.findByUsernameAndCurrentPlatform(email)")
      * @IsGranted("USER", subject="user")
      */
@@ -240,7 +242,16 @@ class UserController extends BaseController
             new Unlocked(),
         ]);
 
-        return $this->bulkUpdateStructures($user, $collection, Crud::CREATE());
+        return $this->updateResourceCollection(
+            Crud::CREATE(),
+            Resource::USER(),
+            $user,
+            Resource::STRUCTURE(),
+            $collection,
+            'structure',
+            ResourceOwnership::KNOWN_RESOURCE(),
+            ResourceOwnership::KNOWN_RESOURCE()
+        );
     }
 
     /**
@@ -253,7 +264,7 @@ class UserController extends BaseController
      *   response = @Facade(class     = CollectionFacade::class,
      *                      decorates = @Facade(class = UpdateStatusFacade::class))
      * )
-     * @Route(name="structure_remove", path="/structure/{email}", methods={"DELETE"})
+     * @Route(name="structure_remove", path="/{email}/structure", methods={"DELETE"})
      * @Entity("user", expr="repository.findByUsernameAndCurrentPlatform(email)")
      * @IsGranted("USER", subject="user")
      */
@@ -263,7 +274,16 @@ class UserController extends BaseController
             new Unlocked(),
         ]);
 
-        return $this->bulkUpdateStructures($user, $collection, Crud::DELETE());
+        return $this->updateResourceCollection(
+            Crud::DELETE(),
+            Resource::USER(),
+            $user,
+            Resource::STRUCTURE(),
+            $collection,
+            'structure',
+            ResourceOwnership::KNOWN_RESOURCE(),
+            ResourceOwnership::KNOWN_RESOURCE()
+        );
     }
 
     /**
@@ -372,65 +392,5 @@ class UserController extends BaseController
                 $context->addViolation('Only root users can set other users as root or update them');
             }
         });
-    }
-
-    private function bulkUpdateStructures(User $user, StructureReferenceCollectionFacade $collection, Crud $action)
-    {
-        $response = new CollectionFacade();
-        $changes  = 0;
-
-        foreach ($collection->getEntries() as $entry) {
-            /** @var StructureReferenceFacade $entry */
-            $structure = $this->structureManager->findOneByExternalId($this->getPlatform(), $entry->getExternalId());
-
-            if (null === $structure) {
-                $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Structure does not exist');
-                continue;
-            }
-
-            if (!$this->isGranted('STRUCTURE', $structure)) {
-                $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Access denied');
-                continue;
-            }
-
-            switch ($action) {
-                case Crud::CREATE():
-                    if ($user->hasStructure($structure)) {
-                        $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'User already have that structure');
-                        continue 2;
-                    }
-
-                    $structuresToAdd = $this->structureManager->findCallableStructuresForStructure($this->getPlatform(), $structure);
-                    foreach ($structuresToAdd as $structureToAdd) {
-                        $user->addStructure($structureToAdd);
-                    }
-
-                    $count      = count($structuresToAdd);
-                    $response[] = new UpdateStatusFacade($entry->getExternalId(), true, sprintf('Added %d structure(s)', $count));
-                    $changes    += $count;
-
-                    break;
-                case Crud::DELETE():
-                    if (!$user->hasStructure($structure)) {
-                        $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'User does not have that structure');
-                        continue 2;
-                    }
-
-                    $user->removeStructure($structure);
-
-                    $response[] = new UpdateStatusFacade($entry->getExternalId());
-                    $changes++;
-
-                    break;
-            }
-
-            break;
-        }
-
-        if ($changes) {
-            $this->userManager->save($user);
-        }
-
-        return $response;
     }
 }

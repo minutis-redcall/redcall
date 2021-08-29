@@ -2,12 +2,14 @@
 
 namespace App\Facade\Structure;
 
+use App\Facade\Resource\ResourceCollectionFacadeInterface;
+use App\Facade\Resource\ResourceReferenceCollectionFacadeInterface;
 use Bundles\ApiBundle\Annotation as Api;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
 use Bundles\ApiBundle\Model\Facade\CollectionFacade;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class StructureReferenceCollectionFacade implements FacadeInterface
+class StructureReferenceCollectionFacade implements ResourceReferenceCollectionFacadeInterface
 {
     /**
      * Contains an array of structure external ids.

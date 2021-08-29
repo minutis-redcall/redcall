@@ -306,6 +306,11 @@ class User extends AbstractUser implements LockableInterface
         return $roles;
     }
 
+    public function getDisplayName() : string
+    {
+        return $this->getUserIdentifier();
+    }
+
     public function __clone()
     {
         $this->structures = clone $this->structures;

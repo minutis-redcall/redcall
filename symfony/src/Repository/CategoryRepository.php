@@ -27,6 +27,14 @@ class CategoryRepository extends BaseRepository
         parent::__construct($registry, Category::class);
     }
 
+    public function findOneByExternalId(string $platform, string $externalId) : ?Category
+    {
+        return $this->findOneBy([
+            'platform'   => $platform,
+            'externalId' => $externalId,
+        ]);
+    }
+
     public function findOneByExternalIdAndCurrentPlatform(string $externalId) : ?Category
     {
         return $this->findOneBy([

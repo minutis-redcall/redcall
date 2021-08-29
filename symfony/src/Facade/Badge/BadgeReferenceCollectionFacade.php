@@ -2,12 +2,13 @@
 
 namespace App\Facade\Badge;
 
+use App\Facade\Resource\ResourceReferenceCollectionFacadeInterface;
 use Bundles\ApiBundle\Annotation as Api;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
 use Bundles\ApiBundle\Model\Facade\CollectionFacade;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class BadgeReferenceCollectionFacade implements FacadeInterface
+class BadgeReferenceCollectionFacade implements ResourceReferenceCollectionFacadeInterface
 {
     /**
      * Contains an array of badge external ids.

@@ -146,4 +146,9 @@ class UserManager extends BaseUserManager
     {
         return $this->userRepository->getUserCountInStructure($structure);
     }
+
+    public function findOneByUsernameAndPlatform(string $platform, string $username) : ?User
+    {
+        return $this->userRepository->findOneByUsernameAndPlatform($platform, $username);
+    }
 }

@@ -485,7 +485,7 @@ class Volunteer implements LockableInterface
         return time() - $utc->getTimestamp() > 3600;
     }
 
-    public function getDisplayName()
+    public function getDisplayName() : string
     {
         if ($this->firstName && $this->lastName) {
             return sprintf('%s %s', $this->toName($this->firstName), $this->toName($this->lastName));

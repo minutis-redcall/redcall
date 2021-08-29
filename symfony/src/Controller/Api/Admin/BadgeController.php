@@ -5,6 +5,8 @@ namespace App\Controller\Api\Admin;
 use App\Entity\Badge;
 use App\Entity\Volunteer;
 use App\Enum\Crud;
+use App\Enum\Resource;
+use App\Enum\ResourceOwnership;
 use App\Facade\Badge\BadgeFacade;
 use App\Facade\Badge\BadgeFiltersFacade;
 use App\Facade\Badge\BadgeReadFacade;
@@ -195,7 +197,7 @@ class BadgeController extends BaseController
      *   response = @Facade(class     = QueryBuilderFacade::class,
      *                      decorates = @Facade(class = VolunteerResourceFacade::class))
      * )
-     * @Route(name="volunteer_records", path="/volunteer/{externalId}", methods={"GET"})
+     * @Route(name="volunteer_records", path="/{externalId}/volunteer", methods={"GET"})
      * @Entity("badge", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
      * @IsGranted("BADGE", subject="badge")
      */
@@ -218,13 +220,22 @@ class BadgeController extends BaseController
      *   response = @Facade(class     = CollectionFacade::class,
      *                      decorates = @Facade(class = UpdateStatusFacade::class))
      * )
-     * @Route(name="volunteer_add", path="/volunteer/{externalId}", methods={"POST"})
+     * @Route(name="volunteer_add", path="/{externalId}/volunteer", methods={"POST"})
      * @Entity("badge", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
      * @IsGranted("BADGE", subject="badge")
      */
     public function volunteerAdd(Badge $badge, VolunteerReferenceCollectionFacade $collection) : FacadeInterface
     {
-        return $this->bulkUpdateVolunteers($badge, $collection, Crud::CREATE());
+        return $this->updateResourceCollection(
+            Crud::CREATE(),
+            Resource::BADGE(),
+            $badge,
+            Resource::VOLUNTEER(),
+            $collection,
+            'badge',
+            ResourceOwnership::RESOLVED_RESOURCE(),
+            ResourceOwnership::KNOWN_RESOURCE()
+        );
     }
 
     /**
@@ -237,71 +248,21 @@ class BadgeController extends BaseController
      *   response = @Facade(class     = CollectionFacade::class,
      *                      decorates = @Facade(class = UpdateStatusFacade::class))
      * )
-     * @Route(name="volunteer_delete", path="/volunteer/{externalId}", methods={"DELETE"})
+     * @Route(name="volunteer_delete", path="/{externalId}/volunteer", methods={"DELETE"})
      * @Entity("badge", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
      * @IsGranted("BADGE", subject="badge")
      */
     public function volunteerDelete(Badge $badge, VolunteerReferenceCollectionFacade $collection) : FacadeInterface
     {
-        return $this->bulkUpdateVolunteers($badge, $collection, Crud::DELETE());
-    }
-
-    private function bulkUpdateVolunteers(Badge $badge, VolunteerReferenceCollectionFacade $collection, Crud $action)
-    {
-        $response = new CollectionFacade();
-        $changes  = 0;
-
-        foreach ($collection->getEntries() as $entry) {
-            /** @var VolunteerReferenceFacade $entry */
-            $volunteer = $this->volunteerManager->findOneByExternalId($this->getPlatform(), $entry->getExternalId());
-
-            if (null === $volunteer) {
-                $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Volunteer does not exist');
-                continue;
-            }
-
-            if (!$this->isGranted('VOLUNTEER', $volunteer)) {
-                $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Access denied');
-                continue;
-            }
-
-            if ($volunteer->isLocked()) {
-                $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Volunteer is locked');
-                continue;
-            }
-
-            switch ($action) {
-                case Crud::CREATE():
-                    if ($volunteer->getBadges()->contains($badge)) {
-                        $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Volunteer already have that badge');
-                        continue 2;
-                    }
-
-                    $volunteer->addBadge($badge);
-                    $this->volunteerManager->save($volunteer);
-
-                    break;
-                case Crud::DELETE():
-                    if (!$volunteer->getBadges()->contains($badge)) {
-                        $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Volunteer does not have that badge');
-                        continue 2;
-                    }
-
-                    $volunteer->removeBadge($badge);
-                    $this->volunteerManager->save($volunteer);
-
-                    break;
-            }
-
-            $changes++;
-
-            $response[] = new UpdateStatusFacade($entry->getExternalId());
-        }
-
-        if ($changes) {
-            $this->badgeManager->save($badge);
-        }
-
-        return $response;
+        return $this->updateResourceCollection(
+            Crud::DELETE(),
+            Resource::BADGE(),
+            $badge,
+            Resource::VOLUNTEER(),
+            $collection,
+            'badge',
+            ResourceOwnership::RESOLVED_RESOURCE(),
+            ResourceOwnership::KNOWN_RESOURCE()
+        );
     }
 }

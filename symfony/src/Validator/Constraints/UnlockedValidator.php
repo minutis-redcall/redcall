@@ -20,7 +20,9 @@ class UnlockedValidator extends ConstraintValidator
         }
 
         if ($value->isLocked()) {
-            $this->context->addViolation('This resource is locked.');
+            $this->context->buildViolation('This resource is locked.')
+                          ->setInvalidValue($value->getDisplayName())
+                          ->addViolation();
         }
     }
 }

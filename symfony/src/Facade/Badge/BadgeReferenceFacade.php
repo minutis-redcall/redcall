@@ -2,11 +2,12 @@
 
 namespace App\Facade\Badge;
 
+use App\Facade\Resource\ResourceReferenceFacadeInterface;
 use Bundles\ApiBundle\Annotation as Api;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class BadgeReferenceFacade implements FacadeInterface
+class BadgeReferenceFacade implements ResourceReferenceFacadeInterface
 {
     /**
      * The identifier you've set to identify a badge.

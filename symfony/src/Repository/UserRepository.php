@@ -68,6 +68,14 @@ class UserRepository extends AbstractUserRepository implements UserRepositoryInt
         ]);
     }
 
+    public function findOneByUsernameAndPlatform(string $platform, string $username) : ?User
+    {
+        return $this->findOneBy([
+            'platform' => $platform,
+            'username' => $username,
+        ]);
+    }
+
     public function findByUsernameAndCurrentPlatform(string $username) : ?User
     {
         return $this->findOneBy([

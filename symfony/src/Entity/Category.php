@@ -207,6 +207,11 @@ class Category implements LockableInterface
         return $this;
     }
 
+    public function getDisplayName() : string
+    {
+        return $this->getName();
+    }
+
     /**
      * @return array
      */

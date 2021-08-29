@@ -5,6 +5,8 @@ namespace App\Controller\Api\Admin;
 use App\Entity\Badge;
 use App\Entity\Category;
 use App\Enum\Crud;
+use App\Enum\Resource;
+use App\Enum\ResourceOwnership;
 use App\Facade\Badge\BadgeReadFacade;
 use App\Facade\Badge\BadgeReferenceCollectionFacade;
 use App\Facade\Badge\BadgeReferenceFacade;
@@ -194,8 +196,8 @@ class CategoryController extends BaseController
      *   response = @Facade(class     = QueryBuilderFacade::class,
      *                      decorates = @Facade(class = BadgeReadFacade::class))
      * )
-     * @Route(name="badge_records", path="/badge/{categoryId}", methods={"GET"})
-     * @Entity("category", expr="repository.findOneByExternalIdAndCurrentPlatform(categoryId)")
+     * @Route(name="badge_records", path="/{externalId}/badge", methods={"GET"})
+     * @Entity("category", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
      * @IsGranted("CATEGORY", subject="category")
      */
     public function badgeRecords(Category $category, PageFilterFacade $page) : FacadeInterface
@@ -217,13 +219,22 @@ class CategoryController extends BaseController
      *   response = @Facade(class     = CollectionFacade::class,
      *                      decorates = @Facade(class = UpdateStatusFacade::class))
      * )
-     * @Route(name="badge_add", path="/badge/{categoryId}", methods={"POST"})
-     * @Entity("category", expr="repository.findOneByExternalIdAndCurrentPlatform(categoryId)")
+     * @Route(name="badge_add", path="/{externalId}/badge", methods={"POST"})
+     * @Entity("category", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
      * @IsGranted("CATEGORY", subject="category")
      */
     public function badgeAdd(Category $category, BadgeReferenceCollectionFacade $collection) : FacadeInterface
     {
-        return $this->bulkUpdateBadges($category, $collection, Crud::CREATE());
+        return $this->updateResourceCollection(
+            Crud::CREATE(),
+            Resource::CATEGORY(),
+            $category,
+            Resource::BADGE(),
+            $collection,
+            'badge',
+            ResourceOwnership::KNOWN_RESOURCE(),
+            ResourceOwnership::RESOLVED_RESOURCE()
+        );
     }
 
     /**
@@ -236,66 +247,21 @@ class CategoryController extends BaseController
      *   response = @Facade(class     = CollectionFacade::class,
      *                      decorates = @Facade(class = UpdateStatusFacade::class))
      * )
-     * @Route(name="badge_remove", path="/badge/{categoryId}", methods={"DELETE"})
-     * @Entity("category", expr="repository.findOneByExternalIdAndCurrentPlatform(categoryId)")
+     * @Route(name="badge_remove", path="/{externalId}/badge", methods={"DELETE"})
+     * @Entity("category", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
      * @IsGranted("CATEGORY", subject="category")
      */
-    public function badgeDelete(Category $category, BadgeReferenceCollectionFacade $externalIds) : FacadeInterface
+    public function badgeDelete(Category $category, BadgeReferenceCollectionFacade $collection) : FacadeInterface
     {
-        return $this->bulkUpdateBadges($category, $externalIds, Crud::DELETE());
-    }
-
-    private function bulkUpdateBadges(Category $category, BadgeReferenceCollectionFacade $collection, Crud $action)
-    {
-        $response = new CollectionFacade();
-        $changes  = 0;
-
-        foreach ($collection->getEntries() as $entry) {
-            /** @var BadgeReferenceFacade $entry */
-            $badge = $this->badgeManager->findOneByExternalId($this->getPlatform(), $entry->getExternalId());
-
-            if (null === $badge) {
-                $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Badge does not exist');
-                continue;
-            }
-
-            if (!$this->isGranted('BADGE', $badge)) {
-                $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Access denied');
-                continue;
-            }
-
-            switch ($action) {
-                case Crud::CREATE():
-                    if ($category->getBadges()->contains($badge)) {
-                        $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Category already contains that badge');
-                        continue 2;
-                    }
-
-                    $category->addBadge($badge);
-                    $this->badgeManager->save($badge);
-
-                    break;
-                case Crud::DELETE():
-                    if (!$category->getBadges()->contains($badge)) {
-                        $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Category does not contain that badge');
-                        continue 2;
-                    }
-
-                    $category->removeBadge($badge);
-                    $this->badgeManager->save($badge);
-
-                    break;
-            }
-
-            $changes++;
-
-            $response[] = new UpdateStatusFacade($entry->getExternalId());
-        }
-
-        if ($changes) {
-            $this->categoryManager->save($category);
-        }
-
-        return $response;
+        return $this->updateResourceCollection(
+            Crud::DELETE(),
+            Resource::CATEGORY(),
+            $category,
+            Resource::BADGE(),
+            $collection,
+            'badge',
+            ResourceOwnership::KNOWN_RESOURCE(),
+            ResourceOwnership::RESOLVED_RESOURCE()
+        );
     }
 }

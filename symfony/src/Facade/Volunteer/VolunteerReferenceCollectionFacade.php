@@ -2,12 +2,14 @@
 
 namespace App\Facade\Volunteer;
 
+use App\Facade\Resource\ResourceCollectionFacadeInterface;
+use App\Facade\Resource\ResourceReferenceCollectionFacadeInterface;
 use Bundles\ApiBundle\Annotation as Api;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
 use Bundles\ApiBundle\Model\Facade\CollectionFacade;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class VolunteerReferenceCollectionFacade implements FacadeInterface
+class VolunteerReferenceCollectionFacade implements ResourceReferenceCollectionFacadeInterface
 {
     /**
      * Contains an array of volunteer external ids.

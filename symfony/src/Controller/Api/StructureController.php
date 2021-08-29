@@ -3,10 +3,19 @@
 namespace App\Controller\Api;
 
 use App\Entity\Structure;
+use App\Entity\Volunteer;
+use App\Enum\Crud;
+use App\Enum\Resource;
+use App\Enum\ResourceOwnership;
+use App\Facade\Generic\UpdateStatusFacade;
 use App\Facade\Structure\StructureFacade;
 use App\Facade\Structure\StructureFiltersFacade;
 use App\Facade\Structure\StructureReadFacade;
+use App\Facade\Volunteer\VolunteerFiltersFacade;
+use App\Facade\Volunteer\VolunteerReferenceCollectionFacade;
+use App\Facade\Volunteer\VolunteerReferenceFacade;
 use App\Manager\StructureManager;
+use App\Manager\VolunteerManager;
 use App\Transformer\ResourceTransformer;
 use App\Transformer\StructureTransformer;
 use App\Validator\Constraints\Unlocked;
@@ -14,6 +23,7 @@ use Bundles\ApiBundle\Annotation\Endpoint;
 use Bundles\ApiBundle\Annotation\Facade;
 use Bundles\ApiBundle\Base\BaseController;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
+use Bundles\ApiBundle\Model\Facade\CollectionFacade;
 use Bundles\ApiBundle\Model\Facade\Http\HttpCreatedFacade;
 use Bundles\ApiBundle\Model\Facade\Http\HttpNoContentFacade;
 use Bundles\ApiBundle\Model\Facade\QueryBuilderFacade;
@@ -44,13 +54,20 @@ class StructureController extends BaseController
      */
     private $resourceTransformer;
 
+    /**
+     * @var VolunteerManager
+     */
+    private $volunteerManager;
+
     public function __construct(StructureManager $structureManager,
         StructureTransformer $structureTransformer,
-        ResourceTransformer $resourceTransformer)
+        ResourceTransformer $resourceTransformer,
+        VolunteerManager $volunteerManager)
     {
         $this->structureManager     = $structureManager;
         $this->structureTransformer = $structureTransformer;
         $this->resourceTransformer  = $resourceTransformer;
+        $this->volunteerManager     = $volunteerManager;
     }
 
     /**
@@ -128,16 +145,108 @@ class StructureController extends BaseController
      */
     public function update(Structure $structure, StructureFacade $facade)
     {
-        $badge = $this->structureTransformer->reconstruct($facade, $structure);
+        $structure = $this->structureTransformer->reconstruct($facade, $structure);
 
-        $this->validate($badge, [
+        $this->validate($structure, [
             new UniqueEntity(['platform', 'externalId']),
             new Unlocked(),
         ]);
 
-        $this->structureManager->save($badge);
+        $this->structureManager->save($structure);
 
         return new HttpNoContentFacade();
     }
 
+    /**
+     * List volunteers that can be triggered in the given structure.
+     *
+     * @Endpoint(
+     *   priority = 320,
+     *   request  = @Facade(class     = VolunteerFiltersFacade::class),
+     *   response = @Facade(class     = QueryBuilderFacade::class,
+     *                      decorates = @Facade(class = VolunteerReferenceFacade::class))
+     * )
+     * @Route(name="volunteer_records", path="/{externalId}/volunteer", methods={"GET"})
+     * @Entity("structure", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
+     * @IsGranted("STRUCTURE", subject="structure")
+     */
+    public function volunteerRecords(Structure $structure, VolunteerFiltersFacade $filters)
+    {
+        $qb = $this->volunteerManager->searchInStructureQueryBuilder(
+            $this->getPlatform(),
+            $structure,
+            $filters->getCriteria(),
+            $filters->isOnlyEnabled(),
+            $filters->isOnlyUsers()
+        );
+
+        return new QueryBuilderFacade($qb, $filters->getPage(), function (Volunteer $volunteer) {
+            return $this->resourceTransformer->expose($volunteer);
+        });
+    }
+
+    /**
+     * Add one or several volunteers into the structure.
+     *
+     * @Endpoint(
+     *   priority = 325,
+     *   request  = @Facade(class     = VolunteerReferenceCollectionFacade::class,
+     *                      decorates = @Facade(class = VolunteerReferenceFacade::class)),
+     *   response = @Facade(class     = CollectionFacade::class,
+     *                      decorates = @Facade(class = UpdateStatusFacade::class))
+     * )
+     * @Route(name="volunteer_add", path="/{externalId}/volunteer", methods={"POST"})
+     * @Entity("structure", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
+     * @IsGranted("STRUCTURE", subject="structure")
+     */
+    public function volunteerAdd(Structure $structure, VolunteerReferenceCollectionFacade $collection) : FacadeInterface
+    {
+        $this->validate($structure, [
+            new Unlocked(),
+        ]);
+
+        return $this->updateResourceCollection(
+            Crud::CREATE(),
+            Resource::STRUCTURE(),
+            $structure,
+            Resource::VOLUNTEER(),
+            $collection,
+            'structure',
+            ResourceOwnership::RESOLVED_RESOURCE(),
+            ResourceOwnership::KNOWN_RESOURCE()
+        );
+    }
+
+    /**
+     * Remove one or several volunteers from the structure.
+     *
+     * @Endpoint(
+     *   priority = 330,
+     *   request  = @Facade(class     = VolunteerReferenceCollectionFacade::class,
+     *                      decorates = @Facade(class = VolunteerReferenceFacade::class)),
+     *   response = @Facade(class     = CollectionFacade::class,
+     *                      decorates = @Facade(class = UpdateStatusFacade::class))
+     * )
+     * @Route(name="volunteer_remove", path="/{externalId}/volunteer", methods={"DELETE"})
+     * @Entity("structure", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
+     * @IsGranted("STRUCTURE", subject="structure")
+     */
+    public function volunteerRemove(Structure $structure,
+        VolunteerReferenceCollectionFacade $collection) : FacadeInterface
+    {
+        $this->validate($structure, [
+            new Unlocked(),
+        ]);
+
+        return $this->updateResourceCollection(
+            Crud::DELETE(),
+            Resource::STRUCTURE(),
+            $structure,
+            Resource::VOLUNTEER(),
+            $collection,
+            'structure',
+            ResourceOwnership::RESOLVED_RESOURCE(),
+            ResourceOwnership::KNOWN_RESOURCE()
+        );
+    }
 }
