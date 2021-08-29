@@ -3,6 +3,7 @@
 namespace App\Controller\Api;
 
 use App\Manager\VolunteerManager;
+use App\Transformer\VolunteerTransformer;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -17,6 +18,11 @@ class VolunteerController extends AbstractController
      * @var VolunteerManager
      */
     private $volunteerManager;
+
+    /**
+     * @var VolunteerTransformer
+     */
+    private $volunteerTransformer;
 
     /**
      * @Route(name="records", methods={"GET"})

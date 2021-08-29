@@ -36,10 +36,13 @@ use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
- * Users are the ones using the RedCall application to trigger
- * volunteers.
+ * Users are people using the RedCall application to trigger volunteers.
  *
- * They are associated with a list of structures they can trigger
+ * Most of the users are associated with a volunteer and list of structures
+ * they can trigger, but users can also be developers (to access the APIs and
+ * synchronize their data source with RedCall), administrators (who supervise
+ * and support everyone using the application) and platform managers or root
+ * (who manage resources across supported countries).
  *
  * @Route("/api/admin/user", name="api_admin_user_")
  * @IsGranted("ROLE_ADMIN")
@@ -315,6 +318,10 @@ class UserController extends BaseController
      */
     public function lock(User $user)
     {
+        $this->validate($user, [
+            $this->getMeValidationCallback(),
+        ]);
+
         $user->setLocked(true);
 
         $this->userManager->save($user);
@@ -335,6 +342,10 @@ class UserController extends BaseController
      */
     public function unlock(User $user)
     {
+        $this->validate($user, [
+            $this->getMeValidationCallback(),
+        ]);
+
         $user->setLocked(false);
 
         $this->userManager->save($user);
