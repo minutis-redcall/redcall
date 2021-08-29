@@ -355,4 +355,92 @@ class StructureController extends BaseController
             ResourceOwnership::RESOLVED_RESOURCE()
         );
     }
+
+    /**
+     * Lock a structure.
+     *
+     * @Endpoint(
+     *   priority = 450,
+     *   response = @Facade(class = HttpNoContentFacade::class)
+     * )
+     * @Route(name="lock", path="/lock/{externalId}", methods={"PUT"})
+     * @Entity("structure", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
+     * @IsGranted("STRUCTURE", subject="structure")
+     */
+    public function lock(Structure $structure)
+    {
+        $structure->setLocked(true);
+
+        $this->structureManager->save($structure);
+
+        return new HttpNoContentFacade();
+    }
+
+    /**
+     * Unlock a structure.
+     *
+     * @Endpoint(
+     *   priority = 455,
+     *   response = @Facade(class = HttpNoContentFacade::class)
+     * )
+     * @Route(name="unlock", path="/unlock/{externalId}", methods={"PUT"})
+     * @Entity("structure", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
+     * @IsGranted("STRUCTURE", subject="structure")
+     */
+    public function unlock(Structure $structure)
+    {
+        $structure->setLocked(false);
+
+        $this->structureManager->save($structure);
+
+        return new HttpNoContentFacade();
+    }
+
+    /**
+     * Disable a structure.
+     *
+     * @Endpoint(
+     *   priority = 460,
+     *   response = @Facade(class = HttpNoContentFacade::class)
+     * )
+     * @Route(name="disable", path="/disable/{externalId}", methods={"PUT"})
+     * @Entity("structure", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
+     * @IsGranted("STRUCTURE", subject="structure")
+     */
+    public function disable(Structure $structure)
+    {
+        $this->validate($structure, [
+            new Unlocked(),
+        ]);
+
+        $structure->setEnabled(false);
+
+        $this->structureManager->save($structure);
+
+        return new HttpNoContentFacade();
+    }
+
+    /**
+     * Enable a structure.
+     *
+     * @Endpoint(
+     *   priority = 465,
+     *   response = @Facade(class = HttpNoContentFacade::class)
+     * )
+     * @Route(name="enable", path="/enable/{externalId}", methods={"PUT"})
+     * @Entity("structure", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
+     * @IsGranted("STRUCTURE", subject="structure")
+     */
+    public function enable(Structure $structure)
+    {
+        $this->validate($structure, [
+            new Unlocked(),
+        ]);
+
+        $structure->setEnabled(true);
+
+        $this->structureManager->save($structure);
+
+        return new HttpNoContentFacade();
+    }
 }

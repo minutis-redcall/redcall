@@ -102,14 +102,6 @@ class StructureTransformer extends BaseTransformer
             $structure->setPresident($volunteer ? $volunteer->getExternalId() : null);
         }
 
-        if (null !== $facade->getLocked()) {
-            $structure->setLocked($facade->getLocked());
-        }
-
-        if (null !== $facade->getEnabled()) {
-            $structure->setEnabled($facade->getEnabled());
-        }
-
         return $structure;
     }
 

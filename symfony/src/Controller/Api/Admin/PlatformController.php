@@ -24,7 +24,7 @@ use Symfony\Component\Routing\Annotation\Route;
  * Every resource is attached to a platform.
  *
  * It is sometimes useful to move a resource from a platform
- * to another, for example if a user subscribes in the wrong
+ * to another, for example if a user subscribes to the wrong
  * platform.
  *
  * @Route("/api/admin/platform", name="api_admin_platform_")
