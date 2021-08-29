@@ -14,14 +14,14 @@ class PaginedFacade implements FacadeInterface
      *
      * @var int
      */
-    protected $totalPages;
+    protected $totalPages = 1;
 
     /**
      * Current page requested
      *
      * @var int
      */
-    protected $currentPage;
+    protected $currentPage = 1;
 
     /**
      * An array of the requested resources
@@ -84,7 +84,7 @@ class PaginedFacade implements FacadeInterface
         return $this->entries;
     }
 
-    protected function addEntry(FacadeInterface $facade)
+    public function addEntry(FacadeInterface $facade)
     {
         $this->entries[] = $facade;
     }

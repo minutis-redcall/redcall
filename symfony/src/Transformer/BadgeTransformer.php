@@ -54,7 +54,7 @@ class BadgeTransformer extends BaseTransformer
         }
 
         if ($object->getSynonym()) {
-            $facade->setSynonymExternalId($object->getSynonym()->getExternalId());
+            $facade->setReplacedByExternalId($object->getSynonym()->getExternalId());
         }
 
         $facade->setEnabled($object->isEnabled());
@@ -152,10 +152,10 @@ class BadgeTransformer extends BaseTransformer
             }
         }
 
-        if (null !== $facade->getSynonymExternalId()) {
+        if (null !== $facade->getReplacedByExternalId()) {
             $synonym = $this->getBadgeManager()->findOneByExternalId(
                 $this->getSecurity()->getPlatform(),
-                $facade->getSynonymExternalId()
+                $facade->getReplacedByExternalId()
             );
 
             if ($synonym) {

@@ -108,9 +108,9 @@ abstract class BaseController extends AbstractController
             // We also determine adders and removers because we do not use collections by references,
             // If you look at Volunteer::getBadges(), it returns a copy of the collection.
             $suffix            = sprintf('%s%s', strtoupper(substr($collectionPropertyName, 0, 1)), substr($collectionPropertyName, 1));
-            $collectionGetter  = sprintf('get%ss', $suffix);
-            $collectionAdder   = sprintf('add%s', $suffix);
-            $collectionRemover = sprintf('remove%s', $suffix);
+            $collectionGetter  = sprintf('get%s', 'Children' === $suffix ? 'Children' : sprintf('%ss', $suffix));
+            $collectionAdder   = sprintf('add%s', 'Children' === $suffix ? 'Child' : $suffix);
+            $collectionRemover = sprintf('remove%s', 'Children' === $suffix ? 'Child' : $suffix);
 
             // If known resource is Volunteer and resource to resolve is Badge,
             // we want to add badges to the volunteer, so the collection will
@@ -172,6 +172,34 @@ abstract class BaseController extends AbstractController
                     $shouldPersist = true;
 
                     break;
+            }
+
+            $violations = $this->get('validator')->validate($ownerResource);
+            if ($violations->count()) {
+                $response[] = new UpdateStatusFacade(
+                    $entry->getExternalId(),
+                    false,
+                    '%s contain %d violations: %s',
+                    $ownerType->getDisplayName(),
+                    $violations->count(),
+                    $violations
+                );
+
+                continue;
+            }
+
+            $violations = $this->get('validator')->validate($toChangeResource);
+            if ($violations->count()) {
+                $response[] = new UpdateStatusFacade(
+                    $entry->getExternalId(),
+                    false,
+                    '%s contain %d violations: %s',
+                    $toChangeType->getDisplayName(),
+                    $violations->count(),
+                    $violations
+                );
+
+                continue;
             }
 
             if ($shouldPersist) {

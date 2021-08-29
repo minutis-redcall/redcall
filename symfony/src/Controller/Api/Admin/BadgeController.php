@@ -10,8 +10,11 @@ use App\Enum\ResourceOwnership;
 use App\Facade\Badge\BadgeFacade;
 use App\Facade\Badge\BadgeFiltersFacade;
 use App\Facade\Badge\BadgeReadFacade;
+use App\Facade\Badge\BadgeReferenceCollectionFacade;
+use App\Facade\Badge\BadgeReferenceFacade;
 use App\Facade\Generic\PageFilterFacade;
 use App\Facade\Generic\UpdateStatusFacade;
+use App\Facade\Resource\BadgeResourceFacade;
 use App\Facade\Resource\VolunteerResourceFacade;
 use App\Facade\Volunteer\VolunteerReferenceCollectionFacade;
 use App\Facade\Volunteer\VolunteerReferenceFacade;
@@ -263,6 +266,164 @@ class BadgeController extends BaseController
             'badge',
             ResourceOwnership::RESOLVED_RESOURCE(),
             ResourceOwnership::KNOWN_RESOURCE()
+        );
+    }
+
+    /**
+     * List badges covered by the given badge.
+     *
+     * @Endpoint(
+     *   priority = 240,
+     *   response = @Facade(class     = CollectionFacade::class,
+     *                      decorates = @Facade(class = BadgeResourceFacade::class))
+     * )
+     * @Route(name="coverage_records", path="/{externalId}/coverage", methods={"GET"})
+     * @Entity("badge", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
+     * @IsGranted("BADGE", subject="badge")
+     */
+    public function coverageRecords(Badge $badge)
+    {
+        $facade = new CollectionFacade();
+
+        foreach ($badge->getCoveredBadges() as $covered) {
+            $facade[] = $this->resourceTransformer->expose($covered);
+        }
+
+        return $facade;
+    }
+
+    /**
+     * Make the given badge cover one or several others
+     *
+     * @Endpoint(
+     *   priority = 245,
+     *   request  = @Facade(class     = BadgeReferenceCollectionFacade::class,
+     *                      decorates = @Facade(class = BadgeReferenceFacade::class)),
+     *   response = @Facade(class     = CollectionFacade::class,
+     *                      decorates = @Facade(class = UpdateStatusFacade::class))
+     * )
+     * @Route(name="coverage_add", path="/{externalId}/coverage", methods={"POST"})
+     * @Entity("badge", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
+     * @IsGranted("BADGE", subject="badge")
+     */
+    public function coverageAdd(Badge $badge, BadgeReferenceCollectionFacade $collection) : FacadeInterface
+    {
+        return $this->updateResourceCollection(
+            Crud::CREATE(),
+            Resource::BADGE(),
+            $badge,
+            Resource::BADGE(),
+            $collection,
+            'children',
+            ResourceOwnership::KNOWN_RESOURCE(),
+            ResourceOwnership::RESOLVED_RESOURCE()
+        );
+    }
+
+    /**
+     * Do not put the given badge above one or several others anymore
+     *
+     * @Endpoint(
+     *   priority = 250,
+     *   request  = @Facade(class     = BadgeReferenceCollectionFacade::class,
+     *                      decorates = @Facade(class = BadgeReferenceFacade::class)),
+     *   response = @Facade(class     = CollectionFacade::class,
+     *                      decorates = @Facade(class = UpdateStatusFacade::class))
+     * )
+     * @Route(name="coverage_remove", path="/{externalId}/coverage", methods={"DELETE"})
+     * @Entity("badge", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
+     * @IsGranted("BADGE", subject="badge")
+     */
+    public function coverageRemove(Badge $badge, BadgeReferenceCollectionFacade $collection) : FacadeInterface
+    {
+        return $this->updateResourceCollection(
+            Crud::DELETE(),
+            Resource::BADGE(),
+            $badge,
+            Resource::BADGE(),
+            $collection,
+            'children',
+            ResourceOwnership::KNOWN_RESOURCE(),
+            ResourceOwnership::RESOLVED_RESOURCE()
+        );
+    }
+
+    /**
+     * List badges replaced by the given badge (synonyms).
+     *
+     * @Endpoint(
+     *   priority = 255,
+     *   response = @Facade(class     = CollectionFacade::class,
+     *                      decorates = @Facade(class = BadgeResourceFacade::class))
+     * )
+     * @Route(name="replacement_records", path="/{externalId}/replacement", methods={"GET"})
+     * @Entity("badge", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
+     * @IsGranted("BADGE", subject="badge")
+     */
+    public function replacementRecords(Badge $badge)
+    {
+        $facade = new CollectionFacade();
+
+        foreach ($badge->getSynonyms() as $covered) {
+            $facade[] = $this->resourceTransformer->expose($covered);
+        }
+
+        return $facade;
+    }
+
+    /**
+     * Replace one or several badges by the given one
+     *
+     * @Endpoint(
+     *   priority = 260,
+     *   request  = @Facade(class     = BadgeReferenceCollectionFacade::class,
+     *                      decorates = @Facade(class = BadgeReferenceFacade::class)),
+     *   response = @Facade(class     = CollectionFacade::class,
+     *                      decorates = @Facade(class = UpdateStatusFacade::class))
+     * )
+     * @Route(name="replacement_add", path="/{externalId}/replacement", methods={"POST"})
+     * @Entity("badge", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
+     * @IsGranted("BADGE", subject="badge")
+     */
+    public function replacementAdd(Badge $badge, BadgeReferenceCollectionFacade $collection) : FacadeInterface
+    {
+        return $this->updateResourceCollection(
+            Crud::CREATE(),
+            Resource::BADGE(),
+            $badge,
+            Resource::BADGE(),
+            $collection,
+            'synonym',
+            ResourceOwnership::KNOWN_RESOURCE(),
+            ResourceOwnership::RESOLVED_RESOURCE()
+        );
+    }
+
+    /**
+     * Unmark one or several badges from being synonyms of the given one
+     *
+     * @Endpoint(
+     *   priority = 265,
+     *   request  = @Facade(class     = BadgeReferenceCollectionFacade::class,
+     *                      decorates = @Facade(class = BadgeReferenceFacade::class)),
+     *   response = @Facade(class     = CollectionFacade::class,
+     *                      decorates = @Facade(class = UpdateStatusFacade::class))
+     * )
+     * @Route(name="replacement_remove", path="/{externalId}/replacement", methods={"DELETE"})
+     * @Entity("badge", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
+     * @IsGranted("BADGE", subject="badge")
+     */
+    public function replacementRemove(Badge $badge, BadgeReferenceCollectionFacade $collection) : FacadeInterface
+    {
+        return $this->updateResourceCollection(
+            Crud::DELETE(),
+            Resource::BADGE(),
+            $badge,
+            Resource::BADGE(),
+            $collection,
+            'synonym',
+            ResourceOwnership::KNOWN_RESOURCE(),
+            ResourceOwnership::RESOLVED_RESOURCE()
         );
     }
 }

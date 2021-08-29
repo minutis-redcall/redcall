@@ -124,7 +124,7 @@ class BadgeFacade implements FacadeInterface
      *
      * @var string|null
      */
-    protected $synonymExternalId;
+    protected $replacedByExternalId;
 
     /**
      * Whether the badge is locked or not.
@@ -264,14 +264,14 @@ class BadgeFacade implements FacadeInterface
         return $this;
     }
 
-    public function getSynonymExternalId() : ?string
+    public function getReplacedByExternalId() : ?string
     {
-        return $this->synonymExternalId;
+        return $this->replacedByExternalId;
     }
 
-    public function setSynonymExternalId(?string $synonymExternalId) : BadgeFacade
+    public function setReplacedByExternalId(?string $replacedByExternalId) : BadgeFacade
     {
-        $this->synonymExternalId = $synonymExternalId;
+        $this->replacedByExternalId = $replacedByExternalId;
 
         return $this;
     }
