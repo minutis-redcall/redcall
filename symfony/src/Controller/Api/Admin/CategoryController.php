@@ -13,6 +13,7 @@ use App\Facade\Badge\BadgeReferenceFacade;
 use App\Facade\Category\CategoryFacade;
 use App\Facade\Category\CategoryFiltersFacade;
 use App\Facade\Generic\PageFilterFacade;
+use App\Facade\Generic\PlatformFacade;
 use App\Facade\Generic\UpdateStatusFacade;
 use App\Manager\BadgeManager;
 use App\Manager\CategoryManager;
@@ -263,5 +264,26 @@ class CategoryController extends BaseController
             ResourceOwnership::KNOWN_RESOURCE(),
             ResourceOwnership::RESOLVED_RESOURCE()
         );
+    }
+
+    /**
+     * Change a category's platform.
+     *
+     * @Endpoint(
+     *   priority = 140,
+     *   request  = @Facade(class = PlatformFacade::class),
+     *   response = @Facade(class = HttpNoContentFacade::class)
+     * )
+     * @Route(name="platform", path="/platform", methods={"DELETE"})
+     * @Entity("category", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
+     * @IsGranted("CATEGORY", subject="category")
+     */
+    public function platform(Category $category, PlatformFacade $platformFacade)
+    {
+        $category->setPlatform($platformFacade->getPlatform());
+
+        $this->categoryManager->save($category);
+
+        return new HttpNoContentFacade();
     }
 }
