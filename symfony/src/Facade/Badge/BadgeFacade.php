@@ -132,34 +132,6 @@ class BadgeFacade implements FacadeInterface
      */
     protected $replacedByExternalId;
 
-    /**
-     * Whether the badge is locked or not.
-     *
-     * A "locked" category cannot be modified through APIs, this is useful when
-     * there are divergences between your own database and the RedCall database.
-     *
-     * @Assert\Choice(choices={false, true})
-     *
-     * @var bool|null
-     */
-    protected $locked;
-
-    /**
-     * Whether the badge is enabled or not.
-     *
-     * RedCall resources (categories, badges, structures, volunteers) may have relations with
-     * other sensible parts of the application (triggers, communications, messages, answers, etc.),
-     * so it may be safer to disable them instead of deleting them and creating database inconsistencies.
-     *
-     * In order to comply with the General Data Protection Regulation (GDPR), resources containing
-     * private information can be anonymized.
-     *
-     * @Assert\Choice(choices={false, true})
-     *
-     * @var bool|null
-     */
-    protected $enabled;
-
     static public function getExample(Facade $decorates = null) : FacadeInterface
     {
         $facade = new static;
@@ -168,8 +140,6 @@ class BadgeFacade implements FacadeInterface
         $facade->name        = 'CD';
         $facade->description = 'Car Driver';
         $facade->visibility  = true;
-        $facade->locked      = false;
-        $facade->enabled     = true;
 
         return $facade;
     }
@@ -278,30 +248,6 @@ class BadgeFacade implements FacadeInterface
     public function setReplacedByExternalId(?string $replacedByExternalId) : BadgeFacade
     {
         $this->replacedByExternalId = $replacedByExternalId;
-
-        return $this;
-    }
-
-    public function getLocked() : ?bool
-    {
-        return $this->locked;
-    }
-
-    public function setLocked(?bool $locked) : BadgeFacade
-    {
-        $this->locked = $locked;
-
-        return $this;
-    }
-
-    public function getEnabled() : ?bool
-    {
-        return $this->enabled;
-    }
-
-    public function setEnabled(?bool $enabled) : BadgeFacade
-    {
-        $this->enabled = $enabled;
 
         return $this;
     }

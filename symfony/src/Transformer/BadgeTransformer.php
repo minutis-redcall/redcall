@@ -157,14 +157,6 @@ class BadgeTransformer extends BaseTransformer
             $object->setSynonym($synonym);
         }
 
-        if (null !== $facade->getLocked()) {
-            $object->setLocked($facade->getLocked());
-        }
-
-        if (null !== $facade->getEnabled()) {
-            $object->setEnabled($facade->getEnabled());
-        }
-
         return $object;
     }
 

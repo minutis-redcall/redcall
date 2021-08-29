@@ -71,7 +71,8 @@ class CategoryRepository extends BaseRepository
         $qb
             ->andWhere(
                 $qb->expr()->orX(
-                    'c.name LIKE :criteria'
+                    'c.name LIKE :criteria',
+                    'c.externalId LIKE :criteria'
                 )
             )
             ->setParameter('criteria', sprintf('%%%s%%', str_replace(' ', '%', $criteria)));

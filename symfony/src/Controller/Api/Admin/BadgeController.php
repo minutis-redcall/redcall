@@ -3,7 +3,6 @@
 namespace App\Controller\Api\Admin;
 
 use App\Entity\Badge;
-use App\Entity\Category;
 use App\Entity\Volunteer;
 use App\Enum\Crud;
 use App\Enum\Resource;
@@ -435,33 +434,84 @@ class BadgeController extends BaseController
      *   priority = 270,
      *   response = @Facade(class = HttpNoContentFacade::class)
      * )
-     * @Route(name="lock", path="/lock", methods={"PUT"})
-     * @Entity("category", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
-     * @IsGranted("CATEGORY", subject="category")
+     * @Route(name="lock", path="/lock/{externalId}", methods={"PUT"})
+     * @Entity("badge", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
+     * @IsGranted("BADGE", subject="badge")
      */
-    public function lock(Category $category)
+    public function lock(Badge $badge)
     {
-        $category->setLocked(true);
+        $badge->setLocked(true);
+
+        $this->badgeManager->save($badge);
 
         return new HttpNoContentFacade();
     }
 
     /**
-     * Unlock a category.
+     * Unlock a badge.
      *
      * @Endpoint(
      *   priority = 275,
      *   response = @Facade(class = HttpNoContentFacade::class)
      * )
-     * @Route(name="unlock", path="/unlock", methods={"PUT"})
-     * @Entity("category", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
-     * @IsGranted("CATEGORY", subject="category")
+     * @Route(name="unlock", path="/unlock/{externalId}", methods={"PUT"})
+     * @Entity("badge", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
+     * @IsGranted("BADGE", subject="badge")
      */
-    public function unlock(Category $category)
+    public function unlock(Badge $badge)
     {
-        $category->setLocked(false);
+        $badge->setLocked(false);
+
+        $this->badgeManager->save($badge);
 
         return new HttpNoContentFacade();
     }
 
+    /**
+     * Disable a badge.
+     *
+     * @Endpoint(
+     *   priority = 280,
+     *   response = @Facade(class = HttpNoContentFacade::class)
+     * )
+     * @Route(name="disable", path="/disable/{externalId}", methods={"PUT"})
+     * @Entity("badge", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
+     * @IsGranted("BADGE", subject="badge")
+     */
+    public function disable(Badge $badge)
+    {
+        $this->validate($badge, [
+            new Unlocked(),
+        ]);
+
+        $badge->setEnabled(false);
+
+        $this->badgeManager->save($badge);
+
+        return new HttpNoContentFacade();
+    }
+
+    /**
+     * Enable a badge.
+     *
+     * @Endpoint(
+     *   priority = 285,
+     *   response = @Facade(class = HttpNoContentFacade::class)
+     * )
+     * @Route(name="enable", path="/enable/{externalId}", methods={"PUT"})
+     * @Entity("badge", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
+     * @IsGranted("BADGE", subject="badge")
+     */
+    public function enable(Badge $badge)
+    {
+        $this->validate($badge, [
+            new Unlocked(),
+        ]);
+
+        $badge->setEnabled(true);
+
+        $this->badgeManager->save($badge);
+
+        return new HttpNoContentFacade();
+    }
 }

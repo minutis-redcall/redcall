@@ -4,7 +4,6 @@ namespace App\Facade\Category;
 
 use Bundles\ApiBundle\Annotation\Facade;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
-use Symfony\Component\Validator\Constraints as Assert;
 
 class CategoryReadFacade extends CategoryFacade
 {
@@ -13,8 +12,6 @@ class CategoryReadFacade extends CategoryFacade
      *
      * A "locked" category cannot be modified through APIs, this is useful when
      * there are divergences between your own database and the RedCall database.
-     *
-     * @Assert\Choice(choices={false, true})
      *
      * @var bool|null
      */
@@ -29,8 +26,6 @@ class CategoryReadFacade extends CategoryFacade
      *
      * In order to comply with the General Data Protection Regulation (GDPR), resources containing
      * private information can be anonymized.
-     *
-     * @Assert\Choice(choices={false, true})
      *
      * @var bool|null
      */
