@@ -155,6 +155,8 @@ class UserController extends BaseController
      */
     public function update(User $user, UserFacade $facade)
     {
+        $olderExternalId = $user->getExternalId();
+
         $user = $this->userTransformer->reconstruct($facade, $user);
 
         $this->validate($user, [
@@ -164,6 +166,10 @@ class UserController extends BaseController
         ]);
 
         $this->userManager->save($user);
+
+        if ($olderExternalId !== $user->getExternalId()) {
+            $this->userManager->changeVolunteer($user, $this->getPlatform(), $user->getExternalId());
+        }
 
         return new HttpNoContentFacade();
     }
@@ -275,74 +281,6 @@ class UserController extends BaseController
             ResourceOwnership::KNOWN_RESOURCE()
         );
     }
-    //
-    //    /**
-    //     * Get volunteer tied to the user.
-    //     *
-    //     * @Endpoint(
-    //     *   priority = 340,
-    //     *   response = @Facade(class = VolunteerResourceFacade::class)
-    //     * )
-    //     * @Route(name="volunteer_record", path="/{email}/volunteer", methods={"GET"})
-    //     * @Entity("user", expr="repository.findByUsernameAndCurrentPlatform(email)")
-    //     * @IsGranted("USER", subject="user")
-    //     */
-    //    public function volunteerRecord(User $user)
-    //    {
-    //        if (!$user->getVolunteer()) {
-    //            return new HttpNotFoundFacade();
-    //        }
-    //
-    //        return $this->resourceTransformer->expose(
-    //            $user->getVolunteer()
-    //        );
-    //    }
-    //
-    //    /**
-    //     * Attach a volunteer to the given user.
-    //     *
-    //     * @Endpoint(
-    //     *   priority = 345,
-    //     *   response = @Facade(class = HttpNoContentFacade::class)
-    //     * )
-    //     * @Route(name="volunteer_set", path="/{email}/volunteer/{volunteerExternalId}", methods={"POST"})
-    //     * @Entity("user", expr="repository.findByUsernameAndCurrentPlatform(email)")
-    //     * @IsGranted("USER", subject="user")
-    //     * @Entity("volunteer", expr="repository.findOneByExternalIdAndCurrentPlatform(volunteerExternalId)")
-    //     * @IsGranted("VOLUNTEER", subject="volunteer")
-    //     */
-    //    public function volunteerSet(User $user, Volunteer $volunteer)
-    //    {
-    //        $this->validate($user, [
-    //            new Unlocked(),
-    //        ]);
-    //
-    //        $this->userManager->changeVolunteer($user, $this->getPlatform(), $volunteer->getExternalId());
-    //
-    //        return new HttpNoContentFacade();
-    //    }
-    //
-    //    /**
-    //     * Remove volunteer tied to the user.
-    //     *
-    //     * @Endpoint(
-    //     *   priority = 340,
-    //     *   response = @Facade(class = HttpNoContentFacade::class)
-    //     * )
-    //     * @Route(name="volunteer_clear", path="/volunteer/{email}", methods={"DELETE"})
-    //     * @Entity("user", expr="repository.findByUsernameAndCurrentPlatform(email)")
-    //     * @IsGranted("USER", subject="user")
-    //     */
-    //    public function volunteerClear(User $user)
-    //    {
-    //        $this->validate($user, [
-    //            new Unlocked(),
-    //        ]);
-    //
-    //        $this->userManager->changeVolunteer($user);
-    //
-    //        return new HttpNoContentFacade();
-    //    }
 
     /**
      * Send a "password recovery" email to the given user.

@@ -33,7 +33,7 @@
                             <div class="col-md-4">
                                 <div>
                                     <div class="h4" {% if user.root %}style="color:red;"{% endif %}>
-                                        {{ platforms[user.platform].flag }} {{ user.username }}
+                                        {{ platforms[user.platform].flag }} <a href="#" style="color:black;" class="copy-to-clipboard">{{ user.username }}</a>
                                     </div>
                                     <div class="text-small">
                                         {{ 'password_login.user_list.registered_at'|trans({'%date%': user.registeredAt|date('d/m/Y H:i')}) }}

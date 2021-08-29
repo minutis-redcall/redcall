@@ -4,6 +4,7 @@ namespace App\Facade\User;
 
 use Bundles\ApiBundle\Annotation as Api;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
+use Symfony\Component\Serializer\Annotation\SerializedName;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class UserFacade implements FacadeInterface
@@ -15,9 +16,32 @@ class UserFacade implements FacadeInterface
      * @Assert\Length(max=64)
      * @Assert\Email
      *
+     * @SerializedName("email")
+     *
      * @var string
      */
     protected $identifier;
+
+    /**
+     * Identifier of the volunteer tied to that user.
+     *
+     * Users are only resources whose purpose is authentication and authorization,
+     * but they should be attached to physical persons (volunteers) in order to
+     * trigger people.
+     *
+     * Having a volunteer tied to every user helps to see real previews and
+     * use "Test on me" buttons, as volunteers are required to build
+     * communications.
+     *
+     * Note: if a user will not trigger people (e.g. an administrator, or a developer,
+     * but not an operations manager) then it is not necessary to attach a volunteer
+     * to it.
+     *
+     * @Assert\Length(max = 64)
+     *
+     * @var string|null
+     */
+    protected $volunteerExternalId;
 
     /**
      * When registering, every user receive a verification email. User''s email is considered valid once user clicked
@@ -100,6 +124,18 @@ class UserFacade implements FacadeInterface
     public function setIdentifier(string $identifier) : UserFacade
     {
         $this->identifier = $identifier;
+
+        return $this;
+    }
+
+    public function getVolunteerExternalId() : ?string
+    {
+        return $this->volunteerExternalId;
+    }
+
+    public function setVolunteerExternalId(?string $volunteerExternalId) : UserFacade
+    {
+        $this->volunteerExternalId = $volunteerExternalId;
 
         return $this;
     }
