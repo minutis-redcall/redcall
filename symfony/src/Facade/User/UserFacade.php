@@ -93,16 +93,6 @@ class UserFacade implements FacadeInterface
      */
     protected $root;
 
-    /**
-     * A locked user is not synchronized anymore with its associated volunteer. If volunteer's scope change
-     * it won't be reflected.
-     *
-     * @Assert\Choice(choices={false, true})
-     *
-     * @var bool|null
-     */
-    protected $locked;
-
     static public function getExample(Api\Facade $decorates = null) : FacadeInterface
     {
         $facade = new self;
@@ -113,7 +103,6 @@ class UserFacade implements FacadeInterface
         $facade->setDeveloper(false);
         $facade->setAdministrator(false);
         $facade->setRoot(false);
-        $facade->setLocked(false);
 
         return $facade;
     }
@@ -204,18 +193,6 @@ class UserFacade implements FacadeInterface
     public function setRoot(?bool $root) : UserFacade
     {
         $this->root = $root;
-
-        return $this;
-    }
-
-    public function isLocked() : ?bool
-    {
-        return $this->locked;
-    }
-
-    public function setLocked(?bool $locked) : UserFacade
-    {
-        $this->locked = $locked;
 
         return $this;
     }

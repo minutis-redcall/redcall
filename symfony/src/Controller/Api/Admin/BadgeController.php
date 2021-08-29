@@ -434,7 +434,7 @@ class BadgeController extends BaseController
      *   priority = 270,
      *   response = @Facade(class = HttpNoContentFacade::class)
      * )
-     * @Route(name="lock", path="/lock/{externalId}", methods={"PUT"})
+     * @Route(name="lock", path="/{externalId}/lock", methods={"PUT"})
      * @Entity("badge", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
      * @IsGranted("BADGE", subject="badge")
      */
@@ -454,7 +454,7 @@ class BadgeController extends BaseController
      *   priority = 275,
      *   response = @Facade(class = HttpNoContentFacade::class)
      * )
-     * @Route(name="unlock", path="/unlock/{externalId}", methods={"PUT"})
+     * @Route(name="unlock", path="/{externalId}/unlock", methods={"PUT"})
      * @Entity("badge", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
      * @IsGranted("BADGE", subject="badge")
      */
@@ -474,7 +474,7 @@ class BadgeController extends BaseController
      *   priority = 280,
      *   response = @Facade(class = HttpNoContentFacade::class)
      * )
-     * @Route(name="disable", path="/disable/{externalId}", methods={"PUT"})
+     * @Route(name="disable", path="/{externalId}/disable", methods={"PUT"})
      * @Entity("badge", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
      * @IsGranted("BADGE", subject="badge")
      */
@@ -498,7 +498,7 @@ class BadgeController extends BaseController
      *   priority = 285,
      *   response = @Facade(class = HttpNoContentFacade::class)
      * )
-     * @Route(name="enable", path="/enable/{externalId}", methods={"PUT"})
+     * @Route(name="enable", path="/{externalId}/enable", methods={"PUT"})
      * @Entity("badge", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
      * @IsGranted("BADGE", subject="badge")
      */

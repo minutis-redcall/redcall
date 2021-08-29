@@ -302,6 +302,46 @@ class UserController extends BaseController
         return new HttpNoContentFacade();
     }
 
+    /**
+     * Lock a user.
+     *
+     * @Endpoint(
+     *   priority = 345,
+     *   response = @Facade(class = HttpNoContentFacade::class)
+     * )
+     * @Route(name="lock", path="/{email}/lock", methods={"PUT"})
+     * @Entity("user", expr="repository.findByUsernameAndCurrentPlatform(email)")
+     * @IsGranted("USER", subject="user")
+     */
+    public function lock(User $user)
+    {
+        $user->setLocked(true);
+
+        $this->userManager->save($user);
+
+        return new HttpNoContentFacade();
+    }
+
+    /**
+     * Unlock a user.
+     *
+     * @Endpoint(
+     *   priority = 350,
+     *   response = @Facade(class = HttpNoContentFacade::class)
+     * )
+     * @Route(name="unlock", path="/{email}/unlock", methods={"PUT"})
+     * @Entity("user", expr="repository.findByUsernameAndCurrentPlatform(email)")
+     * @IsGranted("USER", subject="user")
+     */
+    public function unlock(User $user)
+    {
+        $user->setLocked(false);
+
+        $this->userManager->save($user);
+
+        return new HttpNoContentFacade();
+    }
+
     private function getMeValidationCallback() : Callback
     {
         return new Callback(function ($object, ExecutionContextInterface $context) {

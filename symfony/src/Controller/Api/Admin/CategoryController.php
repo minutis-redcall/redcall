@@ -273,7 +273,7 @@ class CategoryController extends BaseController
      *   priority = 140,
      *   response = @Facade(class = HttpNoContentFacade::class)
      * )
-     * @Route(name="lock", path="/lock/{externalId}", methods={"PUT"})
+     * @Route(name="lock", path="/{externalId}/lock", methods={"PUT"})
      * @Entity("category", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
      * @IsGranted("CATEGORY", subject="category")
      */
@@ -293,7 +293,7 @@ class CategoryController extends BaseController
      *   priority = 145,
      *   response = @Facade(class = HttpNoContentFacade::class)
      * )
-     * @Route(name="unlock", path="/unlock/{externalId}", methods={"PUT"})
+     * @Route(name="unlock", path="/{externalId}/unlock", methods={"PUT"})
      * @Entity("category", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
      * @IsGranted("CATEGORY", subject="category")
      */
@@ -313,7 +313,7 @@ class CategoryController extends BaseController
      *   priority = 150,
      *   response = @Facade(class = HttpNoContentFacade::class)
      * )
-     * @Route(name="disable", path="/disable/{externalId}", methods={"PUT"})
+     * @Route(name="disable", path="/{externalId}/disable", methods={"PUT"})
      * @Entity("category", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
      * @IsGranted("CATEGORY", subject="category")
      */
@@ -337,7 +337,7 @@ class CategoryController extends BaseController
      *   priority = 155,
      *   response = @Facade(class = HttpNoContentFacade::class)
      * )
-     * @Route(name="enable", path="/enable/{externalId}", methods={"PUT"})
+     * @Route(name="enable", path="/{externalId}/enable", methods={"PUT"})
      * @Entity("category", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
      * @IsGranted("CATEGORY", subject="category")
      */

@@ -363,7 +363,7 @@ class StructureController extends BaseController
      *   priority = 450,
      *   response = @Facade(class = HttpNoContentFacade::class)
      * )
-     * @Route(name="lock", path="/lock/{externalId}", methods={"PUT"})
+     * @Route(name="lock", path="/{externalId}/lock", methods={"PUT"})
      * @Entity("structure", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
      * @IsGranted("STRUCTURE", subject="structure")
      */
@@ -383,7 +383,7 @@ class StructureController extends BaseController
      *   priority = 455,
      *   response = @Facade(class = HttpNoContentFacade::class)
      * )
-     * @Route(name="unlock", path="/unlock/{externalId}", methods={"PUT"})
+     * @Route(name="unlock", path="/{externalId}/unlock", methods={"PUT"})
      * @Entity("structure", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
      * @IsGranted("STRUCTURE", subject="structure")
      */
@@ -403,7 +403,7 @@ class StructureController extends BaseController
      *   priority = 460,
      *   response = @Facade(class = HttpNoContentFacade::class)
      * )
-     * @Route(name="disable", path="/disable/{externalId}", methods={"PUT"})
+     * @Route(name="disable", path="/{externalId}/disable", methods={"PUT"})
      * @Entity("structure", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
      * @IsGranted("STRUCTURE", subject="structure")
      */
@@ -427,7 +427,7 @@ class StructureController extends BaseController
      *   priority = 465,
      *   response = @Facade(class = HttpNoContentFacade::class)
      * )
-     * @Route(name="enable", path="/enable/{externalId}", methods={"PUT"})
+     * @Route(name="enable", path="/{externalId}/enable", methods={"PUT"})
      * @Entity("structure", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
      * @IsGranted("STRUCTURE", subject="structure")
      */

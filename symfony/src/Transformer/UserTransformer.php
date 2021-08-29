@@ -65,6 +65,8 @@ class UserTransformer extends BaseTransformer
         }
         $facade->setStructures($structures);
 
+        $facade->setLocked($object->isLocked());
+
         return $facade;
     }
 
