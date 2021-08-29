@@ -81,7 +81,7 @@ class BadgeController extends BaseController
      * List all badges.
      *
      * @Endpoint(
-     *   priority = 20,
+     *   priority = 200,
      *   request  = @Facade(class     = BadgeFiltersFacade::class),
      *   response = @Facade(class     = QueryBuilderFacade::class,
      *                      decorates = @Facade(class = BadgeFacade::class))
@@ -105,7 +105,7 @@ class BadgeController extends BaseController
      * Create a new badge.
      *
      * @Endpoint(
-     *   priority = 21,
+     *   priority = 205,
      *   request  = @Facade(class     = BadgeFacade::class),
      *   response = @Facade(class     = HttpCreatedFacade::class)
      * )
@@ -128,7 +128,7 @@ class BadgeController extends BaseController
      * Get a badge.
      *
      * @Endpoint(
-     *   priority = 22,
+     *   priority = 210,
      *   response = @Facade(class = BadgeReadFacade::class)
      * )
      * @Route(name="read", path="/{externalId}", methods={"GET"})
@@ -144,7 +144,7 @@ class BadgeController extends BaseController
      * Update a badge.
      *
      * @Endpoint(
-     *   priority = 23,
+     *   priority = 215,
      *   request  = @Facade(class = BadgeFacade::class),
      *   response = @Facade(class = HttpNoContentFacade::class)
      * )
@@ -170,7 +170,7 @@ class BadgeController extends BaseController
      * Delete a badge.
      *
      * @Endpoint(
-     *   priority = 24,
+     *   priority = 220,
      *   response = @Facade(class = HttpNoContentFacade::class)
      * )
      * @Route(name="delete", path="/{externalId}", methods={"DELETE"})
@@ -192,7 +192,7 @@ class BadgeController extends BaseController
      * List volunteers having the given badge.
      *
      * @Endpoint(
-     *   priority = 25,
+     *   priority = 225,
      *   request  = @Facade(class     = PageFilterFacade::class),
      *   response = @Facade(class     = QueryBuilderFacade::class,
      *                      decorates = @Facade(class = VolunteerResourceFacade::class))
@@ -214,7 +214,7 @@ class BadgeController extends BaseController
      * Add a badge to a given list of volunteers.
      *
      * @Endpoint(
-     *   priority = 26,
+     *   priority = 230,
      *   request  = @Facade(class     = VolunteerReferenceCollectionFacade::class,
      *                      decorates = @Facade(class = VolunteerReferenceFacade::class)),
      *   response = @Facade(class     = CollectionFacade::class,
@@ -242,7 +242,7 @@ class BadgeController extends BaseController
      * Remove a badge from a given list of volunteers.
      *
      * @Endpoint(
-     *   priority = 27,
+     *   priority = 235,
      *   request  = @Facade(class     = VolunteerReferenceCollectionFacade::class,
      *                      decorates = @Facade(class = VolunteerReferenceFacade::class)),
      *   response = @Facade(class     = CollectionFacade::class,

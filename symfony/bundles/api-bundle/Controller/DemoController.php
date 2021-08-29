@@ -24,7 +24,7 @@ class DemoController extends AbstractController
      * All endpoints hit using GET verb take parameters in the query string.
      *
      * @Endpoint(
-     *   priority = 5,
+     *   priority = 0,
      *   request  = @Facade(class = HelloRequestFacade::class),
      *   response = @Facade(class = HelloResponseFacade::class)
      * )

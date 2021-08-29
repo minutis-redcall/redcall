@@ -81,7 +81,7 @@ class CategoryController extends BaseController
      * List all badge categories.
      *
      * @Endpoint(
-     *   priority = 10,
+     *   priority = 100,
      *   request  = @Facade(class     = CategoryFiltersFacade::class),
      *   response = @Facade(class     = QueryBuilderFacade::class,
      *                      decorates = @Facade(class = CategoryFacade::class))
@@ -104,7 +104,7 @@ class CategoryController extends BaseController
      * Create a new badge category.
      *
      * @Endpoint(
-     *   priority = 11,
+     *   priority = 105,
      *   request  = @Facade(class     = CategoryFacade::class),
      *   response = @Facade(class     = HttpCreatedFacade::class)
      * )
@@ -127,7 +127,7 @@ class CategoryController extends BaseController
      * Get a badge category.
      *
      * @Endpoint(
-     *   priority = 12,
+     *   priority = 110,
      *   response = @Facade(class = CategoryFacade::class)
      * )
      * @Route(name="read", path="/{categoryId}", methods={"GET"})
@@ -143,7 +143,7 @@ class CategoryController extends BaseController
      * Update a badge category.
      *
      * @Endpoint(
-     *   priority = 13,
+     *   priority = 115,
      *   request  = @Facade(class = CategoryFacade::class),
      *   response = @Facade(class = HttpNoContentFacade::class)
      * )
@@ -169,7 +169,7 @@ class CategoryController extends BaseController
      * Delete a badge category.
      *
      * @Endpoint(
-     *   priority = 14,
+     *   priority = 120,
      *   response = @Facade(class = HttpNoContentFacade::class)
      * )
      * @Route(name="delete", path="/{categoryId}", methods={"DELETE"})
@@ -191,7 +191,7 @@ class CategoryController extends BaseController
      * List badges in a given category.
      *
      * @Endpoint(
-     *   priority = 15,
+     *   priority = 125,
      *   request  = @Facade(class     = PageFilterFacade::class),
      *   response = @Facade(class     = QueryBuilderFacade::class,
      *                      decorates = @Facade(class = BadgeReadFacade::class))
@@ -213,7 +213,7 @@ class CategoryController extends BaseController
      * Add a list of badges in the given category.
      *
      * @Endpoint(
-     *   priority = 16,
+     *   priority = 130,
      *   request  = @Facade(class     = BadgeReferenceCollectionFacade::class,
      *                      decorates = @Facade(class = BadgeReferenceFacade::class)),
      *   response = @Facade(class     = CollectionFacade::class,
@@ -241,7 +241,7 @@ class CategoryController extends BaseController
      * Delete a list of badges from the given category.
      *
      * @Endpoint(
-     *   priority = 17,
+     *   priority = 135,
      *   request  = @Facade(class     = BadgeReferenceCollectionFacade::class,
      *                      decorates = @Facade(class = BadgeReferenceFacade::class)),
      *   response = @Facade(class     = CollectionFacade::class,

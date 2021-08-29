@@ -88,7 +88,7 @@ class StructureController extends BaseController
      * List all structures.
      *
      * @Endpoint(
-     *   priority = 300,
+     *   priority = 400,
      *   request  = @Facade(class     = StructureFiltersFacade::class),
      *   response = @Facade(class     = QueryBuilderFacade::class,
      *                      decorates = @Facade(class = StructureReadFacade::class))
@@ -108,7 +108,7 @@ class StructureController extends BaseController
      * Create a new structure.
      *
      * @Endpoint(
-     *   priority = 305,
+     *   priority = 405,
      *   request  = @Facade(class     = StructureFacade::class),
      *   response = @Facade(class     = HttpCreatedFacade::class)
      * )
@@ -132,7 +132,7 @@ class StructureController extends BaseController
      * Get a structure.
      *
      * @Endpoint(
-     *   priority = 310,
+     *   priority = 410,
      *   response = @Facade(class = StructureReadFacade::class)
      * )
      * @Route(name="read", path="/{externalId}", methods={"GET"})
@@ -148,7 +148,7 @@ class StructureController extends BaseController
      * Update a structure.
      *
      * @Endpoint(
-     *   priority = 315,
+     *   priority = 415,
      *   request  = @Facade(class = StructureFacade::class),
      *   response = @Facade(class = HttpNoContentFacade::class)
      * )
@@ -175,7 +175,7 @@ class StructureController extends BaseController
      * List volunteers that can be triggered in the given structure.
      *
      * @Endpoint(
-     *   priority = 320,
+     *   priority = 420,
      *   request  = @Facade(class     = VolunteerFiltersFacade::class),
      *   response = @Facade(class     = QueryBuilderFacade::class,
      *                      decorates = @Facade(class = VolunteerResourceFacade::class))
@@ -203,7 +203,7 @@ class StructureController extends BaseController
      * Add one or several volunteers into the structure (volunteers are triggered by users).
      *
      * @Endpoint(
-     *   priority = 325,
+     *   priority = 425,
      *   request  = @Facade(class     = VolunteerReferenceCollectionFacade::class,
      *                      decorates = @Facade(class = VolunteerReferenceFacade::class)),
      *   response = @Facade(class     = CollectionFacade::class,
@@ -235,7 +235,7 @@ class StructureController extends BaseController
      * Remove one or several volunteers from the structure.
      *
      * @Endpoint(
-     *   priority = 330,
+     *   priority = 430,
      *   request  = @Facade(class     = VolunteerReferenceCollectionFacade::class,
      *                      decorates = @Facade(class = VolunteerReferenceFacade::class)),
      *   response = @Facade(class     = CollectionFacade::class,
@@ -268,7 +268,7 @@ class StructureController extends BaseController
      * List RedCall users that can trigger volunteers in the given structure.
      *
      * @Endpoint(
-     *   priority = 335,
+     *   priority = 435,
      *   request  = @Facade(class     = UserFiltersFacade::class),
      *   response = @Facade(class     = QueryBuilderFacade::class,
      *                      decorates = @Facade(class = UserResourceFacade::class))
@@ -296,7 +296,7 @@ class StructureController extends BaseController
      * Add one or several users into the structure (users will trigger volunteers).
      *
      * @Endpoint(
-     *   priority = 340,
+     *   priority = 440,
      *   request  = @Facade(class     = UserReferenceCollectionFacade::class,
      *                      decorates = @Facade(class = UserReferenceFacade::class)),
      *   response = @Facade(class     = CollectionFacade::class,
@@ -328,7 +328,7 @@ class StructureController extends BaseController
      * Remove one or several users from the structure.
      *
      * @Endpoint(
-     *   priority = 345,
+     *   priority = 445,
      *   request  = @Facade(class     = UserReferenceCollectionFacade::class,
      *                      decorates = @Facade(class = UserReferenceFacade::class)),
      *   response = @Facade(class     = CollectionFacade::class,
