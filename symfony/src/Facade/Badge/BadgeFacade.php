@@ -94,6 +94,39 @@ class BadgeFacade implements FacadeInterface
     protected $triggeringPriority = 500;
 
     /**
+     * The badge of the above level, which covers this one.
+     *
+     * A badge may have a "parent" badge, for example a "car driver" (VL)
+     * has "ambulance driver" (VPSP) as parent, because if someone has an
+     * ambulance driving license, (s)he must have a car driving license as well.
+     *
+     * Another example, If someone has "advanced first aider" level (PSE2), (s)he
+     * must have "intermediate first aider" level (PSE1).
+     *
+     * @Assert\Length(max = 64)
+     *
+     * @var string|null
+     */
+    protected $coveredByExternalId;
+
+    /**
+     * The badge synonym.
+     *
+     * All volunteers having that badge will be considered as having the
+     * synonym badge, and that badge will disappear from interfaces.
+     *
+     * For example, if you have two badges "Car Driver" and "Vehicle Driver", you
+     * can set "Car Driver" as synonym for "Vehicle Driver", and only "Car Driver"
+     * will appear on user interfaces. Filtering out "Car Driver" will also trigger
+     * people having the "Vehicle Driver" badge.
+     *
+     * @Assert\Length(max = 64)
+     *
+     * @var string|null
+     */
+    protected $synonymExternalId;
+
+    /**
      * Whether the badge is locked or not.
      *
      * A "locked" category cannot be modified through APIs, this is useful when
@@ -215,6 +248,30 @@ class BadgeFacade implements FacadeInterface
     public function setTriggeringPriority(?int $triggeringPriority) : BadgeFacade
     {
         $this->triggeringPriority = $triggeringPriority;
+
+        return $this;
+    }
+
+    public function getCoveredByExternalId() : ?string
+    {
+        return $this->coveredByExternalId;
+    }
+
+    public function setCoveredByExternalId(?string $coveredByExternalId) : BadgeFacade
+    {
+        $this->coveredByExternalId = $coveredByExternalId;
+
+        return $this;
+    }
+
+    public function getSynonymExternalId() : ?string
+    {
+        return $this->synonymExternalId;
+    }
+
+    public function setSynonymExternalId(?string $synonymExternalId) : BadgeFacade
+    {
+        $this->synonymExternalId = $synonymExternalId;
 
         return $this;
     }
