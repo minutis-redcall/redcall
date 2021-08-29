@@ -48,8 +48,14 @@ class PropertyCollectionReader
         $properties = $this->extractor->getProperties($class);
         $accessor   = PropertyAccess::createPropertyAccessor();
         foreach ($properties ?? [] as $property) {
-            $propertyDescription = $this->propertyReader->read($class, $property, $parent);
-            $value               = $accessor->getValue($facade, $property);
+            try {
+                $propertyDescription = $this->propertyReader->read($class, $property, $parent);
+            } catch (\ReflectionException $e) {
+                // There may be a getter without property, this is the case on enriched objects
+                continue;
+            }
+
+            $value = $accessor->getValue($facade, $property);
 
             if ($value instanceof FacadeInterface) {
                 $children = $this->read($value, $propertyDescription);

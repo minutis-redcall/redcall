@@ -4,6 +4,12 @@
     <h3>Console</h3>
 </div>
 
+<div id="spinner" class="d-none">
+    <div class="text-center" style="padding: 20px;">
+        <img src="{{ asset('spinner-redcall.gif') }}"/>
+    </div>
+</div>
+
 {% if cors_ok %}
 
     <div id="console" class="text-left">
@@ -94,9 +100,14 @@
         e.preventDefault();
         var that = $(this);
 
+        $('#result-container').removeClass('d-none')
+        $('#result-status').html('');
+        $('#result').html(
+            $('#spinner').html()
+        );
+
         var changeResult = function (data) {
             var pretty = JSON.stringify(JSON.parse(data), null, 2);
-            $('#result-container').removeClass('d-none');
             $('#result').html(pretty);
             that.removeAttr('disabled');
         };

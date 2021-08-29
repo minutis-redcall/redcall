@@ -10,6 +10,7 @@ use App\Enum\Resource;
 use App\Enum\ResourceOwnership;
 use App\Facade\Generic\PageFilterFacade;
 use App\Facade\Generic\UpdateStatusFacade;
+use App\Facade\Resource\StructureResourceFacade;
 use App\Facade\Resource\VolunteerResourceFacade;
 use App\Facade\Structure\StructureReferenceCollectionFacade;
 use App\Facade\Structure\StructureReferenceFacade;
@@ -207,7 +208,7 @@ class UserController extends BaseController
      *   priority = 215,
      *   request  = @Facade(class     = PageFilterFacade::class),
      *   response = @Facade(class     = QueryBuilderFacade::class,
-     *                      decorates = @Facade(class = StructureReferenceFacade::class))
+     *                      decorates = @Facade(class = StructureResourceFacade::class))
      * )
      * @Route(name="structure_records", path="/{email}/structure", methods={"GET"})
      * @Entity("user", expr="repository.findByUsernameAndCurrentPlatform(email)")

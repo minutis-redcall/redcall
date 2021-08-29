@@ -6,6 +6,7 @@ use Bundles\ApiBundle\Model\Documentation\PropertyDescription;
 use Bundles\ApiBundle\Model\Documentation\TypeDescription;
 use Doctrine\Common\Annotations\AnnotationReader;
 use Symfony\Component\PropertyInfo\PropertyInfoExtractorInterface;
+use Symfony\Component\Serializer\Annotation\SerializedName;
 use Symfony\Component\Validator\Constraint;
 
 class PropertyReader
@@ -71,6 +72,10 @@ class PropertyReader
                 $property->addConstraint(
                     $this->constraintReader->read($annotation)
                 );
+            }
+
+            if ($annotation instanceof SerializedName) {
+                $property->setName($annotation->getSerializedName());
             }
         }
 

@@ -139,7 +139,7 @@ class VolunteerManager
         Structure $structure,
         ?string $criteria,
         bool $onlyEnabled,
-        bool $onlyUsers)
+        bool $onlyUsers) : QueryBuilder
     {
         return $this->volunteerRepository->searchInStructureQueryBuilder($platform, $structure, $criteria, $onlyEnabled, $onlyUsers);
     }

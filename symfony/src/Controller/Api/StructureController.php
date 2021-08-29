@@ -3,18 +3,25 @@
 namespace App\Controller\Api;
 
 use App\Entity\Structure;
+use App\Entity\User;
 use App\Entity\Volunteer;
 use App\Enum\Crud;
 use App\Enum\Resource;
 use App\Enum\ResourceOwnership;
 use App\Facade\Generic\UpdateStatusFacade;
+use App\Facade\Resource\UserResourceFacade;
+use App\Facade\Resource\VolunteerResourceFacade;
 use App\Facade\Structure\StructureFacade;
 use App\Facade\Structure\StructureFiltersFacade;
 use App\Facade\Structure\StructureReadFacade;
+use App\Facade\User\UserFiltersFacade;
+use App\Facade\User\UserReferenceCollectionFacade;
+use App\Facade\User\UserReferenceFacade;
 use App\Facade\Volunteer\VolunteerFiltersFacade;
 use App\Facade\Volunteer\VolunteerReferenceCollectionFacade;
 use App\Facade\Volunteer\VolunteerReferenceFacade;
 use App\Manager\StructureManager;
+use App\Manager\UserManager;
 use App\Manager\VolunteerManager;
 use App\Transformer\ResourceTransformer;
 use App\Transformer\StructureTransformer;
@@ -59,15 +66,22 @@ class StructureController extends BaseController
      */
     private $volunteerManager;
 
+    /**
+     * @var UserManager
+     */
+    private $userManager;
+
     public function __construct(StructureManager $structureManager,
         StructureTransformer $structureTransformer,
         ResourceTransformer $resourceTransformer,
-        VolunteerManager $volunteerManager)
+        VolunteerManager $volunteerManager,
+        UserManager $userManager)
     {
         $this->structureManager     = $structureManager;
         $this->structureTransformer = $structureTransformer;
         $this->resourceTransformer  = $resourceTransformer;
         $this->volunteerManager     = $volunteerManager;
+        $this->userManager          = $userManager;
     }
 
     /**
@@ -164,7 +178,7 @@ class StructureController extends BaseController
      *   priority = 320,
      *   request  = @Facade(class     = VolunteerFiltersFacade::class),
      *   response = @Facade(class     = QueryBuilderFacade::class,
-     *                      decorates = @Facade(class = VolunteerReferenceFacade::class))
+     *                      decorates = @Facade(class = VolunteerResourceFacade::class))
      * )
      * @Route(name="volunteer_records", path="/{externalId}/volunteer", methods={"GET"})
      * @Entity("structure", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
@@ -186,7 +200,7 @@ class StructureController extends BaseController
     }
 
     /**
-     * Add one or several volunteers into the structure.
+     * Add one or several volunteers into the structure (volunteers are triggered by users).
      *
      * @Endpoint(
      *   priority = 325,
@@ -247,6 +261,98 @@ class StructureController extends BaseController
             'structure',
             ResourceOwnership::RESOLVED_RESOURCE(),
             ResourceOwnership::KNOWN_RESOURCE()
+        );
+    }
+
+    /**
+     * List RedCall users that can trigger volunteers in the given structure.
+     *
+     * @Endpoint(
+     *   priority = 335,
+     *   request  = @Facade(class     = UserFiltersFacade::class),
+     *   response = @Facade(class     = QueryBuilderFacade::class,
+     *                      decorates = @Facade(class = UserResourceFacade::class))
+     * )
+     * @Route(name="user_records", path="/{externalId}/user", methods={"GET"})
+     * @Entity("structure", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
+     * @IsGranted("STRUCTURE", subject="structure")
+     */
+    public function userRecords(Structure $structure, UserFiltersFacade $filters)
+    {
+        $qb = $this->userManager->searchInStructureQueryBuilder(
+            $this->getPlatform(),
+            $structure,
+            $filters->getCriteria(),
+            $filters->isOnlyAdmins(),
+            $filters->isOnlyDevelopers()
+        );
+
+        return new QueryBuilderFacade($qb, $filters->getPage(), function (User $user) {
+            return $this->resourceTransformer->expose($user);
+        });
+    }
+
+    /**
+     * Add one or several users into the structure (users will trigger volunteers).
+     *
+     * @Endpoint(
+     *   priority = 340,
+     *   request  = @Facade(class     = UserReferenceCollectionFacade::class,
+     *                      decorates = @Facade(class = UserReferenceFacade::class)),
+     *   response = @Facade(class     = CollectionFacade::class,
+     *                      decorates = @Facade(class = UpdateStatusFacade::class))
+     * )
+     * @Route(name="user_add", path="/{externalId}/user", methods={"POST"})
+     * @Entity("structure", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
+     * @IsGranted("STRUCTURE", subject="structure")
+     */
+    public function userAdd(Structure $structure, UserReferenceCollectionFacade $collection) : FacadeInterface
+    {
+        $this->validate($structure, [
+            new Unlocked(),
+        ]);
+
+        return $this->updateResourceCollection(
+            Crud::CREATE(),
+            Resource::STRUCTURE(),
+            $structure,
+            Resource::USER(),
+            $collection,
+            'user',
+            ResourceOwnership::KNOWN_RESOURCE(),
+            ResourceOwnership::RESOLVED_RESOURCE()
+        );
+    }
+
+    /**
+     * Remove one or several users from the structure.
+     *
+     * @Endpoint(
+     *   priority = 345,
+     *   request  = @Facade(class     = UserReferenceCollectionFacade::class,
+     *                      decorates = @Facade(class = UserReferenceFacade::class)),
+     *   response = @Facade(class     = CollectionFacade::class,
+     *                      decorates = @Facade(class = UpdateStatusFacade::class))
+     * )
+     * @Route(name="user_remove", path="/{externalId}/user", methods={"DELETE"})
+     * @Entity("structure", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
+     * @IsGranted("STRUCTURE", subject="structure")
+     */
+    public function userRemove(Structure $structure, UserReferenceCollectionFacade $collection) : FacadeInterface
+    {
+        $this->validate($structure, [
+            new Unlocked(),
+        ]);
+
+        return $this->updateResourceCollection(
+            Crud::DELETE(),
+            Resource::STRUCTURE(),
+            $structure,
+            Resource::USER(),
+            $collection,
+            'user',
+            ResourceOwnership::KNOWN_RESOURCE(),
+            ResourceOwnership::RESOLVED_RESOURCE()
         );
     }
 }
