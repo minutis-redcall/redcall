@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Facade\Structure;
+namespace App\Facade\User;
 
 use App\Facade\Resource\ResourceCollectionFacadeInterface;
 use App\Facade\Resource\ResourceReferenceCollectionFacadeInterface;
@@ -9,15 +9,15 @@ use Bundles\ApiBundle\Contracts\FacadeInterface;
 use Bundles\ApiBundle\Model\Facade\CollectionFacade;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class StructureReferenceCollectionFacade implements ResourceReferenceCollectionFacadeInterface
+class UserReferenceCollectionFacade implements ResourceReferenceCollectionFacadeInterface
 {
     /**
-     * Contains an array of structure external ids.
+     * Contains an array of user external ids.
      *
      * @Assert\NotNull
      * @Assert\Count(min=1, max=100)
      *
-     * @var StructureReferenceFacade[]
+     * @var UserReferenceFacade[]
      */
     protected $entries;
 
@@ -31,9 +31,9 @@ class StructureReferenceCollectionFacade implements ResourceReferenceCollectionF
         $facade = new static;
 
         $facade->setEntries([
-            StructureReferenceFacade::getExample(),
-            StructureReferenceFacade::getExample(),
-            StructureReferenceFacade::getExample(),
+            UserReferenceFacade::getExample(),
+            UserReferenceFacade::getExample(),
+            UserReferenceFacade::getExample(),
         ]);
 
         return $facade;

@@ -4,7 +4,6 @@ namespace App\Facade\User;
 
 use App\Facade\Resource\StructureResourceFacade;
 use App\Facade\Resource\VolunteerResourceFacade;
-use App\Facade\Volunteer\VolunteerReadFacade;
 use Bundles\ApiBundle\Annotation as Api;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
 
@@ -25,6 +24,14 @@ class UserReadFacade extends UserFacade
      */
     protected $structures = [];
 
+    /**
+     * A locked user is not synchronized anymore with its associated volunteer. If volunteer's scope change
+     * it won't be reflected.
+     *
+     * @var bool|null
+     */
+    protected $locked;
+
     public static function getExample(Api\Facade $decorates = null) : FacadeInterface
     {
         /** @var self $facade */
@@ -39,17 +46,19 @@ class UserReadFacade extends UserFacade
         $facade->setVolunteer($volunteer);
 
         $structureA = new StructureResourceFacade();
-        $structureA->setLabel('UNITE LOCALE DE PARIS 1ER');
+        $structureA->setLabel('UNITE LOCALE DE PARIS 5EME');
         $structureA->setExternalId('demo-structure-1');
 
         $structureB = new StructureResourceFacade();
-        $structureB->setLabel('UNITE LOCALE DE PARIS 2EME');
-        $structureB->setExternalId('demo-structure-1');
+        $structureB->setLabel('UNITE LOCALE DE PARIS 7EME');
+        $structureB->setExternalId('demo-structure-2');
 
         $facade->setStructures([
             $structureA,
             $structureB,
         ]);
+
+        $facade->setLocked(false);
 
         return $facade;
     }
@@ -59,7 +68,7 @@ class UserReadFacade extends UserFacade
         return $this->volunteer;
     }
 
-    public function setVolunteer(?VolunteerResourceFacade $volunteer) : UserFacade
+    public function setVolunteer(?VolunteerResourceFacade $volunteer) : UserReadFacade
     {
         $this->volunteer = $volunteer;
 
@@ -71,9 +80,21 @@ class UserReadFacade extends UserFacade
         return $this->structures;
     }
 
-    public function setStructures(array $structures) : UserFacade
+    public function setStructures(array $structures) : UserReadFacade
     {
         $this->structures = $structures;
+
+        return $this;
+    }
+
+    public function isLocked() : ?bool
+    {
+        return $this->locked;
+    }
+
+    public function setLocked(?bool $locked) : UserReadFacade
+    {
+        $this->locked = $locked;
 
         return $this;
     }

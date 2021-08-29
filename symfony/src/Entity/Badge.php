@@ -398,6 +398,11 @@ class Badge implements LockableInterface
         return $this->getFullName();
     }
 
+    public function getDisplayName() : string
+    {
+        return $this->getFullName();
+    }
+
     /**
      * @return Collection|self[]
      */
@@ -522,6 +527,7 @@ class Badge implements LockableInterface
                     ->buildViolation('form.badge.errors.parent.loop', [
                         '%hierarchy%' => implode(' -> ', $this->getCoveringBadges($this->id)),
                     ])
+                    ->setInvalidValue($this->getName())
                     ->atPath('parent')
                     ->addViolation();
             }
@@ -532,6 +538,7 @@ class Badge implements LockableInterface
                     ->buildViolation('form.badge.errors.parent.synonym', [
                         '%name%' => $this->getParent()->getSynonym()->getName(),
                     ])
+                    ->setInvalidValue($this->getName())
                     ->atPath('parent')
                     ->addViolation();
             }

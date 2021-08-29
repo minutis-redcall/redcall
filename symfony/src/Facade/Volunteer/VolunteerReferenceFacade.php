@@ -2,11 +2,12 @@
 
 namespace App\Facade\Volunteer;
 
+use App\Facade\Resource\ResourceReferenceFacadeInterface;
 use Bundles\ApiBundle\Annotation as Api;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class VolunteerReferenceFacade implements FacadeInterface
+class VolunteerReferenceFacade implements ResourceReferenceFacadeInterface
 {
     /**
      * The identifier you've set to identify a volunteer.

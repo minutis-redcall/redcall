@@ -21,6 +21,21 @@ class BadgeFacade implements FacadeInterface
     protected $externalId;
 
     /**
+     * The badge's category, if any.
+     *
+     * On the UX, sorting badges by category may ease reading.
+     * - first aider level 1, 2, 3 are all first aid trainings
+     * - ambulance, car and truck are vehicles
+     *
+     * In order to remove the category, set an arbitrary non-null value.
+     *
+     * @Assert\Length(max = 64)
+     *
+     * @var string|null
+     */
+    protected $categoryExternalId;
+
+    /**
      * Badge's name.
      *
      * Badge name should be small because it is rendered everywhere where a volunteer is rendered.
@@ -81,32 +96,41 @@ class BadgeFacade implements FacadeInterface
     protected $triggeringPriority = 500;
 
     /**
-     * Whether the badge is locked or not.
+     * The badge of the above level, which covers this one.
      *
-     * A "locked" category cannot be modified through APIs, this is useful when
-     * there are divergences between your own database and the RedCall database.
+     * A badge may have a "parent" badge, for example a "car driver" (VL)
+     * has "ambulance driver" (VPSP) as parent, because if someone has an
+     * ambulance driving license, (s)he must have a car driving license as well.
      *
-     * @Assert\Choice(choices={false, true})
+     * Another example, If someone has "advanced first aider" level (PSE2), (s)he
+     * must have "intermediate first aider" level (PSE1).
      *
-     * @var bool|null
+     * If you want to remove the parent association, set an arbitrary non-null value.
+     *
+     * @Assert\Length(max = 64)
+     *
+     * @var string|null
      */
-    protected $locked;
+    protected $coveredByExternalId;
 
     /**
-     * Whether the badge is enabled or not.
+     * The badge synonym.
      *
-     * RedCall resources (categories, badges, structures, volunteers) may have relations with
-     * other sensible parts of the application (triggers, communications, messages, answers, etc.),
-     * so it may be safer to disable them instead of deleting them and creating database inconsistencies.
+     * All volunteers having that badge will be considered as having the
+     * synonym badge, and that badge will disappear from interfaces.
      *
-     * In order to comply with the General Data Protection Regulation (GDPR), resources containing
-     * private information can be anonymized.
+     * For example, if you have two badges "Car Driver" and "Vehicle Driver", you
+     * can set "Car Driver" as synonym for "Vehicle Driver", and only "Car Driver"
+     * will appear on user interfaces. Filtering out "Car Driver" will also trigger
+     * people having the "Vehicle Driver" badge.
      *
-     * @Assert\Choice(choices={false, true})
+     * If you want to remove the synonym, set an arbitrary non-null value.
      *
-     * @var bool|null
+     * @Assert\Length(max = 64)
+     *
+     * @var string|null
      */
-    protected $enabled;
+    protected $replacedByExternalId;
 
     static public function getExample(Facade $decorates = null) : FacadeInterface
     {
@@ -116,8 +140,6 @@ class BadgeFacade implements FacadeInterface
         $facade->name        = 'CD';
         $facade->description = 'Car Driver';
         $facade->visibility  = true;
-        $facade->locked      = false;
-        $facade->enabled     = true;
 
         return $facade;
     }
@@ -130,6 +152,18 @@ class BadgeFacade implements FacadeInterface
     public function setExternalId(string $externalId) : BadgeFacade
     {
         $this->externalId = $externalId;
+
+        return $this;
+    }
+
+    public function getCategoryExternalId() : ?string
+    {
+        return $this->categoryExternalId;
+    }
+
+    public function setCategoryExternalId(?string $categoryExternalId) : BadgeFacade
+    {
+        $this->categoryExternalId = $categoryExternalId;
 
         return $this;
     }
@@ -194,26 +228,26 @@ class BadgeFacade implements FacadeInterface
         return $this;
     }
 
-    public function getLocked() : ?bool
+    public function getCoveredByExternalId() : ?string
     {
-        return $this->locked;
+        return $this->coveredByExternalId;
     }
 
-    public function setLocked(?bool $locked) : BadgeFacade
+    public function setCoveredByExternalId(?string $coveredByExternalId) : BadgeFacade
     {
-        $this->locked = $locked;
+        $this->coveredByExternalId = $coveredByExternalId;
 
         return $this;
     }
 
-    public function getEnabled() : ?bool
+    public function getReplacedByExternalId() : ?string
     {
-        return $this->enabled;
+        return $this->replacedByExternalId;
     }
 
-    public function setEnabled(?bool $enabled) : BadgeFacade
+    public function setReplacedByExternalId(?string $replacedByExternalId) : BadgeFacade
     {
-        $this->enabled = $enabled;
+        $this->replacedByExternalId = $replacedByExternalId;
 
         return $this;
     }

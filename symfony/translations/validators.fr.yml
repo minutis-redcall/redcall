@@ -32,6 +32,9 @@ form:
     error_duplicate: 'Vous avez saisi plusieurs fois le même numéro.'
     error_multi_preferred: 'Vous ne pouvez avoir qu''un seul numéro de téléphone principal.'
     error_no_preferred: 'Vous n''avez pas choisi de numéro principal.'
+  structure:
+    parent:
+      loop: 'Vous êtes en train de créer une boucle dans la hiérarchie des structures (%hierarchy%), vous ne pouvez pas mettre une structure enfant comme structure parente.'
   volunteer:
     errors:
       redcall_user: 'Ce bénévole est rattaché à un utilisateur RedCall, supprimez d''abord l''utilisateur afin de pouvoir désactiver le bénévole.'

@@ -47,6 +47,30 @@ class StructureReadFacade extends StructureFacade
      */
     protected $childrenStructures;
 
+    /**
+     * Whether the structure is locked or not.
+     *
+     * A "locked" structure cannot be modified through APIs, this is useful when
+     * there are divergences between your own database and the RedCall database.
+     *
+     * @var bool|null
+     */
+    protected $locked;
+
+    /**
+     * Whether the structure is enabled or not.
+     *
+     * RedCall resources (categories, badges, structures, volunteers) may have relations with
+     * other sensible parts of the application (triggers, communications, messages, answers, etc.),
+     * so it may be safer to disable them instead of deleting them and creating database inconsistencies.
+     *
+     * In order to comply with the General Data Protection Regulation (GDPR), resources containing
+     * private information can be anonymized.
+     *
+     * @var bool|null
+     */
+    protected $enabled;
+
     public function __construct()
     {
         $this->childrenStructures = new CollectionFacade();
@@ -65,6 +89,8 @@ class StructureReadFacade extends StructureFacade
         $facade->setParentStructure(
             StructureResourceFacade::getExample()
         );
+        $facade->setLocked(false);
+        $facade->setEnabled(true);
 
         return $facade;
     }
@@ -113,6 +139,30 @@ class StructureReadFacade extends StructureFacade
     public function addChildrenStructure(StructureResourceFacade $facade)
     {
         $this->childrenStructures[] = $facade;
+
+        return $this;
+    }
+
+    public function getLocked() : ?bool
+    {
+        return $this->locked;
+    }
+
+    public function setLocked(?bool $locked) : StructureFacade
+    {
+        $this->locked = $locked;
+
+        return $this;
+    }
+
+    public function getEnabled() : ?bool
+    {
+        return $this->enabled;
+    }
+
+    public function setEnabled(?bool $enabled) : StructureFacade
+    {
+        $this->enabled = $enabled;
 
         return $this;
     }

@@ -5,6 +5,8 @@ namespace App\Transformer;
 use App\Entity\Badge;
 use App\Facade\Badge\BadgeFacade;
 use App\Facade\Badge\BadgeReadFacade;
+use App\Manager\BadgeManager;
+use App\Manager\CategoryManager;
 use App\Manager\VolunteerManager;
 use App\Security\Helper\Security;
 use Bundles\ApiBundle\Base\BaseTransformer;
@@ -16,6 +18,8 @@ class BadgeTransformer extends BaseTransformer
     {
         return [
             Security::class,
+            CategoryManager::class,
+            BadgeManager::class,
             VolunteerManager::class,
             ResourceTransformer::class,
         ];
@@ -34,13 +38,25 @@ class BadgeTransformer extends BaseTransformer
 
         $facade = new BadgeReadFacade();
         $facade->setExternalId($object->getExternalId());
-        $facade
-            ->setName($object->getName());
 
+        if ($object->getCategory()) {
+            $facade->setCategoryExternalId($object->getCategory()->getExternalId());
+        }
+
+        $facade->setName($object->getName());
         $facade->setDescription($object->getDescription());
         $facade->setVisibility($object->getVisibility());
         $facade->setRenderingPriority($object->getRenderingPriority());
         $facade->setTriggeringPriority($object->getTriggeringPriority());
+
+        if ($object->getParent()) {
+            $facade->setCoveredByExternalId($object->getParent()->getExternalId());
+        }
+
+        if ($object->getSynonym()) {
+            $facade->setReplacedByExternalId($object->getSynonym()->getExternalId());
+        }
+
         $facade->setEnabled($object->isEnabled());
 
         $facade->setLocked($object->isLocked());
@@ -94,6 +110,15 @@ class BadgeTransformer extends BaseTransformer
             $object->setExternalId($facade->getExternalId());
         }
 
+        if (null !== $facade->getCategoryExternalId()) {
+            $category = $this->getCategoryManager()->findOneByExternalId(
+                $this->getSecurity()->getPlatform(),
+                $facade->getCategoryExternalId()
+            );
+
+            $object->setCategory($category);
+        }
+
         if (null !== $facade->getName()) {
             $object->setName($facade->getName());
         }
@@ -114,12 +139,22 @@ class BadgeTransformer extends BaseTransformer
             $object->setTriggeringPriority($facade->getTriggeringPriority());
         }
 
-        if (null !== $facade->getLocked()) {
-            $object->setLocked($facade->getLocked());
+        if (null !== $facade->getCoveredByExternalId()) {
+            $parent = $this->getBadgeManager()->findOneByExternalId(
+                $this->getSecurity()->getPlatform(),
+                $facade->getCoveredByExternalId()
+            );
+
+            $object->setParent($parent);
         }
 
-        if (null !== $facade->getEnabled()) {
-            $object->setEnabled($facade->getEnabled());
+        if (null !== $facade->getReplacedByExternalId()) {
+            $synonym = $this->getBadgeManager()->findOneByExternalId(
+                $this->getSecurity()->getPlatform(),
+                $facade->getReplacedByExternalId()
+            );
+
+            $object->setSynonym($synonym);
         }
 
         return $object;
@@ -128,6 +163,16 @@ class BadgeTransformer extends BaseTransformer
     private function getSecurity() : Security
     {
         return $this->get(Security::class);
+    }
+
+    private function getCategoryManager() : CategoryManager
+    {
+        return $this->get(CategoryManager::class);
+    }
+
+    private function getBadgeManager() : BadgeManager
+    {
+        return $this->get(BadgeManager::class);
     }
 
     private function getVolunteerManager() : VolunteerManager

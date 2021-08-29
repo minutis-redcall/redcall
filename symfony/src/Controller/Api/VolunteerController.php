@@ -7,6 +7,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
+ * A volunteer is a physical person belonging to the Red Cross.
+ *
  * @Route("/api/volunteer", name="api_volunteer_")
  */
 class VolunteerController extends AbstractController

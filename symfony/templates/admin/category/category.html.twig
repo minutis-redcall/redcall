@@ -82,7 +82,9 @@
         {% endif %}
 
         <div class="float-right">
-            <span style="color:lightgray;">ID: {{ category.externalId }}</span>
+            <span style="color:lightgray;">
+                ID: <a href="#" style="color:lightgray;" class="copy-to-clipboard">{{ category.externalId }}</a>
+            </span>
         </div>
     </div>
 </div>

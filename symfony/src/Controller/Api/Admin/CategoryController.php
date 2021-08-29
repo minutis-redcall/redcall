@@ -5,13 +5,16 @@ namespace App\Controller\Api\Admin;
 use App\Entity\Badge;
 use App\Entity\Category;
 use App\Enum\Crud;
+use App\Enum\Resource;
+use App\Enum\ResourceOwnership;
 use App\Facade\Badge\BadgeReadFacade;
 use App\Facade\Badge\BadgeReferenceCollectionFacade;
 use App\Facade\Badge\BadgeReferenceFacade;
 use App\Facade\Category\CategoryFacade;
 use App\Facade\Category\CategoryFiltersFacade;
+use App\Facade\Category\CategoryReadFacade;
+use App\Facade\Generic\PageFilterFacade;
 use App\Facade\Generic\UpdateStatusFacade;
-use App\Facade\PageFilterFacade;
 use App\Manager\BadgeManager;
 use App\Manager\CategoryManager;
 use App\Transformer\BadgeTransformer;
@@ -79,10 +82,10 @@ class CategoryController extends BaseController
      * List all badge categories.
      *
      * @Endpoint(
-     *   priority = 10,
+     *   priority = 100,
      *   request  = @Facade(class     = CategoryFiltersFacade::class),
      *   response = @Facade(class     = QueryBuilderFacade::class,
-     *                      decorates = @Facade(class = CategoryFacade::class))
+     *                      decorates = @Facade(class = CategoryReadFacade::class))
      * )
      * @Route(name="records", methods={"GET"})
      */
@@ -102,7 +105,7 @@ class CategoryController extends BaseController
      * Create a new badge category.
      *
      * @Endpoint(
-     *   priority = 11,
+     *   priority = 105,
      *   request  = @Facade(class     = CategoryFacade::class),
      *   response = @Facade(class     = HttpCreatedFacade::class)
      * )
@@ -125,8 +128,8 @@ class CategoryController extends BaseController
      * Get a badge category.
      *
      * @Endpoint(
-     *   priority = 12,
-     *   response = @Facade(class = CategoryFacade::class)
+     *   priority = 110,
+     *   response = @Facade(class = CategoryReadFacade::class)
      * )
      * @Route(name="read", path="/{categoryId}", methods={"GET"})
      * @Entity("category", expr="repository.findOneByExternalIdAndCurrentPlatform(categoryId)")
@@ -141,7 +144,7 @@ class CategoryController extends BaseController
      * Update a badge category.
      *
      * @Endpoint(
-     *   priority = 13,
+     *   priority = 115,
      *   request  = @Facade(class = CategoryFacade::class),
      *   response = @Facade(class = HttpNoContentFacade::class)
      * )
@@ -167,7 +170,7 @@ class CategoryController extends BaseController
      * Delete a badge category.
      *
      * @Endpoint(
-     *   priority = 14,
+     *   priority = 120,
      *   response = @Facade(class = HttpNoContentFacade::class)
      * )
      * @Route(name="delete", path="/{categoryId}", methods={"DELETE"})
@@ -189,13 +192,13 @@ class CategoryController extends BaseController
      * List badges in a given category.
      *
      * @Endpoint(
-     *   priority = 15,
+     *   priority = 125,
      *   request  = @Facade(class     = PageFilterFacade::class),
      *   response = @Facade(class     = QueryBuilderFacade::class,
      *                      decorates = @Facade(class = BadgeReadFacade::class))
      * )
-     * @Route(name="badge_records", path="/badge/{categoryId}", methods={"GET"})
-     * @Entity("category", expr="repository.findOneByExternalIdAndCurrentPlatform(categoryId)")
+     * @Route(name="badge_records", path="/{externalId}/badge", methods={"GET"})
+     * @Entity("category", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
      * @IsGranted("CATEGORY", subject="category")
      */
     public function badgeRecords(Category $category, PageFilterFacade $page) : FacadeInterface
@@ -211,91 +214,143 @@ class CategoryController extends BaseController
      * Add a list of badges in the given category.
      *
      * @Endpoint(
-     *   priority = 16,
+     *   priority = 130,
      *   request  = @Facade(class     = BadgeReferenceCollectionFacade::class,
      *                      decorates = @Facade(class = BadgeReferenceFacade::class)),
      *   response = @Facade(class     = CollectionFacade::class,
      *                      decorates = @Facade(class = UpdateStatusFacade::class))
      * )
-     * @Route(name="badge_add", path="/badge/{categoryId}", methods={"POST"})
-     * @Entity("category", expr="repository.findOneByExternalIdAndCurrentPlatform(categoryId)")
+     * @Route(name="badge_add", path="/{externalId}/badge", methods={"POST"})
+     * @Entity("category", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
      * @IsGranted("CATEGORY", subject="category")
      */
     public function badgeAdd(Category $category, BadgeReferenceCollectionFacade $collection) : FacadeInterface
     {
-        return $this->bulkUpdateBadges($category, $collection, Crud::CREATE());
+        return $this->updateResourceCollection(
+            Crud::CREATE(),
+            Resource::CATEGORY(),
+            $category,
+            Resource::BADGE(),
+            $collection,
+            'badge',
+            ResourceOwnership::KNOWN_RESOURCE(),
+            ResourceOwnership::RESOLVED_RESOURCE()
+        );
     }
 
     /**
      * Delete a list of badges from the given category.
      *
      * @Endpoint(
-     *   priority = 17,
+     *   priority = 135,
      *   request  = @Facade(class     = BadgeReferenceCollectionFacade::class,
      *                      decorates = @Facade(class = BadgeReferenceFacade::class)),
      *   response = @Facade(class     = CollectionFacade::class,
      *                      decorates = @Facade(class = UpdateStatusFacade::class))
      * )
-     * @Route(name="badge_remove", path="/badge/{categoryId}", methods={"DELETE"})
-     * @Entity("category", expr="repository.findOneByExternalIdAndCurrentPlatform(categoryId)")
+     * @Route(name="badge_remove", path="/{externalId}/badge", methods={"DELETE"})
+     * @Entity("category", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
      * @IsGranted("CATEGORY", subject="category")
      */
-    public function badgeDelete(Category $category, BadgeReferenceCollectionFacade $externalIds) : FacadeInterface
+    public function badgeDelete(Category $category, BadgeReferenceCollectionFacade $collection) : FacadeInterface
     {
-        return $this->bulkUpdateBadges($category, $externalIds, Crud::DELETE());
+        return $this->updateResourceCollection(
+            Crud::DELETE(),
+            Resource::CATEGORY(),
+            $category,
+            Resource::BADGE(),
+            $collection,
+            'badge',
+            ResourceOwnership::KNOWN_RESOURCE(),
+            ResourceOwnership::RESOLVED_RESOURCE()
+        );
     }
 
-    private function bulkUpdateBadges(Category $category, BadgeReferenceCollectionFacade $collection, Crud $action)
+    /**
+     * Lock a category.
+     *
+     * @Endpoint(
+     *   priority = 140,
+     *   response = @Facade(class = HttpNoContentFacade::class)
+     * )
+     * @Route(name="lock", path="/{externalId}/lock", methods={"PUT"})
+     * @Entity("category", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
+     * @IsGranted("CATEGORY", subject="category")
+     */
+    public function lock(Category $category)
     {
-        $response = new CollectionFacade();
-        $changes  = 0;
+        $category->setLocked(true);
 
-        foreach ($collection->getEntries() as $entry) {
-            /** @var BadgeReferenceFacade $entry */
-            $badge = $this->badgeManager->findOneByExternalId($this->getPlatform(), $entry->getExternalId());
+        $this->categoryManager->save($category);
 
-            if (null === $badge) {
-                $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Badge does not exist');
-                continue;
-            }
+        return new HttpNoContentFacade();
+    }
 
-            if (!$this->isGranted('BADGE', $badge)) {
-                $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Access denied');
-                continue;
-            }
+    /**
+     * Unlock a category.
+     *
+     * @Endpoint(
+     *   priority = 145,
+     *   response = @Facade(class = HttpNoContentFacade::class)
+     * )
+     * @Route(name="unlock", path="/{externalId}/unlock", methods={"PUT"})
+     * @Entity("category", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
+     * @IsGranted("CATEGORY", subject="category")
+     */
+    public function unlock(Category $category)
+    {
+        $category->setLocked(false);
 
-            switch ($action) {
-                case Crud::CREATE():
-                    if ($category->getBadges()->contains($badge)) {
-                        $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Category already contains that badge');
-                        continue 2;
-                    }
+        $this->categoryManager->save($category);
 
-                    $category->addBadge($badge);
-                    $this->badgeManager->save($badge);
+        return new HttpNoContentFacade();
+    }
 
-                    break;
-                case Crud::DELETE():
-                    if (!$category->getBadges()->contains($badge)) {
-                        $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Category does not contain that badge');
-                        continue 2;
-                    }
+    /**
+     * Disable a category.
+     *
+     * @Endpoint(
+     *   priority = 150,
+     *   response = @Facade(class = HttpNoContentFacade::class)
+     * )
+     * @Route(name="disable", path="/{externalId}/disable", methods={"PUT"})
+     * @Entity("category", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
+     * @IsGranted("CATEGORY", subject="category")
+     */
+    public function disable(Category $category)
+    {
+        $this->validate($category, [
+            new Unlocked(),
+        ]);
 
-                    $category->removeBadge($badge);
-                    $this->badgeManager->save($badge);
+        $category->setEnabled(false);
 
-                    break;
-            }
+        $this->categoryManager->save($category);
 
-            $changes++;
+        return new HttpNoContentFacade();
+    }
 
-            $response[] = new UpdateStatusFacade($entry->getExternalId());
-        }
+    /**
+     * Enable a category.
+     *
+     * @Endpoint(
+     *   priority = 155,
+     *   response = @Facade(class = HttpNoContentFacade::class)
+     * )
+     * @Route(name="enable", path="/{externalId}/enable", methods={"PUT"})
+     * @Entity("category", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
+     * @IsGranted("CATEGORY", subject="category")
+     */
+    public function enable(Category $category)
+    {
+        $this->validate($category, [
+            new Unlocked(),
+        ]);
 
-        if ($changes) {
-            $this->categoryManager->save($category);
-        }
+        $category->setEnabled(true);
 
-        return $response;
+        $this->categoryManager->save($category);
+
+        return new HttpNoContentFacade();
     }
 }

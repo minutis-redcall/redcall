@@ -68,6 +68,14 @@ class UserRepository extends AbstractUserRepository implements UserRepositoryInt
         ]);
     }
 
+    public function findOneByUsernameAndPlatform(string $platform, string $username) : ?User
+    {
+        return $this->findOneBy([
+            'platform' => $platform,
+            'username' => $username,
+        ]);
+    }
+
     public function findByUsernameAndCurrentPlatform(string $username) : ?User
     {
         return $this->findOneBy([
@@ -137,6 +145,35 @@ class UserRepository extends AbstractUserRepository implements UserRepositoryInt
                     ->setParameter('platform', $structure->getPlatform())
                     ->getQuery()
                     ->getSingleScalarResult();
+    }
+
+    public function searchInStructureQueryBuilder(string $platform,
+        Structure $structure,
+        ?string $criteria,
+        bool $onlyAdmins,
+        bool $onlyDevelopers) : QueryBuilder
+    {
+        $qb = $this->createTrustedUserQueryBuilder()
+                   ->join('u.structures', 's')
+                   ->andWhere('s.id = :structure')
+                   ->setParameter('structure', $structure)
+                   ->andWhere('u.platform = :platform')
+                   ->setParameter('platform', $platform);
+
+        if ($criteria) {
+            $qb->andWhere('s.externalId LIKE :criteria OR s.name LIKE :criteria')
+               ->setParameter('criteria', sprintf('%%%s%%', str_replace(' ', '%', $criteria)));
+        }
+
+        if ($onlyAdmins) {
+            $qb->andWhere('u.isAdmin = true');
+        }
+
+        if ($onlyDevelopers) {
+            $qb->andWhere('u.isDeveloper = true');
+        }
+
+        return $qb;
     }
 }
 

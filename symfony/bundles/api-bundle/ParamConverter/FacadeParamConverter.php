@@ -55,7 +55,7 @@ class FacadeParamConverter implements ParamConverterInterface
                 'json'
             );
         } catch (ExceptionInterface $e) {
-            throw new BadRequestHttpException('Bad request');
+            throw new BadRequestHttpException('Unable to deserialize request parameters into the facade', $e);
         }
 
         $violations = $this->validator->validate($facade);

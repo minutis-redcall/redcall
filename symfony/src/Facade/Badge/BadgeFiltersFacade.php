@@ -2,7 +2,7 @@
 
 namespace App\Facade\Badge;
 
-use App\Facade\PageFilterFacade;
+use App\Facade\Generic\PageFilterFacade;
 use Bundles\ApiBundle\Annotation\Facade;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
 

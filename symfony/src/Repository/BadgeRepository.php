@@ -157,7 +157,9 @@ class BadgeRepository extends BaseRepository
                 $qb->expr()->orX(
                     'b.name LIKE :criteria',
                     'b.description LIKE :criteria',
-                    'c.name LIKE :criteria'
+                    'b.externalId LIKE :criteria',
+                    'c.name LIKE :criteria',
+                    'c.externalId LIKE :criteria'
                 )
             )
             ->setParameter('criteria', sprintf('%%%s%%', str_replace(' ', '%', $criteria)));

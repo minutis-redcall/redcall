@@ -101,11 +101,7 @@ class StructuresController extends BaseController
             $enabled  = $search->get('only_enabled')->getData();
         }
 
-        if ($this->isGranted('ROLE_ADMIN')) {
-            $queryBuilder = $this->structureManager->searchAllQueryBuilder($this->getPlatform(), $criteria, $enabled);
-        } else {
-            $queryBuilder = $this->structureManager->searchForCurrentUserQueryBuilder($criteria, $enabled);
-        }
+        $queryBuilder = $this->structureManager->searchQueryBuilder($criteria, $enabled);
 
         $redcallUsers = $this->structureManager->countRedCallUsersInPager(
             $this->paginationManager->getPager(

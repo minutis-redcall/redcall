@@ -27,6 +27,14 @@ class CategoryRepository extends BaseRepository
         parent::__construct($registry, Category::class);
     }
 
+    public function findOneByExternalId(string $platform, string $externalId) : ?Category
+    {
+        return $this->findOneBy([
+            'platform'   => $platform,
+            'externalId' => $externalId,
+        ]);
+    }
+
     public function findOneByExternalIdAndCurrentPlatform(string $externalId) : ?Category
     {
         return $this->findOneBy([
@@ -63,7 +71,8 @@ class CategoryRepository extends BaseRepository
         $qb
             ->andWhere(
                 $qb->expr()->orX(
-                    'c.name LIKE :criteria'
+                    'c.name LIKE :criteria',
+                    'c.externalId LIKE :criteria'
                 )
             )
             ->setParameter('criteria', sprintf('%%%s%%', str_replace(' ', '%', $criteria)));

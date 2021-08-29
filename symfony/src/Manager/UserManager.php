@@ -4,6 +4,7 @@ namespace App\Manager;
 
 use App\Entity\Structure;
 use App\Entity\User;
+use App\Enum\Resource;
 use App\Repository\UserRepository;
 use Bundles\PasswordLoginBundle\Manager\UserManager as BaseUserManager;
 use Doctrine\ORM\QueryBuilder;
@@ -145,5 +146,22 @@ class UserManager extends BaseUserManager
     public function getUserCountInStructure(Structure $structure) : int
     {
         return $this->userRepository->getUserCountInStructure($structure);
+    }
+
+    /**
+     * @see Resource::getProviderMethod()
+     */
+    public function findOneByUsernameAndPlatform(string $platform, string $username) : ?User
+    {
+        return $this->userRepository->findOneByUsernameAndPlatform($platform, $username);
+    }
+
+    public function searchInStructureQueryBuilder(string $platform,
+        Structure $structure,
+        ?string $criteria,
+        bool $onlyAdmins,
+        bool $onlyDevelopers) : QueryBuilder
+    {
+        return $this->userRepository->searchInStructureQueryBuilder($platform, $structure, $criteria, $onlyAdmins, $onlyDevelopers);
     }
 }

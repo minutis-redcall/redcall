@@ -8,6 +8,7 @@ use App\Facade\Resource\StructureResourceFacade;
 use App\Facade\Resource\VolunteerResourceFacade;
 use App\Facade\User\UserFacade;
 use App\Facade\User\UserReadFacade;
+use App\Manager\VolunteerManager;
 use App\Security\Helper\Security;
 use Bundles\ApiBundle\Base\BaseTransformer;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
@@ -18,6 +19,7 @@ class UserTransformer extends BaseTransformer
     {
         return [
             Security::class,
+            VolunteerManager::class,
         ];
     }
 
@@ -35,6 +37,11 @@ class UserTransformer extends BaseTransformer
         $facade = new UserReadFacade();
 
         $facade->setIdentifier($object->getUserIdentifier());
+
+        if ($object->getExternalId()) {
+            $facade->setVolunteerExternalId($object->getExternalId());
+        }
+
         $facade->setVerified($object->isVerified());
         $facade->setTrusted($object->isTrusted());
         $facade->setDeveloper($object->isDeveloper());
@@ -58,12 +65,16 @@ class UserTransformer extends BaseTransformer
         }
         $facade->setStructures($structures);
 
+        $facade->setLocked($object->isLocked());
+
         return $facade;
     }
 
     /**
      * @param UserFacade $facade
      * @param User|null  $object
+     *
+     * @return User
      */
     public function reconstruct(FacadeInterface $facade, $object = null)
     {
@@ -75,6 +86,15 @@ class UserTransformer extends BaseTransformer
 
         if (null !== $facade->getIdentifier()) {
             $user->setUsername($facade->getIdentifier());
+        }
+
+        if (null !== $facade->getVolunteerExternalId()) {
+            $volunteer = $this->getVolunteerManager()->findOneByExternalId(
+                $this->getSecurity()->getPlatform(),
+                $facade->getVolunteerExternalId()
+            );
+
+            $object->setVolunteer($volunteer);
         }
 
         if (null !== $facade->isVerified()) {
@@ -103,5 +123,10 @@ class UserTransformer extends BaseTransformer
     private function getSecurity() : Security
     {
         return $this->get(Security::class);
+    }
+
+    private function getVolunteerManager() : VolunteerManager
+    {
+        return $this->get(VolunteerManager::class);
     }
 }

@@ -31,6 +31,11 @@ class CategoryManager
         return $this->categoryRepository->find($id);
     }
 
+    public function findOneByExternalId(string $platform, string $externalId) : ?Category
+    {
+        return $this->categoryRepository->findOneByExternalId($platform, $externalId);
+    }
+
     public function findOneByExternalIdAndCurrentPlatform(string $externalId) : ?Category
     {
         return $this->categoryRepository->findOneByExternalIdAndCurrentPlatform($externalId);

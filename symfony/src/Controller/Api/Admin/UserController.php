@@ -4,17 +4,17 @@ namespace App\Controller\Api\Admin;
 
 use App\Entity\Structure;
 use App\Entity\User;
-use App\Entity\Volunteer;
 use App\Enum\Crud;
+use App\Enum\Resource;
+use App\Enum\ResourceOwnership;
+use App\Facade\Generic\PageFilterFacade;
 use App\Facade\Generic\UpdateStatusFacade;
-use App\Facade\PageFilterFacade;
-use App\Facade\Resource\VolunteerResourceFacade;
+use App\Facade\Resource\StructureResourceFacade;
 use App\Facade\Structure\StructureReferenceCollectionFacade;
 use App\Facade\Structure\StructureReferenceFacade;
 use App\Facade\User\UserFacade;
 use App\Facade\User\UserFiltersFacade;
 use App\Facade\User\UserReadFacade;
-use App\Manager\StructureManager;
 use App\Manager\UserManager;
 use App\Transformer\ResourceTransformer;
 use App\Transformer\UserTransformer;
@@ -26,7 +26,6 @@ use Bundles\ApiBundle\Contracts\FacadeInterface;
 use Bundles\ApiBundle\Model\Facade\CollectionFacade;
 use Bundles\ApiBundle\Model\Facade\Http\HttpCreatedFacade;
 use Bundles\ApiBundle\Model\Facade\Http\HttpNoContentFacade;
-use Bundles\ApiBundle\Model\Facade\Http\HttpNotFoundFacade;
 use Bundles\ApiBundle\Model\Facade\QueryBuilderFacade;
 use Bundles\PasswordLoginBundle\Manager\PasswordRecoveryManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
@@ -63,11 +62,6 @@ class UserController extends BaseController
     private $resourceTransformer;
 
     /**
-     * @var StructureManager
-     */
-    private $structureManager;
-
-    /**
      * @var PasswordRecoveryManager
      */
     private $passwordRecoveryManager;
@@ -75,13 +69,11 @@ class UserController extends BaseController
     public function __construct(UserManager $userManager,
         UserTransformer $userTransformer,
         ResourceTransformer $resourceTransformer,
-        StructureManager $structureManager,
         PasswordRecoveryManager $passwordRecoveryManager)
     {
         $this->userManager             = $userManager;
         $this->userTransformer         = $userTransformer;
         $this->resourceTransformer     = $resourceTransformer;
-        $this->structureManager        = $structureManager;
         $this->passwordRecoveryManager = $passwordRecoveryManager;
     }
 
@@ -89,7 +81,7 @@ class UserController extends BaseController
      * List all users.
      *
      * @Endpoint(
-     *   priority = 200,
+     *   priority = 300,
      *   request  = @Facade(class     = UserFiltersFacade::class),
      *   response = @Facade(class     = QueryBuilderFacade::class,
      *                      decorates = @Facade(class = UserReadFacade::class))
@@ -113,7 +105,7 @@ class UserController extends BaseController
      * Create a new user.
      *
      * @Endpoint(
-     *   priority = 203,
+     *   priority = 305,
      *   request  = @Facade(class     = UserFacade::class),
      *   response = @Facade(class     = HttpCreatedFacade::class)
      * )
@@ -137,7 +129,7 @@ class UserController extends BaseController
      * Get a user.
      *
      * @Endpoint(
-     *   priority = 206,
+     *   priority = 310,
      *   response = @Facade(class = UserReadFacade::class)
      * )
      * @Route(name="read", path="/{email}", methods={"GET"})
@@ -153,7 +145,7 @@ class UserController extends BaseController
      * Update a user.
      *
      * @Endpoint(
-     *   priority = 209,
+     *   priority = 315,
      *   request  = @Facade(class = UserFacade::class),
      *   response = @Facade(class = HttpNoContentFacade::class)
      * )
@@ -163,6 +155,8 @@ class UserController extends BaseController
      */
     public function update(User $user, UserFacade $facade)
     {
+        $olderExternalId = $user->getExternalId();
+
         $user = $this->userTransformer->reconstruct($facade, $user);
 
         $this->validate($user, [
@@ -173,6 +167,10 @@ class UserController extends BaseController
 
         $this->userManager->save($user);
 
+        if ($olderExternalId !== $user->getExternalId()) {
+            $this->userManager->changeVolunteer($user, $this->getPlatform(), $user->getExternalId());
+        }
+
         return new HttpNoContentFacade();
     }
 
@@ -180,7 +178,7 @@ class UserController extends BaseController
      * Delete a user.
      *
      * @Endpoint(
-     *   priority = 212,
+     *   priority = 320,
      *   response = @Facade(class = HttpNoContentFacade::class)
      * )
      * @Route(name="delete", path="/{email}", methods={"DELETE"})
@@ -202,12 +200,12 @@ class UserController extends BaseController
      * List structures that a user is responsible for / can trigger.
      *
      * @Endpoint(
-     *   priority = 215,
+     *   priority = 325,
      *   request  = @Facade(class     = PageFilterFacade::class),
      *   response = @Facade(class     = QueryBuilderFacade::class,
-     *                      decorates = @Facade(class = StructureReferenceFacade::class))
+     *                      decorates = @Facade(class = StructureResourceFacade::class))
      * )
-     * @Route(name="structure_records", path="/structure/{email}", methods={"GET"})
+     * @Route(name="structure_records", path="/{email}/structure", methods={"GET"})
      * @Entity("user", expr="repository.findByUsernameAndCurrentPlatform(email)")
      * @IsGranted("USER", subject="user")
      */
@@ -224,13 +222,13 @@ class UserController extends BaseController
      * Grant one or several structures to the user.
      *
      * @Endpoint(
-     *   priority = 218,
+     *   priority = 330,
      *   request  = @Facade(class     = StructureReferenceCollectionFacade::class,
      *                      decorates = @Facade(class = StructureReferenceFacade::class)),
      *   response = @Facade(class     = CollectionFacade::class,
      *                      decorates = @Facade(class = UpdateStatusFacade::class))
      * )
-     * @Route(name="structure_add", path="/structure/{email}", methods={"POST"})
+     * @Route(name="structure_add", path="/{email}/structure", methods={"POST"})
      * @Entity("user", expr="repository.findByUsernameAndCurrentPlatform(email)")
      * @IsGranted("USER", subject="user")
      */
@@ -240,20 +238,29 @@ class UserController extends BaseController
             new Unlocked(),
         ]);
 
-        return $this->bulkUpdateStructures($user, $collection, Crud::CREATE());
+        return $this->updateResourceCollection(
+            Crud::CREATE(),
+            Resource::USER(),
+            $user,
+            Resource::STRUCTURE(),
+            $collection,
+            'structure',
+            ResourceOwnership::KNOWN_RESOURCE(),
+            ResourceOwnership::KNOWN_RESOURCE()
+        );
     }
 
     /**
      * Remove one or several structures from user's scope.
      *
      * @Endpoint(
-     *   priority = 221,
+     *   priority = 335,
      *   request  = @Facade(class     = StructureReferenceCollectionFacade::class,
      *                      decorates = @Facade(class = StructureReferenceFacade::class)),
      *   response = @Facade(class     = CollectionFacade::class,
      *                      decorates = @Facade(class = UpdateStatusFacade::class))
      * )
-     * @Route(name="structure_remove", path="/structure/{email}", methods={"DELETE"})
+     * @Route(name="structure_remove", path="/{email}/structure", methods={"DELETE"})
      * @Entity("user", expr="repository.findByUsernameAndCurrentPlatform(email)")
      * @IsGranted("USER", subject="user")
      */
@@ -263,85 +270,26 @@ class UserController extends BaseController
             new Unlocked(),
         ]);
 
-        return $this->bulkUpdateStructures($user, $collection, Crud::DELETE());
-    }
-
-    /**
-     * Get volunteer tied to the user.
-     *
-     * @Endpoint(
-     *   priority = 224,
-     *   response = @Facade(class = VolunteerResourceFacade::class)
-     * )
-     * @Route(name="volunteer_record", path="/volunteer/{email}", methods={"GET"})
-     * @Entity("user", expr="repository.findByUsernameAndCurrentPlatform(email)")
-     * @IsGranted("USER", subject="user")
-     */
-    public function volunteerRecord(User $user)
-    {
-        if (!$user->getVolunteer()) {
-            return new HttpNotFoundFacade();
-        }
-
-        return $this->resourceTransformer->expose(
-            $user->getVolunteer()
+        return $this->updateResourceCollection(
+            Crud::DELETE(),
+            Resource::USER(),
+            $user,
+            Resource::STRUCTURE(),
+            $collection,
+            'structure',
+            ResourceOwnership::KNOWN_RESOURCE(),
+            ResourceOwnership::KNOWN_RESOURCE()
         );
-    }
-
-    /**
-     * Attach a volunteer to the given user.
-     *
-     * @Endpoint(
-     *   priority = 227,
-     *   response = @Facade(class = HttpNoContentFacade::class)
-     * )
-     * @Route(name="volunteer_set", path="/volunteer/{email}/{volunteerExternalId}", methods={"POST"})
-     * @Entity("user", expr="repository.findByUsernameAndCurrentPlatform(email)")
-     * @IsGranted("USER", subject="user")
-     * @Entity("volunteer", expr="repository.findOneByExternalIdAndCurrentPlatform(volunteerExternalId)")
-     * @IsGranted("VOLUNTEER", subject="volunteer")
-     */
-    public function volunteerSet(User $user, Volunteer $volunteer)
-    {
-        $this->validate($user, [
-            new Unlocked(),
-        ]);
-
-        $this->userManager->changeVolunteer($user, $this->getPlatform(), $volunteer->getExternalId());
-
-        return new HttpNoContentFacade();
-    }
-
-    /**
-     * Remove volunteer tied to the user.
-     *
-     * @Endpoint(
-     *   priority = 230,
-     *   response = @Facade(class = HttpNoContentFacade::class)
-     * )
-     * @Route(name="volunteer_clear", path="/volunteer/{email}", methods={"DELETE"})
-     * @Entity("user", expr="repository.findByUsernameAndCurrentPlatform(email)")
-     * @IsGranted("USER", subject="user")
-     */
-    public function volunteerClear(User $user)
-    {
-        $this->validate($user, [
-            new Unlocked(),
-        ]);
-
-        $this->userManager->changeVolunteer($user);
-
-        return new HttpNoContentFacade();
     }
 
     /**
      * Send a "password recovery" email to the given user.
      *
      * @Endpoint(
-     *   priority = 233,
+     *   priority = 340,
      *   response = @Facade(class = HttpNoContentFacade::class)
      * )
-     * @Route(name="password_recovery", path="/password-recovery/{email}", methods={"PUT"})
+     * @Route(name="password_recovery", path="{email}/password-recovery", methods={"PUT"})
      * @Entity("user", expr="repository.findByUsernameAndCurrentPlatform(email)")
      * @IsGranted("USER", subject="user")
      */
@@ -350,6 +298,46 @@ class UserController extends BaseController
         $this->passwordRecoveryManager->sendPasswordRecoveryEmail(
             $user->getUsername()
         );
+
+        return new HttpNoContentFacade();
+    }
+
+    /**
+     * Lock a user.
+     *
+     * @Endpoint(
+     *   priority = 345,
+     *   response = @Facade(class = HttpNoContentFacade::class)
+     * )
+     * @Route(name="lock", path="/{email}/lock", methods={"PUT"})
+     * @Entity("user", expr="repository.findByUsernameAndCurrentPlatform(email)")
+     * @IsGranted("USER", subject="user")
+     */
+    public function lock(User $user)
+    {
+        $user->setLocked(true);
+
+        $this->userManager->save($user);
+
+        return new HttpNoContentFacade();
+    }
+
+    /**
+     * Unlock a user.
+     *
+     * @Endpoint(
+     *   priority = 350,
+     *   response = @Facade(class = HttpNoContentFacade::class)
+     * )
+     * @Route(name="unlock", path="/{email}/unlock", methods={"PUT"})
+     * @Entity("user", expr="repository.findByUsernameAndCurrentPlatform(email)")
+     * @IsGranted("USER", subject="user")
+     */
+    public function unlock(User $user)
+    {
+        $user->setLocked(false);
+
+        $this->userManager->save($user);
 
         return new HttpNoContentFacade();
     }
@@ -372,65 +360,5 @@ class UserController extends BaseController
                 $context->addViolation('Only root users can set other users as root or update them');
             }
         });
-    }
-
-    private function bulkUpdateStructures(User $user, StructureReferenceCollectionFacade $collection, Crud $action)
-    {
-        $response = new CollectionFacade();
-        $changes  = 0;
-
-        foreach ($collection->getEntries() as $entry) {
-            /** @var StructureReferenceFacade $entry */
-            $structure = $this->structureManager->findOneByExternalId($this->getPlatform(), $entry->getExternalId());
-
-            if (null === $structure) {
-                $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Structure does not exist');
-                continue;
-            }
-
-            if (!$this->isGranted('STRUCTURE', $structure)) {
-                $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'Access denied');
-                continue;
-            }
-
-            switch ($action) {
-                case Crud::CREATE():
-                    if ($user->hasStructure($structure)) {
-                        $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'User already have that structure');
-                        continue 2;
-                    }
-
-                    $structuresToAdd = $this->structureManager->findCallableStructuresForStructure($this->getPlatform(), $structure);
-                    foreach ($structuresToAdd as $structureToAdd) {
-                        $user->addStructure($structureToAdd);
-                    }
-
-                    $count      = count($structuresToAdd);
-                    $response[] = new UpdateStatusFacade($entry->getExternalId(), true, sprintf('Added %d structure(s)', $count));
-                    $changes    += $count;
-
-                    break;
-                case Crud::DELETE():
-                    if (!$user->hasStructure($structure)) {
-                        $response[] = new UpdateStatusFacade($entry->getExternalId(), false, 'User does not have that structure');
-                        continue 2;
-                    }
-
-                    $user->removeStructure($structure);
-
-                    $response[] = new UpdateStatusFacade($entry->getExternalId());
-                    $changes++;
-
-                    break;
-            }
-
-            break;
-        }
-
-        if ($changes) {
-            $this->userManager->save($user);
-        }
-
-        return $response;
     }
 }
