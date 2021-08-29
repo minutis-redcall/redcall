@@ -37,9 +37,11 @@ class UserFacade implements FacadeInterface
      * but not an operations manager) then it is not necessary to attach a volunteer
      * to it.
      *
+     * In order to unbind a volunteer from a user, use boolean false.
+     *
      * @Assert\Length(max = 64)
      *
-     * @var string|null
+     * @var string|bool|null
      */
     protected $volunteerExternalId;
 
@@ -128,12 +130,18 @@ class UserFacade implements FacadeInterface
         return $this;
     }
 
-    public function getVolunteerExternalId() : ?string
+    /**
+     * @return bool|string|null
+     */
+    public function getVolunteerExternalId()
     {
         return $this->volunteerExternalId;
     }
 
-    public function setVolunteerExternalId(?string $volunteerExternalId) : UserFacade
+    /**
+     * @param string|bool|null $volunteerExternalId
+     */
+    public function setVolunteerExternalId($volunteerExternalId) : UserFacade
     {
         $this->volunteerExternalId = $volunteerExternalId;
 

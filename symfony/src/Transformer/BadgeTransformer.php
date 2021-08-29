@@ -116,9 +116,7 @@ class BadgeTransformer extends BaseTransformer
                 $facade->getCategoryExternalId()
             );
 
-            if ($category) {
-                $object->setCategory($category);
-            }
+            $object->setCategory($category);
         }
 
         if (null !== $facade->getName()) {
@@ -147,9 +145,7 @@ class BadgeTransformer extends BaseTransformer
                 $facade->getCoveredByExternalId()
             );
 
-            if ($parent) {
-                $object->setParent($parent);
-            }
+            $object->setParent($parent);
         }
 
         if (null !== $facade->getReplacedByExternalId()) {
@@ -158,9 +154,7 @@ class BadgeTransformer extends BaseTransformer
                 $facade->getReplacedByExternalId()
             );
 
-            if ($synonym) {
-                $object->setSynonym($synonym);
-            }
+            $object->setSynonym($synonym);
         }
 
         if (null !== $facade->getLocked()) {

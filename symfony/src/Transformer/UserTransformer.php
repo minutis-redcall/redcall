@@ -92,9 +92,7 @@ class UserTransformer extends BaseTransformer
                 $facade->getVolunteerExternalId()
             );
 
-            if ($volunteer) {
-                $object->setVolunteer($volunteer);
-            }
+            $object->setVolunteer($volunteer);
         }
 
         if (null !== $facade->isVerified()) {

@@ -27,6 +27,8 @@ class BadgeFacade implements FacadeInterface
      * - first aider level 1, 2, 3 are all first aid trainings
      * - ambulance, car and truck are vehicles
      *
+     * In order to remove the category, set an arbitrary non-null value.
+     *
      * @Assert\Length(max = 64)
      *
      * @var string|null
@@ -103,6 +105,8 @@ class BadgeFacade implements FacadeInterface
      * Another example, If someone has "advanced first aider" level (PSE2), (s)he
      * must have "intermediate first aider" level (PSE1).
      *
+     * If you want to remove the parent association, set an arbitrary non-null value.
+     *
      * @Assert\Length(max = 64)
      *
      * @var string|null
@@ -119,6 +123,8 @@ class BadgeFacade implements FacadeInterface
      * can set "Car Driver" as synonym for "Vehicle Driver", and only "Car Driver"
      * will appear on user interfaces. Filtering out "Car Driver" will also trigger
      * people having the "Vehicle Driver" badge.
+     *
+     * If you want to remove the synonym, set an arbitrary non-null value.
      *
      * @Assert\Length(max = 64)
      *
