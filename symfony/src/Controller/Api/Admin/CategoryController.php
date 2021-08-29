@@ -12,8 +12,8 @@ use App\Facade\Badge\BadgeReferenceCollectionFacade;
 use App\Facade\Badge\BadgeReferenceFacade;
 use App\Facade\Category\CategoryFacade;
 use App\Facade\Category\CategoryFiltersFacade;
+use App\Facade\Category\CategoryReadFacade;
 use App\Facade\Generic\PageFilterFacade;
-use App\Facade\Generic\PlatformFacade;
 use App\Facade\Generic\UpdateStatusFacade;
 use App\Manager\BadgeManager;
 use App\Manager\CategoryManager;
@@ -85,7 +85,7 @@ class CategoryController extends BaseController
      *   priority = 100,
      *   request  = @Facade(class     = CategoryFiltersFacade::class),
      *   response = @Facade(class     = QueryBuilderFacade::class,
-     *                      decorates = @Facade(class = CategoryFacade::class))
+     *                      decorates = @Facade(class = CategoryReadFacade::class))
      * )
      * @Route(name="records", methods={"GET"})
      */
@@ -129,7 +129,7 @@ class CategoryController extends BaseController
      *
      * @Endpoint(
      *   priority = 110,
-     *   response = @Facade(class = CategoryFacade::class)
+     *   response = @Facade(class = CategoryReadFacade::class)
      * )
      * @Route(name="read", path="/{categoryId}", methods={"GET"})
      * @Entity("category", expr="repository.findOneByExternalIdAndCurrentPlatform(categoryId)")
@@ -267,20 +267,87 @@ class CategoryController extends BaseController
     }
 
     /**
-     * Change a category's platform.
+     * Lock a category.
      *
      * @Endpoint(
      *   priority = 140,
-     *   request  = @Facade(class = PlatformFacade::class),
      *   response = @Facade(class = HttpNoContentFacade::class)
      * )
-     * @Route(name="platform", path="/platform", methods={"DELETE"})
+     * @Route(name="lock", path="/lock/{externalId}", methods={"PUT"})
      * @Entity("category", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
      * @IsGranted("CATEGORY", subject="category")
      */
-    public function platform(Category $category, PlatformFacade $platformFacade)
+    public function lock(Category $category)
     {
-        $category->setPlatform($platformFacade->getPlatform());
+        $category->setLocked(true);
+
+        $this->categoryManager->save($category);
+
+        return new HttpNoContentFacade();
+    }
+
+    /**
+     * Unlock a category.
+     *
+     * @Endpoint(
+     *   priority = 145,
+     *   response = @Facade(class = HttpNoContentFacade::class)
+     * )
+     * @Route(name="unlock", path="/unlock/{externalId}", methods={"PUT"})
+     * @Entity("category", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
+     * @IsGranted("CATEGORY", subject="category")
+     */
+    public function unlock(Category $category)
+    {
+        $category->setLocked(false);
+
+        $this->categoryManager->save($category);
+
+        return new HttpNoContentFacade();
+    }
+
+    /**
+     * Disable a category.
+     *
+     * @Endpoint(
+     *   priority = 150,
+     *   response = @Facade(class = HttpNoContentFacade::class)
+     * )
+     * @Route(name="disable", path="/disable/{externalId}", methods={"PUT"})
+     * @Entity("category", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
+     * @IsGranted("CATEGORY", subject="category")
+     */
+    public function disable(Category $category)
+    {
+        $this->validate($category, [
+            new Unlocked(),
+        ]);
+
+        $category->setEnabled(false);
+
+        $this->categoryManager->save($category);
+
+        return new HttpNoContentFacade();
+    }
+
+    /**
+     * Enable a category.
+     *
+     * @Endpoint(
+     *   priority = 155,
+     *   response = @Facade(class = HttpNoContentFacade::class)
+     * )
+     * @Route(name="enable", path="/enable/{externalId}", methods={"PUT"})
+     * @Entity("category", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
+     * @IsGranted("CATEGORY", subject="category")
+     */
+    public function enable(Category $category)
+    {
+        $this->validate($category, [
+            new Unlocked(),
+        ]);
+
+        $category->setEnabled(true);
 
         $this->categoryManager->save($category);
 

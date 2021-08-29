@@ -3,6 +3,7 @@
 namespace App\Controller\Api\Admin;
 
 use App\Entity\Badge;
+use App\Entity\Category;
 use App\Entity\Volunteer;
 use App\Enum\Crud;
 use App\Enum\Resource;
@@ -426,4 +427,41 @@ class BadgeController extends BaseController
             ResourceOwnership::RESOLVED_RESOURCE()
         );
     }
+
+    /**
+     * Lock a badge.
+     *
+     * @Endpoint(
+     *   priority = 270,
+     *   response = @Facade(class = HttpNoContentFacade::class)
+     * )
+     * @Route(name="lock", path="/lock", methods={"PUT"})
+     * @Entity("category", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
+     * @IsGranted("CATEGORY", subject="category")
+     */
+    public function lock(Category $category)
+    {
+        $category->setLocked(true);
+
+        return new HttpNoContentFacade();
+    }
+
+    /**
+     * Unlock a category.
+     *
+     * @Endpoint(
+     *   priority = 275,
+     *   response = @Facade(class = HttpNoContentFacade::class)
+     * )
+     * @Route(name="unlock", path="/unlock", methods={"PUT"})
+     * @Entity("category", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
+     * @IsGranted("CATEGORY", subject="category")
+     */
+    public function unlock(Category $category)
+    {
+        $category->setLocked(false);
+
+        return new HttpNoContentFacade();
+    }
+
 }

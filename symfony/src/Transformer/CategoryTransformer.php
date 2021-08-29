@@ -4,6 +4,7 @@ namespace App\Transformer;
 
 use App\Entity\Category;
 use App\Facade\Category\CategoryFacade;
+use App\Facade\Category\CategoryReadFacade;
 use App\Security\Helper\Security;
 use Bundles\ApiBundle\Base\BaseTransformer;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
@@ -31,7 +32,7 @@ class CategoryTransformer extends BaseTransformer
             return null;
         }
 
-        $facade = new CategoryFacade();
+        $facade = new CategoryReadFacade();
         $facade->setExternalId($object->getExternalId());
         $facade->setName($object->getName());
         $facade->setPriority($object->getPriority());
@@ -64,14 +65,6 @@ class CategoryTransformer extends BaseTransformer
 
         if (null !== $facade->getPriority()) {
             $object->setPriority($facade->getPriority());
-        }
-
-        if (null !== $facade->isLocked()) {
-            $object->setLocked($facade->isLocked());
-        }
-
-        if (null !== $facade->isEnabled()) {
-            $object->setEnabled($facade->isEnabled());
         }
 
         return $object;
