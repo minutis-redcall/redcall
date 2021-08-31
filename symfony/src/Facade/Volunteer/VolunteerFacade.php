@@ -26,7 +26,7 @@ class VolunteerFacade implements FacadeInterface
      * @Assert\NotBlank(groups={"create"})
      * @Assert\Length(max = 80)
      *
-     * @var string
+     * @var string|null
      */
     protected $firstName;
 
@@ -36,7 +36,7 @@ class VolunteerFacade implements FacadeInterface
      * @Assert\NotBlank(groups={"create"})
      * @Assert\Length(max = 80)
      *
-     * @var string
+     * @var string|null
      */
     protected $lastName;
 
@@ -165,7 +165,7 @@ class VolunteerFacade implements FacadeInterface
         return $facade;
     }
 
-    public function getExternalId() : ?string
+    public function getExternalId() : string
     {
         return $this->externalId;
     }
@@ -182,7 +182,7 @@ class VolunteerFacade implements FacadeInterface
         return $this->firstName;
     }
 
-    public function setFirstName(string $firstName) : VolunteerFacade
+    public function setFirstName(?string $firstName) : VolunteerFacade
     {
         $this->firstName = $firstName;
 
@@ -194,7 +194,7 @@ class VolunteerFacade implements FacadeInterface
         return $this->lastName;
     }
 
-    public function setLastName(string $lastName) : VolunteerFacade
+    public function setLastName(?string $lastName) : VolunteerFacade
     {
         $this->lastName = $lastName;
 
@@ -230,81 +230,81 @@ class VolunteerFacade implements FacadeInterface
         return $this->email;
     }
 
-    public function setEmail(string $email) : VolunteerFacade
+    public function setEmail(?string $email) : VolunteerFacade
     {
         $this->email = $email;
 
         return $this;
     }
 
-    public function isEmailOptin() : ?bool
+    public function getEmailOptin() : ?bool
     {
         return $this->emailOptin;
     }
 
-    public function setEmailOptin(bool $emailOptin) : VolunteerFacade
+    public function setEmailOptin(?bool $emailOptin) : VolunteerFacade
     {
         $this->emailOptin = $emailOptin;
 
         return $this;
     }
 
-    public function isEmailLocked() : ?bool
+    public function getEmailLocked() : ?bool
     {
         return $this->emailLocked;
     }
 
-    public function setEmailLocked(bool $emailLocked) : VolunteerFacade
+    public function setEmailLocked(?bool $emailLocked) : VolunteerFacade
     {
         $this->emailLocked = $emailLocked;
 
         return $this;
     }
 
-    public function isPhoneOptin() : ?bool
+    public function getPhoneOptin() : ?bool
     {
         return $this->phoneOptin;
     }
 
-    public function setPhoneOptin(bool $phoneOptin) : VolunteerFacade
+    public function setPhoneOptin(?bool $phoneOptin) : VolunteerFacade
     {
         $this->phoneOptin = $phoneOptin;
 
         return $this;
     }
 
-    public function isPhoneLocked() : ?bool
+    public function getPhoneLocked() : ?bool
     {
         return $this->phoneLocked;
     }
 
-    public function setPhoneLocked(bool $phoneLocked) : VolunteerFacade
+    public function setPhoneLocked(?bool $phoneLocked) : VolunteerFacade
     {
         $this->phoneLocked = $phoneLocked;
 
         return $this;
     }
 
-    public function isEnabled() : ?bool
-    {
-        return $this->enabled;
-    }
-
-    public function setEnabled(bool $enabled) : VolunteerFacade
-    {
-        $this->enabled = $enabled;
-
-        return $this;
-    }
-
-    public function isLocked() : ?bool
+    public function getLocked() : ?bool
     {
         return $this->locked;
     }
 
-    public function setLocked(bool $locked) : VolunteerFacade
+    public function setLocked(?bool $locked) : VolunteerFacade
     {
         $this->locked = $locked;
+
+        return $this;
+    }
+
+    public function getEnabled() : ?bool
+    {
+        return $this->enabled;
+    }
+
+    public function setEnabled(?bool $enabled) : VolunteerFacade
+    {
+        $this->enabled = $enabled;
 
         return $this;
     }

@@ -79,7 +79,7 @@ class CategoryController extends BaseController
     }
 
     /**
-     * List all badge categories.
+     * List or search among all badge categories.
      *
      * @Endpoint(
      *   priority = 100,

@@ -81,7 +81,7 @@ class BadgeController extends BaseController
     }
 
     /**
-     * List all badges.
+     * List or search among all badges.
      *
      * @Endpoint(
      *   priority = 200,

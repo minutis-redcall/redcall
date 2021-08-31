@@ -85,7 +85,7 @@ class StructureController extends BaseController
     }
 
     /**
-     * List all structures.
+     * List or search among all structures.
      *
      * @Endpoint(
      *   priority = 400,

@@ -144,6 +144,18 @@ class VolunteerManager
         return $this->volunteerRepository->searchInStructureQueryBuilder($platform, $structure, $criteria, $onlyEnabled, $onlyUsers);
     }
 
+    public function searchQueryBuilder(string $platform,
+        ?string $criteria,
+        bool $onlyEnabled,
+        bool $onlyUsers) : QueryBuilder
+    {
+        if ($this->security->isGranted('ROLE_ADMIN')) {
+            return $this->searchAllQueryBuilder($platform, $criteria, $onlyEnabled, $onlyUsers);
+        } else {
+            return $this->searchForCurrentUserQueryBuilder($criteria, $onlyEnabled, $onlyUsers);
+        }
+    }
+
     public function searchAllQueryBuilder(string $platform,
         ?string $criteria,
         bool $onlyEnabled,
