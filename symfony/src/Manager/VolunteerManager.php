@@ -94,6 +94,11 @@ class VolunteerManager
         return $volunteer;
     }
 
+    public function remove(Volunteer $volunteer)
+    {
+        $this->volunteerRepository->remove($volunteer);
+    }
+
     public function searchAll(?string $criteria, int $limit)
     {
         return $this->volunteerRepository->searchAll($this->security->getPlatform(), $criteria, $limit);

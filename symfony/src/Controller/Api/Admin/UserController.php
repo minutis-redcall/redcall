@@ -118,6 +118,8 @@ class UserController extends BaseController
     {
         $user = $this->userTransformer->reconstruct($facade);
 
+        $this->validate($facade, [], ['create']);
+
         $this->validate($user, [
             new UniqueEntity(['username']),
             $this->getRootValidationCallback(),

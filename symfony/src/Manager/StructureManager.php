@@ -49,6 +49,11 @@ class StructureManager
         $this->structureRepository->save($structure);
     }
 
+    public function remove(Structure $structure)
+    {
+        $this->structureRepository->remove($structure);
+    }
+
     public function findCallableStructuresForVolunteer(string $platform, Volunteer $volunteer) : array
     {
         return $this->structureRepository->findCallableStructuresForVolunteer($platform, $volunteer);

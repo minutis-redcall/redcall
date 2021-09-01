@@ -16,7 +16,7 @@ class VolunteerFacade implements FacadeInterface
      * @Assert\NotBlank(groups={"create"})
      * @Assert\Length(max = 64)
      *
-     * @var string
+     * @var string|null
      */
     protected $externalId;
 
@@ -135,7 +135,7 @@ class VolunteerFacade implements FacadeInterface
         return $facade;
     }
 
-    public function getExternalId() : string
+    public function getExternalId() : ?string
     {
         return $this->externalId;
     }

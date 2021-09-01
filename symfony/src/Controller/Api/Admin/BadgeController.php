@@ -118,9 +118,11 @@ class BadgeController extends BaseController
     {
         $badge = $this->badgeTransformer->reconstruct($facade);
 
+        $this->validate($facade, [], ['create']);
+
         $this->validate($badge, [
-            new UniqueEntity(['platform', 'externalId']),
-        ], ['create']);
+            new UniqueEntity(['externalId', 'platform']),
+        ]);
 
         $this->badgeManager->save($badge);
 
@@ -160,7 +162,7 @@ class BadgeController extends BaseController
         $badge = $this->badgeTransformer->reconstruct($facade, $badge);
 
         $this->validate($badge, [
-            new UniqueEntity(['platform', 'externalId']),
+            new UniqueEntity(['externalId', 'platform']),
             new Unlocked(),
         ]);
 
