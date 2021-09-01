@@ -2,10 +2,12 @@
 
 namespace App\Controller\Api;
 
+use App\Entity\User;
 use App\Entity\Volunteer;
 use App\Facade\Volunteer\VolunteerFacade;
 use App\Facade\Volunteer\VolunteerFiltersFacade;
 use App\Facade\Volunteer\VolunteerReadFacade;
+use App\Manager\UserManager;
 use App\Manager\VolunteerManager;
 use App\Transformer\VolunteerTransformer;
 use App\Validator\Constraints\Unlocked;
@@ -38,10 +40,18 @@ class VolunteerController extends BaseController
      */
     private $volunteerTransformer;
 
-    public function __construct(VolunteerManager $volunteerManager, VolunteerTransformer $volunteerTransformer)
+    /**
+     * @var UserManager
+     */
+    private $userManager;
+
+    public function __construct(VolunteerManager $volunteerManager,
+        VolunteerTransformer $volunteerTransformer,
+        UserManager $userManager)
     {
         $this->volunteerManager     = $volunteerManager;
         $this->volunteerTransformer = $volunteerTransformer;
+        $this->userManager          = $userManager;
     }
 
     /**
@@ -87,6 +97,8 @@ class VolunteerController extends BaseController
 
         $this->volunteerManager->save($volunteer);
 
+        $this->saveUser(null, $volunteer->getUser());
+
         return new HttpCreatedFacade();
     }
 
@@ -121,6 +133,8 @@ class VolunteerController extends BaseController
      */
     public function update(Volunteer $volunteer, VolunteerFacade $facade)
     {
+        $oldUser = $volunteer->getUser();
+
         $volunteer = $this->volunteerTransformer->reconstruct($facade, $volunteer);
 
         $this->validate($volunteer, [
@@ -129,6 +143,8 @@ class VolunteerController extends BaseController
         ]);
 
         $this->volunteerManager->save($volunteer);
+
+        $this->saveUser($oldUser, $volunteer->getUser());
 
         return new HttpNoContentFacade();
     }
@@ -153,5 +169,21 @@ class VolunteerController extends BaseController
         $this->volunteerManager->remove($volunteer);
 
         return new HttpNoContentFacade();
+    }
+
+    /**
+     * User is the owning side of the Volunteer relation, it
+     * should be persisted if there were some changes.
+     */
+    private function saveUser(?User $oldUser, ?User $newUser)
+    {
+        if ($oldUser !== $newUser) {
+            if ($oldUser && !$oldUser->isLocked()) {
+                $this->userManager->save($oldUser);
+            }
+            if ($newUser && !$newUser->isLocked()) {
+                $this->userManager->save($newUser);
+            }
+        }
     }
 }

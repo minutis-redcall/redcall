@@ -8,6 +8,7 @@ use App\Facade\Resource\StructureResourceFacade;
 use App\Facade\Resource\VolunteerResourceFacade;
 use App\Facade\User\UserFacade;
 use App\Facade\User\UserReadFacade;
+use App\Manager\PlatformConfigManager;
 use App\Manager\VolunteerManager;
 use App\Security\Helper\Security;
 use Bundles\ApiBundle\Base\BaseTransformer;
@@ -20,6 +21,7 @@ class UserTransformer extends BaseTransformer
         return [
             Security::class,
             VolunteerManager::class,
+            PlatformConfigManager::class,
         ];
     }
 
@@ -82,13 +84,20 @@ class UserTransformer extends BaseTransformer
         if (null === $object) {
             $user = new User();
             $user->setPlatform($this->getSecurity()->getPlatform());
+
+            $platform = $this->getPlatformConfigManager()->getPlaform($this->getSecurity()->getPlatform());
+            $user->setLocale($platform->getDefaultLanguage()->getLocale());
+            $user->setTimezone($platform->getTimezone());
+            $user->setPassword('invalid hash');
         }
 
         if (null !== $facade->getIdentifier()) {
             $user->setUsername($facade->getIdentifier());
         }
 
-        if (null !== $facade->getVolunteerExternalId()) {
+        if (false === $facade->getVolunteerExternalId()) {
+            $object->setVolunteer(null);
+        } elseif (null !== $facade->getVolunteerExternalId()) {
             $volunteer = $this->getVolunteerManager()->findOneByExternalId(
                 $this->getSecurity()->getPlatform(),
                 $facade->getVolunteerExternalId()
@@ -128,5 +137,10 @@ class UserTransformer extends BaseTransformer
     private function getVolunteerManager() : VolunteerManager
     {
         return $this->get(VolunteerManager::class);
+    }
+
+    private function getPlatformConfigManager() : PlatformConfigManager
+    {
+        return $this->get(PlatformConfigManager::class);
     }
 }

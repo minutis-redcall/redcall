@@ -39,41 +39,48 @@ class VolunteerTransformer extends BaseTransformer
             return null;
         }
 
-        $facade = new VolunteerReadFacade();
-        $facade->setExternalId($object->getExternalId());
-        $facade->setFirstName($object->getFirstName());
-        $facade->setLastName($object->getLastName());
-        $facade->setBirthday($object->getBirthday() ? $object->getBirthday()->format('Y-m-d') : null);
-        $facade->setOptoutUntil($object->getOptoutUntil() ? $object->getOptoutUntil()->format('Y-m-d') : null);
-        $facade->setEmail($object->getEmail());
-        $facade->setEmailOptin($object->isEmailOptin());
-        $facade->setEmailLocked($object->isEmailLocked());
-        $facade->setPhoneOptin($object->isPhoneNumberOptin());
-        $facade->setPhoneLocked($object->isPhoneNumberLocked());
-        $facade->setLocked($object->isLocked());
-        $facade->setEnabled($object->isEnabled());
+        $volunteer = $object;
 
-        foreach ($object->getStructures() as $structure) {
+        $facade = new VolunteerReadFacade();
+        $facade->setExternalId($volunteer->getExternalId());
+        $facade->setFirstName($volunteer->getFirstName());
+        $facade->setLastName($volunteer->getLastName());
+        $facade->setBirthday($volunteer->getBirthday() ? $volunteer->getBirthday()->format('Y-m-d') : null);
+        $facade->setOptoutUntil($volunteer->getOptoutUntil() ? $volunteer->getOptoutUntil()->format('Y-m-d') : null);
+        $facade->setEmail($volunteer->getEmail());
+        $facade->setEmailOptin($volunteer->isEmailOptin());
+        $facade->setEmailLocked($volunteer->isEmailLocked());
+        $facade->setPhoneOptin($volunteer->isPhoneNumberOptin());
+        $facade->setPhoneLocked($volunteer->isPhoneNumberLocked());
+
+        if ($volunteer->getUser()) {
+            $facade->setUserIdentifier($volunteer->getUser()->getUserIdentifier());
+        }
+
+        $facade->setLocked($volunteer->isLocked());
+        $facade->setEnabled($volunteer->isEnabled());
+
+        foreach ($volunteer->getStructures() as $structure) {
             $facade->addStructure(
                 $this->getResourceTransformer()->expose($structure)
             );
         }
 
-        foreach ($object->getPhones() as $phone) {
+        foreach ($volunteer->getPhones() as $phone) {
             $facade->addPhone(
                 $this->getPhoneTransformer()->expose($phone)
             );
         }
 
-        foreach ($object->getBadges() as $badge) {
+        foreach ($volunteer->getBadges() as $badge) {
             $facade->addBadge(
                 $this->getResourceTransformer()->expose($badge)
             );
         }
 
-        if ($object->getUser()) {
+        if ($volunteer->getUser()) {
             $facade->setUser(
-                $this->getResourceTransformer()->expose($object->getUser())
+                $this->getResourceTransformer()->expose($volunteer->getUser())
             );
         }
 
@@ -132,6 +139,19 @@ class VolunteerTransformer extends BaseTransformer
 
         if (null !== $facade->getPhoneLocked()) {
             $volunteer->setPhoneNumberLocked($facade->getPhoneLocked());
+        }
+
+        if (false === $facade->getUserIdentifier()) {
+            $volunteer->setUser(null);
+        } elseif (null !== $facade->getUserIdentifier()) {
+            $user = $this->getUserManager()->findOneByUsernameAndPlatform(
+                $this->getSecurity()->getPlatform(),
+                $facade->getUserIdentifier()
+            );
+
+            if ($user) {
+                $user->setVolunteer($volunteer);
+            }
         }
 
         return $volunteer;

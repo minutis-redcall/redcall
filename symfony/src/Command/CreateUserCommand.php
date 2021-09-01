@@ -7,7 +7,6 @@ use App\Entity\User;
 use App\Manager\PlatformConfigManager;
 use App\Manager\UserManager;
 use App\Manager\VolunteerManager;
-use Ramsey\Uuid\Uuid;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -91,7 +90,7 @@ class CreateUserCommand extends BaseCommand
             $user->setTimezone($platform->getTimezone());
 
             $user->setUsername($volunteer->getEmail());
-            $user->setPassword(Uuid::uuid4());
+            $user->setPassword('invalid hash');
             $user->setIsVerified(true);
             $user->setIsTrusted(true);
             $this->userManager->save($user);

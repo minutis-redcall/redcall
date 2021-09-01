@@ -4,6 +4,7 @@ namespace App\Facade\Volunteer;
 
 use Bundles\ApiBundle\Annotation\Facade;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
+use Symfony\Component\Serializer\Annotation\SerializedName;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class VolunteerFacade implements FacadeInterface
@@ -116,6 +117,24 @@ class VolunteerFacade implements FacadeInterface
      * @var bool|null
      */
     protected $phoneLocked;
+
+    /**
+     * Identifier of the user tied to that volunteer
+     *
+     * If the volunteer can trigger other volunteers, it is tied to a user resource,
+     * which contain all its RedCall authorizations (which structures (s)he can trigger,
+     * whether (s)he is an administrator who can access all triggers etc.
+     *
+     * In order to unbind a user from a volunteer, use boolean false.
+     *
+     * @Assert\Length(max=64)
+     * @Assert\Email
+     *
+     * @SerializedName("user_email")
+     *
+     * @var string|bool|null
+     */
+    protected $userIdentifier;
 
     static public function getExample(Facade $decorates = null) : FacadeInterface
     {
@@ -251,6 +270,24 @@ class VolunteerFacade implements FacadeInterface
     public function setPhoneLocked(?bool $phoneLocked) : VolunteerFacade
     {
         $this->phoneLocked = $phoneLocked;
+
+        return $this;
+    }
+
+    /**
+     * @return bool|string|null
+     */
+    public function getUserIdentifier()
+    {
+        return $this->userIdentifier;
+    }
+
+    /**
+     * @param string|bool|null $userIdentifier
+     */
+    public function setUserIdentifier($userIdentifier) : VolunteerFacade
+    {
+        $this->userIdentifier = $userIdentifier;
 
         return $this;
     }
