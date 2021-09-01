@@ -40,11 +40,11 @@ cat deploy/${ENV}/dotenv | grep -v DATABASE_URL > symfony/.env
     gcloud config set project ${GCP_PROJECT_NAME}
 
     # Start Bastion
-    gcloud compute instances start ${GCP_BASTION_INSTANCE} --zone ${GCP_PROJECT_LOCATION}
+    gcloud compute instances start ${GCP_BASTION_INSTANCE} --zone ${GCP_COMPUTE_ENGINE_LOCATION}
     sleep 30
 
     # Start MySQL tunneling
-    gcloud compute ssh ${USER}@${GCP_BASTION_INSTANCE} --zone ${GCP_PROJECT_LOCATION} -- -L 3304:${DATABASE_HOST}:${DATABASE_PORT} -N -f
+    gcloud compute ssh ${USER}@${GCP_BASTION_INSTANCE} --zone ${GCP_COMPUTE_ENGINE_LOCATION} -- -L 3304:${DATABASE_HOST}:${DATABASE_PORT} -N -f
 
     # Change the db information
     cat ../deploy/${ENV}/dotenv-migrate >> .env
