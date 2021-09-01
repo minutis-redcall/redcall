@@ -7,8 +7,6 @@ use App\Facade\Phone\PhoneReadFacade;
 use App\Facade\Resource\BadgeResourceFacade;
 use App\Facade\Resource\StructureResourceFacade;
 use App\Facade\Resource\UserResourceFacade;
-use App\Facade\User\UserFacade;
-use App\Facade\User\UserReadFacade;
 use Bundles\ApiBundle\Annotation\Facade;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
 use Bundles\ApiBundle\Model\Facade\CollectionFacade;
@@ -42,6 +40,30 @@ class VolunteerReadFacade extends VolunteerFacade
      * @var UserResourceFacade|null
      */
     protected $user;
+
+    /**
+     * Whether the volunteer is locked or not.
+     *
+     * A "locked" volunteer cannot be modified through APIs, this is useful when
+     * there are divergences between your own database and the RedCall database.
+     *
+     * @var bool|null
+     */
+    protected $locked;
+
+    /**
+     * Whether the volunteer is enabled or not.
+     *
+     * RedCall resources (categories, badges, structures, volunteers) may have relations with
+     * other sensible parts of the application (triggers, communications, messages, answers, etc.),
+     * so it may be safer to disable them instead of deleting them and creating database inconsistencies.
+     *
+     * In order to comply with the General Data Protection Regulation (GDPR), resources containing
+     * private information can be anonymized.
+     *
+     * @var bool|null
+     */
+    protected $enabled;
 
     public function __construct()
     {
@@ -105,6 +127,30 @@ class VolunteerReadFacade extends VolunteerFacade
     public function setUser(?UserResourceFacade $user) : VolunteerReadFacade
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    public function getLocked() : ?bool
+    {
+        return $this->locked;
+    }
+
+    public function setLocked(?bool $locked) : VolunteerReadFacade
+    {
+        $this->locked = $locked;
+
+        return $this;
+    }
+
+    public function getEnabled() : ?bool
+    {
+        return $this->enabled;
+    }
+
+    public function setEnabled(?bool $enabled) : VolunteerReadFacade
+    {
+        $this->enabled = $enabled;
 
         return $this;
     }

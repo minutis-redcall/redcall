@@ -117,34 +117,6 @@ class VolunteerFacade implements FacadeInterface
      */
     protected $phoneLocked;
 
-    /**
-     * Whether the volunteer is locked or not.
-     *
-     * A "locked" volunteer cannot be modified through APIs, this is useful when
-     * there are divergences between your own database and the RedCall database.
-     *
-     * @Assert\Choice(choices={false, true})
-     *
-     * @var bool|null
-     */
-    protected $locked;
-
-    /**
-     * Whether the volunteer is enabled or not.
-     *
-     * RedCall resources (categories, badges, structures, volunteers) may have relations with
-     * other sensible parts of the application (triggers, communications, messages, answers, etc.),
-     * so it may be safer to disable them instead of deleting them and creating database inconsistencies.
-     *
-     * In order to comply with the General Data Protection Regulation (GDPR), resources containing
-     * private information can be anonymized.
-     *
-     * @Assert\Choice(choices={false, true})
-     *
-     * @var bool|null
-     */
-    protected $enabled;
-
     static public function getExample(Facade $decorates = null) : FacadeInterface
     {
         $facade = new static;
@@ -159,8 +131,6 @@ class VolunteerFacade implements FacadeInterface
         $facade->emailLocked = false;
         $facade->phoneOptin  = true;
         $facade->phoneLocked = false;
-        $facade->enabled     = true;
-        $facade->locked      = false;
 
         return $facade;
     }
@@ -281,30 +251,6 @@ class VolunteerFacade implements FacadeInterface
     public function setPhoneLocked(?bool $phoneLocked) : VolunteerFacade
     {
         $this->phoneLocked = $phoneLocked;
-
-        return $this;
-    }
-
-    public function getLocked() : ?bool
-    {
-        return $this->locked;
-    }
-
-    public function setLocked(?bool $locked) : VolunteerFacade
-    {
-        $this->locked = $locked;
-
-        return $this;
-    }
-
-    public function getEnabled() : ?bool
-    {
-        return $this->enabled;
-    }
-
-    public function setEnabled(?bool $enabled) : VolunteerFacade
-    {
-        $this->enabled = $enabled;
 
         return $this;
     }

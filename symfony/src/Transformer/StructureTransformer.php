@@ -18,9 +18,9 @@ class StructureTransformer extends BaseTransformer
     {
         return [
             Security::class,
-            VolunteerManager::class,
             UserManager::class,
             StructureManager::class,
+            VolunteerManager::class,
             ResourceTransformer::class,
         ];
     }
@@ -105,24 +105,24 @@ class StructureTransformer extends BaseTransformer
         return $structure;
     }
 
-    private function getVolunteerManager() : VolunteerManager
-    {
-        return $this->get(VolunteerManager::class);
-    }
-
     private function getUserManager() : UserManager
     {
         return $this->get(UserManager::class);
     }
 
-    private function getResourceTransformer() : ResourceTransformer
-    {
-        return $this->get(ResourceTransformer::class);
-    }
-
     private function getStructureManager() : StructureManager
     {
         return $this->get(StructureManager::class);
+    }
+
+    private function getVolunteerManager() : VolunteerManager
+    {
+        return $this->get(VolunteerManager::class);
+    }
+
+    private function getResourceTransformer() : ResourceTransformer
+    {
+        return $this->get(ResourceTransformer::class);
     }
 
     private function getSecurity() : Security
