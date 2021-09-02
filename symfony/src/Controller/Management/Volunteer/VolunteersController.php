@@ -343,10 +343,7 @@ class VolunteersController extends BaseController
             throw $this->createNotFoundException();
         }
 
-        $structures = $this->structureManager->findCallableStructuresForStructure($this->getPlatform(), $parentStructure);
-        foreach ($structures as $structure) {
-            $volunteer->addStructure($structure);
-        }
+        $this->structureManager->addStructureAndItsChildrenToVolunteer($this->getPlatform(), $volunteer, $parentStructure);
 
         $this->volunteerManager->save($volunteer);
 

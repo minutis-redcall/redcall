@@ -101,6 +101,42 @@ class StructureManager
         }
     }
 
+    public function searchAllForVolunteerQueryBuilder(Volunteer $volunteer,
+        ?string $criteria = null,
+        bool $enabled = true) : QueryBuilder
+    {
+        return $this->structureRepository->searchAllForVolunteerQueryBuilder(
+            $this->security->getPlatform(),
+            $volunteer,
+            $criteria,
+            $enabled
+        );
+    }
+
+    public function searchForVolunteerAndCurrentUserQueryBuilder(Volunteer $volunteer,
+        ?string $criteria = null,
+        bool $enabled = true) : QueryBuilder
+    {
+        return $this->structureRepository->searchForVolunteerAndCurrentUserQueryBuilder(
+            $this->security->getPlatform(),
+            $this->security->getUser(),
+            $volunteer,
+            $criteria,
+            $enabled
+        );
+    }
+
+    public function searchForVolunteerQueryBuilder(Volunteer $volunteer,
+        ?string $criteria,
+        bool $enabled) : QueryBuilder
+    {
+        if ($this->security->isGranted('ROLE_ADMIN')) {
+            return $this->searchAllForVolunteerQueryBuilder($volunteer, $criteria, $enabled);
+        } else {
+            return $this->searchForVolunteerAndCurrentUserQueryBuilder($volunteer, $criteria, $enabled);
+        }
+    }
+
     public function synchronizeWithPegass()
     {
         $this->structureRepository->synchronizeWithPegass();
@@ -154,6 +190,15 @@ class StructureManager
         }
 
         return $counts;
+    }
+
+    public function addStructureAndItsChildrenToVolunteer(string $platform, Volunteer $volunteer, Structure $structure)
+    {
+        $structures = $this->findCallableStructuresForStructure($platform, $structure);
+
+        foreach ($structures as $structure) {
+            $volunteer->addStructure($structure);
+        }
     }
 
     public function getVolunteerLocalCounts(string $platform, array $structureIds) : array

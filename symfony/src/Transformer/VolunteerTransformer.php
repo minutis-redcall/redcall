@@ -141,7 +141,8 @@ class VolunteerTransformer extends BaseTransformer
             $volunteer->setPhoneNumberLocked($facade->getPhoneLocked());
         }
 
-        if (false === $facade->getUserIdentifier()) {
+        if (false === $facade->getUserIdentifier() && $volunteer->getUser()) {
+            $volunteer->getUser()->setVolunteer(null);
             $volunteer->setUser(null);
         } elseif (null !== $facade->getUserIdentifier()) {
             $user = $this->getUserManager()->findOneByUsernameAndPlatform(
