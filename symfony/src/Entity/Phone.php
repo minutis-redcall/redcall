@@ -161,16 +161,20 @@ class Phone implements PhoneInterface
         return $this;
     }
 
-    public function getHidden() : string
+    public function getHidden() : ?string
     {
         $nationalNumber = $this->national;
+
+        if (!$nationalNumber) {
+            return null;
+        }
 
         return substr($nationalNumber, 0, 4).str_repeat('*', strlen($nationalNumber) - 8).substr($nationalNumber, -4);
     }
 
     public function __toString() : string
     {
-        return $this->e164;
+        return ''.$this->e164;
     }
 
     /**
@@ -179,6 +183,15 @@ class Phone implements PhoneInterface
      */
     public function onChange()
     {
+        $this->populateFromE164();
+    }
+
+    public function populateFromE164()
+    {
+        if (!$this->e164) {
+            return;
+        }
+
         $phoneUtil = PhoneNumberUtil::getInstance();
         $parsed    = $phoneUtil->parse($this->e164, self::DEFAULT_LANG);
 

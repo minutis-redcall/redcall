@@ -2,12 +2,17 @@
 
 namespace App\Controller\Api;
 
+use App\Entity\Badge;
 use App\Entity\Structure;
 use App\Entity\User;
 use App\Entity\Volunteer;
 use App\Enum\Crud;
 use App\Enum\Resource;
 use App\Enum\ResourceOwnership;
+use App\Facade\Badge\BadgeFacade;
+use App\Facade\Badge\BadgeFiltersFacade;
+use App\Facade\Badge\BadgeReferenceCollectionFacade;
+use App\Facade\Badge\BadgeReferenceFacade;
 use App\Facade\Generic\UpdateStatusFacade;
 use App\Facade\Structure\StructureFacade;
 use App\Facade\Structure\StructureFiltersFacade;
@@ -16,9 +21,13 @@ use App\Facade\Structure\StructureReferenceFacade;
 use App\Facade\Volunteer\VolunteerFacade;
 use App\Facade\Volunteer\VolunteerFiltersFacade;
 use App\Facade\Volunteer\VolunteerReadFacade;
+use App\Manager\BadgeManager;
+use App\Manager\PhoneManager;
 use App\Manager\StructureManager;
 use App\Manager\UserManager;
 use App\Manager\VolunteerManager;
+use App\Transformer\BadgeTransformer;
+use App\Transformer\PhoneTransformer;
 use App\Transformer\StructureTransformer;
 use App\Transformer\VolunteerTransformer;
 use App\Validator\Constraints\Unlocked;
@@ -55,6 +64,26 @@ class VolunteerController extends BaseController
     private $volunteerTransformer;
 
     /**
+     * @var BadgeManager
+     */
+    private $badgeManager;
+
+    /**
+     * @var BadgeTransformer
+     */
+    private $badgeTransformer;
+
+    /**
+     * @var PhoneManager
+     */
+    private $phoneManager;
+
+    /**
+     * @var PhoneTransformer
+     */
+    private $phoneTransformer;
+
+    /**
      * @var StructureManager
      */
     private $structureManager;
@@ -71,12 +100,20 @@ class VolunteerController extends BaseController
 
     public function __construct(VolunteerManager $volunteerManager,
         VolunteerTransformer $volunteerTransformer,
+        BadgeManager $badgeManager,
+        BadgeTransformer $badgeTransformer,
+        PhoneManager $phoneManager,
+        PhoneTransformer $phoneTransformer,
         StructureManager $structureManager,
         StructureTransformer $structureTransformer,
         UserManager $userManager)
     {
         $this->volunteerManager     = $volunteerManager;
         $this->volunteerTransformer = $volunteerTransformer;
+        $this->badgeManager         = $badgeManager;
+        $this->badgeTransformer     = $badgeTransformer;
+        $this->phoneManager         = $phoneManager;
+        $this->phoneTransformer     = $phoneTransformer;
         $this->structureManager     = $structureManager;
         $this->structureTransformer = $structureTransformer;
         $this->userManager          = $userManager;
@@ -200,6 +237,93 @@ class VolunteerController extends BaseController
         $this->volunteerManager->remove($volunteer);
 
         return new HttpNoContentFacade();
+    }
+
+    /**
+     * List volunteer's badges
+     *
+     * @Endpoint(
+     *   priority = 545,
+     *   request  = @Facade(class     = BadgeFiltersFacade::class),
+     *   response = @Facade(class     = QueryBuilderFacade::class,
+     *                      decorates = @Facade(class = BadgeFacade::class))
+     * )
+     * @Route(name="badge_records", path="/{externalId}/badge", methods={"GET"})
+     * @Entity("volunteer", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
+     * @IsGranted("VOLUNTEER", subject="volunteer")
+     */
+    public function badgeRecords(Volunteer $volunteer, BadgeFiltersFacade $filters)
+    {
+        $qb = $this->badgeManager->searchForVolunteerQueryBuilder($volunteer, $filters->getCriteria());
+
+        return new QueryBuilderFacade($qb, $filters->getPage(), function (Badge $badge) {
+            return $this->badgeTransformer->expose($badge);
+        });
+    }
+
+    /**
+     * Add a list of one of several badges to the volunteer.
+     *
+     * @Endpoint(
+     *   priority = 550,
+     *   request  = @Facade(class     = BadgeReferenceCollectionFacade::class,
+     *                      decorates = @Facade(class = BadgeReferenceFacade::class)),
+     *   response = @Facade(class     = CollectionFacade::class,
+     *                      decorates = @Facade(class = UpdateStatusFacade::class))
+     * )
+     * @Route(name="badge_add", path="/{externalId}/badge", methods={"POST"})
+     * @Entity("volunteer", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
+     * @IsGranted("VOLUNTEER", subject="volunteer")
+     */
+    public function badgeAdd(Volunteer $volunteer, BadgeReferenceCollectionFacade $collection) : FacadeInterface
+    {
+        $this->validate($volunteer, [
+            new Unlocked(),
+        ]);
+
+        return $this->updateResourceCollection(
+            Crud::CREATE(),
+            Resource::VOLUNTEER(),
+            $volunteer,
+            Resource::BADGE(),
+            $collection,
+            'badge',
+            ResourceOwnership::KNOWN_RESOURCE(),
+            ResourceOwnership::KNOWN_RESOURCE(),
+        );
+    }
+
+    /**
+     * Remove one or several badges from the volunteer.
+     *
+     * @Endpoint(
+     *   priority = 555,
+     *   request  = @Facade(class     = BadgeReferenceCollectionFacade::class,
+     *                      decorates = @Facade(class = BadgeReferenceFacade::class)),
+     *   response = @Facade(class     = CollectionFacade::class,
+     *                      decorates = @Facade(class = UpdateStatusFacade::class))
+     * )
+     * @Route(name="badge_remove", path="/{externalId}/badge", methods={"DELETE"})
+     * @Entity("volunteer", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
+     * @IsGranted("VOLUNTEER", subject="volunteer")
+     */
+    public function badgeRemove(Volunteer $volunteer,
+        BadgeReferenceCollectionFacade $collection) : FacadeInterface
+    {
+        $this->validate($volunteer, [
+            new Unlocked(),
+        ]);
+
+        return $this->updateResourceCollection(
+            Crud::DELETE(),
+            Resource::VOLUNTEER(),
+            $volunteer,
+            Resource::BADGE(),
+            $collection,
+            'badge',
+            ResourceOwnership::KNOWN_RESOURCE(),
+            ResourceOwnership::KNOWN_RESOURCE(),
+        );
     }
 
     /**
