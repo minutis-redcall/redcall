@@ -146,6 +146,10 @@ class User extends AbstractUser implements LockableInterface
     {
         $this->volunteer = $volunteer;
 
+        if ($volunteer) {
+            $volunteer->setUser($this);
+        }
+
         return $this;
     }
 

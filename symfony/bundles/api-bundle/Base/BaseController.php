@@ -57,7 +57,8 @@ abstract class BaseController extends AbstractController
         ResourceReferenceCollectionFacadeInterface $resourcesToResolve,
         string $collectionPropertyName,
         ResourceOwnership $resourceCollectionOwner,
-        ResourceOwnership $doctrineOwningSide
+        ResourceOwnership $doctrineOwningSide,
+        ?callable $callback = null
     ) : CollectionFacade {
         $response = new CollectionFacade();
         $changes  = 0;
@@ -149,7 +150,11 @@ abstract class BaseController extends AbstractController
                     }
 
                     // $volunteer->addBadge($badge);
-                    call_user_func([$ownerResource, $collectionAdder], $toChangeResource);
+                    if ($callback) {
+                        $callback($knownResource, $resolvedResource);
+                    } else {
+                        call_user_func([$ownerResource, $collectionAdder], $toChangeResource);
+                    }
 
                     $shouldPersist = true;
 
@@ -167,7 +172,11 @@ abstract class BaseController extends AbstractController
                     }
 
                     // $volunteer->removeBadge($badge);
-                    call_user_func([$ownerResource, $collectionRemover], $toChangeResource);
+                    if ($callback) {
+                        $callback($knownResource, $resolvedResource);
+                    } else {
+                        call_user_func([$ownerResource, $collectionRemover], $toChangeResource);
+                    }
 
                     $shouldPersist = true;
 

@@ -85,7 +85,7 @@ class StructureController extends BaseController
     }
 
     /**
-     * List all structures.
+     * List or search among all structures.
      *
      * @Endpoint(
      *   priority = 400,
@@ -119,9 +119,11 @@ class StructureController extends BaseController
     {
         $structure = $this->structureTransformer->reconstruct($facade);
 
+        $this->validate($facade, [], ['create']);
+
         $this->validate($structure, [
-            new UniqueEntity(['platform', 'externalId']),
-        ], ['create']);
+            new UniqueEntity(['externalId', 'platform']),
+        ]);
 
         $this->structureManager->save($structure);
 
@@ -162,7 +164,7 @@ class StructureController extends BaseController
         $structure = $this->structureTransformer->reconstruct($facade, $structure);
 
         $this->validate($structure, [
-            new UniqueEntity(['platform', 'externalId']),
+            new UniqueEntity(['externalId', 'platform']),
             new Unlocked(),
         ]);
 
@@ -172,10 +174,32 @@ class StructureController extends BaseController
     }
 
     /**
-     * List volunteers that can be triggered in the given structure.
+     * Delete a structure.
      *
      * @Endpoint(
      *   priority = 420,
+     *   response = @Facade(class = HttpNoContentFacade::class)
+     * )
+     * @Route(name="delete", path="/{externalId}", methods={"DELETE"})
+     * @Entity("structure", expr="repository.findByUsernameAndCurrentPlatform(externalId)")
+     * @IsGranted("STRUCTURE", subject="structure")
+     */
+    public function delete(Structure $structure)
+    {
+        $this->validate($structure, [
+            new Unlocked(),
+        ]);
+
+        $this->structureManager->remove($structure);
+
+        return new HttpNoContentFacade();
+    }
+
+    /**
+     * List volunteers that can be triggered in the given structure.
+     *
+     * @Endpoint(
+     *   priority = 425,
      *   request  = @Facade(class     = VolunteerFiltersFacade::class),
      *   response = @Facade(class     = QueryBuilderFacade::class,
      *                      decorates = @Facade(class = VolunteerResourceFacade::class))
@@ -203,7 +227,7 @@ class StructureController extends BaseController
      * Add one or several volunteers into the structure (volunteers are triggered by users).
      *
      * @Endpoint(
-     *   priority = 425,
+     *   priority = 430,
      *   request  = @Facade(class     = VolunteerReferenceCollectionFacade::class,
      *                      decorates = @Facade(class = VolunteerReferenceFacade::class)),
      *   response = @Facade(class     = CollectionFacade::class,
@@ -235,7 +259,7 @@ class StructureController extends BaseController
      * Remove one or several volunteers from the structure.
      *
      * @Endpoint(
-     *   priority = 430,
+     *   priority = 435,
      *   request  = @Facade(class     = VolunteerReferenceCollectionFacade::class,
      *                      decorates = @Facade(class = VolunteerReferenceFacade::class)),
      *   response = @Facade(class     = CollectionFacade::class,
@@ -268,7 +292,7 @@ class StructureController extends BaseController
      * List RedCall users that can trigger volunteers in the given structure.
      *
      * @Endpoint(
-     *   priority = 435,
+     *   priority = 440,
      *   request  = @Facade(class     = UserFiltersFacade::class),
      *   response = @Facade(class     = QueryBuilderFacade::class,
      *                      decorates = @Facade(class = UserResourceFacade::class))
@@ -296,7 +320,7 @@ class StructureController extends BaseController
      * Add one or several users into the structure (users will trigger volunteers).
      *
      * @Endpoint(
-     *   priority = 440,
+     *   priority = 445,
      *   request  = @Facade(class     = UserReferenceCollectionFacade::class,
      *                      decorates = @Facade(class = UserReferenceFacade::class)),
      *   response = @Facade(class     = CollectionFacade::class,
@@ -328,7 +352,7 @@ class StructureController extends BaseController
      * Remove one or several users from the structure.
      *
      * @Endpoint(
-     *   priority = 445,
+     *   priority = 450,
      *   request  = @Facade(class     = UserReferenceCollectionFacade::class,
      *                      decorates = @Facade(class = UserReferenceFacade::class)),
      *   response = @Facade(class     = CollectionFacade::class,
@@ -360,7 +384,7 @@ class StructureController extends BaseController
      * Lock a structure.
      *
      * @Endpoint(
-     *   priority = 450,
+     *   priority = 455,
      *   response = @Facade(class = HttpNoContentFacade::class)
      * )
      * @Route(name="lock", path="/{externalId}/lock", methods={"PUT"})
@@ -380,7 +404,7 @@ class StructureController extends BaseController
      * Unlock a structure.
      *
      * @Endpoint(
-     *   priority = 455,
+     *   priority = 460,
      *   response = @Facade(class = HttpNoContentFacade::class)
      * )
      * @Route(name="unlock", path="/{externalId}/unlock", methods={"PUT"})
@@ -400,7 +424,7 @@ class StructureController extends BaseController
      * Disable a structure.
      *
      * @Endpoint(
-     *   priority = 460,
+     *   priority = 465,
      *   response = @Facade(class = HttpNoContentFacade::class)
      * )
      * @Route(name="disable", path="/{externalId}/disable", methods={"PUT"})
@@ -424,7 +448,7 @@ class StructureController extends BaseController
      * Enable a structure.
      *
      * @Endpoint(
-     *   priority = 465,
+     *   priority = 470,
      *   response = @Facade(class = HttpNoContentFacade::class)
      * )
      * @Route(name="enable", path="/{externalId}/enable", methods={"PUT"})

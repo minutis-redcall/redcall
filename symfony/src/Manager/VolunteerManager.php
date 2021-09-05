@@ -25,6 +25,16 @@ class VolunteerManager
     private $userManager;
 
     /**
+     * @var StructureManager
+     */
+    private $structureManager;
+
+    /**
+     * @var BadgeManager
+     */
+    private $badgeManager;
+
+    /**
      * @var AnswerManager
      */
     private $answerManager;
@@ -45,12 +55,16 @@ class VolunteerManager
     private $security;
 
     public function __construct(VolunteerRepository $volunteerRepository,
+        StructureManager $structureManager,
+        BadgeManager $badgeManager,
         AnswerManager $answerManager,
         GeoLocationManager $geoLocationManager,
         PhoneManager $phoneManager,
         Security $security)
     {
         $this->volunteerRepository = $volunteerRepository;
+        $this->structureManager    = $structureManager;
+        $this->badgeManager        = $badgeManager;
         $this->answerManager       = $answerManager;
         $this->geoLocationManager  = $geoLocationManager;
         $this->phoneManager        = $phoneManager;
@@ -92,6 +106,11 @@ class VolunteerManager
         $this->volunteerRepository->save($volunteer);
 
         return $volunteer;
+    }
+
+    public function remove(Volunteer $volunteer)
+    {
+        $this->volunteerRepository->remove($volunteer);
     }
 
     public function searchAll(?string $criteria, int $limit)
@@ -142,6 +161,18 @@ class VolunteerManager
         bool $onlyUsers) : QueryBuilder
     {
         return $this->volunteerRepository->searchInStructureQueryBuilder($platform, $structure, $criteria, $onlyEnabled, $onlyUsers);
+    }
+
+    public function searchQueryBuilder(string $platform,
+        ?string $criteria,
+        bool $onlyEnabled,
+        bool $onlyUsers) : QueryBuilder
+    {
+        if ($this->security->isGranted('ROLE_ADMIN')) {
+            return $this->searchAllQueryBuilder($platform, $criteria, $onlyEnabled, $onlyUsers);
+        } else {
+            return $this->searchForCurrentUserQueryBuilder($criteria, $onlyEnabled, $onlyUsers);
+        }
     }
 
     public function searchAllQueryBuilder(string $platform,
@@ -304,8 +335,16 @@ class VolunteerManager
             $this->userManager->remove($user);
         }
 
+        foreach ($volunteer->getStructures(false) as $structure) {
+            $structure->removeVolunteer($volunteer);
+            $this->structureManager->save($structure);
+        }
+
+        $volunteer->setBadges([]);
         $volunteer->setFirstName('-');
         $volunteer->setLastName('-');
+        $volunteer->setBirthday(new \DateTime('2000-01-01'));
+        $volunteer->getBadges()->clear();
         $volunteer->getPhones()->clear();
         $volunteer->setEmail(null);
         $volunteer->setEnabled(false);

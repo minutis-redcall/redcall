@@ -154,10 +154,8 @@ class VolunteersController extends BaseController
 
         if ($structure) {
             $queryBuilder = $this->volunteerManager->searchInStructureQueryBuilder($this->getPlatform(), $structure, $criteria, $hideDisabled, $filterUsers);
-        } elseif ($this->isGranted('ROLE_ADMIN')) {
-            $queryBuilder = $this->volunteerManager->searchAllQueryBuilder($this->getPlatform(), $criteria, $hideDisabled, $filterUsers);
         } else {
-            $queryBuilder = $this->volunteerManager->searchForCurrentUserQueryBuilder($criteria, $hideDisabled, $filterUsers);
+            $queryBuilder = $this->volunteerManager->searchQueryBuilder($this->getPlatform(), $criteria, $hideDisabled, $filterUsers);
         }
 
         return $this->render('management/volunteers/list.html.twig', [
@@ -345,10 +343,7 @@ class VolunteersController extends BaseController
             throw $this->createNotFoundException();
         }
 
-        $structures = $this->structureManager->findCallableStructuresForStructure($this->getPlatform(), $parentStructure);
-        foreach ($structures as $structure) {
-            $volunteer->addStructure($structure);
-        }
+        $this->structureManager->addStructureAndItsChildrenToVolunteer($this->getPlatform(), $volunteer, $parentStructure);
 
         $this->volunteerManager->save($volunteer);
 

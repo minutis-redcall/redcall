@@ -4,6 +4,7 @@ namespace App\Manager;
 
 use App\Entity\Badge;
 use App\Entity\Category;
+use App\Entity\Volunteer;
 use App\Repository\BadgeRepository;
 use Doctrine\ORM\QueryBuilder;
 use Pagerfanta\Pagerfanta;
@@ -93,4 +94,14 @@ class BadgeManager
     {
         return $this->badgeRepository->getBadgesInCategoryQueryBuilder($platform, $category);
     }
+
+    public function searchForVolunteerQueryBuilder(Volunteer $volunteer, ?string $criteria) : QueryBuilder
+    {
+        return $this->badgeRepository->searchForVolunteerQueryBuilder(
+            $volunteer->getPlatform(),
+            $volunteer,
+            $criteria
+        );
+    }
+
 }

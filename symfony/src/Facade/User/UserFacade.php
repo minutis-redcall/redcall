@@ -13,12 +13,13 @@ class UserFacade implements FacadeInterface
      * User's identifier, generally this is the email (s)he used to sign-up to the platform. When using
      * external connectors, it may also be the email tied to the external resource (eg. a Red Cross volunteer).
      *
+     * @Assert\NotBlank(groups={"create"})
      * @Assert\Length(max=64)
      * @Assert\Email
      *
      * @SerializedName("email")
      *
-     * @var string
+     * @var string|null
      */
     protected $identifier;
 

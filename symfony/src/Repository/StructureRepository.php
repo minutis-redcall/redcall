@@ -338,4 +338,33 @@ class StructureRepository extends BaseRepository
 
         return $structureIds;
     }
+
+    public function searchAllForVolunteerQueryBuilder(string $platform,
+        Volunteer $volunteer,
+        ?string $criteria,
+        bool $enabled) : QueryBuilder
+    {
+        $qb = $this->searchAllQueryBuilder($platform, $criteria, $enabled);
+
+        return $this->forVolunteer($qb, $volunteer);
+    }
+
+    public function searchForVolunteerAndCurrentUserQueryBuilder(string $platform,
+        User $user,
+        Volunteer $volunteer,
+        ?string $criteria,
+        bool $enabled) : QueryBuilder
+    {
+        $qb = $this->searchForUserQueryBuilder($platform, $user, $criteria, $enabled);
+
+        return $this->forVolunteer($qb, $volunteer);
+    }
+
+    private function forVolunteer(QueryBuilder $qb, Volunteer $volunteer) : QueryBuilder
+    {
+        return $qb
+            ->join('s.volunteers', 'v')
+            ->andWhere('v.id = :volunteer')
+            ->setParameter('volunteer', $volunteer);
+    }
 }

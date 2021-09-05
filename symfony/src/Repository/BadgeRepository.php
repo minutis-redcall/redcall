@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Base\BaseRepository;
 use App\Entity\Badge;
 use App\Entity\Category;
+use App\Entity\Volunteer;
 use App\Security\Helper\Security;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\QueryBuilder;
@@ -133,6 +134,16 @@ class BadgeRepository extends BaseRepository
                     ->join('b.category', 'c')
                     ->andWhere('c.id = :category')
                     ->setParameter('category', $category);
+    }
+
+    public function searchForVolunteerQueryBuilder(string $platform,
+        Volunteer $volunteer,
+        ?string $criteria) : QueryBuilder
+    {
+        return $this->getSearchInBadgesQueryBuilder($platform, $criteria)
+                    ->join('b.volunteers', 'v')
+                    ->andWhere('v.id = :volunteer')
+                    ->setParameter('volunteer', $volunteer);
     }
 
     private function getBadgesQueryBuilder(string $platform) : QueryBuilder

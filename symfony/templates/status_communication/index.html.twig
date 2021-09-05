@@ -411,14 +411,16 @@
                                                 {{ message.unclear.raw }}
                                             {% endif %}
                                         </span>
-                                        <a id="answer-link-{{ suffix }}"
-                                           style="font-size:10px;"
-                                           href="#"
-                                           onclick="return false;"
-                                           data-message-id="{{ message.id }}"
-                                           class="open-message {% if communication.type != constant('App\\Entity\\Communication::TYPE_SMS') or (not message.isUnclear and not message.invalidAnswer) %}d-none{% endif %}">
-                                            {{ 'campaign_status.answers.answer_link'|trans }}
-                                        </a>
+                                        {% if campaign.active %}
+                                            <a id="answer-link-{{ suffix }}"
+                                               style="font-size:10px;"
+                                               href="#"
+                                               onclick="return false;"
+                                               data-message-id="{{ message.id }}"
+                                               class="open-message {% if communication.type != constant('App\\Entity\\Communication::TYPE_SMS') or (not message.isUnclear and not message.invalidAnswer) %}d-none{% endif %}">
+                                                {{ 'campaign_status.answers.answer_link'|trans }}
+                                            </a>
+                                        {% endif %}
                                     </div>
                                 </td>
                             </tr>

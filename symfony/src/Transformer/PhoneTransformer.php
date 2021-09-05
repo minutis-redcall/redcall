@@ -21,6 +21,8 @@ class PhoneTransformer extends BaseTransformer
             return null;
         }
 
+        $object->populateFromE164();
+
         $facade = new PhoneReadFacade();
         $facade->setPreferred($object->isPreferred());
         $facade->setE164($object->getE164());

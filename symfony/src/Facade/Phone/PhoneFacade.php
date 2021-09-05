@@ -8,12 +8,15 @@ use Bundles\ApiBundle\Annotation as Api;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
+/**
+ * @CustomAssert\Phone
+ */
 class PhoneFacade implements PhoneInterface, FacadeInterface
 {
     /**
      * Whether this number is currently selected by the volunteer.
      *
-     * @Assert\NotBlank
+     * @Assert\NotNull
      * @Assert\Choice(choices={false, true})
      *
      * @var bool
@@ -22,8 +25,6 @@ class PhoneFacade implements PhoneInterface, FacadeInterface
 
     /**
      * The phone number in the international format E.164.
-     *
-     * @CustomAssert\Phone
      *
      * @var string
      */

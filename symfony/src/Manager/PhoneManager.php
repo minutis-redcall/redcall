@@ -17,7 +17,7 @@ class PhoneManager
         $this->phoneRepository = $phoneRepository;
     }
 
-    public function findOneByPhoneNumber(string $phoneNumber)
+    public function findOneByPhoneNumber(string $phoneNumber) : ?Phone
     {
         return $this->phoneRepository->findOneByE164($phoneNumber);
     }

@@ -4,6 +4,7 @@ namespace App\Facade\Volunteer;
 
 use Bundles\ApiBundle\Annotation\Facade;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
+use Symfony\Component\Serializer\Annotation\SerializedName;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class VolunteerFacade implements FacadeInterface
@@ -16,7 +17,7 @@ class VolunteerFacade implements FacadeInterface
      * @Assert\NotBlank(groups={"create"})
      * @Assert\Length(max = 64)
      *
-     * @var string
+     * @var string|null
      */
     protected $externalId;
 
@@ -26,7 +27,7 @@ class VolunteerFacade implements FacadeInterface
      * @Assert\NotBlank(groups={"create"})
      * @Assert\Length(max = 80)
      *
-     * @var string
+     * @var string|null
      */
     protected $firstName;
 
@@ -36,7 +37,7 @@ class VolunteerFacade implements FacadeInterface
      * @Assert\NotBlank(groups={"create"})
      * @Assert\Length(max = 80)
      *
-     * @var string
+     * @var string|null
      */
     protected $lastName;
 
@@ -118,32 +119,22 @@ class VolunteerFacade implements FacadeInterface
     protected $phoneLocked;
 
     /**
-     * Whether the volunteer is locked or not.
+     * Identifier of the user tied to that volunteer
      *
-     * A "locked" volunteer cannot be modified through APIs, this is useful when
-     * there are divergences between your own database and the RedCall database.
+     * If the volunteer can trigger other volunteers, it is tied to a user resource,
+     * which contain all its RedCall authorizations (which structures (s)he can trigger,
+     * whether (s)he is an administrator who can access all triggers etc.
      *
-     * @Assert\Choice(choices={false, true})
+     * In order to unbind a user from a volunteer, use boolean false.
      *
-     * @var bool|null
+     * @Assert\Length(max=64)
+     * @Assert\Email
+     *
+     * @SerializedName("user_email")
+     *
+     * @var string|bool|null
      */
-    protected $locked;
-
-    /**
-     * Whether the volunteer is enabled or not.
-     *
-     * RedCall resources (categories, badges, structures, volunteers) may have relations with
-     * other sensible parts of the application (triggers, communications, messages, answers, etc.),
-     * so it may be safer to disable them instead of deleting them and creating database inconsistencies.
-     *
-     * In order to comply with the General Data Protection Regulation (GDPR), resources containing
-     * private information can be anonymized.
-     *
-     * @Assert\Choice(choices={false, true})
-     *
-     * @var bool|null
-     */
-    protected $enabled;
+    protected $userIdentifier;
 
     static public function getExample(Facade $decorates = null) : FacadeInterface
     {
@@ -159,8 +150,6 @@ class VolunteerFacade implements FacadeInterface
         $facade->emailLocked = false;
         $facade->phoneOptin  = true;
         $facade->phoneLocked = false;
-        $facade->enabled     = true;
-        $facade->locked      = false;
 
         return $facade;
     }
@@ -182,7 +171,7 @@ class VolunteerFacade implements FacadeInterface
         return $this->firstName;
     }
 
-    public function setFirstName(string $firstName) : VolunteerFacade
+    public function setFirstName(?string $firstName) : VolunteerFacade
     {
         $this->firstName = $firstName;
 
@@ -194,7 +183,7 @@ class VolunteerFacade implements FacadeInterface
         return $this->lastName;
     }
 
-    public function setLastName(string $lastName) : VolunteerFacade
+    public function setLastName(?string $lastName) : VolunteerFacade
     {
         $this->lastName = $lastName;
 
@@ -230,81 +219,75 @@ class VolunteerFacade implements FacadeInterface
         return $this->email;
     }
 
-    public function setEmail(string $email) : VolunteerFacade
+    public function setEmail(?string $email) : VolunteerFacade
     {
         $this->email = $email;
 
         return $this;
     }
 
-    public function isEmailOptin() : ?bool
+    public function getEmailOptin() : ?bool
     {
         return $this->emailOptin;
     }
 
-    public function setEmailOptin(bool $emailOptin) : VolunteerFacade
+    public function setEmailOptin(?bool $emailOptin) : VolunteerFacade
     {
         $this->emailOptin = $emailOptin;
 
         return $this;
     }
 
-    public function isEmailLocked() : ?bool
+    public function getEmailLocked() : ?bool
     {
         return $this->emailLocked;
     }
 
-    public function setEmailLocked(bool $emailLocked) : VolunteerFacade
+    public function setEmailLocked(?bool $emailLocked) : VolunteerFacade
     {
         $this->emailLocked = $emailLocked;
 
         return $this;
     }
 
-    public function isPhoneOptin() : ?bool
+    public function getPhoneOptin() : ?bool
     {
         return $this->phoneOptin;
     }
 
-    public function setPhoneOptin(bool $phoneOptin) : VolunteerFacade
+    public function setPhoneOptin(?bool $phoneOptin) : VolunteerFacade
     {
         $this->phoneOptin = $phoneOptin;
 
         return $this;
     }
 
-    public function isPhoneLocked() : ?bool
+    public function getPhoneLocked() : ?bool
     {
         return $this->phoneLocked;
     }
 
-    public function setPhoneLocked(bool $phoneLocked) : VolunteerFacade
+    public function setPhoneLocked(?bool $phoneLocked) : VolunteerFacade
     {
         $this->phoneLocked = $phoneLocked;
 
         return $this;
     }
 
-    public function isEnabled() : ?bool
+    /**
+     * @return bool|string|null
+     */
+    public function getUserIdentifier()
     {
-        return $this->enabled;
+        return $this->userIdentifier;
     }
 
-    public function setEnabled(bool $enabled) : VolunteerFacade
+    /**
+     * @param string|bool|null $userIdentifier
+     */
+    public function setUserIdentifier($userIdentifier) : VolunteerFacade
     {
-        $this->enabled = $enabled;
-
-        return $this;
-    }
-
-    public function isLocked() : ?bool
-    {
-        return $this->locked;
-    }
-
-    public function setLocked(bool $locked) : VolunteerFacade
-    {
-        $this->locked = $locked;
+        $this->userIdentifier = $userIdentifier;
 
         return $this;
     }

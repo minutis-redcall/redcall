@@ -79,7 +79,7 @@ class CategoryController extends BaseController
     }
 
     /**
-     * List all badge categories.
+     * List or search among all badge categories.
      *
      * @Endpoint(
      *   priority = 100,
@@ -115,9 +115,11 @@ class CategoryController extends BaseController
     {
         $category = $this->categoryTransformer->reconstruct($facade);
 
+        $this->validate($facade, [], ['create']);
+
         $this->validate($category, [
-            new UniqueEntity(['platform', 'externalId']),
-        ], ['create']);
+            new UniqueEntity(['externalId', 'platform']),
+        ]);
 
         $this->categoryManager->save($category);
 
@@ -157,7 +159,7 @@ class CategoryController extends BaseController
         $category = $this->categoryTransformer->reconstruct($facade, $category);
 
         $this->validate($category, [
-            new UniqueEntity(['platform', 'externalId']),
+            new UniqueEntity(['externalId', 'platform']),
             new Unlocked(),
         ]);
 
