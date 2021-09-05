@@ -307,7 +307,7 @@ class VolunteerController extends BaseController
      * Update volunteer's phone settings (e.g. set it as preferred)
      *
      * @Endpoint(
-     *   priority = 533,
+     *   priority = 535,
      *   request  = @Facade(class = PhoneFacade::class),
      *   response = @Facade(class  = UpdateStatusFacade::class)
      * )
@@ -339,7 +339,7 @@ class VolunteerController extends BaseController
      * Remove one volunteer's phone
      *
      * @Endpoint(
-     *   priority = 535,
+     *   priority = 540,
      *   request  = @Facade(class = PhoneFacade::class),
      *   response = @Facade(class  = UpdateStatusFacade::class)
      * )
@@ -367,7 +367,7 @@ class VolunteerController extends BaseController
      * List volunteer's badges
      *
      * @Endpoint(
-     *   priority = 540,
+     *   priority = 545,
      *   request  = @Facade(class     = BadgeFiltersFacade::class),
      *   response = @Facade(class     = QueryBuilderFacade::class,
      *                      decorates = @Facade(class = BadgeFacade::class))
@@ -389,7 +389,7 @@ class VolunteerController extends BaseController
      * Add a list of one of several badges to the volunteer.
      *
      * @Endpoint(
-     *   priority = 545,
+     *   priority = 550,
      *   request  = @Facade(class     = BadgeReferenceCollectionFacade::class,
      *                      decorates = @Facade(class = BadgeReferenceFacade::class)),
      *   response = @Facade(class     = CollectionFacade::class,
@@ -421,7 +421,7 @@ class VolunteerController extends BaseController
      * Remove one or several badges from the volunteer.
      *
      * @Endpoint(
-     *   priority = 550,
+     *   priority = 555,
      *   request  = @Facade(class     = BadgeReferenceCollectionFacade::class,
      *                      decorates = @Facade(class = BadgeReferenceFacade::class)),
      *   response = @Facade(class     = CollectionFacade::class,
@@ -454,7 +454,7 @@ class VolunteerController extends BaseController
      * List volunteer's structures
      *
      * @Endpoint(
-     *   priority = 555,
+     *   priority = 560,
      *   request  = @Facade(class     = StructureFiltersFacade::class),
      *   response = @Facade(class     = QueryBuilderFacade::class,
      *                      decorates = @Facade(class = StructureFacade::class))
@@ -481,7 +481,7 @@ class VolunteerController extends BaseController
      * also receive all children structures.
      *
      * @Endpoint(
-     *   priority = 560,
+     *   priority = 565,
      *   request  = @Facade(class     = StructureReferenceCollectionFacade::class,
      *                      decorates = @Facade(class = StructureReferenceFacade::class)),
      *   response = @Facade(class     = CollectionFacade::class,
@@ -516,7 +516,7 @@ class VolunteerController extends BaseController
      * Remove one or several structures from the volunteer.
      *
      * @Endpoint(
-     *   priority = 565,
+     *   priority = 570,
      *   request  = @Facade(class     = StructureReferenceCollectionFacade::class,
      *                      decorates = @Facade(class = StructureReferenceFacade::class)),
      *   response = @Facade(class     = CollectionFacade::class,
@@ -549,7 +549,7 @@ class VolunteerController extends BaseController
      * Lock a volunteer.
      *
      * @Endpoint(
-     *   priority = 570,
+     *   priority = 575,
      *   response = @Facade(class = HttpNoContentFacade::class)
      * )
      * @Route(name="lock", path="/{externalId}/lock", methods={"PUT"})
@@ -569,7 +569,7 @@ class VolunteerController extends BaseController
      * Unlock a volunteer.
      *
      * @Endpoint(
-     *   priority = 575,
+     *   priority = 580,
      *   response = @Facade(class = HttpNoContentFacade::class)
      * )
      * @Route(name="unlock", path="/{externalId}/unlock", methods={"PUT"})
@@ -589,7 +589,7 @@ class VolunteerController extends BaseController
      * Disable a volunteer.
      *
      * @Endpoint(
-     *   priority = 580,
+     *   priority = 585,
      *   response = @Facade(class = HttpNoContentFacade::class)
      * )
      * @Route(name="disable", path="/{externalId}/disable", methods={"PUT"})
@@ -614,7 +614,7 @@ class VolunteerController extends BaseController
      * Enable a volunteer.
      *
      * @Endpoint(
-     *   priority = 585,
+     *   priority = 590,
      *   response = @Facade(class = HttpNoContentFacade::class)
      * )
      * @Route(name="enable", path="/{externalId}/enable", methods={"PUT"})
@@ -630,6 +630,37 @@ class VolunteerController extends BaseController
         $volunteer->setEnabled(true);
 
         $this->volunteerManager->save($volunteer);
+
+        return new HttpNoContentFacade();
+    }
+
+    /**
+     * Anonymize a volunteer.
+     *
+     * Anonymizing a volunteer removes all its private information except its external id,
+     * that cannot be removed in order to keep the "user deleted" information.
+     *
+     * This action can be undone by:
+     * - unlocking the anonymized volunteer
+     * - resynchronizing your data source in order to repopulate missing information
+     * All volunteer's messages and answers prior to the anonymization cannot be restored.
+     *
+     * @Endpoint(
+     *   priority = 595,
+     *   response = @Facade(class = HttpNoContentFacade::class)
+     * )
+     * @Route(name="anonymize", path="/{externalId}/anonymize", methods={"PUT"})
+     * @Entity("volunteer", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
+     * @IsGranted("VOLUNTEER", subject="volunteer")
+     */
+    public function anonymize(Volunteer $volunteer)
+    {
+        $this->validate($volunteer, [
+            //            new Unlocked(),
+            $this->getHasUserValidationCallback(),
+        ]);
+
+        $this->volunteerManager->anonymize($volunteer);
 
         return new HttpNoContentFacade();
     }

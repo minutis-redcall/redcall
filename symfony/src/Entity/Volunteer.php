@@ -379,6 +379,9 @@ class Volunteer implements LockableInterface
         $this->setReport($report);
     }
 
+    /**
+     * @return Structure[]
+     */
     public function getStructures(bool $onlyEnabled = true) : Collection
     {
         if ($onlyEnabled) {
