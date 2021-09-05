@@ -39,6 +39,10 @@ class PhoneValidator extends ConstraintValidator
             throw new UnexpectedTypeException($constraint, Phone::class);
         }
 
+        if (!$value instanceof PhoneInterface) {
+            throw new UnexpectedTypeException($value, PhoneInterface::class);
+        }
+
         // This phone number is invalid
         $phoneUtil = PhoneNumberUtil::getInstance();
         try {

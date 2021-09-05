@@ -633,6 +633,9 @@ class Volunteer implements LockableInterface
         }
     }
 
+    /**
+     * @return Phone[]
+     */
     public function getPhones() : Collection
     {
         return $this->phones;
@@ -871,6 +874,45 @@ class Volunteer implements LockableInterface
         $this->optoutUntil = $optoutUntil;
 
         return $this;
+    }
+
+    public function addPhoneAndEnsureOnlyOneIsPreferred(Phone $phone)
+    {
+        $this->addPhone($phone);
+
+        $this->setPhoneAsPreferred($phone);
+    }
+
+    public function setPhoneAsPreferred(Phone $phone)
+    {
+        if (!$this->phones->contains($phone)) {
+            return;
+        }
+
+        foreach ($this->getPhones() as $current) {
+            $current->setPreferred(
+                $current->getE164() === $phone->getE164()
+            );
+        }
+    }
+
+    public function removePhoneAndEnsureOneIsPreferred(Phone $phone)
+    {
+        $this->removePhone($phone);
+
+        $this->ensureOnePhoneIsPreferred();
+    }
+
+    public function ensureOnePhoneIsPreferred()
+    {
+        $main = 0;
+        foreach ($this->getPhones() as $phone) {
+            $main += (int) $phone->isPreferred();
+        }
+
+        if (0 === $main && $this->getPhones()->count() > 0) {
+            $this->getPhones()->first()->setPreferred(true);
+        }
     }
 
     private function toName(string $name) : string

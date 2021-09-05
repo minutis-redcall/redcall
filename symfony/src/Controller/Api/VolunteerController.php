@@ -3,6 +3,7 @@
 namespace App\Controller\Api;
 
 use App\Entity\Badge;
+use App\Entity\Phone;
 use App\Entity\Structure;
 use App\Entity\User;
 use App\Entity\Volunteer;
@@ -14,6 +15,8 @@ use App\Facade\Badge\BadgeFiltersFacade;
 use App\Facade\Badge\BadgeReferenceCollectionFacade;
 use App\Facade\Badge\BadgeReferenceFacade;
 use App\Facade\Generic\UpdateStatusFacade;
+use App\Facade\Phone\PhoneFacade;
+use App\Facade\Phone\PhoneReadFacade;
 use App\Facade\Structure\StructureFacade;
 use App\Facade\Structure\StructureFiltersFacade;
 use App\Facade\Structure\StructureReferenceCollectionFacade;
@@ -240,10 +243,131 @@ class VolunteerController extends BaseController
     }
 
     /**
+     * List volunteer's phones
+     *
+     * @Endpoint(
+     *   priority = 525,
+     *   response = @Facade(class     = CollectionFacade::class,
+     *                      decorates = @Facade(class = PhoneReadFacade::class))
+     * )
+     * @Route(name="phone_records", path="/{externalId}/phone", methods={"GET"})
+     * @Entity("volunteer", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
+     * @IsGranted("VOLUNTEER", subject="volunteer")
+     */
+    public function phoneRecords(Volunteer $volunteer)
+    {
+        $collection = new CollectionFacade();
+
+        foreach ($volunteer->getPhones() as $phone) {
+            $collection[] = $this->phoneTransformer->expose($phone);
+        }
+
+        return $collection;
+    }
+
+    /**
+     * Add a phone to the volunteer
+     *
+     * @Endpoint(
+     *   priority = 530,
+     *   request  = @Facade(class = PhoneFacade::class),
+     *   response = @Facade(class  = UpdateStatusFacade::class)
+     * )
+     * @Route(name="phone_add", path="/{externalId}/phone", methods={"POST"})
+     * @Entity("volunteer", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
+     * @IsGranted("VOLUNTEER", subject="volunteer")
+     */
+    public function phoneAdd(Volunteer $volunteer, PhoneFacade $facade) : FacadeInterface
+    {
+        $e164 = $facade->getE164();
+
+        if ($volunteer->hasPhoneNumber($e164)) {
+            return new UpdateStatusFacade($e164, false, 'Volunteer already has this phone number');
+        }
+
+        $phone = $this->phoneManager->findOneByPhoneNumber($e164);
+
+        if ($phone && $phone->getVolunteer()->getId() !== $volunteer->getId()) {
+            return new UpdateStatusFacade($e164, false, 'Phone already taken by volunteer #%s', $phone->getVolunteer()->getExternalId());
+        }
+
+        $phone = $this->phoneTransformer->reconstruct($facade);
+        $volunteer->addPhoneAndEnsureOnlyOneIsPreferred($phone);
+
+        $this->validate($volunteer, [
+            new Unlocked(),
+        ]);
+
+        $this->volunteerManager->save($volunteer);
+
+        return new UpdateStatusFacade($e164);
+    }
+
+    /**
+     * Update volunteer's phone settings (e.g. set it as preferred)
+     *
+     * @Endpoint(
+     *   priority = 533,
+     *   request  = @Facade(class = PhoneFacade::class),
+     *   response = @Facade(class  = UpdateStatusFacade::class)
+     * )
+     * @Route(name="phone_update", path="/{externalId}/phone", methods={"PUT"})
+     * @Entity("volunteer", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
+     * @IsGranted("VOLUNTEER", subject="volunteer")
+     */
+    public function phoneUpdate(Volunteer $volunteer, PhoneFacade $facade) : FacadeInterface
+    {
+        $e164 = $facade->getE164();
+
+        if (!$volunteer->hasPhoneNumber($e164)) {
+            return new UpdateStatusFacade($e164, false, 'Volunteer does not have this phone number');
+        }
+
+        $phone = $this->phoneManager->findOneByPhoneNumber($e164);
+        if ($phone->isPreferred()) {
+            return new UpdateStatusFacade($e164, false, 'Phone number is already volunteer\'s preferred one');
+        }
+
+        $volunteer->setPhoneAsPreferred($phone);
+
+        $this->volunteerManager->save($volunteer);
+
+        return new UpdateStatusFacade($e164);
+    }
+
+    /**
+     * Remove one volunteer's phone
+     *
+     * @Endpoint(
+     *   priority = 535,
+     *   request  = @Facade(class = PhoneFacade::class),
+     *   response = @Facade(class  = UpdateStatusFacade::class)
+     * )
+     * @Route(name="phone_remove", path="/{externalId}/phone/{e164}", methods={"DELETE"})
+     * @Entity("volunteer", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
+     * @Entity("phone", expr="repository.findOneByE164(e164)")
+     * @IsGranted("VOLUNTEER", subject="volunteer")
+     */
+    public function phoneRemove(Volunteer $volunteer, Phone $phone) : FacadeInterface
+    {
+        $e164 = $phone->getE164();
+
+        if (!$volunteer->hasPhoneNumber($e164)) {
+            return new UpdateStatusFacade($e164, false, 'Volunteer does not have this phone number');
+        }
+
+        $volunteer->removePhoneAndEnsureOneIsPreferred($phone);
+
+        $this->volunteerManager->save($volunteer);
+
+        return new UpdateStatusFacade($e164);
+    }
+
+    /**
      * List volunteer's badges
      *
      * @Endpoint(
-     *   priority = 545,
+     *   priority = 540,
      *   request  = @Facade(class     = BadgeFiltersFacade::class),
      *   response = @Facade(class     = QueryBuilderFacade::class,
      *                      decorates = @Facade(class = BadgeFacade::class))
@@ -265,7 +389,7 @@ class VolunteerController extends BaseController
      * Add a list of one of several badges to the volunteer.
      *
      * @Endpoint(
-     *   priority = 550,
+     *   priority = 545,
      *   request  = @Facade(class     = BadgeReferenceCollectionFacade::class,
      *                      decorates = @Facade(class = BadgeReferenceFacade::class)),
      *   response = @Facade(class     = CollectionFacade::class,
@@ -297,7 +421,7 @@ class VolunteerController extends BaseController
      * Remove one or several badges from the volunteer.
      *
      * @Endpoint(
-     *   priority = 555,
+     *   priority = 550,
      *   request  = @Facade(class     = BadgeReferenceCollectionFacade::class,
      *                      decorates = @Facade(class = BadgeReferenceFacade::class)),
      *   response = @Facade(class     = CollectionFacade::class,
@@ -330,7 +454,7 @@ class VolunteerController extends BaseController
      * List volunteer's structures
      *
      * @Endpoint(
-     *   priority = 560,
+     *   priority = 555,
      *   request  = @Facade(class     = StructureFiltersFacade::class),
      *   response = @Facade(class     = QueryBuilderFacade::class,
      *                      decorates = @Facade(class = StructureFacade::class))
@@ -357,7 +481,7 @@ class VolunteerController extends BaseController
      * also receive all children structures.
      *
      * @Endpoint(
-     *   priority = 565,
+     *   priority = 560,
      *   request  = @Facade(class     = StructureReferenceCollectionFacade::class,
      *                      decorates = @Facade(class = StructureReferenceFacade::class)),
      *   response = @Facade(class     = CollectionFacade::class,
@@ -392,7 +516,7 @@ class VolunteerController extends BaseController
      * Remove one or several structures from the volunteer.
      *
      * @Endpoint(
-     *   priority = 570,
+     *   priority = 565,
      *   request  = @Facade(class     = StructureReferenceCollectionFacade::class,
      *                      decorates = @Facade(class = StructureReferenceFacade::class)),
      *   response = @Facade(class     = CollectionFacade::class,
@@ -425,7 +549,7 @@ class VolunteerController extends BaseController
      * Lock a volunteer.
      *
      * @Endpoint(
-     *   priority = 580,
+     *   priority = 570,
      *   response = @Facade(class = HttpNoContentFacade::class)
      * )
      * @Route(name="lock", path="/{externalId}/lock", methods={"PUT"})
@@ -445,7 +569,7 @@ class VolunteerController extends BaseController
      * Unlock a volunteer.
      *
      * @Endpoint(
-     *   priority = 585,
+     *   priority = 575,
      *   response = @Facade(class = HttpNoContentFacade::class)
      * )
      * @Route(name="unlock", path="/{externalId}/unlock", methods={"PUT"})
@@ -465,7 +589,7 @@ class VolunteerController extends BaseController
      * Disable a volunteer.
      *
      * @Endpoint(
-     *   priority = 590,
+     *   priority = 580,
      *   response = @Facade(class = HttpNoContentFacade::class)
      * )
      * @Route(name="disable", path="/{externalId}/disable", methods={"PUT"})
@@ -490,7 +614,7 @@ class VolunteerController extends BaseController
      * Enable a volunteer.
      *
      * @Endpoint(
-     *   priority = 595,
+     *   priority = 585,
      *   response = @Facade(class = HttpNoContentFacade::class)
      * )
      * @Route(name="enable", path="/{externalId}/enable", methods={"PUT"})
