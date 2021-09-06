@@ -55,6 +55,8 @@ class FakeEmailController extends BaseController
      */
     public function clearAction(string $csrf)
     {
+        throw $this->createNotFoundException();
+
         $this->validateCsrfOrThrowNotFoundException('fake_email', $csrf);
 
         $this->fakeEmailManager->truncate();
