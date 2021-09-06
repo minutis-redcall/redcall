@@ -4,7 +4,6 @@ namespace Bundles\SandboxBundle\Command;
 
 use App\Base\BaseCommand;
 use Bundles\SandboxBundle\Manager\AnonymizeManager;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -33,7 +32,7 @@ class AnonymizeCommand extends BaseCommand
     {
         $this
             ->setName('anonymize')
-            ->addArgument('platform', InputArgument::REQUIRED, 'Platform in which volunteers are stored')
+            ->addOption('platform', null, InputOption::VALUE_REQUIRED, 'Platform in which volunteers are stored')
             ->addOption('volunteer', null, InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY, 'Volunteer\'s external id to anonymize')
             ->setDescription('Anonymize a specified volunteer, or the whole RedCall database');
     }
@@ -44,11 +43,15 @@ class AnonymizeCommand extends BaseCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         if ($volunteers = $input->getOption('volunteer')) {
+            if (null === $input->getOption('platform')) {
+                throw new \InvalidArgumentException('Please provide --platform option to anonymize individual volunteers');
+            }
+
             foreach ($volunteers as $externalId) {
                 $this->anonymizeManager->anonymizeVolunteer(ltrim($externalId, '0'), $input->getArgument('platform'));
             }
         } else {
-            $this->anonymizeManager->anonymizeDatabase($input->getArgument('platform'));
+            $this->anonymizeManager->anonymizeDatabase();
         }
 
         return 0;

@@ -4,8 +4,8 @@ namespace Bundles\SandboxBundle\Manager;
 
 use App\Entity\Phone;
 use App\Entity\Volunteer;
+use App\Manager\PhoneManager;
 use App\Manager\VolunteerManager;
-use App\Security\Helper\Security;
 use App\Settings;
 use Bundles\SettingsBundle\Manager\SettingManager;
 use libphonenumber\PhoneNumberFormat;
@@ -35,441 +35,52 @@ class AnonymizeManager
     private $fakeEmailManager;
 
     /**
-     * @var Security
-     */
-    private $security;
-
-    /**
      * @var KernelInterface
      */
     private $kernel;
 
     /**
-     * @param VolunteerManager $volunteerManager
-     * @param SettingManager   $settingManager
-     * @param FakeSmsManager   $fakeSmsManager
-     * @param FakeEmailManager $fakeEmailManager
-     * @param KernelInterface  $kernel
+     * @var PhoneManager
      */
+    private $phoneManager;
+
     public function __construct(VolunteerManager $volunteerManager,
         SettingManager $settingManager,
         FakeSmsManager $fakeSmsManager,
         FakeEmailManager $fakeEmailManager,
-        KernelInterface $kernel)
+        KernelInterface $kernel,
+        PhoneManager $phoneManager)
     {
         $this->volunteerManager = $volunteerManager;
         $this->settingManager   = $settingManager;
         $this->fakeSmsManager   = $fakeSmsManager;
         $this->fakeEmailManager = $fakeEmailManager;
         $this->kernel           = $kernel;
+        $this->phoneManager     = $phoneManager;
     }
 
     public static function generateFirstname() : string
     {
-        $names = [
-            'Marie',
-            'Thomas',
-            'Lea',
-            'Nicolas',
-            'Camille',
-            'Maxime',
-            'Manon',
-            'Quentin',
-            'Chloe',
-            'Alexandre',
-            'Julie',
-            'Julien',
-            'Sarah',
-            'Antoine',
-            'Laura',
-            'Kevin',
-            'Pauline',
-            'Clement',
-            'Mathilde',
-            'Lucas',
-            'Marine',
-            'Romain',
-            'Emma',
-            'Pierre',
-            'Lucie',
-            'Florian',
-            'Anais',
-            'Valentin',
-            'Marion',
-            'Guillaume',
-            'Oceane',
-            'Hugo',
-            'Justine',
-            'Theo',
-            'Clara',
-            'Anthony',
-            'Morgane',
-            'Jeremy',
-            'Lisa',
-            'Alexis',
-            'Charlotte',
-            'Paul',
-            'Juliette',
-            'Adrien',
-            'Emilie',
-            'Benjamin',
-            'Melanie',
-            'Mathieu',
-            'Ines',
-            'Vincent',
-            'Elodie',
-            'Arthur',
-            'Louise',
-            'Alex',
-            'Claire',
-            'Louis',
-            'Amandine',
-            'Baptiste',
-            'Margaux',
-            'Dylan',
-            'Noemie',
-            'Nathan',
-            'Alice',
-            'Corentin',
-            'Audrey',
-            'Leo',
-            'Clemence',
-            'Axel',
-            'Maeva',
-            'Thibault',
-            'Eva',
-            'Simon',
-            'Melissa',
-            'Jordan',
-            'Amelie',
-            'Matthieu',
-            'Caroline',
-            'Enzo',
-            'Celia',
-            'Remi',
-            'Elise',
-            'Tom',
-            'Celine',
-            'Aurelien',
-            'Margot',
-            'Victor',
-            'Elisa',
-            'Loic',
-            'Jade',
-            'Sebastien',
-            'Fanny',
-            'Raphael',
-            'Sophie',
-            'David',
-            'Romane',
-            'Arnaud',
-            'Aurelie',
-            'Damien',
-            'Jeanne',
-            'Bastien',
-            'Lola',
-            'Jonathan',
-            'Estelle',
-            'Gabriel',
-            'Ophelie',
-            'Mickael',
-            'Laurine',
-            'François',
-            'Valentine',
-            'Mathis',
-            'Alexandra',
-            'Robin',
-            'Laetitia',
-            'Martin',
-            'Solene',
-            'Tristan',
-            'Zoe',
-            'Dorian',
-            'Coralie',
-            'Samuel',
-            'Alicia',
-            'Maxence',
-            'Agathe',
-            'Benoit',
-            'Alexia',
-            'Thibaut',
-            'Anna',
-            'Fabien',
-            'Aurore',
-            'Jules',
-            'Julia',
-            'Yanis',
-            'Lena',
-            'Florent',
-            'Cecile',
-            'Charles',
-            'Lou',
-            'Marc',
-            'Emeline',
-            'Erwan',
-            'Elsa',
-            'Cedric',
-            'Laurie',
-            'Yann',
-            'Nina',
-            'Gaetan',
-            'Maelle',
-            'JEAN',
-            'Jessica',
-            'Jerome',
-            'Coline',
-            'Cyril',
-            'Axelle',
-            'Max',
-            'Salome',
-            'Steven',
-            'Lucile',
-            'Mehdi',
-            'Laure',
-            'Remy',
-            'Andrea',
-            'William',
-            'Eloise',
-            'Olivier',
-            'Ambre',
-            'Sylvain',
-            'Gaelle',
-            'Tony',
-            'Helene',
-            'Morgan',
-            'Clementine',
-            'Christopher',
-            'Charlene',
-            'Mael',
-            'Sara',
-            'Adam',
-            'Carla',
-            'Laurent',
-            'Myriam',
-            'Tanguy',
-            'Victoria',
-            'Xavier',
-            'Cassandra',
-            'Ludovic',
-            'Heloise',
-            'Killian',
-            'Marina',
-            'Stephane',
-            'Cindy',
-            'Dimitri',
-            'Ludivine',
-            'Antonin',
-        ];
+        static $firstnames = null;
 
-        return $names[rand() % count($names)];
+        if (null === $firstnames) {
+            $path       = __DIR__.'/../../../assets/db/firstnames.txt.gz';
+            $firstnames = explode("\n", file_get_contents('compress.zlib://'.$path));
+        }
+
+        return $firstnames[rand() % count($firstnames)];
     }
 
     public static function generateLastname() : string
     {
-        $names = [
-            'ADAM',
-            'ANDRE',
-            'ANTOINE',
-            'ARNAUD',
-            'AUBERT',
-            'AUBRY',
-            'BAILLY',
-            'BARBIER',
-            'BARON',
-            'BARRE',
-            'BARTHELEMY',
-            'BENARD',
-            'BENOIT',
-            'BERGER',
-            'BERNARD',
-            'BERTIN',
-            'BERTRAND',
-            'BESSON',
-            'BLANC',
-            'BLANCHARD',
-            'BONNET',
-            'BOUCHER',
-            'BOUCHET',
-            'BOULANGER',
-            'BOURGEOIS',
-            'BOUVIER',
-            'BOYER',
-            'BRETON',
-            'BRUN',
-            'BRUNET',
-            'CARLIER',
-            'CARON',
-            'CARPENTIER',
-            'CARRE',
-            'CHARLES',
-            'CHARPENTIER',
-            'CHAUVIN',
-            'CHEVALIER',
-            'CHEVALLIER',
-            'CLEMENT',
-            'COLIN',
-            'COLLET',
-            'COLLIN',
-            'CORDIER',
-            'COUSIN',
-            'DA SILVA',
-            'DANIEL',
-            'DAVID',
-            'DELAUNAY',
-            'DENIS',
-            'DESCHAMPS',
-            'DUBOIS',
-            'DUFOUR',
-            'DUMAS',
-            'DUMONT',
-            'DUPONT',
-            'DUPUIS',
-            'DUPUY',
-            'DURAND',
-            'DUVAL',
-            'ETIENNE',
-            'FABRE',
-            'FAURE',
-            'FERNANDEZ',
-            'FLEURY',
-            'FONTAINE',
-            'FOURNIER',
-            'FRANCOIS',
-            'GAILLARD',
-            'GARCIA',
-            'GARNIER',
-            'GAUTHIER',
-            'GAUTIER',
-            'GAY',
-            'GERARD',
-            'GERMAIN',
-            'GILBERT',
-            'GILLET',
-            'GIRARD',
-            'GIRAUD',
-            'GRONDIN',
-            'GUERIN',
-            'GUICHARD',
-            'GUILLAUME',
-            'GUILLOT',
-            'GUYOT',
-            'HAMON',
-            'HENRY',
-            'HERVE',
-            'HOARAU',
-            'HUBERT',
-            'HUET',
-            'HUMBERT',
-            'JACOB',
-            'JACQUET',
-            'JEAN',
-            'JOLY',
-            'JULIEN',
-            'KLEIN',
-            'LACROIX',
-            'LAMBERT',
-            'LAMY',
-            'LANGLOIS',
-            'LAPORTE',
-            'LAURENT',
-            'LE GALL',
-            'LE GOFF',
-            'LE ROUX',
-            'LEBLANC',
-            'LEBRUN',
-            'LECLERC',
-            'LECLERCQ',
-            'LECOMTE',
-            'LEFEBVRE',
-            'LEFEVRE',
-            'LEGER',
-            'LEGRAND',
-            'LEJEUNE',
-            'LEMAIRE',
-            'LEMAITRE',
-            'LEMOINE',
-            'LEROUX',
-            'LEROY',
-            'LEVEQUE',
-            'LOPEZ',
-            'LOUIS',
-            'LUCAS',
-            'MAILLARD',
-            'MALLET',
-            'MARCHAL',
-            'MARCHAND',
-            'MARECHAL',
-            'MARIE',
-            'MARTIN',
-            'MARTINEZ',
-            'MARTY',
-            'MASSON',
-            'MATHIEU',
-            'MENARD',
-            'MERCIER',
-            'MEUNIER',
-            'MEYER',
-            'MICHAUD',
-            'MICHEL',
-            'MILLET',
-            'MONNIER',
-            'MOREAU',
-            'MOREL',
-            'MORIN',
-            'MOULIN',
-            'MULLER',
-            'NICOLAS',
-            'NOEL',
-            'OLIVIER',
-            'PARIS',
-            'PASQUIER',
-            'PAYET',
-            'PELLETIER',
-            'PEREZ',
-            'PERRET',
-            'PERRIER',
-            'PERRIN',
-            'PERROT',
-            'PETIT',
-            'PHILIPPE',
-            'PICARD',
-            'PICHON',
-            'PIERRE',
-            'POIRIER',
-            'POULAIN',
-            'PREVOST',
-            'REMY',
-            'RENARD',
-            'RENAUD',
-            'RENAULT',
-            'REY',
-            'REYNAUD',
-            'RICHARD',
-            'RIVIERE',
-            'ROBERT',
-            'ROBIN',
-            'ROCHE',
-            'RODRIGUEZ',
-            'ROGER',
-            'ROLLAND',
-            'ROUSSEAU',
-            'ROUSSEL',
-            'ROUX',
-            'ROY',
-            'ROYER',
-            'SANCHEZ',
-            'SCHMITT',
-            'SCHNEIDER',
-            'SIMON',
-            'TESSIER',
-            'THOMAS',
-            'VASSEUR',
-            'VIDAL',
-            'VINCENT',
-            'WEBER',
-        ];
+        static $lastnames = null;
 
-        return $names[rand() % count($names)];
+        if (null === $lastnames) {
+            $path      = __DIR__.'/../../../assets/db/lastnames.txt.gz';
+            $lastnames = explode("\n", file_get_contents('compress.zlib://'.$path));
+        }
+
+        return $lastnames[rand() % count($lastnames)];
     }
 
     public static function generatePhoneNumber() : string
@@ -492,16 +103,9 @@ class AnonymizeManager
     public static function generateEmail(string $firstname, string $lastname) : string
     {
         $providers = [
-            'gmail.com',
-            'yahoo.com',
-            'hotmail.com',
-            'aol.com',
-            'hotmail.fr',
-            'msn.com',
-            'yahoo.fr',
-            'wanadoo.fr',
-            'orange.fr',
-            'free.fr',
+            'example.org',
+            'anonym.net',
+            'ghost.com',
         ];
 
         return strtolower(sprintf('%s.%s@%s', substr($firstname, 0, 1), $lastname, $providers[rand() % count($providers)]));
@@ -510,7 +114,7 @@ class AnonymizeManager
     /**
      * Only used for pen-test environments
      */
-    public function anonymizeDatabase(string $platform)
+    public function anonymizeDatabase()
     {
         if ('cli' === php_sapi_name()) {
             $this->fakeSmsManager->truncate();
@@ -524,7 +128,7 @@ class AnonymizeManager
 
             // Executing asynchronous task to prevent against interruptions
             $console = sprintf('%s/bin/console', $this->kernel->getProjectDir());
-            $command = sprintf('%s anonymize %s', escapeshellarg($console), $platform);
+            $command = sprintf('%s anonymize', escapeshellarg($console));
             exec(sprintf('%s > /dev/null 2>&1 & echo -n \$!', $command));
         }
     }
@@ -555,9 +159,19 @@ class AnonymizeManager
             $this->volunteerManager->save($volunteer);
         }
 
+        $minorControl = (new \DateTime())->modify('-18 years')->getTimestamp();
+        $volunteer->setBirthday(new \DateTime(sprintf('@%d', rand() % $minorControl)));
+
+        do {
+            $phoneNumber = $this->generatePhoneNumber();
+            if (!$this->phoneManager->findOneByPhoneNumber($phoneNumber)) {
+                break;
+            }
+        } while (true);
+
         $phone = new Phone();
         $phone->setVolunteer($volunteer);
-        $phone->setE164($this->generatePhoneNumber());
+        $phone->setE164($phoneNumber);
         $phone->setMobile(true);
         $phone->setPreferred(true);
         $volunteer->getPhones()->add($phone);
