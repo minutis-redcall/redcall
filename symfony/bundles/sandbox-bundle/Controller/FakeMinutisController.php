@@ -37,6 +37,8 @@ class FakeMinutisController extends BaseController
      */
     public function listAction(?int $id)
     {
+        throw $this->createNotFoundException();
+
         return [
             'operations' => $this->operationManager->all(),
             'id'         => $id,
@@ -48,6 +50,8 @@ class FakeMinutisController extends BaseController
      */
     public function clear(Csrf $token)
     {
+        throw $this->createNotFoundException();
+
         $this->operationResourceManager->clear();
         $this->operationManager->clear();
 

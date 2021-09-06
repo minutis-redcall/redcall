@@ -28,6 +28,8 @@ class FakeStorageController extends BaseController
      */
     public function access(string $filename)
     {
+        throw $this->createNotFoundException();
+
         $path = FakeStorageProvider::getPath($this->kernel->getCacheDir(), $filename);
 
         if (!is_file($path)) {
