@@ -14,7 +14,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Constraints\Choice;
@@ -81,66 +80,66 @@ class MaintenanceController extends BaseController
         return $this->render('admin/maintenance/index.html.twig');
     }
 
-    /**
-     * @Route(name="refresh", path="/refresh")
-     */
-    public function refresh()
-    {
-        $this->maintenanceManager->refresh();
-
-        $this->addFlash('success', $this->translator->trans('maintenance.refresh_started'));
-
-        return $this->redirectToRoute('admin_maintenance_index');
-    }
-
-    /**
-     * @Route(name="search", path="/search")
-     */
-    public function search(Request $request)
-    {
-        return $this->render('admin/maintenance/search.html.twig', [
-            'form' => $this->createSearchForm($request)->createView(),
-        ]);
-    }
-
-    /**
-     * @Route(name="search_change_nivol", path="/search/change-nivol")
-     */
-    public function searchChangeNivol(Request $request)
-    {
-        return new JsonResponse([
-            'content' => htmlentities($this->getPegassEntity($request)->getXml()),
-        ]);
-    }
-
-    /**
-     * @Route(name="search_change_expression", path="/search/change-expression")
-     */
-    public function searchChangeExpression(Request $request)
-    {
-        $entity     = $this->getPegassEntity($request);
-        $expression = $this->createSearchForm($request)->get('expression')->getData();
-
-        try {
-            if ($data = $entity->xpath($expression)) {
-                return new JsonResponse([
-                    'content' => $this->translator->trans('maintenance.search.match', [
-                        '%data%' => json_encode($data),
-                    ]),
-                ]);
-            } else {
-                return new JsonResponse([
-                    'content' => $this->translator->trans('maintenance.search.notmatch'),
-                ]);
-            }
-        } catch (\Exception $e) {
-            return new JsonResponse([
-                'content' => $this->translator->trans('maintenance.search.invalid', [
-                    '%error%' => $e->getMessage(),
-                ]),
-            ]);
-        }
-    }
+    //    /**
+    //     * @Route(name="refresh", path="/refresh")
+    //     */
+    //    public function refresh()
+    //    {
+    //        $this->maintenanceManager->refresh();
+    //
+    //        $this->addFlash('success', $this->translator->trans('maintenance.refresh_started'));
+    //
+    //        return $this->redirectToRoute('admin_maintenance_index');
+    //    }
+    //
+    //    /**
+    //     * @Route(name="search", path="/search")
+    //     */
+    //    public function search(Request $request)
+    //    {
+    //        return $this->render('admin/maintenance/search.html.twig', [
+    //            'form' => $this->createSearchForm($request)->createView(),
+    //        ]);
+    //    }
+    //
+    //    /**
+    //     * @Route(name="search_change_nivol", path="/search/change-nivol")
+    //     */
+    //    public function searchChangeNivol(Request $request)
+    //    {
+    //        return new JsonResponse([
+    //            'content' => htmlentities($this->getPegassEntity($request)->getXml()),
+    //        ]);
+    //    }
+    //
+    //    /**
+    //     * @Route(name="search_change_expression", path="/search/change-expression")
+    //     */
+    //    public function searchChangeExpression(Request $request)
+    //    {
+    //        $entity     = $this->getPegassEntity($request);
+    //        $expression = $this->createSearchForm($request)->get('expression')->getData();
+    //
+    //        try {
+    //            if ($data = $entity->xpath($expression)) {
+    //                return new JsonResponse([
+    //                    'content' => $this->translator->trans('maintenance.search.match', [
+    //                        '%data%' => json_encode($data),
+    //                    ]),
+    //                ]);
+    //            } else {
+    //                return new JsonResponse([
+    //                    'content' => $this->translator->trans('maintenance.search.notmatch'),
+    //                ]);
+    //            }
+    //        } catch (\Exception $e) {
+    //            return new JsonResponse([
+    //                'content' => $this->translator->trans('maintenance.search.invalid', [
+    //                    '%error%' => $e->getMessage(),
+    //                ]),
+    //            ]);
+    //        }
+    //    }
 
     /**
      * @Route(name="message", path="/message")
