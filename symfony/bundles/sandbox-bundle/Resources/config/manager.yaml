@@ -19,6 +19,7 @@ services:
       - '@Bundles\SandboxBundle\Manager\FakeSmsManager'
       - '@Bundles\SandboxBundle\Manager\FakeEmailManager'
       - '@kernel'
+      - '@App\Manager\PhoneManager'
 
   Bundles\SandboxBundle\Manager\FixturesManager:
     arguments:
