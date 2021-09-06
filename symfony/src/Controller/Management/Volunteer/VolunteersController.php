@@ -22,10 +22,7 @@ use App\Manager\VolunteerManager;
 use App\Model\Csrf;
 use App\Model\PlatformConfig;
 use Bundles\PaginationBundle\Manager\PaginationManager;
-use Bundles\PegassCrawlerBundle\Entity\Pegass;
 use Bundles\PegassCrawlerBundle\Manager\PegassManager;
-use DateTime;
-use DateTimeZone;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
@@ -166,38 +163,38 @@ class VolunteersController extends BaseController
         ]);
     }
 
-    /**
-     * @Route(path="/pegass-update/{csrf}/{id}", name="pegass_update")
-     * @IsGranted("VOLUNTEER", subject="volunteer")
-     */
-    public function pegassUpdate(Request $request, Volunteer $volunteer, string $csrf)
-    {
-        $this->validateCsrfOrThrowNotFoundException('volunteers', $csrf);
-
-        if ($volunteer->isLocked()) {
-            throw $this->createNotFoundException();
-        }
-
-        if (!$volunteer->canForcePegassUpdate()) {
-            return $this->redirectToRoute('management_volunteers_list', $request->query->all());
-        }
-
-        // Just in case Pegass database would contain some RCE?
-        if (!preg_match('/^[a-zA-Z0-9]+$/', $volunteer->getExternalId())) {
-            return $this->redirectToRoute('management_volunteers_list', $request->query->all());
-        }
-
-        // Prevents multiple clicks
-        $volunteer->setLastPegassUpdate(new DateTime('now', new DateTimeZone('UTC')));
-        $this->volunteerManager->save($volunteer);
-
-        // Executing asynchronous task to prevent against interruptions
-        $console = sprintf('%s/bin/console', $this->kernel->getProjectDir());
-        $command = sprintf('%s pegass --volunteer %s', escapeshellarg($console), $volunteer->getExternalId());
-        exec(sprintf('%s > /dev/null 2>&1 & echo -n \$!', $command));
-
-        return $this->redirectToRoute('management_volunteers_list', $request->query->all());
-    }
+    //    /**
+    //     * @Route(path="/pegass-update/{csrf}/{id}", name="pegass_update")
+    //     * @IsGranted("VOLUNTEER", subject="volunteer")
+    //     */
+    //    public function pegassUpdate(Request $request, Volunteer $volunteer, string $csrf)
+    //    {
+    //        $this->validateCsrfOrThrowNotFoundException('volunteers', $csrf);
+    //
+    //        if ($volunteer->isLocked()) {
+    //            throw $this->createNotFoundException();
+    //        }
+    //
+    //        if (!$volunteer->canForcePegassUpdate()) {
+    //            return $this->redirectToRoute('management_volunteers_list', $request->query->all());
+    //        }
+    //
+    //        // Just in case Pegass database would contain some RCE?
+    //        if (!preg_match('/^[a-zA-Z0-9]+$/', $volunteer->getExternalId())) {
+    //            return $this->redirectToRoute('management_volunteers_list', $request->query->all());
+    //        }
+    //
+    //        // Prevents multiple clicks
+    //        $volunteer->setLastPegassUpdate(new DateTime('now', new DateTimeZone('UTC')));
+    //        $this->volunteerManager->save($volunteer);
+    //
+    //        // Executing asynchronous task to prevent against interruptions
+    //        $console = sprintf('%s/bin/console', $this->kernel->getProjectDir());
+    //        $command = sprintf('%s pegass --volunteer %s', escapeshellarg($console), $volunteer->getExternalId());
+    //        exec(sprintf('%s > /dev/null 2>&1 & echo -n \$!', $command));
+    //
+    //        return $this->redirectToRoute('management_volunteers_list', $request->query->all());
+    //    }
 
     /**
      * @Route(path="/manual-update/{id}", name="manual_update")
@@ -295,24 +292,24 @@ class VolunteersController extends BaseController
 
         return $this->manualUpdateAction($request, $volunteer);
     }
-
-    /**
-     * @Route(path="/pegass/{id}", name="pegass")
-     * @IsGranted("ROLE_ADMIN")
-     */
-    public function pegass(Volunteer $volunteer)
-    {
-        $entity = $this->pegassManager->getEntity(Pegass::TYPE_VOLUNTEER, $volunteer->getExternalId(), false);
-        if (!$entity) {
-            throw $this->createNotFoundException();
-        }
-
-        return $this->render('management/volunteers/pegass.html.twig', [
-            'volunteer' => $volunteer,
-            'pegass'    => json_encode($entity->getContent(), JSON_PRETTY_PRINT),
-            'entity'    => $entity,
-        ]);
-    }
+    //
+    //    /**
+    //     * @Route(path="/pegass/{id}", name="pegass")
+    //     * @IsGranted("ROLE_ADMIN")
+    //     */
+    //    public function pegass(Volunteer $volunteer)
+    //    {
+    //        $entity = $this->pegassManager->getEntity(Pegass::TYPE_VOLUNTEER, $volunteer->getExternalId(), false);
+    //        if (!$entity) {
+    //            throw $this->createNotFoundException();
+    //        }
+    //
+    //        return $this->render('management/volunteers/pegass.html.twig', [
+    //            'volunteer' => $volunteer,
+    //            'pegass'    => json_encode($entity->getContent(), JSON_PRETTY_PRINT),
+    //            'entity'    => $entity,
+    //        ]);
+    //    }
 
     /**
      * @Route(path="/edit-structures/{id}", name="edit_structures")
