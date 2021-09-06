@@ -3,8 +3,6 @@
 namespace Bundles\PasswordLoginBundle\Form\Type;
 
 use Bundles\PasswordLoginBundle\Manager\CaptchaManager;
-use EWZ\Bundle\RecaptchaBundle\Form\Type\EWZRecaptchaType;
-use EWZ\Bundle\RecaptchaBundle\Validator\Constraints\IsTrue as RecaptchaTrue;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -44,10 +42,18 @@ class ForgotPasswordType extends AbstractType
         $ip = $this->requestStack->getMasterRequest()->getClientIp();
 
         if (!$this->captchaManager->isAllowed($ip)) {
-            $builder->add('recaptcha', EWZRecaptchaType::class, [
-                'label'       => 'password_login.forgot_password.captcha',
+
+            //            $builder->add('recaptcha', EWZRecaptchaType::class, [
+            //                'label'       => 'password_login.forgot_password.captcha',
+            //                'constraints' => [
+            //                    new RecaptchaTrue(),
+            //                ],
+            //            ]);
+
+            $builder->add('recaptcha', Type\CheckboxType::class, [
+                'label'       => 'This field is normally a reCaptcha, replaced by a tick to ease your pentests',
                 'constraints' => [
-                    new RecaptchaTrue(),
+                    new Constraints\NotBlank(),
                 ],
             ]);
         }
