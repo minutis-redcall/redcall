@@ -36,7 +36,7 @@ class HttpError implements ErrorInterface
             return $this->exception->getMessage();
         }
 
-        return 'Internal Server Error';
+        return 'An error occurred, check response status code.';
     }
 
     public function getContext() : FacadeInterface
