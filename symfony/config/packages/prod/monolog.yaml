@@ -31,8 +31,7 @@ monolog:
       type: fingers_crossed
       handler: slack_errors
       action_level: error
-      excluded_404s:
-        - ^/
+      excluded_http_codes: [ 400, 401, 403, 404 ]
     slack_errors:
       type: slack
       token: '%env(SLACK_TOKEN)%'
