@@ -329,7 +329,6 @@ campaign_status:
   answer_history: 'Historique de vos réponsess'
   answer_invalid: 'Autres Rép.'
   answer_no: 'Réponse %choice%'
-  answer_none: 'Aucune Rép.'
   answers:
     answer_link: Répondre
     change: 'Changer les réponses'
@@ -403,6 +402,7 @@ campaign_status:
     no_phone_mobile: 'Pas de numéro de téléphone portable.'
     no_phone_optin: 'Ne souhaite pas recevoir de SMS/appels.'
     optout_until: 'Temporairement indisponible'
+  answer_none: 'Aucune Rép.'
 csv_export:
   answer_time: 'Date de la reponse la plus recente'
   choice: 'Choix "%choice%"'

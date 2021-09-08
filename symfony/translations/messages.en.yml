@@ -327,9 +327,8 @@ campaign:
 campaign_status:
   answer: Responses
   answer_history: 'Replies history'
-  answer_invalid: 'Other rep.'
+  answer_invalid: 'Other resp.'
   answer_no: 'Answer %choice%'
-  anser_none: 'No resp.'
   answers:
     answer_link: Answer
     change: 'Change answers'
@@ -403,6 +402,7 @@ campaign_status:
     no_phone_mobile: 'No mobile phone number.'
     no_phone_optin: 'Do not want to be triggered through phone.'
     optout_until: 'Temporarily unavailable.'
+  anser_none: 'No resp.'
 csv_export:
   answer_time: 'Answered at'
   choice: 'Choice "%choice%"'
