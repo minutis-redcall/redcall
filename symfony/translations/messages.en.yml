@@ -637,7 +637,6 @@ manage_volunteers:
   form:
     added: 'Volunteer has properly been added.'
     birthday: 'Birth day'
-    add: 'Create a new volunteer'
     email: Email
     email_locked: 'Locked email *'
     email_optin: 'Available by email'
@@ -661,6 +660,7 @@ manage_volunteers:
     update: 'Update volunteer'
     updated: 'Volunteer has properly been updated.'
     visible_badges: 'Main badges'
+    add: 'Create a new volunteer'
     optout_until: 'Volunteer not available until...'
   others: 'and %count% other(s)'
   redcall:

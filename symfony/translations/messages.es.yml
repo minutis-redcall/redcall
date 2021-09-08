@@ -304,7 +304,7 @@ campaign:
     type: Color
   statuses:
     finished: Terminados
-    my_structures: 'No hay personas voluntarias en tus estructuras'
+    my_structures: 'por personas voluntarias en tus estructuras'
     my_volunteers: 'Implica al voluntariado de tus estructuras'
   titles:
     call: Llamada
@@ -595,7 +595,6 @@ manage_volunteers:
     mail_subject: '⚠️ RedCall: Tienes un mensaje'
   form:
     added: 'La persona voluntaria se ha añadido correctamente.'
-    add: 'Añadir una nueva persona voluntaria'
     email: Email
     email_locked: 'Blockear el email *'
     email_optin: 'Disponible por email'
@@ -619,6 +618,7 @@ manage_volunteers:
     update: 'Actualizar una persona voluntaria'
     updated: 'Se ha modificado correctamente la persona voluntaria.'
     visible_badges: 'Insignias principales'
+    add: 'Añadir una nueva persona voluntaria'
   others: 'y otros %count%'
   redcall:
     action_structures: 'Estructuras que %name% puede movilizar'

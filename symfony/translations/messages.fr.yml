@@ -305,7 +305,7 @@ campaign:
     type: Couleur
   statuses:
     finished: Terminés
-    my_structures: 'Pas des bénévoles de vos structures'
+    my_structures: 'Par des bénévoles de vos structures'
     my_volunteers: 'Implicant des bénévoles de vos structures'
   titles:
     call: Appel
@@ -637,7 +637,6 @@ manage_volunteers:
   form:
     added: 'Le bénévole a correctement été ajouté.'
     birthday: 'Date de naissance'
-    add: 'Créer un nouveau bénévole'
     email: Email
     email_locked: 'Geler l''email *'
     email_optin: 'Disponible par email'
@@ -661,6 +660,7 @@ manage_volunteers:
     update: 'Mettre à jour un bénévole'
     updated: 'Le bénévole a correctement été modifié.'
     visible_badges: 'Badges principaux'
+    add: 'Créer un nouveau bénévole'
     optout_until: 'Bénévole indisponible jusqu''au...'
   others: 'et %count% autre(s)'
   redcall:
