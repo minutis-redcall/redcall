@@ -447,11 +447,11 @@ class Volunteer implements LockableInterface
             return $badge->getName();
         }, $this->getVisibleBadges()));
 
-        return new EscapedArray([
+        return (new EscapedArray([
             'id'          => strval($this->getId()),
             'external-id' => $this->getExternalId(),
             'human'       => sprintf('%s %s%s', $this->getFirstName(), $this->getLastName(), $badges ? sprintf(' (%s)', $badges) : null),
-        ]);
+        ]))->getArrayCopy();
     }
 
     public function getNextPegassUpdate() : ?DateTime

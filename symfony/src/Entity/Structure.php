@@ -518,10 +518,10 @@ class Structure implements LockableInterface
      */
     public function toSearchResults() : array
     {
-        return new EscapedArray([
+        return (new EscapedArray([
             'id'   => (string) $this->getId(),
             'name' => $this->getDisplayName(),
-        ]);
+        ]))->getArrayCopy();
     }
 
     /**

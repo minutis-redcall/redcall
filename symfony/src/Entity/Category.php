@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Contract\LockableInterface;
 use App\Repository\CategoryRepository;
+use App\Tools\EscapedArray;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -217,9 +218,9 @@ class Category implements LockableInterface
      */
     public function toSearchResults() : array
     {
-        return new EscapedArray([
+        return (new EscapedArray([
             'id'   => (string) $this->getId(),
             'name' => $this->getName(),
-        ]);
+        ]))->getArrayCopy();
     }
 }

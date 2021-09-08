@@ -154,6 +154,10 @@ admin:
       phone: '<b>%phone_number% (%phone_percent%%)</b> who do not have phone number'
       summary: 'The RedCall database has <b>%total_number% (%total_percent%%)</b> volunteers who may not be reachable'
       title: Volunteers
+    general:
+      form:
+        from: 'From:'
+        to: 'To:'
   user:
     list: 'User list'
     pegass: 'Pegass bindings'
@@ -325,6 +329,7 @@ campaign:
     3_dark_orange: 'Preparation (DT)'
     4_red: Engagement
 campaign_status:
+  anser_none: 'No resp.'
   answer: Responses
   answer_history: 'Replies history'
   answer_invalid: 'Other resp.'
@@ -391,8 +396,8 @@ campaign_status:
     new_message: 'Write new message'
     sms: '📱 SMS'
   table:
-    other: 'Other response'
     none: 'No responses'
+    other: 'Other response'
   warning:
     country_no_call: 'Voice calls not supported for this phone number.'
     country_no_sms: 'SMS not supported by RedCall for this phone number.'
@@ -402,7 +407,6 @@ campaign_status:
     no_phone_mobile: 'No mobile phone number.'
     no_phone_optin: 'Do not want to be triggered through phone.'
     optout_until: 'Temporarily unavailable.'
-  anser_none: 'No resp.'
 csv_export:
   answer_time: 'Answered at'
   choice: 'Choice "%choice%"'
