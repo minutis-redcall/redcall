@@ -32,7 +32,11 @@ class HttpError implements ErrorInterface
 
     public function getMessage() : string
     {
-        return $this->exception->getMessage();
+        if ('dev' === getenv('APP_ENV')) {
+            return $this->exception->getMessage();
+        }
+
+        return 'Internal Server Error';
     }
 
     public function getContext() : FacadeInterface

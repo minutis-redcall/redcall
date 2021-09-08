@@ -8,7 +8,7 @@ use Bundles\ApiBundle\Contracts\FacadeInterface;
 class ThrowableFacade implements FacadeInterface
 {
     /**
-     * The eception type in development environment.
+     * The exception type in development environment.
      *
      * @var string
      */
