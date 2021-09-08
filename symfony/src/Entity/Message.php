@@ -387,6 +387,11 @@ class Message
         return $this->getLastAnswer();
     }
 
+    public function hasAnswer() : bool
+    {
+        return null !== $this->getLastAnswer();
+    }
+
     /**
      * @return bool
      */

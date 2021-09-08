@@ -329,6 +329,7 @@ campaign_status:
   answer_history: 'Historique de vos réponsess'
   answer_invalid: 'Autres Rép.'
   answer_no: 'Réponse %choice%'
+  answer_none: 'Aucune Rép.'
   answers:
     answer_link: Répondre
     change: 'Changer les réponses'
@@ -392,6 +393,7 @@ campaign_status:
     sms: '📱 SMS'
   table:
     other: 'Autre réponse'
+    none: 'Aucune réponse'
   warning:
     country_no_call: 'Appels non supportés par RedCall pour ce numéro.'
     country_no_sms: 'SMS non supportés par RedCall pour ce numéro.'

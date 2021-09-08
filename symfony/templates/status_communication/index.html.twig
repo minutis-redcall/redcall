@@ -241,6 +241,25 @@
                                 </a>
                             </td>
                         </tr>
+
+                        {% if answerCount %}
+                            <tr>
+                                <td>
+                                    {{ 'campaign_status.answer_none'|trans }}
+                                </td>
+                                <td>
+                                    <a href="#"
+                                       id="has-no-answers-{{ communication.id }}"
+                                       class="filter-response"
+                                       data-communication-id="{{ communication.id }}"
+                                       data-count="{{ communication.noAnswersCount }}"
+                                       data-target="filter-has-no-answers-{{ communication.id }}">
+                                        {{ communication.noAnswersCount }}
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endif %}
+
                         </tbody>
                     </table>
 
@@ -377,6 +396,10 @@
                                                 </span>
                                             </span>
                                         </span>
+
+                                        <span class="d-none message-has-no-answers-{{ communication.id }}"
+                                              data-value="{{ message.hasAnswer ? 0 : 1 }}"
+                                              id="message-has-no-answers-{{ suffix|e('html_attr') }}"></span>
 
                                         {% if campaign.active %}
                                             <span id="open-message-{{ suffix }}"
@@ -673,6 +696,20 @@
                 </label>
             </div>
 
+            <div class="form-check">
+                <label class="switch">
+                    <input type="checkbox"
+                           data-toggle="toggle" data-onstyle="primary"
+                           class="form-check-input filter-action filter-response-{{ communication.id }} filter-action-{{ communication.id }}"
+                           id="filter-has-no-answers-{{ communication.id }}"/>
+                    <span class="slider"></span>
+                </label>
+                <label class="form-check-label"
+                       for="filter-has-no-answers-{{ communication.id }}">
+                    {{ 'campaign_status.table.none'|trans }}
+                </label>
+            </div>
+
         {% endset %}
 
         {{ macros.modal('filter-response-' ~ communication.id, 'campaign_status.filter.title'|trans ~ ' ' ~ 'campaign_status.filter.by_response'|trans, body) }}
@@ -782,6 +819,7 @@
 
             $.each(data['communications'], function (communicationId, communication) {
                 var hasInvalidAnswers = 0;
+                var hasNoAnswers = 0;
                 $.each(communication.msg, function (messageId, messageStatus) {
                     var suffix = communicationId + '-' + messageId;
                     var row = $('#row-' + suffix);
@@ -834,6 +872,8 @@
                         $('#message-has-invalid-answer-time-' + suffix).html(messageStatus['has-invalid-answer']['time']);
                         $('#invalid-answer-raw-' + suffix).html(messageStatus['has-invalid-answer']['raw']).removeClass('d-none');
                         hasInvalidAnswers++;
+                    } else if (0 === messageStatus['has-answer']) {
+                        hasNoAnswers++;
                     } else {
                         if (!messageStatus['has-unclear-answer']['raw']) {
                             $('#message-has-invalid-answer-' + suffix).addClass('d-none');
@@ -895,6 +935,12 @@
                     invalid.html(hasInvalidAnswers);
                     invalid.animate({fontSize: '50px'}, 500).animate({fontSize: '1rem'}, 500);
                     invalid.data('count', hasInvalidAnswers);
+                }
+
+                var noAnswers = $('#has-no-answers-' + communicationId);
+                if (hasNoAnswers !== noAnswers.data('count')) {
+                    noAnswers.html(hasNoAnswers);
+                    noAnswers.data('count', hasNoAnswers);
                 }
             });
 
@@ -970,6 +1016,7 @@
                 {% endfor %}
                 {% endif %}
                 "has-invalid-answer",
+                "has-no-answers",
             ];
             {% endfor %}
 
@@ -1013,6 +1060,12 @@
                     $('#has-invalid-answer-' + communicationId).css('color', 'red');
                 } else {
                     $('#has-invalid-answer-' + communicationId).css('color', '');
+                }
+
+                if ($('#filter-has-no-answers-' + communicationId).is(':checked')) {
+                    $('#has-no-answers-' + communicationId).css('color', 'red');
+                } else {
+                    $('#has-no-answers-' + communicationId).css('color', '');
                 }
 
                 var skill = 0;
