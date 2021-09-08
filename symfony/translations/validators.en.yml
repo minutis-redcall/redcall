@@ -2,7 +2,7 @@ form:
   badge:
     errors:
       parent:
-        loop: 'This badge is a parent on the hierarchy (%hierarchy), so you can''t use it as a child badge.'
+        loop: 'This badge is a parent on the hierarchy (%hierarchy%), so you can''''t use it as a child badge.'
         synonym: 'This badge is a synonym of "%name%", use "%name%" directy.'
       synonym:
         has_parent: 'Badge "%name%" has a previous level badge, so it cannot be replaced.'

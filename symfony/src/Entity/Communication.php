@@ -612,6 +612,19 @@ class Communication
         return $count;
     }
 
+    public function noAnswersCount() : int
+    {
+        $count = 0;
+        foreach ($this->messages as $message) {
+            /** @var Message $message */
+            if (!$message->hasAnswer()) {
+                $count++;
+            }
+        }
+
+        return $count;
+    }
+
     public function getRaw() : ?string
     {
         return $this->raw;

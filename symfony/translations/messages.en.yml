@@ -327,7 +327,7 @@ campaign:
 campaign_status:
   answer: Responses
   answer_history: 'Replies history'
-  answer_invalid: 'Other rep.'
+  answer_invalid: 'Other resp.'
   answer_no: 'Answer %choice%'
   answers:
     answer_link: Answer
@@ -392,6 +392,7 @@ campaign_status:
     sms: '📱 SMS'
   table:
     other: 'Other response'
+    none: 'No responses'
   warning:
     country_no_call: 'Voice calls not supported for this phone number.'
     country_no_sms: 'SMS not supported by RedCall for this phone number.'
@@ -401,6 +402,7 @@ campaign_status:
     no_phone_mobile: 'No mobile phone number.'
     no_phone_optin: 'Do not want to be triggered through phone.'
     optout_until: 'Temporarily unavailable.'
+  anser_none: 'No resp.'
 csv_export:
   answer_time: 'Answered at'
   choice: 'Choice "%choice%"'
@@ -637,7 +639,6 @@ manage_volunteers:
   form:
     added: 'Volunteer has properly been added.'
     birthday: 'Birth day'
-    add: 'Create a new volunteer'
     email: Email
     email_locked: 'Locked email *'
     email_optin: 'Available by email'
@@ -661,6 +662,7 @@ manage_volunteers:
     update: 'Update volunteer'
     updated: 'Volunteer has properly been updated.'
     visible_badges: 'Main badges'
+    add: 'Create a new volunteer'
     optout_until: 'Volunteer not available until...'
   others: 'and %count% other(s)'
   redcall:

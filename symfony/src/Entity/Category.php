@@ -217,9 +217,9 @@ class Category implements LockableInterface
      */
     public function toSearchResults() : array
     {
-        return [
+        return new EscapedArray([
             'id'   => (string) $this->getId(),
             'name' => $this->getName(),
-        ];
+        ]);
     }
 }

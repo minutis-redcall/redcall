@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Contract\LockableInterface;
 use App\Repository\BadgeRepository;
+use App\Tools\EscapedArray;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
@@ -387,10 +388,10 @@ class Badge implements LockableInterface
      */
     public function toSearchResults() : array
     {
-        return [
+        return new EscapedArray([
             'id'   => (string) $this->getId(),
             'name' => $this->getFullName(),
-        ];
+        ]);
     }
 
     public function __toString()

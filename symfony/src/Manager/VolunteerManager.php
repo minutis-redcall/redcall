@@ -113,9 +113,9 @@ class VolunteerManager
         $this->volunteerRepository->remove($volunteer);
     }
 
-    public function searchAll(?string $criteria, int $limit)
+    public function searchAll(?string $criteria, int $limit, bool $enabled = false)
     {
-        return $this->volunteerRepository->searchAll($this->security->getPlatform(), $criteria, $limit);
+        return $this->volunteerRepository->searchAll($this->security->getPlatform(), $criteria, $limit, $enabled);
     }
 
     public function searchForCurrentUser(?string $criteria, int $limit, bool $onlyEnabled = false)

@@ -13,6 +13,16 @@ sandbox:
     clear: 'Effacer tous les messages'
     read: 'Messagerie de %email% (%name%)'
     title: 'Simulateur d''emails - Liste des destinataires'
+  fake_minutis:
+    button: 'Opérations Minutis'
+    clear: 'Effacer toutes les opérations'
+    table:
+      name: Nom
+      none: 'Pas d''opérations pour le moment.'
+      owner: Propriétaire
+      resources: Ressources
+      structure_id: 'Structure ID'
+    title: 'Simulateur d''opérations Minutis'
   fake_sms:
     button: 'Simulateur de SMS'
     clear: 'Effacer tous les messages'
@@ -21,16 +31,6 @@ sandbox:
     thread: 'Messagerie du %phoneNumber% (%name%)'
     title: 'Simulateur de SMS - Liste des destinataires'
     your_message: 'Votre message'
-  fake_minutis:
-    button: 'Opérations Minutis'
-    clear: 'Effacer toutes les opérations'
-    title: 'Simulateur d''opérations Minutis'
-    table:
-      none: 'Pas d''opérations pour le moment.'
-      structure_id: 'Structure ID'
-      name: 'Nom'
-      owner: 'Propriétaire'
-      resources: 'Ressources'
   fixtures:
     structure:
       bind_to_user: 'Relier la structure à votre compte'

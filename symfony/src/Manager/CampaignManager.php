@@ -13,7 +13,6 @@ use App\Enum\Type;
 use App\Form\Model\Campaign as CampaignModel;
 use App\Form\Type\AudienceType;
 use App\Repository\CampaignRepository;
-use App\Security\Helper\Security;
 use Bundles\PasswordLoginBundle\Entity\AbstractUser;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
@@ -56,19 +55,13 @@ class CampaignManager
      */
     private $tokenStorage;
 
-    /**
-     * @var Security
-     */
-    private $security;
-
     public function __construct(CampaignRepository $campaignRepository,
         CommunicationManager $communicationManager,
         MessageManager $messageManager,
         PlatformConfigManager $platformManager,
         OperationManager $operationManager,
         SimpleProcessor $processor,
-        TokenStorageInterface $tokenStorage,
-        Security $security)
+        TokenStorageInterface $tokenStorage)
     {
         $this->campaignRepository   = $campaignRepository;
         $this->communicationManager = $communicationManager;
@@ -77,7 +70,6 @@ class CampaignManager
         $this->operationManager     = $operationManager;
         $this->processor            = $processor;
         $this->tokenStorage         = $tokenStorage;
-        $this->security             = $security;
     }
 
     public function find(int $campaignId) : ?CampaignEntity
@@ -193,10 +185,6 @@ class CampaignManager
     /**
      * A campaign can only be reopened if any of the prefix associated to everyone's
      * messages are not used in any of the currently open campaigns.
-     *
-     * @param CampaignEntity $campaign
-     *
-     * @return bool
      */
     public function canReopenCampaign(CampaignEntity $campaign) : bool
     {

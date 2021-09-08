@@ -67,9 +67,9 @@ class AudienceController extends BaseController
         $criteria = $request->get('keyword');
 
         if ($this->isGranted('ROLE_ADMIN')) {
-            $volunteers = $this->volunteerManager->searchAll($criteria, 20);
+            $volunteers = $this->volunteerManager->searchAll($criteria, 20, true);
         } else {
-            $volunteers = $this->volunteerManager->searchForCurrentUser($criteria, 20);
+            $volunteers = $this->volunteerManager->searchForCurrentUser($criteria, 20, true);
         }
 
         $results = [];

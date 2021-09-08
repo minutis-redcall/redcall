@@ -305,7 +305,7 @@ campaign:
     type: Couleur
   statuses:
     finished: Terminés
-    my_structures: 'Pas des bénévoles de vos structures'
+    my_structures: 'Par des bénévoles de vos structures'
     my_volunteers: 'Implicant des bénévoles de vos structures'
   titles:
     call: Appel
@@ -392,6 +392,7 @@ campaign_status:
     sms: '📱 SMS'
   table:
     other: 'Autre réponse'
+    none: 'Aucune réponse'
   warning:
     country_no_call: 'Appels non supportés par RedCall pour ce numéro.'
     country_no_sms: 'SMS non supportés par RedCall pour ce numéro.'
@@ -401,6 +402,7 @@ campaign_status:
     no_phone_mobile: 'Pas de numéro de téléphone portable.'
     no_phone_optin: 'Ne souhaite pas recevoir de SMS/appels.'
     optout_until: 'Temporairement indisponible'
+  answer_none: 'Aucune Rép.'
 csv_export:
   answer_time: 'Date de la reponse la plus recente'
   choice: 'Choix "%choice%"'
@@ -637,7 +639,6 @@ manage_volunteers:
   form:
     added: 'Le bénévole a correctement été ajouté.'
     birthday: 'Date de naissance'
-    add: 'Créer un nouveau bénévole'
     email: Email
     email_locked: 'Geler l''email *'
     email_optin: 'Disponible par email'
@@ -661,6 +662,7 @@ manage_volunteers:
     update: 'Mettre à jour un bénévole'
     updated: 'Le bénévole a correctement été modifié.'
     visible_badges: 'Badges principaux'
+    add: 'Créer un nouveau bénévole'
     optout_until: 'Bénévole indisponible jusqu''au...'
   others: 'et %count% autre(s)'
   redcall:

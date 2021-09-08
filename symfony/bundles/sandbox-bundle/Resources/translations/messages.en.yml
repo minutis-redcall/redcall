@@ -13,6 +13,16 @@ sandbox:
     clear: 'Remove all messages'
     read: '%email% inbox (%name%)'
     title: 'Email Simulator - List of recipients'
+  fake_minutis:
+    button: 'Minutis operations'
+    clear: 'Remove all operations'
+    table:
+      name: Name
+      none: 'No operations yet'
+      owner: Owner
+      resources: Resources
+      structure_id: 'Structure ID'
+    title: 'Minutis operations simulator'
   fake_sms:
     button: 'SMS Simulator'
     clear: 'Remove all messages'
@@ -21,16 +31,6 @@ sandbox:
     thread: '%phoneNumber% inbox (%name%)'
     title: 'SMS Simulator - List of recipients'
     your_message: 'Your message'
-  fake_minutis:
-    button: 'Minutis operations'
-    clear: 'Remove all operations'
-    title: 'Minutis operations simulator'
-    table:
-      none: 'No operations yet'
-      structure_id: 'Structure ID'
-      name: 'Name'
-      owner: 'Owner'
-      resources: 'Resources'
   fixtures:
     structure:
       bind_to_user: 'Link this new structure to your user account'

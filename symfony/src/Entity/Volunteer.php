@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Contract\LockableInterface;
+use App\Tools\EscapedArray;
 use Bundles\PegassCrawlerBundle\Entity\Pegass;
 use DateInterval;
 use DateTime;
@@ -446,11 +447,11 @@ class Volunteer implements LockableInterface
             return $badge->getName();
         }, $this->getVisibleBadges()));
 
-        return [
+        return new EscapedArray([
             'id'          => strval($this->getId()),
             'external-id' => $this->getExternalId(),
             'human'       => sprintf('%s %s%s', $this->getFirstName(), $this->getLastName(), $badges ? sprintf(' (%s)', $badges) : null),
-        ];
+        ]);
     }
 
     public function getNextPegassUpdate() : ?DateTime
