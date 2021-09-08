@@ -111,7 +111,9 @@
 
         var changeResult = function (data) {
             var pretty = JSON.stringify(JSON.parse(data), null, 2);
-            $('#result').html(pretty);
+            $('#result').html(
+                escapeHtml(pretty)
+            );
             that.removeAttr('disabled');
         };
 
