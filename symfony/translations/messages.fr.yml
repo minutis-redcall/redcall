@@ -120,6 +120,10 @@ admin:
       sent: 'pour l''envoi'
       title: Coûts
       total: 'Le coût total pour la période est de'
+    general:
+      form:
+        from: 'Entre le :'
+        to: 'Et le :'
     messages:
       answers_received: '<b>%answers%</b> réponses ont été reçues.'
       messages_sent: '<b>%stat%</b> messages ont été envoyés dont'
@@ -135,10 +139,6 @@ admin:
         from: 'Entre le :'
         min: 'Compter les déclenchements ayant au moins X messages :'
         title: 'Choisir la période'
-        to: 'Et le :'
-    general:
-      form:
-        from: 'Entre le :'
         to: 'Et le :'
       report:
         answers: Rép.
@@ -333,6 +333,7 @@ campaign_status:
   answer_history: 'Historique de vos réponsess'
   answer_invalid: 'Autres Rép.'
   answer_no: 'Réponse %choice%'
+  answer_none: 'Aucune Rép.'
   answers:
     answer_link: Répondre
     change: 'Changer les réponses'
@@ -395,8 +396,8 @@ campaign_status:
     new_message: 'Ecrire un nouveau message'
     sms: '📱 SMS'
   table:
-    other: 'Autre réponse'
     none: 'Aucune réponse'
+    other: 'Autre réponse'
   warning:
     country_no_call: 'Appels non supportés par RedCall pour ce numéro.'
     country_no_sms: 'SMS non supportés par RedCall pour ce numéro.'
@@ -406,7 +407,6 @@ campaign_status:
     no_phone_mobile: 'Pas de numéro de téléphone portable.'
     no_phone_optin: 'Ne souhaite pas recevoir de SMS/appels.'
     optout_until: 'Temporairement indisponible'
-  answer_none: 'Aucune Rép.'
 csv_export:
   answer_time: 'Date de la reponse la plus recente'
   choice: 'Choix "%choice%"'
