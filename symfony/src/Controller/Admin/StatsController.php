@@ -45,10 +45,33 @@ class StatsController extends BaseController
      */
     public function general(StatisticsManager $statisticsManager, Request $request) : array
     {
-        // TODO make a real form 🤮
+        $form = $this
+            ->createFormBuilder([
+                'from' => new \DateTime('-7days'),
+                'to'   => new \DateTime(),
+            ])
+            ->add('from', DateType::class, [
+                'label'       => 'admin.statistics.general.form.from',
+                'widget'      => 'single_text',
+                'constraints' => [
+                    new NotBlank(),
+                ],
+            ])
+            ->add('to', DateType::class, [
+                'label'       => 'admin.statistics.general.form.to',
+                'widget'      => 'single_text',
+                'constraints' => [
+                    new NotBlank(),
+                ],
+            ])
+            ->add('submit', SubmitType::class, [
+                'label' => 'base.button.submit',
+            ])
+            ->getForm()
+            ->handleRequest($request);
 
-        $from = $request->query->get('from') ? \DateTime::createFromFormat('Y-m-d', $request->query->get('from')) : new \DateTime('-7days');
-        $to   = $request->query->get('to') ? \DateTime::createFromFormat('Y-m-d', $request->query->get('to')) : new \DateTime();
+        $from = $form->get('from')->getData();
+        $to   = $form->get('to')->getData();
 
         $from->setTime(0, 0);
         $to->setTime(23, 59, 59);
@@ -57,6 +80,7 @@ class StatsController extends BaseController
             'stats' => $statisticsManager->getDashboardStatistics($from, $to),
             'from'  => $from,
             'to'    => $to,
+            'form'  => $form->createView(),
         ];
     }
 

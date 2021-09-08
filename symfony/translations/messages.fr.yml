@@ -136,6 +136,10 @@ admin:
         min: 'Compter les déclenchements ayant au moins X messages :'
         title: 'Choisir la période'
         to: 'Et le :'
+    general:
+      form:
+        from: 'Entre le :'
+        to: 'Et le :'
       report:
         answers: Rép.
         campaigns: Décl.

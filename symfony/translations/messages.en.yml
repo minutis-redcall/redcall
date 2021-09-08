@@ -130,12 +130,16 @@ admin:
       newest_update: 'Newest update'
       oldest_update: 'Oldest update'
       title: 'Pegass updates'
+    general:
+      form:
+        from: 'From:'
+        to: 'To:'
     structure:
       form:
         from: 'From:'
         min: 'Only count triggers having minimum X messages:'
         title: 'Choose the period'
-        to: 'To :'
+        to: 'To:'
       report:
         answers: Ans.
         campaigns: Trgrs
