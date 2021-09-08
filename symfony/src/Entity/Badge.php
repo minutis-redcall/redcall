@@ -388,10 +388,10 @@ class Badge implements LockableInterface
      */
     public function toSearchResults() : array
     {
-        return new EscapedArray([
+        return (new EscapedArray([
             'id'   => (string) $this->getId(),
             'name' => $this->getFullName(),
-        ]);
+        ]))->getArrayCopy();
     }
 
     public function __toString()
