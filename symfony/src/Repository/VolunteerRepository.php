@@ -110,9 +110,9 @@ class VolunteerRepository extends BaseRepository
     /**
      * @return Volunteer[]
      */
-    public function searchAll(string $platform, ?string $keyword, int $maxResults) : array
+    public function searchAll(string $platform, ?string $keyword, int $maxResults, bool $enabled = false) : array
     {
-        return $this->searchAllQueryBuilder($platform, $keyword)
+        return $this->searchAllQueryBuilder($platform, $keyword, $enabled)
                     ->getQuery()
                     ->setMaxResults($maxResults)
                     ->getResult();
