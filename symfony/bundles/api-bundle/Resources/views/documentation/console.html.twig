@@ -41,6 +41,7 @@
 
     <div id="result-container" class="text-left bg-white d-none" style="border: 1px solid lightgrey; padding:8px;">
         <div id="result-status" class="float-right" style="padding:10px;"></div>
+        <div id="code-status" class="float-right" style="padding:10px;"></div>
         <pre><code id="result"></code></pre>
     </div>
 
@@ -104,7 +105,7 @@
         var that = $(this);
 
         $('#result-container').removeClass('d-none')
-        $('#result-status').html('');
+        $('#result-status, #code-status').html('');
         $('#result').html(
             $('#spinner').html()
         );
@@ -130,11 +131,13 @@
                         data: $('#{{ console.body.vars.id }}').val(),
                         contentType: 'application/json',
                     }
-                ).done(function (data) {
+                ).done(function (data, status, xhr) {
                     $('#result-status').html('✅');
+                    $('#code-status').html(xhr.status);
                     changeResult(data);
-                }).fail(function (xhr, status, errorThrown) {
+                }).fail(function (xhr) {
                     $('#result-status').html('❌');
+                    $('#code-status').html(xhr.status);
                     changeResult(xhr.responseText);
                 });
             } else {
