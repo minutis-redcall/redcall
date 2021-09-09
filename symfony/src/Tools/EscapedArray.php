@@ -9,9 +9,14 @@ class EscapedArray extends \ArrayObject
         $copy = [];
 
         foreach ($array as $index => $value) {
-            $copy[htmlentities($index)] = htmlentities($value);
+            $copy[$this->escape($index)] = $this->escape($value);
         }
 
         parent::__construct($copy, $flags, $iteratorClass);
+    }
+
+    private function escape(string $value) : string
+    {
+        return htmlspecialchars($value, ENT_QUOTES | ENT_HTML5);
     }
 }
