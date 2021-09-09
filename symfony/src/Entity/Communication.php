@@ -86,13 +86,6 @@ class Communication
      *
      * @ORM\Column(type="boolean")
      */
-    private $geoLocation = false;
-
-    /**
-     * @var boolean
-     *
-     * @ORM\Column(type="boolean")
-     */
     private $multipleAnswer = false;
 
     /**
@@ -459,26 +452,6 @@ class Communication
         }
 
         return null;
-    }
-
-    /**
-     * @return bool
-     */
-    public function hasGeoLocation() : bool
-    {
-        return $this->geoLocation;
-    }
-
-    /**
-     * @param bool $geoLocation
-     *
-     * @return Communication
-     */
-    public function setGeoLocation(bool $geoLocation) : Communication
-    {
-        $this->geoLocation = $geoLocation;
-
-        return $this;
     }
 
     /**

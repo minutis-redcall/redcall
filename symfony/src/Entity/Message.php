@@ -81,11 +81,6 @@ class Message
     private $code;
 
     /**
-     * @ORM\OneToOne(targetEntity="App\Entity\GeoLocation", mappedBy="message", cascade={"all"})
-     */
-    private $geoLocation;
-
-    /**
      * @ORM\Column(type="string", length=8, nullable=true)
      */
     private $prefix;
@@ -313,32 +308,6 @@ class Message
     public function setCode($code) : void
     {
         $this->code = $code;
-    }
-
-    /**
-     * @return GeoLocation|null
-     */
-    public function getGeoLocation() : ?GeoLocation
-    {
-        return $this->geoLocation;
-    }
-
-    /**
-     * @param GeoLocation|null $geoLocation
-     *
-     * @return Message
-     */
-    public function setGeoLocation(?GeoLocation $geoLocation) : self
-    {
-        $this->geoLocation = $geoLocation;
-
-        // set (or unset) the owning side of the relation if necessary
-        $newMessage = $geoLocation === null ? null : $this;
-        if ($newMessage !== $geoLocation->getMessage()) {
-            $geoLocation->setMessage($newMessage);
-        }
-
-        return $this;
     }
 
     /**

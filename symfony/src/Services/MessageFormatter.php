@@ -130,13 +130,6 @@ class MessageFormatter
             }
         }
 
-        // Enabled geo location
-        if ($message->getCommunication()->hasGeoLocation()) {
-            $contentParts[] = $this->translator->trans('message.sms.geo_location', [
-                '%url%' => trim(getenv('WEBSITE_URL'), '/').$this->router->generate('geo_open', ['code' => $message->getCode()]),
-            ], null, $language->getLocale());
-        }
-
         $this->phoneConfigManager->restoreContext();
 
         return GSM::enforceGSMAlphabet(implode("\n", $contentParts));

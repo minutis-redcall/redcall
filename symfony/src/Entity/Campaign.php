@@ -289,23 +289,6 @@ class Campaign
             foreach ($communication->getChoices() as $choice) {
                 $data['communications'][$communication->getId()]['choices'][$choice->getId()] = $choice->getCount();
             }
-
-            // Geolocation
-            $data['communications'][$communication->getId()]['geo'] = [];
-            if ($communication->hasGeoLocation()) {
-                foreach ($communication->getMessages() as $message) {
-                    if ($message->getGeoLocation()) {
-                        $data['communications'][$communication->getId()]['geo'][$message->getId()] = [
-                            'display-name' => $message->getVolunteer()->getDisplayName(),
-                            'phone-number' => $message->getVolunteer()->getPhoneNumber(),
-                            'longitude'    => $message->getGeoLocation()->getLongitude(),
-                            'latitude'     => $message->getGeoLocation()->getLatitude(),
-                            'accuracy'     => $message->getGeoLocation()->getAccuracy(),
-                            'heading'      => $message->getGeoLocation()->getHeading(),
-                        ];
-                    }
-                }
-            }
         }
 
         return $data;

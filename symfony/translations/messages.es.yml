@@ -413,7 +413,6 @@ form:
       back: Volver
       body: Contenido
       cost: 'La longitud del mensaje multiplica su precio por:'
-      geo_location: 'Los destinatarios de este mensaje se podrán geolocalizar entre sí'
       language: '¿En qué idioma estás escribiendo tu mensaje?'
       length: 'Longitud del mensaje:'
       message: Mensaje
@@ -448,22 +447,6 @@ form:
       explaination_5: 'Refuerzos SAMU en previsión de una manifestación el sábado. Se necesitan dos vehículos de primeros auxilios completos.'
       explaination_6: 'Los SMS se dividen en segmentos de 160 caracteres, y cuantos más segmentos haya, menos probabilidades de que el mensaje llegue íntegro a su destino. Debemos acostumbrarnos a enviar mensajes cortos para garantizar que todo el mundo los reciba.'
       title: 'Su mensaje es largo'
-geolocation:
-  error: 'Ha ocurrido un error.'
-  error_permission: 'Has rechazado compartir tu posición (o lo ha hecho la configuración de tu dispositivo).'
-  error_timeout: 'Se ha superado el límite de espera para la geolocalización.'
-  error_unavailable: 'No hay ningún dato de localización disponible.'
-  last_data: 'Posición recibida a las %time% (a %accuracy% de precisión)'
-  last_update: 'Última actualización:'
-  na: 'No disp.'
-  not_supported: 'Tu navegador no soporta la geolocalización .'
-  share: 'Compartir mi posición'
-  share_explains: 'Esto permitirá que le localicen otros miembros del equipo.'
-  started: 'Geolocalización activada'
-  stop: 'Parar la geolocalización'
-  subtitle: Geolocalización
-  title: 'Geolocalización de un equipo'
-  waiting: 'En espera...'
 import_report:
   disable_locked: 'Imposible desactivar un voluntario congelado.'
   disabled: 'El voluntario está desactivado en Pegass.'
@@ -658,7 +641,6 @@ message:
     type: email(s)
   sms:
     announcement: '%brand% %hours%h%mins%'
-    geo_location: 'Geolocalización de tu equipo: %url%'
     how_to_answer_multiple: 'Responde con los códigos de tu elección separados por un espacio'
     how_to_answer_simple: 'Responde con el código de tu elección'
     how_to_answer_url: 'Responde siguiendo %url% o llamando al %number%'

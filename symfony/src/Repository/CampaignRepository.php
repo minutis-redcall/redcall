@@ -243,38 +243,6 @@ class CampaignRepository extends BaseRepository
                     ->getSingleScalarResult();
     }
 
-    public function countNumberOfGeoLocationReceived(int $campaignId) : int
-    {
-        return $this->createQueryBuilder('c')
-                    ->select('COUNT(g.id)')
-                    ->join('c.communications', 'co')
-                    ->join('co.messages', 'm')
-                    ->join('m.geoLocation', 'g')
-                    ->where('c.id = :campaignId')
-                    ->setParameter('campaignId', $campaignId)
-                    ->getQuery()
-                    ->disableResultCache()
-                    ->getSingleScalarResult();
-    }
-
-    public function getLastGeoLocationUpdated(int $campaignId) : int
-    {
-        $row = $this->createQueryBuilder('c')
-                    ->select('g.datetime')
-                    ->join('c.communications', 'co')
-                    ->join('co.messages', 'm')
-                    ->join('m.geoLocation', 'g')
-                    ->where('c.id = :campaignId')
-                    ->setParameter('campaignId', $campaignId)
-                    ->orderBy('g.datetime', 'DESC')
-                    ->setMaxResults(1)
-                    ->getQuery()
-                    ->disableResultCache()
-                    ->getOneOrNullResult();
-
-        return $row && $row['datetime'] ? $row['datetime']->getTimestamp() : 0;
-    }
-
     public function getCampaignAudience(Campaign $campaign) : array
     {
         return $this->createQueryBuilder('c')

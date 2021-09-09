@@ -4,7 +4,6 @@ namespace App\Manager;
 
 use App\Entity\Answer;
 use App\Entity\Badge;
-use App\Entity\GeoLocation;
 use App\Entity\Message;
 use App\Entity\Structure;
 use App\Entity\Volunteer;
@@ -40,11 +39,6 @@ class VolunteerManager
     private $answerManager;
 
     /**
-     * @var GeoLocationManager
-     */
-    private $geoLocationManager;
-
-    /**
      * @var PhoneManager
      */
     private $phoneManager;
@@ -58,7 +52,6 @@ class VolunteerManager
         StructureManager $structureManager,
         BadgeManager $badgeManager,
         AnswerManager $answerManager,
-        GeoLocationManager $geoLocationManager,
         PhoneManager $phoneManager,
         Security $security)
     {
@@ -66,7 +59,6 @@ class VolunteerManager
         $this->structureManager    = $structureManager;
         $this->badgeManager        = $badgeManager;
         $this->answerManager       = $answerManager;
-        $this->geoLocationManager  = $geoLocationManager;
         $this->phoneManager        = $phoneManager;
         $this->security            = $security;
     }
@@ -319,15 +311,6 @@ class VolunteerManager
                     $answer->getChoices()->clear();
                     $this->answerManager->save($answer);
                 }
-            }
-
-            if ($geo = $message->getGeoLocation()) {
-                /** @var GeoLocation $geo */
-                $geo->setLongitude('0.0');
-                $geo->setLatitude('0.0');
-                $geo->setAccuracy(0);
-                $geo->setHeading(0);
-                $this->geoLocationManager->save($geo);
             }
         }
 

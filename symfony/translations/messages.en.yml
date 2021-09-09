@@ -298,7 +298,6 @@ campaign:
     expires: 'Auto. closed on'
     open: 'Reopen the campaign'
   cannot_reopen: 'Impossible to reopen the campaign: since it was closed, one or several volunteers were triggered and prefix used for their answers was reused.'
-  cannot_close: 'Cannot close this campaign: older campaigns are still open: %list%'
   errors:
     inactive: 'This campaign has ended, thank you for your participation.'
   no_structures:
@@ -329,6 +328,7 @@ campaign:
     2_light_orange: 'Preparation (UL)'
     3_dark_orange: 'Preparation (DT)'
     4_red: Engagement
+  cannot_close: 'Cannot close this campaign: older campaigns are still open: %list%'
 campaign_status:
   answer: Responses
   answer_history: 'Replies history'
@@ -443,7 +443,6 @@ form:
       back: Back
       body: Body
       cost: 'Message length multiplies its cost by:'
-      geo_location: 'Message recipients will be able to geo locate each others'
       language: 'In which language is written your message?'
       length: 'Message length:'
       message: Message
@@ -496,22 +495,6 @@ form:
       structure_use: 'Link the trigger to an operation from which structure?'
     title: 'Minutis Operation'
     url: 'Minutis operation:'
-geolocation:
-  error: 'An error occured.'
-  error_permission: 'You (or a setting in your device) refused to share your location.'
-  error_timeout: 'Location information request has timed out.'
-  error_unavailable: 'Location information are not available.'
-  last_data: 'Position received at %time% (precision: %accuracy%)'
-  last_update: 'Last update:'
-  na: N/A
-  not_supported: 'Your browser does not support geo localization.'
-  share: 'Share my location'
-  share_explains: 'This will let other members of the crew locate you.'
-  started: 'Geolocation enabled'
-  stop: 'Stop geolocalization'
-  subtitle: Geolocation
-  title: 'Crew geolocalization'
-  waiting: Waiting...
 import_report:
   disable_locked: 'Cannot disable a locked volunteer.'
   disabled: 'Volunteer is disabled on Pegass.'
@@ -708,7 +691,6 @@ message:
     type: email(s)
   sms:
     announcement: '%brand% at %hours%h%mins%:'
-    geo_location: 'Geolocation of your crew: %url%'
     how_to_answer_multiple: 'Reply by giving your choice(s) code(s), separated by a space.'
     how_to_answer_simple: 'Reply by giving your choice code.'
     how_to_answer_url: 'Answer by following %url% or by calling %number%'
