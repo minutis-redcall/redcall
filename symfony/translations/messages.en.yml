@@ -120,6 +120,10 @@ admin:
       sent: 'for sending'
       title: Costs
       total: 'The total costs for the period is'
+    general:
+      form:
+        from: 'From:'
+        to: 'To:'
     messages:
       answers_received: '<b>%answers%</b> answers were received.'
       messages_sent: '<b>%stat%</b> messages were sent'
@@ -154,10 +158,6 @@ admin:
       phone: '<b>%phone_number% (%phone_percent%%)</b> who do not have phone number'
       summary: 'The RedCall database has <b>%total_number% (%total_percent%%)</b> volunteers who may not be reachable'
       title: Volunteers
-    general:
-      form:
-        from: 'From:'
-        to: 'To:'
   user:
     list: 'User list'
     pegass: 'Pegass bindings'
@@ -282,7 +282,7 @@ base:
     result: '{0} results | {1} result | ]1,Inf[ results'
   play: Play
   search:
-    no_results: 'No results found for "{keyword}".'
+    no_results: 'No results found!'
     placeholder: Search...
   select_all: 'Select all'
   simple_no: 'No'
@@ -329,7 +329,6 @@ campaign:
     3_dark_orange: 'Preparation (DT)'
     4_red: Engagement
 campaign_status:
-  anser_none: 'No resp.'
   answer: Responses
   answer_history: 'Replies history'
   answer_invalid: 'Other resp.'
@@ -407,6 +406,7 @@ campaign_status:
     no_phone_mobile: 'No mobile phone number.'
     no_phone_optin: 'Do not want to be triggered through phone.'
     optout_until: 'Temporarily unavailable.'
+  answer_none: 'No resp.'
 csv_export:
   answer_time: 'Answered at'
   choice: 'Choice "%choice%"'

@@ -282,7 +282,7 @@ base:
     result: '[0,1] résultat | ]1,Inf[ résultats'
   play: Ecouter
   search:
-    no_results: 'Aucun résultat trouvé pour "{keyword}".'
+    no_results: 'Aucun résultat trouvé !'
     placeholder: Rechercher...
   select_all: 'Tout sélectionner'
   simple_no: Non
