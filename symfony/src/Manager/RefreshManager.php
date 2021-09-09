@@ -384,9 +384,6 @@ class RefreshManager
             $user->setIsAdmin(true);
             $this->userManager->save($user);
         }
-
-        // TODO: once current admins have the RTMR badge, automate the admin desactivation
-
     }
 
     private function normalizeName(string $name) : string

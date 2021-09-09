@@ -123,14 +123,20 @@ class MessageManager
             $this->addAnswer($message, $body);
         }
 
-        $this->answerManager->handleSpecialAnswers($phoneNumber, $body);
+        /** @var Message|null $message */
+        $message = null;
+        if ($messages) {
+            $message = reset($messages);
+
+            $this->answerManager->handleSpecialAnswers($message, $body);
+        }
 
         // An unknown number sent us a message
-        if (!$messages) {
+        if (!$message) {
             return null;
         }
 
-        return reset($messages)->getId();
+        return $message->getId();
     }
 
     public function getMessageFromPhoneNumber(string $phoneNumber, ?string $body = null) : ?Message

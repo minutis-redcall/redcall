@@ -7,7 +7,6 @@ use App\Entity\Answer;
 use App\Entity\Message;
 use App\Entity\Volunteer;
 use App\Enum\Stop;
-use App\Enum\Type;
 use App\Provider\SMS\SMSProvider;
 use App\Repository\AnswerRepository;
 use App\Security\Helper\Security;
@@ -52,20 +51,16 @@ class AnswerManager extends BaseService
         return $this->getAnswerRepository()->getSearchQueryBuilder($criteria);
     }
 
-    public function handleSpecialAnswers(string $phoneNumber, string $body)
+    public function handleSpecialAnswers(Message $message, string $body)
     {
         if (Stop::isValid($body)) {
-            $volunteer = $this->getVolunteerManager()->findOneByPhoneNumber($phoneNumber);
+            $volunteer = $message->getVolunteer();
             if (!$volunteer || !$volunteer->isPhoneNumberOptin()) {
                 return;
             }
 
-            $this->getCampaignManager()->contact(
-                $volunteer,
-                Type::SMS(),
-                $this->getTranslator()->trans('special_answers.title', [
-                    '%keyword%' => $body,
-                ]),
+            $this->sendSms(
+                $message,
                 $this->getTranslator()->trans('special_answers.stop')
             );
 
