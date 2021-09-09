@@ -277,8 +277,8 @@ base:
     result: '[0,1] resultado | ]1,Inf[ resultados'
   play: Reproducir
   search:
-    no_results: 'No se ha encontrado ningún resultado con "{keyword}".'
     placeholder: Buscar...
+    no_results: 'No se ha encontrado ningún resultado con "{keyword}".'
   select_all: 'Seleccionar todo'
   simple_no: 'No'
   simple_yes: Sí
