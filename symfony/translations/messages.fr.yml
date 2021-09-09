@@ -298,8 +298,6 @@ campaign:
     expires: 'Fermé auto. le'
     open: 'Réouvrir le déclenchement'
   cannot_reopen: 'Impossible de réouvrir le déclenchement : depuis sa fermeture, un ou plusieurs bénévoles ont été déclenchés et le préfixe associé à leur réponse a été réutilisé.'
-  cannot_close: 'Impossible de fermer le déclenchement : d''autres déclenchements plus anciens sont toujours ouverts : %list%'
-
   errors:
     inactive: 'Ce déclenchement est terminé, merci pour votre participation.'
   no_structures:
@@ -330,6 +328,7 @@ campaign:
     2_light_orange: 'Préparation (UL)'
     3_dark_orange: 'Préparation (DT)'
     4_red: Engagement
+  cannot_close: 'Impossible de fermer le déclenchement : d''autres déclenchements plus anciens sont toujours ouverts : %list%'
 campaign_status:
   answer: 'Réponses libres'
   answer_history: 'Historique de vos réponsess'
@@ -444,7 +443,6 @@ form:
       back: Retour
       body: Contenu
       cost: 'La longueur du message multiplie son prix par :'
-      geo_location: 'Les destinataires de ce message pourront se géo-localiser entre eux'
       language: 'En quelle langue écrivez-vous votre message ?'
       length: 'Longueur du message :'
       message: Message
@@ -497,22 +495,6 @@ form:
       structure_use: 'Structure à laquelle est rattachée l''opération'
     title: 'Opération Minutis'
     url: 'Opération Minutis :'
-geolocation:
-  error: 'Une erreur est survenue.'
-  error_permission: 'Vous avez refusé (ou un paramètre de votre appareil) de partager votre position.'
-  error_timeout: 'Le délai d''attente de votre localisation a été dépassé.'
-  error_unavailable: 'Aucune information de localisation disponible.'
-  last_data: 'Position reçue à %time% (à %accuracy% près)'
-  last_update: 'Dernière mise à jour:'
-  na: Indispo.
-  not_supported: 'La géolocalisation n''est pas supportée par votre navigateur.'
-  share: 'Partager ma position'
-  share_explains: 'Cela va permettre aux autres membres de l''équipe de vous localiser.'
-  started: 'Géolocalisation activée'
-  stop: 'Arrêter la géolocalisation'
-  subtitle: Géolocalisation
-  title: 'Géolocalisation d''équipage'
-  waiting: 'En attente...'
 import_report:
   disable_locked: 'Impossible de desactiver un bénévole gelé.'
   disabled: 'Le bénévole est desactivé sur Pegass.'
@@ -709,7 +691,6 @@ message:
     type: email(s)
   sms:
     announcement: '%brand% %hours%h%mins%'
-    geo_location: 'Géolocalisation de votre équipe: %url%'
     how_to_answer_multiple: 'Répondez avec les codes de votre choix séparés par un espace'
     how_to_answer_simple: 'Répondez avec le code de votre choix'
     how_to_answer_url: 'Répondez en suivant %url% ou en appelant le %number%'

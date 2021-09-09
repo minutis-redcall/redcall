@@ -48,10 +48,6 @@ class SmsTriggerType extends AbstractType
                 'label'    => 'form.communication.fields.multiple_answer',
                 'required' => false,
             ])
-            ->add('geoLocation', CheckboxType::class, [
-                'label'    => 'form.communication.fields.geo_location',
-                'required' => false,
-            ])
             ->add('test', SubmitType::class, [
                 'label' => 'form.communication.fields.test',
                 'attr'  => [

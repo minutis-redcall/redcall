@@ -16,7 +16,6 @@ sandbox:
   fake_sms:
     button: 'Simulador de SMS'
     clear: 'Eliminar todos los mensajes'
-    geo: 'Abrir la geolocalización para "%text"'
     send: Enviar
     thread: 'Buzón de %phoneNumber% (%name%)'
     title: 'Simulador de SMS - Lista de destinatarios'

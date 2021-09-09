@@ -235,12 +235,6 @@ class CampaignManager
             // number of answers to any of the trigger's communication increased
             // note: we don't need to take care of "answers that changed" because answers are immutable
             $this->campaignRepository->countNumberOfAnswersReceived($campaignId),
-
-            // number of geolocation data increased
-            $this->campaignRepository->countNumberOfGeoLocationReceived($campaignId),
-
-            // geolocalisation data of any volunteer has been updated
-            $this->campaignRepository->getLastGeoLocationUpdated($campaignId),
         ];
 
         return sha1(implode('|', $criteria));

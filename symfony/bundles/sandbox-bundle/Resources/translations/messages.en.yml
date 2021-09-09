@@ -26,7 +26,6 @@ sandbox:
   fake_sms:
     button: 'SMS Simulator'
     clear: 'Remove all messages'
-    geo: 'Open geolocation for "%text"'
     send: Send
     thread: '%phoneNumber% inbox (%name%)'
     title: 'SMS Simulator - List of recipients'

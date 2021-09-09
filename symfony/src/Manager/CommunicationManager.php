@@ -11,7 +11,6 @@ use App\Entity\User;
 use App\Entity\Volunteer;
 use App\Form\Model\BaseTrigger;
 use App\Form\Model\EmailTrigger;
-use App\Form\Model\SmsTrigger;
 use App\Provider\Minutis\MinutisProvider;
 use App\Repository\CommunicationRepository;
 use App\Security\Helper\Security;
@@ -205,10 +204,6 @@ class CommunicationManager
             ->setBody($trigger->getMessage())
             ->setCreatedAt(new DateTime())
             ->setMultipleAnswer($trigger->isMultipleAnswer());
-
-        if ($trigger instanceof SmsTrigger) {
-            $communication->setGeoLocation($trigger->isGeoLocation());
-        }
 
         if ($trigger instanceof EmailTrigger) {
             $communication->setSubject($trigger->getSubject());
