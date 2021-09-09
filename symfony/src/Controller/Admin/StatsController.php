@@ -46,10 +46,13 @@ class StatsController extends BaseController
      */
     public function general(StatisticsManager $statisticsManager, Request $request) : array
     {
+        $from = new \DateTime('-7days');
+        $to   = new \DateTime();
+
         $form = $this
             ->createFormBuilder([
-                'from' => new \DateTime('-7days'),
-                'to'   => new \DateTime(),
+                'from' => $from,
+                'to'   => $to,
             ])
             ->add('from', DateType::class, [
                 'label'       => 'admin.statistics.general.form.from',
@@ -73,8 +76,10 @@ class StatsController extends BaseController
             ->getForm()
             ->handleRequest($request);
 
-        $from = $form->get('from')->getData();
-        $to   = $form->get('to')->getData();
+        if ($form->isSubmitted() && $form->isValid()) {
+            $from = $form->get('from')->getData();
+            $to   = $form->get('to')->getData();
+        }
 
         $from->setTime(0, 0);
         $to->setTime(23, 59, 59);
