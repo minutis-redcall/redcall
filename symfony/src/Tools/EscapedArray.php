@@ -6,10 +6,12 @@ class EscapedArray extends \ArrayObject
 {
     public function __construct($array = [], $flags = 0, $iteratorClass = "ArrayIterator")
     {
+        $copy = [];
+
         foreach ($array as $index => $value) {
-            $array[htmlentities($index)] = htmlentities($value);
+            $copy[htmlentities($index)] = htmlentities($value);
         }
 
-        parent::__construct($array, $flags, $iteratorClass);
+        parent::__construct($copy, $flags, $iteratorClass);
     }
 }
