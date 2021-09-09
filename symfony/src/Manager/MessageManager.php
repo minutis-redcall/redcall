@@ -93,8 +93,6 @@ class MessageManager
 
     public function handleAnswer(string $phoneNumber, string $body) : ?int
     {
-        $this->answerManager->handleSpecialAnswers($phoneNumber, $body);
-
         // Replaces "A 2" by "A2"
         $body = preg_replace('/([a-z]+)\s*(\d+)/ui', '${1}${2}', $body);
 
@@ -124,6 +122,8 @@ class MessageManager
         foreach ($messages as $message) {
             $this->addAnswer($message, $body);
         }
+
+        $this->answerManager->handleSpecialAnswers($phoneNumber, $body);
 
         // An unknown number sent us a message
         if (!$messages) {
