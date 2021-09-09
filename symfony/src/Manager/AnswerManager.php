@@ -53,7 +53,7 @@ class AnswerManager extends BaseService
 
     public function handleSpecialAnswers(Message $message, string $body)
     {
-        if (Stop::isValid($body)) {
+        if (Stop::isValid($body) && $message->getCommunication()->isSms()) {
             $volunteer = $message->getVolunteer();
             if (!$volunteer || !$volunteer->isPhoneNumberOptin()) {
                 return;
@@ -87,7 +87,10 @@ class AnswerManager extends BaseService
         $answer->setRaw($content);
         $answer->setReceivedAt(new \DateTime());
         $answer->setUnclear(true);
-        $answer->setByAdmin($this->getSecurity()->getUser()->getUsername());
+
+        if ($this->getSecurity()->getUser()) {
+            $answer->setByAdmin('Robot');
+        }
 
         $this->getAnswerRepository()->save($answer);
 
