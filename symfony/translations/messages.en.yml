@@ -333,6 +333,7 @@ campaign_status:
   answer_history: 'Replies history'
   answer_invalid: 'Other resp.'
   answer_no: 'Answer %choice%'
+  answer_none: 'No resp.'
   answers:
     answer_link: Answer
     change: 'Change answers'
@@ -406,7 +407,6 @@ campaign_status:
     no_phone_mobile: 'No mobile phone number.'
     no_phone_optin: 'Do not want to be triggered through phone.'
     optout_until: 'Temporarily unavailable.'
-  answer_none: 'No resp.'
 csv_export:
   answer_time: 'Answered at'
   choice: 'Choice "%choice%"'
@@ -691,7 +691,7 @@ message:
     announcement: '%brand% at %hours% hours %mins%.'
     answer: 'You answered: "%choice%". Thank you for your participation.'
     choices: 'To answer "%answer%", press %code%.'
-    repeat: 'To repeat this message, press 0.'
+    repeat: 'To repeat this message, press 0 or call back.'
     type: call(s)
     unknown: 'Invalid answer.'
   email:

@@ -691,7 +691,7 @@ message:
     announcement: '%brand% à %hours% heure %mins%.'
     answer: 'Vous avez répondu : "%choice%". Merci pour votre participation.'
     choices: 'Pour répondre "%answer%", tapez %code%.'
-    repeat: 'Pour réécouter le message, tapez 0.'
+    repeat: 'Pour réécouter le message, tapez 0 ou rappeler à ce numéro.'
     type: appel(s)
     unknown: 'Réponse invalide.'
   email:
