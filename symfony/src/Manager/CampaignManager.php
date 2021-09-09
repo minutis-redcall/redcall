@@ -250,4 +250,26 @@ class CampaignManager
     {
         return $this->campaignRepository->getCampaignAudience($campaign);
     }
+
+    /**
+     * @param Campaign $campaign
+     *
+     * @return Campaign[]
+     */
+    public function getActiveCampaignsStillOpenBeforeThatOne(Campaign $campaign) : array
+    {
+        $communicationId = null;
+        $volunteers      = [];
+        foreach ($campaign->getCommunications() as $communication) {
+            if (null === $communicationId || $communication->getId() > $communicationId) {
+                $communicationId = $communication->getId();
+            }
+
+            foreach ($communication->getMessages() as $message) {
+                $volunteers[] = $message->getVolunteer()->getId();
+            }
+        }
+
+        return $this->campaignRepository->getLessRecentCampaignsThan($communicationId, $volunteers);
+    }
 }

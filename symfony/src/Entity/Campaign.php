@@ -190,6 +190,9 @@ class Campaign
         return $this;
     }
 
+    /**
+     * @return Communication[]
+     */
     public function getCommunications()
     {
         return $this->communications;
