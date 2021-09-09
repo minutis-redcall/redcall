@@ -3,15 +3,12 @@
 namespace App\Manager;
 
 use App\Communication\Processor\ProcessorInterface;
-use App\Communication\Processor\SimpleProcessor;
 use App\Entity\Campaign;
 use App\Entity\Campaign as CampaignEntity;
 use App\Entity\Communication;
 use App\Entity\User;
 use App\Entity\Volunteer;
-use App\Enum\Type;
 use App\Form\Model\Campaign as CampaignModel;
-use App\Form\Type\AudienceType;
 use App\Repository\CampaignRepository;
 use Bundles\PasswordLoginBundle\Entity\AbstractUser;
 use Doctrine\ORM\QueryBuilder;
@@ -36,19 +33,9 @@ class CampaignManager
     private $messageManager;
 
     /**
-     * @var PlatformConfigManager
-     */
-    private $platformManager;
-
-    /**
      * @var OperationManager
      */
     private $operationManager;
-
-    /**
-     * @var SimpleProcessor
-     */
-    private $processor;
 
     /**
      * @var TokenStorageInterface
@@ -58,17 +45,13 @@ class CampaignManager
     public function __construct(CampaignRepository $campaignRepository,
         CommunicationManager $communicationManager,
         MessageManager $messageManager,
-        PlatformConfigManager $platformManager,
         OperationManager $operationManager,
-        SimpleProcessor $processor,
         TokenStorageInterface $tokenStorage)
     {
         $this->campaignRepository   = $campaignRepository;
         $this->communicationManager = $communicationManager;
         $this->messageManager       = $messageManager;
-        $this->platformManager      = $platformManager;
         $this->operationManager     = $operationManager;
-        $this->processor            = $processor;
         $this->tokenStorage         = $tokenStorage;
     }
 
@@ -268,26 +251,25 @@ class CampaignManager
         return $this->campaignRepository->getCampaignAudience($campaign);
     }
 
-    public function contact(Volunteer $volunteer, Type $type, string $title, string $message) : CampaignEntity
+    /**
+     * @param Campaign $campaign
+     *
+     * @return Campaign[]
+     */
+    public function getActiveCampaignsStillOpenBeforeThatOne(Campaign $campaign) : array
     {
-        $communication = $type->getFormData();
+        $communicationId = null;
+        $volunteers      = [];
+        foreach ($campaign->getCommunications() as $communication) {
+            if (null === $communicationId || $communication->getId() > $communicationId) {
+                $communicationId = $communication->getId();
+            }
 
-        $platform = $this->platformManager->getPlaform(
-            $volunteer->getPlatform()
-        );
+            foreach ($communication->getMessages() as $message) {
+                $volunteers[] = $message->getVolunteer()->getId();
+            }
+        }
 
-        $communication->setLanguage(
-            $platform->getDefaultLanguage()->getLocale()
-        );
-
-        $communication->setAudience(AudienceType::createEmptyData([
-            'volunteers' => [$volunteer->getId()],
-        ]));
-        $communication->setMessage($message);
-
-        $campaign        = new CampaignModel($communication);
-        $campaign->label = $title;
-
-        return $this->launchNewCampaign($campaign, $this->processor, $volunteer);
+        return $this->campaignRepository->getLessRecentCampaignsThan($communicationId, $volunteers);
     }
 }

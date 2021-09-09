@@ -298,6 +298,8 @@ campaign:
     expires: 'Fermé auto. le'
     open: 'Réouvrir le déclenchement'
   cannot_reopen: 'Impossible de réouvrir le déclenchement : depuis sa fermeture, un ou plusieurs bénévoles ont été déclenchés et le préfixe associé à leur réponse a été réutilisé.'
+  cannot_close: 'Impossible de fermer le déclenchement : d''autres déclenchements plus anciens sont toujours ouverts : %list%'
+
   errors:
     inactive: 'Ce déclenchement est terminé, merci pour votre participation.'
   no_structures:
@@ -691,7 +693,7 @@ message:
     announcement: '%brand% à %hours% heure %mins%.'
     answer: 'Vous avez répondu : "%choice%". Merci pour votre participation.'
     choices: 'Pour répondre "%answer%", tapez %code%.'
-    repeat: 'Pour réécouter le message, tapez 0.'
+    repeat: 'Pour réécouter le message, tapez 0 ou rappeler à ce numéro.'
     type: appel(s)
     unknown: 'Réponse invalide.'
   email:

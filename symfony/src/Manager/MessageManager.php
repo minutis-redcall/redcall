@@ -93,8 +93,6 @@ class MessageManager
 
     public function handleAnswer(string $phoneNumber, string $body) : ?int
     {
-        $this->answerManager->handleSpecialAnswers($phoneNumber, $body);
-
         // Replaces "A 2" by "A2"
         $body = preg_replace('/([a-z]+)\s*(\d+)/ui', '${1}${2}', $body);
 
@@ -125,12 +123,20 @@ class MessageManager
             $this->addAnswer($message, $body);
         }
 
+        /** @var Message|null $message */
+        $message = null;
+        if ($messages) {
+            $message = reset($messages);
+
+            $this->answerManager->handleSpecialAnswers($message, $body);
+        }
+
         // An unknown number sent us a message
-        if (!$messages) {
+        if (!$message) {
             return null;
         }
 
-        return reset($messages)->getId();
+        return $message->getId();
     }
 
     public function getMessageFromPhoneNumber(string $phoneNumber, ?string $body = null) : ?Message

@@ -642,7 +642,7 @@ message:
     announcement: '%brand% a las %hours% horas %mins%.'
     answer: 'Has respondido: "%choice%". Gracias por participar. '
     choices: 'Para responder "%answer%", escribe %code%. '
-    repeat: 'Para volver a escuchar el mensaje, pulsa 0. '
+    repeat: 'Para volver a escuchar el mensaje, pulsa 0 o llamar de vuelta.'
     type: llamada(s)
     unknown: 'Respuesta inválida.'
   email:

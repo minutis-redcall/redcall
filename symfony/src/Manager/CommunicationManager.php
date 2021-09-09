@@ -142,15 +142,9 @@ class CommunicationManager
         return $communication;
     }
 
-    public function launchNewCommunication(Campaign $campaign,
-        Communication $communication,
-        ProcessorInterface $processor = null) : Communication
+    public function launchNewCommunication(Campaign $campaign, Communication $communication) : Communication
     {
-        if ($processor) {
-            $processor->process($communication);
-        } else {
-            $this->processor->process($communication);
-        }
+        $this->processor->process($communication);
 
         if ($communication->getVolunteer()->getUser() && $communication->getVolunteer()->getUser()->getMainStructure()) {
             $structureName = $communication->getVolunteer()->getUser()->getMainStructure()->getDisplayName();
