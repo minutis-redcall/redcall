@@ -103,6 +103,9 @@ admin:
     unlock: Unlock
     unroot: 'Remove from countries manager'
     root: 'Make countries manager'
+    pegass_apied: 'Pegass API'
+    pegass_api_grant: 'Grant Pegass API access'
+    pegass_api_ungrant: 'Remove Pegass API access'
   resources:
     change_platform: 'Switch platform to: %platform%'
     change_platform_title: 'Platform update'
