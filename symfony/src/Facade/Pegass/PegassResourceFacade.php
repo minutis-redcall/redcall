@@ -12,7 +12,6 @@ class PegassResourceFacade implements FacadeInterface
     /**
      * Type of required Pegass entity
      *
-     * @Assert\NotBlank
      * @Assert\Choice(choices = {
      *     Pegass::TYPE_AREA,
      *     Pegass::TYPE_DEPARTMENT,
@@ -27,7 +26,6 @@ class PegassResourceFacade implements FacadeInterface
     /**
      * Identifier of a resource (aka. "nivol" for a volunteer)
      *
-     * @Assert\NotBlank
      * @Assert\Length(max = 64)
      *
      * @var string|null

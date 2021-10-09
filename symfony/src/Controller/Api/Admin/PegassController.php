@@ -23,7 +23,7 @@ use Symfony\Component\Routing\Annotation\Route;
  * French Red Cross.
  *
  * @Route("/api/admin/pegass", name="api_admin_pegass_")
- * @IsGranted("ROLE_ADMIN")
+ * @IsGranted("ROLE_PEGASS_API")
  */
 class PegassController
 {

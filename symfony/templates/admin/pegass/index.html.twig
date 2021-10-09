@@ -33,7 +33,8 @@
                             <div class="col-md-4">
                                 <div>
                                     <div class="h4" {% if user.root %}style="color:red;"{% endif %}>
-                                        {{ platforms[user.platform].flag }} <a href="#" style="color:black;" class="copy-to-clipboard">{{ user.username }}</a>
+                                        {{ platforms[user.platform].flag }}
+                                        <a href="#" style="color:black;" class="copy-to-clipboard">{{ user.username }}</a>
                                     </div>
                                     <div class="text-small">
                                         {{ 'password_login.user_list.registered_at'|trans({'%date%': user.registeredAt|date('d/m/Y H:i')}) }}
@@ -92,6 +93,16 @@
 
                                     {{ 'admin.pegass.is_root'|trans }} <sup>(5)</sup>
                                 </div>
+                                {% if constant('\\App\\Enum\\Platform::FR') == user.platform %}
+                                    <div class="text-small">
+                                        {% if user.isPegassApi %}
+                                            <span class="h4">✅</span>
+                                        {% else %}
+                                            <span class="h4">❌</span>
+                                        {% endif %}
+                                        {{ 'admin.pegass.pegass_apied'|trans }}
+                                    </div>
+                                {% endif %}
                                 <div class="text-small">
                                     {% if user.locked %}
                                         <span class="h4">✅</span>
@@ -185,6 +196,21 @@
                                                 {% else %}
                                                     <a class="dropdown-item text-success" href="{{ path('admin_pegass_toggle_root', {id: user.id, csrf: csrf_token('pegass')}) }}">
                                                         {{ 'admin.pegass.root'|trans }}
+                                                    </a>
+                                                {% endif %}
+                                            {% endif %}
+
+
+                                            {% if app.user.canGrantPegassApi and constant('\\App\\Enum\\Platform::FR') == user.platform %}
+                                                <div class="dropdown-divider"></div>
+
+                                                {% if user.isPegassApi %}
+                                                    <a class="dropdown-item text-danger" href="{{ path('admin_pegass_toggle_pegass_api', {id: user.id, csrf: csrf_token('pegass')}) }}">
+                                                        {{ 'admin.pegass.pegass_api_ungrant'|trans }}
+                                                    </a>
+                                                {% else %}
+                                                    <a class="dropdown-item text-success" href="{{ path('admin_pegass_toggle_pegass_api', {id: user.id, csrf: csrf_token('pegass')}) }}">
+                                                        {{ 'admin.pegass.pegass_api_grant'|trans }}
                                                     </a>
                                                 {% endif %}
                                             {% endif %}

@@ -103,6 +103,9 @@ admin:
     unlock: Dégeler
     unroot: 'Desactiver la gestion des pays'
     root: 'Activer la gestion des pays'
+    pegass_apied: 'Pegass API'
+    pegass_api_grant: 'Autoriser l''accès aux APIs Pegass'
+    pegass_api_ungrant: 'Retirer l''accès aux APIs Pegass'
   resources:
     change_platform: 'Transférer vers %platform%'
     change_platform_title: 'Changement de plateforme'
