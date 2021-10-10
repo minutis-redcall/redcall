@@ -12,6 +12,11 @@
                 {% endif %}
             {% endfor %}
 
+            {# Google App Engine doesn't support PHP 8 yet, so in some cases we cannot use strong typing #}
+            {% if property.types|length == 0 %}
+                <div class="badge badge-pill badge-danger">string*</div>
+            {% endif %}
+
             {% for type in property.types %}
                 {% if type.builtinType == 'boolean' or type.builtinType == 'bool' %}
                     <div class="badge badge-pill badge-warning">boolean{% if nullable %}*{% endif %}</div>
@@ -19,7 +24,7 @@
                     <div class="badge badge-pill badge-success">integer{% if nullable %}*{% endif %}</div>
                 {% elseif type.builtinType == 'double' or type.builtinType == 'float' %}
                     <div class="badge badge-pill badge-success">float{% if nullable %}*{% endif %}</div>
-                {% elseif type.builtinType == 'string' %}
+                {% elseif type.builtinType == 'string' or type.builtinType == 'scalar' %}
                     <div class="badge badge-pill badge-danger">string{% if nullable %}*{% endif %}</div>
                 {% elseif type.builtinType == 'array' %}
                     <div class="badge badge-pill badge-primary">array{% if nullable %}*{% endif %}</div>
