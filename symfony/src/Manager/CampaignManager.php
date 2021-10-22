@@ -252,6 +252,10 @@ class CampaignManager
      */
     public function getActiveCampaignsStillOpenBeforeThatOne(Campaign $campaign) : array
     {
+        if (!$campaign->hasChoices()) {
+            return [];
+        }
+
         $communicationId = null;
         $volunteers      = [];
         foreach ($campaign->getCommunications() as $communication) {

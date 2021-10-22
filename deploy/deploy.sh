@@ -52,7 +52,7 @@ source .env >/dev/null
 
 gcloud config set project ${GCP_PROJECT_NAME}
 gcloud config set app/cloud_build_timeout 3600
-yarn encore production
+#yarn encore production
 gcloud beta app deploy --verbosity debug --quiet --no-cache
 cd ..
 
