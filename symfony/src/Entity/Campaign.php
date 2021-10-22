@@ -406,4 +406,16 @@ class Campaign
     {
         return $this->operation && $this->operation->hasChoice($choice);
     }
+
+    public function hasChoices()
+    {
+        foreach ($this->communications as $communication) {
+            /** @var Communication $communication */
+            if ($communication->getChoices()->count()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

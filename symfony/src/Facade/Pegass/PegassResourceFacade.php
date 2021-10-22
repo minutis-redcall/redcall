@@ -28,7 +28,7 @@ class PegassResourceFacade implements FacadeInterface
      *
      * @Assert\Length(max = 64)
      *
-     * @var string|null
+     * @var scalar|null
      */
     private $identifier;
 
@@ -54,12 +54,12 @@ class PegassResourceFacade implements FacadeInterface
         return $this;
     }
 
-    public function getIdentifier() : ?string
+    public function getIdentifier()
     {
         return $this->identifier;
     }
 
-    public function setIdentifier(?string $identifier) : self
+    public function setIdentifier($identifier) : self
     {
         $this->identifier = $identifier;
 

@@ -12,7 +12,6 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Validator\Constraints\Date;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Range;
 
@@ -46,7 +45,7 @@ class StatsController extends BaseController
      */
     public function general(StatisticsManager $statisticsManager, Request $request) : array
     {
-        $from = new \DateTime('-7days');
+        $from = new \DateTime('first day of January this year');
         $to   = new \DateTime();
 
         $form = $this
@@ -59,7 +58,6 @@ class StatsController extends BaseController
                 'widget'      => 'single_text',
                 'constraints' => [
                     new NotBlank(),
-                    new Date(),
                 ],
             ])
             ->add('to', DateType::class, [
@@ -67,7 +65,6 @@ class StatsController extends BaseController
                 'widget'      => 'single_text',
                 'constraints' => [
                     new NotBlank(),
-                    new Date(),
                 ],
             ])
             ->add('submit', SubmitType::class, [
@@ -128,7 +125,6 @@ class StatsController extends BaseController
                 'widget'      => 'single_text',
                 'constraints' => [
                     new NotBlank(),
-                    new Date(),
                 ],
             ])
             ->add('to', DateType::class, [
@@ -136,7 +132,6 @@ class StatsController extends BaseController
                 'widget'      => 'single_text',
                 'constraints' => [
                     new NotBlank(),
-                    new Date(),
                 ],
             ])
             ->add('min', NumberType::class, [
