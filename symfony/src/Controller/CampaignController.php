@@ -167,18 +167,7 @@ class CampaignController extends BaseController
 
         // Close the campaign
         if ($campaign->isActive()) {
-            $older = $this->campaignManager->getActiveCampaignsStillOpenBeforeThatOne($campaign);
-            if ($older) {
-                $list = array_map(function (Campaign $campaign) {
-                    return sprintf('%s (%s)', $campaign->getLabel(), $campaign->getCreatedAt()->format('d/m/Y'));
-                }, $older);
-
-                $this->addFlash('alert', $this->translator->trans('campaign.cannot_close', [
-                    '%list%' => implode(', ', $list),
-                ]));
-            } else {
-                $this->campaignManager->closeCampaign($campaign);
-            }
+            $this->campaignManager->closeCampaign($campaign);
         }
 
         return $this->redirect($this->generateUrl('communication_index', [

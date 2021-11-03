@@ -45,7 +45,8 @@ class StatsController extends BaseController
      */
     public function general(StatisticsManager $statisticsManager, Request $request) : array
     {
-        $from = new \DateTime('first day of January this year');
+        //$from = new \DateTime('first day of January this year midnight');
+        $from = new \DateTime('first day of this month midnight');
         $to   = new \DateTime();
 
         $form = $this

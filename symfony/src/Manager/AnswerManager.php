@@ -88,8 +88,9 @@ class AnswerManager extends BaseService
         $answer->setReceivedAt(new \DateTime());
         $answer->setUnclear(true);
 
+        $answer->setByAdmin('Robot');
         if ($this->getSecurity()->getUser()) {
-            $answer->setByAdmin('Robot');
+            $answer->setByAdmin($this->getSecurity()->getUser()->getUserIdentifier());
         }
 
         $this->getAnswerRepository()->save($answer);

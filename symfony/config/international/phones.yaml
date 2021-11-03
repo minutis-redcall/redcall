@@ -36,7 +36,7 @@ parameters:
     gf: # +594, Guyane Française
       timezone: 'America/Cayenne'
       outbound_call_enabled: true
-      outbound_call_number: '%env(TWILIO_FROM_LONG_FR)%'
+      outbound_call_number: '%env(TWILIO_FROM_TOLL_FR)%'
       outbound_sms_enabled: true
       outbound_sms_number: '%env(TWILIO_FROM_LONG_FR)%'
       inbound_call_enabled: false
@@ -54,7 +54,7 @@ parameters:
     yt: # +262, Mayotte
       timezone: 'Indian/Mayotte'
       outbound_call_enabled: true
-      outbound_call_number: '%env(TWILIO_FROM_LONG_FR)%'
+      outbound_call_number: '%env(TWILIO_FROM_TOLL_FR)%'
       outbound_sms_enabled: true
       outbound_sms_number: '%env(TWILIO_SENDER_ID_FR)%'
       inbound_call_enabled: false
@@ -63,7 +63,7 @@ parameters:
     pf: # +689, Polynésie Française
       timezone: 'Pacific/Tahiti'
       outbound_call_enabled: true
-      outbound_call_number: '%env(TWILIO_FROM_LONG_FR)%'
+      outbound_call_number: '%env(TWILIO_FROM_TOLL_FR)%'
       outbound_sms_enabled: true
       outbound_sms_number: '%env(TWILIO_SENDER_ID_FR)%'
       inbound_call_enabled: false
@@ -72,7 +72,7 @@ parameters:
     re: # +262, Réunion
       timezone: 'Indian/Reunion'
       outbound_call_enabled: true
-      outbound_call_number: '%env(TWILIO_FROM_LONG_FR)%'
+      outbound_call_number: '%env(TWILIO_FROM_TOLL_FR)%'
       outbound_sms_enabled: true
       outbound_sms_number: '%env(TWILIO_SENDER_ID_FR)%'
       inbound_call_enabled: false
@@ -81,7 +81,7 @@ parameters:
     nc: # +687, Nouvelle-Calédonie
       timezone: 'Pacific/Noumea'
       outbound_call_enabled: true
-      outbound_call_number: '%env(TWILIO_FROM_LONG_FR)%'
+      outbound_call_number: '%env(TWILIO_FROM_TOLL_FR)%'
       outbound_sms_enabled: true
       outbound_sms_number: '%env(TWILIO_SENDER_ID_FR)%'
       inbound_call_enabled: false
@@ -90,7 +90,7 @@ parameters:
     pm: # +508, Saint-Pierre-et-Miquelon
       timezone: 'America/Miquelon'
       outbound_call_enabled: true
-      outbound_call_number: '%env(TWILIO_FROM_LONG_FR)%'
+      outbound_call_number: '%env(TWILIO_FROM_TOLL_FR)%'
       outbound_sms_enabled: true
       outbound_sms_number: '%env(TWILIO_FROM_LONG_FR)%'
       inbound_call_enabled: false
