@@ -261,25 +261,4 @@ class CampaignRepository extends BaseRepository
                     ->getQuery()
                     ->getArrayResult();
     }
-
-    /**
-     * @param Campaign $campaign
-     *
-     * @return Campaign[]
-     */
-    public function getLessRecentCampaignsThan(int $communicationId, array $volunteerIds) : array
-    {
-        return $this->createQueryBuilder('ca')
-                    ->join('ca.communications', 'co')
-                    ->where('ca.active = 1')
-                    ->andWhere('co.id < :communicationId')
-                    ->setParameter('communicationId', $communicationId)
-                    ->join('co.messages', 'm')
-                    ->join('m.volunteer', 'v')
-                    ->andWhere('v.id IN (:volunteerIds)')
-                    ->setParameter('volunteerIds', $volunteerIds)
-                    ->addOrderBy('ca.createdAt', 'ASC')
-                    ->getQuery()
-                    ->getResult();
-    }
 }
