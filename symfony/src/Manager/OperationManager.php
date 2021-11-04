@@ -53,7 +53,7 @@ class OperationManager
             return;
         }
 
-        $email = $owner['attributes']['mail']['value'] ?? null;
+        $email = $owner['attributes']['mail']['value'] ?? $owner['attributes']['username']['value'] ?? null;
         if (!$email) {
             $this->logger->warning(sprintf('Cannot set "%s" as minutis operation owner because (s)he has no email', $ownerExternalId));
 
