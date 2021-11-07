@@ -9,7 +9,6 @@ use Bundles\PegassCrawlerBundle\Repository\PegassRepository;
 use Bundles\PegassCrawlerBundle\Service\PegassClient;
 use DateInterval;
 use DateTime;
-use Doctrine\Common\Persistence\Mapping\MappingException;
 use Doctrine\ORM\QueryBuilder;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -98,6 +97,8 @@ class PegassManager
                 $this->updateArea($entity, $fromCache);
                 break;
             case Pegass::TYPE_DEPARTMENT:
+            case Pegass::TYPE_REGION:
+            case Pegass::TYPE_NATIONAL:
                 $this->updateDepartment($entity, $fromCache);
                 break;
             case Pegass::TYPE_STRUCTURE:
@@ -192,22 +193,39 @@ class PegassManager
         $entity->setUpdatedAt(new DateTime());
         $this->pegassRepository->save($entity);
 
-        if ($identifiers = array_column($data, 'id')) {
-            $this->pegassRepository->removeMissingEntities(Pegass::TYPE_DEPARTMENT, $identifiers);
-        }
+        $mapping = [
+            'Département'          => Pegass::TYPE_DEPARTMENT,
+            'Région'               => Pegass::TYPE_REGION,
+            'Instances Nationales' => Pegass::TYPE_NATIONAL,
+        ];
+        $zones   = [];
 
         foreach ($data as $row) {
-            $department = $this->pegassRepository->getEntity(Pegass::TYPE_DEPARTMENT, $row['id'], false);
-            if (!$department) {
-                $department = new Pegass();
-                $department->setType(Pegass::TYPE_DEPARTMENT);
-                $department->setIdentifier($row['id']);
-                $department->setParentIdentifier($row['id']);
-                $department->setUpdatedAt(new DateTime('1984-07-10')); // Expired
-                $this->debug($department, 'Creating department');
-                $this->pegassRepository->save($department);
+            if (!isset($mapping[$row['typeZoneGeo']])) {
+                continue;
+            }
 
-                $this->slackLogger->info(sprintf('New department created: %s', $department->getIdentifier()));
+            $zones[$mapping[$row['typeZoneGeo']]][] = $row;
+        }
+
+        foreach ($zones as $type => $zone) {
+            if ($identifiers = array_column($zone, 'id')) {
+                $this->pegassRepository->removeMissingEntities($type, $identifiers);
+            }
+
+            foreach ($zone as $row) {
+                $department = $this->pegassRepository->getEntity($type, $row['id'], false);
+                if (!$department) {
+                    $department = new Pegass();
+                    $department->setType($type);
+                    $department->setIdentifier($row['id']);
+                    $department->setParentIdentifier($row['id']);
+                    $department->setUpdatedAt(new DateTime('1984-07-10')); // Expired
+                    $this->debug($department, 'Creating department');
+                    $this->pegassRepository->save($department);
+
+                    $this->slackLogger->info(sprintf('New department created: %s', $department->getIdentifier()));
+                }
             }
         }
     }
@@ -215,7 +233,17 @@ class PegassManager
     private function updateDepartment(Pegass $entity, bool $fromCache)
     {
         if (!$fromCache) {
-            $data = $this->pegassClient->getDepartment($entity->getIdentifier());
+            switch ($entity->getType()) {
+                case Pegass::TYPE_DEPARTMENT:
+                    $data = $this->pegassClient->getDepartment($entity->getIdentifier());
+                    break;
+                case Pegass::TYPE_REGION:
+                    $data = $this->pegassClient->getRegion($entity->getIdentifier());
+                    break;
+                case Pegass::TYPE_NATIONAL:
+                    $data = $this->pegassClient->getNational($entity->getIdentifier());
+                    break;
+            }
         } else {
             if (!$data = $entity->getContent()) {
                 return;
