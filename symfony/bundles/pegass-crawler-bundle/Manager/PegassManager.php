@@ -224,7 +224,7 @@ class PegassManager
                     $this->debug($department, 'Creating department');
                     $this->pegassRepository->save($department);
 
-                    $this->slackLogger->info(sprintf('New department created: %s', $department->getIdentifier()));
+                    $this->slackLogger->info(sprintf('New %s created: %s', $department->getType(), $department->getIdentifier()));
                 }
             }
         }
