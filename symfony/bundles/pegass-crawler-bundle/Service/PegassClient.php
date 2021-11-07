@@ -11,6 +11,8 @@ class PegassClient
     const ENDPOINTS = [
         Pegass::TYPE_AREA       => 'https://pegass.croix-rouge.fr/crf/rest/zonegeo',
         Pegass::TYPE_DEPARTMENT => 'https://pegass.croix-rouge.fr/crf/rest/zonegeo/departement/%identifier%',
+        Pegass::TYPE_REGION     => 'https://pegass.croix-rouge.fr/crf/rest/zonegeo/region/%identifier%',
+        Pegass::TYPE_NATIONAL   => 'https://pegass.croix-rouge.fr/crf/rest/zonegeo/instancenat/%identifier%',
         Pegass::TYPE_STRUCTURE  => [
             'structure'   => 'https://pegass.croix-rouge.fr/crf/rest/structure/%identifier%',
             'responsible' => 'https://pegass.croix-rouge.fr/crf/rest/structure/responsable/?structure=%identifier%',
@@ -58,8 +60,24 @@ class PegassClient
         return $this->get($endpoint);
     }
 
+    public function getRegion(string $identifier) : array
+    {
+        $endpoint = str_replace('%identifier%', $identifier, self::ENDPOINTS[Pegass::TYPE_REGION]);
+
+        return $this->get($endpoint);
+    }
+
+    public function getNational(string $identifier) : array
+    {
+        $endpoint = str_replace('%identifier%', $identifier, self::ENDPOINTS[Pegass::TYPE_NATIONAL]);
+
+        return $this->get($endpoint);
+    }
+
     public function getStructure(string $identifier) : array
     {
+        $structure = json_decode(file_get_contents('/tmp/test.json'), true);
+
         $structure = [];
         foreach (self::ENDPOINTS[Pegass::TYPE_STRUCTURE] as $key => $endpoint) {
             if ('volunteers' !== $key) {
@@ -83,6 +101,16 @@ class PegassClient
         } while (count($data['list'] ?? $data['content'] ?? []) && !$data['last']);
 
         $structure['volunteers'] = $pages;
+
+        // To earn 80% space, removing the children structures in the volunteers list
+        // "Instances Nationales" payload reduces from 17M to 3M
+        foreach ($structure['volunteers'] as $i1 => $volunteers) {
+            foreach ($volunteers['content'] as $i2 => $volunteer) {
+                if (isset($structure['volunteers'][$i1]['content'][$i2]['structure']['structureMenantActiviteList'])) {
+                    unset($structure['volunteers'][$i1]['content'][$i2]['structure']['structureMenantActiviteList']);
+                }
+            }
+        }
 
         return $structure;
     }

@@ -22,19 +22,30 @@ use Throwable;
  */
 class Pegass
 {
-    const TYPE_AREA       = 'area';
+    // Base mapping
+    const TYPE_AREA = 'area';
+
+    // Geographic zones types (same format, but different entities)
     const TYPE_DEPARTMENT = 'department';
-    const TYPE_STRUCTURE  = 'structure';
-    const TYPE_VOLUNTEER  = 'volunteer';
+    const TYPE_REGION     = 'region';
+    const TYPE_NATIONAL   = 'national';
+
+    // Resources
+    const TYPE_STRUCTURE = 'structure';
+    const TYPE_VOLUNTEER = 'volunteer';
 
     const TTL_AREA       = 365;
     const TTL_DEPARTMENT = 7;
+    const TTL_REGION     = 7;
+    const TTL_NATIONAL   = 7;
     const TTL_STRUCTURE  = 7;
     const TTL_VOLUNTEER  = 30;
 
     const TYPES = [
         self::TYPE_AREA,
         self::TYPE_DEPARTMENT,
+        self::TYPE_REGION,
+        self::TYPE_NATIONAL,
         self::TYPE_STRUCTURE,
         self::TYPE_VOLUNTEER,
     ];
@@ -42,6 +53,8 @@ class Pegass
     const TTL = [
         self::TYPE_AREA       => self::TTL_AREA,
         self::TYPE_DEPARTMENT => self::TTL_DEPARTMENT,
+        self::TYPE_REGION     => self::TTL_REGION,
+        self::TYPE_NATIONAL   => self::TTL_NATIONAL,
         self::TYPE_STRUCTURE  => self::TTL_STRUCTURE,
         self::TYPE_VOLUNTEER  => self::TTL_VOLUNTEER,
     ];
