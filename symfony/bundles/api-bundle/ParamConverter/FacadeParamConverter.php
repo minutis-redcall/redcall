@@ -10,6 +10,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInte
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Serializer\Exception\ExceptionInterface;
+use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
@@ -52,7 +53,8 @@ class FacadeParamConverter implements ParamConverterInterface
             $facade = $this->serializer->deserialize(
                 $content,
                 $configuration->getClass(),
-                'json'
+                'json',
+                [AbstractObjectNormalizer::DISABLE_TYPE_ENFORCEMENT => true]
             );
         } catch (ExceptionInterface $e) {
             throw new BadRequestHttpException('Unable to deserialize request parameters into the facade', $e);
