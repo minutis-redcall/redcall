@@ -7,7 +7,7 @@ use Bundles\ApiBundle\Contracts\FacadeInterface;
 
 class PaginedFacade implements FacadeInterface
 {
-    const ITEMS_PER_PAGE = 25;
+    const ITEMS_PER_PAGE = 250;
 
     /**
      * Total number of available pages
