@@ -48,6 +48,7 @@ class VolunteerTransformer extends BaseTransformer
         $facade->setBirthday($volunteer->getBirthday() ? $volunteer->getBirthday()->format('Y-m-d') : null);
         $facade->setOptoutUntil($volunteer->getOptoutUntil() ? $volunteer->getOptoutUntil()->format('Y-m-d') : null);
         $facade->setEmail($volunteer->getEmail());
+        $facade->setInternalEmail($volunteer->getInternalEmail());
         $facade->setEmailOptin($volunteer->isEmailOptin());
         $facade->setEmailLocked($volunteer->isEmailLocked());
         $facade->setPhoneOptin($volunteer->isPhoneNumberOptin());
@@ -123,6 +124,10 @@ class VolunteerTransformer extends BaseTransformer
 
         if (null !== $facade->getEmail()) {
             $volunteer->setEmail($facade->getEmail());
+        }
+
+        if (null !== $facade->getInternalEmail()) {
+            $volunteer->setInternalEmail($facade->getInternalEmail());
         }
 
         if (null !== $facade->getEmailOptin()) {

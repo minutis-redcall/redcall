@@ -85,6 +85,15 @@ class Volunteer implements LockableInterface
     private $email;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=80, nullable=true)
+     * @Assert\Length(max=80)
+     * @Assert\Email
+     */
+    private $internalEmail;
+
+    /**
      * @var bool
      *
      * @ORM\Column(type="boolean", options={"default" : 1})
@@ -286,6 +295,18 @@ class Volunteer implements LockableInterface
     public function setEmail(?string $email) : Volunteer
     {
         $this->email = $email;
+
+        return $this;
+    }
+
+    public function getInternalEmail() : ?string
+    {
+        return $this->internalEmail;
+    }
+
+    public function setInternalEmail(?string $internalEmail) : Volunteer
+    {
+        $this->internalEmail = $internalEmail;
 
         return $this;
     }
