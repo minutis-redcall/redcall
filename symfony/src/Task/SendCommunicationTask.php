@@ -2,6 +2,7 @@
 
 namespace App\Task;
 
+use App\Communication\Sender;
 use App\Entity\Communication;
 use App\Manager\CommunicationManager;
 use App\Queues;
@@ -27,13 +28,20 @@ class SendCommunicationTask implements TaskInterface
      */
     private $voiceCalls;
 
+    /**
+     * @var Sender
+     */
+    private $sender;
+
     public function __construct(TaskSender $taskSender,
         CommunicationManager $communicationManager,
-        VoiceCalls $voiceCalls)
+        VoiceCalls $voiceCalls,
+        Sender $sender)
     {
         $this->taskSender           = $taskSender;
         $this->communicationManager = $communicationManager;
         $this->voiceCalls           = $voiceCalls;
+        $this->sender               = $sender;
     }
 
     public function execute(array $context)
@@ -57,11 +65,13 @@ class SendCommunicationTask implements TaskInterface
             $this->voiceCalls->prepareMedias($communication);
         }
 
-        foreach ($communication->getMessages() as $message) {
-            $this->taskSender->fire($communication->getSendTaskName(), [
-                'message_id' => $message->getId(),
-            ]);
-        }
+        $this->sender->sendCommunication($communication);
+
+        //        foreach ($communication->getMessages() as $message) {
+        //            $this->taskSender->fire($communication->getSendTaskName(), [
+        //                'message_id' => $message->getId(),
+        //            ]);
+        //        }
     }
 
     public function getQueueName() : string
