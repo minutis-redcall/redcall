@@ -41,12 +41,12 @@ class RefreshCommand extends BaseCommand
     {
         date_default_timezone_set('UTC');
 
-        $this->refreshManager->refreshVolunteer(
-            $this->pegassManager->getEntity(\Bundles\PegassCrawlerBundle\Entity\Pegass::TYPE_VOLUNTEER, '00000342302R'),
-            true
-        );
-
-        return 0;
+        //        $this->refreshManager->refreshVolunteer(
+        //            $this->pegassManager->getEntity(\Bundles\PegassCrawlerBundle\Entity\Pegass::TYPE_VOLUNTEER, '00000342302R'),
+        //            true
+        //        );
+        //
+        //        return 0;
 
         // Refresh everything
         $this->refreshManager->refresh(
