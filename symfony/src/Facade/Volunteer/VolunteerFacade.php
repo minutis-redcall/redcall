@@ -67,12 +67,27 @@ class VolunteerFacade implements FacadeInterface
     /**
      * Volunteer's email
      *
+     * Volunteers are triggered on their preferred email, which is often different
+     * from their internal ones inside the organization.
+     *
      * @Assert\Length(max=80)
      * @Assert\Email
      *
      * @var string|null
      */
     protected $email;
+
+    /**
+     * Volunteer's internal email
+     *
+     * Volunteer's email inside the organization (e.g. example@red-cross.com).
+     *
+     * @Assert\Length(max=80)
+     * @Assert\Email
+     *
+     * @var string|null
+     */
+    protected $internalEmail;
 
     /**
      * Whether volunteer accepts to receive emails.
@@ -119,6 +134,19 @@ class VolunteerFacade implements FacadeInterface
     protected $phoneLocked;
 
     /**
+     * Whether volunteer's phone provider forbids to send SMS to special phone numbers.
+     *
+     * If volunteer has a low-cost plan, s-he may not be able to send SMSs to
+     * short codes (special phone numbers). In that case, set this option to
+     * true in order to use other means (link, phone call...).
+     *
+     * @Assert\Choice(choices={false, true})
+     *
+     * @var bool|null
+     */
+    protected $phoneCannotReply = false;
+
+    /**
      * Identifier of the user tied to that volunteer
      *
      * If the volunteer can trigger other volunteers, it is tied to a user resource,
@@ -140,16 +168,17 @@ class VolunteerFacade implements FacadeInterface
     {
         $facade = new static;
 
-        $facade->externalId  = 'demo-volunteer';
-        $facade->firstName   = 'John';
-        $facade->lastName    = 'Doe';
-        $facade->birthday    = '1984-07-10';
-        $facade->optoutUntil = null;
-        $facade->email       = 'demo@example.org';
-        $facade->emailOptin  = true;
-        $facade->emailLocked = false;
-        $facade->phoneOptin  = true;
-        $facade->phoneLocked = false;
+        $facade->externalId    = 'demo-volunteer';
+        $facade->firstName     = 'John';
+        $facade->lastName      = 'Doe';
+        $facade->birthday      = '1984-07-10';
+        $facade->optoutUntil   = null;
+        $facade->email         = 'demo@example.org';
+        $facade->internalEmail = 'demo@croix-rouge.fr';
+        $facade->emailOptin    = true;
+        $facade->emailLocked   = false;
+        $facade->phoneOptin    = true;
+        $facade->phoneLocked   = false;
 
         return $facade;
     }
@@ -226,6 +255,18 @@ class VolunteerFacade implements FacadeInterface
         return $this;
     }
 
+    public function getInternalEmail() : ?string
+    {
+        return $this->internalEmail;
+    }
+
+    public function setInternalEmail(?string $internalEmail) : VolunteerFacade
+    {
+        $this->internalEmail = $internalEmail;
+
+        return $this;
+    }
+
     public function getEmailOptin() : ?bool
     {
         return $this->emailOptin;
@@ -270,6 +311,18 @@ class VolunteerFacade implements FacadeInterface
     public function setPhoneLocked(?bool $phoneLocked) : VolunteerFacade
     {
         $this->phoneLocked = $phoneLocked;
+
+        return $this;
+    }
+
+    public function getPhoneCannotReply() : ?bool
+    {
+        return $this->phoneCannotReply;
+    }
+
+    public function setPhoneCannotReply(?bool $phoneCannotReply) : VolunteerFacade
+    {
+        $this->phoneCannotReply = $phoneCannotReply;
 
         return $this;
     }

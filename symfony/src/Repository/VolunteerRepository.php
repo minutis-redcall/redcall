@@ -492,6 +492,16 @@ class VolunteerRepository extends BaseRepository
             ->getArrayResult();
     }
 
+    public function filterMinors(string $platform, array $volunteerIds) : array
+    {
+        return $this
+            ->createVolunteerListQueryBuilder($platform, $volunteerIds)
+            ->andWhere('v.birthday IS NOT NULL AND v.birthday > :limit')
+            ->setParameter('limit', (new \DateTime())->modify('-18 years')->format('Y-m-d H:i:s'))
+            ->getQuery()
+            ->getArrayResult();
+    }
+
     public function getVolunteerTriggeringPriorities(array $volunteerIds) : array
     {
         $rows = $this->createQueryBuilder('v')

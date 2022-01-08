@@ -24,6 +24,8 @@ class EmailTrigger extends BaseTrigger
 
     public function __construct()
     {
+        parent::__construct();
+
         $this->setType(Communication::TYPE_EMAIL);
     }
 

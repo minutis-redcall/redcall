@@ -2,6 +2,7 @@
 
 namespace App\Form\Model;
 
+use App\Form\Type\AudienceType;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
@@ -68,6 +69,11 @@ abstract class BaseTrigger implements \JsonSerializable
      * @var string[]
      */
     private $operationAnswers = [];
+
+    public function __construct()
+    {
+        $this->audience = AudienceType::createEmptyData([]);
+    }
 
     public function getLabel() : string
     {

@@ -48,10 +48,12 @@ class VolunteerTransformer extends BaseTransformer
         $facade->setBirthday($volunteer->getBirthday() ? $volunteer->getBirthday()->format('Y-m-d') : null);
         $facade->setOptoutUntil($volunteer->getOptoutUntil() ? $volunteer->getOptoutUntil()->format('Y-m-d') : null);
         $facade->setEmail($volunteer->getEmail());
+        $facade->setInternalEmail($volunteer->getInternalEmail());
         $facade->setEmailOptin($volunteer->isEmailOptin());
         $facade->setEmailLocked($volunteer->isEmailLocked());
         $facade->setPhoneOptin($volunteer->isPhoneNumberOptin());
         $facade->setPhoneLocked($volunteer->isPhoneNumberLocked());
+        $facade->setPhoneCannotReply($volunteer->isOnlyOutboundSms());
 
         if ($volunteer->getUser()) {
             $facade->setUserIdentifier($volunteer->getUser()->getUserIdentifier());
@@ -125,6 +127,10 @@ class VolunteerTransformer extends BaseTransformer
             $volunteer->setEmail($facade->getEmail());
         }
 
+        if (null !== $facade->getInternalEmail()) {
+            $volunteer->setInternalEmail($facade->getInternalEmail());
+        }
+
         if (null !== $facade->getEmailOptin()) {
             $volunteer->setEmailOptin($facade->getEmailOptin());
         }
@@ -139,6 +145,10 @@ class VolunteerTransformer extends BaseTransformer
 
         if (null !== $facade->getPhoneLocked()) {
             $volunteer->setPhoneNumberLocked($facade->getPhoneLocked());
+        }
+
+        if (null !== $facade->getPhoneCannotReply()) {
+            $volunteer->setOnlyOutboundSms($facade->getPhoneCannotReply());
         }
 
         if (false === $facade->getUserIdentifier() && $volunteer->getUser()) {

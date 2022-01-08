@@ -96,6 +96,9 @@ admin:
     only_admins: 'Rechercher parmi les administrateurs'
     only_developers: 'Rechercher parmi les développeurs'
     open: 'Ouvrir l''entrée Pegass'
+    pegass_api_grant: 'Autoriser l''accès aux APIs Pegass'
+    pegass_api_ungrant: 'Retirer l''accès aux APIs Pegass'
+    pegass_apied: 'Pegass API'
     root_details: 'Un "gestionnaire de pays" peut changer le pays d''action d''un utilisateur.'
     structures: 'Mise à jour des structures pour %name%'
     title: 'Connexions entre les utilisateurs de RedCall et la base de données bénévole'
@@ -103,9 +106,6 @@ admin:
     unlock: Dégeler
     unroot: 'Desactiver la gestion des pays'
     root: 'Activer la gestion des pays'
-    pegass_apied: 'Pegass API'
-    pegass_api_grant: 'Autoriser l''accès aux APIs Pegass'
-    pegass_api_ungrant: 'Retirer l''accès aux APIs Pegass'
   resources:
     change_platform: 'Transférer vers %platform%'
     change_platform_title: 'Changement de plateforme'
@@ -194,6 +194,7 @@ audience:
       title: 'Fiches bénévoles comportant des problèmes'
     selected: 'Liste des bénévoles sélectionnés'
     title: 'Résumé de la sélection'
+    excluded_minors: '<strong>%nbr%</strong> bénévoles sont mineur(e)s'
   copy_paste: 'Ou coller une liste de nivols'
   copy_paste_details: 'Ou coller une liste de nivols dans le champ ci-dessous.'
   large_audience:
@@ -217,6 +218,7 @@ audience:
     phone_landline: 'Ces bénévoles peuvent recevoir des appels, mais pas de SMS.'
     phone_missing: 'Ces bénévoles ne pourront pas recevoir de communications par SMS ou appel vocal.'
     phone_optout: 'Ces bénévoles ne souhaitent pas recevoir de déclenchements par SMS ou appel vocal.'
+    excluded_minors: 'Ces bénévoles sont mineurs et le déclenchement des mineurs est desactivé.'
   problems:
     disabled: Desactivés
     email_missing: 'Pas d''email'
@@ -229,10 +231,12 @@ audience:
     phone_missing: 'Pas de tél.'
     phone_optout: 'Appels/SMS refusés'
     title: 'Détails à propos des problèmes dans la sélection'
+    excluded_minors: 'Bénévoles mineurs'
   search_for_volunteers: 'Rechercher des bénévoles à déclencher :'
   search_other_badge: 'Rechercher une autre compétence :'
   select_all_badges: 'Déclencher tous les bénévoles quelles que soient leurs compétences'
   structures: 'Structure(s) à déclencher'
+  allow_minors: 'Déclencher les bénévoles mineurs'
 backlinks:
   blablacar: 'Parrainé par'
   minutis: 'Développé par les bénévoles'
@@ -300,6 +304,7 @@ campaign:
     continue: Continuer
     expires: 'Fermé auto. le'
     open: 'Réouvrir le déclenchement'
+  cannot_close: 'Impossible de fermer le déclenchement : d''autres déclenchements plus anciens sont toujours ouverts : %list%'
   cannot_reopen: 'Impossible de réouvrir le déclenchement : depuis sa fermeture, un ou plusieurs bénévoles ont été déclenchés et le préfixe associé à leur réponse a été réutilisé.'
   errors:
     inactive: 'Ce déclenchement est terminé, merci pour votre participation.'
@@ -331,7 +336,6 @@ campaign:
     2_light_orange: 'Préparation (UL)'
     3_dark_orange: 'Préparation (DT)'
     4_red: Engagement
-  cannot_close: 'Impossible de fermer le déclenchement : d''autres déclenchements plus anciens sont toujours ouverts : %list%'
 campaign_status:
   answer: 'Réponses libres'
   answer_history: 'Historique de vos réponsess'
@@ -643,6 +647,7 @@ manage_volunteers:
     optout_until_me: 'Je suis indisponible jusqu''au...'
     phone_number: Téléphone
     phone_number_locked: 'Geler le nᵒ de téléphone *'
+    phone_number_only_outbound: 'Le bénévole ne peut pas envoyer de réponses avec ce numéro'
     phone_number_optin: 'Disponible par téléphone et SMS'
     section_badges: 'Compétences & nominations'
     section_contact: 'Informations de contact'
@@ -678,7 +683,7 @@ message:
     announcement: '%brand% à %hours% heure %mins%.'
     answer: 'Vous avez répondu : "%choice%". Merci pour votre participation.'
     choices: 'Pour répondre "%answer%", tapez %code%.'
-    repeat: 'Pour réécouter le message, tapez 0 ou rappeler à ce numéro.'
+    repeat: 'Pour réécouter le message, tapez 0 ou rappelez à ce numéro.'
     type: appel(s)
     unknown: 'Réponse invalide.'
   email:
@@ -770,6 +775,7 @@ space:
     geo_latitude: Latitude
     geo_longitude: Longitude
     identity_email: Email
+    identity_email_internal: 'Email (interne)'
     identity_email_locked: 'Email gelé'
     identity_email_optin: 'Contacts par email autorisé'
     identity_external: 'ID externe'

@@ -45,6 +45,7 @@ class RefreshCommand extends BaseCommand
         //            $this->pegassManager->getEntity(\Bundles\PegassCrawlerBundle\Entity\Pegass::TYPE_VOLUNTEER, '00000342302R'),
         //            true
         //        );
+        //
         //        return 0;
 
         // Refresh everything

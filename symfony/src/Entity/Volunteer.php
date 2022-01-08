@@ -85,6 +85,15 @@ class Volunteer implements LockableInterface
     private $email;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=80, nullable=true)
+     * @Assert\Length(max=80)
+     * @Assert\Email
+     */
+    private $internalEmail;
+
+    /**
      * @var bool
      *
      * @ORM\Column(type="boolean", options={"default" : 1})
@@ -172,6 +181,13 @@ class Volunteer implements LockableInterface
      * @Assert\Valid
      */
     private $phones;
+
+    /**
+     * @var bool
+     *
+     * @ORM\Column(type="boolean", options={"default" : 0})
+     */
+    private $onlyOutboundSms = false;
 
     /**
      * @ORM\ManyToMany(targetEntity=Badge::class, inversedBy="volunteers")
@@ -286,6 +302,18 @@ class Volunteer implements LockableInterface
     public function setEmail(?string $email) : Volunteer
     {
         $this->email = $email;
+
+        return $this;
+    }
+
+    public function getInternalEmail() : ?string
+    {
+        return $this->internalEmail;
+    }
+
+    public function setInternalEmail(?string $internalEmail) : Volunteer
+    {
+        $this->internalEmail = $internalEmail;
 
         return $this;
     }
@@ -676,6 +704,18 @@ class Volunteer implements LockableInterface
         }
 
         return null;
+    }
+
+    public function isOnlyOutboundSms() : bool
+    {
+        return $this->onlyOutboundSms;
+    }
+
+    public function setOnlyOutboundSms(bool $onlyOutboundSms) : Volunteer
+    {
+        $this->onlyOutboundSms = $onlyOutboundSms;
+
+        return $this;
     }
 
     /**

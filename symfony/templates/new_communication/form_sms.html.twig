@@ -51,12 +51,14 @@
 
 <div id="too-long" class="d-none">
     <div style="border:1px solid grey;padding:5px;">
-        <div class="text-center alert-warning">
+        <div style="background-color:red;" class="text-center">
             <p>⚠️</p>
-            <p><strong>{{ 'form.communication.too_long.title'|trans }}</strong></p>
+            <strong>
+                <span style="color:white!important;">{{ 'form.communication.too_long.title'|trans }}</span>
+            </strong>
             <hr/>
         </div>
-        <p>
+        <p class="text-danger">
             {{ 'form.communication.too_long.explaination_1'|trans }}
             {{ 'form.communication.too_long.explaination_2'|trans }}
             <br/><br/>

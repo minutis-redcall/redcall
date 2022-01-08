@@ -66,6 +66,10 @@ class VolunteerType extends AbstractType
                 'label'    => 'manage_volunteers.form.phone_number_locked',
                 'required' => false,
             ])
+            ->add('onlyOutboundSms', CheckboxType::class, [
+                'label'    => 'manage_volunteers.form.phone_number_only_outbound',
+                'required' => false,
+            ])
             ->add('email', TextType::class, [
                 'label'    => 'manage_volunteers.form.email',
                 'required' => false,

@@ -299,6 +299,11 @@ class VolunteerManager
         return array_column($this->volunteerRepository->filterEmailOptout($platform, $volunteerIds), 'id');
     }
 
+    public function filterMinors(string $platform, array $volunteerIds) : array
+    {
+        return array_column($this->volunteerRepository->filterMinors($platform, $volunteerIds), 'id');
+    }
+
     public function anonymize(Volunteer $volunteer)
     {
         foreach ($volunteer->getMessages() as $message) {

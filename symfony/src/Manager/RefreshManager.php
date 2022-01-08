@@ -20,6 +20,8 @@ use Psr\Log\NullLogger;
 
 class RefreshManager
 {
+    private const EMAIL_KEYS = ['MAIL', 'MAILDOM', 'MAILTRAV'];
+
     private const RED_CROSS_DOMAINS = [
         'croix-rouge.fr',
     ];
@@ -338,21 +340,12 @@ class RefreshManager
             $volunteer->setEmail($this->fetchEmail($pegass->evaluate('infos'), $pegass->evaluate('contact')));
         }
 
-        // Update volunteer badges
+        $volunteer->setInternalEmail($this->fetchInternalEmail($pegass->evaluate('contact')));
+
+        // Update volunteer badge
         $volunteer->setExternalBadges(
             $this->fetchBadges($pegass)
         );
-
-        // Disabling minors
-        if ($volunteer->isMinor()) {
-            $volunteer->addReport('import_report.minor');
-            $volunteer->setEnabled(false);
-            $this->volunteerManager->save($volunteer);
-
-            $this->checkAdminRole($volunteer);
-
-            return;
-        }
 
         $this->volunteerManager->save($volunteer);
 
@@ -442,13 +435,8 @@ class RefreshManager
 
     private function fetchEmail(array $infos, array $contact) : ?string
     {
-        $emailKeys = ['MAIL', 'MAILDOM', 'MAILTRAV'];
-
         // Filter out keys that are not emails
-        $contact = array_filter($contact, function ($data) use ($emailKeys) {
-            return in_array($data['moyenComId'] ?? [], $emailKeys)
-                   && preg_match('/^.+\@.+\..+$/', $data['libelle'] ?? false);
-        });
+        $contact = $this->filterEmails($contact);
 
         // If volunteer has a favorite email, we return it
         if ($no = ($infos['mailMoyenComId']['numero'] ?? null)) {
@@ -460,7 +448,7 @@ class RefreshManager
         }
 
         // Order emails
-        usort($contact, function ($a, $b) use ($emailKeys) {
+        usort($contact, function ($a, $b) {
 
             // Red cross emails should be put last
             foreach (self::RED_CROSS_DOMAINS as $domain) {
@@ -472,7 +460,7 @@ class RefreshManager
                 }
             }
 
-            return array_search($a['moyenComId'], $emailKeys) <=> array_search($b['moyenComId'], $emailKeys);
+            return array_search($a['moyenComId'], self::EMAIL_KEYS) <=> array_search($b['moyenComId'], self::EMAIL_KEYS);
         });
 
         if (!$contact) {
@@ -480,6 +468,30 @@ class RefreshManager
         }
 
         return reset($contact)['libelle'];
+    }
+
+    private function fetchInternalEmail(array $contact) : ?string
+    {
+        // Filter out keys that are not emails
+        $contact = $this->filterEmails($contact);
+
+        foreach ($contact as $row) {
+            foreach (self::RED_CROSS_DOMAINS as $domain) {
+                if (str_ends_with($row['libelle'], $domain)) {
+                    return $row['libelle'];
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private function filterEmails(array $contact) : array
+    {
+        return array_filter($contact, function ($data) {
+            return in_array($data['moyenComId'] ?? [], self::EMAIL_KEYS)
+                   && preg_match('/^.+\@.+\..+$/', $data['libelle'] ?? false);
+        });
     }
 
     private function fetchBadges(Pegass $pegass)
