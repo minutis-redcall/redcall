@@ -194,6 +194,7 @@ audience:
       title: 'Fiches bénévoles comportant des problèmes'
     selected: 'Liste des bénévoles sélectionnés'
     title: 'Résumé de la sélection'
+    excluded_minors: '<strong>%nbr%</strong> bénévoles sont mineur(e)s'
   copy_paste: 'Ou coller une liste de nivols'
   copy_paste_details: 'Ou coller une liste de nivols dans le champ ci-dessous.'
   large_audience:
@@ -217,6 +218,7 @@ audience:
     phone_landline: 'Ces bénévoles peuvent recevoir des appels, mais pas de SMS.'
     phone_missing: 'Ces bénévoles ne pourront pas recevoir de communications par SMS ou appel vocal.'
     phone_optout: 'Ces bénévoles ne souhaitent pas recevoir de déclenchements par SMS ou appel vocal.'
+    excluded_minors: 'Ces bénévoles sont mineurs et le déclenchement des mineurs est desactivé.'
   problems:
     disabled: Desactivés
     email_missing: 'Pas d''email'
@@ -229,10 +231,12 @@ audience:
     phone_missing: 'Pas de tél.'
     phone_optout: 'Appels/SMS refusés'
     title: 'Détails à propos des problèmes dans la sélection'
+    excluded_minors: 'Bénévoles mineurs'
   search_for_volunteers: 'Rechercher des bénévoles à déclencher :'
   search_other_badge: 'Rechercher une autre compétence :'
   select_all_badges: 'Déclencher tous les bénévoles quelles que soient leurs compétences'
   structures: 'Structure(s) à déclencher'
+  allow_minors: 'Déclencher les bénévoles mineurs'
 backlinks:
   blablacar: 'Parrainé par'
   minutis: 'Développé par les bénévoles'
@@ -643,6 +647,7 @@ manage_volunteers:
     optout_until_me: 'Je suis indisponible jusqu''au...'
     phone_number: Téléphone
     phone_number_locked: 'Geler le nᵒ de téléphone *'
+    phone_number_only_outbound: 'Le bénévole ne peut pas envoyer de réponses avec ce numéro'
     phone_number_optin: 'Disponible par téléphone et SMS'
     section_badges: 'Compétences & nominations'
     section_contact: 'Informations de contact'
@@ -653,7 +658,6 @@ manage_volunteers:
     update: 'Mettre à jour un bénévole'
     updated: 'Le bénévole a correctement été modifié.'
     visible_badges: 'Badges principaux'
-    phone_number_only_outbound: 'Le bénévole ne peut pas envoyer de réponses avec ce numéro'
     add: 'Créer un nouveau bénévole'
     optout_until: 'Bénévole indisponible jusqu''au...'
   others: 'et %count% autre(s)'

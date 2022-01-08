@@ -84,6 +84,7 @@ class AudienceType extends AbstractType
             'volunteers'          => [],
             'excluded_volunteers' => [],
             'external_ids'        => [],
+            'allow_minors'        => false,
             'structures_global'   => [],
             'structures_local'    => [],
             'badges_all'          => false,
@@ -113,7 +114,7 @@ class AudienceType extends AbstractType
             }
         }
 
-        return $data;
+        return self::createEmptyData($data);
     }
 
     static public function split(string $value)
@@ -143,6 +144,10 @@ class AudienceType extends AbstractType
                 'attr'     => [
                     'rows' => 4,
                 ],
+            ])
+            ->add('allow_minors', CheckboxType::class, [
+                'label'    => 'audience.allow_minors',
+                'required' => false,
             ])
             ->add('structures_global', TextType::class, [
                 'data'  => $hasOneStructure ? [$structures->first()->getId()] : null,

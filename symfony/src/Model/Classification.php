@@ -6,17 +6,18 @@ class Classification
 {
     const LARGE_AUDIENCE = 250;
 
-    private $invalid       = [];
-    private $disabled      = [];
-    private $inaccessible  = [];
-    private $excluded      = [];
-    private $phoneMissing  = [];
-    private $phoneOptout   = [];
-    private $phoneLandline = [];
-    private $optoutUntil   = [];
-    private $emailMissing  = [];
-    private $emailOptout   = [];
-    private $reachable     = [];
+    private $invalid        = [];
+    private $disabled       = [];
+    private $inaccessible   = [];
+    private $excluded       = [];
+    private $phoneMissing   = [];
+    private $phoneOptout    = [];
+    private $phoneLandline  = [];
+    private $optoutUntil    = [];
+    private $emailMissing   = [];
+    private $emailOptout    = [];
+    private $excludedMinors = [];
+    private $reachable      = [];
 
     public function getInvalid() : array
     {
@@ -118,6 +119,18 @@ class Classification
     public function setEmailOptout(array $emailOptout) : void
     {
         $this->emailOptout = $emailOptout;
+    }
+
+    public function getExcludedMinors() : array
+    {
+        return $this->excludedMinors;
+    }
+
+    public function setExcludedMinors(array $excludedMinors) : self
+    {
+        $this->excludedMinors = $excludedMinors;
+
+        return $this;
     }
 
     public function getReachable() : array

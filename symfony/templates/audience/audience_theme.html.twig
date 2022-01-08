@@ -266,6 +266,16 @@
             </div>
 
             {# -------------------------------------------------------------------------------- #}
+            {# Allow minors #}
+            {# -------------------------------------------------------------------------------- #}
+
+            {{ form_row(form.allow_minors, {
+                'attr': {
+                    'class': 'numbers',
+                }
+            }) }}
+
+            {# -------------------------------------------------------------------------------- #}
             {# Excluded volunteers #}
             {# -------------------------------------------------------------------------------- #}
 
@@ -346,16 +356,16 @@
         $('#badges-all').click(function () {
             if ($(this).is(':checked')) {
                 $('.badge-tick')
-                    .addClass('disabled')
-                    .prop('disabled', 'disabled');
+                        .addClass('disabled')
+                        .prop('disabled', 'disabled');
 
                 $('#{{ form.badges_searched.vars.id }}').flexdatalist({
                     disabled: true,
                 });
             } else {
                 $('.badge-tick')
-                    .removeClass('disabled')
-                    .prop('disabled', false);
+                        .removeClass('disabled')
+                        .prop('disabled', false);
 
                 $('#{{ form.badges_searched.vars.id }}').flexdatalist({
                     disabled: false,
@@ -433,7 +443,7 @@
                 $('#classification').html(data.classification);
 
                 $('.trigger-launch').html(
-                    $('#submit-button-audience').html().replace('%nbr%', data.triggered_count)
+                        $('#submit-button-audience').html().replace('%nbr%', data.triggered_count)
                 );
 
                 if (withBadgeCounts) {
@@ -452,7 +462,7 @@
 
         $('body').on('change', '.numbers', function () {
             numbers(
-                !$(this).hasClass('no-badge-counts')
+                    !$(this).hasClass('no-badge-counts')
             );
         });
 
@@ -472,7 +482,7 @@
 
             {% if classification.reachable|length %}
             $('.trigger-launch').html(
-                $('#submit-button-audience').html().replace('%nbr%', {{ classification.reachable|length }})
+                    $('#submit-button-audience').html().replace('%nbr%', {{ classification.reachable|length }})
             );
             {% endif %}
         });

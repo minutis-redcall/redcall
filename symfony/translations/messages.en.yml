@@ -194,6 +194,7 @@ audience:
       title: 'Volunteer records having issues'
     selected: 'Liste des bénévoles sélectionnés'
     title: 'Selection summary'
+    excluded_minors: '<strong>%nbr%</strong> volunteers are underage'
   copy_paste: 'Or paste a list of identifiers'
   copy_paste_details: 'Paste a list of identifiers in the field below.'
   large_audience:
@@ -217,6 +218,7 @@ audience:
     phone_landline: 'These volunteers can receive voice calls, but cannot receive text messages.'
     phone_missing: 'These volunteers won''t be able to receive voice calls nor text messages.'
     phone_optout: 'These volunteers do not want to be triggered through voice call nor text message.'
+    excluded_minors: 'These volunteers are underage and the trigger explicitly exclude them.'
   problems:
     disabled: Disabled
     email_missing: 'No email'
@@ -229,10 +231,12 @@ audience:
     phone_missing: 'No phone'
     phone_optout: 'Phone opted-out'
     title: 'Audience problem details'
+    excluded_minors: 'Excluded underage volunteers'
   search_for_volunteers: 'Search for volunteers:'
   search_other_badge: 'Search for another skill:'
   select_all_badges: 'Trigger all volunteers whatever their skills'
   structures: 'Structure(s) to trigger'
+  allow_minors: 'Trigger underage volunteers'
 backlinks:
   blablacar: 'Sponsored by'
   minutis: 'Developed by Minutis volunteers'
@@ -643,6 +647,7 @@ manage_volunteers:
     optout_until_me: 'Volunteer not available until...'
     phone_number: 'Phone number'
     phone_number_locked: 'Locked phone number *'
+    phone_number_only_outbound: 'Volunteer cannot reply using that phone number'
     phone_number_optin: 'Available by phone number'
     section_badges: 'Skills, interests and nominations'
     section_contact: 'Contact information'
@@ -653,7 +658,6 @@ manage_volunteers:
     update: 'Update volunteer'
     updated: 'Volunteer has properly been updated.'
     visible_badges: 'Main badges'
-    phone_number_only_outbound: 'Volunteer cannot reply using that phone number'
     add: 'Create a new volunteer'
     optout_until: 'Volunteer not available until...'
   others: 'and %count% other(s)'

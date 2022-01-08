@@ -97,6 +97,12 @@ class AudienceManager
             $this->volunteerManager->filterOptoutUntil($platform, $audience)
         );
 
+        if (!$data['allow_minors']) {
+            $classification->setExcludedMinors(
+                $this->volunteerManager->filterMinors($platform, $audience)
+            );
+        }
+
         if (!$this->security->isGranted('ROLE_ADMIN')) {
             $classification->setInaccessible(
                 $this->volunteerManager->filterInaccessibles($audience)
@@ -113,7 +119,8 @@ class AudienceManager
             $classification->getDisabled(),
             $classification->getInaccessible(),
             $classification->getExcluded(),
-            $classification->getOptoutUntil()
+            $classification->getOptoutUntil(),
+            $classification->getExcludedMinors(),
         );
 
         $classification->setReachable($audience);

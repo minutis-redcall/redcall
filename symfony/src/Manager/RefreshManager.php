@@ -347,17 +347,6 @@ class RefreshManager
             $this->fetchBadges($pegass)
         );
 
-        // Disabling minors
-        if ($volunteer->isMinor()) {
-            $volunteer->addReport('import_report.minor');
-            $volunteer->setEnabled(false);
-            $this->volunteerManager->save($volunteer);
-
-            $this->checkAdminRole($volunteer);
-
-            return;
-        }
-
         $this->volunteerManager->save($volunteer);
 
         // If volunteer is bound to a RedCall user, update its structures
