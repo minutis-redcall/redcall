@@ -9,6 +9,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints;
 
 class ForgotPasswordType extends AbstractType
@@ -55,5 +56,10 @@ class ForgotPasswordType extends AbstractType
         $builder->add('submit', Type\SubmitType::class, [
             'label' => 'password_login.forgot_password.submit',
         ]);
+    }
+
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        $resolver->setDefault('allow_extra_fields', true);
     }
 }

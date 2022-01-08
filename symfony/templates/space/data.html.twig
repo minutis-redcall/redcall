@@ -98,6 +98,17 @@
         </td>
     </tr>
 
+    {% if session.volunteer.internalEmail %}
+        <tr style="border-right: 1px solid {{ lightgrey }};">
+            <td style="padding:5px;">
+                <strong>{{ 'space.consult_data.identity_email_internal'|trans }}</strong>
+            </td>
+            <td style="padding:5px;">
+                {{ session.volunteer.internalEmail }}
+            </td>
+        </tr>
+    {% endif %}
+
     <tr style="border-right: 1px solid {{ lightgrey }};">
         <td style="padding:5px;">
             <strong>{{ 'space.consult_data.identity_email_locked'|trans }}</strong>

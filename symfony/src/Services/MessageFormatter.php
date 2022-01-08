@@ -103,22 +103,22 @@ class MessageFormatter
             foreach ($choices as $choice) {
                 // The way to answer depends on the volunteer's phone number because answering directly to sms and
                 // incoming calls are not always supported, see config/countries.yaml for more details.
-                if ($country && $country->isInboundSmsEnabled()) {
+                if ($country && $country->isInboundSmsEnabled() && !$message->getVolunteer()->isOnlyOutboundSms()) {
                     $contentParts[] = sprintf('%s%s: %s', $message->getPrefix(), $choice->getCode(), $choice->getLabel());
-                } elseif ($country && $country->isInboundCallEnabled()) {
+                } elseif ($country && ($country->isInboundCallEnabled() || $message->getVolunteer()->isOnlyOutboundSms())) {
                     $contentParts[] = sprintf('%s: %s', $choice->getCode(), $choice->getLabel());
                 } else {
                     $contentParts[] = sprintf('- %s', $choice->getLabel());
                 }
             }
 
-            if ($country && $country->isInboundSmsEnabled()) {
+            if ($country && $country->isInboundSmsEnabled() && !$message->getVolunteer()->isOnlyOutboundSms()) {
                 if (!$message->getCommunication()->isMultipleAnswer()) {
                     $contentParts[] = $this->translator->trans('message.sms.how_to_answer_simple', [], null, $language->getLocale());
                 } else {
                     $contentParts[] = $this->translator->trans('message.sms.how_to_answer_multiple', [], null, $language->getLocale());
                 }
-            } elseif ($country && $country->isInboundCallEnabled()) {
+            } elseif ($country && ($country->isInboundCallEnabled() || $message->getVolunteer()->isOnlyOutboundSms())) {
                 $contentParts[] = $this->translator->trans('message.sms.how_to_answer_url', [
                     '%url%'    => trim(getenv('WEBSITE_URL'), '/').$this->router->generate('message_open', ['code' => $message->getCode()]),
                     '%number%' => $country->getInboundCallNumber(),

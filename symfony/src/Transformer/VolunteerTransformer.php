@@ -53,6 +53,7 @@ class VolunteerTransformer extends BaseTransformer
         $facade->setEmailLocked($volunteer->isEmailLocked());
         $facade->setPhoneOptin($volunteer->isPhoneNumberOptin());
         $facade->setPhoneLocked($volunteer->isPhoneNumberLocked());
+        $facade->setPhoneCannotReply($volunteer->isOnlyOutboundSms());
 
         if ($volunteer->getUser()) {
             $facade->setUserIdentifier($volunteer->getUser()->getUserIdentifier());
@@ -144,6 +145,10 @@ class VolunteerTransformer extends BaseTransformer
 
         if (null !== $facade->getPhoneLocked()) {
             $volunteer->setPhoneNumberLocked($facade->getPhoneLocked());
+        }
+
+        if (null !== $facade->getPhoneCannotReply()) {
+            $volunteer->setOnlyOutboundSms($facade->getPhoneCannotReply());
         }
 
         if (false === $facade->getUserIdentifier() && $volunteer->getUser()) {

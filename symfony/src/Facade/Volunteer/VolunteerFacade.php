@@ -134,6 +134,19 @@ class VolunteerFacade implements FacadeInterface
     protected $phoneLocked;
 
     /**
+     * Whether volunteer's phone provider forbids to send SMS to special phone numbers.
+     *
+     * If volunteer has a low-cost plan, s-he may not be able to send SMSs to
+     * short codes (special phone numbers). In that case, set this option to
+     * true in order to use other means (link, phone call...).
+     *
+     * @Assert\Choice(choices={false, true})
+     *
+     * @var bool|null
+     */
+    protected $phoneCannotReply = false;
+
+    /**
      * Identifier of the user tied to that volunteer
      *
      * If the volunteer can trigger other volunteers, it is tied to a user resource,
@@ -298,6 +311,18 @@ class VolunteerFacade implements FacadeInterface
     public function setPhoneLocked(?bool $phoneLocked) : VolunteerFacade
     {
         $this->phoneLocked = $phoneLocked;
+
+        return $this;
+    }
+
+    public function getPhoneCannotReply() : ?bool
+    {
+        return $this->phoneCannotReply;
+    }
+
+    public function setPhoneCannotReply(?bool $phoneCannotReply) : VolunteerFacade
+    {
+        $this->phoneCannotReply = $phoneCannotReply;
 
         return $this;
     }

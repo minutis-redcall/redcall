@@ -35,7 +35,6 @@ services:
       - '@Bundles\PasswordLoginBundle\Manager\UserManager'
       - '@request_stack'
       - '@translator'
-      - '@security.password_encoder'
       - '@security.token_storage'
     tags:
       - { name: form.type }

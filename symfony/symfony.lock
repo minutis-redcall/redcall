@@ -164,8 +164,11 @@
     "guzzlehttp/psr7": {
         "version": "1.4.2"
     },
+    "laminas/laminas-eventmanager": {
+        "version": "3.4.0"
+    },
     "laminas/laminas-zendframework-bridge": {
-        "version": "1.0.2"
+        "version": "1.4.1"
     },
     "league/csv": {
         "version": "9.1.4"

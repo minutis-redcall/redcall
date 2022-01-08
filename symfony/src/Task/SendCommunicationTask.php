@@ -65,13 +65,11 @@ class SendCommunicationTask implements TaskInterface
             $this->voiceCalls->prepareMedias($communication);
         }
 
-        $this->sender->sendCommunication($communication);
-
-        //        foreach ($communication->getMessages() as $message) {
-        //            $this->taskSender->fire($communication->getSendTaskName(), [
-        //                'message_id' => $message->getId(),
-        //            ]);
-        //        }
+        foreach ($communication->getMessages() as $message) {
+            $this->taskSender->fire($communication->getSendTaskName(), [
+                'message_id' => $message->getId(),
+            ]);
+        }
     }
 
     public function getQueueName() : string

@@ -183,6 +183,13 @@ class Volunteer implements LockableInterface
     private $phones;
 
     /**
+     * @var bool
+     *
+     * @ORM\Column(type="boolean", options={"default" : 0})
+     */
+    private $onlyOutboundSms = false;
+
+    /**
      * @ORM\ManyToMany(targetEntity=Badge::class, inversedBy="volunteers")
      */
     private $badges;
@@ -697,6 +704,18 @@ class Volunteer implements LockableInterface
         }
 
         return null;
+    }
+
+    public function isOnlyOutboundSms() : bool
+    {
+        return $this->onlyOutboundSms;
+    }
+
+    public function setOnlyOutboundSms(bool $onlyOutboundSms) : Volunteer
+    {
+        $this->onlyOutboundSms = $onlyOutboundSms;
+
+        return $this;
     }
 
     /**

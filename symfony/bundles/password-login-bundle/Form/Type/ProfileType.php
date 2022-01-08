@@ -13,7 +13,6 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\Validator\Constraints\UserPassword;
 use Symfony\Component\Validator\Constraints;
@@ -43,35 +42,27 @@ class ProfileType extends AbstractType
     private $translator;
 
     /**
-     * @var UserPasswordEncoderInterface
-     */
-    private $encoder;
-
-    /**
      * @var TokenStorageInterface
      */
     private $tokenStorage;
 
     /**
-     * @param CaptchaManager               $captchaManager
-     * @param UserManager                  $userManager
-     * @param RequestStack                 $requestStack
-     * @param TranslatorInterface          $translator
-     * @param UserPasswordEncoderInterface $encoder
-     * @param TokenStorageInterface        $tokenStorage
+     * @param CaptchaManager        $captchaManager
+     * @param UserManager           $userManager
+     * @param RequestStack          $requestStack
+     * @param TranslatorInterface   $translator
+     * @param TokenStorageInterface $tokenStorage
      */
     public function __construct(CaptchaManager $captchaManager,
         UserManager $userManager,
         RequestStack $requestStack,
         TranslatorInterface $translator,
-        UserPasswordEncoderInterface $encoder,
         TokenStorageInterface $tokenStorage)
     {
         $this->captchaManager = $captchaManager;
         $this->userManager    = $userManager;
         $this->requestStack   = $requestStack;
         $this->translator     = $translator;
-        $this->encoder        = $encoder;
         $this->tokenStorage   = $tokenStorage;
     }
 
@@ -158,8 +149,9 @@ class ProfileType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'user'  => null,
-            'admin' => false,
+            'user'               => null,
+            'admin'              => false,
+            'allow_extra_fields' => true,
         ]);
     }
 
