@@ -20,10 +20,12 @@ class VolunteerListRepository extends BaseRepository
         parent::__construct($registry, VolunteerList::class);
     }
 
-    public function findVolunteerListsForUser(string $platform, User $user)
+    /**
+     * @return VolunteerList[]
+     */
+    public function findVolunteerListsForUser(string $platform, User $user) : array
     {
         return $this->createQueryBuilder('l')
-                    ->distinct()
                     ->join('l.structure', 's')
                     ->join('s.users', 'u')
                     ->where('u.id = :id')
