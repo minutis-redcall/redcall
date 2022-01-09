@@ -6,6 +6,7 @@ use App\Manager\AudienceManager;
 use App\Manager\BadgeManager;
 use App\Manager\ExpirableManager;
 use App\Manager\StructureManager;
+use App\Manager\VolunteerListManager;
 use App\Manager\VolunteerManager;
 use App\Security\Helper\Security;
 use Symfony\Component\Form\AbstractType;
@@ -58,6 +59,11 @@ class AudienceType extends AbstractType
     private $expirableManager;
 
     /**
+     * @var VolunteerListManager
+     */
+    private $volunteerListManager;
+
+    /**
      * @var Security
      */
     private $security;
@@ -67,14 +73,16 @@ class AudienceType extends AbstractType
         StructureManager $structureManager,
         BadgeManager $badgeManager,
         ExpirableManager $expirableManager,
+        VolunteerListManager $volunteerListManager,
         Security $security)
     {
-        $this->audienceManager  = $audienceManager;
-        $this->volunteerManager = $volunteerManager;
-        $this->structureManager = $structureManager;
-        $this->badgeManager     = $badgeManager;
-        $this->expirableManager = $expirableManager;
-        $this->security         = $security;
+        $this->audienceManager      = $audienceManager;
+        $this->volunteerManager     = $volunteerManager;
+        $this->structureManager     = $structureManager;
+        $this->badgeManager         = $badgeManager;
+        $this->expirableManager     = $expirableManager;
+        $this->volunteerListManager = $volunteerListManager;
+        $this->security             = $security;
     }
 
     static public function createEmptyData(array $defaults) : array
@@ -216,6 +224,8 @@ class AudienceType extends AbstractType
         if ($data['preselection_key']) {
             $view->vars['preselection'] = $this->expirableManager->get($data['preselection_key']);
         }
+
+        $view->vars['volunteer_lists'] = $this->volunteerListManager->getVolunteerListsForCurrentUser();
     }
 
     /**

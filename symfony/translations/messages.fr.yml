@@ -165,8 +165,9 @@ admin:
     list: 'Liste d''utilisateurs'
     pegass: 'Connexions à Pegass'
 audience:
+  allow_minors: 'Inclure les bénévoles mineurs'
   audience: Audience
-  audience_help: 'Vous pouvez sélectionner les bénévoles à déclencher en les saisissant manuellement, ou en les filtrant par structures et compétences.'
+  audience_help: 'Vous pouvez sélectionner les bénévoles en les saisissant manuellement, ou en les filtrant par structures et compétences.'
   badges: 'Compétences & nominations'
   classification:
     audience: 'Afficher la liste des bénévoles sélectionnés'
@@ -174,6 +175,7 @@ audience:
     email_missing: '<strong>%nbr%</strong> bénévoles n''ont pas d''email'
     email_optout: '<strong>%nbr%</strong> bénévoles ne souhaitant pas recevoir d''emails'
     excluded: '<strong>%nbr%</strong> bénévoles sont manuellement exclus du déclenchement'
+    excluded_minors: '<strong>%nbr%</strong> bénévoles sont mineur(e)s'
     home: 'Il est possible que vous ne puissiez pas joindre tous vos bénévoles.'
     inaccessible: '<strong>%nbr%</strong> bénévoles ne font pas partie de votre périmètre'
     invalid: '<strong>%nbr%</strong> nivols n''existent pas'
@@ -194,7 +196,6 @@ audience:
       title: 'Fiches bénévoles comportant des problèmes'
     selected: 'Liste des bénévoles sélectionnés'
     title: 'Résumé de la sélection'
-    excluded_minors: '<strong>%nbr%</strong> bénévoles sont mineur(e)s'
   copy_paste: 'Ou coller une liste de nivols'
   copy_paste_details: 'Ou coller une liste de nivols dans le champ ci-dessous.'
   large_audience:
@@ -212,18 +213,19 @@ audience:
     email_missing: 'Ces bénévoles ne pourront pas recevoir de communications par email.'
     email_optout: 'Ces bénévoles ne souhaitent pas recevoir de déclenchements par email.'
     excluded: 'Vous pouvez réinclure ces bénévoles en affichant votre sélection.'
+    excluded_minors: 'Ces bénévoles sont mineurs et le déclenchement des mineurs est desactivé.'
     inaccessible: 'Ces bénévoles font partie de sturctures que vous ne pouvez pas déclencher.'
     invalid: 'Ces identifiants de bénévoles sont invalides ou pas encore intégrés.'
     optout_until: 'Ces bénévoles ont indiqué ne pas être disponible actuellement.'
     phone_landline: 'Ces bénévoles peuvent recevoir des appels, mais pas de SMS.'
     phone_missing: 'Ces bénévoles ne pourront pas recevoir de communications par SMS ou appel vocal.'
     phone_optout: 'Ces bénévoles ne souhaitent pas recevoir de déclenchements par SMS ou appel vocal.'
-    excluded_minors: 'Ces bénévoles sont mineurs et le déclenchement des mineurs est desactivé.'
   problems:
     disabled: Desactivés
     email_missing: 'Pas d''email'
     email_optout: 'Emails refusés'
     excluded: 'Manuellement exclus'
+    excluded_minors: 'Bénévoles mineurs'
     inaccessible: 'Hors périmètre'
     invalid: Invalides
     optout_until: 'Temp. indispo.'
@@ -231,12 +233,11 @@ audience:
     phone_missing: 'Pas de tél.'
     phone_optout: 'Appels/SMS refusés'
     title: 'Détails à propos des problèmes dans la sélection'
-    excluded_minors: 'Bénévoles mineurs'
   search_for_volunteers: 'Rechercher des bénévoles à déclencher :'
   search_other_badge: 'Rechercher une autre compétence :'
   select_all_badges: 'Déclencher tous les bénévoles quelles que soient leurs compétences'
-  structures: 'Structure(s) à déclencher'
-  allow_minors: 'Déclencher les bénévoles mineurs'
+  structures: Structure(s)
+  volunteer_lists: 'Listes préremplies de bénévoles'
 backlinks:
   blablacar: 'Parrainé par'
   minutis: 'Développé par les bénévoles'
@@ -259,6 +260,7 @@ base:
     search: Rechercher
     submit: Envoyer
     update: Editer
+    use: Utiliser
   clear_selection: 'Effacer la sélection'
   closed: Fermé
   crud:
@@ -559,7 +561,6 @@ manage_structures:
   last_update: 'Dernière synchro avec Pegass : %last_update% UTC'
   lock: 'Geler la structure'
   manage_prefilled_answers: 'Gérer les réponses pré-remplies'
-  manage_volunteer_lists: 'Gérer les listes de bénévoles'
   manual_update: 'Mise à jour manuelle'
   next_update: 'Prochaine synchro avec Pegass : %next_update% UTC'
   prefilled_answers:
@@ -576,22 +577,28 @@ manage_structures:
   unlock: 'Dégeler la structure'
   users: 'Nombre d''utilisateurs RedCall : %count%'
   view_pegass_entry: 'Ouvir l''entrée de la base de données Pegass'
+  volunteers: 'Nombre de bénévoles : %count%'
+  manage_volunteer_lists: 'Gérer les listes de bénévoles'
   volunteer_list:
     title: 'Gérer les listes de bénévoles'
     subtitle: 'pour "%structureName%"'
     create: 'Créer une nouvelle liste'
+    manage: 'Gérer les listes de bénévoles'
+    choose_structure: 'Dans quelle structure souhaitez-vous gérer les listes de bénévoles ?'
     update: 'Éditer la liste "%name%"'
-    delete: 'X'
+    delete: X
     delete_confirm: 'Vraiment effacer cette liste "%name%" ?'
-    edit: 'Editer'
+    edit: Editer
     form:
       name: 'Nom de la liste'
-      structure: 'Structure à laquelle la rattacher'
     no_lists: 'Pas encore de listes de bénévoles.'
+    help:
+      intro: 'Si vous le souhaitez, vous pouvez'
+      create: 'créer des listes de bénévoles personnalisées'
     table:
       name: 'Nom de la liste'
       nb_volunteers: 'Nb bénév.'
-  volunteers: 'Nombre de bénévoles : %count%'
+      structure: Structure
 manage_volunteers:
   access_denied: 'Vous ne pouvez pas ouvrir le profil d''un(e) bénévole ne faisant pas partie des structures que vous pouvez déclencher.'
   action:

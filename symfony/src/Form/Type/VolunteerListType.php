@@ -25,9 +25,6 @@ class VolunteerListType extends AbstractType
                     new Length(['min' => 1]),
                 ],
             ])
-            ->add('structure', UserStructuresType::class, [
-                'label' => 'manage_structures.volunteer_list.form.structure',
-            ])
             ->add('audience', AudienceType::class, [
                 'required' => false,
             ])

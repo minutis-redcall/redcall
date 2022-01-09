@@ -62,7 +62,7 @@ class CommunicationController extends BaseController
     private $communicationManager;
 
     /**
-     * Message formatter, used for previsualization
+     * Message formatter, used for preview
      *
      * @var MessageFormatter
      */
@@ -247,7 +247,6 @@ class CommunicationController extends BaseController
      * @IsGranted("CAMPAIGN_ACCESS", subject="campaign")
      */
     public function newCommunicationAction(
-        Request $request,
         Campaign $campaign,
         Type $type,
         ?string $key,
