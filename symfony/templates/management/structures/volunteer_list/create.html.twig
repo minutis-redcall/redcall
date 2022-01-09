@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% import 'macros.html.twig' as macros %}
+
+{% block body %}
+
+    <h1>
+        {% if not list.id %}
+            {{ 'manage_structures.volunteer_list.create'|trans }}
+        {% else %}
+            {{ 'manage_structures.volunteer_list.update'|trans({'%name%': list.name}) }}
+        {% endif %}
+        <span class="h4">{{ 'manage_structures.volunteer_list.subtitle'|trans({'%structureName%': structure.name}) }}</span>
+    </h1>
+
+    {% form_theme form 'audience/audience_theme.html.twig' %}
+    {{ form(form, {
+        'attr': {
+            'class': 'trigger'
+        }
+    }) }}
+
+    <br/>
+
+    <div class="text-center">
+        <a href="{{ path('management_structures_volunteer_lists_index', {structureId: structure.id}) }}" class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+    </div>
+
+    <br/><br/>
+
+{% endblock %}

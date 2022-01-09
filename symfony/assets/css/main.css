@@ -352,3 +352,7 @@ input:checked + .slider {
 strong {
     color: black;
 }
+
+li.input-container.flexdatalist-multiple-value input {
+    min-width: 500px;
+}

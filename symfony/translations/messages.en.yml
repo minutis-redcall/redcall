@@ -165,8 +165,9 @@ admin:
     list: 'User list'
     pegass: 'Pegass bindings'
 audience:
+  allow_minors: 'Include underage volunteers'
   audience: Audience
-  audience_help: 'You can select volunteers to trigger by writting them down manually, or by filtering them by structures and skills.'
+  audience_help: 'You can select volunteers by writing them down manually, or by filtering them by structures and skills.'
   badges: 'Skills & Nominations'
   classification:
     audience: 'Render the selected volunteers list'
@@ -174,6 +175,7 @@ audience:
     email_missing: '<strong>%nbr%</strong> volunteers do not have an email'
     email_optout: '<strong>%nbr%</strong> volunteers do not want to receive emails'
     excluded: '<strong>%nbr%</strong> volunteers have been manually excluded from this trigger'
+    excluded_minors: '<strong>%nbr%</strong> volunteers are underage'
     home: 'You may not be able to reach out all your volunteers.'
     inaccessible: '<strong>%nbr%</strong> volunteers are out of your perimeter'
     invalid: '<strong>%nbr%</strong> nivols do not exist'
@@ -194,7 +196,6 @@ audience:
       title: 'Volunteer records having issues'
     selected: 'Liste des bénévoles sélectionnés'
     title: 'Selection summary'
-    excluded_minors: '<strong>%nbr%</strong> volunteers are underage'
   copy_paste: 'Or paste a list of identifiers'
   copy_paste_details: 'Paste a list of identifiers in the field below.'
   large_audience:
@@ -212,18 +213,19 @@ audience:
     email_missing: 'These volunteers won''t be able to receive email communications.'
     email_optout: 'These volunteers do not want to be triggered through emails.'
     excluded: 'You can include these volunteers back by showing your selection.'
+    excluded_minors: 'These volunteers are underage and the trigger explicitly exclude them.'
     inaccessible: 'These volunteers belong to structures you are not allowed to trigger.'
     invalid: 'These volunteers'' identifiers are not valid or not yet integrated.'
     optout_until: 'These volunteers do not want to be triggered at the moment.'
     phone_landline: 'These volunteers can receive voice calls, but cannot receive text messages.'
     phone_missing: 'These volunteers won''t be able to receive voice calls nor text messages.'
     phone_optout: 'These volunteers do not want to be triggered through voice call nor text message.'
-    excluded_minors: 'These volunteers are underage and the trigger explicitly exclude them.'
   problems:
     disabled: Disabled
     email_missing: 'No email'
     email_optout: 'Emails opted-out'
     excluded: 'Manually excluded'
+    excluded_minors: 'Excluded underage volunteers'
     inaccessible: 'Out of perimeter'
     invalid: Invalids
     optout_until: 'Temp. unavailable'
@@ -231,12 +233,11 @@ audience:
     phone_missing: 'No phone'
     phone_optout: 'Phone opted-out'
     title: 'Audience problem details'
-    excluded_minors: 'Excluded underage volunteers'
   search_for_volunteers: 'Search for volunteers:'
   search_other_badge: 'Search for another skill:'
   select_all_badges: 'Trigger all volunteers whatever their skills'
-  structures: 'Structure(s) to trigger'
-  allow_minors: 'Trigger underage volunteers'
+  structures: Structure(s)
+  volunteer_lists: 'Volunteer lists'
 backlinks:
   blablacar: 'Sponsored by'
   minutis: 'Developed by Minutis volunteers'
@@ -259,6 +260,7 @@ base:
     search: Search
     submit: Submit
     update: Edit
+    use: Use
   clear_selection: 'Clear selection'
   closed: Fermé
   crud:
@@ -576,6 +578,27 @@ manage_structures:
   users: 'RedCall users count: %count%'
   view_pegass_entry: 'Open Pegass database entry'
   volunteers: 'Volunteers count: %count%'
+  manage_volunteer_lists: 'Manage volunteer lists'
+  volunteer_list:
+    help:
+      intro: 'If you want, you can'
+      create: 'create custom volunteer lists'
+    title: 'Manage volunteer lists'
+    subtitle: 'for "%structureName%"'
+    create: 'Create a new list'
+    manage: 'Manage volunteer lists'
+    choose_structure: 'In which structure would you like to create a list of volunteers?'
+    update: 'Edit list "%name%"'
+    delete: X
+    delete_confirm: 'Really delete "%name%" list?'
+    edit: Edit
+    form:
+      name: 'List name'
+    no_lists: 'No volunteer lists yet.'
+    table:
+      name: 'List name'
+      nb_volunteers: 'Volunt. count'
+      structure: Structure
 manage_volunteers:
   access_denied: 'Cannot edit this volunteer details, (s)he does not belong to any structure you are managing.'
   action:

@@ -39,6 +39,9 @@
                                 {{ 'manage_structures.manage_prefilled_answers'| trans }}
                             </a>
 
+                            <a class="dropdown-item" href="{{ path('management_structures_volunteer_lists_index', {structureId: structure.id}) }}">
+                                {{ 'manage_structures.manage_volunteer_lists'| trans }}
+                            </a>
                         {% endif %}
 
                         {% if app.user.root %}

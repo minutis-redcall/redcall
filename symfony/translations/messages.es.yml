@@ -158,7 +158,7 @@ admin:
     pegass: 'Conexiones a Pegass'
 audience:
   audience: Audiencia
-  audience_help: 'Puedes seleccionar las personas voluntarias que quieras movilizar introduciéndolas manualmente, o filtrando por estructura y competencias.'
+  audience_help: 'Puedes seleccionar las personas voluntarias introduciéndolas manualmente, o filtrando por estructura y competencias.'
   badges: 'Competencias y nominaciones'
   classification:
     audience: 'Mostrar la lista de personas voluntarias seleccionadas'
@@ -224,7 +224,7 @@ audience:
   search_for_volunteers: 'Buscar personas voluntarias para la movilización:'
   search_other_badge: 'Buscar otra competencia:'
   select_all_badges: 'Movilizar a todo el voluntariado independientemente de las competencias'
-  structures: 'Estructura(s) a movilizar'
+  structures: Estructura(s)
 backlinks:
   blablacar: 'Patrocinado por'
   minutis: 'Desarrollado por personas voluntarias'

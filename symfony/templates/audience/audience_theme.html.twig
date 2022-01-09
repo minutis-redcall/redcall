@@ -44,6 +44,104 @@
             <br/>
 
             {# -------------------------------------------------------------------------------- #}
+            {# Volunteer lists #}
+            {# -------------------------------------------------------------------------------- #}
+
+            {% if form.parent.children.answers.vars.id|default(false) %}
+
+                {% if not volunteer_lists %}
+
+                    <div class="alert alert-info">
+                        {{ 'manage_structures.volunteer_list.help.intro'|trans }}
+                        <a href="#" data-toggle="modal" data-target="#volunteers-list-modal">
+                            {{ 'manage_structures.volunteer_list.help.create'|trans }}
+                        </a>
+                    </div>
+
+                {% else %}
+
+                    <div class="h4">
+                        {{ 'audience.volunteer_lists'|trans }}
+                    </div>
+
+                    <table class="table table-striped">
+                        <thead>
+                        <tr>
+                            <th class="w-25">{{ 'manage_structures.volunteer_list.table.structure'|trans }}</th>
+                            <th class="w-50">{{ 'manage_structures.volunteer_list.table.name'|trans }}</th>
+                            <th>{{ 'manage_structures.volunteer_list.table.nb_volunteers'|trans }}</th>
+                            <th>&nbsp;</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for volunteer_list in volunteer_lists %}
+                            <tr>
+                                <td>
+                                    <a href="{{ path('management_structures_volunteer_lists_index', {structureId: volunteer_list.structure.id}) }}" target="_blank">
+                                        {{ volunteer_list.structure }}
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href="{{ path('management_structures_volunteer_lists_create', {structureId: volunteer_list.structure.id, volunteerListId: volunteer_list.id}) }}" target="_blank">
+                                        {{ volunteer_list.name }}
+                                    </a>
+                                </td>
+                                <td>{{ volunteer_list.volunteers|length }}</td>
+                                <td class="text-right">
+                                    <div class="d-none" id="volunteer-list-{{ volunteer_list.id }}">
+                                        {%- for volunteer in volunteer_list.volunteers %}{{ volunteer.externalId }} {% endfor -%}
+                                    </div>
+                                    <a href="#" data-id="{{ volunteer_list.id }}" class="btn btn-secondary volunteer-list-use">{{ 'base.button.use'|trans }}</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+
+                    <div class="text-right">
+                        <a href="#" data-toggle="modal" data-target="#volunteers-list-modal">
+                            {{ 'manage_structures.volunteer_list.manage'|trans }}
+                        </a>
+                    </div>
+
+                {% endif %}
+
+            {% endif %}
+
+            <div class="modal fade" id="volunteers-list-modal" tabindex="-1" role="dialog" aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 id="volunteers-list-modal-title" class="modal-title">
+                                {{ 'manage_structures.volunteer_list.manage'|trans }}
+                            </h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div id="volunteers-list-modal-body" class="modal-body">
+                            <p>
+                                {{ 'manage_structures.volunteer_list.choose_structure'|trans }}
+                            </p>
+                            <ul>
+                                {% for structure in app.user.structures %}
+                                    <li>
+                                        <a href="{{ path('management_structures_volunteer_lists_index', {structureId: structure.id}) }}" target="_blank">
+                                            {{ structure.name }}
+                                        </a>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ 'base.modal.close'|trans }}</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {# -------------------------------------------------------------------------------- #}
             {# Manual selection #}
             {# -------------------------------------------------------------------------------- #}
 
@@ -75,8 +173,7 @@
             <br/>
 
             <div id="show-copy-paste-external-ids">
-                <a href="#" class="btn btn-sm btn-secondary"
-                   onclick="$('#copy-paste-external-ids').removeClass('d-none');$('#show-copy-paste-external-ids').addClass('d-none');return false;">
+                <a href="#" class="btn btn-sm btn-secondary click-paste">
                     {{ 'audience.copy_paste'|trans }}
                 </a>
             </div>
@@ -442,9 +539,11 @@
             $.post('{{ path('audience_numbers', {name: form.vars.full_name}) }}&badge_counts=' + withBadgeCounts, formData, function (data) {
                 $('#classification').html(data.classification);
 
-                $('.trigger-launch').html(
-                        $('#submit-button-audience').html().replace('%nbr%', data.triggered_count)
-                );
+                if ($('#submit-button-audience').length) {
+                    $('.trigger-launch').html(
+                            $('#submit-button-audience').html().replace('%nbr%', data.triggered_count)
+                    );
+                }
 
                 if (withBadgeCounts) {
                     $.each(data.badge_counts, function (badgeId, count) {
@@ -494,6 +593,31 @@
             } else {
                 $('#toggle-audience-form').html('{{ 'audience.pre_selection.close_standard_form'|trans }}');
             }
+        });
+
+        $('body').on('click', '.click-paste', function (e) {
+            e.preventDefault();
+            $('#copy-paste-external-ids').removeClass('d-none');
+            $('#show-copy-paste-external-ids').addClass('d-none');
+        });
+
+        $('body').on('click', '.volunteer-list-use', function (e) {
+            e.preventDefault();
+
+            $('.click-paste').click();
+            var volunteerListId = $(this).data('id');
+            var textarea = $('#{{ form.external_ids.vars.id }}');
+
+            textarea.val(
+                    (textarea.val() ? textarea.val() + ' ' : '') +
+                    $('#volunteer-list-' + volunteerListId).html()
+                            .replace(/&/g, "&amp;")
+                            .replace(/</g, "&lt;")
+                            .replace(/>/g, "&gt;")
+                            .replace(/"/g, "&quot;")
+                            .replace(/'/g, "&#039;"));
+
+            numbers(0);
         });
 
     </script>
