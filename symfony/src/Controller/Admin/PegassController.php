@@ -5,7 +5,7 @@ namespace App\Controller\Admin;
 use App\Base\BaseController;
 use App\Entity\Structure;
 use App\Entity\User;
-use App\Form\Type\UserStructuresType;
+use App\Form\Type\ManageUserStructuresType;
 use App\Form\Type\VolunteerWidgetType;
 use App\Manager\PlatformConfigManager;
 use App\Manager\StructureManager;
@@ -152,7 +152,7 @@ class PegassController extends BaseController
         }
 
         $form = $this
-            ->createForm(UserStructuresType::class, $clone, [
+            ->createForm(ManageUserStructuresType::class, $clone, [
                 'user' => $user,
             ])
             ->handleRequest($request);

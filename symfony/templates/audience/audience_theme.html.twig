@@ -442,9 +442,11 @@
             $.post('{{ path('audience_numbers', {name: form.vars.full_name}) }}&badge_counts=' + withBadgeCounts, formData, function (data) {
                 $('#classification').html(data.classification);
 
-                $('.trigger-launch').html(
-                        $('#submit-button-audience').html().replace('%nbr%', data.triggered_count)
-                );
+                if ($('#submit-button-audience').length) {
+                    $('.trigger-launch').html(
+                            $('#submit-button-audience').html().replace('%nbr%', data.triggered_count)
+                    );
+                }
 
                 if (withBadgeCounts) {
                     $.each(data.badge_counts, function (badgeId, count) {

@@ -1,0 +1,65 @@
+{% extends 'base.html.twig' %}
+
+{% import 'macros.html.twig' as macros %}
+
+{% block body %}
+
+    <h1>
+        {{ 'manage_structures.volunteer_list.title'|trans }}
+        <span class="h4">{{ 'manage_structures.volunteer_list.subtitle'|trans({'%structureName%': structure.name}) }}</span>
+    </h1>
+
+    {% if not structure.volunteerLists|length %}
+        <div class="h4 text-center">
+            {{ 'manage_structures.volunteer_list.no_lists'|trans }}
+        </div>
+        <br/><br/>
+    {% else %}
+
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>{{ 'manage_structures.volunteer_list.table.name'|trans }}</th>
+                <th>{{ 'manage_structures.volunteer_list.table.nb_volunteers'|trans }}</th>
+                <th>&nbsp;</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for volunteerList in structure.volunteerLists %}
+                <tr>
+                    <td>{{ volunteerList.name }}</td>
+                    <td>{{ volunteerList.volunteers|length }}</td>
+                    <td>
+                        <a href="{{ path('management_structures_volunteer_lists_create', {structureId: structure.id, volunteerListId: volunteerList.id}) }}" class="btn btn-secondary">
+                            {{ 'manage_structures.volunteer_list.edit'|trans }}
+                        </a>
+
+                        <div class="float-right">
+                            <a href="{{ path('management_structures_volunteer_lists_delete', {structureId: structure.id, volunteerListId: volunteerList.id, csrf: csrf_token('csrf')}) }}"
+                               onclick="return confirm('{{ 'manage_structures.volunteer_list.delete_confirm'|trans({'%name%': volunteerList.name})|e('js') }}')"
+                               class="btn btn-danger">
+                                {{ 'manage_structures.volunteer_list.delete'|trans }}
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% endif %}
+
+    <div class="text-center">
+        <a href="{{ path('management_structures_volunteer_lists_create', {structureId: structure.id}) }}" class="btn btn-primary">
+            {{ 'manage_structures.volunteer_list.create'|trans }}
+        </a>
+    </div>
+
+    <br/>
+
+    <div class="text-center">
+        <a href="{{ path('management_structures_list') }}" class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+    </div>
+
+    <br/><br/>
+
+{% endblock %}

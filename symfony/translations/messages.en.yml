@@ -559,6 +559,7 @@ manage_structures:
   last_update: 'Last Pegass synchro on: %last_update% UTC'
   lock: 'Lock structure'
   manage_prefilled_answers: 'Manage prefilled answers'
+  manage_volunteer_lists: 'Manage volunteer lists'
   manual_update: 'Manual update'
   next_update: 'Next Pegass synchro on: %next_update% UTC'
   prefilled_answers:
@@ -575,6 +576,22 @@ manage_structures:
   unlock: 'Unlock structure'
   users: 'RedCall users count: %count%'
   view_pegass_entry: 'Open Pegass database entry'
+  volunteer_list:
+    title: 'Manage volunteer lists'
+    subtitle: 'for "%structureName%"'
+    create: 'Create a new list'
+    update: 'Edit list "%name%"'
+    delete: 'X'
+    delete_confirm: 'Really delete "%name%" list?'
+    edit: 'Edit'
+    form:
+      name: 'List name'
+      structure: 'Structure to which attach the list'
+    no_lists: 'No volunteer lists yet.'
+    table:
+      name: 'List name'
+      nb_volunteers: 'Volunt. count'
+
   volunteers: 'Volunteers count: %count%'
 manage_volunteers:
   access_denied: 'Cannot edit this volunteer details, (s)he does not belong to any structure you are managing.'

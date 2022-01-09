@@ -559,6 +559,7 @@ manage_structures:
   last_update: 'Dernière synchro avec Pegass : %last_update% UTC'
   lock: 'Geler la structure'
   manage_prefilled_answers: 'Gérer les réponses pré-remplies'
+  manage_volunteer_lists: 'Gérer les listes de bénévoles'
   manual_update: 'Mise à jour manuelle'
   next_update: 'Prochaine synchro avec Pegass : %next_update% UTC'
   prefilled_answers:
@@ -575,6 +576,21 @@ manage_structures:
   unlock: 'Dégeler la structure'
   users: 'Nombre d''utilisateurs RedCall : %count%'
   view_pegass_entry: 'Ouvir l''entrée de la base de données Pegass'
+  volunteer_list:
+    title: 'Gérer les listes de bénévoles'
+    subtitle: 'pour "%structureName%"'
+    create: 'Créer une nouvelle liste'
+    update: 'Éditer la liste "%name%"'
+    delete: 'X'
+    delete_confirm: 'Vraiment effacer cette liste "%name%" ?'
+    edit: 'Editer'
+    form:
+      name: 'Nom de la liste'
+      structure: 'Structure à laquelle la rattacher'
+    no_lists: 'Pas encore de listes de bénévoles.'
+    table:
+      name: 'Nom de la liste'
+      nb_volunteers: 'Nb bénév.'
   volunteers: 'Nombre de bénévoles : %count%'
 manage_volunteers:
   access_denied: 'Vous ne pouvez pas ouvrir le profil d''un(e) bénévole ne faisant pas partie des structures que vous pouvez déclencher.'

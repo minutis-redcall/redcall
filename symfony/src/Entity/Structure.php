@@ -128,12 +128,18 @@ class Structure implements LockableInterface
      */
     private $prefilledAnswers;
 
+    /**
+     * @ORM\OneToMany(targetEntity=VolunteerList::class, mappedBy="structure", orphanRemoval=true)
+     */
+    private $volunteerLists;
+
     public function __construct()
     {
         $this->volunteers         = new ArrayCollection();
         $this->childrenStructures = new ArrayCollection();
         $this->users              = new ArrayCollection();
         $this->prefilledAnswers   = new ArrayCollection();
+        $this->volunteerLists = new ArrayCollection();
     }
 
     /**
@@ -577,5 +583,35 @@ class Structure implements LockableInterface
         }
 
         return false;
+    }
+
+    /**
+     * @return Collection|VolunteerList[]
+     */
+    public function getVolunteerLists(): Collection
+    {
+        return $this->volunteerLists;
+    }
+
+    public function addVolunteerList(VolunteerList $volunteerList): self
+    {
+        if (!$this->volunteerLists->contains($volunteerList)) {
+            $this->volunteerLists[] = $volunteerList;
+            $volunteerList->setStructure($this);
+        }
+
+        return $this;
+    }
+
+    public function removeVolunteerList(VolunteerList $volunteerList): self
+    {
+        if ($this->volunteerLists->removeElement($volunteerList)) {
+            // set the owning side to null (unless already changed)
+            if ($volunteerList->getStructure() === $this) {
+                $volunteerList->setStructure(null);
+            }
+        }
+
+        return $this;
     }
 }
