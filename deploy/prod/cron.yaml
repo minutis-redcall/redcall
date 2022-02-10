@@ -1,11 +1,6 @@
 # Cron file for App Engine
 cron:
 
-  # * * * * * <path/to/the/project>/symfony/bin/console pegass
-  - description: "Maintain Pegass cache"
-    url: /cron/pegass
-    schedule: every 1 minutes
-
   # * * * * * <path/to/the/project>/symfony/bin/console twilio:price
   - description: "Fetch missing message prices on Twilio"
     url: /cron/twilio-price

@@ -76,8 +76,6 @@ class PegassClient
 
     public function getStructure(string $identifier) : array
     {
-        $structure = json_decode(file_get_contents('/tmp/test.json'), true);
-
         $structure = [];
         foreach (self::ENDPOINTS[Pegass::TYPE_STRUCTURE] as $key => $endpoint) {
             if ('volunteers' !== $key) {

@@ -1,0 +1,36 @@
+{
+    "structure": {
+        "id": "{{ structure.id }}",
+        "typeStructure": "",
+        "libelle": "{{ structure.label }}",
+        "libelleCourt": "{{ structure.short_label }}",
+        "adresse": "{{ structure.address }}",
+        "telephone": "",
+        "mail": "",
+        "parent": {
+            "id": "{{ structure.parent_id }}"
+        },
+        "structureMenantActiviteList": [
+            {
+                "id": "{{ structure.id }}",
+                "libelle": "{{ structure.label }}",
+            }
+        ]
+    },
+    "responsible": {
+        "responsableId": "{{ structure.responsible }}"
+    },
+    "volunteers": [
+        {
+            "content": [
+                {% for volunteer_id in structure.volunteer_ids %}
+                {
+                    "id": "{{ volunteer_id }}"
+                }
+                {% if not loop.last %},
+                {% endif %}
+                {% endfor %}
+            ]
+        }
+    ]
+}
