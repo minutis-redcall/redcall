@@ -4,6 +4,5 @@ services:
     arguments:
       - '@event_dispatcher'
       - '@Bundles\PegassCrawlerBundle\Repository\PegassRepository'
-      - '@Bundles\PegassCrawlerBundle\Service\PegassClient'
       - '@monolog.logger.slack'
       - '@logger'

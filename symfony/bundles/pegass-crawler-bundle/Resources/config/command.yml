@@ -1,8 +1,9 @@
 services:
 
-  Bundles\PegassCrawlerBundle\Command\PegassCommand:
+  Bundles\PegassCrawlerBundle\Command\PegassFilesCommand:
     arguments:
       - '@Bundles\PegassCrawlerBundle\Manager\PegassManager'
+      - '@twig'
     tags:
       - { name: console.command }
 

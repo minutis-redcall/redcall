@@ -30,7 +30,7 @@
         {% for action in volunteer.actions %}
         {
             "structure": {
-                "id": "{{ action.structure_id }}",
+                "id": "{{ action.structure_id }}"
             },
             "groupeAction": {
                 "id": "{{ action.group_action_id }}",
@@ -75,7 +75,7 @@
             },
             "libelleLong": "{{ nomination.label }}",
             "libelleCourt": "{{ nomination.code }}",
-            "dateValidation": "{{ nomination.got_at }}"
+            "dateValidation": "{{ nomination.got_at ? nomination.got_at|date('Y-m-d\\TH:i:s') : '' }}"
         }
         {% if not loop.last %},
         {% endif %}

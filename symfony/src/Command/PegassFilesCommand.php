@@ -1,14 +1,18 @@
 <?php
 
-namespace App\Task;
+namespace App\Command;
 
-use Bundles\GoogleTaskBundle\Contracts\TaskInterface;
+use Bundles\PegassCrawlerBundle\Entity\Pegass;
 use Bundles\PegassCrawlerBundle\Manager\PegassManager;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
 use Twig\Environment;
 
-class LoadPegassFilesTask implements TaskInterface
+class PegassFilesCommand extends Command
 {
-    const NAME = 'load-pegass-files';
+    protected static $defaultName        = 'pegass-files';
+    protected static $defaultDescription = 'Update pegass database based on files';
 
     /**
      * @var array
@@ -28,16 +32,29 @@ class LoadPegassFilesTask implements TaskInterface
     /**
      * @var Environment
      */
-
     private $twig;
 
     public function __construct(PegassManager $pegassManager, Environment $twig)
     {
+        parent::__construct();
+
         $this->pegassManager = $pegassManager;
         $this->twig          = $twig;
     }
 
-    public function execute(array $context)
+    protected function execute(InputInterface $input, OutputInterface $output) : int
+    {
+        $this->processFiles(array_combine(
+            glob('/Users/alain/Desktop/pegass/redcall_*.csv'),
+            array_map(function (string $filename) {
+                return file_get_contents($filename);
+            }, glob('/Users/alain/Desktop/pegass/redcall_*.csv'))
+        ));
+
+        return Command::SUCCESS;
+    }
+
+    private function processFiles(array $context)
     {
         $csvs = $this->decsvize($context);
 
@@ -51,20 +68,62 @@ class LoadPegassFilesTask implements TaskInterface
         $this->extractTrainings($csvs);
         $this->extractNominations($csvs);
 
-        // check missing structures
-        // check closed structures
-
+        // Updating structures
+        $this->updateStructures();
+        $this->updateVolunteers();
     }
 
-    public function extractNominations(array $csvs)
+    private function updateVolunteers()
+    {
+        foreach ($this->volunteers as $identifier => $data) {
+            $entity = $this->pegassManager->getEntity(Pegass::TYPE_VOLUNTEER, $identifier, false);
+
+            $json = $this->twig->render('pegass/volunteer.json.twig', [
+                'volunteer' => $data,
+            ]);
+
+            if ($decoded = json_decode($json, true)) {
+                $this->pegassManager->updateEntity($entity, $decoded);
+            }
+        }
+    }
+
+    private function updateStructures()
+    {
+        $this->pegassManager->removeMissingEntities(Pegass::TYPE_STRUCTURE, array_keys($this->structures));
+
+        foreach ($this->structures as $identifier => $data) {
+            $entity = $this->pegassManager->getEntity(Pegass::TYPE_STRUCTURE, $identifier, false);
+
+            if (!$entity) {
+                $entity = $this->pegassManager->createNewEntity(Pegass::TYPE_STRUCTURE, $identifier);
+            }
+
+            if (isset($this->structures[$parentId = $data['parent_id']])) {
+                $entity->setParentIdentifier($parentId);
+            } else {
+                $entity->setParentIdentifier($identifier);
+            }
+
+            $json = $this->twig->render('pegass/structure.json.twig', [
+                'structure' => $data,
+            ]);
+
+            if ($decoded = json_decode($json, true)) {
+                $this->pegassManager->updateEntity($entity, $decoded);
+            }
+        }
+    }
+
+    private function extractNominations(array $csvs)
     {
         // ref_nominations
-        // id,libelle
-        // 108,Chef de Secteur
+        // id,libelle,libelle_court
+        // 108,Chef de Secteur,CS
         $nominations = [];
         foreach ($csvs['ref_nominations'] as $row) {
             $nominations[$row[0]] = [
-                'code'  => '',
+                'code'  => $row[2],
                 'label' => $row[1],
             ];
         }
@@ -77,20 +136,29 @@ class LoadPegassFilesTask implements TaskInterface
                 continue;
             }
 
+            if (!array_key_exists($row[1], $this->structures)) {
+                continue;
+            }
+
+            if (!array_key_exists($row[2], $nominations)) {
+                continue;
+            }
+
             if ($row[1] && !in_array($volunteerIdentifier, $this->structures[$row[1]]['volunteer_ids'])) {
                 $this->structures[$row[1]]['volunteer_ids'][] = $volunteerIdentifier;
             }
 
             $this->volunteers[$volunteerIdentifier]['nominations'][] = [
                 'id'           => $row[2],
-                'label'        => $nominations[$row[2]],
+                'code'         => $nominations[$row[2]]['code'],
+                'label'        => $nominations[$row[2]]['label'],
                 'structure_id' => $row[1],
                 'got_at'       => $row[3] ? \DateTime::createFromFormat('d/m/Y', $row[3]) : null,
             ];
         }
     }
 
-    public function extractTrainings(array $csvs)
+    private function extractTrainings(array $csvs)
     {
         // ref_formations
         // id,code,libelle
@@ -111,6 +179,10 @@ class LoadPegassFilesTask implements TaskInterface
                 continue;
             }
 
+            if (!array_key_exists($row[1], $trainings)) {
+                continue;
+            }
+
             $this->volunteers[$volunteerIdentifier]['trainings'][] = [
                 'id'     => $row[1],
                 'code'   => $trainings[$row[1]]['code'],
@@ -121,7 +193,7 @@ class LoadPegassFilesTask implements TaskInterface
         }
     }
 
-    public function extractSkills(array $csvs)
+    private function extractSkills(array $csvs)
     {
         // ref_competences
         // id,libelle
@@ -139,6 +211,10 @@ class LoadPegassFilesTask implements TaskInterface
                 continue;
             }
 
+            if (!array_key_exists($row[1], $skills)) {
+                continue;
+            }
+
             $this->volunteers[$volunteerIdentifier]['skills'][] = [
                 'id'    => $row[1],
                 'label' => $skills[$row[1]],
@@ -146,7 +222,7 @@ class LoadPegassFilesTask implements TaskInterface
         }
     }
 
-    public function extractActions(array $csvs)
+    private function extractActions(array $csvs)
     {
         // ref_groupes_actions
         // id,libelle
@@ -168,6 +244,10 @@ class LoadPegassFilesTask implements TaskInterface
                 continue;
             }
 
+            if (!array_key_exists($row[2], $groupActions)) {
+                continue;
+            }
+
             if (!in_array($volunteerIdentifier, $this->structures[$structureIdentifier]['volunteer_ids'])) {
                 $this->structures[$structureIdentifier]['volunteer_ids'][] = $volunteerIdentifier;
             }
@@ -180,11 +260,11 @@ class LoadPegassFilesTask implements TaskInterface
         }
     }
 
-    public function extractVolunteerBasics(array $csvs)
+    private function extractVolunteerBasics(array $csvs)
     {
         // benevoles
         // nivol,nom,prenom,age,email,email_crf,telephone,id_structure
-        // 00000342302R,TIEMBLO,ALAIN,38.0,xxx@example.com,alain.tiemblo@croix-rouge.fr,0606060606,889
+        // 00000342302R,TIEMBLO,ALAIN,38.0,xxx@example.com,alain.tiemblo@croix-rouge.fr,+33606060606,889
         foreach ($csvs['benevoles'] as $row) {
             $this->volunteers[$row[0]] = [
                 'identifier'         => $row[0],
@@ -204,7 +284,7 @@ class LoadPegassFilesTask implements TaskInterface
         }
     }
 
-    public function extractStructureBasics(array $csvs)
+    private function extractStructureBasics(array $csvs)
     {
         // ref_structures
         // structure_id,structure_parent_id,structure_libelle,structure_libelle_court,adresse_numero,adresse_type_voie,adresse_voie,adresse_lieu_dit,adresse_code_postal,adresse_commune
@@ -222,7 +302,7 @@ class LoadPegassFilesTask implements TaskInterface
         }
     }
 
-    public function decsvize(array $context) : array
+    private function decsvize(array $context) : array
     {
         $csvs = [];
         foreach ($context as $filename => $content) {
@@ -242,14 +322,9 @@ class LoadPegassFilesTask implements TaskInterface
             // Remove header
             array_shift($csv);
 
-            $csvs[substr($filename, 8, -13)] = $csv;
+            $csvs[substr(basename($filename), 8, -13)] = $csv;
         }
 
         return $csvs;
-    }
-
-    public function getQueueName() : string
-    {
-        return self::NAME;
     }
 }

@@ -510,7 +510,7 @@ class RefreshManager
 
         foreach (['action', 'groupeAction'] as $type) {
             foreach ($data as $action) {
-                if (!is_array($action)) {
+                if (!is_array($action) || !($action[$type] ?? false)) {
                     continue;
                 }
 
