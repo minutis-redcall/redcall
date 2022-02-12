@@ -2,6 +2,7 @@
 
 namespace Bundles\PegassCrawlerBundle\Command;
 
+use App\Manager\RefreshManager;
 use Bundles\PegassCrawlerBundle\Entity\Pegass;
 use Bundles\PegassCrawlerBundle\Manager\PegassManager;
 use Symfony\Component\Console\Command\Command;
@@ -30,16 +31,22 @@ class PegassFilesCommand extends Command
     private $pegassManager;
 
     /**
+     * @var RefreshManager
+     */
+    private $refreshManager;
+
+    /**
      * @var Environment
      */
     private $twig;
 
-    public function __construct(PegassManager $pegassManager, Environment $twig)
+    public function __construct(PegassManager $pegassManager, RefreshManager $refreshManager, Environment $twig)
     {
         parent::__construct();
 
-        $this->pegassManager = $pegassManager;
-        $this->twig          = $twig;
+        $this->pegassManager  = $pegassManager;
+        $this->refreshManager = $refreshManager;
+        $this->twig           = $twig;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output) : int
@@ -69,8 +76,11 @@ class PegassFilesCommand extends Command
         $this->extractNominations($csvs);
 
         // Updating structures
+        unset($csvs);
         $this->updateStructures();
         $this->updateVolunteers();
+
+        $this->refreshManager->refreshAsync();
     }
 
     private function updateVolunteers()
@@ -86,7 +96,7 @@ class PegassFilesCommand extends Command
             ]);
 
             if ($decoded = json_decode($json, true)) {
-                $this->pegassManager->updateEntity($entity, $decoded);
+                $this->pegassManager->updateEntity($entity, $decoded, true);
             }
 
             $this->pegassManager->flush();
@@ -112,7 +122,7 @@ class PegassFilesCommand extends Command
             ]);
 
             if ($decoded = json_decode($json, true)) {
-                $this->pegassManager->updateEntity($entity, $decoded);
+                $this->pegassManager->updateEntity($entity, $decoded, true);
             }
 
             $this->pegassManager->flush();

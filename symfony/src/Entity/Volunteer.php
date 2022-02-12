@@ -498,25 +498,6 @@ class Volunteer implements LockableInterface
         return $nextPegassUpdate;
     }
 
-    public function canForcePegassUpdate() : bool
-    {
-        if (!$this->lastPegassUpdate) {
-            return true;
-        }
-
-        // Doctrine loaded an UTC-saved date using the default timezone (Europe/Paris)
-        $utc = (new DateTime($this->lastPegassUpdate->format('Y-m-d H:i:s'), new DateTimeZone('UTC')));
-
-        // Can happen when update dates are spread on a larger timeframe
-        // See: PegassManager:spreadUpdateDatesInTTL()
-        if ($utc->getTimestamp() > time()) {
-            return true;
-        }
-
-        // Prevent several updates in less than 1h
-        return time() - $utc->getTimestamp() > 3600;
-    }
-
     public function getDisplayName() : string
     {
         if ($this->firstName && $this->lastName) {

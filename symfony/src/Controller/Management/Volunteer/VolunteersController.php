@@ -24,8 +24,6 @@ use App\Model\PlatformConfig;
 use Bundles\PaginationBundle\Manager\PaginationManager;
 use Bundles\PegassCrawlerBundle\Entity\Pegass;
 use Bundles\PegassCrawlerBundle\Manager\PegassManager;
-use DateTime;
-use DateTimeZone;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
@@ -164,39 +162,6 @@ class VolunteersController extends BaseController
             'structure'  => $structure,
             'platforms'  => $this->getPlatforms(),
         ]);
-    }
-
-    /**
-     * @Route(path="/pegass-update/{csrf}/{id}", name="pegass_update")
-     * @IsGranted("VOLUNTEER", subject="volunteer")
-     */
-    public function pegassUpdate(Request $request, Volunteer $volunteer, string $csrf)
-    {
-        $this->validateCsrfOrThrowNotFoundException('volunteers', $csrf);
-
-        if ($volunteer->isLocked()) {
-            throw $this->createNotFoundException();
-        }
-
-        if (!$volunteer->canForcePegassUpdate()) {
-            return $this->redirectToRoute('management_volunteers_list', $request->query->all());
-        }
-
-        // Just in case Pegass database would contain some RCE?
-        if (!preg_match('/^[a-zA-Z0-9]+$/', $volunteer->getExternalId())) {
-            return $this->redirectToRoute('management_volunteers_list', $request->query->all());
-        }
-
-        // Prevents multiple clicks
-        $volunteer->setLastPegassUpdate(new DateTime('now', new DateTimeZone('UTC')));
-        $this->volunteerManager->save($volunteer);
-
-        // Executing asynchronous task to prevent against interruptions
-        $console = sprintf('%s/bin/console', $this->kernel->getProjectDir());
-        $command = sprintf('%s pegass --volunteer %s', escapeshellarg($console), $volunteer->getExternalId());
-        exec(sprintf('%s > /dev/null 2>&1 & echo -n \$!', $command));
-
-        return $this->redirectToRoute('management_volunteers_list', $request->query->all());
     }
 
     /**

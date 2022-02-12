@@ -54,12 +54,13 @@ class PegassManager
         return $this->pegassRepository->getEnabledEntitiesQueryBuilder($type, $identifier);
     }
 
-    public function updateEntity(Pegass $entity, array $content)
+    public function updateEntity(Pegass $entity, array $content, bool $async = false)
     {
         // Just in case entity would not be managed anymore
         $entity = $this->pegassRepository->find($entity->getId());
 
         $entity->setContent($content);
+        $entity->setEnabled(true);
         $entity->setUpdatedAt(new \DateTime());
 
         $this->pegassRepository->save($entity);
@@ -73,7 +74,9 @@ class PegassManager
                 break;
         }
 
-        $this->dispatchEvent($entity);
+        if (!$async) {
+            $this->dispatchEvent($entity);
+        }
     }
 
     public function foreach(string $type, callable $callback, bool $onlyEnabled = true)

@@ -42,17 +42,22 @@ class PegassRepository extends ServiceEntityRepository
         string $identifier = null,
         bool $onlyEnabled = true) : ?Pegass
     {
-        $filters['type'] = $type;
+        $qb = $this->createQueryBuilder('p')
+                   ->andWhere('p.type = :type')
+                   ->setParameter('type', $type);
 
         if ($onlyEnabled) {
-            $filters['enabled'] = true;
+            $qb->andWhere('p.enabled = true');
         }
 
         if ($identifier) {
-            $filters['identifier'] = $identifier;
+            $qb->andWhere('p.identifier = :identifier')
+               ->setParameter('identifier', $identifier);
         }
 
-        return $this->findOneBy($filters);
+        return $qb->getQuery()
+                  ->disableResultCache()
+                  ->getOneOrNullResult();
     }
 
     public function findExpiredEntities(int $limit) : array

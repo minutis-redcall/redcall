@@ -40,12 +40,6 @@
                                 </a>
                             {% endif %}
 
-                            {% if not volunteer.locked and volunteer.canForcePegassUpdate %}
-                                <a class="dropdown-item" href="{{ path('management_volunteers_pegass_update', app.request.query.all|merge({id: volunteer.id, csrf: csrf_token('volunteers')})) }}" onclick="$(this).addClass('disabled');">
-                                    {{ 'manage_volunteers.action.update_pegass'|trans }}
-                                </a>
-                            {% endif %}
-
                         {% endif %}
 
                         <a class="dropdown-item" href="{{ path('management_volunteers_manual_update', app.request.query.all|merge({id: volunteer.id})) }}">

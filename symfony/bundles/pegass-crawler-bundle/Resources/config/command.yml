@@ -3,6 +3,7 @@ services:
   Bundles\PegassCrawlerBundle\Command\PegassFilesCommand:
     arguments:
       - '@Bundles\PegassCrawlerBundle\Manager\PegassManager'
+      - '@App\Manager\RefreshManager'
       - '@twig'
     tags:
       - { name: console.command }

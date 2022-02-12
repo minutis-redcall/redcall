@@ -139,7 +139,7 @@ class Structure implements LockableInterface
         $this->childrenStructures = new ArrayCollection();
         $this->users              = new ArrayCollection();
         $this->prefilledAnswers   = new ArrayCollection();
-        $this->volunteerLists = new ArrayCollection();
+        $this->volunteerLists     = new ArrayCollection();
     }
 
     /**
@@ -492,28 +492,6 @@ class Structure implements LockableInterface
         return $nextPegassUpdate;
     }
 
-    /**
-     * @return bool
-     */
-    public function canForcePegassUpdate() : bool
-    {
-        if (!$this->lastPegassUpdate) {
-            return true;
-        }
-
-        // Doctrine loaded an UTC-saved date using the default timezone (Europe/Paris)
-        $utc = (new DateTime($this->lastPegassUpdate->format('Y-m-d H:i:s'), new DateTimeZone('UTC')));
-
-        // Can happen when update dates are spread on a larger timeframe
-        // See: PegassManager:spreadUpdateDatesInTTL()
-        if ($utc->getTimestamp() > time()) {
-            return true;
-        }
-
-        // Prevent several updates in less than 1h
-        return time() - $utc->getTimestamp() > 3600;
-    }
-
     public function getDisplayName() : string
     {
         return mb_strtoupper($this->name);
@@ -571,6 +549,36 @@ class Structure implements LockableInterface
         return $parents;
     }
 
+    /**
+     * @return Collection|VolunteerList[]
+     */
+    public function getVolunteerLists() : Collection
+    {
+        return $this->volunteerLists;
+    }
+
+    public function addVolunteerList(VolunteerList $volunteerList) : self
+    {
+        if (!$this->volunteerLists->contains($volunteerList)) {
+            $this->volunteerLists[] = $volunteerList;
+            $volunteerList->setStructure($this);
+        }
+
+        return $this;
+    }
+
+    public function removeVolunteerList(VolunteerList $volunteerList) : self
+    {
+        if ($this->volunteerLists->removeElement($volunteerList)) {
+            // set the owning side to null (unless already changed)
+            if ($volunteerList->getStructure() === $this) {
+                $volunteerList->setStructure(null);
+            }
+        }
+
+        return $this;
+    }
+
     private function isParentLooping() : bool
     {
         $ref = $this->getParentStructure();
@@ -583,35 +591,5 @@ class Structure implements LockableInterface
         }
 
         return false;
-    }
-
-    /**
-     * @return Collection|VolunteerList[]
-     */
-    public function getVolunteerLists(): Collection
-    {
-        return $this->volunteerLists;
-    }
-
-    public function addVolunteerList(VolunteerList $volunteerList): self
-    {
-        if (!$this->volunteerLists->contains($volunteerList)) {
-            $this->volunteerLists[] = $volunteerList;
-            $volunteerList->setStructure($this);
-        }
-
-        return $this;
-    }
-
-    public function removeVolunteerList(VolunteerList $volunteerList): self
-    {
-        if ($this->volunteerLists->removeElement($volunteerList)) {
-            // set the owning side to null (unless already changed)
-            if ($volunteerList->getStructure() === $this) {
-                $volunteerList->setStructure(null);
-            }
-        }
-
-        return $this;
     }
 }

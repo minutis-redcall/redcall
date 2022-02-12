@@ -495,7 +495,6 @@ manage_structures:
     title: Acciones
   disable_confirm: '¿Seguro que quieres desactivar esta estructura?'
   export: 'Exportar los datos de contacto de las personas voluntarias'
-  force_pegass_update: 'Forzar la actualización de Pegass ahora'
   form:
     create: 'Crear una nueva estructura'
     disabled: 'Mostrar las estructuras desactivadas'
@@ -533,7 +532,6 @@ manage_volunteers:
     title: Acciones
     unlock: Desbloquear
     update_manual: 'Actualizar los datos de voluntariado'
-    update_pegass: 'Forzar la actualización de Pegass ahora'
     view_pegass_entry: 'Abrir la entrada de la base de datos Pegass'
   admin_structures:
     create: 'Podrá editar las estructuras del voluntario después de su creación.'
