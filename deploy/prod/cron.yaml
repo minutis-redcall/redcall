@@ -35,3 +35,8 @@ cron:
   - description: "Creates communication reports"
     url: /cron/report-communication
     schedule: every 1 hours
+
+  # * * * * * <path/to/the/project>/symfony/bin/console pegass-files
+  #  - description: "Sync volunteers with the Pegass database"
+  #    url: /cron/pegass-files
+  #    schedule: every 12 hours

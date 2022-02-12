@@ -92,12 +92,12 @@ class PegassFilesCommand extends Command
             $this->pegassManager->flush();
             unset($this->volunteers[$identifier]);
         }
+
+        $this->pegassManager->removeMissingEntities(Pegass::TYPE_VOLUNTEER, array_keys($this->volunteers));
     }
 
     private function updateStructures()
     {
-        $this->pegassManager->removeMissingEntities(Pegass::TYPE_STRUCTURE, array_keys($this->structures));
-
         foreach ($this->structures as $identifier => $data) {
             if (!$entity = $this->pegassManager->getEntity(Pegass::TYPE_STRUCTURE, $identifier, false)) {
                 if (!isset($this->structures[$parentId = $data['parent_id']])) {
@@ -118,6 +118,8 @@ class PegassFilesCommand extends Command
             $this->pegassManager->flush();
             unset($this->structures[$identifier]);
         }
+
+        $this->pegassManager->removeMissingEntities(Pegass::TYPE_STRUCTURE, array_keys($this->structures));
     }
 
     private function extractNominations(array $csvs)

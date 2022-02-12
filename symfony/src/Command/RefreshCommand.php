@@ -16,17 +16,11 @@ class RefreshCommand extends BaseCommand
      */
     private $refreshManager;
 
-    /**
-     * @var PegassManager
-     */
-    private $pegassManager;
-
     public function __construct(RefreshManager $refreshManager, PegassManager $pegassManager)
     {
         parent::__construct();
 
         $this->refreshManager = $refreshManager;
-        $this->pegassManager  = $pegassManager;
     }
 
     protected function configure()
@@ -40,13 +34,6 @@ class RefreshCommand extends BaseCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         date_default_timezone_set('UTC');
-
-        //        $this->refreshManager->refreshVolunteer(
-        //            $this->pegassManager->getEntity(\Bundles\PegassCrawlerBundle\Entity\Pegass::TYPE_VOLUNTEER, '00000342302R'),
-        //            true
-        //        );
-        //
-        //        return 0;
 
         // Refresh everything
         $this->refreshManager->refresh(

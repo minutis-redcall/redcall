@@ -19,7 +19,7 @@ class CronController extends AbstractController
 {
     private const CRONS = [
         'user:cron',
-        'pegass',
+        'pegass-files',
         'twilio:price',
         'clear:campaign',
         'clear:media',
