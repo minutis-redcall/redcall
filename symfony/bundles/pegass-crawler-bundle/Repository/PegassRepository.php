@@ -58,18 +58,6 @@ class PegassRepository extends ServiceEntityRepository
     public function findExpiredEntities(int $limit) : array
     {
         return $this->createQueryBuilder('p')
-                    ->where('p.type = :type_area AND p.updatedAt < :expire_area')
-                    ->setParameter('type_area', Pegass::TYPE_AREA)
-                    ->setParameter('expire_area', $this->getExpireDate(Pegass::TYPE_AREA))
-                    ->orWhere('p.type = :type_department AND p.updatedAt < :expire_department')
-                    ->setParameter('type_department', Pegass::TYPE_DEPARTMENT)
-                    ->setParameter('expire_department', $this->getExpireDate(Pegass::TYPE_DEPARTMENT))
-                    ->orWhere('p.type = :type_region AND p.updatedAt < :expire_region')
-                    ->setParameter('type_region', Pegass::TYPE_REGION)
-                    ->setParameter('expire_region', $this->getExpireDate(Pegass::TYPE_REGION))
-                    ->orWhere('p.type = :type_national AND p.updatedAt < :expire_national')
-                    ->setParameter('type_national', Pegass::TYPE_NATIONAL)
-                    ->setParameter('expire_national', $this->getExpireDate(Pegass::TYPE_NATIONAL))
                     ->orWhere('p.type = :type_organization AND p.updatedAt < :expire_organization')
                     ->setParameter('type_organization', Pegass::TYPE_STRUCTURE)
                     ->setParameter('expire_organization', $this->getExpireDate(Pegass::TYPE_STRUCTURE))

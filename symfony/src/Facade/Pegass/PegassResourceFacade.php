@@ -13,8 +13,6 @@ class PegassResourceFacade implements FacadeInterface
      * Type of required Pegass entity
      *
      * @Assert\Choice(choices = {
-     *     Pegass::TYPE_AREA,
-     *     Pegass::TYPE_DEPARTMENT,
      *     Pegass::TYPE_STRUCTURE,
      *     Pegass::TYPE_VOLUNTEER
      * })
