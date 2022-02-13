@@ -84,7 +84,8 @@ class PegassRepository extends ServiceEntityRepository
                    ->where('p.type = :type')
                    ->setParameter('type', $type)
                    ->andWhere('p.identifier NOT IN (:identifiers)')
-                   ->setParameter('identifiers', $identifiers);
+                   ->setParameter('identifiers', $identifiers)
+                   ->andWhere('p.enabled = true');
 
         if ($parentIdentifier) {
             $qb->andWhere('p.parentIdentifier = :parentIdentifier')
