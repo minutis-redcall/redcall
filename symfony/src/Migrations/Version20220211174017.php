@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace DoctrineMigrations;
 
-use Bundles\PegassCrawlerBundle\Entity\Pegass;
+use App\Entity\Pegass;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 

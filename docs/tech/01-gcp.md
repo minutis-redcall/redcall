@@ -263,7 +263,7 @@ Voice calls generate several files that are exposed on Google Storage in order t
 9. Find the service account created for the RedCall app, and click "Edit"
    <br/>![](01/70.png)
 
-10. Add Storage Object Creator & Storage Object Viewer roles and click "Save"
+10. Add Storage Object Admin role and click "Save" (note: screenshot is outdated)
     <br/>![](01/71.png)
 
 11. We now need to configure objects auto deletion: go back to the "Storage" section

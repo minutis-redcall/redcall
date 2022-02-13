@@ -4,7 +4,7 @@ namespace App\Entity;
 
 use App\Contract\LockableInterface;
 use App\Tools\EscapedArray;
-use Bundles\PegassCrawlerBundle\Entity\Pegass;
+use App\Entity\Pegass;
 use DateInterval;
 use DateTime;
 use DateTimeInterface;

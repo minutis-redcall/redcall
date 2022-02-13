@@ -5,7 +5,7 @@ namespace App\Facade\Pegass;
 use Bundles\ApiBundle\Annotation as Api;
 use Bundles\ApiBundle\Annotation\Facade;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
-use Bundles\PegassCrawlerBundle\Entity\Pegass;
+use App\Entity\Pegass;
 
 /**
  * A Pegass entity.

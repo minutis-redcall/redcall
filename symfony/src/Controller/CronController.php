@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Console\Input\ArrayInput;
@@ -19,7 +18,7 @@ class CronController extends AbstractController
 {
     private const CRONS = [
         'user:cron',
-        'pegass-files',
+        'pegass:files',
         'twilio:price',
         'clear:campaign',
         'clear:media',
@@ -27,19 +26,6 @@ class CronController extends AbstractController
         'clear:expirable',
         'report:communication',
     ];
-
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
-     * @param LoggerInterface $logger
-     */
-    public function __construct(LoggerInterface $logger)
-    {
-        $this->logger = $logger;
-    }
 
     /**
      * @Route("/{key}")

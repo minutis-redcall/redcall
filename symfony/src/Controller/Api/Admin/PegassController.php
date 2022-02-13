@@ -11,8 +11,8 @@ use Bundles\ApiBundle\Annotation\Facade;
 use Bundles\ApiBundle\Model\Facade\Http\HttpNoContentFacade;
 use Bundles\ApiBundle\Model\Facade\Http\HttpNotFoundFacade;
 use Bundles\ApiBundle\Model\Facade\QueryBuilderFacade;
-use Bundles\PegassCrawlerBundle\Entity\Pegass;
-use Bundles\PegassCrawlerBundle\Manager\PegassManager;
+use App\Entity\Pegass;
+use App\Manager\PegassManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\Routing\Annotation\Route;
 

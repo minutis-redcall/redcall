@@ -1,10 +1,16 @@
 <?php
 
-namespace Bundles\PegassCrawlerBundle\Command;
+namespace App\Command;
 
+use App\Entity\Pegass;
+use App\Manager\PegassManager;
 use App\Manager\RefreshManager;
-use Bundles\PegassCrawlerBundle\Entity\Pegass;
-use Bundles\PegassCrawlerBundle\Manager\PegassManager;
+use App\Task\SyncOneWithPegass;
+use App\Task\SyncWithPegassFile;
+use Bundles\GoogleTaskBundle\Service\TaskSender;
+use Google\Cloud\Storage\StorageClient;
+use Google\Cloud\Storage\StorageObject;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -12,7 +18,7 @@ use Twig\Environment;
 
 class PegassFilesCommand extends Command
 {
-    protected static $defaultName        = 'pegass-files';
+    protected static $defaultName        = 'pegass:files';
     protected static $defaultDescription = 'Update pegass database based on files';
 
     /**
@@ -40,16 +46,82 @@ class PegassFilesCommand extends Command
      */
     private $twig;
 
-    public function __construct(PegassManager $pegassManager, RefreshManager $refreshManager, Environment $twig)
+    /**
+     * @var TaskSender;
+     */
+    private $taskSender;
+
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    public function __construct(PegassManager $pegassManager,
+        RefreshManager $refreshManager,
+        Environment $twig,
+        TaskSender $taskSender,
+        LoggerInterface $logger)
     {
         parent::__construct();
 
         $this->pegassManager  = $pegassManager;
         $this->refreshManager = $refreshManager;
         $this->twig           = $twig;
+        $this->taskSender     = $taskSender;
+        $this->logger         = $logger;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output) : int
+    {
+        //$this->local();
+        $this->remote();
+
+        return Command::SUCCESS;
+    }
+
+    private function remote()
+    {
+        $this->logger->warning('Fetching files on GCS...');
+        $files = [];
+        $items = (new StorageClient())->bucket(getenv('GCP_STORAGE_PEGASS'))->objects();
+        foreach ($items as $item) {
+            /** @var StorageObject $item */
+            if (preg_match('|^redcall_[a-z_]+_[0-9]{8}\.csv$|u', $item->name())) {
+                $files[$item->name()] = $item;
+            }
+        }
+        $this->logger->warning('Fetched '.count($files).' files.');
+
+        $byDates = [];
+        foreach ($files as $filename => $item) {
+            $byDates[substr($filename, -12, -4)][$filename] = $item;
+        }
+        krsort($byDates);
+        $lastFiles = array_shift($byDates);
+
+        if (10 !== count($lastFiles)) {
+            // Export is incomplete
+            return;
+        }
+
+        $this->logger->warning('Deleting older files...');
+        foreach ($byDates as $files) {
+            foreach ($files as $filename => $item) {
+                echo $filename, PHP_EOL;
+                $item->delete();
+            }
+        }
+
+        $this->logger->warning('Downloading files...');
+        $context = [];
+        foreach ($lastFiles as $filename => $item) {
+            $context[$filename] = $item->downloadAsString();
+        }
+
+        $this->processFiles($context);
+    }
+
+    private function local()
     {
         $this->processFiles(array_combine(
             glob('/Users/alain/Desktop/pegass/redcall_*.csv'),
@@ -57,8 +129,6 @@ class PegassFilesCommand extends Command
                 return file_get_contents($filename);
             }, glob('/Users/alain/Desktop/pegass/redcall_*.csv'))
         ));
-
-        return Command::SUCCESS;
     }
 
     private function processFiles(array $context)
@@ -66,70 +136,75 @@ class PegassFilesCommand extends Command
         $csvs = $this->decsvize($context);
 
         // Structures
+        $this->logger->warning('Extracting structure basics...');
         $this->extractStructureBasics($csvs);
 
         // Volunteers
+        $this->logger->warning('Extracting volunteer basics...');
         $this->extractVolunteerBasics($csvs);
+
+        $this->logger->warning('Extracting volunteer actions...');
         $this->extractActions($csvs);
+
+        $this->logger->warning('Extracting volunteer skills...');
         $this->extractSkills($csvs);
+
+        $this->logger->warning('Extracting volunteer trainings...');
         $this->extractTrainings($csvs);
+
+        $this->logger->warning('Extracting volunteer nominations...');
         $this->extractNominations($csvs);
 
-        // Updating structures
-        unset($csvs);
+        $this->logger->warning('Updating structures...');
         $this->updateStructures();
+
+        $this->logger->warning('Updating volunteers...');
         $this->updateVolunteers();
 
-        $this->refreshManager->refreshAsync();
+        $this->logger->warning('Cleaning missing entities...');
+        $this->cleanMissingEntities();
+
+        $this->logger->warning('Job finished.');
     }
 
     private function updateVolunteers()
     {
         foreach ($this->volunteers as $identifier => $data) {
-            if (!$entity = $this->pegassManager->getEntity(Pegass::TYPE_VOLUNTEER, $identifier, false)) {
-                $parentIdentifier = '|'.($data['structure_id'] ? sprintf('%s|', $data['structure_id']) : '');
-                $entity           = $this->pegassManager->createNewEntity(Pegass::TYPE_VOLUNTEER, $identifier, $parentIdentifier);
-            }
-
-            $json = $this->twig->render('pegass/volunteer.json.twig', [
-                'volunteer' => $data,
+            $this->taskSender->fire(SyncWithPegassFile::class, [
+                'type'       => Pegass::TYPE_VOLUNTEER,
+                'identifier' => $identifier,
+                'data'       => $data,
             ]);
-
-            if ($decoded = json_decode($json, true)) {
-                $this->pegassManager->updateEntity($entity, $decoded, true);
-            }
-
-            $this->pegassManager->flush();
-            unset($this->volunteers[$identifier]);
         }
-
-        $this->pegassManager->removeMissingEntities(Pegass::TYPE_VOLUNTEER, array_keys($this->volunteers));
     }
 
     private function updateStructures()
     {
         foreach ($this->structures as $identifier => $data) {
-            if (!$entity = $this->pegassManager->getEntity(Pegass::TYPE_STRUCTURE, $identifier, false)) {
-                if (!isset($this->structures[$parentId = $data['parent_id']])) {
-                    $parentId = $identifier;
-                }
-
-                $entity = $this->pegassManager->createNewEntity(Pegass::TYPE_STRUCTURE, $identifier, $parentId);
-            }
-
-            $json = $this->twig->render('pegass/structure.json.twig', [
-                'structure' => $data,
+            $this->taskSender->fire(SyncWithPegassFile::class, [
+                'type'       => Pegass::TYPE_STRUCTURE,
+                'identifier' => $identifier,
+                'data'       => $data,
             ]);
-
-            if ($decoded = json_decode($json, true)) {
-                $this->pegassManager->updateEntity($entity, $decoded, true);
-            }
-
-            $this->pegassManager->flush();
-            unset($this->structures[$identifier]);
         }
+    }
 
+    private function cleanMissingEntities()
+    {
         $this->pegassManager->removeMissingEntities(Pegass::TYPE_STRUCTURE, array_keys($this->structures));
+        $this->pegassManager->removeMissingEntities(Pegass::TYPE_VOLUNTEER, array_keys($this->volunteers));
+
+        $this->taskSender->fire(SyncWithPegassFile::class, [
+            'type' => SyncOneWithPegass::PARENT_STRUCUTRES,
+        ]);
+
+        $this->taskSender->fire(SyncWithPegassFile::class, [
+            'type' => SyncOneWithPegass::SYNC_STRUCTURES,
+        ]);
+
+        $this->taskSender->fire(SyncWithPegassFile::class, [
+            'type' => SyncOneWithPegass::SYNC_VOLUNTEERS,
+        ]);
     }
 
     private function extractNominations(array $csvs)

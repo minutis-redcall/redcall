@@ -1,8 +1,8 @@
 <?php
 
-namespace Bundles\PegassCrawlerBundle\Event;
+namespace App\Event;
 
-use Bundles\PegassCrawlerBundle\Entity\Pegass;
+use App\Entity\Pegass;
 use Symfony\Contracts\EventDispatcher\Event;
 
 class PegassEvent extends Event

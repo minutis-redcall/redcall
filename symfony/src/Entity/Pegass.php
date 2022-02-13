@@ -1,6 +1,6 @@
 <?php
 
-namespace Bundles\PegassCrawlerBundle\Entity;
+namespace App\Entity;
 
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
@@ -8,7 +8,7 @@ use Symfony\Component\PropertyAccess\PropertyAccess;
 use Throwable;
 
 /**
- * @ORM\Entity(repositoryClass="Bundles\PegassCrawlerBundle\Repository\PegassRepository")
+ * @ORM\Entity(repositoryClass="App\Repository\PegassRepository")
  * @ORM\Table(
  * uniqueConstraints={
  *     @ORM\UniqueConstraint(name="type_identifier_idx", columns={"type", "identifier"})

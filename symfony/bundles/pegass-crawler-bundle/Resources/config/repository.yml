@@ -1,5 +1,0 @@
-services:
-
-  Bundles\PegassCrawlerBundle\Repository\PegassRepository:
-    arguments:
-      - '@Doctrine\Common\Persistence\ManagerRegistry'

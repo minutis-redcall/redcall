@@ -3,14 +3,13 @@
 namespace App\Manager;
 
 use App\Entity\Badge;
+use App\Entity\Pegass;
 use App\Entity\Phone;
 use App\Entity\Structure;
 use App\Entity\Volunteer;
 use App\Enum\Platform;
 use App\Task\SyncOneWithPegass;
 use Bundles\GoogleTaskBundle\Service\TaskSender;
-use Bundles\PegassCrawlerBundle\Entity\Pegass;
-use Bundles\PegassCrawlerBundle\Manager\PegassManager;
 use libphonenumber\NumberParseException;
 use libphonenumber\PhoneNumber;
 use libphonenumber\PhoneNumberFormat;

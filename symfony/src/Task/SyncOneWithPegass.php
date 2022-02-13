@@ -7,8 +7,8 @@ use App\Manager\StructureManager;
 use App\Manager\VolunteerManager;
 use App\Queues;
 use Bundles\GoogleTaskBundle\Contracts\TaskInterface;
-use Bundles\PegassCrawlerBundle\Entity\Pegass;
-use Bundles\PegassCrawlerBundle\Manager\PegassManager;
+use App\Entity\Pegass;
+use App\Manager\PegassManager;
 
 class SyncOneWithPegass implements TaskInterface
 {

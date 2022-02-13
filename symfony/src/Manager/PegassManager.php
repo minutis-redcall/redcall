@@ -1,11 +1,12 @@
 <?php
 
-namespace Bundles\PegassCrawlerBundle\Manager;
+namespace App\Manager;
 
-use Bundles\PegassCrawlerBundle\Entity\Pegass;
-use Bundles\PegassCrawlerBundle\Event\PegassEvent;
-use Bundles\PegassCrawlerBundle\PegassEvents;
-use Bundles\PegassCrawlerBundle\Repository\PegassRepository;
+use App\Entity\Pegass;
+use App\Event\PegassEvent;
+use App\PegassEvents;
+use App\Repository\PegassRepository;
+use Bundles\GoogleTaskBundle\Service\TaskSender;
 use DateTime;
 use Doctrine\ORM\QueryBuilder;
 use Psr\Log\LoggerInterface;
@@ -29,6 +30,11 @@ class PegassManager
     private $slackLogger;
 
     /**
+     * @var TaskSender
+     */
+    private $taskSender;
+
+    /**
      * @var LoggerInterface
      */
     private $logger;
@@ -36,11 +42,13 @@ class PegassManager
     public function __construct(EventDispatcherInterface $eventDispatcher,
         PegassRepository $pegassRepository,
         LoggerInterface $slackLogger,
+        TaskSender $taskSender,
         LoggerInterface $logger)
     {
         $this->eventDispatcher  = $eventDispatcher;
         $this->pegassRepository = $pegassRepository;
         $this->slackLogger      = $slackLogger;
+        $this->taskSender       = $taskSender;
         $this->logger           = $logger;
     }
 
@@ -54,7 +62,7 @@ class PegassManager
         return $this->pegassRepository->getEnabledEntitiesQueryBuilder($type, $identifier);
     }
 
-    public function updateEntity(Pegass $entity, array $content, bool $async = false)
+    public function updateEntity(Pegass $entity, array $content)
     {
         // Just in case entity would not be managed anymore
         $entity = $this->pegassRepository->find($entity->getId());
@@ -74,9 +82,7 @@ class PegassManager
                 break;
         }
 
-        if (!$async) {
-            $this->dispatchEvent($entity);
-        }
+        $this->dispatchEvent($entity);
     }
 
     public function foreach(string $type, callable $callback, bool $onlyEnabled = true)
@@ -95,7 +101,12 @@ class PegassManager
 
     public function removeMissingEntities(string $type, array $identifiers)
     {
-        $this->pegassRepository->removeMissingEntities($type, $identifiers);
+        $entities = $this->pegassRepository->findMissingEntities($type, $identifiers);
+
+        foreach ($entities as $entity) {
+            $entity->setEnabled(false);
+            $this->pegassRepository->save($entity);
+        }
     }
 
     public function createNewEntity(string $type, string $identifier, string $parentIdentifier)

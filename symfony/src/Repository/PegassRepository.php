@@ -1,8 +1,8 @@
 <?php
 
-namespace Bundles\PegassCrawlerBundle\Repository;
+namespace App\Repository;
 
-use Bundles\PegassCrawlerBundle\Entity\Pegass;
+use App\Entity\Pegass;
 use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
@@ -75,16 +75,16 @@ class PegassRepository extends ServiceEntityRepository
                     ->getResult();
     }
 
-    public function removeMissingEntities(string $type, array $identifiers, string $parentIdentifier = null)
+    /**
+     * @return Pegass[]
+     */
+    public function findMissingEntities(string $type, array $identifiers, ?string $parentIdentifier = null) : array
     {
-        $qb = $this->createQueryBuilder('p');
-
-        $qb->update(Pegass::class, 'p')
-           ->set('p.enabled', $qb->expr()->literal(false))
-           ->where('p.type = :type')
-           ->setParameter('type', $type)
-           ->andWhere('p.identifier NOT IN (:identifiers)')
-           ->setParameter('identifiers', $identifiers);
+        $qb = $this->createQueryBuilder('p')
+                   ->where('p.type = :type')
+                   ->setParameter('type', $type)
+                   ->andWhere('p.identifier NOT IN (:identifiers)')
+                   ->setParameter('identifiers', $identifiers);
 
         if ($parentIdentifier) {
             $qb->andWhere('p.parentIdentifier = :parentIdentifier')
@@ -94,22 +94,6 @@ class PegassRepository extends ServiceEntityRepository
         return $qb
             ->getQuery()
             ->execute();
-    }
-
-    /**
-     * @return Pegass[]
-     */
-    public function findMissingEntities(string $type, array $identifiers, string $parentIdentifier) : array
-    {
-        return $this->createQueryBuilder('p')
-                    ->where('p.type = :type')
-                    ->setParameter('type', $type)
-                    ->andWhere('p.identifier NOT IN (:identifiers)')
-                    ->setParameter('identifiers', $identifiers)
-                    ->andWhere('p.parentIdentifier LIKE :parentIdentifier')
-                    ->setParameter('parentIdentifier', sprintf('%%%s%%', $parentIdentifier))
-                    ->getQuery()
-                    ->execute();
     }
 
     /**
@@ -211,7 +195,7 @@ class PegassRepository extends ServiceEntityRepository
     public function save(Pegass $entity)
     {
         $this->_em->persist($entity);
-        $this->_em->flush();
+        $this->_em->flush($entity);
     }
 
     private function getExpireDate(string $type) : DateTime

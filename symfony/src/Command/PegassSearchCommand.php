@@ -1,9 +1,9 @@
 <?php
 
-namespace Bundles\PegassCrawlerBundle\Command;
+namespace App\Command;
 
-use Bundles\PegassCrawlerBundle\Entity\Pegass;
-use Bundles\PegassCrawlerBundle\Manager\PegassManager;
+use App\Entity\Pegass;
+use App\Manager\PegassManager;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 use Symfony\Component\Console\Command\Command;
