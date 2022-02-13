@@ -35,7 +35,9 @@ handlers:
 instance_class: F4_1G
 
 automatic_scaling:
-  max_concurrent_requests: 20
+  max_concurrent_requests: 50
+  min_instances: 0
+  max_instances: 10
 
 inbound_services:
   - warmup

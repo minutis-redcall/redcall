@@ -150,16 +150,16 @@ class PegassManager
             $missingEntities = $this->pegassRepository->findMissingEntities(Pegass::TYPE_VOLUNTEER, $identifiers, $parentIdentifier);
         } else {
             $missingEntities = $this->pegassRepository->findAllChildrenEntities(Pegass::TYPE_VOLUNTEER, $parentIdentifier);
-
-            $entity->setEnabled(false);
-
-            if ($wasEnabled) {
-                $this->slackLogger->warning(sprintf(
-                    'Disabling structure %s (%s)',
-                    $entity->evaluate('structure.libelle'),
-                    $entity->getIdentifier()
-                ));
-            }
+            //
+            //            $entity->setEnabled(false);
+            //
+            //            if ($wasEnabled) {
+            //                $this->slackLogger->warning(sprintf(
+            //                    'Disabling structure %s (%s)',
+            //                    $entity->evaluate('structure.libelle'),
+            //                    $entity->getIdentifier()
+            //                ));
+            //            }
         }
 
         // Removing the structure from volunteers that do not belong to it anymore

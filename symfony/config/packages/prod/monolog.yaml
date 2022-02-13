@@ -26,7 +26,7 @@ monolog:
     google_cloud:
       type: service
       id: monolog_psr_batch_logger
-      level: info
+      level: warning
     slack_no_404:
       type: fingers_crossed
       handler: slack_errors

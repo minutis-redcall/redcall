@@ -11,7 +11,7 @@ use App\Queues;
 use Bundles\GoogleTaskBundle\Contracts\TaskInterface;
 use Twig\Environment;
 
-class SyncWithPegassFile implements TaskInterface
+class PegassUpdateOneEntity implements TaskInterface
 {
     const PARENT_STRUCUTRES = 'parent_structures';
     const SYNC_STRUCTURES   = 'sync_structures';
@@ -78,7 +78,7 @@ class SyncWithPegassFile implements TaskInterface
 
     public function getQueueName() : string
     {
-        return Queues::SYNC_WITH_PEGASS_FILE;
+        return Queues::PEGASS_UPDATE_ONE_ENTITY;
     }
 
     private function updateStructure(string $identifier, array $data)

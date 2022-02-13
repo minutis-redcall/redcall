@@ -4,11 +4,17 @@ namespace App;
 
 class Queues
 {
-    const SYNC_WITH_PEGASS_FILE = 'sync-with-pegass-file';
-    const SYNC_WITH_PEGASS_ALL  = 'sync-with-pegass-all';
-    const SYNC_WITH_PEGASS_ONE  = 'sync-with-pegass-one';
-    const CREATE_TRIGGER        = 'create-trigger';
-    const MESSAGES_SMS          = 'messages-sms';
-    const MESSAGES_CALL         = 'messages-call';
-    const MESSAGES_EMAIL        = 'messages-email';
+    // Update Pegass entities
+    const PEGASS_CREATE_CHUNKS     = 'pegass-create-chunks';
+    const PEGASS_UPDATE_ONE_ENTITY = 'pegass-update-one-entity';
+    const PEGASS_UPDATE_CHUNK      = 'pegass-update-chunk';
+
+    // Refresh RedCall entities against Pegass table
+    const SYNC_WITH_PEGASS_ALL = 'sync-with-pegass-all';
+    const SYNC_WITH_PEGASS_ONE = 'sync-with-pegass-one';
+
+    const CREATE_TRIGGER = 'create-trigger';
+    const MESSAGES_SMS   = 'messages-sms';
+    const MESSAGES_CALL  = 'messages-call';
+    const MESSAGES_EMAIL = 'messages-email';
 }

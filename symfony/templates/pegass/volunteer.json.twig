@@ -59,8 +59,8 @@
                 "code": "{{ training.code }}",
                 "libelle": "{{ training.label }}"
             },
-            "dateObtention": "{{ training.got_at ? training.got_at|date('Y-m-d\\TH:i:s') : '' }}",
-            "dateRecyclage": "{{ training.rec_at ? training.rec_at|date('Y-m-d\\TH:i:s') : '' }}"
+            "dateObtention": "{{ training.got_at }}",
+            "dateRecyclage": "{{ training.rec_at }}"
         }
         {% if not loop.last %},
         {% endif %}
@@ -75,7 +75,7 @@
             },
             "libelleLong": "{{ nomination.label }}",
             "libelleCourt": "{{ nomination.code }}",
-            "dateValidation": "{{ nomination.got_at ? nomination.got_at|date('Y-m-d\\TH:i:s') : '' }}"
+            "dateValidation": "{{ nomination.got_at }}"
         }
         {% if not loop.last %},
         {% endif %}
