@@ -177,16 +177,19 @@ class PegassCreateChunks implements TaskInterface
         unset($this->volunteers);
         $this->pegassManager->removeMissingEntities(Pegass::TYPE_VOLUNTEER, $keys);
 
-        $this->async->fire(PegassUpdateOneEntity::class, [
-            'type' => SyncOneWithPegass::PARENT_STRUCUTRES,
+        $this->async->fire(PegassUpdateChunk::class, [
+            'type'  => SyncOneWithPegass::PARENT_STRUCUTRES,
+            'chuck' => [true],
         ]);
 
-        $this->async->fire(PegassUpdateOneEntity::class, [
-            'type' => SyncOneWithPegass::SYNC_STRUCTURES,
+        $this->async->fire(PegassUpdateChunk::class, [
+            'type'  => SyncOneWithPegass::SYNC_STRUCTURES,
+            'chuck' => [true],
         ]);
 
-        $this->async->fire(PegassUpdateOneEntity::class, [
-            'type' => SyncOneWithPegass::SYNC_VOLUNTEERS,
+        $this->async->fire(PegassUpdateChunk::class, [
+            'type'  => SyncOneWithPegass::SYNC_VOLUNTEERS,
+            'chuck' => [true],
         ]);
     }
 
