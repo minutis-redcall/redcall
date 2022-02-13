@@ -1,0 +1,84 @@
+{
+    "user": {
+        "id": "{{ volunteer.identifier }}",
+        "structure": {
+            "id": "{{ volunteer.structure_id }}"
+        },
+        "nom": "{{ volunteer.lastname }}",
+        "prenom": "{{ volunteer.firstname }}",
+        "actif": true,
+        "mineur": "{{ volunteer.minor }}"
+    },
+    "infos": {
+        "dateNaissance": "{{ volunteer.birthday }}"
+    },
+    "contact": [
+        {
+            "moyenComId": "MAIL",
+            "libelle": "{{ volunteer.personal_email }}"
+        },
+        {
+            "moyenComId": "MAILTRAV",
+            "libelle": "{{ volunteer.organization_email }}"
+        },
+        {
+            "moyenComId": "POR",
+            "libelle": "{{ volunteer.phone }}"
+        }
+    ],
+    "actions": [
+        {% for action in volunteer.actions %}
+        {
+            "structure": {
+                "id": "{{ action.structure_id }}"
+            },
+            "groupeAction": {
+                "id": "{{ action.group_action_id }}",
+                "libelle": "{{ action.group_action_label }}"
+            }
+        }
+        {% if not loop.last %},
+        {% endif %}
+        {% endfor %}
+    ],
+    "skills": [
+        {% for skill in volunteer.skills %}
+        {
+            "id": "{{ skill.id }}",
+            "libelle": "{{ skill.label }}"
+        }
+        {% if not loop.last %},
+        {% endif %}
+        {% endfor %}
+    ],
+    "trainings": [
+        {% for training in volunteer.trainings %}
+        {
+            "formation": {
+                "id": "{{ training.id }}",
+                "code": "{{ training.code }}",
+                "libelle": "{{ training.label }}"
+            },
+            "dateObtention": "{{ training.got_at }}",
+            "dateRecyclage": "{{ training.rec_at }}"
+        }
+        {% if not loop.last %},
+        {% endif %}
+        {% endfor %}
+    ],
+    "nominations": [
+        {% for nomination in volunteer.nominations %}
+        {
+            "id": "{{ nomination.id }}",
+            "structure": {
+                "id": "{{ nomination.structure_id }}"
+            },
+            "libelleLong": "{{ nomination.label }}",
+            "libelleCourt": "{{ nomination.code }}",
+            "dateValidation": "{{ nomination.got_at }}"
+        }
+        {% if not loop.last %},
+        {% endif %}
+        {% endfor %}
+    ]
+}

@@ -20,9 +20,6 @@
                                         {{ 'manage_structures.view_pegass_entry'|trans }}
                                     </a>
                                 {% endif %}
-                                <a class="dropdown-item" href="{{ path('management_structures_force_update', {id: structure.id, csrf: csrf_token('structures')}|merge(app.request.query.all)) }}">
-                                    {{ 'manage_structures.force_pegass_update'|trans }}
-                                </a>
                             {% endif %}
                             {% if is_granted('ROLE_ADMIN') %}
                                 <a class="dropdown-item" href="{{ path('management_structures_create', {id: structure.id}) }}">

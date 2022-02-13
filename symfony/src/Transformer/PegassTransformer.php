@@ -5,7 +5,7 @@ namespace App\Transformer;
 use App\Facade\Pegass\PegassFacade;
 use Bundles\ApiBundle\Base\BaseTransformer;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
-use Bundles\PegassCrawlerBundle\Entity\Pegass;
+use App\Entity\Pegass;
 
 class PegassTransformer extends BaseTransformer
 {

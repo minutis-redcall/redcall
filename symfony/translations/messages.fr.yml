@@ -552,7 +552,6 @@ manage_structures:
     title: Actions
   disable_confirm: 'Voulez-vous vraiment desactiver cette structure ?'
   export: 'Exporter les informations de contact des bénévoles'
-  force_pegass_update: 'Forcer la mise à jour Pegass maintenant'
   form:
     create: 'Créer une nouvelle structure'
     disabled: 'Afficher les structures desactivées'
@@ -561,6 +560,7 @@ manage_structures:
   last_update: 'Dernière synchro avec Pegass : %last_update% UTC'
   lock: 'Geler la structure'
   manage_prefilled_answers: 'Gérer les réponses pré-remplies'
+  manage_volunteer_lists: 'Gérer les listes de bénévoles'
   manual_update: 'Mise à jour manuelle'
   next_update: 'Prochaine synchro avec Pegass : %next_update% UTC'
   prefilled_answers:
@@ -577,28 +577,27 @@ manage_structures:
   unlock: 'Dégeler la structure'
   users: 'Nombre d''utilisateurs RedCall : %count%'
   view_pegass_entry: 'Ouvir l''entrée de la base de données Pegass'
-  volunteers: 'Nombre de bénévoles : %count%'
-  manage_volunteer_lists: 'Gérer les listes de bénévoles'
   volunteer_list:
-    title: 'Gérer les listes de bénévoles'
-    subtitle: 'pour "%structureName%"'
-    create: 'Créer une nouvelle liste'
-    manage: 'Gérer les listes de bénévoles'
     choose_structure: 'Dans quelle structure souhaitez-vous gérer les listes de bénévoles ?'
-    update: 'Éditer la liste "%name%"'
+    create: 'Créer une nouvelle liste'
     delete: X
     delete_confirm: 'Vraiment effacer cette liste "%name%" ?'
     edit: Editer
     form:
       name: 'Nom de la liste'
-    no_lists: 'Pas encore de listes de bénévoles.'
     help:
-      intro: 'Si vous le souhaitez, vous pouvez'
       create: 'créer des listes de bénévoles personnalisées'
+      intro: 'Si vous le souhaitez, vous pouvez'
+    manage: 'Gérer les listes de bénévoles'
+    no_lists: 'Pas encore de listes de bénévoles.'
+    subtitle: 'pour "%structureName%"'
     table:
       name: 'Nom de la liste'
       nb_volunteers: 'Nb bénév.'
       structure: Structure
+    title: 'Gérer les listes de bénévoles'
+    update: 'Éditer la liste "%name%"'
+  volunteers: 'Nombre de bénévoles : %count%'
 manage_volunteers:
   access_denied: 'Vous ne pouvez pas ouvrir le profil d''un(e) bénévole ne faisant pas partie des structures que vous pouvez déclencher.'
   action:
@@ -611,7 +610,6 @@ manage_volunteers:
     title: Actions
     unlock: Dégeler
     update_manual: 'Mettre à jour les informations bénévoles'
-    update_pegass: 'Forcer la mise à jour Pegass maintenant'
     view_pegass_entry: 'Ouvir l''entrée de la base de données Pegass'
   admin_structures:
     create: 'Vous serez en mesure d''éditer les structures du bénévole après sa création.'

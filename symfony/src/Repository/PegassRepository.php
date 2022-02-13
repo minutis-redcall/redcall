@@ -1,8 +1,8 @@
 <?php
 
-namespace Bundles\PegassCrawlerBundle\Repository;
+namespace App\Repository;
 
-use Bundles\PegassCrawlerBundle\Entity\Pegass;
+use App\Entity\Pegass;
 use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
@@ -42,34 +42,27 @@ class PegassRepository extends ServiceEntityRepository
         string $identifier = null,
         bool $onlyEnabled = true) : ?Pegass
     {
-        $filters['type'] = $type;
+        $qb = $this->createQueryBuilder('p')
+                   ->andWhere('p.type = :type')
+                   ->setParameter('type', $type);
 
         if ($onlyEnabled) {
-            $filters['enabled'] = true;
+            $qb->andWhere('p.enabled = true');
         }
 
         if ($identifier) {
-            $filters['identifier'] = $identifier;
+            $qb->andWhere('p.identifier = :identifier')
+               ->setParameter('identifier', $identifier);
         }
 
-        return $this->findOneBy($filters);
+        return $qb->getQuery()
+                  ->disableResultCache()
+                  ->getOneOrNullResult();
     }
 
     public function findExpiredEntities(int $limit) : array
     {
         return $this->createQueryBuilder('p')
-                    ->where('p.type = :type_area AND p.updatedAt < :expire_area')
-                    ->setParameter('type_area', Pegass::TYPE_AREA)
-                    ->setParameter('expire_area', $this->getExpireDate(Pegass::TYPE_AREA))
-                    ->orWhere('p.type = :type_department AND p.updatedAt < :expire_department')
-                    ->setParameter('type_department', Pegass::TYPE_DEPARTMENT)
-                    ->setParameter('expire_department', $this->getExpireDate(Pegass::TYPE_DEPARTMENT))
-                    ->orWhere('p.type = :type_region AND p.updatedAt < :expire_region')
-                    ->setParameter('type_region', Pegass::TYPE_REGION)
-                    ->setParameter('expire_region', $this->getExpireDate(Pegass::TYPE_REGION))
-                    ->orWhere('p.type = :type_national AND p.updatedAt < :expire_national')
-                    ->setParameter('type_national', Pegass::TYPE_NATIONAL)
-                    ->setParameter('expire_national', $this->getExpireDate(Pegass::TYPE_NATIONAL))
                     ->orWhere('p.type = :type_organization AND p.updatedAt < :expire_organization')
                     ->setParameter('type_organization', Pegass::TYPE_STRUCTURE)
                     ->setParameter('expire_organization', $this->getExpireDate(Pegass::TYPE_STRUCTURE))
@@ -82,16 +75,16 @@ class PegassRepository extends ServiceEntityRepository
                     ->getResult();
     }
 
-    public function removeMissingEntities(string $type, array $identifiers, string $parentIdentifier = null)
+    /**
+     * @return Pegass[]
+     */
+    public function findMissingEntities(string $type, array $identifiers, ?string $parentIdentifier = null) : array
     {
-        $qb = $this->createQueryBuilder('p');
-
-        $qb->update(Pegass::class, 'p')
-           ->set('p.enabled', $qb->expr()->literal(false))
-           ->where('p.type = :type')
-           ->setParameter('type', $type)
-           ->andWhere('p.identifier NOT IN (:identifiers)')
-           ->setParameter('identifiers', $identifiers);
+        $qb = $this->createQueryBuilder('p')
+                   ->where('p.type = :type')
+                   ->setParameter('type', $type)
+                   ->andWhere('p.identifier NOT IN (:identifiers)')
+                   ->setParameter('identifiers', $identifiers);
 
         if ($parentIdentifier) {
             $qb->andWhere('p.parentIdentifier = :parentIdentifier')
@@ -101,22 +94,6 @@ class PegassRepository extends ServiceEntityRepository
         return $qb
             ->getQuery()
             ->execute();
-    }
-
-    /**
-     * @return Pegass[]
-     */
-    public function findMissingEntities(string $type, array $identifiers, string $parentIdentifier) : array
-    {
-        return $this->createQueryBuilder('p')
-                    ->where('p.type = :type')
-                    ->setParameter('type', $type)
-                    ->andWhere('p.identifier NOT IN (:identifiers)')
-                    ->setParameter('identifiers', $identifiers)
-                    ->andWhere('p.parentIdentifier LIKE :parentIdentifier')
-                    ->setParameter('parentIdentifier', sprintf('%%%s%%', $parentIdentifier))
-                    ->getQuery()
-                    ->execute();
     }
 
     /**
@@ -218,7 +195,7 @@ class PegassRepository extends ServiceEntityRepository
     public function save(Pegass $entity)
     {
         $this->_em->persist($entity);
-        $this->_em->flush();
+        $this->_em->flush($entity);
     }
 
     private function getExpireDate(string $type) : DateTime

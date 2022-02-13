@@ -4,7 +4,7 @@ namespace App\Entity;
 
 use App\Contract\LockableInterface;
 use App\Tools\EscapedArray;
-use Bundles\PegassCrawlerBundle\Entity\Pegass;
+use App\Entity\Pegass;
 use DateInterval;
 use DateTime;
 use DateTimeZone;
@@ -496,25 +496,6 @@ class Volunteer implements LockableInterface
         $nextPegassUpdate->add($interval);
 
         return $nextPegassUpdate;
-    }
-
-    public function canForcePegassUpdate() : bool
-    {
-        if (!$this->lastPegassUpdate) {
-            return true;
-        }
-
-        // Doctrine loaded an UTC-saved date using the default timezone (Europe/Paris)
-        $utc = (new DateTime($this->lastPegassUpdate->format('Y-m-d H:i:s'), new DateTimeZone('UTC')));
-
-        // Can happen when update dates are spread on a larger timeframe
-        // See: PegassManager:spreadUpdateDatesInTTL()
-        if ($utc->getTimestamp() > time()) {
-            return true;
-        }
-
-        // Prevent several updates in less than 1h
-        return time() - $utc->getTimestamp() > 3600;
     }
 
     public function getDisplayName() : string

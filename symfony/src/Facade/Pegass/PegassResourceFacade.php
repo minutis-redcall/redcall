@@ -4,7 +4,7 @@ namespace App\Facade\Pegass;
 
 use Bundles\ApiBundle\Annotation\Facade;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
-use Bundles\PegassCrawlerBundle\Entity\Pegass;
+use App\Entity\Pegass;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class PegassResourceFacade implements FacadeInterface
@@ -13,8 +13,6 @@ class PegassResourceFacade implements FacadeInterface
      * Type of required Pegass entity
      *
      * @Assert\Choice(choices = {
-     *     Pegass::TYPE_AREA,
-     *     Pegass::TYPE_DEPARTMENT,
      *     Pegass::TYPE_STRUCTURE,
      *     Pegass::TYPE_VOLUNTEER
      * })

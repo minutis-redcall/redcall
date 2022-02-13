@@ -9,7 +9,7 @@ use App\Entity\User;
 use App\Entity\Volunteer;
 use App\Enum\Platform;
 use App\Security\Helper\Security;
-use Bundles\PegassCrawlerBundle\Entity\Pegass;
+use App\Entity\Pegass;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;

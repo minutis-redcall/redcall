@@ -18,7 +18,6 @@
 
 notes.txt
 
-TestCommand.php
 TestController.php
 
 /gcp/cloudFunctions/twilioWebhooks/node_modules/

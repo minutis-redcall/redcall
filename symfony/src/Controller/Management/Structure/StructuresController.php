@@ -14,10 +14,8 @@ use App\Manager\UserManager;
 use App\Model\Csrf;
 use App\Model\PlatformConfig;
 use Bundles\PaginationBundle\Manager\PaginationManager;
-use Bundles\PegassCrawlerBundle\Entity\Pegass;
-use Bundles\PegassCrawlerBundle\Manager\PegassManager;
-use DateTime;
-use DateTimeZone;
+use App\Entity\Pegass;
+use App\Manager\PegassManager;
 use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -145,43 +143,6 @@ class StructuresController extends BaseController
             'structure' => $structure,
             'form'      => $form->createView(),
         ];
-    }
-
-    /**
-     * @Route(name="force_update", path="/force-update/{csrf}/{id}")
-     * @IsGranted("STRUCTURE", subject="structure")
-     */
-    public function forceUpdate(Request $request, Structure $structure, string $csrf)
-    {
-        $this->validateCsrfOrThrowNotFoundException('structures', $csrf);
-
-        if ($structure->isLocked()) {
-            throw $this->createNotFoundException();
-        }
-
-        if (Platform::FR !== $structure->getPlatform()) {
-            throw $this->createNotFoundException();
-        }
-
-        if (!$structure->canForcePegassUpdate()) {
-            return $this->redirectToRoute('management_structures_list', $request->query->all());
-        }
-
-        // Just in case Pegass database would contain some RCE?
-        if (!preg_match('/^[a-zA-Z0-9]+$/', $structure->getExternalId())) {
-            return $this->redirectToRoute('management_structures_list', $request->query->all());
-        }
-
-        // Prevents multiple clicks
-        $structure->setLastPegassUpdate(new DateTime('now', new DateTimeZone('UTC')));
-        $this->structureManager->save($structure);
-
-        // Executing asynchronous task to prevent against interruptions
-        $console = sprintf('%s/bin/console', $this->kernel->getProjectDir());
-        $command = sprintf('%s pegass --structure %s', escapeshellarg($console), $structure->getExternalId());
-        exec(sprintf('%s > /dev/null 2>&1 & echo -n \$!', $command));
-
-        return $this->redirectToRoute('management_structures_list', $request->query->all());
     }
 
     /**

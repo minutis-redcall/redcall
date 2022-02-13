@@ -37,6 +37,7 @@ GCP_PROJECT_LOCATION=europe-west1
 GCP_COMPUTE_ENGINE_LOCATION=europe-west1-b
 GCP_BASTION_INSTANCE=bastion
 GCP_STORAGE_BUCKET=redcall-public-prod-assets
+GCP_STORAGE_PEGASS=used-by-pegass-files-command
 GCP_QUEUE_WEBHOOK_RESPONSE='webhook-sms-responses'
 GCP_QUEUE_WEBHOOK_STATUS='webhook-sms-status'
 GCP_FUNCTION_TWILIO_STATUS=cloudFunction
@@ -72,9 +73,6 @@ SLACK_EMOJI=':fire:'
 # Red Cross specific
 
 GAIA_URL='https://gaia.croix-rouge.fr/crf-benevoles/#contact/NIVOL/%nivol%'
-
-PEGASS_LOGIN=yourlogin
-PEGASS_PASSWORD=yourpassword
 
 MINUTIS_JWT_PUBLIC_KEY_URL=xxx
 MINUTIS_SUPPORT=support.minutis@croix-rouge.fr
