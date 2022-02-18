@@ -76,7 +76,7 @@ class PegassCreateChunks implements TaskInterface
         krsort($byDates);
         $lastFiles = array_shift($byDates);
 
-        if (10 !== count($lastFiles)) {
+        if (10 < count($lastFiles)) {
             // Export is incomplete
             return;
         }

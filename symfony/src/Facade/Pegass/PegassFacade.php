@@ -2,10 +2,9 @@
 
 namespace App\Facade\Pegass;
 
-use Bundles\ApiBundle\Annotation as Api;
+use App\Entity\Pegass;
 use Bundles\ApiBundle\Annotation\Facade;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
-use App\Entity\Pegass;
 
 /**
  * A Pegass entity.
@@ -48,15 +47,6 @@ class PegassFacade implements FacadeInterface
 
     /**
      * The last cache update date.
-     *
-     * Data are refreshed in a timeframe that depends on the entity type.
-     * - {TTL_DEPARTMENT} days for departments
-     * - {TTL_STRUCTURE} days for structures
-     * - {TTL_VOLUNTEER} days for volunteers
-     *
-     * @Api\Placeholder("{TTL_DEPARTMENT}", replaceBy=Pegass::TTL_DEPARTMENT)
-     * @Api\Placeholder("{TTL_STRUCTURE}", replaceBy=Pegass::TTL_STRUCTURE)
-     * @Api\Placeholder("{TTL_VOLUNTEER}", replaceBy=Pegass::TTL_VOLUNTEER)
      *
      * @var \DateTime
      */
