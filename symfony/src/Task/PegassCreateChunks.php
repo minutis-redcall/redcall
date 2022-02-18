@@ -83,7 +83,7 @@ class PegassCreateChunks implements TaskInterface
 
         $this->logger->warning('Deleting older files...');
         foreach ($byDates as $files) {
-            foreach ($files as $filename => $item) {
+            foreach ($files as $item) {
                 $item->delete();
             }
         }
