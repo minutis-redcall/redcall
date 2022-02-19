@@ -2,17 +2,14 @@
 
 namespace App\Controller\Api\Admin;
 
+use App\Entity\Pegass;
 use App\Facade\Pegass\PegassFacade;
 use App\Facade\Pegass\PegassFiltersFacade;
-use App\Facade\Pegass\PegassResourceFacade;
+use App\Manager\PegassManager;
 use App\Transformer\PegassTransformer;
 use Bundles\ApiBundle\Annotation\Endpoint;
 use Bundles\ApiBundle\Annotation\Facade;
-use Bundles\ApiBundle\Model\Facade\Http\HttpNoContentFacade;
-use Bundles\ApiBundle\Model\Facade\Http\HttpNotFoundFacade;
 use Bundles\ApiBundle\Model\Facade\QueryBuilderFacade;
-use App\Entity\Pegass;
-use App\Manager\PegassManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -64,28 +61,5 @@ class PegassController
         return new QueryBuilderFacade($qb, $filters->getPage(), function (Pegass $pegass) {
             return $this->pegassTransformer->expose($pegass);
         });
-    }
-
-    /**
-     * Force refresh a resource ogainst the Pegass database
-     *
-     * @Endpoint(
-     *   priority = 991,
-     *   request = @Facade(class = PegassResourceFacade::class),
-     *   response = @Facade(class = HttpNoContentFacade::class)
-     * )
-     * @Route(path="/refresh", name="refresh", methods={"PUT"})
-     */
-    public function refresh(PegassResourceFacade $resource)
-    {
-        $entity = $this->pegassManager->getEntity($resource->getType(), $resource->getIdentifier());
-
-        if (!$entity) {
-            return new HttpNotFoundFacade();
-        }
-
-        $this->pegassManager->updateEntity($entity, false);
-
-        return new HttpNoContentFacade();
     }
 }

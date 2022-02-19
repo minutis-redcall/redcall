@@ -76,14 +76,14 @@ class PegassCreateChunks implements TaskInterface
         krsort($byDates);
         $lastFiles = array_shift($byDates);
 
-        if (10 !== count($lastFiles)) {
+        if (10 < count($lastFiles)) {
             // Export is incomplete
             return;
         }
 
         $this->logger->warning('Deleting older files...');
         foreach ($byDates as $files) {
-            foreach ($files as $filename => $item) {
+            foreach ($files as $item) {
                 $item->delete();
             }
         }

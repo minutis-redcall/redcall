@@ -67,6 +67,13 @@ class PegassManager
         // Just in case entity would not be managed anymore
         $entity = $this->pegassRepository->find($entity->getId());
 
+        if ($content === $entity->getContent()) {
+            $entity->setUpdatedAt(new \DateTime());
+            $this->pegassRepository->save($entity);
+
+            return;
+        }
+
         $entity->setContent($content);
         $entity->setEnabled(true);
         $entity->setUpdatedAt(new \DateTime());
