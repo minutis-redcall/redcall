@@ -76,8 +76,12 @@ class PegassCreateChunks implements TaskInterface
         krsort($byDates);
         $lastFiles = array_shift($byDates);
 
-        if (10 < count($lastFiles)) {
+        if (count($lastFiles) < 10) {
             // Export is incomplete
+            $this->logger->warning('Import is incomplete ('.count($files).' files).', [
+                'files' => array_keys($lastFiles),
+            ]);
+
             return;
         }
 
