@@ -64,47 +64,36 @@
                         {{ 'audience.volunteer_lists'|trans }}
                     </div>
 
-                    <table class="table table-striped">
-                        <thead>
-                        <tr>
-                            <th class="w-25">{{ 'manage_structures.volunteer_list.table.structure'|trans }}</th>
-                            <th class="w-50">{{ 'manage_structures.volunteer_list.table.name'|trans }}</th>
-                            <th>{{ 'manage_structures.volunteer_list.table.nb_volunteers'|trans }}</th>
-                            <th>&nbsp;</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        {% for volunteer_list in volunteer_lists %}
-                            <tr>
-                                <td>
-                                    <a href="{{ path('management_structures_volunteer_lists_index', {structureId: volunteer_list.structure.id}) }}" target="_blank">
-                                        {{ volunteer_list.structure }}
-                                    </a>
-                                </td>
-                                <td>
-                                    <a href="{{ path('management_structures_volunteer_lists_create', {structureId: volunteer_list.structure.id, volunteerListId: volunteer_list.id}) }}" target="_blank">
-                                        {{ volunteer_list.name }}
-                                    </a>
-                                </td>
-                                <td>{{ volunteer_list.volunteers|length }}</td>
-                                <td class="text-right">
-                                    <div class="d-none" id="volunteer-list-{{ volunteer_list.id }}">
-                                        {%- for volunteer in volunteer_list.volunteers %}{{ volunteer.externalId }} {% endfor -%}
-                                    </div>
-                                    <a href="#" data-id="{{ volunteer_list.id }}" class="btn btn-secondary volunteer-list-use">{{ 'base.button.use'|trans }}</a>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                        </tbody>
-                    </table>
+                    {% for volunteer_list in volunteer_lists %}
+                        <div class="d-none" id="volunteer-list-{{ volunteer_list.id }}">
+                            {%- for volunteer in volunteer_list.volunteers %}{{ volunteer.externalId }} {% endfor -%}
+                        </div>
+                    {% endfor %}
 
-                    <div class="text-right">
+                    <select id="choose-volunteer-list" class="form-control">
+                        <option data-id=""></option>
+                        {% for volunteer_list in volunteer_lists %}
+                            <option data-id="{{ volunteer_list.id }}" data-uri="{{ path('management_structures_volunteer_lists_create', {structureId: volunteer_list.structure.id, volunteerListId: volunteer_list.id}) }}">
+                                {{ volunteer_list.structure }} - {{ volunteer_list.name }}
+                                ({{ volunteer_list.volunteers|length }})
+                            </option>
+                        {% endfor %}
+                    </select>
+
+                    <div class="float-right">
                         <a href="#" data-toggle="modal" data-target="#volunteers-list-modal">
                             {{ 'manage_structures.volunteer_list.manage'|trans }}
                         </a>
                     </div>
 
+                    <div class="my-2">
+                        <a id="choose-volunteer-list-use" href="#" data-id="" class="btn btn-secondary volunteer-list-use d-none">{{ 'base.button.use'|trans }}</a>
+                        <a id="choose-volunteer-lsit-edit" href="" class="btn btn-secondary d-none" target="_blank">{{ 'base.button.update'|trans }}</a>
+                    </div>
+
                 {% endif %}
+
+                <br/>
 
             {% endif %}
 
@@ -618,6 +607,17 @@
                             .replace(/'/g, "&#039;"));
 
             numbers(0);
+        });
+
+        $('body').on('change', '#choose-volunteer-list', function () {
+            var selected = $(this).find(':selected');
+            if (selected.data('id')) {
+                $('#choose-volunteer-list-use').data('id', selected.data('id')).removeClass('d-none');
+                $('#choose-volunteer-lsit-edit').attr('href', selected.data('uri')).removeClass('d-none');
+            } else {
+                $('#choose-volunteer-list-use').addClass('d-none');
+                $('#choose-volunteer-lsit-edit').addClass('d-none');
+            }
         });
 
     </script>
