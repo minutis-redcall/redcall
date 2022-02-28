@@ -79,6 +79,7 @@ class VolunteerListController extends BaseController
             $classification = $this->audienceManager->classifyAudience($this->getPlatform(), $form->get('audience')->getData());
             $volunteers     = $this->volunteerManager->getVolunteerList($this->getPlatform(), $classification->getReachable());
 
+            $volunteerList->getVolunteers()->clear();
             foreach ($volunteers as $volunteer) {
                 $volunteerList->addVolunteer($volunteer);
             }
