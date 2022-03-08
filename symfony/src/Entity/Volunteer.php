@@ -4,7 +4,6 @@ namespace App\Entity;
 
 use App\Contract\LockableInterface;
 use App\Tools\EscapedArray;
-use App\Entity\Pegass;
 use DateInterval;
 use DateTime;
 use DateTimeZone;
@@ -454,6 +453,11 @@ class Volunteer implements LockableInterface
         return $this;
     }
 
+    public function clearStructures()
+    {
+        $this->structures->clear();
+    }
+
     public function getMainStructure(bool $onlyEnabled = true) : ?Structure
     {
         /** @var Structure|null $mainStructure */
@@ -674,6 +678,11 @@ class Volunteer implements LockableInterface
         }
 
         return $this;
+    }
+
+    public function clearPhones()
+    {
+        $this->phones->clear();
     }
 
     public function getPhone() : ?Phone
