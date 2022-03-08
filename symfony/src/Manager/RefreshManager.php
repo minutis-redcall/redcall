@@ -232,6 +232,7 @@ class RefreshManager
         $volunteer->setReport([]);
 
         // Update structures based on where volunteer was found while crawling structures
+        $volunteer->clearStructures();
         $structureIdsVolunteerBelongsTo = [];
         foreach (array_filter(explode('|', $pegass->getParentIdentifier())) as $identifier) {
             if ($structure = $this->structureManager->findOneByExternalId(Platform::FR, $identifier)) {
@@ -266,17 +267,6 @@ class RefreshManager
             $this->checkAdminRole($volunteer);
 
             return;
-        }
-
-        // Remove volunteer from structures he does not belong to anymore
-        $structuresToRemove = [];
-        foreach ($volunteer->getStructures(false) as $structure) {
-            if (!in_array($structure->getId(), $structureIdsVolunteerBelongsTo)) {
-                $structuresToRemove[] = $structure;
-            }
-        }
-        foreach ($structuresToRemove as $structure) {
-            $volunteer->removeStructure($structure);
         }
 
         // Volunteer disabled on Pegass side
@@ -388,6 +378,8 @@ class RefreshManager
 
     private function fetchPhoneNumber(Volunteer $volunteer, array $contact)
     {
+        $volunteer->clearPhones();
+
         $phoneKeys = ['POR', 'PORT', 'TELDOM', 'TELTRAV', 'PORE'];
 
         // Filter out keys that are not phones
