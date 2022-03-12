@@ -21,6 +21,7 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
  *     },
  *     indexes={
  *         @ORM\Index(name="emailx", columns={"email"}),
+ *         @ORM\Index(name="internal_emailx", columns={"internal_email"}),
  *         @ORM\Index(name="enabledx", columns={"enabled"}),
  *         @ORM\Index(name="phone_number_optinx", columns={"phone_number_optin"}),
  *         @ORM\Index(name="email_optinx", columns={"email_optin"}),
