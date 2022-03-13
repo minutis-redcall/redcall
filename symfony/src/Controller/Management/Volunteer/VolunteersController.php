@@ -542,20 +542,26 @@ class VolunteersController extends BaseController
 
     private function createSearchForm(Request $request, ?Structure $structure) : FormInterface
     {
-        $builder = $this->createFormBuilder(['only_enabled' => true], ['csrf_protection' => false])
-                        ->setMethod('GET')
-                        ->add('criteria', TextType::class, [
-                            'label'    => 'manage_volunteers.search.label',
-                            'required' => false,
-                        ])
-                        ->add('only_enabled', CheckboxType::class, [
-                            'label'    => 'manage_volunteers.search.only_enabled',
-                            'required' => false,
-                        ])
-                        ->add('only_users', CheckboxType::class, [
-                            'label'    => 'manage_volunteers.search.only_users',
-                            'required' => false,
-                        ]);
+        $builder = $this
+            ->createFormBuilder([
+                'only_enabled'      => true,
+                'include_hierarchy' => true,
+            ], [
+                'csrf_protection' => false,
+            ])
+            ->setMethod('GET')
+            ->add('criteria', TextType::class, [
+                'label'    => 'manage_volunteers.search.label',
+                'required' => false,
+            ])
+            ->add('only_enabled', CheckboxType::class, [
+                'label'    => 'manage_volunteers.search.only_enabled',
+                'required' => false,
+            ])
+            ->add('only_users', CheckboxType::class, [
+                'label'    => 'manage_volunteers.search.only_users',
+                'required' => false,
+            ]);
 
         if ($structure) {
             $builder->add('include_hierarchy', CheckboxType::class, [

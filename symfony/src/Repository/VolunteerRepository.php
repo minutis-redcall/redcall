@@ -122,8 +122,7 @@ class VolunteerRepository extends BaseRepository
         Structure $structure,
         ?string $keyword,
         bool $onlyEnabled = true,
-        bool $onlyUsers = false,
-        bool $includeHierarchy = false) : QueryBuilder
+        bool $onlyUsers = false) : QueryBuilder
     {
         $qb = $this->searchAllQueryBuilder($platform, $keyword, $onlyEnabled)
                    ->join('v.structures', 's')
@@ -134,17 +133,23 @@ class VolunteerRepository extends BaseRepository
             $this->addUserCriteria($qb);
         }
 
-        if ($includeHierarchy) {
-            $qb
-                ->distinct()
-                ->leftJoin('s.childrenStructures', 'ss')
-                ->andWhere('ss.enabled IS NULL OR ss.enabled = true')
-                ->leftJoin('ss.childrenStructures', 'sss')
-                ->andWhere('sss.enabled IS NULL OR sss.enabled = true')
-                ->leftJoin('sss.childrenStructures', 'ssss')
-                ->andWhere('ssss.enabled IS NULL OR ssss.enabled = true')
-                ->leftJoin('ssss.childrenStructures', 'sssss')
-                ->andWhere('sssss.enabled IS NULL OR sssss.enabled = true');
+        return $qb;
+    }
+
+    public function searchInStructuresQueryBuilder(string $platform,
+        array $structureIds,
+        ?string $keyword,
+        bool $onlyEnabled = true,
+        bool $onlyUsers = false) : QueryBuilder
+    {
+        $qb = $this->searchAllQueryBuilder($platform, $keyword, $onlyEnabled)
+                   ->join('v.structures', 's')
+                   ->andWhere('s.id IN (:structures)')
+                   ->setParameter('structures', $structureIds)
+                   ->andWhere('s.enabled = true');
+
+        if ($onlyUsers) {
+            $this->addUserCriteria($qb);
         }
 
         return $qb;

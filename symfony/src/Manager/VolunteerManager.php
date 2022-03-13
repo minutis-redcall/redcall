@@ -153,7 +153,13 @@ class VolunteerManager
         bool $onlyUsers,
         bool $includeHierarchy) : QueryBuilder
     {
-        return $this->volunteerRepository->searchInStructureQueryBuilder($platform, $structure, $criteria, $onlyEnabled, $onlyUsers, $includeHierarchy);
+        if ($includeHierarchy) {
+            $structureIds = $this->structureManager->getDescendantStructures($this->security->getPlatform(), [$structure->getId()]);
+
+            return $this->volunteerRepository->searchInStructuresQueryBuilder($platform, $structureIds, $criteria, $onlyEnabled, $onlyUsers);
+        }
+
+        return $this->volunteerRepository->searchInStructureQueryBuilder($platform, $structure, $criteria, $onlyEnabled, $onlyUsers);
     }
 
     public function searchQueryBuilder(string $platform,
