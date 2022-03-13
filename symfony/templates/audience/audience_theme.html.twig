@@ -212,8 +212,10 @@
                                 <span class="slider"></span>
                             </label>
                             {% if has_children %}
-                                <a data-toggle="collapse" href="#container-children-{{ current }}">
+                                <a data-toggle="collapse" class="node-collapse-link" href="#container-children-{{ current }}">
                                     <label for="global-structure-{{ current }}">
+                                        <span id="arrow-open-{{ current }}">&#9658;</span>
+                                        <span id="arrow-close-{{ current }}" class="d-none">&#9660;</span>
                                         {{ information[current].name }} ({{ information[current].global_count }})
                                     </label>
                                 </a>
@@ -225,7 +227,7 @@
 
                             {# Slider body #}
                             {% if has_children %}
-                                <div id="container-children-{{ current }}" class="collapse structure-children">
+                                <div id="container-children-{{ current }}" data-current="{{ current }}" class="collapse structure-children">
                                     <div class="card card-body">
                                         <div>
                                             <label class="switch">
@@ -619,6 +621,18 @@
                 $('#choose-volunteer-lsit-edit').addClass('d-none');
             }
         });
+
+        $('.structure-children')
+                .on('show.bs.collapse', function () {
+                    var current = $(this).data('current');
+                    $('#arrow-open-' + current).addClass('d-none');
+                    $('#arrow-close-' + current).removeClass('d-none');
+                })
+                .on('hide.bs.collapse', function () {
+                    var current = $(this).data('current');
+                    $('#arrow-open-' + current).removeClass('d-none');
+                    $('#arrow-close-' + current).addClass('d-none');
+                });
 
     </script>
 

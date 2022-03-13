@@ -69,6 +69,7 @@ class FixturesManager
         }
 
         $structure = new Structure();
+        $structure->setPlatform($this->security->getPlatform());
         $structure->setName($name);
         $structure->setExternalId(Random::generate(8));
         $structure->setEnabled(true);
