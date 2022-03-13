@@ -4,12 +4,12 @@ namespace App\Repository;
 
 use App\Base\BaseRepository;
 use App\Entity\Badge;
+use App\Entity\Pegass;
 use App\Entity\Structure;
 use App\Entity\User;
 use App\Entity\Volunteer;
 use App\Enum\Platform;
 use App\Security\Helper\Security;
-use App\Entity\Pegass;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
@@ -122,7 +122,8 @@ class VolunteerRepository extends BaseRepository
         Structure $structure,
         ?string $keyword,
         bool $onlyEnabled = true,
-        bool $onlyUsers = false) : QueryBuilder
+        bool $onlyUsers = false,
+        bool $includeHierarchy = false) : QueryBuilder
     {
         $qb = $this->searchAllQueryBuilder($platform, $keyword, $onlyEnabled)
                    ->join('v.structures', 's')
@@ -131,6 +132,19 @@ class VolunteerRepository extends BaseRepository
 
         if ($onlyUsers) {
             $this->addUserCriteria($qb);
+        }
+
+        if ($includeHierarchy) {
+            $qb
+                ->distinct()
+                ->leftJoin('s.childrenStructures', 'ss')
+                ->andWhere('ss.enabled IS NULL OR ss.enabled = true')
+                ->leftJoin('ss.childrenStructures', 'sss')
+                ->andWhere('sss.enabled IS NULL OR sss.enabled = true')
+                ->leftJoin('sss.childrenStructures', 'ssss')
+                ->andWhere('ssss.enabled IS NULL OR ssss.enabled = true')
+                ->leftJoin('ssss.childrenStructures', 'sssss')
+                ->andWhere('sssss.enabled IS NULL OR sssss.enabled = true');
         }
 
         return $qb;

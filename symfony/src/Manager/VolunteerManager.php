@@ -150,9 +150,10 @@ class VolunteerManager
         Structure $structure,
         ?string $criteria,
         bool $onlyEnabled,
-        bool $onlyUsers) : QueryBuilder
+        bool $onlyUsers,
+        bool $includeHierarchy) : QueryBuilder
     {
-        return $this->volunteerRepository->searchInStructureQueryBuilder($platform, $structure, $criteria, $onlyEnabled, $onlyUsers);
+        return $this->volunteerRepository->searchInStructureQueryBuilder($platform, $structure, $criteria, $onlyEnabled, $onlyUsers, $includeHierarchy);
     }
 
     public function searchQueryBuilder(string $platform,

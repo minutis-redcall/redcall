@@ -687,6 +687,7 @@ manage_volunteers:
     redcall_user: 'Peut accéder à RedCall'
   search:
     button: Rechercher
+    include_hierarchy: 'AFficher les bénévoles des structures sous-jaçantes'
     label: 'Rechercher un bénévole (appuyez sur Entrée pour continuer)'
     only_enabled: 'Masquer les bénévoles desactivés'
     only_users: 'Afficher seulement les bénévoles pouvant utiliser RedCall'
