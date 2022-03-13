@@ -171,17 +171,34 @@ class VolunteerController extends BaseController
     }
 
     /**
-     * Get a volunteer.
+     * Get a volunteer (by external id).
      *
      * @Endpoint(
      *   priority = 510,
      *   response = @Facade(class = VolunteerReadFacade::class)
      * )
-     * @Route(name="read", path="/{externalId}", methods={"GET"})
+     * @Route(name="read_by_external_id", path="/{externalId}", methods={"GET"},
+     *                                    requirements={"externalId"="^[a-zA-Z0-9]{2,12}$"})
      * @Entity("volunteer", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
      * @IsGranted("VOLUNTEER", subject="volunteer")
      */
-    public function read(Volunteer $volunteer)
+    public function readByExternalId(Volunteer $volunteer)
+    {
+        return $this->volunteerTransformer->expose($volunteer);
+    }
+
+    /**
+     * Get a volunteer (by red cross email).
+     *
+     * @Endpoint(
+     *   priority = 511,
+     *   response = @Facade(class = VolunteerReadFacade::class)
+     * )
+     * @Route(name="read_by_email", path="/{email}", methods={"GET"})
+     * @Entity("volunteer", expr="repository.findOneByInternalEmailAndCurrentPlatform(email)")
+     * @IsGranted("VOLUNTEER", subject="volunteer")
+     */
+    public function readByEmail(Volunteer $volunteer)
     {
         return $this->volunteerTransformer->expose($volunteer);
     }

@@ -4,12 +4,12 @@ namespace App\Repository;
 
 use App\Base\BaseRepository;
 use App\Entity\Badge;
+use App\Entity\Pegass;
 use App\Entity\Structure;
 use App\Entity\User;
 use App\Entity\Volunteer;
 use App\Enum\Platform;
 use App\Security\Helper\Security;
-use App\Entity\Pegass;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
@@ -38,6 +38,14 @@ class VolunteerRepository extends BaseRepository
         return $this->findOneBy([
             'platform'   => $this->security->getPlatform(),
             'externalId' => $externalId,
+        ]);
+    }
+
+    public function findOneByInternalEmailAndCurrentPlatform(string $internalEmail)
+    {
+        return $this->findOneBy([
+            'platform'      => $this->security->getPlatform(),
+            'internalEmail' => $internalEmail,
         ]);
     }
 
