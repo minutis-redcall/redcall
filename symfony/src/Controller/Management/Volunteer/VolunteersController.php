@@ -5,6 +5,7 @@ namespace App\Controller\Management\Volunteer;
 use App\Base\BaseController;
 use App\Communication\Processor\SimpleProcessor;
 use App\Entity\Answer;
+use App\Entity\Pegass;
 use App\Entity\Structure;
 use App\Entity\Volunteer;
 use App\Form\Model\Campaign;
@@ -15,6 +16,7 @@ use App\Form\Type\VolunteerType;
 use App\Manager\AnswerManager;
 use App\Manager\CampaignManager;
 use App\Manager\CommunicationManager;
+use App\Manager\PegassManager;
 use App\Manager\PhoneManager;
 use App\Manager\PlatformConfigManager;
 use App\Manager\StructureManager;
@@ -22,8 +24,6 @@ use App\Manager\VolunteerManager;
 use App\Model\Csrf;
 use App\Model\PlatformConfig;
 use Bundles\PaginationBundle\Manager\PaginationManager;
-use App\Entity\Pegass;
-use App\Manager\PegassManager;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
@@ -139,19 +139,23 @@ class VolunteersController extends BaseController
      */
     public function listAction(Request $request, Structure $structure = null)
     {
-        $search = $this->createSearchForm($request);
+        $search = $this->createSearchForm($request, $structure);
 
-        $criteria     = null;
-        $hideDisabled = true;
-        $filterUsers  = false;
+        $criteria               = null;
+        $hideDisabled           = true;
+        $filterUsers            = false;
+        $filterIncludeHierarchy = true;
         if ($search->isSubmitted() && $search->isValid()) {
             $criteria     = $search->get('criteria')->getData();
             $hideDisabled = $search->get('only_enabled')->getData();
             $filterUsers  = $search->get('only_users')->getData();
+            if ($structure) {
+                $filterIncludeHierarchy = $search->get('include_hierarchy')->getData();
+            }
         }
 
         if ($structure) {
-            $queryBuilder = $this->volunteerManager->searchInStructureQueryBuilder($this->getPlatform(), $structure, $criteria, $hideDisabled, $filterUsers);
+            $queryBuilder = $this->volunteerManager->searchInStructureQueryBuilder($this->getPlatform(), $structure, $criteria, $hideDisabled, $filterUsers, $filterIncludeHierarchy);
         } else {
             $queryBuilder = $this->volunteerManager->searchQueryBuilder($this->getPlatform(), $criteria, $hideDisabled, $filterUsers);
         }
@@ -536,27 +540,42 @@ class VolunteersController extends BaseController
         return $trigger;
     }
 
-    private function createSearchForm(Request $request) : FormInterface
+    private function createSearchForm(Request $request, ?Structure $structure) : FormInterface
     {
-        return $this->createFormBuilder(['only_enabled' => true], ['csrf_protection' => false])
-                    ->setMethod('GET')
-                    ->add('criteria', TextType::class, [
-                        'label'    => 'manage_volunteers.search.label',
-                        'required' => false,
-                    ])
-                    ->add('only_enabled', CheckboxType::class, [
-                        'label'    => 'manage_volunteers.search.only_enabled',
-                        'required' => false,
-                    ])
-                    ->add('only_users', CheckboxType::class, [
-                        'label'    => 'manage_volunteers.search.only_users',
-                        'required' => false,
-                    ])
-                    ->add('submit', SubmitType::class, [
-                        'label' => 'manage_volunteers.search.button',
-                    ])
-                    ->getForm()
-                    ->handleRequest($request);
+        $builder = $this
+            ->createFormBuilder([
+                'only_enabled'      => true,
+                'include_hierarchy' => true,
+            ], [
+                'csrf_protection' => false,
+            ])
+            ->setMethod('GET')
+            ->add('criteria', TextType::class, [
+                'label'    => 'manage_volunteers.search.label',
+                'required' => false,
+            ])
+            ->add('only_enabled', CheckboxType::class, [
+                'label'    => 'manage_volunteers.search.only_enabled',
+                'required' => false,
+            ])
+            ->add('only_users', CheckboxType::class, [
+                'label'    => 'manage_volunteers.search.only_users',
+                'required' => false,
+            ]);
+
+        if ($structure) {
+            $builder->add('include_hierarchy', CheckboxType::class, [
+                'label'    => 'manage_volunteers.search.include_hierarchy',
+                'required' => false,
+            ]);
+        }
+
+        return $builder
+            ->add('submit', SubmitType::class, [
+                'label' => 'manage_volunteers.search.button',
+            ])
+            ->getForm()
+            ->handleRequest($request);
     }
 
     private function createDeletionForm(Request $request, Volunteer $volunteer) : FormInterface

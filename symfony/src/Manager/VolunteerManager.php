@@ -150,8 +150,15 @@ class VolunteerManager
         Structure $structure,
         ?string $criteria,
         bool $onlyEnabled,
-        bool $onlyUsers) : QueryBuilder
+        bool $onlyUsers,
+        bool $includeHierarchy) : QueryBuilder
     {
+        if ($includeHierarchy) {
+            $structureIds = $this->structureManager->getDescendantStructures($this->security->getPlatform(), [$structure->getId()]);
+
+            return $this->volunteerRepository->searchInStructuresQueryBuilder($platform, $structureIds, $criteria, $onlyEnabled, $onlyUsers);
+        }
+
         return $this->volunteerRepository->searchInStructureQueryBuilder($platform, $structure, $criteria, $onlyEnabled, $onlyUsers);
     }
 

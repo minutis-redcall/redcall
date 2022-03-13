@@ -144,6 +144,25 @@ class VolunteerRepository extends BaseRepository
         return $qb;
     }
 
+    public function searchInStructuresQueryBuilder(string $platform,
+        array $structureIds,
+        ?string $keyword,
+        bool $onlyEnabled = true,
+        bool $onlyUsers = false) : QueryBuilder
+    {
+        $qb = $this->searchAllQueryBuilder($platform, $keyword, $onlyEnabled)
+                   ->join('v.structures', 's')
+                   ->andWhere('s.id IN (:structures)')
+                   ->setParameter('structures', $structureIds)
+                   ->andWhere('s.enabled = true');
+
+        if ($onlyUsers) {
+            $this->addUserCriteria($qb);
+        }
+
+        return $qb;
+    }
+
     public function searchAllQueryBuilder(string $platform, ?string $keyword, bool $enabled = false) : QueryBuilder
     {
         $qb = $this->createVolunteersQueryBuilder($platform, $enabled);

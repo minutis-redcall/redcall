@@ -14,10 +14,10 @@ use App\Facade\Resource\VolunteerResourceFacade;
 use App\Facade\Structure\StructureFacade;
 use App\Facade\Structure\StructureFiltersFacade;
 use App\Facade\Structure\StructureReadFacade;
+use App\Facade\Structure\VolunteerFiltersFacade;
 use App\Facade\User\UserFiltersFacade;
 use App\Facade\User\UserReferenceCollectionFacade;
 use App\Facade\User\UserReferenceFacade;
-use App\Facade\Volunteer\VolunteerFiltersFacade;
 use App\Facade\Volunteer\VolunteerReferenceCollectionFacade;
 use App\Facade\Volunteer\VolunteerReferenceFacade;
 use App\Manager\StructureManager;
@@ -215,7 +215,8 @@ class StructureController extends BaseController
             $structure,
             $filters->getCriteria(),
             $filters->isOnlyEnabled(),
-            $filters->isOnlyUsers()
+            $filters->isOnlyUsers(),
+            $filters->isIncludeHierarchy()
         );
 
         return new QueryBuilderFacade($qb, $filters->getPage(), function (Volunteer $volunteer) {
