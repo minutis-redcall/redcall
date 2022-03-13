@@ -248,15 +248,18 @@ class AudienceType extends AbstractType
     {
         // Retrieving structures hierarchy
         $hierarchyForUser = $this->structureManager->getStructureHierarchyForCurrentUser();
-        $hierarchy        = [];
+
+        $hierarchy = [];
         foreach ($hierarchyForUser as $row) {
             if (!array_key_exists($row['id'], $hierarchy)) {
                 $hierarchy[$row['id']] = [];
             }
 
             if ($row['child_id']) {
-                $hierarchy[$row['child_id']] = [];
-                $hierarchy[$row['id']][]     = $row['child_id'];
+                if (!array_key_exists($row['child_id'], $hierarchy)) {
+                    $hierarchy[$row['child_id']] = [];
+                }
+                $hierarchy[$row['id']][] = $row['child_id'];
             }
         }
 
