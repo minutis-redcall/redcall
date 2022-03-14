@@ -3,10 +3,10 @@
 namespace App\Manager;
 
 use App\Entity\Pegass;
+use App\Enum\Platform;
 use App\Event\PegassEvent;
 use App\PegassEvents;
 use App\Repository\PegassRepository;
-use Bundles\GoogleTaskBundle\Service\TaskSender;
 use DateTime;
 use Doctrine\ORM\QueryBuilder;
 use Psr\Log\LoggerInterface;
@@ -27,29 +27,29 @@ class PegassManager
     /**
      * @var LoggerInterface
      */
-    private $slackLogger;
-
-    /**
-     * @var TaskSender
-     */
-    private $taskSender;
-
-    /**
-     * @var LoggerInterface
-     */
     private $logger;
+
+    /**
+     * @var StructureManager
+     */
+    private $structureManager;
+
+    /**
+     * @var VolunteerManager
+     */
+    private $volunteerManager;
 
     public function __construct(EventDispatcherInterface $eventDispatcher,
         PegassRepository $pegassRepository,
-        LoggerInterface $slackLogger,
-        TaskSender $taskSender,
-        LoggerInterface $logger)
+        LoggerInterface $logger,
+        StructureManager $structureManager,
+        VolunteerManager $volunteerManager)
     {
         $this->eventDispatcher  = $eventDispatcher;
         $this->pegassRepository = $pegassRepository;
-        $this->slackLogger      = $slackLogger;
-        $this->taskSender       = $taskSender;
         $this->logger           = $logger;
+        $this->structureManager = $structureManager;
+        $this->volunteerManager = $volunteerManager;
     }
 
     public function getAllEnabledEntities() : array
@@ -113,6 +113,23 @@ class PegassManager
         foreach ($entities as $entity) {
             $entity->setEnabled(false);
             $this->pegassRepository->save($entity);
+
+            switch ($entity->getType()) {
+                case Pegass::TYPE_STRUCTURE:
+                    $structure = $this->structureManager->findOneByExternalId(Platform::FR, $entity->getExternalId());
+                    if ($structure) {
+                        $structure->setEnabled(false);
+                        $this->structureManager->save($structure);
+                    }
+                    break;
+                case Pegass::TYPE_VOLUNTEER:
+                    $volunteer = $this->volunteerManager->findOneByExternalId(Platform::FR, $entity->getExternalId());
+                    if ($volunteer) {
+                        $volunteer->setEnabled(false);
+                        $this->volunteerManager->save($volunteer);
+                    }
+                    break;
+            }
         }
     }
 
@@ -121,6 +138,7 @@ class PegassManager
         $entity = new Pegass();
         $entity->setType($type);
         $entity->setIdentifier($identifier);
+        $entity->setExternalId(ltrim($identifier, '0'));
         $entity->setParentIdentifier($parentIdentifier);
         $entity->setUpdatedAt(new DateTime('1984-07-10'));
 
@@ -192,6 +210,7 @@ class PegassManager
                     $volunteer = new Pegass();
                     $volunteer->setType(Pegass::TYPE_VOLUNTEER);
                     $volunteer->setIdentifier($row['id']);
+                    $volunteer->setExternalId(ltrim($row['id'], '0'));
                     $volunteer->setParentIdentifier($parentIdentifier);
                     $volunteer->setUpdatedAt(new DateTime('1984-07-10')); // Expired
                     $this->debug($volunteer, 'Creating volunteer');

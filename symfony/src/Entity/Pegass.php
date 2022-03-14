@@ -16,7 +16,8 @@ use Throwable;
  * indexes={
  *    @ORM\Index(name="type_update_idx", columns={"type", "updated_at"}),
  *    @ORM\Index(name="typ_ide_par_idx", columns={"type", "identifier", "parent_identifier"}),
- *    @ORM\Index(name="enabled_idx", columns={"enabled"})
+ *    @ORM\Index(name="enabled_idx", columns={"enabled"}),
+ *    @ORM\Index(name="external_idx", columns={"external_id"})
  * })
  * @ORM\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
  */
@@ -50,6 +51,11 @@ class Pegass
      * @ORM\Column(type="string", length=64, nullable=true)
      */
     private $identifier;
+
+    /**
+     * @ORM\Column(type="string", length=64, nullable=true)
+     */
+    private $externalId;
 
     /**
      * @ORM\Column(type="string", length=64, nullable=true)
@@ -89,6 +95,18 @@ class Pegass
     public function setIdentifier(string $identifier) : self
     {
         $this->identifier = $identifier;
+
+        return $this;
+    }
+
+    public function getExternalId()
+    {
+        return $this->externalId;
+    }
+
+    public function setExternalId($externalId)
+    {
+        $this->externalId = $externalId;
 
         return $this;
     }

@@ -32,13 +32,12 @@ handlers:
     script: auto
     redirect_http_response_code: 301
 
-manual_scaling:
-  instances: 1
+automatic_scaling:
+  max_concurrent_requests: 10
+  min_instances: 0
+  max_instances: 10
 
-resources:
-  cpu: 1
-  memory_gb: 0.5
-  disk_size_gb: 10
+instance_class: F4_1G
 
 inbound_services:
   - warmup

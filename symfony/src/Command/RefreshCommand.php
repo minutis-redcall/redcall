@@ -4,7 +4,6 @@ namespace App\Command;
 
 use App\Base\BaseCommand;
 use App\Manager\RefreshManager;
-use App\Manager\PegassManager;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -16,7 +15,7 @@ class RefreshCommand extends BaseCommand
      */
     private $refreshManager;
 
-    public function __construct(RefreshManager $refreshManager, PegassManager $pegassManager)
+    public function __construct(RefreshManager $refreshManager)
     {
         parent::__construct();
 

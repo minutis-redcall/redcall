@@ -232,14 +232,15 @@ class RefreshManager
         $volunteer->setReport([]);
 
         // Update structures based on where volunteer was found while crawling structures
-        $volunteer->clearStructures();
         $structureIdsVolunteerBelongsTo = [];
+        $structuresVolunteerBelongsTo   = [];
         foreach (array_filter(explode('|', $pegass->getParentIdentifier())) as $identifier) {
             if ($structure = $this->structureManager->findOneByExternalId(Platform::FR, $identifier)) {
-                $volunteer->addStructure($structure);
                 $structureIdsVolunteerBelongsTo[] = $structure->getId();
+                $structuresVolunteerBelongsTo[]   = $structure;
             }
         }
+        $volunteer->syncStructures($structuresVolunteerBelongsTo);
 
         // Add structures based on the actions performed by the volunteer
         $identifiers = [];
@@ -321,15 +322,23 @@ class RefreshManager
             $volunteer->setBirthday(new \DateTime($birthday));
         }
 
-        if (!$volunteer->isPhoneNumberLocked()) {
-            $this->fetchPhoneNumber($volunteer, $pegass->evaluate('contact'));
+        foreach ($pegass->evaluate('contact') as $data) {
+            switch ($data['moyenComId'] ?? false) {
+                case 'MAIL':
+                    if (!$volunteer->isEmailLocked()) {
+                        $volunteer->setEmail($data['libelle']);
+                    }
+                    break;
+                case 'MAILTRAV':
+                    $volunteer->setInternalEmail($data['libelle']);
+                    break;
+                case 'POR':
+                    if (!$volunteer->isPhoneNumberLocked()) {
+                        $this->fetchPhoneNumber($volunteer, $data['libelle']);
+                    }
+                    break;
+            }
         }
-
-        if (!$volunteer->isEmailLocked()) {
-            $volunteer->setEmail($this->fetchEmail($pegass->evaluate('infos'), $pegass->evaluate('contact')));
-        }
-
-        $volunteer->setInternalEmail($this->fetchInternalEmail($pegass->evaluate('contact')));
 
         // Update volunteer badge
         $volunteer->setExternalBadges(
@@ -376,113 +385,37 @@ class RefreshManager
         );
     }
 
-    private function fetchPhoneNumber(Volunteer $volunteer, array $contact)
+    private function fetchPhoneNumber(Volunteer $volunteer, string $phoneNumber)
     {
         $volunteer->clearPhones();
 
-        $phoneKeys = ['POR', 'PORT', 'TELDOM', 'TELTRAV', 'PORE'];
+        $phoneUtil = PhoneNumberUtil::getInstance();
+        try {
+            /** @var PhoneNumber $parsed */
+            $parsed = $phoneUtil->parse($phoneNumber, Phone::DEFAULT_LANG);
+            $e164   = $phoneUtil->format($parsed, PhoneNumberFormat::E164);
+            if (!$volunteer->hasPhoneNumber($e164)) {
+                $existingPhone = $this->phoneManager->findOneByPhoneNumber($e164);
 
-        // Filter out keys that are not phones
-        $contact = array_filter($contact, function ($data) use ($phoneKeys) {
-            return in_array($data['moyenComId'] ?? [], $phoneKeys);
-        });
+                // Allow a volunteer to take disabled people's phone number
+                if ($existingPhone && $volunteer->getId() !== $existingPhone->getVolunteer()->getId()
+                    && !$existingPhone->getVolunteer()->isEnabled()) {
+                    $existingVolunteer = $existingPhone->getVolunteer();
+                    $existingVolunteer->removePhone($existingPhone);
+                    $this->volunteerManager->save($existingVolunteer);
+                    $existingPhone = null;
+                }
 
-        // Order phones in order to take work phone last
-        usort($contact, function ($a, $b) use ($phoneKeys) {
-            return array_search($a['moyenComId'], $phoneKeys) <=> array_search($b['moyenComId'], $phoneKeys);
-        });
-
-        if (!$contact) {
+                if (!$existingPhone) {
+                    $phone = new Phone();
+                    $phone->setPreferred(true);
+                    $phone->setE164($e164);
+                    $volunteer->addPhone($phone);
+                }
+            }
+        } catch (NumberParseException $e) {
             return;
         }
-
-        $phoneUtil = PhoneNumberUtil::getInstance();
-        foreach ($contact as $key => $row) {
-            try {
-                /** @var PhoneNumber $parsed */
-                $parsed = $phoneUtil->parse($row['libelle'], Phone::DEFAULT_LANG);
-                $e164   = $phoneUtil->format($parsed, PhoneNumberFormat::E164);
-                if (!$volunteer->hasPhoneNumber($e164)) {
-                    $existingPhone = $this->phoneManager->findOneByPhoneNumber($e164);
-                    // Allow a volunteer to take disabled people's phone number
-                    if ($existingPhone && !$existingPhone->getVolunteer()->isEnabled()) {
-                        $existingVolunteer = $existingPhone->getVolunteer();
-                        $existingVolunteer->removePhone($existingPhone);
-                        $this->volunteerManager->save($existingVolunteer);
-                        $existingPhone = null;
-                    }
-                    if (!$existingPhone) {
-                        $phone = new Phone();
-                        $phone->setPreferred(0 === $volunteer->getPhones()->count());
-                        $phone->setE164($e164);
-                        $volunteer->addPhone($phone);
-                    }
-                }
-            } catch (NumberParseException $e) {
-                continue;
-            }
-        }
-    }
-
-    private function fetchEmail(array $infos, array $contact) : ?string
-    {
-        // Filter out keys that are not emails
-        $contact = $this->filterEmails($contact);
-
-        // If volunteer has a favorite email, we return it
-        if ($no = ($infos['mailMoyenComId']['numero'] ?? null)) {
-            foreach ($contact as $item) {
-                if ($no === ($item['numero'] ?? null)) {
-                    return $item['libelle'];
-                }
-            }
-        }
-
-        // Order emails
-        usort($contact, function ($a, $b) {
-
-            // Red cross emails should be put last
-            foreach (self::RED_CROSS_DOMAINS as $domain) {
-                if (false !== stripos($a['libelle'] ?? false, $domain)) {
-                    return 1;
-                }
-                if (false !== stripos($b['libelle'] ?? false, $domain)) {
-                    return -1;
-                }
-            }
-
-            return array_search($a['moyenComId'], self::EMAIL_KEYS) <=> array_search($b['moyenComId'], self::EMAIL_KEYS);
-        });
-
-        if (!$contact) {
-            return null;
-        }
-
-        return reset($contact)['libelle'];
-    }
-
-    private function fetchInternalEmail(array $contact) : ?string
-    {
-        // Filter out keys that are not emails
-        $contact = $this->filterEmails($contact);
-
-        foreach ($contact as $row) {
-            foreach (self::RED_CROSS_DOMAINS as $domain) {
-                if (str_ends_with($row['libelle'], $domain)) {
-                    return $row['libelle'];
-                }
-            }
-        }
-
-        return null;
-    }
-
-    private function filterEmails(array $contact) : array
-    {
-        return array_filter($contact, function ($data) {
-            return in_array($data['moyenComId'] ?? [], self::EMAIL_KEYS)
-                   && preg_match('/^.+\@.+\..+$/', $data['libelle'] ?? false);
-        });
     }
 
     private function fetchBadges(Pegass $pegass)

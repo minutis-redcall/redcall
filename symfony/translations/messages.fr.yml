@@ -538,6 +538,8 @@ maintenance:
     refresh_button: 'Rafraichir les données'
   refresh: 'Synchroniser entièrement la base de données RedCall avec celle de Pegass'
   refresh_started: 'Synchronisation lancée, cela va prendre du temps.'
+  pegass: 'Mettre à jour la base de données en se basant sur les fichiers de la DSI.'
+  pegass_started: 'Synchronisation lancée, cela va prendre du temps.'
   search:
     description: 'Cet outil vous aide à créer la bonne syntaxe XPath de recherche de nivols.'
     expression: 'Entrez l''expression XPath à tester'

@@ -538,6 +538,8 @@ maintenance:
     refresh_button: 'Refresh the datas'
   refresh: 'Synchronize RedCall and Pegass databases entirely'
   refresh_started: 'Synchronize launched, it will take a while.'
+  pegass: 'Synchronize RedCall and DSI files entirely.'
+  pegass_started: 'Synchronize launched, it will take a while.'
   search:
     description: 'This tool is made to help you build the right xpath search expression.'
     expression: 'Enter the XPath expression to match your nivol data.'

@@ -3,12 +3,12 @@
 namespace App\Controller\Admin;
 
 use App\Base\BaseController;
+use App\Entity\Pegass;
 use App\Form\Type\VolunteerWidgetType;
 use App\Manager\MaintenanceManager;
+use App\Manager\PegassManager;
 use App\Manager\VolunteerManager;
 use App\Settings;
-use App\Entity\Pegass;
-use App\Manager\PegassManager;
 use Bundles\SettingsBundle\Manager\SettingManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -89,6 +89,18 @@ class MaintenanceController extends BaseController
         $this->maintenanceManager->refresh();
 
         $this->addFlash('success', $this->translator->trans('maintenance.refresh_started'));
+
+        return $this->redirectToRoute('admin_maintenance_index');
+    }
+
+    /**
+     * @Route(name="pegass_files", path="/pegass-files")
+     */
+    public function pegassFiles()
+    {
+        $this->maintenanceManager->pegassFiles();
+
+        $this->addFlash('success', $this->translator->trans('maintenance.pegass_started'));
 
         return $this->redirectToRoute('admin_maintenance_index');
     }

@@ -47,7 +47,6 @@ class PegassCreateChunks implements TaskInterface
 
     public function execute(array $context)
     {
-        //$this->local();
         $this->remote();
     }
 
@@ -99,16 +98,6 @@ class PegassCreateChunks implements TaskInterface
         }
 
         $this->processFiles($context);
-    }
-
-    private function local()
-    {
-        $this->processFiles(array_combine(
-            glob('/Users/alain/Desktop/pegass/redcall_*.csv'),
-            array_map(function (string $filename) {
-                return file_get_contents($filename);
-            }, glob('/Users/alain/Desktop/pegass/redcall_*.csv'))
-        ));
     }
 
     private function processFiles(array $context)

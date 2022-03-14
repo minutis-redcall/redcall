@@ -454,9 +454,24 @@ class Volunteer implements LockableInterface
         return $this;
     }
 
-    public function clearStructures()
+    /**
+     * @param Structure[] $structures
+     */
+    public function syncStructures(array $newStructures)
     {
-        $this->structures->clear();
+        $currentStructures = $this->structures->toArray();
+
+        foreach ($newStructures as $structure) {
+            if (!in_array($structure, $currentStructures)) {
+                $this->structures->add($structure);
+            }
+        }
+
+        foreach ($currentStructures as $structure) {
+            if (!in_array($structure, $newStructures)) {
+                $this->structures->removeElement($structure);
+            }
+        }
     }
 
     public function getMainStructure(bool $onlyEnabled = true) : ?Structure

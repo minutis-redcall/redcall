@@ -10,6 +10,7 @@ use App\Entity\Volunteer;
 use App\Repository\VolunteerRepository;
 use App\Security\Helper\Security;
 use Doctrine\ORM\QueryBuilder;
+use Psr\Log\LoggerInterface;
 
 class VolunteerManager
 {
@@ -29,11 +30,6 @@ class VolunteerManager
     private $structureManager;
 
     /**
-     * @var BadgeManager
-     */
-    private $badgeManager;
-
-    /**
      * @var AnswerManager
      */
     private $answerManager;
@@ -48,19 +44,24 @@ class VolunteerManager
      */
     private $security;
 
+    /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
     public function __construct(VolunteerRepository $volunteerRepository,
         StructureManager $structureManager,
-        BadgeManager $badgeManager,
         AnswerManager $answerManager,
         PhoneManager $phoneManager,
-        Security $security)
+        Security $security,
+        LoggerInterface $logger)
     {
         $this->volunteerRepository = $volunteerRepository;
         $this->structureManager    = $structureManager;
-        $this->badgeManager        = $badgeManager;
         $this->answerManager       = $answerManager;
         $this->phoneManager        = $phoneManager;
         $this->security            = $security;
+        $this->logger              = $logger;
     }
 
     /**
