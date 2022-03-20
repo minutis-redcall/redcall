@@ -94,6 +94,11 @@ class VolunteerManager
         return $this->volunteerRepository->findOneByEmail($email);
     }
 
+    public function findOneByInternalEmail(string $email) : ?Volunteer
+    {
+        return $this->volunteerRepository->findOneByInternalEmailAndCurrentPlatform($email);
+    }
+
     public function save(Volunteer $volunteer)
     {
         $this->volunteerRepository->save($volunteer);
