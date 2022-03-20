@@ -9,6 +9,10 @@ use Symfony\Component\Validator\Constraints as Assert;
 class SimpleMessageRequestFacade implements FacadeInterface
 {
     /**
+     * Internal email of the volunteer for which we are sending the trigger.
+     *
+     * In order to bill the right structure, we need to know who requested the trigger.
+     *
      * @Assert\Email
      *
      * @var string|null
@@ -16,6 +20,10 @@ class SimpleMessageRequestFacade implements FacadeInterface
     protected $senderInternalEmail = null;
 
     /**
+     * Message to send.
+     *
+     * Keep it short (< 300 chars) to improve its delivery rate.
+     *
      * @Assert\NotNull()
      * @Assert\Length(min=1, minMessage="form.campaign.errors.message.empty")
      *
