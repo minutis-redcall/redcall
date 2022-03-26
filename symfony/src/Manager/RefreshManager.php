@@ -387,6 +387,12 @@ class RefreshManager
 
     private function fetchPhoneNumber(Volunteer $volunteer, string $phoneNumber)
     {
+        $phoneNumber = str_replace('+330', '+33', $phoneNumber);
+
+        if ($phoneNumber === $volunteer->getPhoneNumber()) {
+            return;
+        }
+
         $volunteer->clearPhones();
 
         $phoneUtil = PhoneNumberUtil::getInstance();
