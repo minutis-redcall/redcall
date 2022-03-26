@@ -9,11 +9,13 @@ use App\Enum\Crud;
 use App\Enum\Resource;
 use App\Enum\ResourceOwnership;
 use App\Facade\Generic\UpdateStatusFacade;
+use App\Facade\Resource\StructureResourceFacade;
 use App\Facade\Resource\UserResourceFacade;
 use App\Facade\Resource\VolunteerResourceFacade;
 use App\Facade\Structure\StructureFacade;
 use App\Facade\Structure\StructureFiltersFacade;
 use App\Facade\Structure\StructureReadFacade;
+use App\Facade\Structure\StructureTreeFacade;
 use App\Facade\Structure\VolunteerFiltersFacade;
 use App\Facade\User\UserFiltersFacade;
 use App\Facade\User\UserReferenceCollectionFacade;
@@ -193,6 +195,37 @@ class StructureController extends BaseController
         $this->structureManager->remove($structure);
 
         return new HttpNoContentFacade();
+    }
+
+    /**
+     * Get parent and children structures for a structure.
+     *
+     * @Endpoint(
+     *   priority = 422,
+     *   response = @Facade(class     = StructureTreeFacade::class)
+     * )
+     * @Route(name="tree", path="/{externalId}/tree", methods={"GET"})
+     * @Entity("structure", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
+     * @IsGranted("STRUCTURE", subject="structure")
+     */
+    public function tree(Structure $structure)
+    {
+        $facade = new StructureTreeFacade();
+        $facade->setCurrent(StructureResourceFacade::createFromStructure($structure));
+
+        $parents = array_reverse($structure->getParentHierarchy());
+        array_shift($parents);
+        foreach ($parents as $parent) {
+            $facade->addParent(
+                StructureResourceFacade::createFromStructure($parent)
+            );
+        }
+
+        foreach ($structure->getChildrenStructures() as $childrenStructure) {
+            $facade->addChild($this->tree($childrenStructure));
+        }
+
+        return $facade;
     }
 
     /**

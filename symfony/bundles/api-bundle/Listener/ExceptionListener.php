@@ -48,7 +48,7 @@ class ExceptionListener
         }
 
         if ($error->getCode() >= Response::HTTP_INTERNAL_SERVER_ERROR) {
-            $this->logger->error($throwable->getMessage(), [
+            $this->logger->warning($throwable->getMessage(), [
                 'trace' => $throwable->getTraceAsString(),
             ]);
         }

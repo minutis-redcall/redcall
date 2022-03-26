@@ -2,6 +2,7 @@
 
 namespace App\Facade\Resource;
 
+use App\Entity\Structure;
 use Bundles\ApiBundle\Annotation as Api;
 use Bundles\ApiBundle\Contracts\FacadeInterface;
 
@@ -18,6 +19,16 @@ class StructureResourceFacade extends ResourceFacade
 
         $facade->externalId = 'demo-structure';
         $facade->label      = 'Paris';
+
+        return $facade;
+    }
+
+    public static function createFromStructure(Structure $structure) : self
+    {
+        $facade = new self;
+
+        $facade->setExternalId($structure->getExternalId());
+        $facade->setLabel($structure->getDisplayName());
 
         return $facade;
     }
