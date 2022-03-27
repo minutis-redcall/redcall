@@ -4,7 +4,6 @@ namespace App\Entity;
 
 use App\Contract\LockableInterface;
 use App\Tools\EscapedArray;
-use App\Entity\Pegass;
 use DateInterval;
 use DateTime;
 use DateTimeInterface;
@@ -537,6 +536,10 @@ class Structure implements LockableInterface
         $parents = [$this];
 
         $ref = $this->getParentStructure();
+        if (!$ref) {
+            return $parents;
+        }
+
         do {
             array_unshift($parents, $ref);
             $ref = $ref->getParentStructure();

@@ -254,6 +254,13 @@ class RefreshManager
             }
         }
 
+        // Update internal email
+        foreach ($pegass->evaluate('contact') as $data) {
+            if ('MAILTRAV' === $data['moyenComId'] ?? false) {
+                $volunteer->setInternalEmail($data['libelle']);
+            }
+        }
+
         // Volunteer is locked
         if ($volunteer->isLocked()) {
             $volunteer->addReport('import_report.update_locked');
