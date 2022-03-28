@@ -26,6 +26,7 @@ form:
       too_large_choice: 'Length of one of the answer is too long.'
       too_large_email: 'This email is too long.'
       too_large_sms: 'This SMS is too long.'
+      invalid_shortcut: 'This shortcut does not exist.'
   operation:
     does_not_exist: 'This operation cannot be found on Minutis.'
   phone_card:

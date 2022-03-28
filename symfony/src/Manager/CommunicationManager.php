@@ -199,6 +199,7 @@ class CommunicationManager
         $communication = new Communication();
         $communication
             ->setVolunteer($volunteer)
+            ->setShortcut($trigger->getShortcut())
             ->setType($trigger->getType())
             ->setLanguage($trigger->getLanguage())
             ->setBody($trigger->getMessage())

@@ -37,6 +37,7 @@ class StructureTransformer extends BaseTransformer
         $facade->setExternalId($object->getExternalId());
         $facade->setParentExternalId($object->getParentStructure() ? $object->getParentStructure()->getExternalId() : null);
         $facade->setName($object->getName());
+        $facade->setShortcut($object->getShortcut());
         $facade->setPresidentExternalId($object->getPresident());
         $facade->setLocked($object->isLocked());
         $facade->setEnabled($object->isEnabled());
@@ -91,6 +92,10 @@ class StructureTransformer extends BaseTransformer
 
         if (null !== $facade->getName()) {
             $structure->setName($facade->getName());
+        }
+
+        if (null !== $facade->getShortcut()) {
+            $structure->setShortcut($facade->getShortcut());
         }
 
         if (null !== $facade->getPresidentExternalId()) {

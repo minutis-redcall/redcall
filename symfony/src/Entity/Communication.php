@@ -94,6 +94,11 @@ class Communication
     private $volunteer;
 
     /**
+     * @ORM\Column(type="string", length=32, nullable=true)
+     */
+    private $shortcut;
+
+    /**
      * @ORM\Column(type="text", nullable=true)
      */
     private $raw;
@@ -543,6 +548,18 @@ class Communication
     public function setVolunteer(?Volunteer $volunteer) : self
     {
         $this->volunteer = $volunteer;
+
+        return $this;
+    }
+
+    public function getShortcut() : ?string
+    {
+        return $this->shortcut;
+    }
+
+    public function setShortcut(?string $shortcut) : self
+    {
+        $this->shortcut = $shortcut;
 
         return $this;
     }

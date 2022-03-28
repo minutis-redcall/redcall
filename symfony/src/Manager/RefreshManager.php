@@ -164,7 +164,8 @@ class RefreshManager
         ]);
 
         $structure->setExternalId($pegass->evaluate('structure.id'));
-        $structure->setName($pegass->evaluate('structure.libelle'));
+        $structure->setName(html_entity_decode($pegass->evaluate('structure.libelle')));
+        $structure->setShortcut(html_entity_decode($pegass->evaluate('structure.libelleCourt')));
         $structure->setPresident(ltrim($pegass->evaluate('responsible.responsableId'), '0'));
         $this->structureManager->save($structure);
     }

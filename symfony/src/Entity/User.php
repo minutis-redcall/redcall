@@ -200,6 +200,19 @@ class User extends AbstractUser implements LockableInterface
         return $structures;
     }
 
+    public function getStructuresShortcuts() : array
+    {
+        $shortcuts = [];
+        foreach ($this->getStructures() as $structure) {
+            /** @var Structure $structure */
+            if ($structure->getShortcut()) {
+                $shortcuts[$structure->getId()] = $structure->getShortcut();
+            }
+        }
+
+        return $shortcuts;
+    }
+
     public function getEnabledStructures() : Collection
     {
         return $this->structures->filter(function (Structure $structure) {

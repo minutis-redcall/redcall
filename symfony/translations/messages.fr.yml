@@ -451,6 +451,7 @@ form:
       answers: 'Réponses possibles'
       back: Retour
       body: Contenu
+      shortcut: 'Raccourci de l''unité locale indiqué dans le SMS (si le bénévole est rattaché à au moins 2 structures)'
       cost: 'La longueur du message multiplie son prix par :'
       language: 'En quelle langue écrivez-vous votre message ?'
       length: 'Longueur du message :'
@@ -538,8 +539,6 @@ maintenance:
     refresh_button: 'Rafraichir les données'
   refresh: 'Synchroniser entièrement la base de données RedCall avec celle de Pegass'
   refresh_started: 'Synchronisation lancée, cela va prendre du temps.'
-  pegass: 'Mettre à jour la base de données en se basant sur les fichiers de la DSI.'
-  pegass_started: 'Synchronisation lancée, cela va prendre du temps.'
   search:
     description: 'Cet outil vous aide à créer la bonne syntaxe XPath de recherche de nivols.'
     expression: 'Entrez l''expression XPath à tester'
@@ -549,6 +548,8 @@ maintenance:
     notmatch: 'L''expression ne match pas avec ce document.'
     title: 'Recherche avancée de nivols dans Pegass'
   title: Maintenance
+  pegass: 'Mettre à jour la base de données en se basant sur les fichiers de la DSI.'
+  pegass_started: 'Synchronisation lancée, cela va prendre du temps.'
 manage_structures:
   action:
     title: Actions
@@ -689,10 +690,10 @@ manage_volunteers:
     redcall_user: 'Peut accéder à RedCall'
   search:
     button: Rechercher
-    include_hierarchy: 'Afficher les bénévoles des structures sous-jaçantes'
     label: 'Rechercher un bénévole (appuyez sur Entrée pour continuer)'
     only_enabled: 'Masquer les bénévoles desactivés'
     only_users: 'Afficher seulement les bénévoles pouvant utiliser RedCall'
+    include_hierarchy: 'Afficher les bénévoles des structures sous-jaçantes'
   title: 'Gestion des bénévoles'
   title_with_structure: 'Gestion des bénévoles de %name%'
 management:
@@ -723,6 +724,7 @@ message:
     type: email(s)
   sms:
     announcement: '%brand% %hours%h%mins%'
+    announcement_with_shortcut: '%brand% (%shortcut%) %hours%h%mins%'
     how_to_answer_multiple: 'Répondez avec les codes de votre choix séparés par un espace'
     how_to_answer_simple: 'Répondez avec le code de votre choix'
     how_to_answer_url: 'Répondez en suivant %url% ou en appelant le %number%'
@@ -899,6 +901,7 @@ structure:
     name: 'Nom de la structure'
     parent: 'Structure parente (optionnelle)'
     president: 'Président (optionnel)'
+    shortcut: 'Nom raccourci'
 title:
   campaigns: Déclenchements
   costs: Coûts
