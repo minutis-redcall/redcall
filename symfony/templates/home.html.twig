@@ -16,13 +16,13 @@
 {% block body %}
 
     <br/>
-    <div class="jumbotron text-center">
+    <div class="jumbotron shadow p-3 mb-5 rounded text-center">
 
         {% if not app.user.structures.count %}
 
             <div class="row">
 
-                <div class="col-md-12 jumbotron">
+                <div class="col-md-12 jumbotron shadow p-3 mb-5 rounded">
 
                     <h3>{{ 'campaign.no_structures.title'|trans }}</h3>
 
