@@ -451,7 +451,6 @@ form:
       answers: 'Possible responses'
       back: Back
       body: Body
-      shortcut: 'Structure shortcut to render on SMS (if volunteer is tied to min. 2 structures)'
       cost: 'Message length multiplies its cost by:'
       language: 'In which language is written your message?'
       length: 'Message length:'
@@ -473,6 +472,7 @@ form:
       type_email: 'Message sent by email'
       type_sms: 'Emergency message sent through SMS'
       volunteers: Audience
+      shortcut: 'Structure shortcut to render on SMS (if volunteer is tied to min. 2 structures)'
     nivols_search: 'Copy/paste a list of nivols'
     nivols_separator: 'You can use any separator you want.'
     sms: SMS
@@ -537,6 +537,8 @@ maintenance:
   modal:
     for_dev_only: 'This fonctionnality is for developer only.'
     refresh_button: 'Refresh the datas'
+  pegass: 'Synchronize RedCall and DSI files entirely.'
+  pegass_started: 'Synchronize launched, it will take a while.'
   refresh: 'Synchronize RedCall and Pegass databases entirely'
   refresh_started: 'Synchronize launched, it will take a while.'
   search:
@@ -548,8 +550,6 @@ maintenance:
     notmatch: 'Expression does not match this document.'
     title: 'Advanced nivols search in Pegass'
   title: Maintenance
-  pegass: 'Synchronize RedCall and DSI files entirely.'
-  pegass_started: 'Synchronize launched, it will take a while.'
 manage_structures:
   action:
     title: Actions
@@ -690,10 +690,10 @@ manage_volunteers:
     redcall_user: 'Has access to RedCall'
   search:
     button: Rechercher
+    include_hierarchy: 'Include volunteers of underlying structures'
     label: 'Search for a volunteer (press Enter to continue)'
     only_enabled: 'Hide disabled volunteers'
     only_users: 'Only show volunteers having RedCall access'
-    include_hierarchy: 'Include volunteers of underlying structures'
   title: 'Manage volunteers'
   title_with_structure: 'Manage volunteers from %name%'
 management:
@@ -724,12 +724,12 @@ message:
     type: email(s)
   sms:
     announcement: '%brand% at %hours%h%mins%:'
-    announcement_with_shortcut: '%brand% (%shortcut%) %hours%h%mins%'
     how_to_answer_multiple: 'Reply by giving your choice(s) code(s), separated by a space.'
     how_to_answer_simple: 'Reply by giving your choice code.'
     how_to_answer_url: 'Answer by following %url% or by calling %number%'
     how_to_answer_url_only: 'Answer by following %url%'
     type: message(s)
+    announcement_with_shortcut: '%brand% (%shortcut%) %hours%h%mins%'
 minutis:
   back: 'Go back to Minutis'
   open: 'Open in Minutis'

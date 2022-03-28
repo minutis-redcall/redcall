@@ -9,11 +9,11 @@
 
     <div class="h3">{{ 'form.communication.fields.message'|trans }}</div>
 
+    {{ form_row(form.language) }}
+
     <div class="{{ form.shortcut.vars.choices|length == 0 ? 'd-none' : '' }}">
         {{ form_row(form.shortcut) }}
     </div>
-
-    {{ form_row(form.language) }}
 
     {{ form_label(form.message) }}
 
