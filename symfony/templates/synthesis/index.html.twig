@@ -1,0 +1,33 @@
+{% extends 'synthesis/base.html.twig' %}
+
+{% block content %}
+
+    <style>
+        p {
+            color: black;
+        }
+    </style>
+
+    <div class="card shadow p-3 mb-5 bg-white rounded">
+        <div class="card-header">
+            <div class="card-title">
+                {{ campaign.label }}
+            </div>
+        </div>
+        <div class="card-body">
+            <div id="content">
+                content
+            </div>
+
+            <hr/>
+
+            <div id="choices">
+            </div>
+        </div>
+        <div class="card-footer">
+            footer
+        </div>
+    </div>
+
+{% endblock %}
+

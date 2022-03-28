@@ -8,7 +8,7 @@
         }
     </style>
 
-    <div class="card">
+    <div class="card shadow p-3 mb-5 bg-white rounded">
         <div class="card-header">
             <div class="card-title">
                 {{ 'campaign_status.communication_short_title'|trans({'%date%': communication.createdAt|date('d/m/Y'), '%time%': communication.createdAt|date('H:i')}, null, language.locale) }}

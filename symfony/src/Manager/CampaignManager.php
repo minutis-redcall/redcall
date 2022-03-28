@@ -10,6 +10,7 @@ use App\Entity\User;
 use App\Entity\Volunteer;
 use App\Form\Model\Campaign as CampaignModel;
 use App\Repository\CampaignRepository;
+use App\Tools\Random;
 use Bundles\PasswordLoginBundle\Entity\AbstractUser;
 use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
@@ -76,10 +77,15 @@ class CampaignManager
             }
         }
 
+        do {
+            $code = Random::generate(CampaignRepository::CODE_SIZE);
+        } while ($this->campaignRepository->findOneByCode($code));
+
         $campaignEntity = new CampaignEntity();
         $campaignEntity
             ->setVolunteer($volunteer)
             ->setPlatform($volunteer->getPlatform())
+            ->setCode($code)
             ->setLabel($campaignModel->label)
             ->setType($campaignModel->type)
             ->setNotes($campaignModel->notes)
@@ -243,5 +249,10 @@ class CampaignManager
     public function getCampaignAudience(CampaignEntity $campaign) : array
     {
         return $this->campaignRepository->getCampaignAudience($campaign);
+    }
+
+    public function findOneByCode(string $code) : ?Campaign
+    {
+        return $this->campaignRepository->findOneByCode($code);
     }
 }

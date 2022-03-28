@@ -74,6 +74,7 @@ security:
     - { path: '^/locale', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
 
     # Links contained in SMS should be publicly available
+    - { path: '^/syn', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
     - { path: '^/msg', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
     - { path: '^/geo', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
 
