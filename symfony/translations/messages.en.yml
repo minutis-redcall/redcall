@@ -463,6 +463,7 @@ form:
       response_title: Responses
       selection: 'Selection:'
       selection_count: volunteers
+      shortcut: 'Structure shortcut to render on SMS (if volunteer is tied to min. 2 structures)'
       structures: 'Structure(s) to call'
       subject: Subject
       submit: Send
@@ -472,7 +473,6 @@ form:
       type_email: 'Message sent by email'
       type_sms: 'Emergency message sent through SMS'
       volunteers: Audience
-      shortcut: 'Structure shortcut to render on SMS (if volunteer is tied to min. 2 structures)'
     nivols_search: 'Copy/paste a list of nivols'
     nivols_separator: 'You can use any separator you want.'
     sms: SMS
@@ -724,12 +724,12 @@ message:
     type: email(s)
   sms:
     announcement: '%brand% at %hours%h%mins%:'
+    announcement_with_shortcut: '%brand% (%shortcut%) %hours%h%mins%'
     how_to_answer_multiple: 'Reply by giving your choice(s) code(s), separated by a space.'
     how_to_answer_simple: 'Reply by giving your choice code.'
     how_to_answer_url: 'Answer by following %url% or by calling %number%'
     how_to_answer_url_only: 'Answer by following %url%'
     type: message(s)
-    announcement_with_shortcut: '%brand% (%shortcut%) %hours%h%mins%'
 minutis:
   back: 'Go back to Minutis'
   open: 'Open in Minutis'
@@ -914,5 +914,6 @@ synthesis:
   manage: 'In order to manage the trigger,'
   connect: 'connect to RedCall'
   choice: '%choice%/%total% (%percent%%)'
-  sms: 'You can follow your trigger by clicking here: %url%'
-
+  email:
+    subject: 'Your trigger "%label%"'
+    content: 'You can follow your trigger by clicking here: %url%'

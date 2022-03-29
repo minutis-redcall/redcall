@@ -15,6 +15,7 @@
         {% for message in messages %}
 
             <h3>{{ message.createdAt|date('d/m/Y H:i') }}</h3>
+            <h4>{{ message.subject }}</h4>
 
             <div style="padding:10px;" class="email-body">
                 {% set body = message.body|replace({'cid:logo':asset('email.png')}) %}

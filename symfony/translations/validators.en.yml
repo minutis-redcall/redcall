@@ -20,13 +20,13 @@ form:
     errors:
       call_multiple: 'Multiple answers are not possible on phone calls.'
       email_geolocation: 'No possible geo location when message sent by email.'
+      invalid_shortcut: 'This shortcut does not exist.'
       no_subject: 'You should provide a subject to the email'
       prefix_already_used: 'Prefix "{{ string }}" is already used by a communication, in an active campaign.'
       too_large_call: 'This voice call is too long.'
       too_large_choice: 'Length of one of the answer is too long.'
       too_large_email: 'This email is too long.'
       too_large_sms: 'This SMS is too long.'
-      invalid_shortcut: 'This shortcut does not exist.'
   operation:
     does_not_exist: 'This operation cannot be found on Minutis.'
   phone_card:
