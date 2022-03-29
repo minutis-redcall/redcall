@@ -6,9 +6,14 @@
 {% set max_length_sms = constant('App\\Entity\\Message::MAX_LENGTH_SMS') %}
 
 <div id="message-container">
+
     <div class="h3">{{ 'form.communication.fields.message'|trans }}</div>
 
     {{ form_row(form.language) }}
+
+    <div class="{{ form.shortcut.vars.choices|length == 0 ? 'd-none' : '' }}">
+        {{ form_row(form.shortcut) }}
+    </div>
 
     {{ form_label(form.message) }}
 

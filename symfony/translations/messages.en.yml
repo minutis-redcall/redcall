@@ -463,6 +463,7 @@ form:
       response_title: Responses
       selection: 'Selection:'
       selection_count: volunteers
+      shortcut: 'Structure shortcut to render on SMS (if volunteer is tied to min. 2 structures)'
       structures: 'Structure(s) to call'
       subject: Subject
       submit: Send
@@ -536,10 +537,10 @@ maintenance:
   modal:
     for_dev_only: 'This fonctionnality is for developer only.'
     refresh_button: 'Refresh the datas'
-  refresh: 'Synchronize RedCall and Pegass databases entirely'
-  refresh_started: 'Synchronize launched, it will take a while.'
   pegass: 'Synchronize RedCall and DSI files entirely.'
   pegass_started: 'Synchronize launched, it will take a while.'
+  refresh: 'Synchronize RedCall and Pegass databases entirely'
+  refresh_started: 'Synchronize launched, it will take a while.'
   search:
     description: 'This tool is made to help you build the right xpath search expression.'
     expression: 'Enter the XPath expression to match your nivol data.'
@@ -723,6 +724,7 @@ message:
     type: email(s)
   sms:
     announcement: '%brand% at %hours%h%mins%:'
+    announcement_with_shortcut: '%brand% (%shortcut%) %hours%h%mins%'
     how_to_answer_multiple: 'Reply by giving your choice(s) code(s), separated by a space.'
     how_to_answer_simple: 'Reply by giving your choice code.'
     how_to_answer_url: 'Answer by following %url% or by calling %number%'
@@ -899,7 +901,19 @@ structure:
     name: 'Structure name'
     parent: 'Optional parent structure'
     president: 'Optional president'
+    shortcut: 'Shortened name'
 title:
   campaigns: Campaigns
   costs: Costs
   messages: Messages
+synthesis:
+  button: Synthesis
+  answer: 'Response "%choice%"'
+  other: 'Other response'
+  none: 'No response'
+  manage: 'In order to manage the trigger,'
+  connect: 'connect to RedCall'
+  choice: '%choice%/%total% (%percent%%)'
+  email:
+    subject: 'Your trigger "%label%"'
+    content: 'You can follow your trigger by clicking here: %url%'

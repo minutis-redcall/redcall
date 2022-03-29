@@ -29,6 +29,10 @@ class StructureType extends AbstractType
             ->add('name', TextType::class, [
                 'label' => 'structure.form.name',
             ])
+            ->add('shortcut', TextType::class, [
+                'required' => false,
+                'label'    => 'structure.form.shortcut',
+            ])
             ->add('parentStructure', StructureWidgetType::class, [
                 'required' => false,
                 'label'    => 'structure.form.parent',

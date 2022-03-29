@@ -85,11 +85,20 @@ class MessageFormatter
             $message->getCommunication()
         );
 
-        $contentParts[] = $this->translator->trans('message.sms.announcement', [
-            '%brand%' => mb_strtoupper($language->getBrand()),
-            '%hours%' => date('H'),
-            '%mins%'  => date('i'),
-        ], null, $language->getLocale());
+        if ($message->getCommunication()->getShortcut() && $message->getVolunteer()->needsShortcutInMessages()) {
+            $contentParts[] = $this->translator->trans('message.sms.announcement_with_shortcut', [
+                '%brand%'    => mb_strtoupper($language->getBrand()),
+                '%shortcut%' => $message->getCommunication()->getShortcut(),
+                '%hours%'    => date('H'),
+                '%mins%'     => date('i'),
+            ], null, $language->getLocale());
+        } else {
+            $contentParts[] = $this->translator->trans('message.sms.announcement', [
+                '%brand%' => mb_strtoupper($language->getBrand()),
+                '%hours%' => date('H'),
+                '%mins%'  => date('i'),
+            ], null, $language->getLocale());
+        }
 
         $contentParts[] = $communication->getBody();
 

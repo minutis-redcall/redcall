@@ -7,14 +7,7 @@
 
     <br/>
 
-    <div class="text-right h4">
-        <span class="badge-pill badge-dark">
-            {{ message.volunteer.firstName }}
-            {{ message.volunteer.lastName[:1] }}.
-        </span>
-    </div>
-
-    {% if message.communication.campaign.active %}
+    {% if campaign.active %}
 
         {% block content %}{% endblock %}
 

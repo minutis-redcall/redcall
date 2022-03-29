@@ -463,6 +463,7 @@ form:
       response_title: Réponses
       selection: 'Sélection:'
       selection_count: bénévoles
+      shortcut: 'Raccourci de la structure indiqué dans le SMS (si le bénévole est rattaché à au moins 2 structures)'
       structures: 'Structure(s) à déclencher'
       subject: Sujet
       submit: Envoyer
@@ -536,10 +537,10 @@ maintenance:
   modal:
     for_dev_only: 'Cette fonctionnalité est destinée aux développeurs uniquement, car cette action n''aura aucun effet sans changement dans la logique d''import Pegass. La resynchronisation Pegass est faite lorsqu''il y a un changement important dans le code qui change la manière d''importer un bénévole, par exemple si l''on souhaite importer de nouvelles compétences.'
     refresh_button: 'Rafraichir les données'
-  refresh: 'Synchroniser entièrement la base de données RedCall avec celle de Pegass'
-  refresh_started: 'Synchronisation lancée, cela va prendre du temps.'
   pegass: 'Mettre à jour la base de données en se basant sur les fichiers de la DSI.'
   pegass_started: 'Synchronisation lancée, cela va prendre du temps.'
+  refresh: 'Synchroniser entièrement la base de données RedCall avec celle de Pegass'
+  refresh_started: 'Synchronisation lancée, cela va prendre du temps.'
   search:
     description: 'Cet outil vous aide à créer la bonne syntaxe XPath de recherche de nivols.'
     expression: 'Entrez l''expression XPath à tester'
@@ -723,6 +724,7 @@ message:
     type: email(s)
   sms:
     announcement: '%brand% %hours%h%mins%'
+    announcement_with_shortcut: '%brand% (%shortcut%) %hours%h%mins%'
     how_to_answer_multiple: 'Répondez avec les codes de votre choix séparés par un espace'
     how_to_answer_simple: 'Répondez avec le code de votre choix'
     how_to_answer_url: 'Répondez en suivant %url% ou en appelant le %number%'
@@ -899,7 +901,19 @@ structure:
     name: 'Nom de la structure'
     parent: 'Structure parente (optionnelle)'
     president: 'Président (optionnel)'
+    shortcut: 'Nom raccourci'
 title:
   campaigns: Déclenchements
   costs: Coûts
   messages: Messages
+synthesis:
+  button: Synthèse
+  answer: 'Réponse "%choice%"'
+  other: 'Autre réponse'
+  none: 'Pas de réponse'
+  manage: 'Afin de gérer ce déclenchement,'
+  connect: 'connectez-vous à RedCall'
+  choice: '%choice%/%total% (%percent%%)'
+  email:
+    subject: 'Votre déclenchement "%label%"'
+    content: 'Vous pouvez suivre votre déclenchement en suivant ce lien: %url%'

@@ -9,10 +9,15 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\CampaignRepository")
- * @ORM\Table(indexes={
- *     @ORM\Index(name="platformx", columns={"platform"}),
- *     @ORM\Index(name="expires_atx", columns={"expires_at"})
- * })
+ * @ORM\Table(
+ *     indexes={
+ *         @ORM\Index(name="platformx", columns={"platform"}),
+ *         @ORM\Index(name="expires_atx", columns={"expires_at"})
+ *     },
+ *     uniqueConstraints={
+ *         @ORM\UniqueConstraint(name="codex", columns={"code"})
+ *     }
+ * )
  */
 class Campaign
 {
@@ -57,6 +62,13 @@ class Campaign
      * @ORM\Column(type="string", length=5)
      */
     private $platform;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="binary", length=8, nullable=true)
+     */
+    private $code;
 
     /**
      * @var string
@@ -138,6 +150,22 @@ class Campaign
     public function setPlatform(string $platform) : Campaign
     {
         $this->platform = $platform;
+
+        return $this;
+    }
+
+    public function getCode() : ?string
+    {
+        if (gettype($this->code) === 'resource') {
+            $this->code = stream_get_contents($this->code);
+        }
+
+        return $this->code;
+    }
+
+    public function setCode(?string $code) : Campaign
+    {
+        $this->code = $code;
 
         return $this;
     }

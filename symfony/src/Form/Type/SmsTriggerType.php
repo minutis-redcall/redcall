@@ -3,25 +3,62 @@
 namespace App\Form\Type;
 
 use App\Entity\Choice;
+use App\Entity\User;
 use App\Form\Model\SmsTrigger;
+use App\Security\Helper\Security;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Callback;
+use Symfony\Component\Validator\Constraints\Choice as ChoiceConstraint;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 class SmsTriggerType extends AbstractType
 {
+    /**
+     * @var Security
+     */
+    private $security;
+
+    public function __construct(Security $security)
+    {
+        $this->security = $security;
+    }
+
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         parent::buildForm($builder, $options);
 
+        /** @var User $user */
+        $user      = $this->security->getUser();
+        $shortcuts = array_combine($user->getStructuresShortcuts(), $user->getStructuresShortcuts());
+
         $builder
             ->add('audience', AudienceType::class)
             ->add('language', LanguageType::class)
+            ->add('shortcut', ChoiceType::class, [
+                'label'       => 'form.communication.fields.shortcut',
+                'choices'     => $shortcuts,
+                'required'    => false,
+                'data'        => $shortcuts ? reset($shortcuts) : null,
+                'constraints' => [
+                    new ChoiceConstraint(['choices' => $shortcuts]),
+                    new Callback(function ($value, ExecutionContextInterface $context, $payload) use ($shortcuts) {
+                        if (null !== $value && !in_array($value, $shortcuts)) {
+                            $context
+                                ->buildViolation('')
+                                ->atPath('shortcut')
+                                ->addViolation();
+                        }
+                    }),
+                ],
+            ])
             ->add('message', TextareaType::class, [
                 'label'    => 'form.communication.fields.body',
                 'required' => false,

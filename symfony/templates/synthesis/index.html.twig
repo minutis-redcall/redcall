@@ -1,0 +1,49 @@
+{% extends 'synthesis/base.html.twig' %}
+
+{% block content %}
+
+    <style>
+        p {
+            color: black;
+        }
+    </style>
+
+    <div class="card shadow p-3 mb-5 bg-white rounded">
+        <div class="card-header">
+            <div class="card-title h3">
+                {{ campaign.label }}
+                <span class="badge badge-pill badge-dark float-right">{{ campaign.createdAt|date('d/m/Y') }} </span>
+            </div>
+        </div>
+        <div class="card-body h5">
+
+            <div id="communications">
+                {{ include('synthesis/communications.html.twig', {campaign: campaign}) }}
+            </div>
+
+        </div>
+        <div class="card-footer">
+            {{ 'synthesis.manage'|trans }} <a href="{{ minutis_url }}">{{ 'synthesis.connect'|trans }}</a>.
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block javascripts %}
+
+    <script type="text/javascript">
+
+        setInterval(function () {
+            $.ajax('{{ path('synthesis_poll', {code: campaign.code}) }}', {
+                type: 'POST',
+                statusCode: {
+                    200: function (data) {
+                        $('#communications').html(data);
+                    },
+                }
+            });
+        }, 5000);
+
+    </script>
+
+{% endblock %}

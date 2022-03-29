@@ -1,4 +1,4 @@
-<div class="card">
+<div class="card shadow">
     <div class="card-header">
         <div class="card-title">
             <a href="{{ path('management_volunteers_list', {id: structure.id}) }}">
@@ -81,6 +81,9 @@
                     </div>
                 </div>
             </div>
+            {% if structure.shortcut %}
+                <div>{{ structure.shortcut }}</div>
+            {% endif %}
         </div>
     </div>
     <div class="card-body">

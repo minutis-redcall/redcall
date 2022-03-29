@@ -94,6 +94,11 @@ class Communication
     private $volunteer;
 
     /**
+     * @ORM\Column(type="string", length=32, nullable=true)
+     */
+    private $shortcut;
+
+    /**
      * @ORM\Column(type="text", nullable=true)
      */
     private $raw;
@@ -547,6 +552,18 @@ class Communication
         return $this;
     }
 
+    public function getShortcut() : ?string
+    {
+        return $this->shortcut;
+    }
+
+    public function setShortcut(?string $shortcut) : self
+    {
+        $this->shortcut = $shortcut;
+
+        return $this;
+    }
+
     /**
      * @param string $body
      *
@@ -752,5 +769,50 @@ class Communication
         $this->language = $language;
 
         return $this;
+    }
+
+    public function getMessageCount()
+    {
+        return count($this->messages);
+    }
+
+    public function getChoicePercentage(Choice $choice) : int
+    {
+        return round($choice->getCount() * 100 / $this->getMessageCount());
+    }
+
+    public function getInvalidAnswersPercentage() : int
+    {
+        return round($this->getInvalidAnswersCount() * 100 / $this->getMessageCount());
+    }
+
+    public function getNoAnswersPercentage() : int
+    {
+        return round($this->noAnswersCount() * 100 / $this->getMessageCount());
+    }
+
+    public function getLastAnswerTime(Choice $choice = null) : string
+    {
+        $lastAnswer = null;
+        foreach ($this->messages as $message) {
+            if (!$message->getLastAnswer()) {
+                continue;
+            }
+
+            if ($choice && !$message->getLastAnswer()->getChoices()->contains($choice)) {
+                continue;
+            }
+
+            if (!$lastAnswer) {
+                $lastAnswer = $message->getLastAnswer()->getReceivedAt();
+                continue;
+            }
+
+            if ($message->getLastAnswer()->getReceivedAt()->getTimestamp() > $lastAnswer->getTimestamp()) {
+                $lastAnswer = $message->getLastAnswer();
+            }
+        }
+
+        return $lastAnswer ? $lastAnswer->format('d/m H:i') : '--:--';
     }
 }

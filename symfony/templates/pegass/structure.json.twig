@@ -2,9 +2,9 @@
     "structure": {
         "id": "{{ structure.id }}",
         "typeStructure": "",
-        "libelle": "{{ structure.label }}",
-        "libelleCourt": "{{ structure.short_label }}",
-        "adresse": "{{ structure.address }}",
+        "libelle": "{{ structure.label|raw }}",
+        "libelleCourt": "{{ structure.short_label|raw }}",
+        "adresse": "{{ structure.address|raw }}",
         "telephone": "",
         "mail": "",
         "parent": {
@@ -13,12 +13,12 @@
         "structureMenantActiviteList": [
             {
                 "id": "{{ structure.id }}",
-                "libelle": "{{ structure.label }}"
+                "libelle": "{{ structure.label|raw }}"
             }
         ]
     },
     "responsible": {
-        "responsableId": "{{ structure.responsible }}"
+        "responsableId": "{{ structure.responsible|raw }}"
     },
     "volunteers": [
         {

@@ -1,0 +1,7 @@
+{% for communication in campaign.communications %}
+    {{ include('synthesis/communication.html.twig', {communication: communication}) }}
+
+    {% if not loop.last %}
+        <br/><br/>
+    {% endif %}
+{% endfor %}

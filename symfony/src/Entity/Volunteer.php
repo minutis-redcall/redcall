@@ -965,6 +965,12 @@ class Volunteer implements LockableInterface
         }
     }
 
+    public function needsShortcutInMessages() : bool
+    {
+        return $this->structures->count() > 1
+               || $this->user && $this->user->getStructures()->count() > 1;
+    }
+
     private function toName(string $name) : string
     {
         return preg_replace_callback('/[^\\s\-]+/ui', function (array $match) {

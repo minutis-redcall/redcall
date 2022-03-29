@@ -4,8 +4,8 @@
         "structure": {
             "id": "{{ volunteer.structure_id }}"
         },
-        "nom": "{{ volunteer.lastname }}",
-        "prenom": "{{ volunteer.firstname }}",
+        "nom": "{{ volunteer.lastname|raw }}",
+        "prenom": "{{ volunteer.firstname|raw }}",
         "actif": true,
         "mineur": "{{ volunteer.minor }}"
     },
@@ -34,7 +34,7 @@
             },
             "groupeAction": {
                 "id": "{{ action.group_action_id }}",
-                "libelle": "{{ action.group_action_label }}"
+                "libelle": "{{ action.group_action_label|raw }}"
             }
         }
         {% if not loop.last %},
@@ -45,7 +45,7 @@
         {% for skill in volunteer.skills %}
         {
             "id": "{{ skill.id }}",
-            "libelle": "{{ skill.label }}"
+            "libelle": "{{ skill.label|raw }}"
         }
         {% if not loop.last %},
         {% endif %}
@@ -57,7 +57,7 @@
             "formation": {
                 "id": "{{ training.id }}",
                 "code": "{{ training.code }}",
-                "libelle": "{{ training.label }}"
+                "libelle": "{{ training.label|raw }}"
             },
             "dateObtention": "{{ training.got_at }}",
             "dateRecyclage": "{{ training.rec_at }}"
@@ -73,7 +73,7 @@
             "structure": {
                 "id": "{{ nomination.structure_id }}"
             },
-            "libelleLong": "{{ nomination.label }}",
+            "libelleLong": "{{ nomination.label|raw }}",
             "libelleCourt": "{{ nomination.code }}",
             "dateValidation": "{{ nomination.got_at }}"
         }

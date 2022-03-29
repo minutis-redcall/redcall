@@ -64,6 +64,14 @@ class Structure implements LockableInterface
     private $name;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=32, nullable=true)
+     * @Assert\Length(max="32")
+     */
+    private $shortcut;
+
+    /**
      * @var bool
      *
      * @ORM\Column(type="boolean")
@@ -189,6 +197,18 @@ class Structure implements LockableInterface
     public function setName(string $name) : self
     {
         $this->name = mb_strtoupper($name);
+
+        return $this;
+    }
+
+    public function getShortcut() : ?string
+    {
+        return $this->shortcut;
+    }
+
+    public function setShortcut(?string $shortcut) : Structure
+    {
+        $this->shortcut = $shortcut;
 
         return $this;
     }

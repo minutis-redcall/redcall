@@ -9,6 +9,11 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 abstract class BaseTrigger implements \JsonSerializable
 {
     /**
+     * @var string|null
+     */
+    protected $shortcut;
+
+    /**
      * @var string
      *
      * @Assert\Length(max=255, groups={"label_edition"})
@@ -73,6 +78,18 @@ abstract class BaseTrigger implements \JsonSerializable
     public function __construct()
     {
         $this->audience = AudienceType::createEmptyData([]);
+    }
+
+    public function getShortcut() : ?string
+    {
+        return $this->shortcut;
+    }
+
+    public function setShortcut(?string $shortcut) : BaseTrigger
+    {
+        $this->shortcut = $shortcut;
+
+        return $this;
     }
 
     public function getLabel() : string

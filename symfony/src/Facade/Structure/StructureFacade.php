@@ -47,6 +47,18 @@ class StructureFacade implements FacadeInterface
     protected $name;
 
     /**
+     * Structure name shortcut.
+     *
+     * The structure shortcut will be used in SMS in order for volunteers being tied
+     * to several structures to know from which one they are receiving the message.
+     *
+     * @Assert\Length(max = 32)
+     *
+     * @var string|null
+     */
+    protected $shortcut;
+
+    /**
      * Structure representative's external id.
      *
      * In the French Red Cross, every structure has a president, elected
@@ -66,6 +78,7 @@ class StructureFacade implements FacadeInterface
 
         $facade->setExternalId('demo-paris');
         $facade->setName('Paris');
+        $facade->setShortcut('75');
         $facade->setPresidentExternalId('demo-volunteer');
 
         return $facade;
@@ -103,6 +116,18 @@ class StructureFacade implements FacadeInterface
     public function setName(string $name) : StructureFacade
     {
         $this->name = $name;
+
+        return $this;
+    }
+
+    public function getShortcut() : ?string
+    {
+        return $this->shortcut;
+    }
+
+    public function setShortcut(?string $shortcut) : StructureFacade
+    {
+        $this->shortcut = $shortcut;
 
         return $this;
     }

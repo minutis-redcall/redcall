@@ -14,8 +14,6 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Constraints\Length;
 
 /**
- * Class MessageController
- *
  * WARNING: this controller is OUT of the security firewall.
  *
  * @Route(path="msg/", name="message_")

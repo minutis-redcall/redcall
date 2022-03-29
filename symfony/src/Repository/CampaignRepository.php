@@ -17,6 +17,8 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class CampaignRepository extends BaseRepository
 {
+    const CODE_SIZE = 8;
+
     /**
      * @var Security
      */

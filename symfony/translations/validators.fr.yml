@@ -20,6 +20,7 @@ form:
     errors:
       call_multiple: 'Les réponses multiples ne sont pas possibles par téléphone.'
       email_geolocation: 'Pas de géolocalisation possible lors d''un envoi par email.'
+      invalid_shortcut: 'Ce raccourci n''existe pas'
       no_subject: 'Vous devez définir un sujet au mail'
       prefix_already_used: 'Le préfixe "{{ string }}" est déjà utilisé dans une communication d''un déclenchement en cours.'
       too_large_call: 'Ce message vocal est trop long.'
