@@ -21,8 +21,11 @@ class Symfony implements EmailProvider
             ->to($to)
             ->subject($subject)
             ->text($textBody)
-            ->html($htmlBody)
-            ->embedFromPath(__DIR__.'/../../../public/email.png', 'logo');
+            ->html($htmlBody);
+
+        if (false !== strpos($htmlBody, 'cid:logo')) {
+            $email->embedFromPath(__DIR__.'/../../../public/email.png', 'logo');
+        }
 
         $this->mailer->send($email);
     }
