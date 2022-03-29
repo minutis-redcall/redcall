@@ -908,3 +908,11 @@ title:
   messages: Messages
 synthesis:
   button: Synthesis
+  answer: 'Response "%choice%"'
+  other: 'Other response'
+  none: 'No response'
+  manage: 'In order to manage the trigger,'
+  connect: 'connect to RedCall'
+  choice: '%choice%/%total% (%percent%%)'
+  sms: 'You can follow your trigger by clicking here: %url%'
+

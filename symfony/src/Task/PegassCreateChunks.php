@@ -396,6 +396,10 @@ class PegassCreateChunks implements TaskInterface
             $csvs[substr(basename($filename), 8, -13)] = $csv;
         }
 
+        array_walk_recursive($csvs, function (&$value) {
+            $value = str_replace('"', "'", $value);
+        });
+
         return $csvs;
     }
 }

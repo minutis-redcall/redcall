@@ -256,9 +256,11 @@ class RefreshManager
         }
 
         // Update internal email
-        foreach ($pegass->evaluate('contact') as $data) {
-            if ('MAILTRAV' === $data['moyenComId'] ?? false) {
-                $volunteer->setInternalEmail($data['libelle']);
+        if ($contact = $pegass->evaluate('contact')) {
+            foreach ($contact as $data) {
+                if ('MAILTRAV' === $data['moyenComId'] ?? false) {
+                    $volunteer->setInternalEmail($data['libelle']);
+                }
             }
         }
 

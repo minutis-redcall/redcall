@@ -35,7 +35,6 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -93,11 +92,6 @@ class VolunteersController extends BaseController
     private $platformManager;
 
     /**
-     * @var KernelInterface
-     */
-    private $kernel;
-
-    /**
      * @var TranslatorInterface
      */
     private $translator;
@@ -116,9 +110,9 @@ class VolunteersController extends BaseController
         AnswerManager $answerManager,
         PaginationManager $paginationManager,
         PlatformConfigManager $platformConfigManager,
-        KernelInterface $kernel,
         TranslatorInterface $translator,
-        Environment $templating)
+        Environment $templating,
+        SimpleProcessor $simpleProcessor)
     {
         $this->volunteerManager     = $volunteerManager;
         $this->structureManager     = $structureManager;
@@ -129,9 +123,9 @@ class VolunteersController extends BaseController
         $this->answerManager        = $answerManager;
         $this->paginationManager    = $paginationManager;
         $this->platformManager      = $platformConfigManager;
-        $this->kernel               = $kernel;
         $this->translator           = $translator;
         $this->templating           = $templating;
+        $this->simpleProcessor      = $simpleProcessor;
     }
 
     /**

@@ -176,8 +176,7 @@ class CommunicationController extends BaseController
     }
 
     /**
-     * @Route(path="campaign/{id}/long-polling", name="long_polling", requirements={"id" = "\d+", "olHash" =
-     *                                           "[0-9a-f]{40}"})
+     * @Route(path="campaign/{id}/long-polling", name="long_polling", requirements={"id" = "\d+"})
      * @IsGranted("CAMPAIGN_ACCESS", subject="campaign")
      */
     public function longPolling(Campaign $campaign, Request $request, TranslatorInterface $translator)

@@ -1,0 +1,57 @@
+{% if communication.choices|length > 0 %}
+
+    <div class="my-2">
+        <img src="{{ asset('email.png') }}" style="max-height: 25px;"/>
+        {{ communication.createdAt|date('d/m H:i') }}
+    </div>
+
+    <div style="background-color: #e9ecef;" class="p-3 text-monospace">
+        {{ communication.body|purify }}
+    </div>
+
+    {% if communication.choices|length %}
+        <table class="table">
+            <tbody>
+            {% for choice in communication.choices %}
+                <tr>
+                    <td class="w-50">{{ 'synthesis.answer'|trans({'%choice%': choice.label }) }}</td>
+                    <td class="w-25">
+                        {{ 'synthesis.choice'|trans({
+                            '%choice%': choice.count,
+                            '%total%': communication.messageCount,
+                            '%percent%': communication.choicePercentage(choice),
+                        }) }}
+                    </td>
+                    <td class="w-25">
+                        {{ communication.lastAnswerTime(choice) }}
+                    </td>
+                </tr>
+            {% endfor %}
+            <tr>
+                <td class="p-3 w-50">{{ 'synthesis.other'|trans }}</td>
+                <td class="p-3 w-25">
+                    {{ 'synthesis.choice'|trans({
+                        '%choice%': communication.invalidAnswersCount,
+                        '%total%': communication.messageCount,
+                        '%percent%': communication.invalidAnswersPercentage,
+                    }) }}
+                </td>
+                <td class="w-25">
+                    {{ communication.lastAnswerTime }}
+                </td>
+            </tr>
+            <tr>
+                <td class="p-3 w-50">{{ 'synthesis.none'|trans }}</td>
+                <td class="p-3 w-25">
+                    {{ 'synthesis.choice'|trans({
+                        '%choice%': communication.noAnswersCount,
+                        '%total%': communication.messageCount,
+                        '%percent%': communication.noAnswersPercentage,
+                    }) }}
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    {% endif %}
+
+{% endif %}

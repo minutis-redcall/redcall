@@ -6,8 +6,6 @@ use App\Base\BaseController;
 use App\Entity\Campaign;
 use Symfony\Component\Routing\Annotation\Route;
 
-//{{ campaign.code }}
-
 /**
  * WARNING: this controller is OUT of the security firewall.
  *
@@ -25,4 +23,13 @@ class SynthesisController extends BaseController
         ]);
     }
 
+    /**
+     * @Route(path="/poll", name="poll")
+     */
+    public function poll(Campaign $campaign)
+    {
+        return $this->render('synthesis/communications.html.twig', [
+            'campaign' => $campaign,
+        ]);
+    }
 }

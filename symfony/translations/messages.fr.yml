@@ -908,3 +908,10 @@ title:
   messages: Messages
 synthesis:
   button: Synthèse
+  answer: 'Réponse "%choice%"'
+  other: 'Autre réponse'
+  none: 'Pas de réponse'
+  manage: 'Afin de gérer ce déclenchement,'
+  connect: 'connectez-vous à RedCall'
+  choice: '%choice%/%total% (%percent%%)'
+  sms: 'Vous pouvez suivre votre déclenchement en suivant ce lien: %url%'
