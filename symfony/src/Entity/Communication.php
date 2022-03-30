@@ -793,26 +793,25 @@ class Communication
 
     public function getLastAnswerTime(Choice $choice = null) : string
     {
-        $lastAnswer = null;
+        $lastAnswerDate = null;
         foreach ($this->messages as $message) {
-            if (!$message->getLastAnswer()) {
+            if (!$answer = $message->getLastAnswer(true)) {
                 continue;
             }
 
-            if ($choice && !$message->getLastAnswer()->getChoices()->contains($choice)) {
+            if ($choice && !$answer->getChoices()->contains($choice)) {
                 continue;
             }
 
-            if (!$lastAnswer) {
-                $lastAnswer = $message->getLastAnswer()->getReceivedAt();
+            if (!$choice && $answer->isValid()) {
                 continue;
             }
 
-            if ($message->getLastAnswer()->getReceivedAt()->getTimestamp() > $lastAnswer->getTimestamp()) {
-                $lastAnswer = $message->getLastAnswer();
+            if (!$lastAnswerDate || $answer->getReceivedAt()->getTimestamp() > $lastAnswerDate->getTimestamp()) {
+                $lastAnswerDate = $answer->getReceivedAt();
             }
         }
 
-        return $lastAnswer ? $lastAnswer->format('d/m H:i') : '--:--';
+        return $lastAnswerDate ? $lastAnswerDate->format('d/m H:i') : '--:--';
     }
 }
