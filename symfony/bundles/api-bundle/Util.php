@@ -2,6 +2,8 @@
 
 namespace Bundles\ApiBundle;
 
+use App\Tools\Random;
+
 class Util
 {
     private const BASE         = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
@@ -9,13 +11,7 @@ class Util
 
     static public function generate(int $size, string $base = self::BASE) : string
     {
-        $code = '';
-
-        for ($i = 0; $i < $size; $i++) {
-            $code .= $base[mt_rand() % mb_strlen($base)];
-        }
-
-        return $code;
+        return Random::generate($size, $base);
     }
 
     static public function encrypt(string $cleartext, string $username) : string
