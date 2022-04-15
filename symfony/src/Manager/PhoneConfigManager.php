@@ -77,7 +77,8 @@ class PhoneConfigManager
             $row['outbound_call_enabled'],
             $row['outbound_call_number'],
             $row['outbound_sms_enabled'],
-            $row['outbound_sms_number'],
+            $row['outbound_sms_short'],
+            $row['outbound_sms_long'],
             $row['inbound_call_enabled'],
             $row['inbound_call_number'],
             $row['inbound_sms_enabled']

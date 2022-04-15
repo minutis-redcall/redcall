@@ -141,7 +141,7 @@ class CampaignManager
 
         $this->communicationManager->launchNewCommunication($campaignEntity, $communication, $processor);
 
-        if ($communication->getMessageCount() > 1) {
+        if ($communication->getMessageCount() > 1 && $volunteer->getEmail()) {
             $locale  = $this->platformManager->getLocale($volunteer->getPlatform());
             $url     = sprintf('%s%s', getenv('WEBSITE_URL'), $this->router->generate('synthesis_index', ['code' => $campaignEntity->getCode()]));
             $subject = $this->translator->trans('synthesis.email.subject', ['%label%' => $campaignEntity->getLabel()], null, $locale);
