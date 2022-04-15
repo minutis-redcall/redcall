@@ -672,6 +672,7 @@ manage_volunteers:
     phone_number: Téléphone
     phone_number_locked: 'Geler le nᵒ de téléphone *'
     phone_number_only_outbound: 'Le bénévole ne peut pas envoyer de réponses avec ce numéro'
+    phone_number_supports_short_code: 'Le bénévole peut recevoir des messages du numéro court'
     phone_number_optin: 'Disponible par téléphone et SMS'
     section_badges: 'Compétences & nominations'
     section_contact: 'Informations de contact'
