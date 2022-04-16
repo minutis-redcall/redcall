@@ -672,6 +672,7 @@ manage_volunteers:
     phone_number: 'Phone number'
     phone_number_locked: 'Locked phone number *'
     phone_number_only_outbound: 'Volunteer cannot reply using that phone number'
+    phone_number_supports_short_code: 'Volunteer can receive messages from the short code'
     phone_number_optin: 'Available by phone number'
     section_badges: 'Skills, interests and nominations'
     section_contact: 'Contact information'

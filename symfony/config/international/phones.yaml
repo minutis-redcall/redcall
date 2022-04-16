@@ -20,7 +20,8 @@ parameters:
       outbound_call_enabled: true
       outbound_call_number: '%env(TWILIO_FROM_LONG_FR)%'
       outbound_sms_enabled: true
-      outbound_sms_number: '%env(TWILIO_FROM_SHORT_FR)%'
+      outbound_sms_short: '%env(TWILIO_FROM_SHORT_FR)%'
+      outbound_sms_long: '%env(TWILIO_FROM_LONG_FR)%'
       inbound_call_enabled: true
       inbound_call_number: '%env(TWILIO_FROM_LONG_FR)%'
       inbound_sms_enabled: true
@@ -29,7 +30,8 @@ parameters:
       outbound_call_enabled: true
       outbound_call_number: '%env(TWILIO_FROM_LONG_GP)%'
       outbound_sms_enabled: true
-      outbound_sms_number: '%env(TWILIO_SENDER_ID_FR)%'
+      outbound_sms_short: '%env(TWILIO_SENDER_ID_FR)%'
+      outbound_sms_long: ~
       inbound_call_enabled: true
       inbound_call_number: '%env(TWILIO_FROM_LONG_GP)%'
       inbound_sms_enabled: false
@@ -38,7 +40,8 @@ parameters:
       outbound_call_enabled: true
       outbound_call_number: '%env(TWILIO_FROM_TOLL_FR)%'
       outbound_sms_enabled: true
-      outbound_sms_number: '%env(TWILIO_FROM_LONG_FR)%'
+      outbound_sms_short: ~
+      outbound_sms_long: '%env(TWILIO_FROM_LONG_FR)%'
       inbound_call_enabled: false
       inbound_call_number: ~
       inbound_sms_enabled: false
@@ -47,7 +50,8 @@ parameters:
       outbound_call_enabled: true
       outbound_call_number: '%env(TWILIO_FROM_LONG_MQ)%'
       outbound_sms_enabled: true
-      outbound_sms_number: '%env(TWILIO_SENDER_ID_FR)%'
+      outbound_sms_short: '%env(TWILIO_SENDER_ID_FR)%'
+      outbound_sms_long: ~
       inbound_call_enabled: true
       inbound_call_number: '%env(TWILIO_FROM_LONG_MQ)%'
       inbound_sms_enabled: false
@@ -56,7 +60,8 @@ parameters:
       outbound_call_enabled: true
       outbound_call_number: '%env(TWILIO_FROM_TOLL_FR)%'
       outbound_sms_enabled: true
-      outbound_sms_number: '%env(TWILIO_SENDER_ID_FR)%'
+      outbound_sms_short: '%env(TWILIO_SENDER_ID_FR)%'
+      outbound_sms_long: ~
       inbound_call_enabled: false
       inbound_call_number: ~
       inbound_sms_enabled: false
@@ -65,7 +70,8 @@ parameters:
       outbound_call_enabled: true
       outbound_call_number: '%env(TWILIO_FROM_TOLL_FR)%'
       outbound_sms_enabled: true
-      outbound_sms_number: '%env(TWILIO_SENDER_ID_FR)%'
+      outbound_sms_short: '%env(TWILIO_SENDER_ID_FR)%'
+      outbound_sms_long: ~
       inbound_call_enabled: false
       inbound_call_number: ~
       inbound_sms_enabled: false
@@ -74,7 +80,8 @@ parameters:
       outbound_call_enabled: true
       outbound_call_number: '%env(TWILIO_FROM_TOLL_FR)%'
       outbound_sms_enabled: true
-      outbound_sms_number: '%env(TWILIO_SENDER_ID_FR)%'
+      outbound_sms_short: '%env(TWILIO_SENDER_ID_FR)%'
+      outbound_sms_long: ~
       inbound_call_enabled: false
       inbound_call_number: ~
       inbound_sms_enabled: false
@@ -83,7 +90,8 @@ parameters:
       outbound_call_enabled: true
       outbound_call_number: '%env(TWILIO_FROM_TOLL_FR)%'
       outbound_sms_enabled: true
-      outbound_sms_number: '%env(TWILIO_SENDER_ID_FR)%'
+      outbound_sms_short: '%env(TWILIO_SENDER_ID_FR)%'
+      outbound_sms_long: ~
       inbound_call_enabled: false
       inbound_call_number: ~
       inbound_sms_enabled: false
@@ -92,7 +100,8 @@ parameters:
       outbound_call_enabled: true
       outbound_call_number: '%env(TWILIO_FROM_TOLL_FR)%'
       outbound_sms_enabled: true
-      outbound_sms_number: '%env(TWILIO_FROM_LONG_FR)%'
+      outbound_sms_short: ~
+      outbound_sms_long: '%env(TWILIO_FROM_LONG_FR)%'
       inbound_call_enabled: false
       inbound_call_number: ~
       inbound_sms_enabled: false
@@ -101,7 +110,8 @@ parameters:
       outbound_call_enabled: false
       outbound_call_number: ~
       outbound_sms_enabled: true
-      outbound_sms_number: '%env(TWILIO_FROM_LONG_FR)%'
+      outbound_sms_short: ~
+      outbound_sms_long: '%env(TWILIO_FROM_LONG_FR)%'
       inbound_call_enabled: false
       inbound_call_number: ~
       inbound_sms_enabled: false
@@ -110,7 +120,8 @@ parameters:
       outbound_call_enabled: false
       outbound_call_number: ~
       outbound_sms_enabled: true
-      outbound_sms_number: '%env(TWILIO_FROM_LONG_FR)%'
+      outbound_sms_short: ~
+      outbound_sms_long: '%env(TWILIO_FROM_LONG_FR)%'
       inbound_call_enabled: false
       inbound_call_number: ~
       inbound_sms_enabled: false
@@ -119,7 +130,8 @@ parameters:
       outbound_call_enabled: false
       outbound_call_number: ~
       outbound_sms_enabled: true
-      outbound_sms_number: '%env(TWILIO_FROM_LONG_FR)%'
+      outbound_sms_short: ~
+      outbound_sms_long: '%env(TWILIO_FROM_LONG_FR)%'
       inbound_call_enabled: false
       inbound_call_number: ~
       inbound_sms_enabled: false
@@ -128,7 +140,8 @@ parameters:
       outbound_call_enabled: true
       outbound_call_number: '%env(TWILIO_FROM_LONG_ES)%'
       outbound_sms_enabled: true
-      outbound_sms_number: '%env(TWILIO_FROM_LONG_ES)%'
+      outbound_sms_short: ~
+      outbound_sms_long: '%env(TWILIO_FROM_LONG_ES)%'
       inbound_call_enabled: true
       inbound_call_number: '%env(TWILIO_FROM_LONG_ES)%'
       inbound_sms_enabled: true

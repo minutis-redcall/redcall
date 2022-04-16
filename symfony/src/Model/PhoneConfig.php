@@ -2,6 +2,8 @@
 
 namespace App\Model;
 
+use App\Entity\Volunteer;
+
 class PhoneConfig
 {
     /**
@@ -27,7 +29,12 @@ class PhoneConfig
     /**
      * @var string|null
      */
-    private $outboundSmsNumber;
+    private $outboundSmsShort;
+
+    /**
+     * @var string|null
+     */
+    private $outboundSmsLong;
 
     /**
      * @var bool
@@ -48,7 +55,8 @@ class PhoneConfig
         bool $outboundCallEnabled,
         ?string $outboundCallNumber,
         bool $outboundSmsEnabled,
-        ?string $outboundSmsNumber,
+        ?string $outboundSmsShort,
+        ?string $outboundSmsLong,
         bool $inboundCallEnabled,
         ?string $inboundCallNumber,
         bool $inboundSmsEnabled)
@@ -57,7 +65,8 @@ class PhoneConfig
         $this->outboundCallEnabled = $outboundCallEnabled;
         $this->outboundCallNumber  = $outboundCallNumber;
         $this->outboundSmsEnabled  = $outboundSmsEnabled;
-        $this->outboundSmsNumber   = $outboundSmsNumber;
+        $this->outboundSmsShort    = $outboundSmsShort;
+        $this->outboundSmsLong     = $outboundSmsLong;
         $this->inboundCallEnabled  = $inboundCallEnabled;
         $this->inboundCallNumber   = $inboundCallNumber;
         $this->inboundSmsEnabled   = $inboundSmsEnabled;
@@ -83,9 +92,14 @@ class PhoneConfig
         return $this->outboundSmsEnabled;
     }
 
-    public function getOutboundSmsNumber() : ?string
+    public function getOutboundSmsShort() : ?string
     {
-        return $this->outboundSmsNumber;
+        return $this->outboundSmsShort;
+    }
+
+    public function getOutboundSmsLong() : ?string
+    {
+        return $this->outboundSmsLong;
     }
 
     public function isInboundCallEnabled() : bool
@@ -101,5 +115,19 @@ class PhoneConfig
     public function isInboundSmsEnabled() : bool
     {
         return $this->inboundSmsEnabled;
+    }
+
+    public function getOutboutSmsSenderByVolunteer(Volunteer $volunteer) : string
+    {
+        if ($this->getOutboundSmsShort()) {
+            $sender = $this->getOutboundSmsShort();
+            if (!$volunteer->isSupportsShortCode() && $this->getOutboundSmsLong()) {
+                $sender = $this->getOutboundSmsLong();
+            }
+        } else {
+            $sender = $this->getOutboundSmsLong();
+        }
+
+        return $sender;
     }
 }
