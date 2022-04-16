@@ -240,12 +240,12 @@ audience:
   volunteer_lists: 'Listes préremplies de bénévoles'
 backlinks:
   blablacar: 'Parrainé par'
+  feedback: 'Partagez vos idées afin d''améliorer RedCall'
   minutis: 'Développé par les bénévoles'
+  new: Nouveau!
   phpstorm: 'Développé avec'
   phrase: 'Traductions grâce à'
   redcross: 'de Minutis'
-  new: Nouveau!
-  feedback: 'Partagez vos idées afin d''améliorer RedCall'
 base:
   actions: Actions
   button:
@@ -674,7 +674,6 @@ manage_volunteers:
     phone_number: Téléphone
     phone_number_locked: 'Geler le nᵒ de téléphone *'
     phone_number_only_outbound: 'Le bénévole ne peut pas envoyer de réponses avec ce numéro'
-    phone_number_supports_short_code: 'Le bénévole peut recevoir des messages du numéro court'
     phone_number_optin: 'Disponible par téléphone et SMS'
     section_badges: 'Compétences & nominations'
     section_contact: 'Informations de contact'
@@ -685,6 +684,7 @@ manage_volunteers:
     update: 'Mettre à jour un bénévole'
     updated: 'Le bénévole a correctement été modifié.'
     visible_badges: 'Badges principaux'
+    phone_number_supports_short_code: 'Le bénévole peut recevoir des messages du numéro court'
     add: 'Créer un nouveau bénévole'
     optout_until: 'Bénévole indisponible jusqu''au...'
   others: 'et %count% autre(s)'
