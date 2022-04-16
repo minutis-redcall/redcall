@@ -244,6 +244,8 @@ backlinks:
   phpstorm: 'Developed with'
   phrase: 'Translated with'
   redcross: 'French Red Cross'
+  new: New!
+  feedback: 'Help us improve RedCall!'
 base:
   actions: Actions
   button:
@@ -902,18 +904,18 @@ structure:
     parent: 'Optional parent structure'
     president: 'Optional president'
     shortcut: 'Shortened name'
+synthesis:
+  answer: 'Response "%choice%"'
+  button: Synthesis
+  choice: '%choice%/%total% (%percent%%)'
+  connect: 'connect to RedCall'
+  email:
+    content: 'You can follow your trigger by clicking here: %url%'
+    subject: 'Your trigger "%label%"'
+  manage: 'In order to manage the trigger,'
+  none: 'No response'
+  other: 'Other response'
 title:
   campaigns: Campaigns
   costs: Costs
   messages: Messages
-synthesis:
-  button: Synthesis
-  answer: 'Response "%choice%"'
-  other: 'Other response'
-  none: 'No response'
-  manage: 'In order to manage the trigger,'
-  connect: 'connect to RedCall'
-  choice: '%choice%/%total% (%percent%%)'
-  email:
-    subject: 'Your trigger "%label%"'
-    content: 'You can follow your trigger by clicking here: %url%'

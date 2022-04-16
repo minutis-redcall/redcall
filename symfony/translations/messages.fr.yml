@@ -244,6 +244,8 @@ backlinks:
   phpstorm: 'Développé avec'
   phrase: 'Traductions grâce à'
   redcross: 'de Minutis'
+  new: Nouveau!
+  feedback: 'Partagez vos idées afin d''améliorer RedCall'
 base:
   actions: Actions
   button:
@@ -902,18 +904,18 @@ structure:
     parent: 'Structure parente (optionnelle)'
     president: 'Président (optionnel)'
     shortcut: 'Nom raccourci'
+synthesis:
+  answer: 'Réponse "%choice%"'
+  button: Synthèse
+  choice: '%choice%/%total% (%percent%%)'
+  connect: 'connectez-vous à RedCall'
+  email:
+    content: 'Vous pouvez suivre votre déclenchement en suivant ce lien: %url%'
+    subject: 'Votre déclenchement "%label%"'
+  manage: 'Afin de gérer ce déclenchement,'
+  none: 'Pas de réponse'
+  other: 'Autre réponse'
 title:
   campaigns: Déclenchements
   costs: Coûts
   messages: Messages
-synthesis:
-  button: Synthèse
-  answer: 'Réponse "%choice%"'
-  other: 'Autre réponse'
-  none: 'Pas de réponse'
-  manage: 'Afin de gérer ce déclenchement,'
-  connect: 'connectez-vous à RedCall'
-  choice: '%choice%/%total% (%percent%%)'
-  email:
-    subject: 'Votre déclenchement "%label%"'
-    content: 'Vous pouvez suivre votre déclenchement en suivant ce lien: %url%'

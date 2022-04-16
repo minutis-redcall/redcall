@@ -29,6 +29,7 @@
     "google/cloud-error-reporting": "^0.15.0",
     "google/cloud-logging": "^1.18",
     "guzzlehttp/guzzle": "^6.3",
+    "league/commonmark": "^1.6",
     "league/csv": "^9.1",
     "mpdf/mpdf": "^8.0",
     "myclabs/php-enum": "^1.7",
@@ -64,6 +65,7 @@
     "symfony/yaml": "^5",
     "twig/extra-bundle": "^3.3",
     "twig/intl-extra": "^3.0",
+    "twig/markdown-extra": "^3.3",
     "twig/string-extra": "^3.3",
     "twilio/sdk": "^6.0"
   },
@@ -87,7 +89,10 @@
     "platform": {
       "php": "7.3"
     },
-    "sort-packages": true
+    "sort-packages": true,
+    "allow-plugins": {
+      "symfony/flex": true
+    }
   },
   "autoload": {
     "psr-4": {
