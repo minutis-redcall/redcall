@@ -129,7 +129,7 @@ class Sender
 
         try {
             $messageId = $this->SMSProvider->send(
-                $country->getOutboutSmsSenderByVolunteer(),
+                $country->getOutboutSmsSenderByVolunteer($volunteer),
                 $volunteer->getPhoneNumber(),
                 $this->formatter->formatSMSContent($message),
                 ['message_id' => $message->getId()]
