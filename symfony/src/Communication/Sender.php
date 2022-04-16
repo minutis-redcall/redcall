@@ -123,15 +123,13 @@ class Sender
         $volunteer = $message->getVolunteer();
         $country   = $this->phoneConfigManager->getPhoneConfigForVolunteer($volunteer);
 
-        if (!$country || !$country->isOutboundSmsEnabled() || !$country->getOutboundSmsNumber()) {
+        if (!$country || !$country->isOutboundSmsEnabled() || !$country->getOutboundSmsShort()) {
             return;
         }
 
-        $sender = $country->getOutboundSmsNumber();
-
         try {
             $messageId = $this->SMSProvider->send(
-                $sender,
+                $country->getOutboutSmsSenderByVolunteer($volunteer),
                 $volunteer->getPhoneNumber(),
                 $this->formatter->formatSMSContent($message),
                 ['message_id' => $message->getId()]

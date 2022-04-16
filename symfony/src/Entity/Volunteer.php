@@ -190,6 +190,13 @@ class Volunteer implements LockableInterface
     private $onlyOutboundSms = false;
 
     /**
+     * @var bool
+     *
+     * @ORM\Column(type="boolean", options={"default" : 1})
+     */
+    private $supportsShortCode = true;
+
+    /**
      * @ORM\ManyToMany(targetEntity=Badge::class, inversedBy="volunteers")
      */
     private $badges;
@@ -720,6 +727,18 @@ class Volunteer implements LockableInterface
     public function setOnlyOutboundSms(bool $onlyOutboundSms) : Volunteer
     {
         $this->onlyOutboundSms = $onlyOutboundSms;
+
+        return $this;
+    }
+
+    public function isSupportsShortCode() : bool
+    {
+        return $this->supportsShortCode;
+    }
+
+    public function setSupportsShortCode(bool $supportsShortCode) : Volunteer
+    {
+        $this->supportsShortCode = $supportsShortCode;
 
         return $this;
     }
