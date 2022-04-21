@@ -341,6 +341,12 @@ class RefreshManager
                     break;
                 case 'MAILTRAV':
                     $volunteer->setInternalEmail($data['libelle']);
+
+                    // In case volunteer has no preferred emails, we'll use the internal email instead
+                    if (!$volunteer->isEmailLocked() && !$volunteer->getEmail()) {
+                        $volunteer->setEmail($data['libelle']);
+                    }
+
                     break;
                 case 'POR':
                     if (!$volunteer->isPhoneNumberLocked()) {
