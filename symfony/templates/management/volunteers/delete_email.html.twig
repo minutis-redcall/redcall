@@ -22,13 +22,14 @@
 
 <p>
     {{ 'manage_volunteers.anonymize.campaign.email.who'|trans }}
-    <ul>
-        <li>{{ 'manage_volunteers.anonymize.campaign.email.firstname'|trans({'%firstname%': volunteer.firstName}) }}</li>
-        <li>{{ 'manage_volunteers.anonymize.campaign.email.lastname'|trans({'%lastname%': volunteer.lastName}) }}</li>
-        <li>{{ 'manage_volunteers.anonymize.campaign.email.email'|trans({'%email%': volunteer.email}) }}</li>
-        <li>{{ 'manage_volunteers.anonymize.campaign.email.phone'|trans({'%phone%': volunteer.phoneNumber}) }}</li>
-        <li>{{ 'manage_volunteers.anonymize.campaign.email.nivol'|trans({'%nivol%': volunteer.nivol}) }}</li>
-    </ul>
+<ul>
+    <li>{{ 'manage_volunteers.anonymize.campaign.email.firstname'|trans({'%firstname%': volunteer.firstName}) }}</li>
+    <li>{{ 'manage_volunteers.anonymize.campaign.email.lastname'|trans({'%lastname%': volunteer.lastName}) }}</li>
+    <li>{{ 'manage_volunteers.anonymize.campaign.email.email'|trans({'%email%': volunteer.email}) }}</li>
+    <li>{{ 'manage_volunteers.anonymize.campaign.email.phone'|trans({'%phone%': volunteer.phoneNumber}) }}</li>
+    <li>{{ 'manage_volunteers.anonymize.campaign.email.nivol'|trans({'%nivol%': volunteer.externalId}) }}</li>
+    <li>{{ 'manage_volunteers.anonymize.campaign.email.structures'|trans({'%structures%': volunteer.structures|join(', ')}) }}</li>
+</ul>
 </p>
 
 {% if answer %}

@@ -635,6 +635,7 @@ manage_volunteers:
         target: 'Ce message doit être transféré au secrétaire de l''unité locale ou au président.'
         title: '[RGPD] RedCall - Mettre à jour GAIA pour #%external-id%'
         who: 'La personne concernée :'
+        structures: 'Structure(s) : %structures%'
       sms_content: 'Bonjour, nous avons pris en compte votre demande. Vous ne recevrez plus de message de notre part. Toutes nos excuses pour la gêne occasionnée.'
       subject: '[RGPD] Demande de suppression de données pour %external-id%'
     cancel: Annuler
@@ -675,6 +676,7 @@ manage_volunteers:
     phone_number_locked: 'Geler le nᵒ de téléphone *'
     phone_number_only_outbound: 'Le bénévole ne peut pas envoyer de réponses avec ce numéro'
     phone_number_optin: 'Disponible par téléphone et SMS'
+    phone_number_supports_short_code: 'Le bénévole peut recevoir des messages du numéro court'
     section_badges: 'Compétences & nominations'
     section_contact: 'Informations de contact'
     section_general: 'Informations générales'
@@ -684,7 +686,6 @@ manage_volunteers:
     update: 'Mettre à jour un bénévole'
     updated: 'Le bénévole a correctement été modifié.'
     visible_badges: 'Badges principaux'
-    phone_number_supports_short_code: 'Le bénévole peut recevoir des messages du numéro court'
     add: 'Créer un nouveau bénévole'
     optout_until: 'Bénévole indisponible jusqu''au...'
   others: 'et %count% autre(s)'
