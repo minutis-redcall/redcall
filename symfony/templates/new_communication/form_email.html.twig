@@ -37,8 +37,6 @@
 
 {{ include('widget/prefilled_answers_editor.html.twig', {answers: form.answers}) }}
 
-<br/>
-
 {{ form_row(form.multipleAnswer) }}
 
 <div class="h3">{{ 'form.communication.fields.preview'|trans }}</div>
@@ -98,7 +96,7 @@
 
     editor.on('text-change', function () {
         $('#{{ form.message.vars.id }}').val(
-            editor.root.innerHTML,
+                editor.root.innerHTML,
         );
         refreshPreview();
     });

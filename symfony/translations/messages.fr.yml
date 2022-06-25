@@ -475,6 +475,8 @@ form:
       type_email: 'Message envoyé par email'
       type_sms: 'Message urgent envoyé par SMS'
       volunteers: Audience
+      multiple_answer_one: 'une réponse'
+      multiple_answer_several: 'plusieurs réponses'
     nivols_search: 'Copier/coller une liste de nivols'
     nivols_separator: 'Vous pouvez utiliser n''importe quel séparateur.'
     sms: SMS
@@ -632,10 +634,10 @@ manage_volunteers:
         message_received: 'Message reçu ayant conduit à la suppression de ce bénévole le %date% à %time% sur le déclenchement <a href="%url%">%trigger%</a> :'
         nivol: 'NIVOL : %nivol%'
         phone: 'Téléphone : %phone%'
+        structures: 'Structure(s) : %structures%'
         target: 'Ce message doit être transféré au secrétaire de l''unité locale ou au président.'
         title: '[RGPD] RedCall - Mettre à jour GAIA pour #%external-id%'
         who: 'La personne concernée :'
-        structures: 'Structure(s) : %structures%'
       sms_content: 'Bonjour, nous avons pris en compte votre demande. Vous ne recevrez plus de message de notre part. Toutes nos excuses pour la gêne occasionnée.'
       subject: '[RGPD] Demande de suppression de données pour %external-id%'
     cancel: Annuler

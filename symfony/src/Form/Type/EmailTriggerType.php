@@ -6,7 +6,7 @@ use App\Entity\Choice;
 use App\Form\Model\EmailTrigger;
 use App\Manager\MediaManager;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
@@ -39,9 +39,13 @@ class EmailTriggerType extends AbstractType
         parent::buildForm($builder, $options);
 
         $builder
-            ->add('multipleAnswer', CheckboxType::class, [
+            ->add('multipleAnswer', ChoiceType::class, [
                 'label'    => 'form.communication.fields.multiple_answer',
-                'required' => false,
+                'expanded' => true,
+                'choices'  => [
+                    'form.communication.fields.multiple_answer_one'     => false,
+                    'form.communication.fields.multiple_answer_several' => true,
+                ],
             ])
             ->add('audience', AudienceType::class)
             ->add('language', LanguageType::class)

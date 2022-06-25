@@ -10,6 +10,18 @@
     </div>
 {% endblock %}
 
+{# Toggle instead of tick #}
+{% block radio_widget %}
+    <div>
+        {{ form_errors(form) }}
+        <label class="switch">
+            <input type="radio" {{ block('widget_attributes') }}{% if value is defined %} value="{{ value }}"{% endif %}{% if checked %} checked="checked"{% endif %} />
+            <span class="slider"></span>
+        </label>
+        <label for="{{ id }}">{{ form.vars.label|trans }}</label>
+    </div>
+{% endblock %}
+
 {# Campaign type (red, orange, green) #}
 {% block types_row %}
     <div class="form-group">
@@ -199,7 +211,7 @@
         $(function () {
 
             $('#{{ form.editor.vars.id }}').val(
-                $('#{{ form.e164.vars.id }}').val()
+                    $('#{{ form.e164.vars.id }}').val()
             );
 
             var tel = document.querySelector('#{{ form.editor.vars.id }}');
@@ -213,7 +225,7 @@
                 if (iti.isValidNumber()) {
                     var e164 = $('#{{ form.editor.vars.id }}').data('e164');
                     $(e164).val(
-                        iti.getNumber()
+                            iti.getNumber()
                     );
                 }
             }

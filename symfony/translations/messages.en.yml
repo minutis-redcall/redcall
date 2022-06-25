@@ -475,6 +475,8 @@ form:
       type_email: 'Message sent by email'
       type_sms: 'Emergency message sent through SMS'
       volunteers: Audience
+      multiple_answer_one: 'one answer'
+      multiple_answer_several: 'several answers'
     nivols_search: 'Copy/paste a list of nivols'
     nivols_separator: 'You can use any separator you want.'
     sms: SMS
@@ -632,10 +634,10 @@ manage_volunteers:
         message_received: 'Message received that conducted the volunteer data deletion received on %date% at %time% on trigger <a href="%url%">%trigger%</a>:'
         nivol: 'NIVOL : %nivol%'
         phone: 'Phone number : %phone%'
+        structures: 'Structure(s) : %structures%'
         target: 'This message should be forwarded to the Local Unit secretary or its president.'
         title: '[GDPR] RedCall - Update GAIA for #%external-id%'
         who: 'Involved person:'
-        structures: 'Structure(s) : %structures%'
       sms_content: 'Hello, we taken your request into account. You won''t receive messages from us. Sorry for the inconvenience.'
       subject: '[GDPR] Data deletion request for %external-id%'
     cancel: Cancel

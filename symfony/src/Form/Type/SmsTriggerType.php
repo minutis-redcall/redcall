@@ -8,7 +8,6 @@ use App\Form\Model\SmsTrigger;
 use App\Security\Helper\Security;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\CallbackTransformer;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -81,9 +80,13 @@ class SmsTriggerType extends AbstractType
                     'class' => 'collection',
                 ],
             ])
-            ->add('multipleAnswer', CheckboxType::class, [
+            ->add('multipleAnswer', ChoiceType::class, [
                 'label'    => 'form.communication.fields.multiple_answer',
-                'required' => false,
+                'expanded' => true,
+                'choices'  => [
+                    'form.communication.fields.multiple_answer_one'     => false,
+                    'form.communication.fields.multiple_answer_several' => true,
+                ],
             ])
             ->add('test', SubmitType::class, [
                 'label' => 'form.communication.fields.test',
