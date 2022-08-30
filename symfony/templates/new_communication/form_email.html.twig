@@ -6,6 +6,8 @@
 <div id="message-container">
     <div class="h3">{{ 'form.communication.fields.message'|trans }}</div>
 
+    {{ include('new_communication/templates.html.twig') }}
+
     {{ form_row(form.language) }}
 
     {{ form_row(form.subject) }}
@@ -16,6 +18,7 @@
         {{ include('widget/quill.html.twig', {
             toolbar: 'toolbar-container',
             editor: 'editor-container',
+            field: form.message,
         }) }}
 
         <br/>
@@ -45,88 +48,3 @@
 
 {{ include('new_communication/common.html.twig') }}
 
-<script type="text/javascript">
-
-    {# Richtext editor for emails #}
-    var editor = new Quill('#editor-container', {
-        theme: 'snow',
-        modules: {
-            toolbar: '#toolbar-container'
-        },
-        bounds: document.body,
-    });
-    editor.root.innerHTML = '{{ form.message.vars.value|e('js') }}';
-
-    var BackgroundStyle = Quill.import('attributors/style/background');
-    Quill.register(BackgroundStyle, true);
-
-    var ColorStyle = Quill.import('attributors/style/color');
-    Quill.register(ColorStyle, true);
-
-    var SizeStyle = Quill.import('attributors/style/size');
-    Quill.register(SizeStyle, true);
-
-    var FontStyle = Quill.import('attributors/style/font');
-    Quill.register(FontStyle, true);
-
-    var AlignStyle = Quill.import('attributors/style/align');
-    Quill.register(AlignStyle, true);
-
-    const Parchment = Quill.import("parchment")
-    const pixelLevels = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
-
-    const TAB_MULTIPLIER = 30;
-
-    class IndentAttributor extends Parchment.Attributor.Style {
-        add(node, value) {
-            return super.add(node, `${+value * TAB_MULTIPLIER}px`)
-        }
-
-        value(node) {
-            return parseFloat(super.value(node)) / TAB_MULTIPLIER || undefined // Don't return NaN
-        }
-    }
-
-    const IndentStyle = new IndentAttributor("indent", "margin-left", {
-        scope: Parchment.Scope.BLOCK,
-        whitelist: pixelLevels.map(value => `${value * TAB_MULTIPLIER}px`),
-    });
-
-    Quill.register({"formats/indent": IndentStyle}, true);
-
-    editor.on('text-change', function () {
-        $('#{{ form.message.vars.id }}').val(
-                editor.root.innerHTML,
-        );
-        refreshPreview();
-    });
-
-    {# See: https://github.com/quilljs/quill/issues/2096 #}
-    const Inline = Quill.import('blots/inline');
-
-    class CustomColor extends Inline {
-        constructor(domNode, value) {
-            super(domNode, value);
-
-            // Map <font> properties
-            domNode.style.color = domNode.color;
-
-            const span = this.replaceWith(new Inline(Inline.create()));
-
-            span.children.forEach(child => {
-                if (child.attributes) child.attributes.copy(span);
-                if (child.unwrap) child.unwrap();
-            });
-
-            this.remove();
-
-            return span;
-        }
-    }
-
-    CustomColor.blotName = "customColor";
-    CustomColor.tagName = "FONT";
-
-    Quill.register(CustomColor, true);
-
-</script>

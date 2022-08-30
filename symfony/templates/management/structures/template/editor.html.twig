@@ -1,0 +1,76 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    <h1>
+        {% if template.id %}
+            {{ 'manage_structures.templates.editor_update'|trans }}
+        {% else %}
+            {{ 'manage_structures.templates.editor_create'|trans }}
+        {% endif %}
+    </h1>
+
+    {{ form_start(form) }}
+    {{ form_row(form.name) }}
+    {{ form_row(form.type) }}
+    {{ form_row(form.language) }}
+
+    <div id="plaintext">
+        {{ form_row(form.body_text) }}
+    </div>
+
+    <div id="richtext">
+        {{ form_row(form.subject) }}
+        {{ form_label(form.body_html) }}
+        <div id="richtext-wrapper">
+            {{ include('widget/quill.html.twig', {
+                toolbar: 'toolbar-container',
+                editor: 'editor-container',
+                field: form.body_html,
+            }) }}
+
+            <br/>
+
+            <div class="d-none">
+                {{ form_widget(form.body_html) }}
+            </div>
+        </div>
+    </div>
+
+    {{ form_label(form.answers) }}
+    {{ render(controller('\\App\\Controller\\WidgetController::prefilledAnswers', {campaignId: null})) }}
+    {{ include('widget/prefilled_answers_editor.html.twig', {answers: form.answers, label: false}) }}
+
+    {{ form_row(form.submit) }}
+    {{ form_end(form) }}
+
+    <div class="text-center">
+        <a href="{{ path('management_structures_template_list', {structure: structure.id}) }}" class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+    </div>
+
+    <br/><br/>
+
+    <script type="text/javascript">
+
+        var toggleBodyInput = function () {
+            var selection = $('input[name="template[{{ form.type.vars.name }}]"]:checked').val();
+            if ('{{ constant('App\\Entity\\Communication::TYPE_EMAIL') }}' === selection) {
+                $('#plaintext').addClass('d-none');
+                $('#richtext').removeClass('d-none');
+            } else {
+                $('#plaintext').removeClass('d-none');
+                $('#richtext').addClass('d-none');
+            }
+        }
+
+        $(document).ready(function () {
+            toggleBodyInput();
+            $('#{{ form.type.vars.id }}').change(function () {
+                toggleBodyInput();
+            });
+        });
+
+    </script>
+
+{% endblock %}
+

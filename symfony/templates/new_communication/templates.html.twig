@@ -1,0 +1,10 @@
+<div class="d-none">
+    <div id="shortcut-id">{{ form.shortcut.vars.id|default(null) }}</div>
+    <div id="language-id">{{ form.language.vars.id }}</div>
+    <div id="subject-id">{{ form.subject.vars.id|default(null) }}</div>
+    <div id="message-id">{{ form.message.vars.id }}</div>
+</div>
+
+{{ render(controller('\\App\\Controller\\WidgetController::templateDropdown', {
+    type: type
+})) }}
