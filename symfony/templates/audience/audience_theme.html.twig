@@ -74,7 +74,7 @@
                         <option data-id=""></option>
                         {% for volunteer_list in volunteer_lists %}
                             <option data-id="{{ volunteer_list.id }}" data-uri="{{ path('management_structures_volunteer_lists_create', {structureId: volunteer_list.structure.id, volunteerListId: volunteer_list.id}) }}">
-                                {{ volunteer_list.structure }} - {{ volunteer_list.name }}
+                                [{{ volunteer_list.structure.shortcut }}] {{ volunteer_list.name }}
                                 ({{ volunteer_list.volunteers|length }})
                             </option>
                         {% endfor %}
@@ -88,7 +88,7 @@
 
                     <div class="my-2">
                         <a id="choose-volunteer-list-use" href="#" data-id="" class="btn btn-secondary volunteer-list-use d-none">{{ 'base.button.use'|trans }}</a>
-                        <a id="choose-volunteer-lsit-edit" href="" class="btn btn-secondary d-none" target="_blank">{{ 'base.button.update'|trans }}</a>
+                        <a id="choose-volunteer-list-edit" href="" class="btn btn-secondary d-none" target="_blank">{{ 'base.button.update'|trans }}</a>
                     </div>
 
                 {% endif %}
@@ -118,6 +118,7 @@
                                         <a href="{{ path('management_structures_volunteer_lists_index', {structureId: structure.id}) }}" target="_blank">
                                             {{ structure.name }}
                                         </a>
+                                        {% if structure.volunteerLists|length %}({{ structure.volunteerLists|length }}){% endif %}
                                     </li>
                                 {% endfor %}
                             </ul>
@@ -615,10 +616,10 @@
             var selected = $(this).find(':selected');
             if (selected.data('id')) {
                 $('#choose-volunteer-list-use').data('id', selected.data('id')).removeClass('d-none');
-                $('#choose-volunteer-lsit-edit').attr('href', selected.data('uri')).removeClass('d-none');
+                $('#choose-volunteer-list-edit').attr('href', selected.data('uri')).removeClass('d-none');
             } else {
                 $('#choose-volunteer-list-use').addClass('d-none');
-                $('#choose-volunteer-lsit-edit').addClass('d-none');
+                $('#choose-volunteer-list-edit').addClass('d-none');
             }
         });
 

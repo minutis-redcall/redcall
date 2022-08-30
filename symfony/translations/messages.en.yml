@@ -458,6 +458,8 @@ form:
       length: 'Message length:'
       message: Message
       multiple_answer: 'Volunteers can choose several answers'
+      multiple_answer_one: 'one answer'
+      multiple_answer_several: 'several answers'
       other_options: 'Other options'
       preview: Preview
       price: 'Estimated communication price:'
@@ -475,8 +477,6 @@ form:
       type_email: 'Message sent by email'
       type_sms: 'Emergency message sent through SMS'
       volunteers: Audience
-      multiple_answer_one: 'one answer'
-      multiple_answer_several: 'several answers'
     nivols_search: 'Copy/paste a list of nivols'
     nivols_separator: 'You can use any separator you want.'
     sms: SMS
@@ -605,6 +605,33 @@ manage_structures:
     title: 'Manage volunteer lists'
     update: 'Edit list "%name%"'
   volunteers: 'Volunteers count: %count%'
+  templates:
+    menu: 'Manage message templates'
+    list_title: 'Your message templates'
+    editor_create: 'Create a new message template'
+    editor_update: 'Update a message template'
+    form:
+      type: 'Trigger type'
+      name: 'Template name (rendered in the trigger form)'
+      subject: 'Message subject'
+      body: 'Message body'
+      answers: 'Possible answers'
+    types:
+      email: '✉️ Email'
+      call: '📞 Phone call'
+      sms: '📱 SMS'
+    actions:
+      up: ▲
+      down: ▼
+      delete: 'Really remove that template?'
+    help:
+      intro: 'If you like you can'
+      create: 'create message templates'
+      end: 'in order to fill the form automatically.'
+    manage:
+      title: 'Manage message templates'
+      choose_structure: 'In which structure would you like to manage message templates?'
+    choose: 'Use a message template'
 manage_volunteers:
   access_denied: 'Cannot edit this volunteer details, (s)he does not belong to any structure you are managing.'
   action:

@@ -1,0 +1,63 @@
+{% extends 'base.html.twig' %}
+
+{% import 'macros.html.twig' as macros %}
+
+{% block body %}
+
+    <h1>{{ 'manage_structures.templates.list_title' | trans }}</h1>
+
+    {% if pager|length %}
+        <table class="table">
+            {% for template in pager.currentPageResults %}
+                <tr>
+                    <td>{{ ('manage_structures.templates.types.' ~ template.type)|trans }}</td>
+                    <td>{{ template.name }}</td>
+                    <td>
+                        <a class="btn btn-secondary"
+                           href="{{ path('management_structures_template_move', {structure: structure.id, template: template.id, csrf: csrf_token('csrf'), newPriority: template.priority + 1}) }}">
+                            {{ 'manage_structures.templates.actions.up'|trans }}
+                        </a>
+                        <span class="m-2">
+                            {{ template.priority }}
+                        </span>
+                        <a class="btn btn-secondary"
+                           href="{{ path('management_structures_template_move', {structure: structure.id, template: template.id, csrf: csrf_token('csrf'), newPriority: template.priority - 1}) }}">
+                            {{ 'manage_structures.templates.actions.down'|trans }}
+                        </a>
+                    </td>
+                    <td>
+                        <a class="btn btn-secondary"
+                           href="{{ path('management_structures_template_edit', {structure: structure.id, template: template.id}) }}">
+                            {{ 'base.button.update'|trans }}
+                        </a>
+                        <a class="btn btn-danger"
+                           href="{{ path('management_structures_template_delete', {structure: structure.id, template: template.id, csrf: csrf_token('csrf')}) }}"
+                           onclick="return confirm($(this).data('confirm'));"
+                           data-confirm="{{ 'manage_structures.templates.actions.delete'|trans }}">
+                            {{ 'base.button.delete'|trans }}
+                        </a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+
+    {% endif %}
+
+    {{ macros.pager(pager) }}
+
+    <br><br>
+
+    <a href="{{ path('management_structures_template_new', {structure: structure.id}) }}"
+       class="btn btn-secondary">
+        {{ 'base.button.create'|trans }}
+    </a>
+
+    <br/>
+
+    <div class="text-center">
+        <a href="{{ path('management_structures_list') }}" class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+    </div>
+
+    <br/><br/>
+
+{% endblock %}

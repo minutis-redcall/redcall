@@ -8,6 +8,8 @@
 <div id="message-container">
     <div class="h3">{{ 'form.communication.fields.message'|trans }}</div>
 
+    {{ include('new_communication/templates.html.twig') }}
+
     {{ form_row(form.language) }}
 
     <div id="textarea-wrapper" class="textarea-wrapper">

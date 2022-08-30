@@ -140,6 +140,11 @@ class Structure implements LockableInterface
      */
     private $volunteerLists;
 
+    /**
+     * @ORM\OneToMany(targetEntity=Template::class, mappedBy="structure", orphanRemoval=true)
+     */
+    private $templates;
+
     public function __construct()
     {
         $this->volunteers         = new ArrayCollection();
@@ -147,6 +152,7 @@ class Structure implements LockableInterface
         $this->users              = new ArrayCollection();
         $this->prefilledAnswers   = new ArrayCollection();
         $this->volunteerLists     = new ArrayCollection();
+        $this->templates          = new ArrayCollection();
     }
 
     /**
@@ -614,5 +620,40 @@ class Structure implements LockableInterface
         }
 
         return false;
+    }
+
+    /**
+     * @return Collection<int, Template>
+     */
+    public function getTemplates() : Collection
+    {
+        return $this->templates;
+    }
+
+    public function addTemplate(Template $template) : self
+    {
+        if (!$this->templates->contains($template)) {
+            $this->templates[] = $template;
+            $template->setStructure($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTemplate(Template $template) : self
+    {
+        if ($this->templates->removeElement($template)) {
+            // set the owning side to null (unless already changed)
+            if ($template->getStructure() === $this) {
+                $template->setStructure(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function isEqualTo(Structure $structure)
+    {
+        return $this->id === $structure->getId();
     }
 }

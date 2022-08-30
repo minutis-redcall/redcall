@@ -25,6 +25,12 @@ class Communication
     const TYPE_CALL  = 'call';
     const TYPE_EMAIL = 'email';
 
+    const TYPES = [
+        self::TYPE_SMS,
+        self::TYPE_CALL,
+        self::TYPE_EMAIL,
+    ];
+
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()
@@ -774,6 +780,16 @@ class Communication
     public function getMessageCount()
     {
         return count($this->messages);
+    }
+
+    static public function isPlaintext(string $type) : bool
+    {
+        return in_array($type, [self::TYPE_SMS, self::TYPE_CALL]);
+    }
+
+    static public function isRichtext(string $type)
+    {
+        return self::TYPE_EMAIL === $type;
     }
 
     public function getChoicePercentage(Choice $choice) : int

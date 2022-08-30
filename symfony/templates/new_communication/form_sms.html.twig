@@ -9,6 +9,8 @@
 
     <div class="h3">{{ 'form.communication.fields.message'|trans }}</div>
 
+    {{ include('new_communication/templates.html.twig') }}
+
     {{ form_row(form.language) }}
 
     <div class="{{ form.shortcut.vars.choices|length == 0 ? 'd-none' : '' }}">

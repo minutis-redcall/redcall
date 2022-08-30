@@ -10,6 +10,7 @@ use App\Entity\PrefilledAnswers;
 use App\Entity\Structure;
 use App\Entity\User;
 use App\Entity\Volunteer;
+use App\Enum\Type;
 use App\Form\Type\BadgeWidgetType;
 use App\Form\Type\CategoryWigetType;
 use App\Form\Type\StructureWidgetType;
@@ -19,6 +20,7 @@ use App\Manager\CampaignManager;
 use App\Manager\CategoryManager;
 use App\Manager\PrefilledAnswersManager;
 use App\Manager\StructureManager;
+use App\Manager\TemplateManager;
 use App\Manager\VolunteerManager;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
@@ -60,12 +62,18 @@ class WidgetController extends BaseController
      */
     private $categoryManager;
 
+    /**
+     * @var TemplateManager
+     */
+    private $templateManager;
+
     public function __construct(CampaignManager $campaignManager,
         PrefilledAnswersManager $prefilledAnswersManager,
         VolunteerManager $volunteerManager,
         StructureManager $structureManager,
         BadgeManager $badgeManager,
-        CategoryManager $categoryManager)
+        CategoryManager $categoryManager,
+        TemplateManager $templateManager)
     {
         $this->campaignManager         = $campaignManager;
         $this->prefilledAnswersManager = $prefilledAnswersManager;
@@ -73,6 +81,7 @@ class WidgetController extends BaseController
         $this->structureManager        = $structureManager;
         $this->badgeManager            = $badgeManager;
         $this->categoryManager         = $categoryManager;
+        $this->templateManager         = $templateManager;
     }
 
     public function prefilledAnswers(?int $campaignId = null)
@@ -123,6 +132,55 @@ class WidgetController extends BaseController
             'current_color' => $currentColor,
             'forms'         => $forms,
             'answers'       => $answers,
+        ]);
+    }
+
+    public function templateDropdown(Type $type)
+    {
+        $choices = [];
+        foreach ($this->templateManager->findByTypeForCurrentUser($type) as $template) {
+            $choices["$template"] = $template->getId();
+        }
+
+        $form = $this
+            ->createNamedFormBuilder('template', ChoiceType::class, null, [
+                'label'    => false,
+                'required' => false,
+                'choices'  => $choices,
+            ])
+            ->getForm();
+
+        return $this->render('widget/template_dropdown.html.twig', [
+            'form'    => $form->createView(),
+            'choices' => $choices,
+        ]);
+    }
+
+    /**
+     * @Route(path="/template-data", name="template_data")
+     */
+    public function templateData(Request $request)
+    {
+        $id = intval($request->get('id'));
+        if (!$id) {
+            throw $this->createNotFoundException();
+        }
+
+        $template = $this->templateManager->find($id);
+        if (!$template) {
+            throw $this->createNotFoundException();
+        }
+
+        if (!$this->isGranted('STRUCTURE', $template->getStructure())) {
+            throw $this->createNotFoundException();
+        }
+
+        return $this->json([
+            'shortcut' => $template->getStructure()->getShortcut(),
+            'subject'  => $template->getSubject(),
+            'body'     => $template->getBody(),
+            'language' => $template->getLanguage(),
+            'answers'  => $template->getAnswers(),
         ]);
     }
 

@@ -1,0 +1,115 @@
+{% if not choices %}
+
+    <div class="alert alert-info">
+        {{ 'manage_structures.templates.help.intro'|trans }}
+        <a href="#" data-toggle="modal" data-target="#templates-modal">{{ 'manage_structures.templates.help.create'|trans }}</a>
+        {{ 'manage_structures.templates.help.end'|trans }}
+    </div>
+
+{% else %}
+
+    <br/>
+
+    <div class="h4">
+        {{ 'manage_structures.templates.choose'|trans }}
+    </div>
+
+    {{ form_widget(form) }}
+
+    <div class="float-right">
+        <a href="#" data-toggle="modal" data-target="#templates-modal">
+            {{ 'manage_structures.templates.manage.title'|trans }}
+        </a>
+    </div>
+
+    <br/><br/>
+
+    <script type="text/javascript">
+
+        $('#{{ form.vars.id }}').change(function () {
+            var id = $(this).val();
+
+            if (!id) {
+                // Cleaning if no selection
+                if ($('#subject-id').html()) {
+                    $('#' + $('#subject-id').html()).val('');
+                }
+
+                if (typeof editor !== 'undefined') {
+                    editor.deleteText(0, 999999999999);
+                } else {
+                    $('#' + $('#message-id').html()).val('');
+                }
+
+                $('#answer-collection').find('.remove-answer').click();
+
+                return;
+            }
+
+            $.post('{{ path('widget_template_data') }}', {
+                id: id,
+            }, function (data) {
+                $('#' + $('#language-id').html()).val(data.language);
+
+                if ($('#shortcut-id').html()) {
+                    $('#' + $('#shortcut-id').html()).val(data.shortcut);
+                }
+
+                if ($('#subject-id').html()) {
+                    $('#' + $('#subject-id').html()).val(data.subject);
+                }
+
+                if (typeof editor !== 'undefined') {
+                    editor.deleteText(0, 999999999999);
+                    editor.pasteHTML(0, data.body);
+                } else {
+                    $('#' + $('#message-id').html()).val(data.body);
+                }
+
+                $('#answer-collection').find('.remove-answer').click();
+                for (var i = 0; i < data.answers.length; i++) {
+                    $('#add-answer').click();
+                }
+                $('#answer-collection .answer-input').each(function (key) {
+                    $(this).val(data.answers[key]);
+                });
+            });
+        });
+
+    </script>
+
+
+{% endif %}
+
+<div class="modal fade" id="templates-modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 id="templates-modal-title" class="modal-title">
+                    {{ 'manage_structures.templates.manage.title'|trans }}
+                </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div id="templates-modal-body" class="modal-body">
+                <p>
+                    {{ 'manage_structures.templates.manage.choose_structure'|trans }}
+                </p>
+                <ul>
+                    {% for structure in app.user.structures %}
+                        <li>
+                            <a href="{{ path('management_structures_template_list', {structure: structure.id}) }}" target="_blank">
+                                {{ structure.name }}
+                            </a>
+                            {% if structure.templates|length %}({{ structure.templates|length }}){% endif %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ 'base.modal.close'|trans }}</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -32,6 +32,10 @@
                                 {{ 'manage_structures.export'|trans }}
                             </a>
 
+                            <a class="dropdown-item" href="{{ path('management_structures_template_list', {structure: structure.id}) }}">
+                                {{ 'manage_structures.templates.menu'| trans }}
+                            </a>
+
                             <a class="dropdown-item" href="{{ path('management_structures_prefilled_answers_list', {structure: structure.id}) }}">
                                 {{ 'manage_structures.manage_prefilled_answers'| trans }}
                             </a>
