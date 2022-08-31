@@ -4,6 +4,7 @@ namespace App\Form\Type;
 
 use App\Entity\Communication;
 use App\Entity\Template;
+use App\Manager\TemplateImageManager;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
@@ -21,13 +22,19 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 class TemplateType extends AbstractType
 {
     /**
+     * @var TemplateImageManager
+     */
+    private $templateImageManager;
+
+    /**
      * @var \HTMLPurifier
      */
     private $purifier;
 
-    public function __construct(\HTMLPurifier $purifier)
+    public function __construct(TemplateImageManager $templateImageManager, \HTMLPurifier $purifier)
     {
-        $this->purifier = $purifier;
+        $this->templateImageManager = $templateImageManager;
+        $this->purifier             = $purifier;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -113,7 +120,7 @@ class TemplateType extends AbstractType
             if (Communication::isPlaintext($template->getType())) {
                 $form->get('body_text')->setData($template->getBody());
             } else {
-                $form->get('body_html')->setData($template->getBody());
+                $form->get('body_html')->setData($template->getBodyWithImages());
             }
         });
 
@@ -132,17 +139,13 @@ class TemplateType extends AbstractType
                     strip_tags($form->get('body_text')->getData())
                 );
             } else {
-                // Cannot use the purifier without extracting images first, as the
-                // WYSIWYG uses base64 images that will be cleared up when purifying,
-                // see EmailTriggerType.
-                //
-                // $template->setBody(
-                //    $this->purifier->purify($form->get('body_html')->getData())
-                // );
-
-                // FIXME Without the purifier, this code is subject to persistent XSS
-                $template->setBody(
+                $body = $this->templateImageManager->handleImages(
+                    $template,
                     $form->get('body_html')->getData()
+                );
+
+                $template->setBody(
+                    $this->purifier->purify($body)
                 );
             }
         });
