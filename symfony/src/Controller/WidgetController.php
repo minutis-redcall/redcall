@@ -178,7 +178,7 @@ class WidgetController extends BaseController
         return $this->json([
             'shortcut' => $template->getStructure()->getShortcut(),
             'subject'  => $template->getSubject(),
-            'body'     => $template->getBody(),
+            'body'     => $template->getBodyWithImages(),
             'language' => $template->getLanguage(),
             'answers'  => $template->getAnswers(),
         ]);

@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\TemplateRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -60,6 +62,18 @@ class Template
      * @ORM\Column(type="string", length=5)
      */
     private $language;
+
+    /**
+     * @var TemplateImage[]
+     *
+     * @ORM\OneToMany(targetEntity=TemplateImage::class, mappedBy="template", orphanRemoval=true)
+     */
+    private $images;
+
+    public function __construct()
+    {
+        $this->images = new ArrayCollection();
+    }
 
     public function getId() : ?int
     {
@@ -119,6 +133,21 @@ class Template
         return $this->body;
     }
 
+    public function getBodyWithImages()
+    {
+        $body = $this->body;
+
+        foreach ($this->images as $image) {
+            $body = str_replace(
+                sprintf('{image:%s}', $image->getUuid()),
+                sprintf('<img src="data:image/png;base64, %s"/>', $image->getContent()),
+                $body
+            );
+        }
+
+        return $body;
+    }
+
     public function setBody(string $body) : self
     {
         $this->body = $body;
@@ -155,14 +184,44 @@ class Template
         return sprintf('[%s] %s', $this->structure->getShortcut(), $this->name);
     }
 
-    public function getLanguage(): ?string
+    public function getLanguage() : ?string
     {
         return $this->language;
     }
 
-    public function setLanguage(string $language): self
+    public function setLanguage(string $language) : self
     {
         $this->language = $language;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, TemplateImage>
+     */
+    public function getImages() : Collection
+    {
+        return $this->images;
+    }
+
+    public function addImage(TemplateImage $image) : self
+    {
+        if (!$this->images->contains($image)) {
+            $this->images[] = $image;
+            $image->setTemplate($this);
+        }
+
+        return $this;
+    }
+
+    public function removeImage(TemplateImage $image) : self
+    {
+        if ($this->images->removeElement($image)) {
+            // set the owning side to null (unless already changed)
+            if ($image->getTemplate() === $this) {
+                $image->setTemplate(null);
+            }
+        }
 
         return $this;
     }
