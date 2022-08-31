@@ -66,6 +66,10 @@
                     $('#' + $('#message-id').html()).val(data.body);
                 }
 
+                if (typeof updateMessageSize !== 'undefined') {
+                    updateMessageSize();
+                }
+
                 $('#answer-collection').find('.remove-answer').click();
                 for (var i = 0; i < data.answers.length; i++) {
                     $('#add-answer').click();

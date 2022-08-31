@@ -6,6 +6,8 @@ use App\Repository\TemplateRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 /**
  * @ORM\Entity(repositoryClass=TemplateRepository::class)
@@ -224,5 +226,51 @@ class Template
         }
 
         return $this;
+    }
+
+    /**
+     * @Assert\Callback
+     */
+    public function validate(ExecutionContextInterface $context, $payload)
+    {
+        switch ($this->type) {
+            case Communication::TYPE_SMS:
+                foreach ($this->getAnswers() as $answer) {
+                    if (mb_strlen($answer) > Choice::MAX_LENGTH_SMS) {
+                        $context->buildViolation('form.communication.errors.too_large_choice')
+                                ->atPath('answers')
+                                ->addViolation();
+                    }
+                }
+
+                if (mb_strlen($this->getBody()) > Message::MAX_LENGTH_SMS) {
+                    $context->buildViolation('form.communication.errors.too_large_sms')
+                            ->atPath('body')
+                            ->addViolation();
+                }
+                break;
+
+            case Communication::TYPE_CALL:
+                if (mb_strlen($this->getBody()) > Message::MAX_LENGTH_CALL) {
+                    $context->buildViolation('form.communication.errors.too_large_sms')
+                            ->atPath('body')
+                            ->addViolation();
+                }
+                break;
+
+            case Communication::TYPE_EMAIL:
+                if (mb_strlen(strip_tags($this->getBody())) > Message::MAX_LENGTH_EMAIL) {
+                    $context->buildViolation('form.communication.errors.too_large_sms')
+                            ->atPath('body')
+                            ->addViolation();
+                }
+
+                if (!$this->getSubject()) {
+                    $context->buildViolation('form.communication.errors.no_subject')
+                            ->atPath('subject')
+                            ->addViolation();
+                }
+                break;
+        }
     }
 }

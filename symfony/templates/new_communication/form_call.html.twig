@@ -27,11 +27,7 @@
 
 <div class="h3">{{ 'form.communication.fields.response_title'|trans }}</div>
 
-{{ form_label(form.answers) }}
-
-{{ render(controller('\\App\\Controller\\WidgetController::prefilledAnswers', {campaignId: campaign.id|default(null)})) }}
-
-{{ include('widget/prefilled_answers_editor.html.twig', {answers: form.answers}) }}
+{{ include('new_communication/answers.html.twig') }}
 
 <div class="h3">{{ 'form.communication.fields.preview'|trans }}</div>
 

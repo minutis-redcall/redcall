@@ -1,0 +1,5 @@
+<div class="form-group">
+    <label for="{{ form.answers.vars.id }}">{{ 'manage_structures.templates.form.answers'|trans }}</label>
+    {{ render(controller('\\App\\Controller\\WidgetController::prefilledAnswers', {campaignId: campaign.id|default(null)})) }}
+    {{ include('widget/prefilled_answers_editor.html.twig', {answers: form.answers, label: false}) }}
+</div>

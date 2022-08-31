@@ -11,6 +11,7 @@
     </h1>
 
     {{ form_start(form) }}
+
     {{ form_row(form.name) }}
     {{ form_row(form.type) }}
     {{ form_row(form.language) }}
@@ -37,9 +38,7 @@
         </div>
     </div>
 
-    {{ form_label(form.answers) }}
-    {{ render(controller('\\App\\Controller\\WidgetController::prefilledAnswers', {campaignId: null})) }}
-    {{ include('widget/prefilled_answers_editor.html.twig', {answers: form.answers, label: false}) }}
+    {{ include('new_communication/answers.html.twig') }}
 
     {{ form_row(form.submit) }}
     {{ form_end(form) }}

@@ -82,9 +82,9 @@ class TemplateType extends AbstractType
                 'mapped'   => false,
             ])
             ->add('answers', CollectionType::class, [
-                'label'         => 'manage_structures.templates.form.answers',
-                'entry_type'    => AnswerType::class,
-                'entry_options' => [
+                'label'          => false,
+                'entry_type'     => AnswerType::class,
+                'entry_options'  => [
                     'label'       => false,
                     'constraints' => [
                         new Length([
@@ -92,12 +92,13 @@ class TemplateType extends AbstractType
                         ]),
                     ],
                 ],
-                'allow_add'     => true,
-                'allow_delete'  => true,
-                'delete_empty'  => true,
-                'prototype'     => true,
-                'required'      => false,
-                'attr'          => [
+                'error_bubbling' => false,
+                'allow_add'      => true,
+                'allow_delete'   => true,
+                'delete_empty'   => true,
+                'prototype'      => true,
+                'required'       => false,
+                'attr'           => [
                     'class' => 'collection',
                 ],
             ])
