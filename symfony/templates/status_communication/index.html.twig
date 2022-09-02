@@ -407,7 +407,7 @@
                                         </span>
 
                                         <span class="d-none message-has-no-answers-{{ communication.id }}"
-                                              data-value="{{ message.hasAnswer ? 0 : 1 }}"
+                                              data-value="{{ message.hasAnswer(true) ? 0 : 1 }}"
                                               id="message-has-no-answers-{{ suffix|e('html_attr') }}"></span>
 
                                         {% if campaign.active %}
@@ -811,9 +811,9 @@
 
                 {# Replace last update date #}
                 $('#campaign-notes-last-update').html(
-                        '{{ 'campaign_status.notes_updated_at'|trans|e('js') }}'
-                                .replace('%date%', data['notes']['notes-updated-date'])
-                                .replace('%time%', data['notes']['notes-updated-time'])
+                    '{{ 'campaign_status.notes_updated_at'|trans|e('js') }}'
+                        .replace('%date%', data['notes']['notes-updated-date'])
+                        .replace('%time%', data['notes']['notes-updated-time'])
                 );
 
                 $('#campaign-notes').data('notes-updated-timestamp', data['notes']['notes-updated-timestamp']);
@@ -913,20 +913,20 @@
 
                 if (communication.progress.sent >= communication.progress.reachable) {
                     $('#progress-text-' + communicationId).html(
-                            '{{ 'campaign_status.finish'|trans|e('js') }}'
-                                    .replace('%sent%', communication.progress.sent)
-                                    .replace('%replies%', communication.progress.replies)
-                                    .replace('%replies_pct%', communication.progress['replies-percent'])
-                                    .replace('%type%', types[communication.progress.type])
+                        '{{ 'campaign_status.finish'|trans|e('js') }}'
+                            .replace('%sent%', communication.progress.sent)
+                            .replace('%replies%', communication.progress.replies)
+                            .replace('%replies_pct%', communication.progress['replies-percent'])
+                            .replace('%type%', types[communication.progress.type])
                     );
                 } else {
                     $('#progress-text-' + communicationId).html(
-                            $('#progress-trans-key-' + communicationId).html()
-                                    .replace('%sent%', communication.progress.sent)
-                                    .replace('%total%', communication.progress.total)
-                                    .replace('%progress%', communication.progress.percent)
-                                    .replace('%cost%', communication.progress.cost)
-                                    .replace('%type%', types[communication.progress.type])
+                        $('#progress-trans-key-' + communicationId).html()
+                            .replace('%sent%', communication.progress.sent)
+                            .replace('%total%', communication.progress.total)
+                            .replace('%progress%', communication.progress.percent)
+                            .replace('%cost%', communication.progress.cost)
+                            .replace('%type%', types[communication.progress.type])
                     );
                 }
 
@@ -1197,8 +1197,8 @@
             var communicationId = $(this).data("communication-id");
 
             $('.row-' + communicationId + ':hidden')
-                    .find('.volunteer-selection')
-                    .prop('checked', false);
+                .find('.volunteer-selection')
+                .prop('checked', false);
 
             $('.row-' + communicationId + ':visible').each(function () {
                 var selection = $(this).find('.volunteer-selection');
@@ -1278,7 +1278,7 @@
             var communicationId = $(this).data('communication-id');
             var type = $(this).data('type');
             $('#selection-new-message-field-' + communicationId + '-' + type).val(
-                    JSON.stringify(getSelectedVolunteers(communicationId))
+                JSON.stringify(getSelectedVolunteers(communicationId))
             );
             $('#selection-new-message-form-' + communicationId + '-' + type).submit();
         });
@@ -1290,7 +1290,7 @@
             e.preventDefault();
             var communicationId = $(this).data('communication-id');
             $('#selection-download-csv-field-' + communicationId).val(
-                    JSON.stringify(getSelectedVolunteers(communicationId))
+                JSON.stringify(getSelectedVolunteers(communicationId))
             );
             $('#selection-download-csv-form-' + communicationId).submit();
         });
@@ -1299,7 +1299,7 @@
             e.preventDefault();
             var communicationId = $(this).data('communication-id');
             $('#selection-download-pdf-field-' + communicationId).val(
-                    JSON.stringify(getSelectedVolunteers(communicationId))
+                JSON.stringify(getSelectedVolunteers(communicationId))
             );
             $('#selection-download-pdf-form-' + communicationId).submit();
         });

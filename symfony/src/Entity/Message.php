@@ -356,9 +356,9 @@ class Message
         return $this->getLastAnswer();
     }
 
-    public function hasAnswer() : bool
+    public function hasAnswer(bool $includingAdmins = false) : bool
     {
-        return null !== $this->getLastAnswer();
+        return null !== $this->getLastAnswer($includingAdmins);
     }
 
     /**
