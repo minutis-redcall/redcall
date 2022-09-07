@@ -319,6 +319,8 @@ class VolunteerManager
 
     public function anonymize(Volunteer $volunteer)
     {
+        $volunteer->setEnabled(false);
+
         foreach ($volunteer->getMessages() as $message) {
             /** @var Message $message */
             foreach ($message->getAnswers() ?? [] as $answer) {
