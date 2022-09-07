@@ -112,6 +112,7 @@ class PegassManager
 
         foreach ($entities as $entity) {
             $entity->setEnabled(false);
+            $entity->setContent(null);
             $this->pegassRepository->save($entity);
 
             switch ($entity->getType()) {
@@ -125,8 +126,7 @@ class PegassManager
                 case Pegass::TYPE_VOLUNTEER:
                     $volunteer = $this->volunteerManager->findOneByExternalId(Platform::FR, $entity->getExternalId());
                     if ($volunteer) {
-                        $volunteer->setEnabled(false);
-                        $this->volunteerManager->save($volunteer);
+                        $this->volunteerManager->anonymize($volunteer);
                     }
                     break;
             }

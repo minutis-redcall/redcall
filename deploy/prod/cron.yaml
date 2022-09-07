@@ -40,3 +40,8 @@ cron:
   - description: "Sync volunteers with the Pegass database"
     url: /cron/pegass-files
     schedule: every 24 hours
+
+  # * * * * * <path/to/the/project>/symfony/bin/console clear:volunteer
+  - description: "Anonymize volunteers that left"
+    url: /cron/clear-volunteer
+    schedule: every 24 hours
