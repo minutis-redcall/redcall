@@ -234,6 +234,10 @@ audience:
   select_all_badges: 'Déclencher tous les bénévoles quelles que soient leurs compétences'
   structures: Structure(s)
   volunteer_lists: 'Listes préremplies de bénévoles'
+  accordion:
+    filters: 'Filtrer par structures et compétences'
+    lists: 'Utiliser une liste de bénévoles'
+    search: 'Recherche manuelle de bénévoles'
 backlinks:
   blablacar: 'Parrainé par'
   feedback: 'Partagez vos idées afin d''améliorer RedCall'
@@ -438,8 +442,8 @@ form:
       notes: 'Notes facultatives adressées aux autres cadres utilisant RedCall'
       notes_title: Notes
       operation: 'Créer ou rattacher ce déclenchement avec une opération dans Minutis'
-      submit: Envoyer
       operation_help: 'Si vous cochez cette case, vous pourrez configurer votre opération en validant votre déclenchement.'
+      submit: Envoyer
   communication:
     call: 'appel vocal'
     email: email

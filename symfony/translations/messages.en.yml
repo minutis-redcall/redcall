@@ -234,6 +234,10 @@ audience:
   select_all_badges: 'Trigger all volunteers whatever their skills'
   structures: Structure(s)
   volunteer_lists: 'Volunteer lists'
+  accordion:
+    filters: 'Filter by structures and skills'
+    lists: 'Use a volunteers list'
+    search: 'Manual volunteers search'
 backlinks:
   blablacar: 'Sponsored by'
   feedback: 'Help us improve RedCall!'
@@ -438,8 +442,8 @@ form:
       notes: 'Optional notes rendered to other RedCall users'
       notes_title: Notes
       operation: 'Create or bind this trigger to a Minutis operation'
-      submit: Send
       operation_help: 'If you tick this option, you will be able to configure your operation after validating your trigger.'
+      submit: Send
   communication:
     call: 'voice call'
     email: email
