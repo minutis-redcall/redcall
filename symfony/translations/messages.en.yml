@@ -439,6 +439,7 @@ form:
       notes_title: Notes
       operation: 'Create or bind this trigger to a Minutis operation'
       submit: Send
+      operation_help: 'If you tick this option, you will be able to configure your operation after validating your trigger.'
   communication:
     call: 'voice call'
     email: email

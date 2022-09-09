@@ -439,6 +439,7 @@ form:
       notes_title: Notes
       operation: 'Créer ou rattacher ce déclenchement avec une opération dans Minutis'
       submit: Envoyer
+      operation_help: 'Si vous cochez cette case, vous pourrez configurer votre opération en validant votre déclenchement.'
   communication:
     call: 'appel vocal'
     email: email
