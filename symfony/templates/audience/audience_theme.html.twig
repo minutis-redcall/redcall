@@ -612,7 +612,8 @@
             {% endif %}
         });
 
-        $('body').on('click', '#toggle-audience-form', function () {
+        $('body').on('click', '#toggle-audience-form', function (e) {
+            e.preventDefault();
             $('#audience-form').toggleClass('d-none');
             if ($('#audience-form').hasClass('d-none')) {
                 $('#toggle-audience-form').html('{{ 'audience.pre_selection.use_standard_form'|trans }}');
