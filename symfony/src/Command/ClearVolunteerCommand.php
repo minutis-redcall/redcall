@@ -39,5 +39,7 @@ class ClearVolunteerCommand extends Command
             $this->volunteerManager->anonymize($volunteer);
             $output->writeln($volunteerId);
         }
+
+        return Command::SUCCESS;
     }
 }
