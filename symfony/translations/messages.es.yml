@@ -125,10 +125,6 @@ admin:
       title: Mensajes
       to_volunteers: 'a <b>%volunteers%</b> personas voluntarias.'
     no_stats: 'Este periodo no cuenta con ninguna estadística.'
-    pegass:
-      newest_update: 'Última actualización'
-      oldest_update: 'Actualización más antigua'
-      title: 'Actualización Pegass'
     structure:
       form:
         from: 'Entre el:'

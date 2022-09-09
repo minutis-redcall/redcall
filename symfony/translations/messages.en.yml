@@ -133,10 +133,6 @@ admin:
       title: Messages
       to_volunteers: 'to <b>%volunteers%</b> volunteers.'
     no_stats: 'No statistics for this section in the selected period.'
-    pegass:
-      newest_update: 'Newest update'
-      oldest_update: 'Oldest update'
-      title: 'Pegass updates'
     structure:
       form:
         from: 'From:'

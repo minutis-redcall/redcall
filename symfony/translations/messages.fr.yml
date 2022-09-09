@@ -133,10 +133,6 @@ admin:
       title: Messages
       to_volunteers: 'à <b>%volunteers%</b> bénévoles.'
     no_stats: 'Aucune statistique à afficher pour cette période.'
-    pegass:
-      newest_update: 'Mise à jour la plus récente'
-      oldest_update: 'Mise à jour la plus ancienne'
-      title: 'Mise à jour Pegass'
     structure:
       form:
         from: 'Entre le :'
