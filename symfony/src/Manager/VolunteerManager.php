@@ -317,6 +317,14 @@ class VolunteerManager
         return array_column($this->volunteerRepository->filterMinors($platform, $volunteerIds), 'id');
     }
 
+    /**
+     * @return int[]
+     */
+    public function findVolunteersToAnonymize() : array
+    {
+        return $this->volunteerRepository->findVolunteersToAnonymize();
+    }
+
     public function anonymize(Volunteer $volunteer)
     {
         $volunteer->setEnabled(false);
@@ -344,8 +352,8 @@ class VolunteerManager
         }
 
         $volunteer->setBadges([]);
-        $volunteer->setFirstName('-');
-        $volunteer->setLastName('-');
+        $volunteer->setFirstName(null);
+        $volunteer->setLastName(null);
         $volunteer->setBirthday(new \DateTime('2000-01-01'));
         $volunteer->getBadges()->clear();
         $volunteer->getPhones()->clear();
