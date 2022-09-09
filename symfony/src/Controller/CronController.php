@@ -8,6 +8,7 @@ use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -29,6 +30,16 @@ class CronController extends AbstractController
     ];
 
     /**
+     * @var SessionInterface
+     */
+    protected $session;
+
+    public function __construct(SessionInterface $session)
+    {
+        $this->session = $session;
+    }
+
+    /**
      * @Route("/{key}")
      */
     public function run(Request $request, string $key, KernelInterface $kernel)
@@ -40,7 +51,11 @@ class CronController extends AbstractController
 
         if ($request->getClientIp() !== '127.0.0.1'
             && 'true' !== $request->headers->get('X-Appengine-Cron')) {
-            throw $this->createAccessDeniedException();
+            if ($this->getUser() && $this->getUser()->isAdmin()) {
+                $this->session->save();
+            } else {
+                throw $this->createAccessDeniedException();
+            }
         }
 
         $application = new Application($kernel);

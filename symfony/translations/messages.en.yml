@@ -133,10 +133,6 @@ admin:
       title: Messages
       to_volunteers: 'to <b>%volunteers%</b> volunteers.'
     no_stats: 'No statistics for this section in the selected period.'
-    pegass:
-      newest_update: 'Newest update'
-      oldest_update: 'Oldest update'
-      title: 'Pegass updates'
     structure:
       form:
         from: 'From:'
@@ -238,6 +234,10 @@ audience:
   select_all_badges: 'Trigger all volunteers whatever their skills'
   structures: Structure(s)
   volunteer_lists: 'Volunteer lists'
+  accordion:
+    filters: 'Filter by structures and skills'
+    lists: 'Use a volunteers list'
+    search: 'Manual volunteers search'
 backlinks:
   blablacar: 'Sponsored by'
   feedback: 'Help us improve RedCall!'
@@ -442,6 +442,7 @@ form:
       notes: 'Optional notes rendered to other RedCall users'
       notes_title: Notes
       operation: 'Create or bind this trigger to a Minutis operation'
+      operation_help: 'If you tick this option, you will be able to configure your operation after validating your trigger.'
       submit: Send
   communication:
     call: 'voice call'
@@ -457,7 +458,7 @@ form:
       language: 'In which language is written your message?'
       length: 'Message length:'
       message: Message
-      multiple_answer: 'Volunteers can choose several answers'
+      multiple_answer: 'Volunteers can choose...'
       multiple_answer_one: 'one answer'
       multiple_answer_several: 'several answers'
       other_options: 'Other options'
@@ -580,6 +581,33 @@ manage_structures:
     button: Search
     label: 'Search structure'
     only_enabled: 'Hide disabled structures'
+  templates:
+    actions:
+      delete: 'Really remove that template?'
+      down: ▼
+      up: ▲
+    choose: 'Use a message template'
+    editor_create: 'Create a new message template'
+    editor_update: 'Update a message template'
+    form:
+      answers: 'Possible answers'
+      body: 'Message body'
+      name: 'Template name (rendered in the trigger form)'
+      subject: 'Message subject'
+      type: 'Trigger type'
+    help:
+      create: 'create message templates'
+      end: 'in order to fill the form automatically.'
+      intro: 'If you like you can'
+    list_title: 'Your message templates'
+    manage:
+      choose_structure: 'In which structure would you like to manage message templates?'
+      title: 'Manage message templates'
+    menu: 'Manage message templates'
+    types:
+      call: '📞 Phone call'
+      email: '✉️ Email'
+      sms: '📱 SMS'
   title: 'Manage structures'
   unlock: 'Unlock structure'
   users: 'RedCall users count: %count%'
@@ -605,33 +633,6 @@ manage_structures:
     title: 'Manage volunteer lists'
     update: 'Edit list "%name%"'
   volunteers: 'Volunteers count: %count%'
-  templates:
-    menu: 'Manage message templates'
-    list_title: 'Your message templates'
-    editor_create: 'Create a new message template'
-    editor_update: 'Update a message template'
-    form:
-      type: 'Trigger type'
-      name: 'Template name (rendered in the trigger form)'
-      subject: 'Message subject'
-      body: 'Message body'
-      answers: 'Possible answers'
-    types:
-      email: '✉️ Email'
-      call: '📞 Phone call'
-      sms: '📱 SMS'
-    actions:
-      up: ▲
-      down: ▼
-      delete: 'Really remove that template?'
-    help:
-      intro: 'If you like you can'
-      create: 'create message templates'
-      end: 'in order to fill the form automatically.'
-    manage:
-      title: 'Manage message templates'
-      choose_structure: 'In which structure would you like to manage message templates?'
-    choose: 'Use a message template'
 manage_volunteers:
   access_denied: 'Cannot edit this volunteer details, (s)he does not belong to any structure you are managing.'
   action:

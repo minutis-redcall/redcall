@@ -39,11 +39,6 @@ class Campaign
     public $trigger;
 
     /**
-     * @var string
-     */
-    public $notes;
-
-    /**
      * @var bool
      */
     public $hasOperation;

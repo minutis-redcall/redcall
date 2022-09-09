@@ -100,6 +100,8 @@ class Campaign
     private $active = true;
 
     /**
+     * @var Communication[]
+     *
      * @ORM\OneToMany(targetEntity="App\Entity\Communication", mappedBy="campaign", cascade={"persist"})
      * @ORM\OrderBy({"createdAt" = "DESC"})
      */
@@ -445,5 +447,22 @@ class Campaign
         }
 
         return false;
+    }
+
+    public function getRenderedShortcuts() : string
+    {
+        $shortcuts = [];
+        foreach ($this->communications as $communication) {
+            $shortcuts[] = $communication->getShortcut();
+        }
+        $shortcuts = array_filter($shortcuts);
+
+        if (!$shortcuts) {
+            return '';
+        }
+
+        $shortcuts = array_unique($shortcuts);
+
+        return sprintf('(%s)', implode(', ', $shortcuts));
     }
 }

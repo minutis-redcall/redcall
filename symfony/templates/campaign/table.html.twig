@@ -40,6 +40,10 @@
                     {% endif %}
                 </a>
 
+                <span style="font-size: 14px;color:grey;">
+                    {{ campaign.renderedShortcuts }}
+                </span>
+
                 {% if campaign.operation %}
                     <div class="float-right">
                         <a href="{{ campaign.operationUrl(minutis) }}" class="btn btn-secondary" target="_blank">🚑 {{ 'minutis.open'|trans }}</a>

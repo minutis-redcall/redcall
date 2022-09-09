@@ -15,17 +15,17 @@
                 {{ form_errors(form) }}
 
                 {% if flow.currentStepNumber == 1 %}
-                    {{ form_row(form.label) }}
                     {{ form_row(form.type) }}
+                    {{ form_row(form.label) }}
+
+                    <hr/>
                     {{ form_row(form.hasOperation) }}
+                    <p>{{ 'form.campaign.fields.operation_help'|trans }}</p>
 
                     <hr/>
 
                     {{ include(type.formView, _context|merge({form: form.trigger})) }}
 
-                    <hr/>
-                    <div class="h4">{{ 'form.campaign.fields.notes_title'|trans }}</div>
-                    {{ form_row(form.notes) }}
                 {% endif %}
 
                 {% if flow.currentStepNumber > 1 %}

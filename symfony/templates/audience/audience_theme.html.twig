@@ -43,59 +43,332 @@
 
             <br/>
 
-            {# -------------------------------------------------------------------------------- #}
-            {# Volunteer lists #}
-            {# -------------------------------------------------------------------------------- #}
-
-            {% if form.parent.children.answers.vars.id|default(false) %}
-
-                {% if not volunteer_lists %}
-
-                    <div class="alert alert-info">
-                        {{ 'manage_structures.volunteer_list.help.intro'|trans }}
-                        <a href="#" data-toggle="modal" data-target="#volunteers-list-modal">
-                            {{ 'manage_structures.volunteer_list.help.create'|trans }}
-                        </a>
+            <div id="accordion">
+                <div class="card">
+                    <div class="card-header" id="accordion-filters-header">
+                        <h5 class="mb-0">
+                            <a href="javascript:void(0);" class="btn btn-link" data-toggle="collapse" data-target="#accordion-filters-body" aria-expanded="true" aria-controls="accordion-filters-body">
+                                {{ 'audience.accordion.filters'|trans }}
+                            </a>
+                        </h5>
                     </div>
 
-                {% else %}
+                    <div id="accordion-filters-body" class="collapse show" aria-labelledby="accordion-filters-header" data-parent="#accordion">
+                        <div class="card-body">
+                            {# -------------------------------------------------------------------------------- #}
+                            {# Structure tree #}
+                            {# -------------------------------------------------------------------------------- #}
+                            <div class="d-none">
+                                {{ form_row(form.structures_global) }}
+                                {{ form_row(form.structures_local) }}
+                            </div>
 
-                    <div class="h4">
-                        {{ 'audience.volunteer_lists'|trans }}
-                    </div>
+                            {% if app.user.structures|length > 1 %}
 
-                    {% for volunteer_list in volunteer_lists %}
-                        <div class="d-none" id="volunteer-list-{{ volunteer_list.id }}">
-                            {%- for volunteer in volunteer_list.volunteers %}{{ volunteer.externalId }} {% endfor -%}
+                                <div class="h4">
+                                    {{ 'audience.structures'|trans }}
+                                </div>
+
+                                {# All structure ticks, in the tree view #}
+                                {% macro renderSlider(form, global, local, hierarchy, information, current, ticked = false) %}
+                                    {% set ticked = ticked or current in global or current in local %}
+
+                                    {# A user may not have access to a children structure #}
+                                    {% if hierarchy[current] is defined %}
+
+                                        {% set has_children = hierarchy[current]|length %}
+
+                                        <div class="structure-node">
+                                            {# Slider header #}
+                                            <label class="switch">
+                                                <input id="global-structure-{{ current }}"
+                                                       type="checkbox"
+                                                       class="toggle-to-text structure-tick numbers"
+                                                       {% if ticked %}checked{% endif %}
+                                                       data-field="#{{ form.structures_global.vars.id }}"
+                                                       data-id="{{ current }}"/>
+                                                <span class="slider"></span>
+                                            </label>
+                                            {% if has_children %}
+                                                <a data-toggle="collapse" class="node-collapse-link" href="#container-children-{{ current }}">
+                                                    <label for="global-structure-{{ current }}">
+                                                        <span id="arrow-open-{{ current }}">&#9658;</span>
+                                                        <span id="arrow-close-{{ current }}" class="d-none">&#9660;</span>
+                                                        {{ information[current].name }}
+                                                        ({{ information[current].global_count }})
+                                                    </label>
+                                                </a>
+                                            {% else %}
+                                                <label for="global-structure-{{ current }}">
+                                                    {{ information[current].name }}
+                                                    ({{ information[current].global_count }})
+                                                </label>
+                                            {% endif %}
+
+                                            {# Slider body #}
+                                            {% if has_children %}
+                                                <div id="container-children-{{ current }}" data-current="{{ current }}" class="collapse structure-children">
+                                                    <div class="card card-body">
+                                                        <div>
+                                                            <label class="switch">
+                                                                <input id="local-structure-{{ current }}"
+                                                                       type="checkbox"
+                                                                       class="toggle-to-text structure-tick numbers"
+                                                                       {% if ticked %}checked{% endif %}
+                                                                       data-field="#{{ form.structures_local.vars.id }}"
+                                                                       data-id="{{ current }}"/>
+                                                                <span class="slider"></span>
+                                                            </label>
+                                                            <label for="local-structure-{{ current }}">
+                                                                {{ information[current].name }}
+                                                                ({{ information[current].local_count }})
+                                                            </label>
+                                                        </div>
+                                                        {% for child in hierarchy[current] %}
+                                                            {% set ticked = ticked or child in global or child in local %}
+                                                            {{ _self.renderSlider(form, global, local, hierarchy, information, child, ticked) }}
+                                                        {% endfor %}
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+
+                                    {% endif %}
+                                {% endmacro %}
+
+                                {% for structure_id in structures_roots %}
+                                    {{ _self.renderSlider(form, form.structures_global.vars.data|split(','), form.structures_local.vars.data|split(','), structures_hierarchy, structures_information, structure_id) }}
+                                {% endfor %}
+
+                                <br/>
+                            {% endif %}
+
+                            {# -------------------------------------------------------------------------------- #}
+                            {# Badges #}
+                            {# -------------------------------------------------------------------------------- #}
+
+                            {% if app.user.structures|length > 1 %}
+                                <div class="h4">
+                                    {{ 'audience.badges'|trans }}
+                                </div>
+                            {% endif %}
+
+                            {# Trigger everyone discarding badges #}
+                            <div class="form-group">
+
+                                <div class="d-none">
+                                    {{ form_row(form.badges_all) }}
+                                </div>
+                                <label class="switch">
+                                    <input id="badges-all"
+                                           class="numbers no-badge-counts"
+                                           onclick="$('#{{ form.badges_all.vars.id }}').prop('checked', $(this).prop('checked'));"
+                                           type="checkbox"
+                                           {% if init_data.badges_all %}checked{% endif %}/>
+                                    <span class="slider"></span>
+                                </label>
+                                <label for="badges-all">
+                                    {{ 'audience.select_all_badges'|trans }}
+                                    (<span id="badge-count-0" class="badge-count">{{ badge_counts[0] }}</span>)
+                                </label>
+                            </div>
+
+                            {# Main badges #}
+                            <div class="row">
+
+                                <div class="d-none">
+                                    {{ form_row(form.badges_ticked) }}
+                                </div>
+
+                                {% set badges_ticked = form.badges_ticked.vars.data|split(',') %}
+
+                                {% for badge in badges_public %}
+                                    <div class="col-md-3">
+                                        <label class="switch">
+                                            <input id="badge-{{ badge.id }}"
+                                                   type="checkbox"
+                                                   class="toggle-to-text badge-tick numbers no-badge-counts"
+                                                   {% if init_data.badges_all %}disabled="disabled"{% endif %}
+                                                    {% if badge.id in badges_ticked %}checked{% endif %}
+                                                   data-field="#{{ form.badges_ticked.vars.id }}"
+                                                   data-id="{{ badge.id }}"/>
+                                            <span class="slider"></span>
+                                        </label>
+                                        <label for="badge-{{ badge.id }}" class="badge-tick {% if init_data.badges_all %}disabled{% endif %}">
+                                            {{ macros.badge(badge) }}
+                                            (<span id="badge-count-{{ badge.id }}" class="badge-count">{{ badge_counts[badge.id] }}</span>)
+                                        </label>
+
+                                    </div>
+                                {% endfor %}
+                            </div>
+
+                            <br/>
+
+                            {# Other badges search #}
+                            {% set attr = {
+                                'class': 'flexdatalist numbers no-badge-counts badge-tick ' ~ (init_data.badges_all ? 'disabled' : ''),
+                                'multiple': "multiple",
+                                'placeholder': 'base.search.placeholder'|trans,
+                                'data-url': path('audience_search_badge'),
+                                'data-data': badges_searched|json_encode,
+                                'data-search-disabled': true,
+                                'data-min-length': 1,
+                                'data-visible-properties': '["name"]',
+                                'data-no-results-text': 'base.search.no_results'|trans,
+                                'data-focus-first-result': true,
+                                'data-selection-required': true,
+                                'data-text-property': "name",
+                                'data-value-property': "id",
+                            } %}
+
+                            {% if init_data.badges_all %}
+                                {% set attr = attr|merge({
+                                    'disabled': 'disabled',
+                                }) %}
+                            {% endif %}
+
+                            <div class="badge-tick {% if init_data.badges_all %}disabled{% endif %}">
+                                {{ form_row(form.badges_searched, {
+                                    'attr': attr
+                                }) }}
+                            </div>
+
+                            {# -------------------------------------------------------------------------------- #}
+                            {# Allow minors #}
+                            {# -------------------------------------------------------------------------------- #}
+
+                            {{ form_row(form.allow_minors, {
+                                'attr': {
+                                    'class': 'numbers',
+                                }
+                            }) }}
+
                         </div>
-                    {% endfor %}
-
-                    <select id="choose-volunteer-list" class="form-control">
-                        <option data-id=""></option>
-                        {% for volunteer_list in volunteer_lists %}
-                            <option data-id="{{ volunteer_list.id }}" data-uri="{{ path('management_structures_volunteer_lists_create', {structureId: volunteer_list.structure.id, volunteerListId: volunteer_list.id}) }}">
-                                [{{ volunteer_list.structure.shortcut }}] {{ volunteer_list.name }}
-                                ({{ volunteer_list.volunteers|length }})
-                            </option>
-                        {% endfor %}
-                    </select>
-
-                    <div class="float-right">
-                        <a href="#" data-toggle="modal" data-target="#volunteers-list-modal">
-                            {{ 'manage_structures.volunteer_list.manage'|trans }}
-                        </a>
                     </div>
-
-                    <div class="my-2">
-                        <a id="choose-volunteer-list-use" href="#" data-id="" class="btn btn-secondary volunteer-list-use d-none">{{ 'base.button.use'|trans }}</a>
-                        <a id="choose-volunteer-list-edit" href="" class="btn btn-secondary d-none" target="_blank">{{ 'base.button.update'|trans }}</a>
+                </div>
+                <div class="card">
+                    <div class="card-header" id="accordion-lists-header">
+                        <h5 class="mb-0">
+                            <a href="javascript:void(0);" class="btn btn-link collapsed" data-toggle="collapse" data-target="#accordion-lists-body" aria-expanded="false" aria-controls="accordion-lists-body">
+                                {{ 'audience.accordion.lists'|trans }}
+                            </a>
+                        </h5>
                     </div>
+                    <div id="accordion-lists-body" class="collapse" aria-labelledby="accordion-lists-header" data-parent="#accordion">
+                        <div class="card-body">
+                            {# -------------------------------------------------------------------------------- #}
+                            {# Volunteer lists #}
+                            {# -------------------------------------------------------------------------------- #}
 
-                {% endif %}
+                            {% if form.parent.children.answers.vars.id|default(false) %}
 
-                <br/>
+                                {% if not volunteer_lists %}
 
-            {% endif %}
+                                    <div class="alert alert-info">
+                                        {{ 'manage_structures.volunteer_list.help.intro'|trans }}
+                                        <a href="#" data-toggle="modal" data-target="#volunteers-list-modal">
+                                            {{ 'manage_structures.volunteer_list.help.create'|trans }}
+                                        </a>
+                                    </div>
+
+                                {% else %}
+
+                                    <div class="h4">
+                                        {{ 'audience.volunteer_lists'|trans }}
+                                    </div>
+
+                                    {% for volunteer_list in volunteer_lists %}
+                                        <div class="d-none" id="volunteer-list-{{ volunteer_list.id }}">
+                                            {%- for volunteer in volunteer_list.volunteers %}{{ volunteer.externalId }} {% endfor -%}
+                                        </div>
+                                    {% endfor %}
+
+                                    <select id="choose-volunteer-list" class="form-control">
+                                        <option data-id=""></option>
+                                        {% for volunteer_list in volunteer_lists %}
+                                            <option data-id="{{ volunteer_list.id }}" data-uri="{{ path('management_structures_volunteer_lists_create', {structureId: volunteer_list.structure.id, volunteerListId: volunteer_list.id}) }}">
+                                                [{{ volunteer_list.structure.shortcut }}] {{ volunteer_list.name }}
+                                                ({{ volunteer_list.volunteers|length }})
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+
+                                    <div class="float-right">
+                                        <a href="#" data-toggle="modal" data-target="#volunteers-list-modal">
+                                            {{ 'manage_structures.volunteer_list.manage'|trans }}
+                                        </a>
+                                    </div>
+
+                                    <div class="my-2">
+                                        <a id="choose-volunteer-list-use" href="#" data-id="" class="btn btn-secondary volunteer-list-use d-none">{{ 'base.button.use'|trans }}</a>
+                                        <a id="choose-volunteer-list-edit" href="" class="btn btn-secondary d-none" target="_blank">{{ 'base.button.update'|trans }}</a>
+                                    </div>
+
+                                {% endif %}
+
+                                <br/>
+
+                                <div id="copy-paste-external-ids">
+                                    {{ form_row(form.external_ids, {
+                                        'attr': {
+                                            'class': 'numbers no-badge-counts'
+                                        }
+                                    }) }}
+                                </div>
+
+                            {% endif %}
+
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="card-header" id="accordion-search-header">
+                        <h5 class="mb-0">
+                            <a href="javascript:void(0);" class="btn btn-link collapsed" data-toggle="collapse" data-target="#accordion-search-body" aria-expanded="false" aria-controls="accordion-search-body">
+                                {{ 'audience.accordion.search'|trans }}
+                            </a>
+                        </h5>
+                    </div>
+                    <div id="accordion-search-body" class="collapse" aria-labelledby="accordion-search-header" data-parent="#accordion">
+                        <div class="card-body">
+                            {# -------------------------------------------------------------------------------- #}
+                            {# Volunteer searach #}
+                            {# -------------------------------------------------------------------------------- #}
+
+                            {% if app.user.structures|length > 1 %}
+                                <div class="h4">
+                                    {{ 'audience.manual_selection'|trans }}
+                                </div>
+                            {% endif %}
+
+                            {{ form_label(form.volunteers) }}
+                            {{ form_widget(form.volunteers, {
+                                'attr': {
+                                    'class': 'flexdatalist numbers no-badge-counts',
+                                    'multiple': "multiple",
+                                    'placeholder': 'base.search.placeholder'|trans,
+                                    'data-url': path('audience_search_volunteer'),
+                                    'data-data': volunteers_data|json_encode,
+                                    'data-search-disabled': true,
+                                    'data-min-length': 1,
+                                    'data-visible-properties': '["human"]',
+                                    'data-no-results-text': 'base.search.no_results'|trans,
+                                    'data-focus-first-result': true,
+                                    'data-selection-required': true,
+                                    'data-text-property': "human",
+                                    'data-value-property': "id",
+                                }
+                            }) }}
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {# -------------------------------------------------------------------------------- #}
+            {# Volunteer lists (modal) #}
+            {# -------------------------------------------------------------------------------- #}
 
             <div class="modal fade" id="volunteers-list-modal" tabindex="-1" role="dialog" aria-hidden="true">
                 <div class="modal-dialog modal-lg" role="document">
@@ -131,238 +404,7 @@
                 </div>
             </div>
 
-            {# -------------------------------------------------------------------------------- #}
-            {# Manual selection #}
-            {# -------------------------------------------------------------------------------- #}
-
-            {% if app.user.structures|length > 1 %}
-                <div class="h4">
-                    {{ 'audience.manual_selection'|trans }}
-                </div>
-            {% endif %}
-
-            {{ form_label(form.volunteers) }}
-            {{ form_widget(form.volunteers, {
-                'attr': {
-                    'class': 'flexdatalist numbers no-badge-counts',
-                    'multiple': "multiple",
-                    'placeholder': 'base.search.placeholder'|trans,
-                    'data-url': path('audience_search_volunteer'),
-                    'data-data': volunteers_data|json_encode,
-                    'data-search-disabled': true,
-                    'data-min-length': 1,
-                    'data-visible-properties': '["human"]',
-                    'data-no-results-text': 'base.search.no_results'|trans,
-                    'data-focus-first-result': true,
-                    'data-selection-required': true,
-                    'data-text-property': "human",
-                    'data-value-property': "id",
-                }
-            }) }}
-
             <br/>
-
-            <div id="show-copy-paste-external-ids">
-                <a href="#" class="btn btn-sm btn-secondary click-paste">
-                    {{ 'audience.copy_paste'|trans }}
-                </a>
-            </div>
-
-            <div id="copy-paste-external-ids" class="d-none">
-                {{ form_row(form.external_ids, {
-                    'attr': {
-                        'class': 'numbers no-badge-counts'
-                    }
-                }) }}
-            </div>
-
-            <br/>
-
-            {# -------------------------------------------------------------------------------- #}
-            {# Structure tree #}
-            {# -------------------------------------------------------------------------------- #}
-            <div class="d-none">
-                {{ form_row(form.structures_global) }}
-                {{ form_row(form.structures_local) }}
-            </div>
-
-            {% if app.user.structures|length > 1 %}
-
-                <div class="h4">
-                    {{ 'audience.structures'|trans }}
-                </div>
-
-                {# All structure ticks, in the tree view #}
-                {% macro renderSlider(form, global, local, hierarchy, information, current, ticked = false) %}
-                    {% set ticked = ticked or current in global or current in local %}
-
-                    {# A user may not have access to a children structure #}
-                    {% if hierarchy[current] is defined %}
-
-                        {% set has_children = hierarchy[current]|length %}
-
-                        <div class="structure-node">
-                            {# Slider header #}
-                            <label class="switch">
-                                <input id="global-structure-{{ current }}"
-                                       type="checkbox"
-                                       class="toggle-to-text structure-tick numbers"
-                                       {% if ticked %}checked{% endif %}
-                                       data-field="#{{ form.structures_global.vars.id }}"
-                                       data-id="{{ current }}"/>
-                                <span class="slider"></span>
-                            </label>
-                            {% if has_children %}
-                                <a data-toggle="collapse" class="node-collapse-link" href="#container-children-{{ current }}">
-                                    <label for="global-structure-{{ current }}">
-                                        <span id="arrow-open-{{ current }}">&#9658;</span>
-                                        <span id="arrow-close-{{ current }}" class="d-none">&#9660;</span>
-                                        {{ information[current].name }} ({{ information[current].global_count }})
-                                    </label>
-                                </a>
-                            {% else %}
-                                <label for="global-structure-{{ current }}">
-                                    {{ information[current].name }} ({{ information[current].global_count }})
-                                </label>
-                            {% endif %}
-
-                            {# Slider body #}
-                            {% if has_children %}
-                                <div id="container-children-{{ current }}" data-current="{{ current }}" class="collapse structure-children">
-                                    <div class="card card-body">
-                                        <div>
-                                            <label class="switch">
-                                                <input id="local-structure-{{ current }}"
-                                                       type="checkbox"
-                                                       class="toggle-to-text structure-tick numbers"
-                                                       {% if ticked %}checked{% endif %}
-                                                       data-field="#{{ form.structures_local.vars.id }}"
-                                                       data-id="{{ current }}"/>
-                                                <span class="slider"></span>
-                                            </label>
-                                            <label for="local-structure-{{ current }}">
-                                                {{ information[current].name }} ({{ information[current].local_count }})
-                                            </label>
-                                        </div>
-                                        {% for child in hierarchy[current] %}
-                                            {% set ticked = ticked or child in global or child in local %}
-                                            {{ _self.renderSlider(form, global, local, hierarchy, information, child, ticked) }}
-                                        {% endfor %}
-                                    </div>
-                                </div>
-                            {% endif %}
-                        </div>
-
-                    {% endif %}
-                {% endmacro %}
-
-                {% for structure_id in structures_roots %}
-                    {{ _self.renderSlider(form, form.structures_global.vars.data|split(','), form.structures_local.vars.data|split(','), structures_hierarchy, structures_information, structure_id) }}
-                {% endfor %}
-
-                <br/>
-            {% endif %}
-
-            {# -------------------------------------------------------------------------------- #}
-            {# Badges #}
-            {# -------------------------------------------------------------------------------- #}
-
-            {% if app.user.structures|length > 1 %}
-                <div class="h4">
-                    {{ 'audience.badges'|trans }}
-                </div>
-            {% endif %}
-
-            {# Trigger everyone discarding badges #}
-            <div class="form-group">
-
-                <div class="d-none">
-                    {{ form_row(form.badges_all) }}
-                </div>
-                <label class="switch">
-                    <input id="badges-all"
-                           class="numbers no-badge-counts"
-                           onclick="$('#{{ form.badges_all.vars.id }}').prop('checked', $(this).prop('checked'));"
-                           type="checkbox"
-                           {% if init_data.badges_all %}checked{% endif %}/>
-                    <span class="slider"></span>
-                </label>
-                <label for="badges-all">
-                    {{ 'audience.select_all_badges'|trans }}
-                    (<span id="badge-count-0" class="badge-count">{{ badge_counts[0] }}</span>)
-                </label>
-            </div>
-
-            {# Main badges #}
-            <div class="row">
-
-                <div class="d-none">
-                    {{ form_row(form.badges_ticked) }}
-                </div>
-
-                {% set badges_ticked = form.badges_ticked.vars.data|split(',') %}
-
-                {% for badge in badges_public %}
-                    <div class="col-md-3">
-                        <label class="switch">
-                            <input id="badge-{{ badge.id }}"
-                                   type="checkbox"
-                                   class="toggle-to-text badge-tick numbers no-badge-counts"
-                                   {% if init_data.badges_all %}disabled="disabled"{% endif %}
-                                    {% if badge.id in badges_ticked %}checked{% endif %}
-                                   data-field="#{{ form.badges_ticked.vars.id }}"
-                                   data-id="{{ badge.id }}"/>
-                            <span class="slider"></span>
-                        </label>
-                        <label for="badge-{{ badge.id }}" class="badge-tick {% if init_data.badges_all %}disabled{% endif %}">
-                            {{ macros.badge(badge) }}
-                            (<span id="badge-count-{{ badge.id }}" class="badge-count">{{ badge_counts[badge.id] }}</span>)
-                        </label>
-
-                    </div>
-                {% endfor %}
-            </div>
-
-            <br/>
-
-            {# Other badges search #}
-            {% set attr = {
-                'class': 'flexdatalist numbers no-badge-counts badge-tick ' ~ (init_data.badges_all ? 'disabled' : ''),
-                'multiple': "multiple",
-                'placeholder': 'base.search.placeholder'|trans,
-                'data-url': path('audience_search_badge'),
-                'data-data': badges_searched|json_encode,
-                'data-search-disabled': true,
-                'data-min-length': 1,
-                'data-visible-properties': '["name"]',
-                'data-no-results-text': 'base.search.no_results'|trans,
-                'data-focus-first-result': true,
-                'data-selection-required': true,
-                'data-text-property': "name",
-                'data-value-property': "id",
-            } %}
-
-            {% if init_data.badges_all %}
-                {% set attr = attr|merge({
-                    'disabled': 'disabled',
-                }) %}
-            {% endif %}
-
-            <div class="badge-tick {% if init_data.badges_all %}disabled{% endif %}">
-                {{ form_row(form.badges_searched, {
-                    'attr': attr
-                }) }}
-            </div>
-
-            {# -------------------------------------------------------------------------------- #}
-            {# Allow minors #}
-            {# -------------------------------------------------------------------------------- #}
-
-            {{ form_row(form.allow_minors, {
-                'attr': {
-                    'class': 'numbers',
-                }
-            }) }}
 
             {# -------------------------------------------------------------------------------- #}
             {# Excluded volunteers #}
@@ -445,16 +487,16 @@
         $('#badges-all').click(function () {
             if ($(this).is(':checked')) {
                 $('.badge-tick')
-                        .addClass('disabled')
-                        .prop('disabled', 'disabled');
+                    .addClass('disabled')
+                    .prop('disabled', 'disabled');
 
                 $('#{{ form.badges_searched.vars.id }}').flexdatalist({
                     disabled: true,
                 });
             } else {
                 $('.badge-tick')
-                        .removeClass('disabled')
-                        .prop('disabled', false);
+                    .removeClass('disabled')
+                    .prop('disabled', false);
 
                 $('#{{ form.badges_searched.vars.id }}').flexdatalist({
                     disabled: false,
@@ -494,14 +536,6 @@
             $('#toggle-volunteer-exclusion-' + id).click();
         })
 
-        {# Opening the list of selected volunteers (small audience) #}
-        {#
-        $('body').on('click', '#open-small-audience', function (e) {
-            e.preventDefault();
-            alert('open small audience!');
-        });
-        #}
-
         {# Updating classification and badge counts #}
         var numbersContext = null;
         var numbersLock = false;
@@ -533,7 +567,7 @@
 
                 if ($('#submit-button-audience').length) {
                     $('.trigger-launch').html(
-                            $('#submit-button-audience').html().replace('%nbr%', data.triggered_count)
+                        $('#submit-button-audience').html().replace('%nbr%', data.triggered_count)
                     );
                 }
 
@@ -553,7 +587,7 @@
 
         $('body').on('change', '.numbers', function () {
             numbers(
-                    !$(this).hasClass('no-badge-counts')
+                !$(this).hasClass('no-badge-counts')
             );
         });
 
@@ -573,12 +607,13 @@
 
             {% if classification.reachable|length %}
             $('.trigger-launch').html(
-                    $('#submit-button-audience').html().replace('%nbr%', {{ classification.reachable|length }})
+                $('#submit-button-audience').html().replace('%nbr%', {{ classification.reachable|length }})
             );
             {% endif %}
         });
 
-        $('body').on('click', '#toggle-audience-form', function () {
+        $('body').on('click', '#toggle-audience-form', function (e) {
+            e.preventDefault();
             $('#audience-form').toggleClass('d-none');
             if ($('#audience-form').hasClass('d-none')) {
                 $('#toggle-audience-form').html('{{ 'audience.pre_selection.use_standard_form'|trans }}');
@@ -587,27 +622,20 @@
             }
         });
 
-        $('body').on('click', '.click-paste', function (e) {
-            e.preventDefault();
-            $('#copy-paste-external-ids').removeClass('d-none');
-            $('#show-copy-paste-external-ids').addClass('d-none');
-        });
-
         $('body').on('click', '.volunteer-list-use', function (e) {
             e.preventDefault();
 
-            $('.click-paste').click();
             var volunteerListId = $(this).data('id');
             var textarea = $('#{{ form.external_ids.vars.id }}');
 
             textarea.val(
-                    (textarea.val() ? textarea.val() + ' ' : '') +
-                    $('#volunteer-list-' + volunteerListId).html()
-                            .replace(/&/g, "&amp;")
-                            .replace(/</g, "&lt;")
-                            .replace(/>/g, "&gt;")
-                            .replace(/"/g, "&quot;")
-                            .replace(/'/g, "&#039;"));
+                (textarea.val() ? textarea.val() + ' ' : '') +
+                $('#volunteer-list-' + volunteerListId).html()
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#039;"));
 
             numbers(0);
         });
@@ -624,16 +652,16 @@
         });
 
         $('.structure-children')
-                .on('show.bs.collapse', function () {
-                    var current = $(this).data('current');
-                    $('#arrow-open-' + current).addClass('d-none');
-                    $('#arrow-close-' + current).removeClass('d-none');
-                })
-                .on('hide.bs.collapse', function () {
-                    var current = $(this).data('current');
-                    $('#arrow-open-' + current).removeClass('d-none');
-                    $('#arrow-close-' + current).addClass('d-none');
-                });
+            .on('show.bs.collapse', function () {
+                var current = $(this).data('current');
+                $('#arrow-open-' + current).addClass('d-none');
+                $('#arrow-close-' + current).removeClass('d-none');
+            })
+            .on('hide.bs.collapse', function () {
+                var current = $(this).data('current');
+                $('#arrow-open-' + current).removeClass('d-none');
+                $('#arrow-close-' + current).addClass('d-none');
+            });
 
     </script>
 

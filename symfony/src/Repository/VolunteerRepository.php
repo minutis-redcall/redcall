@@ -598,6 +598,23 @@ class VolunteerRepository extends BaseRepository
                     ->setParameter('platform', $badge->getPlatform());
     }
 
+    /**
+     * @return int[]
+     */
+    public function findVolunteersToAnonymize() : array
+    {
+        $rows = $this->createQueryBuilder('v')
+                     ->select('v.id')
+                     ->join(Pegass::class, 'p', 'WITH', 'v.externalId = p.externalId')
+                     ->andWhere('p.enabled = false')
+                     ->andWhere('v.firstName IS NOT NULL')
+                     ->setMaxResults(1000)
+                     ->getQuery()
+                     ->getArrayResult();
+
+        return array_column($rows, 'id');
+    }
+
     private function createVolunteerListQueryBuilder(string $platform,
         array $volunteerIds,
         bool $onlyEnabled = true) : QueryBuilder

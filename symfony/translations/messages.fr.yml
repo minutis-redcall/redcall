@@ -133,10 +133,6 @@ admin:
       title: Messages
       to_volunteers: 'à <b>%volunteers%</b> bénévoles.'
     no_stats: 'Aucune statistique à afficher pour cette période.'
-    pegass:
-      newest_update: 'Mise à jour la plus récente'
-      oldest_update: 'Mise à jour la plus ancienne'
-      title: 'Mise à jour Pegass'
     structure:
       form:
         from: 'Entre le :'
@@ -238,6 +234,10 @@ audience:
   select_all_badges: 'Déclencher tous les bénévoles quelles que soient leurs compétences'
   structures: Structure(s)
   volunteer_lists: 'Listes préremplies de bénévoles'
+  accordion:
+    filters: 'Filtrer par structures et compétences'
+    lists: 'Utiliser une liste de bénévoles'
+    search: 'Recherche manuelle de bénévoles'
 backlinks:
   blablacar: 'Parrainé par'
   feedback: 'Partagez vos idées afin d''améliorer RedCall'
@@ -442,6 +442,7 @@ form:
       notes: 'Notes facultatives adressées aux autres cadres utilisant RedCall'
       notes_title: Notes
       operation: 'Créer ou rattacher ce déclenchement avec une opération dans Minutis'
+      operation_help: 'Si vous cochez cette case, vous pourrez configurer votre opération en validant votre déclenchement.'
       submit: Envoyer
   communication:
     call: 'appel vocal'
@@ -457,7 +458,7 @@ form:
       language: 'En quelle langue écrivez-vous votre message ?'
       length: 'Longueur du message :'
       message: Message
-      multiple_answer: 'Les destinataires peuvent choisir plusieurs réponses'
+      multiple_answer: 'Les destinataires peuvent choisir...'
       multiple_answer_one: 'une réponse'
       multiple_answer_several: 'plusieurs réponses'
       other_options: 'Autres options'
@@ -580,6 +581,33 @@ manage_structures:
     button: Rechercher
     label: 'Rechercher une structure'
     only_enabled: 'Masquer les structures desactivées'
+  templates:
+    actions:
+      delete: 'Vraiment supprimer ce modèle ?'
+      down: ▼
+      up: ▲
+    choose: 'Utiliser un modèle de message'
+    editor_create: 'Créer un nouveau modèle de message'
+    editor_update: 'Mettre à jour un modèle de message'
+    form:
+      answers: 'Réponses possibles'
+      body: 'Texte du message'
+      name: 'Nom du modèle de message (affiché dans le formulaire de communication)'
+      subject: 'Sujet du message'
+      type: 'Type de communication'
+    help:
+      create: 'créer des modèles de messages'
+      end: 'afin de préremplir le formulaire.'
+      intro: 'Si vous le souhaitez, vous pouvez'
+    list_title: 'Vos modèles de messages'
+    manage:
+      choose_structure: 'Dans quelle structure souhaitez-vous gérer les modèles de message ?'
+      title: 'Gérer les modèles de messages'
+    menu: 'Gérer les messages pré-remplis'
+    types:
+      call: '📞 Appel vocal'
+      email: '✉️ Email'
+      sms: '📱 SMS'
   title: 'Gestion des structures'
   unlock: 'Dégeler la structure'
   users: 'Nombre d''utilisateurs RedCall : %count%'
@@ -605,33 +633,6 @@ manage_structures:
     title: 'Gérer les listes de bénévoles'
     update: 'Éditer la liste "%name%"'
   volunteers: 'Nombre de bénévoles : %count%'
-  templates:
-    menu: 'Gérer les messages pré-remplis'
-    list_title: 'Vos modèles de messages'
-    editor_create: 'Créer un nouveau modèle de message'
-    editor_update: 'Mettre à jour un modèle de message'
-    form:
-      type: 'Type de communication'
-      name: 'Nom du modèle de message (affiché dans le formulaire de communication)'
-      subject: 'Sujet du message'
-      body: 'Texte du message'
-      answers: 'Réponses possibles'
-    types:
-      email: '✉️ Email'
-      call: '📞 Appel vocal'
-      sms: '📱 SMS'
-    actions:
-      up: ▲
-      down: ▼
-      delete: 'Vraiment supprimer ce modèle ?'
-    help:
-      intro: 'Si vous le souhaitez, vous pouvez'
-      create: 'créer des modèles de messages'
-      end: 'afin de préremplir le formulaire.'
-    manage:
-      title: 'Gérer les modèles de messages'
-      choose_structure: 'Dans quelle structure souhaitez-vous gérer les modèles de message ?'
-    choose: 'Utiliser un modèle de message'
 manage_volunteers:
   access_denied: 'Vous ne pouvez pas ouvrir le profil d''un(e) bénévole ne faisant pas partie des structures que vous pouvez déclencher.'
   action:
