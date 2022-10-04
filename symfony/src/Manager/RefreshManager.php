@@ -19,12 +19,6 @@ use Psr\Log\NullLogger;
 
 class RefreshManager
 {
-    private const EMAIL_KEYS = ['MAIL', 'MAILDOM', 'MAILTRAV'];
-
-    private const RED_CROSS_DOMAINS = [
-        'croix-rouge.fr',
-    ];
-
     // People having that badge should be enabled as RedCall users, and set as admin
     const BADGE_ADMIN = 'RTMR';
 
@@ -233,23 +227,19 @@ class RefreshManager
         $volunteer->setReport([]);
 
         // Update structures based on where volunteer was found while crawling structures
-        $structureIdsVolunteerBelongsTo = [];
-        $structuresVolunteerBelongsTo   = [];
-        foreach (array_filter(explode('|', $pegass->getParentIdentifier())) as $identifier) {
-            if ($structure = $this->structureManager->findOneByExternalId(Platform::FR, $identifier)) {
-                $structureIdsVolunteerBelongsTo[] = $structure->getId();
-                $structuresVolunteerBelongsTo[]   = $structure;
-            }
+        $structuresVolunteerBelongsTo = [];
+        $identifier                   = $pegass->evaluate('user.structure.id');
+        if ($structure = $this->structureManager->findOneByExternalId(Platform::FR, $identifier)) {
+            $structuresVolunteerBelongsTo[] = $structure;
         }
         $volunteer->syncStructures($structuresVolunteerBelongsTo);
 
         // Add structures based on the actions performed by the volunteer
-        $identifiers = [];
+        $identifiers = [$identifier];
         foreach ($pegass->evaluate('actions') ?? [] as $action) {
             if (isset($action['structure']['id']) && !in_array($action['structure']['id'], $identifiers)) {
                 if ($structure = $this->structureManager->findOneByExternalId(Platform::FR, $action['structure']['id'])) {
                     $volunteer->addStructure($structure);
-                    $structureIdsVolunteerBelongsTo[] = $structure->getId();
                 }
                 $identifiers[] = $action['structure']['id'];
             }

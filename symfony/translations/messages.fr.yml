@@ -161,6 +161,10 @@ admin:
     list: 'Liste d''utilisateurs'
     pegass: 'Connexions à Pegass'
 audience:
+  accordion:
+    filters: 'Filtrer par structures et compétences'
+    lists: 'Utiliser une liste de bénévoles'
+    search: 'Recherche manuelle de bénévoles'
   allow_minors: 'Inclure les bénévoles mineurs'
   audience: Audience
   audience_help: 'Vous pouvez sélectionner les bénévoles en les saisissant manuellement, ou en les filtrant par structures et compétences.'
@@ -234,10 +238,6 @@ audience:
   select_all_badges: 'Déclencher tous les bénévoles quelles que soient leurs compétences'
   structures: Structure(s)
   volunteer_lists: 'Listes préremplies de bénévoles'
-  accordion:
-    filters: 'Filtrer par structures et compétences'
-    lists: 'Utiliser une liste de bénévoles'
-    search: 'Recherche manuelle de bénévoles'
 backlinks:
   blablacar: 'Parrainé par'
   feedback: 'Partagez vos idées afin d''améliorer RedCall'
@@ -611,7 +611,7 @@ manage_structures:
   title: 'Gestion des structures'
   unlock: 'Dégeler la structure'
   users: 'Nombre d''utilisateurs RedCall : %count%'
-  view_pegass_entry: 'Ouvir l''entrée de la base de données Pegass'
+  view_pegass_entry: 'Ouvir l''entrée de la base de données DSI'
   volunteer_list:
     choose_structure: 'Dans quelle structure souhaitez-vous gérer les listes de bénévoles ?'
     create: 'Créer une nouvelle liste'
@@ -645,7 +645,8 @@ manage_volunteers:
     title: Actions
     unlock: Dégeler
     update_manual: 'Mettre à jour les informations bénévoles'
-    view_pegass_entry: 'Ouvir l''entrée de la base de données Pegass'
+    view_pegass_entry: 'Ouvir l''entrée de la base de données DSI'
+    reset_pegass_entry: 'Réinitialiser les données depuis la base de la DSI'
   admin_structures:
     create: 'Vous serez en mesure d''éditer les structures du bénévole après sa création.'
     edit: 'Editer les structures'

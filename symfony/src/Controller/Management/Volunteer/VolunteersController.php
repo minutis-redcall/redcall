@@ -19,6 +19,7 @@ use App\Manager\CommunicationManager;
 use App\Manager\PegassManager;
 use App\Manager\PhoneManager;
 use App\Manager\PlatformConfigManager;
+use App\Manager\RefreshManager;
 use App\Manager\StructureManager;
 use App\Manager\VolunteerManager;
 use App\Model\Csrf;
@@ -60,6 +61,11 @@ class VolunteersController extends BaseController
      * @var PegassManager
      */
     private $pegassManager;
+
+    /**
+     * @var RefreshManager
+     */
+    private $refreshManager;
 
     /**
      * @var CampaignManager
@@ -104,6 +110,7 @@ class VolunteersController extends BaseController
     public function __construct(VolunteerManager $volunteerManager,
         StructureManager $structureManager,
         PegassManager $pegassManager,
+        RefreshManager $refreshManager,
         CampaignManager $campaignManager,
         CommunicationManager $communicationManager,
         PhoneManager $phoneManager,
@@ -117,6 +124,7 @@ class VolunteersController extends BaseController
         $this->volunteerManager     = $volunteerManager;
         $this->structureManager     = $structureManager;
         $this->pegassManager        = $pegassManager;
+        $this->refreshManager       = $refreshManager;
         $this->campaignManager      = $campaignManager;
         $this->communicationManager = $communicationManager;
         $this->phoneManager         = $phoneManager;
@@ -275,6 +283,20 @@ class VolunteersController extends BaseController
             'pegass'    => json_encode($entity->getContent(), JSON_PRETTY_PRINT),
             'entity'    => $entity,
         ]);
+    }
+
+    /**
+     * @Route(path="/pegass-reset/{csrf}/{id}", name="pegass_reset")
+     * @IsGranted("ROLE_ADMIN")
+     * @Template("management/volunteers/volunteer.html.twig")
+     */
+    public function pegassReset(Volunteer $volunteer, Csrf $csrf)
+    {
+        $entity = $this->pegassManager->getEntity(Pegass::TYPE_VOLUNTEER, $volunteer->getExternalId(), false);
+
+        $this->refreshManager->refreshVolunteer($entity, true);
+
+        return $this->getContext($volunteer);
     }
 
     /**
