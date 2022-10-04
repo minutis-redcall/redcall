@@ -161,6 +161,10 @@ admin:
     list: 'User list'
     pegass: 'Pegass bindings'
 audience:
+  accordion:
+    filters: 'Filter by structures and skills'
+    lists: 'Use a volunteers list'
+    search: 'Manual volunteers search'
   allow_minors: 'Include underage volunteers'
   audience: Audience
   audience_help: 'You can select volunteers by writing them down manually, or by filtering them by structures and skills.'
@@ -234,10 +238,6 @@ audience:
   select_all_badges: 'Trigger all volunteers whatever their skills'
   structures: Structure(s)
   volunteer_lists: 'Volunteer lists'
-  accordion:
-    filters: 'Filter by structures and skills'
-    lists: 'Use a volunteers list'
-    search: 'Manual volunteers search'
 backlinks:
   blablacar: 'Sponsored by'
   feedback: 'Help us improve RedCall!'
@@ -611,7 +611,7 @@ manage_structures:
   title: 'Manage structures'
   unlock: 'Unlock structure'
   users: 'RedCall users count: %count%'
-  view_pegass_entry: 'Open Pegass database entry'
+  view_pegass_entry: 'Open DSI database entry'
   volunteer_list:
     choose_structure: 'In which structure would you like to create a list of volunteers?'
     create: 'Create a new list'
@@ -645,7 +645,8 @@ manage_volunteers:
     title: Actions
     unlock: Unlock
     update_manual: 'Update volunteer information'
-    view_pegass_entry: 'Open Pegass database entry'
+    view_pegass_entry: 'Open DSI database entry'
+    reset_pegass_entry: 'Reset entry from DSI database'
   admin_structures:
     create: 'You will be able to set volunteer''s structures after creating it.'
     edit: 'Edit structures'

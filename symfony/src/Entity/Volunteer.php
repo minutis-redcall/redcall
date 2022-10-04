@@ -774,7 +774,6 @@ class Volunteer implements LockableInterface
     {
         if (!$this->badges->contains($badge)) {
             $this->badges[] = $badge;
-            $badge->addVolunteer($this);
         }
 
         return $this;
@@ -807,11 +806,18 @@ class Volunteer implements LockableInterface
      */
     public function setExternalBadges(array $badges)
     {
+        $toKeep = [];
         foreach ($this->badges as $badge) {
             /** @var Badge $badge */
-            if ($badge->isExternal()) {
-                $this->removeBadge($badge);
+            if (!$badge->isExternal()) {
+                $toKeep[] = $badge;
             }
+        }
+
+        $this->badges->clear();
+
+        foreach ($toKeep as $badge) {
+            $this->addBadge($badge);
         }
 
         foreach ($badges as $badge) {
