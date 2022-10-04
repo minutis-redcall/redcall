@@ -240,6 +240,18 @@ class PegassManager
         $this->pegassRepository->save($entity);
     }
 
+    public function save(Pegass $entity)
+    {
+        $entity->setUpdatedAt(new DateTime());
+
+        $this->pegassRepository->save($entity);
+    }
+
+    public function delete(Pegass $pegass)
+    {
+        $this->pegassRepository->delete($pegass);
+    }
+
     public function flush()
     {
         $this->pegassRepository->clear();

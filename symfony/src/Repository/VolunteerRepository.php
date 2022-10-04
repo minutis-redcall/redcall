@@ -607,7 +607,6 @@ class VolunteerRepository extends BaseRepository
                      ->select('v.id')
                      ->join(Pegass::class, 'p', 'WITH', 'v.externalId = p.externalId')
                      ->andWhere('p.enabled = false')
-                     ->andWhere('v.firstName IS NOT NULL')
                      ->setMaxResults(1000)
                      ->getQuery()
                      ->getArrayResult();

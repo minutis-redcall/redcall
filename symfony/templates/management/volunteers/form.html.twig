@@ -83,7 +83,7 @@
         {{ form_end(form) }}
     </div>
 
-    {% if (not volunteer.user or not volunteer.user.trusted) and delete and delete.answer.vars.choices|length %}
+    {% if (not volunteer.user or not volunteer.user.trusted) and delete %}
         <div>
             <hr/>
             <strong>{{ 'manage_volunteers.anonymize.gdpr'|trans }}</strong>: {{ 'manage_volunteers.anonymize.volunteer_asked_for_it'|trans }}

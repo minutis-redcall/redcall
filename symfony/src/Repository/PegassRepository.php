@@ -199,6 +199,12 @@ class PegassRepository extends ServiceEntityRepository
         $this->_em->flush($entity);
     }
 
+    public function delete(Pegass $entity)
+    {
+        $this->_em->remove($entity);
+        $this->_em->flush($entity);
+    }
+
     private function getExpireDate(string $type) : DateTime
     {
         return DateTime::createFromFormat('U', time() - (Pegass::TTL[$type] * 24 * 60 * 60));

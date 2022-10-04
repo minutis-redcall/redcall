@@ -18,13 +18,15 @@
 
         <br/>
 
-        <div style="color:red;">{{ 'manage_volunteers.anonymize.message'|trans }}</div>
-        <br/>
+        {% if answer %}
+            <div style="color:red;">{{ 'manage_volunteers.anonymize.message'|trans }}</div>
+            <br/>
 
-        <blockquote class="quote-card">
-            <p>{{ answer.raw }}</p>
-            <cite>{{ answer.receivedAt|date('d/m/Y H:i') }}</cite>
-        </blockquote>
+            <blockquote class="quote-card">
+                <p>{{ answer.raw }}</p>
+                <cite>{{ answer.receivedAt|date('d/m/Y H:i') }}</cite>
+            </blockquote>
+        {% endif %}
 
         <br/>
 

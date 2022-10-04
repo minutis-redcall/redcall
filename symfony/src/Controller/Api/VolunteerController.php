@@ -25,6 +25,7 @@ use App\Facade\Volunteer\VolunteerFacade;
 use App\Facade\Volunteer\VolunteerFiltersFacade;
 use App\Facade\Volunteer\VolunteerReadFacade;
 use App\Manager\BadgeManager;
+use App\Manager\DeletedVolunteerManager;
 use App\Manager\PhoneManager;
 use App\Manager\StructureManager;
 use App\Manager\UserManager;
@@ -48,6 +49,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * A volunteer is a physical person belonging to the Red Cross.
@@ -97,9 +99,19 @@ class VolunteerController extends BaseController
     private $structureTransformer;
 
     /**
+     * @var DeletedVolunteerManager
+     */
+    private $deletedVolunteerManager;
+
+    /**
      * @var UserManager
      */
     private $userManager;
+
+    /**
+     * @var TranslatorInterface
+     */
+    private $translator;
 
     public function __construct(VolunteerManager $volunteerManager,
         VolunteerTransformer $volunteerTransformer,
@@ -109,17 +121,21 @@ class VolunteerController extends BaseController
         PhoneTransformer $phoneTransformer,
         StructureManager $structureManager,
         StructureTransformer $structureTransformer,
-        UserManager $userManager)
+        DeletedVolunteerManager $deletedVolunteerManager,
+        UserManager $userManager,
+        TranslatorInterface $translator)
     {
-        $this->volunteerManager     = $volunteerManager;
-        $this->volunteerTransformer = $volunteerTransformer;
-        $this->badgeManager         = $badgeManager;
-        $this->badgeTransformer     = $badgeTransformer;
-        $this->phoneManager         = $phoneManager;
-        $this->phoneTransformer     = $phoneTransformer;
-        $this->structureManager     = $structureManager;
-        $this->structureTransformer = $structureTransformer;
-        $this->userManager          = $userManager;
+        $this->volunteerManager        = $volunteerManager;
+        $this->volunteerTransformer    = $volunteerTransformer;
+        $this->badgeManager            = $badgeManager;
+        $this->badgeTransformer        = $badgeTransformer;
+        $this->phoneManager            = $phoneManager;
+        $this->phoneTransformer        = $phoneTransformer;
+        $this->structureManager        = $structureManager;
+        $this->structureTransformer    = $structureTransformer;
+        $this->deletedVolunteerManager = $deletedVolunteerManager;
+        $this->userManager             = $userManager;
+        $this->translator              = $translator;
     }
 
     /**
@@ -161,6 +177,13 @@ class VolunteerController extends BaseController
 
         $this->validate($volunteer, [
             new UniqueEntity(['externalId', 'platform']),
+            new Callback(function (Volunteer $data, ExecutionContextInterface $context) {
+                if ($data->getExternalId() && $this->deletedVolunteerManager->isDeleted($data->getExternalId())) {
+                    $context->addViolation(
+                        $this->translator->trans('admin.gdpr.violations.cannot_import')
+                    );
+                }
+            }),
         ]);
 
         $this->volunteerManager->save($volunteer);

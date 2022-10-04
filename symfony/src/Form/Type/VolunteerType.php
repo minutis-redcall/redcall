@@ -4,6 +4,7 @@ namespace App\Form\Type;
 
 use App\Entity\Structure;
 use App\Entity\Volunteer;
+use App\Manager\DeletedVolunteerManager;
 use App\Repository\StructureRepository;
 use App\Security\Helper\Security;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -18,8 +19,11 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Constraints\GreaterThan;
 use Symfony\Component\Validator\Constraints\LessThan;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class VolunteerType extends AbstractType
 {
@@ -28,9 +32,23 @@ class VolunteerType extends AbstractType
      */
     private $security;
 
-    public function __construct(Security $security)
+    /**
+     * @var DeletedVolunteerManager
+     */
+    private $deletedVolunteerManager;
+
+    /**
+     * @var TranslatorInterface
+     */
+    private $translator;
+
+    public function __construct(Security $security,
+        DeletedVolunteerManager $deletedVolunteerManager,
+        TranslatorInterface $translator)
     {
-        $this->security = $security;
+        $this->security                = $security;
+        $this->deletedVolunteerManager = $deletedVolunteerManager;
+        $this->translator              = $translator;
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)
@@ -39,7 +57,14 @@ class VolunteerType extends AbstractType
 
         $builder
             ->add('externalId', TextType::class, [
-                'label' => 'manage_volunteers.form.external_id',
+                'label'       => 'manage_volunteers.form.external_id',
+                'constraints' => new Callback(function ($data, ExecutionContextInterface $context) {
+                    if ($this->deletedVolunteerManager->isDeleted($data)) {
+                        $context->addViolation(
+                            $this->translator->trans('admin.gdpr.violations.cannot_import')
+                        );
+                    }
+                }),
             ])
             ->add('firstName', TextType::class, [
                 'label' => 'manage_volunteers.form.first_name',

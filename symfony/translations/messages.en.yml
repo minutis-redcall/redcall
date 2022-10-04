@@ -4,6 +4,7 @@ admin:
       button: Search
       details: 'Once you found someone, just use the GDPR button to remove him, and and him a message.'
       label: 'Criteria to search for in volunteer answers'
+      submit: Undelete
       title: 'This tool aims to search for people that answered they don''t want to be disturbed anymore.'
     table:
       date: Date
@@ -75,6 +76,15 @@ admin:
     search: 'Search for a category'
     title: 'Manage badge categories'
     unlock: 'Unlock category'
+  gdpr:
+    form:
+      captcha: 'In order to secure the action, please tick the box below.'
+      external_id: 'Search for an external ID (nivol):'
+    success: 'This volunteer can now be reintegrated.s'
+    title: 'Undelete a volunteer'
+    violations:
+      not_exists: 'This identifier does not exist.'
+      cannot_import: 'This identifier cannot be used.'
   home:
     link: Administration
   pegass:
@@ -642,11 +652,11 @@ manage_volunteers:
     enable: Enable
     enable_volunteer: 'Enable volunteer'
     lock: Lock
+    reset_pegass_entry: 'Reset entry from DSI database'
     title: Actions
     unlock: Unlock
     update_manual: 'Update volunteer information'
     view_pegass_entry: 'Open DSI database entry'
-    reset_pegass_entry: 'Reset entry from DSI database'
   admin_structures:
     create: 'You will be able to set volunteer''s structures after creating it.'
     edit: 'Edit structures'
@@ -676,7 +686,7 @@ manage_volunteers:
     delete_button: 'Delete his/her data'
     details_1: 'In accordance with the Data Protection Act and General Data Protection Regulations (GDPR), volunteers have the right to access, modify, delete and object to the processing of their personal data.'
     details_2: 'By clicking on the button below, all his/her information will be anonymzed, but will be kept to comply with accounting obligations (because of fees implicated while sending communications).'
-    details_3: 'His/her external identifier (NIVOL) is the only information that will be kept untouched, in order to block any data update coming from external databases and/or other external services.'
+    details_3: 'His/her external identifier (NIVOL) is the only information that will be kept as a HMAC-SHA256 hash, in order to block any data update coming from external databases and/or other external services. A manual intervention from support will be required to recreate the volunteer.'
     gdpr: GDPR
     message: 'Please review the message causing the data deletion.'
     not_linked: 'You cannot create any alerts because your account is not linked to any volunteer.'
@@ -692,6 +702,7 @@ manage_volunteers:
   form:
     added: 'Volunteer has properly been added.'
     birthday: 'Birth day'
+    create: 'Create volunteer'
     email: Email
     email_locked: 'Locked email *'
     email_optin: 'Available by email'

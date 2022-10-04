@@ -3,6 +3,7 @@
 namespace App\Task;
 
 use App\Entity\Pegass;
+use App\Manager\DeletedVolunteerManager;
 use App\Manager\PegassManager;
 use App\Manager\RefreshManager;
 use App\Manager\StructureManager;
@@ -34,6 +35,11 @@ class PegassUpdateChunk implements TaskInterface
     private $refreshManager;
 
     /**
+     * @var DeletedVolunteerManager
+     */
+    private $deletedVolunteerManager;
+
+    /**
      * @var Environment
      */
     private $twig;
@@ -42,13 +48,15 @@ class PegassUpdateChunk implements TaskInterface
         StructureManager $structureManager,
         VolunteerManager $volunteerManager,
         RefreshManager $refreshManager,
+        DeletedVolunteerManager $deletedVolunteerManager,
         Environment $twig)
     {
-        $this->pegassManager    = $pegassManager;
-        $this->structureManager = $structureManager;
-        $this->volunteerManager = $volunteerManager;
-        $this->refreshManager   = $refreshManager;
-        $this->twig             = $twig;
+        $this->pegassManager           = $pegassManager;
+        $this->structureManager        = $structureManager;
+        $this->volunteerManager        = $volunteerManager;
+        $this->refreshManager          = $refreshManager;
+        $this->deletedVolunteerManager = $deletedVolunteerManager;
+        $this->twig                    = $twig;
     }
 
     public function execute(array $context)
@@ -103,6 +111,11 @@ class PegassUpdateChunk implements TaskInterface
     private function updateVolunteer(string $identifier, array $data)
     {
         if (!$entity = $this->pegassManager->getEntity(Pegass::TYPE_VOLUNTEER, $identifier, false)) {
+            if ($this->deletedVolunteerManager->isDeleted($identifier)) {
+                // Prevents deleted volunteers through GDPR form to be reimported
+                return;
+            }
+
             $parentIdentifier = '|'.($data['structure_id'] ? sprintf('%s|', $data['structure_id']) : '');
             $entity           = $this->pegassManager->createNewEntity(Pegass::TYPE_VOLUNTEER, $identifier, $parentIdentifier);
         }
