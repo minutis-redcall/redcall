@@ -75,6 +75,16 @@ admin:
     search: 'Rechercher une catégorie'
     title: 'Gestion des catégories de badge'
     unlock: 'Dégeler la catégorie'
+  gdpr:
+    form:
+      captcha: 'Afin de sécuriser cette action, merci de cocher la case ci-dessous.'
+      external_id: 'Rechercher un ID externe (nivol) :'
+      submit: Débloquer
+    success: 'Ce bénévole peut désormais être réintégré.'
+    title: 'Réintégrer un bénévole supprimé'
+    violations:
+      not_exists: 'Cet identifiant n''existe pas.'
+      cannot_import: 'Cet identifiant ne peut pas être utilisé.'
   home:
     link: Administration
   pegass:
@@ -642,11 +652,11 @@ manage_volunteers:
     enable: Activer
     enable_volunteer: 'Réactiver le bénévole'
     lock: Geler
+    reset_pegass_entry: 'Réinitialiser les données depuis la base de la DSI'
     title: Actions
     unlock: Dégeler
     update_manual: 'Mettre à jour les informations bénévoles'
     view_pegass_entry: 'Ouvir l''entrée de la base de données DSI'
-    reset_pegass_entry: 'Réinitialiser les données depuis la base de la DSI'
   admin_structures:
     create: 'Vous serez en mesure d''éditer les structures du bénévole après sa création.'
     edit: 'Editer les structures'
@@ -676,7 +686,7 @@ manage_volunteers:
     delete_button: 'Supprimer ses données'
     details_1: 'Conformément à la Loi Informatique et Libertés et Règlement général sur la protection des données (RGPD), tout bénévole dispose d’un droit d’accès, de modification, de suppression et d’opposition au traitement de ses données à caractère personnel.'
     details_2: 'En cliquant sur le bouton ci-dessous, l''ensemble des informations concernant ce bénévole seront anonymisées, mais seront conservées pour obéir à des obligations relatives à la comptabilité (des frais incombant à l''envoi de communications).'
-    details_3: 'Son identifiant externe (NIVOL) est la seule information qui sera conservée intègre, afin de bloquer les mises à jour de ses données auprès des bases de données et autres services externes.'
+    details_3: 'Son identifiant externe (NIVOL) sera conservé sous forme de jeton (hmac-sha256), afin de bloquer les mises à jour de ses données auprès des bases de données et autres services externes. Une intervention du support sera nécessaire afin de réintégrer le bénévole.'
     gdpr: RGPD
     message: 'Merci de bien vouloir relire attentivement le message causant la suppression de données avant de continuer.'
     not_linked: 'Vous ne pouvez pas créer d''alerte car votre compte n''est relié à aucun bénévole.'
@@ -692,6 +702,7 @@ manage_volunteers:
   form:
     added: 'Le bénévole a correctement été ajouté.'
     birthday: 'Date de naissance'
+    create: 'Créer un bénévole'
     email: Email
     email_locked: 'Geler l''email *'
     email_optin: 'Disponible par email'

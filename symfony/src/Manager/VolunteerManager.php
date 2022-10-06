@@ -10,7 +10,6 @@ use App\Entity\Volunteer;
 use App\Repository\VolunteerRepository;
 use App\Security\Helper\Security;
 use Doctrine\ORM\QueryBuilder;
-use Psr\Log\LoggerInterface;
 
 class VolunteerManager
 {
@@ -30,6 +29,11 @@ class VolunteerManager
     private $structureManager;
 
     /**
+     * @var DeletedVolunteerManager
+     */
+    private $deletedVolunteerManager;
+
+    /**
      * @var AnswerManager
      */
     private $answerManager;
@@ -44,24 +48,19 @@ class VolunteerManager
      */
     private $security;
 
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
     public function __construct(VolunteerRepository $volunteerRepository,
         StructureManager $structureManager,
+        DeletedVolunteerManager $deletedVolunteerManager,
         AnswerManager $answerManager,
         PhoneManager $phoneManager,
-        Security $security,
-        LoggerInterface $logger)
+        Security $security)
     {
-        $this->volunteerRepository = $volunteerRepository;
-        $this->structureManager    = $structureManager;
-        $this->answerManager       = $answerManager;
-        $this->phoneManager        = $phoneManager;
-        $this->security            = $security;
-        $this->logger              = $logger;
+        $this->volunteerRepository     = $volunteerRepository;
+        $this->structureManager        = $structureManager;
+        $this->deletedVolunteerManager = $deletedVolunteerManager;
+        $this->answerManager           = $answerManager;
+        $this->phoneManager            = $phoneManager;
+        $this->security                = $security;
     }
 
     /**
@@ -371,6 +370,8 @@ class VolunteerManager
         $volunteer->setEmailLocked(false);
 
         $this->save($volunteer);
+
+        $this->deletedVolunteerManager->anonymize($volunteer);
     }
 
     public function orderVolunteerIdsByTriggeringPriority(array $volunteerIds) : array

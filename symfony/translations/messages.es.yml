@@ -557,12 +557,12 @@ manage_volunteers:
     delete_button: 'Eliminar sus datos'
     details_1: 'En aplicación de la Ley Orgánica de Protección de Datos Personales  y el Reglamento General de Protección de Datos (RGPD), toda persona voluntaria dispone de un derecho de acceso, modificación, eliminación y oposición al tratamiento de sus datos de carácter personal.'
     details_2: 'Cuando hagas clic en el siguiente botón, se anonimizarán todos los datos relativos a esta persona voluntaria, pero se conservarán aquellos necesarios a las obligaciones relativas a la contabilidad (gastos relacionados con el envío de comunicaciones).'
-    details_3: 'Su identificador externo (NIVOL) es el único dato que se conservará íntegramente, para impedir la actualización de sus datos en las bases de datos y en otros servicios externos.'
     gdpr: RGPD
     message: 'Por favor, lee con atención el mensaje causante de la supresión de datos antes de continuar.'
     not_linked: 'No puedes crear alertas porque tu cuenta no está vinculada a ninguna persona voluntaria.'
     title: 'Eliminación de datos de %name%'
     volunteer_asked_for_it: '¿Esta persona voluntaria te ha pedido que elimines sus datos?'
+    details_3: 'Su identificador externo (NIVOL) es el único dato que se conservará íntegramente, para impedir la actualización de sus datos en las bases de datos y en otros servicios externos.'
   can_trigger: 'Estructuras que %name% puede movilizar'
   can_trigger_button: 'Roles RedCall'
   columns:

@@ -241,7 +241,7 @@ class VolunteersController extends BaseController
             if ($delete->isSubmitted() && $delete->isValid()) {
                 return $this->redirectToRoute('management_volunteers_delete', [
                     'volunteerId' => $volunteer->getId(),
-                    'answerId'    => $delete->get('answer')->getData()->getId(),
+                    'answerId'    => $delete->has('answer') ? $delete->get('answer')->getData()->getId() : null,
                 ]);
             }
         }
@@ -357,12 +357,15 @@ class VolunteersController extends BaseController
     }
 
     /**
-     * @Route(path="/delete/{volunteerId}/{answerId}", name="delete")
+     * @Route(path="/delete/{volunteerId}/{answerId}", name="delete", defaults={"answerId"=null})
      * @Entity("volunteer", expr="repository.find(volunteerId)")
-     * @Entity("answer", expr="repository.find(answerId)")
+     * @Entity("answer", expr="answerId ? repository.find(answerId) : null")
      * @Template("management/volunteers/delete.html.twig")
      */
-    public function deleteAction(Request $request, SimpleProcessor $processor, Volunteer $volunteer, Answer $answer)
+    public function deleteAction(Request $request,
+        SimpleProcessor $processor,
+        Volunteer $volunteer,
+        ?Answer $answer = null)
     {
         if ($volunteer->getUser()) {
             throw $this->createNotFoundException();
@@ -488,7 +491,7 @@ class VolunteersController extends BaseController
     }
 
     private function deleteVolunteer(Volunteer $volunteer,
-        Answer $answer,
+        ?Answer $answer,
         SimpleProcessor $processor) : ?\App\Entity\Campaign
     {
         // Sending a message to the volunteer to let him know he is now removed
@@ -596,26 +599,34 @@ class VolunteersController extends BaseController
 
     private function createDeletionForm(Request $request, Volunteer $volunteer) : FormInterface
     {
-        return $this->createFormBuilder()
-                    ->add('answer', EntityType::class, [
-                        'class'         => Answer::class,
-                        'query_builder' => $this->answerManager->getVolunteerAnswersQueryBuilder($volunteer),
-                        'choice_label'  => function (Answer $answer) {
-                            return sprintf('%s: %s', $answer->getReceivedAt()->format('d/m/Y H:i'), $answer->getRaw());
-                        },
-                        'multiple'      => false,
-                        'expanded'      => false,
-                        'label'         => 'manage_volunteers.anonymize.choose_answer',
-                        'constraints'   => new NotBlank(),
-                    ])
-                    ->add('delete', SubmitType::class, [
-                        'label' => 'base.button.delete',
-                        'attr'  => [
-                            'class' => 'btn-danger',
-                        ],
-                    ])
-                    ->getForm()
-                    ->handleRequest($request);
+        $builder      = $this->createFormBuilder();
+        $queryBuilder = $this->answerManager->getVolunteerAnswersQueryBuilder($volunteer);
+        $choices      = $queryBuilder->getQuery()->getResult();
+
+        if (count($choices) > 0) {
+            $builder->add('answer', EntityType::class, [
+                'class'         => Answer::class,
+                'query_builder' => $this->answerManager->getVolunteerAnswersQueryBuilder($volunteer),
+                'choice_label'  => function (Answer $answer) {
+                    return sprintf('%s: %s', $answer->getReceivedAt()->format('d/m/Y H:i'), $answer->getRaw());
+                },
+                'multiple'      => false,
+                'expanded'      => false,
+                'required'      => true,
+                'label'         => 'manage_volunteers.anonymize.choose_answer',
+                'constraints'   => new NotBlank(),
+            ]);
+        }
+
+        return $builder
+            ->add('delete', SubmitType::class, [
+                'label' => 'base.button.delete',
+                'attr'  => [
+                    'class' => 'btn-danger',
+                ],
+            ])
+            ->getForm()
+            ->handleRequest($request);
     }
 
     private function getVolunteerById(?int $id) : Volunteer

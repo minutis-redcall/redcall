@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+{% import 'macros.html.twig' as macros %}
+
+{% block body %}
+
+    <h1>{{ 'admin.gdpr.title'|trans }}</h1>
+
+    <div class="jumbotron shadow p-3 mb-5 rounded">
+
+        {{ form(search) }}
+
+    </div>
+
+{% endblock %}
