@@ -1,4 +1,3 @@
-
 {% extends 'base.html.twig' %}
 
 {% block menu %}{% endblock %}
@@ -13,13 +12,11 @@
 
         <hr/>
 
-        <p>{{ 'space.delete_data.details_1'|trans }}</p>
+        <p>{{ 'space.delete_data.detail_1'|trans }}</p>
         <br/>
-        <p>{{ 'space.delete_data.details_2'|trans }}</p>
+        <p>{{ 'space.delete_data.detail_2'|trans }}</p>
         <br/>
-        <p>{{ 'space.delete_data.details_3'|trans }}</p>
-        <br/>
-        <p>{{ 'space.delete_data.details_4'|trans }}</p>
+        <p>{{ 'space.delete_data.detail_3'|trans }}</p>
 
         <br/>
 
@@ -38,13 +35,13 @@
 
     <script type="text/javascript">
 
-        $('#ask-deletion').click(function(e) {
+        $('#ask-deletion').click(function (e) {
             e.preventDefault();
             $(this).addClass('d-none');
             $('#delete-buttons').removeClass('d-none');
         });
 
-        $('#{{ form.cancel.vars.id }}').click(function(e) {
+        $('#{{ form.cancel.vars.id }}').click(function (e) {
             e.preventDefault();
             $('#ask-deletion').removeClass('d-none');
             $('#delete-buttons').addClass('d-none');

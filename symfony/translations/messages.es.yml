@@ -702,7 +702,6 @@ space:
     answers: 'Respuesta(s) recibida(s)'
     choices: 'Opciones posibles'
     communications: 'Comunicaciones y movilizaciones'
-    download: 'Descargar en formato PDF'
     geo: 'Datos de geolocalización'
     geo_accuracy: 'Precisión (m)'
     geo_date: Fecha
@@ -740,10 +739,6 @@ space:
     cancel: Cancelar
     confirm: Confirmar
     delete_button: 'Borrar mis datos'
-    details_1: 'En aplicación de la Ley Orgánica de Protección de Datos Personales  y el Reglamento General de Protección de Datos (RGPD), dispones de un derecho de acceso, modificación, eliminación y oposición al tratamiento de tus datos de carácter personal.'
-    details_2: 'Cuando hagas clic en el siguiente botón, se anonimizarán todos los datos relacionados contigo, pero se conservarán aquellos necesarios a las obligaciones relativas a la contabilidad (gastos relacionados con el envío de comunicaciones).'
-    details_3: 'Tu identificador externo (NIVOL) es el único dato que se conservará íntegramente, para impedir la actualización de tus datos en las bases de datos y en otros servicios externos.'
-    details_4: 'Si quieres anonimizar tus datos, tu espacio de voluntariado dejará de ser accesible y no podrás ser movilizado. Deberás ponerte en contacto con una unidad local a la que vincularte para solicitar la reactivación del servicio.'
     title: 'Eliminar mis datos'
   email:
     details_1: 'Es posible que tu unidad local o DT se ponga en contacto contigo por email cuando necesiten darte información o para registrar tu disponibilidad en los próximos días.'

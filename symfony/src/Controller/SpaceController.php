@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Base\BaseController;
-use App\Component\HttpFoundation\MpdfResponse;
+use App\Component\HttpFoundation\DownloadResponse;
 use App\Entity\Message;
 use App\Entity\VolunteerSession;
 use App\Form\Type\PhoneCardsType;
@@ -16,7 +16,6 @@ use App\Manager\VolunteerManager;
 use App\Manager\VolunteerSessionManager;
 use App\Tools\PhoneNumber;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
-use Mpdf\Mpdf;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -253,19 +252,12 @@ class SpaceController extends BaseController
      */
     public function downloadData(VolunteerSession $session)
     {
-        $mpdf = new Mpdf([
-            'tempDir'       => sys_get_temp_dir(),
-            'margin_bottom' => 25,
-        ]);
-
-        $mpdf->WriteHTML($this->renderView('space/data.html.twig', [
-            'session'        => $session,
-            'communications' => $this->getSessionCommunications($session),
-        ]));
-
-        return new MpdfResponse(
-            $mpdf,
-            sprintf('data-%s-%s.pdf', $session->getVolunteer()->getExternalId(), date('Y-m-d'))
+        return new DownloadResponse(
+            sprintf('data-%s-%s.html', $session->getVolunteer()->getExternalId(), date('Y-m-d')),
+            $this->renderView('space/data.html.twig', [
+                'session'        => $session,
+                'communications' => $this->getSessionCommunications($session),
+            ])
         );
     }
 
