@@ -223,6 +223,16 @@ class RefreshManager
             $volunteer->setPlatform(Platform::FR);
         }
 
+        if ($pegass->getEnabled() && !$pegass->getContent()) {
+            return;
+        }
+
+        if (!$pegass->getEnabled() && $volunteer->getId()) {
+            $this->volunteerManager->anonymize($volunteer);
+
+            return;
+        }
+
         $volunteer->setExternalId(ltrim($pegass->getIdentifier(), '0'));
         $volunteer->setReport([]);
 
