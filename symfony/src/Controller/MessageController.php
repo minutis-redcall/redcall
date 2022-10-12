@@ -6,6 +6,7 @@ use App\Base\BaseController;
 use App\Entity\Message;
 use App\Manager\LanguageConfigManager;
 use App\Manager\MessageManager;
+use App\Manager\VolunteerManager;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormInterface;
@@ -30,10 +31,18 @@ class MessageController extends BaseController
      */
     protected $languageManager;
 
-    public function __construct(MessageManager $messageRepository, LanguageConfigManager $languageManager)
+    /**
+     * @var VolunteerManager
+     */
+    protected $volunteerManager;
+
+    public function __construct(MessageManager $messageManager,
+        LanguageConfigManager $languageManager,
+        VolunteerManager $volunteerManager)
     {
-        $this->messageManager  = $messageRepository;
-        $this->languageManager = $languageManager;
+        $this->messageManager   = $messageManager;
+        $this->languageManager  = $languageManager;
+        $this->volunteerManager = $volunteerManager;
     }
 
     /**
@@ -61,6 +70,46 @@ class MessageController extends BaseController
             'website_url'   => getenv('WEBSITE_URL'),
             'form'          => $form->createView(),
             'language'      => $language,
+        ]);
+    }
+
+    /**
+     * @Route(path="/optout/{code}", name="optout", methods={"GET", "POST"})
+     */
+    public function optoutAction(Request $request, Message $message)
+    {
+        $form = $this->createFormBuilder()
+                     ->add('cancel', SubmitType::class, [
+                         'label' => 'campaign_status.optout.cancel',
+                         'attr'  => [
+                             'class' => 'btn btn-success',
+                         ],
+                     ])
+                     ->add('confirm', SubmitType::class, [
+                         'label' => 'campaign_status.optout.confirm',
+                         'attr'  => [
+                             'class' => 'btn btn-danger',
+                         ],
+                     ])
+                     ->getForm()
+                     ->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            if ($form->get('confirm')->isClicked()) {
+                $message->getVolunteer()->setEmailOptin(false);
+                $this->volunteerManager->save($message->getVolunteer());
+
+                $this->addFlash('success', 'campaign_status.optout.saved');
+            }
+
+            return $this->redirectToRoute('message_open', [
+                'code' => $message->getCode(),
+            ]);
+        }
+
+        return $this->render('message/optout.html.twig', [
+            'message' => $message,
+            'form'    => $form->createView(),
         ]);
     }
 

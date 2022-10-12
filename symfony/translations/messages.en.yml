@@ -429,6 +429,16 @@ campaign_status:
     no_phone_mobile: 'No mobile phone number.'
     no_phone_optin: 'Do not want to be triggered through phone.'
     optout_until: 'Temporarily unavailable.'
+  optout:
+    title: 'Unsubscribe from Red Cross emails'
+    message: 'Do you really want to unsubscribe from emails sent from your local unit?'
+    comeback: 'If you change your mind, you can connect to RedCall through Minutis and reactivate them in your volunteer space.'
+    confirm: Confirm
+    cancel: Cancel
+    saved: 'Changes saved.'
+    embed:
+      info: 'If you don''t want to receive our emails anymore,'
+      link: 'click here'
 csv_export:
   answer_time: 'Answered at'
   choice: 'Choice "%choice%"'
@@ -839,6 +849,7 @@ space:
     answers: 'Received response(s)'
     choices: 'Possible choices'
     communications: 'Communications and triggers'
+    download_btn: Download
     geo: 'Geolocation data'
     geo_accuracy: 'Accuracy (m)'
     geo_date: Date
@@ -873,7 +884,6 @@ space:
     identity_user_locale: 'Plateform language'
     identity_user_structures: 'Action structures'
     title: 'My personal RedCall data'
-    download_btn: Download
   delete_data:
     cancel: Cancel
     confirm: Confirm

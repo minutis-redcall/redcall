@@ -282,7 +282,7 @@ class SpaceController extends BaseController
                      ->getForm()
                      ->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
+        if ($form->isSubmitted() && $form->isValid() && $form->get('confirm')->isClicked()) {
             $this->volunteerManager->anonymize($session->getVolunteer());
 
             return $this->redirectToRoute('home');
