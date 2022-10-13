@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block menu %}{% endblock %}
+
+{% block body %}
+
+    <br/>
+
+    <div class="jumbotron shadow p-3 mb-5 rounded">
+        <div class="h2">
+            {{ 'campaign_status.optout.title'|trans }}
+        </div>
+
+        <br/>
+        <p>{{ 'campaign_status.optout.message'|trans }}</p>
+        <br/>
+        <p>{{ 'campaign_status.optout.comeback'|trans }}</p>
+        <br/>
+
+        {{ form_start(form) }}
+        <div class="row">
+            <div class="col-6 text-center">
+                {{ form_row(form.cancel) }}
+            </div>
+            <div class="col-6 text-center">
+                {{ form_row(form.confirm) }}
+            </div>
+        </div>
+        {{ form_end(form) }}
+
+
+    </div>
+
+{% endblock %}

@@ -83,8 +83,8 @@ admin:
     success: 'Ce bénévole peut désormais être réintégré.'
     title: 'Réintégrer un bénévole supprimé'
     violations:
-      not_exists: 'Cet identifiant n''existe pas.'
       cannot_import: 'Cet identifiant ne peut pas être utilisé.'
+      not_exists: 'Cet identifiant n''existe pas.'
   home:
     link: Administration
   pegass:
@@ -429,6 +429,16 @@ campaign_status:
     no_phone_mobile: 'Pas de numéro de téléphone portable.'
     no_phone_optin: 'Ne souhaite pas recevoir de SMS/appels.'
     optout_until: 'Temporairement indisponible'
+  optout:
+    title: 'Désinscription des emails de la Croix-Rouge'
+    message: 'Voulez-vous vraiment vous désinscrire des emails envoyés par votre unité locale ?'
+    comeback: 'Si vous changez d''avis, vous devrez vous connecter à RedCall en passant par Minutis, et les réactiver dans votre espace bénévole.'
+    confirm: Confirmer
+    cancel: Annuler
+    saved: 'Changements sauvegardés.'
+    embed:
+      info: 'Pour ne plus recevoir de messages de notre part,'
+      link: 'cliquez ici'
 csv_export:
   answer_time: 'Date de la reponse la plus recente'
   choice: 'Choix "%choice%"'
@@ -839,7 +849,7 @@ space:
     answers: 'Réponse(s) reçue(s)'
     choices: 'Choix possibles'
     communications: 'Communications et déclenchements'
-    download: 'Télécharger au format PDF'
+    download_btn: Télécharger
     geo: 'Données de géolocalisation'
     geo_accuracy: 'Précision (m)'
     geo_date: Date
@@ -878,10 +888,9 @@ space:
     cancel: Annuler
     confirm: Confirmer
     delete_button: 'Supprimer mes données'
-    details_1: 'Conformément à la Loi Informatique et Libertés et Règlement général sur la protection des données (RGPD), vous disposez d’un droit d’accès, de modification, de suppression et d’opposition au traitement de vos données à caractère personnel.'
-    details_2: 'En cliquant sur le bouton ci-dessous, l''ensemble des informations vous concernant seront anonymisées, mais seront conservées pour obéir à des obligations relatives à la comptabilité (des frais incombant à l''envoi de communications).'
-    details_3: 'Votre identifiant externe (NIVOL) est la seule information qui sera conservée intègre, afin de bloquer les mises à jour de vos données auprès des bases de données et autres services externes.'
-    details_4: 'Si vous souhaitez anonymiser vos données, votre espace bénévole deviendra inaccessible et vous ne serez plus déclenchable. Vous devrez contacter votre unité locale de rattachement afin de demander la réouverture du service.'
+    detail_1: 'Conformément à la Loi Informatique et Libertés et Règlement général sur la protection des données (RGPD), vous disposez d’un droit d’accès, de modification, de suppression et d’opposition au traitement de vos données à caractère personnel.'
+    detail_2: 'En cliquant sur le bouton ci-dessous, l''ensemble des informations vous concernant seront supprimées, et vous ne pourrez plus accéder à RedCall.'
+    detail_3: 'Votre identifiant personnel (NIVOL) sera gardé masqué et non déchiffrable (HASHMAC-SHA256) afin de ne pas réintégrer vos données lors la mise à jour de notre base de données.'
     title: 'Suppression de mes données'
   email:
     details_1: 'Vous pourrez être contacté par votre unité locale ou DT par email lorsque ils doivent vous transmettre des informations ou pour un recensement de vos disponibilité dans les jours à venir.'

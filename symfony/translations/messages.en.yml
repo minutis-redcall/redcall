@@ -83,8 +83,8 @@ admin:
     success: 'This volunteer can now be reintegrated.s'
     title: 'Undelete a volunteer'
     violations:
-      not_exists: 'This identifier does not exist.'
       cannot_import: 'This identifier cannot be used.'
+      not_exists: 'This identifier does not exist.'
   home:
     link: Administration
   pegass:
@@ -429,6 +429,16 @@ campaign_status:
     no_phone_mobile: 'No mobile phone number.'
     no_phone_optin: 'Do not want to be triggered through phone.'
     optout_until: 'Temporarily unavailable.'
+  optout:
+    title: 'Unsubscribe from Red Cross emails'
+    message: 'Do you really want to unsubscribe from emails sent from your local unit?'
+    comeback: 'If you change your mind, you can connect to RedCall through Minutis and reactivate them in your volunteer space.'
+    confirm: Confirm
+    cancel: Cancel
+    saved: 'Changes saved.'
+    embed:
+      info: 'If you don''t want to receive our emails anymore,'
+      link: 'click here'
 csv_export:
   answer_time: 'Answered at'
   choice: 'Choice "%choice%"'
@@ -839,7 +849,7 @@ space:
     answers: 'Received response(s)'
     choices: 'Possible choices'
     communications: 'Communications and triggers'
-    download: 'Download as PDF'
+    download_btn: Download
     geo: 'Geolocation data'
     geo_accuracy: 'Accuracy (m)'
     geo_date: Date
@@ -878,10 +888,9 @@ space:
     cancel: Cancel
     confirm: Confirm
     delete_button: 'Remove my data'
-    details_1: 'In accordance with the Data Protection Act and General Data Protection Regulations (GDPR), you have the right to access, modify, delete and object to the processing of your personal data.'
-    details_2: 'By clicking on the button below, all your information will be anonymzed, but will be kept to comply with accounting obligations (because of fees implicated while sending communications).'
-    details_3: 'Your external identifier (NIVOL) is the only information that will be kept untouched, in order to block any data update coming from external databases and/or other external services.'
-    details_4: 'If you wish to anonymize your data, your volunteer space will become unreachable and you won''t be triggered anymore. You will need to contact your local representatives in order to access the RedCall services again.'
+    detail_1: 'In accordance with the Data Protection Act and General Data Protection Regulations (GDPR), you have the right to access, modify, delete and object to the processing of your personal data.'
+    detail_2: 'By clicking on the button below, all your personal data will be removed, and you won''t be able to access RedCall anymore.'
+    detail_3: 'Your external identifier (NIVOL) will be kept hashed and non-decodable (HASHMAC-SHA256), in order to block further data update coming from external databases and/or other external services.'
     title: 'Deletion of my personal data'
   email:
     details_1: 'You may be contacted by your local unit through email when they need to give you some information or gather your availability for the coming days.'
