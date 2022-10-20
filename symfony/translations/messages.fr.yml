@@ -301,6 +301,7 @@ base:
     per_page: 'Résultats par page'
     prev: ←
     result: '[0,1] résultat | ]1,Inf[ résultats'
+    no_results: 'Aucun résultat'
   play: Ecouter
   search:
     no_results: 'Aucun résultat trouvé !'

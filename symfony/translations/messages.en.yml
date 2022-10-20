@@ -301,6 +301,7 @@ base:
     per_page: 'Results per page'
     prev: ←
     result: '{0} results | {1} result | ]1,Inf[ results'
+    no_results: No results
   play: Play
   search:
     no_results: 'No results found!'
