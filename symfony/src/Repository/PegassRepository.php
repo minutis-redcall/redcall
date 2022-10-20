@@ -3,7 +3,6 @@
 namespace App\Repository;
 
 use App\Entity\Pegass;
-use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
@@ -28,16 +27,6 @@ class PegassRepository extends ServiceEntityRepository
         ]);
     }
 
-    public function countEntities(string $type) : int
-    {
-        return $this->createQueryBuilder('p')
-                    ->select('COUNT(p.id)')
-                    ->where('p.type = :type')
-                    ->setParameter('type', $type)
-                    ->getQuery()
-                    ->getSingleScalarResult();
-    }
-
     public function getEntity(string $type,
         string $identifier = null,
         bool $onlyEnabled = true) : ?Pegass
@@ -58,21 +47,6 @@ class PegassRepository extends ServiceEntityRepository
         return $qb->getQuery()
                   ->disableResultCache()
                   ->getOneOrNullResult();
-    }
-
-    public function findExpiredEntities(int $limit) : array
-    {
-        return $this->createQueryBuilder('p')
-                    ->orWhere('p.type = :type_organization AND p.updatedAt < :expire_organization')
-                    ->setParameter('type_organization', Pegass::TYPE_STRUCTURE)
-                    ->setParameter('expire_organization', $this->getExpireDate(Pegass::TYPE_STRUCTURE))
-                    ->orWhere('p.type = :type_volunteer AND p.updatedAt < :expire_volunteer')
-                    ->setParameter('type_volunteer', Pegass::TYPE_VOLUNTEER)
-                    ->setParameter('expire_volunteer', $this->getExpireDate(Pegass::TYPE_VOLUNTEER))
-                    ->orderBy('p.updatedAt', 'ASC')
-                    ->setMaxResults($limit)
-                    ->getQuery()
-                    ->getResult();
     }
 
     /**
@@ -203,10 +177,5 @@ class PegassRepository extends ServiceEntityRepository
     {
         $this->_em->remove($entity);
         $this->_em->flush($entity);
-    }
-
-    private function getExpireDate(string $type) : DateTime
-    {
-        return DateTime::createFromFormat('U', time() - (Pegass::TTL[$type] * 24 * 60 * 60));
     }
 }

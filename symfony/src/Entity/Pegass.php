@@ -20,6 +20,7 @@ use Throwable;
  *    @ORM\Index(name="external_idx", columns={"external_id"})
  * })
  * @ORM\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
+ * @ORM\HasLifecycleCallbacks()
  */
 class Pegass
 {
@@ -81,6 +82,11 @@ class Pegass
      * @ORM\Column(type="boolean")
      */
     private $enabled = true;
+
+    /**
+     * @ORM\Column(type="datetime_immutable", nullable=true)
+     */
+    private $createdAt;
 
     public function getId() : ?int
     {
@@ -377,5 +383,34 @@ class Pegass
         $ret                      = trim(substr($ret, strlen('<root>'), -strlen('</root>')));
 
         return $ret;
+    }
+
+    public function getCreatedAt() : ?\DateTimeImmutable
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(?\DateTimeImmutable $createdAt) : self
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
+     * @ORM\PrePersist()
+     */
+    public function prePersist()
+    {
+        $this->createdAt = new \DateTimeImmutable();
+        $this->updatedAt = new \DateTimeImmutable();
+    }
+
+    /**
+     * @ORM\PreUpdate()
+     */
+    public function preUpdate()
+    {
+        $this->updatedAt = new \DateTimeImmutable();
     }
 }
