@@ -84,7 +84,7 @@ class Pegass
     private $enabled = true;
 
     /**
-     * @ORM\Column(type="datetime_immutable", nullable=true)
+     * @ORM\Column(type="datetime_immutable")
      */
     private $createdAt;
 

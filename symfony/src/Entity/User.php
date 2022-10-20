@@ -71,11 +71,17 @@ class User extends AbstractUser implements LockableInterface
      */
     private $locked = false;
 
+    /**
+     * @ORM\ManyToMany(targetEntity=Badge::class)
+     */
+    private $favoriteBadges;
+
     public function __construct()
     {
         parent::__construct();
 
         $this->structures = new ArrayCollection();
+        $this->favoriteBadges = new ArrayCollection();
     }
 
     public function getPlatform()
@@ -358,5 +364,29 @@ class User extends AbstractUser implements LockableInterface
     public function __clone()
     {
         $this->structures = clone $this->structures;
+    }
+
+    /**
+     * @return Collection<int, Badge>
+     */
+    public function getFavoriteBadges(): Collection
+    {
+        return $this->favoriteBadges;
+    }
+
+    public function addFavoriteBadge(Badge $favoriteBadge): self
+    {
+        if (!$this->favoriteBadges->contains($favoriteBadge)) {
+            $this->favoriteBadges[] = $favoriteBadge;
+        }
+
+        return $this;
+    }
+
+    public function removeFavoriteBadge(Badge $favoriteBadge): self
+    {
+        $this->favoriteBadges->removeElement($favoriteBadge);
+
+        return $this;
     }
 }
