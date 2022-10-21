@@ -903,22 +903,7 @@ class Volunteer implements LockableInterface
         });
 
         // Sorting badges by category's priority and then by priority
-        usort($badges, function (Badge $a, Badge $b) {
-            if ($a->getCategory() && $b->getCategory()
-                && $a->getCategory()->getPriority() !== $b->getCategory()->getPriority()) {
-                return $a->getCategory()->getPriority() <=> $b->getCategory()->getPriority();
-            }
-
-            if ($a->getCategory() && !$b->getCategory()) {
-                return -1;
-            }
-
-            if (!$a->getCategory() && $b->getCategory()) {
-                return 1;
-            }
-
-            return $a->getRenderingPriority() <=> $b->getRenderingPriority();
-        });
+        usort($badges, [Badge::class, 'sortBadges']);
 
         return $badges;
     }
