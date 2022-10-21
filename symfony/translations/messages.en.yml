@@ -301,6 +301,7 @@ base:
     per_page: 'Results per page'
     prev: ←
     result: '{0} results | {1} result | ]1,Inf[ results'
+    no_results: 'No results'
   play: Play
   search:
     no_results: 'No results found!'
@@ -387,6 +388,16 @@ campaign_status:
   message: 'Your message:'
   no_notes_yet: 'This trigger does not contain any notes yet.'
   notes_updated_at: 'Last notes updates on %date% at %time%'
+  optout:
+    cancel: Cancel
+    comeback: 'If you change your mind, you can connect to RedCall through Minutis and reactivate them in your volunteer space.'
+    confirm: Confirm
+    embed:
+      info: 'If you don''t want to receive our emails anymore,'
+      link: 'click here'
+    message: 'Do you really want to unsubscribe from emails sent from your local unit?'
+    saved: 'Changes saved.'
+    title: 'Unsubscribe from Red Cross emails'
   progress: 'Sending: %sent% %type% / %total% (%progress%%).'
   provider:
     context: Context
@@ -429,16 +440,6 @@ campaign_status:
     no_phone_mobile: 'No mobile phone number.'
     no_phone_optin: 'Do not want to be triggered through phone.'
     optout_until: 'Temporarily unavailable.'
-  optout:
-    title: 'Unsubscribe from Red Cross emails'
-    message: 'Do you really want to unsubscribe from emails sent from your local unit?'
-    comeback: 'If you change your mind, you can connect to RedCall through Minutis and reactivate them in your volunteer space.'
-    confirm: Confirm
-    cancel: Cancel
-    saved: 'Changes saved.'
-    embed:
-      info: 'If you don''t want to receive our emails anymore,'
-      link: 'click here'
 csv_export:
   answer_time: 'Answered at'
   choice: 'Choice "%choice%"'
@@ -972,3 +973,12 @@ title:
   campaigns: Campaigns
   costs: Costs
   messages: Messages
+favorite_badge:
+  link: 'Choose your favorite skills & nominations'
+  title: 'Your favorite skills and nominations'
+  description: 'You can choose which filters to render on the trigger form according to your personal needs.'
+  no_badge: 'No favorite skills yet.'
+  public: 'Default skills and nominations are the following: %public_badges%'
+  form:
+    badge: 'Add one or more skill(s) / nomination(s)'
+    submit: Add

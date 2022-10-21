@@ -59,7 +59,7 @@ class BadgeWidgetType extends TextType
 
                     return implode(',', array_map(function (Badge $badge) {
                         return $badge->getId();
-                    }, $badges));
+                    }, $badges ?? []));
                 },
                 function ($badgeId) use ($options) {
                     if (!$options['multiple']) {

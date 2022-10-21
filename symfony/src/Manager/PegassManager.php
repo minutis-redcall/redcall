@@ -7,7 +7,6 @@ use App\Enum\Platform;
 use App\Event\PegassEvent;
 use App\PegassEvents;
 use App\Repository\PegassRepository;
-use DateTime;
 use Doctrine\ORM\QueryBuilder;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -68,7 +67,6 @@ class PegassManager
         $entity = $this->pegassRepository->find($entity->getId());
 
         if ($content === $entity->getContent()) {
-            $entity->setUpdatedAt(new \DateTime());
             $this->pegassRepository->save($entity);
 
             return;
@@ -76,7 +74,6 @@ class PegassManager
 
         $entity->setContent($content);
         $entity->setEnabled(true);
-        $entity->setUpdatedAt(new \DateTime());
 
         $this->pegassRepository->save($entity);
 
@@ -140,7 +137,6 @@ class PegassManager
         $entity->setIdentifier($identifier);
         $entity->setExternalId(ltrim($identifier, '0'));
         $entity->setParentIdentifier($parentIdentifier);
-        $entity->setUpdatedAt(new DateTime('1984-07-10'));
 
         $this->debug($entity, sprintf('Creating %s', $type));
 
@@ -158,7 +154,6 @@ class PegassManager
         $pages = $structure['volunteers'];
 
         $entity->setContent($structure);
-        $entity->setUpdatedAt(new DateTime());
 
         $wasEnabled = $entity->getEnabled();
         $entity->setEnabled(true);
@@ -196,7 +191,6 @@ class PegassManager
                 $missingEntity->setEnabled(false);
             }
 
-            $missingEntity->setUpdatedAt(new \DateTime('1984-07-10')); // Expired
             $this->pegassRepository->save($missingEntity);
         }
 
@@ -212,7 +206,6 @@ class PegassManager
                     $volunteer->setIdentifier($row['id']);
                     $volunteer->setExternalId(ltrim($row['id'], '0'));
                     $volunteer->setParentIdentifier($parentIdentifier);
-                    $volunteer->setUpdatedAt(new DateTime('1984-07-10')); // Expired
                     $this->debug($volunteer, 'Creating volunteer');
                     $this->pegassRepository->save($volunteer);
                 } else {
@@ -235,15 +228,12 @@ class PegassManager
         }
 
         $entity->setContent($data);
-        $entity->setUpdatedAt(new DateTime());
 
         $this->pegassRepository->save($entity);
     }
 
     public function save(Pegass $entity)
     {
-        $entity->setUpdatedAt(new DateTime());
-
         $this->pegassRepository->save($entity);
     }
 

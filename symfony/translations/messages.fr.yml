@@ -301,6 +301,7 @@ base:
     per_page: 'Résultats par page'
     prev: ←
     result: '[0,1] résultat | ]1,Inf[ résultats'
+    no_results: 'Aucun résultat'
   play: Ecouter
   search:
     no_results: 'Aucun résultat trouvé !'
@@ -387,6 +388,16 @@ campaign_status:
   message: 'Votre message :'
   no_notes_yet: 'Ce déclenchement ne contient aucune note pour le moment.'
   notes_updated_at: 'Dernière mise à jour des notes le %date% à %time%'
+  optout:
+    cancel: Annuler
+    comeback: 'Si vous changez d''avis, vous devrez vous connecter à RedCall en passant par Minutis, et les réactiver dans votre espace bénévole.'
+    confirm: Confirmer
+    embed:
+      info: 'Pour ne plus recevoir de messages de notre part,'
+      link: 'cliquez ici'
+    message: 'Voulez-vous vraiment vous désinscrire des emails envoyés par votre unité locale ?'
+    saved: 'Changements sauvegardés.'
+    title: 'Désinscription des emails de la Croix-Rouge'
   progress: 'Envoi: %sent% %type% / %total% (%progress%%).'
   provider:
     context: Contexte
@@ -429,16 +440,6 @@ campaign_status:
     no_phone_mobile: 'Pas de numéro de téléphone portable.'
     no_phone_optin: 'Ne souhaite pas recevoir de SMS/appels.'
     optout_until: 'Temporairement indisponible'
-  optout:
-    title: 'Désinscription des emails de la Croix-Rouge'
-    message: 'Voulez-vous vraiment vous désinscrire des emails envoyés par votre unité locale ?'
-    comeback: 'Si vous changez d''avis, vous devrez vous connecter à RedCall en passant par Minutis, et les réactiver dans votre espace bénévole.'
-    confirm: Confirmer
-    cancel: Annuler
-    saved: 'Changements sauvegardés.'
-    embed:
-      info: 'Pour ne plus recevoir de messages de notre part,'
-      link: 'cliquez ici'
 csv_export:
   answer_time: 'Date de la reponse la plus recente'
   choice: 'Choix "%choice%"'
@@ -972,3 +973,12 @@ title:
   campaigns: Déclenchements
   costs: Coûts
   messages: Messages
+favorite_badge:
+  link: 'Choisir vos compétences & nominations préférées'
+  title: 'Vos compétences et nominations préférées'
+  description: 'Vous pouvez choisir quels filtres afficher dans le formulaire de déclenchement en fonction de vos propres besoins.'
+  no_badge: 'Pas encore de compétences favorites.'
+  public: 'Les compétences et nominations par défaut sont les suivantes : %public_badges%'
+  form:
+    badge: 'Ajouter une ou plusieurs nouvelle(s) compétence(s) / nomination(s)'
+    submit: Ajouter

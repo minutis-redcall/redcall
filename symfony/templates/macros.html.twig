@@ -1,7 +1,13 @@
 {% macro pager(pager, prefix = '', queryParams = {}) %}
     {% if pager %}
-        {% import '@Pagination/macros.html.twig' as macros %}
-        {{ macros.pager(pager, prefix, queryParams) }}
+        {% if pager.nbResults %}
+            {% import '@Pagination/macros.html.twig' as macros %}
+            {{ macros.pager(pager, prefix, queryParams) }}
+        {% else %}
+            <div class="alert alert-warning">
+                {{ 'base.pager.no_results'|trans }}
+            </div>
+        {% endif %}
     {% endif %}
 {% endmacro %}
 
