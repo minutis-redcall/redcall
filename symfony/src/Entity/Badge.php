@@ -607,4 +607,22 @@ class Badge implements LockableInterface
 
         return false;
     }
+
+    static public function sortBadges(Badge $a, Badge $b) : int
+    {
+        if ($a->getCategory() && $b->getCategory()
+            && $a->getCategory()->getPriority() !== $b->getCategory()->getPriority()) {
+            return $a->getCategory()->getPriority() <=> $b->getCategory()->getPriority();
+        }
+
+        if ($a->getCategory() && !$b->getCategory()) {
+            return -1;
+        }
+
+        if (!$a->getCategory() && $b->getCategory()) {
+            return 1;
+        }
+
+        return $a->getRenderingPriority() <=> $b->getRenderingPriority();
+    }
 }

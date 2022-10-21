@@ -80,7 +80,7 @@ class User extends AbstractUser implements LockableInterface
     {
         parent::__construct();
 
-        $this->structures = new ArrayCollection();
+        $this->structures     = new ArrayCollection();
         $this->favoriteBadges = new ArrayCollection();
     }
 
@@ -369,12 +369,26 @@ class User extends AbstractUser implements LockableInterface
     /**
      * @return Collection<int, Badge>
      */
-    public function getFavoriteBadges(): Collection
+    public function getFavoriteBadges() : Collection
     {
         return $this->favoriteBadges;
     }
 
-    public function addFavoriteBadge(Badge $favoriteBadge): self
+    public function getSortedFavoriteBadges() : array
+    {
+        $badges =
+            $this->getFavoriteBadges()
+                 ->filter(function (Badge $badge) {
+                     return $this->platform === $badge->getPlatform();
+                 })
+                 ->toArray();
+
+        usort($badges, [Badge::class, 'sortBadges']);
+
+        return $badges;
+    }
+
+    public function addFavoriteBadge(Badge $favoriteBadge) : self
     {
         if (!$this->favoriteBadges->contains($favoriteBadge)) {
             $this->favoriteBadges[] = $favoriteBadge;
@@ -383,7 +397,7 @@ class User extends AbstractUser implements LockableInterface
         return $this;
     }
 
-    public function removeFavoriteBadge(Badge $favoriteBadge): self
+    public function removeFavoriteBadge(Badge $favoriteBadge) : self
     {
         $this->favoriteBadges->removeElement($favoriteBadge);
 

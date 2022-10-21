@@ -209,7 +209,7 @@ class AudienceType extends AbstractType
         $user = $this->security->getUser();
 
         if ($user->getFavoriteBadges()->count()) {
-            $publicBadges = $user->getFavoriteBadges()->toArray();
+            $publicBadges = $user->getSortedFavoriteBadges();
         } else {
             $publicBadges = $this->badgeManager->getPublicBadges($this->security->getPlatform());
         }
