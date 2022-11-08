@@ -264,6 +264,11 @@ class RefreshManager
             }
         }
 
+        // Update badges (skills may expire, so we overwrite volunteer lock)
+        $volunteer->setExternalBadges(
+            $this->fetchBadges($pegass)
+        );
+
         // Volunteer is locked
         if ($volunteer->isLocked()) {
             $volunteer->addReport('import_report.update_locked');
@@ -355,11 +360,6 @@ class RefreshManager
                     break;
             }
         }
-
-        // Update volunteer badge
-        $volunteer->setExternalBadges(
-            $this->fetchBadges($pegass)
-        );
 
         $this->volunteerManager->save($volunteer);
 

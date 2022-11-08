@@ -188,10 +188,16 @@ class VolunteerRepository extends BaseRepository
         return $qb;
     }
 
-    public function foreach(callable $callback, bool $onlyEnabled = true)
+    public function foreach(callable $callback, ?string $filters = null)
     {
         $count = $this->createQueryBuilder('v')
-                      ->select('COUNT(v.id)')
+                      ->select('COUNT(v.id)');
+
+        if ($filters) {
+            $count->where($filters);
+        }
+
+        $count = $count
                       ->getQuery()
                       ->getSingleScalarResult();
 
@@ -200,14 +206,14 @@ class VolunteerRepository extends BaseRepository
         while ($offset < $count) {
             $qb = $this->createQueryBuilder('v');
 
-            if ($onlyEnabled) {
-                $qb->where('v.enabled = true');
+            if ($filters) {
+                $qb->where($filters);
             }
 
             $qb->setFirstResult($offset)
                ->setMaxResults(1000);
 
-            $iterator = $qb->getQuery()->iterate();
+            $iterator = $qb->getQuery()->toIterable();
 
             while (($row = $iterator->next()) !== false) {
                 /* @var Volunteer $entity */

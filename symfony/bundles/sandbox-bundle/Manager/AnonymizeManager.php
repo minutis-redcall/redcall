@@ -122,7 +122,7 @@ class AnonymizeManager
 
             $this->volunteerManager->foreach(function (Volunteer $volunteer) {
                 $this->anonymize($volunteer);
-            }, false);
+            });
         } elseif (time() - $this->settingManager->get(Settings::SANDBOX_LAST_ANONYMIZE, 0) > 86400) {
             $this->settingManager->set(Settings::SANDBOX_LAST_ANONYMIZE, time());
 

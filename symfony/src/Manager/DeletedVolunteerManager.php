@@ -78,10 +78,12 @@ class DeletedVolunteerManager
         // Adding an entry on the deleted volunteers table
         $id = Hash::hash($volunteer->getExternalId());
 
-        $deletedVolunteer = new DeletedVolunteer();
-        $deletedVolunteer->setHashedExternalId($id);
+        if (!$this->deletedVolunteerRepository->findOneByHashedExternalId($id)) {
+            $deletedVolunteer = new DeletedVolunteer();
+            $deletedVolunteer->setHashedExternalId($id);
 
-        $this->deletedVolunteerRepository->add($deletedVolunteer);
+            $this->deletedVolunteerRepository->add($deletedVolunteer);
+        }
 
         // Generating a new external id
         do {

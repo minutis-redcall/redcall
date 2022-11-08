@@ -199,9 +199,9 @@ class VolunteerManager
         );
     }
 
-    public function foreach(callable $callback, bool $onlyEnabled = true)
+    public function foreach(callable $callback, ?string $filters = null)
     {
-        $this->volunteerRepository->foreach($callback, $onlyEnabled);
+        $this->volunteerRepository->foreach($callback, $filters);
     }
 
     public function getIssues() : array

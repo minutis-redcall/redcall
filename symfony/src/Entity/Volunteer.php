@@ -113,7 +113,7 @@ class Volunteer implements LockableInterface
     private $birthday;
 
     /**
-     * @var DateTime
+     * @var \DateTimeInterface
      *
      * @ORM\Column(type="datetime", nullable=true)
      */
@@ -373,12 +373,12 @@ class Volunteer implements LockableInterface
         return $this->getPhone() ? $this->getPhone()->getNational() : null;
     }
 
-    public function getLastPegassUpdate() : ?DateTime
+    public function getLastPegassUpdate() : ?\DateTimeInterface
     {
         return $this->lastPegassUpdate;
     }
 
-    public function setLastPegassUpdate(DateTime $lastPegassUpdate) : Volunteer
+    public function setLastPegassUpdate(\DateTimeInterface $lastPegassUpdate) : Volunteer
     {
         $this->lastPegassUpdate = $lastPegassUpdate;
 
