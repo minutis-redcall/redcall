@@ -264,14 +264,10 @@ class RefreshManager
             }
         }
 
-        // Update badges (skills may expire, so we overwrite volunteer lock)
-        $volunteer->setExternalBadges(
-            $this->fetchBadges($pegass)
-        );
-
         // Volunteer is locked
         if ($volunteer->isLocked()) {
             $volunteer->addReport('import_report.update_locked');
+            $volunteer->removeExpiredBadges();
             $this->volunteerManager->save($volunteer);
 
             // If volunteer is bound to a RedCall user, update its structures
@@ -360,6 +356,11 @@ class RefreshManager
                     break;
             }
         }
+
+        // Update badges (skills may expire, so we overwrite volunteer lock)
+        $volunteer->setExternalBadges(
+            $this->fetchBadges($pegass)
+        );
 
         $this->volunteerManager->save($volunteer);
 
@@ -505,9 +506,10 @@ class RefreshManager
                 continue;
             }
 
-            // Ignore trainings that should be retrained since more than 6 months
+            // Ignore trainings that should be retrained
+            $expiration = null;
             if (isset($training['dateRecyclage']) && preg_match('/^\d{4}\-\d{2}\-\d{2}T\d{2}:\d{2}:\d{2}$/', $training['dateRecyclage'])) {
-                $expiration = (new \DateTime($training['dateRecyclage']))->add(new \DateInterval('P6M'));
+                $expiration = new \DateTime($training['dateRecyclage']);
                 if (time() > $expiration->getTimestamp()) {
                     continue;
                 }
@@ -519,6 +521,8 @@ class RefreshManager
             if (!$badge) {
                 $badge = $this->createBadge($externalId, $training['formation']['code'], $training['formation']['libelle']);
             }
+
+            $badge->setExpiresAt($expiration);
 
             $badges[] = $badge;
         }

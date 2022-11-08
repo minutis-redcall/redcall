@@ -789,6 +789,20 @@ class Volunteer implements LockableInterface
         return $this;
     }
 
+    public function removeExpiredBadges()
+    {
+        $toRemove = [];
+        foreach ($this->badges as $badge) {
+            /** @var Badge $badge */
+            if ($badge->hasExpired()) {
+                $toRemove[] = $badge;
+            }
+        }
+        foreach ($toRemove as $badge) {
+            $this->badges->removeElement($badge);
+        }
+    }
+
     public function hasBadge(string $platform, string $badgeName) : bool
     {
         foreach ($this->badges as $badge) {

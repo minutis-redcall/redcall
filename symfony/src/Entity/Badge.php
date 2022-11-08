@@ -126,6 +126,13 @@ class Badge implements LockableInterface
     private $synonyms;
 
     /**
+     * @var \DateTimeInterface
+     *
+     * @ORM\Column(type="date_immutable", nullable=true)
+     */
+    private $expiresAt = null;
+
+    /**
      * @var bool
      *
      * @ORM\Column(type="boolean", options={"default" : 1})
@@ -449,6 +456,21 @@ class Badge implements LockableInterface
         }
 
         return $this;
+    }
+
+    public function getExpiresAt() : ?\DateTimeInterface
+    {
+        return $this->expiresAt;
+    }
+
+    public function setExpiresAt(?\DateTimeInterface $expiresAt) : void
+    {
+        $this->expiresAt = $expiresAt;
+    }
+
+    public function hasExpired() : bool
+    {
+        return $this->expiresAt && time() > $this->expiresAt->getTimestamp();
     }
 
     public function canBeRemoved() : bool
