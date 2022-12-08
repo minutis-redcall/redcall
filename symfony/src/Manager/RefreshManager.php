@@ -239,7 +239,8 @@ class RefreshManager
         // Update structures based on where volunteer was found while crawling structures
         $structuresVolunteerBelongsTo = [];
         $identifier                   = $pegass->evaluate('user.structure.id');
-        if ($structure = $this->structureManager->findOneByExternalId(Platform::FR, $identifier)) {
+        if ($identifier
+            && ($structure = $this->structureManager->findOneByExternalId(Platform::FR, $identifier))) {
             $structuresVolunteerBelongsTo[] = $structure;
         }
         $volunteer->syncStructures($structuresVolunteerBelongsTo);
