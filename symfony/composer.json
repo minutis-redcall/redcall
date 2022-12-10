@@ -16,7 +16,7 @@
     "doctrine/annotations": "^1.0",
     "doctrine/doctrine-bundle": "^2.4",
     "doctrine/doctrine-migrations-bundle": "^2",
-    "doctrine/orm": "2.10.4",
+    "doctrine/orm": "^2.11",
     "excelwebzone/recaptcha-bundle": "^1.5",
     "exercise/htmlpurifier-bundle": "^3.0",
     "fabpot/goutte": "^4",
