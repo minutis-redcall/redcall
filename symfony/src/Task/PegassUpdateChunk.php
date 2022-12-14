@@ -104,8 +104,6 @@ class PegassUpdateChunk implements TaskInterface
         if ($decoded = json_decode($json, true)) {
             $this->pegassManager->updateEntity($entity, $decoded);
         }
-
-        $this->pegassManager->flush();
     }
 
     private function updateVolunteer(string $identifier, array $data)
@@ -127,7 +125,5 @@ class PegassUpdateChunk implements TaskInterface
         if ($decoded = json_decode($json, true)) {
             $this->pegassManager->updateEntity($entity, $decoded);
         }
-
-        $this->pegassManager->flush();
     }
 }

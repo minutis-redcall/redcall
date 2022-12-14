@@ -24,14 +24,20 @@ class Minutis implements MinutisProvider
     private $logger;
 
     /**
+     * @var LoggerInterface
+     */
+    private $slackLogger;
+
+    /**
      * @var Client
      */
     private $client;
 
-    public function __construct(SettingManager $settingManager, LoggerInterface $logger)
+    public function __construct(SettingManager $settingManager, LoggerInterface $logger, LoggerInterface $slackLogger)
     {
         $this->settingManager = $settingManager;
         $this->logger         = $logger;
+        $this->slackLogger = $slackLogger;
     }
 
     static public function getOperationUrl(int $operationExternalId) : string
@@ -77,7 +83,7 @@ class Minutis implements MinutisProvider
             $this->getOperation($operationExternalId);
 
             return true;
-        } catch (ClientException $exception) {
+        } catch (ClientException | ServerException $exception) {
             if (Response::HTTP_NOT_FOUND === $exception->getResponse()->getStatusCode()) {
                 return false;
             }
@@ -140,7 +146,7 @@ class Minutis implements MinutisProvider
                 ],
             ]));
         } catch (ClientException | ServerException $e) {
-            $this->logger->warning('Cannot add a Minutis resource to an operation', [
+            $this->slackLogger->warning('Cannot add a Minutis resource to an operation', [
                 'operation_id' => $externalOperationId,
                 'volunteer_id' => $volunteerExternalId,
             ]);
@@ -157,8 +163,8 @@ class Minutis implements MinutisProvider
     {
         try {
             $this->getClient()->delete(sprintf('/api/regulation/%d/ressource/%d', $externalOperationId, $resourceExternalId), $this->populateAuthentication());
-        } catch (ClientException $e) {
-            $this->logger->warning('Cannot remove a Minutis resource from an operation', [
+        } catch (ClientException | ServerException $e) {
+            $this->slackLogger->warning('Cannot remove a Minutis resource from an operation', [
                 'operation_id' => $externalOperationId,
                 'resource_id'  => $resourceExternalId,
             ]);
