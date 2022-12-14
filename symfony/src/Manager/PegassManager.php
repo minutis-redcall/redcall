@@ -242,11 +242,6 @@ class PegassManager
         $this->pegassRepository->delete($pegass);
     }
 
-    public function flush()
-    {
-        $this->pegassRepository->clear();
-    }
-
     private function debug(Pegass $entity, string $message, array $data = [])
     {
         $params = array_merge($data, [

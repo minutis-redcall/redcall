@@ -105,8 +105,9 @@ class UserManager extends BaseUserManager
 
         $user->setVolunteer($volunteer);
 
-        $structures = $this->structureManager->findCallableStructuresForVolunteer($volunteerPlatform, $volunteer);
-        $user->updateStructures($structures);
+        // https://minutis-support.atlassian.net/browse/SUPPORT-1421
+        // $structures = $this->structureManager->findCallableStructuresForVolunteer($volunteerPlatform, $volunteer);
+        // $user->updateStructures($structures);
 
         $this->save($user);
     }

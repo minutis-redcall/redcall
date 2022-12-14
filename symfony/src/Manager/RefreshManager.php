@@ -387,6 +387,10 @@ class RefreshManager
             if (!$volunteer->getUser()) {
                 $this->volunteerManager->save($volunteer);
                 $this->userManager->createUser(Platform::FR, $volunteer->getExternalId());
+
+                $user = $this->userManager->findOneByExternalId(Platform::FR, $volunteer->getExternalId());
+                $structures = $this->structureManager->findCallableStructuresForVolunteer(Platform::FR, $volunteer);
+                $user->updateStructures($structures);
             }
 
             $user = $this->userManager->findOneByExternalId(Platform::FR, $volunteer->getExternalId());
