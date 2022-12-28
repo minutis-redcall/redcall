@@ -156,46 +156,51 @@ class VolunteerManager
         ?string $criteria,
         bool $onlyEnabled,
         bool $onlyUsers,
-        bool $includeHierarchy) : QueryBuilder
+        bool $includeHierarchy,
+        bool $onlyLocked) : QueryBuilder
     {
         if ($includeHierarchy) {
             $structureIds = $this->structureManager->getDescendantStructures($this->security->getPlatform(), [$structure->getId()]);
 
-            return $this->volunteerRepository->searchInStructuresQueryBuilder($platform, $structureIds, $criteria, $onlyEnabled, $onlyUsers);
+            return $this->volunteerRepository->searchInStructuresQueryBuilder($platform, $structureIds, $criteria, $onlyEnabled, $onlyUsers, $onlyLocked);
         }
 
-        return $this->volunteerRepository->searchInStructureQueryBuilder($platform, $structure, $criteria, $onlyEnabled, $onlyUsers);
+        return $this->volunteerRepository->searchInStructureQueryBuilder($platform, $structure, $criteria, $onlyEnabled, $onlyUsers, $onlyLocked);
     }
 
     public function searchQueryBuilder(string $platform,
         ?string $criteria,
         bool $onlyEnabled,
-        bool $onlyUsers) : QueryBuilder
+        bool $onlyUsers,
+        bool $onlyLocked) : QueryBuilder
     {
         if ($this->security->isGranted('ROLE_ADMIN')) {
-            return $this->searchAllQueryBuilder($platform, $criteria, $onlyEnabled, $onlyUsers);
+            return $this->searchAllQueryBuilder($platform, $criteria, $onlyEnabled, $onlyUsers, $onlyLocked);
         } else {
-            return $this->searchForCurrentUserQueryBuilder($criteria, $onlyEnabled, $onlyUsers);
+            return $this->searchForCurrentUserQueryBuilder($criteria, $onlyEnabled, $onlyUsers, $onlyLocked);
         }
     }
 
     public function searchAllQueryBuilder(string $platform,
         ?string $criteria,
         bool $onlyEnabled,
-        bool $onlyUsers) : QueryBuilder
+        bool $onlyUsers,
+        bool $onlyLocked) : QueryBuilder
     {
-        return $this->volunteerRepository->searchAllWithFiltersQueryBuilder($platform, $criteria, $onlyEnabled, $onlyUsers);
+        return $this->volunteerRepository->searchAllWithFiltersQueryBuilder($platform, $criteria, $onlyEnabled, $onlyUsers, $onlyLocked);
     }
 
     public function searchForCurrentUserQueryBuilder(?string $criteria,
         bool $onlyEnabled,
-        bool $onlyUsers) : QueryBuilder
+        bool $onlyUsers,
+        bool $onlyLocked) : QueryBuilder
     {
         return $this->volunteerRepository->searchForUserQueryBuilder(
             $this->security->getUser(),
             $criteria,
             $onlyEnabled,
-            $onlyUsers
+            $onlyUsers,
+            $onlyLocked
         );
     }
 

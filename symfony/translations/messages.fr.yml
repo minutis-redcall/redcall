@@ -249,12 +249,9 @@ audience:
   structures: Structure(s)
   volunteer_lists: 'Listes préremplies de bénévoles'
 backlinks:
-  blablacar: 'Parrainé par'
   feedback: 'Partagez vos idées afin d''améliorer RedCall'
   minutis: 'Développé par les bénévoles'
   new: Nouveau!
-  phpstorm: 'Développé avec'
-  phrase: 'Traductions grâce à'
   redcross: 'de Minutis'
 base:
   actions: Actions
@@ -751,6 +748,7 @@ manage_volunteers:
     label: 'Rechercher un bénévole (appuyez sur Entrée pour continuer)'
     only_enabled: 'Masquer les bénévoles desactivés'
     only_users: 'Afficher seulement les bénévoles pouvant utiliser RedCall'
+    only_locked: 'Afficher seulement les bénévoles gelés'
   title: 'Gestion des bénévoles'
   title_with_structure: 'Gestion des bénévoles de %name%'
 management:

@@ -249,12 +249,9 @@ audience:
   structures: Structure(s)
   volunteer_lists: 'Volunteer lists'
 backlinks:
-  blablacar: 'Sponsored by'
   feedback: 'Help us improve RedCall!'
   minutis: 'Developed by Minutis volunteers'
   new: New!
-  phpstorm: 'Developed with'
-  phrase: 'Translated with'
   redcross: 'French Red Cross'
 base:
   actions: Actions
@@ -751,6 +748,7 @@ manage_volunteers:
     label: 'Search for a volunteer (press Enter to continue)'
     only_enabled: 'Hide disabled volunteers'
     only_users: 'Only show volunteers having RedCall access'
+    only_locked: 'Only show locked volunteers'
   title: 'Manage volunteers'
   title_with_structure: 'Manage volunteers from %name%'
 management:

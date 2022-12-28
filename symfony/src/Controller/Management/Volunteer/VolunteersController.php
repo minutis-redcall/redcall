@@ -146,20 +146,22 @@ class VolunteersController extends BaseController
         $criteria               = null;
         $hideDisabled           = true;
         $filterUsers            = false;
+        $filterLocked           = false;
         $filterIncludeHierarchy = true;
         if ($search->isSubmitted() && $search->isValid()) {
             $criteria     = $search->get('criteria')->getData();
             $hideDisabled = $search->get('only_enabled')->getData();
             $filterUsers  = $search->get('only_users')->getData();
+            $filterLocked = $search->get('only_locked')->getData();
             if ($structure) {
                 $filterIncludeHierarchy = $search->get('include_hierarchy')->getData();
             }
         }
 
         if ($structure) {
-            $queryBuilder = $this->volunteerManager->searchInStructureQueryBuilder($this->getPlatform(), $structure, $criteria, $hideDisabled, $filterUsers, $filterIncludeHierarchy);
+            $queryBuilder = $this->volunteerManager->searchInStructureQueryBuilder($this->getPlatform(), $structure, $criteria, $hideDisabled, $filterUsers, $filterIncludeHierarchy, $filterLocked);
         } else {
-            $queryBuilder = $this->volunteerManager->searchQueryBuilder($this->getPlatform(), $criteria, $hideDisabled, $filterUsers);
+            $queryBuilder = $this->volunteerManager->searchQueryBuilder($this->getPlatform(), $criteria, $hideDisabled, $filterUsers, $filterLocked);
         }
 
         return $this->render('management/volunteers/list.html.twig', [
@@ -575,6 +577,10 @@ class VolunteersController extends BaseController
             ])
             ->add('only_enabled', CheckboxType::class, [
                 'label'    => 'manage_volunteers.search.only_enabled',
+                'required' => false,
+            ])
+            ->add('only_locked', CheckboxType::class, [
+                'label'    => 'manage_volunteers.search.only_locked',
                 'required' => false,
             ])
             ->add('only_users', CheckboxType::class, [
