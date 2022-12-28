@@ -249,12 +249,9 @@ audience:
   structures: Structure(s)
   volunteer_lists: 'Volunteer lists'
 backlinks:
-  blablacar: 'Sponsored by'
   feedback: 'Help us improve RedCall!'
   minutis: 'Developed by Minutis volunteers'
   new: New!
-  phpstorm: 'Developed with'
-  phrase: 'Translated with'
   redcross: 'French Red Cross'
 base:
   actions: Actions

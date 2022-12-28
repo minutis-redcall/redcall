@@ -217,40 +217,10 @@
             <hr>
 
             <div class="row">
-                <div class="col-3">
+                <div class="col-12">
                     <span style="font-size:12px;">{{ 'backlinks.minutis'|trans }}</span>
                     <br/>
                     <span style="font-size:12px;">{{ 'backlinks.redcross'|trans }}</span>
-                </div>
-
-                <div class="col-3">
-                    <span style="font-size:12px;">{{ 'backlinks.blablacar'|trans }}</span>
-                    <br/>
-                    <div style="padding-top:2px;">
-                        <a href="https://blablacar.com" target="_blank">
-                            <img src="{{ asset('partners/logo-blablacar.png') }}" height="11"/>
-                        </a>
-                    </div>
-                </div>
-
-                <div class="col-3">
-                    <span style="font-size:12px;">{{ 'backlinks.phpstorm'|trans }}</span>
-                    <br/>
-                    <div style="padding-top:2px;">
-                        <a href="https://www.jetbrains.com/phpstorm/" target="_blank">
-                            <img src="{{ asset('partners/logo-phpstorm.png') }}" height="11"/>
-                        </a>
-                    </div>
-                </div>
-
-                <div class="col-3">
-                    <span style="font-size:12px;">{{ 'backlinks.phrase'|trans }}</span>
-                    <br/>
-                    <div style="margin-left:1px;">
-                        <a href="https://phrase.com" target="_blank">
-                            <img src="{{ asset('partners/logo-phrase.png') }}" height="11"/>
-                        </a>
-                    </div>
                 </div>
             </div>
 
@@ -282,11 +252,11 @@
 
         function escapeHtml(unsafe) {
             return unsafe
-                    .replace(/&/g, "&amp;")
-                    .replace(/</g, "&lt;")
-                    .replace(/>/g, "&gt;")
-                    .replace(/"/g, "&quot;")
-                    .replace(/'/g, "&#039;");
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
         }
 
     </script>

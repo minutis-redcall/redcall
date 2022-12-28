@@ -249,12 +249,9 @@ audience:
   structures: Structure(s)
   volunteer_lists: 'Listes préremplies de bénévoles'
 backlinks:
-  blablacar: 'Parrainé par'
   feedback: 'Partagez vos idées afin d''améliorer RedCall'
   minutis: 'Développé par les bénévoles'
   new: Nouveau!
-  phpstorm: 'Développé avec'
-  phrase: 'Traductions grâce à'
   redcross: 'de Minutis'
 base:
   actions: Actions
