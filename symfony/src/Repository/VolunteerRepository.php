@@ -100,7 +100,8 @@ class VolunteerRepository extends BaseRepository
     public function searchForUserQueryBuilder(User $user,
         ?string $keyword,
         bool $onlyEnabled = false,
-        bool $onlyUsers = true) : QueryBuilder
+        bool $onlyUsers = true,
+        bool $onlyLocked = false) : QueryBuilder
     {
         $qb = $this->createAccessibleVolunteersQueryBuilder($user, $onlyEnabled);
 
@@ -110,6 +111,10 @@ class VolunteerRepository extends BaseRepository
 
         if ($onlyUsers) {
             $this->addUserCriteria($qb);
+        }
+
+        if ($onlyLocked) {
+            $this->addLockedCriteria($qb);
         }
 
         return $qb;
@@ -130,7 +135,8 @@ class VolunteerRepository extends BaseRepository
         Structure $structure,
         ?string $keyword,
         bool $onlyEnabled = true,
-        bool $onlyUsers = false) : QueryBuilder
+        bool $onlyUsers = false,
+        bool $onlyLocked = false) : QueryBuilder
     {
         $qb = $this->searchAllQueryBuilder($platform, $keyword, $onlyEnabled)
                    ->join('v.structures', 's')
@@ -141,6 +147,10 @@ class VolunteerRepository extends BaseRepository
             $this->addUserCriteria($qb);
         }
 
+        if ($onlyLocked) {
+            $this->addLockedCriteria($qb);
+        }
+
         return $qb;
     }
 
@@ -148,7 +158,8 @@ class VolunteerRepository extends BaseRepository
         array $structureIds,
         ?string $keyword,
         bool $onlyEnabled = true,
-        bool $onlyUsers = false) : QueryBuilder
+        bool $onlyUsers = false,
+        bool $onlyLocked = false) : QueryBuilder
     {
         $qb = $this->searchAllQueryBuilder($platform, $keyword, $onlyEnabled)
                    ->join('v.structures', 's')
@@ -158,6 +169,10 @@ class VolunteerRepository extends BaseRepository
 
         if ($onlyUsers) {
             $this->addUserCriteria($qb);
+        }
+
+        if ($onlyLocked) {
+            $this->addLockedCriteria($qb);
         }
 
         return $qb;
@@ -177,12 +192,17 @@ class VolunteerRepository extends BaseRepository
     public function searchAllWithFiltersQueryBuilder(string $platform,
         ?string $criteria,
         bool $onlyEnabled,
-        bool $onlyUsers) : QueryBuilder
+        bool $onlyUsers,
+        bool $onlyLocked) : QueryBuilder
     {
         $qb = $this->searchAllQueryBuilder($platform, $criteria, $onlyEnabled);
 
         if ($onlyUsers) {
             $this->addUserCriteria($qb);
+        }
+
+        if ($onlyLocked) {
+            $this->addLockedCriteria($qb);
         }
 
         return $qb;
@@ -198,8 +218,8 @@ class VolunteerRepository extends BaseRepository
         }
 
         $count = $count
-                      ->getQuery()
-                      ->getSingleScalarResult();
+            ->getQuery()
+            ->getSingleScalarResult();
 
         $offset = 0;
         $stop   = false;
@@ -677,5 +697,11 @@ class VolunteerRepository extends BaseRepository
     {
         $qb
             ->join('v.user', 'vu');
+    }
+
+    private function addLockedCriteria(QueryBuilder $qb)
+    {
+        $qb
+            ->andWhere('v.locked = true');
     }
 }

@@ -748,6 +748,7 @@ manage_volunteers:
     label: 'Search for a volunteer (press Enter to continue)'
     only_enabled: 'Hide disabled volunteers'
     only_users: 'Only show volunteers having RedCall access'
+    only_locked: 'Only show locked volunteers'
   title: 'Manage volunteers'
   title_with_structure: 'Manage volunteers from %name%'
 management:
