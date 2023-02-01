@@ -41,10 +41,9 @@ class VolunteerRepository extends BaseRepository
         ]);
     }
 
-    public function findOneByInternalEmailAndCurrentPlatform(string $internalEmail)
+    public function findOneByInternalEmail(string $internalEmail)
     {
         return $this->findOneBy([
-            'platform'      => $this->security->getPlatform(),
             'internalEmail' => $internalEmail,
         ]);
     }

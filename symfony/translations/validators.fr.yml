@@ -39,3 +39,5 @@ form:
   volunteer:
     errors:
       redcall_user: 'Ce bénévole est rattaché à un utilisateur RedCall, supprimez d''abord l''utilisateur afin de pouvoir désactiver le bénévole.'
+  whitelist:
+    invalid_redirect_url: 'Cette URL de redirection n''est pas autorisée.'

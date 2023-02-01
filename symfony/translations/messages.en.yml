@@ -249,9 +249,12 @@ audience:
   structures: Structure(s)
   volunteer_lists: 'Volunteer lists'
 backlinks:
+  blablacar: 'Sponsored by'
   feedback: 'Help us improve RedCall!'
   minutis: 'Developed by Minutis volunteers'
   new: New!
+  phpstorm: 'Developed with'
+  phrase: 'Translated with'
   redcross: 'French Red Cross'
 base:
   actions: Actions
@@ -295,10 +298,10 @@ base:
     go: Go
     go_to: 'Go to page'
     next: →
+    no_results: 'No results'
     per_page: 'Results per page'
     prev: ←
     result: '{0} results | {1} result | ]1,Inf[ results'
-    no_results: 'No results'
   play: Play
   search:
     no_results: 'No results found!'
@@ -453,6 +456,15 @@ csv_export:
 developer:
   home:
     link: 'Developer space'
+favorite_badge:
+  description: 'You can choose which filters to render on the trigger form according to your personal needs.'
+  form:
+    badge: 'Add one or more skill(s) / nomination(s)'
+    submit: Add
+  link: 'Choose your favorite skills & nominations'
+  no_badge: 'No favorite skills yet.'
+  public: 'Default skills and nominations are the following: %public_badges%'
+  title: 'Your favorite skills and nominations'
 form:
   campaign:
     fields:
@@ -971,12 +983,8 @@ title:
   campaigns: Campaigns
   costs: Costs
   messages: Messages
-favorite_badge:
-  link: 'Choose your favorite skills & nominations'
-  title: 'Your favorite skills and nominations'
-  description: 'You can choose which filters to render on the trigger form according to your personal needs.'
-  no_badge: 'No favorite skills yet.'
-  public: 'Default skills and nominations are the following: %public_badges%'
-  form:
-    badge: 'Add one or more skill(s) / nomination(s)'
-    submit: Add
+google:
+  connect_with: 'Connect with'
+  connect: Connect
+  other: 'Other means'
+  connect_with_google: 'Connect with Google'

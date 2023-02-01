@@ -249,9 +249,12 @@ audience:
   structures: Structure(s)
   volunteer_lists: 'Listes préremplies de bénévoles'
 backlinks:
+  blablacar: 'Parrainé par'
   feedback: 'Partagez vos idées afin d''améliorer RedCall'
   minutis: 'Développé par les bénévoles'
   new: Nouveau!
+  phpstorm: 'Développé avec'
+  phrase: 'Traductions grâce à'
   redcross: 'de Minutis'
 base:
   actions: Actions
@@ -295,10 +298,10 @@ base:
     go: Go
     go_to: 'Aller à la page'
     next: →
+    no_results: 'Aucun résultat'
     per_page: 'Résultats par page'
     prev: ←
     result: '[0,1] résultat | ]1,Inf[ résultats'
-    no_results: 'Aucun résultat'
   play: Ecouter
   search:
     no_results: 'Aucun résultat trouvé !'
@@ -453,6 +456,15 @@ csv_export:
 developer:
   home:
     link: 'Espace développeur'
+favorite_badge:
+  description: 'Vous pouvez choisir quels filtres afficher dans le formulaire de déclenchement en fonction de vos propres besoins.'
+  form:
+    badge: 'Ajouter une ou plusieurs nouvelle(s) compétence(s) / nomination(s)'
+    submit: Ajouter
+  link: 'Choisir vos compétences & nominations préférées'
+  no_badge: 'Pas encore de compétences favorites.'
+  public: 'Les compétences et nominations par défaut sont les suivantes : %public_badges%'
+  title: 'Vos compétences et nominations préférées'
 form:
   campaign:
     fields:
@@ -971,12 +983,8 @@ title:
   campaigns: Déclenchements
   costs: Coûts
   messages: Messages
-favorite_badge:
-  link: 'Choisir vos compétences & nominations préférées'
-  title: 'Vos compétences et nominations préférées'
-  description: 'Vous pouvez choisir quels filtres afficher dans le formulaire de déclenchement en fonction de vos propres besoins.'
-  no_badge: 'Pas encore de compétences favorites.'
-  public: 'Les compétences et nominations par défaut sont les suivantes : %public_badges%'
-  form:
-    badge: 'Ajouter une ou plusieurs nouvelle(s) compétence(s) / nomination(s)'
-    submit: Ajouter
+google:
+  connect_with: 'Se connecter avec'
+  connect: Connexion
+  other: 'Autres moyens'
+  connect_with_google: 'Se connecter avec Google'

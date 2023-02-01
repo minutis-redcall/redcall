@@ -39,3 +39,5 @@ form:
   volunteer:
     errors:
       redcall_user: 'This volunteer is bound to a RedCall user, remove first the user and then remove this volunteer.'
+  whitelist:
+    invalid_redirect_url: 'The provided redirect URL is not allowed.'
