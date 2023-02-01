@@ -8,6 +8,12 @@ parameters:
   communication.processor: 'App\Communication\Processor\TaskProcessor'
   user_entity: 'App\Entity\User'
   home_route: 'home'
+  whitelisted_base_redirect_urls:
+    - "http://127.0.0.1:8000/"
+    - "http://localhost/"
+    - "https://localhost/"
+    - "https://rcl.re/"
+    - "https://redcall.minutis.croix-rouge.fr/"
 
 services:
   # default configuration for services in *this* file
@@ -91,6 +97,11 @@ services:
       - '@mailer'
       - '@Bundles\PasswordLoginBundle\Manager\UserManager'
       - '@App\Manager\UserManager'
+
+  App\Provider\OAuth\GoogleConnect\GoogleConnect:
+    arguments:
+      $clientId: '%env(GOOGLE_CONNECT_CLIENT_ID)%'
+      $clientSecret: '%env(GOOGLE_CONNECT_CLIENT_SECRET)%'
 
   twig.extension.intl:
     class: Twig\Extra\Intl\IntlExtension

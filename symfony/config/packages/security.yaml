@@ -36,6 +36,7 @@ security:
       guard:
         authenticators:
           - App\Security\Authenticator\MinutisAuthenticator
+          - App\Security\Authenticator\GoogleConnectAuthenticator
           - Bundles\PasswordLoginBundle\Security\Authenticator\FormLoginAuthenticator
         entry_point: App\Security\Authenticator\MinutisAuthenticator
       remember_me:
@@ -55,6 +56,9 @@ security:
 
     # Minutis authentication
     - { path: '^/auth$', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
+
+    # Google Connect
+    - { path: '^/google-(connect|verify)$', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
 
     # Volunteer space
     - { path: '^/space', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }

@@ -7,6 +7,7 @@ use App\Entity\Badge;
 use App\Entity\Message;
 use App\Entity\Structure;
 use App\Entity\Volunteer;
+use App\Model\OAuthUser;
 use App\Repository\VolunteerRepository;
 use App\Security\Helper\Security;
 use Doctrine\ORM\QueryBuilder;
@@ -95,7 +96,7 @@ class VolunteerManager
 
     public function findOneByInternalEmail(string $email) : ?Volunteer
     {
-        return $this->volunteerRepository->findOneByInternalEmailAndCurrentPlatform($email);
+        return $this->volunteerRepository->findOneByInternalEmail($email);
     }
 
     public function save(Volunteer $volunteer)
@@ -405,5 +406,10 @@ class VolunteerManager
     public function getVolunteersHavingBadgeQueryBuilder(Badge $badge)
     {
         return $this->volunteerRepository->getVolunteersHavingBadgeQueryBuilder($badge);
+    }
+
+    public function getVolunteerFromOauth(OAuthUser $oAuthUser) : ?Volunteer
+    {
+        return $this->findOneByInternalEmail($oAuthUser->getEmail());
     }
 }
