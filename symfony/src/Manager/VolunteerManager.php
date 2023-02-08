@@ -412,4 +412,9 @@ class VolunteerManager
     {
         return $this->findOneByInternalEmail($oAuthUser->getEmail());
     }
+
+    public function countActive(): int
+    {
+        return $this->volunteerRepository->countActive();
+    }
 }
