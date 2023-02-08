@@ -4,6 +4,7 @@ namespace App\Task;
 
 use App\Entity\Pegass;
 use App\Manager\PegassManager;
+use App\Manager\VolunteerManager;
 use App\Queues;
 use Bundles\GoogleTaskBundle\Contracts\TaskInterface;
 use Bundles\GoogleTaskBundle\Service\TaskSender;
@@ -13,6 +14,11 @@ use Psr\Log\LoggerInterface;
 
 class PegassCreateChunks implements TaskInterface
 {
+    /**
+     * @var VolunteerManager
+     */
+    private $volunteerManager;
+
     /**
      * @var array
      */
@@ -38,8 +44,9 @@ class PegassCreateChunks implements TaskInterface
      */
     private $logger;
 
-    public function __construct(PegassManager $pegassManager, TaskSender $async, LoggerInterface $logger)
+    public function __construct(VolunteerManager $volunteerManager, PegassManager $pegassManager, TaskSender $async, LoggerInterface $logger)
     {
+        $this->volunteerManager = $volunteerManager;
         $this->pegassManager = $pegassManager;
         $this->async         = $async;
         $this->logger        = $logger;
@@ -111,6 +118,12 @@ class PegassCreateChunks implements TaskInterface
         // Volunteers
         $this->logger->warning('Extracting volunteer basics...');
         $this->extractVolunteerBasics($csvs);
+
+        $ratio = (count($this->volunteers) * 100 / $this->volunteerManager->countActive());
+        if ($ratio < 95) {
+            $this->logger->critical(sprintf('Only %d%% volunteers in import!', $ratio));
+            return;
+        }
 
         $this->logger->warning('Extracting volunteer actions...');
         $this->extractActions($csvs);

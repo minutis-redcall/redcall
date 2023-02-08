@@ -703,4 +703,13 @@ class VolunteerRepository extends BaseRepository
         $qb
             ->andWhere('v.locked = true');
     }
+
+    public function countActive(): int
+    {
+        return $this->createQueryBuilder('v')
+                    ->select('COUNT(v)')
+                    ->andWhere('v.enabled = true')
+                    ->getQuery()
+                    ->getSingleScalarResult();
+    }
 }
