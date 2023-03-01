@@ -82,12 +82,12 @@ class VolunteerFiltersFacade extends PageFilterFacade
         return $this;
     }
 
-    public function isOnlyLocked() : bool|int
+    public function isOnlyLocked() : bool
     {
         return $this->onlyLocked;
     }
 
-    public function setOnlyLocked(bool|int $onlyLocked) : void
+    public function setOnlyLocked(bool $onlyLocked) : void
     {
         $this->onlyLocked = $onlyLocked;
     }
