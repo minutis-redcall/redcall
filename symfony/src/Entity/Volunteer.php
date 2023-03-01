@@ -110,7 +110,7 @@ class Volunteer implements LockableInterface
      *
      * @ORM\Column(type="boolean")
      */
-    private $minor;
+    private $minor = false;
 
     /**
      * @var \DateTimeInterface
