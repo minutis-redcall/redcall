@@ -354,7 +354,6 @@ class PegassCreateChunks implements TaskInterface
                 'identifier'         => $row[0],
                 'lastname'           => $row[1],
                 'firstname'          => $row[2],
-                'birthday'           => sprintf('%d-01-01TT00:00:00', date('Y') - intval($row[3])),
                 'minor'              => intval(intval($row[3]) < 18),
                 'personal_email'     => $row[4],
                 'organization_email' => $row[5],

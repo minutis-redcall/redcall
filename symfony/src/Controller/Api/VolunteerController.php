@@ -151,7 +151,7 @@ class VolunteerController extends BaseController
      */
     public function records(VolunteerFiltersFacade $filters) : FacadeInterface
     {
-        $qb = $this->volunteerManager->searchQueryBuilder($this->getPlatform(), $filters->getCriteria(), $filters->isOnlyEnabled(), $filters->isOnlyUsers());
+        $qb = $this->volunteerManager->searchQueryBuilder($this->getPlatform(), $filters->getCriteria(), $filters->isOnlyEnabled(), $filters->isOnlyUsers(), $filters->isOnlyLocked());
 
         return new QueryBuilderFacade($qb, $filters->getPage(), function (Volunteer $volunteer) {
             return $this->volunteerTransformer->expose($volunteer);

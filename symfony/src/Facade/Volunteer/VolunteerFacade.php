@@ -42,15 +42,13 @@ class VolunteerFacade implements FacadeInterface
     protected $lastName;
 
     /**
-     * Volunteer's birth day.
+     * Whether volunteer is underage or not.
      *
-     * In the YYYY-MM-DD format.
+     * @Assert\Choice(choices={false, true})
      *
-     * @Assert\Date()
-     *
-     * @var string|null
+     * @var bool|null
      */
-    protected $birthday;
+    protected $minor;
 
     /**
      * Volunteer's "Be Right Back" date.
@@ -171,7 +169,7 @@ class VolunteerFacade implements FacadeInterface
         $facade->externalId    = 'demo-volunteer';
         $facade->firstName     = 'John';
         $facade->lastName      = 'Doe';
-        $facade->birthday      = '1984-07-10';
+        $facade->minor         = false;
         $facade->optoutUntil   = null;
         $facade->email         = 'demo@example.org';
         $facade->internalEmail = 'demo@croix-rouge.fr';
@@ -219,16 +217,14 @@ class VolunteerFacade implements FacadeInterface
         return $this;
     }
 
-    public function getBirthday() : ?string
+    public function getMinor() : ?bool
     {
-        return $this->birthday;
+        return $this->minor;
     }
 
-    public function setBirthday(?string $birthday) : VolunteerFacade
+    public function setMinor(?bool $minor) : void
     {
-        $this->birthday = $birthday;
-
-        return $this;
+        $this->minor = $minor;
     }
 
     public function getOptoutUntil() : ?string

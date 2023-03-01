@@ -106,11 +106,11 @@ class Volunteer implements LockableInterface
     private $locked = false;
 
     /**
-     * @var \DateTime|null
+     * @var bool
      *
-     * @ORM\Column(type="datetime", nullable=true)
+     * @ORM\Column(type="boolean")
      */
-    private $birthday;
+    private $minor;
 
     /**
      * @var \DateTimeInterface
@@ -349,23 +349,12 @@ class Volunteer implements LockableInterface
 
     public function isMinor() : bool
     {
-        if (!$this->birthday) {
-            return false;
-        }
-
-        return strtotime('+18 years', $this->birthday->getTimestamp()) > time();
+        return $this->minor;
     }
 
-    public function getBirthday() : ?DateTime
+    public function setMinor(bool $minor) : void
     {
-        return $this->birthday;
-    }
-
-    public function setBirthday(?DateTime $birthday) : Volunteer
-    {
-        $this->birthday = $birthday;
-
-        return $this;
+        $this->minor = $minor;
     }
 
     public function getFormattedPhoneNumber() : ?string

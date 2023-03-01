@@ -548,8 +548,7 @@ class VolunteerRepository extends BaseRepository
     {
         return $this
             ->createVolunteerListQueryBuilder($platform, $volunteerIds)
-            ->andWhere('v.birthday IS NOT NULL AND v.birthday > :limit')
-            ->setParameter('limit', (new \DateTime())->modify('-18 years')->format('Y-m-d H:i:s'))
+            ->andWhere('v.minor = true')
             ->getQuery()
             ->getArrayResult();
     }

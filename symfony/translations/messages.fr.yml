@@ -540,6 +540,11 @@ form:
       structure_use: 'Structure à laquelle est rattachée l''opération'
     title: 'Opération Minutis'
     url: 'Opération Minutis :'
+google:
+  connect_with: 'Se connecter avec'
+  connect_with_google: 'Se connecter avec Google'
+  other: 'Autres moyens'
+  connect: Connexion
 import_report:
   disable_locked: 'Impossible de desactiver un bénévole gelé.'
   disabled: 'Le bénévole est desactivé sur Pegass.'
@@ -721,7 +726,6 @@ manage_volunteers:
     mail_subject: '⚠️ RedCall: Vous avez un message'
   form:
     added: 'Le bénévole a correctement été ajouté.'
-    birthday: 'Date de naissance'
     create: 'Créer un bénévole'
     email: Email
     email_locked: 'Geler l''email *'
@@ -748,6 +752,7 @@ manage_volunteers:
     update: 'Mettre à jour un bénévole'
     updated: 'Le bénévole a correctement été modifié.'
     visible_badges: 'Badges principaux'
+    minority: 'Bénévole mineur (-18ans)'
     add: 'Créer un nouveau bénévole'
     optout_until: 'Bénévole indisponible jusqu''au...'
   others: 'et %count% autre(s)'
@@ -759,8 +764,8 @@ manage_volunteers:
     include_hierarchy: 'Afficher les bénévoles des structures sous-jaçantes'
     label: 'Rechercher un bénévole (appuyez sur Entrée pour continuer)'
     only_enabled: 'Masquer les bénévoles desactivés'
-    only_users: 'Afficher seulement les bénévoles pouvant utiliser RedCall'
     only_locked: 'Afficher seulement les bénévoles gelés'
+    only_users: 'Afficher seulement les bénévoles pouvant utiliser RedCall'
   title: 'Gestion des bénévoles'
   title_with_structure: 'Gestion des bénévoles de %name%'
 management:
@@ -983,8 +988,3 @@ title:
   campaigns: Déclenchements
   costs: Coûts
   messages: Messages
-google:
-  connect_with: 'Se connecter avec'
-  connect: Connexion
-  other: 'Autres moyens'
-  connect_with_google: 'Se connecter avec Google'

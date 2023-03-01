@@ -159,9 +159,6 @@ class AnonymizeManager
             $this->volunteerManager->save($volunteer);
         }
 
-        $minorControl = (new \DateTime())->modify('-18 years')->getTimestamp();
-        $volunteer->setBirthday(new \DateTime(sprintf('@%d', rand() % $minorControl)));
-
         do {
             $phoneNumber = $this->generatePhoneNumber();
             if (!$this->phoneManager->findOneByPhoneNumber($phoneNumber)) {

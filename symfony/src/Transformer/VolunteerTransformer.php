@@ -45,7 +45,7 @@ class VolunteerTransformer extends BaseTransformer
         $facade->setExternalId($volunteer->getExternalId());
         $facade->setFirstName($volunteer->getFirstName());
         $facade->setLastName($volunteer->getLastName());
-        $facade->setBirthday($volunteer->getBirthday() ? $volunteer->getBirthday()->format('Y-m-d') : null);
+        $facade->setMinor($volunteer->isMinor());
         $facade->setOptoutUntil($volunteer->getOptoutUntil() ? $volunteer->getOptoutUntil()->format('Y-m-d') : null);
         $facade->setEmail($volunteer->getEmail());
         $facade->setInternalEmail($volunteer->getInternalEmail());
@@ -115,8 +115,8 @@ class VolunteerTransformer extends BaseTransformer
             $volunteer->setLastName($facade->getLastName());
         }
 
-        if (null !== $facade->getBirthday()) {
-            $volunteer->setBirthday(new \DateTime(sprintf('%s 00:00:00', $facade->getBirthday())));
+        if (null !== $facade->getMinor()) {
+            $volunteer->setMinor($facade->getMinor());
         }
 
         if (null !== $facade->getOptoutUntil()) {

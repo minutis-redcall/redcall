@@ -29,6 +29,13 @@ class VolunteerFiltersFacade extends PageFilterFacade
      */
     protected $onlyUsers = false;
 
+    /**
+     * Only search for volunteers being locked
+     *
+     * @var bool|int
+     */
+    protected $onlyLocked = false;
+
     static public function getExample(Facade $decorates = null) : FacadeInterface
     {
         /** @var self $facade */
@@ -73,5 +80,15 @@ class VolunteerFiltersFacade extends PageFilterFacade
         $this->onlyUsers = $onlyUsers;
 
         return $this;
+    }
+
+    public function isOnlyLocked() : bool|int
+    {
+        return $this->onlyLocked;
+    }
+
+    public function setOnlyLocked(bool|int $onlyLocked) : void
+    {
+        $this->onlyLocked = $onlyLocked;
     }
 }

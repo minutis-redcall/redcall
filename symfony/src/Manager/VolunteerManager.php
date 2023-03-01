@@ -359,7 +359,6 @@ class VolunteerManager
         $volunteer->setBadges([]);
         $volunteer->setFirstName(null);
         $volunteer->setLastName(null);
-        $volunteer->setBirthday(new \DateTime('2000-01-01'));
         $volunteer->getBadges()->clear();
         $volunteer->getPhones()->clear();
         $volunteer->setEmail(null);
