@@ -36,3 +36,12 @@ parameters:
         language_code: 'es-ES'
         male_voice: 'es-ES-Wavenet-B'
         female_voice: 'es-ES-Wavenet-B' # No Wavenet female voice yet
+    pt: # Portugese
+      localized_name: Português
+      english_name: Portuguese
+      locale: pt
+      brand: Cruz Vermelha
+      text_to_speech:
+        language_code: 'pt-PT'
+        male_voice: 'fr-FR-Wavenet-B'
+        female_voice: 'fr-FR-Wavenet-A'

@@ -737,6 +737,7 @@ manage_volunteers:
     last_name: 'Nom de famille'
     lock_info: '* Les nᵒˢ de téléphone et emails gelés ne sont plus mis à jour automatiquement par Pegass.'
     minor: 'Mineur(e) (-18 ans)'
+    minority: 'Bénévole mineur (-18ans)'
     optout_until_me: 'Je suis indisponible jusqu''au...'
     phone_number: Téléphone
     phone_number_locked: 'Geler le nᵒ de téléphone *'
@@ -752,7 +753,6 @@ manage_volunteers:
     update: 'Mettre à jour un bénévole'
     updated: 'Le bénévole a correctement été modifié.'
     visible_badges: 'Badges principaux'
-    minority: 'Bénévole mineur (-18ans)'
     add: 'Créer un nouveau bénévole'
     optout_until: 'Bénévole indisponible jusqu''au...'
   others: 'et %count% autre(s)'

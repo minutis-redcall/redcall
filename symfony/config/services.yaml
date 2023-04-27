@@ -2,8 +2,8 @@
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
   locale: 'fr'
-  locale_list: [ 'fr', 'en', 'es' ]
-  locale_matcher: 'fr|en|es'
+  locale_list: [ 'fr', 'en', 'es', 'pt' ]
+  locale_matcher: 'fr|en|es|pt'
   google_recaptcha_site_key: '%env(GOOGLE_RECAPTCHA_SITE_KEY)%'
   communication.processor: 'App\Communication\Processor\TaskProcessor'
   user_entity: 'App\Entity\User'
