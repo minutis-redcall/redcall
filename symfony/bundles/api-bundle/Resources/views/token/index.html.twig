@@ -6,6 +6,13 @@
         <h3>Your API tokens</h3>
     </div>
 
+    <p class="text-left font-italic">
+        The primary mean of the APIs is to provide a way for every platform to synchronize
+        their own data sources (mainly database of volunteers and structures) with RedCall.
+    </p>
+
+    <br/>
+
     {% if tokens|length %}
         <div class="bg-white text-left">
 
@@ -45,9 +52,11 @@
         {{ form(form) }}
     </div>
 
-    <p class="text-left font-italic">
-        The primary mean of the APIs is to provide a way for every platform to synchronize
-        their own data sources (mainly database of volunteers and structures) with RedCall.
-    </p>
+    <br/>
+
+    <div class="text-center">
+        <a href="{{ path('developer_token_export') }}"
+           class="btn btn-outline-primary">Download documentation as PDF</a>
+    </div>
 
 {% endblock %}

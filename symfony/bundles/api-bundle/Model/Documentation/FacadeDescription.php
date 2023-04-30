@@ -97,7 +97,7 @@ class FacadeDescription
         return $this;
     }
 
-    public function getFormattedExample(string $method, bool $isRequest) : ?string
+    public function getFormattedExample(string $method, bool $isRequest, bool $html = false) : ?string
     {
         if (!$this->example) {
             return null;
@@ -107,7 +107,14 @@ class FacadeDescription
             return sprintf('?%s', http_build_query($this->example));
         }
 
-        return json_encode($this->example, JSON_PRETTY_PRINT);
+        $json = json_encode($this->example, JSON_PRETTY_PRINT);
+        if (!$html) {
+            return $json;
+        }
+
+        $json = str_replace(["\n", ' ', "\t"], ['<br/>', '&nbsp;', '&nbsp;'], $json);
+
+        return $json;
     }
 
     public function getStatusCode() : int

@@ -2,12 +2,15 @@
 
 namespace Bundles\ApiBundle\Controller;
 
+use App\Component\HttpFoundation\MpdfResponse;
 use Bundles\ApiBundle\Entity\Token;
 use Bundles\ApiBundle\Manager\TokenManager;
 use Bundles\ApiBundle\Model\Documentation\CategoryDescription;
 use Bundles\ApiBundle\Model\Documentation\EndpointDescription;
 use Bundles\ApiBundle\Reader\CategoryCollectionReader;
 use Bundles\ApiBundle\Util;
+use Mpdf\Mpdf;
+use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -75,6 +78,45 @@ class TokenController extends AbstractController
             'tokens' => $this->tokenManager->getTokensForUser(),
             'form'   => $form->createView(),
         ];
+    }
+
+    /**
+     * @Route(path="/export", name="export")
+     */
+    public function export()
+    {
+        $collection = $this->categoryCollectionReader->read();
+
+        $token = new Token();
+        $token->setName('demo');
+        $token->setUsername('demo');
+        $token->setToken(Uuid::uuid4());
+        $token->setSecret(Util::encrypt(Util::generate(Token::CLEARTEXT_SECRET_LENGTH), 'demo'));
+        $token->setCreatedAt(new \DateTime());
+
+        $context = [
+            'token'               => $token,
+            'category_collection' => $collection,
+            'demo_get'            => $collection->getCategory(DemoController::class)->getEndpoint('helloGet'),
+            'demo_post'           => $collection->getCategory(DemoController::class)->getEndpoint('helloPost'),
+            'current_date'        => new \DateTime(),
+        ];
+
+        $mpdf = new Mpdf([
+            'tempDir'       => sys_get_temp_dir(),
+            'margin_left'   => 0,
+            'margin_right'  => 0,
+            'margin_bottom' => 25,
+        ]);
+
+        $mpdf->SetHTMLHeader($this->renderView('@Api/export/header.html.twig', $context));
+        $mpdf->SetHTMLFooter($this->renderView('@Api/export/footer.html.twig', $context));
+        $mpdf->WriteHTML($this->renderView('@Api/export/body.html.twig', $context));
+
+        return new MpdfResponse(
+            $mpdf,
+            sprintf('export-%s.pdf', date('Y-m-d'))
+        );
     }
 
     /**
