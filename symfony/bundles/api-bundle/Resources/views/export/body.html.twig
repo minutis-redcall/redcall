@@ -45,11 +45,13 @@
             <p>RedCall allows emergency managers to trigger their local units' volunteers based on their skills. They can ask a question which is sent by SMS or email to the volunteers, and the answers returned by the latter are displayed in real time on a dashboard.</p>
             <p>In order to work, RedCall always need an updated list of volunteers & structures, and this API aims to synchronize your data sources with the RedCall database.</p>
 
-            <h2>Resources</h2>
+            <h2>Main resources</h2>
 
             <ul>
                 {% for category in category_collection.categories %}
-                    {% if category.name != 'Demo' and category.name != 'Pegass' %}
+                    {% if category.name != 'Demo' and category.name != 'Category'
+                        and category.name != 'Campaign' and category.name != 'Pegass'
+                        and category.name != 'Platform' %}
                         <li>
                             <strong>{{ category.name }}</strong>:
                             {{ category.title }}
@@ -67,18 +69,23 @@
          # Authentication
          ################################################# #}
 
-        <div style="margin-left:45px;margin-right:60px;font-family:Arial;">
-        <tocentry content="Authentication" />
+        <div style="background-color:{{ lightgrey }};">
+            <br/>
+            <table width="100%" style="margin-left:45px;margin-right:60px;font-family:Arial Black;color:white;font-weight:bold;">
+                <tr>
+                    <td style="font-size:24px;">
+                        Authentication
+                        <tocentry content="Authentication" />
+                    </td>
+                </tr>
+            </table>
+            <br/>
         </div>
 
         <div style="margin-left:45px;margin-right:60px;font-family:Arial;">
-            <hr/>
-            <h2>Authentication</h2>
-            <hr/>
-
             <p>In order to perform API calls, you should request a developer access to your RedCall administrators in order to have the "developer space" available. Then, from your developer space, you'll be able to generate access tokens & API secrets.</p>
 
-            <p>For the following examples, we'll use:</p>
+            <p>For the following examples, we'll use the following fake credentials:</p>
             <div style="padding-left:15px;">
                 <br/>
                 <code>
@@ -136,7 +143,6 @@ HMAC(
             <h4>When using a <code>POST</code>, <code>PUT</code> or <code>DELETE</code> verb</h4>
             <br/>
             {{ include('@Api/documentation/demo.html.twig', {token: token, endpoint: demo_post, prettify: false}) }}
-            <p>&nbsp;</p>
             <p>
                 {% set method = demo_post.methods[0] %}
                 {% set uri = demo_post.uri %}

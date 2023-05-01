@@ -1,5 +1,3 @@
-{% import '@Api/macros.html.twig' as macros %}
-
 {% if facade.title %}
     <strong>{{ facade.title }}</strong>
     <br/>
@@ -18,68 +16,25 @@
         </thead>
         <tbody>
 
-        {% for property in facade.properties.all %}
-            {% set example = facade.example[property.name]|default(false) %}
-            <tr>
-                <td style="width:25%;text-align:center;padding:10px;color:black;border-left: 1px solid black;border-top: 1px solid black;">
-                    <p>
-                        <b>{{ property.name }}</b>
-                        <br/>
-                        ({% for type in property.types %}{% if not loop.first %}, {% endif %}{{ macros.type_pdf(type) }}{% endfor %})
-                    </p>
-                </td>
-                <td style="width:75%;text-align:left;padding:10px;color:black;border-right: 1px solid black;border-top: 1px solid black;">
-                    <p style="font-weight: bold;">{{ property.title|nl2br }}</p>
-                    {% if property.description %}
-                        <br/>
-                        <p style="font-weight: normal;">{{ property.description|nl2br }}</p>
-                    {% endif %}
+        {{ include('@Api/export/properties.html.twig', {
+            properties: facade.properties
+        }) }}
 
-                    {% if property.constraints %}
-                        <br/>
-                        <table width="100%" cellspacing="0">
-                            <tr>
-                                <td style="text-align:center;color:black;border:1px solid grey;" colspan="2">
-                                    <strong>Constraints</strong>
-                                </td>
-                            </tr>
-                            {% for constraint in property.constraints %}
-                                <tr>
-                                    <td style="width:25%;border:1px solid grey;">{{ constraint.name }}</td>
-                                    <td style="width:75%;border:1px solid grey;">
-                                        {% if constraint.options %}
-                                            {% for name, value in constraint.options %}
-                                                <p>
-                                                    {{ name }}
-                                                    {% if not value is same as(null) and not value is empty %}
-                                                        (<code>{{ value|json_encode }}</code>)
-                                                    {% endif %}
-                                                </p>
-                                            {% endfor %}
-                                        {% endif %}
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        </table>
-                    {% endif %}
-                </td>
-            </tr>
-        {% endfor %}
-        <tr>
-            <td style="text-align:left;padding:10px;color:black;border: 1px solid black;" colspan="2">
-                {% if facade.example %}
-                    <div>
-                        <div style="text-align: center">
-                            <strong>Example</strong>
-                        </div>
-                        <br/>
-                        <code>{{ facade.formattedExample(endpoint.methods[0], constant('\\Bundles\\ApiBundle\\Model\\Documentation\\FacadeDescription::TYPE_REQUEST') == type, true)|raw }}</code>
-                    </div>
-                {% endif %}
-            </td>
-        </tr>
-
+        <tr><td colspan="2" style="border-top: 1px solid black;"></td></tr>
         </tbody>
     </table>
+
+    {% if facade.example %}
+        <div style="margin:2px;text-align:left;padding:10px;color:black;border: 1px solid black;" colspan="2">
+            <div style="text-align: center">
+                <strong>Example</strong>
+            </div>
+            <br/>
+            <div style="font-family: monospace;">
+                {{ facade.formattedExample(endpoint.methods[0], constant('\\Bundles\\ApiBundle\\Model\\Documentation\\FacadeDescription::TYPE_REQUEST') == type, true)|raw }}
+            </div>
+        </div>
+    {% endif %}
+
 {% endif %}
 
