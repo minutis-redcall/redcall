@@ -17,7 +17,16 @@
         {% if country %}
             {% if country.outboundSmsEnabled %}
                 <p>
-                    {{ 'space.phone.details_6'|trans }} {{ country.outboundSmsNumber }}
+                    {{ 'space.phone.details_6'|trans }}
+                    {% if country.outboundSmsShort %}
+                        {{ country.outboundSmsShort }}
+                    {% endif %}
+                    {% if country.outboundSmsShort and country.outboundSmsLong %}
+                        /
+                    {% endif %}
+                    {% if country.outboundSmsLong %}
+                        {{ country.outboundSmsLong }}
+                    {% endif %}
                 </p>
             {% endif %}
             {% if country.outboundCallEnabled %}

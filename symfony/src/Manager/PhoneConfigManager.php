@@ -24,14 +24,15 @@ class PhoneConfigManager
             return null;
         }
 
-        return $this->getPhoneConfig($phone->getCountryCode());
+        return $this->getPhoneConfig($volunteer->getPlatform(), $phone->getCountryCode());
     }
 
-    public function getPhoneConfig(string $countryCode)
+    public function getPhoneConfig(string $platform, string $countryCode)
     {
+        $key = strtolower(sprintf('%s_%s', $platform, $countryCode));
         $countries = array_change_key_case($this->parameterBag->get('phones'), CASE_LOWER);
 
-        $country = $countries[strtolower($countryCode)] ?? null;
+        $country = $countries[$key] ?? null;
         if (!$country) {
             return null;
         }

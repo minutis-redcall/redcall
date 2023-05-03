@@ -6,7 +6,6 @@ use MyCLabs\Enum\Enum;
 
 /**
  * @method static $this FR
- * @method static $this ES
  * @method static $this PT
  */
 class Platform extends Enum
