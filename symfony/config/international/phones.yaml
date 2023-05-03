@@ -24,7 +24,9 @@ parameters:
       outbound_sms_long: '%env(TWILIO_FROM_LONG_FR)%'
       inbound_call_enabled: true
       inbound_call_number: '%env(TWILIO_FROM_LONG_FR)%'
-      inbound_sms_enabled: true
+      inbound_sms_enabled: false
+      platform: fr
+      provider: twilio
     gp: # +590, Guadeloupe
       timezone: 'America/Guadeloupe'
       outbound_call_enabled: true
@@ -35,6 +37,8 @@ parameters:
       inbound_call_enabled: true
       inbound_call_number: '%env(TWILIO_FROM_LONG_GP)%'
       inbound_sms_enabled: false
+      platform: fr
+      provider: twilio
     gf: # +594, Guyane Française
       timezone: 'America/Cayenne'
       outbound_call_enabled: true
@@ -45,6 +49,8 @@ parameters:
       inbound_call_enabled: false
       inbound_call_number: ~
       inbound_sms_enabled: false
+      platform: fr
+      provider: twilio
     mq: # +596, Martinique
       timezone: 'America/Martinique'
       outbound_call_enabled: true
@@ -55,6 +61,8 @@ parameters:
       inbound_call_enabled: true
       inbound_call_number: '%env(TWILIO_FROM_LONG_MQ)%'
       inbound_sms_enabled: false
+      platform: fr
+      provider: twilio
     yt: # +262, Mayotte
       timezone: 'Indian/Mayotte'
       outbound_call_enabled: true
@@ -65,6 +73,8 @@ parameters:
       inbound_call_enabled: false
       inbound_call_number: ~
       inbound_sms_enabled: false
+      platform: fr
+      provider: twilio
     pf: # +689, Polynésie Française
       timezone: 'Pacific/Tahiti'
       outbound_call_enabled: true
@@ -75,6 +85,8 @@ parameters:
       inbound_call_enabled: false
       inbound_call_number: ~
       inbound_sms_enabled: false
+      platform: fr
+      provider: twilio
     re: # +262, Réunion
       timezone: 'Indian/Reunion'
       outbound_call_enabled: true
@@ -85,6 +97,8 @@ parameters:
       inbound_call_enabled: false
       inbound_call_number: ~
       inbound_sms_enabled: false
+      platform: fr
+      provider: twilio
     nc: # +687, Nouvelle-Calédonie
       timezone: 'Pacific/Noumea'
       outbound_call_enabled: true
@@ -95,6 +109,8 @@ parameters:
       inbound_call_enabled: false
       inbound_call_number: ~
       inbound_sms_enabled: false
+      platform: fr
+      provider: twilio
     pm: # +508, Saint-Pierre-et-Miquelon
       timezone: 'America/Miquelon'
       outbound_call_enabled: true
@@ -105,6 +121,8 @@ parameters:
       inbound_call_enabled: false
       inbound_call_number: ~
       inbound_sms_enabled: false
+      platform: fr
+      provider: twilio
     bl: # +590, Saint-Barthélemy
       timezone: 'America/St_Barthelemy'
       outbound_call_enabled: false
@@ -115,6 +133,8 @@ parameters:
       inbound_call_enabled: false
       inbound_call_number: ~
       inbound_sms_enabled: false
+      platform: fr
+      provider: twilio
     mf: # +590, Saint-Martin
       timezone: 'America/Marigot'
       outbound_call_enabled: false
@@ -125,6 +145,8 @@ parameters:
       inbound_call_enabled: false
       inbound_call_number: ~
       inbound_sms_enabled: false
+      platform: fr
+      provider: twilio
     wf: # +681, Wallis-et-Futuna
       timezone: 'Pacific/Wallis'
       outbound_call_enabled: false
@@ -135,13 +157,27 @@ parameters:
       inbound_call_enabled: false
       inbound_call_number: ~
       inbound_sms_enabled: false
-    es: # +34, Spain
-      timezone: 'Europe/Madrid'
-      outbound_call_enabled: true
+      platform: fr
+      provider: twilio
+#    es: # +34, Spain
+#      timezone: 'Europe/Madrid'
+#      outbound_call_enabled: true
+#      outbound_call_number: '%env(TWILIO_FROM_LONG_ES)%'
+#      outbound_sms_enabled: true
+#      outbound_sms_short: ~
+#      outbound_sms_long: '%env(TWILIO_FROM_LONG_ES)%'
+#      inbound_call_enabled: true
+#      inbound_call_number: '%env(TWILIO_FROM_LONG_ES)%'
+#      inbound_sms_enabled: true
+    pt: # +351, Portugal
+      timezone: 'Europe/Lisbon'
+      outbound_call_enabled: false
       outbound_call_number: '%env(TWILIO_FROM_LONG_ES)%'
       outbound_sms_enabled: true
       outbound_sms_short: ~
       outbound_sms_long: '%env(TWILIO_FROM_LONG_ES)%'
-      inbound_call_enabled: true
-      inbound_call_number: '%env(TWILIO_FROM_LONG_ES)%'
+      inbound_call_enabled: false
+      inbound_call_number: ~
       inbound_sms_enabled: true
+      platform: pt
+      provider: twilio
