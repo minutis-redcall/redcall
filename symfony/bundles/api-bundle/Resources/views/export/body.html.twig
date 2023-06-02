@@ -1,0 +1,258 @@
+{% import '@Api/macros.html.twig' as macros %}
+
+{% block content %}
+    {% apply spaceless %}
+
+        {# #################################################
+         # Header
+         ################################################# #}
+        <div style="margin-left:60px;margin-right:60px;border:1px solid {{ lightgrey }};">
+            <div style="text-align:left;position:relative;left:-30px;">
+                <img height="30" src="{{ asset('build/images/corner_topleft.png')[1:] }}"/>
+            </div>
+            <div style="margin-left:50px;">
+                <b>
+                    <span style="font-size:30px;font-family:Arial Black;color:{{ red }};">API documentation</span>
+                    <span style="font-size:20px;font-family:Arial Black;color:{{ red }};"> for RedCall</span>
+                    <br/>
+                    <span style="font-size:20px;font-family:Arial Black;color:{{ red }};">{{ 'now'|date('d/m/Y') }}</span>
+                </b>
+            </div>
+            <div style="text-align:right;">
+                <img height="30" src="{{ asset('build/images/corner_bottomright.png')[1:] }}"/>
+            </div>
+        </div>
+
+        <br/><br/>
+
+        {# #################################################
+         # Table of contents
+         ################################################# #}
+
+        <div style="background-color:{{ lightgrey }};">
+            <br/>
+            <table width="100%" style="margin-left:45px;margin-right:60px;font-family:Arial Black;color:white;font-weight:bold;">
+                <tr>
+                    <td style="font-size:24px;">
+                        Introduction
+                    </td>
+                </tr>
+            </table>
+            <br/>
+        </div>
+
+        <div style="margin-left:45px;margin-right:60px;font-family:Arial;">
+            <p>RedCall allows emergency managers to trigger their local units' volunteers based on their skills. They can ask a question which is sent by SMS or email to the volunteers, and the answers returned by the latter are displayed in real time on a dashboard.</p>
+            <p>In order to work, RedCall always need an updated list of volunteers & structures, and this API aims to synchronize your data sources with the RedCall database.</p>
+
+            <h2>Main resources</h2>
+
+            <ul>
+                {% for category in category_collection.categories %}
+                    {% if category.name != 'Demo' and category.name != 'Category'
+                        and category.name != 'Campaign' and category.name != 'Pegass'
+                        and category.name != 'Platform' %}
+                        <li>
+                            <strong>{{ category.name }}</strong>:
+                            {{ category.title }}
+                            {{ category.description }}
+                            <br/><br/>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </div>
+
+        <tocpagebreak links="on" toc-margin-left="45px" toc-margin-right="60px"/>
+
+        {# #################################################
+         # Authentication
+         ################################################# #}
+
+        <div style="background-color:{{ lightgrey }};">
+            <br/>
+            <table width="100%" style="margin-left:45px;margin-right:60px;font-family:Arial Black;color:white;font-weight:bold;">
+                <tr>
+                    <td style="font-size:24px;">
+                        Authentication
+                        <tocentry content="Authentication" />
+                    </td>
+                </tr>
+            </table>
+            <br/>
+        </div>
+
+        <div style="margin-left:45px;margin-right:60px;font-family:Arial;">
+            <p>In order to perform API calls, you should request a developer access to your RedCall administrators in order to have the "developer space" available. Then, from your developer space, you'll be able to generate access tokens & API secrets.</p>
+
+            <p>For the following examples, we'll use the following fake credentials:</p>
+            <div style="padding-left:15px;">
+                <br/>
+                <code>
+                    Token: {{ token.token }}<br/>
+                    Secret: {{ token.decodedSecret }}
+                </code>
+                <br/><br/>
+            </div>
+
+            <p>In order to authenticate, use the following headers:</p>
+            <div style="padding-left:15px;">
+                <br/>
+                <code>
+                    Authorization: Bearer &lt;Access token&gt;<br/>
+                    X-Signature: &lt;Request Signature&gt;
+                </code>
+                <br/><br/>
+            </div>
+
+            <p>The <code>Request Signature</code> is a keyed hash of the request with your token secret.</p>
+            <p>
+                It is an hexadecimal <code>SHA256 HMAC</code> of the concatenation without separators of the
+                method, the full uri of the requested endoint (including query string) and the body of the API
+                request.
+            </p>
+            <p>&nbsp;</p>
+
+            {# Demo using the query string #}
+            <tocentry content="When using GET verb" level="1" />
+            <h4>When using a <code>GET</code> verb</h4>
+            <br/>
+            <div style="font-size:10px;">
+                {{ include('@Api/documentation/demo.html.twig', {token: token, endpoint: demo_get}) }}
+            </div>
+
+            <p>
+                {% set method = demo_get.methods[0] %}
+                {% set uri = demo_get.uri ~ '?' ~ demo_get.requestFacade.example|http_build_query %}
+
+                In the above example,<br/>
+                <textarea rows="5" style="width: 100%;" readonly>
+HMAC(
+    SHA256,
+    {{ method }}{{ uri }},
+    {{ token.decodedSecret }}
+)
+</textarea>
+                = {{ token.sign(method, uri) }}
+                <br/>
+            </p>
+            <p>&nbsp;</p>
+
+            {# Demo using a payload #}
+            <tocentry content="When using POST, PUT or DELETE verb" level="1" />
+            <h4>When using a <code>POST</code>, <code>PUT</code> or <code>DELETE</code> verb</h4>
+            <br/>
+            {{ include('@Api/documentation/demo.html.twig', {token: token, endpoint: demo_post, prettify: false}) }}
+            <p>
+                {% set method = demo_post.methods[0] %}
+                {% set uri = demo_post.uri %}
+                {% set payload = demo_post.requestFacade.example|json_encode %}
+
+                In the above example,<br/>
+                <textarea rows="5" style="width: 100%;" readonly>
+HMAC(
+    SHA256,
+    {{ method }}{{ uri }}{{ payload }},
+    {{ token.decodedSecret }}
+)
+</textarea>
+                = {{ token.sign(method, uri, payload) }}
+                <br/>
+            </p>
+        </div>
+
+        {# #################################################
+         # Endpoints
+         ################################################# #}
+
+        <div style="margin-left:45px;margin-right:60px;font-family:Arial;">
+        {% for category in category_collection.categories %}
+
+            <pagebreak/>
+
+            {% if not loop.first %}
+                <hr/>
+            {% endif %}
+
+            <div style="background-color:{{ lightgrey }};">
+                <br/>
+                <table width="100%" style="font-family:Arial Black;color:white;font-weight:bold;">
+                    <tr>
+                        <td>
+                            <div style="font-size:24px;">
+                                {{ category.name }}
+                                <tocentry content="{{ category.name }}" />
+                            </div>
+                            {% if category.title or category.description %}
+                                <div style="font-family: Arial;">
+                                    {{ category.title }}
+                                    <br/>
+                                    {{ category.description }}
+                                </div>
+                            {% endif %}
+                        </td>
+                    </tr>
+                </table>
+                <br/>
+            </div>
+
+            {% for endpoint in category.endpoints.endpoints %}
+
+                {% if not loop.first %}
+                    <hr/>
+                {% endif %}
+
+                <h3>
+                    {{ endpoint.title }}
+                    <tocentry content="{{ endpoint.title }}" level="1" />
+                </h3>
+
+                {% if endpoint.roles %}
+                    <div style="text-align: right;">
+                        Required permissions:
+                        {% for role in endpoint.roles %}
+                            {{ role.attribute }}
+                            {% if not loop.last %}, {% endif %}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <div>
+                    {% for method in endpoint.methods %}
+                        <p>
+                            <code>{{ macros.method_pdf(method) }} {{ endpoint.uri }}</code>
+                        </p>
+                    {% endfor %}
+                </div>
+
+                {% if endpoint.description %}
+                    <div>
+                        <p>{{ endpoint.description|nl2br }}</p>
+                    </div>
+                {% endif %}
+
+                {% if endpoint.requestFacade %}
+                    <h3>Request</h3>
+                    {{ include('@Api/export/facade.html.twig', {
+                        type: constant('\\Bundles\\ApiBundle\\Model\\Documentation\\FacadeDescription::TYPE_REQUEST'),
+                        endpoint: endpoint,
+                        facade: endpoint.requestFacade,
+                    }) }}
+                {% endif %}
+
+                {% if endpoint.responseFacade %}
+                    <h3>Response</h3>
+                    {{ include('@Api/export/facade.html.twig', {
+                        type: constant('\\Bundles\\ApiBundle\\Model\\Documentation\\FacadeDescription::TYPE_RESPONSE'),
+                        endpoint: endpoint,
+                        facade: endpoint.responseFacade,
+                    }) }}
+                {% endif %}
+
+            {% endfor %}
+
+        {% endfor %}
+        </div>
+
+    {% endapply %}
+{% endblock %}

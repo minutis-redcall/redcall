@@ -11,3 +11,40 @@
         <div class="badge badge-dark" style="margin:5px;">{{ method|upper }}</div>
     {% endif %}
 {% endmacro %}
+
+{% macro method_pdf(method) %}
+    {% if method == 'GET' %}
+        <span style="color:white;font-weight:bold;background-color:#558855" >{{ method|upper }}</span>
+    {% elseif method == 'POST' %}
+        <span style="color:white;font-weight:bold;background-color:#555588">{{ method|upper }}</span>
+    {% elseif method == 'PUT' %}
+        <span style="color:white;font-weight:bold;background-color:#888855">{{ method|upper }}</span>
+    {% elseif method == 'DELETE' %}
+        <span style="color:white;font-weight:bold;background-color:#885555">{{ method|upper }}</span>
+    {% else %}
+        <span style="color:white;font-weight:bold;background-color:#888888">{{ method|upper }}</span>
+    {% endif %}
+{% endmacro %}
+
+{% macro type_pdf(type) %}
+    {% if type.builtinType == 'boolean' or type.builtinType == 'bool' %}
+        <span style="color:#888855">bool</span>
+    {% elseif type.builtinType == 'integer' or type.builtinType == 'int' %}
+        <span style="color:#558855" >int</span>
+    {% elseif type.builtinType == 'double' or type.builtinType == 'float' %}
+        <span style="color:#558855" >float</span>
+    {% elseif type.builtinType == 'string' or type.builtinType == 'scalar' %}
+        <span style="color:#885555">string</span>
+    {% elseif type.builtinType == 'array' %}
+        <span style="color:#555588">array</span>
+    {% elseif type.builtinType == 'object' %}
+        {% if type.className == 'Bundles\\ApiBundle\\Model\\Facade\\CollectionFacade' %}
+            <span style="color:#555588">array</span>
+        {% elseif type.className == 'DateTime' %}
+            <span style="color:#885588">date</span>
+        {% else %}
+            <span style="color:#888888">object</span>
+        {% endif %}
+    {% endif %}
+{% endmacro %}
+

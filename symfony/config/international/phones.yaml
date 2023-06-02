@@ -1,4 +1,6 @@
 ####################################################################################################################################
+# The key is the concataination of platform and the phone country, so fr_fr means platform = France, country = +33
+#
 # Useful links:
 #
 # Timezones
@@ -15,133 +17,198 @@
 ####################################################################################################################################
 parameters:
   phones:
-    fr: # +33, France
+    fr_fr: # +33, France
       timezone: 'Europe/Paris'
       outbound_call_enabled: true
       outbound_call_number: '%env(TWILIO_FROM_LONG_FR)%'
+      outbound_call_keypad: true
       outbound_sms_enabled: true
       outbound_sms_short: '%env(TWILIO_FROM_SHORT_FR)%'
       outbound_sms_long: '%env(TWILIO_FROM_LONG_FR)%'
       inbound_call_enabled: true
       inbound_call_number: '%env(TWILIO_FROM_LONG_FR)%'
       inbound_sms_enabled: true
-    gp: # +590, Guadeloupe
+      sms_provider: twilio
+      call_provider: twilio
+    fr_gp: # +590, Guadeloupe
       timezone: 'America/Guadeloupe'
       outbound_call_enabled: true
       outbound_call_number: '%env(TWILIO_FROM_LONG_GP)%'
+      outbound_call_keypad: true
       outbound_sms_enabled: true
       outbound_sms_short: '%env(TWILIO_SENDER_ID_FR)%'
       outbound_sms_long: ~
       inbound_call_enabled: true
       inbound_call_number: '%env(TWILIO_FROM_LONG_GP)%'
       inbound_sms_enabled: false
-    gf: # +594, Guyane Française
+      sms_provider: twilio
+      call_provider: twilio
+    fr_gf: # +594, Guyane Française
       timezone: 'America/Cayenne'
       outbound_call_enabled: true
       outbound_call_number: '%env(TWILIO_FROM_TOLL_FR)%'
+      outbound_call_keypad: true
       outbound_sms_enabled: true
       outbound_sms_short: ~
       outbound_sms_long: '%env(TWILIO_FROM_LONG_FR)%'
       inbound_call_enabled: false
       inbound_call_number: ~
       inbound_sms_enabled: false
-    mq: # +596, Martinique
+      sms_provider: twilio
+      call_provider: twilio
+    fr_mq: # +596, Martinique
       timezone: 'America/Martinique'
       outbound_call_enabled: true
       outbound_call_number: '%env(TWILIO_FROM_LONG_MQ)%'
+      outbound_call_keypad: true
       outbound_sms_enabled: true
       outbound_sms_short: '%env(TWILIO_SENDER_ID_FR)%'
       outbound_sms_long: ~
       inbound_call_enabled: true
       inbound_call_number: '%env(TWILIO_FROM_LONG_MQ)%'
       inbound_sms_enabled: false
-    yt: # +262, Mayotte
+      sms_provider: twilio
+      call_provider: twilio
+    fr_yt: # +262, Mayotte
       timezone: 'Indian/Mayotte'
       outbound_call_enabled: true
       outbound_call_number: '%env(TWILIO_FROM_TOLL_FR)%'
+      outbound_call_keypad: true
       outbound_sms_enabled: true
       outbound_sms_short: '%env(TWILIO_SENDER_ID_FR)%'
       outbound_sms_long: ~
       inbound_call_enabled: false
       inbound_call_number: ~
       inbound_sms_enabled: false
-    pf: # +689, Polynésie Française
+      sms_provider: twilio
+      call_provider: twilio
+    fr_pf: # +689, Polynésie Française
       timezone: 'Pacific/Tahiti'
       outbound_call_enabled: true
       outbound_call_number: '%env(TWILIO_FROM_TOLL_FR)%'
+      outbound_call_keypad: true
       outbound_sms_enabled: true
       outbound_sms_short: '%env(TWILIO_SENDER_ID_FR)%'
       outbound_sms_long: ~
       inbound_call_enabled: false
       inbound_call_number: ~
       inbound_sms_enabled: false
-    re: # +262, Réunion
+      sms_provider: twilio
+      call_provider: twilio
+    fr_re: # +262, Réunion
       timezone: 'Indian/Reunion'
       outbound_call_enabled: true
       outbound_call_number: '%env(TWILIO_FROM_TOLL_FR)%'
+      outbound_call_keypad: true
       outbound_sms_enabled: true
       outbound_sms_short: '%env(TWILIO_SENDER_ID_FR)%'
       outbound_sms_long: ~
       inbound_call_enabled: false
       inbound_call_number: ~
       inbound_sms_enabled: false
-    nc: # +687, Nouvelle-Calédonie
+      sms_provider: twilio
+      call_provider: twilio
+    fr_nc: # +687, Nouvelle-Calédonie
       timezone: 'Pacific/Noumea'
       outbound_call_enabled: true
       outbound_call_number: '%env(TWILIO_FROM_TOLL_FR)%'
+      outbound_call_keypad: true
       outbound_sms_enabled: true
       outbound_sms_short: '%env(TWILIO_SENDER_ID_FR)%'
       outbound_sms_long: ~
       inbound_call_enabled: false
       inbound_call_number: ~
       inbound_sms_enabled: false
-    pm: # +508, Saint-Pierre-et-Miquelon
+      sms_provider: twilio
+      call_provider: twilio
+    fr_pm: # +508, Saint-Pierre-et-Miquelon
       timezone: 'America/Miquelon'
       outbound_call_enabled: true
       outbound_call_number: '%env(TWILIO_FROM_TOLL_FR)%'
+      outbound_call_keypad: true
       outbound_sms_enabled: true
       outbound_sms_short: ~
       outbound_sms_long: '%env(TWILIO_FROM_LONG_FR)%'
       inbound_call_enabled: false
       inbound_call_number: ~
       inbound_sms_enabled: false
-    bl: # +590, Saint-Barthélemy
+      sms_provider: twilio
+      call_provider: twilio
+    fr_bl: # +590, Saint-Barthélemy
       timezone: 'America/St_Barthelemy'
       outbound_call_enabled: false
       outbound_call_number: ~
+      outbound_call_keypad: true
       outbound_sms_enabled: true
       outbound_sms_short: ~
       outbound_sms_long: '%env(TWILIO_FROM_LONG_FR)%'
       inbound_call_enabled: false
       inbound_call_number: ~
       inbound_sms_enabled: false
-    mf: # +590, Saint-Martin
+      sms_provider: twilio
+      call_provider: twilio
+    fr_mf: # +590, Saint-Martin
       timezone: 'America/Marigot'
       outbound_call_enabled: false
       outbound_call_number: ~
+      outbound_call_keypad: true
       outbound_sms_enabled: true
       outbound_sms_short: ~
       outbound_sms_long: '%env(TWILIO_FROM_LONG_FR)%'
       inbound_call_enabled: false
       inbound_call_number: ~
       inbound_sms_enabled: false
-    wf: # +681, Wallis-et-Futuna
+      sms_provider: twilio
+      call_provider: twilio
+    fr_wf: # +681, Wallis-et-Futuna
       timezone: 'Pacific/Wallis'
       outbound_call_enabled: false
       outbound_call_number: ~
+      outbound_call_keypad: true
       outbound_sms_enabled: true
       outbound_sms_short: ~
       outbound_sms_long: '%env(TWILIO_FROM_LONG_FR)%'
       inbound_call_enabled: false
       inbound_call_number: ~
       inbound_sms_enabled: false
-    es: # +34, Spain
+      sms_provider: twilio
+      call_provider: twilio
+    es_es: # +34, Spain
       timezone: 'Europe/Madrid'
       outbound_call_enabled: true
       outbound_call_number: '%env(TWILIO_FROM_LONG_ES)%'
+      outbound_call_keypad: true
       outbound_sms_enabled: true
       outbound_sms_short: ~
       outbound_sms_long: '%env(TWILIO_FROM_LONG_ES)%'
       inbound_call_enabled: true
       inbound_call_number: '%env(TWILIO_FROM_LONG_ES)%'
       inbound_sms_enabled: true
+      sms_provider: twilio
+      call_provider: twilio
+    pt_fr: # +351, Portugal
+      timezone: 'Europe/Lisbon'
+      outbound_call_enabled: true
+      outbound_call_number: '%env(TWILIO_FROM_LONG_ES)%'
+      outbound_call_keypad: true
+      outbound_sms_enabled: true
+      outbound_sms_short: ~
+      outbound_sms_long: '%env(TWILIO_FROM_LONG_ES)%'
+      inbound_call_enabled: false
+      inbound_call_number: ~
+      inbound_sms_enabled: false
+      sms_provider: twilio
+      call_provider: twilio
+    pt_pt: # +351, Portugal
+      timezone: 'Europe/Lisbon'
+      outbound_call_enabled: true
+      outbound_call_number: '%env(TWILIO_FROM_LONG_ES)%'
+      outbound_call_keypad: false
+      outbound_sms_enabled: true
+      outbound_sms_short: ~
+      outbound_sms_long: '%env(TWILIO_FROM_LONG_ES)%'
+      inbound_call_enabled: false
+      inbound_call_number: ~
+      inbound_sms_enabled: false
+      sms_provider: twilio
+      call_provider: twilio

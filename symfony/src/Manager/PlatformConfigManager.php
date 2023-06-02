@@ -91,7 +91,7 @@ class PlatformConfigManager
             $row['timezone'],
             $row['flag'],
             $this->languageManager->getLanguageConfig($row['language']),
-            $this->phoneManager->getPhoneConfig($row['phone'])
+            $this->phoneManager->getPhoneConfig($row['name'], $row['phone'])
         );
     }
 }

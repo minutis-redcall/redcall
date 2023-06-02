@@ -151,7 +151,7 @@ class PegassCreateChunks implements TaskInterface
 
     private function updateVolunteers()
     {
-        $chunks = array_chunk($this->volunteers, 100, true);
+        $chunks = array_chunk($this->volunteers, 50, true);
 
         foreach ($chunks as $chunk) {
             $this->async->fire(PegassUpdateChunk::class, [
@@ -163,7 +163,7 @@ class PegassCreateChunks implements TaskInterface
 
     private function updateStructures()
     {
-        $chunks = array_chunk($this->structures, 10, true);
+        $chunks = array_chunk($this->structures, 5, true);
 
         foreach ($chunks as $chunk) {
             $this->async->fire(PegassUpdateChunk::class, [

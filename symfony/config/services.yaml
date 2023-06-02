@@ -1,7 +1,7 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
-  locale: 'fr'
+  locale: 'en'
   locale_list: [ 'fr', 'en', 'es', 'pt' ]
   locale_matcher: 'fr|en|es|pt'
   google_recaptcha_site_key: '%env(GOOGLE_RECAPTCHA_SITE_KEY)%'

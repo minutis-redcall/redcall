@@ -153,7 +153,15 @@ class Token
 
     public function sign(string $method, string $uri, string $body = '') : string
     {
-        return hash_hmac('sha256', sprintf('%s%s%s', $method, $uri, $body), Util::decrypt($this->secret, $this->username));
+        return hash_hmac('sha256', sprintf('%s%s%s', $method, $uri, $body), $this->getDecodedSecret());
+    }
+
+    /**
+     * Should only be used in examples, with mocked secrets.
+     */
+    public function getDecodedSecret(): string
+    {
+        return Util::decrypt($this->secret, $this->username);
     }
 
     public function incrementHitCount() : int

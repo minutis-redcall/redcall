@@ -1,0 +1,40 @@
+{% if facade.title %}
+    <strong>{{ facade.title }}</strong>
+    <br/>
+{% endif %}
+{% if facade.description %}
+    <p>{{ facade.description|nl2br }}</p>
+{% endif %}
+
+{% if facade.properties %}
+    <table width="100%">
+        <thead>
+        <tr>
+            <th>Property</th>
+            <th>Description</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        {{ include('@Api/export/properties.html.twig', {
+            properties: facade.properties
+        }) }}
+
+        <tr><td colspan="2" style="border-top: 1px solid black;"></td></tr>
+        </tbody>
+    </table>
+
+    {% if facade.example %}
+        <div style="margin:2px;text-align:left;padding:10px;color:black;border: 1px solid black;" colspan="2">
+            <div style="text-align: center">
+                <strong>Example</strong>
+            </div>
+            <br/>
+            <div style="font-family: monospace;">
+                {{ facade.formattedExample(endpoint.methods[0], constant('\\Bundles\\ApiBundle\\Model\\Documentation\\FacadeDescription::TYPE_REQUEST') == type, true)|raw }}
+            </div>
+        </div>
+    {% endif %}
+
+{% endif %}
+
