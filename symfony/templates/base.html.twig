@@ -202,18 +202,13 @@
             {% block locales %}
                 <div class="text-center">
                     <br/>
-                    {% if app.request.locale != 'en' %}
                         <a href="{{ path('locale', {locale: 'en'}) }}"> 🇬🇧 English</a>
-                    {% endif %}
-                    {% if app.request.locale != 'fr' %}
+                    &nbsp;
                         <a href="{{ path('locale', {locale: 'fr'}) }}"> 🇫🇷 Français</a>
-                    {% endif %}
-                    {% if app.request.locale != 'es' %}
+                    &nbsp;
                         <a href="{{ path('locale', {locale: 'es'}) }}"> 🇪🇸 Español</a>
-                    {% endif %}
-                    {% if app.request.locale != 'pt' %}
+                    &nbsp;
                         <a href="{{ path('locale', {locale: 'pt'}) }}"> 🇵🇹 Português</a>
-                    {% endif %}
                 </div>
             {% endblock %}
 

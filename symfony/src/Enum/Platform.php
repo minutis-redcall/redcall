@@ -6,11 +6,11 @@ use MyCLabs\Enum\Enum;
 
 /**
  * @method static $this FR
- * @method static $this PT
+// * @method static $this PT
  */
 class Platform extends Enum
 {
     public const FR = 'fr';
 //    public const ES = 'es';
-    public const PT = 'pt';
+//    public const PT = 'pt';
 }

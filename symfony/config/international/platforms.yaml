@@ -25,9 +25,9 @@ parameters:
 #      phone: es
 #      timezone: 'Europe/Madrid'
 #      flag: 🇪🇸
-    - name: pt
-      label: Portugal
-      language: pt
-      phone: pt
-      timezone: 'Europe/Lisbon'
-      flag: 🇵🇹
+#    - name: pt
+#      label: Portugal
+#      language: pt
+#      phone: pt
+#      timezone: 'Europe/Lisbon'
+#      flag: 🇵🇹
