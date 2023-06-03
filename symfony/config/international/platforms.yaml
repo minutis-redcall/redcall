@@ -9,6 +9,8 @@
 #
 # ⚠️ When adding a new platform, do not forget to add it in the platform enum, App\Enum\Platform
 #
+# ⚠️ When adding a new platform, do not forget to add it in the platform facade, App\Facade\Generic\PlatformFacade
+#
 # ⚠️ When adding a new platform, do not forget to add its phone value in "phones.yaml"
 ####################################################################################################################################
 parameters:
