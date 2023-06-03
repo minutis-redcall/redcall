@@ -11,7 +11,7 @@ class PlatformFacade implements FacadeInterface
 {
     /**
      * @Assert\NotBlank
-     * @Assert\Choice(choices={Platform::FR, Platform::PT})
+     * @Assert\Choice(choices={Platform::FR})
      *
      * @var string
      */

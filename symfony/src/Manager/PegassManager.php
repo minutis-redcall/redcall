@@ -66,11 +66,14 @@ class PegassManager
         // Just in case entity would not be managed anymore
         $entity = $this->pegassRepository->find($entity->getId());
 
-        if ($content === $entity->getContent()) {
-            $this->pegassRepository->save($entity);
-
-            return;
-        }
+        // Need to trigger the right events to at least refresh update dates.
+        //
+        //        if ($content === $entity->getContent()) {
+        //            $entity->setUpdatedAt(new \DateTime());
+        //            $this->pegassRepository->save($entity);
+        //
+        //            return;
+        //        }
 
         $entity->setContent($content);
         $entity->setEnabled(true);
