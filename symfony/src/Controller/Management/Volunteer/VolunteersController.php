@@ -141,6 +141,10 @@ class VolunteersController extends BaseController
      */
     public function listAction(Request $request, Structure $structure = null)
     {
+        if ($structure && !$this->isGranted('STRUCTURE', $structure)) {
+            throw $this->createAccessDeniedException();
+        }
+
         $search = $this->createSearchForm($request, $structure);
 
         $criteria               = null;
