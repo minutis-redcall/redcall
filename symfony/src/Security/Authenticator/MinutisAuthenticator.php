@@ -235,7 +235,7 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
         $url = $this->router->generate('password_login_connect');
 
         if ('dev' !== $this->kernel->getEnvironment()
-            && 'password_login' !== $request->cookies->get('auth_method')) {
+            && 'minutis' !== $request->cookies->get('auth_method')) {
             $url = getenv('MINUTIS_URL');
         }
 

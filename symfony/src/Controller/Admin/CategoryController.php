@@ -205,7 +205,7 @@ class CategoryController extends BaseController
     {
         return $this->json([
             'title' => $this->translator->trans('admin.category.badges_list', [
-                '%name%' => $category->getName(),
+                '%name%' => htmlentities($category->getName()),
             ]),
             'body'  => $this->renderView('admin/category/badges_in_category.html.twig', [
                 'category' => $category,
