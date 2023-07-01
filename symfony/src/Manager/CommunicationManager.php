@@ -125,9 +125,8 @@ class CommunicationManager
         return $this->communicationRepository->find($communicationId);
     }
 
-    public function createNewCommunication(Campaign $campaign, BaseTrigger $trigger) : Communication
+    public function createNewCommunication(Campaign $campaign, BaseTrigger $trigger, Communication $communication) : ?Communication
     {
-        $communication = $this->createCommunication($trigger);
         $communication->setRaw(json_encode($trigger, JSON_PRETTY_PRINT));
 
         $campaign->addCommunication($communication);
@@ -188,7 +187,7 @@ class CommunicationManager
         return $communication;
     }
 
-    public function createCommunication(BaseTrigger $trigger) : Communication
+    public function createCommunicationEntityFromTrigger(BaseTrigger $trigger) : Communication
     {
         /** @var User|null $user */
         if ($user = $this->security->getUser()) {

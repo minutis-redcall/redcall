@@ -40,6 +40,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -290,7 +291,12 @@ class CommunicationController extends BaseController
             if ($flow->nextStep()) {
                 $form = $flow->createForm();
             } else {
-                $communication = $this->communicationManager->createNewCommunication($campaign, $trigger);
+                $communication = $this->communicationManager->createCommunicationEntityFromTrigger($trigger);
+                if (0 === $communication->getMessageCount()) {
+                    throw new NotFoundHttpException('New communication has no message');
+                }
+
+                $communication = $this->communicationManager->createNewCommunication($campaign, $trigger, $communication);
 
                 $this->communicationManager->launchNewCommunication($campaign, $communication);
 
@@ -323,7 +329,7 @@ class CommunicationController extends BaseController
             ]);
         }
 
-        $communicationEntity = $this->communicationManager->createCommunication($trigger);
+        $communicationEntity = $this->communicationManager->createCommunicationEntityFromTrigger($trigger);
 
         $message = new Message();
         $message->setCommunication($communicationEntity);
@@ -358,7 +364,7 @@ class CommunicationController extends BaseController
             return new JsonResponse(['success' => false]);
         }
 
-        $communicationEntity = $this->communicationManager->createCommunication($trigger);
+        $communicationEntity = $this->communicationManager->createCommunicationEntityFromTrigger($trigger);
 
         $message = new Message();
         $message->setCommunication($communicationEntity);

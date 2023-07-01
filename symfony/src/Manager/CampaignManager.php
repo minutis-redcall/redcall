@@ -14,6 +14,7 @@ use App\Repository\CampaignRepository;
 use App\Tools\Random;
 use Bundles\PasswordLoginBundle\Entity\AbstractUser;
 use Doctrine\ORM\QueryBuilder;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -123,6 +124,11 @@ class CampaignManager
             ->setActive(true)
             ->setCreatedAt(new \DateTime());
 
+        $communication = $this->communicationManager->createCommunicationEntityFromTrigger($campaignModel->trigger);
+        if (0 === $communication->getMessageCount()) {
+            throw new NotFoundHttpException('New communication has no message');
+        }
+
         $this->campaignRepository->save($campaignEntity);
 
         if ($campaignModel->hasOperation) {
@@ -135,7 +141,7 @@ class CampaignManager
             $this->campaignRepository->save($campaignEntity);
         }
 
-        $communication = $this->communicationManager->createNewCommunication($campaignEntity, $campaignModel->trigger);
+        $communication = $this->communicationManager->createNewCommunication($campaignEntity, $campaignModel->trigger, $communication);
 
         $this->communicationManager->launchNewCommunication($campaignEntity, $communication, $processor);
 
