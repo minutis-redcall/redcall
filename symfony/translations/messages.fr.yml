@@ -109,13 +109,13 @@ admin:
     pegass_api_grant: 'Autoriser l''accès aux APIs Pegass'
     pegass_api_ungrant: 'Retirer l''accès aux APIs Pegass'
     pegass_apied: 'Pegass API'
-    root_details: 'Un "gestionnaire de pays" peut changer le pays d''action d''un utilisateur.'
+    root_details: 'Un "gestionnaire de pays" est un administrateur qui peut en plus changer le pays d''action d''un utilisateur.'
     structures: 'Mise à jour des structures pour %name%'
     title: 'Connexions entre les utilisateurs de RedCall et la base de données bénévole'
     undeveloper: 'Retirer l''accès développeur'
     unlock: Dégeler
-    unroot: 'Desactiver la gestion des pays'
-    root: 'Activer la gestion des pays'
+    unroot: 'Desactiver la gestion des pays (super admin)'
+    root: 'Activer la gestion des pays (super admin)'
   resources:
     change_platform: 'Transférer vers %platform%'
     change_platform_title: 'Changement de plateforme'

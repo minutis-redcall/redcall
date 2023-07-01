@@ -362,6 +362,10 @@ class PegassController extends BaseController
         }
 
         $user->setIsRoot(1 - $user->isRoot());
+        if ($user->isRoot()) {
+            $user->setIsAdmin(true);
+        }
+
         $this->userManager->save($user);
 
         return $this->redirectToRoute('admin_pegass_index', [
