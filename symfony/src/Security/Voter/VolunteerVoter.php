@@ -59,11 +59,6 @@ class VolunteerVoter extends Voter
             return true;
         }
 
-        if (0 === $volunteer->getStructures()->count() && $me->getStructures()->count() > 0) {
-            // We should not allow users without any structures to see any volunteers
-            return true;
-        }
-
         foreach ($volunteer->getStructures() as $structure) {
             if ($me->getStructures()->contains($structure)) {
                 return true;
