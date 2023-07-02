@@ -225,6 +225,8 @@ class SecurityController extends AbstractController
 
         $this->addFlash('success', $this->translator->trans('password_login.verify_email.success'));
 
+        $this->emailVerificationManager->remove($emailVerification);
+
         return $this->redirectToRoute($this->homeRoute);
     }
 
@@ -407,6 +409,8 @@ class SecurityController extends AbstractController
             $this->dispatcher->dispatch(new PostChangePasswordEvent($user), PasswordLoginEvents::POST_CHANGE_PASSWORD);
 
             $this->addFlash('success', $this->translator->trans('password_login.change_password.success'));
+
+            $this->passwordRecoveryManager->remove($passwordRecovery);
 
             return new RedirectResponse(
                 $this->generateUrl('password_login_connect')
