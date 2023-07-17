@@ -2,7 +2,6 @@
 
 namespace App\Form\Type;
 
-use App\Entity\User;
 use App\Manager\AudienceManager;
 use App\Manager\BadgeManager;
 use App\Manager\ExpirableManager;
@@ -205,14 +204,8 @@ class AudienceType extends AbstractType
         $this->buildStructureView($view);
 
         // Badge view
-        /** @var User $user */
-        $user = $this->security->getUser();
+        $publicBadges = $this->badgeManager->getCustomOrPublicBadges();
 
-        if ($user->getFavoriteBadges()->count()) {
-            $publicBadges = $user->getSortedFavoriteBadges();
-        } else {
-            $publicBadges = $this->badgeManager->getPublicBadges($this->security->getPlatform());
-        }
         $view->vars['badges_public']   = $publicBadges;
         $view->vars['badges_searched'] = [];
         if ($ids = $form->get('badges_searched')->getData()) {

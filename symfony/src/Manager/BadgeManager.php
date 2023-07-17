@@ -4,8 +4,10 @@ namespace App\Manager;
 
 use App\Entity\Badge;
 use App\Entity\Category;
+use App\Entity\User;
 use App\Entity\Volunteer;
 use App\Repository\BadgeRepository;
+use App\Security\Helper\Security;
 use Doctrine\ORM\QueryBuilder;
 use Pagerfanta\Pagerfanta;
 
@@ -16,9 +18,15 @@ class BadgeManager
      */
     private $badgeRepository;
 
-    public function __construct(BadgeRepository $badgeRepository)
+    /**
+     * @var Security
+     */
+    private $security;
+
+    public function __construct(BadgeRepository $badgeRepository, Security $security)
     {
         $this->badgeRepository = $badgeRepository;
+        $this->security        = $security;
     }
 
     public function find(int $id) : ?Badge
@@ -90,6 +98,20 @@ class BadgeManager
             ->getResult();
     }
 
+    public function getCustomOrPublicBadges() : array
+    {
+        /** @var User $user */
+        $user = $this->security->getUser();
+
+        if ($user->getFavoriteBadges()->count()) {
+            $publicBadges = $user->getSortedFavoriteBadges();
+        } else {
+            $publicBadges = $this->getPublicBadges($this->security->getPlatform());
+        }
+
+        return $publicBadges;
+    }
+
     public function getBadgesInCategoryQueryBuilder(string $platform, Category $category) : QueryBuilder
     {
         return $this->badgeRepository->getBadgesInCategoryQueryBuilder($platform, $category);
@@ -103,5 +125,4 @@ class BadgeManager
             $criteria
         );
     }
-
 }

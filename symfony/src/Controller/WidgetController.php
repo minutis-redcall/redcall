@@ -219,7 +219,7 @@ class WidgetController extends BaseController
         $results = [];
         foreach ($volunteers as $volunteer) {
             /* @var Volunteer $volunteer */
-            $results[] = $volunteer->toSearchResults();
+            $results[] = $volunteer->toSearchResults($this->getUser());
         }
 
         return $this->json($results);

@@ -59,7 +59,7 @@ class ExportController extends BaseController
 
             $tags = implode(', ', array_map(function (Badge $badge) {
                 return $badge->getName();
-            }, $volunteer->getVisibleBadges()));
+            }, $volunteer->getVisibleBadges($this->getUser())));
 
             $row = [
                 $this->trans('csv_export.external_id')  => $volunteer->getExternalId(),
@@ -161,7 +161,7 @@ class ExportController extends BaseController
                 /* @var Volunteer $volunteerB */
                 $volunteerB = $rowB['volunteer'];
 
-                return ($volunteerA->getBadgePriority() <=> $volunteerB->getBadgePriority());
+                return ($volunteerA->getBadgePriority($this->getUser()) <=> $volunteerB->getBadgePriority($this->getUser()));
             });
         }
 

@@ -75,7 +75,7 @@ class AudienceController extends BaseController
         $results = [];
         foreach ($volunteers as $volunteer) {
             /* @var Volunteer $volunteer */
-            $results[] = $volunteer->toSearchResults();
+            $results[] = $volunteer->toSearchResults($this->getUser());
         }
 
         return $this->json($results);
@@ -113,9 +113,7 @@ class AudienceController extends BaseController
         if ('false' !== $request->get('badge_counts', true)) {
             $badgeCounts = $this->audienceManager->extractBadgeCounts(
                 $data,
-                $this->badgeManager->getPublicBadges(
-                    $this->getPlatform()
-                )
+                $this->badgeManager->getCustomOrPublicBadges()
             );
 
             $response['badge_counts'] = $badgeCounts;

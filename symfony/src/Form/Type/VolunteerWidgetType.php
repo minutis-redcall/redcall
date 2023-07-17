@@ -53,7 +53,7 @@ class VolunteerWidgetType extends TextType
             );
 
             if ($volunteer) {
-                $view->vars['data'] = [$volunteer->toSearchResults()];
+                $view->vars['data'] = [$volunteer->toSearchResults($this->security->getUser())];
             } else {
                 $view->vars['data'] = [];
             }

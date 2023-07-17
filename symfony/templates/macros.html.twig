@@ -117,7 +117,7 @@
 
 {% macro volunteerBadges(volunteer) %}
     {% import _self as macros %}
-    {% for badge in volunteer.visibleBadges %}
+    {% for badge in volunteer.visibleBadges(app.user) %}
         {{ macros.badge(badge) }}{% if not loop.last %},{% endif %}
     {% endfor %}
 {% endmacro %}
