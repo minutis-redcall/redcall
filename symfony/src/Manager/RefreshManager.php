@@ -142,6 +142,11 @@ class RefreshManager
             $structure->setPlatform(Platform::FR);
         }
 
+        $parentIdentifier = $pegass->evaluate('structure.parent.id');
+        if ($parentIdentifier && $parent = $this->structureManager->findOneByExternalId(Platform::FR, $parentIdentifier)) {
+            $structure->setParentStructure($parent);
+        }
+
         // Structure already up to date
         if (!$force && $structure->getLastPegassUpdate()
             && $structure->getLastPegassUpdate()->getTimestamp() === $pegass->getUpdatedAt()->getTimestamp()) {
@@ -386,7 +391,7 @@ class RefreshManager
                 $this->volunteerManager->save($volunteer);
                 $this->userManager->createUser(Platform::FR, $volunteer->getExternalId());
 
-                $user = $this->userManager->findOneByExternalId(Platform::FR, $volunteer->getExternalId());
+                $user       = $this->userManager->findOneByExternalId(Platform::FR, $volunteer->getExternalId());
                 $structures = $this->structureManager->findCallableStructuresForVolunteer(Platform::FR, $volunteer);
                 $user->updateStructures($structures);
             }

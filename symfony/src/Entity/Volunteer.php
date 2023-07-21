@@ -483,11 +483,11 @@ class Volunteer implements LockableInterface
         return $mainStructure;
     }
 
-    public function toSearchResults()
+    public function toSearchResults(?User $user = null)
     {
         $badges = implode(', ', array_map(function (Badge $badge) {
             return $badge->getName();
-        }, $this->getVisibleBadges()));
+        }, $this->getVisibleBadges($user)));
 
         return (new EscapedArray([
             'id'          => strval($this->getId()),
@@ -876,8 +876,12 @@ class Volunteer implements LockableInterface
         }
     }
 
-    public function getVisibleBadges() : array
+    public function getVisibleBadges(?User $user = null) : array
     {
+        if (null !== $user) {
+            $favs = $user->getSortedFavoriteBadges();
+        }
+
         $badges = $this->getBadges()->toArray();
 
         // Only use synonyms
@@ -890,7 +894,17 @@ class Volunteer implements LockableInterface
         }
 
         // Only use visible badges
-        $badges = array_filter($badges, function (Badge $badge) {
+        $badges = array_filter($badges, function (Badge $badge) use ($favs) {
+            if ($favs) {
+                foreach ($favs as $fav) {
+                    if ($fav === $badge) {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+
             return $badge->isVisible();
         });
 
@@ -911,11 +925,11 @@ class Volunteer implements LockableInterface
         return $badges;
     }
 
-    public function getBadgePriority() : int
+    public function getBadgePriority(?User $user = null) : int
     {
         $lowest = 0xFFFFFFFF;
 
-        foreach ($this->getVisibleBadges() as $badge) {
+        foreach ($this->getVisibleBadges($user) as $badge) {
             /** @var Badge $badge */
             if ($badge->getRenderingPriority() < $lowest) {
                 $lowest = $badge->getRenderingPriority();
