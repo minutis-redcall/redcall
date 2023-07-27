@@ -99,6 +99,18 @@ class VolunteerListController extends BaseController
     }
 
     /**
+     * @Route("/cards/{volunteerListId}", name="cards")
+     * @Entity("volunteerList", expr="repository.findOneById(volunteerListId)")
+     */
+    public function cardsAction(Structure $structure, VolunteerList $volunteerList = null)
+    {
+        return $this->render('management/structures/volunteer_list/cards.html.twig', [
+            'structure' => $structure,
+            'list'      => $volunteerList,
+        ]);
+    }
+
+    /**
      * @Route("/remove/{csrf}/{volunteerListId}", name="delete")
      * @Entity("volunteerList", expr="repository.findOneById(volunteerListId)")
      */

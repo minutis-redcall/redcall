@@ -878,6 +878,7 @@ class Volunteer implements LockableInterface
 
     public function getVisibleBadges(?User $user = null) : array
     {
+        $favs = null;
         if (null !== $user) {
             $favs = $user->getSortedFavoriteBadges();
         }
