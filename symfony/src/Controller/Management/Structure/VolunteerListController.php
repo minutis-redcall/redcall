@@ -7,6 +7,7 @@ use App\Entity\Structure;
 use App\Entity\Volunteer;
 use App\Entity\VolunteerList;
 use App\Form\Type\VolunteerListType;
+use App\Form\Type\VolunteerWidgetType;
 use App\Manager\AudienceManager;
 use App\Manager\VolunteerListManager;
 use App\Manager\VolunteerManager;
@@ -116,6 +117,21 @@ class VolunteerListController extends BaseController
      */
     public function cardsAction(Request $request, Structure $structure, VolunteerList $volunteerList = null)
     {
+        $add = $this->createAddVolunteerForm($request);
+        if ($add->isSubmitted() && $add->isValid()) {
+            $volunteer = $this->volunteerManager->findOneByExternalId($this->getPlatform(), $add->get('externalId')->getData());
+
+            if ($volunteer) {
+                $volunteerList->addVolunteer($volunteer);
+                $this->volunteerListManager->save($volunteerList);
+            }
+
+            return $this->redirectToRoute('management_structures_volunteer_lists_cards', [
+                'structureId'     => $structure->getId(),
+                'volunteerListId' => $volunteerList->getId(),
+            ]);
+        }
+
         $search = $this->createSearchForm($request);
 
         $criteria     = null;
@@ -142,6 +158,7 @@ class VolunteerListController extends BaseController
             'structure'  => $structure,
             'volunteers' => $this->paginationManager->getPager($queryBuilder),
             'search'     => $search->createView(),
+            'add'        => $add->createView(),
         ]);
     }
 
@@ -160,7 +177,7 @@ class VolunteerListController extends BaseController
 
     private function createSearchForm(Request $request) : FormInterface
     {
-        $builder = $this
+        return $this
             ->createFormBuilder([
                 'only_enabled'      => true,
                 'include_hierarchy' => true,
@@ -183,11 +200,23 @@ class VolunteerListController extends BaseController
             ->add('only_users', CheckboxType::class, [
                 'label'    => 'manage_volunteers.search.only_users',
                 'required' => false,
-            ]);
-
-        return $builder
+            ])
             ->add('submit', SubmitType::class, [
                 'label' => 'manage_volunteers.search.button',
+            ])
+            ->getForm()
+            ->handleRequest($request);
+    }
+
+    private function createAddVolunteerForm(Request $request) : FormInterface
+    {
+        return $this
+            ->createNamedFormBuilder('add_volunteer')
+            ->add('externalId', VolunteerWidgetType::class, [
+                'label' => false,
+            ])
+            ->add('submit', SubmitType::class, [
+                'label' => 'base.button.save',
             ])
             ->getForm()
             ->handleRequest($request);

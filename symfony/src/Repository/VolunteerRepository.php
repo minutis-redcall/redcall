@@ -722,8 +722,7 @@ class VolunteerRepository extends BaseRepository
         array $structureIds) : QueryBuilder
     {
         $qb = $this->createVolunteersQueryBuilder($list->getStructure()->getPlatform(), $hideDisabled)
-                   ->join('v.structures', 's')
-                   ->join('s.volunteerLists', 'vl')
+                   ->join('v.lists', 'vl')
                    ->andWhere('vl.id = :list')
                    ->setParameter('list', $list);
 

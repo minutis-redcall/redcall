@@ -204,12 +204,18 @@ class Volunteer implements LockableInterface
      */
     private $optoutUntil;
 
+    /**
+     * @ORM\ManyToMany(targetEntity=VolunteerList::class, mappedBy="volunteers")
+     */
+    private $lists;
+
     public function __construct()
     {
         $this->structures = new ArrayCollection();
         $this->messages   = new ArrayCollection();
         $this->phones     = new ArrayCollection();
         $this->badges     = new ArrayCollection();
+        $this->lists      = new ArrayCollection();
     }
 
     /**
@@ -773,6 +779,33 @@ class Volunteer implements LockableInterface
         if ($this->badges->contains($badge)) {
             $this->badges->removeElement($badge);
             $badge->removeVolunteer($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|VolunteerList[]
+     */
+    public function getLists() : Collection
+    {
+        return $this->lists;
+    }
+
+    public function addList(VolunteerList $list) : self
+    {
+        if (!$this->lists->contains($list)) {
+            $this->lists[] = $list;
+        }
+
+        return $this;
+    }
+
+    public function removeList(VolunteerList $list) : self
+    {
+        if ($this->lists->contains($list)) {
+            $this->lists->removeElement($list);
+            $list->removeVolunteer($this);
         }
 
         return $this;
