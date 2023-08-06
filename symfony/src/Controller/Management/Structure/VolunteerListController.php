@@ -11,6 +11,7 @@ use App\Manager\AudienceManager;
 use App\Manager\VolunteerListManager;
 use App\Manager\VolunteerManager;
 use App\Model\Csrf;
+use Bundles\PaginationBundle\Manager\PaginationManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\HttpFoundation\Request;
@@ -38,13 +39,20 @@ class VolunteerListController extends BaseController
      */
     private $volunteerListManager;
 
+    /**
+     * @var PaginationManager
+     */
+    private $paginationManager;
+
     public function __construct(AudienceManager $audienceManager,
         VolunteerManager $volunteerManager,
-        VolunteerListManager $volunteerListManager)
+        VolunteerListManager $volunteerListManager,
+        PaginationManager $paginationManager)
     {
         $this->audienceManager      = $audienceManager;
         $this->volunteerManager     = $volunteerManager;
         $this->volunteerListManager = $volunteerListManager;
+        $this->paginationManager    = $paginationManager;
     }
 
     /**
@@ -104,9 +112,12 @@ class VolunteerListController extends BaseController
      */
     public function cardsAction(Structure $structure, VolunteerList $volunteerList = null)
     {
+        $queryBuilder = $this->volunteerManager->getVolunteersFromList($volunteerList);
+
         return $this->render('management/structures/volunteer_list/cards.html.twig', [
-            'structure' => $structure,
-            'list'      => $volunteerList,
+            'list'       => $volunteerList,
+            'structure'  => $structure,
+            'volunteers' => $this->paginationManager->getPager($queryBuilder),
         ]);
     }
 

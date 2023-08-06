@@ -17,12 +17,15 @@
     <br/>
 
     <div class="row">
-        {% for volunteer in list.volunteers %}
+        {% for volunteer in volunteers %}
             <div class="col-md-6" id="volunteer-{{ volunteer.id }}" style="padding:5px;">
                 {{ include('management/structures/volunteer_list/card.html.twig', {volunteer: volunteer}) }}
             </div>
         {% endfor %}
     </div>
+
+    <br/>
+    {{ macros.pager(volunteers, '', app.request.query.all) }}
 
     <br/><br/>
 

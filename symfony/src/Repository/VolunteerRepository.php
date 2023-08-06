@@ -8,6 +8,7 @@ use App\Entity\Pegass;
 use App\Entity\Structure;
 use App\Entity\User;
 use App\Entity\Volunteer;
+use App\Entity\VolunteerList;
 use App\Enum\Platform;
 use App\Security\Helper\Security;
 use Doctrine\DBAL\Connection;
@@ -703,12 +704,28 @@ class VolunteerRepository extends BaseRepository
             ->andWhere('v.locked = true');
     }
 
-    public function countActive(): int
+    public function countActive() : int
     {
         return $this->createQueryBuilder('v')
                     ->select('COUNT(v)')
                     ->andWhere('v.enabled = true')
                     ->getQuery()
                     ->getSingleScalarResult();
+    }
+
+    public function getVolunteersFromList(VolunteerList $list, array $structureIds) : QueryBuilder
+    {
+        $qb = $this->createVolunteersQueryBuilder($list->getStructure()->getPlatform())
+                   ->join('v.structures', 's')
+                   ->join('s.volunteerLists', 'vl')
+                   ->andWhere('vl.id = :list')
+                   ->setParameter('list', $list);
+
+        if (!empty($structureIds)) {
+            $qb->andWhere('s.id IN (:structures)')
+               ->setParameter('structures', $structureIds);
+        }
+
+        return $qb;
     }
 }
