@@ -87,6 +87,14 @@
                             {% endif %}
                         {% endif %}
 
+                        <div class="dropdown-divider"></div>
+
+                        <a href="{{ path('management_structures_volunteer_lists_delete_one_volunteer', {structureId: structure.id, volunteerListId: list.id, volunteerId: volunteer.id, csrf: csrf_token('csrf')}) }}"
+                           class="dropdown-item text-danger"
+                           onclick="return confirm('{{ 'manage_structures.volunteer_list.card.delete_confirm'|trans({'%name%': volunteer.fullname})|e('js') }}');">
+                            {{ 'manage_structures.volunteer_list.card.delete'|trans }}
+                        </a>
+
                     </div>
                 </div>
             </div>

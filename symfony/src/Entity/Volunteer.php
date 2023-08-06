@@ -286,6 +286,11 @@ class Volunteer implements LockableInterface
         return $this;
     }
 
+    public function getFullname() : string
+    {
+        return $this->firstName.' '.$this->lastName;;
+    }
+
     public function getPhoneNumber() : ?string
     {
         $phone = $this->getPhone();

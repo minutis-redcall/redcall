@@ -41,7 +41,9 @@
     <div class="row">
         {% for volunteer in volunteers %}
             <div class="col-md-6" id="volunteer-{{ volunteer.id }}" style="padding:5px;">
-                {{ include('management/structures/volunteer_list/card.html.twig', {volunteer: volunteer}) }}
+                {{ include('management/structures/volunteer_list/card.html.twig', {
+                    list: list, volunteer: volunteer, structure: structure
+                }) }}
             </div>
         {% endfor %}
     </div>

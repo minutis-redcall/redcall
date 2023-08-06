@@ -163,6 +163,25 @@ class VolunteerListController extends BaseController
     }
 
     /**
+     * @Route("/remove-one-volunteer/{csrf}/{volunteerListId}/{volunteerId}", name="delete_one_volunteer")
+     * @Entity("volunteerList", expr="repository.findOneById(volunteerListId)")
+     * @Entity("volunteer", expr="repository.findOneById(volunteerId)")
+     */
+    public function deleteOneVolunteerAction(Structure $structure,
+        VolunteerList $volunteerList,
+        Volunteer $volunteer,
+        Csrf $csrf)
+    {
+        $volunteerList->removeVolunteer($volunteer);
+        $this->volunteerListManager->save($volunteerList);
+
+        return $this->redirectToRoute('management_structures_volunteer_lists_cards', [
+            'structureId'     => $volunteerList->getStructure()->getId(),
+            'volunteerListId' => $volunteerList->getId(),
+        ]);
+    }
+
+    /**
      * @Route("/remove/{csrf}/{volunteerListId}", name="delete")
      * @Entity("volunteerList", expr="repository.findOneById(volunteerListId)")
      */
