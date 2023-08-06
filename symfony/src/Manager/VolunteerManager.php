@@ -418,8 +418,21 @@ class VolunteerManager
         return $this->volunteerRepository->countActive();
     }
 
-    public function getVolunteersFromList(VolunteerList $list) : QueryBuilder
-    {
-        return $this->volunteerRepository->getVolunteersFromList($list, []);
+    public function getVolunteersFromList(
+        VolunteerList $list,
+        ?string $criteria,
+        bool $hideDisabled,
+        bool $filterUsers,
+        bool $filterLocked
+    ) : QueryBuilder {
+        return $this->volunteerRepository
+            ->getVolunteersFromList(
+                $list,
+                $criteria,
+                $hideDisabled,
+                $filterUsers,
+                $filterLocked,
+                []
+            );
     }
 }

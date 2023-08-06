@@ -14,6 +14,10 @@ use App\Model\Csrf;
 use Bundles\PaginationBundle\Manager\PaginationManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -110,14 +114,34 @@ class VolunteerListController extends BaseController
      * @Route("/cards/{volunteerListId}", name="cards")
      * @Entity("volunteerList", expr="repository.findOneById(volunteerListId)")
      */
-    public function cardsAction(Structure $structure, VolunteerList $volunteerList = null)
+    public function cardsAction(Request $request, Structure $structure, VolunteerList $volunteerList = null)
     {
-        $queryBuilder = $this->volunteerManager->getVolunteersFromList($volunteerList);
+        $search = $this->createSearchForm($request);
+
+        $criteria     = null;
+        $hideDisabled = true;
+        $filterUsers  = false;
+        $filterLocked = false;
+        if ($search->isSubmitted() && $search->isValid()) {
+            $criteria     = $search->get('criteria')->getData();
+            $hideDisabled = $search->get('only_enabled')->getData();
+            $filterUsers  = $search->get('only_users')->getData();
+            $filterLocked = $search->get('only_locked')->getData();
+        }
+
+        $queryBuilder = $this->volunteerManager->getVolunteersFromList(
+            $volunteerList,
+            $criteria,
+            $hideDisabled,
+            $filterUsers,
+            $filterLocked
+        );
 
         return $this->render('management/structures/volunteer_list/cards.html.twig', [
             'list'       => $volunteerList,
             'structure'  => $structure,
             'volunteers' => $this->paginationManager->getPager($queryBuilder),
+            'search'     => $search->createView(),
         ]);
     }
 
@@ -132,5 +156,40 @@ class VolunteerListController extends BaseController
         return $this->redirectToRoute('management_structures_volunteer_lists_index', [
             'structureId' => $structure->getId(),
         ]);
+    }
+
+    private function createSearchForm(Request $request) : FormInterface
+    {
+        $builder = $this
+            ->createFormBuilder([
+                'only_enabled'      => true,
+                'include_hierarchy' => true,
+            ], [
+                'csrf_protection' => false,
+            ])
+            ->setMethod('GET')
+            ->add('criteria', TextType::class, [
+                'label'    => 'manage_volunteers.search.label',
+                'required' => false,
+            ])
+            ->add('only_enabled', CheckboxType::class, [
+                'label'    => 'manage_volunteers.search.only_enabled',
+                'required' => false,
+            ])
+            ->add('only_locked', CheckboxType::class, [
+                'label'    => 'manage_volunteers.search.only_locked',
+                'required' => false,
+            ])
+            ->add('only_users', CheckboxType::class, [
+                'label'    => 'manage_volunteers.search.only_users',
+                'required' => false,
+            ]);
+
+        return $builder
+            ->add('submit', SubmitType::class, [
+                'label' => 'manage_volunteers.search.button',
+            ])
+            ->getForm()
+            ->handleRequest($request);
     }
 }

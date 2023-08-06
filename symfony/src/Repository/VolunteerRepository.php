@@ -713,13 +713,31 @@ class VolunteerRepository extends BaseRepository
                     ->getSingleScalarResult();
     }
 
-    public function getVolunteersFromList(VolunteerList $list, array $structureIds) : QueryBuilder
+    public function getVolunteersFromList(
+        VolunteerList $list,
+        ?string $criteria,
+        bool $hideDisabled,
+        bool $filterUsers,
+        bool $filterLocked,
+        array $structureIds) : QueryBuilder
     {
-        $qb = $this->createVolunteersQueryBuilder($list->getStructure()->getPlatform())
+        $qb = $this->createVolunteersQueryBuilder($list->getStructure()->getPlatform(), $hideDisabled)
                    ->join('v.structures', 's')
                    ->join('s.volunteerLists', 'vl')
                    ->andWhere('vl.id = :list')
                    ->setParameter('list', $list);
+
+        if ($criteria) {
+            $this->addSearchCriteria($qb, $criteria);
+        }
+
+        if ($filterUsers) {
+            $this->addUserCriteria($qb);
+        }
+
+        if ($filterLocked) {
+            $this->addLockedCriteria($qb);
+        }
 
         if (!empty($structureIds)) {
             $qb->andWhere('s.id IN (:structures)')
