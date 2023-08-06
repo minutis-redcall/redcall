@@ -648,6 +648,12 @@ manage_structures:
   users: 'RedCall users count: %count%'
   view_pegass_entry: 'Open DSI database entry'
   volunteer_list:
+    filter_by_structures: 'Filter by structures'
+    card:
+      title: 'Volunteers in the list "%name%"'
+      add: 'Add a volunteer'
+      delete: 'Remove from the list'
+      delete_confirm: 'Really remove "%name%" from list?'
     choose_structure: 'In which structure would you like to create a list of volunteers?'
     create: 'Create a new list'
     delete: X

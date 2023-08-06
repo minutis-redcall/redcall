@@ -31,7 +31,7 @@ class VolunteerList
     private $structure;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Volunteer::class)
+     * @ORM\ManyToMany(targetEntity=Volunteer::class, inversedBy="lists")
      */
     private $volunteers;
 

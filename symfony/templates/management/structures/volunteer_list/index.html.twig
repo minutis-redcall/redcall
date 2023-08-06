@@ -30,7 +30,7 @@
                     <td>{{ volunteerList.name }}</td>
                     <td>{{ volunteerList.volunteers|length }}</td>
                     <td>
-                        <a href="{{ path('management_structures_volunteer_lists_create', {structureId: structure.id, volunteerListId: volunteerList.id}) }}" class="btn btn-secondary">
+                        <a href="{{ path('management_structures_volunteer_lists_cards', {structureId: structure.id, volunteerListId: volunteerList.id}) }}" class="btn btn-secondary">
                             {{ 'manage_structures.volunteer_list.edit'|trans }}
                         </a>
 

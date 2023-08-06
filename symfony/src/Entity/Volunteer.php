@@ -204,12 +204,18 @@ class Volunteer implements LockableInterface
      */
     private $optoutUntil;
 
+    /**
+     * @ORM\ManyToMany(targetEntity=VolunteerList::class, mappedBy="volunteers")
+     */
+    private $lists;
+
     public function __construct()
     {
         $this->structures = new ArrayCollection();
         $this->messages   = new ArrayCollection();
         $this->phones     = new ArrayCollection();
         $this->badges     = new ArrayCollection();
+        $this->lists      = new ArrayCollection();
     }
 
     /**
@@ -278,6 +284,11 @@ class Volunteer implements LockableInterface
         $this->lastName = $lastName;
 
         return $this;
+    }
+
+    public function getFullname() : string
+    {
+        return $this->firstName.' '.$this->lastName;;
     }
 
     public function getPhoneNumber() : ?string
@@ -778,6 +789,33 @@ class Volunteer implements LockableInterface
         return $this;
     }
 
+    /**
+     * @return Collection|VolunteerList[]
+     */
+    public function getLists() : Collection
+    {
+        return $this->lists;
+    }
+
+    public function addList(VolunteerList $list) : self
+    {
+        if (!$this->lists->contains($list)) {
+            $this->lists[] = $list;
+        }
+
+        return $this;
+    }
+
+    public function removeList(VolunteerList $list) : self
+    {
+        if ($this->lists->contains($list)) {
+            $this->lists->removeElement($list);
+            $list->removeVolunteer($this);
+        }
+
+        return $this;
+    }
+
     public function removeExpiredBadges()
     {
         $toRemove = [];
@@ -878,6 +916,7 @@ class Volunteer implements LockableInterface
 
     public function getVisibleBadges(?User $user = null) : array
     {
+        $favs = null;
         if (null !== $user) {
             $favs = $user->getSortedFavoriteBadges();
         }

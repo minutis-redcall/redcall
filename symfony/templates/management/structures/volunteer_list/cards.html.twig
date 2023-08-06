@@ -1,0 +1,134 @@
+{% extends 'base.html.twig' %}
+
+{% import 'macros.html.twig' as macros %}
+
+{% block body %}
+
+    <h1>
+        {{ 'manage_structures.volunteer_list.card.title'|trans({'%name%': list.name}) }}
+    </h1>
+
+    <div class="text-right">
+        <a href="#" class="btn btn-secondary" data-toggle="modal" data-target="#add-volunteer-modal">
+            {{ 'manage_structures.volunteer_list.card.add'|trans }}
+        </a>
+    </div>
+
+    {# Add a volunteer modal #}
+    <div class="modal fade" id="add-volunteer-modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 id="add-volunteer-modal-title" class="modal-title"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div id="add-volunteer-modal-body" class="modal-body">
+                    <h4>{{ 'manage_structures.volunteer_list.card.add'|trans }}</h4>
+                    <br/>
+                    {{ form(add) }}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ 'base.modal.close'|trans }}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {{ form_start(search) }}
+    {{ form_row(search.criteria) }}
+    {{ form_row(search.only_enabled) }}
+    {{ form_row(search.only_locked) }}
+    {{ form_row(search.only_users) }}
+
+    {# Filter structures modal #}
+    <div class="modal fade" id="filter-structures-modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 id="filter-structures-modal-title" class="modal-title"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div id="filter-structures-modal-body" class="modal-body">
+                    <h4>{{ 'manage_structures.volunteer_list.filter_by_structures'|trans }}</h4>
+                    {{ form_row(search.structures) }}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ 'base.modal.close'|trans }}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <a href="#" data-toggle="modal" data-target="#filter-structures-modal">
+        {{ 'manage_structures.volunteer_list.filter_by_structures'|trans }}
+    </a>
+    <br/><br/>
+
+    {{ form_row(search.submit) }}
+    {{ form_end(search) }}
+
+    <div class="row">
+        {% for volunteer in volunteers %}
+            <div class="col-md-6" id="volunteer-{{ volunteer.id }}" style="padding:5px;">
+                {{ include('management/structures/volunteer_list/card.html.twig', {
+                    list: list, volunteer: volunteer, structure: structure
+                }) }}
+            </div>
+        {% endfor %}
+    </div>
+
+    <br/>
+    {{ macros.pager(volunteers, '', app.request.query.all) }}
+
+    <br/><br/>
+
+    <div class="text-center">
+        <a href="{{ path('management_structures_volunteer_lists_index', {structureId: structure.id}) }}" class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+    </div>
+
+    <br/><br/>
+
+    <div class="modal fade" id="user-structures-modal" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 id="user-structures-modal-title" class="modal-title"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div id="user-structures-modal-body" class="modal-body text-center"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ 'base.modal.close'|trans }}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+
+    <script type="text/javascript">
+
+        $('body').on('click', '.show-structure-users', function (e) {
+            e.preventDefault();
+            $('#user-structures-modal-title').html('');
+            $('#user-structures-modal-body').html('<img src="{{ asset('spinner.gif') }}"/>');
+            $('#user-structures-modal').modal();
+            $.post('{{ path('management_volunteers_list_user_structures') }}', {
+                id: $(this).data('volunteer-id'),
+            }, function (data) {
+                $('#user-structures-modal-title').html(data.title);
+                $('#user-structures-modal-body').html(data.body);
+            });
+        });
+
+    </script>
+
+{% endblock %}

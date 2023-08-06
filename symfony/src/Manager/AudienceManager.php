@@ -56,7 +56,7 @@ class AudienceManager
         }
 
         return array_map(function (Volunteer $volunteer) {
-            return $volunteer->toSearchResults();
+            return $volunteer->toSearchResults($this->security->getUser());
         }, $volunteers);
     }
 

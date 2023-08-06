@@ -7,6 +7,7 @@ use App\Entity\Badge;
 use App\Entity\Message;
 use App\Entity\Structure;
 use App\Entity\Volunteer;
+use App\Entity\VolunteerList;
 use App\Model\OAuthUser;
 use App\Repository\VolunteerRepository;
 use App\Security\Helper\Security;
@@ -412,8 +413,27 @@ class VolunteerManager
         return $this->findOneByInternalEmail($oAuthUser->getEmail());
     }
 
-    public function countActive(): int
+    public function countActive() : int
     {
         return $this->volunteerRepository->countActive();
+    }
+
+    public function getVolunteersFromList(
+        VolunteerList $list,
+        ?string $criteria,
+        bool $hideDisabled,
+        bool $filterUsers,
+        bool $filterLocked,
+        array $structures
+    ) : QueryBuilder {
+        return $this->volunteerRepository
+            ->getVolunteersFromList(
+                $list,
+                $criteria,
+                $hideDisabled,
+                $filterUsers,
+                $filterLocked,
+                $structures
+            );
     }
 }

@@ -646,8 +646,14 @@ manage_structures:
   title: 'Gestion des structures'
   unlock: 'Dégeler la structure'
   users: 'Nombre d''utilisateurs RedCall : %count%'
-  view_pegass_entry: 'Ouvir l''entrée de la base de données DSI'
+  view_pegass_entry: 'Ouvrir l''entrée de la base de données DSI'
   volunteer_list:
+    filter_by_structures: 'Filtrer par structures'
+    card:
+      title: 'Bénévoles dans la liste "%name%"'
+      add: 'Ajouter un bénévole'
+      delete: 'Retirer de la liste'
+      delete_confirm: 'Vraiment retirer "%name%" de la liste ?'
     choose_structure: 'Dans quelle structure souhaitez-vous gérer les listes de bénévoles ?'
     create: 'Créer une nouvelle liste'
     delete: X
