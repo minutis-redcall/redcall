@@ -12,10 +12,12 @@ use App\Manager\AudienceManager;
 use App\Manager\VolunteerListManager;
 use App\Manager\VolunteerManager;
 use App\Model\Csrf;
+use App\Security\Helper\Security;
 use Bundles\PaginationBundle\Manager\PaginationManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormInterface;
@@ -49,15 +51,22 @@ class VolunteerListController extends BaseController
      */
     private $paginationManager;
 
+    /**
+     * @var Security
+     */
+    private $security;
+
     public function __construct(AudienceManager $audienceManager,
         VolunteerManager $volunteerManager,
         VolunteerListManager $volunteerListManager,
-        PaginationManager $paginationManager)
+        PaginationManager $paginationManager,
+        Security $security)
     {
         $this->audienceManager      = $audienceManager;
         $this->volunteerManager     = $volunteerManager;
         $this->volunteerListManager = $volunteerListManager;
         $this->paginationManager    = $paginationManager;
+        $this->security             = $security;
     }
 
     /**
@@ -132,17 +141,19 @@ class VolunteerListController extends BaseController
             ]);
         }
 
-        $search = $this->createSearchForm($request);
+        $search = $this->createSearchForm($request, $volunteerList);
 
         $criteria     = null;
         $hideDisabled = true;
         $filterUsers  = false;
         $filterLocked = false;
+        $structures   = [];
         if ($search->isSubmitted() && $search->isValid()) {
             $criteria     = $search->get('criteria')->getData();
             $hideDisabled = $search->get('only_enabled')->getData();
             $filterUsers  = $search->get('only_users')->getData();
             $filterLocked = $search->get('only_locked')->getData();
+            $structures   = $search->get('structures')->getData();
         }
 
         $queryBuilder = $this->volunteerManager->getVolunteersFromList(
@@ -150,7 +161,8 @@ class VolunteerListController extends BaseController
             $criteria,
             $hideDisabled,
             $filterUsers,
-            $filterLocked
+            $filterLocked,
+            $structures
         );
 
         return $this->render('management/structures/volunteer_list/cards.html.twig', [
@@ -194,8 +206,29 @@ class VolunteerListController extends BaseController
         ]);
     }
 
-    private function createSearchForm(Request $request) : FormInterface
+    private function createSearchForm(Request $request, VolunteerList $volunteerList) : FormInterface
     {
+        $currentUser = $this->security->getUser();
+
+        // Create an array of choices for the structure filter, it contains all structures
+        // from all volunteers ordered by the number of volunteers in each structure, descending.
+        $structures = [];
+        $counts     = [];
+        foreach ($volunteerList->getVolunteers() as $volunteer) {
+            foreach ($volunteer->getStructures() as $structure) {
+                $structures[$structure->getId()] = $structure;
+                if (!isset($counts[$structure->getId()])) {
+                    $counts[$structure->getId()] = 0;
+                }
+                $counts[$structure->getId()]++;
+            }
+        }
+        arsort($counts);
+        $choices = [];
+        foreach ($counts as $structureId => $count) {
+            $choices[sprintf('%s (%d)', $structures[$structureId]->getName(), $count)] = $structureId;
+        }
+
         return $this
             ->createFormBuilder([
                 'only_enabled'      => true,
@@ -219,6 +252,12 @@ class VolunteerListController extends BaseController
             ->add('only_users', CheckboxType::class, [
                 'label'    => 'manage_volunteers.search.only_users',
                 'required' => false,
+            ])
+            ->add('structures', ChoiceType::class, [
+                'label'    => false,
+                'choices'  => $choices,
+                'multiple' => true,
+                'expanded' => true,
             ])
             ->add('submit', SubmitType::class, [
                 'label' => 'manage_volunteers.search.button',

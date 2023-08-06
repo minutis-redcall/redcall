@@ -423,7 +423,8 @@ class VolunteerManager
         ?string $criteria,
         bool $hideDisabled,
         bool $filterUsers,
-        bool $filterLocked
+        bool $filterLocked,
+        array $structures
     ) : QueryBuilder {
         return $this->volunteerRepository
             ->getVolunteersFromList(
@@ -432,7 +433,7 @@ class VolunteerManager
                 $hideDisabled,
                 $filterUsers,
                 $filterLocked,
-                []
+                $structures
             );
     }
 }

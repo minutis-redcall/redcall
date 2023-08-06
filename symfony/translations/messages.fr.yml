@@ -648,6 +648,7 @@ manage_structures:
   users: 'Nombre d''utilisateurs RedCall : %count%'
   view_pegass_entry: 'Ouvrir l''entrée de la base de données DSI'
   volunteer_list:
+    filter_by_structures: 'Filtrer par structures'
     card:
       title: 'Bénévoles dans la liste "%name%"'
       add: 'Ajouter un bénévole'

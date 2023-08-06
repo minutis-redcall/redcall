@@ -739,8 +739,10 @@ class VolunteerRepository extends BaseRepository
         }
 
         if (!empty($structureIds)) {
-            $qb->andWhere('s.id IN (:structures)')
-               ->setParameter('structures', $structureIds);
+            $qb
+                ->join('v.structures', 's')
+                ->andWhere('s.id IN (:structures)')
+                ->setParameter('structures', $structureIds);
         }
 
         return $qb;
