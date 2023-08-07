@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    <div class="my-5">
+        <h2>
+            {{ 'manage_structures.volunteer_list.choose_structure'|trans }}
+        </h2>
+    </div>
+
+    <table class="table table-striped table-bordered table-hover">
+        <tbody>
+        {% for structure in app.user.structures %}
+            <tr>
+                <td>
+                    <a href="{{ path('management_structures_volunteer_lists_index', {structureId: structure.id}) }}">
+                        {{ structure.name }}
+                    </a>
+                    {% if structure.volunteerLists|length %}({{ structure.volunteerLists|length }}){% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <br/>
+
+    <div class="text-center">
+        <a href="{{ path('management_home') }}" class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+    </div>
+
+    <br/><br/>
+
+{% endblock %}
