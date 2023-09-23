@@ -294,4 +294,9 @@ class MessageManager
     {
         return $this->messageRepository->getActiveMessagesForVolunteer($volunteer);
     }
+
+    public function getLatestMessagesForVolunteer(Volunteer $volunteer) : array
+    {
+        return $this->messageRepository->getLatestMessagesForVolunteer($volunteer);
+    }
 }

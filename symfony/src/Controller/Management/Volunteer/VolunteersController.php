@@ -16,6 +16,7 @@ use App\Form\Type\VolunteerType;
 use App\Manager\AnswerManager;
 use App\Manager\CampaignManager;
 use App\Manager\CommunicationManager;
+use App\Manager\MessageManager;
 use App\Manager\PegassManager;
 use App\Manager\PhoneManager;
 use App\Manager\PlatformConfigManager;
@@ -93,6 +94,11 @@ class VolunteersController extends BaseController
     private $paginationManager;
 
     /**
+     * @var MessageManager
+     */
+    private $messageManager;
+
+    /**
      * @var PlatformConfigManager
      */
     private $platformManager;
@@ -116,6 +122,7 @@ class VolunteersController extends BaseController
         PhoneManager $phoneManager,
         AnswerManager $answerManager,
         PaginationManager $paginationManager,
+        MessageManager $messageManager,
         PlatformConfigManager $platformConfigManager,
         TranslatorInterface $translator,
         Environment $templating,
@@ -130,6 +137,7 @@ class VolunteersController extends BaseController
         $this->phoneManager         = $phoneManager;
         $this->answerManager        = $answerManager;
         $this->paginationManager    = $paginationManager;
+        $this->messageManager       = $messageManager;
         $this->platformManager      = $platformConfigManager;
         $this->translator           = $translator;
         $this->templating           = $templating;
@@ -258,6 +266,7 @@ class VolunteersController extends BaseController
             'volunteer' => $volunteer,
             'delete'    => !$isCreate ? $delete->createView() : null,
             'answerId'  => $request->get('answerId'),
+            'messages'  => $this->messageManager->getLatestMessagesForVolunteer($volunteer),
         ]);
     }
 

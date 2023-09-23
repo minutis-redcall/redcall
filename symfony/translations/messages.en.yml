@@ -751,6 +751,7 @@ manage_volunteers:
     phone_number_optin: 'Available by phone number'
     phone_number_supports_short_code: 'Volunteer can receive messages from the short code'
     section_badges: 'Skills, interests and nominations'
+    section_messages: 'Latest messages'
     section_contact: 'Contact information'
     section_general: 'General information'
     section_structures: 'Membership structures'

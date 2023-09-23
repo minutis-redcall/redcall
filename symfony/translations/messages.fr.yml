@@ -752,6 +752,7 @@ manage_volunteers:
     phone_number_supports_short_code: 'Le bénévole peut recevoir des messages du numéro court'
     section_badges: 'Compétences & nominations'
     section_contact: 'Informations de contact'
+    section_messages: 'Derniers messages'
     section_general: 'Informations générales'
     section_structures: 'Structures de rattachement'
     structures: 'Structure(s) de rattachement'
