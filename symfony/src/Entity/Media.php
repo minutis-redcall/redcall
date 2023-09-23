@@ -51,7 +51,7 @@ class Media
     private $expiresAt;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Communication::class, inversedBy="images")
+     * @ORM\ManyToOne(targetEntity=Communication::class, inversedBy="images", cascade={"persist"})
      */
     private $communication;
 
