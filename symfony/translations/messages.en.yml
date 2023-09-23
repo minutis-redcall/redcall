@@ -109,12 +109,12 @@ admin:
     pegass_api_grant: 'Grant Pegass API access'
     pegass_api_ungrant: 'Remove Pegass API access'
     pegass_apied: 'Pegass API'
-    root_details: 'A "countries manager" is an admin that can also change user''s platform country.'
+    root_details: 'A "countries manaer" can change user''s platform country.'
     structures: 'Update structures for %name%'
     title: 'Bindings between RedCall users and volunteer database'
     undeveloper: 'Remove developer access'
     unlock: Unlock
-    unroot: 'Remove from countries manager (super admin)'
+    unroot: 'Remove from countries manager'
     root: 'Make countries manager (super admin)'
   resources:
     change_platform: 'Switch platform to: %platform%'
@@ -648,12 +648,6 @@ manage_structures:
   users: 'RedCall users count: %count%'
   view_pegass_entry: 'Open DSI database entry'
   volunteer_list:
-    filter_by_structures: 'Filter by structures'
-    card:
-      title: 'Volunteers in the list "%name%"'
-      add: 'Add a volunteer'
-      delete: 'Remove from the list'
-      delete_confirm: 'Really remove "%name%" from list?'
     choose_structure: 'In which structure would you like to create a list of volunteers?'
     create: 'Create a new list'
     delete: X
@@ -673,6 +667,12 @@ manage_structures:
       structure: Structure
     title: 'Manage volunteer lists'
     update: 'Edit list "%name%"'
+    filter_by_structures: 'Filter by structures'
+    card:
+      title: 'Volunteers in the list "%name%"'
+      add: 'Add a volunteer'
+      delete: 'Remove from the list'
+      delete_confirm: 'Really remove "%name%" from list?'
   volunteers: 'Volunteers count: %count%'
 manage_volunteers:
   access_denied: 'Cannot edit this volunteer details, (s)he does not belong to any structure you are managing.'
@@ -751,7 +751,6 @@ manage_volunteers:
     phone_number_optin: 'Available by phone number'
     phone_number_supports_short_code: 'Volunteer can receive messages from the short code'
     section_badges: 'Skills, interests and nominations'
-    section_messages: 'Latest messages'
     section_contact: 'Contact information'
     section_general: 'General information'
     section_structures: 'Membership structures'
@@ -760,6 +759,7 @@ manage_volunteers:
     update: 'Update volunteer'
     updated: 'Volunteer has properly been updated.'
     visible_badges: 'Main badges'
+    section_messages: 'Latest messages'
     add: 'Create a new volunteer'
     optout_until: 'Volunteer not available until...'
   others: 'and %count% other(s)'
