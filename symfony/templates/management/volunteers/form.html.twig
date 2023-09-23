@@ -81,42 +81,6 @@
         </div>
 
 
-        {% if messages %}
-
-        <div class="col-md-6 mt-3 text-left">
-
-            <h3>{{ 'manage_volunteers.form.section_messages'|trans }}</h3>
-
-            <table class="table table-striped">
-                <tbody>
-                {% for message in messages %}
-                    <tr>
-                        <td>
-                            {{ macros.communicationIcon(message.communication) }}
-                            {{ 'space.home.triggers.subject'|trans({
-                                '%type%': '<strong>' ~ ('space.home.triggers.' ~ message.communication.type)|trans ~ '</strong>',
-                                '%date%': message.communication.createdAt|date('d/m/Y'),
-                                '%time%': message.communication.createdAt|date('H:i')
-                            })|raw }}
-                            <br/>
-                            <em style="font-size:10px;">{{ message.communication.limitedBody|striptags }}</em>
-                        </td>
-                        <td>
-                            <a href="{{ path('communication_index', {id: message.communication.campaign.id}) }}" target="_blank" class="btn btn-primary">
-                                {{ 'base.button.open'|trans }}
-                            </a>
-                        </td>
-                    </tr>
-                {% endfor %}
-                </tbody>
-            </table>
-
-            {% endif %}
-
-        </div>
-
-        {{ form_end(form) }}
-
         {% if (not volunteer.user or not volunteer.user.trusted) and delete %}
             <div class="col-md-6 mt-3 text-left">
                 <hr/>
@@ -124,7 +88,41 @@
                 {{ form(delete) }}
             </div>
         {% endif %}
+
+        {% if messages %}
+            <div class="col-md-6 mt-3 text-left">
+                <h3>{{ 'manage_volunteers.form.section_messages'|trans }}</h3>
+
+                <table class="table table-striped">
+                    <tbody>
+                    {% for message in messages %}
+                        <tr>
+                            <td>
+                                {{ macros.communicationIcon(message.communication) }}
+                                {{ 'space.home.triggers.subject'|trans({
+                                    '%type%': '<strong>' ~ ('space.home.triggers.' ~ message.communication.type)|trans ~ '</strong>',
+                                    '%date%': message.communication.createdAt|date('d/m/Y'),
+                                    '%time%': message.communication.createdAt|date('H:i')
+                                })|raw }}
+                                <br/>
+                                <em style="font-size:10px;">{{ message.communication.limitedBody|striptags }}</em>
+                            </td>
+                            <td>
+                                <a href="{{ path('communication_index', {id: message.communication.campaign.id}) }}" target="_blank" class="btn btn-primary">
+                                    {{ 'base.button.open'|trans }}
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+
+        {{ form_end(form) }}
+
     </div>
+
 
     <div class="text-center">
         <a href="{{ path('management_volunteers_list', app.request.query.all) }}" class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
