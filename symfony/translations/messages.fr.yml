@@ -109,12 +109,12 @@ admin:
     pegass_api_grant: 'Autoriser l''accès aux APIs Pegass'
     pegass_api_ungrant: 'Retirer l''accès aux APIs Pegass'
     pegass_apied: 'Pegass API'
-    root_details: 'Un "gestionnaire de pays" est un administrateur qui peut en plus changer le pays d''action d''un utilisateur.'
+    root_details: 'Un "gestionnaire de pays" peut changer le pays d''action d''un utilisateur.'
     structures: 'Mise à jour des structures pour %name%'
     title: 'Connexions entre les utilisateurs de RedCall et la base de données bénévole'
     undeveloper: 'Retirer l''accès développeur'
     unlock: Dégeler
-    unroot: 'Desactiver la gestion des pays (super admin)'
+    unroot: 'Desactiver la gestion des pays'
     root: 'Activer la gestion des pays (super admin)'
   resources:
     change_platform: 'Transférer vers %platform%'
@@ -646,14 +646,8 @@ manage_structures:
   title: 'Gestion des structures'
   unlock: 'Dégeler la structure'
   users: 'Nombre d''utilisateurs RedCall : %count%'
-  view_pegass_entry: 'Ouvrir l''entrée de la base de données DSI'
+  view_pegass_entry: 'Ouvir l''entrée de la base de données DSI'
   volunteer_list:
-    filter_by_structures: 'Filtrer par structures'
-    card:
-      title: 'Bénévoles dans la liste "%name%"'
-      add: 'Ajouter un bénévole'
-      delete: 'Retirer de la liste'
-      delete_confirm: 'Vraiment retirer "%name%" de la liste ?'
     choose_structure: 'Dans quelle structure souhaitez-vous gérer les listes de bénévoles ?'
     create: 'Créer une nouvelle liste'
     delete: X
@@ -673,6 +667,12 @@ manage_structures:
       structure: Structure
     title: 'Gérer les listes de bénévoles'
     update: 'Éditer la liste "%name%"'
+    filter_by_structures: 'Filtrer par structures'
+    card:
+      title: 'Bénévoles dans la liste "%name%"'
+      add: 'Ajouter un bénévole'
+      delete: 'Retirer de la liste'
+      delete_confirm: 'Vraiment retirer "%name%" de la liste ?'
   volunteers: 'Nombre de bénévoles : %count%'
 manage_volunteers:
   access_denied: 'Vous ne pouvez pas ouvrir le profil d''un(e) bénévole ne faisant pas partie des structures que vous pouvez déclencher.'
@@ -759,6 +759,7 @@ manage_volunteers:
     update: 'Mettre à jour un bénévole'
     updated: 'Le bénévole a correctement été modifié.'
     visible_badges: 'Badges principaux'
+    section_messages: 'Derniers messages'
     add: 'Créer un nouveau bénévole'
     optout_until: 'Bénévole indisponible jusqu''au...'
   others: 'et %count% autre(s)'

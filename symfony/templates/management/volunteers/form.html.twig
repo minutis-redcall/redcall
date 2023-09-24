@@ -13,83 +13,116 @@
     </h1>
 
     <div id="form-container">
-        {{ form_start(form) }}
-        {{ form_errors(form) }}
+    {{ form_start(form) }}
+    {{ form_errors(form) }}
 
-        <div class="row">
-            <div class="col-md-6">
-                <h3>{{ 'manage_volunteers.form.section_general'|trans }}</h3>
-                {{ form_row(form.externalId) }}
-                {{ form_row(form.firstName) }}
-                {{ form_row(form.lastName) }}
-                {{ form_row(form.minor) }}
-                {{ form_row(form.optoutUntil) }}
+    <div class="row" data-masonry='{"percentPosition": true }'>
+        <div class="col-md-6 mt-3">
+            <h3>{{ 'manage_volunteers.form.section_general'|trans }}</h3>
+            {{ form_row(form.externalId) }}
+            {{ form_row(form.firstName) }}
+            {{ form_row(form.lastName) }}
+            {{ form_row(form.minor) }}
+            {{ form_row(form.optoutUntil) }}
+            <hr/>
+        </div>
+
+        <div class="col-md-6 mt-3">
+            {% if form.structures|default(false) %}
+                <h3>{{ 'manage_volunteers.form.section_structures'|trans }}</h3>
+                {{ form_row(form.structures) }}
                 <hr/>
-            </div>
+            {% else %}
+                {% if is_granted('ROLE_ADMIN') %}
+                    {% if isCreate %}
+                        <p>{{ 'manage_volunteers.admin_structures.create'|trans }}</p>
+                    {% else %}
+                        <div class="jumbotron shadow p-3 mb-5 rounded">
+                            <h3>{{ 'manage_volunteers.admin_structures.structures'|trans({'%name%': volunteer.displayName}) }}</h3>
 
-            <div class="col-md-6">
-                {% if form.structures|default(false) %}
-                    <h3>{{ 'manage_volunteers.form.section_structures'|trans }}</h3>
-                    {{ form_row(form.structures) }}
-                    <hr/>
-                {% else %}
-                    {% if is_granted('ROLE_ADMIN') %}
-                        {% if isCreate %}
-                            <p>{{ 'manage_volunteers.admin_structures.create'|trans }}</p>
-                        {% else %}
-                            <div class="jumbotron shadow p-3 mb-5 rounded">
-                                <h3>{{ 'manage_volunteers.admin_structures.structures'|trans({'%name%': volunteer.displayName}) }}</h3>
+                            <br/>
 
-                                <br/>
+                            {% for structure in volunteer.structures %}
+                                {{ structure.displayName }}<br/>
+                            {% endfor %}
 
-                                {% for structure in volunteer.structures %}
-                                    {{ structure.displayName }}<br/>
-                                {% endfor %}
-
-                                <div class="text-center">
-                                    <a href="{{ path('management_volunteers_edit_structures', {id: volunteer.id}) }}" class="btn btn-secondary">
-                                        {{ 'manage_volunteers.admin_structures.edit'|trans }}
-                                    </a>
-                                </div>
+                            <div class="text-center">
+                                <a href="{{ path('management_volunteers_edit_structures', {id: volunteer.id}) }}" class="btn btn-secondary">
+                                    {{ 'manage_volunteers.admin_structures.edit'|trans }}
+                                </a>
                             </div>
-                        {% endif %}
+                        </div>
                     {% endif %}
                 {% endif %}
-            </div>
+            {% endif %}
+        </div>
 
-            <div class="col-md-6">
-                <h3>{{ 'manage_volunteers.form.section_contact'|trans }}</h3>
-                {{ form_row(form.phones) }}
-                {{ form_row(form.phoneNumberOptin) }}
-                {{ form_row(form.phoneNumberLocked) }}
-                {{ form_row(form.onlyOutboundSms) }}
-                {{ form_row(form.supportsShortCode) }}
-                <hr/>
-                {{ form_row(form.email) }}
-                {{ form_row(form.emailOptin) }}
-                {{ form_row(form.emailLocked) }}
-                <hr/>
-                <div>
-                    {{ 'manage_volunteers.form.lock_info'|trans }}
-                </div>
-            </div>
-
-            <div class="col-md-6">
-                <h3>{{ 'manage_volunteers.form.section_badges'|trans }}</h3>
-                {{ form_row(form.badges) }}
+        <div class="col-md-6 mt-3">
+            <h3>{{ 'manage_volunteers.form.section_contact'|trans }}</h3>
+            {{ form_row(form.phones) }}
+            {{ form_row(form.phoneNumberOptin) }}
+            {{ form_row(form.phoneNumberLocked) }}
+            {{ form_row(form.onlyOutboundSms) }}
+            {{ form_row(form.supportsShortCode) }}
+            <hr/>
+            {{ form_row(form.email) }}
+            {{ form_row(form.emailOptin) }}
+            {{ form_row(form.emailLocked) }}
+            <hr/>
+            <div>
+                {{ 'manage_volunteers.form.lock_info'|trans }}
             </div>
         </div>
+
+        <div class="col-md-6 mt-3">
+            <h3>{{ 'manage_volunteers.form.section_badges'|trans }}</h3>
+            {{ form_row(form.badges) }}
+            {{ form_row(form.submit) }}
+        </div>
+
+
+        {% if (not volunteer.user or not volunteer.user.trusted) and delete %}
+            <div class="col-md-6 mt-3 text-left">
+                <hr/>
+                <strong>{{ 'manage_volunteers.anonymize.gdpr'|trans }}</strong>: {{ 'manage_volunteers.anonymize.volunteer_asked_for_it'|trans }}
+                {{ form(delete) }}
+            </div>
+        {% endif %}
+
+        {% if messages %}
+            <div class="col-md-6 mt-3 text-left">
+                <h3>{{ 'manage_volunteers.form.section_messages'|trans }}</h3>
+
+                <table class="table table-striped">
+                    <tbody>
+                    {% for message in messages %}
+                        <tr>
+                            <td>
+                                {{ macros.communicationIcon(message.communication) }}
+                                {{ 'space.home.triggers.subject'|trans({
+                                    '%type%': '<strong>' ~ ('space.home.triggers.' ~ message.communication.type)|trans ~ '</strong>',
+                                    '%date%': message.communication.createdAt|date('d/m/Y'),
+                                    '%time%': message.communication.createdAt|date('H:i')
+                                })|raw }}
+                                <br/>
+                                <em style="font-size:10px;">{{ message.communication.limitedBody|striptags }}</em>
+                            </td>
+                            <td>
+                                <a href="{{ path('communication_index', {id: message.communication.campaign.id}) }}" target="_blank" class="btn btn-primary">
+                                    {{ 'base.button.open'|trans }}
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
 
         {{ form_end(form) }}
+
     </div>
 
-    {% if (not volunteer.user or not volunteer.user.trusted) and delete %}
-        <div>
-            <hr/>
-            <strong>{{ 'manage_volunteers.anonymize.gdpr'|trans }}</strong>: {{ 'manage_volunteers.anonymize.volunteer_asked_for_it'|trans }}
-            {{ form(delete) }}
-        </div>
-    {% endif %}
 
     <div class="text-center">
         <a href="{{ path('management_volunteers_list', app.request.query.all) }}" class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>

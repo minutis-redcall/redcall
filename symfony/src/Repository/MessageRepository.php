@@ -214,4 +214,24 @@ class MessageRepository extends BaseRepository
             ->getQuery()
             ->getResult();
     }
+
+    /**
+     * @param Volunteer $volunteer
+     *
+     * @return Message[]
+     */
+    public function getLatestMessagesForVolunteer(Volunteer $volunteer) : array
+    {
+        return $this
+            ->createQueryBuilder('m')
+            ->join('m.volunteer', 'v')
+            ->join('m.communication', 'co')
+            ->join('co.campaign', 'ca')
+            ->andWhere('v.id = :volunteer')
+            ->setParameter('volunteer', $volunteer)
+            ->orderBy('co.createdAt', 'DESC')
+            ->getQuery()
+            ->setMaxResults(10)
+            ->getResult();
+    }
 }
