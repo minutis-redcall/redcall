@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Model\Sheets;
+namespace App\Model\InstancesNationales;
 
 class VolunteersExtract
 {

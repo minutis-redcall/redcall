@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Model\Sheets;
+namespace App\Model\InstancesNationales;
 
 class SheetExtract
 {
@@ -8,14 +8,6 @@ class SheetExtract
      * @var string
      */
     private $identifier;
-
-    /**
-     * @var int
-     */
-    private $numberOfRows = 0;
-
-    private $tabName;
-
     private $rows = [];
 
     public function getIdentifier() : string
@@ -26,26 +18,6 @@ class SheetExtract
     public function setIdentifier(string $identifier) : void
     {
         $this->identifier = $identifier;
-    }
-
-    public function getNumberOfRows() : int
-    {
-        return $this->numberOfRows;
-    }
-
-    public function setNumberOfRows(int $numberOfRows) : void
-    {
-        $this->numberOfRows = $numberOfRows;
-    }
-
-    public function getTabName()
-    {
-        return $this->tabName;
-    }
-
-    public function setTabName($tabName) : void
-    {
-        $this->tabName = $tabName;
     }
 
     public function getRows() : array
@@ -63,13 +35,29 @@ class SheetExtract
         $this->rows = array_merge($this->rows, $rows);
     }
 
+    public function getColumn(string $columnName) : array
+    {
+        if (false === $index = array_search($columnName, $this->rows[0])) {
+            throw new \Exception("Column {$columnName} not found");
+        }
+
+        $column = [];
+        foreach ($this->rows as $row) {
+            if (empty($row)) {
+                continue;
+            }
+
+            $column[] = $row[$index];
+        }
+
+        return $column;
+    }
+
     public function toArray() : array
     {
         return [
-            'identifier'   => $this->identifier,
-            'tabName'      => $this->tabName,
-            'numberOfRows' => $this->numberOfRows,
-            'rows'         => $this->rows,
+            'identifier' => $this->identifier,
+            'rows'       => $this->rows,
         ];
     }
 
@@ -77,8 +65,6 @@ class SheetExtract
     {
         $extract = new self();
         $extract->setIdentifier($array['identifier']);
-        $extract->setTabName($array['tabName']);
-        $extract->setNumberOfRows($array['numberOfRows']);
         $extract->setRows($array['rows']);
 
         return $extract;
