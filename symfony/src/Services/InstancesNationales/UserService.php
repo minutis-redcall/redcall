@@ -50,12 +50,12 @@ class UserService
 
     public function extractUsers() : void
     {
-        if (is_file('/tmp/listes.json')) {
-            $extract = SheetsExtract::fromArray(json_decode(file_get_contents('/tmp/listes.json'), true));
-        } else {
-            $extract = $this->extractUsersFromGSheets();
-            file_put_contents('/tmp/listes.json', json_encode($extract->toArray()));
-        }
+        //        if (is_file('/tmp/listes.json')) {
+        //            $extract = SheetsExtract::fromArray(json_decode(file_get_contents('/tmp/listes.json'), true));
+        //        } else {
+        $extract = $this->extractUsersFromGSheets();
+        //            file_put_contents('/tmp/listes.json', json_encode($extract->toArray()));
+        //        }
 
         $users = $this->extractObjectsFromGrid($extract);
 
@@ -119,10 +119,10 @@ class UserService
             'count_readers' => $extract->getTab(self::READERS)->count(),
         ]);
 
-        $rows = array_filter(array_unique(array_merge(
+        $rows = array_map('strtolower', array_filter(array_unique(array_merge(
             $extract->getTab(self::READERS)->getColumn('Email'),
             $extract->getTab(self::WRITERS)->getColumn('Email')
-        )));
+        ))));
 
         $users = new UsersExtract();
         foreach ($rows as $row) {
@@ -149,21 +149,26 @@ class UserService
     private function deleteMissingUsers(Structure $structure, UsersExtract $extract)
     {
         $fromExtracts = array_map(function (UserExtract $user) {
-            return $user->getEmail();
+            return strtolower($user->getEmail());
         }, $extract->getUsers());
 
         $fromDatabases = array_map(function (User $user) {
-            return $user->getUsername();
+            return strtolower($user->getUsername());
         }, $this->userManager->getRedCallUsersInStructure($structure));
 
         $toDeletes = array_diff($fromDatabases, $fromExtracts);
 
         foreach ($toDeletes as $toDelete) {
+            $user = $this->userManager->findOneByUsernameAndPlatform(Platform::FR, $toDelete);
+
+            if (!$user || $user->isAdmin()) {
+                continue;
+            }
+
             LogService::pass('Delete a user', [
                 'email' => $toDelete,
-            ]);
+            ], true);
 
-            $user = $this->userManager->findOneByUsernameAndPlatform(Platform::FR, $toDelete);
             $user->removeStructure($structure);
 
             if ($volunteer = $user->getVolunteer()) {
@@ -174,7 +179,7 @@ class UserService
             }
 
             if ($user->getStructures()->count() === 0) {
-                //$this->userManager->remove($user);
+                $this->userManager->remove($user);
             } else {
                 $this->userManager->save($user);
             }
@@ -184,12 +189,12 @@ class UserService
     private function createUsers(Structure $structure, UsersExtract $extract)
     {
         foreach ($extract->getUsers() as $userExtract) {
-            $user = $this->userManager->findOneByUsernameAndPlatform(Platform::FR, $userExtract->getEmail());
+            $user = $this->userManager->findOneByUsernameAndPlatform(Platform::FR, strtolower($userExtract->getEmail()));
 
             if (!$user || !$user->hasStructure($structure)) {
                 LogService::pass('Create a user', [
                     'email' => $userExtract->getEmail(),
-                ]);
+                ], true);
 
                 if (!$user) {
                     $volunteer = $this->volunteerManager->findOneByExternalId(Platform::FR, $userExtract->getNivol());
@@ -200,7 +205,7 @@ class UserService
                         $volunteer->setPlatform(Platform::FR);
                         $volunteer->setExternalId($userExtract->getNivol());
                         $volunteer->setEmail($userExtract->getEmail());
-                        $volunteer->setInternalEmail($userExtract->getEmail());
+                        $volunteer->setInternalEmail(strtolower($userExtract->getEmail()));
 
                         if (@preg_match('/(.*)\.(.*)@/', $userExtract->getEmail(), $matches)) {
                             $volunteer->setFirstName(ucfirst($matches[1]));
@@ -214,7 +219,7 @@ class UserService
                     $user->setPlatform(Platform::FR);
                     $user->setLocale('fr');
                     $user->setTimezone('Europe/Paris');
-                    $user->setUsername($userExtract->getEmail());
+                    $user->setUsername(strtolower($userExtract->getEmail()));
                     $user->setPassword('invalid hash');
                     $user->setIsVerified(true);
                     $user->setIsTrusted(true);

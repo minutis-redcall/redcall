@@ -9,7 +9,6 @@ use App\Entity\Communication;
 use App\Entity\User;
 use App\Entity\Volunteer;
 use App\Form\Model\Campaign as CampaignModel;
-use App\Provider\Email\EmailProvider;
 use App\Repository\CampaignRepository;
 use App\Tools\Random;
 use Bundles\PasswordLoginBundle\Entity\AbstractUser;
@@ -53,11 +52,6 @@ class CampaignManager
     private $platformManager;
 
     /**
-     * @var EmailProvider
-     */
-    private $emailProvider;
-
-    /**
      * @var TranslatorInterface
      */
     private $translator;
@@ -67,15 +61,20 @@ class CampaignManager
      */
     private $router;
 
+    /**
+     * @var MailManager
+     */
+    private $mailManager;
+
     public function __construct(CampaignRepository $campaignRepository,
         CommunicationManager $communicationManager,
         MessageManager $messageManager,
         OperationManager $operationManager,
         PlatformConfigManager $platformConfigManager,
         TokenStorageInterface $tokenStorage,
-        EmailProvider $emailProvider,
         TranslatorInterface $translator,
-        RouterInterface $router)
+        RouterInterface $router,
+        MailManager $mailManager)
     {
         $this->campaignRepository   = $campaignRepository;
         $this->communicationManager = $communicationManager;
@@ -83,19 +82,14 @@ class CampaignManager
         $this->operationManager     = $operationManager;
         $this->platformManager      = $platformConfigManager;
         $this->tokenStorage         = $tokenStorage;
-        $this->emailProvider        = $emailProvider;
         $this->translator           = $translator;
         $this->router               = $router;
+        $this->mailManager          = $mailManager;
     }
 
     public function find(int $campaignId) : ?CampaignEntity
     {
         return $this->campaignRepository->find($campaignId);
-    }
-
-    public function save(CampaignEntity $campaign)
-    {
-        $this->campaignRepository->save($campaign);
     }
 
     public function launchNewCampaign(CampaignModel $campaignModel,
@@ -150,10 +144,20 @@ class CampaignManager
             $url     = sprintf('%s%s', getenv('WEBSITE_URL'), $this->router->generate('synthesis_index', ['code' => $campaignEntity->getCode()]));
             $subject = $this->translator->trans('synthesis.email.subject', ['%label%' => $campaignEntity->getLabel()], null, $locale);
             $body    = $this->translator->trans('synthesis.email.content', ['%url%' => $url], null, $locale);
-            $this->emailProvider->send($volunteer->getEmail(), $subject, $body, $body);
+            $this->mailManager->simple($volunteer->getEmail(), $subject, $body, $body, $locale);
         }
 
         return $campaignEntity;
+    }
+
+    public function findOneByCode(string $code) : ?Campaign
+    {
+        return $this->campaignRepository->findOneByCode($code);
+    }
+
+    public function save(CampaignEntity $campaign)
+    {
+        $this->campaignRepository->save($campaign);
     }
 
     public function closeCampaign(CampaignEntity $campaign)
@@ -292,10 +296,5 @@ class CampaignManager
     public function getCampaignAudience(CampaignEntity $campaign) : array
     {
         return $this->campaignRepository->getCampaignAudience($campaign);
-    }
-
-    public function findOneByCode(string $code) : ?Campaign
-    {
-        return $this->campaignRepository->findOneByCode($code);
     }
 }

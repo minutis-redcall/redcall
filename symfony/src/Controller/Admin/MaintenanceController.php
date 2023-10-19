@@ -106,6 +106,18 @@ class MaintenanceController extends BaseController
     }
 
     /**
+     * @Route(name="annuaire_national", path="/annuaire-national")
+     */
+    public function annuaireNational()
+    {
+        $this->maintenanceManager->annuaireNational();
+
+        $this->addFlash('success', $this->translator->trans('maintenance.pegass_started'));
+
+        return $this->redirectToRoute('admin_maintenance_index');
+    }
+
+    /**
      * @Route(name="search", path="/search")
      */
     public function search(Request $request)
@@ -113,6 +125,23 @@ class MaintenanceController extends BaseController
         return $this->render('admin/maintenance/search.html.twig', [
             'form' => $this->createSearchForm($request)->createView(),
         ]);
+    }
+
+    private function createSearchForm(Request $request)
+    {
+        return $this->createFormBuilder()
+                    ->add('nivol', VolunteerWidgetType::class, [
+                        'label' => 'maintenance.search.nivol',
+                    ])
+                    ->add('expression', TextareaType::class, [
+                        'label' => 'maintenance.search.expression',
+                        'attr'  => [
+                            'rows'        => '10',
+                            'placeholder' => '/volunteer/nominations/libelleCourt[text()="DLUS"]',
+                        ],
+                    ])
+                    ->getForm()
+                    ->handleRequest($request);
     }
 
     /**
@@ -123,6 +152,26 @@ class MaintenanceController extends BaseController
         return new JsonResponse([
             'content' => htmlentities($this->getPegassEntity($request)->getXml()),
         ]);
+    }
+
+    private function getPegassEntity(Request $request) : Pegass
+    {
+        $nivol = $this->createSearchForm($request)->get('nivol')->getData();
+        if (!$nivol) {
+            throw $this->createNotFoundException();
+        }
+
+        $volunteer = $this->volunteerManager->findOneByExternalId($this->getPlatform(), $nivol);
+        if (!$volunteer) {
+            throw $this->createNotFoundException();
+        }
+
+        $entity = $this->pegassManager->getEntity(Pegass::TYPE_VOLUNTEER, $volunteer->getExternalId());
+        if (!$entity) {
+            throw $this->createNotFoundException();
+        }
+
+        return $entity;
     }
 
     /**
@@ -216,42 +265,5 @@ class MaintenanceController extends BaseController
         return $this->render('admin/maintenance/message.html.twig', [
             'form' => $form->createView(),
         ]);
-    }
-
-    private function getPegassEntity(Request $request) : Pegass
-    {
-        $nivol = $this->createSearchForm($request)->get('nivol')->getData();
-        if (!$nivol) {
-            throw $this->createNotFoundException();
-        }
-
-        $volunteer = $this->volunteerManager->findOneByExternalId($this->getPlatform(), $nivol);
-        if (!$volunteer) {
-            throw $this->createNotFoundException();
-        }
-
-        $entity = $this->pegassManager->getEntity(Pegass::TYPE_VOLUNTEER, $volunteer->getExternalId());
-        if (!$entity) {
-            throw $this->createNotFoundException();
-        }
-
-        return $entity;
-    }
-
-    private function createSearchForm(Request $request)
-    {
-        return $this->createFormBuilder()
-                    ->add('nivol', VolunteerWidgetType::class, [
-                        'label' => 'maintenance.search.nivol',
-                    ])
-                    ->add('expression', TextareaType::class, [
-                        'label' => 'maintenance.search.expression',
-                        'attr'  => [
-                            'rows'        => '10',
-                            'placeholder' => '/volunteer/nominations/libelleCourt[text()="DLUS"]',
-                        ],
-                    ])
-                    ->getForm()
-                    ->handleRequest($request);
     }
 }

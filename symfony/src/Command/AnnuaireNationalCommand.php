@@ -2,7 +2,7 @@
 
 namespace App\Command;
 
-use App\Manager\VolunteerManager;
+use App\Manager\MailManager;
 use App\Services\InstancesNationales\LogService;
 use App\Services\InstancesNationales\UserService;
 use App\Services\InstancesNationales\VolunteerService;
@@ -32,19 +32,17 @@ class AnnuaireNationalCommand extends Command
     private $userService;
 
     /**
-     * @var VolunteerManager
+     * @var MailManager
      */
-    private $volunteerManager;
+    private $emailManager;
 
-    public function __construct(VolunteerService $volunteerService,
-        UserService $userService,
-        VolunteerManager $volunteerManager)
+    public function __construct(VolunteerService $volunteerService, UserService $userService, MailManager $emailManager)
     {
         parent::__construct();
 
         $this->volunteerService = $volunteerService;
         $this->userService      = $userService;
-        $this->volunteerManager = $volunteerManager;
+        $this->emailManager     = $emailManager;
     }
 
     protected function configure()
@@ -67,11 +65,29 @@ class AnnuaireNationalCommand extends Command
             LogService::fail('An error occurred during import.', [
                 'exception' => $exception->getMessage(),
                 'trace'     => $exception->getTraceAsString(),
-            ]);
+            ], true);
+
         } finally {
             LogService::dump();
+
+            if (LogService::isImpactful()) {
+                $this->sendEmail();
+            }
         }
 
         return (int) !$error;
+    }
+
+    private function sendEmail()
+    {
+        foreach (explode(';', getenv('ANNUAIRE_NATIONAL_MAIL_ALERTING')) as $to) {
+            $this->emailManager->simple(
+                $to,
+                'Mise à jour de la base de données "Annuaire National"',
+                sprintf("%d changement(s) ont été fait dans la base de données, vous trouverez le log ci-dessous.\n\n%s", LogService::getNbImpacts(), LogService::dump(true)),
+                sprintf('<p>%d changement(s) ont été fait dans la base de données, vous trouverez le log ci-dessous.</p><br/><br/><pre>%s</pre>', LogService::getNbImpacts(), LogService::dump(true)),
+                'fr'
+            );
+        }
     }
 }

@@ -41,17 +41,26 @@ class VolunteerService
 
     public function extractVolunteers()
     {
-        if (is_file('/tmp/annuaire.json')) {
-            $extract = SheetsExtract::fromArray(json_decode(file_get_contents('/tmp/annuaire.json'), true));
-        } else {
-            $extract = $this->extractVolunteersFromGSheets();
-            file_put_contents('/tmp/annuaire.json', json_encode($extract->toArray()));
-        }
+        //        if (is_file('/tmp/annuaire.json')) {
+        //            $extract = SheetsExtract::fromArray(json_decode(file_get_contents('/tmp/annuaire.json'), true));
+        //        } else {
+        $extract = $this->extractVolunteersFromGSheets();
+        //            file_put_contents('/tmp/annuaire.json', json_encode($extract->toArray()));
+        //        }
 
         $volunteers = $this->extractObjectsFromGrid($extract->getTab(self::ANNUAIRE));
         $this->filterVolunteers($volunteers, $extract->getTab(self::LISTES));
 
         $structure = $this->structureManager->findOneByName(Platform::FR, AnnuaireNationalCommand::STRUCTURE_NAME);
+        if (null === $structure) {
+            $structure = new Structure();
+            $structure->setExternalId('NATIONAL');
+            $structure->setPlatform(Platform::FR());
+            $structure->setName(AnnuaireNationalCommand::STRUCTURE_NAME);
+            $structure->setShortcut('NATIONAL');
+            $this->structureManager->save($structure);
+        }
+
         $this->deleteMissingVolunteers($structure, $volunteers);
         $this->crupdateVolunteers($structure, $volunteers);
 
@@ -205,11 +214,16 @@ class VolunteerService
         $toDelete = array_diff($inStructure, $inExtract);
 
         foreach ($toDelete as $nivol) {
+            $volunteer = $structure->getVolunteer($nivol);
+
+            if (!$volunteer) {
+                continue;
+            }
+
             LogService::pass('Deleting a volunteer existing in RedCall but missing in sheets', [
                 'nivol' => $nivol,
             ], true);
 
-            $volunteer = $structure->getVolunteer($nivol);
             $volunteer->setEnabled(false);
 
             $structure->removeVolunteer($volunteer);

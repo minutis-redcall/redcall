@@ -570,6 +570,7 @@ maintenance:
     for_dev_only: 'This fonctionnality is for developer only.'
     refresh_button: 'Refresh the datas'
   pegass: 'Synchronize RedCall and DSI files entirely.'
+  annuaire: 'Update "Annuaire national" french database.'
   pegass_started: 'Synchronize launched, it will take a while.'
   refresh: 'Synchronize RedCall and Pegass databases entirely'
   refresh_started: 'Synchronize launched, it will take a while.'

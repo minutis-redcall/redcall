@@ -5,7 +5,7 @@ namespace App\Services\InstancesNationales;
 class LogService
 {
     static private $debug     = [];
-    static private $impactful = false;
+    static private $impactful = 0;
 
     static public function info(string $message, array $parameters = [], bool $impactful = false) : int
     {
@@ -20,7 +20,7 @@ class LogService
         ];
 
         if ($impactful) {
-            self::$impactful = true;
+            self::$impactful++;
         }
 
         return count(self::$debug);
@@ -50,11 +50,21 @@ class LogService
         self::$debug = [];
     }
 
-    static public function dump() : void
+    static public function dump(bool $return = false) : ?string
     {
+        if ($return) {
+            ob_start();
+        }
+
         foreach (self::getFormattedDebug() as $message) {
             echo $message.PHP_EOL;
         }
+
+        if ($return) {
+            return ob_get_clean();
+        }
+
+        return null;
     }
 
     static private function getFormattedDebug() : array
@@ -69,6 +79,11 @@ class LogService
     }
 
     static public function isImpactful() : bool
+    {
+        return self::$impactful > 0;
+    }
+
+    static public function getNbImpacts() : int
     {
         return self::$impactful;
     }

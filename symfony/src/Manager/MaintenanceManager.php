@@ -4,6 +4,7 @@ namespace App\Manager;
 
 use App\Settings;
 use App\Task\PegassCreateChunks;
+use App\Task\SyncAnnuaire;
 use App\Task\SyncWithPegassTask;
 use Bundles\GoogleTaskBundle\Service\TaskSender;
 use Bundles\SettingsBundle\Manager\SettingManager;
@@ -36,5 +37,10 @@ class MaintenanceManager
     public function pegassFiles()
     {
         $this->async->fire(PegassCreateChunks::class);
+    }
+
+    public function annuaireNational()
+    {
+        $this->async->fire(SyncAnnuaire::class);
     }
 }
