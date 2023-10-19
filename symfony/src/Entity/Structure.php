@@ -136,7 +136,7 @@ class Structure implements LockableInterface
     private $prefilledAnswers;
 
     /**
-     * @ORM\OneToMany(targetEntity=VolunteerList::class, mappedBy="structure", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity=VolunteerList::class, mappedBy="structure", cascade={"all"}, orphanRemoval=true)
      */
     private $volunteerLists;
 
@@ -155,24 +155,58 @@ class Structure implements LockableInterface
         $this->templates          = new ArrayCollection();
     }
 
-    /**
-     * @return int|null
-     */
-    public function getId() : ?int
+    public function getShortcut() : ?string
     {
-        return $this->id;
+        return $this->shortcut;
     }
 
-    public function getPlatform()
+    public function setShortcut(?string $shortcut) : Structure
     {
-        return $this->platform;
-    }
-
-    public function setPlatform($platform)
-    {
-        $this->platform = $platform;
+        $this->shortcut = $shortcut;
 
         return $this;
+    }
+
+    public function isLocked() : bool
+    {
+        return $this->locked;
+    }
+
+    public function setLocked(bool $locked) : Structure
+    {
+        $this->locked = $locked;
+
+        return $this;
+    }
+
+    public function getDisplayName() : string
+    {
+        return mb_strtoupper($this->name);
+    }
+
+    public function getVolunteer(string $externalId) : ?Volunteer
+    {
+        foreach ($this->getVolunteers() as $volunteer) {
+            if ($volunteer->getExternalId() === $externalId) {
+                return $volunteer;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @return Collection|Volunteer[]
+     */
+    public function getVolunteers(bool $onlyEnabled = true) : Collection
+    {
+        if ($onlyEnabled) {
+            return $this->getEnabledVolunteers();
+        }
+
+        return $this->volunteers->filter(function (Volunteer $volunteer) {
+            return $this->platform === $volunteer->getPlatform();
+        });
     }
 
     public function getExternalId() : string
@@ -188,53 +222,23 @@ class Structure implements LockableInterface
     }
 
     /**
-     * @return null|string
+     * @return Collection|Volunteer[]
      */
-    public function getName() : ?string
+    public function getEnabledVolunteers() : Collection
     {
-        return $this->name;
+        return $this->volunteers->filter(function (Volunteer $volunteer) {
+            return $this->platform === $volunteer->getPlatform() && $volunteer->isEnabled();
+        });
     }
 
-    /**
-     * @param string $name
-     *
-     * @return Structure
-     */
-    public function setName(string $name) : self
+    public function getPlatform()
     {
-        $this->name = mb_strtoupper($name);
-
-        return $this;
+        return $this->platform;
     }
 
-    public function getShortcut() : ?string
+    public function setPlatform($platform)
     {
-        return $this->shortcut;
-    }
-
-    public function setShortcut(?string $shortcut) : Structure
-    {
-        $this->shortcut = $shortcut;
-
-        return $this;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getPresident() : ?string
-    {
-        return $this->president;
-    }
-
-    /**
-     * @param string|null $president
-     *
-     * @return Structure
-     */
-    public function setPresident(?string $president) : self
-    {
-        $this->president = $president;
+        $this->platform = $platform;
 
         return $this;
     }
@@ -257,42 +261,6 @@ class Structure implements LockableInterface
         $this->enabled = $enabled;
 
         return $this;
-    }
-
-    public function isLocked() : bool
-    {
-        return $this->locked;
-    }
-
-    public function setLocked(bool $locked) : Structure
-    {
-        $this->locked = $locked;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Volunteer[]
-     */
-    public function getVolunteers(bool $onlyEnabled = true) : Collection
-    {
-        if ($onlyEnabled) {
-            return $this->getEnabledVolunteers();
-        }
-
-        return $this->volunteers->filter(function (Volunteer $volunteer) {
-            return $this->platform === $volunteer->getPlatform();
-        });
-    }
-
-    /**
-     * @return Collection|Volunteer[]
-     */
-    public function getEnabledVolunteers() : Collection
-    {
-        return $this->volunteers->filter(function (Volunteer $volunteer) {
-            return $this->platform === $volunteer->getPlatform() && $volunteer->isEnabled();
-        });
     }
 
     /**
@@ -321,26 +289,6 @@ class Structure implements LockableInterface
             $this->volunteers->removeElement($volunteer);
             $volunteer->removeStructure($this);
         }
-
-        return $this;
-    }
-
-    /**
-     * @return Structure|null
-     */
-    public function getParentStructure() : ?self
-    {
-        return $this->parentStructure;
-    }
-
-    /**
-     * @param self|null $parentStructure
-     *
-     * @return Structure
-     */
-    public function setParentStructure(?self $parentStructure) : self
-    {
-        $this->parentStructure = $parentStructure;
 
         return $this;
     }
@@ -394,6 +342,26 @@ class Structure implements LockableInterface
                 $childrenStructure->setParentStructure(null);
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * @return Structure|null
+     */
+    public function getParentStructure() : ?self
+    {
+        return $this->parentStructure;
+    }
+
+    /**
+     * @param self|null $parentStructure
+     *
+     * @return Structure
+     */
+    public function setParentStructure(?self $parentStructure) : self
+    {
+        $this->parentStructure = $parentStructure;
 
         return $this;
     }
@@ -481,7 +449,6 @@ class Structure implements LockableInterface
         return $this;
     }
 
-
     /**
      * @return Volunteer|null
      */
@@ -494,6 +461,26 @@ class Structure implements LockableInterface
         }
 
         return null;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getPresident() : ?string
+    {
+        return $this->president;
+    }
+
+    /**
+     * @param string|null $president
+     *
+     * @return Structure
+     */
+    public function setPresident(?string $president) : self
+    {
+        $this->president = $president;
+
+        return $this;
     }
 
     /**
@@ -517,11 +504,6 @@ class Structure implements LockableInterface
         return $nextPegassUpdate;
     }
 
-    public function getDisplayName() : string
-    {
-        return mb_strtoupper($this->name);
-    }
-
     /**
      * @return array
      */
@@ -531,6 +513,14 @@ class Structure implements LockableInterface
             'id'   => (string) $this->getId(),
             'name' => $this->getDisplayName(),
         ]))->getArrayCopy();
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getId() : ?int
+    {
+        return $this->id;
     }
 
     /**
@@ -549,12 +539,18 @@ class Structure implements LockableInterface
         }
     }
 
-    /**
-     * @return string
-     */
-    public function __toString()
+    private function isParentLooping() : bool
     {
-        return $this->getDisplayName();
+        $ref = $this->getParentStructure();
+        while ($ref) {
+            if ($ref->id === $this->id) {
+                return true;
+            }
+
+            $ref = $ref->getParentStructure();
+        }
+
+        return false;
     }
 
     public function getParentHierarchy(int $stop = null) : array
@@ -579,11 +575,11 @@ class Structure implements LockableInterface
     }
 
     /**
-     * @return Collection|VolunteerList[]
+     * @return string
      */
-    public function getVolunteerLists() : Collection
+    public function __toString()
     {
-        return $this->volunteerLists;
+        return $this->getDisplayName();
     }
 
     public function addVolunteerList(VolunteerList $volunteerList) : self
@@ -608,18 +604,43 @@ class Structure implements LockableInterface
         return $this;
     }
 
-    private function isParentLooping() : bool
+    public function getVolunteerList(string $name) : ?VolunteerList
     {
-        $ref = $this->getParentStructure();
-        while ($ref) {
-            if ($ref->id === $this->id) {
-                return true;
+        foreach ($this->getVolunteerLists() as $volunteerList) {
+            if ($volunteerList->getName() === $name) {
+                return $volunteerList;
             }
-
-            $ref = $ref->getParentStructure();
         }
 
-        return false;
+        return null;
+    }
+
+    /**
+     * @return Collection|VolunteerList[]
+     */
+    public function getVolunteerLists() : Collection
+    {
+        return $this->volunteerLists;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getName() : ?string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return Structure
+     */
+    public function setName(string $name) : self
+    {
+        $this->name = mb_strtoupper($name);
+
+        return $this;
     }
 
     /**

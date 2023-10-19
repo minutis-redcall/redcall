@@ -84,18 +84,6 @@ class User extends AbstractUser implements LockableInterface
         $this->favoriteBadges = new ArrayCollection();
     }
 
-    public function getPlatform()
-    {
-        return $this->platform;
-    }
-
-    public function setPlatform($platform)
-    {
-        $this->platform = $platform;
-
-        return $this;
-    }
-
     public function getLocale() : ?string
     {
         return $this->locale;
@@ -118,11 +106,6 @@ class User extends AbstractUser implements LockableInterface
         $this->timezone = $timezone;
 
         return $this;
-    }
-
-    public function getExternalId() : ?string
-    {
-        return $this->volunteer ? $this->volunteer->getExternalId() : null;
     }
 
     public function isDeveloper() : bool
@@ -182,6 +165,17 @@ class User extends AbstractUser implements LockableInterface
         return $this;
     }
 
+    public function getStructuresAsList() : array
+    {
+        $structures = [];
+        foreach ($this->getStructures() as $structure) {
+            /** @var Structure $structure */
+            $structures[$structure->getExternalId()] = $structure->getName();
+        }
+
+        return $structures;
+    }
+
     public function getStructures(bool $onlyEnabled = true) : Collection
     {
         $structures = $this->structures;
@@ -195,15 +189,28 @@ class User extends AbstractUser implements LockableInterface
         });
     }
 
-    public function getStructuresAsList() : array
+    public function getExternalId() : ?string
     {
-        $structures = [];
-        foreach ($this->getStructures() as $structure) {
-            /** @var Structure $structure */
-            $structures[$structure->getExternalId()] = $structure->getName();
-        }
+        return $this->volunteer ? $this->volunteer->getExternalId() : null;
+    }
 
-        return $structures;
+    public function getEnabledStructures() : Collection
+    {
+        return $this->structures->filter(function (Structure $structure) {
+            return $structure->isEnabled();
+        });
+    }
+
+    public function getPlatform()
+    {
+        return $this->platform;
+    }
+
+    public function setPlatform($platform)
+    {
+        $this->platform = $platform;
+
+        return $this;
     }
 
     public function getStructuresShortcuts() : array
@@ -217,22 +224,6 @@ class User extends AbstractUser implements LockableInterface
         }
 
         return $shortcuts;
-    }
-
-    public function getEnabledStructures() : Collection
-    {
-        return $this->structures->filter(function (Structure $structure) {
-            return $structure->isEnabled();
-        });
-    }
-
-    public function addStructure(Structure $structure) : self
-    {
-        if (!$this->structures->contains($structure)) {
-            $this->structures[] = $structure;
-        }
-
-        return $this;
     }
 
     public function removeStructure(Structure $structure) : self
@@ -251,9 +242,13 @@ class User extends AbstractUser implements LockableInterface
         }
     }
 
-    public function hasStructure(Structure $structure) : bool
+    public function addStructure(Structure $structure) : self
     {
-        return $this->structures->contains($structure);
+        if (!$this->structures->contains($structure)) {
+            $this->structures[] = $structure;
+        }
+
+        return $this;
     }
 
     public function hasCommonStructure($structures) : bool
@@ -271,6 +266,11 @@ class User extends AbstractUser implements LockableInterface
         return false;
     }
 
+    public function hasStructure(Structure $structure) : bool
+    {
+        return $this->structures->contains($structure);
+    }
+
     public function getCommonStructures($structures) : array
     {
         if ($this->isAdmin()) {
@@ -286,6 +286,17 @@ class User extends AbstractUser implements LockableInterface
         }
 
         return $common;
+    }
+
+    public function getMainStructure() : ?Structure
+    {
+        $root = $this->getRootStructures();
+
+        if ($root) {
+            return reset($root);
+        }
+
+        return null;
     }
 
     /**
@@ -313,17 +324,6 @@ class User extends AbstractUser implements LockableInterface
         return $roots;
     }
 
-    public function getMainStructure() : ?Structure
-    {
-        $root = $this->getRootStructures();
-
-        if ($root) {
-            return reset($root);
-        }
-
-        return null;
-    }
-
     public function isLocked() : ?bool
     {
         return $this->locked;
@@ -336,6 +336,14 @@ class User extends AbstractUser implements LockableInterface
         return $this;
     }
 
+    public function getDisplayName() : string
+    {
+        if ($this->volunteer && $this->volunteer->getFirstName()) {
+            return sprintf('%s %s', $this->volunteer->getFirstName(), $this->volunteer->getLastName());
+        }
+
+        return $this->getUserIdentifier();
+    }
 
     public function getRoles() : array
     {
@@ -356,22 +364,9 @@ class User extends AbstractUser implements LockableInterface
         return $roles;
     }
 
-    public function getDisplayName() : string
-    {
-        return $this->getUserIdentifier();
-    }
-
     public function __clone()
     {
         $this->structures = clone $this->structures;
-    }
-
-    /**
-     * @return Collection<int, Badge>
-     */
-    public function getFavoriteBadges() : Collection
-    {
-        return $this->favoriteBadges;
     }
 
     public function getSortedFavoriteBadges() : array
@@ -386,6 +381,14 @@ class User extends AbstractUser implements LockableInterface
         usort($badges, [Badge::class, 'sortBadges']);
 
         return $badges;
+    }
+
+    /**
+     * @return Collection<int, Badge>
+     */
+    public function getFavoriteBadges() : Collection
+    {
+        return $this->favoriteBadges;
     }
 
     public function addFavoriteBadge(Badge $favoriteBadge) : self

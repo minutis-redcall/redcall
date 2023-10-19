@@ -159,41 +159,6 @@ class VolunteerController extends BaseController
     }
 
     /**
-     * Create a new volunteer.
-     *
-     * @Endpoint(
-     *   priority = 505,
-     *   request  = @Facade(class     = VolunteerFacade::class),
-     *   response = @Facade(class     = HttpCreatedFacade::class)
-     * )
-     * @Route(name="create", methods={"POST"})
-     * @IsGranted("ROLE_ADMIN")
-     */
-    public function create(VolunteerFacade $facade) : FacadeInterface
-    {
-        $volunteer = $this->volunteerTransformer->reconstruct($facade);
-
-        $this->validate($facade, [], ['create']);
-
-        $this->validate($volunteer, [
-            new UniqueEntity(['externalId', 'platform']),
-            new Callback(function (Volunteer $data, ExecutionContextInterface $context) {
-                if ($data->getExternalId() && $this->deletedVolunteerManager->isDeleted($data->getExternalId())) {
-                    $context->addViolation(
-                        $this->translator->trans('admin.gdpr.violations.cannot_import')
-                    );
-                }
-            }),
-        ]);
-
-        $this->volunteerManager->save($volunteer);
-
-        $this->saveUser(null, $volunteer->getUser());
-
-        return new HttpCreatedFacade();
-    }
-
-    /**
      * Get a volunteer (by external id).
      *
      * @Endpoint(
@@ -261,25 +226,19 @@ class VolunteerController extends BaseController
     }
 
     /**
-     * Delete a volunteer.
-     *
-     * @Endpoint(
-     *   priority = 520,
-     *   response = @Facade(class = HttpNoContentFacade::class)
-     * )
-     * @Route(name="delete", path="/{externalId}", methods={"DELETE"})
-     * @Entity("volunteer", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
-     * @IsGranted("VOLUNTEER", subject="volunteer")
+     * User is the owning side of the Volunteer relation, it
+     * should be persisted if there were some changes.
      */
-    public function delete(Volunteer $volunteer)
+    private function saveUser(?User $oldUser, ?User $newUser)
     {
-        $this->validate($volunteer, [
-            new Unlocked(),
-        ]);
-
-        $this->volunteerManager->remove($volunteer);
-
-        return new HttpNoContentFacade();
+        if ($oldUser !== $newUser) {
+            if ($oldUser && !$oldUser->isLocked()) {
+                $this->userManager->save($oldUser);
+            }
+            if ($newUser && !$newUser->isLocked()) {
+                $this->userManager->save($newUser);
+            }
+        }
     }
 
     /**
@@ -325,13 +284,7 @@ class VolunteerController extends BaseController
             return new UpdateStatusFacade($e164, false, 'Volunteer already has this phone number');
         }
 
-        $phone = $this->phoneManager->findOneByPhoneNumber($e164);
-
-        if ($phone && $phone->getVolunteer()->getId() !== $volunteer->getId()) {
-            return new UpdateStatusFacade($e164, false, 'Phone already taken by volunteer #%s', $phone->getVolunteer()->getExternalId());
-        }
-
-        $phone = $this->phoneTransformer->reconstruct($facade);
+        $phone = $this->phoneTransformer->reconstruct($facade, $volunteer->getPhoneByNumber($e164));
         $volunteer->addPhoneAndEnsureOnlyOneIsPreferred($phone);
 
         $this->validate($volunteer, [
@@ -363,7 +316,8 @@ class VolunteerController extends BaseController
             return new UpdateStatusFacade($e164, false, 'Volunteer does not have this phone number');
         }
 
-        $phone = $this->phoneManager->findOneByPhoneNumber($e164);
+        $phone = $volunteer->getPhoneByNumber($e164);
+
         if ($phone->isPreferred()) {
             return new UpdateStatusFacade($e164, false, 'Phone number is already volunteer\'s preferred one');
         }
@@ -385,7 +339,7 @@ class VolunteerController extends BaseController
      * )
      * @Route(name="phone_remove", path="/{externalId}/phone/{e164}", methods={"DELETE"})
      * @Entity("volunteer", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
-     * @Entity("phone", expr="repository.findOneByE164(e164)")
+     * @Entity("phone", expr="repository.findOneByVolunteerAndCurrentPlatformAndE164(externalId, e164)")
      * @IsGranted("VOLUNTEER", subject="volunteer")
      */
     public function phoneRemove(Volunteer $volunteer, Phone $phone) : FacadeInterface
@@ -458,6 +412,41 @@ class VolunteerController extends BaseController
     }
 
     /**
+     * Create a new volunteer.
+     *
+     * @Endpoint(
+     *   priority = 505,
+     *   request  = @Facade(class     = VolunteerFacade::class),
+     *   response = @Facade(class     = HttpCreatedFacade::class)
+     * )
+     * @Route(name="create", methods={"POST"})
+     * @IsGranted("ROLE_ADMIN")
+     */
+    public function create(VolunteerFacade $facade) : FacadeInterface
+    {
+        $volunteer = $this->volunteerTransformer->reconstruct($facade);
+
+        $this->validate($facade, [], ['create']);
+
+        $this->validate($volunteer, [
+            new UniqueEntity(['externalId', 'platform']),
+            new Callback(function (Volunteer $data, ExecutionContextInterface $context) {
+                if ($data->getExternalId() && $this->deletedVolunteerManager->isDeleted($data->getExternalId())) {
+                    $context->addViolation(
+                        $this->translator->trans('admin.gdpr.violations.cannot_import')
+                    );
+                }
+            }),
+        ]);
+
+        $this->volunteerManager->save($volunteer);
+
+        $this->saveUser(null, $volunteer->getUser());
+
+        return new HttpCreatedFacade();
+    }
+
+    /**
      * Remove one or several badges from the volunteer.
      *
      * @Endpoint(
@@ -488,6 +477,28 @@ class VolunteerController extends BaseController
             ResourceOwnership::KNOWN_RESOURCE(),
             ResourceOwnership::KNOWN_RESOURCE(),
         );
+    }
+
+    /**
+     * Delete a volunteer.
+     *
+     * @Endpoint(
+     *   priority = 520,
+     *   response = @Facade(class = HttpNoContentFacade::class)
+     * )
+     * @Route(name="delete", path="/{externalId}", methods={"DELETE"})
+     * @Entity("volunteer", expr="repository.findOneByExternalIdAndCurrentPlatform(externalId)")
+     * @IsGranted("VOLUNTEER", subject="volunteer")
+     */
+    public function delete(Volunteer $volunteer)
+    {
+        $this->validate($volunteer, [
+            new Unlocked(),
+        ]);
+
+        $this->volunteerManager->remove($volunteer);
+
+        return new HttpNoContentFacade();
     }
 
     /**
@@ -650,6 +661,20 @@ class VolunteerController extends BaseController
         return new HttpNoContentFacade();
     }
 
+    private function getHasUserValidationCallback() : Callback
+    {
+        return new Callback(function ($object, ExecutionContextInterface $context) {
+            /** @var Volunteer $object */
+            if ($object->getUser()) {
+                $context
+                    ->buildViolation('Volunteer cannot be disabled because it is bound to a User, remove the User first.')
+                    ->setInvalidValue($object->getUser()->getUserIdentifier())
+                    ->atPath('user')
+                    ->addViolation();
+            }
+        });
+    }
+
     /**
      * Enable a volunteer.
      *
@@ -703,35 +728,5 @@ class VolunteerController extends BaseController
         $this->volunteerManager->anonymize($volunteer);
 
         return new HttpNoContentFacade();
-    }
-
-    /**
-     * User is the owning side of the Volunteer relation, it
-     * should be persisted if there were some changes.
-     */
-    private function saveUser(?User $oldUser, ?User $newUser)
-    {
-        if ($oldUser !== $newUser) {
-            if ($oldUser && !$oldUser->isLocked()) {
-                $this->userManager->save($oldUser);
-            }
-            if ($newUser && !$newUser->isLocked()) {
-                $this->userManager->save($newUser);
-            }
-        }
-    }
-
-    private function getHasUserValidationCallback() : Callback
-    {
-        return new Callback(function ($object, ExecutionContextInterface $context) {
-            /** @var Volunteer $object */
-            if ($object->getUser()) {
-                $context
-                    ->buildViolation('Volunteer cannot be disabled because it is bound to a User, remove the User first.')
-                    ->setInvalidValue($object->getUser()->getUserIdentifier())
-                    ->atPath('user')
-                    ->addViolation();
-            }
-        });
     }
 }

@@ -143,10 +143,10 @@
                     <div class="text-center">
                         {% if is_granted('ROLE_ADMIN') %}
                             <a href="{{ path('admin_pegass_update_structures', {id: app.user.id}) }}" target="_blank">
-                                {{ 'password_login.connect.who_am_i'|trans({'%username%': app.user.username}) }}
+                                {{ 'password_login.connect.who_am_i'|trans({'%username%': app.user.displayName}) }}
                             </a>
                         {% else %}
-                            {{ 'password_login.connect.who_am_i'|trans({'%username%': app.user.username}) }}
+                            {{ 'password_login.connect.who_am_i'|trans({'%username%': app.user.displayName}) }}
                         {% endif %}
                     </div>
 
@@ -216,9 +216,7 @@
 
             <div class="row">
                 <div class="col-12">
-                    <span style="font-size:12px;">{{ 'backlinks.minutis'|trans }}</span>
-                    <br/>
-                    <span style="font-size:12px;">{{ 'backlinks.redcross'|trans }}</span>
+                    Croix-Rouge Française
                 </div>
             </div>
 

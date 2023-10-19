@@ -98,6 +98,11 @@ class VolunteerList
         return $this;
     }
 
+    public function hasVolunteer(Volunteer $volunteer) : bool
+    {
+        return $this->volunteers->contains($volunteer);
+    }
+
     public function getAudience() : ?array
     {
         return $this->audience ? json_decode($this->audience, true) : null;

@@ -87,28 +87,6 @@ class RefreshManager
         $this->refreshVolunteers($force);
     }
 
-    public function refreshAsync()
-    {
-        foreach ($this->pegassManager->getAllEnabledEntities() as $row) {
-            $this->async->fire(SyncOneWithPegass::class, $row);
-        }
-
-        $this->async->fire(SyncOneWithPegass::class, [
-            'type'       => SyncOneWithPegass::PARENT_STRUCUTRES,
-            'identifier' => null,
-        ]);
-
-        $this->async->fire(SyncOneWithPegass::class, [
-            'type'       => SyncOneWithPegass::SYNC_STRUCTURES,
-            'identifier' => null,
-        ]);
-
-        $this->async->fire(SyncOneWithPegass::class, [
-            'type'       => SyncOneWithPegass::SYNC_VOLUNTEERS,
-            'identifier' => null,
-        ]);
-    }
-
     public function refreshStructures(bool $force)
     {
         $this->structureManager->synchronizeWithPegass();
@@ -123,6 +101,33 @@ class RefreshManager
         });
 
         $this->refreshParentStructures();
+    }
+
+    public function refreshVolunteers(bool $force)
+    {
+        $this->volunteerManager->synchronizeWithPegass();
+
+        $this->pegassManager->foreach(Pegass::TYPE_VOLUNTEER, function (Pegass $pegass) use ($force) {
+            $this->debug('Walking through a volunteer', [
+                'identifier' => $pegass->getIdentifier(),
+            ]);
+
+            // Volunteer is invalid (ex: 00000048004C)
+            if (!$pegass->evaluate('user.id')) {
+                return;
+            }
+
+            $this->refreshVolunteer($pegass, $force);
+        });
+    }
+
+    private function debug(string $message, array $params = [])
+    {
+        $this->logger->info($message, $params);
+
+        if ('cli' === php_sapi_name()) {
+            echo sprintf('%s %s (%s)', date('d/m/Y H:i:s'), $message, json_encode($params)), PHP_EOL;
+        }
     }
 
     public function refreshStructure(Pegass $pegass, bool $force)
@@ -198,24 +203,6 @@ class RefreshManager
                     }
                 }
             }
-        });
-    }
-
-    public function refreshVolunteers(bool $force)
-    {
-        $this->volunteerManager->synchronizeWithPegass();
-
-        $this->pegassManager->foreach(Pegass::TYPE_VOLUNTEER, function (Pegass $pegass) use ($force) {
-            $this->debug('Walking through a volunteer', [
-                'identifier' => $pegass->getIdentifier(),
-            ]);
-
-            // Volunteer is invalid (ex: 00000048004C)
-            if (!$pegass->evaluate('user.id')) {
-                return;
-            }
-
-            $this->refreshVolunteer($pegass, $force);
         });
     }
 
@@ -426,23 +413,10 @@ class RefreshManager
             $parsed = $phoneUtil->parse($phoneNumber, Phone::DEFAULT_LANG);
             $e164   = $phoneUtil->format($parsed, PhoneNumberFormat::E164);
             if (!$volunteer->hasPhoneNumber($e164)) {
-                $existingPhone = $this->phoneManager->findOneByPhoneNumber($e164);
-
-                // Allow a volunteer to take disabled people's phone number
-                if ($existingPhone && $volunteer->getId() !== $existingPhone->getVolunteer()->getId()
-                    && !$existingPhone->getVolunteer()->isEnabled()) {
-                    $existingVolunteer = $existingPhone->getVolunteer();
-                    $existingVolunteer->removePhone($existingPhone);
-                    $this->volunteerManager->save($existingVolunteer);
-                    $existingPhone = null;
-                }
-
-                if (!$existingPhone) {
-                    $phone = new Phone();
-                    $phone->setPreferred(true);
-                    $phone->setE164($e164);
-                    $volunteer->addPhone($phone);
-                }
+                $phone = new Phone();
+                $phone->setPreferred(true);
+                $phone->setE164($e164);
+                $volunteer->addPhone($phone);
             }
         } catch (NumberParseException $e) {
             return;
@@ -576,12 +550,25 @@ class RefreshManager
         return $badge;
     }
 
-    private function debug(string $message, array $params = [])
+    public function refreshAsync()
     {
-        $this->logger->info($message, $params);
-
-        if ('cli' === php_sapi_name()) {
-            echo sprintf('%s %s (%s)', date('d/m/Y H:i:s'), $message, json_encode($params)), PHP_EOL;
+        foreach ($this->pegassManager->getAllEnabledEntities() as $row) {
+            $this->async->fire(SyncOneWithPegass::class, $row);
         }
+
+        $this->async->fire(SyncOneWithPegass::class, [
+            'type'       => SyncOneWithPegass::PARENT_STRUCUTRES,
+            'identifier' => null,
+        ]);
+
+        $this->async->fire(SyncOneWithPegass::class, [
+            'type'       => SyncOneWithPegass::SYNC_STRUCTURES,
+            'identifier' => null,
+        ]);
+
+        $this->async->fire(SyncOneWithPegass::class, [
+            'type'       => SyncOneWithPegass::SYNC_VOLUNTEERS,
+            'identifier' => null,
+        ]);
     }
 }

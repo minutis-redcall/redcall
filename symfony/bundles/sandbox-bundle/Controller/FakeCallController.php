@@ -86,9 +86,9 @@ class FakeCallController extends BaseController
      */
     public function readAction(Request $request, Phone $phone, ?int $campaignId)
     {
-        $volunteer = $phone->getVolunteer();
+        $volunteer = $phone->getVolunteers()->first();
 
-        $messages = $this->fakeCallManager->findMessagesForPhone($volunteer->getPhoneNumber());
+        $messages = $this->fakeCallManager->findMessagesForPhone($phone->getE164());
 
         $form = $this->createFormBuilder()
                      ->add('digit', NumberType::class, [

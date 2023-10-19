@@ -120,6 +120,61 @@ class VolunteerRepository extends BaseRepository
         return $qb;
     }
 
+    private function createAccessibleVolunteersQueryBuilder(User $user, bool $enabled = true) : QueryBuilder
+    {
+        return $this->createVolunteersQueryBuilder($user->getPlatform(), $enabled)
+                    ->join('v.structures', 's')
+                    ->join('s.users', 'u')
+                    ->andWhere('u.id = :user')
+                    ->setParameter('user', $user);
+    }
+
+    private function addSearchCriteria(QueryBuilder $qb, string $criteria)
+    {
+        $qb
+            ->leftJoin('v.phones', 'p')
+            ->andWhere(
+                $qb->expr()->orX(
+                    'v.externalId LIKE :criteria',
+                    'v.firstName LIKE :criteria',
+                    'v.lastName LIKE :criteria',
+                    'p.e164 LIKE :criteria',
+                    'p.national LIKE :criteria',
+                    'p.international LIKE :criteria',
+                    'v.email LIKE :criteria',
+                    'CONCAT(v.firstName, \' \', v.lastName) LIKE :criteria',
+                    'CONCAT(v.lastName, \' \', v.firstName) LIKE :criteria'
+                )
+            )
+            ->setParameter('criteria', sprintf('%%%s%%', str_replace(' ', '%', ltrim($criteria, '0'))));
+    }
+
+    private function addUserCriteria(QueryBuilder $qb)
+    {
+        $qb
+            ->join('v.user', 'vu');
+    }
+
+    private function addLockedCriteria(QueryBuilder $qb)
+    {
+        $qb
+            ->andWhere('v.locked = true');
+    }
+
+    private function createVolunteersQueryBuilder(string $platform, bool $enabled = true) : QueryBuilder
+    {
+        $qb = $this->createQueryBuilder('v')
+                   ->distinct()
+                   ->andWhere('v.platform = :platform')
+                   ->setParameter('platform', $platform);
+
+        if ($enabled) {
+            $qb->andWhere('v.enabled = true');
+        }
+
+        return $qb;
+    }
+
     /**
      * @return Volunteer[]
      */
@@ -129,6 +184,17 @@ class VolunteerRepository extends BaseRepository
                     ->getQuery()
                     ->setMaxResults($maxResults)
                     ->getResult();
+    }
+
+    public function searchAllQueryBuilder(string $platform, ?string $keyword, bool $enabled = false) : QueryBuilder
+    {
+        $qb = $this->createVolunteersQueryBuilder($platform, $enabled);
+
+        if ($keyword) {
+            $this->addSearchCriteria($qb, $keyword);
+        }
+
+        return $qb;
     }
 
     public function searchInStructureQueryBuilder(string $platform,
@@ -173,17 +239,6 @@ class VolunteerRepository extends BaseRepository
 
         if ($onlyLocked) {
             $this->addLockedCriteria($qb);
-        }
-
-        return $qb;
-    }
-
-    public function searchAllQueryBuilder(string $platform, ?string $keyword, bool $enabled = false) : QueryBuilder
-    {
-        $qb = $this->createVolunteersQueryBuilder($platform, $enabled);
-
-        if ($keyword) {
-            $this->addSearchCriteria($qb, $keyword);
         }
 
         return $qb;
@@ -350,6 +405,16 @@ class VolunteerRepository extends BaseRepository
             ->getResult();
     }
 
+    private function createVolunteerListQueryBuilder(string $platform,
+        array $volunteerIds,
+        bool $onlyEnabled = true) : QueryBuilder
+    {
+        return $this
+            ->createVolunteersQueryBuilder($platform, $onlyEnabled)
+            ->andWhere('v.id IN (:volunteer_ids)')
+            ->setParameter('volunteer_ids', $volunteerIds);
+    }
+
     public function getVolunteerListForUser(User $user, array $volunteerIds) : array
     {
         return $this
@@ -358,6 +423,14 @@ class VolunteerRepository extends BaseRepository
             ->setParameter('volunteer_ids', $volunteerIds)
             ->getQuery()
             ->getResult();
+    }
+
+    public function getVolunteerListInStructures(array $structureIds) : array
+    {
+        return $this
+            ->getVolunteerListInStructuresQueryBuilder($structureIds)
+            ->getQuery()
+            ->getArrayResult();
     }
 
     public function getVolunteerListInStructuresQueryBuilder(array $structureIds) : QueryBuilder
@@ -372,14 +445,6 @@ class VolunteerRepository extends BaseRepository
             ->setParameter('structure_ids', $structureIds);
     }
 
-    public function getVolunteerListInStructures(array $structureIds) : array
-    {
-        return $this
-            ->getVolunteerListInStructuresQueryBuilder($structureIds)
-            ->getQuery()
-            ->getArrayResult();
-    }
-
     public function getVolunteerCountInStructures(array $structureIds) : int
     {
         return $this
@@ -387,6 +452,24 @@ class VolunteerRepository extends BaseRepository
             ->select('COUNT(DISTINCT v.id)')
             ->getQuery()
             ->getSingleScalarResult();
+    }
+
+    public function getVolunteerListInStructuresHavingBadges(array $structureIds, array $badgeIds) : array
+    {
+        return $this->getVolunteerListInStructuresHavingBadgesQueryBuilder($structureIds, $badgeIds)
+                    ->getQuery()
+                    ->getArrayResult();
+    }
+
+    public function getVolunteerListInStructuresHavingBadgesQueryBuilder(array $structureIds,
+        array $badgeIds) : QueryBuilder
+    {
+        return $this
+            ->getVolunteerListHavingBadgesQueryBuilder($badgeIds)
+            ->join('v.structures', 's')
+            ->andWhere('s.enabled = true')
+            ->andWhere('s.id IN (:structure_ids)')
+            ->setParameter('structure_ids', $structureIds);
     }
 
     public function getVolunteerListHavingBadgesQueryBuilder(array $badgeIds) : QueryBuilder
@@ -410,24 +493,6 @@ class VolunteerRepository extends BaseRepository
                  OR p4.enabled = true AND p4.id IN (:badge_ids)
              ')
             ->setParameter('badge_ids', $badgeIds);
-    }
-
-    public function getVolunteerListInStructuresHavingBadgesQueryBuilder(array $structureIds,
-        array $badgeIds) : QueryBuilder
-    {
-        return $this
-            ->getVolunteerListHavingBadgesQueryBuilder($badgeIds)
-            ->join('v.structures', 's')
-            ->andWhere('s.enabled = true')
-            ->andWhere('s.id IN (:structure_ids)')
-            ->setParameter('structure_ids', $structureIds);
-    }
-
-    public function getVolunteerListInStructuresHavingBadges(array $structureIds, array $badgeIds) : array
-    {
-        return $this->getVolunteerListInStructuresHavingBadgesQueryBuilder($structureIds, $badgeIds)
-                    ->getQuery()
-                    ->getArrayResult();
     }
 
     public function getVolunteerCountHavingBadgesQueryBuilder(array $badgeIds) : int
@@ -637,71 +702,6 @@ class VolunteerRepository extends BaseRepository
                      ->getArrayResult();
 
         return array_column($rows, 'id');
-    }
-
-    private function createVolunteerListQueryBuilder(string $platform,
-        array $volunteerIds,
-        bool $onlyEnabled = true) : QueryBuilder
-    {
-        return $this
-            ->createVolunteersQueryBuilder($platform, $onlyEnabled)
-            ->andWhere('v.id IN (:volunteer_ids)')
-            ->setParameter('volunteer_ids', $volunteerIds);
-    }
-
-    private function createVolunteersQueryBuilder(string $platform, bool $enabled = true) : QueryBuilder
-    {
-        $qb = $this->createQueryBuilder('v')
-                   ->distinct()
-                   ->andWhere('v.platform = :platform')
-                   ->setParameter('platform', $platform);
-
-        if ($enabled) {
-            $qb->andWhere('v.enabled = true');
-        }
-
-        return $qb;
-    }
-
-    private function createAccessibleVolunteersQueryBuilder(User $user, bool $enabled = true) : QueryBuilder
-    {
-        return $this->createVolunteersQueryBuilder($user->getPlatform(), $enabled)
-                    ->join('v.structures', 's')
-                    ->join('s.users', 'u')
-                    ->andWhere('u.id = :user')
-                    ->setParameter('user', $user);
-    }
-
-    private function addSearchCriteria(QueryBuilder $qb, string $criteria)
-    {
-        $qb
-            ->leftJoin('v.phones', 'p')
-            ->andWhere(
-                $qb->expr()->orX(
-                    'v.externalId LIKE :criteria',
-                    'v.firstName LIKE :criteria',
-                    'v.lastName LIKE :criteria',
-                    'p.e164 LIKE :criteria',
-                    'p.national LIKE :criteria',
-                    'p.international LIKE :criteria',
-                    'v.email LIKE :criteria',
-                    'CONCAT(v.firstName, \' \', v.lastName) LIKE :criteria',
-                    'CONCAT(v.lastName, \' \', v.firstName) LIKE :criteria'
-                )
-            )
-            ->setParameter('criteria', sprintf('%%%s%%', str_replace(' ', '%', ltrim($criteria, '0'))));
-    }
-
-    private function addUserCriteria(QueryBuilder $qb)
-    {
-        $qb
-            ->join('v.user', 'vu');
-    }
-
-    private function addLockedCriteria(QueryBuilder $qb)
-    {
-        $qb
-            ->andWhere('v.locked = true');
     }
 
     public function countActive() : int

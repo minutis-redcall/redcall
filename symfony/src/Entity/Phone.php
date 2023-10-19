@@ -5,6 +5,8 @@ namespace App\Entity;
 use App\Contract\PhoneInterface;
 use App\Repository\PhoneRepository;
 use App\Validator\Constraints as CustomAssert;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use libphonenumber\PhoneNumberFormat;
 use libphonenumber\PhoneNumberType;
@@ -34,10 +36,9 @@ class Phone implements PhoneInterface
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity=Volunteer::class, inversedBy="phones")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\ManyToMany(targetEntity=Volunteer::class, inversedBy="phones")
      */
-    private $volunteer;
+    private $volunteers;
 
     /**
      * @ORM\Column(type="boolean")
@@ -55,7 +56,7 @@ class Phone implements PhoneInterface
     private $prefix;
 
     /**
-     * @ORM\Column(type="string", length=32, unique=true)
+     * @ORM\Column(type="string", length=32)
      */
     private $e164;
 
@@ -74,19 +75,38 @@ class Phone implements PhoneInterface
      */
     private $mobile = false;
 
+    public function __construct()
+    {
+        $this->volunteers = new ArrayCollection();
+    }
+
     public function getId() : ?int
     {
         return $this->id;
     }
 
-    public function getVolunteer() : ?Volunteer
+    /**
+     * @return Collection|Volunteer[]
+     */
+    public function getVolunteers() : Collection
     {
-        return $this->volunteer;
+        return $this->volunteers;
     }
 
-    public function setVolunteer(?Volunteer $volunteer) : self
+    public function addVolunteer(Volunteer $volunteer) : self
     {
-        $this->volunteer = $volunteer;
+        if (!$this->volunteers->contains($volunteer)) {
+            $this->volunteers[] = $volunteer;
+        }
+
+        return $this;
+    }
+
+    public function removeVolunteer(Volunteer $volunteer) : self
+    {
+        if ($this->volunteers->contains($volunteer)) {
+            $this->volunteers->removeElement($volunteer);
+        }
 
         return $this;
     }
@@ -99,18 +119,6 @@ class Phone implements PhoneInterface
     public function setPreferred(bool $preferred) : void
     {
         $this->preferred = $preferred;
-    }
-
-    public function getCountryCode() : ?string
-    {
-        return $this->countryCode;
-    }
-
-    public function setCountryCode(string $countryCode) : self
-    {
-        $this->countryCode = $countryCode;
-
-        return $this;
     }
 
     public function getPrefix() : ?int
@@ -200,6 +208,18 @@ class Phone implements PhoneInterface
         $this->setNational($phoneUtil->format($parsed, PhoneNumberFormat::NATIONAL));
         $this->setInternational($phoneUtil->format($parsed, PhoneNumberFormat::INTERNATIONAL));
         $this->setMobile(PhoneNumberType::MOBILE === $phoneUtil->getNumberType($parsed));
+    }
+
+    public function getCountryCode() : ?string
+    {
+        return $this->countryCode;
+    }
+
+    public function setCountryCode(string $countryCode) : self
+    {
+        $this->countryCode = $countryCode;
+
+        return $this;
     }
 
     public function isMobile() : ?bool

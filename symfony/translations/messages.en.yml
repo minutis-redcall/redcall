@@ -248,14 +248,6 @@ audience:
   select_all_badges: 'Trigger all volunteers whatever their skills'
   structures: Structure(s)
   volunteer_lists: 'Volunteer lists'
-backlinks:
-  blablacar: 'Sponsored by'
-  feedback: 'Help us improve RedCall!'
-  minutis: 'Developed by Minutis volunteers'
-  new: New!
-  phpstorm: 'Developed with'
-  phrase: 'Translated with'
-  redcross: 'French Red Cross'
 base:
   actions: Actions
   button:
@@ -578,6 +570,7 @@ maintenance:
     for_dev_only: 'This fonctionnality is for developer only.'
     refresh_button: 'Refresh the datas'
   pegass: 'Synchronize RedCall and DSI files entirely.'
+  annuaire: 'Update "Annuaire national" french database.'
   pegass_started: 'Synchronize launched, it will take a while.'
   refresh: 'Synchronize RedCall and Pegass databases entirely'
   refresh_started: 'Synchronize launched, it will take a while.'

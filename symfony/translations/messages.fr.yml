@@ -248,14 +248,6 @@ audience:
   select_all_badges: 'Déclencher tous les bénévoles quelles que soient leurs compétences'
   structures: Structure(s)
   volunteer_lists: 'Listes préremplies de bénévoles'
-backlinks:
-  blablacar: 'Parrainé par'
-  feedback: 'Partagez vos idées afin d''améliorer RedCall'
-  minutis: 'Développé par les bénévoles'
-  new: Nouveau!
-  phpstorm: 'Développé avec'
-  phrase: 'Traductions grâce à'
-  redcross: 'de Minutis'
 base:
   actions: Actions
   button:
@@ -578,7 +570,8 @@ maintenance:
     for_dev_only: 'Cette fonctionnalité est destinée aux développeurs uniquement, car cette action n''aura aucun effet sans changement dans la logique d''import Pegass. La resynchronisation Pegass est faite lorsqu''il y a un changement important dans le code qui change la manière d''importer un bénévole, par exemple si l''on souhaite importer de nouvelles compétences.'
     refresh_button: 'Rafraichir les données'
   pegass: 'Mettre à jour la base de données en se basant sur les fichiers de la DSI.'
-  pegass_started: 'Synchronisation lancée, cela va prendre du temps.'
+  annuaire: 'Mettre à jour les fichiers d''annuaire national'
+  pegass_started: 'Synchronisation lancée, cela va prendre un peu de temps.'
   refresh: 'Synchroniser entièrement la base de données RedCall avec celle de Pegass'
   refresh_started: 'Synchronisation lancée, cela va prendre du temps.'
   search:

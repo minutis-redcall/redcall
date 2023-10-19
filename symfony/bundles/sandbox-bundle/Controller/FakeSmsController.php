@@ -83,8 +83,8 @@ class FakeSmsController extends BaseController
      */
     public function threadAction(Phone $phone, ?int $campaignId)
     {
-        $volunteer = $phone->getVolunteer();
-        $messages  = $this->fakeSmsManager->findMessagesForPhoneNumber($volunteer->getPhoneNumber());
+        $volunteer = $phone->getVolunteers()->first();
+        $messages  = $this->fakeSmsManager->findMessagesForPhoneNumber($phone->getE164());
 
         $lastMessageId = null;
         if ($messages) {
@@ -109,14 +109,14 @@ class FakeSmsController extends BaseController
     {
         $this->validateCsrfOrThrowNotFoundException('fake_sms', $csrf);
 
-        $volunteer = $phone->getVolunteer();
+        $volunteer = $phone->getVolunteers()->first();
 
         $body = $request->request->get('message');
         if (!$body) {
             throw $this->createNotFoundException();
         }
 
-        $this->messageManager->handleAnswer($volunteer->getPhoneNumber(), $body);
+        $this->messageManager->handleAnswer($phone->getE164(), $body);
 
         $this->fakeSmsManager->save($volunteer, $body, FakeSms::DIRECTION_SENT);
 
