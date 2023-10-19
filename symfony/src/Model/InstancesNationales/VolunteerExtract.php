@@ -3,7 +3,6 @@
 namespace App\Model\InstancesNationales;
 
 use App\Entity\Phone;
-use App\Entity\Volunteer;
 use libphonenumber\PhoneNumber;
 use libphonenumber\PhoneNumberFormat;
 use libphonenumber\PhoneNumberUtil;
@@ -14,12 +13,6 @@ class VolunteerExtract
     const PREFERRED_EMAIL = '/@croix-rouge\.fr$/i';
 
     private $id;
-
-    /**
-     * @var Volunteer
-     */
-    private $volunteer;
-
     private $firstname = null;
     private $lastname  = null;
     private $phoneA    = null;
@@ -47,18 +40,6 @@ class VolunteerExtract
     static public function buildNivol(string $id) : string
     {
         return self::NIVOL_PREFIX.$id;
-    }
-
-    public function getVolunteer() : Volunteer
-    {
-        return $this->volunteer;
-    }
-
-    public function setVolunteer(Volunteer $volunteer) : self
-    {
-        $this->volunteer = $volunteer;
-
-        return $this;
     }
 
     public function getFirstname()

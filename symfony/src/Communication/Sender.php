@@ -111,6 +111,76 @@ class Sender
         }
     }
 
+    private function isMessageNotTransmittable(Message $message) : bool
+    {
+        $error     = null;
+        $volunteer = $message->getVolunteer();
+
+        switch ($message->getCommunication()->getType()) {
+            case Communication::TYPE_SMS:
+                if ($volunteer->getOptoutUntil() && $volunteer->getOptoutUntil()->getTimestamp() > time()) {
+                    $error = 'campaign_status.warning.optout_until';
+                    break;
+                }
+                if ($volunteer->getPhoneNumber() && !$volunteer->getPhone()->isMobile()) {
+                    $error = 'campaign_status.warning.no_phone_mobile';
+                    break;
+                }
+                if (null === $volunteer->getPhoneNumber()) {
+                    $error = 'campaign_status.warning.no_phone';
+                    break;
+                }
+                if (!$volunteer->isPhoneNumberOptin()) {
+                    $error = 'campaign_status.warning.no_phone_optin';
+                    break;
+                }
+                if (!$this->phoneConfigManager->isSMSTransmittable($volunteer)) {
+                    $error = 'campaign_status.warning.country_no_sms';
+                    break;
+                }
+                break;
+            case Communication::TYPE_CALL:
+                if ($volunteer->getOptoutUntil() && $volunteer->getOptoutUntil()->getTimestamp() > time()) {
+                    $error = 'campaign_status.warning.optout_until';
+                    break;
+                }
+                if (null === $volunteer->getPhoneNumber()) {
+                    $error = 'campaign_status.warning.no_phone';
+                    break;
+                }
+                if (!$volunteer->isPhoneNumberOptin()) {
+                    $error = 'campaign_status.warning.no_phone_optin';
+                    break;
+                }
+                if (!$this->phoneConfigManager->isVoiceCallTransmittable($volunteer)) {
+                    $error = 'campaign_status.warning.country_no_call';
+                    break;
+                }
+                break;
+            case Communication::TYPE_EMAIL:
+                if ($volunteer->getOptoutUntil() && $volunteer->getOptoutUntil()->getTimestamp() > time()) {
+                    $error = 'campaign_status.warning.optout_until';
+                    break;
+                }
+                if (null === $volunteer->getEmail()) {
+                    $error = 'campaign_status.warning.no_email';
+                    break;
+                }
+                if (!$volunteer->isEmailOptin()) {
+                    $error = 'campaign_status.warning.no_email_optin';
+                    break;
+                }
+                break;
+        }
+
+        if (null !== $error) {
+            $message->setError($error);
+            $this->messageManager->save($message);
+        }
+
+        return null !== $error;
+    }
+
     /**
      * @param Message $message
      */
@@ -218,75 +288,5 @@ class Sender
     private function saveMessaageStatus(Message $message)
     {
         $this->messageManager->updateMessageStatus($message);
-    }
-
-    private function isMessageNotTransmittable(Message $message) : bool
-    {
-        $error     = null;
-        $volunteer = $message->getVolunteer();
-
-        switch ($message->getCommunication()->getType()) {
-            case Communication::TYPE_SMS:
-                if ($volunteer->getOptoutUntil() && $volunteer->getOptoutUntil()->getTimestamp() > time()) {
-                    $error = 'campaign_status.warning.optout_until';
-                    break;
-                }
-                if ($volunteer->getPhoneNumber() && !$volunteer->getPhone()->isMobile()) {
-                    $error = 'campaign_status.warning.no_phone_mobile';
-                    break;
-                }
-                if (null === $volunteer->getPhoneNumber()) {
-                    $error = 'campaign_status.warning.no_phone';
-                    break;
-                }
-                if (!$volunteer->isPhoneNumberOptin()) {
-                    $error = 'campaign_status.warning.no_phone_optin';
-                    break;
-                }
-                if (!$this->phoneConfigManager->isSMSTransmittable($volunteer)) {
-                    $error = 'campaign_status.warning.country_no_sms';
-                    break;
-                }
-                break;
-            case Communication::TYPE_CALL:
-                if ($volunteer->getOptoutUntil() && $volunteer->getOptoutUntil()->getTimestamp() > time()) {
-                    $error = 'campaign_status.warning.optout_until';
-                    break;
-                }
-                if (null === $volunteer->getPhoneNumber()) {
-                    $error = 'campaign_status.warning.no_phone';
-                    break;
-                }
-                if (!$volunteer->isPhoneNumberOptin()) {
-                    $error = 'campaign_status.warning.no_phone_optin';
-                    break;
-                }
-                if (!$this->phoneConfigManager->isVoiceCallTransmittable($volunteer)) {
-                    $error = 'campaign_status.warning.country_no_call';
-                    break;
-                }
-                break;
-            case Communication::TYPE_EMAIL:
-                if ($volunteer->getOptoutUntil() && $volunteer->getOptoutUntil()->getTimestamp() > time()) {
-                    $error = 'campaign_status.warning.optout_until';
-                    break;
-                }
-                if (null === $volunteer->getEmail()) {
-                    $error = 'campaign_status.warning.no_email';
-                    break;
-                }
-                if (!$volunteer->isEmailOptin()) {
-                    $error = 'campaign_status.warning.no_email_optin';
-                    break;
-                }
-                break;
-        }
-
-        if (null !== $error) {
-            $message->setError($error);
-            $this->messageManager->save($message);
-        }
-
-        return null !== $error;
     }
 }

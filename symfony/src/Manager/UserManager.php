@@ -70,9 +70,9 @@ class UserManager extends BaseUserManager
         return $this->userRepository->findAll();
     }
 
-    public function findOneByExternalId(string $platform, string $externalId) : ?User
+    public function findAllWithStructure(Structure $structure) : array
     {
-        return $this->userRepository->findOneByExternalId($platform, $externalId);
+        return $this->userRepository->findAllWithStructure($structure);
     }
 
     public function changeLocale(User $user, string $locale)
@@ -110,6 +110,11 @@ class UserManager extends BaseUserManager
         // $user->updateStructures($structures);
 
         $this->save($user);
+    }
+
+    public function findOneByExternalId(string $platform, string $externalId) : ?User
+    {
+        return $this->userRepository->findOneByExternalId($platform, $externalId);
     }
 
     public function getUserStructuresQueryBuilder(string $platform, User $user) : QueryBuilder

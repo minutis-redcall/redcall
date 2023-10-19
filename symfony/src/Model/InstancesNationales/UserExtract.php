@@ -4,8 +4,9 @@ namespace App\Model\InstancesNationales;
 
 class UserExtract
 {
+    const NIVOL_PREFIX = 'user-annu-';
+
     private $email;
-    private $user;
 
     public function getEmail()
     {
@@ -19,15 +20,11 @@ class UserExtract
         return $this;
     }
 
-    public function getUser()
+    public function getNivol()
     {
-        return $this->user;
-    }
+        // create a slug from the email
+        $slug = strtolower(trim(preg_replace('/[^A-Za-z0-9-]+/', '-', $this->email)));
 
-    public function setUser($user)
-    {
-        $this->user = $user;
-
-        return $this;
+        return self::NIVOL_PREFIX.$slug;
     }
 }

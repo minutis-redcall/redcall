@@ -2,6 +2,14 @@
 
 namespace App\Services\InstancesNationales;
 
+use App\Command\AnnuaireNationalCommand;
+use App\Entity\Structure;
+use App\Entity\User;
+use App\Entity\Volunteer;
+use App\Enum\Platform;
+use App\Manager\StructureManager;
+use App\Manager\UserManager;
+use App\Manager\VolunteerManager;
 use App\Model\InstancesNationales\SheetExtract;
 use App\Model\InstancesNationales\SheetsExtract;
 use App\Model\InstancesNationales\UserExtract;
@@ -11,44 +19,49 @@ class UserService
 {
     const WRITERS = 'Droits_modification';
     const READERS = 'Droits_lecture';
-
-    const TABS = [
+    const TABS    = [
         self::WRITERS,
         self::READERS,
     ];
 
+    /**
+     * @var VolunteerManager
+     */
+    private $volunteerManager;
+
+    /**
+     * @var StructureManager
+     */
+    private $structureManager;
+
+    /**
+     * @var UserManager
+     */
+    private $userManager;
+
+    public function __construct(VolunteerManager $volunteerManager,
+        StructureManager $structureManager,
+        UserManager $userManager)
+    {
+        $this->volunteerManager = $volunteerManager;
+        $this->structureManager = $structureManager;
+        $this->userManager      = $userManager;
+    }
+
     public function extractUsers() : void
     {
-        $extract = $this->extractUsersFromGSheets();
-
-        LogService::info('Extracting "user" entities from Google Sheets', [
-            'count_writers' => $extract->getTab(self::WRITERS)->count(),
-            'count_readers' => $extract->getTab(self::READERS)->count(),
-        ]);
-
-        $rows = array_filter(array_unique(array_merge(
-            $extract->getTab(self::READERS)->getColumn('Email'),
-            $extract->getTab(self::WRITERS)->getColumn('Email')
-        )));
-
-        $users = new UsersExtract();
-        foreach ($rows as $row) {
-            if (false === filter_var($row, FILTER_VALIDATE_EMAIL)) {
-                LogService::fail('Invalid email address', [
-                    'email' => $row,
-                ]);
-
-                continue;
-            }
-
-            $user = new UserExtract();
-            $user->setEmail($row);
-            $users->addUser($user);
+        if (is_file('/tmp/listes.json')) {
+            $extract = SheetsExtract::fromArray(json_decode(file_get_contents('/tmp/listes.json'), true));
+        } else {
+            $extract = $this->extractUsersFromGSheets();
+            file_put_contents('/tmp/listes.json', json_encode($extract->toArray()));
         }
 
-        LogService::pass('Extracted "user" entities from Google Sheets', [
-            'count' => $users->count(),
-        ]);
+        $users = $this->extractObjectsFromGrid($extract);
+
+        $structure = $this->structureManager->findOneByName(Platform::FR, AnnuaireNationalCommand::STRUCTURE_NAME);
+        $this->deleteMissingUsers($structure, $users);
+        $this->createUsers($structure, $users);
     }
 
     private function extractUsersFromGSheets() : SheetsExtract
@@ -97,5 +110,120 @@ class UserService
         ]);
 
         return $extracts;
+    }
+
+    private function extractObjectsFromGrid(SheetsExtract $extract) : UsersExtract
+    {
+        LogService::info('Extracting "user" entities from Google Sheets', [
+            'count_writers' => $extract->getTab(self::WRITERS)->count(),
+            'count_readers' => $extract->getTab(self::READERS)->count(),
+        ]);
+
+        $rows = array_filter(array_unique(array_merge(
+            $extract->getTab(self::READERS)->getColumn('Email'),
+            $extract->getTab(self::WRITERS)->getColumn('Email')
+        )));
+
+        $users = new UsersExtract();
+        foreach ($rows as $row) {
+            if (false === filter_var($row, FILTER_VALIDATE_EMAIL)) {
+                LogService::fail('Invalid email address', [
+                    'email' => $row,
+                ]);
+
+                continue;
+            }
+
+            $user = new UserExtract();
+            $user->setEmail($row);
+            $users->addUser($user);
+        }
+
+        LogService::pass('Extracted "user" entities from Google Sheets', [
+            'count' => $users->count(),
+        ]);
+
+        return $users;
+    }
+
+    private function deleteMissingUsers(Structure $structure, UsersExtract $extract)
+    {
+        $fromExtracts = array_map(function (UserExtract $user) {
+            return $user->getEmail();
+        }, $extract->getUsers());
+
+        $fromDatabases = array_map(function (User $user) {
+            return $user->getUsername();
+        }, $this->userManager->getRedCallUsersInStructure($structure));
+
+        $toDeletes = array_diff($fromDatabases, $fromExtracts);
+
+        foreach ($toDeletes as $toDelete) {
+            LogService::pass('Delete a user', [
+                'email' => $toDelete,
+            ]);
+
+            $user = $this->userManager->findOneByUsernameAndPlatform(Platform::FR, $toDelete);
+            $user->removeStructure($structure);
+
+            if ($volunteer = $user->getVolunteer()) {
+                if (substr($volunteer->getExternalId(), 0, strlen(UserExtract::NIVOL_PREFIX)) === UserExtract::NIVOL_PREFIX) {
+                    $volunteer->setEnabled(false);
+                    $this->volunteerManager->save($volunteer);
+                }
+            }
+
+            if ($user->getStructures()->count() === 0) {
+                //$this->userManager->remove($user);
+            } else {
+                $this->userManager->save($user);
+            }
+        }
+    }
+
+    private function createUsers(Structure $structure, UsersExtract $extract)
+    {
+        foreach ($extract->getUsers() as $userExtract) {
+            $user = $this->userManager->findOneByUsernameAndPlatform(Platform::FR, $userExtract->getEmail());
+
+            if (!$user || !$user->hasStructure($structure)) {
+                LogService::pass('Create a user', [
+                    'email' => $userExtract->getEmail(),
+                ]);
+
+                if (!$user) {
+                    $volunteer = $this->volunteerManager->findOneByExternalId(Platform::FR, $userExtract->getNivol());
+                    if ($volunteer) {
+                        $volunteer->setEnabled(true);
+                    } else {
+                        $volunteer = new Volunteer();
+                        $volunteer->setPlatform(Platform::FR);
+                        $volunteer->setExternalId($userExtract->getNivol());
+                        $volunteer->setEmail($userExtract->getEmail());
+                        $volunteer->setInternalEmail($userExtract->getEmail());
+
+                        if (@preg_match('/(.*)\.(.*)@/', $userExtract->getEmail(), $matches)) {
+                            $volunteer->setFirstName(ucfirst($matches[1]));
+                            $volunteer->setLastName(ucfirst($matches[2]));
+                        }
+
+                        $this->volunteerManager->save($volunteer);
+                    }
+
+                    $user = new User();
+                    $user->setPlatform(Platform::FR);
+                    $user->setLocale('fr');
+                    $user->setTimezone('Europe/Paris');
+                    $user->setUsername($userExtract->getEmail());
+                    $user->setPassword('invalid hash');
+                    $user->setIsVerified(true);
+                    $user->setIsTrusted(true);
+                    $user->setVolunteer($volunteer);
+                }
+
+                $user->addStructure($structure);
+                $this->userManager->save($user);
+            }
+        }
     }
 }

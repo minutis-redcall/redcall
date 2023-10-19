@@ -35,6 +35,7 @@ class PhoneRepository extends BaseRepository
                     ->setParameter('phoneNumber', $phoneNumber)
                     ->andWhere('p.preferred = true')
                     ->andWhere('v.enabled = true')
+                    ->setMaxResults(1)
                     ->getQuery()
                     ->getOneOrNullResult();
     }

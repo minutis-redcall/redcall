@@ -42,10 +42,11 @@ class UserRepository extends AbstractUserRepository implements UserRepositoryInt
         $this->_em->flush();
     }
 
-    public function createTrustedUserQueryBuilder() : QueryBuilder
+    public function findAll()
     {
-        return $this->createQueryBuilder('u')
-                    ->where('u.isTrusted = true');
+        return $this->findBy([
+            'platform' => $this->security->getPlatform(),
+        ]);
     }
 
     public function findOneByExternalId(string $platform, string $externalId) : ?User
@@ -59,13 +60,6 @@ class UserRepository extends AbstractUserRepository implements UserRepositoryInt
             ->setParameter('externalId', $externalId)
             ->getQuery()
             ->getOneOrNullResult();
-    }
-
-    public function findAll()
-    {
-        return $this->findBy([
-            'platform' => $this->security->getPlatform(),
-        ]);
     }
 
     public function findOneByUsernameAndPlatform(string $platform, string $username) : ?User
@@ -134,6 +128,12 @@ class UserRepository extends AbstractUserRepository implements UserRepositoryInt
                     ->getResult();
     }
 
+    public function createTrustedUserQueryBuilder() : QueryBuilder
+    {
+        return $this->createQueryBuilder('u')
+                    ->where('u.isTrusted = true');
+    }
+
     public function getUserCountInStructure(Structure $structure) : int
     {
         return $this->createTrustedUserQueryBuilder()
@@ -174,6 +174,16 @@ class UserRepository extends AbstractUserRepository implements UserRepositoryInt
         }
 
         return $qb;
+    }
+
+    public function findAllWithStructure(Structure $structure) : array
+    {
+        return $this->createQueryBuilder('u')
+                    ->join('u.structures', 's')
+                    ->andWhere('s.id = :structure')
+                    ->setParameter('structure', $structure)
+                    ->getQuery()
+                    ->getResult();
     }
 }
 
