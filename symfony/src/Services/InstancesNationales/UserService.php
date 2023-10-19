@@ -33,6 +33,8 @@ class UserService
 
         $sheets = new \Google_Service_Sheets($client);
 
+        // -----------------------------------------------
+
         $extracts = new SheetsExtract();
         foreach (self::TABS as $tab) {
             LogService::info('Downloading tab', [
@@ -40,21 +42,24 @@ class UserService
                 'tab' => $tab,
             ]);
 
-            $extract = new SheetExtract();
-            $extract->setIdentifier($tab);
-
-            $extract->addRows(
-                $sheets
-                    ->spreadsheets_values
-                    ->get($id, $tab)
-                    ->getValues()
+            $extracts->addTab(
+                SheetExtract::fromRows(
+                    $tab,
+                    0,
+                    $sheets
+                        ->spreadsheets_values
+                        ->get($id, $tab)
+                        ->getValues()
+                )
             );
-
-            $extracts->addTab($extract);
         }
 
-        LogService::pass('Downloaded Google Sheet', [
-            'id' => $id,
+        // -----------------------------------------------
+
+        LogService::pass('Download complete', [
+            'id'           => $id,
+            'rows_writers' => $extracts->getTab(self::WRITERS)->count(),
+            'rows_readers' => $extracts->getTab(self::READERS)->count(),
         ]);
 
         return $extracts;
@@ -62,7 +67,10 @@ class UserService
 
     public function extractUsers(SheetsExtract $extract) : UsersExtract
     {
-        LogService::info('Extracting "user" entities from Google Sheets');
+        LogService::info('Extracting "user" entities from Google Sheets', [
+            'count_writers' => $extract->getTab(self::WRITERS)->count(),
+            'count_readers' => $extract->getTab(self::READERS)->count(),
+        ]);
 
         $rows = array_filter(array_unique(array_merge(
             $extract->getTab(self::READERS)->getColumn('Email'),

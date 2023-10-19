@@ -173,7 +173,7 @@ class Volunteer implements LockableInterface
     private $messages;
 
     /**
-     * @ORM\OneToMany(targetEntity=Phone::class, mappedBy="volunteer", orphanRemoval=true, cascade={"all"})
+     * @ORM\ManyToMany(targetEntity=Phone::class, mappedBy="volunteer", orphanRemoval=true, cascade={"all"})
      * @ORM\OrderBy({"preferred" = "DESC"})
      *
      * @Assert\Valid
@@ -218,74 +218,6 @@ class Volunteer implements LockableInterface
         $this->lists      = new ArrayCollection();
     }
 
-    /**
-     * @return int
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * @param int $id
-     *
-     * @return $this
-     */
-    public function setId(int $id)
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
-    public function getPlatform()
-    {
-        return $this->platform;
-    }
-
-    public function setPlatform($platform)
-    {
-        $this->platform = $platform;
-
-        return $this;
-    }
-
-    public function getExternalId() : string
-    {
-        return $this->externalId;
-    }
-
-    public function setExternalId(string $externalId) : Volunteer
-    {
-        $this->externalId = $externalId;
-
-        return $this;
-    }
-
-    public function getFirstName() : ?string
-    {
-        return $this->firstName;
-    }
-
-    public function setFirstName($firstName)
-    {
-        $this->firstName = $firstName;
-
-        return $this;
-    }
-
-    public function getLastName() : ?string
-    {
-        return $this->lastName;
-    }
-
-    public function setLastName($lastName)
-    {
-        $this->lastName = $lastName;
-
-        return $this;
-    }
-
     public function getFullname() : string
     {
         return $this->firstName.' '.$this->lastName;;
@@ -296,6 +228,25 @@ class Volunteer implements LockableInterface
         $phone = $this->getPhone();
 
         return $phone ? $phone->getE164() : null;
+    }
+
+    public function getPhone() : ?Phone
+    {
+        foreach ($this->getPhones() as $phone) {
+            if ($phone->isPreferred()) {
+                return $phone;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @return Phone[]
+     */
+    public function getPhones() : Collection
+    {
+        return $this->phones;
     }
 
     public function hasPhoneNumber(string $phoneNumber) : bool
@@ -334,18 +285,6 @@ class Volunteer implements LockableInterface
         return $this;
     }
 
-    public function isEnabled() : ?bool
-    {
-        return $this->enabled;
-    }
-
-    public function setEnabled(bool $enabled) : Volunteer
-    {
-        $this->enabled = $enabled;
-
-        return $this;
-    }
-
     public function isLocked() : ?bool
     {
         return $this->locked;
@@ -356,6 +295,15 @@ class Volunteer implements LockableInterface
         $this->locked = $locked;
 
         return $this;
+    }
+
+    public function getDisplayName() : string
+    {
+        if ($this->firstName && $this->lastName) {
+            return sprintf('%s %s', $this->toName($this->firstName), $this->toName($this->lastName));
+        }
+
+        return sprintf('#%s', mb_strtoupper($this->externalId));
     }
 
     public function isMinor() : bool
@@ -385,18 +333,6 @@ class Volunteer implements LockableInterface
         return $this;
     }
 
-    public function getReport() : ?array
-    {
-        return $this->report ? json_decode($this->report, true) : null;
-    }
-
-    public function setReport(array $report) : Volunteer
-    {
-        $this->report = json_encode($report, JSON_PRETTY_PRINT);
-
-        return $this;
-    }
-
     public function isCallable() : bool
     {
         $hasPhone = $this->getPhone() && $this->phoneNumberOptin;
@@ -411,6 +347,45 @@ class Volunteer implements LockableInterface
         $report   = $this->getReport() ?? [];
         $report[] = $message;
         $this->setReport($report);
+    }
+
+    public function getReport() : ?array
+    {
+        return $this->report ? json_decode($this->report, true) : null;
+    }
+
+    public function setReport(array $report) : Volunteer
+    {
+        $this->report = json_encode($report, JSON_PRETTY_PRINT);
+
+        return $this;
+    }
+
+    public function getStructureIds() : array
+    {
+        return array_map(function (Structure $structure) {
+            return $structure->getId();
+        }, $this->getStructures()->toArray());
+    }
+
+    /**
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param int $id
+     *
+     * @return $this
+     */
+    public function setId(int $id)
+    {
+        $this->id = $id;
+
+        return $this;
     }
 
     /**
@@ -434,11 +409,28 @@ class Volunteer implements LockableInterface
         });
     }
 
-    public function getStructureIds() : array
+    public function getPlatform()
     {
-        return array_map(function (Structure $structure) {
-            return $structure->getId();
-        }, $this->getStructures()->toArray());
+        return $this->platform;
+    }
+
+    public function setPlatform($platform)
+    {
+        $this->platform = $platform;
+
+        return $this;
+    }
+
+    public function isEnabled() : ?bool
+    {
+        return $this->enabled;
+    }
+
+    public function setEnabled(bool $enabled) : Volunteer
+    {
+        $this->enabled = $enabled;
+
+        return $this;
     }
 
     public function addStructure(Structure $structure) : self
@@ -494,6 +486,18 @@ class Volunteer implements LockableInterface
         return $mainStructure;
     }
 
+    public function getExternalId() : string
+    {
+        return $this->externalId;
+    }
+
+    public function setExternalId(string $externalId) : Volunteer
+    {
+        $this->externalId = $externalId;
+
+        return $this;
+    }
+
     public function toSearchResults(?User $user = null)
     {
         $badges = implode(', ', array_map(function (Badge $badge) {
@@ -505,6 +509,109 @@ class Volunteer implements LockableInterface
             'external-id' => $this->getExternalId(),
             'human'       => sprintf('%s %s%s', $this->getFirstName(), $this->getLastName(), $badges ? sprintf(' (%s)', $badges) : null),
         ]))->getArrayCopy();
+    }
+
+    public function getVisibleBadges(?User $user = null) : array
+    {
+        $favs = null;
+        if (null !== $user) {
+            $favs = $user->getSortedFavoriteBadges();
+        }
+
+        $badges = $this->getBadges()->toArray();
+
+        // Only use synonyms
+        foreach ($badges as $key => $badge) {
+            /** @var Badge $badge */
+            if ($badge->getSynonym() && !in_array($badge->getSynonym(), $badges)) {
+                $badges[] = $badge->getSynonym();
+                unset($badges[$key]);
+            }
+        }
+
+        // Only use visible badges
+        $badges = array_filter($badges, function (Badge $badge) use ($favs) {
+            if ($favs) {
+                foreach ($favs as $fav) {
+                    if ($fav === $badge) {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+
+            return $badge->isVisible();
+        });
+
+        // Only rendering the higher badge in the hierarchy
+        $badges = array_filter($badges, function (Badge $badge) use ($badges) {
+            foreach ($badge->getChildren() as $child) {
+                if (in_array($child, $badges)) {
+                    return false;
+                }
+            }
+
+            return true;
+        });
+
+        // Sorting badges by category's priority and then by priority
+        usort($badges, [Badge::class, 'sortBadges']);
+
+        return $badges;
+    }
+
+    public function getFirstName() : ?string
+    {
+        return $this->firstName;
+    }
+
+    public function setFirstName($firstName)
+    {
+        $this->firstName = $firstName;
+
+        return $this;
+    }
+
+    public function getLastName() : ?string
+    {
+        return $this->lastName;
+    }
+
+    public function setLastName($lastName)
+    {
+        $this->lastName = $lastName;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection|Badge[]
+     */
+    public function getBadges(bool $onlyEnabled = true) : Collection
+    {
+        if ($onlyEnabled) {
+            return $this->getEnabledBadges();
+        }
+
+        return $this->badges->filter(function (Badge $badge) {
+            return $this->platform === $badge->getPlatform();
+        });
+    }
+
+    public function setBadges(array $badges)
+    {
+        $this->badges->clear();
+        foreach ($badges as $badge) {
+            $this->badges->add($badge);
+        }
+    }
+
+    public function getEnabledBadges() : Collection
+    {
+        return $this->badges->filter(function (Badge $badge) {
+            return $this->platform === $badge->getPlatform() && $badge->isEnabled();
+        });
     }
 
     public function getNextPegassUpdate() : ?DateTime
@@ -523,15 +630,6 @@ class Volunteer implements LockableInterface
         return $nextPegassUpdate;
     }
 
-    public function getDisplayName() : string
-    {
-        if ($this->firstName && $this->lastName) {
-            return sprintf('%s %s', $this->toName($this->firstName), $this->toName($this->lastName));
-        }
-
-        return sprintf('#%s', mb_strtoupper($this->externalId));
-    }
-
     public function getTruncatedName() : string
     {
         if ($this->firstName && $this->lastName) {
@@ -539,6 +637,13 @@ class Volunteer implements LockableInterface
         }
 
         return sprintf('#%s', mb_strtoupper($this->externalId));
+    }
+
+    private function toName(string $name) : string
+    {
+        return preg_replace_callback('/[^\\s\-]+/ui', function (array $match) {
+            return sprintf("%s%s", mb_strtoupper(mb_substr($match[0], 0, 1)), mb_strtolower(mb_substr($match[0], 1)));
+        }, $name);
     }
 
     public function __toString()
@@ -671,50 +776,9 @@ class Volunteer implements LockableInterface
         }
     }
 
-    /**
-     * @return Phone[]
-     */
-    public function getPhones() : Collection
-    {
-        return $this->phones;
-    }
-
-    public function addPhone(Phone $phone) : self
-    {
-        if (!$this->phones->contains($phone)) {
-            $this->phones[] = $phone;
-            $phone->setVolunteer($this);
-        }
-
-        return $this;
-    }
-
-    public function removePhone(Phone $phone) : self
-    {
-        if ($this->phones->removeElement($phone)) {
-            // set the owning side to null (unless already changed)
-            if ($phone->getVolunteer() === $this) {
-                $phone->setVolunteer(null);
-            }
-        }
-
-        return $this;
-    }
-
     public function clearPhones()
     {
         $this->phones->clear();
-    }
-
-    public function getPhone() : ?Phone
-    {
-        foreach ($this->getPhones() as $phone) {
-            if ($phone->isPreferred()) {
-                return $phone;
-            }
-        }
-
-        return null;
     }
 
     public function isOnlyOutboundSms() : bool
@@ -737,44 +801,6 @@ class Volunteer implements LockableInterface
     public function setSupportsShortCode(bool $supportsShortCode) : Volunteer
     {
         $this->supportsShortCode = $supportsShortCode;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection|Badge[]
-     */
-    public function getBadges(bool $onlyEnabled = true) : Collection
-    {
-        if ($onlyEnabled) {
-            return $this->getEnabledBadges();
-        }
-
-        return $this->badges->filter(function (Badge $badge) {
-            return $this->platform === $badge->getPlatform();
-        });
-    }
-
-    public function setBadges(array $badges)
-    {
-        $this->badges->clear();
-        foreach ($badges as $badge) {
-            $this->badges->add($badge);
-        }
-    }
-
-    public function getEnabledBadges() : Collection
-    {
-        return $this->badges->filter(function (Badge $badge) {
-            return $this->platform === $badge->getPlatform() && $badge->isEnabled();
-        });
-    }
-
-    public function addBadge(Badge $badge) : self
-    {
-        if (!$this->badges->contains($badge)) {
-            $this->badges[] = $badge;
-        }
 
         return $this;
     }
@@ -866,6 +892,15 @@ class Volunteer implements LockableInterface
         }
     }
 
+    public function addBadge(Badge $badge) : self
+    {
+        if (!$this->badges->contains($badge)) {
+            $this->badges[] = $badge;
+        }
+
+        return $this;
+    }
+
     /**
      * @Assert\Callback
      */
@@ -914,56 +949,6 @@ class Volunteer implements LockableInterface
         }
     }
 
-    public function getVisibleBadges(?User $user = null) : array
-    {
-        $favs = null;
-        if (null !== $user) {
-            $favs = $user->getSortedFavoriteBadges();
-        }
-
-        $badges = $this->getBadges()->toArray();
-
-        // Only use synonyms
-        foreach ($badges as $key => $badge) {
-            /** @var Badge $badge */
-            if ($badge->getSynonym() && !in_array($badge->getSynonym(), $badges)) {
-                $badges[] = $badge->getSynonym();
-                unset($badges[$key]);
-            }
-        }
-
-        // Only use visible badges
-        $badges = array_filter($badges, function (Badge $badge) use ($favs) {
-            if ($favs) {
-                foreach ($favs as $fav) {
-                    if ($fav === $badge) {
-                        return true;
-                    }
-                }
-
-                return false;
-            }
-
-            return $badge->isVisible();
-        });
-
-        // Only rendering the higher badge in the hierarchy
-        $badges = array_filter($badges, function (Badge $badge) use ($badges) {
-            foreach ($badge->getChildren() as $child) {
-                if (in_array($child, $badges)) {
-                    return false;
-                }
-            }
-
-            return true;
-        });
-
-        // Sorting badges by category's priority and then by priority
-        usort($badges, [Badge::class, 'sortBadges']);
-
-        return $badges;
-    }
-
     public function getBadgePriority(?User $user = null) : int
     {
         $lowest = 0xFFFFFFFF;
@@ -997,6 +982,16 @@ class Volunteer implements LockableInterface
         $this->setPhoneAsPreferred($phone);
     }
 
+    public function addPhone(Phone $phone) : self
+    {
+        if (!$this->phones->contains($phone)) {
+            $this->phones[] = $phone;
+            $phone->setVolunteer($this);
+        }
+
+        return $this;
+    }
+
     public function setPhoneAsPreferred(Phone $phone)
     {
         if (!$this->phones->contains($phone)) {
@@ -1017,6 +1012,18 @@ class Volunteer implements LockableInterface
         $this->ensureOnePhoneIsPreferred();
     }
 
+    public function removePhone(Phone $phone) : self
+    {
+        if ($this->phones->removeElement($phone)) {
+            // set the owning side to null (unless already changed)
+            if ($phone->getVolunteer() === $this) {
+                $phone->setVolunteer(null);
+            }
+        }
+
+        return $this;
+    }
+
     public function ensureOnePhoneIsPreferred()
     {
         $main = 0;
@@ -1033,12 +1040,5 @@ class Volunteer implements LockableInterface
     {
         return $this->structures->count() > 1
                || $this->user && $this->user->getStructures()->count() > 1;
-    }
-
-    private function toName(string $name) : string
-    {
-        return preg_replace_callback('/[^\\s\-]+/ui', function (array $match) {
-            return sprintf("%s%s", mb_strtoupper(mb_substr($match[0], 0, 1)), mb_strtolower(mb_substr($match[0], 1)));
-        }, $name);
     }
 }

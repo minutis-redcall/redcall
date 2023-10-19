@@ -20,6 +20,8 @@ use Symfony\Component\Console\Output\OutputInterface;
  */
 class AnnuaireNationalCommand extends Command
 {
+    const STRUCTURE_NAME = 'ANNUAIRE NATIONAL';
+
     /**
      * @var VolunteerService
      */
@@ -72,17 +74,14 @@ class AnnuaireNationalCommand extends Command
                 file_put_contents('/tmp/droits.json', json_encode($userExtract->toArray()));
             }
 
-            $volunteers = $this->volunteerService->extractVolunteers($volunteerExtract->getTab(VolunteerService::ANNUAIRE));
-            $users      = $this->userService->extractUsers($userExtract);
+            $volunteers = $this->volunteerService->extractVolunteers($volunteerExtract);
 
-            // TODO step 1, correlate "id" (first row in the Google Sheets) with the volunteer we have in our db
-            // TODO step 2, correlate lists (from columns I to Z) with the volunteer lists we have in DB for "instances nationales"
-            // TODO step 3, combine lists extracted from step 2 with volunteers extracted from step 1
+            $users = $this->userService->extractUsers($userExtract);
 
         } catch (\Exception $exception) {
             $error = true;
 
-            LogService::fail('An error occured during import.', [
+            LogService::fail('An error occurred during import.', [
                 'exception' => $exception->getMessage(),
                 'trace'     => $exception->getTraceAsString(),
             ]);
