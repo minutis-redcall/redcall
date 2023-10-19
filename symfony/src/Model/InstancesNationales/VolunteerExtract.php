@@ -41,7 +41,12 @@ class VolunteerExtract
 
     public function getNivol() : string
     {
-        return self::NIVOL_PREFIX.$this->id;
+        return self::buildNivol($this->id);
+    }
+
+    static public function buildNivol(string $id) : string
+    {
+        return self::NIVOL_PREFIX.$id;
     }
 
     public function getVolunteer() : Volunteer

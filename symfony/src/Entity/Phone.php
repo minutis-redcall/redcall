@@ -56,7 +56,7 @@ class Phone implements PhoneInterface
     private $prefix;
 
     /**
-     * @ORM\Column(type="string", length=32, unique=true)
+     * @ORM\Column(type="string", length=32)
      */
     private $e164;
 
@@ -83,14 +83,6 @@ class Phone implements PhoneInterface
     public function getId() : ?int
     {
         return $this->id;
-    }
-
-    public function getVolunteer() : ?Volunteer
-    {
-    }
-
-    public function setVolunteer(?Volunteer $volunteer) : self
-    {
     }
 
     /**

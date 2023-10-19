@@ -145,7 +145,6 @@ class MessageManager
             $matches = [];
             preg_match('/^([a-zA-Z]+)(\d+)/', $body, $matches);
 
-            // Prefix not found, getting the latest message sent to volunteer on active campaigns
             if (3 === count($matches)) {
                 $prefix = strtoupper($matches[1]);
 
@@ -157,6 +156,7 @@ class MessageManager
             }
         }
 
+        // Prefix not found, getting the latest message sent to volunteer on active campaigns
         return $this->messageRepository->getMessageFromPhoneNumber($phoneNumber);
     }
 
@@ -213,6 +213,11 @@ class MessageManager
         $this->messageRepository->save($message);
     }
 
+    public function save(Message $message)
+    {
+        $this->messageRepository->save($message);
+    }
+
     public function toggleAnswer(Message $message, Choice $choice)
     {
         // If choice currently selected, remove it
@@ -245,11 +250,6 @@ class MessageManager
     public function canUsePrefixesForEveryone(array $volunteersTakenPrefixes) : bool
     {
         return $this->messageRepository->canUsePrefixesForEveryone($volunteersTakenPrefixes);
-    }
-
-    public function save(Message $message)
-    {
-        $this->messageRepository->save($message);
     }
 
     public function updateMessageStatus(Message $message)

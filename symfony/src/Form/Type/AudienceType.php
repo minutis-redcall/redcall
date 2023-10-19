@@ -85,23 +85,6 @@ class AudienceType extends AbstractType
         $this->security             = $security;
     }
 
-    static public function createEmptyData(array $defaults) : array
-    {
-        return array_merge([
-            'preselection_key'    => null,
-            'volunteers'          => [],
-            'excluded_volunteers' => [],
-            'external_ids'        => [],
-            'allow_minors'        => false,
-            'structures_global'   => [],
-            'structures_local'    => [],
-            'badges_all'          => false,
-            'badges_ticked'       => [],
-            'badges_searched'     => [],
-            'test_on_me'          => false,
-        ], $defaults);
-    }
-
     static public function getAudienceFormData(Request $request)
     {
         // Audience type can be located anywhere in the main form, so we need to seek for the
@@ -127,7 +110,24 @@ class AudienceType extends AbstractType
 
     static public function split(string $value)
     {
-        return array_unique(array_filter(preg_split('/[^0-9a-z*]/ui', $value)));
+        return array_unique(array_filter(preg_split('/[^0-9a-z-*]/ui', $value)));
+    }
+
+    static public function createEmptyData(array $defaults) : array
+    {
+        return array_merge([
+            'preselection_key'    => null,
+            'volunteers'          => [],
+            'excluded_volunteers' => [],
+            'external_ids'        => [],
+            'allow_minors'        => false,
+            'structures_global'   => [],
+            'structures_local'    => [],
+            'badges_all'          => false,
+            'badges_ticked'       => [],
+            'badges_searched'     => [],
+            'test_on_me'          => false,
+        ], $defaults);
     }
 
     public function buildForm(FormBuilderInterface $builder, array $options)

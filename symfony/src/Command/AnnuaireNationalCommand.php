@@ -3,7 +3,6 @@
 namespace App\Command;
 
 use App\Manager\VolunteerManager;
-use App\Model\InstancesNationales\SheetsExtract;
 use App\Services\InstancesNationales\LogService;
 use App\Services\InstancesNationales\UserService;
 use App\Services\InstancesNationales\VolunteerService;
@@ -60,25 +59,9 @@ class AnnuaireNationalCommand extends Command
     {
         $error = false;
         try {
-            if (is_file('/tmp/annuaire.json')) {
-                $volunteerExtract = SheetsExtract::fromArray(json_decode(file_get_contents('/tmp/annuaire.json'), true));
-            } else {
-                $volunteerExtract = $this->volunteerService->extractVolunteersFromGSheets();
-                file_put_contents('/tmp/annuaire.json', json_encode($volunteerExtract->toArray()));
-            }
-
-            if (is_file('/tmp/droits.json')) {
-                $userExtract = SheetsExtract::fromArray(json_decode(file_get_contents('/tmp/droits.json'), true));
-            } else {
-                $userExtract = $this->userService->extractUsersFromGSheets();
-                file_put_contents('/tmp/droits.json', json_encode($userExtract->toArray()));
-            }
-
-            $volunteers = $this->volunteerService->extractVolunteers($volunteerExtract);
-
-            $users = $this->userService->extractUsers($userExtract);
-
-        } catch (\Exception $exception) {
+            $this->volunteerService->extractVolunteers();
+            $this->userService->extractUsers();
+        } catch (\Throwable $exception) {
             $error = true;
 
             LogService::fail('An error occurred during import.', [

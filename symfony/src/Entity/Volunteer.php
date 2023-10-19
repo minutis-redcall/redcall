@@ -173,7 +173,7 @@ class Volunteer implements LockableInterface
     private $messages;
 
     /**
-     * @ORM\ManyToMany(targetEntity=Phone::class, mappedBy="volunteer", orphanRemoval=true, cascade={"all"})
+     * @ORM\ManyToMany(targetEntity=Phone::class, mappedBy="volunteers", orphanRemoval=true, cascade={"all"})
      * @ORM\OrderBy({"preferred" = "DESC"})
      *
      * @Assert\Valid
@@ -247,6 +247,17 @@ class Volunteer implements LockableInterface
     public function getPhones() : Collection
     {
         return $this->phones;
+    }
+
+    public function getPhoneByNumber(string $e164) : ?Phone
+    {
+        foreach ($this->getPhones() as $phone) {
+            if ($phone->getE164() === $e164) {
+                return $phone;
+            }
+        }
+
+        return null;
     }
 
     public function hasPhoneNumber(string $phoneNumber) : bool
@@ -986,7 +997,7 @@ class Volunteer implements LockableInterface
     {
         if (!$this->phones->contains($phone)) {
             $this->phones[] = $phone;
-            $phone->setVolunteer($this);
+            $phone->addVolunteer($this);
         }
 
         return $this;
@@ -1016,8 +1027,10 @@ class Volunteer implements LockableInterface
     {
         if ($this->phones->removeElement($phone)) {
             // set the owning side to null (unless already changed)
-            if ($phone->getVolunteer() === $this) {
-                $phone->setVolunteer(null);
+            foreach ($phone->getVolunteers() as $volunteer) {
+                if ($volunteer === $this) {
+                    $phone->removeVolunteer($this);
+                }
             }
         }
 

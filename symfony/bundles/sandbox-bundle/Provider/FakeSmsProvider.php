@@ -27,7 +27,7 @@ class FakeSmsProvider implements SMSProvider
             throw new LogicException('Cannot send fake SMS to unknown volunteer.');
         }
 
-        $volunteer = $phone->getVolunteer();
+        $volunteer = $phone->getVolunteers()->first();
         $this->fakeSmsRepository->save($volunteer, $message, FakeSms::DIRECTION_RECEIVED);
 
         return sprintf('FAKE-%s', Random::generate(15));

@@ -22,6 +22,11 @@ class PhoneManager
         return $this->phoneRepository->findOneByE164($phoneNumber);
     }
 
+    public function findByPhoneNumber(string $phoneNumber) : array
+    {
+        return $this->phoneRepository->findByE164($phoneNumber);
+    }
+
     public function save(Phone $phone)
     {
         $this->phoneRepository->save($phone);

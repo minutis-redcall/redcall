@@ -221,12 +221,6 @@ audience:
   search_other_badge: 'Buscar otra competencia:'
   select_all_badges: 'Movilizar a todo el voluntariado independientemente de las competencias'
   structures: Estructura(s)
-backlinks:
-  blablacar: 'Patrocinado por'
-  minutis: 'Desarrollado por personas voluntarias'
-  phpstorm: 'Desarrollado con'
-  phrase: 'Traducciones proporcionadas por'
-  redcross: 'de Minutis'
 base:
   actions: Acciones
   button:

@@ -4,7 +4,9 @@ namespace App\Services\InstancesNationales;
 
 use App\Command\AnnuaireNationalCommand;
 use App\Entity\Phone;
+use App\Entity\Structure;
 use App\Entity\Volunteer;
+use App\Entity\VolunteerList;
 use App\Enum\Platform;
 use App\Manager\StructureManager;
 use App\Manager\VolunteerManager;
@@ -37,7 +39,28 @@ class VolunteerService
         $this->volunteerManager = $volunteerManager;
     }
 
-    public function extractVolunteersFromGSheets() : SheetsExtract
+    public function extractVolunteers()
+    {
+        if (is_file('/tmp/annuaire.json')) {
+            $extract = SheetsExtract::fromArray(json_decode(file_get_contents('/tmp/annuaire.json'), true));
+        } else {
+            $extract = $this->extractVolunteersFromGSheets();
+            file_put_contents('/tmp/annuaire.json', json_encode($extract->toArray()));
+        }
+
+        $volunteers = $this->extractObjectsFromGrid($extract->getTab(self::ANNUAIRE));
+        $this->filterVolunteers($volunteers, $extract->getTab(self::LISTES));
+
+        $structure = $this->structureManager->findOneByName(Platform::FR, AnnuaireNationalCommand::STRUCTURE_NAME);
+        $this->deleteMissingVolunteers($structure, $volunteers);
+        $this->crupdateVolunteers($structure, $volunteers);
+
+        $this->createLists($structure, $extract->getTab(self::LISTES));
+
+        $this->structureManager->save($structure);
+    }
+
+    private function extractVolunteersFromGSheets() : SheetsExtract
     {
         $id = getenv('GOOGLE_SHEETS_ANNUAIRE_NATIONAL_ID');
 
@@ -101,23 +124,9 @@ class VolunteerService
         return $extracts;
     }
 
-    public function extractVolunteers(SheetsExtract $extract) : VolunteersExtract
+    private function extractObjectsFromGrid(SheetExtract $extract) : VolunteersExtract
     {
-        $tab = $extract->getTab(self::ANNUAIRE);
-
-        $volunteers = $this->extractVolunteersFromSheet($tab);
-
-        $this->filterVolunteers($volunteers, $extract->getTab(self::LISTES));
-
-        $this->deleteMissingVolunteers($volunteers);
-        $this->crupdateVolunteers($volunteers);
-
-        return $volunteers;
-    }
-
-    private function extractVolunteersFromSheet(SheetExtract $extract) : VolunteersExtract
-    {
-        LogService::info('Extracting "volunteer" entities from Google Sheets', [
+        LogService::info('Extracting volunteers from Google Sheets', [
             'rows' => count($extract->getRows()),
         ]);
 
@@ -154,7 +163,7 @@ class VolunteerService
             $volunteers->addVolunteer($volunteer);
         }
 
-        LogService::pass('Extracted "volunteer" entities from Google Sheets', [
+        LogService::pass('Extracted volunteers from Google Sheets', [
             'rows' => $volunteers->count(),
         ]);
 
@@ -163,7 +172,7 @@ class VolunteerService
 
     private function filterVolunteers(VolunteersExtract $volunteers, SheetExtract $list)
     {
-        LogService::info('Filtering out non-active "volunteer" entities', [
+        LogService::info('Filtering out non-active volunteers', [
             'rows' => $volunteers->count(),
         ]);
 
@@ -178,15 +187,13 @@ class VolunteerService
             }
         }
 
-        LogService::pass('Filtered out non-active "volunteer" entities', [
+        LogService::pass('Filtered out non-active volunteers', [
             'rows' => $volunteers->count(),
         ]);
     }
 
-    private function deleteMissingVolunteers(VolunteersExtract $extract) : void
+    private function deleteMissingVolunteers(Structure $structure, VolunteersExtract $extract) : void
     {
-        $structure = $this->structureManager->findOneByName(Platform::FR, AnnuaireNationalCommand::STRUCTURE_NAME);
-
         $inExtract = array_map(function (VolunteerExtract $volunteer) {
             return $volunteer->getNivol();
         }, $extract->getVolunteers());
@@ -198,7 +205,7 @@ class VolunteerService
         $toDelete = array_diff($inStructure, $inExtract);
 
         foreach ($toDelete as $nivol) {
-            LogService::pass('Deleting a "volunteer" entity existing in RedCall but missing in sheets', [
+            LogService::pass('Deleting a volunteer existing in RedCall but missing in sheets', [
                 'nivol' => $nivol,
             ], true);
 
@@ -209,10 +216,8 @@ class VolunteerService
         }
     }
 
-    private function crupdateVolunteers(VolunteersExtract $extract) : void
+    private function crupdateVolunteers(Structure $structure, VolunteersExtract $extract) : void
     {
-        $structure = $this->structureManager->findOneByName(Platform::FR, AnnuaireNationalCommand::STRUCTURE_NAME);
-
         foreach ($extract->getVolunteers() as $fromExtract) {
             $changes = false;
             $nivol   = $fromExtract->getNivol();
@@ -220,7 +225,7 @@ class VolunteerService
             if (null === $fromDatabase = $this->volunteerManager->findOneByExternalId(Platform::FR, $nivol)) {
                 $changes = true;
 
-                LogService::pass('Create a "volunteer" entity existing in sheets but missing in RedCall', [
+                LogService::pass('Create a volunteer existing in sheets but missing in RedCall', [
                     'nivol' => $nivol,
                 ], true);
 
@@ -233,7 +238,7 @@ class VolunteerService
             if ($fromDatabase->getFirstName() !== $fromExtract->getFirstname()) {
                 $changes = true;
 
-                LogService::pass('Update a "volunteer" entity (first name)', [
+                LogService::pass('Update a volunteer (first name)', [
                     'nivol' => $nivol,
                     'from'  => $fromDatabase->getFirstName(),
                     'to'    => $fromExtract->getFirstname(),
@@ -245,7 +250,7 @@ class VolunteerService
             if ($fromDatabase->getLastName() !== $fromExtract->getLastname()) {
                 $changes = true;
 
-                LogService::pass('Update a "volunteer" entity (last name)', [
+                LogService::pass('Update a volunteer (last name)', [
                     'nivol' => $nivol,
                     'from'  => $fromDatabase->getLastName(),
                     'to'    => $fromExtract->getLastname(),
@@ -257,7 +262,7 @@ class VolunteerService
             if ($fromDatabase->getEmail() !== $fromExtract->getEmail()) {
                 $changes = true;
 
-                LogService::pass('Update a "volunteer" entity (email)', [
+                LogService::pass('Update a volunteer (email)', [
                     'nivol' => $nivol,
                     'from'  => $fromDatabase->getEmail(),
                     'to'    => $fromExtract->getEmail(),
@@ -266,46 +271,119 @@ class VolunteerService
                 $fromDatabase->setEmail($fromExtract->getEmail());
             }
 
-            if ($fromDatabase->getPhone() && !$fromExtract->getPhone()) {
+            $from = null;
+            if ($fromDatabase->getPhones()->count() > 0) {
+                $from = $fromDatabase->getPhones()->first()->getE164();
+            }
+            $to = null;
+            if ($fromExtract->getPhone()) {
+                $to = $fromExtract->getPhone();
+            }
+            if ($from !== $to) {
                 $changes = true;
 
-                LogService::pass('Update a "volunteer" entity (remove phone)', [
+                LogService::pass('Update a volunteer (phone)', [
                     'nivol' => $nivol,
-                    'from'  => $fromDatabase->getPhone()->getE164(),
-                    'to'    => $fromExtract->getPhone(),
+                    'from'  => $from,
+                    'to'    => $to,
                 ], true);
 
                 $fromDatabase->clearPhones();
-            } elseif (0 === $fromDatabase->getPhones()->count() && $fromExtract->getPhone()) {
-                $changes = true;
 
-                LogService::pass('Update a "volunteer" entity (add phone)', [
-                    'nivol' => $nivol,
-                    'from'  => null,
-                    'to'    => $fromExtract->getPhone(),
-                ], true);
-
-                $phone = new Phone();
-                $phone->setE164($fromExtract->getPhone());
-                $phone->setPreferred(true);
-                $fromDatabase->addPhone($phone);
-            } elseif ($fromDatabase->getPhone()->getE164() !== $fromExtract->getPhone()) {
-                $changes = true;
-
-                LogService::pass('Update a "volunteer" entity (phone)', [
-                    'nivol' => $nivol,
-                    'from'  => $fromDatabase->getPhone()->getE164(),
-                    'to'    => $fromExtract->getPhone(),
-                ], true);
-
-                $fromDatabase->getPhone()->setE164($fromExtract->getPhone());
+                if ($to) {
+                    $phone = new Phone();
+                    $phone->setE164($to);
+                    $phone->setPreferred(true);
+                    $fromDatabase->addPhone($phone);
+                }
             }
 
             if ($changes) {
                 $this->volunteerManager->save($fromDatabase);
             }
         }
+    }
 
+    private function createLists(Structure $structure, SheetExtract $extract)
+    {
+        $fromDatabaseNames = array_map(function (VolunteerList $list) {
+            return $list->getName();
+        }, $structure->getVolunteerLists()->toArray());
+
+        $fromExtractNames = [];
+        $columnNames      = array_keys($extract->getRows()[0]);
+        foreach ($columnNames as $columnName) {
+            if (preg_match('/^\d\d\:/', $columnName)) {
+                $fromExtractNames[] = $columnName;
+            }
+        }
+
+        $toRemoves = array_diff($fromDatabaseNames, $fromExtractNames);
+        foreach ($toRemoves as $toRemove) {
+            LogService::pass('Deleting volunteer existing in RedCall but missing in sheets', [
+                'name' => $toRemove,
+            ], true);
+
+            $list = $structure->getVolunteerList($toRemove);
+            $structure->removeVolunteerList($list);
+        }
+
+        $toCreates = array_diff($fromExtractNames, $fromDatabaseNames);
+        foreach ($toCreates as $toCreate) {
+            LogService::pass('Creating volunteer existing in sheets but missing in RedCall', [
+                'name' => $toCreate,
+            ], true);
+
+            $list = new VolunteerList();
+            $list->setName($toCreate);
+            $list->setAudience([]);
+            $structure->addVolunteerList($list);
+        }
+
+        foreach ($fromExtractNames as $listName) {
+            $list    = $structure->getVolunteerList($listName);
+            $changes = false;
+
+            foreach ($extract->getRows() as $row) {
+                $nivol = VolunteerExtract::buildNivol($row['Clé']);
+
+                if (!$volunteer = $structure->getVolunteer($nivol)) {
+                    continue;
+                }
+
+                if ('O' === $row[$listName]) {
+                    if (!$list->hasVolunteer($volunteer)) {
+                        $changes = true;
+
+                        LogService::pass('Add volunteer in list', [
+                            'list'  => $listName,
+                            'nivol' => $nivol,
+                        ], true);
+
+                        $list->addVolunteer($volunteer);
+                    }
+                } elseif ($list->hasVolunteer($volunteer)) {
+                    $changes = true;
+
+                    LogService::pass('Remove volunteer from list', [
+                        'list'  => $listName,
+                        'nivol' => $nivol,
+                    ], true);
+
+                    $list->removeVolunteer($volunteer);
+                }
+            }
+
+            if ($changes) {
+                $list->setAudience([
+                    'volunteers' => array_map(function (Volunteer $volunteer) {
+                        return $volunteer->getId();
+                    }, $list->getVolunteers()->toArray()),
+                ]);
+            }
+        }
+
+        $this->structureManager->save($structure);
     }
 
     private function populatePhone(VolunteerExtract $extract, ?string $phoneNumber, string $letter, int $index) : void

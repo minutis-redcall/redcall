@@ -85,31 +85,14 @@ class VolunteerManager
 
     public function findOneByPhoneNumber(string $phoneNumber) : ?Volunteer
     {
-        $phone = $this->phoneManager->findOneByPhoneNumber($phoneNumber);
+        $phone = $this->phoneManager->findByPhoneNumber($phoneNumber);
 
-        return $phone ? $phone->getVolunteer() : null;
+        return $phone ? reset($phone)->getVolunteers()->first() : null;
     }
 
     public function findOneByEmail(string $email) : ?Volunteer
     {
         return $this->volunteerRepository->findOneByEmail($email);
-    }
-
-    public function findOneByInternalEmail(string $email) : ?Volunteer
-    {
-        return $this->volunteerRepository->findOneByInternalEmail($email);
-    }
-
-    public function save(Volunteer $volunteer)
-    {
-        $this->volunteerRepository->save($volunteer);
-
-        return $volunteer;
-    }
-
-    public function remove(Volunteer $volunteer)
-    {
-        $this->volunteerRepository->remove($volunteer);
     }
 
     public function searchAll(?string $criteria, int $limit, bool $enabled = false)
@@ -380,6 +363,18 @@ class VolunteerManager
         $this->deletedVolunteerManager->anonymize($volunteer);
     }
 
+    public function save(Volunteer $volunteer)
+    {
+        $this->volunteerRepository->save($volunteer);
+
+        return $volunteer;
+    }
+
+    public function remove(Volunteer $volunteer)
+    {
+        $this->volunteerRepository->remove($volunteer);
+    }
+
     public function orderVolunteerIdsByTriggeringPriority(array $volunteerIds) : array
     {
         $rows = $this->volunteerRepository->getVolunteerTriggeringPriorities($volunteerIds);
@@ -411,6 +406,11 @@ class VolunteerManager
     public function getVolunteerFromOauth(OAuthUser $oAuthUser) : ?Volunteer
     {
         return $this->findOneByInternalEmail($oAuthUser->getEmail());
+    }
+
+    public function findOneByInternalEmail(string $email) : ?Volunteer
+    {
+        return $this->volunteerRepository->findOneByInternalEmail($email);
     }
 
     public function countActive() : int

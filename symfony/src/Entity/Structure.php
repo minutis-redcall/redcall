@@ -136,7 +136,7 @@ class Structure implements LockableInterface
     private $prefilledAnswers;
 
     /**
-     * @ORM\OneToMany(targetEntity=VolunteerList::class, mappedBy="structure", orphanRemoval=true)
+     * @ORM\OneToMany(targetEntity=VolunteerList::class, mappedBy="structure", cascade={"all"}, orphanRemoval=true)
      */
     private $volunteerLists;
 
@@ -153,26 +153,6 @@ class Structure implements LockableInterface
         $this->prefilledAnswers   = new ArrayCollection();
         $this->volunteerLists     = new ArrayCollection();
         $this->templates          = new ArrayCollection();
-    }
-
-    /**
-     * @return null|string
-     */
-    public function getName() : ?string
-    {
-        return $this->name;
-    }
-
-    /**
-     * @param string $name
-     *
-     * @return Structure
-     */
-    public function setName(string $name) : self
-    {
-        $this->name = mb_strtoupper($name);
-
-        return $this;
     }
 
     public function getShortcut() : ?string
@@ -602,14 +582,6 @@ class Structure implements LockableInterface
         return $this->getDisplayName();
     }
 
-    /**
-     * @return Collection|VolunteerList[]
-     */
-    public function getVolunteerLists() : Collection
-    {
-        return $this->volunteerLists;
-    }
-
     public function addVolunteerList(VolunteerList $volunteerList) : self
     {
         if (!$this->volunteerLists->contains($volunteerList)) {
@@ -628,6 +600,45 @@ class Structure implements LockableInterface
                 $volunteerList->setStructure(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getVolunteerList(string $name) : ?VolunteerList
+    {
+        foreach ($this->getVolunteerLists() as $volunteerList) {
+            if ($volunteerList->getName() === $name) {
+                return $volunteerList;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @return Collection|VolunteerList[]
+     */
+    public function getVolunteerLists() : Collection
+    {
+        return $this->volunteerLists;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getName() : ?string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return Structure
+     */
+    public function setName(string $name) : self
+    {
+        $this->name = mb_strtoupper($name);
 
         return $this;
     }

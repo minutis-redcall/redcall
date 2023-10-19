@@ -17,7 +17,41 @@ class UserService
         self::READERS,
     ];
 
-    public function extractUsersFromGSheets() : SheetsExtract
+    public function extractUsers() : void
+    {
+        $extract = $this->extractUsersFromGSheets();
+
+        LogService::info('Extracting "user" entities from Google Sheets', [
+            'count_writers' => $extract->getTab(self::WRITERS)->count(),
+            'count_readers' => $extract->getTab(self::READERS)->count(),
+        ]);
+
+        $rows = array_filter(array_unique(array_merge(
+            $extract->getTab(self::READERS)->getColumn('Email'),
+            $extract->getTab(self::WRITERS)->getColumn('Email')
+        )));
+
+        $users = new UsersExtract();
+        foreach ($rows as $row) {
+            if (false === filter_var($row, FILTER_VALIDATE_EMAIL)) {
+                LogService::fail('Invalid email address', [
+                    'email' => $row,
+                ]);
+
+                continue;
+            }
+
+            $user = new UserExtract();
+            $user->setEmail($row);
+            $users->addUser($user);
+        }
+
+        LogService::pass('Extracted "user" entities from Google Sheets', [
+            'count' => $users->count(),
+        ]);
+    }
+
+    private function extractUsersFromGSheets() : SheetsExtract
     {
         $id = getenv('GOOGLE_SHEETS_ANNUAIRE_DROITS_ID');
 
@@ -64,39 +98,4 @@ class UserService
 
         return $extracts;
     }
-
-    public function extractUsers(SheetsExtract $extract) : UsersExtract
-    {
-        LogService::info('Extracting "user" entities from Google Sheets', [
-            'count_writers' => $extract->getTab(self::WRITERS)->count(),
-            'count_readers' => $extract->getTab(self::READERS)->count(),
-        ]);
-
-        $rows = array_filter(array_unique(array_merge(
-            $extract->getTab(self::READERS)->getColumn('Email'),
-            $extract->getTab(self::WRITERS)->getColumn('Email')
-        )));
-
-        $users = new UsersExtract();
-        foreach ($rows as $row) {
-            if (false === filter_var($row, FILTER_VALIDATE_EMAIL)) {
-                LogService::fail('Invalid email address', [
-                    'email' => $row,
-                ]);
-
-                continue;
-            }
-
-            $user = new UserExtract();
-            $user->setEmail($row);
-            $users->addUser($user);
-        }
-
-        LogService::pass('Extracted "user" entities from Google Sheets', [
-            'count' => $users->count(),
-        ]);
-
-        return $users;
-    }
-
 }
