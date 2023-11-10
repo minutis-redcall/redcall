@@ -103,7 +103,7 @@ class UserService
 
         // -----------------------------------------------
 
-        LogService::pass('Download complete', [
+        LogService::info('Download complete', [
             'id'           => $id,
             'rows_writers' => $extracts->getTab(self::WRITERS)->count(),
             'rows_readers' => $extracts->getTab(self::READERS)->count(),
@@ -139,7 +139,7 @@ class UserService
             $users->addUser($user);
         }
 
-        LogService::pass('Extracted "user" entities from Google Sheets', [
+        LogService::info('Extracted "user" entities from Google Sheets', [
             'count' => $users->count(),
         ]);
 

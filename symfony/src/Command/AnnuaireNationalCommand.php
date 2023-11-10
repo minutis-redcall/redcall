@@ -49,7 +49,7 @@ class AnnuaireNationalCommand extends Command
     {
         parent::configure();
 
-        $this->setName('annuaire-national')
+        $this->setName('import:national')
              ->setDescription('Importe les listes de l\'annuaire national');
     }
 

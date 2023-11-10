@@ -27,6 +27,7 @@ class CronController extends AbstractController
         'clear:expirable',
         'clear:volunteer',
         'report:communication',
+        'import:national',
     ];
 
     /**

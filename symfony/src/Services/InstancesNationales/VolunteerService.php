@@ -124,7 +124,7 @@ class VolunteerService
 
         // -----------------------------------------------
 
-        LogService::pass('Download complete', [
+        LogService::info('Download complete', [
             'id'            => $id,
             'rows_annuaire' => $extracts->getTab(self::ANNUAIRE)->count(),
             'rows_listes'   => $extracts->getTab(self::LISTES)->count(),
@@ -172,7 +172,7 @@ class VolunteerService
             $volunteers->addVolunteer($volunteer);
         }
 
-        LogService::pass('Extracted volunteers from Google Sheets', [
+        LogService::info('Extracted volunteers from Google Sheets', [
             'rows' => $volunteers->count(),
         ]);
 
@@ -196,7 +196,7 @@ class VolunteerService
             }
         }
 
-        LogService::pass('Filtered out non-active volunteers', [
+        LogService::info('Filtered out non-active volunteers', [
             'rows' => $volunteers->count(),
         ]);
     }
@@ -227,6 +227,8 @@ class VolunteerService
             $volunteer->setEnabled(false);
 
             $structure->removeVolunteer($volunteer);
+            $this->volunteerManager->save($volunteer);
+            $this->structureManager->save($structure);
         }
     }
 
