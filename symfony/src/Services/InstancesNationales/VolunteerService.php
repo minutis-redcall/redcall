@@ -191,7 +191,7 @@ class VolunteerService
             ]);
 
             // "Active" is column B
-            if ('O' !== $row['Actif']) {
+            if (!$row || 'O' !== $row['Actif']) {
                 $volunteers->remove($volunteer);
             }
         }

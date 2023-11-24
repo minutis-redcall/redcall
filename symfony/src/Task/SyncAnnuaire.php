@@ -26,7 +26,7 @@ class SyncAnnuaire implements TaskInterface
         $application = new Application($this->kernel);
         $application->setAutoExit(false);
 
-        $input = new ArrayInput(['command' => 'annuaire-national']);
+        $input = new ArrayInput(['command' => 'annuaire']);
 
         $application->run($input, new NullOutput());
     }
