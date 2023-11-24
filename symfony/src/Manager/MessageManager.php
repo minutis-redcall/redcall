@@ -297,6 +297,10 @@ class MessageManager
 
     public function getLatestMessagesForVolunteer(Volunteer $volunteer) : array
     {
+        if (null === $volunteer->getId()) {
+            return [];
+        }
+
         return $this->messageRepository->getLatestMessagesForVolunteer($volunteer);
     }
 }

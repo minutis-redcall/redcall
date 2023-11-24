@@ -45,7 +45,8 @@ class StatisticsRepository
                    sum(if(v.email is null and p.id is null, 1, 0)) as both_null,
                    sum(if(p.id is null or v.email is null, 1, 0)) as one_is_null
             from volunteer v
-            left join phone p on p.volunteer_id = v.id 
+            left join phone_volunteer pv on pv.volunteer_id = v.id
+            left join phone p on p.id = pv.phone_id 
             where enabled = 1
         ";
 

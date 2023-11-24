@@ -231,6 +231,7 @@ class Sender
 
         $sender = $country->getOutboundCallNumber();
 
+        $messageId = null;
         try {
             $messageId = $this->callProvider->send(
                 $sender,
