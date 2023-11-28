@@ -8,6 +8,7 @@ use App\Model\OAuthUser;
 use App\Tools\Url;
 use App\Validator\Constraints\WhitelistedRedirectUrl;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Csrf\CsrfToken;
@@ -54,6 +55,11 @@ class GoogleConnect implements GoogleConnectInterface
     private $csrfTokenManager;
 
     /**
+     * @var ParameterBagInterface
+     */
+    private $parameters;
+
+    /**
      * @var string
      */
     private $clientId;
@@ -69,6 +75,7 @@ class GoogleConnect implements GoogleConnectInterface
         VolunteerManager $volunteerManager,
         LoggerInterface $logger,
         CsrfTokenManagerInterface $csrfTokenManager,
+        ParameterBagInterface $parameters,
         string $clientId,
         string $clientSecret)
     {
@@ -78,6 +85,7 @@ class GoogleConnect implements GoogleConnectInterface
         $this->volunteerManager = $volunteerManager;
         $this->logger           = $logger;
         $this->csrfTokenManager = $csrfTokenManager;
+        $this->parameters       = $parameters;
         $this->clientId         = $clientId;
         $this->clientSecret     = $clientSecret;
     }
@@ -250,8 +258,12 @@ class GoogleConnect implements GoogleConnectInterface
 
     private function getRedirectUri() : string
     {
-        return Url::getAbsolute(
-            $this->router->generate('google_verify')
-        );
+        if ('dev' === getenv('APP_ENV')) {
+            return Url::getAbsolute(
+                $this->router->generate('google_verify')
+            );
+        } else {
+            return $this->parameters->get('long_url').$this->router->generate('google_verify');
+        }
     }
 }

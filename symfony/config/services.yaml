@@ -8,6 +8,7 @@ parameters:
   communication.processor: 'App\Communication\Processor\TaskProcessor'
   user_entity: 'App\Entity\User'
   home_route: 'home'
+  long_url: 'https://redcall.minutis.croix-rouge.fr'
   whitelisted_base_redirect_urls:
     - "http://127.0.0.1:8000/"
     - "http://localhost/"

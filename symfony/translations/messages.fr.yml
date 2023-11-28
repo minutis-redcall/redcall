@@ -738,6 +738,12 @@ manage_volunteers:
     minor: 'Mineur(e) (-18 ans)'
     minority: 'Bénévole mineur (-18ans)'
     optout_until_me: 'Je suis indisponible jusqu''au...'
+    tabs:
+      general: Général
+      contact: Contact
+      structures: Structures
+      badges: Compétences & Nominations
+      messages: Derniers messages
     phone_number: Téléphone
     phone_number_locked: 'Geler le nᵒ de téléphone *'
     phone_number_only_outbound: 'Le bénévole ne peut pas envoyer de réponses avec ce numéro'

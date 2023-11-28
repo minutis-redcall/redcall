@@ -755,6 +755,12 @@ manage_volunteers:
     section_messages: 'Latest messages'
     add: 'Create a new volunteer'
     optout_until: 'Volunteer not available until...'
+  tabs:
+    general: General
+    contact: Contact
+    structures: Structures
+    badges: Skills
+    messages: Last messages
   others: 'and %count% other(s)'
   redcall:
     action_structures: 'Structures that %name% can trigger'

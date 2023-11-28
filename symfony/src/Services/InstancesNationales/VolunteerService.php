@@ -251,6 +251,17 @@ class VolunteerService
                 $structure->addVolunteer($fromDatabase);
             }
 
+            if (false === $fromDatabase->isEnabled()) {
+                $changes = true;
+
+                LogService::pass('Re-activate a volunteer', [
+                    'nivol' => $nivol,
+                ], true);
+
+                $fromDatabase->setEnabled(true);
+                $structure->addVolunteer($fromDatabase);
+            }
+
             if ($fromDatabase->getFirstName() !== $fromExtract->getFirstname()) {
                 $changes = true;
 
