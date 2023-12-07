@@ -27,15 +27,23 @@ class GoogleConnectController extends BaseController
     public function connect(Request $request)
     {
         // Need to generate the CSRF token on the right domain name
-        $currentUrl    = sprintf('%s://%s', $request->getScheme(), $request->getHost());
-        $configuredUrl = Url::getAbsolute($this->generateUrl('google_connect'));
+        $currentUrl = sprintf('%s://%s', $request->getScheme(), $request->getHost());
+
+        if ('dev' === getenv('APP_ENV')) {
+            $configuredUrl = Url::getAbsolute($this->generateUrl('google_connect'));
+            $redirectUrl   = Url::getAbsolute($this->generateUrl('home'));
+        } else {
+            $configuredUrl = $this->getParameter('long_url').$this->generateUrl('google_connect');
+            $redirectUrl   = $this->getParameter('long_url').$this->generateUrl('home');
+        }
+
         if (!str_starts_with($configuredUrl, $currentUrl)) {
             return new RedirectResponse($configuredUrl);
         }
 
         return new RedirectResponse(
             $this->googleConnect->getAuthorizationUri(
-                Url::getAbsolute($this->generateUrl('home'))
+                $redirectUrl
             )
         );
     }

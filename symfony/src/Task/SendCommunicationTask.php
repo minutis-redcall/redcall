@@ -66,11 +66,11 @@ class SendCommunicationTask implements TaskInterface
         }
 
         foreach ($communication->getMessages() as $message) {
-            //            $this->taskSender->fire($communication->getSendTaskName(), [
-            //                'message_id' => $message->getId(),
-            //            ]);
+            $this->taskSender->fire($communication->getSendTaskName(), [
+                'message_id' => $message->getId(),
+            ]);
 
-            $this->sender->sendMessage($message, false);
+            //$this->sender->sendMessage($message, false);
         }
     }
 

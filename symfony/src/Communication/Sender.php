@@ -193,7 +193,7 @@ class Sender
         $volunteer = $message->getVolunteer();
         $country   = $this->phoneConfigManager->getPhoneConfigForVolunteer($volunteer);
 
-        if (!$country || !$country->isOutboundSmsEnabled() || !$country->getOutboundSmsShort()) {
+        if (!$country || !$country->isOutboundSmsEnabled()) {
             return;
         }
 

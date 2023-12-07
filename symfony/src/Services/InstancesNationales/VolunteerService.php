@@ -191,7 +191,7 @@ class VolunteerService
             ]);
 
             // "Active" is column B
-            if ('O' !== $row['Actif']) {
+            if (!$row || 'O' !== $row['Actif']) {
                 $volunteers->remove($volunteer);
             }
         }
@@ -248,6 +248,17 @@ class VolunteerService
                 $fromDatabase = new Volunteer();
                 $fromDatabase->setPlatform(Platform::FR);
                 $fromDatabase->setExternalId($nivol);
+                $structure->addVolunteer($fromDatabase);
+            }
+
+            if (false === $fromDatabase->isEnabled()) {
+                $changes = true;
+
+                LogService::pass('Re-activate a volunteer', [
+                    'nivol' => $nivol,
+                ], true);
+
+                $fromDatabase->setEnabled(true);
                 $structure->addVolunteer($fromDatabase);
             }
 
