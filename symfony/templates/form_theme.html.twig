@@ -211,21 +211,21 @@
         $(function () {
 
             $('#{{ form.editor.vars.id }}').val(
-                    $('#{{ form.e164.vars.id }}').val()
+                $('#{{ form.e164.vars.id }}').val()
             );
 
             var tel = document.querySelector('#{{ form.editor.vars.id }}');
             var iti = intlTelInput(tel, {
                 nationalMode: true,
                 defaultCountry: 'FR',
-                preferredCountries: ['FR', 'ES', 'GP', 'GF', 'MQ', 'YT', 'PF', 'RE', 'NC', 'PM', 'BL', 'MF', 'WF'],
+                preferredCountries: ['FR', 'AD', 'ES', 'GP', 'GF', 'MQ', 'YT', 'PF', 'RE', 'NC', 'PM', 'BL', 'MF', 'WF'],
             });
 
             var handleChange = function () {
                 if (iti.isValidNumber()) {
                     var e164 = $('#{{ form.editor.vars.id }}').data('e164');
                     $(e164).val(
-                            iti.getNumber()
+                        iti.getNumber()
                     );
                 }
             }

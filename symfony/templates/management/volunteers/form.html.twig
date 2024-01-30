@@ -13,8 +13,7 @@
     </h1>
 
     <div id="form-container">
-        {{ form_start(form) }}
-        {{ form_errors(form) }}
+        {% set has_gdpr = (not volunteer.user or not volunteer.user.trusted) and delete %}
 
         <nav>
             <div class="nav nav-tabs" id="nav-tab" role="tablist">
@@ -43,6 +42,8 @@
             </div>
         </nav>
 
+        {{ form_start(form) }}
+        {{ form_errors(form) }}
         <div class="tab-content" id="nav-content">
 
             {# General #}
@@ -75,13 +76,6 @@
                 <div>
                     {{ 'manage_volunteers.form.lock_info'|trans }}
                 </div>
-                {% if (not volunteer.user or not volunteer.user.trusted) and delete %}
-                    <div class="col-md-6 mt-3 text-left">
-                        <hr/>
-                        <strong>{{ 'manage_volunteers.anonymize.gdpr'|trans }}</strong>: {{ 'manage_volunteers.anonymize.volunteer_asked_for_it'|trans }}
-                        {{ form(delete) }}
-                    </div>
-                {% endif %}
             </div>
 
             {# Structures #}
@@ -159,12 +153,21 @@
                 </div>
             {% endif %}
 
+            {{ form_row(form.submit) }}
+            {{ form_end(form) }}
+
+            {% if has_gdpr %}
+                <div class="text-right">
+                    <strong>{{ 'manage_volunteers.anonymize.gdpr'|trans }}</strong>:
+                    {{ 'manage_volunteers.anonymize.volunteer_asked_for_it'|trans }}
+                    {{ form(delete) }}
+                </div>
+            {% endif %}
+
         </div>
 
         <br/>
 
-        {{ form_row(form.submit) }}
-        {{ form_end(form) }}
 
     </div>
 

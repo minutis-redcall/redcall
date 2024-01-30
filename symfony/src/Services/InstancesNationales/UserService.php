@@ -135,7 +135,7 @@ class UserService
             }
 
             $user = new UserExtract();
-            $user->setEmail($row);
+            $user->setEmail(strtolower($row));
             $users->addUser($user);
         }
 

@@ -10,6 +10,14 @@
 
         <h3>{{ 'manage_volunteers.admin_structures.structures'|trans({'%name%': volunteer.displayName}) }}</h3>
 
+        <div class="float-right">
+            <a href="{{ path('management_volunteers_remove_all_structures', {id: volunteer.id, csrf: csrf_token('volunteer')}) }}" class="btn btn-outline-danger">
+                Remove all structures
+            </a>
+        </div>
+
+        <br/><br/>
+
         <table class="table">
             <tbody>
             {% for structure in volunteer.structures %}

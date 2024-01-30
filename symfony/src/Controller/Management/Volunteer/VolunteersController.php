@@ -326,6 +326,23 @@ class VolunteersController extends BaseController
     }
 
     /**
+     * @Route(path="/remove-all-structures/{csrf}/{id}", name="remove_all_structures")
+     * @IsGranted("ROLE_ADMIN")
+     */
+    public function removeAllStructures(Volunteer $volunteer)
+    {
+        foreach ($volunteer->getStructures() as $structure) {
+            $volunteer->removeStructure($structure);
+        }
+
+        $this->volunteerManager->save($volunteer);
+
+        return $this->redirectToRoute('management_volunteers_edit_structures', [
+            'id' => $volunteer->getId(),
+        ]);
+    }
+
+    /**
      * @Route(path="/add-structure/{csrf}/{id}", name="add_structure")
      * @IsGranted("ROLE_ADMIN")
      */
