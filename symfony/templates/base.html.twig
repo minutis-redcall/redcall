@@ -140,6 +140,9 @@
 
                     <br/><br/>
 
+                    <div class="color-grey small">
+                        {{ app.user.mainStructure }}
+                    </div>
                     <div class="text-center">
                         {% if is_granted('ROLE_ADMIN') %}
                             <a href="{{ path('admin_pegass_update_structures', {id: app.user.id}) }}" target="_blank">
@@ -149,6 +152,7 @@
                             {{ 'password_login.connect.who_am_i'|trans({'%username%': app.user.displayName}) }}
                         {% endif %}
                     </div>
+                    <br/>
 
                     {{ include('@PasswordLogin/menu.html.twig', {
                         display_user: false,

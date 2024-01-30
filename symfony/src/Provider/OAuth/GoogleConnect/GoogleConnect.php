@@ -3,6 +3,8 @@
 namespace App\Provider\OAuth\GoogleConnect;
 
 use App\Entity\Volunteer;
+use App\Enum\Platform;
+use App\Manager\UserManager;
 use App\Manager\VolunteerManager;
 use App\Model\OAuthUser;
 use App\Tools\Url;
@@ -69,6 +71,11 @@ class GoogleConnect implements GoogleConnectInterface
      */
     private $clientSecret;
 
+    /**
+     * @var UserManager
+     */
+    private $userManager;
+
     public function __construct(RouterInterface $router,
         HttpClientInterface $client,
         ValidatorInterface $validator,
@@ -76,6 +83,7 @@ class GoogleConnect implements GoogleConnectInterface
         LoggerInterface $logger,
         CsrfTokenManagerInterface $csrfTokenManager,
         ParameterBagInterface $parameters,
+        UserManager $userManager,
         string $clientId,
         string $clientSecret)
     {
@@ -88,6 +96,7 @@ class GoogleConnect implements GoogleConnectInterface
         $this->parameters       = $parameters;
         $this->clientId         = $clientId;
         $this->clientSecret     = $clientSecret;
+        $this->userManager      = $userManager;
     }
 
     public function getAuthorizationUri(string $redirectUri)
@@ -131,7 +140,22 @@ class GoogleConnect implements GoogleConnectInterface
             return null;
         }
 
-        return $this->volunteerManager->getVolunteerFromOauth($oAuthUser);
+        $user = $this->userManager->findOneByUsernameAndPlatform(Platform::FR, $oAuthUser->getEmail());
+
+        if (null === $user) {
+            return $this->volunteerManager->getVolunteerFromOauth($oAuthUser);
+        }
+
+        if ($user && $volunteer = $user->getVolunteer()) {
+            if (!$volunteer->isEnabled()) {
+                $volunteer->setEnabled(true);
+                $this->volunteerManager->save($volunteer);
+            }
+
+            return $user->getVolunteer();
+        }
+
+        return null;
     }
 
     public function getRedirectAfterAuthenticationUri(Request $request) : ?string
