@@ -44,12 +44,15 @@ class PegassCreateChunks implements TaskInterface
      */
     private $logger;
 
-    public function __construct(VolunteerManager $volunteerManager, PegassManager $pegassManager, TaskSender $async, LoggerInterface $logger)
+    public function __construct(VolunteerManager $volunteerManager,
+        PegassManager $pegassManager,
+        TaskSender $async,
+        LoggerInterface $logger)
     {
         $this->volunteerManager = $volunteerManager;
-        $this->pegassManager = $pegassManager;
-        $this->async         = $async;
-        $this->logger        = $logger;
+        $this->pegassManager    = $pegassManager;
+        $this->async            = $async;
+        $this->logger           = $logger;
     }
 
     public function execute(array $context)
@@ -66,41 +69,31 @@ class PegassCreateChunks implements TaskInterface
     {
         $this->logger->warning('Fetching files on GCS...');
         $files = [];
-        $items = (new StorageClient())->bucket(getenv('GCP_STORAGE_PEGASS'))->objects();
+        $items = (new StorageClient())->bucket(getenv('GCP_STORAGE_PEGASS'))->objects() ?? [];
         foreach ($items as $item) {
             /** @var StorageObject $item */
-            if (preg_match('|^redcall_[a-z_]+_[0-9]{8}\.csv$|u', $item->name())) {
+            if (preg_match('|^redcall_[a-z_]+\.csv$|u', $item->name())) {
                 $files[$item->name()] = $item;
             }
         }
         $this->logger->warning('Fetched '.count($files).' files.');
 
-        $byDates = [];
-        foreach ($files as $filename => $item) {
-            $byDates[substr($filename, -12, -4)][$filename] = $item;
+        if (0 === count($files)) {
+            return;
         }
-        krsort($byDates);
-        $lastFiles = array_shift($byDates);
 
-        if (count($lastFiles) < 10) {
+        if (count($files) < 10) {
             // Export is incomplete
             $this->logger->warning('Import is incomplete ('.count($files).' files).', [
-                'files' => array_keys($lastFiles),
+                'files' => array_keys($files),
             ]);
 
             return;
         }
 
-        $this->logger->warning('Deleting older files...');
-        foreach ($byDates as $files) {
-            foreach ($files as $item) {
-                $item->delete();
-            }
-        }
-
         $this->logger->warning('Downloading files...');
         $context = [];
-        foreach ($lastFiles as $filename => $item) {
+        foreach ($files as $filename => $item) {
             $context[$filename] = $item->downloadAsString();
         }
 
@@ -122,6 +115,7 @@ class PegassCreateChunks implements TaskInterface
         $ratio = (count($this->volunteers) * 100 / $this->volunteerManager->countActive());
         if ($ratio < 95) {
             $this->logger->critical(sprintf('Only %d%% volunteers in import!', $ratio));
+
             return;
         }
 
@@ -405,7 +399,7 @@ class PegassCreateChunks implements TaskInterface
             // Remove header
             array_shift($csv);
 
-            $csvs[substr(basename($filename), 8, -13)] = $csv;
+            $csvs[substr(basename($filename), 8, -4)] = $csv;
         }
 
         array_walk_recursive($csvs, function (&$value) {
