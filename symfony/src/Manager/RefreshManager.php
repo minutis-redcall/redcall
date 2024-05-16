@@ -257,7 +257,16 @@ class RefreshManager
             }
         }
 
-        // Volunteer is locked
+        // Update basic information
+        $volunteer->setFirstName($this->normalizeName($pegass->evaluate('user.prenom')));
+        $volunteer->setLastName($this->normalizeName($pegass->evaluate('user.nom')));
+
+        // Update minority
+        $volunteer->setMinor(
+            $pegass->evaluate('user.mineur')
+        );
+
+        // Volunteer is locked, we stop here
         if ($volunteer->isLocked()) {
             $volunteer->addReport('import_report.update_locked');
             $volunteer->removeExpiredBadges();
@@ -314,15 +323,6 @@ class RefreshManager
         }
 
         $volunteer->setEnabled(true);
-
-        // Update basic information
-        $volunteer->setFirstName($this->normalizeName($pegass->evaluate('user.prenom')));
-        $volunteer->setLastName($this->normalizeName($pegass->evaluate('user.nom')));
-
-        // Update minority
-        $volunteer->setMinor(
-            $pegass->evaluate('user.mineur')
-        );
 
         foreach ($pegass->evaluate('contact') as $data) {
             switch ($data['moyenComId'] ?? false) {
