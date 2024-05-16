@@ -1,4 +1,4 @@
-runtime: php73
+runtime: php83
 
 vpc_access_connector:
   name: "projects/redcall-prod-260921/locations/europe-west1/connectors/gae-serverless-conn-prod"

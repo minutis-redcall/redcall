@@ -518,7 +518,7 @@ class Volunteer implements LockableInterface
         return (new EscapedArray([
             'id'          => strval($this->getId()),
             'external-id' => $this->getExternalId(),
-            'human'       => sprintf('%s: %s %s%s', $this->getExternalId(), $this->getFirstName(), $this->getLastName(), $badges ? sprintf(' (%s)', $badges) : null),
+            'human'       => sprintf('%s %s%s / %s', $this->getFirstName(), $this->getLastName(), $badges ? sprintf(' (%s)', $badges) : null, $this->getExternalId()),
         ]))->getArrayCopy();
     }
 
