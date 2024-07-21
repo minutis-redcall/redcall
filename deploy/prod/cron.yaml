@@ -51,7 +51,3 @@ cron:
     url: /cron/clear-volunteer
     schedule: every 24 hours
 
-  # * * * * * <path/to/the/project>/symfony/bin/console annuaire
-  - description: "Sync volunteers with the Annuaire National database"
-    url: /cron/annuaire
-    schedule: every 24 hours

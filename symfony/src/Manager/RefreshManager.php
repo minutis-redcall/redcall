@@ -258,8 +258,31 @@ class RefreshManager
         }
 
         // Update basic information
-        $volunteer->setFirstName($this->normalizeName($pegass->evaluate('user.prenom')));
-        $volunteer->setLastName($this->normalizeName($pegass->evaluate('user.nom')));
+        $firstName = $this->normalizeName($pegass->evaluate('user.prenom'));
+        if ('' === $firstName) {
+            $this->logger->error(sprintf(
+                'Volunteer %s has no first name, skipping',
+                $volunteer->getExternalId()
+            ), [
+                'payload' => $pegass->getContent() ?? 'N/A',
+            ]);
+
+            return;
+        }
+
+        $volunteer->setFirstName($firstName);
+        $lastName = $this->normalizeName($pegass->evaluate('user.nom'));
+        if ('' === $lastName) {
+            $this->logger->error(sprintf(
+                'Volunteer %s has no last name, skipping',
+                $volunteer->getExternalId()
+            ), [
+                'payload' => $pegass->getContent() ?? 'N/A',
+            ]);
+
+            return;
+        }
+        $volunteer->setLastName($lastName);
 
         // Update minority
         $volunteer->setMinor(
@@ -389,8 +412,12 @@ class RefreshManager
         }
     }
 
-    private function normalizeName(string $name) : string
+    private function normalizeName(?string $name) : string
     {
+        if (null === $name) {
+            return '';
+        }
+
         return sprintf('%s%s',
             mb_strtoupper(mb_substr($name, 0, 1)),
             mb_strtolower(mb_substr($name, 1))
