@@ -12,11 +12,25 @@
 # Twilio sender id support
 # https://support.twilio.com/hc/en-us/articles/223133767-International-support-for-Alphanumeric-Sender-ID
 #
+# Enable a new country code:
+# https://console.twilio.com/us1/develop/sms/settings/geo-permissions
+#
 # Twilio programming voice support
 # https://www.twilio.com/voice/pricing/pm
 ####################################################################################################################################
 parameters:
   phones:
+    fr_be: # +32, Belgium
+      timezone: 'Europe/Brussels'
+      outbound_call_enabled: true
+      outbound_call_number: '%env(TWILIO_FROM_LONG_FR)%'
+      #      outbound_call_keypad: true
+      outbound_sms_enabled: true
+      outbound_sms_short: '%env(TWILIO_FROM_LONG_FR)%'
+      outbound_sms_long: '%env(TWILIO_FROM_LONG_FR)%'
+      inbound_call_enabled: true
+      inbound_call_number: '%env(TWILIO_FROM_LONG_FR)%'
+      inbound_sms_enabled: true
     fr_fr: # +33, France
       timezone: 'Europe/Paris'
       outbound_call_enabled: true

@@ -116,6 +116,7 @@ admin:
     unlock: Unlock
     unroot: 'Remove from countries manager'
     root: 'Make countries manager (super admin)'
+    max: 'Select all (up to max. %max% structures at once)'
   resources:
     change_platform: 'Switch platform to: %platform%'
     change_platform_title: 'Platform update'

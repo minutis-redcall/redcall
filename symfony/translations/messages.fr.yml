@@ -116,6 +116,7 @@ admin:
     unlock: Dégeler
     unroot: 'Desactiver la gestion des pays'
     root: 'Activer la gestion des pays (super admin)'
+    max: 'Sélectionner tout (dans la limite de %max% structures d''un coup)'
   resources:
     change_platform: 'Transférer vers %platform%'
     change_platform_title: 'Changement de plateforme'
