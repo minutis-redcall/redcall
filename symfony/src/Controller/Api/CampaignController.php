@@ -3,7 +3,6 @@
 namespace App\Controller\Api;
 
 use App\Base\BaseController;
-use App\Entity\Structure;
 use App\Facade\Trigger\SimpleMessageRequestFacade;
 use App\Facade\Trigger\SimpleMessageResponseFacade;
 use App\Form\Model\Campaign;
@@ -14,8 +13,6 @@ use App\Manager\PlatformConfigManager;
 use App\Manager\VolunteerManager;
 use Bundles\ApiBundle\Annotation\Endpoint;
 use Bundles\ApiBundle\Annotation\Facade;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
@@ -52,7 +49,7 @@ class CampaignController extends BaseController
     }
 
     /**
-     * Send an SMS to a given structure and its sub structures.
+     * Send an SMS to a given list of volunteers.
      *
      * @Endpoint(
      *   priority = 700,
@@ -60,30 +57,42 @@ class CampaignController extends BaseController
      *   response = @Facade(class = SimpleMessageResponseFacade::class)
      * )
      *
-     * @Route("/{structureExternalId}/simple-sms", methods={"POST"})
-     * @Entity("structure", expr="repository.findOneByExternalIdAndCurrentPlatform(structureExternalId)")
-     * @IsGranted("STRUCTURE", subject="structure")
+     * @Route("/sms", methods={"POST"})
      */
-    public function simpleSms(Structure $structure, SimpleMessageRequestFacade $request)
+    public function sms(SimpleMessageRequestFacade $request)
     {
         // User is trying to set trigger's ownership to a volunteer that is out of his/her scope
-        $volunteer = $this->volunteerManager->findOneByInternalEmail($request->getSenderInternalEmail());
-        if (!$this->isGranted('VOLUNTEER', $volunteer)) {
+        $sender = $this->volunteerManager->findOneByInternalEmail($request->getSenderInternalEmail());
+        if (!$this->isGranted('VOLUNTEER', $sender)) {
             throw $this->createNotFoundException();
+        }
+
+        $receivers = [];
+        foreach ($request->getReceiverInternalEmails() as $internalEmail) {
+            $receiver = $this->volunteerManager->findOneByInternalEmail($internalEmail);
+
+            if (null === $receiver) {
+                continue;
+            }
+
+            if (!$this->isGranted('VOLUNTEER', $receiver)) {
+                continue;
+            }
+
+            $receivers[] = $receiver->getId();
         }
 
         $trigger = new SmsTrigger();
         $trigger->setLanguage($this->platformManager->getPlaform($this->getPlatform())->getDefaultLanguage()->getLocale());
         $trigger->setAudience(AudienceType::createEmptyData([
-            'structures_global' => [$structure->getId()],
-            'badges_all'        => true,
+            'volunteers' => $receivers,
         ]));
         $trigger->setMessage($request->getMessage());
 
         $campaign        = new Campaign($trigger);
         $campaign->label = sprintf('SimpleSms API (%s)', $this->getUser()->getUserIdentifier());
 
-        $entity = $this->campaignManager->launchNewCampaign($campaign, null, $volunteer);
+        $entity = $this->campaignManager->launchNewCampaign($campaign, null, $sender);
 
         return new SimpleMessageResponseFacade(
             count(($entity->getCommunications()[0] ?? [])->getMessages()),

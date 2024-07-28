@@ -20,6 +20,15 @@ class SimpleMessageRequestFacade implements FacadeInterface
     protected $senderInternalEmail = null;
 
     /**
+     * The list of internal emails of the volunteers who will receive the message.
+     *
+     * @Assert\All(@Assert\Email)
+     *
+     * @var string[]
+     */
+    protected $receiverInternalEmails = [];
+
+    /**
      * Message to send.
      *
      * Keep it short (< 300 chars) to improve its delivery rate.
@@ -33,9 +42,10 @@ class SimpleMessageRequestFacade implements FacadeInterface
 
     static public function getExample(Api\Facade $decorates = null) : FacadeInterface
     {
-        $facade                      = new self;
-        $facade->senderInternalEmail = 'roger.rabbit@croix-rouge.fr';
-        $facade->message             = 'Recherche d\'effectifs pour tenir CHU en 3x8 la semaine prochaine, merci de vous inscire sur https://example.com';
+        $facade                         = new self;
+        $facade->senderInternalEmail    = 'roger.rabbit@croix-rouge.fr';
+        $facade->receiverInternalEmails = ['john.rambo@criox-rouge.fr'];
+        $facade->message                = 'Recherche d\'effectifs pour tenir CHU en 3x8 la semaine prochaine, merci de vous inscrire sur https://example.com';
 
         return $facade;
     }
@@ -48,6 +58,23 @@ class SimpleMessageRequestFacade implements FacadeInterface
     public function setSenderInternalEmail(?string $senderInternalEmail) : SimpleMessageRequestFacade
     {
         $this->senderInternalEmail = $senderInternalEmail;
+
+        return $this;
+    }
+
+    public function getReceiverInternalEmails() : array
+    {
+        return $this->receiverInternalEmails;
+    }
+
+    public function setReceiverInternalEmails(array $receiverInternalEmails) : void
+    {
+        $this->receiverInternalEmails = $receiverInternalEmails;
+    }
+
+    public function addReceiverInternalEmail(string $receiverInternalEmail) : SimpleMessageRequestFacade
+    {
+        $this->receiverInternalEmails[] = $receiverInternalEmail;
 
         return $this;
     }
