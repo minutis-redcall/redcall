@@ -995,3 +995,23 @@ title:
   campaigns: Campaigns
   costs: Costs
   messages: Messages
+nivol_auth:
+  connect_minutis:
+    s01: 'Do you usually log in via Minutis? Use'
+    s02: 'NIVOL authentication'
+    s03: '.'
+  connect_annu:
+    s01: 'Are you an employee and want to use the national directory? Use'
+    s02: 'Google Workplace authentication'
+    s03: '.'
+  connect_classic:
+    s01: 'Did you create an account with email/password? Use'
+    s02: 'the classic login form'
+    s03: '.'
+  connect_choice: 'Choose one of the authentication methods above.'
+  input_nivol: 'Please enter your NIVOL'
+  nivol_not_found: 'NIvol not found'
+  input_submit: 'Send me a verification code by email'
+  input_code: 'Please enter the code received by email'
+  remember_me: 'Trust this device and keep the session open'
+  input_connect: 'Connect'

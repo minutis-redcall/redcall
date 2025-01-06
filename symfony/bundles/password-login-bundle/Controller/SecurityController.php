@@ -27,7 +27,6 @@ use Bundles\PasswordLoginBundle\Services\Mail;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -250,48 +249,13 @@ class SecurityController extends AbstractController
             ->handleRequest($request);
 
         if ($this->session->has(Security::AUTHENTICATION_ERROR)) {
-            $connectForm->addError(
-                new FormError($this->translator->trans('password_login.connect.incorrect'))
-            );
-
-            $nivolForm->addError(
-                new FormError($this->translator->trans('password_login.connect.incorrect'))
-            );
-
+            $this->session->getFlashBag()->add('danger', $this->translator->trans('password_login.connect.incorrect'));
             $this->session->remove(Security::AUTHENTICATION_ERROR);
         }
 
         return [
             'connect' => $connectForm->createView(),
             'nivol'   => $nivolForm->createView(),
-        ];
-    }
-
-    /**
-     * @Route("/nivol", name="nivol")
-     * @Template()
-     */
-    public function nivolAction(Request $request)
-    {
-        if ($this->isGranted('ROLE_USER')) {
-            return $this->redirectToRoute($this->homeRoute);
-        }
-
-        $connectForm = $this
-            ->createForm(NivolType::class)
-            ->handleRequest($request);
-
-        if ($this->session->has(Security::AUTHENTICATION_ERROR)) {
-            $connectForm->addError(
-                new FormError($this->translator->trans('password_login.connect.incorrect'))
-            );
-
-            $this->session->remove(Security::AUTHENTICATION_ERROR);
-        }
-
-        return [
-            'connect' => $connectForm->createView(),
-            'nivol'   => $this->getNivolForm($request)->createView(),
         ];
     }
 

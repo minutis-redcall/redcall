@@ -5,20 +5,28 @@ namespace App\Manager;
 use App\Entity\User;
 use App\Enum\Platform;
 use App\Tools\Random;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class NivolManager
 {
-    private VolunteerManager $volunteerManager;
-    private ExpirableManager $expirableManager;
-    private MailManager      $mailManager;
+    private VolunteerManager    $volunteerManager;
+    private ExpirableManager    $expirableManager;
+    private MailManager         $mailManager;
+    private TranslatorInterface $translator;
+    private RequestStack        $requestStack;
 
     public function __construct(VolunteerManager $volunteerManager,
         ExpirableManager $expirableManager,
-        MailManager $mailManager)
+        MailManager $mailManager,
+        TranslatorInterface $translator,
+        RequestStack $requestStack)
     {
         $this->volunteerManager = $volunteerManager;
         $this->expirableManager = $expirableManager;
         $this->mailManager      = $mailManager;
+        $this->translator       = $translator;
+        $this->requestStack     = $requestStack;
     }
 
     public function getUserByNivol(string $nivol) : ?User
@@ -59,10 +67,10 @@ class NivolManager
 
         $this->mailManager->simple(
             $user->getUserIdentifier(),
-            sprintf('%s est votre code de connexion à RedCall', $code),
-            sprintf('Utilisez le code %s pour vous connecter à RedCall.', $code),
-            sprintf('<p>Utilisez le code <strong>%s</strong> pour vous connecter à RedCall.</p>', $code),
-            'fr'
+            $this->translator->trans('nivol_auth.email.subject', ['%code%' => $code]),
+            $this->translator->trans('nivol_auth.email.content', ['%code%' => $code]),
+            $this->translator->trans('nivol_auth.email.content_html', ['%code%' => $code]),
+            $this->requestStack->getMainRequest()->getLocale()
         );
 
         return $identifier;

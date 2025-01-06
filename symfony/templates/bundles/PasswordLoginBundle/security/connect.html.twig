@@ -20,22 +20,22 @@
 
             <div id="main">
                 <p>
-                    Vous avez l'habitude vous connecter via Minutis ? Utilisez
+                    {{ 'nivol_auth.connect_minutis.s01'|trans }}
                     <a href="#" onclick="$('.auth-mean').addClass('d-none'); $('#nivol').removeClass('d-none'); return false;">
-                        l'authentification par NIVOL</a>.
+                        {{ 'nivol_auth.connect_minutis.s02'|trans }}</a>{{ 'nivol_auth.connect_minutis.s03'|trans }}
                 </p>
                 <br/><br/>
                 <p>
-                    Vous êtes un employé et souhaitez utiliser l'annuaire national ? Utilisez
+                    {{ 'nivol_auth.connect_annu.s01'|trans }}
                     <a href="#" onclick="$('.auth-mean').addClass('d-none'); $('#google-login').removeClass('d-none'); return false;">
-                        l'authentification par Google Workplace</a>.
+                        {{ 'nivol_auth.connect_annu.s02'|trans }}</a>{{ 'nivol_auth.connect_annu.s03'|trans }}
                 </p>
                 <br/><br/>
                 <p>
-                    Vous avez créé un compte par email / mot de passe ? Utilisez
+                    {{ 'nivol_auth.connect_classic.s01'|trans }}
                     <a href="#classic-login" onclick="$('.auth-mean').addClass('d-none'); $('#classic-login').removeClass('d-none'); return false;">
-                        le formulaire de login
-                    </a> classique.
+                        {{ 'nivol_auth.connect_classic.s02'|trans }}
+                    </a> {{ 'nivol_auth.connect_classic.s03'|trans }}
                 </p>
             </div>
             <br/><br/>
@@ -43,10 +43,11 @@
             <hr/>
 
             <div class="auth-mean">
-                Faites un choix parmi la liste de méthodes d'authentification ci-dessus.
+                {{ 'nivol_auth.connect_choice'|trans }}
             </div>
 
             <div id="nivol" class="auth-mean d-none">
+                {% form_theme nivol '@EWZRecaptcha/Form/ewz_recaptcha_widget.html.twig' %}
                 {{ form(nivol) }}
             </div>
 
