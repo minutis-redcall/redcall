@@ -1015,3 +1015,7 @@ nivol_auth:
   input_code: 'Please enter the code received by email'
   remember_me: 'Trust this device and keep the session open'
   input_connect: 'Connect'
+  email:
+    subject: '%code% is your RedCall verification code'
+    content: 'Use the code %code% to connect to RedCall.'
+    content_html: '<p>Use the code <strong>%code%</strong> to connect to RedCall.</p>'
