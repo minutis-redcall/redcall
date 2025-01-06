@@ -2,6 +2,7 @@
 
 namespace Bundles\PasswordLoginBundle\Controller;
 
+use App\Form\Type\NivolType;
 use Bundles\PasswordLoginBundle\Entity\AbstractUser;
 use Bundles\PasswordLoginBundle\Entity\EmailVerification;
 use Bundles\PasswordLoginBundle\Event\PasswordLoginEvents;
@@ -26,7 +27,6 @@ use Bundles\PasswordLoginBundle\Services\Mail;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -244,16 +244,18 @@ class SecurityController extends AbstractController
             ->createForm(ConnectType::class)
             ->handleRequest($request);
 
-        if ($this->session->has(Security::AUTHENTICATION_ERROR)) {
-            $connectForm->addError(
-                new FormError($this->translator->trans('password_login.connect.incorrect'))
-            );
+        $nivolForm = $this
+            ->createForm(NivolType::class)
+            ->handleRequest($request);
 
+        if ($this->session->has(Security::AUTHENTICATION_ERROR)) {
+            $this->session->getFlashBag()->add('danger', $this->translator->trans('password_login.connect.incorrect'));
             $this->session->remove(Security::AUTHENTICATION_ERROR);
         }
 
         return [
             'connect' => $connectForm->createView(),
+            'nivol'   => $nivolForm->createView(),
         ];
     }
 

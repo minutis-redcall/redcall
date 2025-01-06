@@ -16,7 +16,42 @@
                 <img style="max-height:60px;" src="{{ asset('build/images/redcall-full.png') }}"/>
             </div>
 
-            <div id="google-login">
+            <br/><br/><br/>
+
+            <div id="main">
+                <p>
+                    {{ 'nivol_auth.connect_minutis.s01'|trans }}
+                    <a href="#" onclick="$('.auth-mean').addClass('d-none'); $('#nivol').removeClass('d-none'); return false;">
+                        {{ 'nivol_auth.connect_minutis.s02'|trans }}</a>{{ 'nivol_auth.connect_minutis.s03'|trans }}
+                </p>
+                <br/><br/>
+                <p>
+                    {{ 'nivol_auth.connect_annu.s01'|trans }}
+                    <a href="#" onclick="$('.auth-mean').addClass('d-none'); $('#google-login').removeClass('d-none'); return false;">
+                        {{ 'nivol_auth.connect_annu.s02'|trans }}</a>{{ 'nivol_auth.connect_annu.s03'|trans }}
+                </p>
+                <br/><br/>
+                <p>
+                    {{ 'nivol_auth.connect_classic.s01'|trans }}
+                    <a href="#classic-login" onclick="$('.auth-mean').addClass('d-none'); $('#classic-login').removeClass('d-none'); return false;">
+                        {{ 'nivol_auth.connect_classic.s02'|trans }}
+                    </a> {{ 'nivol_auth.connect_classic.s03'|trans }}
+                </p>
+            </div>
+            <br/><br/>
+
+            <hr/>
+
+            <div class="auth-mean">
+                {{ 'nivol_auth.connect_choice'|trans }}
+            </div>
+
+            <div id="nivol" class="auth-mean d-none">
+                {% form_theme nivol '@EWZRecaptcha/Form/ewz_recaptcha_widget.html.twig' %}
+                {{ form(nivol) }}
+            </div>
+
+            <div id="google-login" class="auth-mean d-none">
 
                 <br/><br/><br/>
 
@@ -29,17 +64,9 @@
                     </p>
                 </div>
 
-                <br/><br/><br/>
-
-                <div class="text-center">
-                    <a href="#" onclick="$('#google-login').addClass('d-none'); $('#classic-login').removeClass('d-none'); return false;">
-                        {{ 'google.other'|trans }}
-                    </a>
-                </div>
-
             </div>
 
-            <div id="classic-login" class="d-none">
+            <div id="classic-login" class="auth-mean d-none">
                 <h3>{{ block('title') }}</h3>
 
                 {% form_theme connect '@EWZRecaptcha/Form/ewz_recaptcha_widget.html.twig' %}

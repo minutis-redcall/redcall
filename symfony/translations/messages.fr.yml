@@ -1001,3 +1001,27 @@ title:
   campaigns: Déclenchements
   costs: Coûts
   messages: Messages
+nivol_auth:
+  connect_minutis:
+    s01: 'Vous avez l''habitude vous connecter via Minutis ? Utilisez'
+    s02: 'l''authentification par NIVOL'
+    s03: '.'
+  connect_annu:
+    s01: 'Vous êtes un employé et souhaitez utiliser l''annuaire national ? Utilisez'
+    s02: 'l''authentification par Google Workplace'
+    s03: '.'
+  connect_classic:
+    s01: 'Vous avez créé un compte par email / mot de passe ? Utilisez'
+    s02: 'le formulaire de login'
+    s03: 'classique.'
+  connect_choice: 'Faites un choix parmi la liste de méthodes d''authentification ci-dessus.'
+  input_nivol: 'Veuillez saisir votre NIVOL'
+  nivol_not_found: 'NIVOL invalide'
+  input_submit: 'M''envoyer un code par email'
+  input_code: 'Veuillez saisir le code reçu par email'
+  remember_me: 'Faire confiance à cet appareil et laisser la session ouverte'
+  input_connect: 'Se connecter'
+  email:
+    subject: '%code% est votre code de connexion à RedCall'
+    content: 'Utilisez le code %code% pour vous connecter à RedCall.'
+    content_html: '<p>Utilisez le code <strong>%code%</strong> pour vous connecter à RedCall.</p>'
