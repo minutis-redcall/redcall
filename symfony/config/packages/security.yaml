@@ -38,6 +38,7 @@ security:
           - App\Security\Authenticator\MinutisAuthenticator
           - App\Security\Authenticator\GoogleConnectAuthenticator
           - Bundles\PasswordLoginBundle\Security\Authenticator\FormLoginAuthenticator
+          - App\Security\Authenticator\NivolAuthenticator
         entry_point: App\Security\Authenticator\MinutisAuthenticator
       remember_me:
         token_provider: 'Symfony\Bridge\Doctrine\Security\RememberMe\DoctrineTokenProvider'
@@ -76,6 +77,8 @@ security:
     - { path: '^/change-password', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
     - { path: '^/verify-email', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
     - { path: '^/locale', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
+    - { path: '^/nivol', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
+    - { path: '^/code', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
 
     # Links contained in SMS should be publicly available
     - { path: '^/syn', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }

@@ -2,6 +2,7 @@
 
 namespace Bundles\PasswordLoginBundle\Manager;
 
+use App\Entity\User;
 use Bundles\PasswordLoginBundle\Entity\AbstractUser;
 use Bundles\PasswordLoginBundle\Repository\UserRepository;
 use Bundles\PasswordLoginBundle\Repository\UserRepositoryInterface;
@@ -56,5 +57,10 @@ class UserManager
     public function searchAll(?string $criteria) : array
     {
         return $this->userRepository->searchAll($criteria);
+    }
+
+    public function find(string $id) : ?User
+    {
+        return $this->userRepository->find($id);
     }
 }

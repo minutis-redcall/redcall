@@ -2,6 +2,7 @@
 
 namespace Bundles\PasswordLoginBundle\Controller;
 
+use App\Form\Type\NivolType;
 use Bundles\PasswordLoginBundle\Entity\AbstractUser;
 use Bundles\PasswordLoginBundle\Entity\EmailVerification;
 use Bundles\PasswordLoginBundle\Event\PasswordLoginEvents;
@@ -244,6 +245,42 @@ class SecurityController extends AbstractController
             ->createForm(ConnectType::class)
             ->handleRequest($request);
 
+        $nivolForm = $this
+            ->createForm(NivolType::class)
+            ->handleRequest($request);
+
+        if ($this->session->has(Security::AUTHENTICATION_ERROR)) {
+            $connectForm->addError(
+                new FormError($this->translator->trans('password_login.connect.incorrect'))
+            );
+
+            $nivolForm->addError(
+                new FormError($this->translator->trans('password_login.connect.incorrect'))
+            );
+
+            $this->session->remove(Security::AUTHENTICATION_ERROR);
+        }
+
+        return [
+            'connect' => $connectForm->createView(),
+            'nivol'   => $nivolForm->createView(),
+        ];
+    }
+
+    /**
+     * @Route("/nivol", name="nivol")
+     * @Template()
+     */
+    public function nivolAction(Request $request)
+    {
+        if ($this->isGranted('ROLE_USER')) {
+            return $this->redirectToRoute($this->homeRoute);
+        }
+
+        $connectForm = $this
+            ->createForm(NivolType::class)
+            ->handleRequest($request);
+
         if ($this->session->has(Security::AUTHENTICATION_ERROR)) {
             $connectForm->addError(
                 new FormError($this->translator->trans('password_login.connect.incorrect'))
@@ -254,6 +291,7 @@ class SecurityController extends AbstractController
 
         return [
             'connect' => $connectForm->createView(),
+            'nivol'   => $this->getNivolForm($request)->createView(),
         ];
     }
 
