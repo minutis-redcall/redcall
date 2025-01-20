@@ -49,7 +49,7 @@ class NivolType extends AbstractType
                 'constraints' => [
                     new Callback([
                         'callback' => function ($nivol, $context) {
-                            if (!$this->nivolManager->getUserByNivol($nivol)) {
+                            if ($nivol && !$this->nivolManager->getUserByNivol($nivol)) {
                                 $context
                                     ->buildViolation($this->translator->trans('nivol_auth.nivol_not_found'))
                                     ->addViolation();
