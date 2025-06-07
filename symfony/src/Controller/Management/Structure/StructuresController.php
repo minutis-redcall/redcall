@@ -4,18 +4,18 @@ namespace App\Controller\Management\Structure;
 
 use App\Base\BaseController;
 use App\Component\HttpFoundation\ArrayToCsvResponse;
+use App\Entity\Pegass;
 use App\Entity\Structure;
 use App\Entity\Volunteer;
 use App\Enum\Platform;
 use App\Form\Type\StructureType;
+use App\Manager\PegassManager;
 use App\Manager\PlatformConfigManager;
 use App\Manager\StructureManager;
 use App\Manager\UserManager;
 use App\Model\Csrf;
 use App\Model\PlatformConfig;
 use Bundles\PaginationBundle\Manager\PaginationManager;
-use App\Entity\Pegass;
-use App\Manager\PegassManager;
 use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
@@ -193,12 +193,14 @@ class StructuresController extends BaseController
      */
     public function listUsers(Request $request)
     {
-        $structure = $this->getStructureById($request->get('id'));
-        $users     = $this->userManager->getRedCallUsersInStructure($structure);
+        $structure       = $this->getStructureById($request->get('id'));
+        $includeChildren = $request->get('include_children', false);
+        $users           = $this->userManager->getRedCallUsersInStructure($structure, $includeChildren);
 
         return $this->json([
-            'title' => $this->translator->trans('manage_structures.redcall_users', [
-                '%name%' => $structure->getName(),
+            'title' => $this->translator->trans('manage_structures.redcall_users'.($includeChildren ? '_children' : ''), [
+                '%name%'  => $structure->getName(),
+                '%count%' => count($users),
             ]),
             'body'  => $this->renderView('management/structures/users.html.twig', [
                 'users' => $users,

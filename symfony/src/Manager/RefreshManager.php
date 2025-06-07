@@ -273,13 +273,7 @@ class RefreshManager
         $volunteer->setFirstName($firstName);
         $lastName = $this->normalizeName($pegass->evaluate('user.nom'));
         if ('' === $lastName) {
-            $this->logger->error(sprintf(
-                'Volunteer %s has no last name, skipping',
-                $volunteer->getExternalId()
-            ), [
-                'payload' => $pegass->getContent() ?? 'N/A',
-            ]);
-
+            // The volunteer will be complete the next day
             return;
         }
         $volunteer->setLastName($lastName);

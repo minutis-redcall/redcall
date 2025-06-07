@@ -130,9 +130,17 @@ class UserManager extends BaseUserManager
         return $this->userRepository->searchQueryBuilder($criteria, $onlyAdmins, $onlyDevelopers);
     }
 
-    public function getRedCallUsersInStructure(Structure $structure) : array
+    public function getRedCallUsersInStructure(Structure $structure, bool $includeChildren) : array
     {
-        return $this->userRepository->getRedCallUsersInStructure($structure);
+        $users = $this->userRepository->getRedCallUsersInStructure($structure);
+
+        if ($includeChildren) {
+            foreach ($structure->getChildrenStructures() as $childStructure) {
+                $users = array_merge($users, $this->userRepository->getRedCallUsersInStructure($childStructure));
+            }
+        }
+
+        return array_unique($users, SORT_REGULAR);
     }
 
     public function createUser(string $platform, string $externalId)

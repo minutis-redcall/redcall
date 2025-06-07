@@ -605,7 +605,8 @@ manage_structures:
       title: 'Edition of prefilled answers'
     list_title: 'List of prefilled answers'
   president: 'President: %president%'
-  redcall_users: 'List of people that can trigger %name%'
+  redcall_users: 'List of %count% people that can trigger %name%'
+  redcall_users_children: 'List of %count% people that can trigger this structure or its children'
   search:
     button: Search
     label: 'Search structure'
@@ -668,6 +669,7 @@ manage_structures:
       delete: 'Remove from the list'
       delete_confirm: 'Really remove "%name%" from list?'
   volunteers: 'Volunteers count: %count%'
+  include_children: 'Include children structures'
 manage_volunteers:
   access_denied: 'Cannot edit this volunteer details, (s)he does not belong to any structure you are managing.'
   action:

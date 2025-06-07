@@ -42,10 +42,26 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 id="redcall-user-modal-title" class="modal-title"></h5>
+
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
+
+                <div class="form-check">
+                    <label class="switch">
+                        <input type="checkbox"
+                               data-toggle="toggle" data-onstyle="primary"
+                               class="form-check-input"
+                               id="includes-children"/>
+                        <span class="slider"></span>
+                    </label>
+                    <label class="form-check-label"
+                           for="includes-children">
+                        {{ 'manage_structures.include_children'|trans }}
+                    </label>
+                </div>
+
                 <div id="redcall-user-modal-body" class="modal-body text-center"></div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ 'base.modal.close'|trans }}</button>
@@ -79,10 +95,17 @@
             $('#redcall-user-modal').modal();
             $.post('{{ path('management_structures_list_users') }}', {
                 id: $(this).data('structure-id'),
+                include_children: $('#includes-children').is(':checked') ? 1 : 0
             }, function (data) {
                 $('#redcall-user-modal-title').html(data.title);
                 $('#redcall-user-modal-body').html(data.body);
             });
+        });
+
+        $('body').on('change', '#includes-children', function () {
+            if ($('#redcall-user-modal').is(':visible')) {
+                $('.show-structure-users').trigger('click');
+            }
         });
 
     </script>

@@ -605,7 +605,8 @@ manage_structures:
       title: 'Ajout/edition de réponse pré-remplies'
     list_title: 'Liste des réponses pré-remplies'
   president: 'Président : %president%'
-  redcall_users: 'Liste des personnes pouvant déclencher %name%'
+  redcall_users: 'Liste des %count% personnes pouvant déclencher %name%'
+  redcall_users_children: 'Liste des %count% personnes pouvant déclencher %name% ou ses structures enfants'
   search:
     button: Rechercher
     label: 'Rechercher une structure'
@@ -668,6 +669,7 @@ manage_structures:
       delete: 'Retirer de la liste'
       delete_confirm: 'Vraiment retirer "%name%" de la liste ?'
   volunteers: 'Nombre de bénévoles : %count%'
+  include_children: 'Inclure les structures enfants'
 manage_volunteers:
   access_denied: 'Vous ne pouvez pas ouvrir le profil d''un(e) bénévole ne faisant pas partie des structures que vous pouvez déclencher.'
   action:
