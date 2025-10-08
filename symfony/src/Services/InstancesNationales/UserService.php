@@ -154,7 +154,7 @@ class UserService
 
         $fromDatabases = array_map(function (User $user) {
             return strtolower($user->getUsername());
-        }, $this->userManager->getRedCallUsersInStructure($structure));
+        }, $this->userManager->getRedCallUsersInStructure($structure, false));
 
         $toDeletes = array_diff($fromDatabases, $fromExtracts);
 

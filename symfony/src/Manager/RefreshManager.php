@@ -20,7 +20,7 @@ use Psr\Log\NullLogger;
 class RefreshManager
 {
     // People having that badge should be enabled as RedCall users, and set as admin
-    const BADGE_ADMIN = 'RTMR';
+    const BADGES_ADMIN = ['RTMR', 'RT MR'];
 
     /**
      * @var PegassManager
@@ -390,7 +390,15 @@ class RefreshManager
             return;
         }
 
-        if ($volunteer->hasBadge(Platform::FR, self::BADGE_ADMIN)) {
+        $isAdmin = false;
+        foreach (self::BADGES_ADMIN as $badge) {
+            if ($volunteer->hasBadge(Platform::FR, $badge)) {
+                $isAdmin = true;
+                break;
+            }
+        }
+
+        if ($isAdmin) {
             if (!$volunteer->getUser()) {
                 $this->volunteerManager->save($volunteer);
                 $this->userManager->createUser(Platform::FR, $volunteer->getExternalId());
