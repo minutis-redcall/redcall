@@ -31,6 +31,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
@@ -143,6 +144,8 @@ class SecurityController extends AbstractController
      */
     public function registerAction(Request $request)
     {
+        throw new NotFoundHttpException('Registration is disabled.');
+
         if ($this->isGranted('ROLE_USER')) {
             return $this->redirectToRoute($this->homeRoute);
         }
