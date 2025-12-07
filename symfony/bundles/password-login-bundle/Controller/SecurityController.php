@@ -262,8 +262,9 @@ class SecurityController extends AbstractController
         }
 
         return [
-            'connect' => $connectForm->createView(),
-            'nivol'   => $nivolForm->createView(),
+            'connect'         => $connectForm->createView(),
+            'nivol'           => $nivolForm->createView(),
+            'nivol_auto_open' => $nivol !== null,
         ];
     }
 
