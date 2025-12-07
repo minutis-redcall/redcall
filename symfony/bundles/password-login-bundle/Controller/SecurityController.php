@@ -234,10 +234,10 @@ class SecurityController extends AbstractController
     }
 
     /**
-     * @Route("/connect", name="connect")
+     * @Route("/connect/{nivol}", requirements={"nivol": "[a-zA-Z0-9]*"}, defaults={"nivol": null}, name="connect")
      * @Template()
      */
-    public function connectAction(Request $request)
+    public function connectAction(Request $request, ?string $nivol = null)
     {
         if ($this->isGranted('ROLE_USER')) {
             return $this->redirectToRoute($this->homeRoute);
@@ -247,8 +247,13 @@ class SecurityController extends AbstractController
             ->createForm(ConnectType::class)
             ->handleRequest($request);
 
+        $data = null;
+        if ($nivol) {
+            $data = ['nivol' => $nivol];
+        }
+
         $nivolForm = $this
-            ->createForm(NivolType::class)
+            ->createForm(NivolType::class, $data)
             ->handleRequest($request);
 
         if ($this->session->has(Security::AUTHENTICATION_ERROR)) {
