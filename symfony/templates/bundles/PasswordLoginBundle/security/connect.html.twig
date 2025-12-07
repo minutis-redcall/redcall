@@ -46,7 +46,7 @@
                 {{ 'nivol_auth.connect_choice'|trans }}
             </div>
 
-            <div id="nivol" class="auth-mean d-none">
+            <div id="nivol" class="auth-mean {% if not nivol_auto_open|default(false) %}d-none{% endif %}">
                 {% form_theme nivol '@EWZRecaptcha/Form/ewz_recaptcha_widget.html.twig' %}
                 {{ form(nivol) }}
             </div>
