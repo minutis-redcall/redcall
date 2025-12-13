@@ -529,16 +529,7 @@ class Volunteer implements LockableInterface
             $favs = $user->getSortedFavoriteBadges();
         }
 
-        $badges = $this->getBadges()->toArray();
-
-        // Only use synonyms
-        foreach ($badges as $key => $badge) {
-            /** @var Badge $badge */
-            if ($badge->getSynonym() && !in_array($badge->getSynonym(), $badges)) {
-                $badges[] = $badge->getSynonym();
-                unset($badges[$key]);
-            }
-        }
+        $badges = $this->getBadgesFilteredFromSynonyms();
 
         // Only use visible badges
         $badges = array_filter($badges, function (Badge $badge) use ($favs) {
@@ -568,6 +559,25 @@ class Volunteer implements LockableInterface
 
         // Sorting badges by category's priority and then by priority
         usort($badges, [Badge::class, 'sortBadges']);
+
+        return $badges;
+    }
+
+    /**
+     * @return array<Badge>
+     */
+    public function getBadgesFilteredFromSynonyms() : array
+    {
+        $badges = $this->getBadges()->toArray();
+
+        // Only use synonyms
+        foreach ($badges as $key => $badge) {
+            /** @var Badge $badge */
+            if ($badge->getSynonym() && !in_array($badge->getSynonym(), $badges)) {
+                $badges[] = $badge->getSynonym();
+                unset($badges[$key]);
+            }
+        }
 
         return $badges;
     }

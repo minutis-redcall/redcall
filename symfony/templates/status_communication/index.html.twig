@@ -417,7 +417,7 @@
                                         {% endif %}
 
                                         <div class="d-none">
-                                            {% for skill in message.volunteer.badges %}
+                                            {% for skill in message.volunteer.badgesFilteredFromSynonyms %}
                                                 <div class="message-is-skill-{{ skill.id|e('html_attr') }}-{{ communication.id }}" data-value=1></div>
                                             {% endfor %}
                                         </div>
