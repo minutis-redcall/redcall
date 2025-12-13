@@ -274,6 +274,10 @@ class User extends AbstractUser implements LockableInterface
     public function getCommonStructures($structures) : array
     {
         if ($this->isAdmin()) {
+            usort($structures, function (Structure $a, Structure $b) {
+                return $a->getDisplayName() <=> $b->getDisplayName();
+            });
+
             return $structures;
         }
 
@@ -284,6 +288,10 @@ class User extends AbstractUser implements LockableInterface
                 $common[] = $structure;
             }
         }
+
+        usort($common, function (Structure $a, Structure $b) {
+            return $a->getDisplayName() <=> $b->getDisplayName();
+        });
 
         return $common;
     }
