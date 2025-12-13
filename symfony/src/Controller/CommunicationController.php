@@ -301,8 +301,8 @@ class CommunicationController extends BaseController
                 $this->communicationManager->launchNewCommunication($campaign, $communication);
 
                 return $this->redirect($this->generateUrl('communication_index', [
-                    'id' => $campaign->getId(),
-                ]));
+                        'id' => $campaign->getId(),
+                    ]).'#tab-'.$communication->getId());
             }
         }
 
