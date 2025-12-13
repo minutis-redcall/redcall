@@ -417,7 +417,7 @@
                                         {% endif %}
 
                                         <div class="d-none">
-                                            {% for skill in message.volunteer.badges %}
+                                            {% for skill in message.volunteer.badgesFilteredFromSynonyms %}
                                                 <div class="message-is-skill-{{ skill.id|e('html_attr') }}-{{ communication.id }}" data-value=1></div>
                                             {% endfor %}
                                         </div>
@@ -1385,6 +1385,33 @@
             e.preventDefault();
             $.post('{{ path('keep_campaign', {id: campaign.id, csrf: csrf_token('campaign')}) }}', function (result) {
                 $('#closed-at').html(result.expiresAt);
+            });
+        });
+
+        {# -------------------------------------------------------------------------------- #}
+        {# Hash and tabs #}
+        {# -------------------------------------------------------------------------------- #}
+        $(function () {
+            var hash = window.location.hash;
+
+            if (hash) {
+                // Find the tab link whose href matches the hash
+                var $tabLink = $('a[href="' + hash + '"][data-toggle="tab"]');
+
+                if ($tabLink.length) {
+                    $tabLink.tab('show');
+                }
+            }
+
+            // Optional: keep URL hash in sync when user clicks different tabs
+            $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+                var newHash = $(e.target).attr('href');
+                if (history.replaceState) {
+                    history.replaceState(null, null, newHash);
+                } else {
+                    // Fallback for dinosaurs
+                    window.location.hash = newHash;
+                }
             });
         });
 
