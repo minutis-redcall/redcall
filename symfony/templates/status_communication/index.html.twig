@@ -1403,7 +1403,7 @@
                 }
             }
 
-            // Optional: keep URL hash in sync when user clicks different tabs
+            // Keep URL hash in sync when user clicks different tabs
             $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
                 var newHash = $(e.target).attr('href');
                 if (history.replaceState) {

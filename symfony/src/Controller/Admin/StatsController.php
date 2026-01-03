@@ -3,6 +3,7 @@
 namespace App\Controller\Admin;
 
 use App\Base\BaseController;
+use App\Component\HttpFoundation\ArrayToCsvResponse;
 use App\Manager\ReportManager;
 use App\Manager\StatisticsManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -99,12 +100,27 @@ class StatsController extends BaseController
         $form = $this->createStructureForm($request);
 
         $report = null;
+
         if ($form->isSubmitted() && $form->isValid()) {
-            $report = $this->reportManager->createStructureReport(
-                $form->get('from')->getData(),
-                $form->get('to')->getData(),
-                $form->get('min')->getData()
-            );
+            $from = $form->get('from')->getData();
+            $to   = $form->get('to')->getData();
+            $min  = (int) $form->get('min')->getData();
+
+            $report = $this->reportManager->createStructureReport($from, $to, $min);
+
+            // If "Download CSV" was clicked, return a CSV response instead of HTML.
+            if ($form->get('download_csv')->isClicked()) {
+                $rows = $this->buildStructureReportCsvRows($report);
+
+                $filename = sprintf(
+                    'structure-stats_%s_%s_min-%d.csv',
+                    $from->format('Y-m-d'),
+                    $to->format('Y-m-d'),
+                    $min
+                );
+
+                return new ArrayToCsvResponse($rows, $filename);
+            }
         }
 
         return [
@@ -124,16 +140,12 @@ class StatsController extends BaseController
             ->add('from', DateType::class, [
                 'label'       => 'admin.statistics.structure.form.from',
                 'widget'      => 'single_text',
-                'constraints' => [
-                    new NotBlank(),
-                ],
+                'constraints' => [new NotBlank()],
             ])
             ->add('to', DateType::class, [
                 'label'       => 'admin.statistics.structure.form.to',
                 'widget'      => 'single_text',
-                'constraints' => [
-                    new NotBlank(),
-                ],
+                'constraints' => [new NotBlank()],
             ])
             ->add('min', NumberType::class, [
                 'label'       => 'admin.statistics.structure.form.min',
@@ -148,7 +160,50 @@ class StatsController extends BaseController
                     'class' => 'btn btn-primary trigger-launch',
                 ],
             ])
+            ->add('download_csv', SubmitType::class, [
+                'label' => 'CSV',
+                'attr'  => [
+                    'class' => 'btn btn-secondary',
+                ],
+            ])
             ->getForm()
             ->handleRequest($request);
+    }
+
+    /**
+     * Flattens the structure report array into CSV rows.
+     * One row per (structure, trigger type) like your HTML table.
+     */
+    private function buildStructureReportCsvRows(array $report) : array
+    {
+        $rows = [];
+
+        foreach ($report as $structureId => $types) {
+            foreach ($types as $type => $data) {
+                if (!isset($data['costs']) || count($data['costs']) === 0) {
+                    $cost     = 0;
+                    $currency = 'EUR';
+                } else {
+                    $cost     = reset($data['costs']);
+                    $currency = key($data['costs']);
+                }
+
+                $rows[] = [
+                    'ID de la structure'  => (string) $structureId,
+                    'Nom de la structure' => (string) ($data['name'] ?? ''),
+                    'Déclenchements'      => (string) ($data['campaigns'] ?? 0),
+                    'Type'                => (string) ($data['type'] ?? $type),
+                    'Communications'      => (string) ($data['communications'] ?? 0),
+                    'Messages'            => (string) ($data['messages'] ?? 0),
+                    'Questions'           => (string) ($data['questions'] ?? 0),
+                    'Réponses'            => (string) ($data['answers'] ?? 0),
+                    'Erreurs'             => (string) ($data['errors'] ?? 0),
+                    'Coûts'               => sprintf('%.2f', abs($cost)),
+                    'Devise'              => $currency,
+                ];
+            }
+        }
+
+        return $rows;
     }
 }
