@@ -147,7 +147,7 @@ admin:
     structure:
       form:
         from: 'Entre le :'
-        min: 'Compter les déclenchements ayant au moins X messages :'
+        min: 'Déclenchements ayant au moins X messages :'
         title: 'Choisir la période'
         to: 'Et le :'
       report:
