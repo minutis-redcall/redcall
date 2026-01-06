@@ -1,3 +1,0 @@
-# Should contain the database URL from your local computer (host will most probably contain your db ip address)
-DATABASE_HOST=127.0.0.1
-DATABASE_PORT=3304
