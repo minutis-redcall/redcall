@@ -5,7 +5,7 @@ namespace App\Form\Type;
 use App\Enum\Type;
 use App\Form\Model\Campaign as CampaignModel;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -25,9 +25,16 @@ class CampaignType extends AbstractType
             ->add('trigger', $options['type']->getFormType(), [
                 'label' => false,
             ])
-            ->add('hasOperation', CheckboxType::class, [
+
+            // TODO re-activate to allow to attach Minutis operations to campaigns
+            //      and do not forget the new.html.twig
+            ->add('hasOperation', /*CheckboxType::class*/ HiddenType::class, [
                 'label'    => 'form.campaign.fields.operation',
                 'required' => false,
+                'data'     => false,
+                'attr'     => [
+                    'class' => 'd-none',
+                ],
             ]);
     }
 
