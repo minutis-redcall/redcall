@@ -231,7 +231,7 @@ class PegassCreateChunks implements TaskInterface
                 'code'         => $nominations[$row[2]]['code'],
                 'label'        => $nominations[$row[2]]['label'],
                 'structure_id' => $row[1],
-                'got_at'       => $row[3] ? \DateTime::createFromFormat('d/m/Y', $row[3])->format('Y-m-d\TH:i:s') : null,
+                'got_at'       => $row[3] ? \DateTime::createFromFormat('Y-m-d', $row[3])->format('Y-m-d\TH:i:s') : null,
             ];
         }
     }
