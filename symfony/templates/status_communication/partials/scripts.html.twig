@@ -12,7 +12,44 @@
 
     function refreshStatuses(data) {
 
-        if ($('#campaign-notes').data('notes-updated-timestamp') != data['notes']['notes-updated-timestamp']) {
+        {# Update Group Labels #}
+        if (data['groupNames']) {
+            $.each(data['groupNames'], function (index, name) {
+                var label = name || '{{ 'campaign_status.groups.title'|trans|e('js') }} ' + (parseInt(index) + 1);
+                $('.group-label-' + index).html(label);
+                $('.group-name-input[data-index="' + index + '"]').val(name);
+            });
+        }
+
+        {# Update Volunteer Group Dots #}
+        if (data['volunteerGroups']) {
+            $.each(communicationIds, function (k, communicationId) {
+                $('.row-' + communicationId).each(function () {
+                    var row = $(this);
+                    var volunteerId = row.data('volunteer-id');
+                    var suffix = communicationId + '-' + row.attr('id').split('-').pop();
+                    var container = $('#volunteer-groups-' + suffix);
+                    var assignedIndices = data['volunteerGroups'][volunteerId] || [];
+
+                    container.empty();
+                    $.each(assignedIndices, function (i, groupIndex) {
+                        var color = groupColorsArray[groupIndex];
+                        container.append('<span class="group-dot group-dot-' + groupIndex + '" data-index="' + groupIndex + '" style="display:inline-block; width:8px; height:8px; border-radius:50%; background-color:#' + color + '; margin-right:2px;"></span>');
+                    });
+
+                    {# Update checkboxes #}
+                    $('.volunteer-group-checkbox[data-volunteer-id="' + volunteerId + '"]').each(function () {
+                        var checkbox = $(this);
+                        var index = checkbox.data('index');
+                        checkbox.prop('checked', $.inArray(index, assignedIndices) !== -1);
+                    });
+
+                    row.data('groups', assignedIndices.join(','));
+                });
+            });
+        }
+
+        if (data['notes'] && $('#campaign-notes').data('notes-updated-timestamp') != data['notes']['notes-updated-timestamp']) {
 
             {# Replace note contents #}
             if (data['notes']['content'] && data['notes']['content'].length > 0) {
@@ -212,6 +249,13 @@
         }, 5000);
     }
 
+    var groupColorsArray = [];
+    {% for colorName, colorCode in groupColors %}
+    groupColorsArray.push("{{ colorCode|e('js') }}");
+    {% endfor %}
+
+    var activeGroupFilter = null;
+
     var communicationIds = [];
     {% for communication in campaign.communications %}
     communicationIds.push("{{ communication.id|e('js') }}");
@@ -256,6 +300,9 @@
         # and "Driver" in the skills category, you will get all volunteers that are drivers --and-- who
         # answered "Yes")
         #}
+
+        var activeGroup = activeGroupFilter;
+
         $.each(communicationIds, function (key, communicationId) {
             {# counting number of filters ticked #}
             var structure = 0;
@@ -317,9 +364,14 @@
             } else {
                 $('#link-filter-unreachable-' + communicationId).css('color', '');
             }
+            if (activeGroup !== null) {
+                $('#link-filter-group-' + communicationId).css('color', 'red');
+            } else {
+                $('#link-filter-group-' + communicationId).css('color', '');
+            }
 
             {# if no filter used, everything is visible #}
-            if (structure + response + skill + unreachable === 0) {
+            if (activeGroup === null && structure + response + skill + unreachable === 0) {
                 $('.row-' + communicationId).fadeIn();
                 return true;
             }
@@ -327,6 +379,13 @@
             {# if some checkbox ticked, visible if at least one value is 1 #}
             $('.row-' + communicationId).each(function () {
                 var row = $(this);
+
+                {# is visible if in the active group #}
+                var groupVisible = true;
+                if (activeGroup !== null) {
+                    var groups = row.data('groups') ? row.data('groups').toString().split(',') : [];
+                    groupVisible = $.inArray(activeGroup.toString(), groups) !== -1;
+                }
 
                 {# is visible if structure ticked and volunteer in structure #}
                 var structureVisible = false;
@@ -379,7 +438,7 @@
                 }
 
                 {# displays the row only if all conditions above are true #}
-                if (structureVisible && actionVisible && skillVisible && unreachableVisible) {
+                if (groupVisible && structureVisible && actionVisible && skillVisible && unreachableVisible) {
                     row.fadeIn();
                 } else {
                     row.fadeOut();
@@ -627,6 +686,48 @@
         });
     });
 
+    {# -------------------------------------------------------------------------------- #}
+    {# Group management #}
+    {# -------------------------------------------------------------------------------- #}
+
+    $('.group-name-input').on('change', function () {
+        var that = $(this);
+        var index = that.data('index');
+        var name = that.val();
+
+        $.post('{{ path('campaign_group_rename', {id: campaign.id, index: 'INDEX', csrf: csrf_token('campaign')}) }}'.replace('INDEX', index), {
+            name: name
+        });
+    });
+
+    $('.filter-group').click(function () {
+        var that = $(this);
+        var index = that.data('index');
+
+        if (activeGroupFilter === index) {
+            activeGroupFilter = null;
+            $('.group-color-square').css('border-color', '#dee2e6').css('box-shadow', 'none');
+        } else {
+            activeGroupFilter = index;
+            $('.group-color-square').css('border-color', '#dee2e6').css('box-shadow', 'none');
+            $('.group-color-square[data-index="' + index + '"]').css('border-color', 'black').css('box-shadow', '0 0 0 2px black');
+        }
+
+        refreshVisibility();
+    });
+
+    $('body').on('change', '.volunteer-group-checkbox', function () {
+        var checkbox = $(this);
+        var volunteerId = checkbox.data('volunteer-id');
+        var index = checkbox.data('index');
+
+        $.post('{{ path('campaign_group_toggle', {id: campaign.id, volunteerId: 'VOLUNTEER_ID', index: 'INDEX', csrf: csrf_token('campaign')}) }}'
+            .replace('VOLUNTEER_ID', volunteerId)
+            .replace('INDEX', index), function () {
+            {# We don't need to do much here, polling will update the dots if needed,
+               but for better UX we could toggle them immediately. #}
+        });
+    });
 
 </script>
 

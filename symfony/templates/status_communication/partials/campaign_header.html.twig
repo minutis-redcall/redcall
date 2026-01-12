@@ -20,7 +20,9 @@
     </div>
     {% if operationUrl %}
         <div class="col-12 skip-line">
-            {{ 'form.operation.url'|trans }} <a href="{{ operationUrl }}" target="_blank">{{ operationUrl }}</a>
+            {% if operationUrl %}
+                <a href="{{ operationUrl }}" class="btn btn-secondary btn-sm mb-2" target="_blank">{{ 'form.operation.url'|trans }}</a>
+            {% endif %}
         </div>
     {% endif %}
     <div class="col-12 skip-line" {% if campaign.active and is_granted('CAMPAIGN_OWNER', campaign) %}onclick="$('#change-color').modal();"{% endif %} style="cursor:pointer;">

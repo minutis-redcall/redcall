@@ -7,6 +7,7 @@ use App\Communication\Processor\ProcessorInterface;
 use App\Entity\Campaign;
 use App\Entity\Communication;
 use App\Entity\Message;
+use App\Enum\Group;
 use App\Enum\Type;
 use App\Form\Flow\CallTriggerFlow;
 use App\Form\Flow\EmailTriggerFlow;
@@ -109,6 +110,11 @@ class CommunicationController extends BaseController
      */
     private $platformManager;
 
+    /**
+     * @var \App\Repository\VolunteerGroupRepository
+     */
+    private $volunteerGroupRepository;
+
     public function __construct(CampaignManager $campaignManager,
         CommunicationManager $communicationManager,
         MessageFormatter $formatter,
@@ -119,19 +125,21 @@ class CommunicationController extends BaseController
         StructureManager $structureManager,
         ExpirableManager $expirableManager,
         LanguageConfigManager $languageManager,
-        PlatformConfigManager $platformManager)
+        PlatformConfigManager $platformManager,
+        \App\Repository\VolunteerGroupRepository $volunteerGroupRepository)
     {
-        $this->campaignManager      = $campaignManager;
-        $this->communicationManager = $communicationManager;
-        $this->formatter            = $formatter;
-        $this->badgeManager         = $badgeManager;
-        $this->messageManager       = $messageManager;
-        $this->answerManager        = $answerManager;
-        $this->mediaManager         = $mediaManager;
-        $this->structureManager     = $structureManager;
-        $this->expirableManager     = $expirableManager;
-        $this->languageManager      = $languageManager;
-        $this->platformManager      = $platformManager;
+        $this->campaignManager          = $campaignManager;
+        $this->communicationManager     = $communicationManager;
+        $this->formatter                = $formatter;
+        $this->badgeManager             = $badgeManager;
+        $this->messageManager           = $messageManager;
+        $this->answerManager            = $answerManager;
+        $this->mediaManager             = $mediaManager;
+        $this->structureManager         = $structureManager;
+        $this->expirableManager         = $expirableManager;
+        $this->languageManager          = $languageManager;
+        $this->platformManager          = $platformManager;
+        $this->volunteerGroupRepository = $volunteerGroupRepository;
     }
 
     /**
@@ -149,6 +157,8 @@ class CommunicationController extends BaseController
             'hash'               => $this->campaignManager->getHash($campaign->getId()),
             'campaignStructures' => $this->structureManager->getCampaignStructures($this->getPlatform(), $campaign),
             'operationUrl'       => $campaign->getOperationUrl($minutis),
+            'volunteerGroups'    => $this->volunteerGroupRepository->getVolunteerGroups($campaign->getId()),
+            'groupColors'        => Group::getGroups(),
         ]);
     }
 
@@ -172,7 +182,9 @@ class CommunicationController extends BaseController
         $this->get('session')->save();
 
         return new JsonResponse(
-            $campaign->getCampaignStatus($translator)
+            array_merge($campaign->getCampaignStatus($translator), [
+                'volunteerGroups' => $this->volunteerGroupRepository->getVolunteerGroups($campaign->getId()),
+            ])
         );
     }
 
@@ -193,10 +205,9 @@ class CommunicationController extends BaseController
                 $this->campaignManager->refresh($campaign);
 
                 return new JsonResponse(
-                    array_merge($campaign->getCampaignStatus($translator
-
-                    ), [
-                        'hash' => $hash,
+                    array_merge($campaign->getCampaignStatus($translator), [
+                        'hash'            => $hash,
+                        'volunteerGroups' => $this->volunteerGroupRepository->getVolunteerGroups($campaign->getId()),
                     ])
                 );
             }
@@ -218,6 +229,7 @@ class CommunicationController extends BaseController
      */
     public function addCommunicationAction(Request $request, Campaign $campaign, Type $type)
     {
+        /** @var \App\Entity\User $user */
         $user = $this->getUser();
 
         if (!$user->getVolunteer() || !$user->getStructures()->count()) {
@@ -263,6 +275,7 @@ class CommunicationController extends BaseController
         /** @var FormFlow $flow */
         $flow = $flows[$type->getFormFlow()];
 
+        /** @var \App\Entity\User $user */
         $user = $this->getUser();
 
         if (!$user->getVolunteer() || !$user->getStructures()->count()) {
@@ -301,8 +314,8 @@ class CommunicationController extends BaseController
                 $this->communicationManager->launchNewCommunication($campaign, $communication);
 
                 return $this->redirect($this->generateUrl('communication_index', [
-                        'id' => $campaign->getId(),
-                    ]).'#tab-'.$communication->getId());
+                    'id' => $campaign->getId(),
+                ]).'#tab-'.$communication->getId());
             }
         }
 
@@ -320,10 +333,12 @@ class CommunicationController extends BaseController
      */
     public function previewCommunicationAction(Request $request, Type $type, \HTMLPurifier $purifier)
     {
+        /** @var \App\Entity\User $user */
+        $user    = $this->getUser();
         $trigger = $this->getCommunicationFromRequest($request, $type);
 
         if (!strip_tags($trigger->getMessage())
-            || !$this->getUser()->getVolunteer() || !$this->getUser()->getVolunteer()->getPhone()) {
+            || !$user->getVolunteer() || !$user->getVolunteer()->getPhone()) {
             return new JsonResponse([
                 'success' => false,
             ]);
@@ -336,7 +351,7 @@ class CommunicationController extends BaseController
         $message->setPrefix('X');
         $message->setCode('xxxxxxxx');
         $message->setVolunteer(
-            $this->getUser()->getVolunteer()
+            $user->getVolunteer()
         );
 
         $content   = $this->formatter->formatMessageContent($message);
@@ -358,6 +373,8 @@ class CommunicationController extends BaseController
      */
     public function playCommunication(Request $request)
     {
+        /** @var \App\Entity\User $user */
+        $user    = $this->getUser();
         $trigger = $this->getCommunicationFromRequest($request, Type::CALL());
 
         if (!$trigger->getMessage()) {
@@ -372,7 +389,7 @@ class CommunicationController extends BaseController
         $message->setCode('xxxxxxxx');
 
         $message->setVolunteer(
-            $this->getUser()->getVolunteer()
+            $user->getVolunteer()
         );
 
         $media = $this->mediaManager->createMp3(

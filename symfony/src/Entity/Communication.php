@@ -73,12 +73,12 @@ class Communication
     private $createdAt;
 
     /**
-     * @var Message[]
+     * @var Collection|Message[]
      *
      * @ORM\OneToMany(targetEntity="App\Entity\Message", mappedBy="communication", cascade={"persist"})
      * @ORM\OrderBy({"updatedAt" = "DESC"})
      */
-    private $messages = [];
+    private $messages;
 
     /**
      * @var Choice[]
@@ -122,7 +122,7 @@ class Communication
     private $lastActivityAt;
 
     /**
-     * @var Media[]
+     * @var Collection|Media[]
      *
      * @ORM\OneToMany(targetEntity=Media::class, mappedBy="communication", cascade={"persist", "remove"})
      */
@@ -675,6 +675,8 @@ class Communication
             case self::TYPE_EMAIL:
                 return SendEmailTask::class;
         }
+
+        throw new \LogicException('Invalid communication type');
     }
 
     public function getProgression() : array
@@ -740,7 +742,7 @@ class Communication
      */
     public function getImages() : Collection
     {
-        return $this->images;
+        return $this->images ?: new ArrayCollection();
     }
 
     public function addImage(Media $image) : self
@@ -807,7 +809,7 @@ class Communication
         return round($this->noAnswersCount() * 100 / $this->getMessageCount());
     }
 
-    public function getLastAnswerTime(Choice $choice = null) : string
+    public function getLastAnswerTime(?Choice $choice = null) : string
     {
         $lastAnswerDate = null;
         foreach ($this->messages as $message) {
@@ -829,5 +831,15 @@ class Communication
         }
 
         return $lastAnswerDate ? $lastAnswerDate->format('d/m H:i') : '--:--';
+    }
+
+    public function getCost() : float
+    {
+        $cost = 0.0;
+        foreach ($this->messages as $message) {
+            $cost += $message->getCost();
+        }
+
+        return $cost;
     }
 }

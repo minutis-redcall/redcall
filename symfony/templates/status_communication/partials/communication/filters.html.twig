@@ -11,6 +11,10 @@
         {{ 'campaign_status.filter.or'|trans }}
     {% endif %}
     <a href="#"
+       id="link-filter-group-{{ communication.id }}"
+       onclick="$('#filter-group-modal').modal(); return false;">{{ 'campaign_status.filter.by_group'|trans }}</a>
+    {{ 'campaign_status.filter.or'|trans }}
+    <a href="#"
        id="link-filter-response-{{ communication.id }}"
        onclick="$('#filter-response-{{ communication.id }}').modal(); return false;">{{ 'campaign_status.filter.by_response'|trans }}</a>
     {{ 'campaign_status.filter.or'|trans }}

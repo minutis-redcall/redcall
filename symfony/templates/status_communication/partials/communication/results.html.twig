@@ -42,7 +42,7 @@
 
             <td id="volunteer-{{ suffix }}">
 
-                <div class="float-right">
+                <div class="float-right text-right">
 
                     {% if app.environment == 'dev' %}
                         <a class="btn btn-default"
@@ -75,7 +75,7 @@
                     {% endif %}
 
                     {# Answer codes when volunteer answered them #}
-                    {% if answerCount %}
+                    {% if message.answers.count %}
                         {% for choice in communication.choices %}
                             {% set answer = message.getAnswerByChoice(choice) %}
                             <span class="{{ answer ? '' : 'd-none' }} badge badge-dark message-is-choice-{{ choice.id }}-{{ communication.id }}"
@@ -125,6 +125,41 @@
                         {% for skill in message.volunteer.badgesFilteredFromSynonyms %}
                             <div class="message-is-skill-{{ skill.id|e('html_attr') }}-{{ communication.id }}" data-value=1></div>
                         {% endfor %}
+                    </div>
+                </div>
+
+                <div class="text-small text-muted">
+                    {{ volunteer.externalId }}
+                    <span id="volunteer-groups-{{ suffix }}" class="ml-1 volunteer-groups-list">
+                        {% if volunteerGroups[volunteer.id] is defined %}
+                            {% for groupIndex in volunteerGroups[volunteer.id] %}
+                                <span class="group-dot group-dot-{{ groupIndex }}" data-index="{{ groupIndex }}" style="display:inline-block; width:8px; height:8px; border-radius:50%; background-color:#{{ groupColors[groupIndex] }};"></span>
+                            {% endfor %}
+                        {% endif %}
+                    </span>
+                    <div class="dropdown d-inline ml-1">
+                        <a href="#" class="dropdown-toggle text-muted" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-tags"></i> {{ 'campaign_status.groups.title'|trans }}
+                        </a>
+                        <div class="dropdown-menu p-2" style="min-width: 200px;">
+                            {% for colorName, colorCode in groupColors %}
+                                {% set groupIndex = loop.index0 %}
+                                <div class="dropdown-item p-1 border-0">
+                                    <div class="custom-control custom-checkbox">
+                                        <input type="checkbox"
+                                               class="custom-control-input volunteer-group-checkbox"
+                                               id="vg-{{ suffix }}-{{ groupIndex }}"
+                                               data-volunteer-id="{{ volunteer.id }}"
+                                               data-index="{{ groupIndex }}"
+                                               {% if volunteerGroups[volunteer.id] is defined and groupIndex in volunteerGroups[volunteer.id] %}checked{% endif %}>
+                                        <label class="custom-control-label d-flex align-items-center" for="vg-{{ suffix }}-{{ groupIndex }}">
+                                            <span class="mr-2" style="display:inline-block; width:12px; height:12px; background-color:#{{ colorCode }};"></span>
+                                            <span class="group-label-{{ groupIndex }}">{{ campaign.groupNames[groupIndex]|default('campaign_status.groups.title'|trans ~ ' ' ~ (groupIndex + 1)) }}</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
                     </div>
                 </div>
 

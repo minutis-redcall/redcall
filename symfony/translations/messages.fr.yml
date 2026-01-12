@@ -367,12 +367,19 @@ campaign_status:
   communication_tabs: Communications
   communication_title: 'Communication du %date% à %time%'
   filter:
+    by_group: 'par groupe'
     by_response: 'par réponse'
     by_skill: 'par compétence'
     by_structure: 'par structure'
     by_unreachable: 'les personnes injoignables'
     or: ou/et
     title: Filtrer
+  groups:
+    title: Groupes
+    manage: Gérer les groupes
+    rename_help: Saisissez un nom pour créer/renommer le groupe
+    filter_help: Cliquez pour activer/désactiver le filtre
+    assign_help: Gérer l'appartenance de ce volontaire aux groupes
   finish: 'Envoi terminé: %sent% %type% envoyé(s) (%replies% réponse(s) reçue(s), %replies_pct%%)'
   free_answer: 'Envoyer une réponse libre'
   legend:
