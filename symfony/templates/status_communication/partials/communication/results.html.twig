@@ -154,7 +154,7 @@
                                                {% if volunteerGroups[volunteer.id] is defined and groupIndex in volunteerGroups[volunteer.id] %}checked{% endif %}>
                                         <label class="custom-control-label d-flex align-items-center" for="vg-{{ suffix }}-{{ groupIndex }}">
                                             <span class="mr-2" style="display:inline-block; width:12px; height:12px; background-color:#{{ colorCode }};"></span>
-                                            <span class="group-label-{{ groupIndex }}">{{ campaign.groupNames[groupIndex]|default('campaign_status.groups.title'|trans ~ ' ' ~ (groupIndex + 1)) }}</span>
+                                            <span class="group-label-{{ groupIndex }}">{{ campaign.groupNames[groupIndex]|default('campaign_status.groups.default'|trans ~ ' ' ~ (groupIndex + 1)) }}</span>
                                         </label>
                                     </div>
                                 </div>

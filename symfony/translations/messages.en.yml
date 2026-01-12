@@ -375,8 +375,10 @@ campaign_status:
     title: Filter
   groups:
     title: Groups
+    defuault: group
     manage: Manage groups
     rename_help: Enter a name to create/rename the group
+    filter_instruction: Click on color(s) to filter that group.
     filter_help: Click to toggle filter
     assign_help: Toggle group assignments for this volunteer
   finish: 'Sent all %sent% %type% (%replies% answers received, %replies_pct%%)'

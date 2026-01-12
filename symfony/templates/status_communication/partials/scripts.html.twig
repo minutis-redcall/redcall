@@ -15,7 +15,7 @@
         {# Update Group Labels #}
         if (data['groupNames']) {
             $.each(data['groupNames'], function (index, name) {
-                var label = name || '{{ 'campaign_status.groups.title'|trans|e('js') }} ' + (parseInt(index) + 1);
+                var label = name || '{{ 'campaign_status.groups.default'|trans|e('js') }} ' + (parseInt(index) + 1);
                 $('.group-label-' + index).html(label);
                 $('.group-name-input[data-index="' + index + '"]').val(name);
             });
@@ -254,7 +254,7 @@
     groupColorsArray.push("{{ colorCode|e('js') }}");
     {% endfor %}
 
-    var activeGroupFilter = null;
+    var activeGroupFilters = [];
 
     var communicationIds = [];
     {% for communication in campaign.communications %}
@@ -301,7 +301,7 @@
         # answered "Yes")
         #}
 
-        var activeGroup = activeGroupFilter;
+        var activeGroups = activeGroupFilters;
 
         $.each(communicationIds, function (key, communicationId) {
             {# counting number of filters ticked #}
@@ -364,14 +364,14 @@
             } else {
                 $('#link-filter-unreachable-' + communicationId).css('color', '');
             }
-            if (activeGroup !== null) {
+            if (activeGroups.length > 0) {
                 $('#link-filter-group-' + communicationId).css('color', 'red');
             } else {
                 $('#link-filter-group-' + communicationId).css('color', '');
             }
 
             {# if no filter used, everything is visible #}
-            if (activeGroup === null && structure + response + skill + unreachable === 0) {
+            if (activeGroups.length === 0 && structure + response + skill + unreachable === 0) {
                 $('.row-' + communicationId).fadeIn();
                 return true;
             }
@@ -382,9 +382,15 @@
 
                 {# is visible if in the active group #}
                 var groupVisible = true;
-                if (activeGroup !== null) {
+                if (activeGroups.length > 0) {
+                    groupVisible = false;
                     var groups = row.data('groups') ? row.data('groups').toString().split(',') : [];
-                    groupVisible = $.inArray(activeGroup.toString(), groups) !== -1;
+                    $.each(activeGroups, function (i, val) {
+                        if ($.inArray(val.toString(), groups) !== -1) {
+                            groupVisible = true;
+                            return false;
+                        }
+                    });
                 }
 
                 {# is visible if structure ticked and volunteer in structure #}
@@ -704,14 +710,17 @@
         var that = $(this);
         var index = that.data('index');
 
-        if (activeGroupFilter === index) {
-            activeGroupFilter = null;
-            $('.group-color-square').css('border-color', '#dee2e6').css('box-shadow', 'none');
+        var position = $.inArray(index, activeGroupFilters);
+        if (position !== -1) {
+            activeGroupFilters.splice(position, 1);
         } else {
-            activeGroupFilter = index;
-            $('.group-color-square').css('border-color', '#dee2e6').css('box-shadow', 'none');
-            $('.group-color-square[data-index="' + index + '"]').css('border-color', 'black').css('box-shadow', '0 0 0 2px black');
+            activeGroupFilters.push(index);
         }
+
+        $('.group-color-square').css('border-color', '#dee2e6').css('box-shadow', 'none');
+        $.each(activeGroupFilters, function (i, val) {
+            $('.group-color-square[data-index="' + val + '"]').css('border-color', 'black').css('box-shadow', '0 0 0 2px black');
+        });
 
         refreshVisibility();
     });
