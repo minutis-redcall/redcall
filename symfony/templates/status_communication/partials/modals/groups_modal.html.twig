@@ -1,0 +1,36 @@
+<div class="modal fade" id="filter-group-modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{{ 'campaign_status.groups.title'|trans }}</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <small class="text-muted d-block mb-1">{{ 'campaign_status.groups.rename_help'|trans }}</small>
+                <small class="text-info d-block mb-3 font-italic">
+                    <i class="fas fa-info-circle"></i> {{ 'campaign_status.groups.filter_instruction'|trans }}
+                </small>
+                {% for colorName, colorCode in groupColors %}
+                    {% set groupIndex = loop.index0 %}
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="group-color-square mr-2 border pointer filter-group"
+                             data-index="{{ groupIndex }}"
+                             id="group-modal-filter-{{ groupIndex }}"
+                             style="width: 20px; height: 20px; background-color: #{{ colorCode }}; cursor: pointer;"
+                             title="{{ 'campaign_status.groups.filter_help'|trans }}"></div>
+                        <input type="text"
+                               class="form-control form-control-sm group-name-input"
+                               data-index="{{ groupIndex }}"
+                               placeholder="{{ 'campaign_status.groups.default'|trans }} {{ loop.index }}"
+                               value="{{ campaign.groupNames[groupIndex]|default('') }}">
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">{{ 'base.modal.close'|trans }}</button>
+            </div>
+        </div>
+    </div>
+</div>

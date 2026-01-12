@@ -1,0 +1,64 @@
+{# -------------------------------------------------------------------------------- #}
+{# Table containing message and answers #}
+{# -------------------------------------------------------------------------------- #}
+<table class="table">
+    <tbody>
+    {% for choice in communication.choices %}
+        <tr>
+            <td>{{ 'campaign_status.answer_no'|trans({'%choice%': choice.code}) }}</td>
+            <td>
+                <div id="choice-{{ choice.id }}">
+                    <a href="#"
+                        class="filter-response"
+                        data-communication-id="{{ communication.id }}"
+                        data-target="filter-is-choice-{{ choice.id }}-{{ communication.id }}">
+                        {{ choice.label }}
+                    </a>
+                    (<span id="choice-count-{{ choice.id }}" data-count="{{ choice.count }}">{{ choice.count }}</span>)
+                    {% if campaign.choiceShouldCreateResource(choice) %}
+                        🚑
+                    {% endif %}
+                </div>
+            </td>
+        </tr>
+    {% endfor %}
+    <tr>
+        <td>
+            {% if answerCount %}
+                {{ 'campaign_status.answer_invalid'|trans }}
+            {% else %}
+                {{ 'campaign_status.answer'|trans }}
+            {% endif %}
+        </td>
+        <td>
+            <a href="#"
+                id="has-invalid-answer-{{ communication.id }}"
+                class="filter-response"
+                data-communication-id="{{ communication.id }}"
+                data-count="{{ communication.invalidAnswersCount }}"
+                data-target="filter-has-invalid-answer-{{ communication.id }}">
+                {{ communication.invalidAnswersCount }}
+            </a>
+        </td>
+    </tr>
+
+    {% if answerCount %}
+        <tr>
+            <td>
+                {{ 'campaign_status.answer_none'|trans }}
+            </td>
+            <td>
+                <a href="#"
+                    id="has-no-answers-{{ communication.id }}"
+                    class="filter-response"
+                    data-communication-id="{{ communication.id }}"
+                    data-count="{{ communication.noAnswersCount }}"
+                    data-target="filter-has-no-answers-{{ communication.id }}">
+                    {{ communication.noAnswersCount }}
+                </a>
+            </td>
+        </tr>
+    {% endif %}
+
+    </tbody>
+</table>

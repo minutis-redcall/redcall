@@ -132,6 +132,11 @@ class Campaign
      */
     private $operation;
 
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private $groupNames;
+
     public function getId()
     {
         return $this->id;
@@ -158,8 +163,9 @@ class Campaign
 
     public function getCode() : ?string
     {
-        if (gettype($this->code) === 'resource') {
-            $this->code = stream_get_contents($this->code);
+        $code = $this->code;
+        if (is_resource($code)) {
+            $this->code = stream_get_contents($code);
         }
 
         return $this->code;
@@ -263,11 +269,16 @@ class Campaign
     public function getCampaignStatus(TranslatorInterface $translator) : array
     {
         $data = [
+            'id'             => $this->getId(),
+            'active'         => $this->isActive(),
+            'label'          => $this->getLabel(),
+            'type'           => $this->getType(),
+            'groupNames'     => $this->getGroupNames(),
             'notes'          => [
-                'content'                 => nl2br($this->notes),
-                'notes-updated-timestamp' => $this->notesUpdatedAt ? $this->notesUpdatedAt->getTimestamp() : 0,
-                'notes-updated-date'      => $this->notesUpdatedAt ? $this->notesUpdatedAt->format('d/m/Y') : null,
-                'notes-updated-time'      => $this->notesUpdatedAt ? $this->notesUpdatedAt->format('H:i') : null,
+                'notes-updated-timestamp' => $this->getNotesUpdatedAt() ? $this->getNotesUpdatedAt()->getTimestamp() : 0,
+                'notes-updated-date'      => $this->getNotesUpdatedAt() ? $this->getNotesUpdatedAt()->format('d/m/Y') : null,
+                'notes-updated-time'      => $this->getNotesUpdatedAt() ? $this->getNotesUpdatedAt()->format('H:i') : null,
+                'content'                 => $this->getNotes(),
             ],
             'communications' => [],
         ];
@@ -464,5 +475,17 @@ class Campaign
         $shortcuts = array_unique($shortcuts);
 
         return sprintf('(%s)', implode(', ', $shortcuts));
+    }
+
+    public function getGroupNames() : array
+    {
+        return $this->groupNames ? json_decode($this->groupNames, true) : [];
+    }
+
+    public function setGroupNames(array $groupNames) : self
+    {
+        $this->groupNames = json_encode($groupNames);
+
+        return $this;
     }
 }

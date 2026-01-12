@@ -1,0 +1,16 @@
+{% set answerCount = communication.choices|length %}
+
+<div class="tab-pane fade {{ key == 0 ? 'show active' : '' }}" id="tab-{{ communication.id }}"
+     role="tabpanel" aria-labelledby="{{ communication.id }}-tab">
+
+    {% include 'status_communication/partials/communication/header.html.twig' %}
+    {% include 'status_communication/partials/communication/progression.html.twig' %}
+    {% include 'status_communication/partials/communication/body.html.twig' %}
+    <br/>
+    {% include 'status_communication/partials/communication/answers.html.twig' %}
+    {% include 'status_communication/partials/communication/filters.html.twig' %}
+    {% include 'status_communication/partials/communication/results.html.twig' %}
+    {% include 'status_communication/partials/communication/selection_actions.html.twig' %}
+    {% include 'status_communication/partials/communication/debug.html.twig' %}
+
+</div>

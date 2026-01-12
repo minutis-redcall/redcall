@@ -1,0 +1,49 @@
+{% import 'macros.html.twig' as macros %}
+
+{# -------------------------------------------------------------------------------- #}
+{# Message (shorten and normal version) #}
+{# -------------------------------------------------------------------------------- #}
+<div id="limited-body-{{ communication.id }}" class="email-body">
+    <strong>{{ communication.limitedBody|striptags }}</strong>
+    {% if communication.canExpandBody %}
+        <a href="#" class="show-complete-body" data-communication-id="{{ communication.id }}">🔽️</a>
+    {% endif %}
+    {% if communication.volunteer or is_granted('ROLE_ADMIN') %}
+        <div class="float-right color-grey" style="font-weight: normal;" {% if communication.volunteer %}title="{{ communication.volunteer.externalId }}"{% endif %}>
+            {{ macros.communicationBy(communication) }}
+
+            {% if communication.volunteer and is_granted('ROLE_ADMIN') %}
+                <span style="color:black;">/</span>
+            {% endif %}
+
+            {# -------------------------------------------------------------------------------- #}
+            {# Relaunch button (for admins only) #}
+            {# -------------------------------------------------------------------------------- #}
+            {% if is_granted('ROLE_ADMIN') %}
+                <a href="{{ path('communication_relaunch', {communication: communication.id, campaign: campaign.id}) }}" onclick="return confirm('{{ 'campaign_status.relaunch_communication_confirm'| trans }}');">
+                    {{ 'campaign_status.relaunch_communication'| trans }}
+                </a>
+            {% endif %}
+
+            {% if campaign.active and campaign.code %}
+                <span class="ml-1">
+                    <a href="{{ path('synthesis_index', {code: campaign.code}) }}" target="_blank" class="btn btn-sm btn-outline-info">{{ 'synthesis.button'|trans }}</a>
+                </span>
+            {% endif %}
+
+        </div>
+    {% endif %}
+</div>
+<div id="complete-body-{{ communication.id }}" class="d-none email-body">
+    {% if communication.subject %}
+        <br/>
+        <div class="text-center h4">{{ communication.subject }}</div>
+    {% endif %}
+    {% if communication.type in [constant('App\\Entity\\Communication::TYPE_EMAIL')] %}
+        {{ communication|format_email }}
+    {% else %}
+        {{ communication.body|nl2br }}
+    {% endif %}
+    <a href="#" class="show-limited-body" data-communication-id="{{ communication.id }}">🔼️</a>
+</div>
+<br/>

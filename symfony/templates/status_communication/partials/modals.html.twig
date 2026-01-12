@@ -1,0 +1,8 @@
+{% include 'status_communication/partials/modals/campaign_modals.html.twig' %}
+
+{% for key, communication in campaign.communications %}
+    {% include 'status_communication/partials/modals/communication_modals.html.twig' %}
+{% endfor %}
+
+{% include 'status_communication/partials/modals/global_modals.html.twig' %}
+{% include 'status_communication/partials/modals/groups_modal.html.twig' %}

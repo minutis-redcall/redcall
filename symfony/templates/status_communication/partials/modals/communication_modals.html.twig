@@ -1,0 +1,128 @@
+{% import 'macros.html.twig' as macros %}
+
+{% set answerCount = communication.choices|length %}
+
+{# -------------------------------------------------------------------------------- #}
+{# Change communication label #}
+{# -------------------------------------------------------------------------------- #}
+{% if campaign.active %}
+    {% set body %}
+        <form id="rename-communication-{{ communication.id }}"
+              action="{{ path('communication_rename', {campaignId: campaign.id, communicationId: communication.id}) }}"
+              method="post">
+            <input type="text" class="form-control" name="new_name" value="{{ communication.label }}"/>
+            <input type="hidden" name="csrf" value="{{ csrf_token('communication') }}"/>
+        </form>
+    {% endset %}
+
+    {% set buttons %}
+        <button type="button" class="btn btn-primary"
+                onclick="$('#rename-communication-{{ communication.id }}').submit();">{{ 'base.form.change'|trans }}</button>
+    {% endset %}
+
+    {{ macros.modal('change-communication-label-' ~ communication.id, 'modal.change_campaign_label'|trans, body, buttons) }}
+{% endif %}
+
+{# -------------------------------------------------------------------------------- #}
+{# Filter volunteers by their structures #}
+{# -------------------------------------------------------------------------------- #}
+
+{% set body %}
+
+    {% set commonStructures = app.user.getCommonStructures(campaignStructures) %}
+    {% for structure in commonStructures %}
+        <div class="form-check">
+            <label class="switch">
+                <input type="checkbox"
+                       data-toggle="toggle" data-onstyle="primary"
+                       class="form-check-input filter-action filter-structure-{{ communication.id }} filter-action-{{ communication.id }}"
+                       id="filter-structure-{{ structure.id }}-{{ communication.id }}"
+                       value="{{ structure.id }}"/>
+                <span class="slider"></span>
+            </label>
+            <label class="form-check-label"
+                   for="filter-structure-{{ structure.id }}-{{ communication.id }}">
+                {{ structure.displayName }}
+            </label>
+        </div>
+    {% endfor %}
+
+{% endset %}
+
+{{ macros.modal('filter-structure-' ~ communication.id, 'campaign_status.filter.title'|trans ~ ' ' ~ 'campaign_status.filter.by_structure'|trans, body) }}
+
+{# -------------------------------------------------------------------------------- #}
+{# Filter volunteers by their response #}
+{# -------------------------------------------------------------------------------- #}
+{% set body %}
+
+    {% for index, choice in communication.choices %}
+        <div class="form-check">
+            <label class="switch">
+                <input type="checkbox"
+                       data-toggle="toggle" data-onstyle="primary"
+                       data-choice-id="{{ choice.id }}"
+                       class="form-check-input filter-action filter-response-{{ communication.id }} filter-response-{{ communication.id }} filter-action-{{ communication.id }}"
+                       id="filter-is-choice-{{ choice.id }}-{{ communication.id }}"/>
+                <span class="slider"></span>
+            </label>
+            <label class="form-check-label"
+                   for="filter-is-choice-{{ choice.id }}-{{ communication.id }}">
+                {{ choice.label }}
+            </label>
+        </div>
+    {% endfor %}
+
+    <div class="form-check">
+        <label class="switch">
+            <input type="checkbox"
+                   data-toggle="toggle" data-onstyle="primary"
+                   class="form-check-input filter-action filter-response-{{ communication.id }} filter-action-{{ communication.id }}"
+                   id="filter-has-invalid-answer-{{ communication.id }}"/>
+            <span class="slider"></span>
+        </label>
+        <label class="form-check-label"
+               for="filter-has-invalid-answer-{{ communication.id }}">
+            {{ 'campaign_status.table.other'|trans }}
+        </label>
+    </div>
+
+    <div class="form-check">
+        <label class="switch">
+            <input type="checkbox"
+                   data-toggle="toggle" data-onstyle="primary"
+                   class="form-check-input filter-action filter-response-{{ communication.id }} filter-action-{{ communication.id }}"
+                   id="filter-has-no-answers-{{ communication.id }}"/>
+            <span class="slider"></span>
+        </label>
+        <label class="form-check-label"
+               for="filter-has-no-answers-{{ communication.id }}">
+            {{ 'campaign_status.table.none'|trans }}
+        </label>
+    </div>
+
+{% endset %}
+
+{{ macros.modal('filter-response-' ~ communication.id, 'campaign_status.filter.title'|trans ~ ' ' ~ 'campaign_status.filter.by_response'|trans, body) }}
+
+{# -------------------------------------------------------------------------------- #}
+{# Filter volunteers by their skills #}
+{# -------------------------------------------------------------------------------- #}
+{% set body %}
+    {% for skill in skills %}
+        <div class="form-check">
+            <label class="switch">
+                <input type="checkbox"
+                       class="form-check-input filter-action filter-skill-{{ communication.id }} filter-action-{{ communication.id }}"
+                       id="filter-is-skill-{{ skill.id }}-{{ communication.id }}"/>
+                <span class="slider"></span>
+            </label>
+            <label class="form-check-label"
+                   for="filter-is-skill-{{ skill.id }}-{{ communication.id }}">
+                {{ macros.badge(skill) }}
+            </label>
+        </div>
+    {% endfor %}
+{% endset %}
+
+{{ macros.modal('filter-skill-' ~ communication.id, 'campaign_status.filter.title'|trans ~ ' ' ~ 'campaign_status.filter.by_skill'|trans, body) }}
