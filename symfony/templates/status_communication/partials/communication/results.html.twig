@@ -1,0 +1,167 @@
+{% import 'macros.html.twig' as macros %}
+
+{# -------------------------------------------------------------------------------- #}
+{# Results #}
+{# -------------------------------------------------------------------------------- #}
+<table class="table">
+    <thead>
+    <tr>
+        <th width="5%">
+            <label class="switch">
+                <input class="select-all" data-communication-id="{{ communication.id }}"
+                       type="checkbox"/>
+                <span class="slider"></span>
+            </label>
+        </th>
+        <th width="95%">&nbsp;</th>
+    </tr>
+    </thead>
+    <tbody id="top-{{ communication.id }}">
+    {% for message in communication.messages %}
+        {% set suffix = communication.id ~ '-' ~ message.id %}
+        {% set volunteer = message.volunteer %}
+        <tr id="row-{{ suffix|e('html_attr') }}"
+            class="row-{{ communication.id }}"
+            data-volunteer-id="{{ volunteer.id }}"
+            data-structures="{{ volunteer.structureIds|join(',') }}"
+            data-is-reachable="{{ message.reachable }}"
+            data-has-answer="{{ message.answers.count }}">
+
+            {# Selection #}
+            <td id="message-selected-{{ suffix|e('html_attr') }}"
+                data-communication-id="{{ communication.id }}">
+                <label class="switch">
+                    <input id="select-{{ suffix }}"
+                           class="volunteer-selection volunteer-selection-{{ communication.id }}"
+                           data-communication-id="{{ communication.id }}"
+                           data-suffix="{{ suffix|e('html_attr') }}"
+                           type="checkbox"/>
+                    <span class="slider"></span>
+                </label>
+            </td>
+
+            <td id="volunteer-{{ suffix }}">
+
+                <div class="float-right">
+
+                    {% if app.environment == 'dev' %}
+                        <a class="btn btn-default"
+                        {% if communication.type == constant('App\\Entity\\Communication::TYPE_SMS') %}
+                            {% if message.volunteer.phoneNumber %}
+                                target="_blank" href="{{ path('sandbox_fake_sms_thread', {e164: message.volunteer.phoneNumber, campaignId: campaign.id}) }}">{{ macros.communicationIcon(communication) }}</a>
+                            {% else %}
+                                href="#">&nbsp;</a>
+                            {% endif %}
+                        {% elseif communication.type == constant('App\\Entity\\Communication::TYPE_CALL') %}
+                            {% if message.volunteer.phoneNumber %}
+                                target="_blank" href="{{ path('sandbox_fake_call_read', {e164: message.volunteer.phoneNumber, campaignId: campaign.id}) }}">{{ macros.communicationIcon(communication) }}️</a>
+                            {% else %}
+                                href="#">&nbsp;</a>
+                            {% endif %}
+                        {% else %}
+                            {% if message.volunteer.email %}
+                                target="_blank" href="{{ path('sandbox_fake_email_read', {email: message.volunteer.email, campaignId: campaign.id}) }}">{{ macros.communicationIcon(communication) }}️</a>
+                            {% else %}
+                                href="#">&nbsp;</a>
+                            {% endif %}
+                        {% endif %}
+                    {% endif %}
+
+                    {% if is_granted('ROLE_ADMIN') and message.messageId %}
+                        <a href="#" class="provider-modal" data-href="{{ path('communication_provider_information', {
+                            campaignId: campaign.id,
+                            messageId: message.id,
+                        }) }}">ℹ️</a>
+                    {% endif %}
+
+                    {# Answer codes when volunteer answered them #}
+                    {% if answerCount %}
+                        {% for choice in communication.choices %}
+                            {% set answer = message.getAnswerByChoice(choice) %}
+                            <span class="{{ answer ? '' : 'd-none' }} badge badge-dark message-is-choice-{{ choice.id }}-{{ communication.id }}"
+                                  style="font-size:16px;"
+                                  data-value="{{ answer ? 1 : 0 }}"
+                                  id="message-is-choice-{{ choice.id }}-{{ suffix|e('html_attr') }}">
+                                {{ choice.code }}
+                                <span style="font-size:10px;">
+                                    <br/>
+                                    <span id="message-is-choice-time-{{ choice.id }}-{{ suffix|e('html_attr') }}">
+                                        {% if answer %}
+                                            {{ answer.receivedAt|date('H:i') }}
+                                        {% endif %}
+                                    </span>
+                                </span>
+                            </span>
+                        {% endfor %}
+                    {% endif %}
+
+                    {# Volunteer sent an invalid answer #}
+                    <span class="{{ message.invalidAnswer ? '' : 'd-none' }} badge badge-dark message-has-invalid-answer-{{ communication.id }}"
+                          style="font-size:16px;"
+                          data-value="{{ message.invalidAnswer ? 1 : 0 }}"
+                          id="message-has-invalid-answer-{{ suffix|e('html_attr') }}">
+                        ?
+                        <span style="font-size:10px;">
+                            <br/>
+                            <span id="message-has-invalid-answer-time-{{ suffix|e('html_attr') }}">
+                                {% if message.invalidAnswer %}
+                                    {{ message.invalidAnswer.receivedAt|date('H:i') }}
+                                {% endif %}
+                            </span>
+                        </span>
+                    </span>
+
+                    <span class="d-none message-has-no-answers-{{ communication.id }}"
+                          data-value="{{ message.hasAnswer(true) ? 0 : 1 }}"
+                          id="message-has-no-answers-{{ suffix|e('html_attr') }}"></span>
+
+                    {% if campaign.active %}
+                        <span id="open-message-{{ suffix }}"
+                              data-message-id="{{ message.id }}"
+                              class="open-message" style="cursor:pointer;">✏️</span>
+                    {% endif %}
+
+                    <div class="d-none">
+                        {% for skill in message.volunteer.badgesFilteredFromSynonyms %}
+                            <div class="message-is-skill-{{ skill.id|e('html_attr') }}-{{ communication.id }}" data-value=1></div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div id="volunteer-container-{{ suffix }}" class="{% if not message.sent %}text-black-50{% elseif message.error %}message.error{% endif %}">
+                    {{ macros.volunteer(message.volunteer) }}
+                </div>
+
+                {# Unexpected error #}
+                <div id="error-{{ suffix }}" style="color:red;">
+                    {{ message.error|trans }}
+                </div>
+                <div>
+                    <span id="message-is-unclear-{{ suffix }}" class="{{ message.isUnclear ? '' : 'd-none' }}" style="color:red;font-size:10px;">
+                        <strong>⚠️ {{ 'campaign_status.answers.unclear'|trans }}</strong>
+                    </span>
+                    <span id="invalid-answer-raw-{{ suffix }}" style="font-size:10px;">
+                        {% if message.invalidAnswer %}
+                            {{ message.invalidAnswer.raw }}
+                        {% endif %}
+                        {% if message.isUnclear %}
+                            {{ message.unclear.raw }}
+                        {% endif %}
+                    </span>
+                    {% if campaign.active %}
+                        <a id="answer-link-{{ suffix }}"
+                           style="font-size:10px;"
+                           href="#"
+                           onclick="return false;"
+                           data-message-id="{{ message.id }}"
+                           class="open-message {% if communication.type != constant('App\\Entity\\Communication::TYPE_SMS') or (not message.isUnclear and not message.invalidAnswer) %}d-none{% endif %}">
+                            {{ 'campaign_status.answers.answer_link'|trans }}
+                        </a>
+                    {% endif %}
+                </div>
+            </td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+<div class="clearfix"></div>

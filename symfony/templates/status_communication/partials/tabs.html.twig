@@ -1,0 +1,29 @@
+{% import 'macros.html.twig' as macros %}
+
+{# -------------------------------------------------------------------------------- #}
+{# Tabs to switch between campaign's communications #}
+{# -------------------------------------------------------------------------------- #}
+{% if campaign.communications|length > 1 %}
+
+    <div class="col-12">
+        <h5>{{ 'campaign_status.communication_tabs'|trans }}</h5>
+        <ul class="nav nav-tabs" id="communications-menu" role="tablist">
+            {% for key, communication in campaign.communications %}
+                <li class="nav-item">
+                    <a id="{{ communication.id }}-tab" data-toggle="tab" class="nav-link {{ key ?: 'active' }}"
+                       href="#tab-{{ communication.id }}" role="tab" aria-controls="{{ communication.id }}">
+                        {{ macros.communicationIcon(communication) }}
+                        {% if communication.label %}
+                            {{ communication.label }}
+                        {% else %}
+                            {{ 'campaign_status.communication_short_title'|trans({'%date%': communication.createdAt|date('d/m/Y'), '%time%': communication.createdAt|date('H:i')}) }}
+                        {% endif %}
+                    </a>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <div class="col-12"><br/></div>
+
+{% endif %}

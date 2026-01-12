@@ -260,7 +260,7 @@ class RefreshManager
         // Update basic information
         $firstName = $this->normalizeName($pegass->evaluate('user.prenom'));
         if ('' === $firstName) {
-            $this->logger->error(sprintf(
+            $this->logger->notice(sprintf(
                 'Volunteer %s has no first name, skipping',
                 $volunteer->getExternalId()
             ), [

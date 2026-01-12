@@ -1,0 +1,22 @@
+{# -------------------------------------------------------------------------------- #}
+{# Filter by responses or skills... #}
+{# -------------------------------------------------------------------------------- #}
+<div class="skip-line text-small">
+    {{ 'campaign_status.filter.title'|trans }}
+    {% set commonStructures = app.user.getCommonStructures(campaignStructures) %}
+    {% if commonStructures > 1 %}
+        <a href="#"
+           id="link-filter-structure-{{ communication.id }}"
+           onclick="$('#filter-structure-{{ communication.id }}').modal(); return false;">{{ 'campaign_status.filter.by_structure'|trans }}</a>
+        {{ 'campaign_status.filter.or'|trans }}
+    {% endif %}
+    <a href="#"
+       id="link-filter-response-{{ communication.id }}"
+       onclick="$('#filter-response-{{ communication.id }}').modal(); return false;">{{ 'campaign_status.filter.by_response'|trans }}</a>
+    {{ 'campaign_status.filter.or'|trans }}
+    <a href="#"
+       id="link-filter-skill-{{ communication.id }}"
+       onclick="$('#filter-skill-{{ communication.id }}').modal(); return false;">{{ 'campaign_status.filter.by_skill'|trans }}</a>
+    {{ 'campaign_status.filter.or'|trans }}
+    <a href="#" id="link-filter-unreachable-{{ communication.id }}" class="filter-unreachable" data-value="0">{{ 'campaign_status.filter.by_unreachable'|trans }}</a>
+</div>

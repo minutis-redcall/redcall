@@ -1,0 +1,80 @@
+{% import 'status_communication/macros.html.twig' as specificMacros %}
+
+{# -------------------------------------------------------------------------------- #}
+{# Actions on selected rows #}
+{# -------------------------------------------------------------------------------- #}
+<div class="row" id="selection-{{ communication.id }}">
+
+    {# New message to selection #}
+    {% if campaign.active %}
+
+        <div class="col-md-3 col-12 skip-line">
+            <div class="dropdown">
+                <button class="btn btn-sm btn-primary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    {{ 'campaign_status.selection.new_message'|trans }}
+                </button>
+                <div class="dropdown-menu">
+                    {{ specificMacros.newMessage(campaign, communication, constant('App\\Entity\\Communication::TYPE_SMS')) }}
+                    {{ specificMacros.newMessage(campaign, communication, constant('App\\Entity\\Communication::TYPE_CALL')) }}
+                    {{ specificMacros.newMessage(campaign, communication, constant('App\\Entity\\Communication::TYPE_EMAIL')) }}
+                </div>
+            </div>
+        </div>
+
+    {% endif %}
+
+    {# Download CSV #}
+    <div class="col-md-3 col-12 skip-line">
+        <button
+                class="btn btn-primary download-csv-button"
+                data-communication-id="{{ communication.id }}"
+                data-timeout-disabled="30000">
+            {{ 'campaign_status.selection.download_csv'|trans }}
+        </button>
+        <form id="selection-download-csv-form-{{ communication.id }}"
+              action="{{ path('export_csv', {id: communication.id}) }}"
+              method="post" class="d-none">
+            <input type="hidden" name="csrf" value="{{ csrf_token('communication') }}"/>
+            <input type="hidden" name="volunteers"
+                   id="selection-download-csv-field-{{ communication.id }}" value=""/>
+        </form>
+    </div>
+
+    {# Download PDF #}
+    <div class="col-md-3 col-12 skip-line">
+        <button
+                class="btn btn-primary download-pdf-button"
+                data-communication-id="{{ communication.id }}"
+                data-timeout-disabled="30000">
+            {{ 'campaign_status.selection.download_portrait_pdf'|trans }}
+        </button>
+        <form id="selection-download-pdf-form-{{ communication.id }}"
+              action="{{ path('export_pdf', {id: communication.id}) }}"
+              method="post" class="d-none">
+            <input type="hidden" name="csrf" value="{{ csrf_token('communication') }}"/>
+            <input type="hidden" name="volunteers"
+                   id="selection-download-pdf-field-{{ communication.id }}" value=""/>
+        </form>
+    </div>
+
+    {# Open / Close campaign #}
+    <div class="col-md-3 col-12 skip-line">
+        {% if is_granted('CAMPAIGN_OWNER', campaign) %}
+            {% if campaign.active %}
+                <a href="{{ path('close_campaign', { id: campaign.id, csrf: csrf_token('campaign') }) }}"
+                   class="btn btn-warning" role="button">
+                    {{ 'campaign.actions.close'|trans }}
+                </a>
+                <p>
+                    {{ 'campaign.actions.expires'|trans }}
+                    <a href="#" id="closed-at">{{ campaign.expiresAt|date('d/m/Y H:i') }}</a>
+                </p>
+            {% else %}
+                <a href="{{ path('open_campaign', { id: campaign.id, csrf: csrf_token('campaign') }) }}"
+                   class="btn btn-danger" role="button">
+                    {{ 'campaign.actions.open'|trans }}
+                </a>
+            {% endif %}
+        {% endif %}
+    </div>
+</div>

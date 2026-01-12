@@ -1,0 +1,58 @@
+{% import 'macros.html.twig' as macros %}
+
+{# -------------------------------------------------------------------------------- #}
+{# Change campaign label #}
+{# -------------------------------------------------------------------------------- #}
+{% if campaign.active %}
+    {% set body %}
+        <form id="rename-campaign" action="{{ path('rename_campaign', {id: campaign.id}) }}" method="post">
+            <input type="text" class="form-control" name="new_name" value="{{ campaign.label }}"/>
+            <input type="hidden" name="csrf" value="{{ csrf_token('campaign') }}"/>
+        </form>
+    {% endset %}
+
+    {% set buttons %}
+        <button type="button" class="btn btn-primary"
+                onclick="$('#rename-campaign').submit();">{{ 'base.form.change'|trans }}</button>
+    {% endset %}
+
+    {{ macros.modal('change-campaign-label', 'modal.change_campaign_label'|trans, body, buttons) }}
+{% endif %}
+
+{# -------------------------------------------------------------------------------- #}
+{# Change campaign color #}
+{# -------------------------------------------------------------------------------- #}
+{% if campaign.active %}
+    {% set body %}
+        {% for color, hexColor in constant('App\\Entity\\Campaign::COLORS') %}
+            <a href="{{ path('color_campaign', app.request.query.all|merge({id: campaign.id, color: color, csrf: csrf_token('campaign')})) }}"
+               class="btn btn-primary text-white border-0 w-100"
+               style="background-color:{{ hexColor }};">
+                {{ ('campaign.types.' ~ color)|trans }}
+            </a>
+
+            <br/><br/>
+        {% endfor %}
+    {% endset %}
+
+    {{ macros.modal('change-color', 'modal.change_color'|trans, body) }}
+{% endif %}
+
+{# -------------------------------------------------------------------------------- #}
+{# Change campaign notes #}
+{# -------------------------------------------------------------------------------- #}
+{% if campaign.active %}
+    {% set body %}
+        <form id="change-notes-form" action="{{ path('notes_campaign', {id: campaign.id}) }}" method="post">
+            <textarea class="form-control" style="width:100%" rows=15 name="notes">{{ campaign.notes }}</textarea>
+            <input type="hidden" name="csrf" value="{{ csrf_token('campaign') }}"/>
+        </form>
+    {% endset %}
+
+    {% set buttons %}
+        <button type="button" class="btn btn-primary"
+                onclick="$('#change-notes-form').submit();">{{ 'base.form.change'|trans }}</button>
+    {% endset %}
+
+    {{ macros.modal('change-notes', 'modal.change_campaign_notes'|trans, body, buttons) }}
+{% endif %}
