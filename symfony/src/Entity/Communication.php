@@ -135,7 +135,9 @@ class Communication
 
     public function __construct()
     {
-        $this->images = new ArrayCollection();
+        $this->messages = new ArrayCollection();
+        $this->choices  = new ArrayCollection();
+        $this->images   = new ArrayCollection();
     }
 
     /**

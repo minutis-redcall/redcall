@@ -10,6 +10,7 @@ use App\Entity\User;
 use App\Entity\Volunteer;
 use App\Form\Model\Campaign as CampaignModel;
 use App\Repository\CampaignRepository;
+use App\Repository\VolunteerGroupRepository;
 use App\Tools\Random;
 use Bundles\PasswordLoginBundle\Entity\AbstractUser;
 use Doctrine\ORM\QueryBuilder;
@@ -64,7 +65,8 @@ class CampaignManager
     /**
      * @var MailManager
      */
-    private $mailManager;
+    private                          $mailManager;
+    private VolunteerGroupRepository $volunteerGroupRepository;
 
     public function __construct(CampaignRepository $campaignRepository,
         CommunicationManager $communicationManager,
@@ -74,17 +76,19 @@ class CampaignManager
         TokenStorageInterface $tokenStorage,
         TranslatorInterface $translator,
         RouterInterface $router,
-        MailManager $mailManager)
+        MailManager $mailManager,
+        VolunteerGroupRepository $volunteerGroupRepository)
     {
-        $this->campaignRepository   = $campaignRepository;
-        $this->communicationManager = $communicationManager;
-        $this->messageManager       = $messageManager;
-        $this->operationManager     = $operationManager;
-        $this->platformManager      = $platformConfigManager;
-        $this->tokenStorage         = $tokenStorage;
-        $this->translator           = $translator;
-        $this->router               = $router;
-        $this->mailManager          = $mailManager;
+        $this->campaignRepository       = $campaignRepository;
+        $this->communicationManager     = $communicationManager;
+        $this->messageManager           = $messageManager;
+        $this->operationManager         = $operationManager;
+        $this->platformManager          = $platformConfigManager;
+        $this->tokenStorage             = $tokenStorage;
+        $this->translator               = $translator;
+        $this->router                   = $router;
+        $this->mailManager              = $mailManager;
+        $this->volunteerGroupRepository = $volunteerGroupRepository;
     }
 
     public function find(int $campaignId) : ?CampaignEntity
@@ -288,6 +292,9 @@ class CampaignManager
             // number of answers to any of the trigger's communication increased
             // note: we don't need to take care of "answers that changed" because answers are immutable
             $this->campaignRepository->countNumberOfAnswersReceived($campaignId),
+
+            // volunteer groups
+            $this->volunteerGroupRepository->countVolunteerGroups($campaignId),
         ];
 
         return sha1(implode('|', $criteria));

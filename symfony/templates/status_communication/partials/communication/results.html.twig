@@ -129,14 +129,6 @@
                 </div>
 
                 <div class="text-small text-muted">
-                    {{ volunteer.externalId }}
-                    <span id="volunteer-groups-{{ suffix }}" class="ml-1 volunteer-groups-list">
-                        {% if volunteerGroups[volunteer.id] is defined %}
-                            {% for groupIndex in volunteerGroups[volunteer.id] %}
-                                <span class="group-dot group-dot-{{ groupIndex }}" data-index="{{ groupIndex }}" style="display:inline-block; width:8px; height:8px; border-radius:50%; background-color:#{{ groupColors[groupIndex] }};"></span>
-                            {% endfor %}
-                        {% endif %}
-                    </span>
                     <div class="dropdown d-inline ml-1">
                         <a href="#" class="dropdown-toggle text-muted" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             <i class="fas fa-tags"></i> {{ 'campaign_status.groups.title'|trans }}
@@ -161,6 +153,13 @@
                             {% endfor %}
                         </div>
                     </div>
+                    <span id="volunteer-groups-{{ suffix }}" class="ml-1 volunteer-groups-list">
+                        {% if volunteerGroups[volunteer.id] is defined %}
+                            {% for groupIndex in volunteerGroups[volunteer.id] %}
+                                <span class="group-dot group-dot-{{ groupIndex }}" data-index="{{ groupIndex }}" style="display:inline-block; width:8px; height:8px; border-radius:50%; background-color:#{{ groupColors[groupIndex] }};"></span>
+                            {% endfor %}
+                        {% endif %}
+                    </span>
                 </div>
 
                 <div id="volunteer-container-{{ suffix }}" class="{% if not message.sent %}text-black-50{% elseif message.error %}message.error{% endif %}">
