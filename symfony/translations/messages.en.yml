@@ -788,10 +788,14 @@ manage_volunteers:
 management:
   current_structures: 'You are currently able to trigger the following structures:'
   home:
-    link: 'Workforce Management'
+    link: 'Resources Management'
     resources: 'Resources Management'
   support_email: 'If there is a mistake, please contact support team at %email%'
   update_structures: 'Update structures'
+  show_users: "Show users having access"
+  no_other_users: "No other users have access to this structure"
+  missing_volunteer: "User has no volunteer entity (likely removed)"
+  external_id_label: "External ID: %external_id%"
 message:
   call:
     announcement: '%brand% at %hours% hours %mins%.'
@@ -1040,7 +1044,7 @@ costs:
   tips:
     title: 'Tips to optimize your costs'
     message_length: 'Reduce message length to 160 characters maximum, including answers'
-    phone_validation: 'Check phone number validity regularly'
+    phone_validation: 'Check volunteers'' phone number validity regularly'
   structure_report:
     title: 'Breakdown by structure'
     no_data: 'No data available for this period.'

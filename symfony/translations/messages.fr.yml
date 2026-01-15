@@ -795,9 +795,13 @@ manage_volunteers:
 management:
   current_structures: 'Vous pouvez actuellement déclencher les structures suivantes :'
   home:
-    link: 'Gestion des effectifs'
+    link: 'Gestion des ressources'
     resources: 'Gestion des ressources'
   support_email: 'Si cette information est erronée, merci de contacter l''équipe à %email%'
+  show_users: "Qui d'autre peut déclencher cette structure ?"
+  no_other_users: "Aucun autre utilisateur n'a accès à cette structure"
+  missing_volunteer: "L'utilisateur n'a pas de bénévole (probablement supprimé)"
+  external_id_label: "Identifiant : %external_id%"
   update_structures: 'Modifier les structures'
 message:
   call:
@@ -1047,7 +1051,7 @@ costs:
   tips:
     title: 'Conseils pour optimiser vos coûts'
     message_length: 'Réduisez la longueur des messages à 160 caractères maximum, réponses incluses'
-    phone_validation: 'Vérifiez régulièrement la validité des numéros de téléphone'
+    phone_validation: 'Vérifiez régulièrement la validité des numéros de téléphone de vos bénévoles'
   structure_report:
     title: 'Détail par structure'
     no_data: 'Aucune donnée disponible pour cette période.'
