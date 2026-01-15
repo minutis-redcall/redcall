@@ -1029,3 +1029,33 @@ nivol_auth:
     subject: '%code% is your RedCall verification code'
     content: 'Use the code %code% to connect to RedCall.'
     content_html: '<p>Use the code <strong>%code%</strong> to connect to RedCall.</p>'
+
+costs:
+  menu_button: 'Costs'
+  title: 'Your communication costs'
+  disclaimer:
+    title: 'Important information'
+    content: 'These costs are for information only. The Red Cross does not charge structures for these communications.'
+    purpose: 'The goal is to increase awareness about communication costs so that structures can optimize their usage.'
+  tips:
+    title: 'Tips to optimize your costs'
+    message_length: 'Reduce message length to 160 characters maximum, including answers'
+    phone_validation: 'Check phone number validity regularly'
+  structure_report:
+    title: 'Breakdown by structure'
+    no_data: 'No data available for this period.'
+  campaign_table:
+    title: 'Campaigns for %month%'
+    label: 'Label'
+    date: 'Date'
+    type: 'Type'
+    communications: 'Comms'
+    messages: 'Msgs'
+    questions: 'Questions'
+    answers: 'Answers'
+    errors: 'Errors'
+    costs: 'Costs'
+  monthly_table:
+    title: 'Monthly totals (last 12 months)'
+    month: 'Month'
+    total: 'Total'

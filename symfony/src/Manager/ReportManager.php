@@ -248,4 +248,164 @@ class ReportManager
 
         $this->communicationManager->save($communication);
     }
+
+    /**
+     * Creates a detailed cost report for specific structures within a date range.
+     * Returns campaign-level breakdown with costs per structure.
+     */
+    public function createUserStructuresCostsReport(array $structureIds, \DateTime $from, \DateTime $to): array
+    {
+        if (empty($structureIds)) {
+            return [];
+        }
+
+        $reports = $this->reportRepository->getCommunicationReportsBetween($from, $to, 0);
+
+        $structureReports = [];
+
+        foreach ($reports as $report) {
+            /** @var Report $report */
+            foreach ($report->getRepartitions() as $repartition) {
+                $structure = $repartition->getStructure();
+                if (!$structure) {
+                    continue;
+                }
+
+                $structureId = $structure->getId();
+
+                // Only process structures the user has access to
+                if (!in_array($structureId, $structureIds)) {
+                    continue;
+                }
+
+                // Initialize structure entry
+                if (!isset($structureReports[$structureId])) {
+                    $structureReports[$structureId] = [
+                        'name' => $structure->getName(),
+                        'campaigns' => [],
+                        'totalCosts' => [],
+                    ];
+                }
+
+                $communication = $report->getCommunication();
+                $campaign = $communication->getCampaign();
+                $campaignId = $campaign->getId();
+
+                // Initialize campaign entry
+                if (!isset($structureReports[$structureId]['campaigns'][$campaignId])) {
+                    $structureReports[$structureId]['campaigns'][$campaignId] = [
+                        'id' => $campaignId,
+                        'label' => $campaign->getLabel(),
+                        'date' => $campaign->getCreatedAt(),
+                        'type' => $communication->getType(),
+                        'communications' => 0,
+                        'messages' => 0,
+                        'questions' => 0,
+                        'answers' => 0,
+                        'errors' => 0,
+                        'costs' => [],
+                    ];
+                }
+
+                $campaignRef = &$structureReports[$structureId]['campaigns'][$campaignId];
+                $campaignRef['communications']++;
+                $campaignRef['messages'] += $repartition->getMessageCount();
+                $campaignRef['questions'] += $repartition->getQuestionCount();
+                $campaignRef['answers'] += $repartition->getAnswerCount();
+                $campaignRef['errors'] += $repartition->getErrorCount();
+
+                foreach ($repartition->getCosts() ?? [] as $currency => $amount) {
+                    if (!isset($campaignRef['costs'][$currency])) {
+                        $campaignRef['costs'][$currency] = 0;
+                    }
+                    $campaignRef['costs'][$currency] += $amount;
+
+                    // Also aggregate to structure totals
+                    if (!isset($structureReports[$structureId]['totalCosts'][$currency])) {
+                        $structureReports[$structureId]['totalCosts'][$currency] = 0;
+                    }
+                    $structureReports[$structureId]['totalCosts'][$currency] += $amount;
+                }
+            }
+        }
+
+        // Sort campaigns by date within each structure
+        foreach ($structureReports as $structureId => &$structureData) {
+            uasort($structureData['campaigns'], function ($a, $b) {
+                return $b['date'] <=> $a['date'];
+            });
+        }
+
+        return $structureReports;
+    }
+
+    /**
+     * Creates monthly cost totals for specific structures over the last N months.
+     */
+    public function createUserStructuresMonthlyTotals(array $structureIds, int $months = 12): array
+    {
+        if (empty($structureIds)) {
+            return [];
+        }
+
+        $monthlyTotals = [];
+
+        // Generate list of last N finished months
+        $now = new \DateTime();
+        for ($i = 1; $i <= $months; $i++) {
+            $monthStart = (clone $now)->modify("-{$i} months")->modify('first day of this month')->setTime(0, 0, 0);
+            $monthEnd = (clone $monthStart)->modify('last day of this month')->setTime(23, 59, 59);
+
+            $monthKey = $monthStart->format('Y-m');
+            $monthlyTotals[$monthKey] = [
+                'label' => $monthStart->format('F Y'),
+                'from' => $monthStart,
+                'to' => $monthEnd,
+                'structures' => [],
+                'totalCosts' => [],
+            ];
+
+            // Fetch reports for this month
+            $reports = $this->reportRepository->getCommunicationReportsBetween($monthStart, $monthEnd, 0);
+
+            foreach ($reports as $report) {
+                /** @var Report $report */
+                foreach ($report->getRepartitions() as $repartition) {
+                    $structure = $repartition->getStructure();
+                    if (!$structure) {
+                        continue;
+                    }
+
+                    $structureId = $structure->getId();
+                    if (!in_array($structureId, $structureIds)) {
+                        continue;
+                    }
+
+                    // Initialize structure in this month
+                    if (!isset($monthlyTotals[$monthKey]['structures'][$structureId])) {
+                        $monthlyTotals[$monthKey]['structures'][$structureId] = [
+                            'name' => $structure->getName(),
+                            'costs' => [],
+                        ];
+                    }
+
+                    foreach ($repartition->getCosts() ?? [] as $currency => $amount) {
+                        // Structure-level costs for this month
+                        if (!isset($monthlyTotals[$monthKey]['structures'][$structureId]['costs'][$currency])) {
+                            $monthlyTotals[$monthKey]['structures'][$structureId]['costs'][$currency] = 0;
+                        }
+                        $monthlyTotals[$monthKey]['structures'][$structureId]['costs'][$currency] += $amount;
+
+                        // Total costs for this month
+                        if (!isset($monthlyTotals[$monthKey]['totalCosts'][$currency])) {
+                            $monthlyTotals[$monthKey]['totalCosts'][$currency] = 0;
+                        }
+                        $monthlyTotals[$monthKey]['totalCosts'][$currency] += $amount;
+                    }
+                }
+            }
+        }
+
+        return $monthlyTotals;
+    }
 }
