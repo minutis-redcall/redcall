@@ -7,9 +7,7 @@
 
     <title>{% block title %}RedCall{% endblock %}</title>
     {% block base_stylesheets %}
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Lato:wght@300;400;700&family=Roboto:wght@300;400;500;700&family=Ultra&family=Arvo:wght@400;700&family=Anton&family=Permanent+Marker&display=swap" rel="stylesheet">
         {{ encore_entry_link_tags('css') }}
     {% endblock %}
     {% block stylesheets %}{% endblock %}
@@ -58,19 +56,21 @@
     {% endblock %}
 
     {% block header %}
-        <div class="header-card {% if app.user|default(false) or session.volunteer|default(false) %}card mb-4{% endif %}">
-            <div class="card-header d-flex align-items-center justify-content-between flex-wrap">
-                <div class="header-main d-flex align-items-center flex-wrap">
-                    {% block logo %}{% endblock %}
+        <div class="header-band bg-white mb-4">
+            <div class="container d-flex align-items-center justify-content-between py-3">
+                <div class="header-main d-flex align-items-center">
+                    <div class="logo-container mr-4">
+                        {% block logo %}{% endblock %}
+                    </div>
 
                     {% block menu %}
                         {% if app.user|default(false) %}
-                            <div class="d-flex align-items-center flex-wrap ml-2">
+                            <nav class="d-flex align-items-center flex-wrap">
                                 {% if app.user.trusted %}
-                                    <a href="{{ path('home') }}" class="btn btn-secondary mr-2">{{ 'base.home'|trans }}</a>
+                                    <a href="{{ path('home') }}" class="btn btn-link text-dark font-weight-bold mr-3">{{ 'base.home'|trans }}</a>
 
-                                    <div class="dropdown mr-2">
-                                        <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    <div class="dropdown mr-3">
+                                        <button class="btn btn-link text-dark font-weight-bold dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                             {{ 'campaign.titles.create_full'|trans }}
                                         </button>
                                         <div class="dropdown-menu">
@@ -85,15 +85,15 @@
                                         </div>
                                     </div>
 
-                                    <a href="{{ path('list_campaigns') }}" class="btn btn-secondary mr-2">{{ 'campaign.titles.list_full'|trans }}</a>
-                                    <a href="{{ path('costs_home') }}" class="btn btn-secondary mr-2">{{ 'costs.menu_button'|trans }}</a>
+                                    <a href="{{ path('list_campaigns') }}" class="btn btn-link text-dark font-weight-bold mr-3">{{ 'campaign.titles.list_full'|trans }}</a>
+                                    <a href="{{ path('costs_home') }}" class="btn btn-link text-dark font-weight-bold mr-3">{{ 'costs.menu_button'|trans }}</a>
                                 {% endif %}
-                            </div>
+                            </nav>
                         {% endif %}
                     {% endblock %}
                 </div>
 
-                <div class="header-actions d-flex align-items-center ml-auto">
+                <div class="header-actions d-flex align-items-center">
                     {% if app.user|default(false) and app.user.root %}
                         <div class="platform-switch mr-3">
                             {{ render(controller('\\App\\Controller\\Admin\\PlatformController::renderSwitch')) }}
@@ -101,7 +101,7 @@
                     {% endif %}
 
                     {% if session.volunteer|default(false) %}
-                        <span class="badge badge-pill badge-dark">
+                        <span class="badge badge-pill badge-primary">
                             {{ session.volunteer.firstName }} {{ session.volunteer.lastName[:1] }}.
                         </span>
                     {% endif %}

@@ -1,23 +1,23 @@
 {% extends 'base.html.twig' %}
 
 {% block logo %}
-    <a href="{{ path('home') }}" class="mr-3">
-        <img src="{{ asset('minutis.png') }}" style="max-height: 40px;"/>
+    <a href="{{ path('home') }}">
+        <img src="{{ asset('minutis.png') }}" style="max-height: 50px;" alt="Croix-Rouge Française"/>
     </a>
 {% endblock %}
 
 {% block body %}
 
     <br/>
-    <div class="jumbotron shadow p-3 mb-5 rounded text-center">
+    <div class="jumbotron bg-white border-0 text-center py-5">
 
         {% if not app.user.structures.count %}
 
             <div class="row">
 
-                <div class="col-md-12 p-3 mb-5 rounded">
+                <div class="col-md-12 p-3 mb-5 rc-rounded rc-crayon-border bg-light">
 
-                    <h3>{{ 'campaign.no_structures.title'|trans }}</h3>
+                    <h3 class="text-rational">{{ 'campaign.no_structures.title'|trans }}</h3>
 
                     {{ 'campaign.no_structures.description'|trans }}
 
@@ -28,38 +28,38 @@
         {% else %}
 
             <div class="row">
-                <div class="col-12">
-                    <div class="h2" style="color:#708c91;">{{ 'campaign.titles.create_full'|trans }}</div>
-                    <br/>
+                <div class="col-12 mb-5">
+                    <h1 class="">{{ 'campaign.titles.create_full'|trans }}</h1>
                 </div>
-                <div class="col-4">
-                    <a href="{{ path('create_campaign', {type: 'sms'}) }}" class="btn btn-secondary" style="width:100%;padding:15px;">
-                        <div style="font-size:35px;">📱</div>
-                        <strong>{{ 'campaign.titles.sms'|trans }}</strong>
+                
+                <div class="col-md-4 mb-4">
+                    <a href="{{ path('create_campaign', {type: 'sms'}) }}" class="rc-btn-circle btn-yellow text-decoration-none shadow-sm">
+                        <div class="icon">📱</div>
+                        <strong class="text-rational">{{ 'campaign.titles.sms'|trans }}</strong>
                     </a>
                 </div>
-                <div class="col-4">
-                    <a href="{{ path('create_campaign', {type: 'call'}) }}" class="btn btn-secondary" style="width:100%;padding:15px;">
-                        <div style="font-size:35px;">📞</div>
-                        <strong>{{ 'campaign.titles.call'|trans }}</strong>
+                
+                <div class="col-md-4 mb-4">
+                    <a href="{{ path('create_campaign', {type: 'call'}) }}" class="rc-btn-circle btn-red text-decoration-none shadow-sm">
+                        <div class="icon">📞</div>
+                        <strong class="text-rational">{{ 'campaign.titles.call'|trans }}</strong>
                     </a>
                 </div>
-                <div class="col-4">
-                    <a href="{{ path('create_campaign', {type: 'email'}) }}" class="btn btn-secondary" style="width:100%;padding:15px;">
-                        <div style="font-size:35px;">✉️</div>
-                        <strong>{{ 'campaign.titles.email'|trans }}</strong>
+                
+                <div class="col-md-4 mb-4">
+                    <a href="{{ path('create_campaign', {type: 'email'}) }}" class="rc-btn-circle btn-blue text-decoration-none shadow-sm">
+                        <div class="icon">✉️</div>
+                        <strong class="text-rational">{{ 'campaign.titles.email'|trans }}</strong>
                     </a>
                 </div>
             </div>
 
-            <br/><br/><br/>
+            <div class="mt-5 pt-4">
+                <a href="{{ path('list_campaigns') }}"
+                   class="btn btn-primary btn-lg rc-rounded px-5">{{ 'campaign.titles.list_full'|trans }}</a>
+            </div>
 
-            <a href="{{ path('list_campaigns') }}"
-               class="text-lg-center large-button btn btn-secondary" style="width:100%;">{{ 'campaign.titles.list_full'|trans }}</a>
-
-            <br/><br/><br/>
-
-            <div id="issues">
+            <div id="issues" class="mt-5">
                 <img src="{{ asset('spinner.gif') }}" style="width:25px;"/>
             </div>
 

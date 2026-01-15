@@ -12,29 +12,62 @@
 #}
 -->
 <mjml>
-    <mj-body>
-        <mj-section border="1px solid #667385" padding="0 0">
-            <mj-column>
-                <mj-image src="cid:logo"></mj-image>
-            </mj-column>
-            <mj-section background-color="#667385" padding-top="10px;">&nbsp;</mj-section>
-            <mj-section background-color="#e30613" padding-right="50px;" padding-left="50px;" padding-top="10px" padding-bottom="10px;">
-                <mj-text color="white">{{ 'message.email.announcement'|trans({
-                        '%brand%': language.brand|upper,
-                        '%day%':'now'|date('d'),
-                        '%month%':'now'|date('m'),
-                        '%year%':'now'|date('Y'),
-                        '%hours%':'now'|date('H'),
-                        '%mins%':'now'|date('i'),
-                    }, null, language.locale) }}
-                </mj-text>
+    <mj-head>
+        <mj-font name="Poppins" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" />
+        <mj-font name="Arvo" href="https://fonts.googleapis.com/css2?family=Arvo:wght@400;700&display=swap" />
+        <mj-attributes>
+            <mj-all font-family="Poppins, sans-serif" color="#000000" />
+            <mj-text font-size="14px" line-height="20px" />
+            <mj-section background-color="#ffffff" padding="20px" />
+        </mj-attributes>
+    </mj-head>
+    <mj-body background-color="#f4f4f4">
+        <mj-wrapper padding="20px 0">
+            <!-- Header Logo -->
+            <mj-section background-color="#ffffff" padding="10px 0" border-bottom="4px solid #e30613">
+                <mj-column>
+                    <mj-image width="200px" src="cid:logo" alt="Croix-Rouge Française"></mj-image>
+                </mj-column>
             </mj-section>
-            <mj-section background-color="#667385" padding-right="50px;" padding-left="50px;">
-                <mj-text color="white" font-size="18px;" font-weight="bold">{{ subject }}</mj-text>
+
+            <!-- Announcement -->
+            <mj-section background-color="#e30613" padding="10px 40px">
+                <mj-column>
+                    <mj-text color="#ffffff" font-size="12px">
+                        {{ 'message.email.announcement'|trans({
+                            '%brand%': language.brand|upper,
+                            '%day%':'now'|date('d'),
+                            '%month%':'now'|date('m'),
+                            '%year%':'now'|date('Y'),
+                            '%hours%':'now'|date('H'),
+                            '%mins%':'now'|date('i'),
+                        }, null, language.locale) }}
+                    </mj-text>
+                </mj-column>
             </mj-section>
-            <mj-section background-color="white" padding-right="50px;" padding-left="50px;">
-                <mj-text color="black" font-size="14px;">{{ content|raw }}</mj-text>
+
+            <!-- Subject -->
+            <mj-section padding="30px 40px 10px 40px">
+                <mj-column>
+                    <mj-text font-family="Arvo, serif" font-size="20px" font-weight="bold">{{ subject }}</mj-text>
+                </mj-column>
             </mj-section>
-        </mj-section>
+
+            <!-- Content -->
+            <mj-section padding="10px 40px 30px 40px">
+                <mj-column>
+                    <mj-text font-size="15px">{{ content|raw }}</mj-text>
+                </mj-column>
+            </mj-section>
+
+            <!-- Footer -->
+            <mj-section background-color="transparent" padding="10px 40px">
+                <mj-column>
+                    <mj-text font-size="11px" color="#aaaaaa" align="center" padding-top="20px">
+                        © {{ "now"|date("Y") }} Croix-Rouge Française • RedCall
+                    </mj-text>
+                </mj-column>
+            </mj-section>
+        </mj-wrapper>
     </mj-body>
 </mjml>

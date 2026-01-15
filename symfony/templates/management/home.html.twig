@@ -43,26 +43,25 @@
 {% block body %}
 
     <div class="jumbotron shadow-sm p-4 p-md-5 mb-5 rounded bg-white">
-        <h1 class="display-4 text-center mb-4">{{ 'management.home.link'|trans }}</h1>
+        <h1 class="display-4 text-center mb-8">{{ 'management.home.link'|trans }}</h1>
 
-        <div class="d-flex flex-wrap justify-content-center mb-5">
-            {% if is_granted('ROLE_ADMIN') %}
-                <a href="{{ path('admin_badge_index') }}" class="btn btn-outline-secondary m-2">
-                    🎖️ {{ 'admin.badge.title' |trans }}
+        <div class="d-flex justify-content-center mb-5">
+            <div class="btn-group flex-wrap" role="group">
+                {% if is_granted('ROLE_ADMIN') %}
+                    <a href="{{ path('admin_badge_index') }}" class="btn btn-outline-secondary">
+                        🎖️ {{ 'admin.badge.title' |trans }}
+                    </a>
+                {% endif %}
+                <a href="{{ path('management_structures_list') }}" class="btn btn-outline-secondary">
+                    🏢 {{ 'manage_structures.title'|trans }}
                 </a>
-            {% endif %}
-
-            <a href="{{ path('management_structures_list') }}" class="btn btn-outline-secondary m-2">
-                🏢 {{ 'manage_structures.title'|trans }}
-            </a>
-
-            <a href="{{ path('management_volunteers_list') }}" class="btn btn-outline-secondary m-2">
-                👥 {{ 'manage_volunteers.title'|trans }}
-            </a>
-
-            <a href="{{ path('management_structures_volunteer_lists_home') }}" class="btn btn-outline-secondary m-2">
-                📋 {{ 'manage_structures.volunteer_list.manage'|trans }}
-            </a>
+                <a href="{{ path('management_volunteers_list') }}" class="btn btn-outline-secondary">
+                    👥 {{ 'manage_volunteers.title'|trans }}
+                </a>
+                <a href="{{ path('management_structures_volunteer_lists_home') }}" class="btn btn-outline-secondary">
+                    📋 {{ 'manage_structures.volunteer_list.manage'|trans }}
+                </a>
+            </div>
         </div>
 
         <div class="text-left mt-5">
