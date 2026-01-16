@@ -40,7 +40,7 @@ class ReportRepository extends ServiceEntityRepository
 
     /**
      * Native SQL query to get costs report for specific structures within a date range.
-     * Returns raw data grouped by structure, campaign, and communication type.
+     * Returns raw data for each report_repartition - aggregation is done in PHP.
      *
      * @param array $structureIds
      * @param \DateTime $from
@@ -65,12 +65,12 @@ class ReportRepository extends ServiceEntityRepository
                 camp.id AS campaign_id,
                 camp.label AS campaign_label,
                 camp.created_at AS campaign_date,
+                comm.id AS communication_id,
                 comm.type AS communication_type,
-                COUNT(DISTINCT comm.id) AS communications_count,
-                SUM(rr.message_count) AS messages,
-                SUM(rr.question_count) AS questions,
-                SUM(rr.answer_count) AS answers,
-                SUM(rr.error_count) AS errors,
+                rr.message_count AS messages,
+                rr.question_count AS questions,
+                rr.answer_count AS answers,
+                rr.error_count AS errors,
                 rr.costs AS costs_json
             FROM report_repartition rr
             INNER JOIN report r ON rr.report_id = r.id
@@ -79,7 +79,6 @@ class ReportRepository extends ServiceEntityRepository
             INNER JOIN structure s ON rr.structure_id = s.id
             WHERE rr.structure_id IN ({$placeholders})
               AND comm.created_at BETWEEN ? AND ?
-            GROUP BY s.id, s.name, camp.id, camp.label, camp.created_at, comm.type, rr.costs
             ORDER BY s.name, camp.created_at DESC
         ";
 
@@ -90,6 +89,7 @@ class ReportRepository extends ServiceEntityRepository
 
         return $conn->fetchAllAssociative($sql, $params);
     }
+
 
     /**
      * Native SQL query to get monthly cost totals for specific structures over multiple months.

@@ -266,6 +266,7 @@ class ReportManager
         foreach ($rawData as $row) {
             $structureId = (int) $row['structure_id'];
             $campaignId = (int) $row['campaign_id'];
+            $communicationId = (int) $row['communication_id'];
 
             // Initialize structure entry
             if (!isset($structureReports[$structureId])) {
@@ -283,7 +284,7 @@ class ReportManager
                     'label' => $row['campaign_label'],
                     'date' => new \DateTime($row['campaign_date']),
                     'type' => $row['communication_type'],
-                    'communications' => 0,
+                    'communicationIds' => [], // Track unique communication IDs
                     'messages' => 0,
                     'questions' => 0,
                     'answers' => 0,
@@ -293,7 +294,12 @@ class ReportManager
             }
 
             $campaignRef = &$structureReports[$structureId]['campaigns'][$campaignId];
-            $campaignRef['communications'] += (int) $row['communications_count'];
+            
+            // Track unique communications
+            if (!in_array($communicationId, $campaignRef['communicationIds'])) {
+                $campaignRef['communicationIds'][] = $communicationId;
+            }
+            
             $campaignRef['messages'] += (int) $row['messages'];
             $campaignRef['questions'] += (int) $row['questions'];
             $campaignRef['answers'] += (int) $row['answers'];
@@ -312,6 +318,14 @@ class ReportManager
                     $structureReports[$structureId]['totalCosts'][$currency] = 0;
                 }
                 $structureReports[$structureId]['totalCosts'][$currency] += $amount;
+            }
+        }
+
+        // Convert communicationIds arrays to counts
+        foreach ($structureReports as $structureId => &$structureData) {
+            foreach ($structureData['campaigns'] as $campaignId => &$campaignData) {
+                $campaignData['communications'] = count($campaignData['communicationIds']);
+                unset($campaignData['communicationIds']); // Remove the tracking array
             }
         }
 
