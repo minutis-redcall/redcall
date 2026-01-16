@@ -79,6 +79,7 @@ class ReportRepository extends ServiceEntityRepository
             INNER JOIN structure s ON rr.structure_id = s.id
             WHERE rr.structure_id IN ({$placeholders})
               AND comm.created_at BETWEEN ? AND ?
+              AND comm.type = 'sms'
             ORDER BY s.name, camp.created_at DESC
         ";
 
@@ -115,13 +116,16 @@ class ReportRepository extends ServiceEntityRepository
                 DATE_FORMAT(comm.created_at, '%Y-%m') AS month_key,
                 s.id AS structure_id,
                 s.name AS structure_name,
+                camp.id AS campaign_id,
                 rr.costs AS costs_json
             FROM report_repartition rr
             INNER JOIN report r ON rr.report_id = r.id
             INNER JOIN communication comm ON r.id = comm.report_id
+            INNER JOIN campaign camp ON comm.campaign_id = camp.id
             INNER JOIN structure s ON rr.structure_id = s.id
             WHERE rr.structure_id IN ({$placeholders})
               AND comm.created_at BETWEEN ? AND ?
+              AND comm.type = 'sms'
             ORDER BY month_key DESC, s.name
         ";
 
@@ -129,6 +133,49 @@ class ReportRepository extends ServiceEntityRepository
             $structureIds,
             [$from->format('Y-m-d 00:00:00'), $to->format('Y-m-d 23:59:59')]
         );
+
+        return $conn->fetchAllAssociative($sql, $params);
+    }
+
+    /**
+     * Native SQL query for structure reports (admin statistics).
+     * Returns raw data for all structures within a date range.
+     *
+     * @param \DateTime $from
+     * @param \DateTime $to
+     * @param int $minMessages
+     * @return array
+     */
+    public function getStructureReportData(\DateTime $from, \DateTime $to, int $minMessages = 3): array
+    {
+        $conn = $this->_em->getConnection();
+
+        $sql = "
+            SELECT 
+                s.id AS structure_id,
+                s.name AS structure_name,
+                camp.id AS campaign_id,
+                comm.type AS communication_type,
+                rr.message_count AS messages,
+                rr.question_count AS questions,
+                rr.answer_count AS answers,
+                rr.error_count AS errors,
+                rr.costs AS costs_json
+            FROM report_repartition rr
+            INNER JOIN report r ON rr.report_id = r.id
+            INNER JOIN communication comm ON r.id = comm.report_id
+            INNER JOIN campaign camp ON comm.campaign_id = camp.id
+            INNER JOIN structure s ON rr.structure_id = s.id
+            WHERE comm.created_at BETWEEN ? AND ?
+              AND (r.message_count + r.question_count) >= ?
+            ORDER BY s.name
+        ";
+
+        $params = [
+            $from->format('Y-m-d 00:00:00'),
+            $to->format('Y-m-d 23:59:59'),
+            $minMessages
+        ];
 
         return $conn->fetchAllAssociative($sql, $params);
     }

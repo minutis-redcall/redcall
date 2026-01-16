@@ -62,8 +62,6 @@
                                 <tr>
                                     <th>{{ 'costs.campaign_table.label'|trans }}</th>
                                     <th>{{ 'costs.campaign_table.date'|trans }}</th>
-                                    <th>{{ 'costs.campaign_table.type'|trans }}</th>
-                                    <th>{{ 'costs.campaign_table.communications'|trans }}</th>
                                     <th>{{ 'costs.campaign_table.messages'|trans }}</th>
                                     <th>{{ 'costs.campaign_table.questions'|trans }}</th>
                                     <th>{{ 'costs.campaign_table.answers'|trans }}</th>
@@ -80,8 +78,6 @@
                                             </a>
                                         </td>
                                         <td>{{ campaign.date|date('d/m/Y') }}</td>
-                                        <td>{{ ('form.communication.' ~ campaign.type)|trans }}</td>
-                                        <td>{{ campaign.communications }}</td>
                                         <td>{{ campaign.messages }}</td>
                                         <td>{{ campaign.questions }}</td>
                                         <td>
@@ -148,6 +144,7 @@
                 <thead class="thead-light">
                 <tr>
                     <th>{{ 'costs.monthly_table.month'|trans }}</th>
+                    <th>{{ 'costs.monthly_table.campaigns'|trans }}</th>
                     <th>{{ 'costs.monthly_table.total'|trans }}</th>
                 </tr>
                 </thead>
@@ -155,6 +152,7 @@
                 {% for monthKey, monthData in monthlyTotals %}
                     <tr>
                         <td>{{ monthData.label }}</td>
+                        <td>{{ monthData.campaigns }}</td>
                         <td>
                             {% if monthData.totalCosts is empty %}
                                 <span class="text-muted">-</span>

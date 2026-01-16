@@ -1062,5 +1062,6 @@ costs:
   monthly_table:
     title: 'Monthly totals (last 12 months)'
     month: 'Month'
+    campaigns: 'Campaigns'
     total: 'Total'
   yearly_total: 'Yearly total'

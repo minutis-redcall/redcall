@@ -85,53 +85,52 @@ class ReportManager
 
     public function createStructureReport(\DateTime $from, \DateTime $to, int $minMessages)
     {
-        $reports = $this->reportRepository->getCommunicationReportsBetween($from, $to, $minMessages);
+        $rawData = $this->reportRepository->getStructureReportData($from, $to, $minMessages);
 
         $structures = [];
         $costs      = [];
 
-        foreach ($reports as $report) {
-            /** @var Report $report */
-            foreach ($report->getRepartitions() as $repartition) {
-                $structure   = $repartition->getStructure();
-                $structureId = $structure->getId();
+        foreach ($rawData as $row) {
+            $structureId = (int) $row['structure_id'];
+            $type        = $row['communication_type'];
 
-                // Initializing
-                if (!array_key_exists($structureId, $structures)) {
-                    $costs[$structureId] = 0;
-                    foreach ([Communication::TYPE_SMS, Communication::TYPE_CALL, Communication::TYPE_EMAIL] as $type) {
-                        $structures[$structureId][$type] = [
-                            'name'           => $structure->getName(),
-                            'campaigns'      => [],
-                            'type'           => $type,
-                            'communications' => 0,
-                            'messages'       => 0,
-                            'questions'      => 0,
-                            'answers'        => 0,
-                            'errors'         => 0,
-                            'costs'          => [],
-                        ];
-                    }
+            // Initializing
+            if (!array_key_exists($structureId, $structures)) {
+                $costs[$structureId] = 0;
+                foreach ([Communication::TYPE_SMS, Communication::TYPE_CALL, Communication::TYPE_EMAIL] as $commType) {
+                    $structures[$structureId][$commType] = [
+                        'name'           => $row['structure_name'],
+                        'campaigns'      => [],
+                        'type'           => $commType,
+                        'communications' => 0,
+                        'messages'       => 0,
+                        'questions'      => 0,
+                        'answers'        => 0,
+                        'errors'         => 0,
+                        'costs'          => [],
+                    ];
                 }
+            }
 
-                // Filling
-                $ref                   = &$structures[$structureId][$report->getCommunication()->getType()];
-                $ref['campaigns'][]    = $report->getCommunication()->getCampaign()->getId();
-                $ref['communications'] += 1;
-                $ref['messages']       += $repartition->getMessageCount();
-                $ref['questions']      += $repartition->getQuestionCount();
-                $ref['answers']        += $repartition->getAnswerCount();
-                $ref['errors']         += $repartition->getErrorCount();
-                foreach ($repartition->getCosts() as $currency => $amount) {
-                    if (!isset($ref['costs'][$currency])) {
-                        $ref['costs'][$currency] = 0;
-                    }
-                    $ref['costs'][$currency] += $amount;
+            // Filling
+            $ref                   = &$structures[$structureId][$type];
+            $ref['campaigns'][]    = (int) $row['campaign_id'];
+            $ref['communications'] += 1;
+            $ref['messages']       += (int) $row['messages'];
+            $ref['questions']      += (int) $row['questions'];
+            $ref['answers']        += (int) $row['answers'];
+            $ref['errors']         += (int) $row['errors'];
 
-                    // We mix all currencies (we currently support EUR and USD),
-                    // but it's just for sorting results, so it doesn't matter.
-                    $costs[$structureId] += $amount;
+            $rowCosts = json_decode($row['costs_json'] ?? '[]', true) ?: [];
+            foreach ($rowCosts as $currency => $amount) {
+                if (!isset($ref['costs'][$currency])) {
+                    $ref['costs'][$currency] = 0;
                 }
+                $ref['costs'][$currency] += $amount;
+
+                // We mix all currencies (we currently support EUR and USD),
+                // but it's just for sorting results, so it doesn't matter.
+                $costs[$structureId] += $amount;
             }
         }
 
@@ -253,7 +252,7 @@ class ReportManager
      * Creates a detailed cost report for specific structures within a date range.
      * Uses native SQL for performance. Returns campaign-level breakdown with costs per structure.
      */
-    public function createUserStructuresCostsReport(array $structureIds, \DateTime $from, \DateTime $to): array
+    public function createUserStructuresCostsReport(array $structureIds, \DateTime $from, \DateTime $to) : array
     {
         if (empty($structureIds)) {
             return [];
@@ -264,15 +263,15 @@ class ReportManager
         $structureReports = [];
 
         foreach ($rawData as $row) {
-            $structureId = (int) $row['structure_id'];
-            $campaignId = (int) $row['campaign_id'];
+            $structureId     = (int) $row['structure_id'];
+            $campaignId      = (int) $row['campaign_id'];
             $communicationId = (int) $row['communication_id'];
 
             // Initialize structure entry
             if (!isset($structureReports[$structureId])) {
                 $structureReports[$structureId] = [
-                    'name' => $row['structure_name'],
-                    'campaigns' => [],
+                    'name'       => $row['structure_name'],
+                    'campaigns'  => [],
                     'totalCosts' => [],
                 ];
             }
@@ -280,30 +279,30 @@ class ReportManager
             // Initialize campaign entry
             if (!isset($structureReports[$structureId]['campaigns'][$campaignId])) {
                 $structureReports[$structureId]['campaigns'][$campaignId] = [
-                    'id' => $campaignId,
-                    'label' => $row['campaign_label'],
-                    'date' => new \DateTime($row['campaign_date']),
-                    'type' => $row['communication_type'],
+                    'id'               => $campaignId,
+                    'label'            => $row['campaign_label'],
+                    'date'             => new \DateTime($row['campaign_date']),
+                    'type'             => $row['communication_type'],
                     'communicationIds' => [], // Track unique communication IDs
-                    'messages' => 0,
-                    'questions' => 0,
-                    'answers' => 0,
-                    'errors' => 0,
-                    'costs' => [],
+                    'messages'         => 0,
+                    'questions'        => 0,
+                    'answers'          => 0,
+                    'errors'           => 0,
+                    'costs'            => [],
                 ];
             }
 
             $campaignRef = &$structureReports[$structureId]['campaigns'][$campaignId];
-            
+
             // Track unique communications
             if (!in_array($communicationId, $campaignRef['communicationIds'])) {
                 $campaignRef['communicationIds'][] = $communicationId;
             }
-            
-            $campaignRef['messages'] += (int) $row['messages'];
+
+            $campaignRef['messages']  += (int) $row['messages'];
             $campaignRef['questions'] += (int) $row['questions'];
-            $campaignRef['answers'] += (int) $row['answers'];
-            $campaignRef['errors'] += (int) $row['errors'];
+            $campaignRef['answers']   += (int) $row['answers'];
+            $campaignRef['errors']    += (int) $row['errors'];
 
             // Parse and aggregate costs from JSON
             $costs = json_decode($row['costs_json'] ?? '[]', true) ?: [];
@@ -343,15 +342,15 @@ class ReportManager
      * Creates monthly cost totals for specific structures over the last N months.
      * Uses native SQL for performance.
      */
-    public function createUserStructuresMonthlyTotals(array $structureIds, int $months = 12): array
+    public function createUserStructuresMonthlyTotals(array $structureIds, int $months = 12) : array
     {
         if (empty($structureIds)) {
             return [];
         }
 
         // Calculate date range for all months
-        $now = new \DateTime();
-        $to = (clone $now)->modify('last day of previous month')->setTime(23, 59, 59);
+        $now  = new \DateTime();
+        $to   = (clone $now)->modify('last day of previous month')->setTime(23, 59, 59);
         $from = (clone $now)->modify("-{$months} months")->modify('first day of this month')->setTime(0, 0, 0);
 
         $rawData = $this->reportRepository->getMonthlyTotalsByStructures($structureIds, $from, $to);
@@ -359,30 +358,37 @@ class ReportManager
         // Initialize all months first
         $monthlyTotals = [];
         for ($i = 1; $i <= $months; $i++) {
-            $monthStart = (clone $now)->modify("-{$i} months")->modify('first day of this month')->setTime(0, 0, 0);
-            $monthKey = $monthStart->format('Y-m');
+            $monthStart               = (clone $now)->modify("-{$i} months")->modify('first day of this month')->setTime(0, 0, 0);
+            $monthKey                 = $monthStart->format('Y-m');
             $monthlyTotals[$monthKey] = [
-                'label' => $monthStart->format('F Y'),
-                'from' => $monthStart,
-                'to' => (clone $monthStart)->modify('last day of this month')->setTime(23, 59, 59),
-                'structures' => [],
-                'totalCosts' => [],
+                'label'       => $monthStart->format('F Y'),
+                'from'        => $monthStart,
+                'to'          => (clone $monthStart)->modify('last day of this month')->setTime(23, 59, 59),
+                'structures'  => [],
+                'campaignIds' => [], // Track unique campaign IDs
+                'totalCosts'  => [],
             ];
         }
 
         // Aggregate raw data
         foreach ($rawData as $row) {
-            $monthKey = $row['month_key'];
+            $monthKey    = $row['month_key'];
             $structureId = (int) $row['structure_id'];
+            $campaignId  = (int) $row['campaign_id'];
 
             if (!isset($monthlyTotals[$monthKey])) {
                 continue; // Skip if outside our range
             }
 
+            // Track unique campaigns
+            if (!in_array($campaignId, $monthlyTotals[$monthKey]['campaignIds'])) {
+                $monthlyTotals[$monthKey]['campaignIds'][] = $campaignId;
+            }
+
             // Initialize structure in this month
             if (!isset($monthlyTotals[$monthKey]['structures'][$structureId])) {
                 $monthlyTotals[$monthKey]['structures'][$structureId] = [
-                    'name' => $row['structure_name'],
+                    'name'  => $row['structure_name'],
                     'costs' => [],
                 ];
             }
@@ -402,6 +408,12 @@ class ReportManager
                 }
                 $monthlyTotals[$monthKey]['totalCosts'][$currency] += $amount;
             }
+        }
+
+        // Convert campaignIds arrays to counts
+        foreach ($monthlyTotals as $monthKey => &$monthData) {
+            $monthData['campaigns'] = count($monthData['campaignIds']);
+            unset($monthData['campaignIds']);
         }
 
         return $monthlyTotals;
