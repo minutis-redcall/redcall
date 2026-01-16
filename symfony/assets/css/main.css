@@ -565,3 +565,40 @@ strong {
 li.input-container.flexdatalist-multiple-value input {
     min-width: 500px;
 }
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 1.75rem;
+        margin-top: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    h1::after {
+        height: 4px;
+        width: 100%;
+    }
+
+    .rc-btn-circle {
+        width: 120px;
+        height: 120px;
+    }
+
+    .rc-btn-circle .icon {
+        font-size: 32px;
+    }
+
+    .rc-btn-circle strong {
+        font-size: 0.75rem;
+    }
+
+    .jumbotron {
+        padding-top: 2rem !important;
+        padding-bottom: 2rem !important;
+    }
+
+    li.input-container.flexdatalist-multiple-value input {
+        min-width: 100%;
+    }
+}
+

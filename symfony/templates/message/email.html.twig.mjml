@@ -13,13 +13,13 @@
 -->
 <mjml>
     <mj-head>
-        <mj-font name="Poppins" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" />
-        <mj-font name="Arvo" href="https://fonts.googleapis.com/css2?family=Arvo:wght@400;700&display=swap" />
+        <mj-font name="Poppins" href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap"/>
+        <mj-font name="Arvo" href="https://fonts.googleapis.com/css2?family=Arvo:wght@400;700&display=swap"/>
         <mj-attributes>
-            <mj-all font-family="Poppins, sans-serif" color="#000000" />
-            <mj-text font-size="14px" line-height="20px" />
-            <mj-section background-color="#ffffff" padding="20px" />
-            <mj-button background-color="#e30613" color="#ffffff" font-family="Arvo, serif" font-weight="bold" border-radius="4px" />
+            <mj-all font-family="Poppins, sans-serif" color="#000000"/>
+            <mj-text font-size="14px" line-height="20px"/>
+            <mj-section background-color="#ffffff" padding="20px"/>
+            <mj-button background-color="#e30613" color="#ffffff" font-family="Arvo, serif" font-weight="bold" border-radius="4px"/>
         </mj-attributes>
         <mj-raw>
             {% if 1 == communication.choices|length %}
@@ -40,12 +40,12 @@
                 </script>
             {% else %}
                 <script type="application/ld+json">
-                {
-                    "@context": "http://schema.org",
-                    "@type": "EmailMessage",
-                    "potentialAction": {
-                        "@type": "ViewAction",
-                        "url": "{{ website_url }}{{ path('message_open', {code: message.code}) }}",
+                    {
+                        "@context": "http://schema.org",
+                        "@type": "EmailMessage",
+                        "potentialAction": {
+                            "@type": "ViewAction",
+                            "url": "{{ website_url }}{{ path('message_open', {code: message.code}) }}",
                         "name": "{{ 'message.email.open_in_redcall'|trans({}, null, language.locale) }}"
                     },
                     "description": "{{ 'message.email.open_in_redcall'|trans({}, null, language.locale) }}"
@@ -59,7 +59,7 @@
             <!-- Header Logo -->
             <mj-section background-color="#ffffff" padding="10px 0" border-bottom="4px solid #e30613">
                 <mj-column>
-                    <mj-image width="200px" src="cid:logo" alt="Croix-Rouge Française"></mj-image>
+                    <mj-image width="40px" src="cid:logo" alt="Croix-Rouge Française"></mj-image>
                 </mj-column>
             </mj-section>
 
