@@ -1063,3 +1063,4 @@ costs:
     title: 'Monthly totals (last 12 months)'
     month: 'Month'
     total: 'Total'
+  yearly_total: 'Yearly total'

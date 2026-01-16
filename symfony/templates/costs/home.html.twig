@@ -74,7 +74,11 @@
                                 <tbody>
                                 {% for campaign in structureData.campaigns %}
                                     <tr>
-                                        <td>{{ campaign.label }}</td>
+                                        <td>
+                                            <a href="{{ path('communication_index', {id: campaign.id}) }}" target="_blank">
+                                                {{ campaign.label }}
+                                            </a>
+                                        </td>
                                         <td>{{ campaign.date|date('d/m/Y') }}</td>
                                         <td>{{ ('form.communication.' ~ campaign.type)|trans }}</td>
                                         <td>{{ campaign.communications }}</td>
@@ -120,6 +124,25 @@
             {{ 'costs.structure_report.no_data'|trans }}
         </div>
     {% else %}
+        {# Yearly total sum #}
+        {% set yearlyTotals = {} %}
+        {% for monthKey, monthData in monthlyTotals %}
+            {% for currency, amount in monthData.totalCosts %}
+                {% if yearlyTotals[currency] is not defined %}
+                    {% set yearlyTotals = yearlyTotals|merge({(currency): 0}) %}
+                {% endif %}
+                {% set yearlyTotals = yearlyTotals|merge({(currency): yearlyTotals[currency] + amount}) %}
+            {% endfor %}
+        {% endfor %}
+        
+        {% if yearlyTotals is not empty %}
+            <div class="alert alert-light border mb-3">
+                <strong>{{ 'costs.yearly_total'|trans }}:</strong>
+                {% for currency, amount in yearlyTotals %}
+                    <span class="badge badge-primary ml-2">{{ (-1 * amount)|round(2) }} {{ currency }}</span>
+                {% endfor %}
+            </div>
+        {% endif %}
         <div class="table-responsive">
             <table class="table table-striped">
                 <thead class="thead-light">

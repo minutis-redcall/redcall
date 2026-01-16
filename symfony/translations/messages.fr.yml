@@ -1070,3 +1070,4 @@ costs:
     title: 'Totaux mensuels (12 derniers mois)'
     month: 'Mois'
     total: 'Total'
+  yearly_total: 'Total annuel'

@@ -37,4 +37,99 @@ class ReportRepository extends ServiceEntityRepository
                     ->getQuery()
                     ->getResult();
     }
+
+    /**
+     * Native SQL query to get costs report for specific structures within a date range.
+     * Returns raw data grouped by structure, campaign, and communication type.
+     *
+     * @param array $structureIds
+     * @param \DateTime $from
+     * @param \DateTime $to
+     * @return array
+     */
+    public function getCostsReportByStructures(array $structureIds, \DateTime $from, \DateTime $to): array
+    {
+        if (empty($structureIds)) {
+            return [];
+        }
+
+        $conn = $this->_em->getConnection();
+
+        // Build placeholders for structure IDs
+        $placeholders = implode(',', array_fill(0, count($structureIds), '?'));
+
+        $sql = "
+            SELECT 
+                s.id AS structure_id,
+                s.name AS structure_name,
+                camp.id AS campaign_id,
+                camp.label AS campaign_label,
+                camp.created_at AS campaign_date,
+                comm.type AS communication_type,
+                COUNT(DISTINCT comm.id) AS communications_count,
+                SUM(rr.message_count) AS messages,
+                SUM(rr.question_count) AS questions,
+                SUM(rr.answer_count) AS answers,
+                SUM(rr.error_count) AS errors,
+                rr.costs AS costs_json
+            FROM report_repartition rr
+            INNER JOIN report r ON rr.report_id = r.id
+            INNER JOIN communication comm ON r.id = comm.report_id
+            INNER JOIN campaign camp ON comm.campaign_id = camp.id
+            INNER JOIN structure s ON rr.structure_id = s.id
+            WHERE rr.structure_id IN ({$placeholders})
+              AND comm.created_at BETWEEN ? AND ?
+            GROUP BY s.id, s.name, camp.id, camp.label, camp.created_at, comm.type, rr.costs
+            ORDER BY s.name, camp.created_at DESC
+        ";
+
+        $params = array_merge(
+            $structureIds,
+            [$from->format('Y-m-d 00:00:00'), $to->format('Y-m-d 23:59:59')]
+        );
+
+        return $conn->fetchAllAssociative($sql, $params);
+    }
+
+    /**
+     * Native SQL query to get monthly cost totals for specific structures over multiple months.
+     *
+     * @param array $structureIds
+     * @param \DateTime $from
+     * @param \DateTime $to
+     * @return array
+     */
+    public function getMonthlyTotalsByStructures(array $structureIds, \DateTime $from, \DateTime $to): array
+    {
+        if (empty($structureIds)) {
+            return [];
+        }
+
+        $conn = $this->_em->getConnection();
+
+        // Build placeholders for structure IDs
+        $placeholders = implode(',', array_fill(0, count($structureIds), '?'));
+
+        $sql = "
+            SELECT 
+                DATE_FORMAT(comm.created_at, '%Y-%m') AS month_key,
+                s.id AS structure_id,
+                s.name AS structure_name,
+                rr.costs AS costs_json
+            FROM report_repartition rr
+            INNER JOIN report r ON rr.report_id = r.id
+            INNER JOIN communication comm ON r.id = comm.report_id
+            INNER JOIN structure s ON rr.structure_id = s.id
+            WHERE rr.structure_id IN ({$placeholders})
+              AND comm.created_at BETWEEN ? AND ?
+            ORDER BY month_key DESC, s.name
+        ";
+
+        $params = array_merge(
+            $structureIds,
+            [$from->format('Y-m-d 00:00:00'), $to->format('Y-m-d 23:59:59')]
+        );
+
+        return $conn->fetchAllAssociative($sql, $params);
+    }
 }
