@@ -7,6 +7,7 @@
 
     <title>{% block title %}RedCall{% endblock %}</title>
     {% block base_stylesheets %}
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Lato:wght@300;400;700&family=Roboto:wght@300;400;500;700&family=Ultra&family=Arvo:wght@400;700&family=Anton&family=Permanent+Marker&display=swap" rel="stylesheet">
         {{ encore_entry_link_tags('css') }}
     {% endblock %}
     {% block stylesheets %}{% endblock %}
@@ -20,100 +21,92 @@
     </script>
 {% endblock %}
 
-<div class="container mt-0">
+<div class="container py-4">
 
     {% block flashes %}
-        {% if translation_domain is not defined %}
-            {% set translation_domain = null %}
-        {% endif %}
-        {% if close is not defined %}
-            {% set close = false %}
-        {% endif %}
+        <div class="flashes-container">
+            {% for flashMessage in app.session.flashbag.get('alert') %}
+                <div class="alert alert-warning">
+                    <span>{{ flashMessage|trans({}, translation_domain|default(null)) }}</span>
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                </div>
+            {% endfor %}
 
-        {% for flashMessage in app.session.flashbag.get('alert') %}
-            <div class="alert alert-warning">
-                {% if close %}
-                    <button type="button" class="close" data-dismiss="alert">&times;</button>{% endif %}
-                {{ flashMessage|trans({}, translation_domain) }}
-            </div>
-        {% endfor %}
+            {% for flashMessage in app.session.flashbag.get('danger') %}
+                <div class="alert alert-danger">
+                    <span>{{ flashMessage|trans({}, translation_domain|default(null)) }}</span>
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                </div>
+            {% endfor %}
 
-        {% for flashMessage in app.session.flashbag.get('danger') %}
-            <div class="alert alert-danger">
-                {% if close %}
-                    <button type="button" class="close" data-dismiss="alert">&times;</button>{% endif %}
-                {{ flashMessage|trans({}, translation_domain) }}
-            </div>
-        {% endfor %}
+            {% for flashMessage in app.session.flashbag.get('info') %}
+                <div class="alert alert-info">
+                    <span>{{ flashMessage|trans({}, translation_domain|default(null)) }}</span>
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                </div>
+            {% endfor %}
 
-        {% for flashMessage in app.session.flashbag.get('info') %}
-            <div class="alert alert-info">
-                {% if close %}
-                    <button type="button" class="close" data-dismiss="alert">&times;</button>{% endif %}
-                {{ flashMessage|trans({}, translation_domain) }}
-            </div>
-        {% endfor %}
-
-        {% for flashMessage in app.session.flashbag.get('success') %}
-            <div class="alert alert-success">
-                {% if close %}
-                    <button type="button" class="close" data-dismiss="alert">&times;</button>{% endif %}
-                {{ flashMessage|trans({}, translation_domain) }}
-            </div>
-        {% endfor %}
+            {% for flashMessage in app.session.flashbag.get('success') %}
+                <div class="alert alert-success">
+                    <span>{{ flashMessage|trans({}, translation_domain|default(null)) }}</span>
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                </div>
+            {% endfor %}
+        </div>
     {% endblock %}
 
     {% block header %}
-        <div class="{% if app.user|default(false) or session.volunteer|default(false) %}card-header{% endif %}">
+        <div class="header-band bg-white mb-4">
+            <div class="container d-flex align-items-center justify-content-between py-3">
+                <div class="header-main d-flex align-items-center">
+                    <div class="logo-container mr-4">
+                        {% block logo %}{% endblock %}
+                    </div>
 
-            {% block menu %}
+                    {% block menu %}
+                        {% if app.user|default(false) %}
+                            <nav class="d-flex align-items-center flex-wrap">
+                                {% if app.user.trusted %}
+                                    <a href="{{ path('home') }}" class="btn btn-link text-dark font-weight-bold mr-3">{{ 'base.home'|trans }}</a>
 
-                {% if app.user|default(false) %}
+                                    <div class="dropdown mr-3">
+                                        <button class="btn btn-link text-dark font-weight-bold dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                            {{ 'campaign.titles.create_full'|trans }}
+                                        </button>
+                                        <div class="dropdown-menu">
+                                            <a href="{{ path('create_campaign', {type: 'sms'}) }}" class="dropdown-item">📱
+                                                &nbsp; {{ 'campaign.titles.sms'|trans }}</a>
+                                            <div class="dropdown-divider"></div>
+                                            <a href="{{ path('create_campaign', {type: 'call'}) }}" class="dropdown-item">📞
+                                                &nbsp; {{ 'campaign.titles.call'|trans }}</a>
+                                            <div class="dropdown-divider"></div>
+                                            <a href="{{ path('create_campaign', {type: 'email'}) }}" class="dropdown-item">✉️
+                                                &nbsp; {{ 'campaign.titles.email'|trans }}</a>
+                                        </div>
+                                    </div>
 
-                    {% if app.user.trusted %}
-                        <a href="{{ path('home') }}"
-                           class="btn btn-secondary text-sm-center" style="margin: 5px;">{{ 'base.home'|trans }}</a>
+                                    <a href="{{ path('list_campaigns') }}" class="btn btn-link text-dark font-weight-bold mr-3">{{ 'campaign.titles.list_full'|trans }}</a>
+                                    <a href="{{ path('costs_home') }}" class="btn btn-link text-dark font-weight-bold mr-3">{{ 'costs.menu_button'|trans }}</a>
+                                {% endif %}
+                            </nav>
+                        {% endif %}
+                    {% endblock %}
+                </div>
 
-                        <span class="dropdown">
-                            <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="margin: 5px;">
-                                {{ 'campaign.titles.create_full'|trans }}
-                            </button>
-                            <span class="dropdown-menu">
-                                <a href="{{ path('create_campaign', {type: 'sms'}) }}"
-                                   class="dropdown-item">📱 &nbsp; {{ 'campaign.titles.sms'|trans }}</a>
-                                <div class="dropdown-divider"></div>
-                                <a href="{{ path('create_campaign', {type: 'call'}) }}"
-                                   class="dropdown-item">📞 &nbsp; {{ 'campaign.titles.call'|trans }}</a>
-                                <div class="dropdown-divider"></div>
-                                <a href="{{ path('create_campaign', {type: 'email'}) }}"
-                                   class="dropdown-item">✉️ &nbsp; {{ 'campaign.titles.email'|trans }}</a>
-                            </span>
-                        </span>
-
-                        <a href="{{ path('list_campaigns') }}" style="margin: 5px;"
-                           class="btn btn-secondary text-sm-center">{{ 'campaign.titles.list_full'|trans }}</a>
-
-                    {% endif %}
-
-                    {% if app.user.root %}
-                        <div class="float-right">
+                <div class="header-actions d-flex align-items-center">
+                    {% if app.user|default(false) and app.user.root %}
+                        <div class="platform-switch mr-3">
                             {{ render(controller('\\App\\Controller\\Admin\\PlatformController::renderSwitch')) }}
                         </div>
                     {% endif %}
 
-                {% endif %}
-
-            {% endblock %}
-
-            {% if session.volunteer|default(false) %}
-                <div class="text-right h4">
-                    <span class="badge-pill badge-dark">
-                        {{ session.volunteer.firstName }}
-                        {{ session.volunteer.lastName[:1] }}.
-                    </span>
+                    {% if session.volunteer|default(false) %}
+                        <span class="badge badge-pill badge-primary">
+                            {{ session.volunteer.firstName }} {{ session.volunteer.lastName[:1] }}.
+                        </span>
+                    {% endif %}
                 </div>
-            {% endif %}
-
+            </div>
         </div>
     {% endblock %}
 
@@ -130,102 +123,79 @@
     {% block body %}{% endblock %}
 
     {% block footer %}
-        <div class="text-center card-footer">
+        <footer class="footer mt-5 py-5 border-top">
+            <div class="text-center">
+                {% block security %}
+                    {% if app.user|default(false) %}
+                        <div class="mb-4">
+                            <a href="{{ minutis_url }}" class="btn btn-outline-primary">{{ 'minutis.back'|trans }}</a>
+                        </div>
 
-            {% block security %}
+                        <div class="text-secondary small mb-2">
+                            {{ app.user.mainStructure }}
+                        </div>
+                        <div class="mb-3">
+                            {% if is_granted('ROLE_ADMIN') %}
+                                <a href="{{ path('admin_pegass_update_structures', {id: app.user.id}) }}" target="_blank" class="text-dark font-weight-bold">
+                                    {{ 'password_login.connect.who_am_i'|trans({'%username%': app.user.displayName}) }}
+                                </a>
+                            {% else %}
+                                <span class="text-dark font-weight-bold">
+                                    {{ 'password_login.connect.who_am_i'|trans({'%username%': app.user.displayName}) }}
+                                </span>
+                            {% endif %}
+                        </div>
 
-                {% if app.user|default(false) %}
+                        <div class="mb-4">
+                            {{ include('@PasswordLogin/menu.html.twig', {
+                                display_user: false,
+                                display_profile: false,
+                                display_manage_users: false,
+                            }) }}
+                        </div>
+                    {% endif %}
+                {% endblock %}
 
-                    <a href="{{ minutis_url }}">{{ 'minutis.back'|trans }}</a>
+                <div class="d-flex flex-wrap justify-content-center mb-4">
+                    {% if app.user|default(false) and app.environment == 'dev' %}
+                        <a href="{{ path('sandbox_home') }}" class="btn btn-secondary btn-sm m-1">{{ 'sandbox.home.link'|trans }}</a>
+                    {% endif %}
 
-                    <br/><br/>
+                    {% if app.user|default(false) and app.user.volunteer %}
+                        <a href="{{ path('go_to_space') }}" class="btn btn-secondary btn-sm m-1">{{ 'space.home.link'|trans }}</a>
+                    {% endif %}
 
-                    <div class="color-grey small">
-                        {{ app.user.mainStructure }}
-                    </div>
-                    <div class="text-center">
-                        {% if is_granted('ROLE_ADMIN') %}
-                            <a href="{{ path('admin_pegass_update_structures', {id: app.user.id}) }}" target="_blank">
-                                {{ 'password_login.connect.who_am_i'|trans({'%username%': app.user.displayName}) }}
-                            </a>
-                        {% else %}
-                            {{ 'password_login.connect.who_am_i'|trans({'%username%': app.user.displayName}) }}
-                        {% endif %}
-                    </div>
-                    <br/>
+                    {% if app.user|default(false) and is_granted('ROLE_DEVELOPER') %}
+                        <a href="{{ path('developer_home') }}" class="btn btn-secondary btn-sm m-1">{{ 'developer.home.link'|trans }}</a>
+                    {% endif %}
 
-                    {{ include('@PasswordLogin/menu.html.twig', {
-                        display_user: false,
-                        display_profile: false,
-                        display_manage_users: false,
-                    }) }}
+                    {% if app.user|default(false) %}
+                        <a href="{{ path('management_home') }}" class="btn btn-secondary btn-sm m-1">{{ 'management.home.resources'|trans }}</a>
+                    {% endif %}
 
-                {% endif %}
+                    {% if app.user|default(false) and is_granted('ROLE_ADMIN') %}
+                        <a href="{{ path('admin_home') }}" class="btn btn-secondary btn-sm m-1">{{ 'admin.home.link'|trans }}</a>
+                    {% endif %}
 
-            {% endblock %}
-
-            <br/>
-
-            {% if app.user|default(false) and app.environment == 'dev' %}
-
-                <a href="{{ path('sandbox_home') }}" class="btn btn-secondary">{{ 'sandbox.home.link'|trans }}</a>
-                &nbsp;&nbsp;
-            {% endif %}
-
-            {% if app.user|default(false) and app.user.volunteer %}
-
-                <a href="{{ path('go_to_space') }}" class="btn btn-secondary">{{ 'space.home.link'|trans }}</a>
-                &nbsp;&nbsp;
-
-            {% endif %}
-
-            {% if app.user|default(false) and is_granted('ROLE_DEVELOPER') %}
-
-                <a href="{{ path('developer_home') }}" class="btn btn-secondary">{{ 'developer.home.link'|trans }}</a>
-                &nbsp;&nbsp;
-
-            {% endif %}
-
-            {% if app.user|default(false) %}
-
-                <a href="{{ path('management_home') }}" class="btn btn-secondary">{{ 'management.home.resources'|trans }}</a>
-                &nbsp;&nbsp;
-
-            {% endif %}
-
-            {% if app.user|default(false) and is_granted('ROLE_ADMIN') %}
-
-                <a href="{{ path('admin_home') }}" class="btn btn-secondary">{{ 'admin.home.link'|trans }}</a>
-                &nbsp;&nbsp;
-
-            {% endif %}
-
-            <a href="https://github.com/minutis-redcall/app/blob/master/docs/user/fr/README.md"
-               target="_blank" class="btn btn-secondary">{{ 'base.documentation'|trans }}</a>
-
-            {% block locales %}
-                <div class="text-center">
-                    <br/>
-                    <a href="{{ path('locale', {locale: 'en'}) }}"> 🇬🇧 English</a>
-                    &nbsp;
-                    <a href="{{ path('locale', {locale: 'fr'}) }}"> 🇫🇷 Français</a>
-                    &nbsp;
-                    <a href="{{ path('locale', {locale: 'es'}) }}"> 🇪🇸 Español</a>
-                    &nbsp;
-                    <a href="{{ path('locale', {locale: 'pt'}) }}"> 🇵🇹 Português</a>
+                    <a href="https://github.com/minutis-redcall/app/blob/master/docs/user/fr/README.md" target="_blank" class="btn btn-secondary btn-sm m-1">{{ 'base.documentation'|trans }}</a>
                 </div>
-            {% endblock %}
 
-            <hr>
+                {% block locales %}
+                    <div class="locale-switcher d-flex justify-content-center mb-4">
+                        <a href="{{ path('locale', {locale: 'en'}) }}" class="mx-2">🇬🇧 English</a>
+                        <a href="{{ path('locale', {locale: 'fr'}) }}" class="mx-2">🇫🇷 Français</a>
+                        <a href="{{ path('locale', {locale: 'es'}) }}" class="mx-2">🇪🇸 Español</a>
+                        <a href="{{ path('locale', {locale: 'pt'}) }}" class="mx-2">🇵🇹 Português</a>
+                    </div>
+                {% endblock %}
 
-            <div class="row">
-                <div class="col-12">
-                    Croix-Rouge Française
+                <hr class="w-25 mx-auto mb-4">
+
+                <div class="text-secondary small">
+                    © {{ "now"|date("Y") }} Croix-Rouge Française • RedCall
                 </div>
             </div>
-
-        </div>
-
+        </footer>
     {% endblock %}
 
 </div>

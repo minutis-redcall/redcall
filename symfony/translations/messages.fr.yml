@@ -795,9 +795,13 @@ manage_volunteers:
 management:
   current_structures: 'Vous pouvez actuellement déclencher les structures suivantes :'
   home:
-    link: 'Gestion des effectifs'
+    link: 'Gestion des ressources'
     resources: 'Gestion des ressources'
   support_email: 'Si cette information est erronée, merci de contacter l''équipe à %email%'
+  show_users: "Qui d'autre peut déclencher cette structure ?"
+  no_other_users: "Aucun autre utilisateur n'a accès à cette structure"
+  missing_volunteer: "L'utilisateur n'a pas de bénévole (probablement supprimé)"
+  external_id_label: "Identifiant : %external_id%"
   update_structures: 'Modifier les structures'
 message:
   call:
@@ -1036,3 +1040,35 @@ nivol_auth:
     subject: '%code% est votre code de connexion à RedCall'
     content: 'Utilisez le code %code% pour vous connecter à RedCall.'
     content_html: '<p>Utilisez le code <strong>%code%</strong> pour vous connecter à RedCall.</p>'
+
+costs:
+  menu_button: 'Coûts'
+  title: 'Coûts de vos communications'
+  disclaimer:
+    title: 'Information importante'
+    content: 'Ces coûts sont fournis à titre informatif uniquement. La Croix-Rouge ne facture pas les structures pour ces communications.'
+    purpose: 'L''objectif est d''augmenter la sensibilisation aux coûts de communication afin que les structures puissent optimiser leur utilisation.'
+  tips:
+    title: 'Conseils pour optimiser vos coûts'
+    message_length: 'Réduisez la longueur des messages à 160 caractères maximum, réponses incluses'
+    phone_validation: 'Vérifiez régulièrement la validité des numéros de téléphone de vos bénévoles'
+  structure_report:
+    title: 'Détail par structure'
+    no_data: 'Aucune donnée disponible pour cette période.'
+  campaign_table:
+    title: 'Campagnes du mois de %month%'
+    label: 'Intitulé'
+    date: 'Date'
+    type: 'Type'
+    communications: 'Comms'
+    messages: 'Msgs'
+    questions: 'Questions'
+    answers: 'Réponses'
+    errors: 'Erreurs'
+    costs: 'Coûts'
+  monthly_table:
+    title: 'Totaux mensuels (12 derniers mois)'
+    month: 'Mois'
+    campaigns: 'Campagnes'
+    total: 'Total'
+  yearly_total: 'Total annuel'

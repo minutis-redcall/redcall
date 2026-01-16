@@ -1,0 +1,176 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+    <h1>{{ 'costs.title'|trans }}</h1>
+
+    {# Informational disclaimer #}
+    <div class="alert alert-info mb-4">
+        <div>
+            <h5 class="alert-heading">
+                <strong>{{ 'costs.disclaimer.title'|trans }}</strong>
+            </h5>
+            <p class="mb-2">{{ 'costs.disclaimer.content'|trans }}</p>
+            <p class="mb-0">{{ 'costs.disclaimer.purpose'|trans }}</p>
+        </div>
+    </div>
+
+    {# Cost optimization tips #}
+    <div class="mb-4">
+        <div>
+            <strong>{{ 'costs.tips.title'|trans }}</strong>
+        </div>
+        <div>
+            <ul class="mb-0">
+                <li>{{ 'costs.tips.message_length'|trans }}</li>
+                <li>{{ 'costs.tips.phone_validation'|trans }}</li>
+            </ul>
+        </div>
+    </div>
+
+    <hr/>
+
+    {# Structure reports for last month #}
+    <h2>{{ 'costs.structure_report.title'|trans }}</h2>
+
+    {% if structureReports is empty %}
+        <div class="alert alert-secondary">
+            {{ 'costs.structure_report.no_data'|trans }}
+        </div>
+    {% else %}
+        {% for structureId, structureData in structureReports %}
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <strong>{{ structureData.name }}</strong>
+                    {% if structureData.totalCosts is not empty %}
+                        <span class="float-right">
+                            {% for currency, amount in structureData.totalCosts %}
+                                <span class="badge badge-secondary">{{ (-1 * amount)|round(2) }} {{ currency }}</span>
+                            {% endfor %}
+                        </span>
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    <h5>{{ 'costs.campaign_table.title'|trans({'%month%': lastMonthLabel}) }}</h5>
+
+                    {% if structureData.campaigns is empty %}
+                        <p class="text-muted">{{ 'costs.structure_report.no_data'|trans }}</p>
+                    {% else %}
+                        <div class="table-responsive">
+                            <table class="table table-sm table-striped">
+                                <thead class="thead-light">
+                                <tr>
+                                    <th>{{ 'costs.campaign_table.label'|trans }}</th>
+                                    <th>{{ 'costs.campaign_table.date'|trans }}</th>
+                                    <th>{{ 'costs.campaign_table.messages'|trans }}</th>
+                                    <th>{{ 'costs.campaign_table.questions'|trans }}</th>
+                                    <th>{{ 'costs.campaign_table.answers'|trans }}</th>
+                                    <th>{{ 'costs.campaign_table.errors'|trans }}</th>
+                                    <th>{{ 'costs.campaign_table.costs'|trans }}</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for campaign in structureData.campaigns %}
+                                    <tr>
+                                        <td>
+                                            <a href="{{ path('communication_index', {id: campaign.id}) }}" target="_blank">
+                                                {{ campaign.label }}
+                                            </a>
+                                        </td>
+                                        <td>{{ campaign.date|date('d/m/Y') }}</td>
+                                        <td>{{ campaign.messages }}</td>
+                                        <td>{{ campaign.questions }}</td>
+                                        <td>
+                                            {{ campaign.answers }}
+                                            {% if campaign.questions %}
+                                                ({{ (campaign.answers * 100 / campaign.questions)|round(1) }}%)
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {{ campaign.errors }}
+                                            {% if campaign.messages + campaign.questions %}
+                                                ({{ (campaign.errors * 100 / (campaign.messages + campaign.questions))|round(1) }}%)
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {% for currency, amount in campaign.costs %}
+                                                <div>{{ (-1 * amount)|round(2) }} {{ currency }}</div>
+                                            {% else %}
+                                                <span class="text-muted">-</span>
+                                            {% endfor %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <hr/>
+
+    {# 12-month totals breakdown #}
+    <h2>{{ 'costs.monthly_table.title'|trans }}</h2>
+
+    {% if monthlyTotals is empty %}
+        <div class="alert alert-secondary">
+            {{ 'costs.structure_report.no_data'|trans }}
+        </div>
+    {% else %}
+        {# Yearly total sum #}
+        {% set yearlyTotals = {} %}
+        {% for monthKey, monthData in monthlyTotals %}
+            {% for currency, amount in monthData.totalCosts %}
+                {% if yearlyTotals[currency] is not defined %}
+                    {% set yearlyTotals = yearlyTotals|merge({(currency): 0}) %}
+                {% endif %}
+                {% set yearlyTotals = yearlyTotals|merge({(currency): yearlyTotals[currency] + amount}) %}
+            {% endfor %}
+        {% endfor %}
+        
+        {% if yearlyTotals is not empty %}
+            <div class="alert alert-light border mb-3">
+                <strong>{{ 'costs.yearly_total'|trans }}:</strong>
+                {% for currency, amount in yearlyTotals %}
+                    <span class="badge badge-primary ml-2">{{ (-1 * amount)|round(2) }} {{ currency }}</span>
+                {% endfor %}
+            </div>
+        {% endif %}
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead class="thead-light">
+                <tr>
+                    <th>{{ 'costs.monthly_table.month'|trans }}</th>
+                    <th>{{ 'costs.monthly_table.campaigns'|trans }}</th>
+                    <th>{{ 'costs.monthly_table.total'|trans }}</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for monthKey, monthData in monthlyTotals %}
+                    <tr>
+                        <td>{{ monthData.label }}</td>
+                        <td>{{ monthData.campaigns }}</td>
+                        <td>
+                            {% if monthData.totalCosts is empty %}
+                                <span class="text-muted">-</span>
+                            {% else %}
+                                {% for currency, amount in monthData.totalCosts %}
+                                    <span class="badge badge-secondary">{{ (-1 * amount)|round(2) }} {{ currency }}</span>
+                                {% endfor %}
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% endif %}
+
+    <div class="text-center mt-4">
+        <a href="{{ path('home') }}" class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+    </div>
+
+{% endblock %}

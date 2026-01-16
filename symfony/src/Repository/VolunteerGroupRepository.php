@@ -40,12 +40,12 @@ class VolunteerGroupRepository extends ServiceEntityRepository
     public function getVolunteerGroups(int $campaignId) : array
     {
         $rows = $this->createQueryBuilder('vg')
-            ->select('v.id as volunteerId, vg.groupIndex')
-            ->join('vg.volunteer', 'v')
-            ->where('vg.campaign = :campaignId')
-            ->setParameter('campaignId', $campaignId)
-            ->getQuery()
-            ->getArrayResult();
+                     ->select('v.id as volunteerId, vg.groupIndex')
+                     ->join('vg.volunteer', 'v')
+                     ->where('vg.campaign = :campaignId')
+                     ->setParameter('campaignId', $campaignId)
+                     ->getQuery()
+                     ->getArrayResult();
 
         $groups = [];
         foreach ($rows as $row) {
@@ -53,5 +53,15 @@ class VolunteerGroupRepository extends ServiceEntityRepository
         }
 
         return $groups;
+    }
+
+    public function countVolunteerGroups(int $campaignId) : int
+    {
+        return $this->createQueryBuilder('vg')
+                    ->select('COUNT(vg.volunteer)')
+                    ->where('vg.campaign = :campaignId')
+                    ->setParameter('campaignId', $campaignId)
+                    ->getQuery()
+                    ->getSingleScalarResult();
     }
 }

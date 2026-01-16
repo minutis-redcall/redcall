@@ -1,51 +1,154 @@
 {% extends 'base.html.twig' %}
 
+{% block stylesheets %}
+    <style>
+        .structure-card {
+            transition: transform 0.2s;
+            border-radius: 12px;
+        }
+
+        .structure-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .avatar-circle {
+            width: 40px;
+            height: 40px;
+            background-color: #f8f9fa;
+            border: 2px solid #dee2e6;
+            color: #495057;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .user-list-item {
+            transition: background-color 0.2s;
+            border-radius: 8px;
+        }
+
+        .user-list-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .italic {
+            font-style: italic;
+        }
+    </style>
+{% endblock %}
+
 {% block body %}
 
-    <br/>
+    <div class="jumbotron shadow-sm p-4 p-md-5 mb-5 rounded bg-white">
+        <h1 class="display-4 text-center mb-8">{{ 'management.home.link'|trans }}</h1>
 
-    <div class="jumbotron shadow p-3 mb-5 rounded text-center">
-
-        {% if is_granted('ROLE_ADMIN') %}
-
-            <a href="{{ path('admin_badge_index') }}"
-               class="text-lg-center large-button btn btn-secondary">{{ 'admin.badge.title' |trans }}</a>
-
-            <br><br>
-
-        {% endif %}
-
-        <a href="{{ path('management_structures_list') }}"
-           class="text-lg-center large-button btn btn-secondary">{{ 'manage_structures.title'|trans }}</a>
-
-        <br/><br/>
-
-        <a href="{{ path('management_volunteers_list') }}"
-           class="text-lg-center large-button btn btn-secondary">{{ 'manage_volunteers.title'|trans }}</a>
-
-        <br/><br/>
-
-        <a href="{{ path('management_structures_volunteer_lists_home') }}"
-           class="text-lg-center large-button btn btn-secondary">
-            {{ 'manage_structures.volunteer_list.manage'|trans }}
-        </a>
-
-        <br/><br/><br/>
-
-        <div class="text-left">
-            <p>{{ 'management.current_structures'|trans }}</p>
-
-            {% for structure in app.user.structures %}
-                <p>{{ structure.name }}</p>
-            {% endfor %}
-
-            <p>{{ 'management.support_email'|trans({'%email%': email}) }}</p>
+        <div class="d-flex justify-content-center mb-5">
+            <div class="btn-group flex-wrap" role="group">
+                {% if is_granted('ROLE_ADMIN') %}
+                    <a href="{{ path('admin_badge_index') }}" class="btn btn-outline-secondary">
+                        🎖️ {{ 'admin.badge.title' |trans }}
+                    </a>
+                {% endif %}
+                <a href="{{ path('management_structures_list') }}" class="btn btn-outline-secondary">
+                    🏢 {{ 'manage_structures.title'|trans }}
+                </a>
+                <a href="{{ path('management_volunteers_list') }}" class="btn btn-outline-secondary">
+                    👥 {{ 'manage_volunteers.title'|trans }}
+                </a>
+                <a href="{{ path('management_structures_volunteer_lists_home') }}" class="btn btn-outline-secondary">
+                    📋 {{ 'manage_structures.volunteer_list.manage'|trans }}
+                </a>
+            </div>
         </div>
 
-        <br/><br/><br/>
+        <div class="text-left mt-5">
+            <h4 class="mb-4">{{ 'management.current_structures'|trans }}</h4>
 
-        <a href="{{ path('home') }}"
-           class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+            <div class="row">
+                {% for structure in app.user.structures %}
+                    <div class="col-lg-6 mb-4">
+                        <div class="card structure-card shadow-sm border-0 h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center flex-wrap">
+                                    <h5 class="card-title mb-2 mb-md-0 font-weight-bold">
+                                        {{ structure.name }}
+                                    </h5>
+                                </div>
+                                <div>
+                                    <button class="btn btn-light btn-sm font-weight-bold" type="button" data-toggle="collapse" data-target="#structure-users-{{ structure.id }}" aria-expanded="false">
+                                        {{ 'management.show_users'|trans }}
+                                    </button>
+                                </div>
+
+                                <div class="collapse mt-3" id="structure-users-{{ structure.id }}">
+                                    <hr>
+                                    <div class="list-group list-group-flush">
+                                        {% set other_users = false %}
+                                        {% for user in structure.users %}
+                                            {% if user.id != app.user.id %}
+                                                {% set other_users = true %}
+                                                <div class="list-group-item user-list-item px-0 py-2 border-0">
+                                                    {% if user.volunteer %}
+                                                        <div class="d-flex align-items-center">
+                                                            <div class="avatar-circle mr-3">
+                                                                {% if user.volunteer.firstName or user.volunteer.lastName %}
+                                                                    {{ user.volunteer.firstName|first|upper }}{{ user.volunteer.lastName|first|upper }}
+                                                                {% else %}
+                                                                    ⚠️
+                                                                {% endif %}
+                                                            </div>
+                                                            <div>
+                                                                <div class="font-weight-bold">
+                                                                    {% if user.volunteer.firstName or user.volunteer.lastName %}
+                                                                        {{ user.volunteer.firstName }} {{ user.volunteer.lastName }}
+                                                                    {% else %}
+                                                                        <span class="text-danger">{{ user.username }}</span>
+                                                                    {% endif %}
+                                                                </div>
+                                                                <small class="text-muted">
+                                                                    🆔 {{ 'management.external_id_label'|trans({'%external_id%': user.volunteer.externalId}) }}
+                                                                </small>
+                                                            </div>
+                                                        </div>
+                                                    {% else %}
+                                                        <div class="alert alert-warning mb-0 p-2 d-flex align-items-center">
+                                                            <div class="mr-2">⚠️</div>
+                                                            <div>
+                                                                <div class="font-weight-bold">{{ user.username }}</div>
+                                                                <small>{{ 'management.missing_volunteer'|trans }}</small>
+                                                            </div>
+                                                        </div>
+                                                    {% endif %}
+                                                </div>
+                                            {% endif %}
+                                        {% endfor %}
+
+                                        {% if not other_users %}
+                                            <div class="list-group-item px-0 py-2 border-0 text-muted italic small">
+                                                {{ 'management.no_other_users'|trans }}
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+
+            <p class="mt-5 text-center text-muted small border-top pt-4">
+                📧 {{ 'management.support_email'|trans({'%email%': email}) }}
+            </p>
+        </div>
+
+        <div class="text-center mt-5">
+            <a href="{{ path('home') }}" class="btn btn-link text-secondary">
+                ⬅️ {{ 'base.button.back'|trans }}
+            </a>
+        </div>
 
     </div>
 
