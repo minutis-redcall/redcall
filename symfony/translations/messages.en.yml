@@ -103,7 +103,6 @@ admin:
     lock: Lock
     locked: Frozen
     locked_details: 'Structures of a frozen user are not updated when Pegass is updating its bound volunteer.'
-    only_admins: 'Search among administrators only'
     only_developers: 'Search among developers only'
     open: 'Open Pegass entity'
     pegass_api_grant: 'Grant Pegass API access'
@@ -115,8 +114,20 @@ admin:
     undeveloper: 'Remove developer access'
     unlock: Unlock
     unroot: 'Remove from countries manager'
-    root: 'Make countries manager (super admin)'
+    root: 'Activate countries management (super admin)'
     max: 'Select all (up to max. %max% structures at once)'
+    administrators:
+      title: 'Administrators'
+      user: 'User'
+      type: 'Type'
+      cannot_revoke_root: 'Cannot revoke a root user'
+      revoke_confirm: 'Do you really want to revoke admin rights for this user?'
+      revoke: 'Revoke admin rights'
+    rtmr:
+      title: 'Territorial Minutis RedCall Referents (RTMR)'
+      user: 'Volunteer'
+      structures: 'Structures'
+      no_structures: 'No structures'
   resources:
     change_platform: 'Switch platform to: %platform%'
     change_platform_title: 'Platform update'

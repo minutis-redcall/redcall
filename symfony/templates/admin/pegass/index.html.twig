@@ -14,247 +14,160 @@
 
         <div class="text-center">
             <br/>
-            <a href="{{ path('admin_pegass_create_user') }}" class="btn btn-secondary">{{ 'admin.pegass.create_user'|trans }}</a>
-            &nbsp; &nbsp;
-            <a href="{{ path('admin_pegass_list_users') }}" class="btn btn-secondary">{{ 'admin.pegass.list_users'|trans }}</a>
-            <br/><br/>
+            <div class="btn-group mb-4">
+                <a href="{{ path('admin_pegass_create_user') }}" class="btn btn-primary">
+                    <i class="fas fa-user-plus mr-2"></i>{{ 'admin.pegass.create_user'|trans }}
+                </a>
+                <a href="{{ path('admin_pegass_list_users') }}" class="btn btn-outline-secondary">
+                    <i class="fas fa-list mr-2"></i>{{ 'admin.pegass.list_users'|trans }}
+                </a>
+                <a href="{{ path('admin_pegass_administrators') }}" class="btn btn-outline-info">
+                    <i class="fas fa-user-shield mr-2"></i>{{ 'admin.pegass.administrators.title'|trans }}
+                </a>
+                <a href="{{ path('admin_pegass_rtmr') }}" class="btn btn-outline-warning">
+                    <i class="fas fa-id-badge mr-2"></i>{{ 'admin.pegass.rtmr.title'|trans }}
+                </a>
+            </div>
+            <br/>
         </div>
 
         {{ form_start(search) }}
+        <div class="mb-3">
+            {{ form_row(search.criteria) }}
+        </div>
+        <div class="mb-3">
+            {{ form_row(search.only_developers) }}
+        </div>
+        <div class="text-right">
+            {{ form_widget(search.submit, {'attr': {'class': 'btn btn-primary'}}) }}
+        </div>
         <input type="hidden" name="type" value="pegass"/>
         {{ form_end(search) }}
 
-        <table class="table">
-            <tbody>
+        <div class="row mt-4">
             {% for user in users %}
-                <tr>
-                    <td>
-                        <div class="row">
-                            <div class="col-md-4">
-                                <div>
-                                    <div class="h4" {% if user.root %}style="color:red;"{% endif %}>
+                <div class="col-xl-4 col-md-6 mb-4">
+                    <div class="card h-100 shadow-sm border-left-{{ user.root ? 'danger' : (user.admin ? 'primary' : 'secondary') }}">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div class="w-75">
+                                    <h6 class="card-title mb-0 {% if user.root %}text-danger font-weight-bold{% endif %} text-truncate" title="{{ user.username }}">
                                         {{ platforms[user.platform].flag }}
-                                        <a href="#" style="color:black;" class="copy-to-clipboard">{{ user.username }}</a>
-                                    </div>
-                                    <div class="text-small">
+                                        <a href="#" class="copy-to-clipboard text-dark">{{ user.username }}</a>
+                                    </h6>
+                                    <small class="text-muted">
                                         {{ 'password_login.user_list.registered_at'|trans({'%date%': user.registeredAt|date('d/m/Y H:i')}) }}
-                                    </div>
-                                    {% if user.volunteer %}
-                                        <div>
-                                            <a href="{{ path('management_volunteers_manual_update', {'id': user.volunteer.id}) }}" target="_blank">
-                                                {{ 'admin.pegass.bound_volunteer'|trans({'%name%': user.volunteer.displayName}) }}
-                                            </a>
-                                        </div>
-                                    {% endif %}
+                                    </small>
                                 </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div>
-                                    {% if user.verified %}
-                                        <span class="h4">✅</span>
-                                    {% else %}
-                                        <span class="h4">❌</span>
-                                    {% endif %}
-
-                                    {{ 'password_login.user_list.is_valid'|trans }} <sup>(1)</sup>
-                                </div>
-                                <div>
-                                    {% if user.trusted %}
-                                        <span class="h4">✅</span>
-                                    {% else %}
-                                        <span class="h4">❌</span>
-                                    {% endif %}
-
-                                    {{ 'password_login.user_list.is_trusted'|trans }} <sup>(2)</sup>
-                                </div>
-                                <div class="text-small">
-                                    {% if user.developer %}
-                                        <span class="h4">✅</span>
-                                    {% else %}
-                                        <span class="h4">❌</span>
-                                    {% endif %}
-                                    {{ 'admin.pegass.developered'|trans }} <sup>(3)</sup>
-                                </div>
-                                <div class="text-small">
-                                    {% if user.admin %}
-                                        <span class="h4">✅</span>
-                                    {% else %}
-                                        <span class="h4">❌</span>
-                                    {% endif %}
-
-                                    {{ 'password_login.user_list.is_admin'|trans }} <sup>(4)</sup>
-                                </div>
-                                <div class="text-small">
-                                    {% if user.root %}
-                                        <span class="h4">✅</span>
-                                    {% else %}
-                                        <span class="h4">❌</span>
-                                    {% endif %}
-
-                                    {{ 'admin.pegass.is_root'|trans }} <sup>(5)</sup>
-                                </div>
-                                {% if constant('\\App\\Enum\\Platform::FR') == user.platform %}
-                                    <div class="text-small">
-                                        {% if user.isPegassApi %}
-                                            <span class="h4">✅</span>
-                                        {% else %}
-                                            <span class="h4">❌</span>
-                                        {% endif %}
-                                        {{ 'admin.pegass.pegass_apied'|trans }}
-                                    </div>
-                                {% endif %}
-                                <div class="text-small">
-                                    {% if user.locked %}
-                                        <span class="h4">✅</span>
-                                    {% else %}
-                                        <span class="h4">❌</span>
-                                    {% endif %}
-                                    {{ 'admin.pegass.locked'|trans }} <sup>(6)</sup>
-                                </div>
-                            </div>
-                            <div class="col-md-4">
-                                <div class="external-id"
-                                     data-id="{{ user.id }}"
-                                     data-uri="{{ path('admin_pegass_update', {csrf: csrf_token('pegass'), id: user.id}) }}">
-                                    {% if user.locked %}
-                                        <strong>{{ user.externalId }}</strong>
-                                    {% else %}
-                                        {{ render(controller('\\App\\Controller\\WidgetController::volunteerEditor', {
-                                            user: user
-                                        })) }}
-                                    {% endif %}
-                                </div>
-                                <div id="structures-{{ user.id }}">
-                                    {% for structure in user.structures %}
-                                        {% if structure.platform == user.platform %}
-                                            <div>{{ structure.name }}</div>
-                                        {% endif %}
-                                    {% endfor %}
-                                </div>
-
-                                <a href="{{ path('admin_pegass_update_structures', {id: user.id}) }}">{{ 'management.update_structures'|trans }}</a>
-                            </div>
-                            <div class="col-md-1">
                                 {% if not user.isEqualTo(app.user) or user.root %}
                                     <div class="dropdown">
-                                        <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                            {{ 'base.actions'|trans }}
+                                        <button class="btn btn-sm btn-link text-muted" type="button" data-toggle="dropdown">
+                                            <i class="fas fa-ellipsis-v"></i>
                                         </button>
                                         <div class="dropdown-menu dropdown-menu-right">
-
-                                            <a class="dropdown-item text-primary" href="{{ path('password_login_admin_profile', {username: user.username}) }}">
-                                                {{ 'password_login.user_list.profile'|trans }}
+                                            <a class="dropdown-item" href="{{ path('password_login_admin_profile', {username: user.username}) }}">
+                                                <i class="fas fa-user-circle mr-2"></i>{{ 'password_login.user_list.profile'|trans }}
+                                            </a>
+                                            <div class="dropdown-divider"></div>
+                                            
+                                            {# Verification #}
+                                            <a class="dropdown-item {{ user.verified ? 'text-danger' : 'text-success' }}" href="{{ path('admin_pegass_toggle_verify', {id: user.id, csrf: csrf_token('pegass')}) }}">
+                                                <i class="fas {{ user.verified ? 'fa-times-circle' : 'fa-check-circle' }} mr-2"></i>
+                                                {{ (user.verified ? 'password_login.user_list.unverify' : 'password_login.user_list.verify')|trans }}
                                             </a>
 
-                                            <div class="dropdown-divider"></div>
+                                            {# Trust #}
+                                            <a class="dropdown-item {{ user.trusted ? 'text-danger' : 'text-success' }}" href="{{ path('admin_pegass_toggle_trust', {id: user.id, csrf: csrf_token('pegass')}) }}">
+                                                <i class="fas {{ user.trusted ? 'fa-user-slash' : 'fa-user-check' }} mr-2"></i>
+                                                {{ (user.trusted ? 'password_login.user_list.untrust' : 'password_login.user_list.trust')|trans }}
+                                            </a>
 
-                                            {% if user.verified %}
-                                                <a class="dropdown-item text-danger" href="{{ path('admin_pegass_toggle_verify', {id: user.id, csrf: csrf_token('pegass')}) }}">
-                                                    {{ 'password_login.user_list.unverify'|trans }}
-                                                </a>
-                                            {% else %}
-                                                <a class="dropdown-item text-success" href="{{ path('admin_pegass_toggle_verify', {id: user.id, csrf: csrf_token('pegass')}) }}">
-                                                    {{ 'password_login.user_list.verify'|trans }}
-                                                </a>
-                                            {% endif %}
+                                            {# Developer #}
+                                            <a class="dropdown-item {{ user.developer ? 'text-danger' : 'text-success' }}" href="{{ path('admin_pegass_toggle_developer', {id: user.id, csrf: csrf_token('pegass')}) }}">
+                                                <i class="fas fa-code mr-2"></i>
+                                                {{ (user.developer ? 'admin.pegass.undeveloper' : 'admin.pegass.developer')|trans }}
+                                            </a>
 
-                                            {% if user.trusted %}
-                                                <a class="dropdown-item text-danger" href="{{ path('admin_pegass_toggle_trust', {id: user.id, csrf: csrf_token('pegass')}) }}">
-                                                    {{ 'password_login.user_list.untrust'|trans }}
-                                                </a>
-                                            {% else %}
-                                                <a class="dropdown-item text-success" href="{{ path('admin_pegass_toggle_trust', {id: user.id, csrf: csrf_token('pegass')}) }}">
-                                                    {{ 'password_login.user_list.trust'|trans }}
-                                                </a>
-                                            {% endif %}
+                                            {# Admin #}
+                                            <a class="dropdown-item {{ user.admin ? 'text-danger' : 'text-success' }}" href="{{ path('admin_pegass_toggle_admin', {id: user.id, csrf: csrf_token('pegass')}) }}">
+                                                <i class="fas fa-shield-alt mr-2"></i>
+                                                {{ (user.admin ? 'password_login.user_list.unadmin' : 'password_login.user_list.admin')|trans }}
+                                            </a>
 
-                                            {% if user.developer %}
-                                                <a class="dropdown-item text-danger" href="{{ path('admin_pegass_toggle_developer', {id: user.id, csrf: csrf_token('pegass')}) }}">
-                                                    {{ 'admin.pegass.undeveloper'|trans }}
-                                                </a>
-                                            {% else %}
-                                                <a class="dropdown-item text-success" href="{{ path('admin_pegass_toggle_developer', {id: user.id, csrf: csrf_token('pegass')}) }}">
-                                                    {{ 'admin.pegass.developer'|trans }}
-                                                </a>
-                                            {% endif %}
-
-                                            {% if user.admin %}
-                                                <a class="dropdown-item text-danger" href="{{ path('admin_pegass_toggle_admin', {id: user.id, csrf: csrf_token('pegass')}) }}">
-                                                    {{ 'password_login.user_list.unadmin'|trans }}
-                                                </a>
-                                            {% else %}
-                                                <a class="dropdown-item text-success" href="{{ path('admin_pegass_toggle_admin', {id: user.id, csrf: csrf_token('pegass')}) }}">
-                                                    {{ 'password_login.user_list.admin'|trans }}
-                                                </a>
-                                            {% endif %}
-
+                                            {# Root #}
                                             {% if app.user.root %}
-                                                {% if user.root %}
-                                                    <a class="dropdown-item text-danger" href="{{ path('admin_pegass_toggle_root', {id: user.id, csrf: csrf_token('pegass')}) }}">
-                                                        {{ 'admin.pegass.unroot'|trans }}
-                                                    </a>
-                                                {% else %}
-                                                    <a class="dropdown-item text-success" href="{{ path('admin_pegass_toggle_root', {id: user.id, csrf: csrf_token('pegass')}) }}">
-                                                        {{ 'admin.pegass.root'|trans }}
-                                                    </a>
-                                                {% endif %}
+                                                <a class="dropdown-item {{ user.root ? 'text-danger' : 'text-success' }}" href="{{ path('admin_pegass_toggle_root', {id: user.id, csrf: csrf_token('pegass')}) }}">
+                                                    <i class="fas fa-crown mr-2"></i>
+                                                    {{ (user.root ? 'admin.pegass.unroot' : 'admin.pegass.root')|trans }}
+                                                </a>
                                             {% endif %}
 
-
+                                            {# Pegass API #}
                                             {% if app.user.canGrantPegassApi and constant('\\App\\Enum\\Platform::FR') == user.platform %}
-                                                <div class="dropdown-divider"></div>
-
-                                                {% if user.isPegassApi %}
-                                                    <a class="dropdown-item text-danger" href="{{ path('admin_pegass_toggle_pegass_api', {id: user.id, csrf: csrf_token('pegass')}) }}">
-                                                        {{ 'admin.pegass.pegass_api_ungrant'|trans }}
-                                                    </a>
-                                                {% else %}
-                                                    <a class="dropdown-item text-success" href="{{ path('admin_pegass_toggle_pegass_api', {id: user.id, csrf: csrf_token('pegass')}) }}">
-                                                        {{ 'admin.pegass.pegass_api_grant'|trans }}
-                                                    </a>
-                                                {% endif %}
+                                                <a class="dropdown-item {{ user.isPegassApi ? 'text-danger' : 'text-success' }}" href="{{ path('admin_pegass_toggle_pegass_api', {id: user.id, csrf: csrf_token('pegass')}) }}">
+                                                    <i class="fas fa-cloud mr-2"></i>
+                                                    {{ (user.isPegassApi ? 'admin.pegass.pegass_api_ungrant' : 'admin.pegass.pegass_api_grant')|trans }}
+                                                </a>
                                             {% endif %}
 
                                             <div class="dropdown-divider"></div>
 
-                                            {% if user.locked %}
-                                                <a class="dropdown-item text-danger" href="{{ path('admin_pegass_toggle_lock', {id: user.id, csrf: csrf_token('pegass')}) }}">
-                                                    {{ 'admin.pegass.unlock'|trans }}
-                                                </a>
-                                            {% else %}
-                                                <a class="dropdown-item text-success" href="{{ path('admin_pegass_toggle_lock', {id: user.id, csrf: csrf_token('pegass')}) }}">
-                                                    {{ 'admin.pegass.lock'|trans }}
-                                                </a>
-                                            {% endif %}
+                                            {# Lock #}
+                                            <a class="dropdown-item {{ user.locked ? 'text-danger' : 'text-success' }}" href="{{ path('admin_pegass_toggle_lock', {id: user.id, csrf: csrf_token('pegass')}) }}">
+                                                <i class="fas {{ user.locked ? 'fa-unlock' : 'fa-lock' }} mr-2"></i>
+                                                {{ (user.locked ? 'admin.pegass.unlock' : 'admin.pegass.lock')|trans }}
+                                            </a>
 
-                                            {% if app.user.root %}
-
-                                                <div class="dropdown-divider"></div>
-
-                                                <div class="dropdown-header">{{ 'admin.resources.change_platform_title'|trans }}</div>
-                                                {% for platform in platforms %}
-                                                    <a class="dropdown-item {% if platform == user.platform %}disabled{% else %}text-primary{% endif %}" href="{{ path('admin_pegass_update_platform', {id: user.id, csrf: csrf_token('csrf'), platform: platform}) }}" {% if platform == user.platform %}onclick="return false;"{% endif %}>
-                                                        {{ 'admin.resources.change_platform'|trans({'%platform%': platform.flag ~ ' ' ~ platform.label}) }}
-                                                    </a>
-                                                {% endfor %}
-
-                                            {% endif %}
-
-                                            <div class="dropdown-divider"></div>
-
+                                            {# Delete #}
                                             <a class="dropdown-item text-danger" href="{{ path('admin_pegass_delete', {id: user.id, csrf: csrf_token('pegass')}) }}" onclick="return confirm('{{ 'admin.pegass.delete_confirm'|trans({'%email%': user.username})|e('js') }}');">
-                                                {{ 'password_login.user_list.delete'|trans }}
+                                                <i class="fas fa-trash-alt mr-2"></i>{{ 'password_login.user_list.delete'|trans }}
                                             </a>
                                         </div>
                                     </div>
                                 {% endif %}
                             </div>
+
+                            {% if user.volunteer %}
+                                <div class="mb-3">
+                                    <a href="{{ path('management_volunteers_manual_update', {'id': user.volunteer.id}) }}" target="_blank" class="badge badge-light p-2">
+                                        <i class="fas fa-link mr-1"></i>{{ 'admin.pegass.bound_volunteer'|trans({'%name%': user.volunteer.displayName}) }}
+                                    </a>
+                                </div>
+                            {% endif %}
+
+                            <div class="badges-grid mb-3">
+                                <span class="badge {{ user.verified ? 'badge-success' : 'badge-light text-muted' }}" data-toggle="tooltip" title="{{ 'password_login.user_list.is_valid'|trans }}">V</span>
+                                <span class="badge {{ user.trusted ? 'badge-success' : 'badge-light text-muted' }}" data-toggle="tooltip" title="{{ 'password_login.user_list.is_trusted'|trans }}">T</span>
+                                <span class="badge {{ user.developer ? 'badge-info' : 'badge-light text-muted' }}" data-toggle="tooltip" title="{{ 'admin.pegass.developered'|trans }}">D</span>
+                                <span class="badge {{ user.admin ? 'badge-primary' : 'badge-light text-muted' }}" data-toggle="tooltip" title="{{ 'password_login.user_list.is_admin'|trans }}">A</span>
+                                <span class="badge {{ user.root ? 'badge-danger' : 'badge-light text-muted' }}" data-toggle="tooltip" title="{{ 'admin.pegass.is_root'|trans }}">R</span>
+                                <span class="badge {{ user.locked ? 'badge-dark' : 'badge-light text-muted' }}" data-toggle="tooltip" title="{{ 'admin.pegass.locked'|trans }}">L</span>
+                            </div>
+
+                            <div class="external-id-editor mb-3" data-id="{{ user.id }}" data-uri="{{ path('admin_pegass_update', {csrf: csrf_token('pegass'), id: user.id}) }}">
+                                {% if user.locked %}
+                                    <code class="p-1 px-2 bg-light rounded text-dark">{{ user.externalId }}</code>
+                                {% else %}
+                                    {{ render(controller('\\App\\Controller\\WidgetController::volunteerEditor', {user: user})) }}
+                                {% endif %}
+                            </div>
+
+                            <div id="structures-{{ user.id }}" class="small text-muted mb-2 overflow-auto" style="max-height: 100px;">
+                                {% for structure in user.structures %}
+                                    {% if structure.platform == user.platform %}
+                                        <div><i class="fas fa-caret-right mr-1"></i>{{ structure.name }}</div>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            
+                            <a href="{{ path('admin_pegass_update_structures', {id: user.id}) }}" class="btn btn-sm btn-outline-secondary btn-block">
+                                <i class="fas fa-sitemap mr-2"></i>{{ 'management.update_structures'|trans }}
+                            </a>
                         </div>
-                    </td>
-                </tr>
+                    </div>
+                </div>
             {% endfor %}
-            </tbody>
-        </table>
+        </div>
 
         {{ macros.pager(users) }}
 
@@ -288,8 +201,8 @@
 
     <script type="text/javascript">
 
-        $('.external-id input').change(function () {
-            var container = $(this).closest('.external-id');
+        $('.external-id-editor input').change(function () {
+            var container = $(this).closest('.external-id-editor');
             var input = $(this);
 
             $.post(container.data('uri'), {
@@ -298,10 +211,14 @@
                 var structuresContainer = $('#structures-' + container.data('id'));
                 structuresContainer.html('');
                 $.each(data.structures, function (index, value) {
-                    structuresContainer.append('<div>' + value + '</div>');
+                    structuresContainer.append('<div><i class="fas fa-caret-right mr-1"></i>' + value + '</div>');
                 });
             });
         });
+
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip()
+        })
 
     </script>
 
