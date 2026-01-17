@@ -39,6 +39,11 @@ class BadgeManager
         return $this->badgeRepository->findOneByExternalId($platform, $externalId);
     }
 
+    public function findOneByName(string $platform, string $name) : ?Badge
+    {
+        return $this->badgeRepository->findOneByName($platform, $name);
+    }
+
     public function save(Badge $badge)
     {
         $this->badgeRepository->save($badge);

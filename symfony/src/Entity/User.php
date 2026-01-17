@@ -298,38 +298,27 @@ class User extends AbstractUser implements LockableInterface
 
     public function getMainStructure() : ?Structure
     {
-        $root = $this->getRootStructures();
-
-        if ($root) {
-            return reset($root);
-        }
-
-        return null;
-    }
-
-    /**
-     * @return Structure[]
-     */
-    public function getRootStructures() : array
-    {
-        $structures = $this->getStructures();
-        $roots      = [];
+        /** @var Structure|null $mainStructure */
+        $mainStructure = null;
+        $mainLevel     = null;
+        $structures    = $this->getStructures();
         foreach ($structures as $structure) {
             /** @var Structure $structure */
-            if (!$structure->getParentStructure()) {
-                $roots[] = $structure;
-                continue;
-            }
-
-            // Structure disappear if any of its ancestor is in the list
-            foreach ($structure->getAncestors() as $ancestor) {
-                if (!$structures->contains($ancestor)) {
-                    $roots[] = $structure;
-                }
+            $level = count($structure->getAncestors());
+            if ($mainStructure === null) {
+                $mainStructure = $structure;
+                $mainLevel     = $level;
+            } elseif ($level < $mainLevel) {
+                // Structure is higher in hierarchy (fewer ancestors)
+                $mainStructure = $structure;
+                $mainLevel     = $level;
+            } elseif ($level === $mainLevel && strcasecmp($structure->getName() ?? '', $mainStructure->getName() ?? '') < 0) {
+                // Same level, take the first alphabetically
+                $mainStructure = $structure;
             }
         }
 
-        return $roots;
+        return $mainStructure;
     }
 
     public function isLocked() : ?bool

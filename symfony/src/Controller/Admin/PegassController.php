@@ -7,12 +7,11 @@ use App\Entity\Structure;
 use App\Entity\User;
 use App\Form\Type\ManageUserStructuresType;
 use App\Form\Type\VolunteerWidgetType;
+use App\Manager\BadgeManager;
 use App\Manager\PlatformConfigManager;
 use App\Manager\StructureManager;
 use App\Manager\UserManager;
 use App\Manager\VolunteerManager;
-use App\Model\Csrf;
-use App\Model\PlatformConfig;
 use Bundles\PaginationBundle\Manager\PaginationManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -24,7 +23,9 @@ use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @Route(path="admin/pegass", name="admin_pegass_")
+ * @Route("/admin/pegass", name="admin_pegass_")
+ *
+ * This controller handles administration tools for Pegass users and structures.
  */
 class PegassController extends BaseController
 {
@@ -54,6 +55,11 @@ class PegassController extends BaseController
     private $platformManager;
 
     /**
+     * @var BadgeManager
+     */
+    private $badgeManager;
+
+    /**
      * @var RequestStack
      */
     private $requestStack;
@@ -63,6 +69,7 @@ class PegassController extends BaseController
         VolunteerManager $volunteerManager,
         PaginationManager $paginationManager,
         PlatformConfigManager $platformManager,
+        BadgeManager $badgeManager,
         RequestStack $requestStack)
     {
         $this->userManager       = $userManager;
@@ -70,6 +77,7 @@ class PegassController extends BaseController
         $this->volunteerManager  = $volunteerManager;
         $this->paginationManager = $paginationManager;
         $this->platformManager   = $platformManager;
+        $this->badgeManager      = $badgeManager;
         $this->requestStack      = $requestStack;
     }
 
@@ -83,7 +91,6 @@ class PegassController extends BaseController
 
         if ($search->isSubmitted() && $search->isValid()) {
             $criteria       = $search->get('criteria')->getData();
-            $onlyAdmins     = $search->get('only_admins')->getData();
             $onlyDevelopers = $search->get('only_developers')->getData();
         }
 
@@ -91,7 +98,7 @@ class PegassController extends BaseController
             'search'    => $search->createView(),
             'type'      => $request->get('type'),
             'users'     => $this->paginationManager->getPager(
-                $this->userManager->searchQueryBuilder($criteria ?? null, $onlyAdmins ?? false, $onlyDevelopers ?? false)
+                $this->userManager->searchQueryBuilder($criteria ?? null, false, $onlyDevelopers ?? false)
             ),
             'platforms' => $this->platformManager->getAvailablePlatforms(),
         ]);
@@ -411,22 +418,67 @@ class PegassController extends BaseController
     }
 
     /**
-     * @Route(name="update_platform", path="/change-platform/{csrf}/{id}/{platform}")
-     * @IsGranted("ROLE_ROOT")
-     * @IsGranted("USER", subject="user")
+     * @Route(path="/administrators", name="administrators")
      */
-    public function changePlatform(User $user, Csrf $csrf, PlatformConfig $platform)
+    public function administrators(Request $request)
     {
+        $users = $this->userManager->searchQueryBuilder(null, true, false)
+                                   ->andWhere('u.isRoot = false')
+                                   ->getQuery()
+                                   ->getResult();
+
+        $roots = $this->userManager->searchQueryBuilder(null, true, false)
+                                   ->andWhere('u.isRoot = true')
+                                   ->getQuery()
+                                   ->getResult();
+
+        return $this->render('admin/pegass/administrators.html.twig', [
+            'users' => $users,
+            'roots' => $roots,
+        ]);
+    }
+
+    /**
+     * @Route("/revoke-admin/{csrf}/{id}", name="revoke_admin")
+     * @IsGranted("ROLE_ROOT")
+     */
+    public function revokeAdmin(User $user, string $csrf)
+    {
+        $this->validateCsrfOrThrowNotFoundException('pegass', $csrf);
+
         if ($user->isEqualTo($this->getUser())) {
             throw $this->createNotFoundException();
         }
 
-        $user->setPlatform($platform);
+        if ($user->isRoot()) {
+            throw $this->createAccessDeniedException('Cannot revoke root admin');
+        }
 
+        $user->setIsAdmin(false);
         $this->userManager->save($user);
 
-        return $this->redirectToRoute('admin_pegass_index', [
-            'form[criteria]' => $user->getExternalId(),
+        return $this->redirectToRoute('admin_pegass_administrators');
+    }
+
+    /**
+     * @Route(path="/rtmr", name="rtmr")
+     */
+    public function rtmr(Request $request)
+    {
+        $badge = $this->badgeManager->findOneByName($this->getPlatform(), \App\Manager\RefreshManager::RTMR_BADGE);
+
+        if (!$badge) {
+            $volunteers = [];
+        } else {
+            $volunteers = $this->volunteerManager->getVolunteersHavingBadgeQueryBuilder($badge)
+                                                 ->join('v.user', 'u')
+                                                 ->addSelect('u')
+                                                 ->getQuery()
+                                                 ->getResult();
+        }
+
+        return $this->render('admin/pegass/rtmr.html.twig', [
+            'volunteers' => $volunteers,
         ]);
     }
 
@@ -437,10 +489,6 @@ class PegassController extends BaseController
             ->setMethod('GET')
             ->add('criteria', TextType::class, [
                 'label'    => 'password_login.user_list.search.criteria',
-                'required' => false,
-            ])
-            ->add('only_admins', CheckboxType::class, [
-                'label'    => 'admin.pegass.only_admins',
                 'required' => false,
             ])
             ->add('only_developers', CheckboxType::class, [

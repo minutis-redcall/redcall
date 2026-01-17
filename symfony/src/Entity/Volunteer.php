@@ -486,10 +486,20 @@ class Volunteer implements LockableInterface
     {
         /** @var Structure|null $mainStructure */
         $mainStructure = null;
+        $mainLevel     = null;
         $structures    = $onlyEnabled ? $this->getStructures() : $this->structures;
         foreach ($structures as $structure) {
             /** @var Structure $structure */
-            if (!$mainStructure || $structure->getExternalId() < $mainStructure->getExternalId()) {
+            $level = count($structure->getAncestors());
+            if ($mainStructure === null) {
+                $mainStructure = $structure;
+                $mainLevel     = $level;
+            } elseif ($level < $mainLevel) {
+                // Structure is higher in hierarchy (fewer ancestors)
+                $mainStructure = $structure;
+                $mainLevel     = $level;
+            } elseif ($level === $mainLevel && strcasecmp($structure->getName() ?? '', $mainStructure->getName() ?? '') < 0) {
+                // Same level, take the first alphabetically
                 $mainStructure = $structure;
             }
         }

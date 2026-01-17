@@ -103,7 +103,6 @@ admin:
     lock: Geler
     locked: Gelé
     locked_details: 'Les structures d''un utilisateur gelé ne seront pas mises à jour avec la mise à jour Pegass de son bénévole attaché.'
-    only_admins: 'Rechercher parmi les administrateurs'
     only_developers: 'Rechercher parmi les développeurs'
     open: 'Ouvrir l''entrée Pegass'
     pegass_api_grant: 'Autoriser l''accès aux APIs Pegass'
@@ -117,6 +116,19 @@ admin:
     unroot: 'Desactiver la gestion des pays'
     root: 'Activer la gestion des pays (super admin)'
     max: 'Sélectionner tout (dans la limite de %max% structures d''un coup)'
+    administrators:
+      title: 'Administrateurs'
+      user: 'Utilisateur'
+      type: 'Type'
+      cannot_revoke_root: 'Impossible de révoquer un root'
+      revoke_confirm: 'Voulez-vous vraiment révoquer les droits admin de cet utilisateur ?'
+      revoke: 'Révoquer les droits admin'
+    rtmr:
+      title: 'Référents Territoriaux (RTMR)'
+      user: 'Bénévole'
+      structures: 'Structures'
+      no_structures: 'Aucune structure'
+      none: 'Aucun RTMR trouvé.'
   resources:
     change_platform: 'Transférer vers %platform%'
     change_platform_title: 'Changement de plateforme'

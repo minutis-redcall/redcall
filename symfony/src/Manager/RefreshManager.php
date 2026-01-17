@@ -2,6 +2,7 @@
 
 namespace App\Manager;
 
+use App\Command\AnnuaireNationalCommand;
 use App\Entity\Badge;
 use App\Entity\Pegass;
 use App\Entity\Phone;
@@ -19,8 +20,8 @@ use Psr\Log\NullLogger;
 
 class RefreshManager
 {
-    // People having that badge should be enabled as RedCall users, and set as admin
-    const BADGES_ADMIN = ['RTMR', 'RT MR'];
+    const RTMR_BADGE         = 'RT MR'; // Référent Territorial Minutis RedCall
+    const INVALID_RTMR_BADGE = 'RTMR'; // Référent Territorial Maîtrise des Risques
 
     /**
      * @var PegassManager
@@ -295,7 +296,7 @@ class RefreshManager
                 $this->userManager->changeVolunteer($user, Platform::FR, $volunteer->getExternalId());
             }
 
-            $this->checkAdminRole($volunteer);
+            $this->checkRTMRRole($volunteer);
 
             return;
         }
@@ -307,7 +308,7 @@ class RefreshManager
             $volunteer->setEnabled(false);
             $this->volunteerManager->save($volunteer);
 
-            $this->checkAdminRole($volunteer);
+            $this->checkRTMRRole($volunteer);
 
             return;
         }
@@ -317,7 +318,7 @@ class RefreshManager
             && $volunteer->getLastPegassUpdate()->getTimestamp() === $pegass->getUpdatedAt()->getTimestamp()) {
             $this->volunteerManager->save($volunteer);
 
-            $this->checkAdminRole($volunteer);
+            $this->checkRTMRRole($volunteer);
 
             return;
         }
@@ -334,7 +335,7 @@ class RefreshManager
             $volunteer->addReport('import_report.failed');
             $this->volunteerManager->save($volunteer);
 
-            $this->checkAdminRole($volunteer);
+            $this->checkRTMRRole($volunteer);
 
             return;
         }
@@ -378,28 +379,65 @@ class RefreshManager
             $this->userManager->changeVolunteer($user, Platform::FR, $volunteer->getExternalId());
         }
 
-        $this->checkAdminRole($volunteer);
+        $this->checkRTMRRole($volunteer);
     }
 
-    private function checkAdminRole(Volunteer $volunteer)
+    private function checkRTMRRole(Volunteer $volunteer)
     {
-        if (!$volunteer->isEnabled() && $user = $volunteer->getUser()) {
-            $user->setIsTrusted(false);
-            $this->userManager->save($user);
+        if ($user = $volunteer->getUser()) {
+            $clear = false;
 
-            return;
-        }
+            if (!$volunteer->isEnabled()) {
+                $clear = true;
+            }
 
-        $isAdmin = false;
-        foreach (self::BADGES_ADMIN as $badge) {
-            if ($volunteer->hasBadge(Platform::FR, $badge)) {
-                $isAdmin = true;
-                break;
+            if (strncmp($volunteer->getExternalId(), 'deleted-', 8) === 0) {
+                $clear = true;
+            }
+
+            if ($clear) {
+                $user->setIsTrusted(false);
+                $user->setIsAdmin(false);
+                foreach ($user->getStructures() as $structure) {
+                    // Keep Annuaire National structure, managed elsewhere (google sheets)
+                    if (AnnuaireNationalCommand::STRUCTURE_NAME === $structure->getShortcut()) {
+                        continue;
+                    }
+
+                    $user->removeStructure($structure);
+                }
+
+                $this->userManager->save($user);
             }
         }
 
-        if ($isAdmin) {
-            if (!$volunteer->getUser()) {
+        if (Platform::FR !== $volunteer->getPlatform()) {
+            return;
+        }
+
+        // Reconciliation: wrong RTMR cannot trigger any structure
+        if (!$volunteer->hasBadge(Platform::FR, self::RTMR_BADGE)
+            && $volunteer->hasBadge(Platform::FR, self::INVALID_RTMR_BADGE)
+            && $volunteer->getUser()) {
+            $user = $volunteer->getUser();
+            $user->setIsAdmin(false);
+
+            // User cannot trigger any structure
+            foreach ($user->getStructures() as $structure) {
+                // Keep Annuaire National structure, managed elsewhere (google sheets)
+                if (AnnuaireNationalCommand::STRUCTURE_NAME === $structure->getShortcut()) {
+                    continue;
+                }
+
+                $user->removeStructure($structure);
+            }
+
+            $this->userManager->save($user);
+        }
+
+        // User is a RTMR, ensure they have a RedCall account and are not admins
+        if ($volunteer->hasBadge(Platform::FR, self::RTMR_BADGE)) {
+            if (!$user = $volunteer->getUser()) {
                 $this->volunteerManager->save($volunteer);
                 $this->userManager->createUser(Platform::FR, $volunteer->getExternalId());
 
@@ -408,9 +446,11 @@ class RefreshManager
                 $user->updateStructures($structures);
             }
 
-            $user = $this->userManager->findOneByExternalId(Platform::FR, $volunteer->getExternalId());
-            $user->setIsAdmin(true);
-            $this->userManager->save($user);
+            // RTMRs are NOT admins!
+            if ($user->isAdmin()) {
+                $user->setIsAdmin(false);
+                $this->userManager->save($user);
+            }
         }
     }
 
