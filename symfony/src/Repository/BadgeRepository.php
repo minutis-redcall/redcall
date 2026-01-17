@@ -39,6 +39,14 @@ class BadgeRepository extends BaseRepository
         ]);
     }
 
+    public function findOneByName(string $platform, string $name) : ?Badge
+    {
+        return $this->findOneBy([
+            'platform' => $platform,
+            'name'     => $name,
+        ]);
+    }
+
     public function findOneByExternalIdAndCurrentPlatform(string $externalId) : ?Badge
     {
         return $this->findOneBy([

@@ -384,12 +384,31 @@ class RefreshManager
 
     private function checkRTMRRole(Volunteer $volunteer)
     {
-        // If a volunteer has been disabled, we ensure its user won't be able to login anymore
-        if (!$volunteer->isEnabled() && $user = $volunteer->getUser()) {
-            $user->setIsTrusted(false);
-            $this->userManager->save($user);
+        if ($user = $volunteer->getUser()) {
+            $clear = false;
 
-            return;
+            if (!$volunteer->isEnabled()) {
+                $clear = true;
+            }
+
+            if (strncmp($volunteer->getExternalId(), 'deleted-', 8) === 0) {
+                $clear = true;
+            }
+
+            if ($clear) {
+                $user->setIsTrusted(false);
+                $user->setIsAdmin(false);
+                foreach ($user->getStructures() as $structure) {
+                    // Keep Annuaire National structure, managed elsewhere (google sheets)
+                    if (AnnuaireNationalCommand::STRUCTURE_NAME === $structure->getShortcut()) {
+                        continue;
+                    }
+
+                    $user->removeStructure($structure);
+                }
+
+                $this->userManager->save($user);
+            }
         }
 
         if (Platform::FR !== $volunteer->getPlatform()) {

@@ -465,7 +465,7 @@ class PegassController extends BaseController
      */
     public function rtmr(Request $request)
     {
-        $badge = $this->badgeManager->findOneByExternalId($this->getPlatform(), \App\Manager\RefreshManager::RTMR_BADGE);
+        $badge = $this->badgeManager->findOneByName($this->getPlatform(), \App\Manager\RefreshManager::RTMR_BADGE);
 
         if (!$badge) {
             $volunteers = [];
