@@ -161,7 +161,7 @@ class VolunteerService
             $this->populateEmail($volunteer, $row['Mail_2'], 'B', $index);
 
             if ($volunteer->isEmpty()) {
-                LogService::fail('No contact info', [
+                LogService::error('No contact info', [
                     'id'    => $volunteer->getId(),
                     'index' => $index,
                 ]);
@@ -220,9 +220,9 @@ class VolunteerService
                 continue;
             }
 
-            LogService::pass('Deleting a volunteer existing in RedCall but missing in sheets', [
+            LogService::success('deleted', 'Deleting a volunteer existing in RedCall but missing in sheets', [
                 'nivol' => $nivol,
-            ], true);
+            ]);
 
             $volunteer->setEnabled(false);
 
@@ -241,9 +241,9 @@ class VolunteerService
             if (null === $fromDatabase = $this->volunteerManager->findOneByExternalId(Platform::FR, $nivol)) {
                 $changes = true;
 
-                LogService::pass('Create a volunteer existing in sheets but missing in RedCall', [
+                LogService::success('new', 'Create a volunteer existing in sheets but missing in RedCall', [
                     'nivol' => $nivol,
-                ], true);
+                ]);
 
                 $fromDatabase = new Volunteer();
                 $fromDatabase->setPlatform(Platform::FR);
@@ -254,9 +254,9 @@ class VolunteerService
             if (false === $fromDatabase->isEnabled()) {
                 $changes = true;
 
-                LogService::pass('Re-activate a volunteer', [
+                LogService::success('updated', 'Re-activate a volunteer', [
                     'nivol' => $nivol,
-                ], true);
+                ]);
 
                 $fromDatabase->setEnabled(true);
                 $structure->addVolunteer($fromDatabase);
@@ -265,11 +265,11 @@ class VolunteerService
             if ($fromDatabase->getFirstName() !== $fromExtract->getFirstname()) {
                 $changes = true;
 
-                LogService::pass('Update a volunteer (first name)', [
+                LogService::success('updated', 'Update a volunteer (first name)', [
                     'nivol' => $nivol,
                     'from'  => $fromDatabase->getFirstName(),
                     'to'    => $fromExtract->getFirstname(),
-                ], true);
+                ]);
 
                 $fromDatabase->setFirstName($fromExtract->getFirstname());
             }
@@ -277,11 +277,11 @@ class VolunteerService
             if ($fromDatabase->getLastName() !== $fromExtract->getLastname()) {
                 $changes = true;
 
-                LogService::pass('Update a volunteer (last name)', [
+                LogService::success('updated', 'Update a volunteer (last name)', [
                     'nivol' => $nivol,
                     'from'  => $fromDatabase->getLastName(),
                     'to'    => $fromExtract->getLastname(),
-                ], true);
+                ]);
 
                 $fromDatabase->setLastName($fromExtract->getLastname());
             }
@@ -289,11 +289,11 @@ class VolunteerService
             if ($fromDatabase->getEmail() !== $fromExtract->getEmail()) {
                 $changes = true;
 
-                LogService::pass('Update a volunteer (email)', [
+                LogService::success('updated', 'Update a volunteer (email)', [
                     'nivol' => $nivol,
                     'from'  => $fromDatabase->getEmail(),
                     'to'    => $fromExtract->getEmail(),
-                ], true);
+                ]);
 
                 $fromDatabase->setEmail($fromExtract->getEmail());
             }
@@ -309,11 +309,11 @@ class VolunteerService
             if ($from !== $to) {
                 $changes = true;
 
-                LogService::pass('Update a volunteer (phone)', [
+                LogService::success('updated', 'Update a volunteer (phone)', [
                     'nivol' => $nivol,
                     'from'  => $from,
                     'to'    => $to,
-                ], true);
+                ]);
 
                 $fromDatabase->clearPhones();
 
@@ -347,9 +347,9 @@ class VolunteerService
 
         $toRemoves = array_diff($fromDatabaseNames, $fromExtractNames);
         foreach ($toRemoves as $toRemove) {
-            LogService::pass('Deleting volunteer existing in RedCall but missing in sheets', [
+            LogService::success('deleted', 'Deleting volunteer existing in RedCall but missing in sheets', [
                 'name' => $toRemove,
-            ], true);
+            ]);
 
             $list = $structure->getVolunteerList($toRemove);
             $structure->removeVolunteerList($list);
@@ -357,9 +357,9 @@ class VolunteerService
 
         $toCreates = array_diff($fromExtractNames, $fromDatabaseNames);
         foreach ($toCreates as $toCreate) {
-            LogService::pass('Creating volunteer existing in sheets but missing in RedCall', [
+            LogService::success('new', 'Creating volunteer existing in sheets but missing in RedCall', [
                 'name' => $toCreate,
-            ], true);
+            ]);
 
             $list = new VolunteerList();
             $list->setName($toCreate);
@@ -382,20 +382,20 @@ class VolunteerService
                     if (!$list->hasVolunteer($volunteer)) {
                         $changes = true;
 
-                        LogService::pass('Add volunteer in list', [
+                        LogService::success('updated', 'Add volunteer in list', [
                             'list'  => $listName,
                             'nivol' => $nivol,
-                        ], true);
+                        ]);
 
                         $list->addVolunteer($volunteer);
                     }
                 } elseif ($list->hasVolunteer($volunteer)) {
                     $changes = true;
 
-                    LogService::pass('Remove volunteer from list', [
+                    LogService::success('updated', 'Remove volunteer from list', [
                         'list'  => $listName,
                         'nivol' => $nivol,
-                    ], true);
+                    ]);
 
                     $list->removeVolunteer($volunteer);
                 }
@@ -424,7 +424,7 @@ class VolunteerService
             $parsed    = $phoneUtil->parse($phoneNumber, 'FR');
             $e164      = $phoneUtil->format($parsed, PhoneNumberFormat::E164);
         } catch (NumberParseException $e) {
-            LogService::fail('Invalid phone', [
+            LogService::error('Invalid phone', [
                 'phone'     => $phoneNumber,
                 'exception' => $e->getMessage(),
                 'index'     => $index,
@@ -449,7 +449,7 @@ class VolunteerService
         $emails = explode(';', $email);
         foreach ($emails as $check) {
             if (false === filter_var($check, FILTER_VALIDATE_EMAIL)) {
-                LogService::fail('Invalid email address', [
+                LogService::error('Invalid email address', [
                     'email' => $check,
                     'index' => $index,
                 ]);

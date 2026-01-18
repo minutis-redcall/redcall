@@ -127,7 +127,7 @@ class UserService
         $users = new UsersExtract();
         foreach ($rows as $row) {
             if (false === filter_var($row, FILTER_VALIDATE_EMAIL)) {
-                LogService::fail('Invalid email address', [
+                LogService::error('Invalid email address', [
                     'email' => $row,
                 ]);
 
@@ -165,9 +165,9 @@ class UserService
                 continue;
             }
 
-            LogService::pass('Delete a user', [
+            LogService::success('deleted', 'Delete a user', [
                 'email' => $toDelete,
-            ], true);
+            ]);
 
             $user->removeStructure($structure);
 
@@ -192,9 +192,9 @@ class UserService
             $user = $this->userManager->findOneByUsernameAndPlatform(Platform::FR, strtolower($userExtract->getEmail()));
 
             if (!$user || !$user->hasStructure($structure)) {
-                LogService::pass('Create a user', [
+                LogService::success('new', 'Create a user', [
                     'email' => $userExtract->getEmail(),
-                ], true);
+                ]);
 
                 if (!$user) {
                     $volunteer = $this->volunteerManager->findOneByExternalId(Platform::FR, $userExtract->getNivol());
