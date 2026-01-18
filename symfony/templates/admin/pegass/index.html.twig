@@ -61,8 +61,8 @@
                                 </div>
                                 {% if not user.isEqualTo(app.user) or user.root %}
                                     <div class="dropdown">
-                                        <button class="btn btn-sm btn-link text-muted" type="button" data-toggle="dropdown">
-                                            <i class="fas fa-ellipsis-v"></i>
+                                        <button class="btn btn-sm btn-link text-muted" type="button" data-toggle="dropdown" style="text-decoration: none;">
+                                            &#8942;
                                         </button>
                                         <div class="dropdown-menu dropdown-menu-right">
                                             <a class="dropdown-item" href="{{ path('password_login_admin_profile', {username: user.username}) }}">

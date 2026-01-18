@@ -388,7 +388,7 @@ class PegassController extends BaseController
     {
         $this->validateCsrfOrThrowNotFoundException('pegass', $csrf);
 
-        if (!$this->getUser()->canGrantPegassApi()) {
+        if (!$this->getUser() instanceof User || !$this->getUser()->canGrantPegassApi()) {
             throw $this->createNotFoundException();
         }
 
