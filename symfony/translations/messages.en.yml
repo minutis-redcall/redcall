@@ -534,6 +534,8 @@ form:
       explaination_5: 'Ambulances required next Sunday during protests in case of troubles.'
       explaination_6: 'SMS are divided in 160 characters segments, and more there are segments, less there are chances that message reach out its destination. Let''s send small messages in order to secure their delivery to everyone.'
       title: 'Your message length is long'
+    errors:
+      reduce_length: 'Reduce your message length to submit'
   operation:
     buttons:
       continue: Continue

@@ -8,7 +8,7 @@
 
 <script type="text/javascript">
 
-    {% if type != constant('App\\Entity\\Communication::TYPE_EMAIL') %}
+    {% if type != constant('App\\Entity\\Communication::TYPE_SMS') and type != constant('App\\Entity\\Communication::TYPE_EMAIL') %}
 
     {# Update message size automatically #}
     function updateMessageSize() {

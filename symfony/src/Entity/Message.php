@@ -19,7 +19,7 @@ class Message
     const MIN_LENGTH = 1;
 
     // TODO move to Enum\Type
-    const MAX_LENGTH_SMS   = 300;
+    const MAX_LENGTH_SMS   = 306;
     const MAX_LENGTH_CALL  = 1000;
     const MAX_LENGTH_EMAIL = 50000;
 

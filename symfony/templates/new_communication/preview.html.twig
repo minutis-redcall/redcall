@@ -9,6 +9,13 @@
         &nbsp;
     </div>
 
+    <div class="progress" style="height: 5px;">
+        <div id="message-progress-bar" class="progress-bar bg-success" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+    </div>
+    <div class="text-right text-muted small mt-1 mb-3">
+        <span id="message-len">0</span>/{{ constant('App\\Entity\\Message::MAX_LENGTH_SMS') }}
+    </div>
+
 {% endif %}
 
 <div id="message-calc-all" style="margin-bottom:10px;">
@@ -42,10 +49,34 @@
                     }
 
                     if ('{{ constant('App\\Entity\\Communication::TYPE_SMS') }}' === data.type) {
-                        if (data.cost > 2) {
-                            $('#too-long').removeClass('d-none');
+                        // Progress bar & Counter
+                        var maxLen = {{ constant('App\\Entity\\Message::MAX_LENGTH_SMS') }};
+                        var percentage = Math.min(100, (data.length / maxLen) * 100);
+                        var progressBar = $('#message-progress-bar');
+
+                        $('#message-len').html(data.length);
+                        progressBar.css('width', percentage + '%').attr('aria-valuenow', percentage);
+
+                        // Fix: Remove standard classes so they don't override our gradient
+                        progressBar.removeClass('bg-success bg-danger');
+
+                        // Gradient color logic (Green -> Red)
+                        var hue = Math.max(0, 120 - (percentage * 1.2));
+                        progressBar.css('background-color', 'hsl(' + hue + ', 100%, 40%)');
+
+                        // Blocking logic
+                        if (data.cost > 2 || data.length > maxLen) {
+                            $('.trigger-launch.btn-primary').prop('disabled', true);
+                            $('.trigger-test').prop('disabled', true);
+                            $('#sms-length-warning').removeClass('d-none');
+                            
+                            progressBar.css('background-color', ''); // Remove gradient
+                            progressBar.addClass('bg-danger'); // Force red
                         } else {
-                            $('#too-long').addClass('d-none');
+                            $('.trigger-launch.btn-primary').prop('disabled', false);
+                            $('.trigger-test').prop('disabled', false);
+                            $('#sms-length-warning').addClass('d-none');
+                            // Custom gradient applies
                         }
                     }
 

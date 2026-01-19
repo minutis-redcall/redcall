@@ -19,14 +19,8 @@
 
     {{ form_label(form.message) }}
 
-    <div id="textarea-wrapper" class="textarea-wrapper">
+    <div id="textarea-wrapper" class="textarea-wrapper mb-3">
         {{ form_widget(form.message) }}
-
-        <div class="message-length float-right">
-            <span id="message-size">0</span>
-            /
-            <span id="message-max">{{ max_length_sms }}</span>
-        </div>
     </div>
 
 </div>
@@ -43,28 +37,8 @@
 
 {{ include('new_communication/preview.html.twig') }}
 
-<div id="too-long" class="d-none">
-    <div style="border:1px solid grey;padding:5px;">
-        <div style="background-color:red;" class="text-center">
-            <p>⚠️</p>
-            <strong>
-                <span style="color:white!important;">{{ 'form.communication.too_long.title'|trans }}</span>
-            </strong>
-            <hr/>
-        </div>
-        <p class="text-danger">
-            {{ 'form.communication.too_long.explaination_1'|trans }}
-            {{ 'form.communication.too_long.explaination_2'|trans }}
-            <br/><br/>
-        </p>
-        <ul>
-            <li>{{ 'form.communication.too_long.explaination_3'|trans }}</li>
-            <li>{{ 'form.communication.too_long.explaination_4'|trans }}</li>
-            <li>{{ 'form.communication.too_long.explaination_5'|trans }}</li>
-        </ul>
-        <p>{{ 'form.communication.too_long.explaination_6'|trans }}</p>
-    </div>
-    <br/>
+<div id="sms-length-warning" class="alert alert-danger d-none mt-3 text-center">
+    {{ 'form.communication.errors.reduce_length'|trans|default('Reduce your message length to submit') }}
 </div>
 
 {{ include('new_communication/common.html.twig') }}

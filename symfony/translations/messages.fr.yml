@@ -536,6 +536,8 @@ form:
       explaination_5: 'Renfort SAMU prévision manif ce samedi. Besoin de 2 équipages VPSP complets.'
       explaination_6: 'Les SMS sont divisés en segments de 160 caractères, et plus il y a de segments, moins il y a de chances que le message arrive entier à son destinataire. Il faut que nous nous habituons à envoyer des petits messages pour en garantir la bonne réception par tout le monde.'
       title: 'Votre message est long.'
+    errors:
+      reduce_length: 'Réduisez la longueur de votre message pour valider'
   operation:
     buttons:
       continue: Continuer
