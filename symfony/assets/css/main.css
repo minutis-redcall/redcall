@@ -147,8 +147,8 @@ p {
 .btn-secondary:focus:not(disabled),
 .btn-secondary:hover:not(disabled),
 .btn-secondary:not(disabled) {
-    background-color: var(--rc-black) !important;
-    border-color: var(--rc-black) !important;
+    background-color: #373737 !important;
+    border-color: #373737 !important;
     color: white !important;
     border-radius: var(--border-radius);
     padding: 8px 20px;
