@@ -22,10 +22,12 @@
     --text-primary: var(--rc-black);
     --text-secondary: #444444;
     
-    --border-radius: 4px; /* More squared as per RC style, but rounded allowed */
-    --border-radius-lg: 12px;
+    --border-radius: 8px; /* Softened from 4px */
+    --border-radius-lg: 16px;
     
     --transition-base: all 0.2s ease-in-out;
+    --shadow-soft: 0 4px 6px rgba(0,0,0,0.07);
+    --shadow-hover: 0 8px 15px rgba(0,0,0,0.1);
 }
 
 body {
@@ -115,12 +117,14 @@ p {
 /* Buttons */
 .btn {
     border-radius: var(--border-radius);
-    padding: 8px 20px;
-    font-size: 0.85rem;
+    padding: 10px 24px; /* Slightly larger padding for better touch targets */
+    font-size: 0.9rem;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.05em;
     transition: var(--transition-base);
+    box-shadow: var(--shadow-soft);
+    border: 2px solid transparent; /* Prepare for outline styles */
 }
 
 .btn-primary:active:not(disabled),
@@ -131,36 +135,35 @@ p {
     border-color: var(--rc-red) !important;
     color: white !important;
     border-radius: var(--border-radius);
-    padding: 8px 20px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    transition: var(--transition-base);
+    padding: 10px 24px;
+    box-shadow: 0 4px 10px rgba(227, 6, 19, 0.3);
 }
 
 .btn-primary:hover:not(disabled) {
     background-color: #c40510 !important;
+    border-color: #c40510 !important;
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(227, 6, 19, 0.3);
+    box-shadow: 0 8px 15px rgba(227, 6, 19, 0.4);
 }
 
+/* Reformed Secondary Button - Outline Style */
 .btn-secondary:active:not(disabled),
 .btn-secondary:focus:not(disabled),
-.btn-secondary:hover:not(disabled),
 .btn-secondary:not(disabled) {
-    background-color: #373737 !important;
-    border-color: #373737 !important;
-    color: white !important;
+    background-color: transparent !important;
+    border-color: #e0e0e0 !important; /* Soft grey border */
+    color: var(--text-primary) !important;
     border-radius: var(--border-radius);
-    padding: 8px 20px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    transition: var(--transition-base);
+    padding: 10px 24px;
+    box-shadow: none;
 }
 
 .btn-secondary:hover:not(disabled) {
-    background-color: #333333 !important;
-    color: white !important;
+    background-color: #f8f9fa !important; /* Very light grey hover */
+    border-color: var(--text-primary) !important; /* Darker border on hover */
+    color: var(--text-primary) !important;
     transform: translateY(-2px);
+    box-shadow: var(--shadow-soft);
 }
 
 .btn-link.text-dark:hover {
