@@ -454,6 +454,7 @@ campaign_status:
     no_phone_mobile: 'Pas de numéro de téléphone portable.'
     no_phone_optin: 'Ne souhaite pas recevoir de SMS/appels.'
     optout_until: 'Temporairement indisponible'
+  show_all_messages: 'Afficher tous les messages (%count% en attente)'
 csv_export:
   answer_time: 'Date de la reponse la plus recente'
   choice: 'Choix "%choice%"'

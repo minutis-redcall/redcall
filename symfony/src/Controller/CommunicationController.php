@@ -146,18 +146,29 @@ class CommunicationController extends BaseController
      * @Route(path="campaign/{id}", name="index", requirements={"id" = "\d+"})
      * @IsGranted("CAMPAIGN_ACCESS", subject="campaign")
      */
-    public function indexAction(Campaign $campaign, MinutisProvider $minutis)
+    public function indexAction(Campaign $campaign, MinutisProvider $minutis, TranslatorInterface $translator)
     {
         $this->get('session')->save();
+
+        $volunteerGroups = $this->volunteerGroupRepository->getVolunteerGroups($campaign->getId());
+        $hash            = $this->campaignManager->getHash($campaign->getId());
+
+        // Pass campaign status in the same format as polling endpoints return
+        // This fixes Bug 1: initial page data now matches what JS refreshStatuses() expects
+        $campaignStatus = array_merge($campaign->getCampaignStatus($translator), [
+            'hash'            => $hash,
+            'volunteerGroups' => $volunteerGroups,
+        ]);
 
         return $this->render('status_communication/index.html.twig', [
             'campaign'           => $campaign,
             'skills'             => $this->badgeManager->getPublicBadges($this->getPlatform()),
             'progress'           => $campaign->getCampaignProgression(),
-            'hash'               => $this->campaignManager->getHash($campaign->getId()),
+            'hash'               => $hash,
+            'campaignStatus'     => $campaignStatus,
             'campaignStructures' => $this->structureManager->getCampaignStructures($this->getPlatform(), $campaign),
             'operationUrl'       => $campaign->getOperationUrl($minutis),
-            'volunteerGroups'    => $this->volunteerGroupRepository->getVolunteerGroups($campaign->getId()),
+            'volunteerGroups'    => $volunteerGroups,
             'groupColors'        => Group::getGroups(),
         ]);
     }
