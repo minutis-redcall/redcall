@@ -283,19 +283,21 @@ class Campaign
             'communications' => [],
         ];
         foreach ($this->getCommunications() as $communication) {
-            $msgsSent = 0;
-
-            // Messages & Answers
+            // Messages & Answers - only include messages with activity (Bug 2 optimization)
             foreach ($communication->getMessages() as $message) {
-                if ($message->getMessageId()) {
-                    $msgsSent++;
+                // Skip messages without any activity to reduce payload size
+                $hasActivity = $message->isSent() 
+                    || $message->getError() 
+                    || $message->getAnswers()->count() > 0;
+                
+                if (!$hasActivity) {
+                    continue;
                 }
 
                 $choices = [];
                 foreach ($communication->getChoices() as $choice) {
                     $choices[$choice->getId()] = null;
                     $answer                    = $message->getAnswerByChoice($choice);
-                    $choices[$choice->getId()] = null;
                     if ($answer) {
                         $choices[$choice->getId()] = $answer->getReceivedAt()->format('H:i');
                     }
@@ -320,6 +322,14 @@ class Campaign
                         'raw'  => $unclearAnswer ? $unclearAnswer->getSafeRaw() : null,
                         'time' => $unclearAnswer ? $unclearAnswer->getReceivedAt()->format('H:i') : null,
                     ],
+                ];
+            }
+
+            // Ensure communication entry exists even if no messages have activity
+            if (!isset($data['communications'][$communication->getId()])) {
+                $data['communications'][$communication->getId()] = [
+                    'type' => $communication->getType(),
+                    'msg'  => [],
                 ];
             }
 

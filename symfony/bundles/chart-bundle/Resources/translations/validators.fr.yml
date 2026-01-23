@@ -1,6 +1,0 @@
-chart:
-  violations:
-    context:
-      value: 'Cette valeur ne contient pas de JSON valide.'
-    query:
-      select: 'La requête doit impérativement commencer par le mot clef "SELECT".'

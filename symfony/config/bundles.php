@@ -11,7 +11,6 @@ return [
     Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle::class => ['all' => true],
     EWZ\Bundle\RecaptchaBundle\EWZRecaptchaBundle::class                 => ['all' => true],
     Bundles\ApiBundle\ApiBundle::class                                   => ['all' => true],
-    Bundles\ChartBundle\ChartBundle::class                               => ['all' => true],
     Bundles\PasswordLoginBundle\PasswordLoginBundle::class               => ['all' => true],
     Bundles\PaginationBundle\PaginationBundle::class                     => ['all' => true],
     Bundles\SandboxBundle\SandboxBundle::class                           => ['dev' => true],

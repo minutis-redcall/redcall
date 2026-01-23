@@ -246,15 +246,19 @@
         });
     };
 
+    // Use server-rendered initial data to avoid data format mismatch
+    var initialCampaignStatus = {{ campaignStatus|json_encode|raw }};
+
     if ('{{ app.environment == 'dev' }}' === '0') {
-        shortPolling();
+        // Production: use initial data immediately, then start long polling
+        refreshStatuses(initialCampaignStatus);
         longPolling();
     } else {
-        shortPolling();
+        // Dev: use initial data immediately, then short poll periodically
+        refreshStatuses(initialCampaignStatus);
         setInterval(function () {
             shortPolling();
         }, 5000);
-        shortPolling();
     }
 
     var groupColorsArray = [];
@@ -472,6 +476,22 @@
         var that = $(this);
         that.data('value', 1 - that.data('value'));
         refreshVisibility();
+    });
+
+    {# -------------------------------------------------------------------------------- #}
+    {# Show all messages toggle                                                         #}
+    {# -------------------------------------------------------------------------------- #}
+    $('.show-all-messages-toggle').change(function () {
+        var communicationId = $(this).data('communication-id');
+        var pendingContainer = $('#pending-messages-' + communicationId);
+
+        if ($(this).is(':checked')) {
+            pendingContainer.removeClass('d-none');
+        } else {
+            pendingContainer.addClass('d-none');
+            // Uncheck any selected pending messages
+            pendingContainer.find('.volunteer-selection').prop('checked', false);
+        }
     });
 
     {# -------------------------------------------------------------------------------- #}

@@ -41,7 +41,7 @@
            class="text-lg-left large-button btn btn-secondary">
             {% if session.volunteer.phone %}
                 ☎️ &nbsp; {{ 'space.home.update_phone'|trans }}
-                <span style="color:black;">{{ session.volunteer.hiddenPhone }}</span>
+                <span>{{ session.volunteer.hiddenPhone }}</span>
             {% else %}
                 ☎️ &nbsp; {{ 'space.home.add_phone'|trans }}
             {% endif %}
@@ -53,7 +53,7 @@
            class="text-lg-left large-button btn btn-secondary">
             {% if session.volunteer.email %}
                 📧 &nbsp; {{ 'space.home.update_email'|trans }}
-                <span style="color:black">{{ session.volunteer.hiddenEmail }}</span>
+                <span>{{ session.volunteer.hiddenEmail }}</span>
             {% else %}
                 📧 &nbsp; {{ 'space.home.add_email'|trans }}
             {% endif %}
