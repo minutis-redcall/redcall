@@ -199,9 +199,6 @@ Objectives:
 | `/campaign/{id}/report`                                                                                            | Campaigns                                   |
 | `/campaign/{id}/short-polling`                                                                                     | Campaigns                                   |
 | `/change-password/{uuid}`                                                                                          | General - Login                             |
-| `/chart`                                                                                                           | General                                     |
-| `/chart/query`                                                                                                     | General                                     |
-| `/chart/query/edit/{id}`                                                                                           | General - Edit                              |
 | `/cloud-task`                                                                                                      | General                                     |
 | `/code/{identifier}`                                                                                               | General                                     |
 | `/connect/{nivol}`                                                                                                 | General - Login                             |
@@ -436,9 +433,6 @@ ROOT_campaign_param --> ROOT_campaign_param_report(/report)
 ROOT_campaign_param --> ROOT_campaign_param_shortpolling(/short-polling)
 ROOT --> ROOT_changepassword(/change-password)
 ROOT_changepassword --> ROOT_changepassword_param(/:param)
-ROOT --> ROOT_chart(/chart)
-ROOT_chart --> ROOT_chart_query(/query)
-ROOT_chart_query --> ROOT_chart_query_edit(/edit)
 ROOT --> ROOT_cloudtask(/cloud-task)
 ROOT --> ROOT_code(/code)
 ROOT_code --> ROOT_code_param(/:param)
