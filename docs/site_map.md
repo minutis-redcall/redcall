@@ -56,7 +56,6 @@ Objectives:
 | `/admin/pegass/revoke-admin/{csrf}/{id}`                                                                           | [Admin] / Pegass (Personnel)                |
 | `/admin/pegass/rtmr`                                                                                               | [Admin] / Pegass (Personnel)                |
 | `/admin/pegass/toggle-admin/{csrf}/{id}`                                                                           | [Admin] / Pegass (Personnel) - Toggle State |
-| `/admin/pegass/toggle-developer/{csrf}/{id}`                                                                       | [Admin] / Pegass (Personnel) - Toggle State |
 | `/admin/pegass/toggle-lock/{csrf}/{id}`                                                                            | [Admin] / Pegass (Personnel) - Toggle State |
 | `/admin/pegass/toggle-pegass-api/{csrf}/{id}`                                                                      | [Admin] / Pegass (Personnel) - Toggle State |
 | `/admin/pegass/toggle-root/{csrf}/{id}`                                                                            | [Admin] / Pegass (Personnel) - Toggle State |
@@ -78,92 +77,6 @@ Objectives:
 | `/admin/users/toggle-admin/{username}/{csrf}`                                                                      | [Admin] / User Account - Login              |
 | `/admin/users/toggle-trust/{username}/{csrf}`                                                                      | [Admin] / User Account - Login              |
 | `/admin/users/toggle-verify/{username}/{csrf}`                                                                     | [Admin] / User Account - Login              |
-| `/api/admin/badge`                                                                                                 | [API] / Badges                              |
-| `/api/admin/badge`                                                                                                 | [API] / Badges - Create                     |
-| `/api/admin/badge/{externalId}`                                                                                    | [API] / Badges - View                       |
-| `/api/admin/badge/{externalId}`                                                                                    | [API] / Badges - Edit                       |
-| `/api/admin/badge/{externalId}`                                                                                    | [API] / Badges - Delete                     |
-| `/api/admin/badge/{externalId}/coverage`                                                                           | [API] / Badges                              |
-| `/api/admin/badge/{externalId}/coverage`                                                                           | [API] / Badges - Create                     |
-| `/api/admin/badge/{externalId}/coverage`                                                                           | [API] / Badges - Delete                     |
-| `/api/admin/badge/{externalId}/disable`                                                                            | [API] / Badges                              |
-| `/api/admin/badge/{externalId}/enable`                                                                             | [API] / Badges                              |
-| `/api/admin/badge/{externalId}/lock`                                                                               | [API] / Badges                              |
-| `/api/admin/badge/{externalId}/replacement`                                                                        | [API] / Badges                              |
-| `/api/admin/badge/{externalId}/replacement`                                                                        | [API] / Badges - Create                     |
-| `/api/admin/badge/{externalId}/replacement`                                                                        | [API] / Badges - Delete                     |
-| `/api/admin/badge/{externalId}/unlock`                                                                             | [API] / Badges                              |
-| `/api/admin/badge/{externalId}/volunteer`                                                                          | [API] / Volunteer Mgmt                      |
-| `/api/admin/badge/{externalId}/volunteer`                                                                          | [API] / Volunteer Mgmt - Create             |
-| `/api/admin/badge/{externalId}/volunteer`                                                                          | [API] / Volunteer Mgmt - Delete             |
-| `/api/admin/category`                                                                                              | [API] / Categories                          |
-| `/api/admin/category`                                                                                              | [API] / Categories - Create                 |
-| `/api/admin/category/{categoryId}`                                                                                 | [API] / Categories - View                   |
-| `/api/admin/category/{categoryId}`                                                                                 | [API] / Categories - Edit                   |
-| `/api/admin/category/{categoryId}`                                                                                 | [API] / Categories - Delete                 |
-| `/api/admin/category/{externalId}/badge`                                                                           | [API] / Badges                              |
-| `/api/admin/category/{externalId}/badge`                                                                           | [API] / Badges - Create                     |
-| `/api/admin/category/{externalId}/badge`                                                                           | [API] / Badges - Delete                     |
-| `/api/admin/category/{externalId}/disable`                                                                         | [API] / Categories                          |
-| `/api/admin/category/{externalId}/enable`                                                                          | [API] / Categories                          |
-| `/api/admin/category/{externalId}/lock`                                                                            | [API] / Categories                          |
-| `/api/admin/category/{externalId}/unlock`                                                                          | [API] / Categories                          |
-| `/api/admin/platform/badge/{externalId}`                                                                           | [API] / Badges                              |
-| `/api/admin/platform/category/{externalId}`                                                                        | [API] / Categories                          |
-| `/api/admin/platform/structure/{externalId}`                                                                       | [API] / Structure Mgmt                      |
-| `/api/admin/platform/user/{email}`                                                                                 | [API] / User Account                        |
-| `/api/admin/platform/volunteer/{externalId}`                                                                       | [API] / Volunteer Mgmt                      |
-| `/api/admin/user`                                                                                                  | [API] / User Account                        |
-| `/api/admin/user`                                                                                                  | [API] / User Account - Create               |
-| `/api/admin/user/{email}`                                                                                          | [API] / User Account - View                 |
-| `/api/admin/user/{email}`                                                                                          | [API] / User Account - Edit                 |
-| `/api/admin/user/{email}`                                                                                          | [API] / User Account - Delete               |
-| `/api/admin/user/{email}/lock`                                                                                     | [API] / User Account                        |
-| `/api/admin/user/{email}/structure`                                                                                | [API] / User Account                        |
-| `/api/admin/user/{email}/structure`                                                                                | [API] / User Account - Create               |
-| `/api/admin/user/{email}/structure`                                                                                | [API] / User Account - Delete               |
-| `/api/admin/user/{email}/unlock`                                                                                   | [API] / User Account                        |
-| `/api/admin/user{email}/password-recovery`                                                                         | [API] / User Account                        |
-| `/api/demo`                                                                                                        | [API]                                       |
-| `/api/demo`                                                                                                        | [API]                                       |
-| `/api/structure`                                                                                                   | [API] / Structure Mgmt                      |
-| `/api/structure`                                                                                                   | [API] / Structure Mgmt - Create             |
-| `/api/structure/{externalId}`                                                                                      | [API] / Structure Mgmt - View               |
-| `/api/structure/{externalId}`                                                                                      | [API] / Structure Mgmt - Edit               |
-| `/api/structure/{externalId}`                                                                                      | [API] / Structure Mgmt - Delete             |
-| `/api/structure/{externalId}/disable`                                                                              | [API] / Structure Mgmt                      |
-| `/api/structure/{externalId}/enable`                                                                               | [API] / Structure Mgmt                      |
-| `/api/structure/{externalId}/lock`                                                                                 | [API] / Structure Mgmt                      |
-| `/api/structure/{externalId}/tree`                                                                                 | [API] / Structure Mgmt                      |
-| `/api/structure/{externalId}/unlock`                                                                               | [API] / Structure Mgmt                      |
-| `/api/structure/{externalId}/user`                                                                                 | [API] / User Account                        |
-| `/api/structure/{externalId}/user`                                                                                 | [API] / User Account - Create               |
-| `/api/structure/{externalId}/user`                                                                                 | [API] / User Account - Delete               |
-| `/api/structure/{externalId}/volunteer`                                                                            | [API] / Structure Mgmt                      |
-| `/api/structure/{externalId}/volunteer`                                                                            | [API] / Structure Mgmt - Create             |
-| `/api/structure/{externalId}/volunteer`                                                                            | [API] / Structure Mgmt - Delete             |
-| `/api/trigger/sms`                                                                                                 | [API]                                       |
-| `/api/volunteer`                                                                                                   | [API] / Volunteer Mgmt                      |
-| `/api/volunteer`                                                                                                   | [API] / Volunteer Mgmt - Create             |
-| `/api/volunteer/{email}`                                                                                           | [API] / Volunteer Mgmt - View               |
-| `/api/volunteer/{externalId}`                                                                                      | [API] / Volunteer Mgmt - View               |
-| `/api/volunteer/{externalId}`                                                                                      | [API] / Volunteer Mgmt - Edit               |
-| `/api/volunteer/{externalId}`                                                                                      | [API] / Volunteer Mgmt - Delete             |
-| `/api/volunteer/{externalId}/anonymize`                                                                            | [API] / Volunteer Mgmt                      |
-| `/api/volunteer/{externalId}/badge`                                                                                | [API] / Volunteer Mgmt                      |
-| `/api/volunteer/{externalId}/badge`                                                                                | [API] / Volunteer Mgmt - Create             |
-| `/api/volunteer/{externalId}/badge`                                                                                | [API] / Volunteer Mgmt - Delete             |
-| `/api/volunteer/{externalId}/disable`                                                                              | [API] / Volunteer Mgmt                      |
-| `/api/volunteer/{externalId}/enable`                                                                               | [API] / Volunteer Mgmt                      |
-| `/api/volunteer/{externalId}/lock`                                                                                 | [API] / Volunteer Mgmt                      |
-| `/api/volunteer/{externalId}/phone`                                                                                | [API] / Volunteer Mgmt                      |
-| `/api/volunteer/{externalId}/phone`                                                                                | [API] / Volunteer Mgmt - Create             |
-| `/api/volunteer/{externalId}/phone`                                                                                | [API] / Volunteer Mgmt - Edit               |
-| `/api/volunteer/{externalId}/phone/{e164}`                                                                         | [API] / Volunteer Mgmt - Delete             |
-| `/api/volunteer/{externalId}/structure`                                                                            | [API] / Structure Mgmt                      |
-| `/api/volunteer/{externalId}/structure`                                                                            | [API] / Structure Mgmt - Create             |
-| `/api/volunteer/{externalId}/structure`                                                                            | [API] / Structure Mgmt - Delete             |
-| `/api/volunteer/{externalId}/unlock`                                                                               | [API] / Volunteer Mgmt                      |
 | `/audience/home`                                                                                                   | Audience Selection                          |
 | `/audience/numbers`                                                                                                | Audience Selection                          |
 | `/audience/problems`                                                                                               | Audience Selection                          |
@@ -205,14 +118,6 @@ Objectives:
 | `/costs/`                                                                                                          | General                                     |
 | `/cron/{key}`                                                                                                      | Cron Job                                    |
 | `/deploy`                                                                                                          | General                                     |
-| `/developer/`                                                                                                      | General                                     |
-| `/developer/token/`                                                                                                | General - List                              |
-| `/developer/token/console/{token}/sign`                                                                            | General                                     |
-| `/developer/token/documentation/endpoint/{token}/{categoryId}/{endpointId}`                                        | Categories                                  |
-| `/developer/token/documentation/home/{token}`                                                                      | General                                     |
-| `/developer/token/export`                                                                                          | General - Export                            |
-| `/developer/token/remove/{csrf}/{token}`                                                                           | General - Delete                            |
-| `/developer/token/show-secret/{token}`                                                                             | General - View                              |
 | `/export/{id}/csv`                                                                                                 | General - Export                            |
 | `/export/{id}/pdf`                                                                                                 | General - Export                            |
 | `/favorite-badge`                                                                                                  | Badges - List                               |
@@ -355,7 +260,6 @@ ROOT_admin_pegass --> ROOT_admin_pegass_listusers(/list-users)
 ROOT_admin_pegass --> ROOT_admin_pegass_revokeadmin(/revoke-admin)
 ROOT_admin_pegass --> ROOT_admin_pegass_rtmr(/rtmr)
 ROOT_admin_pegass --> ROOT_admin_pegass_toggleadmin(/toggle-admin)
-ROOT_admin_pegass --> ROOT_admin_pegass_toggledeveloper(/toggle-developer)
 ROOT_admin_pegass --> ROOT_admin_pegass_togglelock(/toggle-lock)
 ROOT_admin_pegass --> ROOT_admin_pegass_togglepegassapi(/toggle-pegass-api)
 ROOT_admin_pegass --> ROOT_admin_pegass_toggleroot(/toggle-root)
@@ -378,20 +282,6 @@ ROOT_admin_users --> ROOT_admin_users_resetpassword(/reset-password)
 ROOT_admin_users --> ROOT_admin_users_toggleadmin(/toggle-admin)
 ROOT_admin_users --> ROOT_admin_users_toggletrust(/toggle-trust)
 ROOT_admin_users --> ROOT_admin_users_toggleverify(/toggle-verify)
-ROOT --> ROOT_api(/api)
-ROOT_api --> ROOT_api_admin(/admin)
-ROOT_api_admin --> ROOT_api_admin_badge(/badge)
-ROOT_api_admin --> ROOT_api_admin_category(/category)
-ROOT_api_admin --> ROOT_api_admin_platform(/platform)
-ROOT_api_admin --> ROOT_api_admin_user(/user)
-ROOT_api_admin --> ROOT_api_admin_userparam(/user:param)
-ROOT_api --> ROOT_api_demo(/demo)
-ROOT_api --> ROOT_api_structure(/structure)
-ROOT_api_structure --> ROOT_api_structure_param(/:param)
-ROOT_api --> ROOT_api_trigger(/trigger)
-ROOT_api_trigger --> ROOT_api_trigger_sms(/sms)
-ROOT_api --> ROOT_api_volunteer(/volunteer)
-ROOT_api_volunteer --> ROOT_api_volunteer_param(/:param)
 ROOT --> ROOT_audience(/audience)
 ROOT_audience --> ROOT_audience_home(/home)
 ROOT_audience --> ROOT_audience_numbers(/numbers)
@@ -442,13 +332,6 @@ ROOT --> ROOT_costs(/costs)
 ROOT --> ROOT_cron(/cron)
 ROOT_cron --> ROOT_cron_param(/:param)
 ROOT --> ROOT_deploy(/deploy)
-ROOT --> ROOT_developer(/developer)
-ROOT_developer --> ROOT_developer_token(/token)
-ROOT_developer_token --> ROOT_developer_token_console(/console)
-ROOT_developer_token --> ROOT_developer_token_documentation(/documentation)
-ROOT_developer_token --> ROOT_developer_token_export(/export)
-ROOT_developer_token --> ROOT_developer_token_remove(/remove)
-ROOT_developer_token --> ROOT_developer_token_showsecret(/show-secret)
 ROOT --> ROOT_export(/export)
 ROOT_export --> ROOT_export_param(/:param)
 ROOT_export_param --> ROOT_export_param_csv(/csv)

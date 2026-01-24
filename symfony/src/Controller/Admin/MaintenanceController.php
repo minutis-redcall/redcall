@@ -24,7 +24,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * @Route(path="admin/maintenance", name="admin_maintenance_")
- * @IsGranted("ROLE_DEVELOPER")
+ * @IsGranted("ROLE_ROOT")
  */
 class MaintenanceController extends BaseController
 {

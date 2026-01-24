@@ -69,7 +69,7 @@
                                                 <i class="fas fa-user-circle mr-2"></i>{{ 'password_login.user_list.profile'|trans }}
                                             </a>
                                             <div class="dropdown-divider"></div>
-                                            
+
                                             {# Verification #}
                                             <a class="dropdown-item {{ user.verified ? 'text-danger' : 'text-success' }}" href="{{ path('admin_pegass_toggle_verify', {id: user.id, csrf: csrf_token('pegass')}) }}">
                                                 <i class="fas {{ user.verified ? 'fa-times-circle' : 'fa-check-circle' }} mr-2"></i>
@@ -80,12 +80,6 @@
                                             <a class="dropdown-item {{ user.trusted ? 'text-danger' : 'text-success' }}" href="{{ path('admin_pegass_toggle_trust', {id: user.id, csrf: csrf_token('pegass')}) }}">
                                                 <i class="fas {{ user.trusted ? 'fa-user-slash' : 'fa-user-check' }} mr-2"></i>
                                                 {{ (user.trusted ? 'password_login.user_list.untrust' : 'password_login.user_list.trust')|trans }}
-                                            </a>
-
-                                            {# Developer #}
-                                            <a class="dropdown-item {{ user.developer ? 'text-danger' : 'text-success' }}" href="{{ path('admin_pegass_toggle_developer', {id: user.id, csrf: csrf_token('pegass')}) }}">
-                                                <i class="fas fa-code mr-2"></i>
-                                                {{ (user.developer ? 'admin.pegass.undeveloper' : 'admin.pegass.developer')|trans }}
                                             </a>
 
                                             {# Admin #}
@@ -138,7 +132,6 @@
                             <div class="badges-grid mb-3">
                                 <span class="badge {{ user.verified ? 'badge-success' : 'badge-light text-muted' }}" data-toggle="tooltip" title="{{ 'password_login.user_list.is_valid'|trans }}">V</span>
                                 <span class="badge {{ user.trusted ? 'badge-success' : 'badge-light text-muted' }}" data-toggle="tooltip" title="{{ 'password_login.user_list.is_trusted'|trans }}">T</span>
-                                <span class="badge {{ user.developer ? 'badge-info' : 'badge-light text-muted' }}" data-toggle="tooltip" title="{{ 'admin.pegass.developered'|trans }}">D</span>
                                 <span class="badge {{ user.admin ? 'badge-primary' : 'badge-light text-muted' }}" data-toggle="tooltip" title="{{ 'password_login.user_list.is_admin'|trans }}">A</span>
                                 <span class="badge {{ user.root ? 'badge-danger' : 'badge-light text-muted' }}" data-toggle="tooltip" title="{{ 'admin.pegass.is_root'|trans }}">R</span>
                                 <span class="badge {{ user.locked ? 'badge-dark' : 'badge-light text-muted' }}" data-toggle="tooltip" title="{{ 'admin.pegass.locked'|trans }}">L</span>
@@ -159,7 +152,7 @@
                                     {% endif %}
                                 {% endfor %}
                             </div>
-                            
+
                             <a href="{{ path('admin_pegass_update_structures', {id: user.id}) }}" class="btn btn-sm btn-outline-secondary btn-block">
                                 <i class="fas fa-sitemap mr-2"></i>{{ 'management.update_structures'|trans }}
                             </a>
@@ -178,16 +171,13 @@
             <sup>(2)</sup> {{ 'password_login.user_list.description_trusted'|trans }}
         </div>
         <div class="text-left">
-            <sup>(3)</sup> {{ 'admin.pegass.developered_details'|trans }}
+            <sup>(3)</sup> {{ 'password_login.user_list.description_admin'|trans }}
         </div>
         <div class="text-left">
-            <sup>(4)</sup> {{ 'password_login.user_list.description_admin'|trans }}
+            <sup>(4)</sup> {{ 'admin.pegass.root_details'|trans }}
         </div>
         <div class="text-left">
-            <sup>(5)</sup> {{ 'admin.pegass.root_details'|trans }}
-        </div>
-        <div class="text-left">
-            <sup>(6)</sup> {{ 'admin.pegass.locked_details'|trans }}
+            <sup>(5)</sup> {{ 'admin.pegass.locked_details'|trans }}
         </div>
 
         <br/>

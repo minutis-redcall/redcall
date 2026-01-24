@@ -93,9 +93,6 @@ admin:
     create_user: 'Add a new user'
     delete_confirm: 'Really remove "%email%"?'
     delete_structures: 'Delete one or several structures'
-    developer: 'Grant developer access'
-    developered: Developer
-    developered_details: 'A developer can integrate RedCall APIs and access technical features.'
     edit: 'Open volunteer record'
     is_root: 'Countries manager'
     list_users: 'List user nivols'
@@ -103,7 +100,6 @@ admin:
     lock: Lock
     locked: Frozen
     locked_details: 'Structures of a frozen user are not updated when Pegass is updating its bound volunteer.'
-    only_developers: 'Search among developers only'
     open: 'Open Pegass entity'
     pegass_api_grant: 'Grant Pegass API access'
     pegass_api_ungrant: 'Remove Pegass API access'
@@ -111,7 +107,6 @@ admin:
     root_details: 'A "countries manaer" can change user''s platform country.'
     structures: 'Update structures for %name%'
     title: 'Bindings between RedCall users and volunteer database'
-    undeveloper: 'Remove developer access'
     unlock: Unlock
     unroot: 'Remove from countries manager'
     root: 'Activate countries management (super admin)'
@@ -283,7 +278,6 @@ base:
     create_title: 'Add a new entry'
     delete_confirm: 'Are you sure you wish to remove "%entity%"?'
     update_title: 'Update "%entity%"'
-  documentation: Documentation
   error: 'An error has occured, please try again.'
   form:
     change: Change
@@ -466,9 +460,6 @@ csv_export:
   sent: 'Message sent'
   structure: Structure
   tags: Skills
-developer:
-  home:
-    link: 'Developer space'
 favorite_badge:
   description: 'You can choose which filters to render on the trigger form according to your personal needs.'
   form:
@@ -590,7 +581,6 @@ maintenance:
       label: 'Message color'
       success: 'Green (success)'
   modal:
-    for_dev_only: 'This fonctionnality is for developer only.'
     refresh_button: 'Refresh the datas'
   pegass: 'Synchronize RedCall and DSI files entirely.'
   annuaire: 'Update "Annuaire national" french database.'
@@ -931,7 +921,6 @@ space:
     identity_user: 'RedCall user'
     identity_user_access: 'User access'
     identity_user_admin: 'Administrator access'
-    identity_user_developer: 'Developper access'
     identity_user_locale: 'Plateform language'
     identity_user_structures: 'Action structures'
     title: 'My personal RedCall data'

@@ -165,10 +165,6 @@
                         <a href="{{ path('go_to_space') }}" class="btn btn-secondary btn-sm m-1">{{ 'space.home.link'|trans }}</a>
                     {% endif %}
 
-                    {% if app.user|default(false) and is_granted('ROLE_DEVELOPER') %}
-                        <a href="{{ path('developer_home') }}" class="btn btn-secondary btn-sm m-1">{{ 'developer.home.link'|trans }}</a>
-                    {% endif %}
-
                     {% if app.user|default(false) %}
                         <a href="{{ path('management_home') }}" class="btn btn-secondary btn-sm m-1">{{ 'management.home.resources'|trans }}</a>
                     {% endif %}
@@ -176,8 +172,6 @@
                     {% if app.user|default(false) and is_granted('ROLE_ADMIN') %}
                         <a href="{{ path('admin_home') }}" class="btn btn-secondary btn-sm m-1">{{ 'admin.home.link'|trans }}</a>
                     {% endif %}
-
-                    <a href="https://github.com/minutis-redcall/app/blob/master/docs/user/fr/README.md" target="_blank" class="btn btn-secondary btn-sm m-1">{{ 'base.documentation'|trans }}</a>
                 </div>
 
                 {% block locales %}

@@ -15,16 +15,6 @@ security:
       pattern: ^/(_(profiler|wdt)|css|images|js)/
       security: false
 
-    api:
-      pattern: '^/api'
-      provider: user_provider
-      stateless: true
-      anonymous: false
-      logout: ~
-      guard:
-        authenticators:
-          - Bundles\ApiBundle\Security\Authenticator\ApiAuthenticator
-
     main:
       pattern: '^/'
       provider: user_provider
@@ -93,10 +83,6 @@ security:
 
     # Website administration
     - { path: '^/admin', roles: [ 'ROLE_ADMIN' ] }
-
-    # Api and api management
-    - { path: '^/developer', roles: [ 'ROLE_DEVELOPER' ] }
-    - { path: '^/api', roles: [ 'ROLE_DEVELOPER' ] }
 
     # Google Cloud Tasks
     - { path: '^/cloud-task$', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }

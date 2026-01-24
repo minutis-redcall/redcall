@@ -125,9 +125,9 @@ class UserManager extends BaseUserManager
         );
     }
 
-    public function searchQueryBuilder(?string $criteria, ?bool $onlyAdmins, ?bool $onlyDevelopers) : QueryBuilder
+    public function searchQueryBuilder(?string $criteria, ?bool $onlyAdmins) : QueryBuilder
     {
-        return $this->userRepository->searchQueryBuilder($criteria, $onlyAdmins, $onlyDevelopers);
+        return $this->userRepository->searchQueryBuilder($criteria, $onlyAdmins);
     }
 
     public function getRedCallUsersInStructure(Structure $structure, bool $includeChildren) : array
@@ -157,25 +157,11 @@ class UserManager extends BaseUserManager
         $application->run($input, new NullOutput());
     }
 
-    public function getUserCountInStructure(Structure $structure) : int
-    {
-        return $this->userRepository->getUserCountInStructure($structure);
-    }
-
     /**
      * @see Resource::getProviderMethod()
      */
     public function findOneByUsernameAndPlatform(string $platform, string $username) : ?User
     {
         return $this->userRepository->findOneByUsernameAndPlatform($platform, $username);
-    }
-
-    public function searchInStructureQueryBuilder(string $platform,
-        Structure $structure,
-        ?string $criteria,
-        bool $onlyAdmins,
-        bool $onlyDevelopers) : QueryBuilder
-    {
-        return $this->userRepository->searchInStructureQueryBuilder($platform, $structure, $criteria, $onlyAdmins, $onlyDevelopers);
     }
 }

@@ -33,7 +33,7 @@
         <a href="{{ path('admin_gdpr_index') }}"
            class="text-lg-center large-button btn btn-secondary">{{ 'admin.gdpr.title' |trans }}</a>
 
-        {% if is_granted('ROLE_DEVELOPER') %}
+        {% if is_granted('ROLE_ROOT') %}
 
             <br><br>
 

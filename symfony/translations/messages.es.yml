@@ -83,9 +83,6 @@ admin:
     create_user: 'Añadir un nuevo usuario'
     delete_confirm: '¿Realmente eliminar "%email%"?'
     delete_structures: 'Eliminar una o varias estructuras'
-    developer: 'Dar acceso a un/a desarrollador/a'
-    developered: Desarrollador/a
-    developered_details: 'Un desarrolador puede integrar las APIs de RedCall y acceder a funciones técnicas.'
     edit: 'Abrir la ficha de la persona voluntaria'
     is_root: 'Gestion de países'
     list_users: 'Enviar un mensaje a todas las personas usuarias'
@@ -94,12 +91,10 @@ admin:
     locked: Bloqueado
     locked_details: 'Las estructuras de un usuario bloqueado no se actualizarán con la actualización de Pegass de su voluntario/a adjunto/a.'
     only_admins: 'Buscar entre los/as administradores/as'
-    only_developers: 'Buscar entre los desarrolladores'
     open: 'Abrir la entrada Pegass'
     root_details: 'Un "gestor de país" puede cambiar el país de acción de un/a usuario/a.'
     structures: 'Actualizacion de estructuras de %name%'
     title: 'Conexiones entre usuarios/as de RedCall y la base de datos de voluntariado'
-    undeveloper: 'Desactivar el acceso de desarrolador'
     unlock: Desbloquear
     unroot: 'Desactivar la gestión de países'
   resources:
@@ -382,9 +377,6 @@ csv_export:
   sent: 'Mensaje enviado'
   structure: Estructura
   tags: Competencias
-developer:
-  home:
-    link: 'Espacio de desarrollo'
 form:
   campaign:
     fields:
@@ -725,7 +717,6 @@ space:
     identity_user: 'Usuario/a en RedCall'
     identity_user_access: 'Acceso usuario/a'
     identity_user_admin: 'Acceso de administrador'
-    identity_user_developer: 'Acceso desarrollador'
     identity_user_locale: 'Idioma de la plataforma'
     identity_user_structures: 'Estructura(s) de acción'
     title: 'Mis datos personales en RedCall'

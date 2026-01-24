@@ -1,6 +1,0 @@
-services:
-  Bundles\ApiBundle\Twig\Extension\ApiExtension:
-    arguments:
-      - '@twig'
-    tags:
-      - twig.extension

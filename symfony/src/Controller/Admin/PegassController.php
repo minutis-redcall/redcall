@@ -14,7 +14,6 @@ use App\Manager\UserManager;
 use App\Manager\VolunteerManager;
 use Bundles\PaginationBundle\Manager\PaginationManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
@@ -90,15 +89,14 @@ class PegassController extends BaseController
         $search  = $this->createSearchForm($request);
 
         if ($search->isSubmitted() && $search->isValid()) {
-            $criteria       = $search->get('criteria')->getData();
-            $onlyDevelopers = $search->get('only_developers')->getData();
+            $criteria = $search->get('criteria')->getData();
         }
 
         return $this->render('admin/pegass/index.html.twig', [
             'search'    => $search->createView(),
             'type'      => $request->get('type'),
             'users'     => $this->paginationManager->getPager(
-                $this->userManager->searchQueryBuilder($criteria ?? null, false, $onlyDevelopers ?? false)
+                $this->userManager->searchQueryBuilder($criteria ?? null, false)
             ),
             'platforms' => $this->platformManager->getAvailablePlatforms(),
         ]);
@@ -336,26 +334,6 @@ class PegassController extends BaseController
     }
 
     /**
-     * @Route(name="toggle_developer", path="/toggle-developer/{csrf}/{id}")
-     * @IsGranted("USER", subject="user")
-     */
-    public function toggleDeveloperAction(User $user, $csrf)
-    {
-        $this->validateCsrfOrThrowNotFoundException('pegass', $csrf);
-
-        if ($user->isEqualTo($this->getUser())) {
-            throw $this->createNotFoundException();
-        }
-
-        $user->setIsDeveloper(1 - $user->isDeveloper());
-        $this->userManager->save($user);
-
-        return $this->redirectToRoute('admin_pegass_index', [
-            'form[criteria]' => $user->getExternalId(),
-        ]);
-    }
-
-    /**
      * @Route(name="toggle_root", path="/toggle-root/{csrf}/{id}")
      * @IsGranted("ROLE_ROOT")
      * @IsGranted("USER", subject="user")
@@ -489,10 +467,6 @@ class PegassController extends BaseController
             ->setMethod('GET')
             ->add('criteria', TextType::class, [
                 'label'    => 'password_login.user_list.search.criteria',
-                'required' => false,
-            ])
-            ->add('only_developers', CheckboxType::class, [
-                'label'    => 'admin.pegass.only_developers',
                 'required' => false,
             ])
             ->add('submit', SubmitType::class, [

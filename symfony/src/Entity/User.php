@@ -41,11 +41,6 @@ class User extends AbstractUser implements LockableInterface
     /**
      * @ORM\Column(type="boolean", options={"default" : 0})
      */
-    private $isDeveloper = false;
-
-    /**
-     * @ORM\Column(type="boolean", options={"default" : 0})
-     */
     private $isRoot = false;
 
     /**
@@ -104,18 +99,6 @@ class User extends AbstractUser implements LockableInterface
     public function setTimezone(string $timezone)
     {
         $this->timezone = $timezone;
-
-        return $this;
-    }
-
-    public function isDeveloper() : bool
-    {
-        return $this->isDeveloper;
-    }
-
-    public function setIsDeveloper(bool $isDeveloper) : self
-    {
-        $this->isDeveloper = $isDeveloper;
 
         return $this;
     }
@@ -345,10 +328,6 @@ class User extends AbstractUser implements LockableInterface
     public function getRoles() : array
     {
         $roles = parent::getRoles();
-
-        if ($this->isDeveloper) {
-            $roles[] = 'ROLE_DEVELOPER';
-        }
 
         if ($this->isRoot) {
             $roles[] = 'ROLE_ROOT';

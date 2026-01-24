@@ -228,19 +228,6 @@
 
     <tr style="border-right: 1px solid {{ lightgrey }};">
         <td style="padding:5px;">
-            <strong>{{ 'space.consult_data.identity_user_developer'|trans }}</strong>
-        </td>
-        <td style="padding:5px;">
-            {% if session.volunteer.user %}
-                {{ session.volunteer.user.developer ? 'base.simple_yes'|trans : 'base.simple_no'|trans }}
-            {% else %}
-                -
-            {% endif %}
-        </td>
-    </tr>
-
-    <tr style="border-right: 1px solid {{ lightgrey }};">
-        <td style="padding:5px;">
             <strong>{{ 'space.consult_data.identity_user_admin'|trans }}</strong>
         </td>
         <td style="padding:5px;">
