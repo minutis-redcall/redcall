@@ -78,7 +78,7 @@
     "symfony/debug-bundle": "^5",
     "symfony/dotenv": "^5",
     "symfony/maker-bundle": "^1.0",
-    "symfony/phpunit-bridge": "^5.3",
+    "symfony/phpunit-bridge": "^7.3",
     "symfony/stopwatch": "^5",
     "symfony/web-profiler-bundle": "^5",
     "symfony/web-server-bundle": "^4"
@@ -86,9 +86,6 @@
   "config": {
     "preferred-install": {
       "*": "dist"
-    },
-    "platform": {
-      "php": "7.3"
     },
     "sort-packages": true,
     "allow-plugins": {
