@@ -3,7 +3,6 @@
 namespace App\Entity;
 
 use App\Contract\LockableInterface;
-use App\Enum\Platform;
 use Bundles\PasswordLoginBundle\Entity\AbstractUser;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -42,11 +41,6 @@ class User extends AbstractUser implements LockableInterface
      * @ORM\Column(type="boolean", options={"default" : 0})
      */
     private $isRoot = false;
-
-    /**
-     * @ORM\Column(type="boolean", options={"default" : 0})
-     */
-    private $isPegassApi = false;
 
     /**
      * @var Volunteer|null
@@ -113,23 +107,6 @@ class User extends AbstractUser implements LockableInterface
         $this->isRoot = $isRoot;
 
         return $this;
-    }
-
-    public function isPegassApi() : bool
-    {
-        return Platform::FR === $this->platform && $this->isPegassApi;
-    }
-
-    public function setIsPegassApi(bool $isPegassApi) : User
-    {
-        $this->isPegassApi = $isPegassApi;
-
-        return $this;
-    }
-
-    public function canGrantPegassApi() : bool
-    {
-        return $this->isAdmin && Platform::FR === $this->platform;
     }
 
     public function getVolunteer() : ?Volunteer
@@ -331,10 +308,6 @@ class User extends AbstractUser implements LockableInterface
 
         if ($this->isRoot) {
             $roles[] = 'ROLE_ROOT';
-        }
-
-        if ($this->isPegassApi) {
-            $roles[] = 'ROLE_PEGASS_API';
         }
 
         return $roles;

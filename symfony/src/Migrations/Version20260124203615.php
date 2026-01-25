@@ -30,6 +30,7 @@ final class Version20260124203615 extends AbstractMigration
         $this->addSql('DROP TABLE token');
         $this->addSql('DROP TABLE webhook');
         $this->addSql('ALTER TABLE user DROP is_developer');
+        $this->addSql('ALTER TABLE user DROP is_pegass_api');
     }
 
     public function down(Schema $schema) : void
@@ -45,5 +46,6 @@ final class Version20260124203615 extends AbstractMigration
         $this->addSql('ALTER TABLE stat_visualization ADD CONSTRAINT FK_D63899ABC4663E4 FOREIGN KEY (page_id) REFERENCES stat_page (id) ON UPDATE NO ACTION ON DELETE NO ACTION');
         $this->addSql('ALTER TABLE stat_visualization ADD CONSTRAINT FK_D63899ABEF946F99 FOREIGN KEY (query_id) REFERENCES stat_query (id) ON UPDATE NO ACTION ON DELETE NO ACTION');
         $this->addSql('ALTER TABLE user ADD is_developer TINYINT(1) DEFAULT \'0\' NOT NULL');
+        $this->addSql('ALTER TABLE user ADD is_pegass_api TINYINT(1) DEFAULT \'0\' NOT NULL');
     }
 }

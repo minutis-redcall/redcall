@@ -93,14 +93,6 @@
                                                 </a>
                                             {% endif %}
 
-                                            {# Pegass API #}
-                                            {% if app.user.canGrantPegassApi and constant('\\App\\Enum\\Platform::FR') == user.platform %}
-                                                <a class="dropdown-item {{ user.isPegassApi ? 'text-danger' : 'text-success' }}" href="{{ path('admin_pegass_toggle_pegass_api', {id: user.id, csrf: csrf_token('pegass')}) }}">
-                                                    <i class="fas fa-cloud mr-2"></i>
-                                                    {{ (user.isPegassApi ? 'admin.pegass.pegass_api_ungrant' : 'admin.pegass.pegass_api_grant')|trans }}
-                                                </a>
-                                            {% endif %}
-
                                             <div class="dropdown-divider"></div>
 
                                             {# Lock #}

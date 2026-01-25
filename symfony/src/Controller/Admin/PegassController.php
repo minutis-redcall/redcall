@@ -359,26 +359,6 @@ class PegassController extends BaseController
     }
 
     /**
-     * @Route(name="toggle_pegass_api", path="/toggle-pegass-api/{csrf}/{id}")
-     * @IsGranted("USER", subject="user")
-     */
-    public function togglePegassApiAction(User $user, string $csrf)
-    {
-        $this->validateCsrfOrThrowNotFoundException('pegass', $csrf);
-
-        if (!$this->getUser() instanceof User || !$this->getUser()->canGrantPegassApi()) {
-            throw $this->createNotFoundException();
-        }
-
-        $user->setIsPegassApi(1 - $user->isPegassApi());
-        $this->userManager->save($user);
-
-        return $this->redirectToRoute('admin_pegass_index', [
-            'form[criteria]' => $user->getExternalId(),
-        ]);
-    }
-
-    /**
      * @Route(name="delete", path="/delete/{csrf}/{id}")
      * @IsGranted("USER", subject="user")
      */
