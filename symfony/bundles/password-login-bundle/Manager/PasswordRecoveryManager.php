@@ -4,7 +4,9 @@ namespace Bundles\PasswordLoginBundle\Manager;
 
 use Bundles\PasswordLoginBundle\Entity\PasswordRecovery;
 use Bundles\PasswordLoginBundle\Repository\PasswordRecoveryRepository;
-use Bundles\PasswordLoginBundle\Services\Mail;
+use App\Provider\Email\EmailProvider;
+use Twig\Environment;
+use Symfony\Contracts\Translation\TranslatorInterface;
 use Symfony\Component\Routing\RouterInterface;
 
 class PasswordRecoveryManager
@@ -15,9 +17,19 @@ class PasswordRecoveryManager
     private $passwordRecoveryRepository;
 
     /**
-     * @var Mail
+     * @var EmailProvider
      */
-    private $mail;
+    private $emailProvider;
+
+    /**
+     * @var Environment
+     */
+    private $twig;
+
+    /**
+     * @var TranslatorInterface
+     */
+    private $translator;
 
     /**
      * @var RouterInterface
@@ -25,11 +37,15 @@ class PasswordRecoveryManager
     private $router;
 
     public function __construct(PasswordRecoveryRepository $passwordRecoveryRepository,
-        Mail $mail,
+        EmailProvider $emailProvider,
+        Environment $twig,
+        TranslatorInterface $translator,
         RouterInterface $router)
     {
         $this->passwordRecoveryRepository = $passwordRecoveryRepository;
-        $this->mail                       = $mail;
+        $this->emailProvider              = $emailProvider;
+        $this->twig                       = $twig;
+        $this->translator                 = $translator;
         $this->router                     = $router;
     }
 
@@ -62,13 +78,19 @@ class PasswordRecoveryManager
             return;
         }
 
-        $url = trim(getenv('WEBSITE_URL'), '/').$this->router->generate('password_login_change_password', ['uuid' => $uuid]);
+        $url = trim($_ENV['WEBSITE_URL'], '/').$this->router->generate('password_login_change_password', ['uuid' => $uuid]);
 
-        $this->mail->send(
+        $body = $this->twig->render('@PasswordLogin/security/forgot_password_mail.txt.twig', [
+            'url' => $url,
+            'type' => 'register',
+            '_locale' => null,
+        ]);
+
+        $this->emailProvider->send(
             $username,
-            'password_login.forgot_password.subject',
-            '@PasswordLogin/security/forgot_password_mail.txt.twig',
-            ['url' => $url, 'type' => 'register']
+            $this->translator->trans('password_login.forgot_password.subject'),
+            $body,
+            $body
         );
     }
 }

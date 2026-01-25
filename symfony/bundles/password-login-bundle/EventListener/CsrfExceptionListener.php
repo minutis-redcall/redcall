@@ -20,7 +20,7 @@ class CsrfExceptionListener
      */
     private $homeRoute;
 
-    public function __construct(Environment $twig, string $homeRoute)
+    public function __construct(Environment $twig, string $homeRoute = 'home')
     {
         $this->twig      = $twig;
         $this->homeRoute = $homeRoute;

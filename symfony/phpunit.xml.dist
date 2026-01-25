@@ -33,7 +33,6 @@
         <env name="GOOGLE_APPLICATION_CREDENTIALS" value=""/>
         <!-- ###- google/apiclient ### -->
 
-        <env name="WEBSITE_URL" value=""/>
         <env name="GOOGLE_SHEETS_VOLUNTEERS_ID" value=""/>
 
         <!-- ###+ symfony/mailer ### -->

@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
@@ -73,12 +74,12 @@ class FormLoginAuthenticator extends AbstractFormLoginAuthenticator
     public function __construct(CaptchaManager $captchaManager,
         FormFactoryInterface $formFactory,
         UserPasswordEncoderInterface $encoder,
-        Session $session,
+        SessionInterface $session,
         TokenStorageInterface $tokenStorage,
         TranslatorInterface $translator,
         RequestStack $requestStack,
         RouterInterface $router,
-        string $homeRoute)
+        string $homeRoute = 'home')
     {
         $this->captchaManager = $captchaManager;
         $this->formFactory    = $formFactory;

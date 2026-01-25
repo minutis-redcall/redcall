@@ -59,7 +59,7 @@ class AdminController extends AbstractController
         UserManager $userManager,
         EventDispatcherInterface $dispatcher,
         TranslatorInterface $translator,
-        string $homeRoute)
+        string $homeRoute = 'home')
     {
         $this->emailVerificationManager = $emailVerificationManager;
         $this->passwordRecoveryManager  = $passwordRecoveryManager;

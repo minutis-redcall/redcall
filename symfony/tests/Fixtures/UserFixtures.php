@@ -17,7 +17,7 @@ class UserFixtures
         $this->encoder = $encoder;
     }
 
-    public function createRawUser(string $username = 'user', string $password = 'password', bool $admin = false): User
+    public function createRawUser(string $username = 'user', string $password = 'password', bool $admin = false, bool $verified = true): User
     {
         $user = new User();
         $user->setUsername($username);
@@ -25,7 +25,7 @@ class UserFixtures
         $user->setLocale('fr');
         $user->setTimezone('Europe/Paris');
         $user->setPassword($this->encoder->encodePassword($user, $password));
-        $user->setIsVerified(true);
+        $user->setIsVerified($verified);
         $user->setIsTrusted(true);
         $user->setIsRoot($admin);
         $user->setIsAdmin($admin);

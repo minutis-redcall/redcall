@@ -10,6 +10,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Security\Core\Encoder\EncoderFactory;
+use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 
 class UserPasswordCommand extends Command
 {
@@ -23,7 +24,7 @@ class UserPasswordCommand extends Command
      */
     private $encoderFactory;
 
-    public function __construct(UserManager $userManager, EncoderFactory $encoderFactory)
+    public function __construct(UserManager $userManager, EncoderFactoryInterface $encoderFactory)
     {
         parent::__construct();
 

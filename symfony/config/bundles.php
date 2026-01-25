@@ -12,7 +12,7 @@ return [
     EWZ\Bundle\RecaptchaBundle\EWZRecaptchaBundle::class => ['all' => true],
     Bundles\PasswordLoginBundle\PasswordLoginBundle::class => ['all' => true],
     Bundles\PaginationBundle\PaginationBundle::class => ['all' => true],
-    Bundles\SandboxBundle\SandboxBundle::class => ['dev' => true],
+    Bundles\SandboxBundle\SandboxBundle::class => ['dev' => true, 'test' => true],
     Bundles\SettingsBundle\SettingsBundle::class => ['all' => true],
     Bundles\TwilioBundle\TwilioBundle::class => ['all' => true],
     Bundles\GoogleTaskBundle\GoogleTaskBundle::class => ['all' => true],

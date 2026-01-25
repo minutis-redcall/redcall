@@ -6,12 +6,13 @@ use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Security\Core\User\EquatableInterface;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
  * @ORM\MappedSuperclass()
  */
-class AbstractUser implements UserInterface, EquatableInterface
+class AbstractUser implements UserInterface, EquatableInterface, PasswordAuthenticatedUserInterface
 {
     /**
      * @ORM\Column(name="id", type="string", length=36)
