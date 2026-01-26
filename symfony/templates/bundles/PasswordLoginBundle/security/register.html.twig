@@ -16,18 +16,18 @@
 
             {% form_theme registration '@EWZRecaptcha/Form/ewz_recaptcha_widget.html.twig' %}
             {{ form_start(registration) }}
-                {{ form_row(registration.platform) }}
-                {{ form_row(registration.username) }}
-                {{ form_row(registration.password) }}
-                {% if registration.recaptcha is defined %}
-                    {{ form_row(registration.recaptcha) }}
-                {% endif %}
-                <div class="auth-actions">
-                    <button type="submit" class="btn btn-primary btn-block">
-                        {{ 'password_login.register.submit'|trans|default('Register'|trans) }}
-                    </button>
-                </div>
-            {{ form_end(registration, {render_rest: false}) }}
+            {{ form_row(registration.platform) }}
+            {{ form_row(registration.username) }}
+            {{ form_row(registration.password) }}
+            {% if registration.recaptcha is defined %}
+                {{ form_row(registration.recaptcha) }}
+            {% endif %}
+            <div class="auth-actions">
+                <button type="submit" class="btn btn-primary btn-block">
+                    {{ 'password_login.register.submit'|trans|default('Register'|trans) }}
+                </button>
+            </div>
+            {{ form_end(registration) }}
 
             <div class="auth-links">
                 {{ 'password_login.register.already_have_account'|trans }}

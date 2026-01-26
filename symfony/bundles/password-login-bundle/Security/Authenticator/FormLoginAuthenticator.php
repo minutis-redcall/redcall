@@ -118,6 +118,10 @@ class FormLoginAuthenticator extends AbstractFormLoginAuthenticator
         }
 
         if (!$connectForm->isValid()) {
+            foreach ($connectForm->getErrors(true) as $error) {
+                $this->session->getFlashBag()->add('alert', $error->getMessage());
+            }
+
             $this->decreaseGrace();
 
             return false;

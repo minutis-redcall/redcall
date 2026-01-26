@@ -58,7 +58,7 @@
                         {{ 'base.button.back'|trans }}
                     </button>
                 </div>
-                {{ form_end(nivol, {render_rest: false}) }}
+                {{ form_end(nivol) }}
             </div>
 
             {# Classic Login #}
@@ -79,7 +79,7 @@
                         {{ 'password_login.connect.connect'|trans|default('Connect'|trans) }}
                     </button>
                 </div>
-                {{ form_end(connect, {render_rest: false}) }}
+                {{ form_end(connect) }}
 
                 <div class="auth-links">
                     <a href="{{ path('password_login_forgot_password') }}">{{ 'password_login.connect.forgot_password'|trans }}</a>

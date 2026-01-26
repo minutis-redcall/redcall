@@ -1,0 +1,176 @@
+/* Authentication Pages Styling */
+
+.auth-wrapper {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 3rem 1rem;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 480px;
+    background: var(--rc-white);
+    padding: 2.5rem;
+    border-radius: var(--border-radius-lg);
+    box-shadow: 0 15px 35px rgba(0,0,0,0.05), 0 5px 15px rgba(0,0,0,0.03);
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.auth-logo {
+    text-align: center;
+    margin-bottom: 2.5rem;
+}
+
+.auth-logo img {
+    max-height: 80px;
+    max-width: 100%;
+    height: auto;
+    width: auto;
+    transition: transform 0.3s ease;
+}
+
+.auth-logo img:hover {
+    transform: scale(1.05);
+}
+
+.auth-card h1 {
+    font-size: 1.5rem;
+    margin-top: 0;
+    margin-bottom: 2.5rem;
+    padding-bottom: 0.75rem;
+    display: block;
+    text-align: center;
+}
+
+.auth-form-group {
+    margin-bottom: 1.5rem;
+}
+
+.auth-form-group label {
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+    display: block;
+}
+
+.auth-card .form-control {
+    border-radius: var(--border-radius);
+    padding: 0.75rem 1rem;
+    height: auto;
+    border: 1.5px solid #eee;
+    transition: var(--transition-base);
+    font-size: 0.95rem;
+}
+
+.auth-card .form-control:focus {
+    border-color: var(--rc-red);
+    box-shadow: 0 0 0 3px rgba(227, 6, 19, 0.1);
+    outline: none;
+}
+
+.auth-actions {
+    margin-top: 2rem;
+}
+
+.auth-actions .btn {
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+}
+
+.auth-links {
+    text-align: center;
+    margin-top: 1.5rem;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.auth-links a {
+    color: var(--rc-red);
+    font-weight: 600;
+    text-decoration: none;
+    transition: var(--transition-base);
+}
+
+.auth-links a:hover {
+    color: #c40510;
+    text-decoration: underline;
+}
+
+.auth-mean-toggle {
+    background: #f8f9fa;
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border: 1px dashed #ddd;
+}
+
+.auth-mean-toggle p {
+    margin-bottom: 0.75rem;
+    font-size: 0.95rem;
+}
+
+.auth-sep {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    margin: 1.5rem 0;
+    color: #aaa;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.auth-sep::before,
+.auth-sep::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid #eee;
+}
+
+.auth-sep:not(:empty)::before {
+    margin-right: 1rem;
+}
+
+.auth-sep:not(:empty)::after {
+    margin-left: 1rem;
+}
+
+/* Specific button for Google login */
+.btn-google {
+    background-color: white !important;
+    color: #444 !important;
+    border: 1.5px solid #eee !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Roboto', sans-serif;
+    text-transform: none !important;
+    font-weight: 500 !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important;
+}
+
+.btn-google:hover {
+    background-color: #f8f9fa !important;
+    border-color: #ddd !important;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1) !important;
+}
+
+.btn-google img {
+    margin-right: 12px;
+}
+
+/* Utility classes for the transition */
+.auth-hidden {
+    display: none !important;
+}
+
+/* Localization switcher in auth */
+.auth-locales {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #eee;
+}
