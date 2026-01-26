@@ -15,8 +15,8 @@ password_login:
     incorrect: 'L''email ou le mot de passe que vous avez saisi est incorrect.'
     no_account_yet: 'Je n''ai pas encore de compte.'
     password: 'Veuillez saisir votre mot de passe'
-    remember_me: 'Faire confiance à cet appareil et laisser la session ouverte'
-    title: 'Connexion à la plateforme'
+    remember_me: 'Faire confiance à cet appareil'
+    title: 'Connexion'
     who_am_i: '%username%'
   error:
     invalid_csrf:
@@ -36,9 +36,9 @@ password_login:
     sent: 'Si un compte existe avec l''email %email%, vous allez prochainement recevoir un email contenant un lien qui vous permettra de réinitialiser votre mot de passe. Si votre boîte emails est protégée par un anti-spam, pensez à vérifier que celui-ci n''ait pas été bloqué.'
     sent_by_admin: 'Un email a bien été envoyé à %email%.'
     subject: '☎️ Réinitialisation de votre mot de passe.'
-    submit: 'Demander à changer de mot de passe'
+    submit: 'Changer de mot de passe'
     title: 'Mot de passe perdu ?'
-    username: 'Veuillez saisir votre email afin de réinitialiser votre mot de passe.'
+    username: 'Veuillez saisir votre email.'
   logout:
     button: Déconnexion
   not_trusted:

@@ -63,13 +63,13 @@ h1::after {
     content: '';
     position: absolute;
     bottom: 0;
-    left: 0;
-    width: 80%;
-    height: 6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 4px;
     background-color: var(--rc-red);
     opacity: 0.6;
-    border-radius: 50% 20% 50% 10%;
-    transform: rotate(-1.5deg);
+    border-radius: 2px;
 }
 
 h5.modal-title {

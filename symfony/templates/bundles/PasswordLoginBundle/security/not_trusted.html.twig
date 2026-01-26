@@ -6,29 +6,29 @@
 
 {% block body %}
 
-    <br/>
+    <div class="auth-wrapper">
+        <div class="auth-card">
+            <div class="auth-logo">
+                <img src="{{ asset('build/images/redcall-full.png') }}" alt="RedCall Logo"/>
+            </div>
 
-    <div class="clearfix"></div>
+            <h1 class="auth-title">{{ 'password_login.not_trusted.title'|trans }}</h1>
 
-    <hr/>
+            <div class="alert alert-warning">
+                {{ 'password_login.not_trusted.description'|trans }}
+            </div>
 
-    <div class="row">
+            <div class="auth-actions">
+                {{ include('@PasswordLogin/menu.html.twig', {
+                    display_profile: false,
+                    display_manage_users: false,
+                }) }}
+            </div>
 
-        <div class="col-md-12 jumbotron shadow p-3 mb-5 rounded">
-
-            <h3>{{ block('title') }}</h3>
-
-            {{ 'password_login.not_trusted.description'|trans }}
-
+            <div class="auth-locales text-center">
+                {{ block('locales') }}
+            </div>
         </div>
-
     </div>
-
-    {{ include('@PasswordLogin/menu.html.twig', {
-        display_profile: false,
-        display_manage_users: false,
-    }) }}
-
-    {{ block('locales') }}
 
 {% endblock %}
