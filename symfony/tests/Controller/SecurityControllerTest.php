@@ -208,4 +208,55 @@ class SecurityControllerTest extends BaseWebTestCase
         $this->assertTrue($encoder->isPasswordValid($updatedUser, 'Upd4t3dP4ssw0rd!'), 'Password should be updated in DB');
         $this->assertSelectorExists('.alert-success');
     }
+
+    public function testConnectWithNivol()
+    {
+        $client = static::createClient();
+        $client->followRedirects();
+        
+        // Cleanup DB
+        $container = $client->getContainer();
+        $em = $container->get('doctrine')->getManager();
+        $em->createQuery('DELETE FROM Bundles\SandboxBundle\Entity\FakeEmail')->execute();
+
+        // Create User linked to Volunteer
+        $fixtures = $this->getFixtures($container);
+        $user = $fixtures->createRawUser('knights@ni.com', 'password', false, true);
+        $fixtures->createVolunteer($user, '987654321', 'knights@ni.com');
+
+        // 1. Go to Connect page
+        $crawler = $client->request('GET', '/connect');
+        $this->assertResponseIsSuccessful();
+
+        // 2. Submit Nivol Form with External ID
+        $form = $crawler->filter('#nivol form')->form();
+        $form['nivol'] = '987654321';
+        $client->submit($form);
+
+        // 3. Intercept Email
+        $fakeEmailManager = $container->get(FakeEmailManager::class);
+        $emails = $fakeEmailManager->findMessagesForEmail('knights@ni.com');
+        $this->assertCount(1, $emails, 'Nivol login email should be sent to user email');
+
+        // 4. Extract Code
+        $body = $emails[0]->getBody();
+        preg_match('#([A-Z][0-9]{2}[A-Z][0-9]{2})#', $body, $matches);
+        
+        if (empty($matches)) {
+             $this->fail('Login code not found in email body. Body content: ' . substr($body, 0, 200));
+        }
+        
+        $code = $matches[1];
+
+        // 5. Submit Code
+        $crawler = $client->getCrawler();
+        $form = $crawler->filter('form')->form();
+        $form['code'] = $code;
+        $client->submit($form);
+
+        // 6. Verify Logged In
+        $this->assertResponseRedirects('/');
+        $client->followRedirect();
+        $this->assertSelectorExists('a[href="/logout"]');
+    }
 }

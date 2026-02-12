@@ -35,4 +35,28 @@ class UserFixtures
 
         return $user;
     }
+
+    public function createVolunteer(
+        User $user,
+        string $externalId = '123456789',
+        string $email = 'volunteer@example.com'
+    ): \App\Entity\Volunteer {
+        $volunteer = new \App\Entity\Volunteer();
+        $volunteer->setExternalId($externalId);
+        $volunteer->setPlatform($user->getPlatform());
+        $volunteer->setEmail($email);
+        $volunteer->setUser($user);
+        $volunteer->setEnabled(true);
+        $volunteer->setLocked(false);
+        $volunteer->setPhoneNumberOptin(true);
+        $volunteer->setEmailOptin(true);
+
+        $user->setVolunteer($volunteer);
+
+        $this->entityManager->persist($volunteer);
+        $this->entityManager->persist($user);
+        $this->entityManager->flush();
+
+        return $volunteer;
+    }
 }

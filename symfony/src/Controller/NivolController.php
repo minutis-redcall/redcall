@@ -33,7 +33,7 @@ class NivolController extends AbstractController
         if ($nivolForm->isSubmitted() && $nivolForm->isValid()) {
             $identifier = $this->nivolManager->sendEmail($nivolForm->get('nivol')->getData());
 
-            return $this->redirectToRoute('code', ['identifier' => $identifier]);
+            return $this->redirectToRoute('code', ['uuid' => $identifier]);
         }
 
         return [
@@ -42,11 +42,10 @@ class NivolController extends AbstractController
     }
 
     /**
-     * @Route("/code/{identifier}", name="code")
-     * @Entity("expirable", expr="repository.findOneByUuid(identifier)")
+     * @Route("/code/{uuid}", name="code")
      * @Template()
      */
-    public function code(Request $request)
+    public function code(Request $request, Expirable $expirable)
     {
         $codeForm = $this
             ->createForm(CodeType::class)
