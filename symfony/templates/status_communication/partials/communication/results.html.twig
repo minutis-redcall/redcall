@@ -187,18 +187,11 @@
 {% import _self as resultsMacros %}
 
 {# -------------------------------------------------------------------------------- #}
-{# Filter messages into two groups: with activity and pending                      #}
-{# Bug 2 fix: only render messages with activity by default                        #}
+{# Partition messages in a single O(n) pass (avoids O(n²) Twig |merge)            #}
 {# -------------------------------------------------------------------------------- #}
-{% set messagesWithActivity = [] %}
-{% set pendingMessages = [] %}
-{% for message in communication.messages %}
-    {% if message.answers.count > 0 or message.error or message.invalidAnswer or message.isUnclear %}
-        {% set messagesWithActivity = messagesWithActivity|merge([message]) %}
-    {% else %}
-        {% set pendingMessages = pendingMessages|merge([message]) %}
-    {% endif %}
-{% endfor %}
+{% set partitioned = communication.partitionedMessages %}
+{% set messagesWithActivity = partitioned.active %}
+{% set pendingMessages = partitioned.pending %}
 
 {# -------------------------------------------------------------------------------- #}
 {# Results                                                                          #}

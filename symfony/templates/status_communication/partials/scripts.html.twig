@@ -21,15 +21,20 @@
             });
         }
 
-        {# Update Volunteer Group Dots #}
+        {# Update Volunteer Group Dots - only update volunteers whose groups changed #}
         if (data['volunteerGroups']) {
             $.each(communicationIds, function (k, communicationId) {
                 $('.row-' + communicationId).each(function () {
                     var row = $(this);
                     var volunteerId = row.data('volunteer-id');
-                    var suffix = communicationId + '-' + row.attr('id').split('-').pop();
-                    var container = $('#volunteer-groups-' + suffix);
                     var assignedIndices = data['volunteerGroups'][volunteerId] || [];
+
+                    {# Skip DOM updates if this volunteer's groups haven't changed #}
+                    var prev = previousVolunteerGroups[volunteerId];
+                    if (prev && prev.toString() === assignedIndices.toString()) return;
+
+                    var suffix = row.attr('id').replace('row-', '');
+                    var container = $('#volunteer-groups-' + suffix);
 
                     container.empty();
                     $.each(assignedIndices, function (i, groupIndex) {
@@ -37,16 +42,22 @@
                         container.append('<span class="group-dot group-dot-' + groupIndex + '" data-index="' + groupIndex + '" style="display:inline-block; width:8px; height:8px; border-radius:50%; background-color:#' + color + '; margin-right:2px;"></span>');
                     });
 
-                    {# Update checkboxes #}
-                    $('.volunteer-group-checkbox[data-volunteer-id="' + volunteerId + '"]').each(function () {
-                        var checkbox = $(this);
-                        var index = checkbox.data('index');
-                        checkbox.prop('checked', $.inArray(index, assignedIndices) !== -1);
-                    });
-
                     row.data('groups', assignedIndices.join(','));
                 });
             });
+
+            {# Update checkboxes only for volunteers whose groups changed #}
+            $.each(data['volunteerGroups'], function (volunteerId, assignedIndices) {
+                var prev = previousVolunteerGroups[volunteerId];
+                if (prev && prev.toString() === assignedIndices.toString()) return;
+
+                $('.volunteer-group-checkbox[data-volunteer-id="' + volunteerId + '"]').each(function () {
+                    var checkbox = $(this);
+                    checkbox.prop('checked', $.inArray(checkbox.data('index'), assignedIndices) !== -1);
+                });
+            });
+
+            previousVolunteerGroups = data['volunteerGroups'];
         }
 
         if (data['notes'] && $('#campaign-notes').data('notes-updated-timestamp') != data['notes']['notes-updated-timestamp']) {
@@ -202,7 +213,9 @@
             }
         });
 
-        refreshVisibility();
+        if (hasActiveFilters) {
+            refreshVisibility();
+        }
     }
 
     var longPolling = function () {
@@ -267,6 +280,8 @@
     {% endfor %}
 
     var activeGroupFilters = [];
+    var previousVolunteerGroups = {{ volunteerGroups|json_encode|raw }};
+    var hasActiveFilters = false;
 
     var communicationIds = [];
     {% for communication in campaign.communications %}
@@ -278,6 +293,7 @@
     {# -------------------------------------------------------------------------------- #}
 
     function refreshVisibility() {
+        var filtersFound = false;
 
         var structures = [];
         {% for structure in campaignStructures %}
@@ -384,9 +400,13 @@
 
             {# if no filter used, everything is visible #}
             if (activeGroups.length === 0 && structure + response + skill + unreachable === 0) {
-                $('.row-' + communicationId).fadeIn();
+                {# Only touch DOM if filters were previously active #}
+                if (hasActiveFilters) {
+                    $('.row-' + communicationId).show();
+                }
                 return true;
             }
+            filtersFound = true;
 
             {# if some checkbox ticked, visible if at least one value is 1 #}
             $('.row-' + communicationId).each(function () {
@@ -457,13 +477,14 @@
 
                 {# displays the row only if all conditions above are true #}
                 if (groupVisible && structureVisible && actionVisible && skillVisible && unreachableVisible) {
-                    row.fadeIn();
+                    row.show();
                 } else {
-                    row.fadeOut();
+                    row.hide();
                     row.find('.volunteer-selection').prop('checked', false);
                 }
             });
         });
+        hasActiveFilters = filtersFound;
     }
 
     $('.filter-action').click(function () {
