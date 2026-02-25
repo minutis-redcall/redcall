@@ -2,10 +2,10 @@
 
 namespace App\Controller;
 
+use App\Entity\Expirable;
 use App\Form\Type\CodeType;
 use App\Form\Type\NivolType;
 use App\Manager\NivolManager;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
