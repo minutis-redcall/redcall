@@ -78,7 +78,7 @@
 
             $('#campaign-notes').data('notes-updated-timestamp', data['notes']['notes-updated-timestamp']);
 
-            refreshTextToHypertext();
+            refreshTextToHypertext($('#campaign-notes-content'));
 
             {# Applying visual effects to notice the note updates #}
             $('#campaign-notes-border').css('border', '5px solid red');
@@ -116,7 +116,7 @@
                         $('#answer-link-' + suffix).removeClass('d-none');
                     }
                     $('#message-is-unclear-' + suffix).removeClass('d-none');
-                    $('#invalid-answer-raw-' + suffix).html(messageStatus['has-unclear-answer']['raw']).removeClass('d-none');
+                    $('#invalid-answer-raw-' + suffix).text(messageStatus['has-unclear-answer']['raw']).removeClass('d-none');
                 } else {
                     $('#message-is-unclear-' + suffix).addClass('d-none');
                 }
@@ -129,7 +129,7 @@
 
                 {# an error occured while sending message #}
                 if (messageStatus['error']) {
-                    $('#error-' + suffix).html(messageStatus['error']).removeClass('d-none');
+                    $('#error-' + suffix).text(messageStatus['error']).removeClass('d-none');
                 }
 
                 {# Message has invalid answer #}
@@ -139,7 +139,7 @@
                     }
                     $('#message-has-invalid-answer-' + suffix).removeClass('d-none');
                     $('#message-has-invalid-answer-time-' + suffix).html(messageStatus['has-invalid-answer']['time']);
-                    $('#invalid-answer-raw-' + suffix).html(messageStatus['has-invalid-answer']['raw']).removeClass('d-none');
+                    $('#invalid-answer-raw-' + suffix).text(messageStatus['has-invalid-answer']['raw']).removeClass('d-none');
                     hasInvalidAnswers++;
                 } else if (0 === messageStatus['has-answer']) {
                     hasNoAnswers++;
@@ -218,26 +218,26 @@
         }
     }
 
+    var longPollingErrorCount = 0;
+    var longPollingHash = '{{ hash }}';
     var longPolling = function () {
-        var errorCount = 0;
-        var hash = '{{ hash }}';
         setTimeout(function () {
             $.ajax('{{ path('communication_long_polling', {id: campaign.id}) }}', {
                 type: 'POST',
                 data: {
-                    hash: hash,
+                    hash: longPollingHash,
                 },
                 success: function (result) {
-                    errorCount = 0;
+                    longPollingErrorCount = 0;
                     if (result) {
-                        hash = result.hash;
+                        longPollingHash = result.hash;
                         refreshStatuses(result);
                     }
                     longPolling();
                 },
                 error: function () {
-                    errorCount++;
-                    if (100 === errorCount) {
+                    longPollingErrorCount++;
+                    if (100 === longPollingErrorCount) {
                         window.location = '{{ path('home') }}';
                     } else {
                         longPolling();
@@ -259,6 +259,20 @@
         });
     };
 
+    var groupColorsArray = [];
+    {% for colorName, colorCode in groupColors %}
+    groupColorsArray.push("{{ colorCode|e('js') }}");
+    {% endfor %}
+
+    var activeGroupFilters = [];
+    var previousVolunteerGroups = {{ volunteerGroups|json_encode|raw }};
+    var hasActiveFilters = false;
+
+    var communicationIds = [];
+    {% for communication in campaign.communications %}
+    communicationIds.push("{{ communication.id|e('js') }}");
+    {% endfor %}
+
     // Use server-rendered initial data to avoid data format mismatch
     var initialCampaignStatus = {{ campaignStatus|json_encode|raw }};
 
@@ -274,20 +288,6 @@
         }, 5000);
     }
 
-    var groupColorsArray = [];
-    {% for colorName, colorCode in groupColors %}
-    groupColorsArray.push("{{ colorCode|e('js') }}");
-    {% endfor %}
-
-    var activeGroupFilters = [];
-    var previousVolunteerGroups = {{ volunteerGroups|json_encode|raw }};
-    var hasActiveFilters = false;
-
-    var communicationIds = [];
-    {% for communication in campaign.communications %}
-    communicationIds.push("{{ communication.id|e('js') }}");
-    {% endfor %}
-
     {# -------------------------------------------------------------------------------- #}
     {# Filter rows according to ticked columns #}
     {# -------------------------------------------------------------------------------- #}
@@ -300,7 +300,7 @@
         structures.push("structure-{{ structure.id|e('js') }}");
         {% endfor %}
 
-        var actions = [];
+        var actions = {};
         {% for communication in campaign.communications %}
         actions["{{ communication.id|e('js') }}"] = [
             {% if communication.choices|length %}
@@ -431,7 +431,7 @@
                 $.each(structures, function (index, action) {
                     var suffix = action + '-' + communicationId;
                     var filter = $('#filter-' + suffix);
-                    if (filter.is(':checked') && !$.inArray(filter.val(), row.data('structures').toString().split(','))) {
+                    if (filter.is(':checked') && $.inArray(filter.val(), row.data('structures').toString().split(',')) !== -1) {
                         structureVisible = true;
                     }
 
@@ -683,10 +683,11 @@
     {# -------------------------------------------------------------------------------- #}
     {# Transform text links into clickable links #}
     {# -------------------------------------------------------------------------------- #}
-    function refreshTextToHypertext() {
-        $('.text-to-hypertext').each(function () {
+    function refreshTextToHypertext(container) {
+        var elements = container ? $(container).find('.text-to-hypertext').addBack('.text-to-hypertext') : $('.text-to-hypertext');
+        elements.each(function () {
             var str = $(this).html();
-            var regex = /(https?:\/\/([^\s]+))/ig
+            var regex = /(https?:\/\/([^\s]+))/ig;
             var replaced_text = str.replace(regex, "<a href='$1' target='_blank'>$1</a>");
             $(this).html(replaced_text);
         });
