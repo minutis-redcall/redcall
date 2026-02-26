@@ -132,11 +132,13 @@
         <div id="volunteer-name-{{ uuid }}" class="h4">
             <span href="#" class="volunteer-info" {% if clickable %}style="cursor:pointer;{% endif %}"
                   {% if clickable %}onclick="$('#volunteer-details-{{ uuid }}').toggleClass('d-none');return false;"{% endif %}>
+                <span id="volunteer-displayname-{{ uuid }}">
                 {% if volunteer.enabled %}
                     {{ volunteer.displayName }}
                 {% else %}
                     <span style="text-decoration:line-through;color:grey;">{{ volunteer.displayName }}</span> 🚫
                 {% endif %}
+                </span>
                 {% if volunteer.minor %}
                     🐻
                 {% elseif volunteer.userEnabled %}
@@ -196,6 +198,57 @@
                 {% if is_granted('VOLUNTEER', volunteer) %}
                     ✏️
                     <a target="_blank" href="{{ path('management_volunteers_manual_update', {'id': volunteer.id}) }}">{{ 'admin.pegass.edit'|trans }}</a>
+
+                    {% if not volunteer.user %}
+                        <div style="margin-top:5px;">
+                            <a href="#"
+                               class="volunteer-toggle-enable {{ volunteer.enabled ? 'text-danger' : 'text-success' }}"
+                               data-enabled="{{ volunteer.enabled ? '1' : '0' }}"
+                               data-href="{{ path('management_volunteers_toggle_enable', {id: volunteer.id, token: csrf_token('token')}) }}"
+                               data-name-id="volunteer-displayname-{{ uuid }}"
+                               data-display-name="{{ volunteer.displayName|e('html_attr') }}"
+                               data-label-enable="{{ 'manage_volunteers.action.enable_volunteer'|trans|e('html_attr') }}"
+                               data-label-disable="{{ 'manage_volunteers.action.disable_volunteer'|trans|e('html_attr') }}"
+                               data-confirm-disable="{{ 'manage_volunteers.action.disable_confirm'|trans|e('html_attr') }}">
+                                {{ volunteer.enabled ? 'manage_volunteers.action.disable_volunteer'|trans : 'manage_volunteers.action.enable_volunteer'|trans }}
+                            </a>
+                        </div>
+                        <script>
+                            if (!window._volunteerToggleInit) {
+                                window._volunteerToggleInit = true;
+                                $(document).on('click', '.volunteer-toggle-enable', function(e) {
+                                    e.preventDefault();
+                                    var $link = $(this);
+                                    var enabled = $link.data('enabled') == 1;
+                                    if (enabled && !confirm($link.data('confirm-disable'))) {
+                                        return;
+                                    }
+                                    $link.css('pointer-events', 'none');
+                                    $.post($link.data('href'), function() {
+                                        var nameEl = document.getElementById($link.data('name-id'));
+                                        var displayName = $link.data('display-name');
+                                        if (enabled) {
+                                            var s = document.createElement('span');
+                                            s.style.cssText = 'text-decoration:line-through;color:grey;';
+                                            s.textContent = displayName;
+                                            nameEl.textContent = '';
+                                            nameEl.appendChild(s);
+                                            nameEl.appendChild(document.createTextNode(' \ud83d\udeab'));
+                                            $link.removeClass('text-danger').addClass('text-success');
+                                            $link.text($link.data('label-enable'));
+                                            $link.data('enabled', '0');
+                                        } else {
+                                            nameEl.textContent = displayName;
+                                            $link.removeClass('text-success').addClass('text-danger');
+                                            $link.text($link.data('label-disable'));
+                                            $link.data('enabled', '1');
+                                        }
+                                        $link.css('pointer-events', '');
+                                    });
+                                });
+                            }
+                        </script>
+                    {% endif %}
                 {% else %}
                     <span style="color:grey;">{{ 'manage_volunteers.access_denied'|trans }}</span>
                 {% endif %}
