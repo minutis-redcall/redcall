@@ -75,9 +75,7 @@
                 {% endif %}
 
                 <div class="auth-actions">
-                    <button type="submit" class="btn btn-primary btn-block">
-                        {{ 'password_login.connect.connect'|trans|default('Connect'|trans) }}
-                    </button>
+                    {{ form_row(connect.submit) }}
                 </div>
                 {{ form_end(connect) }}
 
