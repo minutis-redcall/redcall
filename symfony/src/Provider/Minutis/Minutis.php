@@ -37,7 +37,7 @@ class Minutis implements MinutisProvider
     {
         $this->settingManager = $settingManager;
         $this->logger         = $logger;
-        $this->slackLogger = $slackLogger;
+        $this->slackLogger    = $slackLogger;
     }
 
     static public function getOperationUrl(int $operationExternalId) : string
@@ -83,7 +83,7 @@ class Minutis implements MinutisProvider
             $this->getOperation($operationExternalId);
 
             return true;
-        } catch (ClientException | ServerException $exception) {
+        } catch (ClientException|ServerException $exception) {
             if (Response::HTTP_NOT_FOUND === $exception->getResponse()->getStatusCode()) {
                 return false;
             }
@@ -99,7 +99,7 @@ class Minutis implements MinutisProvider
         $response = $this->getClient()->get('/api/ressource', $this->populateAuthentication([
             'query' => [
                 'type'       => 'benevole',
-                'externalId' => $nivol,
+                'externalId' => trim($nivol, '0'),
             ],
         ]));
 
@@ -145,7 +145,7 @@ class Minutis implements MinutisProvider
                     'ressource'    => $resource,
                 ],
             ]));
-        } catch (ClientException | ServerException $e) {
+        } catch (ClientException|ServerException $e) {
             $this->slackLogger->warning('Cannot add a Minutis resource to an operation', [
                 'operation_id' => $externalOperationId,
                 'volunteer_id' => $volunteerExternalId,
@@ -163,7 +163,7 @@ class Minutis implements MinutisProvider
     {
         try {
             $this->getClient()->delete(sprintf('/api/regulation/%d/ressource/%d', $externalOperationId, $resourceExternalId), $this->populateAuthentication());
-        } catch (ClientException | ServerException $e) {
+        } catch (ClientException|ServerException $e) {
             $this->slackLogger->warning('Cannot remove a Minutis resource from an operation', [
                 'operation_id' => $externalOperationId,
                 'resource_id'  => $resourceExternalId,
