@@ -8,7 +8,6 @@ use App\Entity\User;
 use App\Form\Type\ManageUserStructuresType;
 use App\Form\Type\VolunteerWidgetType;
 use App\Manager\BadgeManager;
-use App\Manager\PlatformConfigManager;
 use App\Manager\StructureManager;
 use App\Manager\UserManager;
 use App\Manager\VolunteerManager;
@@ -49,11 +48,6 @@ class PegassController extends BaseController
     private $paginationManager;
 
     /**
-     * @var PlatformConfigManager
-     */
-    private $platformManager;
-
-    /**
      * @var BadgeManager
      */
     private $badgeManager;
@@ -67,7 +61,6 @@ class PegassController extends BaseController
         StructureManager $structureManager,
         VolunteerManager $volunteerManager,
         PaginationManager $paginationManager,
-        PlatformConfigManager $platformManager,
         BadgeManager $badgeManager,
         RequestStack $requestStack)
     {
@@ -75,7 +68,6 @@ class PegassController extends BaseController
         $this->structureManager  = $structureManager;
         $this->volunteerManager  = $volunteerManager;
         $this->paginationManager = $paginationManager;
-        $this->platformManager   = $platformManager;
         $this->badgeManager      = $badgeManager;
         $this->requestStack      = $requestStack;
     }
@@ -98,7 +90,6 @@ class PegassController extends BaseController
             'users'     => $this->paginationManager->getPager(
                 $this->userManager->searchQueryBuilder($criteria ?? null, false)
             ),
-            'platforms' => $this->platformManager->getAvailablePlatforms(),
         ]);
     }
 
@@ -129,7 +120,7 @@ class PegassController extends BaseController
         $externalId = $request->request->get('externalId');
 
         if (!$user->isLocked()) {
-            $this->userManager->changeVolunteer($user, $this->getPlatform(), $externalId);
+            $this->userManager->changeVolunteer($user, $externalId);
         }
 
         $structureNames = array_filter(array_map(function (Structure $structure) {
@@ -179,7 +170,7 @@ class PegassController extends BaseController
         return $this->render('admin/pegass/structures.html.twig', [
             'user'       => $user,
             'form'       => $form->createView(),
-            'structures' => $this->structureManager->getStructuresForUser($this->getPlatform(), $user),
+            'structures' => $this->structureManager->getStructuresForUser($user),
         ]);
     }
 
@@ -201,7 +192,7 @@ class PegassController extends BaseController
             throw $this->createNotFoundException();
         }
 
-        $structures = $this->structureManager->findCallableStructuresForStructure($this->getPlatform(), $parentStructure);
+        $structures = $this->structureManager->findCallableStructuresForStructure($parentStructure);
         foreach ($structures as $structure) {
             $user->addStructure($structure);
         }
@@ -233,7 +224,6 @@ class PegassController extends BaseController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $volunteer = $this->volunteerManager->findOneByExternalId(
-                $this->getPlatform(),
                 $form->get('externalId')->getData()
             );
 
@@ -241,7 +231,7 @@ class PegassController extends BaseController
                 throw $this->createNotFoundException();
             }
 
-            $this->userManager->createUser($this->getPlatform(), $volunteer->getExternalId());
+            $this->userManager->createUser($volunteer->getExternalId());
 
             return $this->redirectToRoute('admin_pegass_index', [
                 'form[criteria]' => $volunteer->getExternalId(),
@@ -423,7 +413,7 @@ class PegassController extends BaseController
      */
     public function rtmr(Request $request)
     {
-        $badge = $this->badgeManager->findOneByName($this->getPlatform(), \App\Manager\RefreshManager::RTMR_BADGE);
+        $badge = $this->badgeManager->findOneByName(\App\Manager\RefreshManager::RTMR_BADGE);
 
         if (!$badge) {
             $volunteers = [];

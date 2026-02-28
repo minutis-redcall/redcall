@@ -8,39 +8,41 @@
 
 {% for index, campaign in table.pager.currentPageResults %}
 
-    <div class="card">
+    <div class="card mb-3">
 
-        <div class="card-header text-center" style="background-color: {{ constant('App\\Entity\\Campaign::BACKGROUNDS')[campaign.type] }}; color: {{ constant('App\\Entity\\Campaign::COLORS')[campaign.type] }};">
-            <strong>{{ ('campaign.types.' ~ campaign.type)|trans }}</strong>
-            <span style="color:red;">✚</span> {{ campaign.createdAt|date("d/m/Y H:i") }}
-
-            <div class="float-right">
+        <div class="card-header bg-white d-flex align-items-center justify-content-between" style="border-left: 4px solid {{ constant('App\\Entity\\Campaign::COLORS')[campaign.type] }};">
+            <div>
+                <span class="badge text-white" style="background-color:{{ constant('App\\Entity\\Campaign::COLORS')[campaign.type] }};">
+                    {{ ('campaign.types.' ~ campaign.type)|trans }}
+                </span>
+                <span class="text-muted ml-2 text-small">{{ campaign.createdAt|date("d/m/Y H:i") }}</span>
+            </div>
+            <div>
                 <a href="{{ path('communication_index', {id: campaign.id}) }}">
                     {% if campaign.active %}
-                        <div class="badge badge-pill badge-success">{{ 'base.open'|trans }}</div>
+                        <span class="badge badge-pill badge-success">{{ 'base.open'|trans }}</span>
                     {% else %}
-                        <div class="badge badge-pill badge-danger">{{ 'base.closed'|trans }}</div>
+                        <span class="badge badge-pill badge-danger">{{ 'base.closed'|trans }}</span>
                     {% endif %}
                 </a>
             </div>
-
         </div>
 
         <div class="card-body">
 
-            <div class="card-title h4">
+            <h4 class="card-title">
                 {% for communication in campaign.communications %}
                     {{ macros.communicationIcon(communication) }}
                 {% endfor %}
                 <a href="{{ path('communication_index', {id: campaign.id}) }}">
                     {% if not campaign.active %}
-                        <strike>{{ campaign.label }}</strike>
+                        <del>{{ campaign.label }}</del>
                     {% else %}
                         {{ campaign.label }}
                     {% endif %}
                 </a>
 
-                <span style="font-size: 14px;color:grey;">
+                <span class="text-small text-muted">
                     {{ campaign.renderedShortcuts }}
                 </span>
 
@@ -49,13 +51,12 @@
                         <a href="{{ campaign.operationUrl(minutis) }}" class="btn btn-secondary" target="_blank">🚑 {{ 'minutis.open'|trans }}</a>
                     </div>
                 {% endif %}
-            </div>
+            </h4>
 
             <div class="card-text">
-                <div class="text-sm-left color-grey">
+                <div class="text-muted">
                     {% if campaign.volunteer %}
                         <p>{{ 'campaign.titles.created_by'|trans({'%name%': campaign.volunteer.displayName}) }}</p>
-                        <br/>
                     {% endif %}
 
                     {% if campaign.reportReady %}
@@ -87,10 +88,7 @@
         </div>
     </div>
 
-    <br/>
 {% endfor %}
-
-<br/>
 
 {{ macros.pager(table.pager, type, {type: type}) }}
 

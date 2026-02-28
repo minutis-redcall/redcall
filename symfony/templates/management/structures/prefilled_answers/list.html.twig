@@ -11,7 +11,7 @@
         <div class="row">
 
             <div class="col-12">
-                <div class="h3">{{ prefilledAnswer.label }}</div>
+                <h3>{{ prefilledAnswer.label }}</h3>
 
                 {% for color in prefilledAnswer.colors %}
                     {{ macros.triggerColor(color) }}
@@ -22,8 +22,6 @@
                         <li class="list-group-item">{{ answer }}</li>
                     {% endfor %}
                 </ul>
-
-                <br/>
 
                 <a href="{{ path('management_structures_prefilled_answers_edit', {structure: structure.id, prefilledAnswers: prefilledAnswer.id}) }}"
                    class="btn btn-primary">
@@ -50,18 +48,13 @@
 
     {{ macros.pager(pager) }}
 
-    <br><br>
     <a href="{{ path('management_structures_prefilled_answers_new', {structure: structure.id}) }}"
        class="btn btn-secondary">
         {{ 'base.button.create'|trans }}
     </a>
 
-    <br/>
-
-    <div class="text-center">
+    <div class="rc-back-link">
         <a href="{{ path('management_structures_list') }}" class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
     </div>
-
-    <br/><br/>
 
 {% endblock %}

@@ -4,9 +4,8 @@
 
     <h1>{{ 'admin.statistics.buttons.structure' | trans }}</h1>
 
-    <div id="form-container" class="jumbotron shadow p-3 mb-5 rounded">
+    <div id="form-container" class="rc-section">
         <h3>{{ 'admin.statistics.structure.form.title'|trans }}</h3>
-        <br/>
 
         {{ form_start(form) }}
 
@@ -57,11 +56,11 @@
             {% for id, structure in report %}
                 {% set row = 0 %}
                 {% for type, data in structure %}
-                    <tr style="background-color: {{ cycle(['#ffffff', '#eeeeee'], counter) }};">
+                    <tr>
                         {% if row == 0 %}
-                            <td style="vertical-align: middle;" rowspan="3">{{ id }}</td>
-                            <td style="vertical-align: middle;" rowspan="3">{{ data.name }}</td>
-                            <td style="vertical-align: middle;" rowspan="3">{{ data.campaigns }}</td>
+                            <td rowspan="3">{{ id }}</td>
+                            <td rowspan="3">{{ data.name }}</td>
+                            <td rowspan="3">{{ data.campaigns }}</td>
                         {% endif %}
                         <td>{{ ('form.communication.' ~ data.type)|trans }}</td>
                         <td>{{ data.communications }}</td>
@@ -95,13 +94,9 @@
 
     {% endif %}
 
-    <div class="text-center">
-        <br/><br/>
-
+    <div class="rc-back-link">
         <a href="{{ path('admin_stats_home') }}"
            class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
-
-        <br/><br/>
     </div>
 
 {% endblock %}

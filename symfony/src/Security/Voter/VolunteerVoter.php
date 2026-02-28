@@ -51,10 +51,6 @@ class VolunteerVoter extends Voter
         /** @var Volunteer $volunteer */
         $volunteer = $subject;
 
-        if ($me->getPlatform() !== $volunteer->getPlatform()) {
-            return false;
-        }
-
         if ($this->security->isGranted('ROLE_ADMIN')) {
             return true;
         }

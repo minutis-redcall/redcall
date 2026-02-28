@@ -34,14 +34,14 @@ class BadgeManager
         return $this->badgeRepository->find($id);
     }
 
-    public function findOneByExternalId(string $platform, string $externalId) : ?Badge
+    public function findOneByExternalId(string $externalId) : ?Badge
     {
-        return $this->badgeRepository->findOneByExternalId($platform, $externalId);
+        return $this->badgeRepository->findOneByExternalId($externalId);
     }
 
-    public function findOneByName(string $platform, string $name) : ?Badge
+    public function findOneByName(string $name) : ?Badge
     {
-        return $this->badgeRepository->findOneByName($platform, $name);
+        return $this->badgeRepository->findOneByName($name);
     }
 
     public function save(Badge $badge)
@@ -49,24 +49,24 @@ class BadgeManager
         $this->badgeRepository->save($badge);
     }
 
-    public function getSearchInBadgesQueryBuilder(string $platform, ?string $criteria, bool $onlyEnabled)
+    public function getSearchInBadgesQueryBuilder(?string $criteria, bool $onlyEnabled)
     {
-        return $this->badgeRepository->getSearchInBadgesQueryBuilder($platform, $criteria, $onlyEnabled);
+        return $this->badgeRepository->getSearchInBadgesQueryBuilder($criteria, $onlyEnabled);
     }
 
-    public function searchForCompletion(string $platform, ?string $criteria, int $limit = 0) : array
+    public function searchForCompletion(?string $criteria, int $limit = 0) : array
     {
-        return $this->badgeRepository->searchForCompletion($platform, $criteria, $limit);
+        return $this->badgeRepository->searchForCompletion($criteria, $limit);
     }
 
-    public function searchNonVisibleUsableBadge(string $platform, ?string $criteria, int $limit = 0) : array
+    public function searchNonVisibleUsableBadge(?string $criteria, int $limit = 0) : array
     {
-        return $this->badgeRepository->searchNonVisibleUsableBadge($platform, $criteria, $limit);
+        return $this->badgeRepository->searchNonVisibleUsableBadge($criteria, $limit);
     }
 
-    public function getNonVisibleUsableBadgesList(string $platform, array $ids)
+    public function getNonVisibleUsableBadgesList(array $ids)
     {
-        return $this->badgeRepository->getNonVisibleUsableBadgesList($platform, $ids);
+        return $this->badgeRepository->getNonVisibleUsableBadgesList($ids);
     }
 
     public function remove(Badge $badge)
@@ -90,15 +90,15 @@ class BadgeManager
         return $this->badgeRepository->getVolunteerCountInBadgeList($ids);
     }
 
-    public function getPublicBadgesQueryBuilder(string $platform) : QueryBuilder
+    public function getPublicBadgesQueryBuilder() : QueryBuilder
     {
-        return $this->badgeRepository->getPublicBadgesQueryBuilder($platform);
+        return $this->badgeRepository->getPublicBadgesQueryBuilder();
     }
 
-    public function getPublicBadges(string $platform) : array
+    public function getPublicBadges() : array
     {
         return $this
-            ->getPublicBadgesQueryBuilder($platform)
+            ->getPublicBadgesQueryBuilder()
             ->getQuery()
             ->getResult();
     }
@@ -111,21 +111,20 @@ class BadgeManager
         if ($user->getFavoriteBadges()->count()) {
             $publicBadges = $user->getSortedFavoriteBadges();
         } else {
-            $publicBadges = $this->getPublicBadges($this->security->getPlatform());
+            $publicBadges = $this->getPublicBadges();
         }
 
         return $publicBadges;
     }
 
-    public function getBadgesInCategoryQueryBuilder(string $platform, Category $category) : QueryBuilder
+    public function getBadgesInCategoryQueryBuilder(Category $category) : QueryBuilder
     {
-        return $this->badgeRepository->getBadgesInCategoryQueryBuilder($platform, $category);
+        return $this->badgeRepository->getBadgesInCategoryQueryBuilder($category);
     }
 
     public function searchForVolunteerQueryBuilder(Volunteer $volunteer, ?string $criteria) : QueryBuilder
     {
         return $this->badgeRepository->searchForVolunteerQueryBuilder(
-            $volunteer->getPlatform(),
             $volunteer,
             $criteria
         );

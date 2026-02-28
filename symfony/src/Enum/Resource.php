@@ -66,7 +66,7 @@ class Resource extends Enum
     {
         switch ($this->value) {
             case self::USER:
-                return 'findOneByUsernameAndPlatform';
+                return 'findOneByUsername';
             default:
                 return 'findOneByExternalId';
         }

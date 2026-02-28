@@ -4,7 +4,6 @@ namespace App\Command;
 
 use App\Base\BaseCommand;
 use App\Entity\User;
-use App\Manager\PlatformConfigManager;
 use App\Manager\UserManager;
 use App\Manager\VolunteerManager;
 use Symfony\Component\Console\Input\InputArgument;
@@ -23,20 +22,13 @@ class CreateUserCommand extends BaseCommand
      */
     private $volunteerManager;
 
-    /**
-     * @var PlatformConfigManager
-     */
-    private $platformConfigManager;
-
     public function __construct(UserManager $userManager,
-        VolunteerManager $volunteerManager,
-        PlatformConfigManager $platformConfigManager)
+        VolunteerManager $volunteerManager)
     {
         parent::__construct();
 
-        $this->userManager           = $userManager;
-        $this->volunteerManager      = $volunteerManager;
-        $this->platformConfigManager = $platformConfigManager;
+        $this->userManager      = $userManager;
+        $this->volunteerManager = $volunteerManager;
     }
 
     /**
@@ -47,7 +39,6 @@ class CreateUserCommand extends BaseCommand
         $this
             ->setName('user:create')
             ->setDescription('Create users based on volunteer\'s external id')
-            ->addArgument('platform', InputArgument::REQUIRED, 'Platform for which to create user')
             ->addArgument('external-id', InputArgument::REQUIRED | InputArgument::IS_ARRAY, 'External IDs from which to create a new user');
     }
 
@@ -56,10 +47,8 @@ class CreateUserCommand extends BaseCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $platform = $input->getArgument('platform');
-
         foreach ($input->getArgument('external-id') as $externalId) {
-            $volunteer = $this->volunteerManager->findOneByExternalId($platform, $externalId);
+            $volunteer = $this->volunteerManager->findOneByExternalId($externalId);
 
             if (!$volunteer) {
                 $output->writeln(sprintf('KO %s: external id do not exist', $externalId));
@@ -76,18 +65,15 @@ class CreateUserCommand extends BaseCommand
                 continue;
             }
 
-            if ($this->userManager->findOneByExternalId($platform, $externalId)) {
+            if ($this->userManager->findOneByExternalId($externalId)) {
                 $output->writeln(sprintf('KO %s: external id already connected to a user', $externalId));
                 continue;
             }
 
             $user = new User();
 
-            $platform = $this->platformConfigManager->getPlaform($volunteer->getPlatform());
-
-            $user->setPlatform($platform->getName());
-            $user->setLocale($platform->getDefaultLanguage()->getLocale());
-            $user->setTimezone($platform->getTimezone());
+            $user->setLocale('fr');
+            $user->setTimezone('Europe/Paris');
 
             $user->setUsername($volunteer->getEmail());
             $user->setPassword('invalid hash');
@@ -95,7 +81,7 @@ class CreateUserCommand extends BaseCommand
             $user->setIsTrusted(true);
             $this->userManager->save($user);
 
-            $this->userManager->changeVolunteer($user, $platform, $externalId);
+            $this->userManager->changeVolunteer($user, $externalId);
 
             $output->writeln(sprintf('OK %s: user created', $externalId));
         }

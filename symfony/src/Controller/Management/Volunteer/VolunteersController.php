@@ -19,12 +19,10 @@ use App\Manager\CommunicationManager;
 use App\Manager\MessageManager;
 use App\Manager\PegassManager;
 use App\Manager\PhoneManager;
-use App\Manager\PlatformConfigManager;
 use App\Manager\RefreshManager;
 use App\Manager\StructureManager;
 use App\Manager\VolunteerManager;
 use App\Model\Csrf;
-use App\Model\PlatformConfig;
 use Bundles\PaginationBundle\Manager\PaginationManager;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Ramsey\Uuid\Uuid;
@@ -99,11 +97,6 @@ class VolunteersController extends BaseController
     private $messageManager;
 
     /**
-     * @var PlatformConfigManager
-     */
-    private $platformManager;
-
-    /**
      * @var TranslatorInterface
      */
     private $translator;
@@ -123,7 +116,6 @@ class VolunteersController extends BaseController
         AnswerManager $answerManager,
         PaginationManager $paginationManager,
         MessageManager $messageManager,
-        PlatformConfigManager $platformConfigManager,
         TranslatorInterface $translator,
         Environment $templating,
         SimpleProcessor $simpleProcessor)
@@ -138,7 +130,6 @@ class VolunteersController extends BaseController
         $this->answerManager        = $answerManager;
         $this->paginationManager    = $paginationManager;
         $this->messageManager       = $messageManager;
-        $this->platformManager      = $platformConfigManager;
         $this->translator           = $translator;
         $this->templating           = $templating;
         $this->simpleProcessor      = $simpleProcessor;
@@ -171,16 +162,15 @@ class VolunteersController extends BaseController
         }
 
         if ($structure) {
-            $queryBuilder = $this->volunteerManager->searchInStructureQueryBuilder($this->getPlatform(), $structure, $criteria, $hideDisabled, $filterUsers, $filterIncludeHierarchy, $filterLocked);
+            $queryBuilder = $this->volunteerManager->searchInStructureQueryBuilder($structure, $criteria, $hideDisabled, $filterUsers, $filterIncludeHierarchy, $filterLocked);
         } else {
-            $queryBuilder = $this->volunteerManager->searchQueryBuilder($this->getPlatform(), $criteria, $hideDisabled, $filterUsers, $filterLocked);
+            $queryBuilder = $this->volunteerManager->searchQueryBuilder($criteria, $hideDisabled, $filterUsers, $filterLocked);
         }
 
         return $this->render('management/volunteers/list.html.twig', [
             'search'     => $search->createView(),
             'volunteers' => $this->paginationManager->getPager($queryBuilder),
             'structure'  => $structure,
-            'platforms'  => $this->getPlatforms(),
         ]);
     }
 
@@ -276,7 +266,6 @@ class VolunteersController extends BaseController
     public function createAction(Request $request)
     {
         $volunteer = new Volunteer();
-        $volunteer->setPlatform($this->getPlatform());
         $volunteer->setExternalId(Uuid::uuid4());
 
         return $this->manualUpdateAction($request, $volunteer);
@@ -360,7 +349,7 @@ class VolunteersController extends BaseController
             throw $this->createNotFoundException();
         }
 
-        $this->structureManager->addStructureAndItsChildrenToVolunteer($this->getPlatform(), $volunteer, $parentStructure);
+        $this->structureManager->addStructureAndItsChildrenToVolunteer($volunteer, $parentStructure);
 
         $this->volunteerManager->save($volunteer);
 
@@ -491,33 +480,9 @@ class VolunteersController extends BaseController
         return $this->getContext($volunteer);
     }
 
-    /**
-     * @Route(name="update_platform", path="/change-platform/{csrf}/{id}/{platform}")
-     * @IsGranted("ROLE_ROOT")
-     * @IsGranted("VOLUNTEER", subject="volunteer")
-     */
-    public function changePlatform(Volunteer $volunteer, Csrf $csrf, PlatformConfig $platform)
-    {
-        $volunteer->setPlatform($platform);
-
-        $this->volunteerManager->save($volunteer);
-
-        return $this->redirectToRoute('management_volunteers_list');
-    }
-
-    protected function getPlatforms() : ?array
-    {
-        if (!$this->getUser()->isRoot()) {
-            return null;
-        }
-
-        return $this->platformManager->getAvailablePlatforms();
-    }
-
     private function getContext(Volunteer $volunteer)
     {
         return [
-            'platforms' => $this->getPlatforms(),
             'volunteer' => $volunteer,
         ];
     }
@@ -528,9 +493,7 @@ class VolunteersController extends BaseController
     {
         // Sending a message to the volunteer to let him know he is now removed
         $sms = new SmsTrigger();
-        $sms->setLanguage(
-            $this->platformManager->getLocale($volunteer->getPlatform())
-        );
+        $sms->setLanguage('fr');
 
         $campaign = new Campaign($sms);
 
@@ -554,9 +517,7 @@ class VolunteersController extends BaseController
 
         // Sending a message inviting redcall users managing volunteer's structure to complete data deletion
         $email = new EmailTrigger();
-        $email->setLanguage(
-            $this->platformManager->getLocale($this->getPlatform())
-        );
+        $email->setLanguage('fr');
 
         $audience = [];
         foreach ($volunteer->getStructures() as $structure) {

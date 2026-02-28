@@ -1,15 +1,9 @@
 {% extends 'base.html.twig' %}
 
-{% block logo %}
-    <a href="{{ path('home') }}">
-        <img src="{{ asset('minutis.png') }}" style="max-height: 50px;" alt="Croix-Rouge Française"/>
-    </a>
-{% endblock %}
 
 {% block body %}
 
-    <br/>
-    <div class="jumbotron bg-white border-0 text-center py-5">
+    <div class="rc-section text-center py-5">
 
         {% if not app.user.structures.count %}
 
@@ -60,7 +54,7 @@
             </div>
 
             <div id="issues" class="mt-5">
-                <img src="{{ asset('spinner.gif') }}" style="width:25px;"/>
+                <span class="rc-spinner"></span>
             </div>
 
         {% endif %}

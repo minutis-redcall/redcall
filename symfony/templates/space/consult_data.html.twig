@@ -4,9 +4,7 @@
 
 {% block body %}
 
-    <br/>
-
-    <div class="jumbotron shadow p-3 mb-5 rounded">
+    <div class="rc-section">
 
         <div class="text-right">
             <a href="{{ path('space_download_data', {sessionId: session.sessionId}) }}">{{ 'space.consult_data.download_btn'|trans }}</a>
@@ -16,9 +14,9 @@
 
     </div>
 
-    <a href="{{ path('space_home', {sessionId: session.sessionId}) }}"
-       class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
-
-    <br/><br/>
+    <div class="rc-back-link">
+        <a href="{{ path('space_home', {sessionId: session.sessionId}) }}"
+           class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+    </div>
 
 {% endblock %}

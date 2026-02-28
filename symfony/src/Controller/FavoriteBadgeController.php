@@ -62,7 +62,7 @@ class FavoriteBadgeController extends BaseController
         /** @var User $user */
         $user = $this->security->getUser();
         if (!$this->settingManager->get($key = sprintf('fav_badge_%d', $user->getId()))) {
-            foreach ($this->badgeManager->getPublicBadges($this->security->getPlatform()) as $badge) {
+            foreach ($this->badgeManager->getPublicBadges() as $badge) {
                 $user->addFavoriteBadge($badge);
             }
             $this->userManager->save($user);
@@ -93,7 +93,7 @@ class FavoriteBadgeController extends BaseController
 
         return [
             'form'          => $form->createView(),
-            'public_badges' => $this->badgeManager->getPublicBadges($this->security->getPlatform()),
+            'public_badges' => $this->badgeManager->getPublicBadges(),
         ];
     }
 

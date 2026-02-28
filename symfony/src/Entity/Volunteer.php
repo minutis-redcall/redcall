@@ -16,7 +16,7 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 /**
  * @ORM\Table(
  *     uniqueConstraints={
- *         @ORM\UniqueConstraint(name="pf_extid_idx", columns={"platform", "external_id"})
+ *         @ORM\UniqueConstraint(name="extid_idx", columns={"external_id"})
  *     },
  *     indexes={
  *         @ORM\Index(name="emailx", columns={"email"}),
@@ -40,11 +40,6 @@ class Volunteer implements LockableInterface
      * @ORM\Column(type="integer")
      */
     private $id;
-
-    /**
-     * @ORM\Column(type="string", length=5)
-     */
-    private $platform;
 
     /**
      * @var string
@@ -408,28 +403,14 @@ class Volunteer implements LockableInterface
             return $this->getEnabledStructures();
         }
 
-        return $this->structures->filter(function (Structure $structure) {
-            return $this->platform === $structure->getPlatform();
-        });
+        return $this->structures;
     }
 
     public function getEnabledStructures() : Collection
     {
         return $this->structures->filter(function (Structure $structure) {
-            return $this->platform === $structure->getPlatform() && $structure->isEnabled();
+            return $structure->isEnabled();
         });
-    }
-
-    public function getPlatform()
-    {
-        return $this->platform;
-    }
-
-    public function setPlatform($platform)
-    {
-        $this->platform = $platform;
-
-        return $this;
     }
 
     public function isEnabled() : ?bool
@@ -625,9 +606,7 @@ class Volunteer implements LockableInterface
             return $this->getEnabledBadges();
         }
 
-        return $this->badges->filter(function (Badge $badge) {
-            return $this->platform === $badge->getPlatform();
-        });
+        return $this->badges;
     }
 
     public function setBadges(array $badges)
@@ -641,7 +620,7 @@ class Volunteer implements LockableInterface
     public function getEnabledBadges() : Collection
     {
         return $this->badges->filter(function (Badge $badge) {
-            return $this->platform === $badge->getPlatform() && $badge->isEnabled();
+            return $badge->isEnabled();
         });
     }
 
@@ -887,11 +866,11 @@ class Volunteer implements LockableInterface
         }
     }
 
-    public function hasBadge(string $platform, string $badgeName) : bool
+    public function hasBadge(string $badgeName) : bool
     {
         foreach ($this->badges as $badge) {
             /** @var Badge $badge */
-            if ($platform === $badge->getPlatform() && $badgeName === $badge->getName()) {
+            if ($badgeName === $badge->getName()) {
                 return true;
             }
         }

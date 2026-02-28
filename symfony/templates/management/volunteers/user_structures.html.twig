@@ -1,9 +1,7 @@
 <div class="text-left">
     <ul>
         {% for structure in user.structures %}
-            {% if app.user.platform == structure.platform %}
-                <li>{{ structure.name }}</li>
-            {% endif %}
+            <li>{{ structure.name }}</li>
         {% endfor %}
     </ul>
 </div>

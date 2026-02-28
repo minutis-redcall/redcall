@@ -22,7 +22,7 @@
 
     <div class="row">
         {% for volunteer in volunteers %}
-            <div class="col-md-6" id="volunteer-{{ volunteer.id }}" style="padding:5px;">
+            <div class="col-md-6" id="volunteer-{{ volunteer.id }}">
                 {{ include('management/volunteers/volunteer.html.twig', {volunteer: volunteer}) }}
             </div>
         {% endfor %}
@@ -31,17 +31,14 @@
     {{ macros.pager(volunteers, '', app.request.query.all) }}
 
     <div>{{ 'lock.explanation'|trans }}</div>
-    <br/>
 
-    <div class="text-center">
+    <div class="rc-back-link">
         {% if structure %}
             <a href="{{ path('management_structures_list') }}" class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
         {% else %}
             <a href="{{ path('management_home') }}" class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
         {% endif %}
     </div>
-
-    <br/><br/>
 
     <div class="modal fade" id="user-structures-modal" tabindex="-1" role="dialog" aria-hidden="true">
         <div class="modal-dialog modal-lg" role="document">
@@ -81,7 +78,7 @@
         $('body').on('click', '.show-structure-users', function (e) {
             e.preventDefault();
             $('#user-structures-modal-title').html('');
-            $('#user-structures-modal-body').html('<img src="{{ asset('spinner.gif') }}"/>');
+            $('#user-structures-modal-body').html('<div class="py-4"><span class="rc-spinner rc-spinner-lg"></span></div>');
             $('#user-structures-modal').modal();
             $.post('{{ path('management_volunteers_list_user_structures') }}', {
                 id: $(this).data('volunteer-id'),

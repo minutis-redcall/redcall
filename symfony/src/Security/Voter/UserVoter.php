@@ -50,10 +50,6 @@ class UserVoter extends Voter
         /** @var User $user */
         $user = $subject;
 
-        if ($me->getPlatform() !== $user->getPlatform()) {
-            return false;
-        }
-
         //        if ($me->isEqualTo($user)) {
         //            return false;
         //        }

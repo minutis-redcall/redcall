@@ -6,7 +6,6 @@ use App\Command\AnnuaireNationalCommand;
 use App\Entity\Structure;
 use App\Entity\User;
 use App\Entity\Volunteer;
-use App\Enum\Platform;
 use App\Manager\StructureManager;
 use App\Manager\UserManager;
 use App\Manager\VolunteerManager;
@@ -59,7 +58,7 @@ class UserService
 
         $users = $this->extractObjectsFromGrid($extract);
 
-        $structure = $this->structureManager->findOneByName(Platform::FR, AnnuaireNationalCommand::STRUCTURE_NAME);
+        $structure = $this->structureManager->findOneByName(AnnuaireNationalCommand::STRUCTURE_NAME);
         $this->deleteMissingUsers($structure, $users);
         $this->createUsers($structure, $users);
     }
@@ -159,7 +158,7 @@ class UserService
         $toDeletes = array_diff($fromDatabases, $fromExtracts);
 
         foreach ($toDeletes as $toDelete) {
-            $user = $this->userManager->findOneByUsernameAndPlatform(Platform::FR, $toDelete);
+            $user = $this->userManager->findOneByUsername($toDelete);
 
             if (!$user || $user->isAdmin()) {
                 continue;
@@ -189,7 +188,7 @@ class UserService
     private function createUsers(Structure $structure, UsersExtract $extract)
     {
         foreach ($extract->getUsers() as $userExtract) {
-            $user = $this->userManager->findOneByUsernameAndPlatform(Platform::FR, strtolower($userExtract->getEmail()));
+            $user = $this->userManager->findOneByUsername(strtolower($userExtract->getEmail()));
 
             if (!$user || !$user->hasStructure($structure)) {
                 LogService::success('new', 'Create a user', [
@@ -197,12 +196,11 @@ class UserService
                 ]);
 
                 if (!$user) {
-                    $volunteer = $this->volunteerManager->findOneByExternalId(Platform::FR, $userExtract->getNivol());
+                    $volunteer = $this->volunteerManager->findOneByExternalId($userExtract->getNivol());
                     if ($volunteer) {
                         $volunteer->setEnabled(true);
                     } else {
                         $volunteer = new Volunteer();
-                        $volunteer->setPlatform(Platform::FR);
                         $volunteer->setExternalId($userExtract->getNivol());
                         $volunteer->setEmail($userExtract->getEmail());
                         $volunteer->setInternalEmail(strtolower($userExtract->getEmail()));
@@ -216,7 +214,6 @@ class UserService
                     }
 
                     $user = new User();
-                    $user->setPlatform(Platform::FR);
                     $user->setLocale('fr');
                     $user->setTimezone('Europe/Paris');
                     $user->setUsername(strtolower($userExtract->getEmail()));

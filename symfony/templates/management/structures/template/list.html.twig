@@ -45,19 +45,13 @@
 
     {{ macros.pager(pager) }}
 
-    <br><br>
-
     <a href="{{ path('management_structures_template_new', {structure: structure.id}) }}"
        class="btn btn-secondary">
         {{ 'base.button.create'|trans }}
     </a>
 
-    <br/>
-
-    <div class="text-center">
+    <div class="rc-back-link">
         <a href="{{ path('management_structures_list') }}" class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
     </div>
-
-    <br/><br/>
 
 {% endblock %}

@@ -3,7 +3,6 @@
 namespace App\Provider\OAuth\GoogleConnect;
 
 use App\Entity\Volunteer;
-use App\Enum\Platform;
 use App\Manager\UserManager;
 use App\Manager\VolunteerManager;
 use App\Model\OAuthUser;
@@ -140,7 +139,7 @@ class GoogleConnect implements GoogleConnectInterface
             return null;
         }
 
-        $user = $this->userManager->findOneByUsernameAndPlatform(Platform::FR, $oAuthUser->getEmail());
+        $user = $this->userManager->findOneByUsername($oAuthUser->getEmail());
 
         if (null === $user) {
             return $this->volunteerManager->getVolunteerFromOauth($oAuthUser);

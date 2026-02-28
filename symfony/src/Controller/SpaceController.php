@@ -11,7 +11,6 @@ use App\Manager\LocaleManager;
 use App\Manager\MessageManager;
 use App\Manager\PhoneConfigManager;
 use App\Manager\PhoneManager;
-use App\Manager\PlatformConfigManager;
 use App\Manager\VolunteerManager;
 use App\Manager\VolunteerSessionManager;
 use App\Tools\PhoneNumber;
@@ -53,11 +52,6 @@ class SpaceController extends BaseController
     private $phoneConfigManager;
 
     /**
-     * @var PlatformConfigManager
-     */
-    private $platformConfigManager;
-
-    /**
      * @var PhoneManager
      */
     private $phoneManager;
@@ -71,7 +65,6 @@ class SpaceController extends BaseController
         VolunteerManager $volunteerManager,
         MessageManager $messageManager,
         PhoneConfigManager $phoneConfigManager,
-        PlatformConfigManager $platformConfigManager,
         PhoneManager $phoneManager,
         TranslatorInterface $translator)
     {
@@ -79,7 +72,6 @@ class SpaceController extends BaseController
         $this->volunteerManager        = $volunteerManager;
         $this->messageManager          = $messageManager;
         $this->phoneConfigManager      = $phoneConfigManager;
-        $this->platformConfigManager   = $platformConfigManager;
         $this->phoneManager            = $phoneManager;
         $this->translator              = $translator;
     }
@@ -90,7 +82,7 @@ class SpaceController extends BaseController
     public function home(Request $request, LocaleManager $localeManager, VolunteerSession $session)
     {
         if (!$this->getUser()) {
-            $locale = $this->platformConfigManager->getLocale($session->getVolunteer()->getPlatform());
+            $locale = 'fr';
             if ($locale !== $request->getLocale()) {
                 $localeManager->changeLocale($locale);
             }

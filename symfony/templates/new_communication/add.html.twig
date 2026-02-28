@@ -6,8 +6,8 @@
     <h1>
         {{ macros.communicationTypeIcon(type) }}
         {{ ('new_communication.title_' ~ type)|trans }}
-        <br/>
-        <div class="h3">{{ 'new_communication.subtitle'|trans({'%label%': campaign.label|lower}) }}</div>
+
+        <h3>{{ 'new_communication.subtitle'|trans({'%label%': campaign.label|lower}) }}</h3>
     </h1>
 
     <div id="form-container">
@@ -22,17 +22,15 @@
             <button type="submit" name="{{ flow.formTransitionKey }}" value="back" class="btn btn-secondary trigger-launch" formnovalidate="formnovalidate">
                 {{ 'form.operation.buttons.return'|trans }}
             </button>
-
-            <br/><br/>
         {% endif %}
 
         {{ form_end(form) }}
 
-        <a href="{{ path('communication_index', {id: campaign.id, key: key}) }}" class="btn btn-light">
-            {{ 'form.communication.fields.back'|trans }}
-        </a>
-
-        <br/><br/>
+        <div class="rc-back-link">
+            <a href="{{ path('communication_index', {id: campaign.id, key: key}) }}" class="btn btn-light">
+                {{ 'form.communication.fields.back'|trans }}
+            </a>
+        </div>
 
     </div>
 

@@ -2,7 +2,6 @@
 
 namespace Bundles\SandboxBundle\Provider;
 
-use App\Enum\Platform;
 use App\Manager\VolunteerManager;
 use App\Provider\Minutis\MinutisProvider;
 use Bundles\SandboxBundle\Manager\AnonymizeManager;
@@ -68,7 +67,7 @@ class FakeMinutisProvider implements MinutisProvider
 
     public function searchForVolunteer(string $volunteerExternalId) : ?array
     {
-        $volunteer = $this->volunteerManager->findOneByExternalId(Platform::FR, $volunteerExternalId);
+        $volunteer = $this->volunteerManager->findOneByExternalId($volunteerExternalId);
         if ($volunteer) {
             $email = $volunteer->getEmail();
         } else {

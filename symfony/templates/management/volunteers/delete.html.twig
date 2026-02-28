@@ -2,33 +2,24 @@
 
 {% block body %}
 
-    <br/>
-
-    <div class="jumbotron shadow p-3 mb-5 rounded">
+    <div class="rc-section">
 
         <h3>{{ 'manage_volunteers.anonymize.title'|trans({'%name%': volunteer.displayName}) }}</h3>
 
         <hr/>
 
         <p>{{ 'manage_volunteers.anonymize.details_1'|trans }}</p>
-        <br/>
         <p>{{ 'manage_volunteers.anonymize.details_2'|trans }}</p>
-        <br/>
         <p>{{ 'manage_volunteers.anonymize.details_3'|trans }}</p>
 
-        <br/>
-
         {% if answer %}
-            <div style="color:red;">{{ 'manage_volunteers.anonymize.message'|trans }}</div>
-            <br/>
+            <div class="text-danger">{{ 'manage_volunteers.anonymize.message'|trans }}</div>
 
             <blockquote class="quote-card">
                 <p>{{ answer.raw }}</p>
                 <cite>{{ answer.receivedAt|date('d/m/Y H:i') }}</cite>
             </blockquote>
         {% endif %}
-
-        <br/>
 
         <div id="delete-buttons" class="d-none">
             {{ form_start(form) }}
@@ -49,8 +40,6 @@
 
     <a href="{{ path('management_volunteers_manual_update', {id: volunteer.id}) }}"
        class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
-
-    <br/><br/>
 
     <script type="text/javascript">
 

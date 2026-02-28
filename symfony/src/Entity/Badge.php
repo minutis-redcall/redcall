@@ -17,7 +17,7 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
  *         @ORM\Index(name="enabledx", columns={"enabled"}),
  *     },
  *     uniqueConstraints={
- *         @ORM\UniqueConstraint(name="pf_extid_idx", columns={"platform", "external_id"})
+ *         @ORM\UniqueConstraint(name="extid_idx", columns={"external_id"})
  *     }
  * )
  * @ORM\Entity(repositoryClass=BadgeRepository::class)
@@ -33,13 +33,6 @@ class Badge implements LockableInterface
      * @ORM\Column(type="integer")
      */
     private $id;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(type="string", length=5)
-     */
-    private $platform;
 
     /**
      * @var string
@@ -158,18 +151,6 @@ class Badge implements LockableInterface
         return $this->id;
     }
 
-    public function getPlatform()
-    {
-        return $this->platform;
-    }
-
-    public function setPlatform($platform)
-    {
-        $this->platform = $platform;
-
-        return $this;
-    }
-
     public function getExternalId() : ?string
     {
         return $this->externalId;
@@ -273,9 +254,7 @@ class Badge implements LockableInterface
             return $this->getEnabledVolunteers();
         }
 
-        return $this->volunteers->filter(function (Volunteer $volunteer) {
-            return $this->platform === $volunteer->getPlatform();
-        });
+        return $this->volunteers;
     }
 
     /**
@@ -284,7 +263,7 @@ class Badge implements LockableInterface
     public function getEnabledVolunteers() : Collection
     {
         return $this->volunteers->filter(function (Volunteer $volunteer) {
-            return $this->platform === $volunteer->getPlatform() && $volunteer->isEnabled();
+            return $volunteer->isEnabled();
         });
     }
 
@@ -343,9 +322,7 @@ class Badge implements LockableInterface
             return $this->getEnabledChildren();
         }
 
-        return $this->children->filter(function (Badge $badge) {
-            return $this->platform === $badge->getPlatform();
-        });
+        return $this->children;
     }
 
     /**
@@ -354,7 +331,7 @@ class Badge implements LockableInterface
     public function getEnabledChildren() : Collection
     {
         return $this->children->filter(function (Badge $badge) {
-            return $this->platform === $badge->getPlatform() && $badge->isEnabled();
+            return $badge->isEnabled();
         });
     }
 
@@ -420,9 +397,7 @@ class Badge implements LockableInterface
             return $this->getEnabledSynonyms();
         }
 
-        return $this->synonyms->filter(function (Badge $badge) {
-            return $this->platform === $badge->getPlatform();
-        });
+        return $this->synonyms;
     }
 
     /**
@@ -431,7 +406,7 @@ class Badge implements LockableInterface
     public function getEnabledSynonyms() : Collection
     {
         return $this->synonyms->filter(function (Badge $badge) {
-            return $this->platform === $badge->getPlatform() && $badge->isEnabled();
+            return $badge->isEnabled();
         });
     }
 

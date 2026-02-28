@@ -9,22 +9,20 @@
 <div class="row text-left">
 
     {% for volunteer in volunteers %}
-        <div class="col-md-6" style="padding:5px;" id="preselection-volunteer-{{ volunteer.id }}">
-            <table>
-                <tr>
-                    <td style="padding:5px;">
+        <div class="col-md-6" id="preselection-volunteer-{{ volunteer.id }}">
+            <div class="d-flex align-items-start gap-2 mb-2">
+                <div>
                         <a href="#"
                            class="btn btn-small btn-secondary preselection-volunteer-toggle"
                            style="border: 1px solid red!important;"
                            data-id="{{ volunteer.id }}">
                             ❌
                         </a>
-                    </td>
-                    <td style="padding:5px;">
+                </div>
+                <div class="flex-grow-1">
                         {{ macros.volunteer(volunteer) }}
-                    </td>
-                </tr>
-            </table>
+                </div>
+            </div>
         </div>
     {% endfor %}
 

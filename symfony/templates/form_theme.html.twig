@@ -26,10 +26,10 @@
 {% block types_row %}
     <div class="form-group">
         {{ form_label(form) }}
-        <div class="row" style="padding-left:15px;padding-right:15px;">
+        <div class="row px-3">
             {% for child in form.children %}
                 {% set color = constant('App\\Entity\\Campaign::COLORS')[child.vars.value] %}
-                <div class="col-md-3" style="font-weight:bold;color:{{ color|e('html_attr') }};">
+                <div class="col-md-3 font-weight-bold" style="color:{{ color|e('html_attr') }};">
 
                     {{ form_widget(child, {
                         attr: form.vars.attr|merge({
@@ -45,7 +45,7 @@
 
 {# One answer of the collection (having the "delete" button at its right) #}
 {% block answer_row %}
-    <div class="row answer-row" style="margin-bottom: 5px;" id="answer-nb-{{ name }}">
+    <div class="row answer-row mb-1" id="answer-nb-{{ name }}">
 
         <div class="col-10">
             {{ form_errors(form) }}
@@ -164,14 +164,14 @@
     <div class="col-md-6 phone-row" id="form-row-{{ form.vars.id }}">
         <div class="card">
             <div class="card-header">
-                <div class="card-title h4">
+                <h4 class="card-title mb-0">
                     {{ 'phone_card.title'|trans({'%index%': intval(name) + 1}) }}
                     <div class="float-right phone-main {% if not form.preferred.vars.data %}d-none{% endif %}">
-                        <div class="badge badge-pill badge-success" style="background-color:#48C765;">
+                        <span class="badge badge-pill badge-success">
                             {{ 'phone_card.main'|trans }}
-                        </div>
+                        </span>
                     </div>
-                </div>
+                </h4>
             </div>
             <div class="card-body">
 
@@ -197,8 +197,7 @@
 
                 <div class="float-right">
                     <a href="#"
-                       class="btn btn-small btn-secondary delete-phone"
-                       style="border: 1px solid red!important;"
+                       class="btn btn-small btn-outline-danger delete-phone"
                        data-target="#form-row-{{ form.vars.id }}">
                         ❌
                     </a>
@@ -247,16 +246,12 @@
         }) }}
     </div>
 
-    <br/>
-
-    <div class="add-phone-container">
+    <div class="add-phone-container mt-3 mb-3">
         <a href="#"
            class="btn btn-secondary add-phone">
             {{ 'phone_card.add'|trans }}
         </a>
     </div>
-
-    <br/>
 
     <script type="text/javascript">
 

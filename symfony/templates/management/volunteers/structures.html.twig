@@ -4,9 +4,7 @@
 
 {% block body %}
 
-    <br/>
-
-    <div class="col-md-12 jumbotron shadow p-3 mb-5 rounded">
+    <div class="col-md-12 rc-section">
 
         <h3>{{ 'manage_volunteers.admin_structures.structures'|trans({'%name%': volunteer.displayName}) }}</h3>
 
@@ -16,9 +14,7 @@
             </a>
         </div>
 
-        <br/><br/>
-
-        <table class="table">
+        <table class="table mt-3">
             <tbody>
             {% for structure in volunteer.structures %}
                 <tr>
@@ -36,8 +32,6 @@
         <div id="structure-to-add">
             {{ render(controller('\\App\\Controller\\WidgetController::structureEditor')) }}
         </div>
-
-        <br/>
 
         <a href="{{ path('management_volunteers_manual_update', {id: volunteer.id}) }}"
            class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>

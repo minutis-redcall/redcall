@@ -7,7 +7,7 @@
 
     <title>{% block title %}RedCall{% endblock %}</title>
     {% block base_stylesheets %}
-        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Lato:wght@300;400;700&family=Roboto:wght@300;400;500;700&family=Ultra&family=Arvo:wght@400;700&family=Anton&family=Permanent+Marker&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
         {{ encore_entry_link_tags('css') }}
     {% endblock %}
     {% block stylesheets %}{% endblock %}
@@ -60,7 +60,11 @@
             <div class="container d-flex align-items-center justify-content-between py-3">
                 <div class="header-main d-flex align-items-center">
                     <div class="logo-container mr-4">
-                        {% block logo %}{% endblock %}
+                        {% block logo %}
+                            <a href="{{ path('home') }}">
+                                <img src="{{ asset('minutis.png') }}" style="max-height: 40px;" alt="Croix-Rouge Française"/>
+                            </a>
+                        {% endblock %}
                     </div>
 
                     {% block menu %}
@@ -94,12 +98,6 @@
                 </div>
 
                 <div class="header-actions d-flex align-items-center">
-                    {% if app.user|default(false) and app.user.root %}
-                        <div class="platform-switch mr-3">
-                            {{ render(controller('\\App\\Controller\\Admin\\PlatformController::renderSwitch')) }}
-                        </div>
-                    {% endif %}
-
                     {% if session.volunteer|default(false) %}
                         <span class="badge badge-pill badge-primary">
                             {{ session.volunteer.firstName }} {{ session.volunteer.lastName[:1] }}.

@@ -54,7 +54,6 @@ class Kernel extends BaseKernel
 
         $loader->load($confDir.'/international/languages.yaml');
         $loader->load($confDir.'/international/phones.yaml');
-        $loader->load($confDir.'/international/platforms.yaml');
 
         $loader->load($confDir.'/{packages}/*'.self::CONFIG_EXTS, 'glob');
         $loader->load($confDir.'/{packages}/'.$this->environment.'/**/*'.self::CONFIG_EXTS, 'glob');

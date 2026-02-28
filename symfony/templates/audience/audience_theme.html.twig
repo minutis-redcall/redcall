@@ -35,13 +35,10 @@
 
         <div id="audience-form" class="{% if preselection %}d-none{% endif %}">
 
-            <div class="h3">
-                {{ 'audience.audience'|trans }}
-            </div>
+            <h3>{{ 'audience.audience'|trans }}</h3>
 
             <p>{{ 'audience.audience_help'|trans }}</p>
 
-            <br/>
 
             <div id="accordion">
                 <div class="card">
@@ -65,9 +62,7 @@
 
                             {% if app.user.structures|length > 1 %}
 
-                                <div class="h4">
-                                    {{ 'audience.structures'|trans }}
-                                </div>
+                                <h4>{{ 'audience.structures'|trans }}</h4>
 
                                 {# All structure ticks, in the tree view #}
                                 {% macro renderSlider(form, global, local, hierarchy, information, current, ticked = false) %}
@@ -148,9 +143,7 @@
                             {# -------------------------------------------------------------------------------- #}
 
                             {% if app.user.structures|length > 1 %}
-                                <div class="h4">
-                                    {{ 'audience.badges'|trans }}
-                                </div>
+                                <h4>{{ 'audience.badges'|trans }}</h4>
                             {% endif %}
 
                             {# Trigger everyone discarding badges #}
@@ -277,9 +270,7 @@
 
                                 {% else %}
 
-                                    <div class="h4">
-                                        {{ 'audience.volunteer_lists'|trans }}
-                                    </div>
+                                    <h4>{{ 'audience.volunteer_lists'|trans }}</h4>
 
                                     {% for volunteer_list in volunteer_lists %}
                                         <div class="d-none" id="volunteer-list-{{ volunteer_list.id }}">
@@ -340,9 +331,7 @@
                             {# -------------------------------------------------------------------------------- #}
 
                             {% if app.user.structures|length > 1 %}
-                                <div class="h4">
-                                    {{ 'audience.manual_selection'|trans }}
-                                </div>
+                                <h4>{{ 'audience.manual_selection'|trans }}</h4>
                             {% endif %}
 
                             {{ form_label(form.volunteers) }}
@@ -511,7 +500,7 @@
         $('body').on('click', '#open-problems', function (e) {
             e.preventDefault();
             $('#audience-modal-title').html('{{ 'audience.problems.title'|trans }}');
-            $('#audience-modal-body').html('<img src="{{ asset('spinner.gif') }}"/>');
+            $('#audience-modal-body').html('<div class="py-4"><span class="rc-spinner rc-spinner-lg"></span></div>');
             $('#audience-modal').modal();
             $.post('{{ path('audience_problems', {name: form.vars.full_name}) }}', $('form.trigger').serialize(), function (content) {
                 $('#audience-modal-body').html(content);
@@ -522,7 +511,7 @@
         $('body').on('click', '#open-audience', function (e) {
             e.preventDefault();
             $('#audience-modal-title').html('{{ 'audience.classification.selected'|trans }}');
-            $('#audience-modal-body').html('<img src="{{ asset('spinner.gif') }}"/>');
+            $('#audience-modal-body').html('<div class="py-4"><span class="rc-spinner rc-spinner-lg"></span></div>');
             $('#audience-modal').modal();
             $.post('{{ path('audience_selection', {name: form.vars.full_name}) }}', $('form.trigger').serialize(), function (content) {
                 $('#audience-modal-body').html(content);
@@ -562,7 +551,7 @@
             numbersContext = null;
 
             if (withBadgeCounts) {
-                $('.badge-count').html('<img src="{{ asset('spinner.gif') }}" style="width:25px;"/>');
+                $('.badge-count').html('<span class="rc-spinner"></span>');
             }
 
             $.post('{{ path('audience_numbers', {name: form.vars.full_name}) }}&badge_counts=' + withBadgeCounts, formData, function (data) {

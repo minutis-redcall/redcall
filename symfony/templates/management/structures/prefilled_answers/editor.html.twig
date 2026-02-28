@@ -17,12 +17,8 @@
     {{ form_row(form.submit) }}
     {{ form_end(form) }}
 
-    <br/>
-
-    <div class="text-center">
+    <div class="rc-back-link">
         <a href="{{ path('management_structures_prefilled_answers_list', {structure: structure.id}) }}" class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
     </div>
-
-    <br/><br/>
 
 {% endblock %}

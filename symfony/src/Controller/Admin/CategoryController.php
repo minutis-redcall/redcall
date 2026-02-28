@@ -8,9 +8,7 @@ use App\Entity\Badge;
 use App\Entity\Category;
 use App\Manager\BadgeManager;
 use App\Manager\CategoryManager;
-use App\Manager\PlatformConfigManager;
 use App\Model\Csrf;
-use App\Model\PlatformConfig;
 use Bundles\PaginationBundle\Manager\PaginationManager;
 use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
@@ -46,11 +44,6 @@ class CategoryController extends BaseController
     private $badgeManager;
 
     /**
-     * @var PlatformConfigManager
-     */
-    private $platformManager;
-
-    /**
      * @var TranslatorInterface
      */
     private $translator;
@@ -58,13 +51,11 @@ class CategoryController extends BaseController
     public function __construct(PaginationManager $paginationManager,
         CategoryManager $categoryManager,
         BadgeManager $badgeManager,
-        PlatformConfigManager $platformManager,
         TranslatorInterface $translator)
     {
         $this->paginationManager = $paginationManager;
         $this->categoryManager   = $categoryManager;
         $this->badgeManager      = $badgeManager;
-        $this->platformManager   = $platformManager;
         $this->translator        = $translator;
     }
 
@@ -78,7 +69,6 @@ class CategoryController extends BaseController
 
         $categories = $this->paginationManager->getPager(
             $this->categoryManager->getSearchInCategoriesQueryBuilder(
-                $this->getPlatform(),
                 $searchForm->get('criteria')->getData()
             )
         );
@@ -86,7 +76,6 @@ class CategoryController extends BaseController
         return [
             'categories' => $categories,
             'search'     => $searchForm->createView(),
-            'platforms'  => $this->getPlatforms(),
         ];
     }
 
@@ -101,7 +90,6 @@ class CategoryController extends BaseController
 
         if (!$category) {
             $category = new Category();
-            $category->setPlatform($this->getPlatform());
             $category->setExternalId(Uuid::uuid4());
         }
 
@@ -127,8 +115,7 @@ class CategoryController extends BaseController
                 'saved' => true,
                 'id'    => $category->getId(),
                 'view'  => $this->renderView('admin/category/category.html.twig', [
-                    'category'  => $category,
-                    'platforms' => $this->getPlatforms(),
+                    'category' => $category,
                 ]),
             ]);
         }
@@ -173,8 +160,7 @@ class CategoryController extends BaseController
 
         return $this->json([
             'view' => $this->renderView('admin/category/category.html.twig', [
-                'category'  => $category,
-                'platforms' => $this->getPlatforms(),
+                'category' => $category,
             ]),
         ]);
     }
@@ -191,8 +177,7 @@ class CategoryController extends BaseController
 
         return $this->json([
             'view' => $this->renderView('admin/category/category.html.twig', [
-                'category'  => $category,
-                'platforms' => $this->getPlatforms(),
+                'category' => $category,
             ]),
         ]);
     }
@@ -241,8 +226,7 @@ class CategoryController extends BaseController
     public function refreshCategoryCard(Category $category)
     {
         return $this->render('admin/category/category.html.twig', [
-            'category'  => $category,
-            'platforms' => $this->getPlatforms(),
+            'category' => $category,
         ]);
     }
 
@@ -260,31 +244,6 @@ class CategoryController extends BaseController
         $this->badgeManager->save($badge);
 
         return new NoContentResponse();
-    }
-
-    /**
-     * @Route(name="update_platform", path="/change-platform/{csrf}/{id}/{platform}")
-     * @IsGranted("ROLE_ROOT")
-     * @IsGranted("CATEGORY", subject="category")
-     */
-    public function changePlatform(Category $category, Csrf $csrf, PlatformConfig $platform)
-    {
-        $category->setPlatform($platform);
-
-        $this->categoryManager->save($category);
-
-        return $this->redirectToRoute('admin_category_refresh', [
-            'id' => $category->getId(),
-        ]);
-    }
-
-    protected function getPlatforms() : ?array
-    {
-        if (!$this->getUser()->isRoot()) {
-            return null;
-        }
-
-        return $this->platformManager->getAvailablePlatforms();
     }
 
     private function createSearchForm(Request $request, string $label) : FormInterface

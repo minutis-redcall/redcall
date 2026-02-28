@@ -3,7 +3,6 @@
 namespace App\Security\Authenticator;
 
 use App\Entity\Volunteer;
-use App\Manager\PlatformConfigManager;
 use App\Manager\VolunteerManager;
 use App\Manager\VolunteerSessionManager;
 use Firebase\JWT\JWT;
@@ -35,11 +34,6 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
     private $volunteerSessionManager;
 
     /**
-     * @var PlatformConfigManager
-     */
-    private $platformManager;
-
-    /**
      * @var RouterInterface
      */
     private $router;
@@ -66,7 +60,6 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
 
     public function __construct(VolunteerManager $volunteerManager,
         VolunteerSessionManager $volunteerSessionManager,
-        PlatformConfigManager $platformManager,
         RouterInterface $router,
         LoggerInterface $logger,
         KernelInterface $kernel,
@@ -74,7 +67,6 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
     {
         $this->volunteerManager        = $volunteerManager;
         $this->volunteerSessionManager = $volunteerSessionManager;
-        $this->platformManager         = $platformManager;
         $this->router                  = $router;
         $this->logger                  = $logger;
         $this->kernel                  = $kernel;
@@ -141,15 +133,8 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
         ]);
 
         // Seek for a volunteer attached to that nivol
-        // TODO / SECURITY: if 2 nivols are the same in 2 distinct platforms, a volunteer could connect to someone else's account
-        $volunteer = null;
-        foreach ($this->platformManager->getPlatformChoices() as $platform) {
-            $externalId = ltrim($decoded['nivol'], '0');
-            $volunteer  = $this->volunteerManager->findOneByExternalId($platform, $externalId);
-            if ($volunteer) {
-                break;
-            }
-        }
+        $externalId = ltrim($decoded['nivol'], '0');
+        $volunteer  = $this->volunteerManager->findOneByExternalId($externalId);
 
         if (null === $volunteer) {
             $this->logger->warning('Minutis authenticator: external id not associated with a volunteer', [

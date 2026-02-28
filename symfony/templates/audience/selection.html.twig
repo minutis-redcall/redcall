@@ -4,10 +4,9 @@
 
 <div class="row text-left">
     {% for volunteer in volunteers %}
-        <div class="col-md-6" style="padding:5px;" id="preselection-volunteer-{{ volunteer.id }}">
-            <table>
-                <tr>
-                    <td style="padding:5px;">
+        <div class="col-md-6" id="preselection-volunteer-{{ volunteer.id }}">
+            <div class="d-flex align-items-start gap-2 mb-2">
+                <div>
                         {% set ticked = volunteer.id not in classification.excluded %}
                         <div id="exclude-volunteer-{{ volunteer.id }}" class="{% if not ticked %}d-none{% endif %}">
                             <a href="#"
@@ -31,12 +30,11 @@
                                {% if not ticked %}checked{% endif %}
                                data-proxy="#excluded-volunteers"
                                data-id="{{ volunteer.id }}"/>
-                    </td>
-                    <td style="padding:5px;">
+                </div>
+                <div class="flex-grow-1">
                         {{ macros.volunteer(volunteer) }}
-                    </td>
-                </tr>
-            </table>
+                </div>
+            </div>
         </div>
     {% endfor %}
 </div>

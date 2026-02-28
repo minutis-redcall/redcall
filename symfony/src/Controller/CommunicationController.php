@@ -24,7 +24,6 @@ use App\Manager\ExpirableManager;
 use App\Manager\LanguageConfigManager;
 use App\Manager\MediaManager;
 use App\Manager\MessageManager;
-use App\Manager\PlatformConfigManager;
 use App\Manager\StructureManager;
 use App\Provider\Minutis\MinutisProvider;
 use App\Services\MessageFormatter;
@@ -106,11 +105,6 @@ class CommunicationController extends BaseController
     private $languageManager;
 
     /**
-     * @var PlatformConfigManager
-     */
-    private $platformManager;
-
-    /**
      * @var \App\Repository\VolunteerGroupRepository
      */
     private $volunteerGroupRepository;
@@ -125,7 +119,6 @@ class CommunicationController extends BaseController
         StructureManager $structureManager,
         ExpirableManager $expirableManager,
         LanguageConfigManager $languageManager,
-        PlatformConfigManager $platformManager,
         \App\Repository\VolunteerGroupRepository $volunteerGroupRepository)
     {
         $this->campaignManager          = $campaignManager;
@@ -138,7 +131,6 @@ class CommunicationController extends BaseController
         $this->structureManager         = $structureManager;
         $this->expirableManager         = $expirableManager;
         $this->languageManager          = $languageManager;
-        $this->platformManager          = $platformManager;
         $this->volunteerGroupRepository = $volunteerGroupRepository;
     }
 
@@ -162,11 +154,11 @@ class CommunicationController extends BaseController
 
         return $this->render('status_communication/index.html.twig', [
             'campaign'           => $campaign,
-            'skills'             => $this->badgeManager->getPublicBadges($this->getPlatform()),
+            'skills'             => $this->badgeManager->getPublicBadges(),
             'progress'           => $campaign->getCampaignProgression(),
             'hash'               => $hash,
             'campaignStatus'     => $campaignStatus,
-            'campaignStructures' => $this->structureManager->getCampaignStructures($this->getPlatform(), $campaign),
+            'campaignStructures' => $this->structureManager->getCampaignStructures($campaign),
             'operationUrl'       => $campaign->getOperationUrl($minutis),
             'volunteerGroups'    => $volunteerGroups,
             'groupColors'        => Group::getGroups(),
@@ -301,9 +293,7 @@ class CommunicationController extends BaseController
         $trigger->setAudience([
             'preselection_key' => $key,
         ]);
-        $trigger->setLanguage(
-            $this->platformManager->getPlaform($this->getPlatform())->getDefaultLanguage()->getLocale()
-        );
+        $trigger->setLanguage('fr');
         $trigger->setAnswers([]);
 
         $flow->bind($trigger);

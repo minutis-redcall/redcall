@@ -91,7 +91,7 @@
         $('body').on('click', '.show-structure-users', function (e) {
             e.preventDefault();
             $('#redcall-user-modal-title').html('');
-            $('#redcall-user-modal-body').html('<img src="{{ asset('spinner.gif') }}"/>');
+            $('#redcall-user-modal-body').html('<div class="py-4"><span class="rc-spinner rc-spinner-lg"></span></div>');
             $('#redcall-user-modal').modal();
             $.post('{{ path('management_structures_list_users') }}', {
                 id: $(this).data('structure-id'),

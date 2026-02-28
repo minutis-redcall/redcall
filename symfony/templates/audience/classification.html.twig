@@ -1,7 +1,7 @@
 {% if classification.problems or classification.reachable %}
-    <div class="h4">
+    <h4>
         {{ 'audience.classification.title'|trans }}
-    </div>
+    </h4>
 {% endif %}
 
 {% for key, list in classification.toArray %}
@@ -20,16 +20,13 @@
         {{ 'audience.classification.problems'|trans }}
     </a>
 
-    {% if classification.reachable or classification.excluded %}
-        <br/>
-    {% endif %}
 {% endif %}
 
 {% if classification.reachable or classification.excluded %}
 
     <a href="#"
        class="btn btn-sm btn-secondary"
-       {% if classification.problems %}style="margin-top:5px;"{% endif %}
+       {% if classification.problems %}class="mt-1"{% endif %}
        id="open-audience">
         {{ 'audience.classification.audience'|trans }}
     </a>

@@ -7,8 +7,6 @@ use App\Entity\Campaign;
 use App\Entity\Structure;
 use App\Entity\User;
 use App\Entity\Volunteer;
-use App\Enum\Platform;
-use App\Security\Helper\Security;
 use App\Entity\Pegass;
 use Doctrine\DBAL\Connection;
 use Doctrine\ORM\QueryBuilder;
@@ -24,39 +22,22 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class StructureRepository extends BaseRepository
 {
-    /**
-     * @var Security
-     */
-    private $security;
-
-    public function __construct(Security $security, ManagerRegistry $registry)
+    public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Structure::class);
-
-        $this->security = $security;
     }
 
-    public function findOneByExternalIdAndCurrentPlatform(string $externalId)
+    public function findOneByExternalId(string $externalId) : ?Structure
     {
         return $this->findOneBy([
-            'platform'   => $this->security->getPlatform(),
             'externalId' => $externalId,
         ]);
     }
 
-    public function findOneByExternalId(string $platform, string $externalId) : ?Structure
+    public function findOneByName(string $name)
     {
         return $this->findOneBy([
-            'platform'   => $platform,
-            'externalId' => $externalId,
-        ]);
-    }
-
-    public function findOneByName(string $platform, string $name)
-    {
-        return $this->findOneBy([
-            'platform' => $platform,
-            'name'     => $name,
+            'name' => $name,
         ]);
     }
 
@@ -72,7 +53,7 @@ class StructureRepository extends BaseRepository
      *
      * @return array
      */
-    public function findCallableStructuresForVolunteer(string $platform, Volunteer $volunteer) : array
+    public function findCallableStructuresForVolunteer(Volunteer $volunteer) : array
     {
         $structures = $this->createQueryBuilder('s')
                            ->select('
@@ -103,8 +84,6 @@ class StructureRepository extends BaseRepository
         return $this->createQueryBuilder('s')
                     ->where('s.id IN (:ids)')
                     ->setParameter('ids', $ids)
-                    ->andWhere('s.platform = :platform')
-                    ->setParameter('platform', $platform)
                     ->andWhere('s.enabled = true')
                     ->getQuery()
                     ->getResult();
@@ -122,7 +101,7 @@ class StructureRepository extends BaseRepository
      *
      * @return array
      */
-    public function findCallableStructuresForStructure(string $platform, Structure $structure) : array
+    public function findCallableStructuresForStructure(Structure $structure) : array
     {
         $structures = $this->createQueryBuilder('s')
                            ->select('
@@ -152,31 +131,25 @@ class StructureRepository extends BaseRepository
         return $this->createQueryBuilder('s')
                     ->where('s.id IN (:ids)')
                     ->setParameter('ids', $ids)
-                    ->andWhere('s.platform = :platform')
-                    ->setParameter('platform', $platform)
                     ->andWhere('s.enabled = true')
                     ->getQuery()
                     ->getResult();
     }
 
-    public function getStructuresForUserQueryBuilder(string $platform, User $user) : QueryBuilder
+    public function getStructuresForUserQueryBuilder(User $user) : QueryBuilder
     {
         return $this->createQueryBuilder('s')
                     ->join('s.users', 'u')
                     ->where('u.id = :id')
                     ->setParameter('id', $user->getId())
                     ->andWhere('s.enabled = true')
-                    ->andWhere('s.platform = :platform')
-                    ->setParameter('platform', $platform)
                     ->orderBy('s.externalId', 'asc');
     }
 
-    public function searchAllQueryBuilder(string $platform, ?string $criteria, bool $onlyEnabled = true) : QueryBuilder
+    public function searchAllQueryBuilder(?string $criteria, bool $onlyEnabled = true) : QueryBuilder
     {
         $qb = $this
-            ->createQueryBuilder('s')
-            ->andWhere('s.platform = :platform')
-            ->setParameter('platform', $platform);
+            ->createQueryBuilder('s');
 
         if ($onlyEnabled) {
             $qb->andWhere('s.enabled = :enabled')
@@ -193,26 +166,23 @@ class StructureRepository extends BaseRepository
         return $qb;
     }
 
-    public function searchAll(string $platform, ?string $criteria, int $maxResults) : array
+    public function searchAll(?string $criteria, int $maxResults) : array
     {
         return $this
-            ->searchAllQueryBuilder($platform, $criteria)
+            ->searchAllQueryBuilder($criteria)
             ->setMaxResults($maxResults)
             ->getQuery()
             ->getResult();
     }
 
-    public function searchForUserQueryBuilder(string $platform,
-        User $user,
+    public function searchForUserQueryBuilder(User $user,
         ?string $criteria,
         bool $onlyEnabled = true) : QueryBuilder
     {
         $qb = $this->createQueryBuilder('s')
                    ->join('s.users', 'u')
                    ->where('u.id = :user_id')
-                   ->setParameter('user_id', $user->getId())
-                   ->andWhere('s.platform = :platform')
-                   ->setParameter('platform', $platform);
+                   ->setParameter('user_id', $user->getId());
 
         if ($onlyEnabled) {
             $qb->andWhere('s.enabled = :enabled')
@@ -247,13 +217,11 @@ class StructureRepository extends BaseRepository
             ->update()
             ->set('s.enabled', ':enabled')
             ->where($qb->expr()->in('s.externalId', $sub->getDQL()))
-            ->andWhere('s.platform = :platform')
-            ->setParameter('platform', Platform::FR)
             ->getQuery()
             ->execute();
     }
 
-    public function getCampaignStructures(string $platform, Campaign $campaign) : array
+    public function getCampaignStructures(Campaign $campaign) : array
     {
         return $this
             ->createQueryBuilder('s')
@@ -263,29 +231,25 @@ class StructureRepository extends BaseRepository
             ->join('m.communication', 'co')
             ->join('co.campaign', 'c')
             ->where('s.enabled = true')
-            ->andWhere('s.platform = :platform')
-            ->setParameter('platform', $platform)
             ->andWhere('c.id = :campaign_id')
             ->setParameter('campaign_id', $campaign->getId())
             ->getQuery()
             ->getResult();
     }
 
-    public function countRedCallUsersQueryBuilder(string $platform, QueryBuilder $qb) : QueryBuilder
+    public function countRedCallUsersQueryBuilder(QueryBuilder $qb) : QueryBuilder
     {
         return (clone $qb)
             ->select('s.id as structure_id, COUNT(su) AS count')
             ->join('s.users', 'su')
-            ->andWhere('s.platform = :platform')
-            ->setParameter('platform', $platform)
             ->andWhere('su.isTrusted = true')
             ->groupBy('s.id');
     }
 
-    public function getStructureHierarchyForCurrentUser(string $platform, User $user) : array
+    public function getStructureHierarchyForCurrentUser(User $user) : array
     {
         $rows = $this
-            ->getStructuresForUserQueryBuilder($platform, $user)
+            ->getStructuresForUserQueryBuilder($user)
             ->select('s.id, c.id as child_id, c.enabled as child_enabled')
             ->leftJoin('s.childrenStructures', 'c')
             ->getQuery()
@@ -300,7 +264,7 @@ class StructureRepository extends BaseRepository
         return $rows;
     }
 
-    public function getVolunteerLocalCounts(string $platform, array $structureIds) : array
+    public function getVolunteerLocalCounts(array $structureIds) : array
     {
         return $this
             ->createQueryBuilder('s')
@@ -308,8 +272,6 @@ class StructureRepository extends BaseRepository
             ->where('s.id IN (:ids)')
             ->setParameter('ids', $structureIds, Connection::PARAM_INT_ARRAY)
             ->andWhere('s.enabled = true')
-            ->andWhere('s.platform = :platform')
-            ->setParameter('platform', $platform)
             ->leftJoin('s.volunteers', 'v')
             ->andWhere('v.enabled = true OR v.enabled IS NULL')
             ->groupBy('s.id')
@@ -317,7 +279,7 @@ class StructureRepository extends BaseRepository
             ->getArrayResult();
     }
 
-    public function getDescendantStructures(string $platform, array $structureIds) : array
+    public function getDescendantStructures(array $structureIds) : array
     {
         for ($i = 0; $i < 5; $i++) {
             $structureIds = array_merge(
@@ -326,8 +288,6 @@ class StructureRepository extends BaseRepository
                     ->createQueryBuilder('s')
                     ->select('s.id')
                     ->where('s.enabled = true')
-                    ->andWhere('s.platform = :platform')
-                    ->setParameter('platform', $platform)
                     ->join('s.parentStructure', 'p')
                     ->andWhere('p.id IN (:ids)')
                     ->setParameter('ids', $structureIds, Connection::PARAM_INT_ARRAY)
@@ -339,23 +299,21 @@ class StructureRepository extends BaseRepository
         return $structureIds;
     }
 
-    public function searchAllForVolunteerQueryBuilder(string $platform,
-        Volunteer $volunteer,
+    public function searchAllForVolunteerQueryBuilder(Volunteer $volunteer,
         ?string $criteria,
         bool $enabled) : QueryBuilder
     {
-        $qb = $this->searchAllQueryBuilder($platform, $criteria, $enabled);
+        $qb = $this->searchAllQueryBuilder($criteria, $enabled);
 
         return $this->forVolunteer($qb, $volunteer);
     }
 
-    public function searchForVolunteerAndCurrentUserQueryBuilder(string $platform,
-        User $user,
+    public function searchForVolunteerAndCurrentUserQueryBuilder(User $user,
         Volunteer $volunteer,
         ?string $criteria,
         bool $enabled) : QueryBuilder
     {
-        $qb = $this->searchForUserQueryBuilder($platform, $user, $criteria, $enabled);
+        $qb = $this->searchForUserQueryBuilder($user, $criteria, $enabled);
 
         return $this->forVolunteer($qb, $volunteer);
     }

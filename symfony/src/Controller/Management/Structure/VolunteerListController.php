@@ -109,8 +109,8 @@ class VolunteerListController extends BaseController
             ->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $classification = $this->audienceManager->classifyAudience($this->getPlatform(), $form->get('audience')->getData());
-            $volunteers     = $this->volunteerManager->getVolunteerList($this->getPlatform(), $classification->getReachable());
+            $classification = $this->audienceManager->classifyAudience($form->get('audience')->getData());
+            $volunteers     = $this->volunteerManager->getVolunteerList($classification->getReachable());
 
             $volunteerList->getVolunteers()->clear();
             foreach ($volunteers as $volunteer) {
@@ -141,7 +141,7 @@ class VolunteerListController extends BaseController
     {
         $add = $this->createAddVolunteerForm($request);
         if ($add->isSubmitted() && $add->isValid()) {
-            $volunteer = $this->volunteerManager->findOneByExternalId($this->getPlatform(), $add->get('externalId')->getData());
+            $volunteer = $this->volunteerManager->findOneByExternalId($add->get('externalId')->getData());
 
             if ($volunteer) {
                 $volunteerList->addVolunteer($volunteer);

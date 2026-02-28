@@ -9,11 +9,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * @ORM\Table(
- *    indexes={
- *        @ORM\Index(name="platform_idx", columns={"platform"})
- *     }
- * )
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
  * @ORM\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
  *
@@ -22,11 +17,6 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class User extends AbstractUser implements LockableInterface
 {
-    /**
-     * @ORM\Column(type="string", length=5)
-     */
-    private $platform;
-
     /**
      * @ORM\Column(type="string", length=10)
      */
@@ -138,15 +128,11 @@ class User extends AbstractUser implements LockableInterface
 
     public function getStructures(bool $onlyEnabled = true) : Collection
     {
-        $structures = $this->structures;
-
         if ($onlyEnabled) {
-            $structures = $this->getEnabledStructures();
+            return $this->getEnabledStructures();
         }
 
-        return $structures->filter(function (Structure $structure) {
-            return $structure->getPlatform() === $this->platform;
-        });
+        return $this->structures;
     }
 
     public function getExternalId() : ?string
@@ -159,18 +145,6 @@ class User extends AbstractUser implements LockableInterface
         return $this->structures->filter(function (Structure $structure) {
             return $structure->isEnabled();
         });
-    }
-
-    public function getPlatform()
-    {
-        return $this->platform;
-    }
-
-    public function setPlatform($platform)
-    {
-        $this->platform = $platform;
-
-        return $this;
     }
 
     public function getStructuresShortcuts() : array
@@ -320,12 +294,7 @@ class User extends AbstractUser implements LockableInterface
 
     public function getSortedFavoriteBadges() : array
     {
-        $badges =
-            $this->getFavoriteBadges()
-                 ->filter(function (Badge $badge) {
-                     return $this->platform === $badge->getPlatform();
-                 })
-                 ->toArray();
+        $badges = $this->getFavoriteBadges()->toArray();
 
         usort($badges, [Badge::class, 'sortBadges']);
 

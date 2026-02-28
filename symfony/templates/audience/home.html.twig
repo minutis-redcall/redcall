@@ -1,22 +1,23 @@
 {% if classification.problems %}
-    <div class="text-left card">
+    <div class="rc-issues-card">
 
-        <div class="card-body">
-            <div class="h4">
-                ⚠️
-                {{ 'audience.classification.home'|trans }}
-            </div>
+        <div class="rc-issues-header">
+            <span class="rc-issues-icon">!</span>
+            <span class="rc-issues-title">{{ 'audience.classification.home'|trans }}</span>
+        </div>
 
+        <div class="rc-issues-list">
             {% for key, list in classification.toArray %}
                 {% if key != 'reachable' and list %}
-                    <p>
-                        {{ ('audience.classification.' ~ (key|snake))|trans({'%nbr%': list|length})|raw }}
-                    </p>
+                    <div class="rc-issues-row">
+                        <span class="rc-issues-count">{{ list|length }}</span>
+                        <span class="rc-issues-label">{{ ('audience.problems.' ~ (key|snake))|trans }}</span>
+                    </div>
                 {% endif %}
             {% endfor %}
+        </div>
 
-            <br/>
-
+        <div class="rc-issues-action">
             <a href="{{ path('audience_resolve') }}" class="btn btn-sm btn-secondary">
                 {{ 'audience.classification.resolve.button'|trans }}
             </a>

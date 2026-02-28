@@ -1,7 +1,7 @@
 {# -------------------------------------------------------------------------------- #}
 {# Progression #}
 {# -------------------------------------------------------------------------------- #}
-<div class="progress position-relative" style="background-color:darkgray;height:18px;">
+<div class="progress position-relative">
     <div id="progress-bar-{{ communication.id }}"
          class="progress-bar {% if progress[communication.id].sent >= progress[communication.id].reachable %}bg-success{% endif %}"
          role="progressbar"
@@ -10,7 +10,6 @@
          aria-valuemin="0"
          aria-valuemax="100"></div>
     <span id="progress-text-{{ communication.id }}"
-          style="padding-top:7px;"
           class="justify-content-center d-flex position-absolute w-100 text-white">
         {% if progress[communication.id].sent >= progress[communication.id].reachable %}
             {{ 'campaign_status.finish'|trans({

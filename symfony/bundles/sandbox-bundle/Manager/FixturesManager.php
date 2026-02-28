@@ -58,18 +58,16 @@ class FixturesManager
         $this->security         = $security;
     }
 
-    public function createStructure(string $platform,
-        string $name,
+    public function createStructure(string $name,
         ?int $parent,
         int $numberOfVolunteers,
         bool $bindToUser) : Structure
     {
-        if ($structure = $this->structureManager->findOneByName($platform, $name)) {
+        if ($structure = $this->structureManager->findOneByName($name)) {
             return $structure;
         }
 
         $structure = new Structure();
-        $structure->setPlatform($this->security->getPlatform());
         $structure->setName($name);
         $structure->setExternalId(Random::generate(8));
         $structure->setEnabled(true);
@@ -92,9 +90,7 @@ class FixturesManager
 
     public function createVolunteers(int $numberOfVolunteers, ?int $structureId) : array
     {
-        $badges = $this->badgeManager->getPublicBadges(
-            $this->security->getPlatform()
-        );
+        $badges = $this->badgeManager->getPublicBadges();
 
         if ($structureId) {
             $structure = $this->structureManager->find($structureId);
@@ -120,12 +116,9 @@ class FixturesManager
      */
     private function createVolunteer(array $allBadges) : Volunteer
     {
-        $platform = $this->security->getPlatform();
-
-        $externalId = $this->generateExternalId($platform);
+        $externalId = $this->generateExternalId();
 
         $volunteer = new Volunteer();
-        $volunteer->setPlatform($platform);
         $volunteer->setExternalId($externalId);
         $volunteer->setEnabled(true);
         $volunteer->setLocked(true);
@@ -142,17 +135,17 @@ class FixturesManager
 
         $this->volunteerManager->save($volunteer);
 
-        $this->anonymizeManager->anonymizeVolunteer($volunteer->getExternalId(), $platform);
+        $this->anonymizeManager->anonymizeVolunteer($volunteer->getExternalId());
 
         return $volunteer;
     }
 
-    private function generateExternalId(string $platform) : string
+    private function generateExternalId() : string
     {
         $externalId = Random::generate(12, '0123456789ABCDEF');
 
-        if ($this->volunteerManager->findOneByExternalId($platform, $externalId)) {
-            return $this->generateExternalId($platform);
+        if ($this->volunteerManager->findOneByExternalId($externalId)) {
+            return $this->generateExternalId();
         }
 
         return $externalId;

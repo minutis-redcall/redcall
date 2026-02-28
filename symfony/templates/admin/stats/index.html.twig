@@ -2,22 +2,22 @@
 
 {% block body %}
 
-    <br/>
-
-    <div class="jumbotron shadow p-3 mb-5 rounded text-center">
+    <div class="rc-section rc-section-center text-center">
 
         <a class="text-lg-center large-button btn btn-secondary"
            href="{{ path('admin_stats_general') }}">{{ 'admin.statistics.buttons.general'| trans }}</a>
 
-        <br/><br/>
+        <div class="mb-2"></div>
 
         <a href="{{ path('admin_stats_structure') }}"
            class="text-lg-center large-button btn btn-secondary">{{ 'admin.statistics.buttons.structure'|trans }}</a>
 
-        <br/><br/><br/>
+        <div class="mt-4"></div>
 
-        <a href="{{ path('admin_home') }}"
-           class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+        <div class="rc-back-link">
+            <a href="{{ path('admin_home') }}"
+               class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+        </div>
 
     </div>
 

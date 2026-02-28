@@ -48,11 +48,6 @@ class CampaignManager
     private $tokenStorage;
 
     /**
-     * @var PlatformConfigManager
-     */
-    private $platformManager;
-
-    /**
      * @var TranslatorInterface
      */
     private $translator;
@@ -72,7 +67,6 @@ class CampaignManager
         CommunicationManager $communicationManager,
         MessageManager $messageManager,
         OperationManager $operationManager,
-        PlatformConfigManager $platformConfigManager,
         TokenStorageInterface $tokenStorage,
         TranslatorInterface $translator,
         RouterInterface $router,
@@ -83,7 +77,6 @@ class CampaignManager
         $this->communicationManager     = $communicationManager;
         $this->messageManager           = $messageManager;
         $this->operationManager         = $operationManager;
-        $this->platformManager          = $platformConfigManager;
         $this->tokenStorage             = $tokenStorage;
         $this->translator               = $translator;
         $this->router                   = $router;
@@ -114,7 +107,6 @@ class CampaignManager
         $campaignEntity = new CampaignEntity();
         $campaignEntity
             ->setVolunteer($volunteer)
-            ->setPlatform($volunteer->getPlatform())
             ->setCode($code)
             ->setLabel($campaignModel->label)
             ->setType($campaignModel->type)
@@ -144,7 +136,7 @@ class CampaignManager
         $this->communicationManager->launchNewCommunication($campaignEntity, $communication, $processor);
 
         if ($communication->getMessageCount() > 1 && $volunteer->getEmail()) {
-            $locale  = $this->platformManager->getLocale($volunteer->getPlatform());
+            $locale  = 'fr';
             $url     = sprintf('%s%s', getenv('WEBSITE_URL'), $this->router->generate('synthesis_index', ['code' => $campaignEntity->getCode()]));
             $subject = $this->translator->trans('synthesis.email.subject', ['%label%' => $campaignEntity->getLabel()], null, $locale);
             $body    = $this->translator->trans('synthesis.email.content', ['%url%' => $url], null, $locale);
@@ -244,9 +236,9 @@ class CampaignManager
         return $this->messageManager->canUsePrefixesForEveryone($volunteersTakenPrefixes);
     }
 
-    public function getAllCampaignsQueryBuilder(string $platform) : QueryBuilder
+    public function getAllCampaignsQueryBuilder() : QueryBuilder
     {
-        return $this->campaignRepository->getAllCampaignsQueryBuilder($platform);
+        return $this->campaignRepository->getAllCampaignsQueryBuilder();
     }
 
     public function countAllOpenCampaigns() : int

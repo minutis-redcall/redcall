@@ -6,9 +6,7 @@
 
 {% block body %}
 
-    <br/>
-
-    <div class="col-md-12 jumbotron shadow p-3 mb-5 rounded">
+    <div class="col-md-12 rc-section">
 
         <h3>{{ 'admin.pegass.title'|trans }}</h3>
 
@@ -49,7 +47,6 @@
                             <div class="d-flex justify-content-between align-items-start mb-3">
                                 <div class="w-75">
                                     <h6 class="card-title mb-0 {% if user.root %}text-danger font-weight-bold{% endif %} text-truncate" title="{{ user.username }}">
-                                        {{ platforms[user.platform].flag }}
                                         <a href="#" class="copy-to-clipboard text-dark">{{ user.username }}</a>
                                     </h6>
                                     <small class="text-muted">
@@ -136,9 +133,7 @@
 
                             <div id="structures-{{ user.id }}" class="small text-muted mb-2 overflow-auto" style="max-height: 100px;">
                                 {% for structure in user.structures %}
-                                    {% if structure.platform == user.platform %}
-                                        <div><i class="fas fa-caret-right mr-1"></i>{{ structure.name }}</div>
-                                    {% endif %}
+                                    <div><i class="fas fa-caret-right mr-1"></i>{{ structure.name }}</div>
                                 {% endfor %}
                             </div>
 

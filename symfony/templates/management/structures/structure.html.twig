@@ -14,7 +14,7 @@
                     <div class="dropdown-menu dropdown-menu-right">
                         {% if structure.enabled %}
 
-                            {% if not structure.locked and constant('\\App\\Enum\\Platform::FR') == app.user.platform and structure.lastPegassUpdate %}
+                            {% if not structure.locked and structure.lastPegassUpdate %}
                                 {% if is_granted('ROLE_ADMIN') %}
                                     <a class="dropdown-item" href="{{ path('management_structures_pegass', {id: structure.id}) }}" target="_blank">
                                         {{ 'manage_structures.view_pegass_entry'|trans }}
@@ -43,19 +43,6 @@
                             <a class="dropdown-item" href="{{ path('management_structures_volunteer_lists_index', {structureId: structure.id}) }}">
                                 {{ 'manage_structures.manage_volunteer_lists'| trans }}
                             </a>
-                        {% endif %}
-
-                        {% if app.user.root %}
-
-                            <div class="dropdown-divider"></div>
-
-                            <div class="dropdown-header">{{ 'admin.resources.change_platform_title'|trans }}</div>
-                            {% for platform in platforms %}
-                                <a class="dropdown-item {% if platform == structure.platform %}disabled{% else %}text-primary{% endif %}" href="{{ path('management_structures_update_platform', {id: structure.id, csrf: csrf_token('csrf'), platform: platform}) }}" {% if platform == structure.platform %}onclick="return false;"{% endif %}>
-                                    {{ 'admin.resources.change_platform'|trans({'%platform%': platform.flag ~ ' ' ~ platform.label}) }}
-                                </a>
-                            {% endfor %}
-
                         {% endif %}
 
                         {% if is_granted('ROLE_ADMIN') %}
@@ -109,17 +96,14 @@
                     data-structure-id="{{ structure.id }}">{{ 'base.button.details'|trans }}</a>)
             {% endif %}
 
-            {% if constant('\\App\\Enum\\Platform::FR') == app.user.platform %}
-                {% if structure.lastPegassUpdate %}
-                    <br/>
-                    {{ 'manage_structures.last_update'|trans({'%last_update%': structure.lastPegassUpdate|date('d/m/Y H:i')}) }}
-                {% endif %}
-
-                {% if structure.nextPegassUpdate %}
+            {% if structure.lastPegassUpdate %}
                 <br/>
-                {{ 'manage_structures.next_update'|trans({'%next_update%': structure.nextPegassUpdate|date('d/m/Y H:i')}) }}
+                {{ 'manage_structures.last_update'|trans({'%last_update%': structure.lastPegassUpdate|date('d/m/Y H:i')}) }}
             {% endif %}
 
+            {% if structure.nextPegassUpdate %}
+                <br/>
+                {{ 'manage_structures.next_update'|trans({'%next_update%': structure.nextPegassUpdate|date('d/m/Y H:i')}) }}
             {% endif %}
         </span>
 

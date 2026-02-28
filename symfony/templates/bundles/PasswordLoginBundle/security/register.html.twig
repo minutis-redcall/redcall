@@ -16,7 +16,6 @@
 
             {% form_theme registration '@EWZRecaptcha/Form/ewz_recaptcha_widget.html.twig' %}
             {{ form_start(registration) }}
-            {{ form_row(registration.platform) }}
             {{ form_row(registration.username) }}
             {{ form_row(registration.password) }}
             {% if registration.recaptcha is defined %}

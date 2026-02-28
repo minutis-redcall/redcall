@@ -87,7 +87,6 @@ class AudienceController extends BaseController
     public function searchBadge(Request $request)
     {
         $badges = $this->badgeManager->searchNonVisibleUsableBadge(
-            $this->getPlatform(),
             $request->get('keyword'),
             20
         );
@@ -119,7 +118,7 @@ class AudienceController extends BaseController
             $response['badge_counts'] = $badgeCounts;
         }
 
-        $classification = $this->audienceManager->classifyAudience($this->getPlatform(), $data);
+        $classification = $this->audienceManager->classifyAudience($data);
 
         $response['classification'] = $this->renderView('audience/classification.html.twig', [
             'classification' => $classification,
@@ -137,11 +136,10 @@ class AudienceController extends BaseController
     {
         $data = AudienceType::getAudienceFormData($request);
 
-        $classification = $this->audienceManager->classifyAudience($this->getPlatform(), $data);
+        $classification = $this->audienceManager->classifyAudience($data);
         $classification->setReachable([]);
 
         $volunteers = $this->volunteerManager->getVolunteerList(
-            $this->getPlatform(),
             call_user_func_array('array_merge', array_values($classification->toArray())),
             false
         );
@@ -159,10 +157,9 @@ class AudienceController extends BaseController
     {
         $data = AudienceType::getAudienceFormData($request);
 
-        $classification = $this->audienceManager->classifyAudience($this->getPlatform(), $data);
+        $classification = $this->audienceManager->classifyAudience($data);
 
         $mixedVolunteers = $this->volunteerManager->getVolunteerList(
-            $this->getPlatform(),
             array_merge($classification->getExcluded(), $classification->getReachable())
         );
 
@@ -193,7 +190,6 @@ class AudienceController extends BaseController
         $classification->setReachable([]);
 
         $volunteers = $this->volunteerManager->getVolunteerList(
-            $this->getPlatform(),
             call_user_func_array('array_merge', array_values($classification->toArray()))
         );
 
@@ -217,6 +213,6 @@ class AudienceController extends BaseController
             'badges_all'       => true,
         ]);
 
-        return $this->audienceManager->classifyAudience($this->getPlatform(), $data);
+        return $this->audienceManager->classifyAudience($data);
     }
 }

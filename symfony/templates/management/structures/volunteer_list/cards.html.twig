@@ -119,7 +119,7 @@
         $('body').on('click', '.show-structure-users', function (e) {
             e.preventDefault();
             $('#user-structures-modal-title').html('');
-            $('#user-structures-modal-body').html('<img src="{{ asset('spinner.gif') }}"/>');
+            $('#user-structures-modal-body').html('<div class="py-4"><span class="rc-spinner rc-spinner-lg"></span></div>');
             $('#user-structures-modal').modal();
             $.post('{{ path('management_volunteers_list_user_structures') }}', {
                 id: $(this).data('volunteer-id'),

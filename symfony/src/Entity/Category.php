@@ -13,7 +13,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 /**
  * @ORM\Table(
  *     uniqueConstraints={
- *         @ORM\UniqueConstraint(name="pf_extid_idx", columns={"platform", "external_id"})
+ *         @ORM\UniqueConstraint(name="extid_idx", columns={"external_id"})
  *     }
  * )
  * @ORM\Entity(repositoryClass=CategoryRepository::class)
@@ -29,13 +29,6 @@ class Category implements LockableInterface
      * @ORM\Column(type="integer")
      */
     private $id;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(type="string", length=5)
-     */
-    private $platform;
 
     /**
      * @var string
@@ -92,18 +85,6 @@ class Category implements LockableInterface
         return $this->id;
     }
 
-    public function getPlatform() : string
-    {
-        return $this->platform;
-    }
-
-    public function setPlatform(string $platform)
-    {
-        $this->platform = $platform;
-
-        return $this;
-    }
-
     public function getExternalId() : ?string
     {
         return $this->externalId;
@@ -149,15 +130,13 @@ class Category implements LockableInterface
             return $this->getEnabledBadges();
         }
 
-        return $this->badges->filter(function (Badge $badge) {
-            return $this->platform === $badge->getPlatform();
-        });
+        return $this->badges;
     }
 
     public function getEnabledBadges()
     {
         return $this->badges->filter(function (Badge $badge) {
-            return $this->platform === $badge->getPlatform() && $badge->isEnabled();
+            return $badge->isEnabled();
         });
     }
 

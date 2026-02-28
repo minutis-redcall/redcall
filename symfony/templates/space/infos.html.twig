@@ -5,16 +5,13 @@
 
 {% block body %}
 
-    <br/>
-    <div class="row jumbotron shadow p-3 mb-5 rounded">
+    <div class="row rc-section">
 
         <div class="col-md-12">
             <p>{{ 'space.infos.context_1'|trans }}</p>
-            <br/>
             <ul>
                 <li>
                     <p>{{ 'space.infos.context_2'|trans }}</p>
-                    <br/>
                 </li>
                 <li>
                     <p>{{ 'space.infos.context_3'|trans }}</p>
@@ -24,21 +21,17 @@
             <p>{{ 'space.infos.context_4'|trans }} {{ 'space.infos.context_5'|trans }}</p>
         </div>
 
-        <div class="col-md-6">
-            <br/>
+        <div class="col-md-6 mt-3">
             <p>{{ 'space.infos.context_6'|trans }}</p>
             <img class="img-fluid" src="{{ asset('message.png') }}"/>
         </div>
-        <div class="col-md-6">
-            <br/>
+        <div class="col-md-6 mt-3">
             <p>{{ 'space.infos.context_7'|trans }}</p>
             <img class="img-fluid" src="{{ asset('reponses.png') }}"/>
         </div>
 
-        <div class="col-md-12">
-            <br/>
+        <div class="col-md-12 mt-3">
             <p>{{ 'space.infos.context_8'|trans }}</p>
-            <br/>
             <p>{{ 'space.infos.context_9'|trans }}</p>
             <p>{{ 'space.infos.context_10'|trans }}</p>
             <p>{{ 'space.infos.context_11'|trans }}</p>
@@ -48,9 +41,9 @@
 
     </div>
 
-    <a href="{{ path('space_home', {sessionId: session.sessionId}) }}"
-       class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
-
-    <br/><br/>
+    <div class="rc-back-link">
+        <a href="{{ path('space_home', {sessionId: session.sessionId}) }}"
+           class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+    </div>
 
 {% endblock %}

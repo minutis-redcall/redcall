@@ -4,25 +4,22 @@
 
 {% block body %}
 
-    <br/>
-    <div class="jumbotron shadow p-3 mb-5 rounded">
+    <div class="rc-section">
 
-        <div class="h3">{{ 'space.email.title'|trans }}</div>
+        <h3>{{ 'space.email.title'|trans }}</h3>
 
         <p>{{ 'space.email.details_1'|trans }}</p>
-        <br/>
 
         {{ form(form) }}
 
         <p>{{ 'space.email.details_2'|trans({'%from%': from}) }}</p>
-        <br/>
         <p>{{ 'space.email.details_3'|trans }} {{ 'space.email.details_4'|trans }} </p>
 
     </div>
 
-    <a href="{{ path('space_home', {sessionId: session.sessionId}) }}"
-       class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
-
-    <br/><br/>
+    <div class="rc-back-link">
+        <a href="{{ path('space_home', {sessionId: session.sessionId}) }}"
+           class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+    </div>
 
 {% endblock %}

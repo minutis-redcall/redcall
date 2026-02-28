@@ -51,10 +51,6 @@ class BadgeVoter extends Voter
         /** @var Badge $badge */
         $badge = $subject;
 
-        if ($me->getPlatform() !== $badge->getPlatform()) {
-            return false;
-        }
-
         if ($this->security->isGranted('ROLE_ADMIN')) {
             return true;
         }

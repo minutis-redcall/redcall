@@ -4,93 +4,93 @@
     display: flex;
     align-items: flex-start;
     justify-content: center;
-    padding: 3rem 1rem;
+    padding: 2.5rem 1rem;
 }
 
 .auth-card {
     width: 100%;
-    max-width: 480px;
+    max-width: 420px;
     background: var(--rc-white);
-    padding: 2.5rem;
+    padding: 2rem;
     border-radius: var(--border-radius-lg);
-    box-shadow: 0 15px 35px rgba(0,0,0,0.05), 0 5px 15px rgba(0,0,0,0.03);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.04), 0 1px 6px rgba(0,0,0,0.02);
     border: 1px solid rgba(0,0,0,0.05);
 }
 
 .auth-logo {
     text-align: center;
-    margin-bottom: 2.5rem;
+    margin-bottom: 2rem;
 }
 
 .auth-logo img {
-    max-height: 80px;
+    max-height: 64px;
     max-width: 100%;
     height: auto;
     width: auto;
-    transition: transform 0.3s ease;
+    transition: transform 0.2s ease;
 }
 
 .auth-logo img:hover {
-    transform: scale(1.05);
+    transform: scale(1.03);
 }
 
 .auth-card h1 {
-    font-size: 1.5rem;
+    font-size: 1.15rem;
     margin-top: 0;
-    margin-bottom: 2.5rem;
-    padding-bottom: 0.75rem;
+    margin-bottom: 1.75rem;
+    padding-bottom: 0.5rem;
     display: block;
     text-align: center;
 }
 
 .auth-form-group {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.25rem;
 }
 
 .auth-form-group label {
-    font-weight: 600;
-    font-size: 0.85rem;
+    font-weight: 500;
+    font-size: 0.8rem;
     color: var(--text-secondary);
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.35rem;
     display: block;
 }
 
 .auth-card .form-control {
     border-radius: var(--border-radius);
-    padding: 0.75rem 1rem;
+    padding: 0.6rem 0.85rem;
     height: auto;
-    border: 1.5px solid #eee;
+    border: 1.5px solid #e5e5e5;
     transition: var(--transition-base);
-    font-size: 0.95rem;
+    font-size: 0.85rem;
 }
 
 .auth-card .form-control:focus {
     border-color: var(--rc-red);
-    box-shadow: 0 0 0 3px rgba(227, 6, 19, 0.1);
+    box-shadow: 0 0 0 3px rgba(227, 6, 19, 0.08);
     outline: none;
 }
 
 .auth-actions {
-    margin-top: 2rem;
+    margin-top: 1.5rem;
 }
 
 .auth-actions .btn {
     width: 100%;
-    padding: 12px;
-    font-size: 1rem;
-    margin-bottom: 1rem;
+    padding: 10px;
+    font-size: 0.85rem;
+    margin-bottom: 0.75rem;
 }
 
 .auth-links {
     text-align: center;
-    margin-top: 1.5rem;
-    font-size: 0.9rem;
+    margin-top: 1.25rem;
+    font-size: 0.8rem;
     color: var(--text-secondary);
 }
 
 .auth-links a {
     color: var(--rc-red);
-    font-weight: 600;
+    font-weight: 500;
     text-decoration: none;
     transition: var(--transition-base);
 }
@@ -103,25 +103,25 @@
 .auth-mean-toggle {
     background: #f8f9fa;
     border-radius: var(--border-radius);
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
+    padding: 1.25rem;
+    margin-bottom: 1.25rem;
     border: 1px dashed #ddd;
 }
 
 .auth-mean-toggle p {
-    margin-bottom: 0.75rem;
-    font-size: 0.95rem;
+    margin-bottom: 0.5rem;
+    font-size: 0.85rem;
 }
 
 .auth-sep {
     display: flex;
     align-items: center;
     text-align: center;
-    margin: 1.5rem 0;
+    margin: 1.25rem 0;
     color: #aaa;
-    font-size: 0.8rem;
+    font-size: 0.7rem;
     text-transform: uppercase;
-    letter-spacing: 1px;
+    letter-spacing: 0.5px;
 }
 
 .auth-sep::before,
@@ -132,35 +132,34 @@
 }
 
 .auth-sep:not(:empty)::before {
-    margin-right: 1rem;
+    margin-right: 0.75rem;
 }
 
 .auth-sep:not(:empty)::after {
-    margin-left: 1rem;
+    margin-left: 0.75rem;
 }
 
 /* Specific button for Google login */
 .btn-google {
     background-color: white !important;
     color: #444 !important;
-    border: 1.5px solid #eee !important;
+    border: 1.5px solid #e5e5e5 !important;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: 'Roboto', sans-serif;
     text-transform: none !important;
     font-weight: 500 !important;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important;
+    box-shadow: none !important;
 }
 
 .btn-google:hover {
     background-color: #f8f9fa !important;
     border-color: #ddd !important;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1) !important;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.06) !important;
 }
 
 .btn-google img {
-    margin-right: 12px;
+    margin-right: 10px;
 }
 
 /* Utility classes for the transition */
@@ -170,7 +169,7 @@
 
 /* Localization switcher in auth */
 .auth-locales {
-    margin-top: 2rem;
-    padding-top: 1.5rem;
+    margin-top: 1.5rem;
+    padding-top: 1.25rem;
     border-top: 1px solid #eee;
 }

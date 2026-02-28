@@ -4,7 +4,6 @@ namespace App\Repository;
 
 use App\Entity\Structure;
 use App\Entity\User;
-use App\Security\Helper\Security;
 use Bundles\PasswordLoginBundle\Entity\AbstractUser;
 use Bundles\PasswordLoginBundle\Repository\AbstractUserRepository;
 use Bundles\PasswordLoginBundle\Repository\UserRepositoryInterface;
@@ -18,15 +17,8 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class UserRepository extends AbstractUserRepository implements UserRepositoryInterface
 {
-    /**
-     * @var Security
-     */
-    private $security;
-
-    public function __construct(ManagerRegistry $registry, Security $security)
+    public function __construct(ManagerRegistry $registry)
     {
-        $this->security = $security;
-
         parent::__construct($registry, User::class);
     }
 
@@ -44,36 +36,23 @@ class UserRepository extends AbstractUserRepository implements UserRepositoryInt
 
     public function findAll()
     {
-        return $this->findBy([
-            'platform' => $this->security->getPlatform(),
-        ]);
+        return $this->findBy([]);
     }
 
-    public function findOneByExternalId(string $platform, string $externalId) : ?User
+    public function findOneByExternalId(string $externalId) : ?User
     {
         return $this
             ->createQueryBuilder('u')
             ->join('u.volunteer', 'v')
-            ->where('v.platform = :platform')
-            ->setParameter('platform', $platform)
-            ->andWhere('v.externalId = :externalId')
+            ->where('v.externalId = :externalId')
             ->setParameter('externalId', $externalId)
             ->getQuery()
             ->getOneOrNullResult();
     }
 
-    public function findOneByUsernameAndPlatform(string $platform, string $username) : ?User
+    public function findOneByUsername(string $username) : ?User
     {
         return $this->findOneBy([
-            'platform' => $platform,
-            'username' => $username,
-        ]);
-    }
-
-    public function findByUsernameAndCurrentPlatform(string $username) : ?User
-    {
-        return $this->findOneBy([
-            'platform' => $this->security->getPlatform(),
             'username' => $username,
         ]);
     }
@@ -100,8 +79,6 @@ class UserRepository extends AbstractUserRepository implements UserRepositoryInt
                 )
             )
             ->setParameter('criteria', sprintf('%%%s%%', $criteria))
-            ->andWhere('u.isRoot = true OR u.platform = :platform')
-            ->setParameter('platform', $this->security->getPlatform())
             ->addOrderBy('u.registeredAt', 'DESC')
             ->addOrderBy('u.username', 'ASC');
 
@@ -118,8 +95,6 @@ class UserRepository extends AbstractUserRepository implements UserRepositoryInt
                     ->join('u.structures', 's')
                     ->andWhere('s.id = :structure')
                     ->setParameter('structure', $structure)
-                    ->andWhere('u.platform = :platform')
-                    ->setParameter('platform', $structure->getPlatform())
                     ->getQuery()
                     ->getResult();
     }

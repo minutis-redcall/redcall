@@ -4,7 +4,6 @@ namespace App\Repository;
 
 use App\Base\BaseRepository;
 use App\Entity\Category;
-use App\Security\Helper\Security;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -15,39 +14,21 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class CategoryRepository extends BaseRepository
 {
-    /**
-     * @var Security
-     */
-    private $security;
-
-    public function __construct(ManagerRegistry $registry, Security $security)
+    public function __construct(ManagerRegistry $registry)
     {
-        $this->security = $security;
-
         parent::__construct($registry, Category::class);
     }
 
-    public function findOneByExternalId(string $platform, string $externalId) : ?Category
+    public function findOneByExternalId(string $externalId) : ?Category
     {
         return $this->findOneBy([
-            'platform'   => $platform,
             'externalId' => $externalId,
         ]);
     }
 
-    public function findOneByExternalIdAndCurrentPlatform(string $externalId) : ?Category
-    {
-        return $this->findOneBy([
-            'platform'   => $this->security->getPlatform(),
-            'externalId' => $externalId,
-        ]);
-    }
-
-    public function getSearchInCategoriesQueryBuilder(string $platform, ?string $criteria) : QueryBuilder
+    public function getSearchInCategoriesQueryBuilder(?string $criteria) : QueryBuilder
     {
         $qb = $this->createQueryBuilder('c')
-                   ->andWhere('c.platform = :platform')
-                   ->setParameter('platform', $platform)
                    ->addOrderBy('c.enabled', 'DESC')
                    ->addOrderBy('c.priority', 'ASC');
 
@@ -58,9 +39,9 @@ class CategoryRepository extends BaseRepository
         return $qb;
     }
 
-    public function search(string $platform, ?string $criteria, int $limit) : array
+    public function search(?string $criteria, int $limit) : array
     {
-        return $this->getSearchInCategoriesQueryBuilder($platform, $criteria)
+        return $this->getSearchInCategoriesQueryBuilder($criteria)
                     ->setMaxResults($limit)
                     ->getQuery()
                     ->getResult();

@@ -4,7 +4,6 @@ namespace App\Repository;
 
 use App\Base\BaseRepository;
 use App\Entity\Campaign;
-use App\Security\Helper\Security;
 use Bundles\PasswordLoginBundle\Entity\AbstractUser;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
@@ -19,16 +18,9 @@ class CampaignRepository extends BaseRepository
 {
     const CODE_SIZE = 8;
 
-    /**
-     * @var Security
-     */
-    private $security;
-
-    public function __construct(Security $security, ManagerRegistry $registry)
+    public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Campaign::class);
-
-        $this->security = $security;
     }
 
     /**
@@ -60,8 +52,6 @@ class CampaignRepository extends BaseRepository
             ->where('u.id = :user')
             ->setParameter('user', $user)
             ->andWhere('s.enabled = true')
-            ->andWhere('c.platform = :platform')
-            ->setParameter('platform', $this->security->getPlatform())
             ->andWhere('c.active = true');
     }
 
@@ -78,8 +68,6 @@ class CampaignRepository extends BaseRepository
             ->where('u.id = :user')
             ->setParameter('user', $user)
             ->andWhere('s.enabled = true')
-            ->andWhere('c.platform = :platform')
-            ->setParameter('platform', $this->security->getPlatform())
             ->andWhere('c.active = true');
     }
 
@@ -101,8 +89,6 @@ class CampaignRepository extends BaseRepository
             ->where('u.id = :user')
             ->setParameter('user', $user)
             ->andWhere('s.enabled = true')
-            ->andWhere('c.platform = :platform')
-            ->setParameter('platform', $this->security->getPlatform())
             ->andWhere('c.active = false');
     }
 
@@ -168,11 +154,9 @@ class CampaignRepository extends BaseRepository
                     ->setParameter('active', true);
     }
 
-    public function getAllCampaignsQueryBuilder(string $platform) : QueryBuilder
+    public function getAllCampaignsQueryBuilder() : QueryBuilder
     {
-        return $this->createQueryBuilder('c')
-                    ->where('c.platform = :platform')
-                    ->setParameter('platform', $platform);
+        return $this->createQueryBuilder('c');
     }
 
     /**
@@ -256,8 +240,6 @@ class CampaignRepository extends BaseRepository
                     ->where('c.id = :campaign_id')
                     ->setParameter('campaign_id', $campaign->getId())
                     ->andWhere('s.enabled = true')
-                    ->andWhere('s.platform = :platform')
-                    ->setParameter('platform', $this->security->getPlatform())
                     ->orderBy('volunteer_count', 'DESC')
                     ->groupBy('s.id')
                     ->getQuery()

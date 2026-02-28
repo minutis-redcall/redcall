@@ -166,7 +166,7 @@ class CommunicationManager
                     $communication->getVolunteer()->getDisplayName(),
                     $structureName,
                     count($communication->getMessages()),
-                    count($this->structureManager->getCampaignStructures($campaign->getPlatform(), $campaign)),
+                    count($this->structureManager->getCampaignStructures($campaign)),
                     PHP_EOL,
                     $campaign->getLabel(),
                     PHP_EOL,
@@ -193,12 +193,10 @@ class CommunicationManager
         if ($user = $this->security->getUser()) {
             $id        = null;
             $volunteer = $user->getVolunteer();
-            $platform  = $user->getPlatform();
         } else {
             // Triggers ran through the Campaign::contact() method only contain 1 volunteer
             $id        = $trigger->getAudience()['volunteers'][0];
             $volunteer = $this->volunteerManager->find($id);
-            $platform  = $volunteer->getPlatform();
         }
 
         $communication = new Communication();
@@ -234,8 +232,8 @@ class CommunicationManager
         if ($id) {
             $volunteers = [$volunteer];
         } else {
-            $classification = $this->audienceManager->classifyAudience($platform, $trigger->getAudience());
-            $volunteers     = $this->volunteerManager->getVolunteerList($platform, $classification->getReachable());
+            $classification = $this->audienceManager->classifyAudience($trigger->getAudience());
+            $volunteers     = $this->volunteerManager->getVolunteerList($classification->getReachable());
         }
 
         $codes = $this->messageManager->generateCodes(count($volunteers));

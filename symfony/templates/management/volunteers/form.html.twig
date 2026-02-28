@@ -90,10 +90,8 @@
                         {% if isCreate %}
                             <p>{{ 'manage_volunteers.admin_structures.create'|trans }}</p>
                         {% else %}
-                            <div class="jumbotron shadow p-3 mb-5 rounded">
+                            <div class="rc-section">
                                 <h3>{{ 'manage_volunteers.admin_structures.structures'|trans({'%name%': volunteer.displayName}) }}</h3>
-
-                                <br/>
 
                                 {% for structure in volunteer.structures %}
                                     {{ structure.displayName }}<br/>
@@ -166,17 +164,10 @@
 
         </div>
 
-        <br/>
-
-
     </div>
 
-    <br/>
-
-    <div class="text-center">
+    <div class="rc-back-link">
         <a href="{{ path('management_volunteers_list', app.request.query.all) }}" class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
     </div>
-
-    <br/><br/>
 
 {% endblock %}

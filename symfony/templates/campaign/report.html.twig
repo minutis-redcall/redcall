@@ -59,16 +59,14 @@
 
 {% endmacro %}
 
-<br/>
-
-<div class="h4">{{ 'report.campaign.title'|trans }}</div>
+<h4>{{ 'report.campaign.title'|trans }}</h4>
 
 {% for key, communication in campaign.communications %}
     {% set report = communication.report %}
 
     {% if report.repartitions.count > 0 %}
 
-        <div class="float-right color-grey" style="font-weight: normal;" {% if communication.volunteer %}title="{{ communication.volunteer.externalId }}"{% endif %}>
+        <div class="float-right color-grey" {% if communication.volunteer %}title="{{ communication.volunteer.externalId }}"{% endif %}>
             {{ macros.communicationBy(communication) }}
         </div>
 

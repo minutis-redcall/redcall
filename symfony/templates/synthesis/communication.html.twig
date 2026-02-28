@@ -1,11 +1,11 @@
 {% if communication.choices|length > 0 %}
 
     <div class="my-2">
-        <img src="{{ asset('email.png') }}" style="max-height: 25px;"/>
+        <img src="{{ asset('email.png') }}" class="mr-1" style="max-height:20px;"/>
         {{ communication.createdAt|date('d/m H:i') }}
     </div>
 
-    <div style="background-color: #e9ecef;" class="p-3 text-monospace">
+    <div class="bg-light p-3 text-monospace">
         {{ communication.body|purify }}
     </div>
 

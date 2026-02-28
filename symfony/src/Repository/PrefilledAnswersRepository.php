@@ -6,7 +6,6 @@ use App\Base\BaseRepository;
 use App\Entity\PrefilledAnswers;
 use App\Entity\Structure;
 use App\Entity\User;
-use App\Security\Helper\Security;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -17,16 +16,9 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class PrefilledAnswersRepository extends BaseRepository
 {
-    /**
-     * @var Security
-     */
-    private $security;
-
-    public function __construct(Security $security, ManagerRegistry $registry)
+    public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, PrefilledAnswers::class);
-
-        $this->security = $security;
     }
 
     public function getPrefilledAnswersByStructure(Structure $structure)
@@ -34,10 +26,7 @@ class PrefilledAnswersRepository extends BaseRepository
         $qb = $this->createQueryBuilder('pa')
                    ->join('pa.structure', 's')
                    ->where('s.id = :id')
-                   ->setParameter('id', $structure->getId())
-                   ->andWhere('s.platform = :platform')
-                   ->setParameter('platform', $this->security->getPlatform())
-                   ->andWhere('pa.platform = :platform');
+                   ->setParameter('id', $structure->getId());
 
         return $qb;
     }
@@ -47,10 +36,7 @@ class PrefilledAnswersRepository extends BaseRepository
         $qb = $this->createQueryBuilder('pa')
                    ->leftJoin('pa.structure', 's')
                    ->where('s.id IS NULL OR s.id IN (:id)')
-                   ->setParameter('id', $user->getStructures())
-                   ->andWhere('s.platform IS NULL OR s.platform = :platform')
-                   ->setParameter('platform', $this->security->getPlatform())
-                   ->andWhere('pa.platform = :platform');
+                   ->setParameter('id', $user->getStructures());
 
         return $qb->getQuery()->getResult();
     }
@@ -58,8 +44,6 @@ class PrefilledAnswersRepository extends BaseRepository
     public function getGlobalPrefilledAnswers()
     {
         return $this->createQueryBuilder('pa')
-                    ->where('pa.structure is null')
-                    ->andWhere('pa.platform = :platform')
-                    ->setParameter('platform', $this->security->getPlatform());
+                    ->where('pa.structure is null');
     }
 }

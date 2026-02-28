@@ -4,21 +4,15 @@
 
 {% block body %}
 
-    <br/>
-
-    <div class="jumbotron shadow p-3 mb-5 rounded">
+    <div class="rc-section">
 
         <h3>{{ 'space.delete_data.title'|trans }}</h3>
 
         <hr/>
 
         <p>{{ 'space.delete_data.detail_1'|trans }}</p>
-        <br/>
         <p>{{ 'space.delete_data.detail_2'|trans }}</p>
-        <br/>
         <p>{{ 'space.delete_data.detail_3'|trans }}</p>
-
-        <br/>
 
         <div id="delete-buttons" class="d-none">
             {{ form(form) }}
@@ -28,10 +22,10 @@
 
     </div>
 
-    <a href="{{ path('space_home', {sessionId: session.sessionId}) }}"
-       class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
-
-    <br/><br/>
+    <div class="rc-back-link">
+        <a href="{{ path('space_home', {sessionId: session.sessionId}) }}"
+           class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+    </div>
 
     <script type="text/javascript">
 

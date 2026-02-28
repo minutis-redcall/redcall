@@ -799,7 +799,7 @@
         $('body').on('click', '.provider-modal', function (e) {
             e.preventDefault();
             $('#provider-modal-title').html('');
-            $('#provider-modal-body').html('<img src="{{ asset('spinner.gif') }}"/>');
+            $('#provider-modal-body').html('<div class="py-4"><span class="rc-spinner rc-spinner-lg"></span></div>');
             $('#provider-modal').modal();
             $.post($(this).data('href'), function (data) {
                 $('#provider-modal-title').html(data.title);
