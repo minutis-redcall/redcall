@@ -2,8 +2,8 @@
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
   locale: 'en'
-  locale_list: [ 'fr', 'en', 'es', 'pt' ]
-  locale_matcher: 'fr|en|es|pt'
+  locale_list: [ 'fr', 'en' ]
+  locale_matcher: 'fr|en'
   google_recaptcha_site_key: '%env(GOOGLE_RECAPTCHA_SITE_KEY)%'
   communication.processor: 'App\Communication\Processor\TaskProcessor'
   user_entity: 'App\Entity\User'
@@ -90,15 +90,6 @@ services:
     class: App\Repository\UserRepository
     arguments: [ '@Doctrine\Common\Persistence\ManagerRegistry' ]
 
-  Bundles\PasswordLoginBundle\Services\Mail:
-    class: App\Services\Mail
-    arguments:
-      - '@translator'
-      - '@twig'
-      - '@mailer'
-      - '@Bundles\PasswordLoginBundle\Manager\UserManager'
-      - '@App\Manager\UserManager'
-
   App\Provider\OAuth\GoogleConnect\GoogleConnect:
     arguments:
       $clientId: '%env(GOOGLE_CONNECT_CLIENT_ID)%'
@@ -109,3 +100,12 @@ services:
     tags:
       - { name: twig.extension }
 
+  Bundles\PasswordLoginBundle\:
+    resource: '../bundles/password-login-bundle/*'
+    exclude:
+      - '../bundles/password-login-bundle/DependencyInjection/'
+      - '../bundles/password-login-bundle/Entity/'
+      - '../bundles/password-login-bundle/Event/'
+      - '../bundles/password-login-bundle/Tests/'
+      - '../bundles/password-login-bundle/Resources/'
+    public: true

@@ -6,8 +6,38 @@
 
 {% block body %}
 
-    {{ block('body', '@!PasswordLogin/security/profile.html.twig') }}
+    <div class="auth-wrapper">
+        <div class="auth-card">
+            <div class="auth-logo">
+                <img src="{{ asset('build/images/redcall-full.png') }}" alt="RedCall Logo"/>
+            </div>
 
-    {{ block('locales') }}
+            <h1 class="text-center">{{ 'password_login.profile.title'|trans }}</h1>
+
+            {% form_theme profile '@EWZRecaptcha/Form/ewz_recaptcha_widget.html.twig' %}
+            {{ form_start(profile) }}
+            {{ form_row(profile.current_password) }}
+            <hr class="my-4"/>
+            {{ form_row(profile.username) }}
+            {{ form_row(profile.password) }}
+            {% if profile.recaptcha is defined %}
+                {{ form_row(profile.recaptcha) }}
+            {% endif %}
+
+            <div class="auth-actions">
+                <button type="submit" class="btn btn-primary btn-block">
+                    {{ 'password_login.profile.submit'|trans|default('Update Profile'|trans) }}
+                </button>
+                <a href="{{ path(homeRoute) }}" class="btn btn-secondary btn-block">
+                    {{ 'password_login.profile.home'|trans }}
+                </a>
+            </div>
+            {{ form_end(profile) }}
+
+            <div class="auth-locales text-center">
+                {{ block('locales') }}
+            </div>
+        </div>
+    </div>
 
 {% endblock %}

@@ -78,9 +78,9 @@ class VolunteerManager
         return $this->volunteerRepository->find($volunteerId);
     }
 
-    public function findOneByExternalId(string $platform, string $externalId) : ?Volunteer
+    public function findOneByExternalId(string $externalId) : ?Volunteer
     {
-        return $this->volunteerRepository->findOneByExternalId($platform, $externalId);
+        return $this->volunteerRepository->findOneByExternalId($externalId);
     }
 
     public function findOneByPhoneNumber(string $phoneNumber) : ?Volunteer
@@ -97,7 +97,7 @@ class VolunteerManager
 
     public function searchAll(?string $criteria, int $limit, bool $enabled = false)
     {
-        return $this->volunteerRepository->searchAll($this->security->getPlatform(), $criteria, $limit, $enabled);
+        return $this->volunteerRepository->searchAll($criteria, $limit, $enabled);
     }
 
     public function searchForCurrentUser(?string $criteria, int $limit, bool $onlyEnabled = false)
@@ -110,11 +110,11 @@ class VolunteerManager
         );
     }
 
-    public function getVolunteerList(string $platform, array $volunteerIds, bool $onlyEnabled = true) : array
+    public function getVolunteerList(array $volunteerIds, bool $onlyEnabled = true) : array
     {
         $volunteers = [];
 
-        $list = $this->volunteerRepository->getVolunteerList($platform, $volunteerIds, $onlyEnabled);
+        $list = $this->volunteerRepository->getVolunteerList($volunteerIds, $onlyEnabled);
 
         usort($list, function (Volunteer $a, Volunteer $b) {
             return $a->getLastName() <=> $b->getLastName();
@@ -136,8 +136,7 @@ class VolunteerManager
         );
     }
 
-    public function searchInStructureQueryBuilder(string $platform,
-        Structure $structure,
+    public function searchInStructureQueryBuilder(Structure $structure,
         ?string $criteria,
         bool $onlyEnabled,
         bool $onlyUsers,
@@ -145,34 +144,32 @@ class VolunteerManager
         bool $onlyLocked) : QueryBuilder
     {
         if ($includeHierarchy) {
-            $structureIds = $this->structureManager->getDescendantStructures($this->security->getPlatform(), [$structure->getId()]);
+            $structureIds = $this->structureManager->getDescendantStructures([$structure->getId()]);
 
-            return $this->volunteerRepository->searchInStructuresQueryBuilder($platform, $structureIds, $criteria, $onlyEnabled, $onlyUsers, $onlyLocked);
+            return $this->volunteerRepository->searchInStructuresQueryBuilder($structureIds, $criteria, $onlyEnabled, $onlyUsers, $onlyLocked);
         }
 
-        return $this->volunteerRepository->searchInStructureQueryBuilder($platform, $structure, $criteria, $onlyEnabled, $onlyUsers, $onlyLocked);
+        return $this->volunteerRepository->searchInStructureQueryBuilder($structure, $criteria, $onlyEnabled, $onlyUsers, $onlyLocked);
     }
 
-    public function searchQueryBuilder(string $platform,
-        ?string $criteria,
+    public function searchQueryBuilder(?string $criteria,
         bool $onlyEnabled,
         bool $onlyUsers,
         bool $onlyLocked) : QueryBuilder
     {
         if ($this->security->isGranted('ROLE_ADMIN')) {
-            return $this->searchAllQueryBuilder($platform, $criteria, $onlyEnabled, $onlyUsers, $onlyLocked);
+            return $this->searchAllQueryBuilder($criteria, $onlyEnabled, $onlyUsers, $onlyLocked);
         } else {
             return $this->searchForCurrentUserQueryBuilder($criteria, $onlyEnabled, $onlyUsers, $onlyLocked);
         }
     }
 
-    public function searchAllQueryBuilder(string $platform,
-        ?string $criteria,
+    public function searchAllQueryBuilder(?string $criteria,
         bool $onlyEnabled,
         bool $onlyUsers,
         bool $onlyLocked) : QueryBuilder
     {
-        return $this->volunteerRepository->searchAllWithFiltersQueryBuilder($platform, $criteria, $onlyEnabled, $onlyUsers, $onlyLocked);
+        return $this->volunteerRepository->searchAllWithFiltersQueryBuilder($criteria, $onlyEnabled, $onlyUsers, $onlyLocked);
     }
 
     public function searchForCurrentUserQueryBuilder(?string $criteria,
@@ -248,10 +245,9 @@ class VolunteerManager
         return $this->volunteerRepository->getVolunteerGlobalCounts($structureIds);
     }
 
-    public function filterInvalidExternalIds(string $platform, array $externalIds) : array
+    public function filterInvalidExternalIds(array $externalIds) : array
     {
         return $this->volunteerRepository->filterInvalidExternalIds(
-            $platform,
             array_map(function ($externalId) {
                 return ltrim($externalId, '0');
             }, $externalIds)
@@ -266,44 +262,44 @@ class VolunteerManager
         );
     }
 
-    public function filterDisabled(string $platform, array $volunteerIds) : array
+    public function filterDisabled(array $volunteerIds) : array
     {
-        return array_column($this->volunteerRepository->filterDisabled($platform, $volunteerIds), 'id');
+        return array_column($this->volunteerRepository->filterDisabled($volunteerIds), 'id');
     }
 
-    public function filterOptoutUntil(string $platform, array $volunteerIds) : array
+    public function filterOptoutUntil(array $volunteerIds) : array
     {
-        return array_column($this->volunteerRepository->filterOptoutUntil($platform, $volunteerIds), 'id');
+        return array_column($this->volunteerRepository->filterOptoutUntil($volunteerIds), 'id');
     }
 
-    public function filterPhoneLandline(string $platform, array $volunteerIds) : array
+    public function filterPhoneLandline(array $volunteerIds) : array
     {
-        return array_column($this->volunteerRepository->filterPhoneLandline($platform, $volunteerIds), 'id');
+        return array_column($this->volunteerRepository->filterPhoneLandline($volunteerIds), 'id');
     }
 
-    public function filterPhoneMissing(string $platform, array $volunteerIds) : array
+    public function filterPhoneMissing(array $volunteerIds) : array
     {
-        return array_column($this->volunteerRepository->filterPhoneMissing($platform, $volunteerIds), 'id');
+        return array_column($this->volunteerRepository->filterPhoneMissing($volunteerIds), 'id');
     }
 
-    public function filterPhoneOptout(string $platform, array $volunteerIds) : array
+    public function filterPhoneOptout(array $volunteerIds) : array
     {
-        return array_column($this->volunteerRepository->filterPhoneOptout($platform, $volunteerIds), 'id');
+        return array_column($this->volunteerRepository->filterPhoneOptout($volunteerIds), 'id');
     }
 
-    public function filterEmailMissing(string $platform, array $volunteerIds) : array
+    public function filterEmailMissing(array $volunteerIds) : array
     {
-        return array_column($this->volunteerRepository->filterEmailMissing($platform, $volunteerIds), 'id');
+        return array_column($this->volunteerRepository->filterEmailMissing($volunteerIds), 'id');
     }
 
-    public function filterEmailOptout(string $platform, array $volunteerIds) : array
+    public function filterEmailOptout(array $volunteerIds) : array
     {
-        return array_column($this->volunteerRepository->filterEmailOptout($platform, $volunteerIds), 'id');
+        return array_column($this->volunteerRepository->filterEmailOptout($volunteerIds), 'id');
     }
 
-    public function filterMinors(string $platform, array $volunteerIds) : array
+    public function filterMinors(array $volunteerIds) : array
     {
-        return array_column($this->volunteerRepository->filterMinors($platform, $volunteerIds), 'id');
+        return array_column($this->volunteerRepository->filterMinors($volunteerIds), 'id');
     }
 
     /**

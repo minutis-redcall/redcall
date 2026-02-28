@@ -40,7 +40,6 @@ class VolunteerListManager
     public function getVolunteerListsForCurrentUser() : array
     {
         return $this->volunteerListRepository->findVolunteerListsForUser(
-            $this->security->getPlatform(),
             $this->security->getUser()
         );
     }

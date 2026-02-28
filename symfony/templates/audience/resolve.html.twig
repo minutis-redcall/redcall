@@ -11,9 +11,7 @@
         {{ 'audience.classification.resolve.details.info3'|trans }}
     </p>
 
-    <br/>
-
-    <div class="row text-left jumbotron shadow p-3 mb-5 rounded">
+    <div class="row text-left rc-section">
         <div class="col-md-3">
             <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
                 {% set counter = 0 %}
@@ -38,7 +36,6 @@
                             <div class="card">
                                 <div class="card-body">
                                     <p>{{ ('audience.problem_details.' ~ key|snake)|trans }}</p>
-                                    <br/>
                                     <table class="table">
                                         <tbody>
                                         {% for id in list %}
@@ -51,21 +48,19 @@
                                                         </div>
                                                         <div class="col-md-5">
                                                             #{{ volunteer.externalId }}
-                                                            {% if constant('\\App\\Enum\\Platform::FR') == volunteer.platform %}
                                                                 /
                                                                 <a target="_blank" href="{{ gaia|replace({'%nivol%': volunteer.externalId}) }}">{{ 'audience.classification.resolve.details.gaia'|trans }}</a>
-                                                            {% endif %}
                                                             <br/>
                                                             {% if volunteer.email %}
-                                                                {% if not volunteer.emailOptin %}<strike>{% endif %}
+                                                                {% if not volunteer.emailOptin %}<del>{% endif %}
                                                                 <a href="mailto:{{ volunteer.email }}?subject={{ 'manage_volunteers.contact.mail_subject'|trans }}">{{ volunteer.email }}</a>
-                                                                {% if not volunteer.emailOptin %}</strike>{% endif %}
+                                                                {% if not volunteer.emailOptin %}</del>{% endif %}
                                                                 <br/>
                                                             {% endif %}
                                                             {% if volunteer.phoneNumber %}
-                                                                {% if not volunteer.phoneNumberOptin %}<strike>{% endif %}
+                                                                {% if not volunteer.phoneNumberOptin %}<del>{% endif %}
                                                                 {{ macros.phone(volunteer.phone) }}
-                                                                {% if not volunteer.phoneNumberOptin %}</strike>{% endif %}
+                                                                {% if not volunteer.phoneNumberOptin %}</del>{% endif %}
                                                                 <br/>
                                                             {% endif %}
                                                         </div>
@@ -89,10 +84,9 @@
         </div>
     </div>
 
-    <div class="text-center">
+    <div class="rc-back-link">
         <a href="{{ path('home') }}"
            class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
-        <br/><br/>
     </div>
 
 {% endblock %}

@@ -24,7 +24,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 /**
  * @Route(path="admin/maintenance", name="admin_maintenance_")
- * @IsGranted("ROLE_DEVELOPER")
+ * @IsGranted("ROLE_ROOT")
  */
 class MaintenanceController extends BaseController
 {
@@ -161,7 +161,7 @@ class MaintenanceController extends BaseController
             throw $this->createNotFoundException();
         }
 
-        $volunteer = $this->volunteerManager->findOneByExternalId($this->getPlatform(), $nivol);
+        $volunteer = $this->volunteerManager->findOneByExternalId($nivol);
         if (!$volunteer) {
             throw $this->createNotFoundException();
         }

@@ -51,10 +51,6 @@ class StructureVoter extends Voter
         /** @var Structure $structure */
         $structure = $subject;
 
-        if ($me->getPlatform() !== $structure->getPlatform()) {
-            return false;
-        }
-
         if ($this->security->isGranted('ROLE_ADMIN')) {
             return true;
         }

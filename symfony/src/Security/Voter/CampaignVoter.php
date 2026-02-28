@@ -5,7 +5,7 @@ namespace App\Security\Voter;
 use App\Entity\Campaign;
 use App\Entity\User;
 use App\Manager\StructureManager;
-use App\Security\Helper\Security;
+use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -59,10 +59,6 @@ class CampaignVoter extends Voter
         /** @var Campaign $campaign */
         $campaign = $subject;
 
-        if ($me->getPlatform() !== $campaign->getPlatform()) {
-            return false;
-        }
-
         if ($this->security->isGranted('ROLE_ADMIN')) {
             return true;
         }
@@ -82,7 +78,7 @@ class CampaignVoter extends Voter
         // A user can access a campaign if any of the triggered volunteer has a
         // common structure with that user.
         return $me->hasCommonStructure(
-            $this->structureManager->getCampaignStructures($this->security->getPlatform(), $campaign)
+            $this->structureManager->getCampaignStructures($campaign)
         );
     }
 }

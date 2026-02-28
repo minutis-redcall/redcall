@@ -4,9 +4,7 @@
 
 {% block body %}
 
-    <br/>
-
-    <div class="col-md-12 jumbotron shadow p-3 mb-5 rounded">
+    <div class="rc-section">
 
         <h3>{{ 'admin.pegass.structures'|trans({'%name%': user.username}) }}</h3>
 
@@ -24,7 +22,7 @@
                     <span class="slider"></span>
                 </label>
                 <label for="select-all">
-                    <em style="color:darkgray;">{{ 'admin.pegass.max'|trans({'%max%': 800}) }}</em>
+                    <em class="text-muted">{{ 'admin.pegass.max'|trans({'%max%': 800}) }}</em>
                 </label>
             {% endif %}
 
@@ -36,8 +34,6 @@
                 {% endfor %}
             </div>
 
-            <br/>
-
             {{ form_end(form) }}
 
             <hr/>
@@ -48,10 +44,10 @@
             {{ render(controller('\\App\\Controller\\WidgetController::structureEditor')) }}
         </div>
 
-        <br/>
-
-        <a href="{{ path('admin_pegass_index') }}"
-           class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+        <div class="rc-back-link">
+            <a href="{{ path('admin_pegass_index') }}"
+               class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+        </div>
 
     </div>
 

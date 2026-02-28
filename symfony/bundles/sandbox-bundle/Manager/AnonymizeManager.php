@@ -167,9 +167,9 @@ class AnonymizeManager
         return $phoneUtil->format($parsed, PhoneNumberFormat::E164);
     }
 
-    public function anonymizeVolunteer(string $externalId, string $platform)
+    public function anonymizeVolunteer(string $externalId)
     {
-        $volunteer = $this->volunteerManager->findOneByExternalId($platform, $externalId);
+        $volunteer = $this->volunteerManager->findOneByExternalId($externalId);
         if ($volunteer) {
             $this->anonymize($volunteer);
         }

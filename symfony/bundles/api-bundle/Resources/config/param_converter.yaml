@@ -1,8 +1,0 @@
-services:
-
-  Bundles\ApiBundle\ParamConverter\FacadeParamConverter:
-    arguments:
-      - '@serializer'
-      - '@validator'
-    tags:
-      - request.param_converter

@@ -1,15 +1,9 @@
 {% extends 'base.html.twig' %}
 
-{% block logo %}
-    <a href="{{ path('home') }}">
-        <img src="{{ asset('minutis.png') }}" style="max-height: 50px;" alt="Croix-Rouge Française"/>
-    </a>
-{% endblock %}
 
 {% block body %}
 
-    <br/>
-    <div class="jumbotron bg-white border-0 text-center py-5">
+    <div class="rc-section text-center py-5">
 
         {% if not app.user.structures.count %}
 
@@ -31,21 +25,21 @@
                 <div class="col-12 mb-5">
                     <h1 class="">{{ 'campaign.titles.create_full'|trans }}</h1>
                 </div>
-                
+
                 <div class="col-md-4 mb-4">
                     <a href="{{ path('create_campaign', {type: 'sms'}) }}" class="rc-btn-circle btn-yellow text-decoration-none shadow-sm">
                         <div class="icon">📱</div>
                         <strong class="text-rational">{{ 'campaign.titles.sms'|trans }}</strong>
                     </a>
                 </div>
-                
+
                 <div class="col-md-4 mb-4">
                     <a href="{{ path('create_campaign', {type: 'call'}) }}" class="rc-btn-circle btn-red text-decoration-none shadow-sm">
                         <div class="icon">📞</div>
                         <strong class="text-rational">{{ 'campaign.titles.call'|trans }}</strong>
                     </a>
                 </div>
-                
+
                 <div class="col-md-4 mb-4">
                     <a href="{{ path('create_campaign', {type: 'email'}) }}" class="rc-btn-circle btn-blue text-decoration-none shadow-sm">
                         <div class="icon">✉️</div>
@@ -60,7 +54,7 @@
             </div>
 
             <div id="issues" class="mt-5">
-                <img src="{{ asset('spinner.gif') }}" style="width:25px;"/>
+                <span class="rc-spinner"></span>
             </div>
 
         {% endif %}

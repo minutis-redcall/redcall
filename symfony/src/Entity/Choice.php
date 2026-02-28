@@ -130,13 +130,9 @@ class Choice
      */
     public function getCount() : int
     {
-        $count = 0;
+        $counts = $this->getCommunication()->computeChoiceCounts();
 
-        foreach ($this->getCommunication()->getMessages() as $message) {
-            $count += boolval($message->getAnswerByChoice($this));
-        }
-
-        return $count;
+        return $counts[$this->getId()] ?? 0;
     }
 
     public function getOperation() : ?Operation

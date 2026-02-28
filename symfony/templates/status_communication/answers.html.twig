@@ -1,4 +1,4 @@
-<div class="text-center h4">{{ message.volunteer.displayName }}</div>
+<h4 class="text-center">{{ message.volunteer.displayName }}</h4>
 
 {% if message.communication.choices|length %}
     <p>{{ 'campaign_status.answers.change'|trans }}</p>
@@ -27,7 +27,7 @@
         {% for answer in message.answers|reverse %}
             <tr>
                 <td class="{% if answer.byAdmin %}text-right{% endif %}">
-                    <div {% if answer.unclear %}style="color:red"{% endif %}>
+                    <div {% if answer.unclear %}class="text-danger"{% endif %}>
                         {{ answer.receivedAt|date('d/m/y H:i') }}:
                         {{ answer.raw }}
                     </div>
@@ -48,7 +48,7 @@
 {% endif %}
 
 <div id="refresh-answers-{{ message.id }}" data-count="{{ message.answers|length }}" class="d-none">
-    <div class="text-center" style="border:1px solid grey;padding:5px;">
+    <div class="text-center border rounded p-2">
         <p>⚠️</p>
         <p><strong>{{ 'campaign_status.answers.new_message'|trans }}</strong></p>
         <a href="#"

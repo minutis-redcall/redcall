@@ -7,7 +7,7 @@
 
     <title>{% block title %}RedCall{% endblock %}</title>
     {% block base_stylesheets %}
-        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Lato:wght@300;400;700&family=Roboto:wght@300;400;500;700&family=Ultra&family=Arvo:wght@400;700&family=Anton&family=Permanent+Marker&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
         {{ encore_entry_link_tags('css') }}
     {% endblock %}
     {% block stylesheets %}{% endblock %}
@@ -60,7 +60,11 @@
             <div class="container d-flex align-items-center justify-content-between py-3">
                 <div class="header-main d-flex align-items-center">
                     <div class="logo-container mr-4">
-                        {% block logo %}{% endblock %}
+                        {% block logo %}
+                            <a href="{{ path('home') }}">
+                                <img src="{{ asset('minutis.png') }}" style="max-height: 40px;" alt="Croix-Rouge Française"/>
+                            </a>
+                        {% endblock %}
                     </div>
 
                     {% block menu %}
@@ -94,12 +98,6 @@
                 </div>
 
                 <div class="header-actions d-flex align-items-center">
-                    {% if app.user|default(false) and app.user.root %}
-                        <div class="platform-switch mr-3">
-                            {{ render(controller('\\App\\Controller\\Admin\\PlatformController::renderSwitch')) }}
-                        </div>
-                    {% endif %}
-
                     {% if session.volunteer|default(false) %}
                         <span class="badge badge-pill badge-primary">
                             {{ session.volunteer.firstName }} {{ session.volunteer.lastName[:1] }}.
@@ -165,10 +163,6 @@
                         <a href="{{ path('go_to_space') }}" class="btn btn-secondary btn-sm m-1">{{ 'space.home.link'|trans }}</a>
                     {% endif %}
 
-                    {% if app.user|default(false) and is_granted('ROLE_DEVELOPER') %}
-                        <a href="{{ path('developer_home') }}" class="btn btn-secondary btn-sm m-1">{{ 'developer.home.link'|trans }}</a>
-                    {% endif %}
-
                     {% if app.user|default(false) %}
                         <a href="{{ path('management_home') }}" class="btn btn-secondary btn-sm m-1">{{ 'management.home.resources'|trans }}</a>
                     {% endif %}
@@ -176,16 +170,12 @@
                     {% if app.user|default(false) and is_granted('ROLE_ADMIN') %}
                         <a href="{{ path('admin_home') }}" class="btn btn-secondary btn-sm m-1">{{ 'admin.home.link'|trans }}</a>
                     {% endif %}
-
-                    <a href="https://github.com/minutis-redcall/app/blob/master/docs/user/fr/README.md" target="_blank" class="btn btn-secondary btn-sm m-1">{{ 'base.documentation'|trans }}</a>
                 </div>
 
                 {% block locales %}
                     <div class="locale-switcher d-flex justify-content-center mb-4">
                         <a href="{{ path('locale', {locale: 'en'}) }}" class="mx-2">🇬🇧 English</a>
                         <a href="{{ path('locale', {locale: 'fr'}) }}" class="mx-2">🇫🇷 Français</a>
-                        <a href="{{ path('locale', {locale: 'es'}) }}" class="mx-2">🇪🇸 Español</a>
-                        <a href="{{ path('locale', {locale: 'pt'}) }}" class="mx-2">🇵🇹 Português</a>
                     </div>
                 {% endblock %}
 

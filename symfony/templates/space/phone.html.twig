@@ -4,13 +4,11 @@
 
 {% block body %}
 
-    <br/>
-    <div class="jumbotron shadow p-3 mb-5 rounded">
+    <div class="rc-section">
 
-        <div class="h3">{{ 'space.phone.title'|trans }}</div>
+        <h3>{{ 'space.phone.title'|trans }}</h3>
 
         <p>{{ 'space.phone.details_1'|trans }}</p>
-        <br/>
 
         {{ form(form) }}
 
@@ -37,7 +35,6 @@
             {% if country.outboundSmsEnabled or country.outboundCallEnabled %}
 
                 <p>{{ 'space.phone.details_3'|trans }}</p>
-                <br/>
             {% endif %}
         {% endif %}
 
@@ -45,9 +42,9 @@
 
     </div>
 
-    <a href="{{ path('space_home', {sessionId: session.sessionId}) }}"
-       class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
-
-    <br/><br/>
+    <div class="rc-back-link">
+        <a href="{{ path('space_home', {sessionId: session.sessionId}) }}"
+           class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+    </div>
 
 {% endblock %}

@@ -4,7 +4,7 @@
 <hr/>
 
 <div id="message-container">
-    <div class="h3">{{ 'form.communication.fields.message'|trans }}</div>
+    <h3>{{ 'form.communication.fields.message'|trans }}</h3>
 
     {{ include('new_communication/templates.html.twig') }}
 
@@ -21,8 +21,6 @@
             field: form.message,
         }) }}
 
-        <br/>
-
         <div class="d-none">
             {{ form_widget(form.message) }}
         </div>
@@ -32,13 +30,13 @@
 
 <div class="clearfix"></div>
 
-<div class="h3">{{ 'form.communication.fields.response_title'|trans }}</div>
+<h3>{{ 'form.communication.fields.response_title'|trans }}</h3>
 
 {{ include('new_communication/answers.html.twig') }}
 
 {{ form_row(form.multipleAnswer) }}
 
-<div class="h3">{{ 'form.communication.fields.preview'|trans }}</div>
+<h3>{{ 'form.communication.fields.preview'|trans }}</h3>
 
 {{ include('new_communication/preview.html.twig') }}
 

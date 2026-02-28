@@ -3,11 +3,11 @@
 {% if category.badges|length %}
     <div class="row">
         {% for badge in category.badges %}
-            <div class="col-7 category-badge-{{ badge.id }}" style="padding:5px;">
+            <div class="col-7 category-badge-{{ badge.id }}">
                 {{ macros.badge(badge) }}
             </div>
 
-            <div class="col-5 category-badge-{{ badge.id }} text-right" style="padding:5px;">
+            <div class="col-5 category-badge-{{ badge.id }} text-right">
                 <div class="float-right">
 
                     {% if not badge.locked %}

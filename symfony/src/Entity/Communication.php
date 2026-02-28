@@ -597,6 +597,61 @@ class Communication
         return $estimated;
     }
 
+    /**
+     * Partitions messages into two groups in a single pass:
+     * - 'active': messages with answers, errors, or unclear status
+     * - 'pending': messages with no activity yet
+     *
+     * Avoids O(n²) Twig |merge and reduces repeated condition evaluations.
+     */
+    public function getPartitionedMessages() : array
+    {
+        $active  = [];
+        $pending = [];
+        foreach ($this->messages as $message) {
+            /** @var Message $message */
+            if ($message->getAnswers()->count() > 0 || $message->getError() || $message->getInvalidAnswer() || $message->isUnclear()) {
+                $active[] = $message;
+            } else {
+                $pending[] = $message;
+            }
+        }
+
+        return ['active' => $active, 'pending' => $pending];
+    }
+
+    /**
+     * Computes all choice counts in a single pass over messages,
+     * instead of iterating all messages for each choice separately.
+     * Result is cached for the duration of the request.
+     */
+    private $choiceCountsCache;
+
+    public function computeChoiceCounts() : array
+    {
+        if (null !== $this->choiceCountsCache) {
+            return $this->choiceCountsCache;
+        }
+
+        $counts = [];
+        foreach ($this->choices as $choice) {
+            $counts[$choice->getId()] = 0;
+        }
+        foreach ($this->messages as $message) {
+            foreach ($message->getAnswers() as $answer) {
+                foreach ($answer->getChoices() as $choice) {
+                    if (isset($counts[$choice->getId()])) {
+                        $counts[$choice->getId()]++;
+                    }
+                }
+            }
+        }
+
+        $this->choiceCountsCache = $counts;
+
+        return $counts;
+    }
+
     public function getInvalidAnswersCount() : int
     {
         $count = 0;
@@ -683,8 +738,9 @@ class Communication
 
     public function getProgression() : array
     {
-        $msgsSent = 0;
-        $replies  = 0;
+        $msgsSent  = 0;
+        $replies   = 0;
+        $reachable = 0;
 
         foreach ($this->getMessages() as $message) {
             if ($message->isSent()) {
@@ -693,12 +749,29 @@ class Communication
             if ($message->getAnswers()->count()) {
                 $replies++;
             }
+
+            // Inline countReachables logic to avoid a second full iteration
+            switch ($this->type) {
+                case self::TYPE_SMS:
+                case self::TYPE_CALL:
+                    if ($message->getVolunteer()->isPhoneNumberOptin() && $message->getVolunteer()->getPhoneNumber() && !$message->getError()) {
+                        $reachable++;
+                    }
+                    break;
+                case self::TYPE_EMAIL:
+                    if ($message->getVolunteer()->isEmailOptin() && $message->getVolunteer()->getEmail() && !$message->getError()) {
+                        $reachable++;
+                    }
+                    break;
+            }
         }
+
+        $count = count($this->getMessages());
 
         return [
             'sent'            => $msgsSent,
-            'total'           => $count = count($this->getMessages()),
-            'reachable'       => $this->countReachables(),
+            'total'           => $count,
+            'reachable'       => $reachable,
             'percent'         => $count ? round($msgsSent * 100 / $count, 2) : 0,
             'replies'         => $replies,
             'replies-percent' => $msgsSent ? round($replies * 100 / $msgsSent, 2) : 0,

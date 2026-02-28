@@ -5,8 +5,6 @@
 
 {% block body %}
 
-    <br/>
-
     <div class="text-right h4">
         <span class="badge-pill badge-dark">
             {{ message.volunteer.firstName }}
@@ -23,9 +21,9 @@
         {# Campaign is inactive: display an error message #}
         {# ------------------------------------------------------ #}
 
-        <div class="h3">{{ 'campaign.errors.inactive'|trans }}</div>
+        <h3>{{ 'campaign.errors.inactive'|trans }}</h3>
 
-        <hr/><br/>
+        <hr/>
 
     {% endif %}
 

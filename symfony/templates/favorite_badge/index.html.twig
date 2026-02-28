@@ -6,8 +6,6 @@
 
     <p>{{ 'favorite_badge.description'|trans }}</p>
 
-    <br/>
-
     {{ form(form) }}
 
     {% if app.user.favoriteBadges %}
@@ -32,8 +30,6 @@
         </div>
 
     {% endif %}
-
-    <br/>
 
     <p>{{ 'favorite_badge.public'|trans({'%public_badges%': public_badges|join(', ')}) }}</p>
 

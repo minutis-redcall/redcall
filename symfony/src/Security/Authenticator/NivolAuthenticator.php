@@ -121,14 +121,14 @@ class NivolAuthenticator extends AbstractFormLoginAuthenticator
         $params = $request->attributes->get('_route_params');
 
         return [
-            'identifier' => $params['identifier'],
-            'code'       => $data['code'],
+            'uuid' => $params['uuid'],
+            'code' => $data['code'],
         ];
     }
 
     public function getUser($credentials, UserProviderInterface $userProvider)
     {
-        $expirable = $this->expirableManager->get($credentials['identifier']);
+        $expirable = $this->expirableManager->get($credentials['uuid']);
 
         if (null === $expirable) {
             throw new BadCredentialsException();
@@ -145,7 +145,7 @@ class NivolAuthenticator extends AbstractFormLoginAuthenticator
 
     public function checkCredentials($credentials, UserInterface $user)
     {
-        $expirable = $this->expirableManager->get($credentials['identifier']);
+        $expirable = $this->expirableManager->get($credentials['uuid']);
 
         if (null === $expirable) {
             throw new BadCredentialsException();

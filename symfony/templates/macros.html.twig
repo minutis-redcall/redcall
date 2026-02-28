@@ -12,30 +12,22 @@
 {% endmacro %}
 
 {% macro orderBy(order, columnsAndLabels, hash = '') %}
-    <br/>
-
-    <div>
-        <div>{{ 'base.order_by.order_by'|trans }}</div>
-        <div>
-            <select class="form-control" id="order-by-{{ hash }}" onchange="document.location = $(this).find(':selected').data('href');">
-                {% for column, label in columnsAndLabels %}
-
-                    {% for orderDirection in ['asc', 'desc'] %}
-                        <option
-                                value="{{ column }}"
-                                data-href="?{{ http_build_query(app.request.query.all|merge({(order.prefix ~ 'order-by'): column, (order.prefix ~ 'order-by-direction'): orderDirection})) ~ (hash ? '#' ~ hash : '') }}"
-                                class="order-by-trigger"
-                                {% if order.column|lower == column|lower and order.direction|lower == orderDirection|lower %}selected{% endif %}>
-                            {{ label }}, {{ ('base.order_by.' ~ orderDirection)|trans|lower }}
-                        </option>
-                    {% endfor %}
+    <div class="d-flex align-items-center gap-2 mb-3 mt-2">
+        <label class="mb-0 text-muted text-small">{{ 'base.order_by.order_by'|trans }}</label>
+        <select class="form-control form-control-sm" style="max-width:280px;" id="order-by-{{ hash }}" onchange="document.location = $(this).find(':selected').data('href');">
+            {% for column, label in columnsAndLabels %}
+                {% for orderDirection in ['asc', 'desc'] %}
+                    <option
+                            value="{{ column }}"
+                            data-href="?{{ http_build_query(app.request.query.all|merge({(order.prefix ~ 'order-by'): column, (order.prefix ~ 'order-by-direction'): orderDirection})) ~ (hash ? '#' ~ hash : '') }}"
+                            class="order-by-trigger"
+                            {% if order.column|lower == column|lower and order.direction|lower == orderDirection|lower %}selected{% endif %}>
+                        {{ label }}, {{ ('base.order_by.' ~ orderDirection)|trans|lower }}
+                    </option>
                 {% endfor %}
-            </select>
-        </div>
+            {% endfor %}
+        </select>
     </div>
-
-    <br/>
-
 {% endmacro %}
 
 {% macro modal(id, title, body, buttons = '') %}
@@ -89,7 +81,7 @@
             {{ 'campaign_status.by_no_structures'|trans({
                 '%name%': communication.volunteer.displayName,
             }) }}
-            (<span style="color:red;">{{ 'campaign_status.by_admin'|trans }}</span>)
+            (<span class="text-danger">{{ 'campaign_status.by_admin'|trans }}</span>)
         {% else %}
             {{ 'campaign_status.by'|trans({
                 '%name%': communication.volunteer.displayName,
@@ -101,7 +93,7 @@
 
 {% macro phone(phone) %}
     <a href="tel:{{ phone.e164 }}">
-        <div class="iti__flag iti__{{ phone.countryCode|lower }}" style="float:left;"></div>&nbsp; {{ phone.national }}
+        <span class="iti__flag iti__{{ phone.countryCode|lower }}" style="display:inline-block;"></span>&nbsp; {{ phone.national }}
     </a>
 {% endmacro %}
 
@@ -129,14 +121,16 @@
     <div id="volunteer-{{ uuid }}">
 
         {# Volunteer's name #}
-        <div id="volunteer-name-{{ uuid }}" class="h4">
+        <h4 id="volunteer-name-{{ uuid }}" class="mb-1">
             <span href="#" class="volunteer-info" {% if clickable %}style="cursor:pointer;{% endif %}"
                   {% if clickable %}onclick="$('#volunteer-details-{{ uuid }}').toggleClass('d-none');return false;"{% endif %}>
+                <span id="volunteer-displayname-{{ uuid }}">
                 {% if volunteer.enabled %}
                     {{ volunteer.displayName }}
                 {% else %}
-                    <span style="text-decoration:line-through;color:grey;">{{ volunteer.displayName }}</span> 🚫
+                    <del class="text-muted">{{ volunteer.displayName }}</del> 🚫
                 {% endif %}
+                </span>
                 {% if volunteer.minor %}
                     🐻
                 {% elseif volunteer.userEnabled %}
@@ -144,13 +138,13 @@
                 {% else %}
                     👤
                 {% endif %}
-                {% if not clickable and is_granted('ROLE_ADMIN') and constant('\\App\\Enum\\Platform::FR') == app.user.platform %}
+                {% if not clickable and is_granted('ROLE_ADMIN') %}
                     <a href="{{ path('management_volunteers_pegass', {id: volunteer.id}) }}" target="_blank">
                         🛠
                     </a>
                 {% endif %}
             </span>
-        </div>
+        </h4>
         <div id="volunteer-structures-{{ uuid }}">
             {% if volunteer.structures.count %}
                 <strong>{{ (volunteer.structures|first).name }}</strong>
@@ -173,19 +167,19 @@
                 #{{ volunteer.externalId }}
                 <br/>
                 {% if volunteer.email %}
-                    {% if not volunteer.emailOptin %}<strike>{% endif %}
+                    {% if not volunteer.emailOptin %}<del>{% endif %}
                     <a href="mailto:{{ volunteer.email }}?subject={{ 'manage_volunteers.contact.mail_subject'|trans }}">{{ volunteer.email }}</a>
-                    {% if not volunteer.emailOptin %}</strike>{% endif %}
+                    {% if not volunteer.emailOptin %}</del>{% endif %}
                     <br/>
                 {% endif %}
                 {% if volunteer.phoneNumber %}
-                    {% if not volunteer.phoneNumberOptin %}<strike>{% endif %}
+                    {% if not volunteer.phoneNumberOptin %}<del>{% endif %}
                     {{ macros.phone(volunteer.phone) }}
-                    {% if not volunteer.phoneNumberOptin %}</strike>{% endif %}
+                    {% if not volunteer.phoneNumberOptin %}</del>{% endif %}
                     <br/>
                 {% endif %}
 
-                {% if is_granted('ROLE_ADMIN') and constant('\\App\\Enum\\Platform::FR') == app.user.platform %}
+                {% if is_granted('ROLE_ADMIN') %}
                     <div>
                         <a href="{{ path('management_volunteers_pegass', {id: volunteer.id}) }}" target="_blank">
                             🛠 {{ 'admin.pegass.open'|trans }}
@@ -196,8 +190,59 @@
                 {% if is_granted('VOLUNTEER', volunteer) %}
                     ✏️
                     <a target="_blank" href="{{ path('management_volunteers_manual_update', {'id': volunteer.id}) }}">{{ 'admin.pegass.edit'|trans }}</a>
+
+                    {% if not volunteer.user %}
+                        <div class="mt-1">
+                            <a href="#"
+                               class="volunteer-toggle-enable {{ volunteer.enabled ? 'text-danger' : 'text-success' }}"
+                               data-enabled="{{ volunteer.enabled ? '1' : '0' }}"
+                               data-href="{{ path('management_volunteers_toggle_enable', {id: volunteer.id, token: csrf_token('token')}) }}"
+                               data-name-id="volunteer-displayname-{{ uuid }}"
+                               data-display-name="{{ volunteer.displayName|e('html_attr') }}"
+                               data-label-enable="{{ 'manage_volunteers.action.enable_volunteer'|trans|e('html_attr') }}"
+                               data-label-disable="{{ 'manage_volunteers.action.disable_volunteer'|trans|e('html_attr') }}"
+                               data-confirm-disable="{{ 'manage_volunteers.action.disable_confirm'|trans|e('html_attr') }}">
+                                {{ volunteer.enabled ? 'manage_volunteers.action.disable_volunteer'|trans : 'manage_volunteers.action.enable_volunteer'|trans }}
+                            </a>
+                        </div>
+                        <script>
+                            if (!window._volunteerToggleInit) {
+                                window._volunteerToggleInit = true;
+                                $(document).on('click', '.volunteer-toggle-enable', function(e) {
+                                    e.preventDefault();
+                                    var $link = $(this);
+                                    var enabled = $link.data('enabled') == 1;
+                                    if (enabled && !confirm($link.data('confirm-disable'))) {
+                                        return;
+                                    }
+                                    $link.css('pointer-events', 'none');
+                                    $.post($link.data('href'), function() {
+                                        var nameEl = document.getElementById($link.data('name-id'));
+                                        var displayName = $link.data('display-name');
+                                        if (enabled) {
+                                            var s = document.createElement('span');
+                                            s.style.cssText = 'text-decoration:line-through;color:grey;';
+                                            s.textContent = displayName;
+                                            nameEl.textContent = '';
+                                            nameEl.appendChild(s);
+                                            nameEl.appendChild(document.createTextNode(' \ud83d\udeab'));
+                                            $link.removeClass('text-danger').addClass('text-success');
+                                            $link.text($link.data('label-enable'));
+                                            $link.data('enabled', '0');
+                                        } else {
+                                            nameEl.textContent = displayName;
+                                            $link.removeClass('text-success').addClass('text-danger');
+                                            $link.text($link.data('label-disable'));
+                                            $link.data('enabled', '1');
+                                        }
+                                        $link.css('pointer-events', '');
+                                    });
+                                });
+                            }
+                        </script>
+                    {% endif %}
                 {% else %}
-                    <span style="color:grey;">{{ 'manage_volunteers.access_denied'|trans }}</span>
+                    <span class="text-muted">{{ 'manage_volunteers.access_denied'|trans }}</span>
                 {% endif %}
             </div>
         {% endif %}

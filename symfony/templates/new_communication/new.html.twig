@@ -18,11 +18,9 @@
                     {{ form_row(form.type) }}
                     {{ form_row(form.label) }}
 
-                    {# TODO re-activate to allow to attach Minutis operations to campaigns #}
-                    {#      do not forget the CampaignType.php #}
-                    {#                    <hr/> #}
-                    {#                    {{ form_row(form.hasOperation) }} #}
-                    {#                    <p>{{ 'form.campaign.fields.operation_help'|trans }}</p> #}
+                    <hr/>
+                    {{ form_row(form.hasOperation) }}
+                    <p>{{ 'form.campaign.fields.operation_help'|trans }}</p>
 
                     <hr/>
 

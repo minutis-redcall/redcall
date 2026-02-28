@@ -5,15 +5,19 @@
          xsi:noNamespaceSchemaLocation="http://schema.phpunit.de/6.1/phpunit.xsd"
          backupGlobals="false"
          colors="true"
-         bootstrap="vendor/autoload.php"
+         bootstrap="tests/bootstrap.php"
 >
     <php>
-        <ini name="error_reporting" value="-1"/>
+        <ini name="error_reporting" value="24575"/>
+        <!--        <ini name="error_reporting" value="-1"/>-->
         <env name="KERNEL_CLASS" value="App\Kernel"/>
         <env name="APP_ENV" value="test"/>
         <env name="APP_DEBUG" value="1"/>
         <env name="APP_SECRET" value="s$cretf0rt3st"/>
         <env name="SHELL_VERBOSITY" value="-1"/>
+        <env name="SYMFONY_DEPRECATIONS_HELPER" value="weak"/>
+        <env name="TWILIO_ACCOUNT_SID" value="AC_MOCK"/>
+        <env name="TWILIO_AUTH_TOKEN" value="MOCK_TOKEN"/>
         <!-- define your env variables for the test env here -->
 
         <!-- ###+ google/recaptcha ### -->
@@ -29,7 +33,6 @@
         <env name="GOOGLE_APPLICATION_CREDENTIALS" value=""/>
         <!-- ###- google/apiclient ### -->
 
-        <env name="WEBSITE_URL" value=""/>
         <env name="GOOGLE_SHEETS_VOLUNTEERS_ID" value=""/>
 
         <!-- ###+ symfony/mailer ### -->
@@ -52,4 +55,9 @@
     <listeners>
         <listener class="Symfony\Bridge\PhpUnit\SymfonyTestsListener"/>
     </listeners>
+
+    <extensions>
+        <extension class="DAMA\DoctrineTestBundle\PHPUnit\PHPUnitExtension"/>
+    </extensions>
+
 </phpunit>

@@ -7,14 +7,11 @@ use App\Component\HttpFoundation\ArrayToCsvResponse;
 use App\Entity\Pegass;
 use App\Entity\Structure;
 use App\Entity\Volunteer;
-use App\Enum\Platform;
 use App\Form\Type\StructureType;
 use App\Manager\PegassManager;
-use App\Manager\PlatformConfigManager;
 use App\Manager\StructureManager;
 use App\Manager\UserManager;
 use App\Model\Csrf;
-use App\Model\PlatformConfig;
 use Bundles\PaginationBundle\Manager\PaginationManager;
 use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
@@ -55,11 +52,6 @@ class StructuresController extends BaseController
     private $userManager;
 
     /**
-     * @var PlatformConfigManager
-     */
-    private $platformManager;
-
-    /**
      * @var KernelInterface
      */
     private $kernel;
@@ -73,7 +65,6 @@ class StructuresController extends BaseController
         PaginationManager $paginationManager,
         PegassManager $pegassManager,
         UserManager $userManager,
-        PlatformConfigManager $platformManager,
         KernelInterface $kernel,
         TranslatorInterface $translator)
     {
@@ -81,7 +72,6 @@ class StructuresController extends BaseController
         $this->paginationManager = $paginationManager;
         $this->pegassManager     = $pegassManager;
         $this->userManager       = $userManager;
-        $this->platformManager   = $platformManager;
         $this->kernel            = $kernel;
         $this->translator        = $translator;
     }
@@ -103,7 +93,7 @@ class StructuresController extends BaseController
 
         $redcallUsers = $this->structureManager->countRedCallUsersInPager(
             $this->paginationManager->getPager(
-                $this->structureManager->countRedCallUsersQueryBuilder($this->getPlatform(), $queryBuilder)
+                $this->structureManager->countRedCallUsersQueryBuilder($queryBuilder)
             )
         );
 
@@ -112,7 +102,6 @@ class StructuresController extends BaseController
             'structures'   => $this->paginationManager->getPager($queryBuilder),
             'redcallUsers' => $redcallUsers,
             'enabled'      => $enabled,
-            'platforms'    => $this->getPlatforms(),
         ]);
     }
 
@@ -126,7 +115,6 @@ class StructuresController extends BaseController
         if (null === $structure) {
             $structure = new Structure();
             $structure->setExternalId(Uuid::uuid4());
-            $structure->setPlatform($this->getPlatform());
         }
 
         $form = $this->createForm(StructureType::class, $structure);
@@ -151,10 +139,6 @@ class StructuresController extends BaseController
      */
     public function pegass(Structure $structure)
     {
-        if (Platform::FR !== $structure->getPlatform()) {
-            throw $this->createNotFoundException();
-        }
-
         $entity = $this->pegassManager->getEntity(Pegass::TYPE_STRUCTURE, $structure->getExternalId(), false);
         if (!$entity) {
             throw $this->createNotFoundException();
@@ -238,24 +222,9 @@ class StructuresController extends BaseController
         return $this->getContext($structure);
     }
 
-    /**
-     * @Route(name="update_platform", path="/change-platform/{csrf}/{id}/{platform}")
-     * @IsGranted("ROLE_ROOT")
-     * @IsGranted("STRUCTURE", subject="structure")
-     */
-    public function changePlatform(Structure $structure, Csrf $csrf, PlatformConfig $platform)
-    {
-        $structure->setPlatform($platform);
-
-        $this->structureManager->save($structure);
-
-        return $this->redirectToRoute('management_structures_list');
-    }
-
     private function getContext(Structure $structure)
     {
         return [
-            'platforms'    => $this->getPlatforms(),
             'structure'    => $structure,
             'redcallUsers' => [
                 $structure->getId() => count($structure->getUsers()),
@@ -297,12 +266,4 @@ class StructuresController extends BaseController
         return $structure;
     }
 
-    private function getPlatforms() : ?array
-    {
-        if (!$this->getUser()->isRoot()) {
-            return null;
-        }
-
-        return $this->platformManager->getAvailablePlatforms();
-    }
 }

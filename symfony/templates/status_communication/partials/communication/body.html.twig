@@ -9,7 +9,7 @@
         <a href="#" class="show-complete-body" data-communication-id="{{ communication.id }}">🔽️</a>
     {% endif %}
     {% if communication.volunteer or is_granted('ROLE_ADMIN') %}
-        <div class="float-right color-grey" style="font-weight: normal;" {% if communication.volunteer %}title="{{ communication.volunteer.externalId }}"{% endif %}>
+        <div class="float-right color-grey" {% if communication.volunteer %}title="{{ communication.volunteer.externalId }}"{% endif %}>
             {{ macros.communicationBy(communication) }}
 
             {% if communication.volunteer and is_granted('ROLE_ADMIN') %}
@@ -37,7 +37,7 @@
 <div id="complete-body-{{ communication.id }}" class="d-none email-body">
     {% if communication.subject %}
         <br/>
-        <div class="text-center h4">{{ communication.subject }}</div>
+        <h4 class="text-center">{{ communication.subject }}</h4>
     {% endif %}
     {% if communication.type in [constant('App\\Entity\\Communication::TYPE_EMAIL')] %}
         {{ communication|format_email }}
@@ -46,4 +46,3 @@
     {% endif %}
     <a href="#" class="show-limited-body" data-communication-id="{{ communication.id }}">🔼️</a>
 </div>
-<br/>

@@ -12,15 +12,11 @@
 
     {{ form(form) }}
 
-    <div class="text-center">
-
+    <div class="rc-back-link">
         <a href="{{ path('admin_badge_index', app.request.query.all) }}" class="btn btn-secondary">
             {{ 'base.button.back'|trans }}
         </a>
-
     </div>
-
-    <br/><br/>
 
 {% endblock %}
 

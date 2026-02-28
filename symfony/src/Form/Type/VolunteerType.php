@@ -144,7 +144,7 @@ class VolunteerType extends AbstractType
                         'label'         => 'manage_volunteers.form.structures',
                         'class'         => Structure::class,
                         'query_builder' => function (StructureRepository $er) use ($currentUser) {
-                            return $er->getStructuresForUserQueryBuilder($this->security->getPlatform(), $currentUser);
+                            return $er->getStructuresForUserQueryBuilder($currentUser);
                         },
                         'choice_label'  => function (Structure $structure) {
                             return $structure->getName();

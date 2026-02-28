@@ -3,11 +3,10 @@
 {# -------------------------------------------------------------------------------- #}
 {# Campaign label and color #}
 {# -------------------------------------------------------------------------------- #}
-<br/>
 <div class="row">
     <div class="col-12 h1" {% if campaign.active and is_granted('CAMPAIGN_OWNER', campaign) %}onclick="$('#change-campaign-label').modal();"{% endif %} style="cursor: pointer;">
         {% if not campaign.active %}
-            <strike>{{ campaign.label }}</strike>
+            <del>{{ campaign.label }}</del>
         {% else %}
             {{ campaign.label }}
         {% endif %}
@@ -42,7 +41,7 @@
 <div class="col-12 skip-line" id="campaign-notes" data-notes-updated-timestamp="{{ campaign.notesUpdatedAt ? campaign.notesUpdatedAt|date('U') : 0 }}">
     <div id="campaign-notes-border" style="padding: 5px; margin: 0px -10px; border: 1px solid black;background-color:#eeeeee;">
         {% if campaign.active %}
-            <span class="float-right badge" onclick="$('#change-notes').modal();" style="cursor:pointer;padding-bottom:3px;">✏️</span>
+            <span class="float-right badge pb-1" onclick="$('#change-notes').modal();" style="cursor:pointer;">✏️</span>
         {% endif %}
         <div id="campaign-notes-content" class="text-to-hypertext">
             {% if not campaign.notes %}
@@ -51,7 +50,7 @@
                 {{ campaign.notes|nl2br }}
             {% endif %}
         </div>
-        <div class="text-right" style="padding-top:5px;">
+        <div class="text-right pt-1">
             <em id="campaign-notes-last-update">
                 {% if campaign.notesUpdatedAt %}
                     {{ 'campaign_status.notes_updated_at'|trans({

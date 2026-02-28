@@ -39,9 +39,7 @@ class CampaignController extends BaseController
      */
     public function index(MinutisProvider $minutis) : array
     {
-        $all = $this->campaignManager->getAllCampaignsQueryBuilder(
-            $this->getPlatform()
-        );
+        $all = $this->campaignManager->getAllCampaignsQueryBuilder();
 
         return [
             'minutis' => $minutis,

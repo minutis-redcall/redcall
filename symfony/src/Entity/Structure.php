@@ -19,7 +19,7 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
  * @ORM\Entity(repositoryClass="App\Repository\StructureRepository")
  * @ORM\Table(
  *     uniqueConstraints={
- *         @ORM\UniqueConstraint(name="pf_extid_idx", columns={"platform", "external_id"})
+ *         @ORM\UniqueConstraint(name="extid_idx", columns={"external_id"})
  *     },
  *     indexes={
  *         @ORM\Index(name="name_idx", columns={"name"})
@@ -37,13 +37,6 @@ class Structure implements LockableInterface
      * @ORM\Column(type="integer")
      */
     private $id;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(type="string", length=5)
-     */
-    private $platform;
 
     /**
      * @var string
@@ -204,9 +197,7 @@ class Structure implements LockableInterface
             return $this->getEnabledVolunteers();
         }
 
-        return $this->volunteers->filter(function (Volunteer $volunteer) {
-            return $this->platform === $volunteer->getPlatform();
-        });
+        return $this->volunteers;
     }
 
     public function getExternalId() : string
@@ -227,20 +218,8 @@ class Structure implements LockableInterface
     public function getEnabledVolunteers() : Collection
     {
         return $this->volunteers->filter(function (Volunteer $volunteer) {
-            return $this->platform === $volunteer->getPlatform() && $volunteer->isEnabled();
+            return $volunteer->isEnabled();
         });
-    }
-
-    public function getPlatform()
-    {
-        return $this->platform;
-    }
-
-    public function setPlatform($platform)
-    {
-        $this->platform = $platform;
-
-        return $this;
     }
 
     /**
@@ -396,9 +375,7 @@ class Structure implements LockableInterface
      */
     public function getUsers() : Collection
     {
-        return $this->users->filter(function (User $user) {
-            return $this->platform === $user->getPlatform();
-        });
+        return $this->users;
     }
 
     public function addUser(User $user) : self

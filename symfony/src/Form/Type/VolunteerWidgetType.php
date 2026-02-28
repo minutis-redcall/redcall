@@ -48,7 +48,6 @@ class VolunteerWidgetType extends TextType
     {
         if ($view->vars['value']) {
             $volunteer = $this->volunteerManager->findOneByExternalId(
-                $this->security->getPlatform(),
                 $view->vars['value']
             );
 

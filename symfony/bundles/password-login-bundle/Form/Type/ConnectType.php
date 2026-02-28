@@ -52,7 +52,7 @@ class ConnectType extends AbstractType
                 'required' => false,
             ]);
 
-        $ip = $this->requestStack->getMasterRequest()->getClientIp();
+        $ip = $this->requestStack->getMainRequest()->getClientIp();
 
         if (!$this->captchaManager->isAllowed($ip)) {
             $builder->add('recaptcha', EWZRecaptchaType::class, [

@@ -3,7 +3,6 @@
 namespace App\Manager;
 
 use App\Entity\User;
-use App\Enum\Platform;
 use App\Tools\Random;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -32,7 +31,7 @@ class NivolManager
     public function getUserByNivol(string $nivol) : ?User
     {
         $externalId = ltrim($nivol, '0');
-        $volunteer  = $this->volunteerManager->findOneByExternalId(Platform::FR, $externalId);
+        $volunteer  = $this->volunteerManager->findOneByExternalId($externalId);
 
         if (null === $volunteer) {
             return null;

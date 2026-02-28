@@ -3,7 +3,6 @@
 namespace App\Manager;
 
 use App\Entity\Pegass;
-use App\Enum\Platform;
 use App\Event\PegassEvent;
 use App\PegassEvents;
 use App\Repository\PegassRepository;
@@ -117,14 +116,14 @@ class PegassManager
 
             switch ($entity->getType()) {
                 case Pegass::TYPE_STRUCTURE:
-                    $structure = $this->structureManager->findOneByExternalId(Platform::FR, $entity->getExternalId());
+                    $structure = $this->structureManager->findOneByExternalId($entity->getExternalId());
                     if ($structure) {
                         $structure->setEnabled(false);
                         $this->structureManager->save($structure);
                     }
                     break;
                 case Pegass::TYPE_VOLUNTEER:
-                    $volunteer = $this->volunteerManager->findOneByExternalId(Platform::FR, $entity->getExternalId());
+                    $volunteer = $this->volunteerManager->findOneByExternalId($entity->getExternalId());
                     if ($volunteer) {
                         $this->volunteerManager->anonymize($volunteer);
                     }

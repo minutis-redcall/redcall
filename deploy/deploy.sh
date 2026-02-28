@@ -6,6 +6,18 @@ set -ex
 ENV=$1
 ROOTDIR=$(dirname "$0")/../
 
+# --- CONFIGURATION GCP ---
+GCP_ACCOUNT="alain.tiemblo@croix-rouge.fr"
+
+if [[ "${ENV}" == "prod" ]]; then
+  GCP_PROJECT_NAME="redcall-prod-260921"
+else
+  GCP_PROJECT_NAME="redcall-dev"
+fi
+
+GCLOUD_OPTS="--project=${GCP_PROJECT_NAME} --account=${GCP_ACCOUNT}"
+# -------------------------
+
 if [ ! -d "${ENV}" ]; then
   echo "'${ENV}' is not a valid environment."
   exit 1
@@ -50,15 +62,15 @@ source .env >/dev/null
 #  exit 1
 #fi
 
-gcloud config set project ${GCP_PROJECT_NAME}
-gcloud config set app/cloud_build_timeout 3600
+gcloud config set project ${GCP_PROJECT_NAME} ${GCLOUD_OPTS}
+gcloud config set app/cloud_build_timeout 3600 ${GCLOUD_OPTS}
 export NODE_OPTIONS=--openssl-legacy-provider
 yarn encore production
-gcloud beta app deploy --verbosity debug --quiet --no-cache
+gcloud beta app deploy --verbosity debug --quiet --no-cache ${GCLOUD_OPTS}
 cd ..
 
 # Cron jobs
-gcloud app deploy --quiet symfony/cron.yaml
+gcloud app deploy --quiet symfony/cron.yaml ${GCLOUD_OPTS}
 
 # Restoring current context
 cp deploying/.env symfony/.env
@@ -73,7 +85,7 @@ if [[ "${ENV}" = "prod" ]]; then
 sleep 300
 fi
 
-VERSIONS=$(gcloud app versions list --service default --sort-by '~version' --format 'value(version.id)' | sort -r | tail -n +2)
-if [ ${#VERSIONS} -gt 0 ]; then
-  gcloud app versions delete --service default $VERSIONS -q
+VERSIONS=$(gcloud app versions list --service default --sort-by '~version' --format 'value(version.id)' ${GCLOUD_OPTS} | sort -r | tail -n +2)
+if [ -n "${VERSIONS}" ]; then
+  gcloud app versions delete --service default $VERSIONS -q ${GCLOUD
 fi

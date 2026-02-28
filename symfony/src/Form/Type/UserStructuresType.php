@@ -40,7 +40,7 @@ class UserStructuresType extends AbstractType
         $resolver->setDefaults([
             'class'         => Structure::class,
             'query_builder' => function (Options $options) {
-                return $this->userManager->getUserStructuresQueryBuilder($this->security->getPlatform(), $options['user']);
+                return $this->userManager->getUserStructuresQueryBuilder($options['user']);
             },
             'choice_label'  => function (Structure $structure) {
                 return $structure->getDisplayName();

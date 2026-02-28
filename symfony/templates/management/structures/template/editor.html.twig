@@ -30,8 +30,6 @@
                 field: form.body_html,
             }) }}
 
-            <br/>
-
             <div class="d-none">
                 {{ form_widget(form.body_html) }}
             </div>
@@ -43,11 +41,9 @@
     {{ form_row(form.submit) }}
     {{ form_end(form) }}
 
-    <div class="text-center">
+    <div class="rc-back-link">
         <a href="{{ path('management_structures_template_list', {structure: structure.id}) }}" class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
     </div>
-
-    <br/><br/>
 
     <script type="text/javascript">
 

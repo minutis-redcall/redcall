@@ -21,15 +21,20 @@
             });
         }
 
-        {# Update Volunteer Group Dots #}
+        {# Update Volunteer Group Dots - only update volunteers whose groups changed #}
         if (data['volunteerGroups']) {
             $.each(communicationIds, function (k, communicationId) {
                 $('.row-' + communicationId).each(function () {
                     var row = $(this);
                     var volunteerId = row.data('volunteer-id');
-                    var suffix = communicationId + '-' + row.attr('id').split('-').pop();
-                    var container = $('#volunteer-groups-' + suffix);
                     var assignedIndices = data['volunteerGroups'][volunteerId] || [];
+
+                    {# Skip DOM updates if this volunteer's groups haven't changed #}
+                    var prev = previousVolunteerGroups[volunteerId];
+                    if (prev && prev.toString() === assignedIndices.toString()) return;
+
+                    var suffix = row.attr('id').replace('row-', '');
+                    var container = $('#volunteer-groups-' + suffix);
 
                     container.empty();
                     $.each(assignedIndices, function (i, groupIndex) {
@@ -37,16 +42,22 @@
                         container.append('<span class="group-dot group-dot-' + groupIndex + '" data-index="' + groupIndex + '" style="display:inline-block; width:8px; height:8px; border-radius:50%; background-color:#' + color + '; margin-right:2px;"></span>');
                     });
 
-                    {# Update checkboxes #}
-                    $('.volunteer-group-checkbox[data-volunteer-id="' + volunteerId + '"]').each(function () {
-                        var checkbox = $(this);
-                        var index = checkbox.data('index');
-                        checkbox.prop('checked', $.inArray(index, assignedIndices) !== -1);
-                    });
-
                     row.data('groups', assignedIndices.join(','));
                 });
             });
+
+            {# Update checkboxes only for volunteers whose groups changed #}
+            $.each(data['volunteerGroups'], function (volunteerId, assignedIndices) {
+                var prev = previousVolunteerGroups[volunteerId];
+                if (prev && prev.toString() === assignedIndices.toString()) return;
+
+                $('.volunteer-group-checkbox[data-volunteer-id="' + volunteerId + '"]').each(function () {
+                    var checkbox = $(this);
+                    checkbox.prop('checked', $.inArray(checkbox.data('index'), assignedIndices) !== -1);
+                });
+            });
+
+            previousVolunteerGroups = data['volunteerGroups'];
         }
 
         if (data['notes'] && $('#campaign-notes').data('notes-updated-timestamp') != data['notes']['notes-updated-timestamp']) {
@@ -67,7 +78,7 @@
 
             $('#campaign-notes').data('notes-updated-timestamp', data['notes']['notes-updated-timestamp']);
 
-            refreshTextToHypertext();
+            refreshTextToHypertext($('#campaign-notes-content'));
 
             {# Applying visual effects to notice the note updates #}
             $('#campaign-notes-border').css('border', '5px solid red');
@@ -105,7 +116,7 @@
                         $('#answer-link-' + suffix).removeClass('d-none');
                     }
                     $('#message-is-unclear-' + suffix).removeClass('d-none');
-                    $('#invalid-answer-raw-' + suffix).html(messageStatus['has-unclear-answer']['raw']).removeClass('d-none');
+                    $('#invalid-answer-raw-' + suffix).text(messageStatus['has-unclear-answer']['raw']).removeClass('d-none');
                 } else {
                     $('#message-is-unclear-' + suffix).addClass('d-none');
                 }
@@ -118,7 +129,7 @@
 
                 {# an error occured while sending message #}
                 if (messageStatus['error']) {
-                    $('#error-' + suffix).html(messageStatus['error']).removeClass('d-none');
+                    $('#error-' + suffix).text(messageStatus['error']).removeClass('d-none');
                 }
 
                 {# Message has invalid answer #}
@@ -128,7 +139,7 @@
                     }
                     $('#message-has-invalid-answer-' + suffix).removeClass('d-none');
                     $('#message-has-invalid-answer-time-' + suffix).html(messageStatus['has-invalid-answer']['time']);
-                    $('#invalid-answer-raw-' + suffix).html(messageStatus['has-invalid-answer']['raw']).removeClass('d-none');
+                    $('#invalid-answer-raw-' + suffix).text(messageStatus['has-invalid-answer']['raw']).removeClass('d-none');
                     hasInvalidAnswers++;
                 } else if (0 === messageStatus['has-answer']) {
                     hasNoAnswers++;
@@ -202,29 +213,31 @@
             }
         });
 
-        refreshVisibility();
+        if (hasActiveFilters) {
+            refreshVisibility();
+        }
     }
 
+    var longPollingErrorCount = 0;
+    var longPollingHash = '{{ hash }}';
     var longPolling = function () {
-        var errorCount = 0;
-        var hash = '{{ hash }}';
         setTimeout(function () {
             $.ajax('{{ path('communication_long_polling', {id: campaign.id}) }}', {
                 type: 'POST',
                 data: {
-                    hash: hash,
+                    hash: longPollingHash,
                 },
                 success: function (result) {
-                    errorCount = 0;
+                    longPollingErrorCount = 0;
                     if (result) {
-                        hash = result.hash;
+                        longPollingHash = result.hash;
                         refreshStatuses(result);
                     }
                     longPolling();
                 },
                 error: function () {
-                    errorCount++;
-                    if (100 === errorCount) {
+                    longPollingErrorCount++;
+                    if (100 === longPollingErrorCount) {
                         window.location = '{{ path('home') }}';
                     } else {
                         longPolling();
@@ -246,6 +259,20 @@
         });
     };
 
+    var groupColorsArray = [];
+    {% for colorName, colorCode in groupColors %}
+    groupColorsArray.push("{{ colorCode|e('js') }}");
+    {% endfor %}
+
+    var activeGroupFilters = [];
+    var previousVolunteerGroups = {{ volunteerGroups|json_encode|raw }};
+    var hasActiveFilters = false;
+
+    var communicationIds = [];
+    {% for communication in campaign.communications %}
+    communicationIds.push("{{ communication.id|e('js') }}");
+    {% endfor %}
+
     // Use server-rendered initial data to avoid data format mismatch
     var initialCampaignStatus = {{ campaignStatus|json_encode|raw }};
 
@@ -261,30 +288,19 @@
         }, 5000);
     }
 
-    var groupColorsArray = [];
-    {% for colorName, colorCode in groupColors %}
-    groupColorsArray.push("{{ colorCode|e('js') }}");
-    {% endfor %}
-
-    var activeGroupFilters = [];
-
-    var communicationIds = [];
-    {% for communication in campaign.communications %}
-    communicationIds.push("{{ communication.id|e('js') }}");
-    {% endfor %}
-
     {# -------------------------------------------------------------------------------- #}
     {# Filter rows according to ticked columns #}
     {# -------------------------------------------------------------------------------- #}
 
     function refreshVisibility() {
+        var filtersFound = false;
 
         var structures = [];
         {% for structure in campaignStructures %}
         structures.push("structure-{{ structure.id|e('js') }}");
         {% endfor %}
 
-        var actions = [];
+        var actions = {};
         {% for communication in campaign.communications %}
         actions["{{ communication.id|e('js') }}"] = [
             {% if communication.choices|length %}
@@ -384,9 +400,13 @@
 
             {# if no filter used, everything is visible #}
             if (activeGroups.length === 0 && structure + response + skill + unreachable === 0) {
-                $('.row-' + communicationId).fadeIn();
+                {# Only touch DOM if filters were previously active #}
+                if (hasActiveFilters) {
+                    $('.row-' + communicationId).show();
+                }
                 return true;
             }
+            filtersFound = true;
 
             {# if some checkbox ticked, visible if at least one value is 1 #}
             $('.row-' + communicationId).each(function () {
@@ -411,7 +431,7 @@
                 $.each(structures, function (index, action) {
                     var suffix = action + '-' + communicationId;
                     var filter = $('#filter-' + suffix);
-                    if (filter.is(':checked') && !$.inArray(filter.val(), row.data('structures').toString().split(','))) {
+                    if (filter.is(':checked') && $.inArray(filter.val(), row.data('structures').toString().split(',')) !== -1) {
                         structureVisible = true;
                     }
 
@@ -457,13 +477,14 @@
 
                 {# displays the row only if all conditions above are true #}
                 if (groupVisible && structureVisible && actionVisible && skillVisible && unreachableVisible) {
-                    row.fadeIn();
+                    row.show();
                 } else {
-                    row.fadeOut();
+                    row.hide();
                     row.find('.volunteer-selection').prop('checked', false);
                 }
             });
         });
+        hasActiveFilters = filtersFound;
     }
 
     $('.filter-action').click(function () {
@@ -662,10 +683,11 @@
     {# -------------------------------------------------------------------------------- #}
     {# Transform text links into clickable links #}
     {# -------------------------------------------------------------------------------- #}
-    function refreshTextToHypertext() {
-        $('.text-to-hypertext').each(function () {
+    function refreshTextToHypertext(container) {
+        var elements = container ? $(container).find('.text-to-hypertext').addBack('.text-to-hypertext') : $('.text-to-hypertext');
+        elements.each(function () {
             var str = $(this).html();
-            var regex = /(https?:\/\/([^\s]+))/ig
+            var regex = /(https?:\/\/([^\s]+))/ig;
             var replaced_text = str.replace(regex, "<a href='$1' target='_blank'>$1</a>");
             $(this).html(replaced_text);
         });
@@ -777,7 +799,7 @@
         $('body').on('click', '.provider-modal', function (e) {
             e.preventDefault();
             $('#provider-modal-title').html('');
-            $('#provider-modal-body').html('<img src="{{ asset('spinner.gif') }}"/>');
+            $('#provider-modal-body').html('<div class="py-4"><span class="rc-spinner rc-spinner-lg"></span></div>');
             $('#provider-modal').modal();
             $.post($(this).data('href'), function (data) {
                 $('#provider-modal-title').html(data.title);

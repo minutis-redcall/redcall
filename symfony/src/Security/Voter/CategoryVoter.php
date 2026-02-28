@@ -51,10 +51,6 @@ class CategoryVoter extends Voter
         /** @var Category $category */
         $category = $subject;
 
-        if ($me->getPlatform() !== $category->getPlatform()) {
-            return false;
-        }
-
         if ($this->security->isGranted('ROLE_ADMIN')) {
             return true;
         }

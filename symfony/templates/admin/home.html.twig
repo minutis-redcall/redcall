@@ -2,8 +2,7 @@
 
 {% block body %}
 
-    <br/>
-    <div class="jumbotron shadow p-3 mb-5 rounded text-center">
+    <div class="rc-section text-center">
 
         <a href="{{ path('admin_pegass_index') }}"
            class="text-lg-center large-button btn btn-secondary">{{ 'password_login.user_list.button'|trans }}</a>
@@ -33,7 +32,7 @@
         <a href="{{ path('admin_gdpr_index') }}"
            class="text-lg-center large-button btn btn-secondary">{{ 'admin.gdpr.title' |trans }}</a>
 
-        {% if is_granted('ROLE_DEVELOPER') %}
+        {% if is_granted('ROLE_ROOT') %}
 
             <br><br>
 

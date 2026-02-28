@@ -164,14 +164,6 @@
             });
         });
 
-        $('body').on('click', '.update-platform', function (e) {
-            e.preventDefault();
-            var that = $(this);
-            $.post(that.data('uri'), function (body) {
-                $('#category-' + that.data('id')).html(body);
-            });
-        });
-
     </script>
 
 {% endblock %}

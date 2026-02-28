@@ -7,9 +7,7 @@ use App\Entity\Badge;
 use App\Form\Type\BadgeWidgetType;
 use App\Form\Type\CategoryWigetType;
 use App\Manager\BadgeManager;
-use App\Manager\PlatformConfigManager;
 use App\Model\Csrf;
-use App\Model\PlatformConfig;
 use Bundles\PaginationBundle\Manager\PaginationManager;
 use Ramsey\Uuid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
@@ -37,18 +35,11 @@ class BadgeController extends BaseController
      */
     private $badgeManager;
 
-    /**
-     * @var PlatformConfigManager
-     */
-    private $platformManager;
-
     public function __construct(PaginationManager $paginationManager,
-        BadgeManager $badgeManager,
-        PlatformConfigManager $platformManager)
+        BadgeManager $badgeManager)
     {
         $this->paginationManager = $paginationManager;
         $this->badgeManager      = $badgeManager;
-        $this->platformManager   = $platformManager;
     }
 
     /**
@@ -61,17 +52,15 @@ class BadgeController extends BaseController
 
         $badges = $this->paginationManager->getPager(
             $this->badgeManager->getSearchInBadgesQueryBuilder(
-                $this->getPlatform(),
                 $searchForm->get('criteria')->getData(),
                 $searchForm->get('only_enabled')->getData()
             )
         );
 
         return [
-            'badges'    => $badges,
-            'counts'    => $this->badgeManager->getVolunteerCountInSearch($badges),
-            'search'    => $searchForm->createView(),
-            'platforms' => $this->getPlatforms(),
+            'badges' => $badges,
+            'counts' => $this->badgeManager->getVolunteerCountInSearch($badges),
+            'search' => $searchForm->createView(),
         ];
     }
 
@@ -87,7 +76,6 @@ class BadgeController extends BaseController
 
         if (!$badge) {
             $badge = new Badge();
-            $badge->setPlatform($this->getPlatform());
             $badge->setExternalId(Uuid::uuid4());
         }
 
@@ -162,38 +150,14 @@ class BadgeController extends BaseController
         return $this->getContext($badge);
     }
 
-    /**
-     * @Route(name="update_platform", path="/change-platform/{csrf}/{id}/{platform}")
-     * @IsGranted("ROLE_ROOT")
-     * @IsGranted("BADGE", subject="badge")
-     */
-    public function changePlatform(Badge $badge, Csrf $csrf, PlatformConfig $platform)
-    {
-        $badge->setPlatform($platform);
-
-        $this->badgeManager->save($badge);
-
-        return $this->redirectToRoute('admin_badge_index');
-    }
-
-    protected function getPlatforms() : ?array
-    {
-        if (!$this->getUser()->isRoot()) {
-            return null;
-        }
-
-        return $this->platformManager->getAvailablePlatforms();
-    }
-
     private function getContext(Badge $badge)
     {
         $counts = $this->badgeManager->getVolunteerCountInBadgeList([$badge->getId()]);
         $count  = $counts ? reset($counts) : 0;
 
         return [
-            'badge'     => $badge,
-            'count'     => $count,
-            'platforms' => $this->getPlatforms(),
+            'badge' => $badge,
+            'count' => $count,
         ];
     }
 

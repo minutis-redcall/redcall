@@ -10,7 +10,6 @@ use App\Form\Model\Campaign as CampaignModel;
 use App\Form\Model\SmsTrigger;
 use App\Manager\CampaignManager;
 use App\Manager\OperationManager;
-use App\Manager\PlatformConfigManager;
 use App\Manager\StructureManager;
 use App\Provider\Minutis\MinutisProvider;
 use Bundles\PaginationBundle\Manager\PaginationManager;
@@ -36,11 +35,6 @@ class CampaignController extends BaseController
     private $campaignManager;
 
     /**
-     * @var PlatformConfigManager
-     */
-    private $platformManager;
-
-    /**
      * @var StructureManager
      */
     private $structureManager;
@@ -57,14 +51,12 @@ class CampaignController extends BaseController
 
     public function __construct(PaginationManager $paginationManager,
         CampaignManager $campaignManager,
-        PlatformConfigManager $platformManager,
         StructureManager $structureManager,
         OperationManager $operationManager,
         TranslatorInterface $translator)
     {
         $this->paginationManager = $paginationManager;
         $this->campaignManager   = $campaignManager;
-        $this->platformManager   = $platformManager;
         $this->structureManager  = $structureManager;
         $this->operationManager  = $operationManager;
         $this->translator        = $translator;
@@ -113,9 +105,7 @@ class CampaignController extends BaseController
             $type->getFormData()
         );
 
-        $campaignModel->trigger->setLanguage(
-            $this->platformManager->getPlaform($this->getPlatform())->getDefaultLanguage()->getLocale()
-        );
+        $campaignModel->trigger->setLanguage('fr');
 
         $flow->setType($type);
         $flow->bind($campaignModel);
@@ -298,7 +288,7 @@ class CampaignController extends BaseController
      */
     public function searchForOperation(Request $request)
     {
-        $structure = $this->structureManager->findOneByExternalId($this->getPlatform(), $request->get('externalId'));
+        $structure = $this->structureManager->findOneByExternalId($request->get('externalId'));
         if (!$structure || !$this->isGranted('STRUCTURE', $structure)) {
             throw $this->createNotFoundException();
         }

@@ -23,7 +23,7 @@ class VolunteerListRepository extends BaseRepository
     /**
      * @return VolunteerList[]
      */
-    public function findVolunteerListsForUser(string $platform, User $user) : array
+    public function findVolunteerListsForUser(User $user) : array
     {
         return $this->createQueryBuilder('l')
                     ->join('l.structure', 's')
@@ -31,8 +31,6 @@ class VolunteerListRepository extends BaseRepository
                     ->where('u.id = :id')
                     ->setParameter('id', $user->getId())
                     ->andWhere('s.enabled = true')
-                    ->andWhere('s.platform = :platform')
-                    ->setParameter('platform', $platform)
                     ->orderBy('s.externalId', 'asc')
                     ->getQuery()
                     ->getResult();

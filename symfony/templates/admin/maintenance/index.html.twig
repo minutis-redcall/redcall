@@ -3,33 +3,34 @@
 
 {% block body %}
 
-    <br/>
-    <div class="jumbotron shadow p-3 mb-5 rounded text-center">
+    <div class="rc-section rc-section-center text-center">
 
         <a class="text-lg-center large-button btn btn-secondary" href="{{ path('admin_maintenance_refresh') }}">{{ 'maintenance.refresh'| trans }}</a>
 
-        <br/><br/>
+        <div class="mb-2"></div>
 
         <a class="text-lg-center large-button btn btn-secondary" href="{{ path('admin_maintenance_pegass_files') }}">{{ 'maintenance.pegass'| trans }}</a>
 
-        <br/><br/>
+        <div class="mb-2"></div>
 
         <a class="text-lg-center large-button btn btn-secondary" href="{{ path('admin_maintenance_annuaire_national') }}">{{ 'maintenance.annuaire'| trans }}</a>
 
-        <br/><br/>
+        <div class="mb-2"></div>
 
         <a href="{{ path('admin_maintenance_search') }}"
            class="text-lg-center large-button btn btn-secondary">{{ 'maintenance.search.title'|trans }}</a>
 
-        <br/><br/>
+        <div class="mb-2"></div>
 
         <a href="{{ path('admin_maintenance_message') }}"
            class="text-lg-center large-button btn btn-secondary">{{ 'maintenance.message.title'|trans }}</a>
 
-        <br/><br/><br/>
+        <div class="mt-4"></div>
 
-        <a href="{{ path('admin_home') }}"
-           class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+        <div class="rc-back-link">
+            <a href="{{ path('admin_home') }}"
+               class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+        </div>
 
     </div>
 

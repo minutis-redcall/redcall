@@ -6,7 +6,7 @@
 {% set max_length_call = constant('App\\Entity\\Message::MAX_LENGTH_CALL') %}
 
 <div id="message-container">
-    <div class="h3">{{ 'form.communication.fields.message'|trans }}</div>
+    <h3>{{ 'form.communication.fields.message'|trans }}</h3>
 
     {{ include('new_communication/templates.html.twig') }}
 
@@ -25,16 +25,15 @@
 
 <div class="clearfix"></div>
 
-<div class="h3">{{ 'form.communication.fields.response_title'|trans }}</div>
+<h3>{{ 'form.communication.fields.response_title'|trans }}</h3>
 
 {{ include('new_communication/answers.html.twig') }}
 
-<div class="h3">{{ 'form.communication.fields.preview'|trans }}</div>
+<h3>{{ 'form.communication.fields.preview'|trans }}</h3>
 
 <div id="message-preview-audio">
     <a href="#" id="message-play" class="btn btn-sm btn-secondary">{{ 'base.play'|trans }}</a>
     <div id="message-player" class="d-none"></div>
-    <br/><br/>
 </div>
 
 {{ include('new_communication/preview.html.twig') }}

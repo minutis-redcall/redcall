@@ -47,10 +47,10 @@ class AudienceManager
         $this->security         = $security;
     }
 
-    public function getVolunteerList(string $platform, array $ids) : array
+    public function getVolunteerList(array $ids) : array
     {
         if ($this->security->isGranted('ROLE_ADMIN')) {
-            $volunteers = $this->volunteerManager->getVolunteerList($platform, $ids);
+            $volunteers = $this->volunteerManager->getVolunteerList($ids);
         } else {
             $volunteers = $this->volunteerManager->getVolunteerListForCurrentUser($ids);
         }
@@ -62,14 +62,14 @@ class AudienceManager
 
     public function getBadgeList(array $ids) : array
     {
-        $badges = $this->badgeManager->getNonVisibleUsableBadgesList($this->security->getPlatform(), $ids);
+        $badges = $this->badgeManager->getNonVisibleUsableBadgesList($ids);
 
         return array_map(function (Badge $badge) {
             return $badge->toSearchResults();
         }, $badges);
     }
 
-    public function classifyAudience(string $platform, array $data) : Classification
+    public function classifyAudience(array $data) : Classification
     {
         $classification = new Classification();
 
@@ -83,23 +83,23 @@ class AudienceManager
 
         if ($data['external_ids']) {
             $classification->setInvalid(
-                $this->volunteerManager->filterInvalidExternalIds($platform, $data['external_ids'])
+                $this->volunteerManager->filterInvalidExternalIds($data['external_ids'])
             );
         }
 
         $audience = $this->extractAudience($data);
 
         $classification->setDisabled(
-            $this->volunteerManager->filterDisabled($platform, $audience)
+            $this->volunteerManager->filterDisabled($audience)
         );
 
         $classification->setOptoutUntil(
-            $this->volunteerManager->filterOptoutUntil($platform, $audience)
+            $this->volunteerManager->filterOptoutUntil($audience)
         );
 
         if (!$data['allow_minors']) {
             $classification->setExcludedMinors(
-                $this->volunteerManager->filterMinors($platform, $audience)
+                $this->volunteerManager->filterMinors($audience)
             );
         }
 
@@ -127,23 +127,23 @@ class AudienceManager
 
         // Adding more contextual information in order to help fix contact info
         $classification->setPhoneLandline(
-            $this->volunteerManager->filterPhoneLandline($platform, $audience)
+            $this->volunteerManager->filterPhoneLandline($audience)
         );
 
         $classification->setPhoneMissing(
-            $this->volunteerManager->filterPhoneMissing($platform, $audience)
+            $this->volunteerManager->filterPhoneMissing($audience)
         );
 
         $classification->setPhoneOptout(
-            $this->volunteerManager->filterPhoneOptout($platform, $audience)
+            $this->volunteerManager->filterPhoneOptout($audience)
         );
 
         $classification->setEmailMissing(
-            $this->volunteerManager->filterEmailMissing($platform, $audience)
+            $this->volunteerManager->filterEmailMissing($audience)
         );
 
         $classification->setEmailOptout(
-            $this->volunteerManager->filterEmailOptout($platform, $audience)
+            $this->volunteerManager->filterEmailOptout($audience)
         );
 
         return $classification;
@@ -193,7 +193,7 @@ class AudienceManager
         if ($data['structures_global']) {
             $structureIds = array_merge(
                 $structureIds,
-                $this->structureManager->getDescendantStructures($this->security->getPlatform(), $data['structures_global'])
+                $this->structureManager->getDescendantStructures($data['structures_global'])
             );
         }
 

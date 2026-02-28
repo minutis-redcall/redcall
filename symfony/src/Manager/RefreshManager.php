@@ -8,7 +8,6 @@ use App\Entity\Pegass;
 use App\Entity\Phone;
 use App\Entity\Structure;
 use App\Entity\Volunteer;
-use App\Enum\Platform;
 use App\Task\SyncOneWithPegass;
 use Bundles\GoogleTaskBundle\Service\TaskSender;
 use libphonenumber\NumberParseException;
@@ -137,7 +136,7 @@ class RefreshManager
             return;
         }
 
-        $structure = $this->structureManager->findOneByExternalId(Platform::FR, $pegass->getIdentifier());
+        $structure = $this->structureManager->findOneByExternalId($pegass->getIdentifier());
 
         if ($structure && $structure->isLocked()) {
             return;
@@ -145,11 +144,10 @@ class RefreshManager
 
         if (!$structure) {
             $structure = new Structure();
-            $structure->setPlatform(Platform::FR);
         }
 
         $parentIdentifier = $pegass->evaluate('structure.parent.id');
-        if ($parentIdentifier && $parent = $this->structureManager->findOneByExternalId(Platform::FR, $parentIdentifier)) {
+        if ($parentIdentifier && $parent = $this->structureManager->findOneByExternalId($parentIdentifier)) {
             $structure->setParentStructure($parent);
         }
 
@@ -184,13 +182,13 @@ class RefreshManager
             ]);
 
             if ($parentId = $pegass->evaluate('structure.parent.id')) {
-                $structure = $this->structureManager->findOneByExternalId(Platform::FR, $pegass->getIdentifier());
+                $structure = $this->structureManager->findOneByExternalId($pegass->getIdentifier());
 
                 if ($structure->getParentStructure() && $parentId === $structure->getParentStructure()->getExternalId()) {
                     return;
                 }
 
-                if ($parent = $this->structureManager->findOneByExternalId(Platform::FR, $parentId)) {
+                if ($parent = $this->structureManager->findOneByExternalId($parentId)) {
                     if (!in_array($structure, $parent->getAncestors())) {
                         $structure->setParentStructure($parent);
                         $this->structureManager->save($structure);
@@ -210,10 +208,9 @@ class RefreshManager
     public function refreshVolunteer(Pegass $pegass, bool $force)
     {
         // Create or update?
-        $volunteer = $this->volunteerManager->findOneByExternalId(Platform::FR, $pegass->getIdentifier());
+        $volunteer = $this->volunteerManager->findOneByExternalId($pegass->getIdentifier());
         if (!$volunteer) {
             $volunteer = new Volunteer();
-            $volunteer->setPlatform(Platform::FR);
         }
 
         if ($pegass->getEnabled() && !$pegass->getContent()) {
@@ -233,7 +230,7 @@ class RefreshManager
         $structuresVolunteerBelongsTo = [];
         $identifier                   = $pegass->evaluate('user.structure.id');
         if ($identifier
-            && ($structure = $this->structureManager->findOneByExternalId(Platform::FR, $identifier))) {
+            && ($structure = $this->structureManager->findOneByExternalId($identifier))) {
             $structuresVolunteerBelongsTo[] = $structure;
         }
         $volunteer->syncStructures($structuresVolunteerBelongsTo);
@@ -242,7 +239,7 @@ class RefreshManager
         $identifiers = [$identifier];
         foreach ($pegass->evaluate('actions') ?? [] as $action) {
             if (isset($action['structure']['id']) && !in_array($action['structure']['id'], $identifiers)) {
-                if ($structure = $this->structureManager->findOneByExternalId(Platform::FR, $action['structure']['id'])) {
+                if ($structure = $this->structureManager->findOneByExternalId($action['structure']['id'])) {
                     $volunteer->addStructure($structure);
                 }
                 $identifiers[] = $action['structure']['id'];
@@ -291,9 +288,9 @@ class RefreshManager
             $this->volunteerManager->save($volunteer);
 
             // If volunteer is bound to a RedCall user, update its structures
-            $user = $this->userManager->findOneByExternalId(Platform::FR, $volunteer->getExternalId());
+            $user = $this->userManager->findOneByExternalId($volunteer->getExternalId());
             if ($user) {
-                $this->userManager->changeVolunteer($user, Platform::FR, $volunteer->getExternalId());
+                $this->userManager->changeVolunteer($user, $volunteer->getExternalId());
             }
 
             $this->checkRTMRRole($volunteer);
@@ -376,7 +373,7 @@ class RefreshManager
         // If volunteer is bound to a RedCall user, update its structures
         $user = $volunteer->getUser();
         if ($user) {
-            $this->userManager->changeVolunteer($user, Platform::FR, $volunteer->getExternalId());
+            $this->userManager->changeVolunteer($user, $volunteer->getExternalId());
         }
 
         $this->checkRTMRRole($volunteer);
@@ -411,13 +408,9 @@ class RefreshManager
             }
         }
 
-        if (Platform::FR !== $volunteer->getPlatform()) {
-            return;
-        }
-
         // Reconciliation: wrong RTMR cannot trigger any structure
-        if (!$volunteer->hasBadge(Platform::FR, self::RTMR_BADGE)
-            && $volunteer->hasBadge(Platform::FR, self::INVALID_RTMR_BADGE)
+        if (!$volunteer->hasBadge(self::RTMR_BADGE)
+            && $volunteer->hasBadge(self::INVALID_RTMR_BADGE)
             && $volunteer->getUser()) {
             $user = $volunteer->getUser();
             $user->setIsAdmin(false);
@@ -436,13 +429,13 @@ class RefreshManager
         }
 
         // User is a RTMR, ensure they have a RedCall account and are not admins
-        if ($volunteer->hasBadge(Platform::FR, self::RTMR_BADGE)) {
+        if ($volunteer->hasBadge(self::RTMR_BADGE)) {
             if (!$user = $volunteer->getUser()) {
                 $this->volunteerManager->save($volunteer);
-                $this->userManager->createUser(Platform::FR, $volunteer->getExternalId());
+                $this->userManager->createUser($volunteer->getExternalId());
 
-                $user       = $this->userManager->findOneByExternalId(Platform::FR, $volunteer->getExternalId());
-                $structures = $this->structureManager->findCallableStructuresForVolunteer(Platform::FR, $volunteer);
+                $user       = $this->userManager->findOneByExternalId($volunteer->getExternalId());
+                $structures = $this->structureManager->findCallableStructuresForVolunteer($volunteer);
                 $user->updateStructures($structures);
             }
 
@@ -513,7 +506,7 @@ class RefreshManager
                 }
 
                 $externalId = sprintf('%s-%d', $type, $action[$type]['id']);
-                $badge      = $this->badgeManager->findOneByExternalId(Platform::FR, $externalId);
+                $badge      = $this->badgeManager->findOneByExternalId($externalId);
 
                 if (!$badge) {
                     $badge = $this->createBadge($externalId, $action[$type]['libelle']);
@@ -536,7 +529,7 @@ class RefreshManager
             }
 
             $externalId = sprintf('skill-%d', $skill['id']);
-            $badge      = $this->badgeManager->findOneByExternalId(Platform::FR, $externalId);
+            $badge      = $this->badgeManager->findOneByExternalId($externalId);
 
             if (!$badge) {
                 $badge = $this->createBadge($externalId, $skill['libelle']);
@@ -567,7 +560,7 @@ class RefreshManager
             }
 
             $externalId = sprintf('training-%d', $training['formation']['id']);
-            $badge      = $this->badgeManager->findOneByExternalId(Platform::FR, $externalId);
+            $badge      = $this->badgeManager->findOneByExternalId($externalId);
 
             if (!$badge) {
                 $badge = $this->createBadge($externalId, $training['formation']['code'], $training['formation']['libelle']);
@@ -591,7 +584,7 @@ class RefreshManager
             }
 
             $externalId = sprintf('nomination-%d', $nomination['id']);
-            $badge      = $this->badgeManager->findOneByExternalId(Platform::FR, $externalId);
+            $badge      = $this->badgeManager->findOneByExternalId($externalId);
 
             if (!$badge) {
                 $badge = $this->createBadge($externalId, $nomination['libelleCourt'], $nomination['libelleLong']);
@@ -610,7 +603,6 @@ class RefreshManager
         }
 
         $badge = new Badge();
-        $badge->setPlatform(Platform::FR);
         $badge->setExternalId($externalId);
         $badge->setName(substr($name, 0, 64));
         $badge->setDescription(substr($description, 0, 255));

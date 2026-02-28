@@ -15,14 +15,12 @@
     {% else %}
         <p>{{ 'admin.statistics.no_stats' | trans }}</p>
     {% endif %}
-    <br>
     {% if stats.campaignsPeriod is defined %}
         <p>{{ 'admin.statistics.campaign.period' | trans({
                 '%created%': stats.campaignsPeriod.created,
                 '%active%': stats.campaignsPeriod.active,
             }) | raw }}</p>
     {% endif %}
-    <br>
 
     {# MESSAGES SECTION #}
     <h4>{{ 'admin.statistics.messages.title' | trans }}</h4>
@@ -39,7 +37,6 @@
     {% else %}
         <p>{{ 'admin.statistics.no_stats' | trans }}</p>
     {% endif %}
-    <br>
 
     {# COSTS SECTION #}
     <h4>{{ 'admin.statistics.costs.title' | trans }}</h4>
@@ -57,8 +54,6 @@
     {% else %}
         <p>{{ 'admin.statistics.no_stats' | trans }}</p>
     {% endif %}
-    <br>
-
 
     {# VOLOUNTEERS SECTION #}
     <h4>{{ 'admin.statistics.volunteers.title' | trans }}</h4>
@@ -82,15 +77,10 @@
     {% else %}
         <p>{{ 'admin.statistics.no_stats' | trans }}</p>
     {% endif %}
-    <br>
 
-    <div class="text-center">
-        <br/><br/>
-
+    <div class="rc-back-link">
         <a href="{{ path('admin_stats_home') }}"
            class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
-
-        <br/><br/>
     </div>
 
 {% endblock %}

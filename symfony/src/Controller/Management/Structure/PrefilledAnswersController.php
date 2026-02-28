@@ -57,7 +57,6 @@ class PrefilledAnswersController extends BaseController
     {
         if ($request->get('prefilledAnswers') === null) {
             $prefilledAnswers = new PrefilledAnswers();
-            $prefilledAnswers->setPlatform($this->getPlatform());
             $prefilledAnswers->setStructure($structure);
         } else {
             $prefilledAnswers = $this->prefilledAnswersManager->findById($request->get('prefilledAnswers'));

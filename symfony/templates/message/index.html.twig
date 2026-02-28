@@ -13,9 +13,7 @@
             <div class="card-title">
                 {{ 'campaign_status.communication_short_title'|trans({'%date%': communication.createdAt|date('d/m/Y'), '%time%': communication.createdAt|date('H:i')}, null, language.locale) }}
                 {% if communication.subject %}
-                    <div class="h3">
-                        {{ communication.subject }}
-                    </div>
+                    <h3>{{ communication.subject }}</h3>
                 {% endif %}
             </div>
         </div>
@@ -30,13 +28,13 @@
                 {% for choice in message.communication.choices %}
                     {% if not message.answerByChoice(choice) %}
                         {# Volunteer is able to answer #}
-                        <div class="h3 text-center">
+                        <h3 class="text-center">
                             <a class="respond btn btn-primary"
                                style="width: 100%;white-space: normal;"
                                href="{{ path('message_action', {code: message.code, action: choice.code, signature: message.signature }) }}">
                                 <span class="h4">{{ choice.label }}</span>
                             </a>
-                        </div>
+                        </h3>
                     {% else %}
                         {# Volunteer already answered, he can cancel though #}
                         <table style="width: 100%;">
@@ -58,7 +56,6 @@
                             </tr>
                         </table>
                     {% endif %}
-                    <br/>
                 {% endfor %}
                 {% if message.communication.choices|length %}
                     <hr/>

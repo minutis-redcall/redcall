@@ -82,7 +82,7 @@ class UserManager extends BaseUserManager
         $this->userRepository->save($user);
     }
 
-    public function changeVolunteer(User $user, ?string $volunteerPlatform = null, ?string $volunteerExternalId = null)
+    public function changeVolunteer(User $user, ?string $volunteerExternalId = null)
     {
         if ($user->isLocked()) {
             return;
@@ -90,8 +90,8 @@ class UserManager extends BaseUserManager
 
         $volunteer = null;
 
-        if ($volunteerPlatform && $volunteerExternalId) {
-            $volunteer = $this->volunteerManager->findOneByExternalId($user->getPlatform(), $volunteerExternalId);
+        if ($volunteerExternalId) {
+            $volunteer = $this->volunteerManager->findOneByExternalId($volunteerExternalId);
         }
 
         if (!$volunteer) {
@@ -106,28 +106,27 @@ class UserManager extends BaseUserManager
         $user->setVolunteer($volunteer);
 
         // https://minutis-support.atlassian.net/browse/SUPPORT-1421
-        // $structures = $this->structureManager->findCallableStructuresForVolunteer($volunteerPlatform, $volunteer);
+        // $structures = $this->structureManager->findCallableStructuresForVolunteer($volunteer);
         // $user->updateStructures($structures);
 
         $this->save($user);
     }
 
-    public function findOneByExternalId(string $platform, string $externalId) : ?User
+    public function findOneByExternalId(string $externalId) : ?User
     {
-        return $this->userRepository->findOneByExternalId($platform, $externalId);
+        return $this->userRepository->findOneByExternalId($externalId);
     }
 
-    public function getUserStructuresQueryBuilder(string $platform, User $user) : QueryBuilder
+    public function getUserStructuresQueryBuilder(User $user) : QueryBuilder
     {
         return $this->structureManager->getStructuresQueryBuilderForUser(
-            $platform,
             $user
         );
     }
 
-    public function searchQueryBuilder(?string $criteria, ?bool $onlyAdmins, ?bool $onlyDevelopers) : QueryBuilder
+    public function searchQueryBuilder(?string $criteria, ?bool $onlyAdmins) : QueryBuilder
     {
-        return $this->userRepository->searchQueryBuilder($criteria, $onlyAdmins, $onlyDevelopers);
+        return $this->userRepository->searchQueryBuilder($criteria, $onlyAdmins);
     }
 
     public function getRedCallUsersInStructure(Structure $structure, bool $includeChildren) : array
@@ -143,39 +142,24 @@ class UserManager extends BaseUserManager
         return array_unique($users, SORT_REGULAR);
     }
 
-    public function createUser(string $platform, string $externalId)
+    public function createUser(string $externalId)
     {
         $application = new Application($this->kernel);
         $application->setAutoExit(false);
 
         $input = new ArrayInput([
-            'command'     => 'user:create',
-            'platform'    => $platform,
-            'external-id' => [$externalId],
+            'command'      => 'user:create',
+            'external-id'  => [$externalId],
         ]);
 
         $application->run($input, new NullOutput());
     }
 
-    public function getUserCountInStructure(Structure $structure) : int
-    {
-        return $this->userRepository->getUserCountInStructure($structure);
-    }
-
     /**
      * @see Resource::getProviderMethod()
      */
-    public function findOneByUsernameAndPlatform(string $platform, string $username) : ?User
+    public function findOneByUsername(string $username) : ?User
     {
-        return $this->userRepository->findOneByUsernameAndPlatform($platform, $username);
-    }
-
-    public function searchInStructureQueryBuilder(string $platform,
-        Structure $structure,
-        ?string $criteria,
-        bool $onlyAdmins,
-        bool $onlyDevelopers) : QueryBuilder
-    {
-        return $this->userRepository->searchInStructureQueryBuilder($platform, $structure, $criteria, $onlyAdmins, $onlyDevelopers);
+        return $this->userRepository->findOneByUsername($username);
     }
 }

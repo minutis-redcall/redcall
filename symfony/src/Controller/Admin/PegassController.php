@@ -8,13 +8,11 @@ use App\Entity\User;
 use App\Form\Type\ManageUserStructuresType;
 use App\Form\Type\VolunteerWidgetType;
 use App\Manager\BadgeManager;
-use App\Manager\PlatformConfigManager;
 use App\Manager\StructureManager;
 use App\Manager\UserManager;
 use App\Manager\VolunteerManager;
 use Bundles\PaginationBundle\Manager\PaginationManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
@@ -50,11 +48,6 @@ class PegassController extends BaseController
     private $paginationManager;
 
     /**
-     * @var PlatformConfigManager
-     */
-    private $platformManager;
-
-    /**
      * @var BadgeManager
      */
     private $badgeManager;
@@ -68,7 +61,6 @@ class PegassController extends BaseController
         StructureManager $structureManager,
         VolunteerManager $volunteerManager,
         PaginationManager $paginationManager,
-        PlatformConfigManager $platformManager,
         BadgeManager $badgeManager,
         RequestStack $requestStack)
     {
@@ -76,7 +68,6 @@ class PegassController extends BaseController
         $this->structureManager  = $structureManager;
         $this->volunteerManager  = $volunteerManager;
         $this->paginationManager = $paginationManager;
-        $this->platformManager   = $platformManager;
         $this->badgeManager      = $badgeManager;
         $this->requestStack      = $requestStack;
     }
@@ -90,17 +81,15 @@ class PegassController extends BaseController
         $search  = $this->createSearchForm($request);
 
         if ($search->isSubmitted() && $search->isValid()) {
-            $criteria       = $search->get('criteria')->getData();
-            $onlyDevelopers = $search->get('only_developers')->getData();
+            $criteria = $search->get('criteria')->getData();
         }
 
         return $this->render('admin/pegass/index.html.twig', [
             'search'    => $search->createView(),
             'type'      => $request->get('type'),
             'users'     => $this->paginationManager->getPager(
-                $this->userManager->searchQueryBuilder($criteria ?? null, false, $onlyDevelopers ?? false)
+                $this->userManager->searchQueryBuilder($criteria ?? null, false)
             ),
-            'platforms' => $this->platformManager->getAvailablePlatforms(),
         ]);
     }
 
@@ -131,7 +120,7 @@ class PegassController extends BaseController
         $externalId = $request->request->get('externalId');
 
         if (!$user->isLocked()) {
-            $this->userManager->changeVolunteer($user, $this->getPlatform(), $externalId);
+            $this->userManager->changeVolunteer($user, $externalId);
         }
 
         $structureNames = array_filter(array_map(function (Structure $structure) {
@@ -181,7 +170,7 @@ class PegassController extends BaseController
         return $this->render('admin/pegass/structures.html.twig', [
             'user'       => $user,
             'form'       => $form->createView(),
-            'structures' => $this->structureManager->getStructuresForUser($this->getPlatform(), $user),
+            'structures' => $this->structureManager->getStructuresForUser($user),
         ]);
     }
 
@@ -203,7 +192,7 @@ class PegassController extends BaseController
             throw $this->createNotFoundException();
         }
 
-        $structures = $this->structureManager->findCallableStructuresForStructure($this->getPlatform(), $parentStructure);
+        $structures = $this->structureManager->findCallableStructuresForStructure($parentStructure);
         foreach ($structures as $structure) {
             $user->addStructure($structure);
         }
@@ -235,7 +224,6 @@ class PegassController extends BaseController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $volunteer = $this->volunteerManager->findOneByExternalId(
-                $this->getPlatform(),
                 $form->get('externalId')->getData()
             );
 
@@ -243,7 +231,7 @@ class PegassController extends BaseController
                 throw $this->createNotFoundException();
             }
 
-            $this->userManager->createUser($this->getPlatform(), $volunteer->getExternalId());
+            $this->userManager->createUser($volunteer->getExternalId());
 
             return $this->redirectToRoute('admin_pegass_index', [
                 'form[criteria]' => $volunteer->getExternalId(),
@@ -336,26 +324,6 @@ class PegassController extends BaseController
     }
 
     /**
-     * @Route(name="toggle_developer", path="/toggle-developer/{csrf}/{id}")
-     * @IsGranted("USER", subject="user")
-     */
-    public function toggleDeveloperAction(User $user, $csrf)
-    {
-        $this->validateCsrfOrThrowNotFoundException('pegass', $csrf);
-
-        if ($user->isEqualTo($this->getUser())) {
-            throw $this->createNotFoundException();
-        }
-
-        $user->setIsDeveloper(1 - $user->isDeveloper());
-        $this->userManager->save($user);
-
-        return $this->redirectToRoute('admin_pegass_index', [
-            'form[criteria]' => $user->getExternalId(),
-        ]);
-    }
-
-    /**
      * @Route(name="toggle_root", path="/toggle-root/{csrf}/{id}")
      * @IsGranted("ROLE_ROOT")
      * @IsGranted("USER", subject="user")
@@ -373,26 +341,6 @@ class PegassController extends BaseController
             $user->setIsAdmin(true);
         }
 
-        $this->userManager->save($user);
-
-        return $this->redirectToRoute('admin_pegass_index', [
-            'form[criteria]' => $user->getExternalId(),
-        ]);
-    }
-
-    /**
-     * @Route(name="toggle_pegass_api", path="/toggle-pegass-api/{csrf}/{id}")
-     * @IsGranted("USER", subject="user")
-     */
-    public function togglePegassApiAction(User $user, string $csrf)
-    {
-        $this->validateCsrfOrThrowNotFoundException('pegass', $csrf);
-
-        if (!$this->getUser() instanceof User || !$this->getUser()->canGrantPegassApi()) {
-            throw $this->createNotFoundException();
-        }
-
-        $user->setIsPegassApi(1 - $user->isPegassApi());
         $this->userManager->save($user);
 
         return $this->redirectToRoute('admin_pegass_index', [
@@ -465,7 +413,7 @@ class PegassController extends BaseController
      */
     public function rtmr(Request $request)
     {
-        $badge = $this->badgeManager->findOneByName($this->getPlatform(), \App\Manager\RefreshManager::RTMR_BADGE);
+        $badge = $this->badgeManager->findOneByName(\App\Manager\RefreshManager::RTMR_BADGE);
 
         if (!$badge) {
             $volunteers = [];
@@ -489,10 +437,6 @@ class PegassController extends BaseController
             ->setMethod('GET')
             ->add('criteria', TextType::class, [
                 'label'    => 'password_login.user_list.search.criteria',
-                'required' => false,
-            ])
-            ->add('only_developers', CheckboxType::class, [
-                'label'    => 'admin.pegass.only_developers',
                 'required' => false,
             ])
             ->add('submit', SubmitType::class, [

@@ -7,7 +7,6 @@ use App\Entity\Phone;
 use App\Entity\Structure;
 use App\Entity\Volunteer;
 use App\Entity\VolunteerList;
-use App\Enum\Platform;
 use App\Manager\StructureManager;
 use App\Manager\VolunteerManager;
 use App\Model\InstancesNationales\SheetExtract;
@@ -51,11 +50,10 @@ class VolunteerService
         $volunteers = $this->extractObjectsFromGrid($extract->getTab(self::ANNUAIRE));
         $this->filterVolunteers($volunteers, $extract->getTab(self::LISTES));
 
-        $structure = $this->structureManager->findOneByName(Platform::FR, AnnuaireNationalCommand::STRUCTURE_NAME);
+        $structure = $this->structureManager->findOneByName(AnnuaireNationalCommand::STRUCTURE_NAME);
         if (null === $structure) {
             $structure = new Structure();
             $structure->setExternalId('NATIONAL');
-            $structure->setPlatform(Platform::FR());
             $structure->setName(AnnuaireNationalCommand::STRUCTURE_NAME);
             $structure->setShortcut('NATIONAL');
             $this->structureManager->save($structure);
@@ -238,7 +236,7 @@ class VolunteerService
             $changes = false;
             $nivol   = $fromExtract->getNivol();
 
-            if (null === $fromDatabase = $this->volunteerManager->findOneByExternalId(Platform::FR, $nivol)) {
+            if (null === $fromDatabase = $this->volunteerManager->findOneByExternalId($nivol)) {
                 $changes = true;
 
                 LogService::success('new', 'Create a volunteer existing in sheets but missing in RedCall', [
@@ -246,7 +244,6 @@ class VolunteerService
                 ]);
 
                 $fromDatabase = new Volunteer();
-                $fromDatabase->setPlatform(Platform::FR);
                 $fromDatabase->setExternalId($nivol);
                 $structure->addVolunteer($fromDatabase);
             }

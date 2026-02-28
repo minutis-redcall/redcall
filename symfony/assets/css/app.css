@@ -2,6 +2,7 @@
 @import 'jquery.flexdatalist.min.css';
 @import 'leaflet.css';
 @import 'main.css';
+@import 'auth.css';
 @import '~quill/dist/quill.core.css';
 @import '~quill/dist/quill.bubble.css';
 @import '~quill/dist/quill.snow.css';

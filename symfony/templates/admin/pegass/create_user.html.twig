@@ -2,21 +2,18 @@
 
 {% block body %}
 
-    <br/>
-
-    <div class="col-md-12 jumbotron shadow p-3 mb-5 rounded">
+    <div class="rc-section">
 
         <h3>{{ 'admin.pegass.create_user'|trans }}</h3>
 
         {{ form_start(form) }}
         {{ form_row(form.externalId) }}
-        <br/>
         {{ form_end(form) }}
 
-        <br/><br/>
-
-        <a href="{{ path('admin_pegass_index') }}"
-           class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+        <div class="rc-back-link">
+            <a href="{{ path('admin_pegass_index') }}"
+               class="btn btn-secondary">{{ 'base.button.back'|trans }}</a>
+        </div>
 
     </div>
 

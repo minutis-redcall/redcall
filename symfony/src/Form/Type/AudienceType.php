@@ -198,7 +198,7 @@ class AudienceType extends AbstractType
         // Volunteer view
         $view->vars['volunteers_data'] = [];
         if ($ids = $form->get('volunteers')->getData()) {
-            $view->vars['volunteers_data'] = array_values($this->audienceManager->getVolunteerList($this->security->getPlatform(), $ids));
+            $view->vars['volunteers_data'] = array_values($this->audienceManager->getVolunteerList($ids));
         }
 
         $this->buildStructureView($view);
@@ -217,7 +217,7 @@ class AudienceType extends AbstractType
         foreach ($form as $name => $element) {
             $data[$name] = $element->getData();
         }
-        $view->vars['classification'] = $this->audienceManager->classifyAudience($this->security->getPlatform(), $data);
+        $view->vars['classification'] = $this->audienceManager->classifyAudience($data);
         $view->vars['badge_counts']   = $this->audienceManager->extractBadgeCounts($data, $publicBadges);
         $view->vars['init_data']      = $data;
 
@@ -276,7 +276,7 @@ class AudienceType extends AbstractType
         // Basic information
         $ids         = array_merge(array_keys($hierarchy), $children) ?? [];
         $information = [];
-        foreach ($this->structureManager->getVolunteerLocalCounts($this->security->getPlatform(), $ids) as $entry) {
+        foreach ($this->structureManager->getVolunteerLocalCounts($ids) as $entry) {
             $information[$entry['id']] = [
                 'name'         => $entry['name'],
                 'local_count'  => intval($entry['count']),

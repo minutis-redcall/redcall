@@ -4,18 +4,11 @@
 
 {% block body %}
 
-    <br/>
+    <div class="rc-section">
+        <h2>{{ 'campaign_status.optout.title'|trans }}</h2>
 
-    <div class="jumbotron shadow p-3 mb-5 rounded">
-        <div class="h2">
-            {{ 'campaign_status.optout.title'|trans }}
-        </div>
-
-        <br/>
         <p>{{ 'campaign_status.optout.message'|trans }}</p>
-        <br/>
         <p>{{ 'campaign_status.optout.comeback'|trans }}</p>
-        <br/>
 
         {{ form_start(form) }}
         <div class="row">
