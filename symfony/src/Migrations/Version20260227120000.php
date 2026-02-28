@@ -35,12 +35,11 @@ final class Version20260227120000 extends AbstractMigration
         $this->addSql('ALTER TABLE prefilled_answers DROP INDEX platformx');
 
         // Delete non-FR data if any (should be none, but just in case)
-        $this->addSql("DELETE FROM user WHERE platform != 'FR'");
-        $this->addSql("DELETE FROM volunteer WHERE platform != 'FR'");
-        $this->addSql("DELETE FROM structure WHERE platform != 'FR'");
-        $this->addSql("DELETE FROM campaign WHERE platform != 'FR'");
-        $this->addSql("DELETE FROM badge WHERE platform != 'FR'");
-        $this->addSql("DELETE FROM category WHERE platform != 'FR'");
+        $this->addSql("UPDATE user SET is_trusted = 0 WHERE platform != 'FR'");
+        $this->addSql("UPDATE volunteer SET enabled = 0 WHERE platform != 'FR'");
+        $this->addSql("UPDATE structure SET enabled = 0 WHERE platform != 'FR'");
+        $this->addSql("UPDATE badge SET enabled = 0 WHERE platform != 'FR'");
+        $this->addSql("UPDATE category SET enabled = 0 WHERE platform != 'FR'");
         $this->addSql("DELETE FROM prefilled_answers WHERE platform != 'FR'");
 
         // Drop platform columns
