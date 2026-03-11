@@ -2,6 +2,7 @@
 
 namespace App\Logger;
 
+use Monolog\LogRecord;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
@@ -9,19 +10,8 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 class ContextProcessor
 {
-    /**
-     * @var KernelInterface
-     */
     private $kernel;
-
-    /**
-     * @var TokenStorageInterface
-     */
     private $tokenStorage;
-
-    /**
-     * @var RequestStack
-     */
     private $requestStack;
 
     public function __construct(KernelInterface $kernel,
@@ -33,21 +23,23 @@ class ContextProcessor
         $this->requestStack = $requestStack;
     }
 
-    public function __invoke(array $record)
+    public function __invoke(LogRecord $record): LogRecord
     {
-        $record['extra']['env']      = $this->kernel->getEnvironment();
-        $record['extra']['platform'] = php_sapi_name();
+        $extra = $record->extra;
+        $extra['env']      = $this->kernel->getEnvironment();
+        $extra['platform'] = php_sapi_name();
+
         if ($request = $this->requestStack->getMainRequest()) {
-            $record['extra']['uri'] = $request->getUri();
+            $extra['uri'] = $request->getUri();
             if ($request->getContent()) {
-                $record['extra']['body'] = $request->getContent();
+                $extra['body'] = $request->getContent();
             }
 
             if ($this->tokenStorage->getToken() && $this->tokenStorage->getToken()->getUser() instanceof UserInterface) {
-                $record['extra']['user'] = $this->tokenStorage->getToken()->getUser()->getUsername();
+                $extra['user'] = $this->tokenStorage->getToken()->getUser()->getUserIdentifier();
             }
         }
 
-        return $record;
+        return $record->with(extra: $extra);
     }
 }
