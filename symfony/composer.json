@@ -21,21 +21,21 @@
     "exercise/htmlpurifier-bundle": "^3.0",
     "fabpot/goutte": "^4",
     "facile-it/doctrine-mysql-come-back": "^1.8",
-    "firebase/php-jwt": "^5.0",
+    "firebase/php-jwt": "^6.10",
     "giggsey/libphonenumber-for-php": "^8.12",
-    "google/apiclient": "^2.0",
-    "google/cloud": "*",
-    "google/cloud-debugger": "^0.20.0",
-    "google/cloud-error-reporting": "^0.15.0",
-    "google/cloud-logging": "^1.18",
-    "guzzlehttp/guzzle": "^6.3",
-    "league/commonmark": "^1.6",
+    "google/apiclient": "^2.19",
+    "google/cloud-error-reporting": "^0.19",
+    "google/cloud-storage": "^1.30",
+    "google/cloud-tasks": "^1.12",
+    "google/cloud-text-to-speech": "^1.5",
+    "guzzlehttp/guzzle": "^7.4.5",
+    "league/commonmark": "^2.8.1",
     "league/csv": "^9.1",
     "mpdf/mpdf": "^8.0",
     "myclabs/php-enum": "^1.7",
     "pagerfanta/doctrine-orm-adapter": "^2.5",
     "phpdocumentor/reflection-docblock": "^5.2",
-    "ramsey/uuid": "^3.7",
+    "ramsey/uuid": "^4.0",
     "sendgrid/sendgrid": "^7.4",
     "sensio/framework-extra-bundle": "^5.1",
     "symfony/apache-pack": "^1.0",
@@ -88,6 +88,11 @@
       "*": "dist"
     },
     "sort-packages": true,
+    "audit": {
+      "ignore": {
+        "PKSA-y2cr-5h3j-g3ys": "Low severity: weak encryption in php-jwt <7.0; blocked by Symfony 5 / psr/log incompatibility"
+      }
+    },
     "allow-plugins": {
       "symfony/flex": true
     }
