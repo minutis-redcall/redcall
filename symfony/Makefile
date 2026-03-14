@@ -17,12 +17,6 @@ install-yarn: ## Installs all Node dependencies
 	@yarn install --cache-min 99999 --progress=false
 	@yarn encore dev
 
-reset: reset-db ## Resets the development environment
-
-reset-db: ## Resets the development database
-	@echo "\033[1m\033[36m> Resetting development database\033[0m\033[21m"
-	../dev/database/reset.sh
-
 run: # Runs the application on a local web server
 	@echo "\033[1m\033[36m> Starting the application\033[0m\033[21m"
 	@php bin/console server:start
@@ -30,3 +24,13 @@ run: # Runs the application on a local web server
 stop: # Stops the application
 	@echo "\033[1m\033[36m> Stopping the application\033[0m\033[21m"
 	@php bin/console server:stop
+
+test: ## Reinitializes the test database and runs all tests
+	@echo "\033[1m\033[36m> Dropping test database\033[0m\033[21m"
+	@APP_ENV=test php bin/console doctrine:database:drop --force --if-exists
+	@echo "\033[1m\033[36m> Creating test database\033[0m\033[21m"
+	@APP_ENV=test php bin/console doctrine:database:create
+	@echo "\033[1m\033[36m> Creating schema from entities\033[0m\033[21m"
+	@APP_ENV=test php bin/console doctrine:schema:create
+	@echo "\033[1m\033[36m> Running tests\033[0m\033[21m"
+	@php vendor/bin/phpunit

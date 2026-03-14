@@ -712,7 +712,7 @@ class Volunteer implements LockableInterface
         $new = get_object_vars($this);
 
         foreach ($old as $key => $value) {
-            if ('phone' === $key || 'email' === $key || 'structures' === $key || 'user' === $key) {
+            if (in_array($key, ['phones', 'email', 'structures', 'user', 'messages', 'badges', 'lists'], true)) {
                 continue;
             }
 

@@ -167,14 +167,12 @@ class Pegass
         }
 
         try {
-            $object = json_decode(json_encode($content));
-
             $accessed = PropertyAccess::createPropertyAccessorBuilder()
                                       ->disableExceptionOnInvalidPropertyPath()
                                       ->getPropertyAccessor()
-                                      ->getValue($object, $expression);
+                                      ->getValue($content, $expression);
 
-            return json_decode(json_encode($accessed), true);
+            return $accessed;
         } catch (Throwable $e) {
             return null;
         }

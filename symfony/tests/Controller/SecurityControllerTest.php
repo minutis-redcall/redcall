@@ -4,16 +4,16 @@ namespace App\Tests\Controller;
 
 use App\Entity\User;
 use App\Tests\Base\BaseWebTestCase;
-use App\Tests\Fixtures\UserFixtures;
+use App\Tests\Fixtures\DataFixtures;
 use Bundles\PasswordLoginBundle\Manager\EmailVerificationManager;
 use Bundles\SandboxBundle\Manager\FakeEmailManager;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
 class SecurityControllerTest extends BaseWebTestCase
 {
-    private function getFixtures($container) : UserFixtures
+    private function getFixtures($container) : DataFixtures
     {
-        return new UserFixtures(
+        return new DataFixtures(
             $container->get('doctrine.orm.entity_manager'),
             $container->get('security.password_encoder')
         );
@@ -213,15 +213,15 @@ class SecurityControllerTest extends BaseWebTestCase
     {
         $client = static::createClient();
         $client->followRedirects();
-        
+
         // Cleanup DB
         $container = $client->getContainer();
-        $em = $container->get('doctrine')->getManager();
+        $em        = $container->get('doctrine')->getManager();
         $em->createQuery('DELETE FROM Bundles\SandboxBundle\Entity\FakeEmail')->execute();
 
         // Create User linked to Volunteer
         $fixtures = $this->getFixtures($container);
-        $user = $fixtures->createRawUser('knights@ni.com', 'password', false, true);
+        $user     = $fixtures->createRawUser('knights@ni.com', 'password', false, true);
         $fixtures->createVolunteer($user, '987654321', 'knights@ni.com');
 
         // 1. Go to Connect page
@@ -229,28 +229,28 @@ class SecurityControllerTest extends BaseWebTestCase
         $this->assertResponseIsSuccessful();
 
         // 2. Submit Nivol Form with External ID
-        $form = $crawler->filter('#nivol form')->form();
+        $form          = $crawler->filter('#nivol form')->form();
         $form['nivol'] = '987654321';
         $client->submit($form);
 
         // 3. Intercept Email
         $fakeEmailManager = $container->get(FakeEmailManager::class);
-        $emails = $fakeEmailManager->findMessagesForEmail('knights@ni.com');
+        $emails           = $fakeEmailManager->findMessagesForEmail('knights@ni.com');
         $this->assertCount(1, $emails, 'Nivol login email should be sent to user email');
 
         // 4. Extract Code
         $body = $emails[0]->getBody();
         preg_match('#([A-Z][0-9]{2}[A-Z][0-9]{2})#', $body, $matches);
-        
+
         if (empty($matches)) {
-             $this->fail('Login code not found in email body. Body content: ' . substr($body, 0, 200));
+            $this->fail('Login code not found in email body. Body content: '.substr($body, 0, 200));
         }
-        
+
         $code = $matches[1];
 
         // 5. Submit Code
-        $crawler = $client->getCrawler();
-        $form = $crawler->filter('form')->form();
+        $crawler      = $client->getCrawler();
+        $form         = $crawler->filter('form')->form();
         $form['code'] = $code;
         $client->submit($form);
 
@@ -258,5 +258,117 @@ class SecurityControllerTest extends BaseWebTestCase
         $this->assertResponseRedirects('/');
         $client->followRedirect();
         $this->assertSelectorExists('a[href="/logout"]');
+    }
+
+    public function testRegisterDuplicate()
+    {
+        $client = static::createClient();
+        $client->followRedirects();
+
+        $container = $client->getContainer();
+        $em        = $container->get('doctrine')->getManager();
+        $em->createQuery('DELETE FROM Bundles\PasswordLoginBundle\Entity\Captcha')->execute();
+
+        $captchaManager = $container->get(\Bundles\PasswordLoginBundle\Manager\CaptchaManager::class);
+        $captchaManager->whitelistNow('127.0.0.1');
+
+        // Create an existing user first
+        $this->getFixtures($container)->createRawUser('duplicate@example.com', 'password');
+
+        // Try to register with the same email
+        $crawler = $client->request('GET', '/register');
+        $this->assertResponseIsSuccessful();
+
+        $form = $crawler->filter('form[name="registration"]')->form();
+
+        $form['registration[username]']         = 'duplicate@example.com';
+        $form['registration[password][first]']  = 'SuperStrongPassword123!';
+        $form['registration[password][second]'] = 'SuperStrongPassword123!';
+        $form['registration[platform]']->select('fr');
+
+        $crawler = $client->submit($form);
+
+        // The form should show a validation error and stay on the register page
+        $this->assertResponseIsSuccessful();
+        $this->assertStringContainsString('/register', $client->getRequest()->getRequestUri());
+    }
+
+    public function testConnectInvalidCredentials()
+    {
+        $client = static::createClient();
+        $client->followRedirects();
+
+        $container = $client->getContainer();
+        $this->getFixtures($container)->createRawUser('invalidcreds@example.com', 'password');
+
+        $crawler = $client->request('GET', '/connect');
+
+        $form             = $crawler->filter('#classic-login form')->form();
+        $form['username'] = 'invalidcreds@example.com';
+        $form['password'] = 'wrongpassword';
+
+        $crawler = $client->submit($form);
+
+        // User should stay on the connect page (not redirected to home)
+        $this->assertStringContainsString('/connect', $client->getRequest()->getRequestUri());
+    }
+
+    public function testLockedAccountCannotConnect()
+    {
+        $client = static::createClient();
+        $client->followRedirects();
+
+        $container = $client->getContainer();
+        $em        = $container->get('doctrine')->getManager();
+
+        // Create a user and set them as locked
+        $user = $this->getFixtures($container)->createRawUser('locked@example.com', 'password');
+        $user->setLocked(true);
+        $em->persist($user);
+        $em->flush();
+
+        // Try to connect with valid credentials
+        $crawler = $client->request('GET', '/connect');
+
+        $form             = $crawler->filter('#classic-login form')->form();
+        $form['username'] = 'locked@example.com';
+        $form['password'] = 'password';
+
+        $crawler = $client->submit($form);
+
+        // Verify the locked user is not redirected to home
+        $this->assertStringContainsString('/connect', $client->getRequest()->getRequestUri());
+    }
+
+    public function testProfileChangeUsername()
+    {
+        $client = static::createClient();
+        $client->getCookieJar()->clear();
+        $client->followRedirects();
+        $container = static::getContainer();
+
+        $user = $this->getFixtures($container)->createRawUser('oldusername@example.com', 'password');
+        $this->login($client, $user);
+
+        $crawler = $client->request('GET', '/profile');
+        $this->assertResponseIsSuccessful();
+
+        $form = $crawler->filter('form[name="profile"]')->form();
+
+        $form['profile[username]']         = 'newusername@example.com';
+        $form['profile[current_password]'] = 'password';
+
+        $client->submit($form);
+
+        // Clear the entity manager to force fresh data from DB
+        $container->get('doctrine')->getManager()->clear();
+
+        // Verify the username was updated in the database
+        $updatedUser = $container->get('doctrine')->getRepository(User::class)->findOneBy(['username' => 'newusername@example.com']);
+        $this->assertNotNull($updatedUser, 'Username should be updated to newusername@example.com in DB');
+
+        // The old username should no longer exist
+        $oldUser = $container->get('doctrine')->getRepository(User::class)->findOneBy(['username' => 'oldusername@example.com']);
+        $this->assertNull($oldUser, 'Old username should no longer exist in DB');
     }
 }

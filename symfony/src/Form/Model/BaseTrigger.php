@@ -195,6 +195,8 @@ abstract class BaseTrigger implements \JsonSerializable
         if (false !== $index) {
             unset($this->operationAnswers[$index]);
         }
+
+        return $this;
     }
 
     /**

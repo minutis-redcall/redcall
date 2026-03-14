@@ -15,12 +15,10 @@ if (!class_exists(Application::class)) {
     throw new RuntimeException('You need to add "symfony/framework-bundle" as a Composer dependency.');
 }
 
-if (!isset($_SERVER['APP_ENV'])) {
-    if (!class_exists(Dotenv::class)) {
-        throw new RuntimeException('APP_ENV environment variable is not defined. You need to define environment variables for configuration or add "symfony/dotenv" as a Composer dependency to load variables from a .env file.');
-    }
-    (new Dotenv())->usePutenv(true)->load(__DIR__.'/../.env');
+if (!class_exists(Dotenv::class)) {
+    throw new RuntimeException('You need to add "symfony/dotenv" as a Composer dependency to load variables from a .env file.');
 }
+(new Dotenv())->usePutenv(true)->loadEnv(__DIR__.'/../.env');
 
 if (file_exists(realpath(__DIR__.'/../config/keys/google-service-account.json'))) {
     putenv(sprintf(

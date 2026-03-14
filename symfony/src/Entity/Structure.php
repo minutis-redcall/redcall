@@ -419,7 +419,7 @@ class Structure implements LockableInterface
     public function removePrefilledAnswer(PrefilledAnswers $prefilledAnswers) : self
     {
         if ($this->prefilledAnswers->contains($prefilledAnswers)) {
-            $this->prefilledAnswers->remove($prefilledAnswers);
+            $this->prefilledAnswers->removeElement($prefilledAnswers);
             $prefilledAnswers->setStructure(null);
         }
 
