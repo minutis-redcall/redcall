@@ -42,9 +42,6 @@ class SecurityControllerTest extends BaseWebTestCase
         $form['registration[password][first]']  = 'SuperStrongPassword123!';
         $form['registration[password][second]'] = 'SuperStrongPassword123!';
 
-        // Try selecting by value if it's a choice/radio
-        $form['registration[platform]']->select('fr');
-
         $client->submit($form);
 
         $this->assertResponseIsSuccessful();
@@ -249,15 +246,20 @@ class SecurityControllerTest extends BaseWebTestCase
         $code = $matches[1];
 
         // 5. Submit Code
+        // Disable kernel reboot so the security token persists across redirects
+        // (same technique used by BaseWebTestCase::login())
+        $client->disableReboot();
+
         $crawler      = $client->getCrawler();
         $form         = $crawler->filter('form')->form();
         $form['code'] = $code;
         $client->submit($form);
 
-        // 6. Verify Logged In
-        $this->assertResponseRedirects('/');
-        $client->followRedirect();
-        $this->assertSelectorExists('a[href="/logout"]');
+        // 6. Verify Logged In (followRedirects is enabled, so we're already on the final page)
+        $this->assertResponseIsSuccessful();
+        // The logout URL is absolute (http://localhost/logout?_csrf_token=...) so use a
+        // CSS selector that matches the "logout" substring anywhere in the href attribute.
+        $this->assertSelectorExists('a[href*="/logout"]');
     }
 
     public function testRegisterDuplicate()
@@ -284,7 +286,6 @@ class SecurityControllerTest extends BaseWebTestCase
         $form['registration[username]']         = 'duplicate@example.com';
         $form['registration[password][first]']  = 'SuperStrongPassword123!';
         $form['registration[password][second]'] = 'SuperStrongPassword123!';
-        $form['registration[platform]']->select('fr');
 
         $crawler = $client->submit($form);
 

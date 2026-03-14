@@ -70,16 +70,19 @@ class PrefilledAnswersControllerTest extends BaseWebTestCase
 
         $this->login($client, $admin);
 
-        $crawler = $client->request('GET', sprintf('/management/structures/%d/prefilled-answers/new', $structure->getId()));
+        $url = sprintf('/management/structures/%d/prefilled-answers/new', $structure->getId());
+        $crawler = $client->request('GET', $url);
         $this->assertResponseIsSuccessful();
 
-        $form                                  = $crawler->filter('form[name="prefilled_answers"]')->form();
-        $form['prefilled_answers[label]']      = 'New PFA Label';
-        $form['prefilled_answers[colors]']     = ['1_green'];
-        $form['prefilled_answers[answers][0]'] = 'Answer One';
-        $form['prefilled_answers[answers][1]'] = 'Answer Two';
-
-        $client->submit($form);
+        // CollectionType answers are added via JS prototype — submit as raw POST
+        $client->request('POST', $url, [
+            'prefilled_answers' => [
+                'label'   => 'New PFA Label',
+                'colors'  => ['1_green'],
+                'answers' => ['Answer One', 'Answer Two'],
+                'submit'  => '',
+            ],
+        ]);
         $this->assertResponseIsSuccessful();
 
         $em = $client->getContainer()->get('doctrine')->getManager();

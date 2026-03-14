@@ -100,7 +100,8 @@ class SpaceControllerTest extends BaseWebTestCase
 
         $client->request('GET', '/space/00000000-0000-0000-0000-000000000000/');
 
-        // Invalid session should not return 200 (either 403 or redirect)
-        $this->assertResponseStatusCodeSame(403);
+        // Invalid session returns 404 because the Doctrine ParamConverter cannot find
+        // the VolunteerSession entity before the voter even gets a chance to deny access.
+        $this->assertResponseStatusCodeSame(404);
     }
 }

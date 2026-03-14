@@ -74,7 +74,7 @@ class MessageController extends BaseController
     }
 
     /**
-     * @Route(path="/optout/{code}", name="optout", methods={"GET", "POST"})
+     * @Route(path="optout/{code}", name="optout", methods={"GET", "POST"})
      */
     public function optoutAction(Request $request, Message $message)
     {

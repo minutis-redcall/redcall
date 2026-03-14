@@ -167,8 +167,7 @@ class TemplateControllerTest extends BaseWebTestCase
 
     public function testDeleteTemplate()
     {
-        $client = static::createClient();
-        $client->followRedirects();
+        $client   = static::createClient();
         $fixtures = $this->getFixtures($client->getContainer());
 
         $admin     = $fixtures->createRawUser('tpl_delete@test.com', 'password', true);
@@ -180,15 +179,22 @@ class TemplateControllerTest extends BaseWebTestCase
 
         $this->login($client, $admin);
 
-        $csrf = $this->getCsrfToken($client->getContainer(), 'csrf');
-
-        $client->request('GET', sprintf(
-            '/management/structures/%d/template/%d/%s/delete',
-            $structure->getId(),
-            $templateId,
-            $csrf
+        // Navigate to the template list and extract the delete link from the page,
+        // which includes a server-generated CSRF token that is guaranteed to be valid.
+        $crawler = $client->request('GET', sprintf(
+            '/management/structures/%d/template',
+            $structure->getId()
         ));
         $this->assertResponseIsSuccessful();
+
+        $deleteLink = $crawler->filter('a.btn-danger')->link();
+        $client->click($deleteLink);
+
+        // The delete action redirects back to the list page.
+        $this->assertResponseRedirects(sprintf(
+            '/management/structures/%d/template',
+            $structure->getId()
+        ));
 
         $em = $client->getContainer()->get('doctrine')->getManager();
         $em->clear();

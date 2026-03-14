@@ -52,7 +52,7 @@ class VolunteersControllerTest extends BaseWebTestCase
 
         $this->login($client, $user);
 
-        $crawler = $client->request('GET', '/management/volunteers/');
+        $crawler = $client->request('GET', '/management/volunteers');
         $this->assertResponseIsSuccessful();
 
         $responseContent = $client->getResponse()->getContent();
@@ -234,9 +234,14 @@ class VolunteersControllerTest extends BaseWebTestCase
         $client->followRedirects();
         $fixtures = $this->getFixtures($client->getContainer());
 
-        $admin     = $fixtures->createRawUser('vol_delete@example.com', 'password', true);
-        $structure = $fixtures->createStructure('VOL DELETE STRUCTURE', 'EXT-VOL-DELETE');
+        $em = $client->getContainer()->get('doctrine.orm.entity_manager');
+
+        // Admin needs a linked volunteer for launchNewCampaign to work
+        $admin         = $fixtures->createRawUser('vol_delete@example.com', 'password', true);
+        $structure     = $fixtures->createStructure('VOL DELETE STRUCTURE', 'EXT-VOL-DELETE');
+        $adminVol      = $fixtures->createVolunteer($admin, 'VOL-ADMIN-DEL', 'vol_delete@example.com');
         $fixtures->assignUserToStructure($admin, $structure);
+        $fixtures->assignVolunteerToStructure($adminVol, $structure);
 
         // Create a volunteer with no user linked (required for deletion)
         $volunteer = new Volunteer();
@@ -249,7 +254,6 @@ class VolunteersControllerTest extends BaseWebTestCase
         $volunteer->setPhoneNumberOptin(true);
         $volunteer->setEmailOptin(true);
 
-        $em = $client->getContainer()->get('doctrine.orm.entity_manager');
         $em->persist($volunteer);
         $em->flush();
 
@@ -263,10 +267,12 @@ class VolunteersControllerTest extends BaseWebTestCase
         $crawler = $client->request('GET', sprintf('/management/volunteers/delete/%d', $volunteerId));
         $this->assertResponseIsSuccessful();
 
-        // Submit the confirmation form with the "confirm" button
-        $form = $crawler->filter('form')->form();
-        $form['form[confirm]']->click();
-        $client->submit($form);
+        // Submit the confirmation form with the "confirm" button via raw POST
+        $formNode = $crawler->filter('form')->first();
+        $client->request('POST', $formNode->attr('action') ?: sprintf('/management/volunteers/delete/%d', $volunteerId), [
+            'form' => ['confirm' => ''],
+        ]);
+
 
         $em->clear();
 

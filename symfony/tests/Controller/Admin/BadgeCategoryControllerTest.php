@@ -164,15 +164,16 @@ class BadgeCategoryControllerTest extends BaseWebTestCase
 
         $this->login($client, $admin);
 
+        $categoryId = $category->getId();
         $token = $this->getCsrfToken($client->getContainer(), 'token');
 
-        $client->request('GET', sprintf('/admin/categories/delete-category-%d/%s', $category->getId(), $token));
+        $client->request('GET', sprintf('/admin/categories/delete-category-%d/%s', $categoryId, $token));
 
         $this->assertResponseStatusCodeSame(204);
 
         $em = $client->getContainer()->get('doctrine.orm.entity_manager');
         $em->clear();
-        $deletedCategory = $em->getRepository(Category::class)->find($category->getId());
+        $deletedCategory = $em->getRepository(Category::class)->find($categoryId);
         $this->assertNull($deletedCategory);
     }
 }

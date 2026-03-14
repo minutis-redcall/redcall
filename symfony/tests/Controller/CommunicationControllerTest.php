@@ -95,6 +95,12 @@ class CommunicationControllerTest extends BaseWebTestCase
         $user = $fixtures->createRawUser('comm_provider@example.com', 'password');
         [$campaign, $communication, $message] = $this->createCampaignForUser($fixtures, $user);
 
+        // Set a fake messageId so getBySid() doesn't receive null
+        $em = $client->getContainer()->get('doctrine.orm.entity_manager');
+        $message->setMessageId('SM_fake_sid_for_test');
+        $em->persist($message);
+        $em->flush();
+
         $this->login($client, $user);
 
         $client->request('GET', sprintf(

@@ -80,22 +80,23 @@ class StatisticsManager
 
         //Volunteers Section
         $volunteersStats          = $this->statisticsRepository->getEmailAndPhoneNumberMissings();
+        $total                    = $volunteersStats['total'] ?: 1;
         $array                    = [
             'total' => [
                 'number'  => $volunteersStats['one_is_null'],
-                'percent' => $volunteersStats['one_is_null'] / $volunteersStats['total'] * 100,
+                'percent' => $volunteersStats['one_is_null'] / $total * 100,
             ],
             'email' => [
                 'number'  => $volunteersStats['email_null'],
-                'percent' => $volunteersStats['email_null'] / $volunteersStats['total'] * 100,
+                'percent' => $volunteersStats['email_null'] / $total * 100,
             ],
             'phone' => [
                 'number'  => $volunteersStats['phone_null'],
-                'percent' => $volunteersStats['phone_null'] / $volunteersStats['total'] * 100,
+                'percent' => $volunteersStats['phone_null'] / $total * 100,
             ],
             'both'  => [
                 'number'  => $volunteersStats['both_null'],
-                'percent' => $volunteersStats['both_null'] / $volunteersStats['total'] * 100,
+                'percent' => $volunteersStats['both_null'] / $total * 100,
             ],
         ];
         $statistics['volunteers'] = $array;

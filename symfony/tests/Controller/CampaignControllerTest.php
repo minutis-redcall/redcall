@@ -3,6 +3,8 @@
 namespace App\Tests\Controller;
 
 use App\Entity\Campaign;
+use App\Entity\Report;
+use App\Entity\ReportRepartition;
 use App\Entity\User;
 use App\Tests\Base\BaseWebTestCase;
 use App\Tests\Fixtures\DataFixtures;
@@ -221,6 +223,26 @@ class CampaignControllerTest extends BaseWebTestCase
         $container = $client->getContainer();
 
         $data = $this->createAccessibleCampaign($container, 'Report Campaign');
+
+        // The report template accesses communication.report.repartitions, so we
+        // need to create a Report entity linked to the communication.
+        $em            = $container->get('doctrine.orm.entity_manager');
+        $communication = $data['campaign']->getCommunications()->first();
+
+        $report = new Report();
+        $report->setType($communication->getType());
+        $report->setCosts([]);
+        $communication->setReport($report);
+
+        $repartition = new ReportRepartition();
+        $repartition->setStructure($data['user']->getStructures()->first());
+        $repartition->setRatio(100.0);
+        $report->addRepartition($repartition);
+
+        $em->persist($report);
+        $em->persist($communication);
+        $em->flush();
+
         $this->login($client, $data['user']);
 
         $crawler = $client->request('GET', sprintf('/campaign/%d/report', $data['campaign']->getId()));

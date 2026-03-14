@@ -79,6 +79,12 @@ class FavoriteBadgeControllerTest extends BaseWebTestCase
 
         $this->login($client, $user);
 
+        // Visit the index page first so the fav_badge_{id} setting is initialized.
+        // Without this, the delete redirect back to index would re-add all public
+        // badges (including the one just removed) via the first-visit initialization.
+        $client->request('GET', '/favorite-badge');
+        $this->assertResponseIsSuccessful();
+
         $csrf = $this->getCsrfToken($client->getContainer());
 
         $client->request('GET', sprintf('/favorite-badge/delete/%s/%d', $csrf, $badge->getId()));
