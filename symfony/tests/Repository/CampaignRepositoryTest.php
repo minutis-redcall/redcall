@@ -269,6 +269,24 @@ class CampaignRepositoryTest extends KernelTestCase
         $this->assertContains($fullCampaign['campaign']->getId(), $ids);
     }
 
+    public function testGetCampaignImpactingMyVolunteersExcludesCrewCampaigns(): void
+    {
+        $fullCampaign = $this->fixtures->createFullCampaign('crewexcl@test.com');
+        // Set communication volunteer to the same volunteer in the user's structure
+        $fullCampaign['communication']->setVolunteer($fullCampaign['volunteer']);
+        $em = self::$container->get('doctrine.orm.entity_manager');
+        $em->persist($fullCampaign['communication']);
+        $em->flush();
+
+        // Campaign created by a volunteer in the user's structures should NOT appear
+        // in "impacting my volunteers" — it belongs in "opened by me or my crew"
+        $results = $this->repository->getCampaignImpactingMyVolunteers($fullCampaign['user'])
+            ->getQuery()->getResult();
+
+        $ids = array_map(function (Campaign $c) { return $c->getId(); }, $results);
+        $this->assertNotContains($fullCampaign['campaign']->getId(), $ids);
+    }
+
     // ── getInactiveCampaignsForUserQueryBuilder ──
 
     public function testGetInactiveCampaignsForUserQueryBuilder(): void

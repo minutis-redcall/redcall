@@ -12,6 +12,7 @@
 /deploy/preprod/google-service-account.json
 /deploy/protec
 /deploying
+/.deploy-backup
 /deploy.ulparis0102
 /symfony/app.yaml
 /symfony/cron.yaml

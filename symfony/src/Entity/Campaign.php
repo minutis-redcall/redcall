@@ -301,11 +301,11 @@ class Campaign
                     'has-answer'         => $message->getAnswers()->count(),
                     'choices'            => $choices,
                     'has-invalid-answer' => [
-                        'raw'  => $invalidAnswer ? $invalidAnswer->getSafeRaw() : null,
+                        'raw'  => $invalidAnswer ? $invalidAnswer->getRaw() : null,
                         'time' => $invalidAnswer ? $invalidAnswer->getReceivedAt()->format('H:i') : null,
                     ],
                     'has-unclear-answer' => [
-                        'raw'  => $unclearAnswer ? $unclearAnswer->getSafeRaw() : null,
+                        'raw'  => $unclearAnswer ? $unclearAnswer->getRaw() : null,
                         'time' => $unclearAnswer ? $unclearAnswer->getReceivedAt()->format('H:i') : null,
                     ],
                 ];

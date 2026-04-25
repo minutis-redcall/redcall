@@ -105,7 +105,15 @@ class CampaignRepository extends BaseRepository
             ->where('u.id = :user')
             ->setParameter('user', $user)
             ->andWhere('s.enabled = true')
-            ->andWhere('c.active = true');
+            ->andWhere('c.active = true')
+            ->andWhere('c.id NOT IN (
+                SELECT c2.id FROM App\Entity\Campaign c2
+                JOIN c2.communications co2
+                JOIN co2.volunteer v2
+                JOIN v2.structures s2
+                JOIN s2.users u2
+                WHERE u2.id = :user AND s2.enabled = true AND c2.active = true
+            )');
     }
 
     /**

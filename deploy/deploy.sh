@@ -10,11 +10,6 @@ ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 SYMFONY_DIR="$ROOT_DIR/symfony"
 VERSIONS_TO_KEEP=3
 
-declare -A GCP_PROJECTS=(
-  [prod]="redcall-prod-260921"
-  [preprod]="redcall-dev"
-)
-
 # ─── Helpers ──────────────────────────────────────────────────────────────────
 
 log()   { echo "==> $*"; }
@@ -34,11 +29,14 @@ if [[ ! -d "$SCRIPT_DIR/$ENV" ]]; then
   exit 1
 fi
 
-GCP_PROJECT="${GCP_PROJECTS[$ENV]:-}"
-if [[ -z "$GCP_PROJECT" ]]; then
-  error "No GCP project configured for environment '$ENV'."
-  exit 1
-fi
+case "$ENV" in
+  prod)    GCP_PROJECT="redcall-prod-260921" ;;
+  preprod) GCP_PROJECT="redcall-dev" ;;
+  *)
+    error "No GCP project configured for environment '$ENV'."
+    exit 1
+    ;;
+esac
 
 GCLOUD_OPTS="--project=$GCP_PROJECT --account=$GCP_ACCOUNT"
 
