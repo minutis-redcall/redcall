@@ -84,6 +84,9 @@
     "symfony/web-server-bundle": "^4"
   },
   "config": {
+    "platform": {
+      "php": "8.3.29"
+    },
     "preferred-install": {
       "*": "dist"
     },

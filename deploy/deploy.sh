@@ -1,91 +1,148 @@
 #!/usr/bin/env bash
 
-# Stop deployment script on errors
-set -ex
+set -euo pipefail
 
-ENV=$1
-ROOTDIR=$(dirname "$0")/../
+# ─── Configuration ────────────────────────────────────────────────────────────
 
-# --- CONFIGURATION GCP ---
 GCP_ACCOUNT="alain.tiemblo@croix-rouge.fr"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+ROOT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+SYMFONY_DIR="$ROOT_DIR/symfony"
+VERSIONS_TO_KEEP=3
 
-if [[ "${ENV}" == "prod" ]]; then
-  GCP_PROJECT_NAME="redcall-prod-260921"
-else
-  GCP_PROJECT_NAME="redcall-dev"
-fi
+declare -A GCP_PROJECTS=(
+  [prod]="redcall-prod-260921"
+  [preprod]="redcall-dev"
+)
 
-GCLOUD_OPTS="--project=${GCP_PROJECT_NAME} --account=${GCP_ACCOUNT}"
-# -------------------------
+# ─── Helpers ──────────────────────────────────────────────────────────────────
 
-if [ ! -d "${ENV}" ]; then
-  echo "'${ENV}' is not a valid environment."
+log()   { echo "==> $*"; }
+error() { echo "ERROR: $*" >&2; }
+
+# ─── Validate arguments ──────────────────────────────────────────────────────
+
+ENV="${1:-}"
+
+if [[ -z "$ENV" ]]; then
+  echo "Usage: $0 <prod|preprod>"
   exit 1
 fi
 
-# gcloud auth login
+if [[ ! -d "$SCRIPT_DIR/$ENV" ]]; then
+  error "'$ENV' is not a valid environment (no $SCRIPT_DIR/$ENV directory)."
+  exit 1
+fi
 
-cd $ROOTDIR
+GCP_PROJECT="${GCP_PROJECTS[$ENV]:-}"
+if [[ -z "$GCP_PROJECT" ]]; then
+  error "No GCP project configured for environment '$ENV'."
+  exit 1
+fi
 
-#php symfony/bin/console phrase:sync --sleep=5 --create
+GCLOUD_OPTS="--project=$GCP_PROJECT --account=$GCP_ACCOUNT"
 
-# Backing up current context
-rm -rf deploying
-mkdir deploying
-cp symfony/.env deploying/
-cp symfony/config/keys/google-service-account.json deploying/
+# ─── Cleanup trap ─────────────────────────────────────────────────────────────
+# Always restore local working files, whether the deploy succeeds or fails.
 
-## Generating Twig templates from MJML code
-php symfony/bin/console generate:mjml symfony/templates/message/email.html.twig.mjml
-php symfony/bin/console generate:mjml symfony/templates/message/image.html.twig.mjml
-php symfony/bin/console --env=prod cache:warmup
+NEEDS_RESTORE=false
 
-# Copying configuration files
-cp deploy/${ENV}/app.yaml symfony/
-cp deploy/${ENV}/dotenv symfony/.env
-cp deploy/${ENV}/google-service-account.json symfony/config/keys
-cp deploy/${ENV}/cron.yaml symfony/
+cleanup() {
+  if [[ "$NEEDS_RESTORE" == true ]]; then
+    log "Restoring local configuration files..."
+    cp "$ROOT_DIR/.deploy-backup/.env" "$SYMFONY_DIR/.env"
+    cp "$ROOT_DIR/.deploy-backup/google-service-account.json" "$SYMFONY_DIR/config/keys/google-service-account.json"
+  fi
+  rm -rf "$ROOT_DIR/.deploy-backup"
+  rm -f "$SYMFONY_DIR/app.yaml" "$SYMFONY_DIR/cron.yaml"
+}
 
-# Deploying
-cd symfony
-source .env >/dev/null
+trap cleanup EXIT
 
-#GREENLIGHT=$(wget -O- ${WEBSITE_URL}/deploy)
-#if [[ "${GREENLIGHT}" != "0" ]]; then
-#  echo "A communication has recently been triggered, cannot deploy before ${GREENLIGHT} seconds"
-#  cd ..
-#  cp deploying/.env symfony/.env
-#  cp deploying/google-service-account.json symfony/config/keys/google-service-account.json
-#  rm -r deploying
-#  rm symfony/app.yaml
-#  rm symfony/cron.yaml
-#  exit 1
-#fi
+# ─── Pre-flight checks ───────────────────────────────────────────────────────
 
-gcloud config set project ${GCP_PROJECT_NAME} ${GCLOUD_OPTS}
-gcloud config set app/cloud_build_timeout 3600 ${GCLOUD_OPTS}
-export NODE_OPTIONS=--openssl-legacy-provider
+log "Checking prerequisites..."
+
+for cmd in gcloud yarn php; do
+  if ! command -v "$cmd" &>/dev/null; then
+    error "'$cmd' is not installed or not in PATH."
+    exit 1
+  fi
+done
+
+for file in "$SCRIPT_DIR/$ENV/app.yaml" "$SCRIPT_DIR/$ENV/dotenv" "$SCRIPT_DIR/$ENV/google-service-account.json" "$SCRIPT_DIR/$ENV/cron.yaml"; do
+  if [[ ! -f "$file" ]]; then
+    error "Missing deploy config: $file"
+    exit 1
+  fi
+done
+
+# ─── Back up local files ─────────────────────────────────────────────────────
+
+log "Backing up local configuration..."
+rm -rf "$ROOT_DIR/.deploy-backup"
+mkdir -p "$ROOT_DIR/.deploy-backup"
+cp "$SYMFONY_DIR/.env" "$ROOT_DIR/.deploy-backup/.env"
+cp "$SYMFONY_DIR/config/keys/google-service-account.json" "$ROOT_DIR/.deploy-backup/google-service-account.json"
+NEEDS_RESTORE=true
+
+# ─── Generate MJML templates ─────────────────────────────────────────────────
+
+log "Generating MJML email templates..."
+php "$SYMFONY_DIR/bin/console" generate:mjml "$SYMFONY_DIR/templates/message/email.html.twig.mjml"
+php "$SYMFONY_DIR/bin/console" generate:mjml "$SYMFONY_DIR/templates/message/image.html.twig.mjml"
+
+# ─── Swap in deploy configuration ────────────────────────────────────────────
+
+log "Copying $ENV configuration into symfony/..."
+cp "$SCRIPT_DIR/$ENV/app.yaml" "$SYMFONY_DIR/"
+cp "$SCRIPT_DIR/$ENV/dotenv" "$SYMFONY_DIR/.env"
+cp "$SCRIPT_DIR/$ENV/google-service-account.json" "$SYMFONY_DIR/config/keys/"
+cp "$SCRIPT_DIR/$ENV/cron.yaml" "$SYMFONY_DIR/"
+
+# ─── Build frontend assets ───────────────────────────────────────────────────
+
+log "Building frontend assets..."
+cd "$SYMFONY_DIR"
 yarn encore production
-gcloud beta app deploy --verbosity debug --quiet --no-cache ${GCLOUD_OPTS}
-cd ..
 
-# Cron jobs
-gcloud app deploy --quiet symfony/cron.yaml ${GCLOUD_OPTS}
+# ─── Deploy to App Engine ─────────────────────────────────────────────────────
 
-# Restoring current context
-cp deploying/.env symfony/.env
-cp deploying/google-service-account.json symfony/config/keys/google-service-account.json
-rm -r deploying
-rm symfony/app.yaml
-rm symfony/cron.yaml
+log "Deploying application to $ENV ($GCP_PROJECT)..."
+gcloud config set project "$GCP_PROJECT" $GCLOUD_OPTS
+gcloud config set app/cloud_build_timeout 3600 $GCLOUD_OPTS
+gcloud beta app deploy --verbosity info --quiet --no-cache $GCLOUD_OPTS
 
-# Removing previous instance(s)
-# In case a rollback may be necessary, we give a 5 mins grace
-if [[ "${ENV}" = "prod" ]]; then
-sleep 300
+log "Deploying cron jobs..."
+gcloud app deploy --quiet "$SYMFONY_DIR/cron.yaml" $GCLOUD_OPTS
+
+cd "$ROOT_DIR"
+
+# ─── Restore local files (also runs via trap on failure) ──────────────────────
+
+log "Restoring local configuration..."
+cp "$ROOT_DIR/.deploy-backup/.env" "$SYMFONY_DIR/.env"
+cp "$ROOT_DIR/.deploy-backup/google-service-account.json" "$SYMFONY_DIR/config/keys/google-service-account.json"
+NEEDS_RESTORE=false
+
+# ─── Clean up old versions ───────────────────────────────────────────────────
+
+log "Cleaning up old App Engine versions (keeping last $VERSIONS_TO_KEEP)..."
+OLD_VERSIONS=$(
+  gcloud app versions list \
+    --service default \
+    --sort-by '~version' \
+    --format 'value(version.id)' \
+    $GCLOUD_OPTS \
+  | sort -rV \
+  | tail -n +$((VERSIONS_TO_KEEP + 1))
+)
+
+if [[ -n "$OLD_VERSIONS" ]]; then
+  log "Deleting old versions: $OLD_VERSIONS"
+  gcloud app versions delete --service default $OLD_VERSIONS -q $GCLOUD_OPTS || true
+else
+  log "No old versions to clean up."
 fi
 
-VERSIONS=$(gcloud app versions list --service default --sort-by '~version' --format 'value(version.id)' ${GCLOUD_OPTS} | sort -r | tail -n +2)
-if [ -n "${VERSIONS}" ]; then
-  gcloud app versions delete --service default $VERSIONS -q ${GCLOUD
-fi
+log "Deploy to $ENV complete."
