@@ -206,5 +206,10 @@ class StructureManager
     {
         return $this->structureRepository->getDescendantStructures($structureIds);
     }
+
+    public function getVolunteerStructureMemberships(array $structureIds) : array
+    {
+        return $this->structureRepository->getVolunteerStructureMemberships($structureIds);
+    }
 }
 

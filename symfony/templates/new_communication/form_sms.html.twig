@@ -5,40 +5,48 @@
 
 {% set max_length_sms = constant('App\\Entity\\Message::MAX_LENGTH_SMS') %}
 
-<div id="message-container">
+<div class="card mb-3">
+    <div class="card-body">
+        <h3 class="mt-0">{{ 'form.communication.fields.message'|trans }}</h3>
 
-    <h3>{{ 'form.communication.fields.message'|trans }}</h3>
+        {{ include('new_communication/templates.html.twig') }}
 
-    {{ include('new_communication/templates.html.twig') }}
+        {{ form_row(form.language) }}
 
-    {{ form_row(form.language) }}
+        <div class="{{ form.shortcut.vars.choices|length == 0 ? 'd-none' : '' }}">
+            {{ form_row(form.shortcut) }}
+        </div>
 
-    <div class="{{ form.shortcut.vars.choices|length == 0 ? 'd-none' : '' }}">
-        {{ form_row(form.shortcut) }}
+        {{ form_label(form.message) }}
+
+        <div id="textarea-wrapper" class="textarea-wrapper mb-3">
+            {{ form_widget(form.message) }}
+        </div>
     </div>
-
-    {{ form_label(form.message) }}
-
-    <div id="textarea-wrapper" class="textarea-wrapper mb-3">
-        {{ form_widget(form.message) }}
-    </div>
-
 </div>
 
 <div class="clearfix"></div>
 
-<h3>{{ 'form.communication.fields.response_title'|trans }}</h3>
+<div class="card mb-3">
+    <div class="card-body">
+        <h3 class="mt-0">{{ 'form.communication.fields.response_title'|trans }}</h3>
 
-{{ include('new_communication/answers.html.twig') }}
+        {{ include('new_communication/answers.html.twig') }}
 
-{{ form_row(form.multipleAnswer) }}
+        {{ form_row(form.multipleAnswer) }}
+    </div>
+</div>
 
-<h3>{{ 'form.communication.fields.preview'|trans }}</h3>
+<div class="card mb-3">
+    <div class="card-body">
+        <h3 class="mt-0">{{ 'form.communication.fields.preview'|trans }}</h3>
 
-{{ include('new_communication/preview.html.twig') }}
+        {{ include('new_communication/preview.html.twig') }}
 
-<div id="sms-length-warning" class="alert alert-danger d-none mt-3 text-center">
-    {{ 'form.communication.errors.reduce_length'|trans|default('Reduce your message length to submit') }}
+        <div id="sms-length-warning" class="alert alert-danger d-none mt-3 text-center">
+            {{ 'form.communication.errors.reduce_length'|trans|default('Reduce your message length to submit') }}
+        </div>
+    </div>
 </div>
 
 {{ include('new_communication/common.html.twig') }}

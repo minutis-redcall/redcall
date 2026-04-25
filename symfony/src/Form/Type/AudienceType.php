@@ -218,7 +218,7 @@ class AudienceType extends AbstractType
             $data[$name] = $element->getData();
         }
         $view->vars['classification'] = $this->audienceManager->classifyAudience($data);
-        $view->vars['badge_counts']   = $this->audienceManager->extractBadgeCounts($data, $publicBadges);
+        $view->vars['badge_counts']   = []; // Deferred to AJAX — loaded via numbers(1) on page load
         $view->vars['init_data']      = $data;
 
         $view->vars['preselection'] = [];
@@ -284,13 +284,30 @@ class AudienceType extends AbstractType
             ];
         }
 
-        // Calculating global counts
+        // Calculating global counts using batch volunteer-structure memberships
+        $allStructureIds = array_unique(array_filter($ids));
+        $memberships     = $this->structureManager->getVolunteerStructureMemberships($allStructureIds);
+
+        // Build structure -> volunteer set map
+        $structureVolunteers = [];
+        foreach ($memberships as $row) {
+            $structureVolunteers[(int) $row['structure_id']][] = (int) $row['volunteer_id'];
+        }
+
         foreach ($hierarchy as $id => $children) {
             if (!$children) {
                 $information[$id]['global_count'] = $information[$id]['local_count'];
             } else {
-                $descendants                      = $this->findDescendants($hierarchy, array_merge([$id], $children));
-                $information[$id]['global_count'] = $this->volunteerManager->getVolunteerGlobalCounts($descendants);
+                $descendants  = $this->findDescendants($hierarchy, array_merge([$id], $children));
+                $volunteerIds = [];
+                foreach ($descendants as $descId) {
+                    if (isset($structureVolunteers[$descId])) {
+                        foreach ($structureVolunteers[$descId] as $vid) {
+                            $volunteerIds[$vid] = true;
+                        }
+                    }
+                }
+                $information[$id]['global_count'] = count($volunteerIds);
             }
         }
         $view->vars['structures_information'] = $information;

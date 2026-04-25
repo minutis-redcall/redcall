@@ -654,6 +654,48 @@ class VolunteerRepository extends BaseRepository
             ->getArrayResult();
     }
 
+    /**
+     * Batch-fetch volunteer attributes and phone status for classification.
+     * Replaces 8 individual filter*() calls with 2 queries.
+     *
+     * @return array{volunteers: array, phones: array}
+     */
+    public function batchClassifyVolunteers(array $volunteerIds) : array
+    {
+        if (empty($volunteerIds)) {
+            return ['volunteers' => [], 'phones' => []];
+        }
+
+        $conn = $this->getEntityManager()->getConnection();
+        $placeholders = implode(',', array_fill(0, count($volunteerIds), '?'));
+        $params       = array_map('intval', $volunteerIds);
+
+        // Query 1: volunteer attributes
+        $volunteers = $conn->fetchAllAssociative("
+            SELECT v.id, v.enabled, v.optout_until, v.minor,
+                   v.email, v.email_optin, v.phone_number_optin
+            FROM volunteer v
+            WHERE v.id IN ({$placeholders})
+        ", $params);
+
+        // Query 2: phone status for all volunteers
+        $phones = $conn->fetchAllAssociative("
+            SELECT pv.volunteer_id,
+                   MAX(p.preferred) AS has_preferred,
+                   MAX(CASE WHEN p.preferred = 1 AND p.mobile = 0 THEN 1 ELSE 0 END) AS preferred_is_landline,
+                   MAX(CASE WHEN p.preferred = 1 AND p.mobile = 1 THEN 1 ELSE 0 END) AS preferred_is_mobile
+            FROM phone_volunteer pv
+            JOIN phone p ON p.id = pv.phone_id
+            WHERE pv.volunteer_id IN ({$placeholders})
+            GROUP BY pv.volunteer_id
+        ", $params);
+
+        return [
+            'volunteers' => $volunteers,
+            'phones'     => $phones,
+        ];
+    }
+
     public function getVolunteerTriggeringPriorities(array $volunteerIds) : array
     {
         $rows = $this->createQueryBuilder('v')

@@ -3,42 +3,50 @@
 
 <hr/>
 
-<div id="message-container">
-    <h3>{{ 'form.communication.fields.message'|trans }}</h3>
+<div class="card mb-3">
+    <div class="card-body">
+        <h3 class="mt-0">{{ 'form.communication.fields.message'|trans }}</h3>
 
-    {{ include('new_communication/templates.html.twig') }}
+        {{ include('new_communication/templates.html.twig') }}
 
-    {{ form_row(form.language) }}
+        {{ form_row(form.language) }}
 
-    {{ form_row(form.subject) }}
+        {{ form_row(form.subject) }}
 
-    {{ form_label(form.message) }}
+        {{ form_label(form.message) }}
 
-    <div id="richtext-wrapper">
-        {{ include('widget/quill.html.twig', {
-            toolbar: 'toolbar-container',
-            editor: 'editor-container',
-            field: form.message,
-        }) }}
+        <div id="richtext-wrapper">
+            {{ include('widget/quill.html.twig', {
+                toolbar: 'toolbar-container',
+                editor: 'editor-container',
+                field: form.message,
+            }) }}
 
-        <div class="d-none">
-            {{ form_widget(form.message) }}
+            <div class="d-none">
+                {{ form_widget(form.message) }}
+            </div>
         </div>
     </div>
-
 </div>
 
 <div class="clearfix"></div>
 
-<h3>{{ 'form.communication.fields.response_title'|trans }}</h3>
+<div class="card mb-3">
+    <div class="card-body">
+        <h3 class="mt-0">{{ 'form.communication.fields.response_title'|trans }}</h3>
 
-{{ include('new_communication/answers.html.twig') }}
+        {{ include('new_communication/answers.html.twig') }}
 
-{{ form_row(form.multipleAnswer) }}
+        {{ form_row(form.multipleAnswer) }}
+    </div>
+</div>
 
-<h3>{{ 'form.communication.fields.preview'|trans }}</h3>
+<div class="card mb-3">
+    <div class="card-body">
+        <h3 class="mt-0">{{ 'form.communication.fields.preview'|trans }}</h3>
 
-{{ include('new_communication/preview.html.twig') }}
+        {{ include('new_communication/preview.html.twig') }}
+    </div>
+</div>
 
 {{ include('new_communication/common.html.twig') }}
-

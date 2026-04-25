@@ -39,13 +39,38 @@
         </div>
     {% endif %}
 
-    {# Group filter chips #}
-    <a href="#"
-       id="link-filter-group-{{ communication.id }}"
-       class="sd-filter-chip"
-       onclick="$('#filter-group-modal').modal(); return false;">
-        {{ 'campaign_status.filter.by_group'|trans }}
-    </a>
+    {# Group filter dropdown #}
+    <div class="dropdown sd-filter-dropdown d-inline-block">
+        <a href="#"
+           id="link-filter-group-{{ communication.id }}"
+           class="sd-filter-chip dropdown-toggle"
+           data-toggle="dropdown"
+           aria-haspopup="true"
+           aria-expanded="false">
+            {{ 'campaign_status.filter.by_group'|trans }}
+        </a>
+        <div class="dropdown-menu" onclick="event.stopPropagation();">
+            <small class="text-muted d-block px-3 mb-1">{{ 'campaign_status.groups.rename_help'|trans }}</small>
+            <small class="text-info d-block px-3 mb-2 font-italic">
+                &#x2139;&#xFE0F; {{ 'campaign_status.groups.filter_instruction'|trans }}
+            </small>
+            {% for colorName, colorCode in groupColors %}
+                {% set groupIndex = loop.index0 %}
+                <div class="d-flex align-items-center px-3 py-1">
+                    <div class="group-color-square filter-group mr-2"
+                         data-index="{{ groupIndex }}"
+                         id="group-filter-{{ groupIndex }}"
+                         style="width: 20px; height: 20px; background-color: #{{ colorCode }}; cursor: pointer; border: 1.5px solid #dee2e6; border-radius: 3px; flex-shrink: 0;"
+                         title="{{ 'campaign_status.groups.filter_help'|trans }}"></div>
+                    <input type="text"
+                           class="form-control form-control-sm group-name-input"
+                           data-index="{{ groupIndex }}"
+                           placeholder="{{ 'campaign_status.groups.default'|trans }} {{ loop.index }}"
+                           value="{{ campaign.groupNames[groupIndex]|default('') }}">
+                </div>
+            {% endfor %}
+        </div>
+    </div>
 
     {# Response filter dropdown #}
     <div class="dropdown sd-filter-dropdown d-inline-block">

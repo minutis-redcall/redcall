@@ -40,18 +40,13 @@
             <p>{{ 'audience.audience_help'|trans }}</p>
 
 
-            <div id="accordion">
-                <div class="card">
-                    <div class="card-header" id="accordion-filters-header">
-                        <h5 class="mb-0">
-                            <a href="javascript:void(0);" class="btn btn-link" data-toggle="collapse" data-target="#accordion-filters-body" aria-expanded="true" aria-controls="accordion-filters-body">
-                                {{ 'audience.accordion.filters'|trans }}
-                            </a>
-                        </h5>
-                    </div>
-
-                    <div id="accordion-filters-body" class="collapse show" aria-labelledby="accordion-filters-header" data-parent="#accordion">
-                        <div class="card-body">
+            <ul class="nav nav-tabs" id="audience-tabs" role="tablist">
+                <li class="active"><a data-toggle="tab" href="#tab-filters" role="tab">{{ 'audience.accordion.filters'|trans }}</a></li>
+                <li><a data-toggle="tab" href="#tab-lists" role="tab">{{ 'audience.accordion.lists'|trans }}</a></li>
+                <li><a data-toggle="tab" href="#tab-search" role="tab">{{ 'audience.accordion.search'|trans }}</a></li>
+            </ul>
+            <div class="tab-content" style="padding-top: 1rem;">
+                <div id="tab-filters" class="tab-pane active" role="tabpanel">
                             {# -------------------------------------------------------------------------------- #}
                             {# Structure tree #}
                             {# -------------------------------------------------------------------------------- #}
@@ -162,7 +157,7 @@
                                 </label>
                                 <label for="badges-all">
                                     {{ 'audience.select_all_badges'|trans }}
-                                    (<span id="badge-count-0" class="badge-count">{{ badge_counts[0] }}</span>)
+                                    (<span id="badge-count-0" class="badge-count">{{ badge_counts[0]|default('<span class="rc-spinner"></span>')|raw }}</span>)
                                 </label>
                             </div>
 
@@ -189,7 +184,7 @@
                                         </label>
                                         <label for="badge-{{ badge.id }}" class="badge-tick {% if init_data.badges_all %}disabled{% endif %}">
                                             {{ macros.badge(badge) }}
-                                            (<span id="badge-count-{{ badge.id }}" class="badge-count">{{ badge_counts[badge.id] }}</span>)
+                                            (<span id="badge-count-{{ badge.id }}" class="badge-count">{{ badge_counts[badge.id]|default('<span class="rc-spinner"></span>')|raw }}</span>)
                                         </label>
 
                                     </div>
@@ -240,19 +235,8 @@
                                 }
                             }) }}
 
-                        </div>
-                    </div>
                 </div>
-                <div class="card">
-                    <div class="card-header" id="accordion-lists-header">
-                        <h5 class="mb-0">
-                            <a href="javascript:void(0);" class="btn btn-link collapsed" data-toggle="collapse" data-target="#accordion-lists-body" aria-expanded="false" aria-controls="accordion-lists-body">
-                                {{ 'audience.accordion.lists'|trans }}
-                            </a>
-                        </h5>
-                    </div>
-                    <div id="accordion-lists-body" class="collapse" aria-labelledby="accordion-lists-header" data-parent="#accordion">
-                        <div class="card-body">
+                <div id="tab-lists" class="tab-pane" role="tabpanel">
                             {# -------------------------------------------------------------------------------- #}
                             {# Volunteer lists #}
                             {# -------------------------------------------------------------------------------- #}
@@ -313,19 +297,8 @@
 
                             {% endif %}
 
-                        </div>
-                    </div>
                 </div>
-                <div class="card">
-                    <div class="card-header" id="accordion-search-header">
-                        <h5 class="mb-0">
-                            <a href="javascript:void(0);" class="btn btn-link collapsed" data-toggle="collapse" data-target="#accordion-search-body" aria-expanded="false" aria-controls="accordion-search-body">
-                                {{ 'audience.accordion.search'|trans }}
-                            </a>
-                        </h5>
-                    </div>
-                    <div id="accordion-search-body" class="collapse" aria-labelledby="accordion-search-header" data-parent="#accordion">
-                        <div class="card-body">
+                <div id="tab-search" class="tab-pane" role="tabpanel">
                             {# -------------------------------------------------------------------------------- #}
                             {# Volunteer searach #}
                             {# -------------------------------------------------------------------------------- #}
@@ -353,8 +326,6 @@
                                 }
                             }) }}
 
-                        </div>
-                    </div>
                 </div>
             </div>
 
@@ -420,7 +391,7 @@
         {# Summary #}
         {# -------------------------------------------------------------------------------- #}
 
-        <div id="classification">
+        <div id="classification" class="classification-bar">
 
             {{ include('audience/classification.html.twig', {
                 classification: classification,
@@ -643,17 +614,21 @@
             }
         });
 
-        $('.structure-children')
-            .on('show.bs.collapse', function () {
-                var current = $(this).data('current');
-                $('#arrow-open-' + current).addClass('d-none');
-                $('#arrow-close-' + current).removeClass('d-none');
-            })
-            .on('hide.bs.collapse', function () {
-                var current = $(this).data('current');
-                $('#arrow-open-' + current).removeClass('d-none');
-                $('#arrow-close-' + current).addClass('d-none');
-            });
+        {# Structure tree expand/collapse arrows #}
+        $('body').on('show.bs.collapse', '.structure-children', function () {
+            var current = $(this).data('current');
+            $('#arrow-open-' + current).addClass('d-none');
+            $('#arrow-close-' + current).removeClass('d-none');
+        }).on('hide.bs.collapse', '.structure-children', function () {
+            var current = $(this).data('current');
+            $('#arrow-open-' + current).removeClass('d-none');
+            $('#arrow-close-' + current).addClass('d-none');
+        });
+
+        {# Load badge counts via AJAX on page ready (deferred from server-side) #}
+        $(function () {
+            numbers(1);
+        });
 
     </script>
 

@@ -281,22 +281,55 @@ class StructureRepository extends BaseRepository
 
     public function getDescendantStructures(array $structureIds) : array
     {
-        for ($i = 0; $i < 5; $i++) {
-            $structureIds = array_merge(
-                $structureIds,
-                array_column($this
-                    ->createQueryBuilder('s')
-                    ->select('s.id')
-                    ->where('s.enabled = true')
-                    ->join('s.parentStructure', 'p')
-                    ->andWhere('p.id IN (:ids)')
-                    ->setParameter('ids', $structureIds, Connection::PARAM_INT_ARRAY)
-                    ->getQuery()
-                    ->getArrayResult(), 'id')
-            );
+        if (empty($structureIds)) {
+            return [];
         }
 
-        return $structureIds;
+        $rows = $this->createQueryBuilder('s')
+            ->select('s.id AS s0, c1.id AS s1, c2.id AS s2, c3.id AS s3, c4.id AS s4, c5.id AS s5')
+            ->leftJoin('s.childrenStructures', 'c1', 'WITH', 'c1.enabled = true')
+            ->leftJoin('c1.childrenStructures', 'c2', 'WITH', 'c2.enabled = true')
+            ->leftJoin('c2.childrenStructures', 'c3', 'WITH', 'c3.enabled = true')
+            ->leftJoin('c3.childrenStructures', 'c4', 'WITH', 'c4.enabled = true')
+            ->leftJoin('c4.childrenStructures', 'c5', 'WITH', 'c5.enabled = true')
+            ->where('s.id IN (:ids)')
+            ->andWhere('s.enabled = true')
+            ->setParameter('ids', $structureIds, Connection::PARAM_INT_ARRAY)
+            ->getQuery()
+            ->getArrayResult();
+
+        $allIds = $structureIds;
+        foreach ($rows as $row) {
+            foreach (['s0', 's1', 's2', 's3', 's4', 's5'] as $col) {
+                if ($row[$col]) {
+                    $allIds[] = $row[$col];
+                }
+            }
+        }
+
+        return array_values(array_unique($allIds));
+    }
+
+    /**
+     * Fetch all (volunteer_id, structure_id) pairs for enabled volunteers in given structures.
+     * Used to compute global counts in PHP instead of N separate COUNT queries.
+     */
+    public function getVolunteerStructureMemberships(array $structureIds) : array
+    {
+        if (empty($structureIds)) {
+            return [];
+        }
+
+        $conn         = $this->getEntityManager()->getConnection();
+        $placeholders = implode(',', array_fill(0, count($structureIds), '?'));
+        $params       = array_map('intval', $structureIds);
+
+        return $conn->fetchAllAssociative("
+            SELECT vs.volunteer_id, vs.structure_id
+            FROM volunteer_structure vs
+            JOIN volunteer v ON v.id = vs.volunteer_id AND v.enabled = 1
+            WHERE vs.structure_id IN ({$placeholders})
+        ", $params);
     }
 
     public function searchAllForVolunteerQueryBuilder(Volunteer $volunteer,

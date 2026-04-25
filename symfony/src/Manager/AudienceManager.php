@@ -89,18 +89,69 @@ class AudienceManager
 
         $audience = $this->extractAudience($data);
 
-        $classification->setDisabled(
-            $this->volunteerManager->filterDisabled($audience)
-        );
+        // Batch-fetch volunteer attributes + phone status in 2 queries (instead of 8-10)
+        $batchData    = $this->volunteerManager->batchClassifyVolunteers($audience);
+        $now          = new \DateTime();
+        $disabled     = [];
+        $optoutUntil  = [];
+        $minors       = [];
+        $emailMissing = [];
+        $emailOptout  = [];
+        $phoneOptout  = [];
 
-        $classification->setOptoutUntil(
-            $this->volunteerManager->filterOptoutUntil($audience)
-        );
+        // Index volunteer data by ID
+        foreach ($batchData['volunteers'] as $vol) {
+            $id = (int) $vol['id'];
+            if (!$vol['enabled']) {
+                $disabled[] = $id;
+            }
+            if ($vol['enabled'] && $vol['optout_until'] && new \DateTime($vol['optout_until']) > $now) {
+                $optoutUntil[] = $id;
+            }
+            if ($vol['minor']) {
+                $minors[] = $id;
+            }
+            if ($vol['email'] === null && $vol['email_optin']) {
+                $emailMissing[] = $id;
+            }
+            if ($vol['email'] !== null && !$vol['email_optin']) {
+                $emailOptout[] = $id;
+            }
+            if (!$vol['phone_number_optin']) {
+                $phoneOptout[] = $id;
+            }
+        }
+
+        // Index phone data by volunteer ID
+        $phoneByVolunteer = [];
+        foreach ($batchData['phones'] as $phone) {
+            $phoneByVolunteer[(int) $phone['volunteer_id']] = $phone;
+        }
+
+        // Phone classification
+        $phoneMissing  = [];
+        $phoneLandline = [];
+
+        foreach ($batchData['volunteers'] as $vol) {
+            $id = (int) $vol['id'];
+            if (!$vol['phone_number_optin']) {
+                continue; // Already in phoneOptout
+            }
+
+            $phoneInfo = $phoneByVolunteer[$id] ?? null;
+
+            if (!$phoneInfo) {
+                $phoneMissing[] = $id;
+            } elseif ($phoneInfo['preferred_is_landline']) {
+                $phoneLandline[] = $id;
+            }
+        }
+
+        $classification->setDisabled($disabled);
+        $classification->setOptoutUntil($optoutUntil);
 
         if (!$data['allow_minors']) {
-            $classification->setExcludedMinors(
-                $this->volunteerManager->filterMinors($audience)
-            );
+            $classification->setExcludedMinors($minors);
         }
 
         if (!$this->security->isGranted('ROLE_ADMIN')) {
@@ -125,26 +176,13 @@ class AudienceManager
 
         $classification->setReachable($audience);
 
-        // Adding more contextual information in order to help fix contact info
-        $classification->setPhoneLandline(
-            $this->volunteerManager->filterPhoneLandline($audience)
-        );
-
-        $classification->setPhoneMissing(
-            $this->volunteerManager->filterPhoneMissing($audience)
-        );
-
-        $classification->setPhoneOptout(
-            $this->volunteerManager->filterPhoneOptout($audience)
-        );
-
-        $classification->setEmailMissing(
-            $this->volunteerManager->filterEmailMissing($audience)
-        );
-
-        $classification->setEmailOptout(
-            $this->volunteerManager->filterEmailOptout($audience)
-        );
+        // Contextual info for reachable volunteers only
+        $reachableSet = array_flip($audience);
+        $classification->setPhoneLandline(array_values(array_filter($phoneLandline, function ($id) use ($reachableSet) { return isset($reachableSet[$id]); })));
+        $classification->setPhoneMissing(array_values(array_filter($phoneMissing, function ($id) use ($reachableSet) { return isset($reachableSet[$id]); })));
+        $classification->setPhoneOptout(array_values(array_filter($phoneOptout, function ($id) use ($reachableSet) { return isset($reachableSet[$id]); })));
+        $classification->setEmailMissing(array_values(array_filter($emailMissing, function ($id) use ($reachableSet) { return isset($reachableSet[$id]); })));
+        $classification->setEmailOptout(array_values(array_filter($emailOptout, function ($id) use ($reachableSet) { return isset($reachableSet[$id]); })));
 
         return $classification;
     }
@@ -215,7 +253,12 @@ class AudienceManager
         }, $badgeList);
 
         if (!empty($badgeIds)) {
-            $counts += $this->volunteerManager->getVolunteerCountsPerBadgeInStructures($structureIds, $badgeIds);
+            $batchCounts = $this->volunteerManager->getVolunteerCountsPerBadgeInStructures($structureIds, $badgeIds);
+
+            // Ensure every badge ID is present (0 if no structures selected or no volunteers match)
+            foreach ($badgeIds as $id) {
+                $counts[$id] = $batchCounts[$id] ?? 0;
+            }
         }
 
         return $counts;

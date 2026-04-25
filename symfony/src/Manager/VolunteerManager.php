@@ -250,6 +250,11 @@ class VolunteerManager
         return $this->volunteerRepository->getVolunteerGlobalCounts($structureIds);
     }
 
+    public function batchClassifyVolunteers(array $volunteerIds) : array
+    {
+        return $this->volunteerRepository->batchClassifyVolunteers($volunteerIds);
+    }
+
     public function filterInvalidExternalIds(array $externalIds) : array
     {
         return $this->volunteerRepository->filterInvalidExternalIds(

@@ -5,38 +5,48 @@
 
 {% set max_length_call = constant('App\\Entity\\Message::MAX_LENGTH_CALL') %}
 
-<div id="message-container">
-    <h3>{{ 'form.communication.fields.message'|trans }}</h3>
+<div class="card mb-3">
+    <div class="card-body">
+        <h3 class="mt-0">{{ 'form.communication.fields.message'|trans }}</h3>
 
-    {{ include('new_communication/templates.html.twig') }}
+        {{ include('new_communication/templates.html.twig') }}
 
-    {{ form_row(form.language) }}
+        {{ form_row(form.language) }}
 
-    <div id="textarea-wrapper" class="textarea-wrapper">
-        {{ form_widget(form.message) }}
+        <div id="textarea-wrapper" class="textarea-wrapper">
+            {{ form_widget(form.message) }}
 
-        <div class="message-length float-right">
-            <span id="message-size">0</span>
-            /
-            <span id="message-max">{{ max_length_call }}</span>
+            <div class="message-length float-right">
+                <span id="message-size">0</span>
+                /
+                <span id="message-max">{{ max_length_call }}</span>
+            </div>
         </div>
     </div>
 </div>
 
 <div class="clearfix"></div>
 
-<h3>{{ 'form.communication.fields.response_title'|trans }}</h3>
+<div class="card mb-3">
+    <div class="card-body">
+        <h3 class="mt-0">{{ 'form.communication.fields.response_title'|trans }}</h3>
 
-{{ include('new_communication/answers.html.twig') }}
-
-<h3>{{ 'form.communication.fields.preview'|trans }}</h3>
-
-<div id="message-preview-audio">
-    <a href="#" id="message-play" class="btn btn-sm btn-secondary">{{ 'base.play'|trans }}</a>
-    <div id="message-player" class="d-none"></div>
+        {{ include('new_communication/answers.html.twig') }}
+    </div>
 </div>
 
-{{ include('new_communication/preview.html.twig') }}
+<div class="card mb-3">
+    <div class="card-body">
+        <h3 class="mt-0">{{ 'form.communication.fields.preview'|trans }}</h3>
+
+        <div id="message-preview-audio">
+            <a href="#" id="message-play" class="btn btn-sm btn-secondary">{{ 'base.play'|trans }}</a>
+            <div id="message-player" class="d-none"></div>
+        </div>
+
+        {{ include('new_communication/preview.html.twig') }}
+    </div>
+</div>
 
 {{ include('new_communication/common.html.twig') }}
 

@@ -529,4 +529,138 @@ class AudienceManagerTest extends KernelTestCase
         // At least 1 volunteer in the structure
         $this->assertGreaterThanOrEqual(1, $counts[0]);
     }
+
+    public function testExtractBadgeCountsAlwaysIncludesAllBadgeKeys()
+    {
+        $badge1 = $this->fixtures->createBadge('BADGE A', 'BADGE-KEYS-001');
+        $badge2 = $this->fixtures->createBadge('BADGE B', 'BADGE-KEYS-002');
+        $badge3 = $this->fixtures->createBadge('BADGE C', 'BADGE-KEYS-003');
+
+        $structure = $this->fixtures->createStructure('KEYS STRUCT', 'EXT-KEYS-001');
+
+        $data = [
+            'structures_local'  => [$structure->getId()],
+            'structures_global' => [],
+        ];
+
+        $counts = $this->audienceManager->extractBadgeCounts($data, [$badge1, $badge2, $badge3]);
+
+        // Every badge ID must be present even with 0 volunteers
+        $this->assertArrayHasKey(0, $counts);
+        $this->assertArrayHasKey($badge1->getId(), $counts);
+        $this->assertArrayHasKey($badge2->getId(), $counts);
+        $this->assertArrayHasKey($badge3->getId(), $counts);
+    }
+
+    public function testExtractBadgeCountsWithEmptyStructuresStillIncludesBadgeKeys()
+    {
+        $badge1 = $this->fixtures->createBadge('BADGE EMPTY1', 'BADGE-EMPTY-001');
+        $badge2 = $this->fixtures->createBadge('BADGE EMPTY2', 'BADGE-EMPTY-002');
+
+        // No structures selected at all
+        $data = [
+            'structures_local'  => [],
+            'structures_global' => [],
+        ];
+
+        $counts = $this->audienceManager->extractBadgeCounts($data, [$badge1, $badge2]);
+
+        // All keys present with 0 counts
+        $this->assertArrayHasKey(0, $counts);
+        $this->assertEquals(0, $counts[0]);
+        $this->assertArrayHasKey($badge1->getId(), $counts);
+        $this->assertEquals(0, $counts[$badge1->getId()]);
+        $this->assertArrayHasKey($badge2->getId(), $counts);
+        $this->assertEquals(0, $counts[$badge2->getId()]);
+    }
+
+    public function testExtractBadgeCountsMatchesVolunteerWithBadge()
+    {
+        $structure = $this->fixtures->createStructure('MATCH STRUCT', 'EXT-MATCH-001');
+        $badge     = $this->fixtures->createBadge('MATCH BADGE', 'BADGE-MATCH-001');
+
+        // Create a volunteer with the badge in the structure
+        $vol = $this->fixtures->createStandaloneVolunteer('VOL-MATCH-001', 'match1@test.com');
+        $vol->addBadge($badge);
+        $this->fixtures->assignVolunteerToStructure($vol, $structure);
+
+        // Create a volunteer WITHOUT the badge in the same structure
+        $vol2 = $this->fixtures->createStandaloneVolunteer('VOL-MATCH-002', 'match2@test.com');
+        $this->fixtures->assignVolunteerToStructure($vol2, $structure);
+
+        $data = [
+            'structures_local'  => [$structure->getId()],
+            'structures_global' => [],
+        ];
+
+        $counts = $this->audienceManager->extractBadgeCounts($data, [$badge]);
+
+        // Total should count both volunteers
+        $this->assertEquals(2, $counts[0]);
+
+        // Badge count should only count the volunteer with the badge
+        $this->assertEquals(1, $counts[$badge->getId()]);
+    }
+
+    public function testExtractBadgeCountsWithMultipleBadges()
+    {
+        $structure = $this->fixtures->createStructure('MULTI STRUCT', 'EXT-MULTI-001');
+        $badgeA    = $this->fixtures->createBadge('MULTI A', 'BADGE-MULTI-A');
+        $badgeB    = $this->fixtures->createBadge('MULTI B', 'BADGE-MULTI-B');
+
+        // Volunteer 1 has badge A only
+        $vol1 = $this->fixtures->createStandaloneVolunteer('VOL-MULTI-001', 'multi1@test.com');
+        $vol1->addBadge($badgeA);
+        $this->fixtures->assignVolunteerToStructure($vol1, $structure);
+
+        // Volunteer 2 has badge B only
+        $vol2 = $this->fixtures->createStandaloneVolunteer('VOL-MULTI-002', 'multi2@test.com');
+        $vol2->addBadge($badgeB);
+        $this->fixtures->assignVolunteerToStructure($vol2, $structure);
+
+        // Volunteer 3 has both badges
+        $vol3 = $this->fixtures->createStandaloneVolunteer('VOL-MULTI-003', 'multi3@test.com');
+        $vol3->addBadge($badgeA);
+        $vol3->addBadge($badgeB);
+        $this->fixtures->assignVolunteerToStructure($vol3, $structure);
+
+        $data = [
+            'structures_local'  => [$structure->getId()],
+            'structures_global' => [],
+        ];
+
+        $counts = $this->audienceManager->extractBadgeCounts($data, [$badgeA, $badgeB]);
+
+        $this->assertEquals(3, $counts[0]);
+        $this->assertEquals(2, $counts[$badgeA->getId()]); // vol1 + vol3
+        $this->assertEquals(2, $counts[$badgeB->getId()]); // vol2 + vol3
+    }
+
+    public function testExtractBadgeCountsDoesNotCountDisabledVolunteers()
+    {
+        $structure = $this->fixtures->createStructure('DIS STRUCT', 'EXT-DIS-001');
+        $badge     = $this->fixtures->createBadge('DIS BADGE', 'BADGE-DIS-001');
+
+        // Enabled volunteer with badge
+        $vol1 = $this->fixtures->createStandaloneVolunteer('VOL-DIS-001', 'dis1@test.com');
+        $vol1->addBadge($badge);
+        $this->fixtures->assignVolunteerToStructure($vol1, $structure);
+
+        // Disabled volunteer with same badge
+        $vol2 = $this->fixtures->createStandaloneVolunteer('VOL-DIS-002', 'dis2@test.com');
+        $vol2->addBadge($badge);
+        $vol2->setEnabled(false);
+        $this->em->persist($vol2);
+        $this->fixtures->assignVolunteerToStructure($vol2, $structure);
+
+        $data = [
+            'structures_local'  => [$structure->getId()],
+            'structures_global' => [],
+        ];
+
+        $counts = $this->audienceManager->extractBadgeCounts($data, [$badge]);
+
+        // Only the enabled volunteer should be counted
+        $this->assertEquals(1, $counts[$badge->getId()]);
+    }
 }
