@@ -210,9 +210,12 @@ class AudienceManager
             0 => $this->volunteerManager->getVolunteerCountInStructures($structureIds),
         ];
 
-        foreach ($badgeList as $badge) {
-            /** @var Badge $badge */
-            $counts[$badge->getId()] = $this->volunteerManager->getVolunteerCountInStructuresHavingBadges($structureIds, [$badge->getId()]);
+        $badgeIds = array_map(function (Badge $badge) {
+            return $badge->getId();
+        }, $badgeList);
+
+        if (!empty($badgeIds)) {
+            $counts += $this->volunteerManager->getVolunteerCountsPerBadgeInStructures($structureIds, $badgeIds);
         }
 
         return $counts;

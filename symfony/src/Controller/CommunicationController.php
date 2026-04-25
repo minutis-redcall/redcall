@@ -200,17 +200,19 @@ class CommunicationController extends BaseController
         // Always close the session to prevent against session locks
         $this->get('session')->save();
 
-        $secs = 0;
+        $campaignId = $campaign->getId();
+        $secs       = 0;
+
         while ($secs < 10) {
-            $hash = $this->campaignManager->getHash($campaign->getId());
+            $hash = $this->campaignManager->getHash($campaignId);
 
             if ($request->get('hash') !== $hash) {
-                $this->campaignManager->refresh($campaign);
+                $freshCampaign = $this->campaignManager->refresh($campaign);
 
                 return new JsonResponse(
-                    array_merge($campaign->getCampaignStatus($translator), [
+                    array_merge($freshCampaign->getCampaignStatus($translator), [
                         'hash'            => $hash,
-                        'volunteerGroups' => $this->volunteerGroupRepository->getVolunteerGroups($campaign->getId()),
+                        'volunteerGroups' => $this->volunteerGroupRepository->getVolunteerGroups($campaignId),
                     ])
                 );
             }

@@ -4,7 +4,9 @@ namespace App\Repository;
 
 use App\Base\BaseRepository;
 use App\Entity\Campaign;
+use App\Entity\Message;
 use Bundles\PasswordLoginBundle\Entity\AbstractUser;
+use Doctrine\ORM\Query;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -24,20 +26,55 @@ class CampaignRepository extends BaseRepository
     }
 
     /**
-     * @param int $campaignId
+     * Fetches a campaign with all related data (communications, choices,
+     * messages, answers, volunteers) using HINT_REFRESH to overwrite the
+     * identity map without $em->clear().
      *
-     * @return Campaign|null
+     * Uses two queries to avoid Cartesian product explosion:
+     * 1. Campaign + Communications + Choices (small)
+     * 2. Messages + Answers + Answer-choices + Volunteers (populates identity map)
      */
-    public function findOneByIdNoCache(int $campaignId)
+    public function findCampaignWithFreshData(int $campaignId) : ?Campaign
     {
-        $this->_em->clear();
+        // Query 1: Campaign + Communications + Choices
+        $campaign = $this->createQueryBuilder('c')
+                        ->addSelect('co', 'ch')
+                        ->leftJoin('c.communications', 'co')
+                        ->leftJoin('co.choices', 'ch')
+                        ->where('c.id = :id')
+                        ->setParameter('id', $campaignId)
+                        ->getQuery()
+                        ->disableResultCache()
+                        ->setHint(Query::HINT_REFRESH, true)
+                        ->getOneOrNullResult();
 
-        return $this->createQueryBuilder('c')
-                    ->where('c.id = :id')
-                    ->setParameter('id', $campaignId)
-                    ->getQuery()
-                    ->disableResultCache()
-                    ->getOneOrNullResult();
+        if (!$campaign) {
+            return null;
+        }
+
+        // Query 2: Pre-load all messages with their answers, answer-choices, and volunteers
+        // This populates the identity map so getCampaignStatus() won't trigger lazy-loading
+        $communicationIds = [];
+        foreach ($campaign->getCommunications() as $communication) {
+            $communicationIds[] = $communication->getId();
+        }
+
+        if ($communicationIds) {
+            $this->_em->createQueryBuilder()
+                ->select('m', 'a', 'ach', 'v')
+                ->from(Message::class, 'm')
+                ->leftJoin('m.answers', 'a')
+                ->leftJoin('a.choices', 'ach')
+                ->leftJoin('m.volunteer', 'v')
+                ->where('m.communication IN (:communicationIds)')
+                ->setParameter('communicationIds', $communicationIds)
+                ->getQuery()
+                ->disableResultCache()
+                ->setHint(Query::HINT_REFRESH, true)
+                ->getResult();
+        }
+
+        return $campaign;
     }
 
     public function getCampaignsOpenedByMeOrMyCrew(AbstractUser $user) : QueryBuilder
@@ -138,6 +175,7 @@ class CampaignRepository extends BaseRepository
     {
         $campaign->setNotes($notes);
         $campaign->setNotesUpdatedAt(new \DateTime());
+        $campaign->touchActivity();
 
         $this->save($campaign);
     }
@@ -182,6 +220,17 @@ class CampaignRepository extends BaseRepository
              ->setParameter('now', (new \DateTime())->format('Y-m-d H:i:s'))
              ->getQuery()
              ->execute();
+    }
+
+    public function getHashData(int $campaignId) : ?array
+    {
+        return $this->createQueryBuilder('c')
+                    ->select('c.lastActivityAt, c.notesUpdatedAt')
+                    ->where('c.id = :id')
+                    ->setParameter('id', $campaignId)
+                    ->getQuery()
+                    ->disableResultCache()
+                    ->getOneOrNullResult();
     }
 
     public function getNoteUpdateTimestamp(int $campaignId) : int

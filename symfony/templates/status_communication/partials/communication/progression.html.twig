@@ -1,32 +1,36 @@
 {# -------------------------------------------------------------------------------- #}
-{# Progression #}
+{# Progress bar with stats                                                           #}
 {# -------------------------------------------------------------------------------- #}
-<div class="progress position-relative">
-    <div id="progress-bar-{{ communication.id }}"
-         class="progress-bar {% if progress[communication.id].sent >= progress[communication.id].reachable %}bg-success{% endif %}"
-         role="progressbar"
-         style="width: {{ progress[communication.id].percent }}%;"
-         aria-valuenow="{{ progress[communication.id].percent }}"
-         aria-valuemin="0"
-         aria-valuemax="100"></div>
-    <span id="progress-text-{{ communication.id }}"
-          class="justify-content-center d-flex position-absolute w-100 text-white">
-        {% if progress[communication.id].sent >= progress[communication.id].reachable %}
-            {{ 'campaign_status.finish'|trans({
-                '%type%': ('message.' ~ communication.type ~ '.type')|trans,
-                '%sent%': progress[communication.id].sent,
-                '%replies%': progress[communication.id].replies,
-                '%replies_pct%': progress[communication.id]['replies-percent'],
-            }) }}
-        {% else %}
-            {{ 'campaign_status.progress'|trans({
-                '%type%': ('message.' ~ communication.type ~ '.type')|trans,
-                '%sent%': progress[communication.id].sent,
-                '%total%': progress[communication.id].total,
-                '%progress%': progress[communication.id].percent
-            }) }}
-        {% endif %}
-    </span>
+<div class="sd-progress-wrap">
+    <div class="sd-progress-stats">
+        <span id="progress-text-{{ communication.id }}">
+            {% if progress[communication.id].sent >= progress[communication.id].reachable %}
+                {{ 'campaign_status.finish'|trans({
+                    '%type%': ('message.' ~ communication.type ~ '.type')|trans,
+                    '%sent%': progress[communication.id].sent,
+                    '%replies%': progress[communication.id].replies,
+                    '%replies_pct%': progress[communication.id]['replies-percent'],
+                }) }}
+            {% else %}
+                {{ 'campaign_status.progress'|trans({
+                    '%type%': ('message.' ~ communication.type ~ '.type')|trans,
+                    '%sent%': progress[communication.id].sent,
+                    '%total%': progress[communication.id].total,
+                    '%progress%': progress[communication.id].percent,
+                }) }}
+            {% endif %}
+        </span>
+        <span><strong>{{ progress[communication.id].percent }}%</strong></span>
+    </div>
+    <div class="progress position-relative">
+        <div id="progress-bar-{{ communication.id }}"
+             class="progress-bar {% if progress[communication.id].sent >= progress[communication.id].reachable %}bg-success{% endif %}"
+             role="progressbar"
+             style="width: {{ progress[communication.id].percent }}%;"
+             aria-valuenow="{{ progress[communication.id].percent }}"
+             aria-valuemin="0"
+             aria-valuemax="100"></div>
+    </div>
     <div id="progress-trans-key-{{ communication.id }}"
          class="d-none">{{ 'campaign_status.progress'|trans }}</div>
 </div>

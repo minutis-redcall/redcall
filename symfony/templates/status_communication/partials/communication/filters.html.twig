@@ -1,26 +1,148 @@
+{% import 'macros.html.twig' as macros %}
+
 {# -------------------------------------------------------------------------------- #}
-{# Filter by responses or skills... #}
+{# Inline filter bar (replaces modal-based filters)                                  #}
 {# -------------------------------------------------------------------------------- #}
-<div class="skip-line text-small">
-    {{ 'campaign_status.filter.title'|trans }}
+<div class="sd-filter-bar">
+    <span class="sd-filter-label">{{ 'campaign_status.filter.title'|trans }}</span>
+
+    {# Structure filter dropdown #}
     {% set commonStructures = app.user.getCommonStructures(campaignStructures) %}
-    {% if commonStructures > 1 %}
-        <a href="#"
-           id="link-filter-structure-{{ communication.id }}"
-           onclick="$('#filter-structure-{{ communication.id }}').modal(); return false;">{{ 'campaign_status.filter.by_structure'|trans }}</a>
-        {{ 'campaign_status.filter.or'|trans }}
+    {% if commonStructures|length > 1 %}
+        <div class="dropdown sd-filter-dropdown d-inline-block">
+            <a href="#"
+               id="link-filter-structure-{{ communication.id }}"
+               class="sd-filter-chip dropdown-toggle"
+               data-toggle="dropdown"
+               aria-haspopup="true"
+               aria-expanded="false">
+                {{ 'campaign_status.filter.by_structure'|trans }}
+            </a>
+            <div class="dropdown-menu" onclick="event.stopPropagation();">
+                {% for structure in commonStructures %}
+                    <div class="form-check px-3 py-1">
+                        <label class="switch">
+                            <input type="checkbox"
+                                   data-toggle="toggle" data-onstyle="primary"
+                                   class="form-check-input filter-action filter-structure-{{ communication.id }} filter-action-{{ communication.id }}"
+                                   id="filter-structure-{{ structure.id }}-{{ communication.id }}"
+                                   value="{{ structure.id }}"/>
+                            <span class="slider"></span>
+                        </label>
+                        <label class="form-check-label ml-1"
+                               for="filter-structure-{{ structure.id }}-{{ communication.id }}">
+                            {{ structure.displayName }}
+                        </label>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
     {% endif %}
+
+    {# Group filter chips #}
     <a href="#"
        id="link-filter-group-{{ communication.id }}"
-       onclick="$('#filter-group-modal').modal(); return false;">{{ 'campaign_status.filter.by_group'|trans }}</a>
-    {{ 'campaign_status.filter.or'|trans }}
-    <a href="#"
-       id="link-filter-response-{{ communication.id }}"
-       onclick="$('#filter-response-{{ communication.id }}').modal(); return false;">{{ 'campaign_status.filter.by_response'|trans }}</a>
-    {{ 'campaign_status.filter.or'|trans }}
-    <a href="#"
-       id="link-filter-skill-{{ communication.id }}"
-       onclick="$('#filter-skill-{{ communication.id }}').modal(); return false;">{{ 'campaign_status.filter.by_skill'|trans }}</a>
-    {{ 'campaign_status.filter.or'|trans }}
-    <a href="#" id="link-filter-unreachable-{{ communication.id }}" class="filter-unreachable" data-value="0">{{ 'campaign_status.filter.by_unreachable'|trans }}</a>
+       class="sd-filter-chip"
+       onclick="$('#filter-group-modal').modal(); return false;">
+        {{ 'campaign_status.filter.by_group'|trans }}
+    </a>
+
+    {# Response filter dropdown #}
+    <div class="dropdown sd-filter-dropdown d-inline-block">
+        <a href="#"
+           id="link-filter-response-{{ communication.id }}"
+           class="sd-filter-chip dropdown-toggle"
+           data-toggle="dropdown"
+           aria-haspopup="true"
+           aria-expanded="false">
+            {{ 'campaign_status.filter.by_response'|trans }}
+        </a>
+        <div class="dropdown-menu" onclick="event.stopPropagation();">
+            {% for index, choice in communication.choices %}
+                <div class="form-check px-3 py-1">
+                    <label class="switch">
+                        <input type="checkbox"
+                               data-toggle="toggle" data-onstyle="primary"
+                               data-choice-id="{{ choice.id }}"
+                               class="form-check-input filter-action filter-response-{{ communication.id }} filter-response-{{ communication.id }} filter-action-{{ communication.id }}"
+                               id="filter-is-choice-{{ choice.id }}-{{ communication.id }}"/>
+                        <span class="slider"></span>
+                    </label>
+                    <label class="form-check-label ml-1"
+                           for="filter-is-choice-{{ choice.id }}-{{ communication.id }}">
+                        {{ choice.label }}
+                    </label>
+                </div>
+            {% endfor %}
+
+            <div class="form-check px-3 py-1">
+                <label class="switch">
+                    <input type="checkbox"
+                           data-toggle="toggle" data-onstyle="primary"
+                           class="form-check-input filter-action filter-response-{{ communication.id }} filter-action-{{ communication.id }}"
+                           id="filter-has-invalid-answer-{{ communication.id }}"/>
+                    <span class="slider"></span>
+                </label>
+                <label class="form-check-label ml-1"
+                       for="filter-has-invalid-answer-{{ communication.id }}">
+                    {{ 'campaign_status.table.other'|trans }}
+                </label>
+            </div>
+
+            <div class="form-check px-3 py-1">
+                <label class="switch">
+                    <input type="checkbox"
+                           data-toggle="toggle" data-onstyle="primary"
+                           class="form-check-input filter-action filter-response-{{ communication.id }} filter-action-{{ communication.id }}"
+                           id="filter-has-no-answers-{{ communication.id }}"/>
+                    <span class="slider"></span>
+                </label>
+                <label class="form-check-label ml-1"
+                       for="filter-has-no-answers-{{ communication.id }}">
+                    {{ 'campaign_status.table.none'|trans }}
+                </label>
+            </div>
+        </div>
+    </div>
+
+    {# Skill filter dropdown #}
+    {% if skills|length > 0 %}
+    <div class="dropdown sd-filter-dropdown d-inline-block">
+        <a href="#"
+           id="link-filter-skill-{{ communication.id }}"
+           class="sd-filter-chip dropdown-toggle"
+           data-toggle="dropdown"
+           aria-haspopup="true"
+           aria-expanded="false">
+            {{ 'campaign_status.filter.by_skill'|trans }}
+        </a>
+        <div class="dropdown-menu" onclick="event.stopPropagation();">
+            {% for skill in skills %}
+                <div class="form-check px-3 py-1">
+                    <label class="switch">
+                        <input type="checkbox"
+                               class="form-check-input filter-action filter-skill-{{ communication.id }} filter-action-{{ communication.id }}"
+                               id="filter-is-skill-{{ skill.id }}-{{ communication.id }}"/>
+                        <span class="slider"></span>
+                    </label>
+                    <label class="form-check-label ml-1"
+                           for="filter-is-skill-{{ skill.id }}-{{ communication.id }}">
+                        {{ macros.badge(skill) }}
+                    </label>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    {# Unreachable filter #}
+    <a href="#" id="link-filter-unreachable-{{ communication.id }}" class="sd-filter-chip filter-unreachable" data-value="0">
+        {{ 'campaign_status.filter.by_unreachable'|trans }}
+    </a>
+
+    {# Clear filters link #}
+    <span class="sd-filter-clear" id="sd-clear-filters-{{ communication.id }}" style="display:none;"
+          onclick="$('.filter-action-{{ communication.id }}').prop('checked', false); activeGroupFilters=[]; $('#link-filter-unreachable-{{ communication.id }}').data('value', 0); refreshVisibility();">
+        &#x2715; {{ 'campaign_status.filter.clear'|trans }}
+    </span>
 </div>

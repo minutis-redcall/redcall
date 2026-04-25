@@ -28,20 +28,20 @@ class CampaignRepositoryTest extends KernelTestCase
         );
     }
 
-    // ── findOneByIdNoCache ──
+    // ── findCampaignWithFreshData ──
 
-    public function testFindOneByIdNoCache(): void
+    public function testFindCampaignWithFreshData(): void
     {
-        $campaign = $this->fixtures->createCampaign('Find NoCache Campaign');
+        $campaign = $this->fixtures->createCampaign('Find Fresh Campaign');
 
-        $found = $this->repository->findOneByIdNoCache($campaign->getId());
+        $found = $this->repository->findCampaignWithFreshData($campaign->getId());
         $this->assertNotNull($found);
-        $this->assertSame('Find NoCache Campaign', $found->getLabel());
+        $this->assertSame('Find Fresh Campaign', $found->getLabel());
     }
 
-    public function testFindOneByIdNoCacheReturnsNullForNonexistent(): void
+    public function testFindCampaignWithFreshDataReturnsNullForNonexistent(): void
     {
-        $found = $this->repository->findOneByIdNoCache(999999);
+        $found = $this->repository->findCampaignWithFreshData(999999);
         $this->assertNull($found);
     }
 

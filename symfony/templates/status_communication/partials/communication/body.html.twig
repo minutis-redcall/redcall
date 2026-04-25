@@ -1,24 +1,21 @@
 {% import 'macros.html.twig' as macros %}
 
 {# -------------------------------------------------------------------------------- #}
-{# Message (shorten and normal version) #}
+{# Message body (short and full versions)                                             #}
 {# -------------------------------------------------------------------------------- #}
 <div id="limited-body-{{ communication.id }}" class="email-body">
     <strong>{{ communication.limitedBody|striptags }}</strong>
     {% if communication.canExpandBody %}
-        <a href="#" class="show-complete-body" data-communication-id="{{ communication.id }}">🔽️</a>
+        <a href="#" class="sd-body-toggle show-complete-body" data-communication-id="{{ communication.id }}">&#x25BC; Show more</a>
     {% endif %}
     {% if communication.volunteer or is_granted('ROLE_ADMIN') %}
-        <div class="float-right color-grey" {% if communication.volunteer %}title="{{ communication.volunteer.externalId }}"{% endif %}>
+        <div class="sd-comm-body-meta" {% if communication.volunteer %}title="{{ communication.volunteer.externalId }}"{% endif %}>
             {{ macros.communicationBy(communication) }}
 
             {% if communication.volunteer and is_granted('ROLE_ADMIN') %}
-                <span style="color:black;">/</span>
+                <span>/</span>
             {% endif %}
 
-            {# -------------------------------------------------------------------------------- #}
-            {# Relaunch button (for admins only) #}
-            {# -------------------------------------------------------------------------------- #}
             {% if is_granted('ROLE_ADMIN') %}
                 <a href="{{ path('communication_relaunch', {communication: communication.id, campaign: campaign.id}) }}" onclick="return confirm('{{ 'campaign_status.relaunch_communication_confirm'| trans }}');">
                     {{ 'campaign_status.relaunch_communication'| trans }}
@@ -26,11 +23,10 @@
             {% endif %}
 
             {% if campaign.active and campaign.code %}
-                <span class="ml-1">
+                <span class="ml-2">
                     <a href="{{ path('synthesis_index', {code: campaign.code}) }}" target="_blank" class="btn btn-sm btn-outline-info">{{ 'synthesis.button'|trans }}</a>
                 </span>
             {% endif %}
-
         </div>
     {% endif %}
 </div>
@@ -44,5 +40,5 @@
     {% else %}
         {{ communication.body|nl2br }}
     {% endif %}
-    <a href="#" class="show-limited-body" data-communication-id="{{ communication.id }}">🔼️</a>
+    <a href="#" class="sd-body-toggle show-limited-body" data-communication-id="{{ communication.id }}">&#x25B2; Show less</a>
 </div>

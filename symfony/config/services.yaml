@@ -85,6 +85,7 @@ services:
     tags:
       - { name: doctrine.event_listener, event: postPersist }
       - { name: doctrine.event_listener, event: postUpdate }
+      - { name: doctrine.event_listener, event: postFlush }
 
   Bundles\PasswordLoginBundle\Repository\UserRepositoryInterface:
     class: App\Repository\UserRepository

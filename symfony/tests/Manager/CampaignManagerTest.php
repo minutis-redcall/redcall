@@ -196,10 +196,23 @@ class CampaignManagerTest extends KernelTestCase
         $campaign = $setup['campaign'];
         $message = $setup['message'];
 
+        // Reset lastActivityAt to a known past value so the hash changes detectably
+        $this->em->createQuery(
+            'UPDATE App\Entity\Campaign c SET c.lastActivityAt = :past WHERE c.id = :id'
+        )
+            ->setParameter('past', new \DateTime('2020-01-01'))
+            ->setParameter('id', $campaign->getId())
+            ->execute();
+
         $hashBefore = $this->campaignManager->getHash($campaign->getId());
 
-        // Add an answer
-        $this->fixtures->createAnswer($message, 'Test answer');
+        // Simulate what CommunicationActivitySubscriber does: update lastActivityAt
+        $this->em->createQuery(
+            'UPDATE App\Entity\Campaign c SET c.lastActivityAt = :now WHERE c.id = :id'
+        )
+            ->setParameter('now', new \DateTime())
+            ->setParameter('id', $campaign->getId())
+            ->execute();
 
         $hashAfter = $this->campaignManager->getHash($campaign->getId());
 

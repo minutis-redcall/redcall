@@ -1,65 +1,72 @@
 {% import 'macros.html.twig' as macros %}
 
-{# -------------------------------------------------------------------------------- #}
-{# Campaign label and color #}
-{# -------------------------------------------------------------------------------- #}
-<div class="row">
-    <div class="col-12 h1" {% if campaign.active and is_granted('CAMPAIGN_OWNER', campaign) %}onclick="$('#change-campaign-label').modal();"{% endif %} style="cursor: pointer;">
-        {% if not campaign.active %}
-            <del>{{ campaign.label }}</del>
-        {% else %}
-            {{ campaign.label }}
-        {% endif %}
+{% set hexColor = constant('App\\Entity\\Campaign::COLORS')[campaign.type] %}
 
-        {% if not campaign.active %}
-            <em>({{ 'campaign.statuses.finished'|trans|lower }})</em>
-        {% elseif is_granted('CAMPAIGN_OWNER', campaign) %}
-            <span class="float-right badge badge-light" style="cursor:pointer;">✏️</span>
+{# -------------------------------------------------------------------------------- #}
+{# Campaign card with color accent                                                   #}
+{# -------------------------------------------------------------------------------- #}
+<div class="sd-campaign-card" style="--campaign-color: {{ hexColor }};">
+
+    {# Campaign title + color badge + edit button #}
+    <div class="sd-campaign-top">
+        <h1 class="sd-campaign-name">
+            {% if not campaign.active %}
+                <del>{{ campaign.label }}</del>
+                <span class="sd-comm-meta">({{ 'campaign.statuses.finished'|trans|lower }})</span>
+            {% else %}
+                {{ campaign.label }}
+            {% endif %}
+        </h1>
+
+        <span class="sd-campaign-type-badge"
+              style="background-color: {{ hexColor }};"
+              {% if campaign.active and is_granted('CAMPAIGN_OWNER', campaign) %}
+                  onclick="$('#change-color').modal();"
+                  role="button"
+              {% endif %}>
+            {{ ('campaign.types.' ~ campaign.type)|trans }}
+        </span>
+
+        {% if campaign.active and is_granted('CAMPAIGN_OWNER', campaign) %}
+            <span class="sd-edit-btn" onclick="$('#change-campaign-label').modal();" role="button" title="{{ 'base.form.change'|trans }}">
+                &#9998;
+            </span>
         {% endif %}
     </div>
+
     {% if operationUrl %}
-        <div class="col-12 skip-line">
-            {% if operationUrl %}
-                <a href="{{ operationUrl }}" class="btn btn-secondary btn-sm mb-2" target="_blank">{{ 'form.operation.url'|trans }}</a>
-            {% endif %}
+        <div class="mb-2">
+            <a href="{{ operationUrl }}" class="btn btn-sm btn-secondary" target="_blank">{{ 'form.operation.url'|trans }}</a>
         </div>
     {% endif %}
-    <div class="col-12 skip-line" {% if campaign.active and is_granted('CAMPAIGN_OWNER', campaign) %}onclick="$('#change-color').modal();"{% endif %} style="cursor:pointer;">
-        {% set hexColor = constant('App\\Entity\\Campaign::COLORS')[campaign.type] %}
-        <div id="current-color" class="w-100 text-center text-white badge" style="background-color:{{ hexColor }};">
-            {{ ('campaign.types.' ~ campaign.type)|trans }}
-            {% if campaign.active and is_granted('CAMPAIGN_OWNER', campaign) %}
-                <span>✏️</span>
-            {% endif %}
-        </div>
-    </div>
-</div>
 
-{# -------------------------------------------------------------------------------- #}
-{# Notes associated with the campaign #}
-{# -------------------------------------------------------------------------------- #}
-<div class="col-12 skip-line" id="campaign-notes" data-notes-updated-timestamp="{{ campaign.notesUpdatedAt ? campaign.notesUpdatedAt|date('U') : 0 }}">
-    <div id="campaign-notes-border" style="padding: 5px; margin: 0px -10px; border: 1px solid black;background-color:#eeeeee;">
-        {% if campaign.active %}
-            <span class="float-right badge pb-1" onclick="$('#change-notes').modal();" style="cursor:pointer;">✏️</span>
-        {% endif %}
-        <div id="campaign-notes-content" class="text-to-hypertext">
-            {% if not campaign.notes %}
-                {{ 'campaign_status.no_notes_yet'|trans }}
-            {% else %}
-                {{ campaign.notes|nl2br }}
+    {# Notes #}
+    <div id="campaign-notes"
+         data-notes-updated-timestamp="{{ campaign.notesUpdatedAt ? campaign.notesUpdatedAt|date('U') : 0 }}">
+        <div id="campaign-notes-border" class="sd-notes">
+            {% if campaign.active %}
+                <span class="sd-edit-btn float-right ml-2" onclick="$('#change-notes').modal();" role="button" title="{{ 'base.form.change'|trans }}">
+                    &#9998;
+                </span>
             {% endif %}
-        </div>
-        <div class="text-right pt-1">
-            <em id="campaign-notes-last-update">
-                {% if campaign.notesUpdatedAt %}
-                    {{ 'campaign_status.notes_updated_at'|trans({
-                        '%date%': campaign.notesUpdatedAt|date('d/m/Y'),
-                        '%time%': campaign.notesUpdatedAt|date('H:i'),
-                    }) }}
+            <div id="campaign-notes-content" class="sd-notes-content text-to-hypertext">
+                {% if not campaign.notes %}
+                    {{ 'campaign_status.no_notes_yet'|trans }}
+                {% else %}
+                    {{ campaign.notes|nl2br }}
                 {% endif %}
-            </em>
-            <a href="#" id="campaign-notes-ack" class="btn btn-sm btn-danger d-none">OK</a>
+            </div>
+            <div class="sd-notes-footer">
+                <em id="campaign-notes-last-update">
+                    {% if campaign.notesUpdatedAt %}
+                        {{ 'campaign_status.notes_updated_at'|trans({
+                            '%date%': campaign.notesUpdatedAt|date('d/m/Y'),
+                            '%time%': campaign.notesUpdatedAt|date('H:i'),
+                        }) }}
+                    {% endif %}
+                </em>
+                <a href="#" id="campaign-notes-ack" class="btn btn-danger sd-notes-ack d-none">OK</a>
+            </div>
         </div>
     </div>
 </div>

@@ -40,6 +40,7 @@ class CampaignGroupController extends BaseController
         $names         = $campaign->getGroupNames();
         $names[$index] = $name ?: null;
         $campaign->setGroupNames($names);
+        $campaign->touchActivity();
 
         $this->campaignManager->save($campaign);
 
@@ -73,6 +74,9 @@ class CampaignGroupController extends BaseController
             $volunteerGroup->setGroupIndex($index);
             $this->volunteerGroupRepository->save($volunteerGroup, true);
         }
+
+        $campaign->touchActivity();
+        $this->campaignManager->save($campaign);
 
         return new JsonResponse(['success' => true]);
     }

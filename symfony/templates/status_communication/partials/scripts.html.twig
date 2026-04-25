@@ -39,7 +39,7 @@
                     container.empty();
                     $.each(assignedIndices, function (i, groupIndex) {
                         var color = groupColorsArray[groupIndex];
-                        container.append('<span class="group-dot group-dot-' + groupIndex + '" data-index="' + groupIndex + '" style="display:inline-block; width:8px; height:8px; border-radius:50%; background-color:#' + color + '; margin-right:2px;"></span>');
+                        container.append('<span class="sd-group-dot group-dot group-dot-' + groupIndex + '" data-index="' + groupIndex + '" style="background-color:#' + color + ';"></span>');
                     });
 
                     row.data('groups', assignedIndices.join(','));
@@ -80,9 +80,8 @@
 
             refreshTextToHypertext($('#campaign-notes-content'));
 
-            {# Applying visual effects to notice the note updates #}
-            $('#campaign-notes-border').css('border', '5px solid red');
-            $('#campaign-notes-last-update').css('color', 'red');
+            {# Subtle visual effect for note updates — class-based, not inline styles #}
+            $('#campaign-notes-border').addClass('sd-notes--updated');
             $('#campaign-notes-ack').removeClass('d-none');
         }
 
@@ -121,9 +120,11 @@
                     $('#message-is-unclear-' + suffix).addClass('d-none');
                 }
 
-                {# Message has a new answer #}
+                {# Message has a new answer — move to top + highlight #}
                 if (messageStatus['has-answer'] !== row.data('has-answer')) {
                     row.prependTo($('#top-' + communicationId));
+                    row.addClass('sd-volunteer-row--highlight');
+                    setTimeout(function() { row.removeClass('sd-volunteer-row--highlight'); }, 1500);
                     row.data('has-answer', messageStatus['has-answer']);
                 }
 
@@ -163,7 +164,7 @@
                 }
             });
 
-            {# Refresh the SMS sending progress bar #}
+            {# Refresh the progress bar #}
             var progressBar = $('#progress-bar-' + communicationId);
             if (communication.progress.sent >= communication.progress.reachable && !progressBar.hasClass('bg-success')) {
                 progressBar.addClass('bg-success');
@@ -190,26 +191,32 @@
                 );
             }
 
+            {# Animate choice counts with CSS class instead of fontSize bounce #}
             $.each(communication.choices, function (choiceId, count) {
                 var choice = $('#choice-count-' + choiceId);
                 if (count !== choice.data('count')) {
                     choice.html(count);
-                    choice.animate({fontSize: '50px'}, 500).animate({fontSize: '1rem'}, 500);
+                    choice.addClass('sd-count-bump');
+                    setTimeout(function() { choice.removeClass('sd-count-bump'); }, 350);
                     choice.data('count', count);
                 }
             });
 
-            var invalid = $('#has-invalid-answer-' + communicationId);
-            if (hasInvalidAnswers !== invalid.data('count')) {
+            {# Invalid answers count animation #}
+            var invalid = $('#has-invalid-answer-' + communicationId + ' .sd-answer-count');
+            var invalidChip = $('#has-invalid-answer-' + communicationId);
+            if (hasInvalidAnswers !== invalidChip.data('count')) {
                 invalid.html(hasInvalidAnswers);
-                invalid.animate({fontSize: '50px'}, 500).animate({fontSize: '1rem'}, 500);
-                invalid.data('count', hasInvalidAnswers);
+                invalid.addClass('sd-count-bump');
+                setTimeout(function() { invalid.removeClass('sd-count-bump'); }, 350);
+                invalidChip.data('count', hasInvalidAnswers);
             }
 
-            var noAnswers = $('#has-no-answers-' + communicationId);
-            if (hasNoAnswers !== noAnswers.data('count')) {
-                noAnswers.html(hasNoAnswers);
-                noAnswers.data('count', hasNoAnswers);
+            {# No answers count #}
+            var noAnswersChip = $('#has-no-answers-' + communicationId);
+            if (noAnswersChip.length && hasNoAnswers !== noAnswersChip.data('count')) {
+                noAnswersChip.find('.sd-answer-count').html(hasNoAnswers);
+                noAnswersChip.data('count', hasNoAnswers);
             }
         });
 
@@ -318,17 +325,6 @@
         skills.push("is-skill-{{ skill.id|e('js') }}");
         {% endfor %}
 
-        {#
-        # Controlling each checkboxes:
-        #
-        # Each filter is inclusive on its category (if you select "Yes" and "No" in the response category,
-        # you will get all volunteers who answered "Yes" --or-- "No").
-        #
-        # But, filter categories are exclusive each other (if you select "Yes" in the response category
-        # and "Driver" in the skills category, you will get all volunteers that are drivers --and-- who
-        # answered "Yes")
-        #}
-
         var activeGroups = activeGroupFilters;
 
         $.each(communicationIds, function (key, communicationId) {
@@ -339,29 +335,28 @@
             });
 
             var response = 0;
+            var noAnswersChecked = false;
             $('.filter-response-' + communicationId).each(function () {
                 var that = $(this);
                 var checked = that.is(':checked');
                 response += checked;
-
-                // Response links
-                if (checked) {
-                    $('#choice-' + that.data('choice-id') + ' a').css('color', 'red');
-                } else {
-                    $('#choice-' + that.data('choice-id') + ' a').css('color', '');
-                }
             });
 
-            if ($('#filter-has-invalid-answer-' + communicationId).is(':checked')) {
-                $('#has-invalid-answer-' + communicationId).css('color', 'red');
-            } else {
-                $('#has-invalid-answer-' + communicationId).css('color', '');
-            }
+            {# Highlight answer chips based on which response filters are checked #}
+            $('.sd-answer-chip.filter-response[data-communication-id="' + communicationId + '"]').each(function () {
+                var chip = $(this);
+                var targetId = chip.data('target');
+                var isChecked = targetId ? $('#' + targetId).is(':checked') : false;
+                chip.toggleClass('sd-answer-chip--active', isChecked);
+            });
 
-            if ($('#filter-has-no-answers-' + communicationId).is(':checked')) {
-                $('#has-no-answers-' + communicationId).css('color', 'red');
-            } else {
-                $('#has-no-answers-' + communicationId).css('color', '');
+            {# Check if "no answers" filter is active #}
+            noAnswersChecked = $('#filter-has-no-answers-' + communicationId).is(':checked');
+
+            {# Auto-expand pending messages when "no answers" filter is active #}
+            var showAllToggle = $('#show-all-toggle-' + communicationId);
+            if (noAnswersChecked && !showAllToggle.is(':checked')) {
+                showAllToggle.prop('checked', true).trigger('change');
             }
 
             var skill = 0;
@@ -371,32 +366,16 @@
 
             var unreachable = $('#link-filter-unreachable-' + communicationId).data('value');
 
-            {# change links color to understand which filters are enabled #}
-            if (structure) {
-                $('#link-filter-structure-' + communicationId).css('color', 'red');
-            } else {
-                $('#link-filter-structure-' + communicationId).css('color', '');
-            }
-            if (response) {
-                $('#link-filter-response-' + communicationId).css('color', 'red');
-            } else {
-                $('#link-filter-response-' + communicationId).css('color', '');
-            }
-            if (skill) {
-                $('#link-filter-skill-' + communicationId).css('color', 'red');
-            } else {
-                $('#link-filter-skill-' + communicationId).css('color', '');
-            }
-            if (unreachable) {
-                $('#link-filter-unreachable-' + communicationId).css('color', 'red');
-            } else {
-                $('#link-filter-unreachable-' + communicationId).css('color', '');
-            }
-            if (activeGroups.length > 0) {
-                $('#link-filter-group-' + communicationId).css('color', 'red');
-            } else {
-                $('#link-filter-group-' + communicationId).css('color', '');
-            }
+            {# Toggle active state on filter bar chips #}
+            $('#link-filter-structure-' + communicationId).toggleClass('sd-filter-chip--active', !!structure);
+            $('#link-filter-response-' + communicationId).toggleClass('sd-filter-chip--active', !!response);
+            $('#link-filter-skill-' + communicationId).toggleClass('sd-filter-chip--active', !!skill);
+            $('#link-filter-unreachable-' + communicationId).toggleClass('sd-filter-chip--active', !!unreachable);
+            $('#link-filter-group-' + communicationId).toggleClass('sd-filter-chip--active', activeGroups.length > 0);
+
+            {# Show/hide clear filters link #}
+            var anyActive = (activeGroups.length + structure + response + skill + unreachable) > 0;
+            $('#sd-clear-filters-' + communicationId).toggle(anyActive);
 
             {# if no filter used, everything is visible #}
             if (activeGroups.length === 0 && structure + response + skill + unreachable === 0) {
@@ -631,7 +610,7 @@
     });
 
     {# -------------------------------------------------------------------------------- #}
-    {# Filter responses using the table #}
+    {# Filter responses using the answer chips                                           #}
     {# -------------------------------------------------------------------------------- #}
     $('.filter-response').click(function (e) {
         var that = $(this);
@@ -701,8 +680,7 @@
     $('#campaign-notes-ack').click(function (e) {
         e.preventDefault();
         $('#campaign-notes-ack').addClass('d-none');
-        $('#campaign-notes-border').css('border', '1px solid black');
-        $('#campaign-notes-last-update').css('color', '');
+        $('#campaign-notes-border').removeClass('sd-notes--updated');
     });
 
     {# -------------------------------------------------------------------------------- #}
@@ -783,8 +761,7 @@
         $.post('{{ path('campaign_group_toggle', {id: campaign.id, volunteerId: 'VOLUNTEER_ID', index: 'INDEX', csrf: csrf_token('campaign')}) }}'
             .replace('VOLUNTEER_ID', volunteerId)
             .replace('INDEX', index), function () {
-            {# We don't need to do much here, polling will update the dots if needed,
-               but for better UX we could toggle them immediately. #}
+            {# Polling will update the dots #}
         });
     });
 

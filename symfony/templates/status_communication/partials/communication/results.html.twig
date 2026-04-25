@@ -1,22 +1,21 @@
 {% import 'macros.html.twig' as macros %}
 
 {# -------------------------------------------------------------------------------- #}
-{# Macro for rendering a single message row                                        #}
+{# Macro for rendering a single volunteer row                                       #}
 {# -------------------------------------------------------------------------------- #}
 {% macro messageRow(message, communication, campaign, volunteerGroups, groupColors, suffix) %}
     {% import 'macros.html.twig' as macros %}
     {% set volunteer = message.volunteer %}
-    <tr id="row-{{ suffix|e('html_attr') }}"
-        class="row-{{ communication.id }}"
-        data-volunteer-id="{{ volunteer.id }}"
-        data-structures="{{ volunteer.structureIds|join(',') }}"
-        data-is-reachable="{{ message.reachable }}"
-        data-has-answer="{{ message.answers.count }}"
-        data-groups="{% if volunteerGroups[volunteer.id] is defined %}{{ volunteerGroups[volunteer.id]|join(',') }}{% endif %}">
+    <div id="row-{{ suffix|e('html_attr') }}"
+         class="sd-volunteer-row row-{{ communication.id }}"
+         data-volunteer-id="{{ volunteer.id }}"
+         data-structures="{{ volunteer.structureIds|join(',') }}"
+         data-is-reachable="{{ message.reachable }}"
+         data-has-answer="{{ message.answers.count }}"
+         data-groups="{% if volunteerGroups[volunteer.id] is defined %}{{ volunteerGroups[volunteer.id]|join(',') }}{% endif %}">
 
-        {# Selection #}
-        <td id="message-selected-{{ suffix|e('html_attr') }}"
-            data-communication-id="{{ communication.id }}">
+        {# Selection toggle #}
+        <div class="sd-vol-select" id="message-selected-{{ suffix|e('html_attr') }}" data-communication-id="{{ communication.id }}">
             <label class="switch">
                 <input id="select-{{ suffix }}"
                        class="volunteer-selection volunteer-selection-{{ communication.id }}"
@@ -25,100 +24,29 @@
                        type="checkbox"/>
                 <span class="slider"></span>
             </label>
-        </td>
+        </div>
 
-        <td id="volunteer-{{ suffix }}">
+        {# Volunteer info #}
+        <div class="sd-vol-info" id="volunteer-{{ suffix }}">
+            <div class="sd-vol-name-line">
+                {# Volunteer name + icon #}
+                <div id="volunteer-container-{{ suffix }}" class="{% if not message.sent %}text-black-50{% elseif message.error %}message-error{% endif %}">
+                    {{ macros.volunteer(message.volunteer) }}
+                </div>
 
-            <div class="float-right text-right">
-
-                {% if app.environment == 'dev' %}
-                    <a class="btn btn-default"
-                    {% if communication.type == constant('App\\Entity\\Communication::TYPE_SMS') %}
-                        {% if message.volunteer.phoneNumber %}
-                            target="_blank" href="{{ path('sandbox_fake_sms_thread', {e164: message.volunteer.phoneNumber, campaignId: campaign.id}) }}">{{ macros.communicationIcon(communication) }}</a>
-                        {% else %}
-                            href="#">&nbsp;</a>
-                        {% endif %}
-                    {% elseif communication.type == constant('App\\Entity\\Communication::TYPE_CALL') %}
-                        {% if message.volunteer.phoneNumber %}
-                            target="_blank" href="{{ path('sandbox_fake_call_read', {e164: message.volunteer.phoneNumber, campaignId: campaign.id}) }}">{{ macros.communicationIcon(communication) }}️</a>
-                        {% else %}
-                            href="#">&nbsp;</a>
-                        {% endif %}
-                    {% else %}
-                        {% if message.volunteer.email %}
-                            target="_blank" href="{{ path('sandbox_fake_email_read', {email: message.volunteer.email, campaignId: campaign.id}) }}">{{ macros.communicationIcon(communication) }}️</a>
-                        {% else %}
-                            href="#">&nbsp;</a>
-                        {% endif %}
+                {# Group dots #}
+                <span id="volunteer-groups-{{ suffix }}" class="sd-vol-groups-inline volunteer-groups-list">
+                    {% if volunteerGroups[volunteer.id] is defined %}
+                        {% for groupIndex in volunteerGroups[volunteer.id] %}
+                            <span class="sd-group-dot group-dot group-dot-{{ groupIndex }}" data-index="{{ groupIndex }}" style="background-color:#{{ groupColors[groupIndex] }};"></span>
+                        {% endfor %}
                     {% endif %}
-                {% endif %}
-
-                {% if is_granted('ROLE_ADMIN') and message.messageId %}
-                    <a href="#" class="provider-modal" data-href="{{ path('communication_provider_information', {
-                        campaignId: campaign.id,
-                        messageId: message.id,
-                    }) }}">ℹ️</a>
-                {% endif %}
-
-                {# Answer codes when volunteer answered them #}
-                {% if message.answers.count %}
-                    {% for choice in communication.choices %}
-                        {% set answer = message.getAnswerByChoice(choice) %}
-                        <span class="{{ answer ? '' : 'd-none' }} badge badge-dark message-is-choice-{{ choice.id }}-{{ communication.id }}"
-                              style="font-size:16px;"
-                              data-value="{{ answer ? 1 : 0 }}"
-                              id="message-is-choice-{{ choice.id }}-{{ suffix|e('html_attr') }}">
-                            {{ choice.code }}
-                            <span style="font-size:10px;">
-                                <br/>
-                                <span id="message-is-choice-time-{{ choice.id }}-{{ suffix|e('html_attr') }}">
-                                    {% if answer %}
-                                        {{ answer.receivedAt|date('H:i') }}
-                                    {% endif %}
-                                </span>
-                            </span>
-                        </span>
-                    {% endfor %}
-                {% endif %}
-
-                {# Volunteer sent an invalid answer #}
-                <span class="{{ message.invalidAnswer ? '' : 'd-none' }} badge badge-dark message-has-invalid-answer-{{ communication.id }}"
-                      style="font-size:16px;"
-                      data-value="{{ message.invalidAnswer ? 1 : 0 }}"
-                      id="message-has-invalid-answer-{{ suffix|e('html_attr') }}">
-                    ?
-                    <span style="font-size:10px;">
-                        <br/>
-                        <span id="message-has-invalid-answer-time-{{ suffix|e('html_attr') }}">
-                            {% if message.invalidAnswer %}
-                                {{ message.invalidAnswer.receivedAt|date('H:i') }}
-                            {% endif %}
-                        </span>
-                    </span>
                 </span>
 
-                <span class="d-none message-has-no-answers-{{ communication.id }}"
-                      data-value="{{ message.hasAnswer(true) ? 0 : 1 }}"
-                      id="message-has-no-answers-{{ suffix|e('html_attr') }}"></span>
-
-                {% if campaign.active %}
-                    <span id="open-message-{{ suffix }}"
-                          data-message-id="{{ message.id }}"
-                          class="open-message" style="cursor:pointer;">✏️</span>
-                {% endif %}
-
-                <div class="d-none">
-                    {% for skill in message.volunteer.badgesFilteredFromSynonyms %}
-                        <div class="message-is-skill-{{ skill.id|e('html_attr') }}-{{ communication.id }}" data-value=1></div>
-                    {% endfor %}
-                </div>
-            </div>
-
-            <div class="text-small text-muted">
-                <div class="dropdown d-inline ml-1">
-                    <a href="#" class="dropdown-toggle text-muted" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        <i class="fas fa-tags"></i> {{ 'campaign_status.groups.title'|trans }}
+                {# Group assignment dropdown #}
+                <div class="dropdown d-inline">
+                    <a href="#" class="sd-vol-group-trigger dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        &#x1F3F7;&#xFE0F;
                     </a>
                     <div class="dropdown-menu p-2" style="min-width: 200px;">
                         {% for colorName, colorCode in groupColors %}
@@ -132,7 +60,7 @@
                                            data-index="{{ groupIndex }}"
                                            {% if volunteerGroups[volunteer.id] is defined and groupIndex in volunteerGroups[volunteer.id] %}checked{% endif %}>
                                     <label class="custom-control-label d-flex align-items-center" for="vg-{{ suffix }}-{{ groupIndex }}">
-                                        <span class="mr-2" style="display:inline-block; width:12px; height:12px; background-color:#{{ colorCode }};"></span>
+                                        <span class="sd-group-dot mr-2" style="width:12px; height:12px; background-color:#{{ colorCode }};"></span>
                                         <span class="group-label-{{ groupIndex }}">{{ campaign.groupNames[groupIndex]|default('campaign_status.groups.default'|trans ~ ' ' ~ (groupIndex + 1)) }}</span>
                                     </label>
                                 </div>
@@ -140,48 +68,145 @@
                         {% endfor %}
                     </div>
                 </div>
-                <span id="volunteer-groups-{{ suffix }}" class="ml-1 volunteer-groups-list">
-                    {% if volunteerGroups[volunteer.id] is defined %}
-                        {% for groupIndex in volunteerGroups[volunteer.id] %}
-                            <span class="group-dot group-dot-{{ groupIndex }}" data-index="{{ groupIndex }}" style="display:inline-block; width:8px; height:8px; border-radius:50%; background-color:#{{ groupColors[groupIndex] }};"></span>
-                        {% endfor %}
-                    {% endif %}
-                </span>
             </div>
 
-            <div id="volunteer-container-{{ suffix }}" class="{% if not message.sent %}text-black-50{% elseif message.error %}message.error{% endif %}">
-                {{ macros.volunteer(message.volunteer) }}
-            </div>
+            {# Error #}
+            {% if message.error %}
+                <div id="error-{{ suffix }}" class="sd-vol-error">
+                    {{ message.error|trans }}
+                </div>
+            {% else %}
+                <div id="error-{{ suffix }}" class="sd-vol-error d-none"></div>
+            {% endif %}
 
-            {# Unexpected error #}
-            <div id="error-{{ suffix }}" style="color:red;">
-                {{ message.error|trans }}
-            </div>
-            <div>
-                <span id="message-is-unclear-{{ suffix }}" class="{{ message.isUnclear ? '' : 'd-none' }}" style="color:red;font-size:10px;">
-                    <strong>⚠️ {{ 'campaign_status.answers.unclear'|trans }}</strong>
-                </span>
-                <span id="invalid-answer-raw-{{ suffix }}" style="font-size:10px;">
-                    {% if message.invalidAnswer %}
-                        {{ message.invalidAnswer.raw }}
+            {# Unclear / Invalid answer text #}
+            {% if message.isUnclear or message.invalidAnswer %}
+                <div class="mt-1">
+                    <span id="message-is-unclear-{{ suffix }}" class="{% if not message.isUnclear %}d-none{% endif %}">
+                        <span class="sd-vol-unclear">
+                            <span class="sd-vol-unclear-label">&#x26A0; {{ 'campaign_status.answers.unclear'|trans }}</span>
+                        </span>
+                    </span>
+                    <span id="invalid-answer-raw-{{ suffix }}" style="font-size:0.75rem;">
+                        {% if message.invalidAnswer %}
+                            {{ message.invalidAnswer.raw }}
+                        {% endif %}
+                        {% if message.isUnclear %}
+                            {{ message.unclear.raw }}
+                        {% endif %}
+                    </span>
+                    {% if campaign.active %}
+                        <a id="answer-link-{{ suffix }}"
+                           style="font-size:0.75rem;"
+                           href="#"
+                           onclick="return false;"
+                           data-message-id="{{ message.id }}"
+                           class="open-message {% if communication.type != constant('App\\Entity\\Communication::TYPE_SMS') or (not message.isUnclear and not message.invalidAnswer) %}d-none{% endif %}">
+                            {{ 'campaign_status.answers.answer_link'|trans }}
+                        </a>
                     {% endif %}
-                    {% if message.isUnclear %}
-                        {{ message.unclear.raw }}
-                    {% endif %}
+                </div>
+            {% else %}
+                <span id="message-is-unclear-{{ suffix }}" class="d-none">
+                    <span class="sd-vol-unclear">
+                        <span class="sd-vol-unclear-label">&#x26A0; {{ 'campaign_status.answers.unclear'|trans }}</span>
+                    </span>
                 </span>
+                <span id="invalid-answer-raw-{{ suffix }}" class="d-none" style="font-size:0.75rem;"></span>
                 {% if campaign.active %}
                     <a id="answer-link-{{ suffix }}"
-                       style="font-size:10px;"
+                       style="font-size:0.75rem;"
                        href="#"
                        onclick="return false;"
                        data-message-id="{{ message.id }}"
-                       class="open-message {% if communication.type != constant('App\\Entity\\Communication::TYPE_SMS') or (not message.isUnclear and not message.invalidAnswer) %}d-none{% endif %}">
+                       class="open-message d-none">
                         {{ 'campaign_status.answers.answer_link'|trans }}
                     </a>
                 {% endif %}
+            {% endif %}
+
+            {# Hidden skill data for filtering #}
+            <div class="d-none">
+                {% for skill in message.volunteer.badgesFilteredFromSynonyms %}
+                    <div class="message-is-skill-{{ skill.id|e('html_attr') }}-{{ communication.id }}" data-value=1></div>
+                {% endfor %}
             </div>
-        </td>
-    </tr>
+        </div>
+
+        {# Status badges #}
+        <div class="sd-vol-status">
+            {% if app.environment == 'dev' %}
+                <a class="btn btn-default btn-sm"
+                {% if communication.type == constant('App\\Entity\\Communication::TYPE_SMS') %}
+                    {% if message.volunteer.phoneNumber %}
+                        target="_blank" href="{{ path('sandbox_fake_sms_thread', {e164: message.volunteer.phoneNumber, campaignId: campaign.id}) }}"><span class="sd-type-emoji">{{ macros.communicationIcon(communication) }}</span></a>
+                    {% else %}
+                        href="#">&nbsp;</a>
+                    {% endif %}
+                {% elseif communication.type == constant('App\\Entity\\Communication::TYPE_CALL') %}
+                    {% if message.volunteer.phoneNumber %}
+                        target="_blank" href="{{ path('sandbox_fake_call_read', {e164: message.volunteer.phoneNumber, campaignId: campaign.id}) }}"><span class="sd-type-emoji">{{ macros.communicationIcon(communication) }}</span></a>
+                    {% else %}
+                        href="#">&nbsp;</a>
+                    {% endif %}
+                {% else %}
+                    {% if message.volunteer.email %}
+                        target="_blank" href="{{ path('sandbox_fake_email_read', {email: message.volunteer.email, campaignId: campaign.id}) }}"><span class="sd-type-emoji">{{ macros.communicationIcon(communication) }}</span></a>
+                    {% else %}
+                        href="#">&nbsp;</a>
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+
+            {% if is_granted('ROLE_ADMIN') and message.messageId %}
+                <a href="#" class="provider-modal sd-edit-btn" data-href="{{ path('communication_provider_information', {
+                    campaignId: campaign.id,
+                    messageId: message.id,
+                }) }}" title="Provider info">&#x2139;</a>
+            {% endif %}
+
+            {# Answer choice badges #}
+            {% if message.answers.count %}
+                {% for choice in communication.choices %}
+                    {% set answer = message.getAnswerByChoice(choice) %}
+                    <span class="{{ answer ? '' : 'd-none' }} sd-answer-badge message-is-choice-{{ choice.id }}-{{ communication.id }}"
+                          data-value="{{ answer ? 1 : 0 }}"
+                          id="message-is-choice-{{ choice.id }}-{{ suffix|e('html_attr') }}">
+                        {{ choice.code }}
+                        <span class="sd-answer-badge-time" id="message-is-choice-time-{{ choice.id }}-{{ suffix|e('html_attr') }}">
+                            {% if answer %}
+                                {{ answer.receivedAt|date('H:i') }}
+                            {% endif %}
+                        </span>
+                    </span>
+                {% endfor %}
+            {% endif %}
+
+            {# Invalid answer badge #}
+            <span class="{{ message.invalidAnswer ? '' : 'd-none' }} sd-answer-badge sd-answer-badge--invalid message-has-invalid-answer-{{ communication.id }}"
+                  data-value="{{ message.invalidAnswer ? 1 : 0 }}"
+                  id="message-has-invalid-answer-{{ suffix|e('html_attr') }}">
+                ?
+                <span class="sd-answer-badge-time" id="message-has-invalid-answer-time-{{ suffix|e('html_attr') }}">
+                    {% if message.invalidAnswer %}
+                        {{ message.invalidAnswer.receivedAt|date('H:i') }}
+                    {% endif %}
+                </span>
+            </span>
+
+            {# Hidden no-answers marker for filtering #}
+            <span class="d-none message-has-no-answers-{{ communication.id }}"
+                  data-value="{{ message.hasAnswer(true) ? 0 : 1 }}"
+                  id="message-has-no-answers-{{ suffix|e('html_attr') }}"></span>
+
+            {# Edit answer button #}
+            {% if campaign.active %}
+                <span id="open-message-{{ suffix }}"
+                      data-message-id="{{ message.id }}"
+                      class="open-message sd-edit-btn" role="button" title="{{ 'campaign_status.answers.answer_link'|trans }}">&#9998;</span>
+            {% endif %}
+        </div>
+    </div>
 {% endmacro %}
 
 {% import _self as resultsMacros %}
@@ -194,48 +219,46 @@
 {% set pendingMessages = partitioned.pending %}
 
 {# -------------------------------------------------------------------------------- #}
-{# Results                                                                          #}
+{# Volunteer list                                                                    #}
 {# -------------------------------------------------------------------------------- #}
-<table class="table">
-    <thead>
-    <tr>
-        <th width="5%">
+<div class="sd-volunteer-list">
+
+    {# List header with select-all and show-pending toggle #}
+    <div class="sd-list-header">
+        <div class="sd-vol-select">
             <label class="switch">
                 <input class="select-all" data-communication-id="{{ communication.id }}"
                        type="checkbox"/>
                 <span class="slider"></span>
             </label>
-        </th>
-        <th width="95%">
-            {# Toggle for showing all messages #}
+        </div>
+        <div class="sd-list-meta">
             {% if pendingMessages|length > 0 %}
-                <label class="d-inline-flex align-items-center mb-0" style="font-weight: normal; font-size: 0.875rem;">
-                    <input type="checkbox" 
-                           class="show-all-messages-toggle mr-2" 
+                <label class="d-inline-flex align-items-center mb-0">
+                    <input type="checkbox"
+                           class="show-all-messages-toggle mr-2"
                            data-communication-id="{{ communication.id }}"
                            id="show-all-toggle-{{ communication.id }}"/>
                     {{ 'campaign_status.show_all_messages'|trans({'%count%': pendingMessages|length})|default('Show all messages (' ~ pendingMessages|length ~ ' pending)') }}
                 </label>
             {% endif %}
-        </th>
-    </tr>
-    </thead>
-    <tbody id="top-{{ communication.id }}">
-    
-    {# Render messages with activity (always visible) #}
-    {% for message in messagesWithActivity %}
-        {% set suffix = communication.id ~ '-' ~ message.id %}
-        {{ resultsMacros.messageRow(message, communication, campaign, volunteerGroups, groupColors, suffix) }}
-    {% endfor %}
-    
-    </tbody>
-    
-    {# Pending messages container (hidden by default) #}
-    <tbody id="pending-messages-{{ communication.id }}" class="d-none pending-messages-container">
-    {% for message in pendingMessages %}
-        {% set suffix = communication.id ~ '-' ~ message.id %}
-        {{ resultsMacros.messageRow(message, communication, campaign, volunteerGroups, groupColors, suffix) }}
-    {% endfor %}
-    </tbody>
-</table>
-<div class="clearfix"></div>
+        </div>
+    </div>
+
+    {# Active messages (always visible) #}
+    <div id="top-{{ communication.id }}">
+        {% for message in messagesWithActivity %}
+            {% set suffix = communication.id ~ '-' ~ message.id %}
+            {{ resultsMacros.messageRow(message, communication, campaign, volunteerGroups, groupColors, suffix) }}
+        {% endfor %}
+    </div>
+
+    {# Pending messages (hidden by default) #}
+    <div id="pending-messages-{{ communication.id }}" class="d-none sd-pending-container">
+        {% for message in pendingMessages %}
+            {% set suffix = communication.id ~ '-' ~ message.id %}
+            {{ resultsMacros.messageRow(message, communication, campaign, volunteerGroups, groupColors, suffix) }}
+        {% endfor %}
+    </div>
+
+</div>

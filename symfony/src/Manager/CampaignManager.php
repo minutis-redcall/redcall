@@ -194,9 +194,9 @@ class CampaignManager
         $this->campaignRepository->changeNotes($campaign, $notes);
     }
 
-    public function refresh(CampaignEntity $campaign)
+    public function refresh(CampaignEntity $campaign) : ?CampaignEntity
     {
-        return $this->campaignRepository->findOneByIdNoCache($campaign->getId());
+        return $this->campaignRepository->findCampaignWithFreshData($campaign->getId());
     }
 
     public function getCampaignsOpenedByMeOrMyCrew(User $user) : QueryBuilder
@@ -252,44 +252,24 @@ class CampaignManager
     }
 
     /**
-     * We want the data to be refreshed on the frontend side only when the
-     * campaign changes, so hash should contain all information that can
-     * change (eg. messages sent, answers, note etc), in order to break
-     * the long polling only when main information are updated.
+     * Hash based on Campaign.lastActivityAt and Campaign.notesUpdatedAt.
+     * These timestamps are updated by CommunicationActivitySubscriber (postFlush)
+     * and manual write paths (notes, group toggle/rename).
      *
-     * We could use the CampaignEntity object directly (iterating it in
-     * order to count messages received etc) but it would lazily load
-     * everything related to the campaign from the db, which is too heavy.
-     *
-     * We should also take care to explicitly disable Doctrine caching in
-     * all queries, because Doctrine will usually return the same result
-     * for the same query.
-     *
-     * @TODO we now have Communicaiton.lastActivityAt, use it instead (update CommunicationActivitySubscriber with
-     *       Campaign changes if necessary)
-     *
-     * @param int $campaignId
-     *
-     * @return string
+     * Single PK lookup query, replacing the previous 4 uncached JOIN queries.
      */
     public function getHash(int $campaignId) : string
     {
-        $criteria = [
-            // trigger note has been updated
-            $this->campaignRepository->getNoteUpdateTimestamp($campaignId),
+        $row = $this->campaignRepository->getHashData($campaignId);
 
-            // number of messages sent changed
-            $this->campaignRepository->countNumberOfMessagesSent($campaignId),
+        if (!$row) {
+            return sha1('empty');
+        }
 
-            // number of answers to any of the trigger's communication increased
-            // note: we don't need to take care of "answers that changed" because answers are immutable
-            $this->campaignRepository->countNumberOfAnswersReceived($campaignId),
-
-            // volunteer groups
-            $this->volunteerGroupRepository->countVolunteerGroups($campaignId),
-        ];
-
-        return sha1(implode('|', $criteria));
+        return sha1(implode('|', [
+            $row['lastActivityAt'] instanceof \DateTimeInterface ? $row['lastActivityAt']->format('U.u') : '0',
+            $row['notesUpdatedAt'] instanceof \DateTimeInterface ? $row['notesUpdatedAt']->format('U.u') : '0',
+        ]));
     }
 
     public function getCampaignAudience(CampaignEntity $campaign) : array

@@ -3,22 +3,25 @@
 {% import 'status_communication/macros.html.twig' as specificMacros %}
 
 {% block body %}
-    {% include 'status_communication/partials/campaign_header.html.twig' %}
+    <div class="sd-page">
 
-    <div class="row justify-content-md-center">
+        {% include 'status_communication/partials/campaign_header.html.twig' %}
 
-        {% include 'status_communication/partials/tabs.html.twig' %}
+        <div class="row justify-content-md-center">
 
-        <div class="tab-content col-12" id="all-tabs">
+            {% include 'status_communication/partials/tabs.html.twig' %}
 
-            {% for key, communication in campaign.communications %}
-                {% include 'status_communication/partials/communication_item.html.twig' %}
-            {% endfor %}
+            <div class="tab-content col-12" id="all-tabs">
+
+                {% for key, communication in campaign.communications %}
+                    {% include 'status_communication/partials/communication_item.html.twig' %}
+                {% endfor %}
+
+            </div>
 
         </div>
 
     </div>
-
 {% endblock %}
 
 {% block modals %}

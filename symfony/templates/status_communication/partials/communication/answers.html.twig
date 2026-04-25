@@ -1,64 +1,48 @@
 {# -------------------------------------------------------------------------------- #}
-{# Table containing message and answers #}
+{# Answer summary as clickable chips                                                #}
 {# -------------------------------------------------------------------------------- #}
-<table class="table">
-    <tbody>
+<div class="sd-answer-grid">
     {% for choice in communication.choices %}
-        <tr>
-            <td>{{ 'campaign_status.answer_no'|trans({'%choice%': choice.code}) }}</td>
-            <td>
-                <div id="choice-{{ choice.id }}">
-                    <a href="#"
-                        class="filter-response"
-                        data-communication-id="{{ communication.id }}"
-                        data-target="filter-is-choice-{{ choice.id }}-{{ communication.id }}">
-                        {{ choice.label }}
-                    </a>
-                    (<span id="choice-count-{{ choice.id }}" data-count="{{ choice.count }}">{{ choice.count }}</span>)
-                    {% if campaign.choiceShouldCreateResource(choice) %}
-                        🚑
-                    {% endif %}
-                </div>
-            </td>
-        </tr>
+        <a href="#"
+           id="choice-{{ choice.id }}"
+           class="sd-answer-chip filter-response"
+           data-communication-id="{{ communication.id }}"
+           data-target="filter-is-choice-{{ choice.id }}-{{ communication.id }}">
+            <span class="sd-answer-label">{{ choice.label }}</span>
+            <span class="sd-answer-count" id="choice-count-{{ choice.id }}" data-count="{{ choice.count }}">{{ choice.count }}</span>
+            {% if campaign.choiceShouldCreateResource(choice) %}
+                <span class="sd-answer-resource">&#x1F691;</span>
+            {% endif %}
+        </a>
     {% endfor %}
-    <tr>
-        <td>
+
+    {# Invalid answers chip #}
+    <a href="#"
+       id="has-invalid-answer-{{ communication.id }}"
+       class="sd-answer-chip filter-response"
+       data-communication-id="{{ communication.id }}"
+       data-count="{{ communication.invalidAnswersCount }}"
+       data-target="filter-has-invalid-answer-{{ communication.id }}">
+        <span class="sd-answer-label">
             {% if answerCount %}
                 {{ 'campaign_status.answer_invalid'|trans }}
             {% else %}
                 {{ 'campaign_status.answer'|trans }}
             {% endif %}
-        </td>
-        <td>
-            <a href="#"
-                id="has-invalid-answer-{{ communication.id }}"
-                class="filter-response"
-                data-communication-id="{{ communication.id }}"
-                data-count="{{ communication.invalidAnswersCount }}"
-                data-target="filter-has-invalid-answer-{{ communication.id }}">
-                {{ communication.invalidAnswersCount }}
-            </a>
-        </td>
-    </tr>
+        </span>
+        <span class="sd-answer-count">{{ communication.invalidAnswersCount }}</span>
+    </a>
 
+    {# No answers chip #}
     {% if answerCount %}
-        <tr>
-            <td>
-                {{ 'campaign_status.answer_none'|trans }}
-            </td>
-            <td>
-                <a href="#"
-                    id="has-no-answers-{{ communication.id }}"
-                    class="filter-response"
-                    data-communication-id="{{ communication.id }}"
-                    data-count="{{ communication.noAnswersCount }}"
-                    data-target="filter-has-no-answers-{{ communication.id }}">
-                    {{ communication.noAnswersCount }}
-                </a>
-            </td>
-        </tr>
+        <a href="#"
+           id="has-no-answers-{{ communication.id }}"
+           class="sd-answer-chip filter-response"
+           data-communication-id="{{ communication.id }}"
+           data-count="{{ communication.noAnswersCount }}"
+           data-target="filter-has-no-answers-{{ communication.id }}">
+            <span class="sd-answer-label">{{ 'campaign_status.answer_none'|trans }}</span>
+            <span class="sd-answer-count">{{ communication.noAnswersCount }}</span>
+        </a>
     {% endif %}
-
-    </tbody>
-</table>
+</div>

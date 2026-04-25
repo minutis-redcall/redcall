@@ -11,7 +11,8 @@ use Symfony\Contracts\Translation\TranslatorInterface;
  * @ORM\Entity(repositoryClass="App\Repository\CampaignRepository")
  * @ORM\Table(
  *     indexes={
- *         @ORM\Index(name="expires_atx", columns={"expires_at"})
+ *         @ORM\Index(name="expires_atx", columns={"expires_at"}),
+ *         @ORM\Index(name="last_activity_idx", columns={"last_activity_at"})
  *     },
  *     uniqueConstraints={
  *         @ORM\UniqueConstraint(name="codex", columns={"code"})
@@ -128,6 +129,11 @@ class Campaign
      * @ORM\Column(type="text", nullable=true)
      */
     private $groupNames;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $lastActivityAt;
 
     public function getId()
     {
@@ -475,6 +481,25 @@ class Campaign
     public function setGroupNames(array $groupNames) : self
     {
         $this->groupNames = json_encode($groupNames);
+
+        return $this;
+    }
+
+    public function getLastActivityAt() : ?\DateTimeInterface
+    {
+        return $this->lastActivityAt;
+    }
+
+    public function setLastActivityAt(?\DateTimeInterface $lastActivityAt) : self
+    {
+        $this->lastActivityAt = $lastActivityAt;
+
+        return $this;
+    }
+
+    public function touchActivity() : self
+    {
+        $this->lastActivityAt = new \DateTime();
 
         return $this;
     }

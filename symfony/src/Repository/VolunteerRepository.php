@@ -485,6 +485,71 @@ class VolunteerRepository extends BaseRepository
                     ->getSingleScalarResult();
     }
 
+    /**
+     * Batch-count volunteers per badge in given structures, using a single native SQL query.
+     * Replaces N individual getVolunteerCountInStructuresHavingBadges() calls.
+     *
+     * @return array<int, int> badge_id => volunteer count
+     */
+    public function getVolunteerCountsPerBadgeInStructures(array $structureIds, array $badgeIds) : array
+    {
+        if (empty($structureIds) || empty($badgeIds)) {
+            return [];
+        }
+
+        $conn = $this->getEntityManager()->getConnection();
+
+        $badgePlaceholders  = implode(',', array_fill(0, count($badgeIds), '?'));
+        $structPlaceholders = implode(',', array_fill(0, count($structureIds), '?'));
+
+        $sql = "
+            SELECT targets.target_badge_id, COUNT(DISTINCT v.id) AS cnt
+            FROM volunteer v
+            JOIN volunteer_structure vs ON vs.volunteer_id = v.id
+            JOIN volunteer_badge vb ON vb.volunteer_id = v.id
+            JOIN badge b ON b.id = vb.badge_id AND b.enabled = 1
+            LEFT JOIN badge x ON x.id = b.synonym_id AND x.enabled = 1
+            LEFT JOIN badge p1 ON p1.id = b.parent_id AND p1.enabled = 1
+            LEFT JOIN badge p2 ON p2.id = p1.parent_id AND p2.enabled = 1
+            LEFT JOIN badge p3 ON p3.id = p2.parent_id AND p3.enabled = 1
+            LEFT JOIN badge p4 ON p4.id = p3.parent_id AND p4.enabled = 1
+            JOIN (
+                SELECT id AS target_badge_id FROM badge WHERE id IN ({$badgePlaceholders})
+            ) targets ON (
+                   b.id = targets.target_badge_id
+                OR x.id = targets.target_badge_id
+                OR p1.id = targets.target_badge_id
+                OR p2.id = targets.target_badge_id
+                OR p3.id = targets.target_badge_id
+                OR p4.id = targets.target_badge_id
+            )
+            WHERE v.enabled = 1
+              AND vs.structure_id IN ({$structPlaceholders})
+            GROUP BY targets.target_badge_id
+        ";
+
+        $params = array_merge(
+            array_map('intval', $badgeIds),
+            array_map('intval', $structureIds)
+        );
+
+        $rows = $conn->fetchAllAssociative($sql, $params);
+
+        $counts = [];
+        foreach ($rows as $row) {
+            $counts[(int) $row['target_badge_id']] = (int) $row['cnt'];
+        }
+
+        // Fill missing badges with 0
+        foreach ($badgeIds as $id) {
+            if (!isset($counts[(int) $id])) {
+                $counts[(int) $id] = 0;
+            }
+        }
+
+        return $counts;
+    }
+
     public function getVolunteerGlobalCounts(array $structureIds) : int
     {
         return $this
