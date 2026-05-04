@@ -83,7 +83,7 @@ admin:
     success: 'This volunteer can now be reintegrated.s'
     title: 'Undelete a volunteer'
     violations:
-      cannot_import: 'This identifier cannot be used.'
+      cannot_import: 'This volunteer has been deleted (GDPR). Their identifier cannot be reused. Contact support if you need to restore them.'
       not_exists: 'This identifier does not exist.'
   home:
     link: Administration
@@ -768,6 +768,7 @@ manage_volunteers:
     tags: Skills
     update: 'Update volunteer'
     updated: 'Volunteer has properly been updated.'
+    deleted_volunteer_warning: 'Warning: this volunteer''s identifier has been deleted (GDPR). Saving changes to this volunteer may cause issues. Contact support if you need to restore them properly.'
     visible_badges: 'Main badges'
     section_messages: 'Latest messages'
     add: 'Create a new volunteer'

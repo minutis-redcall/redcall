@@ -16,6 +16,7 @@ use App\Form\Type\VolunteerType;
 use App\Manager\AnswerManager;
 use App\Manager\CampaignManager;
 use App\Manager\CommunicationManager;
+use App\Manager\DeletedVolunteerManager;
 use App\Manager\MessageManager;
 use App\Manager\PegassManager;
 use App\Manager\PhoneManager;
@@ -106,6 +107,11 @@ class VolunteersController extends BaseController
      */
     private $templating;
 
+    /**
+     * @var DeletedVolunteerManager
+     */
+    private $deletedVolunteerManager;
+
     public function __construct(VolunteerManager $volunteerManager,
         StructureManager $structureManager,
         PegassManager $pegassManager,
@@ -118,21 +124,23 @@ class VolunteersController extends BaseController
         MessageManager $messageManager,
         TranslatorInterface $translator,
         Environment $templating,
-        SimpleProcessor $simpleProcessor)
+        SimpleProcessor $simpleProcessor,
+        DeletedVolunteerManager $deletedVolunteerManager)
     {
-        $this->volunteerManager     = $volunteerManager;
-        $this->structureManager     = $structureManager;
-        $this->pegassManager        = $pegassManager;
-        $this->refreshManager       = $refreshManager;
-        $this->campaignManager      = $campaignManager;
-        $this->communicationManager = $communicationManager;
-        $this->phoneManager         = $phoneManager;
-        $this->answerManager        = $answerManager;
-        $this->paginationManager    = $paginationManager;
-        $this->messageManager       = $messageManager;
-        $this->translator           = $translator;
-        $this->templating           = $templating;
-        $this->simpleProcessor      = $simpleProcessor;
+        $this->volunteerManager        = $volunteerManager;
+        $this->structureManager        = $structureManager;
+        $this->pegassManager           = $pegassManager;
+        $this->refreshManager          = $refreshManager;
+        $this->campaignManager         = $campaignManager;
+        $this->communicationManager    = $communicationManager;
+        $this->phoneManager            = $phoneManager;
+        $this->answerManager           = $answerManager;
+        $this->paginationManager       = $paginationManager;
+        $this->messageManager          = $messageManager;
+        $this->translator              = $translator;
+        $this->templating              = $templating;
+        $this->simpleProcessor         = $simpleProcessor;
+        $this->deletedVolunteerManager = $deletedVolunteerManager;
     }
 
     /**
@@ -181,6 +189,10 @@ class VolunteersController extends BaseController
     public function manualUpdateAction(Request $request, Volunteer $volunteer)
     {
         $isCreate = !$volunteer->getId();
+
+        if (!$isCreate && $this->deletedVolunteerManager->isDeleted($volunteer->getExternalId())) {
+            $this->addFlash('alert', $this->translator->trans('manage_volunteers.form.deleted_volunteer_warning'));
+        }
 
         $oldVolunteer = clone $volunteer;
         $oldPhone     = $volunteer->getPhone() ? clone $volunteer->getPhone() : null;
