@@ -13,7 +13,7 @@ class SpaceControllerTest extends BaseWebTestCase
     {
         return new DataFixtures(
             $container->get('doctrine.orm.entity_manager'),
-            $container->get('security.password_encoder')
+            $container->get('security.password_hasher')
         );
     }
 
@@ -41,12 +41,13 @@ class SpaceControllerTest extends BaseWebTestCase
         $em->persist($volunteerSession);
         $em->flush();
 
-        // Store in the HTTP session so the VolunteerSessionVoter grants access
-        $session = $container->get('session');
+        // Store in the HTTP session so the VolunteerSessionVoter grants access.
+        // Use the kernel's session.factory so the storage matches what the
+        // request handler will read.
+        $session = $container->get('session.factory')->createSession();
         $session->set('volunteer-session', $volunteerSession->getSessionId());
         $session->save();
 
-        // Attach session cookie to browser
         $client->getCookieJar()->set(
             new \Symfony\Component\BrowserKit\Cookie($session->getName(), $session->getId())
         );

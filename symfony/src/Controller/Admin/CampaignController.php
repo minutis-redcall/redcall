@@ -10,9 +10,7 @@ use Bundles\PaginationBundle\Manager\PaginationManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @Route("/admin/campaign", name="admin_campaign_")
- */
+#[Route("/admin/campaign", name: "admin_campaign_")]
 class CampaignController extends BaseController
 {
     /**
@@ -32,11 +30,11 @@ class CampaignController extends BaseController
     }
 
     /**
-     * @Route(name="index")
-     * @Template("admin/campaign/list.html.twig")
      *
      * @return array
      */
+#[Route(name: "index")]
+#[Template("admin/campaign/list.html.twig")]
     public function index(MinutisProvider $minutis) : array
     {
         $all = $this->campaignManager->getAllCampaignsQueryBuilder();

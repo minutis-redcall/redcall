@@ -27,20 +27,19 @@ class AudienceManagerTest extends KernelTestCase
     {
         self::bootKernel();
 
-        $this->audienceManager = self::$container->get(AudienceManager::class);
-        $this->em = self::$container->get('doctrine.orm.entity_manager');
+        $this->audienceManager = self::getContainer()->get(AudienceManager::class);
+        $this->em = self::getContainer()->get('doctrine.orm.entity_manager');
         $this->fixtures = new DataFixtures(
             $this->em,
-            self::$container->get('security.password_encoder')
+            self::getContainer()->get('security.password_hasher')
         );
     }
 
     private function loginUser($user) : void
     {
-        $token = new UsernamePasswordToken(
-            $user, null, 'main', $user->getRoles()
+        $token = new UsernamePasswordToken($user, 'main', $user->getRoles()
         );
-        self::$container->get('security.token_storage')->setToken($token);
+        self::getContainer()->get('security.token_storage')->setToken($token);
     }
 
     // ──────────────────────────────────────────────

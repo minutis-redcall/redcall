@@ -12,9 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Twilio\TwiML\TwiML;
 
-/**
- * @Route(name="twilio_", path="/twilio/")
- */
+#[Route(name: "twilio_", path: "/twilio/")]
 class CallController extends BaseController
 {
     /**
@@ -37,9 +35,7 @@ class CallController extends BaseController
         $this->logger      = $logger ?? new NullLogger();
     }
 
-    /**
-     * @Route(name="incoming_call", path="incoming-call")
-     */
+    #[Route(name: "incoming_call", path: "incoming-call")]
     public function incoming(Request $request)
     {
         $this->validateRequestSignature($request);
@@ -63,9 +59,7 @@ class CallController extends BaseController
         return new XmlResponse($response->asXml());
     }
 
-    /**
-     * @Route(name="outgoing_call", path="outgoing-call/{uuid}")
-     */
+    #[Route(name: "outgoing_call", path: "outgoing-call/{uuid}")]
     public function outgoing(Request $request, string $uuid)
     {
         $this->validateRequestSignature($request);
@@ -100,9 +94,7 @@ class CallController extends BaseController
         ]);
     }
 
-    /**
-     * @Route(name="answering_machine", path="answering-machine/{uuid}")
-     */
+    #[Route(name: "answering_machine", path: "answering-machine/{uuid}")]
     public function answeringMachine(Request $request, string $uuid)
     {
         $this->validateRequestSignature($request);

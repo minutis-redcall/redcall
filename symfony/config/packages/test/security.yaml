@@ -1,4 +1,3 @@
 security:
-  encoders:
-    App\Entity\User:
-      algorithm: plaintext
+  password_hashers:
+    App\Entity\User: plaintext

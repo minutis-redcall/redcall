@@ -6,74 +6,54 @@ use App\Entity\Volunteer;
 use App\Manager\VolunteerManager;
 use App\Manager\VolunteerSessionManager;
 use Firebase\JWT\JWT;
+use Firebase\JWT\Key;
 use Goutte\Client;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
-use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Security\Core\User\UserProviderInterface;
-use Symfony\Component\Security\Guard\AbstractGuardAuthenticator;
+use Symfony\Component\Security\Http\Authenticator\AbstractAuthenticator;
+use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
+use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
+use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPassport;
+use Symfony\Component\Security\Http\EntryPoint\AuthenticationEntryPointInterface;
 
-class MinutisAuthenticator extends AbstractGuardAuthenticator
+class MinutisAuthenticator extends AbstractAuthenticator implements AuthenticationEntryPointInterface
 {
-    /**
-     * @var VolunteerManager
-     */
-    private $volunteerManager;
+    private VolunteerManager $volunteerManager;
+    private VolunteerSessionManager $volunteerSessionManager;
+    private RouterInterface $router;
+    private LoggerInterface $logger;
+    private KernelInterface $kernel;
+    private RequestStack $requestStack;
 
-    /**
-     * @var VolunteerSessionManager
-     */
-    private $volunteerSessionManager;
-
-    /**
-     * @var RouterInterface
-     */
-    private $router;
-
-    /**
-     * @var LoggerInterface
-     */
-    private $logger;
-
-    /**
-     * @var KernelInterface
-     */
-    private $kernel;
-
-    /**
-     * @var SessionInterface
-     */
-    private $session;
-
-    /**
-     * @var Volunteer
-     */
-    private $volunteer;
+    /** Used by onAuthenticationFailure */
+    private ?Volunteer $volunteer = null;
 
     public function __construct(VolunteerManager $volunteerManager,
         VolunteerSessionManager $volunteerSessionManager,
         RouterInterface $router,
         LoggerInterface $logger,
         KernelInterface $kernel,
-        SessionInterface $session)
+        RequestStack $requestStack)
     {
         $this->volunteerManager        = $volunteerManager;
         $this->volunteerSessionManager = $volunteerSessionManager;
         $this->router                  = $router;
         $this->logger                  = $logger;
         $this->kernel                  = $kernel;
-        $this->session                 = $session;
+        $this->requestStack            = $requestStack;
     }
 
-    public function supports(Request $request)
+    public function supports(Request $request): ?bool
     {
         $support = getenv('MINUTIS_JWT_PUBLIC_KEY_URL')
                    && '/auth' === $request->getPathInfo()
@@ -90,7 +70,7 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
         return $support;
     }
 
-    public function getCredentials(Request $request)
+    public function authenticate(Request $request): Passport
     {
         $jwt = $request->request->get('jwt');
 
@@ -98,16 +78,9 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
             'jwt' => $jwt,
         ]);
 
-        return $jwt;
-    }
-
-    public function getUser($jwt, UserProviderInterface $userProvider)
-    {
-        // Decode and verify JWT token
         try {
-            $decoded = (array) JWT::decode($jwt, $this->getMinutisPublicKey(), ['RS256']);
+            $decoded = (array) JWT::decode($jwt, new Key($this->getMinutisPublicKey(), 'RS256'));
         } catch (\Throwable $e) {
-            // Either invalid JWT, invalid algo, expired token...
             $this->logger->warning('Minutis authenticator: unable to decode JWT', [
                 'token'     => $jwt,
                 'exception' => $e->getMessage(),
@@ -116,7 +89,6 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
             throw new BadCredentialsException();
         }
 
-        // Seek for a nivol in payload
         foreach (['exp', 'nivol'] as $requiredKey) {
             if (!array_key_exists($requiredKey, $decoded)) {
                 $this->logger->warning('Minutis authenticator: key not given in JWT', [
@@ -132,7 +104,6 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
             'decoded' => $decoded,
         ]);
 
-        // Seek for a volunteer attached to that nivol
         $externalId = ltrim($decoded['nivol'], '0');
         $volunteer  = $this->volunteerManager->findOneByExternalId($externalId);
 
@@ -152,10 +123,8 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
             throw new BadCredentialsException();
         }
 
-        // Will be used by onAuthenticationFailure handler
         $this->volunteer = $volunteer;
 
-        // Seek for a RedCall user attached to that volunteer
         $user = $volunteer->getUser();
         if (null === $user) {
             $this->logger->info('Minutis authenticator: a volunteer without RedCall access clicked on Minutis link', [
@@ -166,18 +135,17 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
         }
 
         $this->logger->info('Minutis authenticator: successfully connected user', [
-            'user' => $user->getUsername(),
+            'user' => $user->getUserIdentifier(),
         ]);
 
-        return $user;
+        return new SelfValidatingPassport(
+            new UserBadge($user->getUserIdentifier(), function () use ($user) {
+                return $user;
+            })
+        );
     }
 
-    public function checkCredentials($credentials, UserInterface $user)
-    {
-        return true;
-    }
-
-    public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
+    public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
         if ($this->volunteer && $this->volunteer->isEnabled()) {
             $sessionId = $this->volunteerSessionManager->createSession($this->volunteer);
@@ -188,16 +156,20 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
                 ])
             );
         }
+
+        return null;
     }
 
-    public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)
+    public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
-        $route = $this->session->get('auth_redirect', [
+        $session = $this->getSession();
+
+        $route = $session->get('auth_redirect', [
             'route'        => 'home',
             'route_params' => [],
         ]);
 
-        $this->session->remove('auth_redirect');
+        $session->remove('auth_redirect');
 
         $response = new RedirectResponse(
             $this->router->generate($route['route'], $route['route_params'])
@@ -210,30 +182,25 @@ class MinutisAuthenticator extends AbstractGuardAuthenticator
         return $response;
     }
 
-    public function start(Request $request, AuthenticationException $authException = null)
+    public function start(Request $request, AuthenticationException $authException = null): Response
     {
-        $this->session->set('auth_redirect', [
+        $session = $this->getSession();
+        $session->set('auth_redirect', [
             'route'        => $request->attributes->get('_route'),
             'route_params' => $request->attributes->get('_route_params'),
         ]);
 
         $url = $this->router->generate('password_login_connect');
 
-        // Automatic redirect to minutis when reaching out /home
-        //        if ('dev' !== $this->kernel->getEnvironment()
-        //            && 'minutis' !== $request->cookies->get('auth_method')) {
-        //            $url = getenv('MINUTIS_URL');
-        //        }
-
         return new RedirectResponse($url);
     }
 
-    public function supportsRememberMe()
+    private function getSession(): Session
     {
-        return false;
+        return $this->requestStack->getSession();
     }
 
-    private function getMinutisPublicKey()
+    private function getMinutisPublicKey(): string
     {
         $client = new Client();
 

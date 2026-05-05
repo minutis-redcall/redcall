@@ -8,9 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @Route("/fake-storage", name="fake_storage_")
- */
+#[Route("/fake-storage", name: "fake_storage_")]
 class FakeStorageController extends BaseController
 {
     /**
@@ -23,9 +21,7 @@ class FakeStorageController extends BaseController
         $this->kernel = $kernel;
     }
 
-    /**
-     * @Route("/{filename}", name="access")
-     */
+    #[Route("/{filename}", name: "access")]
     public function access(string $filename)
     {
         $path = FakeStorageProvider::getPath($this->kernel->getCacheDir(), $filename);

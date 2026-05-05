@@ -17,8 +17,8 @@ use Symfony\Component\Validator\Constraints\Length;
 /**
  * WARNING: this controller is OUT of the security firewall.
  *
- * @Route(path="msg/", name="message_")
  */
+#[Route(path: "msg/", name: "message_")]
 class MessageController extends BaseController
 {
     /**
@@ -45,9 +45,7 @@ class MessageController extends BaseController
         $this->volunteerManager = $volunteerManager;
     }
 
-    /**
-     * @Route(path="{code}", name="open", methods={"GET", "POST"})
-     */
+    #[Route(path: "{code}", name: "open", methods: ["GET", "POST"])]
     public function openAction(Request $request, Message $message)
     {
         $form = $this->createFreeAnswerForm($request);
@@ -73,9 +71,7 @@ class MessageController extends BaseController
         ]);
     }
 
-    /**
-     * @Route(path="optout/{code}", name="optout", methods={"GET", "POST"})
-     */
+    #[Route(path: "optout/{code}", name: "optout", methods: ["GET", "POST"])]
     public function optoutAction(Request $request, Message $message)
     {
         $form = $this->createFormBuilder()
@@ -113,9 +109,7 @@ class MessageController extends BaseController
         ]);
     }
 
-    /**
-     * @Route(path="{code}/{signature}/{action}", name="action", requirements={"action" = "\d+"}, methods={"GET"})
-     */
+    #[Route(path: "{code}/{signature}/{action}", name: "action", requirements: ["action" => "\d+"], methods: ["GET"])]
     public function actionAction(Message $message, int $action, string $signature)
     {
         $this->checkSignature($message, $signature);
@@ -136,10 +130,7 @@ class MessageController extends BaseController
         ]);
     }
 
-    /**
-     * @Route(path="{code}/annuler/{signature}/{action}", name="cancel", requirements={"action" = "\d+"},
-     *                                                    methods={"GET"})
-     */
+    #[Route(path: "{code}/annuler/{signature}/{action}", name: "cancel", requirements: ["action" => "\d+"], methods: ["GET"])]
     public function cancelAction(Message $message, int $action, string $signature)
     {
         $this->checkSignature($message, $signature);

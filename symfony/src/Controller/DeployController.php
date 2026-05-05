@@ -7,9 +7,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @Route(path="deploy")
- */
+#[Route(path: "deploy")]
 class DeployController extends AbstractController
 {
     /**
@@ -25,9 +23,7 @@ class DeployController extends AbstractController
         $this->messageManager = $messageManager;
     }
 
-    /**
-     * @Route()
-     */
+    #[Route()]
     public function check()
     {
         return new Response(

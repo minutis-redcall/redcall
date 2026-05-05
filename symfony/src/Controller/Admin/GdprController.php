@@ -16,9 +16,7 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-/**
- * @Route("/admin/gdpr", name="admin_gdpr_")
- */
+#[Route("/admin/gdpr", name: "admin_gdpr_")]
 class GdprController extends BaseController
 {
     /**
@@ -37,10 +35,8 @@ class GdprController extends BaseController
         $this->translator              = $translator;
     }
 
-    /**
-     * @Route(name="index")
-     * @Template("admin/gdpr/index.html.twig")
-     */
+    #[Route(name: "index")]
+#[Template("admin/gdpr/index.html.twig")]
     public function index(Request $request) : array
     {
         $form = $this

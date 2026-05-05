@@ -26,14 +26,14 @@ class GdprManagerTest extends KernelTestCase
     {
         self::bootKernel();
 
-        $this->em = self::$container->get('doctrine.orm.entity_manager');
+        $this->em = self::getContainer()->get('doctrine.orm.entity_manager');
         $this->fixtures = new DataFixtures(
             $this->em,
-            self::$container->get('security.password_encoder')
+            self::getContainer()->get('security.password_hasher')
         );
 
         // GdprManager is not a public service; instantiate it manually
-        $volunteerManager = self::$container->get(VolunteerManager::class);
+        $volunteerManager = self::getContainer()->get(VolunteerManager::class);
         $this->gdprManager = new \App\Manager\GdprManager($volunteerManager);
     }
 

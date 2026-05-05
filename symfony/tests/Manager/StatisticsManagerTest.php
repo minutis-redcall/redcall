@@ -22,11 +22,11 @@ class StatisticsManagerTest extends KernelTestCase
     {
         self::bootKernel();
 
-        $this->statisticsManager = self::$container->get(StatisticsManager::class);
-        $this->em = self::$container->get('doctrine.orm.entity_manager');
+        $this->statisticsManager = self::getContainer()->get(StatisticsManager::class);
+        $this->em = self::getContainer()->get('doctrine.orm.entity_manager');
         $this->fixtures = new DataFixtures(
             $this->em,
-            self::$container->get('security.password_encoder')
+            self::getContainer()->get('security.password_hasher')
         );
     }
 

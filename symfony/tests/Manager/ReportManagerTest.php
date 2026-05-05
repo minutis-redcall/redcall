@@ -23,11 +23,11 @@ class ReportManagerTest extends KernelTestCase
     {
         self::bootKernel();
 
-        $this->reportManager = self::$container->get(ReportManager::class);
-        $this->em = self::$container->get('doctrine.orm.entity_manager');
+        $this->reportManager = self::getContainer()->get(ReportManager::class);
+        $this->em = self::getContainer()->get('doctrine.orm.entity_manager');
         $this->fixtures = new DataFixtures(
             $this->em,
-            self::$container->get('security.password_encoder')
+            self::getContainer()->get('security.password_hasher')
         );
     }
 

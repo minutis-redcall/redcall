@@ -14,7 +14,7 @@ use Symfony\Component\Validator\Constraints\Choice;
 
 class ChooseOperationChoicesType extends AbstractType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         // Dynamically creating the "operation choices" field based on given answers
         $builder->addEventListener(FormEvents::PRE_SET_DATA, function (FormEvent $event) {
@@ -47,7 +47,7 @@ class ChooseOperationChoicesType extends AbstractType
         });
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => BaseTrigger::class,

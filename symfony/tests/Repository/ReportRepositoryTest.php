@@ -20,12 +20,12 @@ class ReportRepositoryTest extends KernelTestCase
     {
         self::bootKernel();
 
-        $this->repository = self::$container->get('doctrine.orm.entity_manager')
+        $this->repository = self::getContainer()->get('doctrine.orm.entity_manager')
             ->getRepository(Report::class);
 
         $this->fixtures = new DataFixtures(
-            self::$container->get('doctrine.orm.entity_manager'),
-            self::$container->get('security.password_encoder')
+            self::getContainer()->get('doctrine.orm.entity_manager'),
+            self::getContainer()->get('security.password_hasher')
         );
     }
 
@@ -42,7 +42,7 @@ class ReportRepositoryTest extends KernelTestCase
 
         $communication->setReport($report);
 
-        $em = self::$container->get('doctrine.orm.entity_manager');
+        $em = self::getContainer()->get('doctrine.orm.entity_manager');
         $em->persist($report);
         $em->persist($communication);
         $em->flush();
@@ -119,7 +119,7 @@ class ReportRepositoryTest extends KernelTestCase
         $campaign = $this->fixtures->createCampaign('OOR Campaign');
         $comm = $this->fixtures->createCommunication($campaign, Communication::TYPE_SMS, 'oor body');
         $comm->setCreatedAt(new \DateTime('2020-01-01'));
-        $em = self::$container->get('doctrine.orm.entity_manager');
+        $em = self::getContainer()->get('doctrine.orm.entity_manager');
         $em->persist($comm);
         $em->flush();
 

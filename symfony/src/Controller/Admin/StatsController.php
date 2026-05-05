@@ -16,9 +16,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Range;
 
-/**
- * @Route("/admin/stats", name="admin_stats_")
- */
+#[Route("/admin/stats", name: "admin_stats_")]
 class StatsController extends BaseController
 {
     /**
@@ -31,19 +29,15 @@ class StatsController extends BaseController
         $this->reportManager = $reportManager;
     }
 
-    /**
-     * @Route("/", name="home")
-     * @Template
-     */
+    #[Route("/", name: "home")]
+#[Template()]
     public function index()
     {
         return [];
     }
 
-    /**
-     * @Route("/general", name="general")
-     * @Template()
-     */
+    #[Route("/general", name: "general")]
+#[Template()]
     public function general(StatisticsManager $statisticsManager, Request $request) : array
     {
         //$from = new \DateTime('first day of January this year midnight');
@@ -91,10 +85,8 @@ class StatsController extends BaseController
         ];
     }
 
-    /**
-     * @Route("/structure", name="structure")
-     * @Template
-     */
+    #[Route("/structure", name: "structure")]
+#[Template()]
     public function structure(Request $request)
     {
         $form = $this->createStructureForm($request);

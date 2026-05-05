@@ -28,12 +28,12 @@ class UserStructuresType extends AbstractType
         $this->security    = $security;
     }
 
-    public function getParent()
+    public function getParent(): ?string
     {
         return EntityType::class;
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefault('user', $this->security->getUser());
 

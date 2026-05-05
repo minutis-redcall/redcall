@@ -49,7 +49,7 @@ class RegistrationType extends AbstractType
         $this->translator     = $translator;
     }
 
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->add('username', Type\EmailType::class, [
@@ -88,7 +88,7 @@ class RegistrationType extends AbstractType
                 'second_options'  => ['label' => 'password_login.register.repeat_password'],
             ]);
 
-        $ip = $this->requestStack->getMasterRequest()->getClientIp();
+        $ip = $this->requestStack->getMainRequest()->getClientIp();
 
         if (!$this->captchaManager->isAllowed($ip)) {
             $builder
@@ -106,7 +106,7 @@ class RegistrationType extends AbstractType
         ]);
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefault('allow_extra_fields', true);
     }

@@ -8,17 +8,17 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class PhoneCardsType extends AbstractType
 {
-    public function getParent()
+    public function getParent(): ?string
     {
         return CollectionType::class;
     }
 
-    public function getBlockPrefix()
+    public function getBlockPrefix(): string
     {
         return 'phone_cards';
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'label'         => false,

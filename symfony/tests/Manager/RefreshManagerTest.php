@@ -52,15 +52,15 @@ class RefreshManagerTest extends KernelTestCase
     {
         self::bootKernel();
 
-        $this->refreshManager = self::$container->get(RefreshManager::class);
-        $this->em = self::$container->get('doctrine.orm.entity_manager');
-        $this->structureManager = self::$container->get(StructureManager::class);
-        $this->volunteerManager = self::$container->get(VolunteerManager::class);
-        $this->pegassManager = self::$container->get(PegassManager::class);
-        $this->badgeManager = self::$container->get(BadgeManager::class);
+        $this->refreshManager = self::getContainer()->get(RefreshManager::class);
+        $this->em = self::getContainer()->get('doctrine.orm.entity_manager');
+        $this->structureManager = self::getContainer()->get(StructureManager::class);
+        $this->volunteerManager = self::getContainer()->get(VolunteerManager::class);
+        $this->pegassManager = self::getContainer()->get(PegassManager::class);
+        $this->badgeManager = self::getContainer()->get(BadgeManager::class);
         $this->fixtures = new DataFixtures(
             $this->em,
-            self::$container->get('security.password_encoder')
+            self::getContainer()->get('security.password_hasher')
         );
     }
 

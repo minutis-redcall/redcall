@@ -7,14 +7,12 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @Route(path="cron")
- */
+#[Route(path: "cron")]
 class CronController extends AbstractController
 {
     private const CRONS = [
@@ -30,19 +28,14 @@ class CronController extends AbstractController
         'import:national',
     ];
 
-    /**
-     * @var SessionInterface
-     */
-    protected $session;
+    private RequestStack $requestStack;
 
-    public function __construct(SessionInterface $session)
+    public function __construct(RequestStack $requestStack)
     {
-        $this->session = $session;
+        $this->requestStack = $requestStack;
     }
 
-    /**
-     * @Route("/{key}")
-     */
+    #[Route("/{key}")]
     public function run(Request $request, string $key, KernelInterface $kernel)
     {
         $key = str_replace('-', ':', $key);
@@ -53,7 +46,7 @@ class CronController extends AbstractController
         if ($request->getClientIp() !== '127.0.0.1'
             && 'true' !== $request->headers->get('X-Appengine-Cron')) {
             if ($this->getUser() && $this->getUser()->isAdmin()) {
-                $this->session->save();
+                $this->requestStack->getSession()->save();
             } else {
                 throw $this->createAccessDeniedException();
             }

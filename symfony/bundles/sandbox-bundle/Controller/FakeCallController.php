@@ -18,9 +18,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
-/**
- * @Route("/fake-call", name="fake_call_")
- */
+#[Route("/fake-call", name: "fake_call_")]
 class FakeCallController extends BaseController
 {
     /**
@@ -52,10 +50,8 @@ class FakeCallController extends BaseController
         $this->volunteerManager = $volunteerManager;
     }
 
-    /**
-     * @Route("/", name="list")
-     * @Template()
-     */
+    #[Route("/", name: "list")]
+#[Template()]
     public function listAction()
     {
         $phones = $this->fakeCallManager->findAllPhones();
@@ -68,9 +64,7 @@ class FakeCallController extends BaseController
         ];
     }
 
-    /**
-     * @Route("/clear/{csrf}", name="clear")
-     */
+    #[Route("/clear/{csrf}", name: "clear")]
     public function clearAction(string $csrf)
     {
         $this->validateCsrfOrThrowNotFoundException('fake_call', $csrf);
@@ -80,10 +74,8 @@ class FakeCallController extends BaseController
         return $this->redirectToRoute('sandbox_fake_call_list');
     }
 
-    /**
-     * @Route("/read/{e164}/{campaignId}", name="read", defaults={"campaignId"=null})
-     * @Template()
-     */
+    #[Route("/read/{e164}/{campaignId}", name: "read", defaults: ["campaignId" => null])]
+#[Template()]
     public function readAction(Request $request, Phone $phone, ?int $campaignId)
     {
         $volunteer = $phone->getVolunteers()->first();

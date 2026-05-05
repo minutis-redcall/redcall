@@ -24,7 +24,7 @@ class UseCampaignOperationType extends AbstractType
         $this->operationManager = $operationManager;
     }
 
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->add('operation', UseOperationType::class, [
@@ -49,7 +49,7 @@ class UseCampaignOperationType extends AbstractType
             ]);
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => Campaign::class,

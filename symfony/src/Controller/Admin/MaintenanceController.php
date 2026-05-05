@@ -22,10 +22,8 @@ use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-/**
- * @Route(path="admin/maintenance", name="admin_maintenance_")
- * @IsGranted("ROLE_ROOT")
- */
+#[Route(path: "admin/maintenance", name: "admin_maintenance_")]
+#[IsGranted("ROLE_ROOT")]
 class MaintenanceController extends BaseController
 {
     /**
@@ -73,17 +71,13 @@ class MaintenanceController extends BaseController
         $this->translator         = $translator;
     }
 
-    /**
-     * @Route(name="index", path="/")
-     */
+    #[Route(name: "index", path: "/")]
     public function index()
     {
         return $this->render('admin/maintenance/index.html.twig');
     }
 
-    /**
-     * @Route(name="refresh", path="/refresh")
-     */
+    #[Route(name: "refresh", path: "/refresh")]
     public function refresh()
     {
         $this->maintenanceManager->refresh();
@@ -93,9 +87,7 @@ class MaintenanceController extends BaseController
         return $this->redirectToRoute('admin_maintenance_index');
     }
 
-    /**
-     * @Route(name="pegass_files", path="/pegass-files")
-     */
+    #[Route(name: "pegass_files", path: "/pegass-files")]
     public function pegassFiles()
     {
         $this->maintenanceManager->pegassFiles();
@@ -105,9 +97,7 @@ class MaintenanceController extends BaseController
         return $this->redirectToRoute('admin_maintenance_index');
     }
 
-    /**
-     * @Route(name="annuaire_national", path="/annuaire-national")
-     */
+    #[Route(name: "annuaire_national", path: "/annuaire-national")]
     public function annuaireNational()
     {
         $this->maintenanceManager->annuaireNational();
@@ -117,9 +107,7 @@ class MaintenanceController extends BaseController
         return $this->redirectToRoute('admin_maintenance_index');
     }
 
-    /**
-     * @Route(name="search", path="/search")
-     */
+    #[Route(name: "search", path: "/search")]
     public function search(Request $request)
     {
         return $this->render('admin/maintenance/search.html.twig', [
@@ -144,9 +132,7 @@ class MaintenanceController extends BaseController
                     ->handleRequest($request);
     }
 
-    /**
-     * @Route(name="search_change_nivol", path="/search/change-nivol")
-     */
+    #[Route(name: "search_change_nivol", path: "/search/change-nivol")]
     public function searchChangeNivol(Request $request)
     {
         return new JsonResponse([
@@ -174,9 +160,7 @@ class MaintenanceController extends BaseController
         return $entity;
     }
 
-    /**
-     * @Route(name="search_change_expression", path="/search/change-expression")
-     */
+    #[Route(name: "search_change_expression", path: "/search/change-expression")]
     public function searchChangeExpression(Request $request)
     {
         $entity     = $this->getPegassEntity($request);
@@ -203,9 +187,7 @@ class MaintenanceController extends BaseController
         }
     }
 
-    /**
-     * @Route(name="message", path="/message")
-     */
+    #[Route(name: "message", path: "/message")]
     public function message(Request $request)
     {
         $types = [

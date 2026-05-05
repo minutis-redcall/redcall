@@ -26,12 +26,12 @@ class PegassManagerTest extends KernelTestCase
     {
         self::bootKernel();
 
-        $this->pegassManager = self::$container->get(PegassManager::class);
-        $this->em = self::$container->get('doctrine.orm.entity_manager');
-        $this->pegassRepository = self::$container->get(PegassRepository::class);
+        $this->pegassManager = self::getContainer()->get(PegassManager::class);
+        $this->em = self::getContainer()->get('doctrine.orm.entity_manager');
+        $this->pegassRepository = self::getContainer()->get(PegassRepository::class);
         $this->fixtures = new DataFixtures(
             $this->em,
-            self::$container->get('security.password_encoder')
+            self::getContainer()->get('security.password_hasher')
         );
     }
 

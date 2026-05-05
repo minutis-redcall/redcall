@@ -1,8 +1,7 @@
 security:
 
-  encoders:
-    App\Entity\User:
-      algorithm: bcrypt
+  password_hashers:
+    App\Entity\User: bcrypt
 
   providers:
     user_provider:
@@ -18,20 +17,21 @@ security:
     main:
       pattern: '^/'
       provider: user_provider
-      anonymous: ~
+      lazy: true
+      user_checker: App\Security\UserChecker
       logout:
         path: /logout
         target: /
         csrf_token_generator: security.csrf.token_manager
-      guard:
-        authenticators:
-          - App\Security\Authenticator\MinutisAuthenticator
-          - App\Security\Authenticator\GoogleConnectAuthenticator
-          - Bundles\PasswordLoginBundle\Security\Authenticator\FormLoginAuthenticator
-          - App\Security\Authenticator\NivolAuthenticator
-        entry_point: App\Security\Authenticator\MinutisAuthenticator
+      custom_authenticators:
+        - App\Security\Authenticator\MinutisAuthenticator
+        - App\Security\Authenticator\GoogleConnectAuthenticator
+        - Bundles\PasswordLoginBundle\Security\Authenticator\FormLoginAuthenticator
+        - App\Security\Authenticator\NivolAuthenticator
+      entry_point: App\Security\Authenticator\MinutisAuthenticator
       remember_me:
-        token_provider: 'Symfony\Bridge\Doctrine\Security\RememberMe\DoctrineTokenProvider'
+        token_provider:
+          doctrine: true
         secret: '%kernel.secret%'
 
   role_hierarchy:
@@ -40,52 +40,52 @@ security:
   access_control:
 
     # Technical
-    - { path: '^/_ah', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
-    - { path: '^/cron', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
-    - { path: '^/task', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
-    - { path: '^/deploy', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
+    - { path: '^/_ah', roles: PUBLIC_ACCESS }
+    - { path: '^/cron', roles: PUBLIC_ACCESS }
+    - { path: '^/task', roles: PUBLIC_ACCESS }
+    - { path: '^/deploy', roles: PUBLIC_ACCESS }
 
     # Minutis authentication
-    - { path: '^/auth$', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
+    - { path: '^/auth$', roles: PUBLIC_ACCESS }
 
     # Google Connect
-    - { path: '^/google-(connect|verify)$', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
+    - { path: '^/google-(connect|verify)$', roles: PUBLIC_ACCESS }
 
     # Volunteer space
-    - { path: '^/space', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
+    - { path: '^/space', roles: PUBLIC_ACCESS }
 
     # Webhooks (sms response received)
-    - { path: '^/twilio', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
+    - { path: '^/twilio', roles: PUBLIC_ACCESS }
 
     # Medias (generated voice calls)
-    - { path: '^/media', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
+    - { path: '^/media', roles: PUBLIC_ACCESS }
 
     # Unauthenticated identity management
-    - { path: '^/connect', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
-    - { path: '^/register', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
-    - { path: '^/forgot-password', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
-    - { path: '^/change-password', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
-    - { path: '^/verify-email', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
-    - { path: '^/locale', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
-    - { path: '^/nivol', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
-    - { path: '^/code', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
+    - { path: '^/connect', roles: PUBLIC_ACCESS }
+    - { path: '^/register', roles: PUBLIC_ACCESS }
+    - { path: '^/forgot-password', roles: PUBLIC_ACCESS }
+    - { path: '^/change-password', roles: PUBLIC_ACCESS }
+    - { path: '^/verify-email', roles: PUBLIC_ACCESS }
+    - { path: '^/locale', roles: PUBLIC_ACCESS }
+    - { path: '^/nivol', roles: PUBLIC_ACCESS }
+    - { path: '^/code', roles: PUBLIC_ACCESS }
 
     # Links contained in SMS should be publicly available
-    - { path: '^/syn', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
-    - { path: '^/msg', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
-    - { path: '^/geo', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
+    - { path: '^/syn', roles: PUBLIC_ACCESS }
+    - { path: '^/msg', roles: PUBLIC_ACCESS }
+    - { path: '^/geo', roles: PUBLIC_ACCESS }
 
     # We allow non activated users to reach a few pages
-    - { path: '^/logout', role: 'ROLE_USER' }
-    - { path: '^/profile', role: 'ROLE_USER' }
-    - { path: '^/guest', role: 'ROLE_USER' }
+    - { path: '^/logout', roles: ROLE_USER }
+    - { path: '^/profile', roles: ROLE_USER }
+    - { path: '^/guest', roles: ROLE_USER }
     - { path: '^/$', roles: [ 'ROLE_USER' ] }
 
     # Website administration
     - { path: '^/admin', roles: [ 'ROLE_ADMIN' ] }
 
     # Google Cloud Tasks
-    - { path: '^/cloud-task$', role: 'IS_AUTHENTICATED_ANONYMOUSLY' }
+    - { path: '^/cloud-task$', roles: PUBLIC_ACCESS }
 
     # Requires an activated account for other pages
     - { path: '^/', roles: [ 'ROLE_TRUSTED' ] }

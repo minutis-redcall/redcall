@@ -8,10 +8,8 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class HomeController extends BaseController
 {
-    /**
-     * @Route(name="home")
-     * @Template()
-     */
+    #[Route(name: "home")]
+#[Template()]
     public function indexAction()
     {
     }

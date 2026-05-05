@@ -25,10 +25,8 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Validator\Constraints\GreaterThan;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-/**
- * @Route(path="/space/{sessionId}", name="space_")
- * @IsGranted("VOLUNTEER_SESSION", subject="session")
- */
+#[Route(path: "/space/{sessionId}", name: "space_")]
+#[IsGranted("VOLUNTEER_SESSION", subject: "session")]
 class SpaceController extends BaseController
 {
     /**
@@ -76,9 +74,7 @@ class SpaceController extends BaseController
         $this->translator              = $translator;
     }
 
-    /**
-     * @Route(path="/", name="home")
-     */
+    #[Route(path: "/", name: "home")]
     public function home(Request $request, LocaleManager $localeManager, VolunteerSession $session)
     {
         if (!$this->getUser()) {
@@ -94,9 +90,7 @@ class SpaceController extends BaseController
         ]);
     }
 
-    /**
-     * @Route(path="/infos", name="infos")
-     */
+    #[Route(path: "/infos", name: "infos")]
     public function infos(VolunteerSession $session)
     {
         return $this->render('space/infos.html.twig', [
@@ -104,9 +98,7 @@ class SpaceController extends BaseController
         ]);
     }
 
-    /**
-     * @Route(path="/phone", name="phone")
-     */
+    #[Route(path: "/phone", name: "phone")]
     public function phone(VolunteerSession $session, Request $request)
     {
         $volunteer = $session->getVolunteer();
@@ -149,9 +141,7 @@ class SpaceController extends BaseController
         ]);
     }
 
-    /**
-     * @Route(path="/email", name="email")
-     */
+    #[Route(path: "/email", name: "email")]
     public function email(VolunteerSession $session, Request $request)
     {
         $volunteer = $session->getVolunteer();
@@ -184,9 +174,7 @@ class SpaceController extends BaseController
         ]);
     }
 
-    /**
-     * @Route(path="/enabled", name="enabled")
-     */
+    #[Route(path: "/enabled", name: "enabled")]
     public function enabled(VolunteerSession $session, Request $request)
     {
         $volunteer = $session->getVolunteer();
@@ -228,9 +216,7 @@ class SpaceController extends BaseController
         ]);
     }
 
-    /**
-     * @Route(path="/consult-data", name="consult_data")
-     */
+    #[Route(path: "/consult-data", name: "consult_data")]
     public function consultData(VolunteerSession $session)
     {
         return $this->render('space/consult_data.html.twig', [
@@ -239,9 +225,7 @@ class SpaceController extends BaseController
         ]);
     }
 
-    /**
-     * @Route(path="/download-data", name="download_data")
-     */
+    #[Route(path: "/download-data", name: "download_data")]
     public function downloadData(VolunteerSession $session)
     {
         return new DownloadResponse(
@@ -253,9 +237,7 @@ class SpaceController extends BaseController
         );
     }
 
-    /**
-     * @Route(path="/delete-data", name="delete_data")
-     */
+    #[Route(path: "/delete-data", name: "delete_data")]
     public function deleteData(VolunteerSession $session, Request $request)
     {
         $form = $this->createFormBuilder()
@@ -286,9 +268,7 @@ class SpaceController extends BaseController
         ]);
     }
 
-    /**
-     * @Route(path="/logout", name="logout")
-     */
+    #[Route(path: "/logout", name: "logout")]
     public function logout(VolunteerSession $session)
     {
         $this->volunteerSessionManager->removeSession($session);

@@ -31,20 +31,16 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\HttpFoundation\Session\Session;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
-use Symfony\Component\Security\Core\Security;
+use Symfony\Component\Security\Http\SecurityRequestAttributes;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Environment;
 
-/**
- * @Route(name="password_login_")
- */
+#[Route(name: "password_login_")]
 class SecurityController extends AbstractController
 {
     /**
@@ -83,7 +79,7 @@ class SecurityController extends AbstractController
     private $twig;
 
     /**
-     * @var UserPasswordEncoderInterface
+     * @var UserPasswordHasherInterface
      */
     private $encoder;
 
@@ -91,11 +87,6 @@ class SecurityController extends AbstractController
      * @var TokenStorageInterface
      */
     private $tokenStorage;
-
-    /**
-     * @var Session
-     */
-    private $session;
 
     /**
      * @var TranslatorInterface
@@ -124,9 +115,8 @@ class SecurityController extends AbstractController
         EventDispatcherInterface $dispatcher,
         EmailProvider $emailProvider,
         Environment $twig,
-        UserPasswordEncoderInterface $encoder,
+        UserPasswordHasherInterface $encoder,
         TokenStorageInterface $tokenStorage,
-        SessionInterface $session,
         TranslatorInterface $translator,
         RequestStack $requestStack,
         string $userClass = User::class,
@@ -141,17 +131,19 @@ class SecurityController extends AbstractController
         $this->twig                     = $twig;
         $this->encoder                  = $encoder;
         $this->tokenStorage             = $tokenStorage;
-        $this->session                  = $session;
         $this->translator               = $translator;
         $this->requestStack             = $requestStack;
         $this->userClass                = $userClass;
         $this->homeRoute                = $homeRoute;
     }
 
-    /**
-     * @Route("/register", name="register")
-     * @Template()
-     */
+    private function getSession()
+    {
+        return $this->requestStack->getSession();
+    }
+
+    #[Route("/register", name: "register")]
+#[Template()]
     public function registerAction(Request $request)
     {
         if ('test' !== getenv('APP_ENV')) {
@@ -178,7 +170,7 @@ class SecurityController extends AbstractController
         }
 
         if ($registrationForm->isSubmitted() && $registrationForm->isValid()) {
-            $user->setPassword($this->encoder->encodePassword($user, $user->getPassword()));
+            $user->setPassword($this->encoder->hashPassword($user, $user->getPassword()));
 
             $this->dispatcher->dispatch(new PreRegisterEvent($user), PasswordLoginEvents::PRE_REGISTER);
 
@@ -200,9 +192,7 @@ class SecurityController extends AbstractController
         ];
     }
 
-    /**
-     * @Route("/verify-email/{uuid}", name="verify_email")
-     */
+    #[Route("/verify-email/{uuid}", name: "verify_email")]
     public function verifyEmailAction(Request $request, $uuid)
     {
         if ($this->isGranted('ROLE_USER')) {
@@ -235,7 +225,7 @@ class SecurityController extends AbstractController
 
         $this->dispatcher->dispatch(new PostVerifyEmailEvent($user), PasswordLoginEvents::POST_VERIFY_EMAIL);
 
-        $token = new UsernamePasswordToken($user, null, 'main', $user->getRoles());
+        $token = new UsernamePasswordToken($user, 'main', $user->getRoles());
         $this->tokenStorage->setToken($token);
 
         $this->addFlash('success', $this->translator->trans('password_login.verify_email.success'));
@@ -245,10 +235,8 @@ class SecurityController extends AbstractController
         return $this->redirectToRoute($this->homeRoute);
     }
 
-    /**
-     * @Route("/connect/{nivol}", requirements={"nivol": "[a-zA-Z0-9]*"}, defaults={"nivol": null}, name="connect")
-     * @Template()
-     */
+    #[Route("/connect/{nivol}", requirements: ["nivol" => "[a-zA-Z0-9]*"], defaults: ["nivol" => null], name: "connect")]
+#[Template()]
     public function connectAction(Request $request, ?string $nivol = null)
     {
         if ($this->isGranted('ROLE_USER')) {
@@ -268,9 +256,10 @@ class SecurityController extends AbstractController
             ->createForm(NivolType::class, $data)
             ->handleRequest($request);
 
-        if ($this->session->has(Security::AUTHENTICATION_ERROR)) {
-            $this->session->getFlashBag()->add('danger', $this->translator->trans('password_login.connect.incorrect'));
-            $this->session->remove(Security::AUTHENTICATION_ERROR);
+        $session = $this->getSession();
+        if ($session->has(SecurityRequestAttributes::AUTHENTICATION_ERROR)) {
+            $session->getFlashBag()->add('danger', $this->translator->trans('password_login.connect.incorrect'));
+            $session->remove(SecurityRequestAttributes::AUTHENTICATION_ERROR);
         }
 
         return [
@@ -280,18 +269,14 @@ class SecurityController extends AbstractController
         ];
     }
 
-    /**
-     * @Route("/logout", name="logout")
-     */
+    #[Route("/logout", name: "logout")]
     public function logoutAction(Request $request)
     {
         // never reached
     }
 
-    /**
-     * @Route("/profile", name="profile")
-     * @Template()
-     */
+    #[Route("/profile", name: "profile")]
+#[Template()]
     public function profileAction(Request $request)
     {
         $formUser = new AbstractUser();
@@ -324,7 +309,7 @@ class SecurityController extends AbstractController
 
             if ($formUser->getPassword()) {
                 $newUser->setPassword(
-                    $this->encoder->encodePassword($newUser, $formUser->getPassword())
+                    $this->encoder->hashPassword($newUser, $formUser->getPassword())
                 );
             }
 
@@ -347,19 +332,15 @@ class SecurityController extends AbstractController
         ];
     }
 
-    /**
-     * @Route("/guest", name="not_trusted")
-     * @Template()
-     */
+    #[Route("/guest", name: "not_trusted")]
+#[Template()]
     public function notTrustedAction()
     {
         return [];
     }
 
-    /**
-     * @Route("/forgot-password", name="forgot_password")
-     * @Template()
-     */
+    #[Route("/forgot-password", name: "forgot_password")]
+#[Template()]
     public function forgotPasswordAction(Request $request)
     {
         if ($this->isGranted('ROLE_USER')) {
@@ -393,10 +374,8 @@ class SecurityController extends AbstractController
         ];
     }
 
-    /**
-     * @Route("/change-password/{uuid}", name="change_password")
-     * @Template()
-     */
+    #[Route("/change-password/{uuid}", name: "change_password")]
+#[Template()]
     public function changePasswordAction(Request $request, $uuid)
     {
         if ($this->isGranted('ROLE_USER')) {
@@ -425,7 +404,7 @@ class SecurityController extends AbstractController
             $newPassword = $changePassword->getData()['password'];
 
             $user->setPassword(
-                $this->encoder->encodePassword($user, $newPassword)
+                $this->encoder->hashPassword($user, $newPassword)
             );
 
             $this->userManager->save($user);
@@ -488,7 +467,7 @@ class SecurityController extends AbstractController
     private function decreaseGrace()
     {
         $this->captchaManager->decreaseGrace(
-            $this->requestStack->getMasterRequest()->getClientIp()
+            $this->requestStack->getMainRequest()->getClientIp()
         );
     }
 }

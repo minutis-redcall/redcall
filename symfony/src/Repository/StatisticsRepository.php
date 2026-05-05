@@ -26,7 +26,7 @@ class StatisticsRepository
 
     public function getNumberOfCampaigns(\DateTime $from, \DateTime $to) : array
     {
-        return $this->entityManager->getConnection()->fetchAssoc('
+        return $this->entityManager->getConnection()->fetchAssociative('
             SELECT COUNT(*) as created, SUM(IF(c.active, 1, 0)) as active
             FROM campaign c
             WHERE c.created_at BETWEEN :from AND :to

@@ -191,7 +191,7 @@ class MessageManager
         $answer->setUnclear($message->getCommunication()->isUnclear($message->getPrefix(), $body));
 
         if ($byAdmin) {
-            $answer->setByAdmin($this->tokenStorage->getToken()->getUsername());
+            $answer->setByAdmin($this->tokenStorage->getToken()->getUserIdentifier());
         }
 
         foreach ($choices as $choice) {

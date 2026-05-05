@@ -19,9 +19,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-/**
- * @Route("/admin/users", name="password_login_admin_")
- */
+#[Route("/admin/users", name: "password_login_admin_")]
 class AdminController extends AbstractController
 {
     /**
@@ -69,10 +67,8 @@ class AdminController extends AbstractController
         $this->homeRoute                = $homeRoute;
     }
 
-    /**
-     * @Route("/", name="list")
-     * @Template()
-     */
+    #[Route("/", name: "list")]
+#[Template()]
     public function listAction(Request $request)
     {
         $search = $this->createSearchForm($request);
@@ -89,9 +85,7 @@ class AdminController extends AbstractController
         ];
     }
 
-    /**
-     * @Route("/toggle-verify/{username}/{csrf}", name="toggle_verify")
-     */
+    #[Route("/toggle-verify/{username}/{csrf}", name: "toggle_verify")]
     public function toggleVerify($username, $csrf)
     {
         $user = $this->checkCsrfAndUser($username, $csrf);
@@ -107,9 +101,7 @@ class AdminController extends AbstractController
         return $this->redirectToRoute('password_login_admin_list');
     }
 
-    /**
-     * @Route("/toggle-trust/{username}/{csrf}", name="toggle_trust")
-     */
+    #[Route("/toggle-trust/{username}/{csrf}", name: "toggle_trust")]
     public function toggleTrust($username, $csrf)
     {
         $user = $this->checkCsrfAndUser($username, $csrf);
@@ -120,9 +112,7 @@ class AdminController extends AbstractController
         return $this->redirectToRoute('password_login_admin_list');
     }
 
-    /**
-     * @Route("/toggle-admin/{username}/{csrf}", name="toggle_admin")
-     */
+    #[Route("/toggle-admin/{username}/{csrf}", name: "toggle_admin")]
     public function toggleAdmin($username, $csrf)
     {
         $user = $this->checkCsrfAndUser($username, $csrf);
@@ -133,9 +123,7 @@ class AdminController extends AbstractController
         return $this->redirectToRoute('password_login_admin_list');
     }
 
-    /**
-     * @Route("/delete/{username}/{csrf}", name="delete")
-     */
+    #[Route("/delete/{username}/{csrf}", name: "delete")]
     public function delete($username, $csrf)
     {
         $user = $this->checkCsrfAndUser($username, $csrf);
@@ -153,10 +141,8 @@ class AdminController extends AbstractController
         return $this->redirectToRoute('password_login_admin_list');
     }
 
-    /**
-     * @Route("/profile/{username}", name="profile")
-     * @Template()
-     */
+    #[Route("/profile/{username}", name: "profile")]
+#[Template()]
     public function profile(Request $request, string $username)
     {
         $newUser = $this->checkUser($username);
@@ -189,9 +175,7 @@ class AdminController extends AbstractController
         ];
     }
 
-    /**
-     * @Route("/reset-password/{username}/{csrf}", name="reset_password")
-     */
+    #[Route("/reset-password/{username}/{csrf}", name: "reset_password")]
     public function resetPassword($username, $csrf)
     {
         if ($this->checkCsrfAndUser($username, $csrf)) {

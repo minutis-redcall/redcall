@@ -26,9 +26,7 @@ use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-/**
- * @Route(path="management/structures", name="management_structures_")
- */
+#[Route(path: "management/structures", name: "management_structures_")]
 class StructuresController extends BaseController
 {
     /**
@@ -76,9 +74,7 @@ class StructuresController extends BaseController
         $this->translator        = $translator;
     }
 
-    /**
-     * @Route("/{enabled}", name="list", defaults={"enabled" = true}, requirements={"enabled" = "^\d?$"})
-     */
+    #[Route("/{enabled}", name: "list", defaults: ["enabled" => true], requirements: ["enabled" => "^\d?$"])]
     public function listAction(Request $request, bool $enabled)
     {
         $search = $this->createSearchForm($request);
@@ -106,10 +102,10 @@ class StructuresController extends BaseController
     }
 
     /**
-     * @Route("/create/{id}", name="create", defaults={"id" = null})
      * @Security("is_granted('ROLE_ADMIN')")
-     * @Template("management/structures/form.html.twig")
      */
+#[Route("/create/{id}", name: "create", defaults: ["id" => null])]
+#[Template("management/structures/form.html.twig")]
     public function createStructure(Request $request, ?Structure $structure = null)
     {
         if (null === $structure) {
@@ -133,10 +129,8 @@ class StructuresController extends BaseController
         ];
     }
 
-    /**
-     * @Route(name="pegass", path="/pegass/{id}")
-     * @IsGranted("ROLE_ADMIN")
-     */
+    #[Route(name: "pegass", path: "/pegass/{id}")]
+#[IsGranted("ROLE_ADMIN")]
     public function pegass(Structure $structure)
     {
         $entity = $this->pegassManager->getEntity(Pegass::TYPE_STRUCTURE, $structure->getExternalId(), false);
@@ -151,10 +145,8 @@ class StructuresController extends BaseController
         ]);
     }
 
-    /**
-     * @Route(name="export", path="/export/{id}")
-     * @IsGranted("STRUCTURE", subject="structure")
-     */
+    #[Route(name: "export", path: "/export/{id}")]
+#[IsGranted("STRUCTURE", subject: "structure")]
     public function export(Structure $structure)
     {
         $rows = [];
@@ -172,9 +164,7 @@ class StructuresController extends BaseController
         return new ArrayToCsvResponse($rows, sprintf('%s.%s.csv', date('Y-m-d'), $structure->getName()));
     }
 
-    /**
-     * @Route(name="list_users", path="/list-users")
-     */
+    #[Route(name: "list_users", path: "/list-users")]
     public function listUsers(Request $request)
     {
         $structure       = $this->getStructureById($request->get('id'));
@@ -192,12 +182,10 @@ class StructuresController extends BaseController
         ]);
     }
 
-    /**
-     * @Route(path="/toggle-lock-{id}/{token}", name="toggle_lock")
-     * @IsGranted("STRUCTURE", subject="structure")
-     * @IsGranted("ROLE_ADMIN")
-     * @Template("management/structures/structure.html.twig")
-     */
+    #[Route(path: "/toggle-lock-{id}/{token}", name: "toggle_lock")]
+#[IsGranted("STRUCTURE", subject: "structure")]
+#[IsGranted("ROLE_ADMIN")]
+#[Template("management/structures/structure.html.twig")]
     public function toggleLock(Structure $structure, Csrf $token)
     {
         $structure->setLocked(1 - $structure->isLocked());
@@ -207,12 +195,10 @@ class StructuresController extends BaseController
         return $this->getContext($structure);
     }
 
-    /**
-     * @Route(path="/toggle-enable-{id}/{token}", name="toggle_enable")
-     * @IsGranted("STRUCTURE", subject="structure")
-     * @IsGranted("ROLE_ADMIN")
-     * @Template("management/structures/structure.html.twig")
-     */
+    #[Route(path: "/toggle-enable-{id}/{token}", name: "toggle_enable")]
+#[IsGranted("STRUCTURE", subject: "structure")]
+#[IsGranted("ROLE_ADMIN")]
+#[Template("management/structures/structure.html.twig")]
     public function toggleEnable(Structure $structure, Csrf $token)
     {
         $structure->setEnabled(1 - $structure->isEnabled());

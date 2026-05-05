@@ -9,10 +9,8 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @Route("/costs", name="costs_")
- * @IsGranted("ROLE_TRUSTED")
- */
+#[Route("/costs", name: "costs_")]
+#[IsGranted("ROLE_TRUSTED")]
 class CostsController extends BaseController
 {
     private ReportManager $reportManager;
@@ -22,10 +20,8 @@ class CostsController extends BaseController
         $this->reportManager = $reportManager;
     }
 
-    /**
-     * @Route("/", name="home")
-     * @Template
-     */
+    #[Route("/", name: "home")]
+#[Template()]
     public function home(): array
     {
         /** @var User $user */

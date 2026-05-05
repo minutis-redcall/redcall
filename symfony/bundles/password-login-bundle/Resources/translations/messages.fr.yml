@@ -8,6 +8,7 @@ password_login:
     success: 'Votre mot de passe a bien été mis à jour.'
     title: 'Changement de mot de passe'
   connect:
+    account_locked: 'Votre compte est bloqué. Veuillez contacter un administrateur.'
     captcha: 'Merci de cocher la case ci-dessous'
     connect: Connexion
     email: 'Veuillez saisir votre email'

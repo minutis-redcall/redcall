@@ -19,12 +19,12 @@ class AnswerRepositoryTest extends KernelTestCase
     {
         self::bootKernel();
 
-        $this->repository = self::$container->get('doctrine.orm.entity_manager')
+        $this->repository = self::getContainer()->get('doctrine.orm.entity_manager')
             ->getRepository(Answer::class);
 
         $this->fixtures = new DataFixtures(
-            self::$container->get('doctrine.orm.entity_manager'),
-            self::$container->get('security.password_encoder')
+            self::getContainer()->get('doctrine.orm.entity_manager'),
+            self::getContainer()->get('security.password_hasher')
         );
     }
 
@@ -43,7 +43,7 @@ class AnswerRepositoryTest extends KernelTestCase
         $this->assertCount(1, $answer->getChoices());
 
         // Refresh message from DB so its answers collection is loaded
-        $em = self::$container->get('doctrine.orm.entity_manager');
+        $em = self::getContainer()->get('doctrine.orm.entity_manager');
         $em->clear();
         $freshMessage = $em->getRepository(\App\Entity\Message::class)->find($fullCampaign['message']->getId());
 
@@ -68,7 +68,7 @@ class AnswerRepositoryTest extends KernelTestCase
         );
 
         // Refresh message from DB so its answers collection is loaded
-        $em = self::$container->get('doctrine.orm.entity_manager');
+        $em = self::getContainer()->get('doctrine.orm.entity_manager');
         $em->clear();
         $freshMessage = $em->getRepository(\App\Entity\Message::class)->find($fullCampaign['message']->getId());
         $freshChoice = $em->getRepository(\App\Entity\Choice::class)->find($choice->getId());

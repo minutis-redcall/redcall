@@ -27,9 +27,7 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @Route(path="/widget", name="widget_")
- */
+#[Route(path: "/widget", name: "widget_")]
 class WidgetController extends BaseController
 {
     /**
@@ -156,9 +154,7 @@ class WidgetController extends BaseController
         ]);
     }
 
-    /**
-     * @Route(path="/template-data", name="template_data")
-     */
+    #[Route(path: "/template-data", name: "template_data")]
     public function templateData(Request $request)
     {
         $id = intval($request->get('id'));
@@ -199,9 +195,7 @@ class WidgetController extends BaseController
         ]);
     }
 
-    /**
-     * @Route(path="/volunteer-search/{searchAll}", name="volunteer_search")
-     */
+    #[Route(path: "/volunteer-search/{searchAll}", name: "volunteer_search")]
     public function volunteerSearch(Request $request, bool $searchAll = false)
     {
         if ($searchAll && !$this->isGranted('ROLE_ADMIN')) {
@@ -241,9 +235,7 @@ class WidgetController extends BaseController
         ]);
     }
 
-    /**
-     * @Route(path="/structure-search/{searchAll}", name="structure_search")
-     */
+    #[Route(path: "/structure-search/{searchAll}", name: "structure_search")]
     public function structureSearch(Request $request, bool $searchAll = false)
     {
         if ($searchAll && !$this->isGranted('ROLE_ADMIN')) {
@@ -279,9 +271,7 @@ class WidgetController extends BaseController
         ]);
     }
 
-    /**
-     * @Route(path="/badge-search", name="badge_search")
-     */
+    #[Route(path: "/badge-search", name: "badge_search")]
     public function badgeSearch(Request $request)
     {
         $criteria = trim($request->query->get('keyword'));
@@ -309,9 +299,7 @@ class WidgetController extends BaseController
         ]);
     }
 
-    /**
-     * @Route(path="/category-search", name="category_search")
-     */
+    #[Route(path: "/category-search", name: "category_search")]
     public function categorySearch(Request $request)
     {
         $criteria = trim($request->query->get('keyword'));

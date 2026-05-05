@@ -47,9 +47,7 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-/**
- * @Route(name="communication_")
- */
+#[Route(name: "communication_")]
 class CommunicationController extends BaseController
 {
     /**
@@ -134,13 +132,11 @@ class CommunicationController extends BaseController
         $this->volunteerGroupRepository = $volunteerGroupRepository;
     }
 
-    /**
-     * @Route(path="campaign/{id}", name="index", requirements={"id" = "\d+"})
-     * @IsGranted("CAMPAIGN_ACCESS", subject="campaign")
-     */
+    #[Route(path: "campaign/{id}", name: "index", requirements: ["id" => "\d+"])]
+#[IsGranted("CAMPAIGN_ACCESS", subject: "campaign")]
     public function indexAction(Campaign $campaign, MinutisProvider $minutis, TranslatorInterface $translator)
     {
-        $this->get('session')->save();
+        $this->container->get('request_stack')->getSession()->save();
 
         $volunteerGroups = $this->volunteerGroupRepository->getVolunteerGroups($campaign->getId());
         $hash            = $this->campaignManager->getHash($campaign->getId());
@@ -165,10 +161,8 @@ class CommunicationController extends BaseController
         ]);
     }
 
-    /**
-     * @Route(path="campaign/goto/{id}", name="goto", requirements={"id" = "\d+"})
-     * @IsGranted("COMMUNICATION", subject="communication")
-     */
+    #[Route(path: "campaign/goto/{id}", name: "goto", requirements: ["id" => "\d+"])]
+#[IsGranted("COMMUNICATION", subject: "communication")]
     public function gotoAction(Communication $communication)
     {
         return $this->redirectToRoute('communication_index', [
@@ -176,13 +170,11 @@ class CommunicationController extends BaseController
         ]);
     }
 
-    /**
-     * @Route(path="campaign/{id}/short-polling", name="short_polling", requirements={"id" = "\d+"})
-     * @IsGranted("CAMPAIGN_ACCESS", subject="campaign")
-     */
+    #[Route(path: "campaign/{id}/short-polling", name: "short_polling", requirements: ["id" => "\d+"])]
+#[IsGranted("CAMPAIGN_ACCESS", subject: "campaign")]
     public function shortPolling(Campaign $campaign, TranslatorInterface $translator)
     {
-        $this->get('session')->save();
+        $this->container->get('request_stack')->getSession()->save();
 
         return new JsonResponse(
             array_merge($campaign->getCampaignStatus($translator), [
@@ -191,14 +183,12 @@ class CommunicationController extends BaseController
         );
     }
 
-    /**
-     * @Route(path="campaign/{id}/long-polling", name="long_polling", requirements={"id" = "\d+"})
-     * @IsGranted("CAMPAIGN_ACCESS", subject="campaign")
-     */
+    #[Route(path: "campaign/{id}/long-polling", name: "long_polling", requirements: ["id" => "\d+"])]
+#[IsGranted("CAMPAIGN_ACCESS", subject: "campaign")]
     public function longPolling(Campaign $campaign, Request $request, TranslatorInterface $translator)
     {
         // Always close the session to prevent against session locks
-        $this->get('session')->save();
+        $this->container->get('request_stack')->getSession()->save();
 
         $campaignId = $campaign->getId();
         $secs       = 0;
@@ -224,14 +214,8 @@ class CommunicationController extends BaseController
         return new Response();
     }
 
-    /**
-     * @Route(
-     *     name="add",
-     *     path="campaign/{id}/add-communication/{type}",
-     *     requirements={"id" = "\d+"}
-     * )
-     * @IsGranted("CAMPAIGN_ACCESS", subject="campaign")
-     */
+    #[Route(name: "add", path: "campaign/{id}/add-communication/{type}", requirements: ["id" => "\d+"])]
+#[IsGranted("CAMPAIGN_ACCESS", subject: "campaign")]
     public function addCommunicationAction(Request $request, Campaign $campaign, Type $type)
     {
         /** @var \App\Entity\User $user */
@@ -254,15 +238,8 @@ class CommunicationController extends BaseController
         ]);
     }
 
-    /**
-     * @Route(
-     *     name="new",
-     *     path="campaign/{id}/new-communication/{type}/{key}",
-     *     defaults={"key" = null},
-     *     requirements={"id" = "\d+"}
-     * )
-     * @IsGranted("CAMPAIGN_ACCESS", subject="campaign")
-     */
+    #[Route(name: "new", path: "campaign/{id}/new-communication/{type}/{key}", defaults: ["key" => null], requirements: ["id" => "\d+"])]
+#[IsGranted("CAMPAIGN_ACCESS", subject: "campaign")]
     public function newCommunicationAction(
         Campaign $campaign,
         Type $type,
@@ -331,9 +308,7 @@ class CommunicationController extends BaseController
         ]);
     }
 
-    /**
-     * @Route(path="campaign/preview/{type}", name="preview")
-     */
+    #[Route(path: "campaign/preview/{type}", name: "preview")]
     public function previewCommunicationAction(Request $request, Type $type, \HTMLPurifier $purifier)
     {
         /** @var \App\Entity\User $user */
@@ -371,9 +346,7 @@ class CommunicationController extends BaseController
         ]);
     }
 
-    /**
-     * @Route(path="campaign/play", name="play")
-     */
+    #[Route(path: "campaign/play", name: "play")]
     public function playCommunication(Request $request)
     {
         /** @var \App\Entity\User $user */
@@ -408,12 +381,7 @@ class CommunicationController extends BaseController
         ]);
     }
 
-    /**
-     * @Route(
-     *     name="answers",
-     *     path="campaign/answers"
-     * )
-     */
+    #[Route(name: "answers", path: "campaign/answers")]
     public function answersAction(Request $request)
     {
         $messageId = $request->query->get('messageId');
@@ -455,13 +423,7 @@ class CommunicationController extends BaseController
         ]);
     }
 
-    /**
-     * @Route(
-     *     name="change_answer",
-     *     path="campaign/answer/{csrf}/{id}",
-     *     requirements={"id" = "\d+"}
-     * )
-     */
+    #[Route(name: "change_answer", path: "campaign/answer/{csrf}/{id}", requirements: ["id" => "\d+"])]
     public function changeAnswerAction(Request $request, Message $message, string $csrf)
     {
         $this->validateCsrfOrThrowNotFoundException('communication', $csrf);
@@ -487,11 +449,11 @@ class CommunicationController extends BaseController
     }
 
     /**
-     * @Route(path="campaign/{campaignId}/rename-communication/{communicationId}", name="rename")
      * @Entity("campaign", expr="repository.find(campaignId)")
      * @Entity("communicationEntity", expr="repository.find(communicationId)")
-     * @IsGranted("CAMPAIGN_ACCESS", subject="campaign")
      */
+#[Route(path: "campaign/{campaignId}/rename-communication/{communicationId}", name: "rename")]
+#[IsGranted("CAMPAIGN_ACCESS", subject: "campaign")]
     public function rename(Request $request,
         Campaign $campaign,
         Communication $communicationEntity,
@@ -516,9 +478,9 @@ class CommunicationController extends BaseController
     }
 
     /**
-     * @Route("campaign/{campaign}/communication/{communication}/relaunch", name="relaunch")
      * @Security("is_granted('ROLE_ADMIN')")
      */
+#[Route("campaign/{campaign}/communication/{communication}/relaunch", name: "relaunch")]
     public function relaunchCommunication(Campaign $campaign,
         Communication $communication,
         ProcessorInterface $processor)
@@ -535,11 +497,11 @@ class CommunicationController extends BaseController
     }
 
     /**
-     * @Route(path="campaign/{campaignId}/provider-information/{messageId}", name="provider_information")
      * @Entity("campaign", expr="repository.find(campaignId)")
      * @Entity("message", expr="repository.find(messageId)")
-     * @IsGranted("CAMPAIGN_ACCESS", subject="campaign")
      */
+#[Route(path: "campaign/{campaignId}/provider-information/{messageId}", name: "provider_information")]
+#[IsGranted("CAMPAIGN_ACCESS", subject: "campaign")]
     public function getProviderInformation(Campaign $campaign,
         Message $message,
         TranslatorInterface $translator,
@@ -564,7 +526,7 @@ class CommunicationController extends BaseController
 
     private function getCommunicationFromRequest(Request $request, Type $type) : BaseTrigger
     {
-        if ($request->request->get('campaign')) {
+        if ($request->request->has('campaign')) {
             // New campaign form
             $campaign = new CampaignModel($type->getFormData());
 

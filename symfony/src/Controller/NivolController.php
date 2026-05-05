@@ -20,10 +20,8 @@ class NivolController extends AbstractController
         $this->nivolManager = $nivolManager;
     }
 
-    /**
-     * @Route("/nivol", name="nivol")
-     * @Template()
-     */
+    #[Route("/nivol", name: "nivol")]
+#[Template()]
     public function login(Request $request)
     {
         $nivolForm = $this
@@ -41,10 +39,8 @@ class NivolController extends AbstractController
         ];
     }
 
-    /**
-     * @Route("/code/{uuid}", name="code")
-     * @Template()
-     */
+    #[Route("/code/{uuid}", name: "code")]
+#[Template()]
     public function code(Request $request, Expirable $expirable)
     {
         $codeForm = $this

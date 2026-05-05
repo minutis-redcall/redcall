@@ -25,11 +25,11 @@ class CampaignManagerTest extends KernelTestCase
     {
         self::bootKernel();
 
-        $this->campaignManager = self::$container->get(CampaignManager::class);
-        $this->em = self::$container->get('doctrine.orm.entity_manager');
+        $this->campaignManager = self::getContainer()->get(CampaignManager::class);
+        $this->em = self::getContainer()->get('doctrine.orm.entity_manager');
         $this->fixtures = new DataFixtures(
             $this->em,
-            self::$container->get('security.password_encoder')
+            self::getContainer()->get('security.password_hasher')
         );
     }
 
@@ -248,10 +248,9 @@ class CampaignManagerTest extends KernelTestCase
         $user = $this->fixtures->createRawUser('novolunteer@test.com');
 
         // Set up the token storage with a user that has NO volunteer
-        $token = new \Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken(
-            $user, null, 'main', $user->getRoles()
+        $token = new \Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken($user, 'main', $user->getRoles()
         );
-        self::$container->get('security.token_storage')->setToken($token);
+        self::getContainer()->get('security.token_storage')->setToken($token);
 
         $trigger = new \App\Form\Model\SmsTrigger();
         $campaignModel = new \App\Form\Model\Campaign($trigger);

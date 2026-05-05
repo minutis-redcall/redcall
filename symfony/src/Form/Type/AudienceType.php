@@ -130,7 +130,7 @@ class AudienceType extends AbstractType
         ], $defaults);
     }
 
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $structures = $this->security->getUser()->getStructures();
 
@@ -193,7 +193,7 @@ class AudienceType extends AbstractType
         }
     }
 
-    public function buildView(FormView $view, FormInterface $form, array $options)
+    public function buildView(FormView $view, FormInterface $form, array $options): void
     {
         // Volunteer view
         $view->vars['volunteers_data'] = [];
@@ -232,7 +232,7 @@ class AudienceType extends AbstractType
     /**
      * @inheritDoc
      */
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'label'          => false,
@@ -240,7 +240,7 @@ class AudienceType extends AbstractType
         ]);
     }
 
-    public function getBlockPrefix() : string
+    public function getBlockPrefix(): string
     {
         return 'audience';
     }

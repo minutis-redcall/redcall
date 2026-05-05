@@ -40,7 +40,7 @@ class PaginationManager
 
     public function getPager($data, $prefix = '', $hasJoins = false) : Pagerfanta
     {
-        $request = $this->requestStack->getMasterRequest();
+        $request = $this->requestStack->getMainRequest();
 
         $adapter = null;
         if ($data instanceof QueryBuilder) {

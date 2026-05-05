@@ -19,11 +19,20 @@ class VolunteerSessionManagerTest extends KernelTestCase
         self::bootKernel();
 
         $container        = static::getContainer();
+
+        // Sf6: VolunteerSessionManager reads/writes the HTTP session via RequestStack,
+        // so a request with a session must be on the stack.
+        $request = \Symfony\Component\HttpFoundation\Request::create('/');
+        $request->setSession(new \Symfony\Component\HttpFoundation\Session\Session(
+            new \Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage()
+        ));
+        $container->get('request_stack')->push($request);
+
         $this->manager    = $container->get(VolunteerSessionManager::class);
         $this->repository = $container->get('doctrine')->getRepository(VolunteerSession::class);
         $this->fixtures   = new DataFixtures(
             $container->get('doctrine.orm.entity_manager'),
-            $container->get('security.password_encoder')
+            $container->get('security.password_hasher')
         );
     }
 

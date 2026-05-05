@@ -5,7 +5,6 @@ namespace App\Manager;
 use App\Entity\User;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class LocaleManager
@@ -14,11 +13,6 @@ class LocaleManager
      * @var RequestStack
      */
     private $requestStack;
-
-    /**
-     * @var SessionInterface
-     */
-    private $session;
 
     /**
      * @var string
@@ -41,17 +35,20 @@ class LocaleManager
     private $userManager;
 
     public function __construct(RequestStack $requestStack,
-        SessionInterface $session,
         ParameterBagInterface $parameterBag,
         TokenStorageInterface $tokenStorage,
         UserManager $userManager)
     {
         $this->requestStack     = $requestStack;
-        $this->session          = $session;
         $this->defaultLocale    = $parameterBag->get('locale');
         $this->availableLocales = $parameterBag->get('locale_list');
         $this->tokenStorage     = $tokenStorage;
         $this->userManager      = $userManager;
+    }
+
+    private function getSession()
+    {
+        return $this->requestStack->getSession();
     }
 
     /**
@@ -69,10 +66,10 @@ class LocaleManager
 
     public function restoreFromSession()
     {
-        $request = $this->requestStack->getMasterRequest();
+        $request = $this->requestStack->getMainRequest();
 
         // Set locale from the session
-        if ($locale = $this->session->get('_locale')) {
+        if ($locale = $this->getSession()->get('_locale')) {
             $this->changeLocale($locale);
 
             return;
@@ -110,7 +107,7 @@ class LocaleManager
             $this->requestStack->getMainRequest()->setLocale($locale);
         }
 
-        $this->session->set('_locale', $locale);
+        $this->getSession()->set('_locale', $locale);
     }
 
     /**

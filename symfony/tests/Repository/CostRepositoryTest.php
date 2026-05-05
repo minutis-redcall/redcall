@@ -19,12 +19,12 @@ class CostRepositoryTest extends KernelTestCase
     {
         self::bootKernel();
 
-        $this->repository = self::$container->get('doctrine.orm.entity_manager')
+        $this->repository = self::getContainer()->get('doctrine.orm.entity_manager')
             ->getRepository(Cost::class);
 
         $this->fixtures = new DataFixtures(
-            self::$container->get('doctrine.orm.entity_manager'),
-            self::$container->get('security.password_encoder')
+            self::getContainer()->get('doctrine.orm.entity_manager'),
+            self::getContainer()->get('security.password_hasher')
         );
     }
 
@@ -44,7 +44,7 @@ class CostRepositoryTest extends KernelTestCase
         $cost->setToNumber('+33600000001');
         $cost->setBody('test');
 
-        $em = self::$container->get('doctrine.orm.entity_manager');
+        $em = self::getContainer()->get('doctrine.orm.entity_manager');
         $em->persist($cost);
         $em->flush();
 
@@ -79,7 +79,7 @@ class CostRepositoryTest extends KernelTestCase
 
         $this->repository->remove($found);
 
-        $em = self::$container->get('doctrine.orm.entity_manager');
+        $em = self::getContainer()->get('doctrine.orm.entity_manager');
         $em->clear();
         $this->assertNull($this->repository->find($costId));
     }

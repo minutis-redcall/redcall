@@ -62,9 +62,7 @@ class CampaignController extends BaseController
         $this->translator        = $translator;
     }
 
-    /**
-     * @Route(path="campaign/list", name="list_campaigns")
-     */
+    #[Route(path: "campaign/list", name: "list_campaigns")]
     public function listCampaigns(MinutisProvider $minutis)
     {
         $byMyCrew      = $this->campaignManager->getCampaignsOpenedByMeOrMyCrew($this->getUser());
@@ -90,9 +88,7 @@ class CampaignController extends BaseController
         ]);
     }
 
-    /**
-     * @Route(path="campaign/new/{type}", name="create_campaign")
-     */
+    #[Route(path: "campaign/new/{type}", name: "create_campaign")]
     public function createCampaign(Type $type, CampaignFlow $flow)
     {
         $user = $this->getUser();
@@ -136,10 +132,8 @@ class CampaignController extends BaseController
         ]);
     }
 
-    /**
-     * @Route(path="campaign/{id}/audience", name="audience_campaign")
-     * @IsGranted("CAMPAIGN_ACCESS", subject="campaign")
-     */
+    #[Route(path: "campaign/{id}/audience", name: "audience_campaign")]
+#[IsGranted("CAMPAIGN_ACCESS", subject: "campaign")]
     public function audience(Campaign $campaign)
     {
         return new JsonResponse(
@@ -147,10 +141,8 @@ class CampaignController extends BaseController
         );
     }
 
-    /**
-     * @Route(path="campaign/{id}/close/{csrf}", name="close_campaign")
-     * @IsGranted("CAMPAIGN_OWNER", subject="campaign")
-     */
+    #[Route(path: "campaign/{id}/close/{csrf}", name: "close_campaign")]
+#[IsGranted("CAMPAIGN_OWNER", subject: "campaign")]
     public function closeCampaign(Campaign $campaign, string $csrf) : Response
     {
         $this->validateCsrfOrThrowNotFoundException('campaign', $csrf);
@@ -165,10 +157,8 @@ class CampaignController extends BaseController
         ]));
     }
 
-    /**
-     * @Route(path="campaign/{id}/open/{csrf}", name="open_campaign")
-     * @IsGranted("CAMPAIGN_OWNER", subject="campaign")
-     */
+    #[Route(path: "campaign/{id}/open/{csrf}", name: "open_campaign")]
+#[IsGranted("CAMPAIGN_OWNER", subject: "campaign")]
     public function openCampaign(Campaign $campaign, string $csrf) : Response
     {
         $this->validateCsrfOrThrowNotFoundException('campaign', $csrf);
@@ -186,10 +176,8 @@ class CampaignController extends BaseController
         ]));
     }
 
-    /**
-     * @Route(path="campaign/{id}/keep/{csrf}", name="keep_campaign")
-     * @IsGranted("CAMPAIGN_OWNER", subject="campaign")
-     */
+    #[Route(path: "campaign/{id}/keep/{csrf}", name: "keep_campaign")]
+#[IsGranted("CAMPAIGN_OWNER", subject: "campaign")]
     public function keepCampaign(Campaign $campaign, string $csrf) : Response
     {
         $this->validateCsrfOrThrowNotFoundException('campaign', $csrf);
@@ -203,10 +191,8 @@ class CampaignController extends BaseController
         ]);
     }
 
-    /**
-     * @Route(path="campaign/{id}/change-color/{color}/{csrf}", name="color_campaign")
-     * @IsGranted("CAMPAIGN_OWNER", subject="campaignEntity")
-     */
+    #[Route(path: "campaign/{id}/change-color/{color}/{csrf}", name: "color_campaign")]
+#[IsGranted("CAMPAIGN_OWNER", subject: "campaignEntity")]
     public function changeColor(Campaign $campaignEntity,
         string $color,
         string $csrf,
@@ -230,10 +216,8 @@ class CampaignController extends BaseController
         ]));
     }
 
-    /**
-     * @Route(path="campaign/{id}/rename", name="rename_campaign")
-     * @IsGranted("CAMPAIGN_OWNER", subject="campaignEntity")
-     */
+    #[Route(path: "campaign/{id}/rename", name: "rename_campaign")]
+#[IsGranted("CAMPAIGN_OWNER", subject: "campaignEntity")]
     public function rename(Request $request, Campaign $campaignEntity, ValidatorInterface $validator) : Response
     {
         $this->validateCsrfOrThrowNotFoundException('campaign', $request->request->get('csrf'));
@@ -254,10 +238,8 @@ class CampaignController extends BaseController
         ]));
     }
 
-    /**
-     * @Route(path="campaign/{id}/notes", name="notes_campaign")
-     * @IsGranted("CAMPAIGN_ACCESS", subject="campaign")
-     */
+    #[Route(path: "campaign/{id}/notes", name: "notes_campaign")]
+#[IsGranted("CAMPAIGN_ACCESS", subject: "campaign")]
     public function notes(Request $request, Campaign $campaign) : Response
     {
         $this->validateCsrfOrThrowNotFoundException('campaign', $request->request->get('csrf'));
@@ -271,11 +253,9 @@ class CampaignController extends BaseController
         ]));
     }
 
-    /**
-     * @Route(path="campaign/{id}/report", name="campaign_report")
-     * @IsGranted("CAMPAIGN_ACCESS", subject="campaign")
-     * @Template
-     */
+    #[Route(path: "campaign/{id}/report", name: "campaign_report")]
+#[IsGranted("CAMPAIGN_ACCESS", subject: "campaign")]
+#[Template()]
     public function report(Campaign $campaign)
     {
         return [
@@ -283,9 +263,7 @@ class CampaignController extends BaseController
         ];
     }
 
-    /**
-     * @Route(path="campaign/operations", name="campaign_search_for_operation")
-     */
+    #[Route(path: "campaign/operations", name: "campaign_search_for_operation")]
     public function searchForOperation(Request $request)
     {
         $structure = $this->structureManager->findOneByExternalId($request->get('externalId'));

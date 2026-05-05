@@ -12,9 +12,7 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @Route("/admin/answer-analysis", name="admin_answer_analysis_")
- */
+#[Route("/admin/answer-analysis", name: "admin_answer_analysis_")]
 class AnswerAnalysisController extends BaseController
 {
     /**
@@ -33,10 +31,8 @@ class AnswerAnalysisController extends BaseController
         $this->answerManager     = $answerManager;
     }
 
-    /**
-     * @Route(name="index")
-     * @Template("admin/answer_analysis/index.html.twig")
-     */
+    #[Route(name: "index")]
+#[Template("admin/answer_analysis/index.html.twig")]
     public function index(Request $request) : array
     {
         $form = $this->createSearchForm($request);

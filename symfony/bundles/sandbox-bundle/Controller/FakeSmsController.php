@@ -15,9 +15,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @Route("/fake-sms", name="fake_sms_")
- */
+#[Route("/fake-sms", name: "fake_sms_")]
 class FakeSmsController extends BaseController
 {
     /**
@@ -49,10 +47,8 @@ class FakeSmsController extends BaseController
         $this->volunteerManager = $volunteerManager;
     }
 
-    /**
-     * @Route("/", name="list")
-     * @Template()
-     */
+    #[Route("/", name: "list")]
+#[Template()]
     public function listAction()
     {
         $phoneNumbers = $this->fakeSmsManager->findAllPhones();
@@ -65,9 +61,7 @@ class FakeSmsController extends BaseController
         ];
     }
 
-    /**
-     * @Route("/clear/{csrf}", name="clear")
-     */
+    #[Route("/clear/{csrf}", name: "clear")]
     public function clearAction(string $csrf)
     {
         $this->validateCsrfOrThrowNotFoundException('fake_sms', $csrf);
@@ -77,10 +71,8 @@ class FakeSmsController extends BaseController
         return $this->redirectToRoute('sandbox_fake_sms_list');
     }
 
-    /**
-     * @Route("/thread/{e164}/{campaignId}", name="thread", defaults={"campaignId"=null})
-     * @Template()
-     */
+    #[Route("/thread/{e164}/{campaignId}", name: "thread", defaults: ["campaignId" => null])]
+#[Template()]
     public function threadAction(Phone $phone, ?int $campaignId)
     {
         $volunteer = $phone->getVolunteers()->first();
@@ -102,9 +94,9 @@ class FakeSmsController extends BaseController
     }
 
     /**
-     * @Route("/send/{e164}/{csrf}", name="send")
      * @Method("POST")
      */
+#[Route("/send/{e164}/{csrf}", name: "send")]
     public function sendAction(Request $request, Phone $phone, string $csrf)
     {
         $this->validateCsrfOrThrowNotFoundException('fake_sms', $csrf);
@@ -123,9 +115,7 @@ class FakeSmsController extends BaseController
         return new Response();
     }
 
-    /**
-     * @Route("/poll/{phoneNumber}", name="poll")
-     */
+    #[Route("/poll/{phoneNumber}", name: "poll")]
     public function pollAction(Request $request, string $phoneNumber)
     {
         $lastMessageId = $request->request->get('lastMessageId');

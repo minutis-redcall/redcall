@@ -25,7 +25,7 @@ class CategoryWigetType extends TextType
         $this->categoryManager = $categoryManager;
     }
 
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         parent::buildForm($builder, $options);
 
@@ -41,12 +41,12 @@ class CategoryWigetType extends TextType
         );
     }
 
-    public function getBlockPrefix()
+    public function getBlockPrefix(): string
     {
         return 'category_widget';
     }
 
-    public function buildView(FormView $view, FormInterface $form, array $options)
+    public function buildView(FormView $view, FormInterface $form, array $options): void
     {
         if ($view->vars['value']) {
             $category = $view->vars['value'];

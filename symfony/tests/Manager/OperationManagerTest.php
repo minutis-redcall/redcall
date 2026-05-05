@@ -27,11 +27,11 @@ class OperationManagerTest extends KernelTestCase
     {
         self::bootKernel();
 
-        $this->operationManager = self::$container->get(OperationManager::class);
-        $this->em = self::$container->get('doctrine.orm.entity_manager');
+        $this->operationManager = self::getContainer()->get(OperationManager::class);
+        $this->em = self::getContainer()->get('doctrine.orm.entity_manager');
         $this->fixtures = new DataFixtures(
             $this->em,
-            self::$container->get('security.password_encoder')
+            self::getContainer()->get('security.password_hasher')
         );
     }
 

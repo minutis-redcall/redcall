@@ -30,7 +30,7 @@ class ForgotPasswordType extends AbstractType
         $this->requestStack   = $requestStack;
     }
 
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->add('username', Type\EmailType::class, [
@@ -42,7 +42,7 @@ class ForgotPasswordType extends AbstractType
                 ],
             ]);
 
-        $ip = $this->requestStack->getMasterRequest()->getClientIp();
+        $ip = $this->requestStack->getMainRequest()->getClientIp();
 
         if (!$this->captchaManager->isAllowed($ip)) {
             $builder->add('recaptcha', EWZRecaptchaType::class, [
@@ -58,7 +58,7 @@ class ForgotPasswordType extends AbstractType
         ]);
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefault('allow_extra_fields', true);
     }

@@ -27,7 +27,7 @@ class BadgeWidgetType extends TextType
         $this->badgeManager = $badgeManager;
     }
 
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         parent::buildForm($builder, $options);
 
@@ -74,12 +74,12 @@ class BadgeWidgetType extends TextType
         );
     }
 
-    public function getBlockPrefix()
+    public function getBlockPrefix(): string
     {
         return 'badge_widget';
     }
 
-    public function buildView(FormView $view, FormInterface $form, array $options)
+    public function buildView(FormView $view, FormInterface $form, array $options): void
     {
         $view->vars['multiple'] = $options['multiple'];
         if ($view->vars['value']) {
@@ -103,7 +103,7 @@ class BadgeWidgetType extends TextType
         }
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         parent::configureOptions($resolver);
 

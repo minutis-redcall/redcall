@@ -20,9 +20,7 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @Route("/admin/badges", name="admin_badge_")
- */
+#[Route("/admin/badges", name: "admin_badge_")]
 class BadgeController extends BaseController
 {
     /**
@@ -42,10 +40,8 @@ class BadgeController extends BaseController
         $this->badgeManager      = $badgeManager;
     }
 
-    /**
-     * @Route(name="index")
-     * @Template("admin/badge/badges.html.twig")
-     */
+    #[Route(name: "index")]
+#[Template("admin/badge/badges.html.twig")]
     public function index(Request $request) : array
     {
         $searchForm = $this->createSearchForm($request);
@@ -64,10 +60,8 @@ class BadgeController extends BaseController
         ];
     }
 
-    /**
-     * @Route(path="/manage-{id}", name="manage", defaults={"id"=null})
-     * @Template("admin/badge/manage.html.twig")
-     */
+    #[Route(path: "/manage-{id}", name: "manage", defaults: ["id" => null])]
+#[Template("admin/badge/manage.html.twig")]
     public function manage(Request $request, ?Badge $badge = null)
     {
         if (null !== $badge && !$this->isGranted('BADGE', $badge)) {
@@ -106,11 +100,9 @@ class BadgeController extends BaseController
         ];
     }
 
-    /**
-     * @Route(path="/toggle-visibility-{id}/{token}", name="toggle_visibility")
-     * @IsGranted("BADGE", subject="badge")
-     * @Template("admin/badge/badge.html.twig")
-     */
+    #[Route(path: "/toggle-visibility-{id}/{token}", name: "toggle_visibility")]
+#[IsGranted("BADGE", subject: "badge")]
+#[Template("admin/badge/badge.html.twig")]
     public function toggleVisibility(Badge $badge, Csrf $token)
     {
         if ($badge->isUsable()) {
@@ -122,11 +114,9 @@ class BadgeController extends BaseController
         return $this->getContext($badge);
     }
 
-    /**
-     * @Route(path="/toggle-lock-{id}/{token}", name="toggle_lock")
-     * @IsGranted("BADGE", subject="badge")
-     * @Template("admin/badge/badge.html.twig")
-     */
+    #[Route(path: "/toggle-lock-{id}/{token}", name: "toggle_lock")]
+#[IsGranted("BADGE", subject: "badge")]
+#[Template("admin/badge/badge.html.twig")]
     public function toggleLock(Badge $badge, Csrf $token)
     {
         $badge->setLocked(1 - $badge->isLocked());
@@ -136,11 +126,9 @@ class BadgeController extends BaseController
         return $this->getContext($badge);
     }
 
-    /**
-     * @Route(path="/toggle-enable-{id}/{token}", name="toggle_enable")
-     * @IsGranted("BADGE", subject="badge")
-     * @Template("admin/badge/badge.html.twig")
-     */
+    #[Route(path: "/toggle-enable-{id}/{token}", name: "toggle_enable")]
+#[IsGranted("BADGE", subject: "badge")]
+#[Template("admin/badge/badge.html.twig")]
     public function toggleEnable(Badge $badge, Csrf $token)
     {
         $badge->setEnabled(1 - $badge->isEnabled());

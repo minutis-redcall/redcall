@@ -22,7 +22,6 @@ doctrine:
         logging: false
         profiling: false
         wrapper_class: 'Facile\DoctrineMySQLComeBack\Doctrine\DBAL\Connection'
-        driver_class: 'Facile\DoctrineMySQLComeBack\Doctrine\DBAL\Driver\PDOMySql\Driver'
         options:
             x_reconnect_attempts: 3
     orm:

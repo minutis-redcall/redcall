@@ -17,9 +17,7 @@ use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-/**
- * @Route("/fixtures", name="fixtures_")
- */
+#[Route("/fixtures", name: "fixtures_")]
 class FixturesController extends BaseController
 {
     /**
@@ -39,10 +37,8 @@ class FixturesController extends BaseController
         $this->translator      = $translator;
     }
 
-    /**
-     * @Route(path="/", name="index")
-     * @Template()
-     */
+    #[Route(path: "/", name: "index")]
+#[Template()]
     public function index(Request $request)
     {
         $structure = $this->getStructureForm($request);

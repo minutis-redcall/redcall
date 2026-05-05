@@ -9,9 +9,7 @@ use Bundles\SandboxBundle\Manager\FakeOperationResourceManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @Route("/fake-minutis", name="fake_minutis_")
- */
+#[Route("/fake-minutis", name: "fake_minutis_")]
 class FakeMinutisController extends BaseController
 {
     /**
@@ -31,10 +29,8 @@ class FakeMinutisController extends BaseController
         $this->operationResourceManager = $operationResourceManager;
     }
 
-    /**
-     * @Route("/{id}", name="list", defaults={"id"=null}, requirements={"id"="\d+"})
-     * @Template()
-     */
+    #[Route("/{id}", name: "list", defaults: ["id" => null], requirements: ["id" => "\d+"])]
+#[Template()]
     public function listAction(?int $id)
     {
         return [
@@ -43,9 +39,7 @@ class FakeMinutisController extends BaseController
         ];
     }
 
-    /**
-     * @Route("/clear/{token}", name="clear")
-     */
+    #[Route("/clear/{token}", name: "clear")]
     public function clear(Csrf $token)
     {
         $this->operationResourceManager->clear();

@@ -24,9 +24,7 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @Route(path="management/structures/volunteer-lists", name="management_structures_volunteer_lists_")
- */
+#[Route(path: "management/structures/volunteer-lists", name: "management_structures_volunteer_lists_")]
 class VolunteerListController extends BaseController
 {
     /**
@@ -68,19 +66,17 @@ class VolunteerListController extends BaseController
     }
 
 
-    /**
-     * @Route("/", name="home")
-     */
+    #[Route("/", name: "home")]
     public function homeAction()
     {
         return $this->render('management/structures/volunteer_list/home.html.twig');
     }
 
     /**
-     * @Route("/{structureId}/", name="index")
      * @Entity("structure", expr="repository.find(structureId)")
-     * @IsGranted("STRUCTURE", subject="structure")
      */
+#[Route("/{structureId}/", name: "index")]
+#[IsGranted("STRUCTURE", subject: "structure")]
     public function indexAction(Structure $structure)
     {
         return $this->render('management/structures/volunteer_list/index.html.twig', [
@@ -89,11 +85,11 @@ class VolunteerListController extends BaseController
     }
 
     /**
-     * @Route("/{structureId}/create/{volunteerListId}", name="create", defaults={"volunteerListId"=null})
      * @Entity("volunteerList", expr="repository.findOneById(volunteerListId)")
      * @Entity("structure", expr="repository.find(structureId)")
-     * @IsGranted("STRUCTURE", subject="structure")
      */
+#[Route("/{structureId}/create/{volunteerListId}", name: "create", defaults: ["volunteerListId" => null])]
+#[IsGranted("STRUCTURE", subject: "structure")]
     public function createAction(Structure $structure, Request $request, ?VolunteerList $volunteerList = null)
     {
         $volunteerList = $volunteerList ?? new VolunteerList();
@@ -132,11 +128,11 @@ class VolunteerListController extends BaseController
     }
 
     /**
-     * @Route("/{structureId}/cards/{volunteerListId}", name="cards")
      * @Entity("volunteerList", expr="repository.findOneById(volunteerListId)")
      * @Entity("structure", expr="repository.find(structureId)")
-     * @IsGranted("STRUCTURE", subject="structure")
      */
+#[Route("/{structureId}/cards/{volunteerListId}", name: "cards")]
+#[IsGranted("STRUCTURE", subject: "structure")]
     public function cardsAction(Request $request, Structure $structure, VolunteerList $volunteerList = null)
     {
         $add = $this->createAddVolunteerForm($request);
@@ -188,12 +184,12 @@ class VolunteerListController extends BaseController
     }
 
     /**
-     * @Route("/{structureId}/remove-one-volunteer/{csrf}/{volunteerListId}/{volunteerId}", name="delete_one_volunteer")
      * @Entity("volunteerList", expr="repository.findOneById(volunteerListId)")
      * @Entity("volunteer", expr="repository.findOneById(volunteerId)")
      * @Entity("structure", expr="repository.find(structureId)")
-     * @IsGranted("STRUCTURE", subject="structure")
      */
+#[Route("/{structureId}/remove-one-volunteer/{csrf}/{volunteerListId}/{volunteerId}", name: "delete_one_volunteer")]
+#[IsGranted("STRUCTURE", subject: "structure")]
     public function deleteOneVolunteerAction(Structure $structure,
         VolunteerList $volunteerList,
         Volunteer $volunteer,
@@ -209,11 +205,11 @@ class VolunteerListController extends BaseController
     }
 
     /**
-     * @Route("/{structureId}/remove/{csrf}/{volunteerListId}", name="delete")
      * @Entity("volunteerList", expr="repository.findOneById(volunteerListId)")
      * @Entity("structure", expr="repository.find(structureId)")
-     * @IsGranted("STRUCTURE", subject="structure")
      */
+#[Route("/{structureId}/remove/{csrf}/{volunteerListId}", name: "delete")]
+#[IsGranted("STRUCTURE", subject: "structure")]
     public function deleteAction(Structure $structure, VolunteerList $volunteerList, Csrf $csrf)
     {
         $this->volunteerListManager->remove($volunteerList);

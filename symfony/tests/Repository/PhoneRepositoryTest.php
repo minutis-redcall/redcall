@@ -19,12 +19,12 @@ class PhoneRepositoryTest extends KernelTestCase
     {
         self::bootKernel();
 
-        $this->repository = self::$container->get('doctrine.orm.entity_manager')
+        $this->repository = self::getContainer()->get('doctrine.orm.entity_manager')
             ->getRepository(Phone::class);
 
         $this->fixtures = new DataFixtures(
-            self::$container->get('doctrine.orm.entity_manager'),
-            self::$container->get('security.password_encoder')
+            self::getContainer()->get('doctrine.orm.entity_manager'),
+            self::getContainer()->get('security.password_hasher')
         );
     }
 
@@ -41,7 +41,7 @@ class PhoneRepositoryTest extends KernelTestCase
         $phone->setCountryCode('FR');
         $phone->addVolunteer($volunteer);
 
-        $em = self::$container->get('doctrine.orm.entity_manager');
+        $em = self::getContainer()->get('doctrine.orm.entity_manager');
         $em->persist($phone);
         $em->persist($volunteer);
         $em->flush();
@@ -87,7 +87,7 @@ class PhoneRepositoryTest extends KernelTestCase
         $phone->setCountryCode('FR');
         $phone->addVolunteer($volunteer);
 
-        $em = self::$container->get('doctrine.orm.entity_manager');
+        $em = self::getContainer()->get('doctrine.orm.entity_manager');
         $em->persist($volunteer);
         $em->persist($phone);
         $em->flush();

@@ -19,12 +19,12 @@ class VolunteerSessionRepositoryTest extends KernelTestCase
     {
         self::bootKernel();
 
-        $this->repository = self::$container->get('doctrine.orm.entity_manager')
+        $this->repository = self::getContainer()->get('doctrine.orm.entity_manager')
             ->getRepository(VolunteerSession::class);
 
         $this->fixtures = new DataFixtures(
-            self::$container->get('doctrine.orm.entity_manager'),
-            self::$container->get('security.password_encoder')
+            self::getContainer()->get('doctrine.orm.entity_manager'),
+            self::getContainer()->get('security.password_hasher')
         );
     }
 
@@ -51,7 +51,7 @@ class VolunteerSessionRepositoryTest extends KernelTestCase
         $session->setSessionId('expired-session-id-123');
         $session->setCreatedAt(new \DateTime('-2 hours'));
 
-        $em = self::$container->get('doctrine.orm.entity_manager');
+        $em = self::getContainer()->get('doctrine.orm.entity_manager');
         $em->persist($session);
         $em->flush();
 
@@ -73,7 +73,7 @@ class VolunteerSessionRepositoryTest extends KernelTestCase
         // Clear sessions older than 1 hour; our session was just created
         $this->repository->clearExpired(3600);
 
-        $em = self::$container->get('doctrine.orm.entity_manager');
+        $em = self::getContainer()->get('doctrine.orm.entity_manager');
         $em->clear();
         $found = $this->repository->find($id);
         $this->assertNotNull($found);

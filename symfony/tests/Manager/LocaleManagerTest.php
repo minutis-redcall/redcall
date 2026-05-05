@@ -7,7 +7,9 @@ use App\Tests\Fixtures\DataFixtures;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 
@@ -24,7 +26,7 @@ class LocaleManagerTest extends KernelTestCase
 
         $container = static::getContainer();
 
-        $this->session      = $container->get('session');
+        $this->session      = new Session(new MockArraySessionStorage());
         $this->requestStack = $container->get('request_stack');
         $this->tokenStorage = $container->get('security.token_storage');
         $this->manager      = $container->get(LocaleManager::class);
@@ -56,7 +58,6 @@ class LocaleManagerTest extends KernelTestCase
 
         $this->manager->changeLocale('xx_invalid');
 
-        // 'xx' is not in the available locales, so it should fall back to default 'en'
         $this->assertSame('en', $request->getLocale());
         $this->assertSame('en', $this->session->get('_locale'));
     }
@@ -67,7 +68,6 @@ class LocaleManagerTest extends KernelTestCase
 
         $this->manager->changeLocale('fr_FR');
 
-        // Should strip '_FR' and use 'fr'
         $this->assertSame('fr', $request->getLocale());
         $this->assertSame('fr', $this->session->get('_locale'));
     }
@@ -111,7 +111,6 @@ class LocaleManagerTest extends KernelTestCase
 
         $this->manager->restoreFromSession();
 
-        // Default locale is 'en' (from parameters.yaml)
         $this->assertSame('en', $request->getLocale());
     }
 
@@ -120,7 +119,7 @@ class LocaleManagerTest extends KernelTestCase
         $container = static::getContainer();
         $fixtures  = new DataFixtures(
             $container->get('doctrine.orm.entity_manager'),
-            $container->get('security.password_encoder')
+            $container->get('security.password_hasher')
         );
 
         $user = $fixtures->createRawUser('locale_test@example.com');
@@ -128,7 +127,7 @@ class LocaleManagerTest extends KernelTestCase
         $container->get('doctrine.orm.entity_manager')->persist($user);
         $container->get('doctrine.orm.entity_manager')->flush();
 
-        $token = new UsernamePasswordToken($user, null, 'main', $user->getRoles());
+        $token = new UsernamePasswordToken($user, 'main', $user->getRoles());
         $this->tokenStorage->setToken($token);
 
         $request = $this->pushRequest('en');
@@ -145,7 +144,6 @@ class LocaleManagerTest extends KernelTestCase
 
         $this->manager->restoreFromUser();
 
-        // Locale should remain unchanged
         $this->assertSame('en', $request->getLocale());
     }
 
@@ -154,12 +152,12 @@ class LocaleManagerTest extends KernelTestCase
         $container = static::getContainer();
         $fixtures  = new DataFixtures(
             $container->get('doctrine.orm.entity_manager'),
-            $container->get('security.password_encoder')
+            $container->get('security.password_hasher')
         );
 
         $user = $fixtures->createRawUser('save_locale_test@example.com');
 
-        $token = new UsernamePasswordToken($user, null, 'main', $user->getRoles());
+        $token = new UsernamePasswordToken($user, 'main', $user->getRoles());
         $this->tokenStorage->setToken($token);
 
         $request = $this->pushRequest('en');

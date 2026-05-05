@@ -19,29 +19,23 @@ use Symfony\Component\Routing\Annotation\Route;
  * "stop" is reached, and restart it when "start" is
  * called.
  *
- * @Route(path="_ah")
  */
+#[Route(path: "_ah")]
 class GoogleController extends BaseController
 {
-    /**
-     * @Route("/start")
-     */
+    #[Route("/start")]
     public function start()
     {
         return new Response();
     }
 
-    /**
-     * @Route("/stop")
-     */
+    #[Route("/stop")]
     public function stop()
     {
         return new Response();
     }
 
-    /**
-     * @Route("/warmup")
-     */
+    #[Route("/warmup")]
     public function warmup(KernelInterface $kernel)
     {
         $application = new Application($kernel);

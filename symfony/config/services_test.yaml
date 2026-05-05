@@ -3,3 +3,14 @@ services:
     class: 'Bundles\SandboxBundle\Provider\FakeEmailProvider'
     arguments: [ '@doctrine' ]
     public: true
+
+  Bundles\SandboxBundle\Security\Csrf\TestCsrfTokenManager:
+    public: true
+
+  security.csrf.token_manager:
+    alias: 'Bundles\SandboxBundle\Security\Csrf\TestCsrfTokenManager'
+    public: true
+
+  Symfony\Component\Security\Csrf\CsrfTokenManagerInterface:
+    alias: 'Bundles\SandboxBundle\Security\Csrf\TestCsrfTokenManager'
+    public: true

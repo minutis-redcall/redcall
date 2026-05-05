@@ -13,7 +13,7 @@ class PrefilledAnswersControllerTest extends BaseWebTestCase
     {
         return new DataFixtures(
             $container->get('doctrine.orm.entity_manager'),
-            $container->get('security.password_encoder')
+            $container->get('security.password_hasher')
         );
     }
 
@@ -21,6 +21,13 @@ class PrefilledAnswersControllerTest extends BaseWebTestCase
     {
         /** @var CsrfTokenManagerInterface $tokenManager */
         $tokenManager = $container->get('security.csrf.token_manager');
+
+        // Sf6: CSRF token storage needs a session in RequestStack
+        if (!$container->get('request_stack')->getMainRequest()) {
+            $req = \Symfony\Component\HttpFoundation\Request::create('/');
+            $req->setSession(new \Symfony\Component\HttpFoundation\Session\Session(new \Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage()));
+            $container->get('request_stack')->push($req);
+        }
 
         return $tokenManager->getToken($id)->getValue();
     }

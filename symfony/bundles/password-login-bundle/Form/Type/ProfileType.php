@@ -66,7 +66,7 @@ class ProfileType extends AbstractType
         $this->tokenStorage   = $tokenStorage;
     }
 
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         if (!$options['admin']) {
             $builder
@@ -128,7 +128,7 @@ class ProfileType extends AbstractType
                     'second_options'  => ['label' => 'password_login.register.repeat_password'],
                 ]);
 
-            $ip = $this->requestStack->getMasterRequest()->getClientIp();
+            $ip = $this->requestStack->getMainRequest()->getClientIp();
 
             if (!$this->captchaManager->isGracePeriod($ip)) {
                 $builder->add('recaptcha', EWZRecaptchaType::class, [
@@ -146,7 +146,7 @@ class ProfileType extends AbstractType
         ]);
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'user'               => null,

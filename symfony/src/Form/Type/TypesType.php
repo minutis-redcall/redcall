@@ -25,7 +25,7 @@ class TypesType extends AbstractType
         $this->translator = $translator;
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'choices'      => $choices = array_combine(Campaign::TYPES, Campaign::TYPES),
@@ -36,12 +36,12 @@ class TypesType extends AbstractType
         ]);
     }
 
-    public function getBlockPrefix()
+    public function getBlockPrefix(): string
     {
         return 'types';
     }
 
-    public function getParent()
+    public function getParent(): ?string
     {
         return ChoiceType::class;
     }

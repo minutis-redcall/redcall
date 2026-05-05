@@ -16,9 +16,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
-/**
- * @Route(name="twilio_", path="/twilio/")
- */
+#[Route(name: "twilio_", path: "/twilio/")]
 class StatusController extends BaseController
 {
     /**
@@ -55,10 +53,8 @@ class StatusController extends BaseController
         $this->logger          = $logger ?? new NullLogger();
     }
 
-    /**
-     * @Route(name="status", path="message-status/{uuid}")
-     * @Template()
-     */
+    #[Route(name: "status", path: "message-status/{uuid}")]
+#[Template()]
     public function messageStatus(Request $request, string $uuid)
     {
         $this->validateRequestSignature($request);

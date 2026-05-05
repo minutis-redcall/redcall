@@ -17,9 +17,7 @@ class TaskController extends AbstractController
         $this->taskReceiver = $taskReceiver;
     }
 
-    /**
-     * @Route(name="google_task_receiver", path="/cloud-task")
-     */
+    #[Route(name: "google_task_receiver", path: "/cloud-task")]
     public function receive(Request $request)
     {
         $this->taskReceiver->handle($request);

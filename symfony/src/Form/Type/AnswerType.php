@@ -9,7 +9,7 @@ use Symfony\Component\Validator\Constraints\Length;
 
 class AnswerType extends TextType
 {
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         parent::configureOptions($resolver);
 
@@ -29,7 +29,7 @@ class AnswerType extends TextType
     /**
      * {@inheritdoc}
      */
-    public function getBlockPrefix()
+    public function getBlockPrefix(): string
     {
         return 'answer';
     }

@@ -15,7 +15,7 @@ class BaseController extends AbstractController
         $defaultDirection = 'ASC',
         $prefix = '')
     {
-        $request = $this->get('request_stack')->getMasterRequest();
+        $request = $this->container->get('request_stack')->getMainRequest();
 
         if (strpos($prefixedDefaultColumn, '.') === false) {
             throw new LogicException("Invalid format of the given doctrine default column: {$prefixedDefaultColumn}.");

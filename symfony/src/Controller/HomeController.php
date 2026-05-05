@@ -10,9 +10,7 @@ use Symfony\Component\Routing\Annotation\Route;
 
 class HomeController extends AbstractController
 {
-    /**
-     * @Route(name="home")
-     */
+    #[Route(name: "home")]
     public function home()
     {
         if (!$this->isGranted('ROLE_TRUSTED')) {
@@ -22,9 +20,7 @@ class HomeController extends AbstractController
         return $this->render('home.html.twig');
     }
 
-    /**
-     * @Route("/locale/{locale}", name="locale")
-     */
+    #[Route("/locale/{locale}", name: "locale")]
     public function locale(LocaleManager $localeManager, string $locale)
     {
         $localeManager->save($locale);
@@ -32,17 +28,13 @@ class HomeController extends AbstractController
         return $this->redirectToRoute('home');
     }
 
-    /**
-     * @Route("/auth", name="auth")
-     */
+    #[Route("/auth", name: "auth")]
     public function auth()
     {
         return $this->redirectToRoute('home');
     }
 
-    /**
-     * @Route("/go-to-space", name="go_to_space")
-     */
+    #[Route("/go-to-space", name: "go_to_space")]
     public function space(VolunteerSessionManager $volunteerSessionManager)
     {
         /** @var Volunteer|null $volunteer */

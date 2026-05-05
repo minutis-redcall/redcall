@@ -24,7 +24,7 @@ class DeletedVolunteerManagerTest extends KernelTestCase
         $this->repository = $container->get('doctrine')->getRepository(DeletedVolunteer::class);
         $this->fixtures   = new DataFixtures(
             $container->get('doctrine.orm.entity_manager'),
-            $container->get('security.password_encoder')
+            $container->get('security.password_hasher')
         );
     }
 

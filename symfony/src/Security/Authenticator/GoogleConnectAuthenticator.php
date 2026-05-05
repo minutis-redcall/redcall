@@ -8,37 +8,25 @@ use App\Provider\OAuth\GoogleConnect\GoogleConnectInterface;
 use App\Tools\Url;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
-use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Security\Core\User\UserProviderInterface;
-use Symfony\Component\Security\Guard\AbstractGuardAuthenticator;
+use Symfony\Component\Security\Http\Authenticator\AbstractAuthenticator;
+use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
+use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
+use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPassport;
+use Symfony\Component\Security\Http\EntryPoint\AuthenticationEntryPointInterface;
 
-class GoogleConnectAuthenticator extends AbstractGuardAuthenticator
+class GoogleConnectAuthenticator extends AbstractAuthenticator implements AuthenticationEntryPointInterface
 {
-    /**
-     * @var GoogleConnectInterface
-     */
-    private $googleConnect;
+    private GoogleConnectInterface $googleConnect;
+    private VolunteerSessionManager $volunteerSessionManager;
+    private RouterInterface $router;
 
-    /**
-     * @var VolunteerSessionManager
-     */
-    private $volunteerSessionManager;
-
-    /**
-     * @var RouterInterface
-     */
-    private $router;
-
-    /**
-     * Used to create a session
-     *
-     * @var Volunteer
-     */
-    private $volunteer;
+    /** Used to create a session on auth failure */
+    private ?Volunteer $volunteer = null;
 
     public function __construct(GoogleConnectInterface $googleConnect,
         VolunteerSessionManager $volunteerSessionManager,
@@ -49,7 +37,7 @@ class GoogleConnectAuthenticator extends AbstractGuardAuthenticator
         $this->router                  = $router;
     }
 
-    public function supports(Request $request)
+    public function supports(Request $request): ?bool
     {
         foreach (['state', 'code'] as $parameter) {
             if (!$request->query->has($parameter)) {
@@ -60,12 +48,7 @@ class GoogleConnectAuthenticator extends AbstractGuardAuthenticator
         return true;
     }
 
-    public function getCredentials(Request $request)
-    {
-        return $request;
-    }
-
-    public function getUser($request, UserProviderInterface $userProvider)
+    public function authenticate(Request $request): Passport
     {
         $volunteer = $this->googleConnect->verify($request);
 
@@ -73,23 +56,21 @@ class GoogleConnectAuthenticator extends AbstractGuardAuthenticator
             throw new BadCredentialsException();
         }
 
-        // Will be used by onAuthenticationFailure handler
         $this->volunteer = $volunteer;
 
-        // Seek for a RedCall user attached to that volunteer
-        if (null === $user = $volunteer->getUser()) {
+        $user = $volunteer->getUser();
+        if (null === $user) {
             throw new BadCredentialsException();
         }
 
-        return $user;
+        return new SelfValidatingPassport(
+            new UserBadge($user->getUserIdentifier(), function () use ($user) {
+                return $user;
+            })
+        );
     }
 
-    public function checkCredentials($credentials, UserInterface $user)
-    {
-        return true;
-    }
-
-    public function onAuthenticationFailure(Request $request, AuthenticationException $exception)
+    public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
         if ($this->volunteer && $this->volunteer->isEnabled()) {
             $sessionId = $this->volunteerSessionManager->createSession($this->volunteer);
@@ -106,7 +87,7 @@ class GoogleConnectAuthenticator extends AbstractGuardAuthenticator
         );
     }
 
-    public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)
+    public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
         if ($url = $this->googleConnect->getRedirectAfterAuthenticationUri($request)) {
             return new RedirectResponse($url);
@@ -117,12 +98,7 @@ class GoogleConnectAuthenticator extends AbstractGuardAuthenticator
         );
     }
 
-    public function supportsRememberMe()
-    {
-        return false;
-    }
-
-    public function start(Request $request, AuthenticationException $authException = null)
+    public function start(Request $request, AuthenticationException $authException = null): Response
     {
         return new RedirectResponse(
             $this->googleConnect->getAuthorizationUri(

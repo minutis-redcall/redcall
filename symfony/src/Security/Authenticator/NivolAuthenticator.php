@@ -6,63 +6,37 @@ use App\Form\Type\CodeType;
 use App\Manager\ExpirableManager;
 use Bundles\PasswordLoginBundle\Entity\AbstractUser;
 use Bundles\PasswordLoginBundle\Manager\UserManager;
-use Bundles\PasswordLoginBundle\Traits\ServiceTrait;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
-use Symfony\Component\Security\Core\User\UserInterface;
-use Symfony\Component\Security\Core\User\UserProviderInterface;
-use Symfony\Component\Security\Guard\Authenticator\AbstractFormLoginAuthenticator;
+use Symfony\Component\Security\Http\Authenticator\AbstractAuthenticator;
+use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
+use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
+use Symfony\Component\Security\Http\Authenticator\Passport\SelfValidatingPassport;
+use Symfony\Component\Security\Http\EntryPoint\AuthenticationEntryPointInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-class NivolAuthenticator extends AbstractFormLoginAuthenticator
+class NivolAuthenticator extends AbstractAuthenticator implements AuthenticationEntryPointInterface
 {
-    /**
-     * @var FormFactoryInterface
-     */
-    private $formFactory;
-
-    /**
-     * @var Session
-     */
-    private $session;
-
-    /**
-     * @var TokenStorageInterface
-     */
-    private $tokenStorage;
-
-    /**
-     * @var TranslatorInterface
-     */
-    private $translator;
-
-    /**
-     * @var RouterInterface
-     */
-    private $router;
-
-    /**
-     * @var ExpirableManager
-     */
-    private $expirableManager;
-
-    /**
-     * @var UserManager
-     */
-    private $userManager;
-
+    private FormFactoryInterface $formFactory;
+    private RequestStack $requestStack;
+    private TokenStorageInterface $tokenStorage;
+    private TranslatorInterface $translator;
+    private RouterInterface $router;
+    private ExpirableManager $expirableManager;
+    private UserManager $userManager;
 
     public function __construct(
         FormFactoryInterface $formFactory,
-        SessionInterface $session,
+        RequestStack $requestStack,
         TokenStorageInterface $tokenStorage,
         TranslatorInterface $translator,
         RouterInterface $router,
@@ -70,7 +44,7 @@ class NivolAuthenticator extends AbstractFormLoginAuthenticator
         UserManager $userManager)
     {
         $this->formFactory      = $formFactory;
-        $this->session          = $session;
+        $this->requestStack     = $requestStack;
         $this->tokenStorage     = $tokenStorage;
         $this->translator       = $translator;
         $this->router           = $router;
@@ -78,17 +52,18 @@ class NivolAuthenticator extends AbstractFormLoginAuthenticator
         $this->userManager      = $userManager;
     }
 
-    public function start(Request $request, AuthenticationException $authException = null)
+    public function start(Request $request, AuthenticationException $authException = null): Response
     {
-        $this->session->set('auth_redirect', [
+        $session = $this->getSession();
+        $session->set('auth_redirect', [
             'route'        => $request->attributes->get('_route'),
             'route_params' => $request->attributes->get('_route_params'),
         ]);
 
-        parent::start($request, $authException);
+        return new RedirectResponse($this->getLoginUrl($request));
     }
 
-    public function supports(Request $request)
+    public function supports(Request $request): ?bool
     {
         if ('/code' !== substr($request->getPathInfo(), 0, 5)) {
             return false;
@@ -110,7 +85,7 @@ class NivolAuthenticator extends AbstractFormLoginAuthenticator
         return true;
     }
 
-    public function getCredentials(Request $request)
+    public function authenticate(Request $request): Passport
     {
         $codeForm = $this
             ->formFactory
@@ -120,17 +95,20 @@ class NivolAuthenticator extends AbstractFormLoginAuthenticator
         $data   = $codeForm->getData();
         $params = $request->attributes->get('_route_params');
 
-        return [
-            'uuid' => $params['uuid'],
-            'code' => $data['code'],
-        ];
-    }
+        $uuid = $params['uuid'] ?? null;
+        $code = $data['code'] ?? null;
 
-    public function getUser($credentials, UserProviderInterface $userProvider)
-    {
-        $expirable = $this->expirableManager->get($credentials['uuid']);
+        if (null === $uuid || null === $code) {
+            throw new BadCredentialsException();
+        }
+
+        $expirable = $this->expirableManager->get($uuid);
 
         if (null === $expirable) {
+            throw new BadCredentialsException();
+        }
+
+        if (strtolower($expirable['code']) !== strtolower($code)) {
             throw new BadCredentialsException();
         }
 
@@ -140,54 +118,51 @@ class NivolAuthenticator extends AbstractFormLoginAuthenticator
             throw new BadCredentialsException();
         }
 
-        return $user;
+        return new SelfValidatingPassport(
+            new UserBadge($user->getUserIdentifier(), function () use ($user) {
+                return $user;
+            })
+        );
     }
 
-    public function checkCredentials($credentials, UserInterface $user)
+    public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
-        $expirable = $this->expirableManager->get($credentials['uuid']);
-
-        if (null === $expirable) {
-            throw new BadCredentialsException();
-        }
-
-        if (strtolower($expirable['code']) !== strtolower($credentials['code'])) {
-            throw new BadCredentialsException();
-        }
-
-        return true;
+        return new RedirectResponse($this->getLoginUrl($request));
     }
 
-    public function onAuthenticationSuccess(Request $request, TokenInterface $token, $providerKey)
+    public function onAuthenticationSuccess(Request $request, TokenInterface $token, string $firewallName): ?Response
     {
-        /**
-         * @var AbstractUser $user
-         */
+        /** @var AbstractUser $user */
         $user = $token->getUser();
 
+        $session = $this->getSession();
+
         if (!$user->isVerified()) {
-            $this->session->getFlashBag()->add('alert', $this->translator->trans('password_login.verify_email.failure'));
+            $session->getFlashBag()->add('alert', $this->translator->trans('password_login.verify_email.failure'));
             $this->tokenStorage->setToken();
 
-            return new RedirectResponse($this->getLoginUrl());
+            return new RedirectResponse($this->getLoginUrl($request));
         }
 
-        $route = $this->session->get('auth_redirect', [
+        $route = $session->get('auth_redirect', [
             'route'        => 'home',
             'route_params' => [],
         ]);
 
-        $this->session->remove('auth_redirect');
+        $session->remove('auth_redirect');
 
-        $response = new RedirectResponse(
+        return new RedirectResponse(
             $this->router->generate($route['route'], $route['route_params'])
         );
-
-        return $response;
     }
 
-    protected function getLoginUrl()
+    private function getLoginUrl(Request $request): string
     {
         return $this->router->generate('password_login_connect');
+    }
+
+    private function getSession(): Session
+    {
+        return $this->requestStack->getSession();
     }
 }

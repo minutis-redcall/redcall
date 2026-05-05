@@ -9,9 +9,7 @@ use Bundles\SandboxBundle\Manager\FakeEmailManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @Route("/fake-email", name="fake_email_")
- */
+#[Route("/fake-email", name: "fake_email_")]
 class FakeEmailController extends BaseController
 {
     /**
@@ -34,10 +32,8 @@ class FakeEmailController extends BaseController
         $this->volunteerManager = $volunteerManager;
     }
 
-    /**
-     * @Route("/", name="list")
-     * @Template()
-     */
+    #[Route("/", name: "list")]
+#[Template()]
     public function listAction()
     {
         $emails = $this->fakeEmailManager->findAllEmails();
@@ -50,9 +46,7 @@ class FakeEmailController extends BaseController
         ];
     }
 
-    /**
-     * @Route("/clear/{csrf}", name="clear")
-     */
+    #[Route("/clear/{csrf}", name: "clear")]
     public function clearAction(string $csrf)
     {
         $this->validateCsrfOrThrowNotFoundException('fake_email', $csrf);
@@ -62,10 +56,8 @@ class FakeEmailController extends BaseController
         return $this->redirectToRoute('sandbox_fake_email_list');
     }
 
-    /**
-     * @Route("/read/{email}/{campaignId}", name="read", defaults={"campaignId"=null})
-     * @Template()
-     */
+    #[Route("/read/{email}/{campaignId}", name: "read", defaults: ["campaignId" => null])]
+#[Template()]
     public function readAction(Volunteer $volunteer, ?int $campaignId)
     {
         $messages = $this->fakeEmailManager->findMessagesForEmail($volunteer->getEmail());

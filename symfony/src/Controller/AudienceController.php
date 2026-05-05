@@ -16,9 +16,7 @@ use App\Model\Classification;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
-/**
- * @Route(path="audience", name="audience_")
- */
+#[Route(path: "audience", name: "audience_")]
 class AudienceController extends BaseController
 {
     /**
@@ -59,9 +57,7 @@ class AudienceController extends BaseController
         $this->communicationManager = $communicationManager;
     }
 
-    /**
-     * @Route(path="/search-volunteer", name="search_volunteer")
-     */
+    #[Route(path: "/search-volunteer", name: "search_volunteer")]
     public function searchVolunteer(Request $request)
     {
         $criteria = $request->get('keyword');
@@ -81,9 +77,7 @@ class AudienceController extends BaseController
         return $this->json($results);
     }
 
-    /**
-     * @Route(path="/search-badge", name="search_badge")
-     */
+    #[Route(path: "/search-badge", name: "search_badge")]
     public function searchBadge(Request $request)
     {
         $badges = $this->badgeManager->searchNonVisibleUsableBadge(
@@ -100,9 +94,7 @@ class AudienceController extends BaseController
         return $this->json($results);
     }
 
-    /**
-     * @Route(path="/numbers", name="numbers")
-     */
+    #[Route(path: "/numbers", name: "numbers")]
     public function numbers(Request $request)
     {
         $data = AudienceType::getAudienceFormData($request);
@@ -129,9 +121,7 @@ class AudienceController extends BaseController
         return $this->json($response);
     }
 
-    /**
-     * @Route(path="/problems", name="problems")
-     */
+    #[Route(path: "/problems", name: "problems")]
     public function problems(Request $request)
     {
         $data = AudienceType::getAudienceFormData($request);
@@ -150,9 +140,7 @@ class AudienceController extends BaseController
         ]);
     }
 
-    /**
-     * @Route(path="/selection", name="selection")
-     */
+    #[Route(path: "/selection", name: "selection")]
     public function selection(Request $request)
     {
         $data = AudienceType::getAudienceFormData($request);
@@ -171,9 +159,7 @@ class AudienceController extends BaseController
         ]);
     }
 
-    /**
-     * @Route("/home", name="home")
-     */
+    #[Route("/home", name: "home")]
     public function home()
     {
         return $this->render('audience/home.html.twig', [
@@ -181,9 +167,7 @@ class AudienceController extends BaseController
         ]);
     }
 
-    /**
-     * @Route("/resolve", name="resolve")
-     */
+    #[Route("/resolve", name: "resolve")]
     public function resolve()
     {
         $classification = $this->getGlboalClassification();

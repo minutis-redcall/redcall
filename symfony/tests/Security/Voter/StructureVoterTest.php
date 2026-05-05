@@ -25,13 +25,13 @@ class StructureVoterTest extends KernelTestCase
         $this->voter = $container->get(StructureVoter::class);
         $this->fixtures = new DataFixtures(
             $container->get('doctrine.orm.entity_manager'),
-            $container->get('security.password_encoder')
+            $container->get('security.password_hasher')
         );
     }
 
     private function createToken($user): UsernamePasswordToken
     {
-        $token = new UsernamePasswordToken($user, null, 'main', $user->getRoles());
+        $token = new UsernamePasswordToken($user, 'main', $user->getRoles());
         static::getContainer()->get('security.token_storage')->setToken($token);
 
         return $token;
@@ -179,7 +179,8 @@ class StructureVoterTest extends KernelTestCase
         static::getContainer()->get('security.token_storage')->setToken(null);
         $token = $this->createMock(UsernamePasswordToken::class);
 
-        $this->expectException(AuthenticationCredentialsNotFoundException::class);
-        $this->voter->vote($token, $structure, ['STRUCTURE']);
+        // Sf6: returns DENIED instead of throwing
+        $result = $this->voter->vote($token, $structure, ['STRUCTURE']);
+        $this->assertEquals(VoterInterface::ACCESS_DENIED, $result);
     }
 }

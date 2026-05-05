@@ -30,12 +30,12 @@ class CostManagerTest extends KernelTestCase
     {
         self::bootKernel();
 
-        $this->costManager = self::$container->get(CostManager::class);
-        $this->em = self::$container->get('doctrine.orm.entity_manager');
-        $this->costRepository = self::$container->get(CostRepository::class);
+        $this->costManager = self::getContainer()->get(CostManager::class);
+        $this->em = self::getContainer()->get('doctrine.orm.entity_manager');
+        $this->costRepository = self::getContainer()->get(CostRepository::class);
         $this->fixtures = new DataFixtures(
             $this->em,
-            self::$container->get('security.password_encoder')
+            self::getContainer()->get('security.password_hasher')
         );
     }
 

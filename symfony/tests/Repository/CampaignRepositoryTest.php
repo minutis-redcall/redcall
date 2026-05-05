@@ -19,12 +19,12 @@ class CampaignRepositoryTest extends KernelTestCase
     {
         self::bootKernel();
 
-        $this->repository = self::$container->get('doctrine.orm.entity_manager')
+        $this->repository = self::getContainer()->get('doctrine.orm.entity_manager')
             ->getRepository(Campaign::class);
 
         $this->fixtures = new DataFixtures(
-            self::$container->get('doctrine.orm.entity_manager'),
-            self::$container->get('security.password_encoder')
+            self::getContainer()->get('doctrine.orm.entity_manager'),
+            self::getContainer()->get('security.password_hasher')
         );
     }
 
@@ -54,7 +54,7 @@ class CampaignRepositoryTest extends KernelTestCase
 
         $this->repository->closeCampaign($campaign);
 
-        $em = self::$container->get('doctrine.orm.entity_manager');
+        $em = self::getContainer()->get('doctrine.orm.entity_manager');
         $em->clear();
         $fresh = $this->repository->find($campaign->getId());
         $this->assertEquals(0, $fresh->isActive());
@@ -68,7 +68,7 @@ class CampaignRepositoryTest extends KernelTestCase
 
         $this->repository->openCampaign($campaign);
 
-        $em = self::$container->get('doctrine.orm.entity_manager');
+        $em = self::getContainer()->get('doctrine.orm.entity_manager');
         $em->clear();
         $fresh = $this->repository->find($campaign->getId());
         $this->assertEquals(1, $fresh->isActive());
@@ -83,7 +83,7 @@ class CampaignRepositoryTest extends KernelTestCase
 
         $this->repository->changeColor($campaign, Campaign::TYPE_RED);
 
-        $em = self::$container->get('doctrine.orm.entity_manager');
+        $em = self::getContainer()->get('doctrine.orm.entity_manager');
         $em->clear();
         $fresh = $this->repository->find($campaign->getId());
         $this->assertSame(Campaign::TYPE_RED, $fresh->getType());
@@ -97,7 +97,7 @@ class CampaignRepositoryTest extends KernelTestCase
 
         $this->repository->changeName($campaign, 'New Name');
 
-        $em = self::$container->get('doctrine.orm.entity_manager');
+        $em = self::getContainer()->get('doctrine.orm.entity_manager');
         $em->clear();
         $fresh = $this->repository->find($campaign->getId());
         $this->assertSame('New Name', $fresh->getLabel());
@@ -111,7 +111,7 @@ class CampaignRepositoryTest extends KernelTestCase
 
         $this->repository->changeNotes($campaign, 'Some important notes');
 
-        $em = self::$container->get('doctrine.orm.entity_manager');
+        $em = self::getContainer()->get('doctrine.orm.entity_manager');
         $em->clear();
         $fresh = $this->repository->find($campaign->getId());
         $this->assertSame('Some important notes', $fresh->getNotes());
@@ -164,7 +164,7 @@ class CampaignRepositoryTest extends KernelTestCase
     {
         $campaign = $this->fixtures->createCampaign('Expired Campaign', Campaign::TYPE_GREEN, true);
         $campaign->setExpiresAt(new \DateTime('-1 day'));
-        $em = self::$container->get('doctrine.orm.entity_manager');
+        $em = self::getContainer()->get('doctrine.orm.entity_manager');
         $em->persist($campaign);
         $em->flush();
 
@@ -245,7 +245,7 @@ class CampaignRepositoryTest extends KernelTestCase
         $fullCampaign = $this->fixtures->createFullCampaign('crew@test.com');
         // The communication needs a volunteer for the join
         $fullCampaign['communication']->setVolunteer($fullCampaign['volunteer']);
-        $em = self::$container->get('doctrine.orm.entity_manager');
+        $em = self::getContainer()->get('doctrine.orm.entity_manager');
         $em->persist($fullCampaign['communication']);
         $em->flush();
 
@@ -274,7 +274,7 @@ class CampaignRepositoryTest extends KernelTestCase
         $fullCampaign = $this->fixtures->createFullCampaign('crewexcl@test.com');
         // Set communication volunteer to the same volunteer in the user's structure
         $fullCampaign['communication']->setVolunteer($fullCampaign['volunteer']);
-        $em = self::$container->get('doctrine.orm.entity_manager');
+        $em = self::getContainer()->get('doctrine.orm.entity_manager');
         $em->persist($fullCampaign['communication']);
         $em->flush();
 
@@ -293,7 +293,7 @@ class CampaignRepositoryTest extends KernelTestCase
     {
         $fullCampaign = $this->fixtures->createFullCampaign('inactqb@test.com');
         $fullCampaign['campaign']->setActive(false);
-        $em = self::$container->get('doctrine.orm.entity_manager');
+        $em = self::getContainer()->get('doctrine.orm.entity_manager');
         $em->persist($fullCampaign['campaign']);
         $em->flush();
 

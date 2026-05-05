@@ -15,7 +15,7 @@ class DeletedVolunteerRepositoryTest extends KernelTestCase
     {
         self::bootKernel();
 
-        $this->repository = self::$container->get('doctrine.orm.entity_manager')
+        $this->repository = self::getContainer()->get('doctrine.orm.entity_manager')
             ->getRepository(DeletedVolunteer::class);
     }
 
@@ -44,7 +44,7 @@ class DeletedVolunteerRepositoryTest extends KernelTestCase
 
         // ID may not be set yet because we didn't flush
         // But entity should be managed
-        $em = self::$container->get('doctrine.orm.entity_manager');
+        $em = self::getContainer()->get('doctrine.orm.entity_manager');
         $this->assertTrue($em->contains($entity));
 
         $em->flush();
@@ -63,7 +63,7 @@ class DeletedVolunteerRepositoryTest extends KernelTestCase
 
         $this->repository->remove($entity);
 
-        $em = self::$container->get('doctrine.orm.entity_manager');
+        $em = self::getContainer()->get('doctrine.orm.entity_manager');
         $em->clear();
         $this->assertNull($this->repository->find($id));
     }

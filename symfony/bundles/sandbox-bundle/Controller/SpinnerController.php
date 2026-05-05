@@ -17,10 +17,8 @@ use Symfony\Component\Validator\Constraints\Regex;
 
 class SpinnerController extends BaseController
 {
-    /**
-     * @Route("/spinner", name="spinner")
-     * @Template
-     */
+    #[Route("/spinner", name: "spinner")]
+#[Template()]
     public function index(Request $request)
     {
         $form = $this

@@ -16,11 +16,11 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
 /**
- * @Route(path="management/structures/{structure}/template", name="management_structures_template_")
- * @ParamConverter("structure", options={"id" = "structure"})
- * @ParamConverter("template", options={"id" = "template"})
  * @Security("is_granted('STRUCTURE', structure)")
  */
+#[Route(path: "management/structures/{structure}/template", name: "management_structures_template_")]
+#[ParamConverter("structure", options: ["id" => "structure"])]
+#[ParamConverter("template", options: ["id" => "template"])]
 class TemplateController extends BaseController
 {
     /**
@@ -40,9 +40,9 @@ class TemplateController extends BaseController
     }
 
     /**
-     * @Route(name="list")
      * @TwigTemplate("management/structures/template/list.html.twig")
      */
+#[Route(name: "list")]
     public function list(Structure $structure)
     {
         $templates = $this->templateManager->getTemplatesForStructure($structure);
@@ -54,10 +54,10 @@ class TemplateController extends BaseController
     }
 
     /**
-     * @Route("/new", name="new")
-     * @Route("/{template}/edit", requirements={"template" = "\d+"}, name="edit")
      * @TwigTemplate("management/structures/template/editor.html.twig")
      */
+#[Route("/new", name: "new")]
+#[Route("/{template}/edit", requirements: ["template" => "\d+"], name: "edit")]
     public function editor(Request $request, Structure $structure, ?Template $template = null)
     {
         if ($template && !$template->getStructure()->isEqualTo($structure)) {
@@ -88,9 +88,7 @@ class TemplateController extends BaseController
         ];
     }
 
-    /**
-     * @Route("/{template}/{csrf}/delete", name="delete")
-     */
+    #[Route("/{template}/{csrf}/delete", name: "delete")]
     public function delete(Structure $structure, Template $template, Csrf $csrf)
     {
         if (!$template->getStructure()->isEqualTo($structure)) {
@@ -104,9 +102,7 @@ class TemplateController extends BaseController
         ]);
     }
 
-    /**
-     * @Route("/{template}/{csrf}/move/{newPriority}", name="move")
-     */
+    #[Route("/{template}/{csrf}/move/{newPriority}", name: "move")]
     public function move(Structure $structure, Template $template, int $newPriority, Csrf $csrf)
     {
         if (!$template->getStructure()->isEqualTo($structure)) {

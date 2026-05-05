@@ -16,7 +16,7 @@ class ExpirableRepositoryTest extends KernelTestCase
     {
         self::bootKernel();
 
-        $this->repository = self::$container->get('doctrine.orm.entity_manager')
+        $this->repository = self::getContainer()->get('doctrine.orm.entity_manager')
             ->getRepository(Expirable::class);
     }
 
@@ -28,7 +28,7 @@ class ExpirableRepositoryTest extends KernelTestCase
         $expirable->setCreatedAt(new \DateTime());
         $expirable->setExpiresAt($expiresAt);
 
-        $em = self::$container->get('doctrine.orm.entity_manager');
+        $em = self::getContainer()->get('doctrine.orm.entity_manager');
         $em->persist($expirable);
         $em->flush();
 
@@ -44,7 +44,7 @@ class ExpirableRepositoryTest extends KernelTestCase
 
         $this->repository->clearExpired();
 
-        $em = self::$container->get('doctrine.orm.entity_manager');
+        $em = self::getContainer()->get('doctrine.orm.entity_manager');
         $em->clear();
         $this->assertNull($this->repository->find($id));
     }
@@ -56,7 +56,7 @@ class ExpirableRepositoryTest extends KernelTestCase
 
         $this->repository->clearExpired();
 
-        $em = self::$container->get('doctrine.orm.entity_manager');
+        $em = self::getContainer()->get('doctrine.orm.entity_manager');
         $em->clear();
         $this->assertNotNull($this->repository->find($id));
     }
@@ -89,7 +89,7 @@ class ExpirableRepositoryTest extends KernelTestCase
 
         $this->repository->remove($expirable);
 
-        $em = self::$container->get('doctrine.orm.entity_manager');
+        $em = self::getContainer()->get('doctrine.orm.entity_manager');
         $em->clear();
         $this->assertNull($this->repository->find($id));
     }
