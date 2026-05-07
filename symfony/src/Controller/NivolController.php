@@ -6,7 +6,7 @@ use App\Entity\Expirable;
 use App\Form\Type\CodeType;
 use App\Form\Type\NivolType;
 use App\Manager\NivolManager;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -21,7 +21,7 @@ class NivolController extends AbstractController
     }
 
     #[Route("/nivol", name: "nivol")]
-#[Template()]
+    #[Template("nivol/login.html.twig")]
     public function login(Request $request)
     {
         $nivolForm = $this
@@ -40,7 +40,7 @@ class NivolController extends AbstractController
     }
 
     #[Route("/code/{uuid}", name: "code")]
-#[Template()]
+    #[Template("nivol/code.html.twig")]
     public function code(Request $request, Expirable $expirable)
     {
         $codeForm = $this

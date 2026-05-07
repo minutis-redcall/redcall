@@ -7,7 +7,7 @@ use App\Entity\Campaign;
 use App\Manager\CampaignManager;
 use App\Provider\Minutis\MinutisProvider;
 use Bundles\PaginationBundle\Manager\PaginationManager;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route("/admin/campaign", name: "admin_campaign_")]

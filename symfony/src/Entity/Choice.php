@@ -4,45 +4,36 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity(repositoryClass="App\Repository\ChoiceRepository")
- */
+#[ORM\Entity(repositoryClass: \App\Repository\ChoiceRepository::class)]
 class Choice
 {
     const MAX_LENGTH_DEFAULT = 255;
     const MAX_LENGTH_SMS     = 16;
 
-    /**
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     private $id;
 
     /**
      * @var string
-     *
-     * @ORM\Column(type="string", length=2)
      */
+    #[ORM\Column(type: 'string', length: 2)]
     private $code;
 
     /**
      * @var string
-     *
-     * @ORM\Column(type="string", length=self::MAX_LENGTH_DEFAULT)
      */
+    #[ORM\Column(type: 'string', length: self::MAX_LENGTH_DEFAULT)]
     private $label;
 
     /**
      * @var Communication
-     *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Communication", inversedBy="choices")
      */
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Communication::class, inversedBy: 'choices')]
     private $communication;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Operation::class, inversedBy="choices")
-     */
+    #[ORM\ManyToOne(targetEntity: Operation::class, inversedBy: 'choices')]
     private $operation;
 
     /**

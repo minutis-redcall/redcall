@@ -8,7 +8,7 @@ class BaseRepository extends ServiceEntityRepository
 {
     public function save($entity)
     {
-        $this->_em->persist($entity);
-        $this->_em->flush();
+        $this->getEntityManager()->persist($entity);
+        $this->getEntityManager()->flush();
     }
 }

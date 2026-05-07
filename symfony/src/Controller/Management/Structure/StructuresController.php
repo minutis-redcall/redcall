@@ -14,9 +14,8 @@ use App\Manager\UserManager;
 use App\Model\Csrf;
 use Bundles\PaginationBundle\Manager\PaginationManager;
 use Ramsey\Uuid\Uuid;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Bridge\Twig\Attribute\Template;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -101,11 +100,9 @@ class StructuresController extends BaseController
         ]);
     }
 
-    /**
-     * @Security("is_granted('ROLE_ADMIN')")
-     */
-#[Route("/create/{id}", name: "create", defaults: ["id" => null])]
-#[Template("management/structures/form.html.twig")]
+    #[Route("/create/{id}", name: "create", defaults: ["id" => null])]
+    #[IsGranted("ROLE_ADMIN")]
+    #[Template("management/structures/form.html.twig")]
     public function createStructure(Request $request, ?Structure $structure = null)
     {
         if (null === $structure) {

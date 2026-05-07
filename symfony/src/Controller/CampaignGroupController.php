@@ -8,8 +8,8 @@ use App\Entity\Volunteer;
 use App\Entity\VolunteerGroup;
 use App\Manager\CampaignManager;
 use App\Repository\VolunteerGroupRepository;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -43,11 +43,8 @@ class CampaignGroupController extends BaseController
         return new JsonResponse(['success' => true]);
     }
 
-    /**
-     * @Entity("volunteer", expr="repository.find(volunteerId)")
-     */
-#[Route(path: "/volunteer/{volunteerId}/toggle/{index}", name: "toggle", methods: ["POST"])]
-    public function toggle(Campaign $campaign, Volunteer $volunteer, int $index, Request $request)
+    #[Route(path: "/volunteer/{volunteerId}/toggle/{index}", name: "toggle", methods: ["POST"])]
+    public function toggle(Campaign $campaign, #[MapEntity(expr: "repository.find(volunteerId)")] Volunteer $volunteer, int $index, Request $request)
     {
         $this->validateCsrfOrThrowNotFoundException('campaign', $request->get('csrf'));
 

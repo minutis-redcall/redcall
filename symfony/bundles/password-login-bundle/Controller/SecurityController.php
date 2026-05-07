@@ -25,7 +25,7 @@ use Bundles\PasswordLoginBundle\Manager\CaptchaManager;
 use Bundles\PasswordLoginBundle\Manager\EmailVerificationManager;
 use Bundles\PasswordLoginBundle\Manager\PasswordRecoveryManager;
 use Bundles\PasswordLoginBundle\Manager\UserManager;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -143,7 +143,7 @@ class SecurityController extends AbstractController
     }
 
     #[Route("/register", name: "register")]
-#[Template()]
+    #[Template("@PasswordLogin/security/register.html.twig")]
     public function registerAction(Request $request)
     {
         if ('test' !== getenv('APP_ENV')) {
@@ -236,7 +236,7 @@ class SecurityController extends AbstractController
     }
 
     #[Route("/connect/{nivol}", requirements: ["nivol" => "[a-zA-Z0-9]*"], defaults: ["nivol" => null], name: "connect")]
-#[Template()]
+    #[Template("@PasswordLogin/security/connect.html.twig")]
     public function connectAction(Request $request, ?string $nivol = null)
     {
         if ($this->isGranted('ROLE_USER')) {
@@ -276,7 +276,7 @@ class SecurityController extends AbstractController
     }
 
     #[Route("/profile", name: "profile")]
-#[Template()]
+    #[Template("@PasswordLogin/security/profile.html.twig")]
     public function profileAction(Request $request)
     {
         $formUser = new AbstractUser();
@@ -333,14 +333,14 @@ class SecurityController extends AbstractController
     }
 
     #[Route("/guest", name: "not_trusted")]
-#[Template()]
+    #[Template("@PasswordLogin/security/not_trusted.html.twig")]
     public function notTrustedAction()
     {
         return [];
     }
 
     #[Route("/forgot-password", name: "forgot_password")]
-#[Template()]
+    #[Template("@PasswordLogin/security/forgot_password.html.twig")]
     public function forgotPasswordAction(Request $request)
     {
         if ($this->isGranted('ROLE_USER')) {
@@ -375,7 +375,7 @@ class SecurityController extends AbstractController
     }
 
     #[Route("/change-password/{uuid}", name: "change_password")]
-#[Template()]
+    #[Template("@PasswordLogin/security/change_password.html.twig")]
     public function changePasswordAction(Request $request, $uuid)
     {
         if ($this->isGranted('ROLE_USER')) {

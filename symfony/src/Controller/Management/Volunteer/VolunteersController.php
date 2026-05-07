@@ -27,9 +27,9 @@ use App\Model\Csrf;
 use Bundles\PaginationBundle\Manager\PaginationManager;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Ramsey\Uuid\Uuid;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
+use Symfony\Bridge\Twig\Attribute\Template;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -352,13 +352,11 @@ class VolunteersController extends BaseController
         ]);
     }
 
-    /**
-     * @Entity("volunteer", expr="repository.find(volunteerId)")
-     * @Entity("structure", expr="repository.find(structureId)")
-     */
-#[Route(path: "/delete-structure/{csrf}/{volunteerId}/{structureId}", name: "delete_structure")]
-#[IsGranted("ROLE_ADMIN")]
-    public function deleteStructure(string $csrf, Volunteer $volunteer, Structure $structure)
+    #[Route(path: "/delete-structure/{csrf}/{volunteerId}/{structureId}", name: "delete_structure")]
+    #[IsGranted("ROLE_ADMIN")]
+    public function deleteStructure(string $csrf,
+        #[MapEntity(expr: "repository.find(volunteerId)")] Volunteer $volunteer,
+        #[MapEntity(expr: "repository.find(structureId)")] Structure $structure)
     {
         $this->validateCsrfOrThrowNotFoundException('volunteer', $csrf);
 
@@ -371,16 +369,12 @@ class VolunteersController extends BaseController
         ]);
     }
 
-    /**
-     * @Entity("volunteer", expr="repository.find(volunteerId)")
-     * @Entity("answer", expr="answerId ? repository.find(answerId) : null")
-     */
-#[Route(path: "/delete/{volunteerId}/{answerId}", name: "delete", defaults: ["answerId" => null])]
-#[Template("management/volunteers/delete.html.twig")]
+    #[Route(path: "/delete/{volunteerId}/{answerId}", name: "delete", defaults: ["answerId" => null])]
+    #[Template("management/volunteers/delete.html.twig")]
     public function deleteAction(Request $request,
         SimpleProcessor $processor,
-        Volunteer $volunteer,
-        ?Answer $answer = null)
+        #[MapEntity(expr: "repository.find(volunteerId)")] Volunteer $volunteer,
+        #[MapEntity(expr: "answerId ? repository.find(answerId) : null")] ?Answer $answer = null)
     {
         if ($volunteer->getUser()) {
             throw $this->createNotFoundException();

@@ -19,13 +19,6 @@
         <env name="TWILIO_ACCOUNT_SID" value="AC_MOCK"/>
         <env name="TWILIO_AUTH_TOKEN" value="MOCK_TOKEN"/>
         <!-- define your env variables for the test env here -->
-
-        <!-- ###+ google/recaptcha ### -->
-        <!-- To use Google Recaptcha, you must register a site on Recaptcha's admin panel: -->
-        <!-- https://www.google.com/recaptcha/admin -->
-        <env name="GOOGLE_RECAPTCHA_SITE_KEY" value=""/>
-        <env name="GOOGLE_RECAPTCHA_SECRET" value=""/>
-        <!-- ###- google/recaptcha ### -->
         <!-- ###+ google/apiclient ### -->
         <env name="GOOGLE_API_KEY" value=""/>
         <env name="GOOGLE_CLIENT_ID" value=""/>

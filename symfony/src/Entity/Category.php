@@ -10,69 +10,56 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @ORM\Table(
- *     uniqueConstraints={
- *         @ORM\UniqueConstraint(name="extid_idx", columns={"external_id"})
- *     }
- * )
- * @ORM\Entity(repositoryClass=CategoryRepository::class)
- * @ORM\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
- */
+#[ORM\Table]
+#[ORM\UniqueConstraint(name: 'extid_idx', columns: ['external_id'])]
+#[ORM\Entity(repositoryClass: CategoryRepository::class)]
+#[ORM\ChangeTrackingPolicy('DEFERRED_EXPLICIT')]
 class Category implements LockableInterface
 {
     /**
      * @var int
-     *
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
      */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     private $id;
 
     /**
      * @var string
-     *
-     * @ORM\Column(type="string", length=64)
-     * @Assert\NotNull
-     * @Assert\Length(min=1, max=64)
      */
+    #[ORM\Column(type: 'string', length: 64)]
+    #[Assert\NotNull]
+    #[Assert\Length(min: 1, max: 64)]
     private $externalId;
 
     /**
      * @var string
-     *
-     * @ORM\Column(type="string", length=255)
-     * @Assert\NotNull
-     * @Assert\Length(min=1, max=255)
      */
+    #[ORM\Column(type: 'string', length: 255)]
+    #[Assert\NotNull]
+    #[Assert\Length(min: 1, max: 255)]
     private $name;
 
     /**
      * @var int
-     *
-     * @ORM\Column(type="integer", nullable=true)
-     * @Assert\Regex(pattern="/\d+/")
      */
+    #[ORM\Column(type: 'integer', nullable: true)]
+    #[Assert\Regex(pattern: '/\d+/')]
     private $priority;
 
-    /**
-     * @ORM\OneToMany(targetEntity=Badge::class, mappedBy="category", cascade={"persist"})
-     */
+    #[ORM\OneToMany(targetEntity: Badge::class, mappedBy: 'category', cascade: ['persist'])]
     private $badges;
 
     /**
      * @var bool
-     *
-     * @ORM\Column(type="boolean", options={"default" : 1})
      */
+    #[ORM\Column(type: 'boolean', options: ['default' => 1])]
     private $enabled = true;
 
     /**
      * @var bool
-     *
-     * @ORM\Column(type="boolean", options={"default" : 0})
      */
+    #[ORM\Column(type: 'boolean', options: ['default' => 0])]
     private $locked = false;
 
     public function __construct()

@@ -13,26 +13,23 @@ class Operation
 
     /**
      * @var string
-     *
-     * @Assert\NotBlank(groups={"Create"})
-     * @Assert\Length(max=255, groups={"Create"})
      */
+    #[Assert\NotBlank(groups: ['Create'])]
+    #[Assert\Length(max: 255, groups: ['Create'])]
     public $name;
 
     /**
      * @var string
-     *
-     * @Assert\NotBlank(groups={"Use"})
-     * @Assert\Length(max=64, groups={"Use"})
      */
+    #[Assert\NotBlank(groups: ['Use'])]
+    #[Assert\Length(max: 64, groups: ['Use'])]
     public $operationExternalId;
 
     /**
      * @var string
-     *
-     * @Assert\NotBlank(groups={"Create"})
-     * @Assert\Length(max=64, groups={"Create"})
      */
+    #[Assert\NotBlank(groups: ['Create'])]
+    #[Assert\Length(max: 64, groups: ['Create'])]
     public $ownerExternalId;
 
     /**

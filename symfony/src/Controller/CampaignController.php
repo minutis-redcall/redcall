@@ -13,8 +13,8 @@ use App\Manager\OperationManager;
 use App\Manager\StructureManager;
 use App\Provider\Minutis\MinutisProvider;
 use Bundles\PaginationBundle\Manager\PaginationManager;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -254,8 +254,8 @@ class CampaignController extends BaseController
     }
 
     #[Route(path: "campaign/{id}/report", name: "campaign_report")]
-#[IsGranted("CAMPAIGN_ACCESS", subject: "campaign")]
-#[Template()]
+    #[IsGranted("CAMPAIGN_ACCESS", subject: "campaign")]
+    #[Template("campaign/report.html.twig")]
     public function report(Campaign $campaign)
     {
         return [

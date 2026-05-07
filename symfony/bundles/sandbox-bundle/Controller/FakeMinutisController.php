@@ -6,7 +6,7 @@ use App\Model\Csrf;
 use Bundles\SandboxBundle\Base\BaseController;
 use Bundles\SandboxBundle\Manager\FakeOperationManager;
 use Bundles\SandboxBundle\Manager\FakeOperationResourceManager;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route("/fake-minutis", name: "fake_minutis_")]
@@ -30,7 +30,7 @@ class FakeMinutisController extends BaseController
     }
 
     #[Route("/{id}", name: "list", defaults: ["id" => null], requirements: ["id" => "\d+"])]
-#[Template()]
+    #[Template("@Sandbox/fake_minutis/list.html.twig")]
     public function listAction(?int $id)
     {
         return [

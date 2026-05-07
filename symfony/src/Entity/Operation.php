@@ -7,31 +7,21 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity(repositoryClass=OperationRepository::class)
- */
+#[ORM\Entity(repositoryClass: OperationRepository::class)]
 class Operation
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     private $id;
 
-    /**
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Column(type: 'integer')]
     private $operationExternalId;
 
-    /**
-     * @ORM\OneToMany(targetEntity=Choice::class, mappedBy="operation")
-     */
+    #[ORM\OneToMany(targetEntity: Choice::class, mappedBy: 'operation')]
     private $choices;
 
-    /**
-     * @ORM\OneToOne(targetEntity=Campaign::class, mappedBy="operation", cascade={"persist", "remove"})
-     */
+    #[ORM\OneToOne(targetEntity: Campaign::class, mappedBy: 'operation', cascade: ['persist', 'remove'])]
     private $campaign;
 
     public function __construct()

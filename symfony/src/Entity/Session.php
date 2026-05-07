@@ -4,32 +4,22 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity
- * @ORM\Table(name="sessions")
- */
+#[ORM\Table(name: 'sessions')]
+#[ORM\Entity]
 class Session
 {
-    /**
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(name="sess_id", type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(name: 'sess_id', type: 'integer')]
     private $id;
 
-    /**
-     * @ORM\Column(name="sess_data",type="blob")
-     */
+    #[ORM\Column(name: 'sess_data', type: 'blob')]
     private $data;
 
-    /**
-     * @ORM\Column(name="sess_time", type="integer")
-     */
+    #[ORM\Column(name: 'sess_time', type: 'integer')]
     private $time;
 
-    /**
-     * @ORM\Column(name="sess_lifetime", type="integer")
-     */
+    #[ORM\Column(name: 'sess_lifetime', type: 'integer')]
     private $lifetime;
 
     public function getId() : ?int

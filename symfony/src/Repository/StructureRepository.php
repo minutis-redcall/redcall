@@ -203,7 +203,7 @@ class StructureRepository extends BaseRepository
     {
         $qb = $this->createQueryBuilder('s');
 
-        $sub = $this->_em->createQueryBuilder()
+        $sub = $this->getEntityManager()->createQueryBuilder()
                          ->select('p.identifier')
                          ->from(Pegass::class, 'p')
                          ->where('p.type = :type')
@@ -270,7 +270,7 @@ class StructureRepository extends BaseRepository
             ->createQueryBuilder('s')
             ->select('s.id, s.name, COUNT(DISTINCT v) AS count')
             ->where('s.id IN (:ids)')
-            ->setParameter('ids', $structureIds, Connection::PARAM_INT_ARRAY)
+            ->setParameter('ids', $structureIds, \Doctrine\DBAL\ArrayParameterType::INTEGER)
             ->andWhere('s.enabled = true')
             ->leftJoin('s.volunteers', 'v')
             ->andWhere('v.enabled = true OR v.enabled IS NULL')
@@ -294,7 +294,7 @@ class StructureRepository extends BaseRepository
             ->leftJoin('c4.childrenStructures', 'c5', 'WITH', 'c5.enabled = true')
             ->where('s.id IN (:ids)')
             ->andWhere('s.enabled = true')
-            ->setParameter('ids', $structureIds, Connection::PARAM_INT_ARRAY)
+            ->setParameter('ids', $structureIds, \Doctrine\DBAL\ArrayParameterType::INTEGER)
             ->getQuery()
             ->getArrayResult();
 

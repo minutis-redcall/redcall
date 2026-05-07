@@ -8,8 +8,7 @@ use App\Manager\VolunteerManager;
 use Bundles\SandboxBundle\Base\BaseController;
 use Bundles\SandboxBundle\Entity\FakeSms;
 use Bundles\SandboxBundle\Manager\FakeSmsManager;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -48,7 +47,7 @@ class FakeSmsController extends BaseController
     }
 
     #[Route("/", name: "list")]
-#[Template()]
+    #[Template("@Sandbox/fake_sms/list.html.twig")]
     public function listAction()
     {
         $phoneNumbers = $this->fakeSmsManager->findAllPhones();
@@ -72,7 +71,7 @@ class FakeSmsController extends BaseController
     }
 
     #[Route("/thread/{e164}/{campaignId}", name: "thread", defaults: ["campaignId" => null])]
-#[Template()]
+    #[Template("@Sandbox/fake_sms/thread.html.twig")]
     public function threadAction(Phone $phone, ?int $campaignId)
     {
         $volunteer = $phone->getVolunteers()->first();
@@ -93,10 +92,7 @@ class FakeSmsController extends BaseController
         ];
     }
 
-    /**
-     * @Method("POST")
-     */
-#[Route("/send/{e164}/{csrf}", name: "send")]
+    #[Route("/send/{e164}/{csrf}", name: "send", methods: ["POST"])]
     public function sendAction(Request $request, Phone $phone, string $csrf)
     {
         $this->validateCsrfOrThrowNotFoundException('fake_sms', $csrf);

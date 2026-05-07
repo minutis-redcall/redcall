@@ -5,6 +5,7 @@ parameters:
   locale_list: [ 'fr', 'en' ]
   locale_matcher: 'fr|en'
   google_recaptcha_site_key: '%env(GOOGLE_RECAPTCHA_SITE_KEY)%'
+  recaptcha_enabled: true
   communication.processor: 'App\Communication\Processor\TaskProcessor'
   user_entity: 'App\Entity\User'
   home_route: 'home'
@@ -43,7 +44,7 @@ services:
   # this creates a service per class whose id is the fully-qualified class name
   App\:
     resource: '../src/*'
-    exclude: '../src/{Entity,Migrations,Polyfill,Tests,Kernel.php}'
+    exclude: '../src/{Entity,Migrations,Tests,Kernel.php}'
 
   # controllers are imported separately to make sure services can be injected
   # as action arguments even if you don't extend any base controller class
@@ -96,6 +97,26 @@ services:
     arguments:
       $clientId: '%env(GOOGLE_CONNECT_CLIENT_ID)%'
       $clientSecret: '%env(GOOGLE_CONNECT_CLIENT_SECRET)%'
+
+  App\ArgumentResolver\CsrfTokenResolver:
+    tags:
+      - { name: controller.argument_value_resolver, priority: 150 }
+
+  App\ArgumentResolver\MyClabsEnumResolver:
+    tags:
+      - { name: controller.argument_value_resolver, priority: 150 }
+
+  App\Form\Type\RecaptchaType:
+    arguments:
+      $siteKey: '%google_recaptcha_site_key%'
+    tags:
+      - { name: form.type }
+
+  App\Validator\Constraints\RecaptchaTrueValidator:
+    arguments:
+      $enabled: '%recaptcha_enabled%'
+    tags:
+      - { name: validator.constraint_validator }
 
   twig.extension.intl:
     class: Twig\Extra\Intl\IntlExtension

@@ -2,9 +2,9 @@
 
 namespace Bundles\PasswordLoginBundle\Form\Type;
 
+use App\Form\Type\RecaptchaType;
+use App\Validator\Constraints\RecaptchaTrue;
 use Bundles\PasswordLoginBundle\Manager\CaptchaManager;
-use EWZ\Bundle\RecaptchaBundle\Form\Type\EWZRecaptchaType;
-use EWZ\Bundle\RecaptchaBundle\Validator\Constraints\IsTrue as RecaptchaTrue;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -55,7 +55,7 @@ class ConnectType extends AbstractType
         $ip = $this->requestStack->getMainRequest()->getClientIp();
 
         if (!$this->captchaManager->isAllowed($ip)) {
-            $builder->add('recaptcha', EWZRecaptchaType::class, [
+            $builder->add('recaptcha', RecaptchaType::class, [
                 'label'       => 'password_login.connect.captcha',
                 'constraints' => [
                     new RecaptchaTrue(),

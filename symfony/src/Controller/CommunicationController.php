@@ -32,9 +32,9 @@ use Bundles\TwilioBundle\Manager\TwilioCallManager;
 use Bundles\TwilioBundle\Manager\TwilioMessageManager;
 use Bundles\TwilioBundle\Manager\TwilioStatusManager;
 use Craue\FormFlowBundle\Form\FormFlow;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
+use Symfony\Component\ExpressionLanguage\Expression;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -448,15 +448,11 @@ class CommunicationController extends BaseController
         return new Response();
     }
 
-    /**
-     * @Entity("campaign", expr="repository.find(campaignId)")
-     * @Entity("communicationEntity", expr="repository.find(communicationId)")
-     */
-#[Route(path: "campaign/{campaignId}/rename-communication/{communicationId}", name: "rename")]
-#[IsGranted("CAMPAIGN_ACCESS", subject: "campaign")]
+    #[Route(path: "campaign/{campaignId}/rename-communication/{communicationId}", name: "rename")]
+    #[IsGranted("CAMPAIGN_ACCESS", subject: "campaign")]
     public function rename(Request $request,
-        Campaign $campaign,
-        Communication $communicationEntity,
+        #[MapEntity(expr: "repository.find(campaignId)")] Campaign $campaign,
+        #[MapEntity(expr: "repository.find(communicationId)")] Communication $communicationEntity,
         ValidatorInterface $validator) : Response
     {
         $this->validateCsrfOrThrowNotFoundException('communication', $request->request->get('csrf'));
@@ -477,10 +473,8 @@ class CommunicationController extends BaseController
         ]));
     }
 
-    /**
-     * @Security("is_granted('ROLE_ADMIN')")
-     */
-#[Route("campaign/{campaign}/communication/{communication}/relaunch", name: "relaunch")]
+    #[Route("campaign/{campaign}/communication/{communication}/relaunch", name: "relaunch")]
+    #[IsGranted(new Expression("is_granted('ROLE_ADMIN')"))]
     public function relaunchCommunication(Campaign $campaign,
         Communication $communication,
         ProcessorInterface $processor)
@@ -496,14 +490,11 @@ class CommunicationController extends BaseController
         return $this->redirectToRoute('communication_index', ['id' => $campaign->getId()]);
     }
 
-    /**
-     * @Entity("campaign", expr="repository.find(campaignId)")
-     * @Entity("message", expr="repository.find(messageId)")
-     */
-#[Route(path: "campaign/{campaignId}/provider-information/{messageId}", name: "provider_information")]
-#[IsGranted("CAMPAIGN_ACCESS", subject: "campaign")]
-    public function getProviderInformation(Campaign $campaign,
-        Message $message,
+    #[Route(path: "campaign/{campaignId}/provider-information/{messageId}", name: "provider_information")]
+    #[IsGranted("CAMPAIGN_ACCESS", subject: "campaign")]
+    public function getProviderInformation(
+        #[MapEntity(expr: "repository.find(campaignId)")] Campaign $campaign,
+        #[MapEntity(expr: "repository.find(messageId)")] Message $message,
         TranslatorInterface $translator,
         TwilioStatusManager $statusManager,
         TwilioMessageManager $messageManager,

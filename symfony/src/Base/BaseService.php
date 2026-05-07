@@ -12,9 +12,7 @@ abstract class BaseService implements ServiceSubscriberInterface
      */
     private $container;
 
-    /**
-     * @required
-     */
+    #[\Symfony\Contracts\Service\Attribute\Required]
     public function setContainer(ContainerInterface $container) : ?ContainerInterface
     {
         $previous        = $this->container;

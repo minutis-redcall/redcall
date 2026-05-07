@@ -5,11 +5,9 @@ namespace App\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
-/**
- * @ORM\Entity(repositoryClass="App\Repository\PrefilledAnswersRepository")
- * @ORM\HasLifecycleCallbacks()
- * @ORM\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
- */
+#[ORM\Entity(repositoryClass: \App\Repository\PrefilledAnswersRepository::class)]
+#[ORM\HasLifecycleCallbacks]
+#[ORM\ChangeTrackingPolicy('DEFERRED_EXPLICIT')]
 class PrefilledAnswers
 {
     /**
@@ -18,41 +16,28 @@ class PrefilledAnswers
      */
     const COMMA_REPLACEMENT = '#COM#';
 
-    /**
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     private $id;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     * @Assert\NotBlank
-     * @Assert\Length(max=255)
-     */
+    #[ORM\Column(type: 'string', length: 255)]
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 255)]
     private $label;
 
-    /**
-     * @ORM\Column(type="simple_array", nullable=true)
-     * @Assert\Choice({
-     *     Campaign::TYPE_GREEN,
-     *     Campaign::TYPE_LIGHT_ORANGE,
-     *     Campaign::TYPE_DARK_ORANGE,
-     *     Campaign::TYPE_RED
-     * }, multiple = true)
-     */
+    #[ORM\Column(type: 'simple_array', nullable: true)]
+    #[Assert\Choice([Campaign::TYPE_GREEN, Campaign::TYPE_LIGHT_ORANGE, Campaign::TYPE_DARK_ORANGE, Campaign::TYPE_RED], multiple: true)]
     private $colors = [];
 
-    /**
-     * @ORM\Column(type="simple_array")
-     * @Assert\Count(min=1, max=10)
-     */
+    #[ORM\Column(type: 'simple_array')]
+    #[Assert\Count(min: 1, max: 10)]
     private $answers = [];
 
     /**
      * @var Structure|null
-     * @ORM\ManyToOne(targetEntity="App\Entity\Structure", inversedBy="prefilledAnswers")
      */
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Structure::class, inversedBy: 'prefilledAnswers')]
     private $structure;
 
     /**
@@ -139,25 +124,19 @@ class PrefilledAnswers
         $this->structure = $structure;
     }
 
-    /**
-     * @ORM\PrePersist
-     */
+    #[ORM\PrePersist]
     public function onPrePersist()
     {
         $this->sanitizePFAs();
     }
 
-    /**
-     * @ORM\PreUpdate
-     */
+    #[ORM\PreUpdate]
     public function onPreUpdate()
     {
         $this->sanitizePFAs();
     }
 
-    /**
-     * @ORM\PostLoad
-     */
+    #[ORM\PostLoad]
     public function onPostLoad()
     {
         $this->restorePFAs();

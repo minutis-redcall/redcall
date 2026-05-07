@@ -12,9 +12,8 @@ class EmailTrigger extends BaseTrigger
 {
     /**
      * @var string|null
-     *
-     * @Assert\Length(max=80)
      */
+    #[Assert\Length(max: 80)]
     private $subject = null;
 
     /**
@@ -53,9 +52,7 @@ class EmailTrigger extends BaseTrigger
         return $this;
     }
 
-    /**
-     * @Assert\Callback
-     */
+    #[Assert\Callback]
     public function validate(ExecutionContextInterface $context, $payload)
     {
         parent::validate($context, $payload);

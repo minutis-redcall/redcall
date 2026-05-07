@@ -3,9 +3,8 @@
 namespace App\Form\Type;
 
 use App\Manager\NivolManager;
+use App\Validator\Constraints\RecaptchaTrue;
 use Bundles\PasswordLoginBundle\Manager\CaptchaManager;
-use EWZ\Bundle\RecaptchaBundle\Form\Type\EWZRecaptchaType;
-use EWZ\Bundle\RecaptchaBundle\Validator\Constraints\IsTrue as RecaptchaTrue;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -62,7 +61,7 @@ class NivolType extends AbstractType
         $ip = $this->requestStack->getMainRequest()->getClientIp();
 
         if ($ip === '169.155.250.88' /* test alain */ || !$this->captchaManager->isAllowed($ip)) {
-            $builder->add('recaptcha', EWZRecaptchaType::class, [
+            $builder->add('recaptcha', RecaptchaType::class, [
                 'label'       => 'password_login.connect.captcha',
                 'constraints' => [
                     new RecaptchaTrue(),

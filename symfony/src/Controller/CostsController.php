@@ -5,8 +5,8 @@ namespace App\Controller;
 use App\Base\BaseController;
 use App\Entity\User;
 use App\Manager\ReportManager;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route("/costs", name: "costs_")]
@@ -21,7 +21,7 @@ class CostsController extends BaseController
     }
 
     #[Route("/", name: "home")]
-#[Template()]
+    #[Template("costs/home.html.twig")]
     public function home(): array
     {
         /** @var User $user */

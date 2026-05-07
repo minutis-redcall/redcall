@@ -5,40 +5,27 @@ namespace App\Entity;
 use App\Repository\ExpirableRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Table(indexes={
- *     @ORM\Index(name="uuidx", columns={"uuid"}),
- *     @ORM\Index(name="expires_atx", columns={"expires_at"})
- * })
- * @ORM\Entity(repositoryClass=ExpirableRepository::class)
- */
+#[ORM\Table]
+#[ORM\Index(name: 'uuidx', columns: ['uuid'])]
+#[ORM\Index(name: 'expires_atx', columns: ['expires_at'])]
+#[ORM\Entity(repositoryClass: ExpirableRepository::class)]
 class Expirable
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     private $id;
 
-    /**
-     * @ORM\Column(type="string", length=36)
-     */
+    #[ORM\Column(type: 'string', length: 36)]
     private $uuid;
 
-    /**
-     * @ORM\Column(type="text")
-     */
+    #[ORM\Column(type: 'text')]
     private $data;
 
-    /**
-     * @ORM\Column(type="datetime")
-     */
+    #[ORM\Column(type: 'datetime')]
     private $createdAt;
 
-    /**
-     * @ORM\Column(type="datetime")
-     */
+    #[ORM\Column(type: 'datetime')]
     private $expiresAt;
 
     public function getId() : ?int

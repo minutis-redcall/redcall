@@ -7,7 +7,7 @@ use App\Entity\PrefilledAnswers;
 use App\Form\Type\PrefilledAnswersType;
 use App\Manager\PrefilledAnswersManager;
 use Bundles\PaginationBundle\Manager\PaginationManager;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 
@@ -69,8 +69,7 @@ class PrefilledAnswersController extends BaseController
     }
 
     #[Route(name: "delete", path: "supprimer/{csrf}/{pfaId}", requirements: ["pfaId" => "\d+"])]
-#[ParamConverter("prefilledAnswers", options: ["id" => "pfaId"])]
-    public function deleteAction(PrefilledAnswers $prefilledAnswers, string $csrf)
+    public function deleteAction(#[MapEntity(id: "pfaId")] PrefilledAnswers $prefilledAnswers, string $csrf)
     {
         $this->validateCsrfOrThrowNotFoundException('prefilled_answers', $csrf);
 

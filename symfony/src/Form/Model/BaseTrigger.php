@@ -15,47 +15,41 @@ abstract class BaseTrigger implements \JsonSerializable
 
     /**
      * @var string
-     *
-     * @Assert\Length(max=255, groups={"label_edition"})
      */
+    #[Assert\Length(max: 255, groups: ['label_edition'])]
     private $label;
 
     /**
      * @var string
-     *
-     * @Assert\NotNull
      */
+    #[Assert\NotNull]
     private $type;
 
     /**
      * @var array
-     *
-     * @Assert\NotNull
-     * @Assert\Count(min=1, minMessage="form.campaign.errors.volunteers.min")
      */
+    #[Assert\NotNull]
+    #[Assert\Count(min: 1, minMessage: 'form.campaign.errors.volunteers.min')]
     private $audience = [];
 
     /**
      * @var string
-     *
-     * @Assert\NotNull
      */
+    #[Assert\NotNull]
     private $language;
 
     /**
      * @var string
-     *
-     * @Assert\NotNull()
-     * @Assert\Length(min=1, minMessage="form.campaign.errors.message.empty")
      */
+    #[Assert\NotNull]
+    #[Assert\Length(min: 1, minMessage: 'form.campaign.errors.message.empty')]
     private $message;
 
     /**
      * @var array
-     *
-     * @Assert\Count(max=9)
-     * @Assert\Valid
      */
+    #[Assert\Count(max: 9)]
+    #[Assert\Valid]
     private $answers = [];
 
     /**

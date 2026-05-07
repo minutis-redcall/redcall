@@ -9,45 +9,29 @@ use Symfony\Component\Security\Core\User\EquatableInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-/**
- * @ORM\MappedSuperclass()
- */
+#[ORM\MappedSuperclass]
 class AbstractUser implements UserInterface, EquatableInterface, PasswordAuthenticatedUserInterface
 {
-    /**
-     * @ORM\Column(name="id", type="string", length=36)
-     * @ORM\Id
-     */
+    #[ORM\Column(name: 'id', type: 'string', length: 36)]
+    #[ORM\Id]
     protected $id;
 
-    /**
-     * @ORM\Column(name="username", type="string", length=64, unique=true)
-     */
+    #[ORM\Column(name: 'username', type: 'string', length: 64, unique: true)]
     protected $username;
 
-    /**
-     * @ORM\Column(name="password", type="string", length=72)
-     */
+    #[ORM\Column(name: 'password', type: 'string', length: 72)]
     protected $password;
 
-    /**
-     * @ORM\Column(name="is_verified", type="boolean")
-     */
+    #[ORM\Column(name: 'is_verified', type: 'boolean')]
     protected $isVerified = false;
 
-    /**
-     * @ORM\Column(name="is_trusted", type="boolean")
-     */
+    #[ORM\Column(name: 'is_trusted', type: 'boolean')]
     protected $isTrusted = false;
 
-    /**
-     * @ORM\Column(name="is_admin", type="boolean")
-     */
+    #[ORM\Column(name: 'is_admin', type: 'boolean')]
     protected $isAdmin = false;
 
-    /**
-     * @ORM\Column(type="datetime")
-     */
+    #[ORM\Column(type: 'datetime')]
     protected $registeredAt;
 
     protected $roles = ['ROLE_USER'];
@@ -139,9 +123,7 @@ class AbstractUser implements UserInterface, EquatableInterface, PasswordAuthent
         return $this;
     }
 
-    /**
-     * @ORM\PrePersist
-     */
+    #[ORM\PrePersist]
     public function onPrePersist()
     {
         $this->setRegisteredAt(new DateTime());

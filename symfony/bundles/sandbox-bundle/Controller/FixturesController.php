@@ -5,7 +5,7 @@ namespace Bundles\SandboxBundle\Controller;
 use App\Form\Type\StructureWidgetType;
 use Bundles\SandboxBundle\Base\BaseController;
 use Bundles\SandboxBundle\Manager\FixturesManager;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -38,7 +38,7 @@ class FixturesController extends BaseController
     }
 
     #[Route(path: "/", name: "index")]
-#[Template()]
+    #[Template("@Sandbox/fixtures/index.html.twig")]
     public function index(Request $request)
     {
         $structure = $this->getStructureForm($request);

@@ -11,7 +11,7 @@ use App\Manager\UserManager;
 use App\Model\Csrf;
 use App\Security\Helper\Security;
 use Bundles\SettingsBundle\Manager\SettingManager;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
@@ -51,7 +51,7 @@ class FavoriteBadgeController extends BaseController
     }
 
     #[Route(name: "index")]
-#[Template()]
+    #[Template("favorite_badge/index.html.twig")]
     public function index(Request $request)
     {
         // Initializing with the currently public badges

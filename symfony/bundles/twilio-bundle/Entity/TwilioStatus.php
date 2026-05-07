@@ -4,39 +4,33 @@ namespace Bundles\TwilioBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity(repositoryClass="Bundles\TwilioBundle\Repository\TwilioStatusRepository")
- */
+#[ORM\Entity(repositoryClass: \Bundles\TwilioBundle\Repository\TwilioStatusRepository::class)]
 class TwilioStatus
 {
     /**
      * @var int
-     *
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
      */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     private $id;
 
     /**
      * @var string
-     *
-     * @ORM\Column(type="string", length=64)
      */
+    #[ORM\Column(type: 'string', length: 64)]
     private $sid;
 
     /**
      * @var string
-     *
-     * @ORM\Column(type="string", length=64)
      */
+    #[ORM\Column(type: 'string', length: 64)]
     private $status;
 
     /**
      * @var \DateTime
-     *
-     * @ORM\Column(type="datetime")
      */
+    #[ORM\Column(type: 'datetime')]
     private $receivedAt;
 
     public function __construct()

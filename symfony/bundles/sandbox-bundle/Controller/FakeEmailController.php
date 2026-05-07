@@ -6,7 +6,7 @@ use App\Entity\Volunteer;
 use App\Manager\VolunteerManager;
 use Bundles\SandboxBundle\Base\BaseController;
 use Bundles\SandboxBundle\Manager\FakeEmailManager;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route("/fake-email", name: "fake_email_")]
@@ -33,7 +33,7 @@ class FakeEmailController extends BaseController
     }
 
     #[Route("/", name: "list")]
-#[Template()]
+    #[Template("@Sandbox/fake_email/list.html.twig")]
     public function listAction()
     {
         $emails = $this->fakeEmailManager->findAllEmails();
@@ -57,7 +57,7 @@ class FakeEmailController extends BaseController
     }
 
     #[Route("/read/{email}/{campaignId}", name: "read", defaults: ["campaignId" => null])]
-#[Template()]
+    #[Template("@Sandbox/fake_email/read.html.twig")]
     public function readAction(Volunteer $volunteer, ?int $campaignId)
     {
         $messages = $this->fakeEmailManager->findMessagesForEmail($volunteer->getEmail());

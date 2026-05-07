@@ -10,7 +10,7 @@ use Bundles\PasswordLoginBundle\Form\Type\ProfileType;
 use Bundles\PasswordLoginBundle\Manager\EmailVerificationManager;
 use Bundles\PasswordLoginBundle\Manager\PasswordRecoveryManager;
 use Bundles\PasswordLoginBundle\Manager\UserManager;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -68,7 +68,7 @@ class AdminController extends AbstractController
     }
 
     #[Route("/", name: "list")]
-#[Template()]
+    #[Template("@PasswordLogin/admin/list.html.twig")]
     public function listAction(Request $request)
     {
         $search = $this->createSearchForm($request);
@@ -142,7 +142,7 @@ class AdminController extends AbstractController
     }
 
     #[Route("/profile/{username}", name: "profile")]
-#[Template()]
+    #[Template("@PasswordLogin/admin/profile.html.twig")]
     public function profile(Request $request, string $username)
     {
         $newUser = $this->checkUser($username);

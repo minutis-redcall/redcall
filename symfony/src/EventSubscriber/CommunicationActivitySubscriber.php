@@ -5,8 +5,9 @@ namespace App\EventSubscriber;
 use App\Entity\Answer;
 use App\Entity\Cost;
 use App\Entity\Message;
-use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\PostFlushEventArgs;
+use Doctrine\ORM\Event\PostPersistEventArgs;
+use Doctrine\ORM\Event\PostUpdateEventArgs;
 
 class CommunicationActivitySubscriber
 {
@@ -15,14 +16,14 @@ class CommunicationActivitySubscriber
      */
     private $pendingCampaignIds = [];
 
-    public function postPersist(LifecycleEventArgs $args)
+    public function postPersist(PostPersistEventArgs $args)
     {
         $this->onChange(
             $args->getObject()
         );
     }
 
-    public function postUpdate(LifecycleEventArgs $args)
+    public function postUpdate(PostUpdateEventArgs $args)
     {
         $this->onChange(
             $args->getObject()
@@ -38,7 +39,7 @@ class CommunicationActivitySubscriber
         $ids = $this->pendingCampaignIds;
         $this->pendingCampaignIds = [];
 
-        $em = $args->getEntityManager();
+        $em = $args->getObjectManager();
         $em->createQuery(
             'UPDATE App\Entity\Campaign c SET c.lastActivityAt = :now WHERE c.id IN (:ids)'
         )

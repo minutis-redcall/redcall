@@ -4,37 +4,25 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity(repositoryClass=App\Repository\ReportRepartitionRepository::class)
- */
+#[ORM\Entity(repositoryClass: \App\Repository\ReportRepartitionRepository::class)]
 class ReportRepartition extends AbstractReport
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     private $id;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Structure::class)
-     */
+    #[ORM\ManyToOne(targetEntity: Structure::class)]
     private $structure;
 
-    /**
-     * @ORM\Column(type="float")
-     */
+    #[ORM\Column(type: 'float')]
     private $ratio;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Report::class, inversedBy="repartitions")
-     * @ORM\JoinColumn(nullable=false)
-     */
+    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\ManyToOne(targetEntity: Report::class, inversedBy: 'repartitions')]
     private $report;
 
-    /**
-     * @ORM\Column(type="string", length=64)
-     */
+    #[ORM\Column(type: 'string', length: 64)]
     private $costs = '[]';
 
     public function getId() : ?int

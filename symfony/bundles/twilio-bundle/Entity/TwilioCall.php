@@ -4,36 +4,23 @@ namespace Bundles\TwilioBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Table(
- *     uniqueConstraints={
- *         @ORM\UniqueConstraint(name="uuid_idx", columns={"uuid"})
- *     },
- *     indexes={
- *         @ORM\Index(name="sid_idx", columns={"sid"}),
- *         @ORM\Index(name="price_idx", columns={"price"})
- *     }
- * )
- * @ORM\Entity(repositoryClass="Bundles\TwilioBundle\Repository\TwilioCallRepository")
- * @ORM\HasLifecycleCallbacks
- */
+#[ORM\Table]
+#[ORM\Index(name: 'sid_idx', columns: ['sid'])]
+#[ORM\Index(name: 'price_idx', columns: ['price'])]
+#[ORM\UniqueConstraint(name: 'uuid_idx', columns: ['uuid'])]
+#[ORM\Entity(repositoryClass: \Bundles\TwilioBundle\Repository\TwilioCallRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class TwilioCall extends BaseTwilio
 {
     public const TYPE = 'call';
 
-    /**
-     * @ORM\Column(type="datetime", nullable=true)
-     */
+    #[ORM\Column(type: 'datetime', nullable: true)]
     private $startedAt;
 
-    /**
-     * @ORM\Column(type="datetime", nullable=true)
-     */
+    #[ORM\Column(type: 'datetime', nullable: true)]
     private $endedAt;
 
-    /**
-     * @ORM\Column(type="integer", nullable=true)
-     */
+    #[ORM\Column(type: 'integer', nullable: true)]
     private $duration;
 
     public function getStartedAt() : ?\DateTime

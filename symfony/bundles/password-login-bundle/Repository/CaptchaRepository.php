@@ -17,7 +17,7 @@ class CaptchaRepository extends BaseRepository
 
     public function clearExpired() : void
     {
-        $this->_em->createQuery('
+        $this->getEntityManager()->createQuery('
             DELETE Bundles\PasswordLoginBundle\Entity\Captcha c
             WHERE c.timestamp < :expiry
         ')->execute([

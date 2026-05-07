@@ -34,7 +34,7 @@ class FakeOperationRepository extends BaseRepository
             ->getResult();
     }
 
-    public function findAll()
+    public function findAll(): array
     {
         return $this->findBy([], ['updatedAt' => 'DESC']);
     }

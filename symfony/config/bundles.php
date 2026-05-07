@@ -7,8 +7,6 @@ return [
     Doctrine\Bundle\DoctrineBundle\DoctrineBundle::class => ['all' => true],
     Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle::class => ['all' => true],
     Symfony\Bundle\MonologBundle\MonologBundle::class => ['all' => true],
-    Sensio\Bundle\FrameworkExtraBundle\SensioFrameworkExtraBundle::class => ['all' => true],
-    EWZ\Bundle\RecaptchaBundle\EWZRecaptchaBundle::class => ['all' => true],
     Bundles\PasswordLoginBundle\PasswordLoginBundle::class => ['all' => true],
     Bundles\PaginationBundle\PaginationBundle::class => ['all' => true],
     Bundles\SandboxBundle\SandboxBundle::class => ['dev' => true, 'test' => true],

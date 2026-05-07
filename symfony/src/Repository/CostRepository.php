@@ -22,14 +22,14 @@ class CostRepository extends BaseRepository
     public function truncate()
     {
         // Credits: https://stackoverflow.com/a/9710383/731138
-        $cmd        = $this->_em->getClassMetadata(Cost::class);
-        $connection = $this->_em->getConnection();
+        $cmd        = $this->getEntityManager()->getClassMetadata(Cost::class);
+        $connection = $this->getEntityManager()->getConnection();
         $dbPlatform = $connection->getDatabasePlatform();
         $connection->beginTransaction();
         try {
             $connection->query('SET FOREIGN_KEY_CHECKS=0');
             $q = $dbPlatform->getTruncateTableSql($cmd->getTableName());
-            $connection->executeUpdate($q);
+            $connection->executeStatement($q);
             $connection->query('SET FOREIGN_KEY_CHECKS=1');
             $connection->commit();
         } catch (\Exception $e) {

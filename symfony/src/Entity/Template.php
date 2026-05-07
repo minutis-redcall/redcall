@@ -9,67 +9,47 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
-/**
- * @ORM\Entity(repositoryClass=TemplateRepository::class)
- * @ORM\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
- */
+#[ORM\Entity(repositoryClass: TemplateRepository::class)]
+#[ORM\ChangeTrackingPolicy('DEFERRED_EXPLICIT')]
 class Template
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     private $id;
 
     /**
      * @var Structure
-     *
-     * @ORM\ManyToOne(targetEntity=Structure::class, inversedBy="templates")
-     * @ORM\JoinColumn(nullable=false)
      */
+    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\ManyToOne(targetEntity: Structure::class, inversedBy: 'templates')]
     private $structure;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
+    #[ORM\Column(type: 'string', length: 255)]
     private $name;
 
-    /**
-     * @ORM\Column(type="string", length=20)
-     */
+    #[ORM\Column(type: 'string', length: 20)]
     private $type = Communication::TYPE_SMS;
 
-    /**
-     * @ORM\Column(type="string", length=80, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 80, nullable: true)]
     private $subject;
 
-    /**
-     * @ORM\Column(type="text")
-     */
+    #[ORM\Column(type: 'text')]
     private $body;
 
-    /**
-     * @ORM\Column(type="simple_array", nullable=true)
-     */
+    #[ORM\Column(type: 'simple_array', nullable: true)]
     private $answers = [];
 
-    /**
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Column(type: 'integer')]
     private $priority = 0;
 
-    /**
-     * @ORM\Column(type="string", length=5)
-     */
+    #[ORM\Column(type: 'string', length: 5)]
     private $language;
 
     /**
      * @var TemplateImage[]
-     *
-     * @ORM\OneToMany(targetEntity=TemplateImage::class, mappedBy="template", orphanRemoval=true)
      */
+    #[ORM\OneToMany(targetEntity: TemplateImage::class, mappedBy: 'template', orphanRemoval: true)]
     private $images;
 
     public function __construct()
@@ -228,9 +208,7 @@ class Template
         return $this;
     }
 
-    /**
-     * @Assert\Callback
-     */
+    #[Assert\Callback]
     public function validate(ExecutionContextInterface $context, $payload)
     {
         switch ($this->type) {

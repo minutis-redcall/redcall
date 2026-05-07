@@ -4,11 +4,10 @@ namespace Bundles\PasswordLoginBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Table(uniqueConstraints={@ORM\UniqueConstraint(name="uuid_idx", columns={"uuid"})})
- * @ORM\Entity(repositoryClass="Bundles\PasswordLoginBundle\Repository\EmailVerificationRepository")
- * @ORM\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
- */
+#[ORM\Table]
+#[ORM\UniqueConstraint(name: 'uuid_idx', columns: ['uuid'])]
+#[ORM\Entity(repositoryClass: \Bundles\PasswordLoginBundle\Repository\EmailVerificationRepository::class)]
+#[ORM\ChangeTrackingPolicy('DEFERRED_EXPLICIT')]
 class EmailVerification
 {
     const EXPIRATION = '36 hours';
@@ -16,25 +15,17 @@ class EmailVerification
     const TYPE_REGISTRATION = 'registration';
     const TYPE_EDIT_PROFILE = 'edit_profile';
 
-    /**
-     * @ORM\Column(name="username", type="string", length=64)
-     * @ORM\Id
-     */
+    #[ORM\Column(name: 'username', type: 'string', length: 64)]
+    #[ORM\Id]
     private $username;
 
-    /**
-     * @ORM\Column(name="uuid", type="string", length=36)
-     */
+    #[ORM\Column(name: 'uuid', type: 'string', length: 36)]
     private $uuid;
 
-    /**
-     * @ORM\Column(name="type", type="string", length=36)
-     */
+    #[ORM\Column(name: 'type', type: 'string', length: 36)]
     private $type;
 
-    /**
-     * @ORM\Column(name="timestamp", type="integer", options={"unsigned"=true})
-     */
+    #[ORM\Column(name: 'timestamp', type: 'integer', options: ['unsigned' => true])]
     private $timestamp;
 
     public function __construct()

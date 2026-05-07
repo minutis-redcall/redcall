@@ -13,7 +13,7 @@ use App\Entity\Message;
 use App\Entity\Volunteer;
 use DateTime;
 use Mpdf\Mpdf;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;

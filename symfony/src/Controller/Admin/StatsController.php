@@ -6,7 +6,7 @@ use App\Base\BaseController;
 use App\Component\HttpFoundation\ArrayToCsvResponse;
 use App\Manager\ReportManager;
 use App\Manager\StatisticsManager;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -30,14 +30,14 @@ class StatsController extends BaseController
     }
 
     #[Route("/", name: "home")]
-#[Template()]
+    #[Template("admin/stats/index.html.twig")]
     public function index()
     {
         return [];
     }
 
     #[Route("/general", name: "general")]
-#[Template()]
+    #[Template("admin/stats/general.html.twig")]
     public function general(StatisticsManager $statisticsManager, Request $request) : array
     {
         //$from = new \DateTime('first day of January this year midnight');
@@ -86,7 +86,7 @@ class StatsController extends BaseController
     }
 
     #[Route("/structure", name: "structure")]
-#[Template()]
+    #[Template("admin/stats/structure.html.twig")]
     public function structure(Request $request)
     {
         $form = $this->createStructureForm($request);

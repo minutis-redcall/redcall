@@ -140,7 +140,7 @@ class PegassTest extends TestCase
         $pegass->prePersist();
 
         $this->assertInstanceOf(\DateTimeImmutable::class, $pegass->getCreatedAt());
-        $this->assertInstanceOf(\DateTimeImmutable::class, $pegass->getUpdatedAt());
+        $this->assertInstanceOf(\DateTime::class, $pegass->getUpdatedAt());
         $this->assertEqualsWithDelta(time(), $pegass->getCreatedAt()->getTimestamp(), 2);
         $this->assertEqualsWithDelta(time(), $pegass->getUpdatedAt()->getTimestamp(), 2);
     }

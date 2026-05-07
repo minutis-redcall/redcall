@@ -16,7 +16,7 @@ class PasswordRecoveryRepository extends BaseRepository
 
     public function clearExpired() : void
     {
-        $this->_em->createQuery('
+        $this->getEntityManager()->createQuery('
                     DELETE Bundles\PasswordLoginBundle\Entity\PasswordRecovery pr
                     WHERE pr.timestamp < :expiry
                 ')->execute([

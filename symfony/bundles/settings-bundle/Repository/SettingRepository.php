@@ -47,8 +47,8 @@ class SettingRepository extends ServiceEntityRepository
 
         $entity->setValue($value);
 
-        $this->_em->persist($entity);
-        $this->_em->flush();
+        $this->getEntityManager()->persist($entity);
+        $this->getEntityManager()->flush();
     }
 
     public function remove(string $property)
@@ -56,8 +56,8 @@ class SettingRepository extends ServiceEntityRepository
         $entity = $this->findOneByProperty($property);
 
         if ($entity) {
-            $this->_em->remove($entity);
-            $this->_em->flush();
+            $this->getEntityManager()->remove($entity);
+            $this->getEntityManager()->flush();
         }
     }
 }

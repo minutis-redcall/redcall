@@ -4,32 +4,27 @@ namespace Bundles\SandboxBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity(repositoryClass="Bundles\SandboxBundle\Repository\FakeOperationResourceRepository")
- */
+#[ORM\Entity(repositoryClass: \Bundles\SandboxBundle\Repository\FakeOperationResourceRepository::class)]
 class FakeOperationResource
 {
     /**
      * @var int
-     *
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
      */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     private $id;
 
     /**
      * @var FakeOperation
-     *
-     * @ORM\ManyToOne(targetEntity="Bundles\SandboxBundle\Entity\FakeOperation", inversedBy="resources")
      */
+    #[ORM\ManyToOne(targetEntity: \Bundles\SandboxBundle\Entity\FakeOperation::class, inversedBy: 'resources')]
     private $operation;
 
     /**
      * @var string
-     *
-     * @ORM\Column(type="string", length=64, nullable=true)
      */
+    #[ORM\Column(type: 'string', length: 64, nullable: true)]
     private $volunteerExternalId;
 
     public function getId() : int

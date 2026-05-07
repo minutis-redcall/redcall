@@ -35,8 +35,8 @@ class FakeCallRepository extends ServiceEntityRepository
 
     public function save(FakeCall $fakeCall)
     {
-        $this->_em->persist($fakeCall);
-        $this->_em->flush();
+        $this->getEntityManager()->persist($fakeCall);
+        $this->getEntityManager()->flush();
     }
 
     public function findMessagesForPhone(string $phoneNumber)

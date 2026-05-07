@@ -71,7 +71,7 @@ class CommunicationManagerTest extends KernelTestCase
         // Use native SQL to bypass lifecycle callbacks
         $conn = $this->em->getConnection();
         $twoDaysAgo = (new \DateTime('-2 days'))->format('Y-m-d H:i:s');
-        $conn->executeUpdate(
+        $conn->executeStatement(
             'UPDATE communication SET last_activity_at = ?, created_at = ?, report_id = NULL WHERE id = ?',
             [$twoDaysAgo, $twoDaysAgo, $commId]
         );

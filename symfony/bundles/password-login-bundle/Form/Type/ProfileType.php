@@ -2,11 +2,11 @@
 
 namespace Bundles\PasswordLoginBundle\Form\Type;
 
+use App\Form\Type\RecaptchaType;
+use App\Validator\Constraints\RecaptchaTrue;
 use Bundles\PasswordLoginBundle\Base\BaseType;
 use Bundles\PasswordLoginBundle\Manager\CaptchaManager;
 use Bundles\PasswordLoginBundle\Manager\UserManager;
-use EWZ\Bundle\RecaptchaBundle\Form\Type\EWZRecaptchaType;
-use EWZ\Bundle\RecaptchaBundle\Validator\Constraints\IsTrue as RecaptchaTrue;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -131,7 +131,7 @@ class ProfileType extends AbstractType
             $ip = $this->requestStack->getMainRequest()->getClientIp();
 
             if (!$this->captchaManager->isGracePeriod($ip)) {
-                $builder->add('recaptcha', EWZRecaptchaType::class, [
+                $builder->add('recaptcha', RecaptchaType::class, [
                     'label'       => 'password_login.profile.captcha',
                     'constraints' => [
                         new RecaptchaTrue(),

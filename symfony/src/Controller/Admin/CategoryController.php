@@ -11,9 +11,9 @@ use App\Manager\CategoryManager;
 use App\Model\Csrf;
 use Bundles\PaginationBundle\Manager\PaginationManager;
 use Ramsey\Uuid\Uuid;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
+use Symfony\Bridge\Twig\Attribute\Template;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -212,14 +212,13 @@ class CategoryController extends BaseController
         ]);
     }
 
-    /**
-     * @Entity("category", expr="repository.find(categoryId)")
-     * @Entity("badge", expr="repository.find(badgeId)")
-     */
-#[Route(name: "delete_badge", path: "/delete-badge-{badgeId}-in-category-{categoryId}/{token}")]
-#[IsGranted("CATEGORY", subject: "category")]
-#[IsGranted("BADGE", subject: "badge")]
-    public function deleteBadgeInCategory(Category $category, Badge $badge, Csrf $token)
+    #[Route(name: "delete_badge", path: "/delete-badge-{badgeId}-in-category-{categoryId}/{token}")]
+    #[IsGranted("CATEGORY", subject: "category")]
+    #[IsGranted("BADGE", subject: "badge")]
+    public function deleteBadgeInCategory(
+        #[MapEntity(expr: "repository.find(categoryId)")] Category $category,
+        #[MapEntity(expr: "repository.find(badgeId)")] Badge $badge,
+        Csrf $token)
     {
         $category->removeBadge($badge);
 

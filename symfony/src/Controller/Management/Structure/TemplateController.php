@@ -9,18 +9,13 @@ use App\Form\Type\TemplateType;
 use App\Manager\TemplateManager;
 use App\Model\Csrf;
 use Bundles\PaginationBundle\Manager\PaginationManager;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template as TwigTemplate;
+use Symfony\Bridge\Twig\Attribute\Template as TwigTemplate;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-/**
- * @Security("is_granted('STRUCTURE', structure)")
- */
 #[Route(path: "management/structures/{structure}/template", name: "management_structures_template_")]
-#[ParamConverter("structure", options: ["id" => "structure"])]
-#[ParamConverter("template", options: ["id" => "template"])]
+#[IsGranted("STRUCTURE", subject: "structure")]
 class TemplateController extends BaseController
 {
     /**
@@ -39,10 +34,8 @@ class TemplateController extends BaseController
         $this->templateManager   = $templateManager;
     }
 
-    /**
-     * @TwigTemplate("management/structures/template/list.html.twig")
-     */
-#[Route(name: "list")]
+    #[Route(name: "list")]
+    #[TwigTemplate("management/structures/template/list.html.twig")]
     public function list(Structure $structure)
     {
         $templates = $this->templateManager->getTemplatesForStructure($structure);
@@ -53,11 +46,9 @@ class TemplateController extends BaseController
         ];
     }
 
-    /**
-     * @TwigTemplate("management/structures/template/editor.html.twig")
-     */
-#[Route("/new", name: "new")]
-#[Route("/{template}/edit", requirements: ["template" => "\d+"], name: "edit")]
+    #[Route("/new", name: "new")]
+    #[Route("/{template}/edit", requirements: ["template" => "\d+"], name: "edit")]
+    #[TwigTemplate("management/structures/template/editor.html.twig")]
     public function editor(Request $request, Structure $structure, ?Template $template = null)
     {
         if ($template && !$template->getStructure()->isEqualTo($structure)) {

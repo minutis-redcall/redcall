@@ -7,37 +7,25 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity(repositoryClass=VolunteerListRepository::class)
- */
+#[ORM\Entity(repositoryClass: VolunteerListRepository::class)]
 class VolunteerList
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     private $id;
 
-    /**
-     * @ORM\Column(type="string", length=64)
-     */
+    #[ORM\Column(type: 'string', length: 64)]
     private $name;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Structure::class, inversedBy="volunteerLists")
-     * @ORM\JoinColumn(nullable=false)
-     */
+    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\ManyToOne(targetEntity: Structure::class, inversedBy: 'volunteerLists')]
     private $structure;
 
-    /**
-     * @ORM\ManyToMany(targetEntity=Volunteer::class, inversedBy="lists")
-     */
+    #[ORM\ManyToMany(targetEntity: Volunteer::class, inversedBy: 'lists')]
     private $volunteers;
 
-    /**
-     * @ORM\Column(type="text")
-     */
+    #[ORM\Column(type: 'text')]
     private $audience;
 
     public function __construct()

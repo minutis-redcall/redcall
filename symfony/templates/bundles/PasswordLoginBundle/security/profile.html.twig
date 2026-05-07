@@ -14,7 +14,7 @@
 
             <h1 class="text-center">{{ 'password_login.profile.title'|trans }}</h1>
 
-            {% form_theme profile '@EWZRecaptcha/Form/ewz_recaptcha_widget.html.twig' %}
+            {% form_theme profile 'form/recaptcha_widget.html.twig' %}
             {{ form_start(profile) }}
             {{ form_row(profile.current_password) }}
             <hr class="my-4"/>

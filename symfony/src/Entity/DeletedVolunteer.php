@@ -8,27 +8,20 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Purpose of this class is to store a hashmac of the volunteer's external id
  * in order to not re-import it during any synchronization.
- *
- * @ORM\Entity(repositoryClass=DeletedVolunteerRepository::class)
- * @ORM\HasLifecycleCallbacks()
  */
+#[ORM\Entity(repositoryClass: DeletedVolunteerRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class DeletedVolunteer
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     private $id;
 
-    /**
-     * @ORM\Column(type="string", length=64, unique=true)
-     */
+    #[ORM\Column(type: 'string', length: 64, unique: true)]
     private $hashedExternalId;
 
-    /**
-     * @ORM\Column(type="datetime_immutable")
-     */
+    #[ORM\Column(type: 'datetime_immutable')]
     private $insertedAt;
 
     public function getId() : ?int
@@ -60,9 +53,7 @@ class DeletedVolunteer
         return $this;
     }
 
-    /**
-     * @ORM\PrePersist
-     */
+    #[ORM\PrePersist]
     public function onPrePersist()
     {
         $this->setInsertedAt(new \DateTimeImmutable());

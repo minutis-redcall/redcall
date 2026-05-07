@@ -13,195 +13,157 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
-/**
- * @ORM\Table(
- *     uniqueConstraints={
- *         @ORM\UniqueConstraint(name="extid_idx", columns={"external_id"})
- *     },
- *     indexes={
- *         @ORM\Index(name="emailx", columns={"email"}),
- *         @ORM\Index(name="internal_emailx", columns={"internal_email"}),
- *         @ORM\Index(name="enabledx", columns={"enabled"}),
- *         @ORM\Index(name="phone_number_optinx", columns={"phone_number_optin"}),
- *         @ORM\Index(name="email_optinx", columns={"email_optin"}),
- *         @ORM\Index(name="optout_untilx", columns={"optout_until"})
- *     }
- * )
- * @ORM\Entity(repositoryClass="App\Repository\VolunteerRepository")
- * @ORM\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
- */
+#[ORM\Table]
+#[ORM\Index(name: 'emailx', columns: ['email'])]
+#[ORM\Index(name: 'internal_emailx', columns: ['internal_email'])]
+#[ORM\Index(name: 'enabledx', columns: ['enabled'])]
+#[ORM\Index(name: 'phone_number_optinx', columns: ['phone_number_optin'])]
+#[ORM\Index(name: 'email_optinx', columns: ['email_optin'])]
+#[ORM\Index(name: 'optout_untilx', columns: ['optout_until'])]
+#[ORM\UniqueConstraint(name: 'extid_idx', columns: ['external_id'])]
+#[ORM\Entity(repositoryClass: \App\Repository\VolunteerRepository::class)]
+#[ORM\ChangeTrackingPolicy('DEFERRED_EXPLICIT')]
 class Volunteer implements LockableInterface
 {
     /**
      * @var int
-     *
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
      */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     private $id;
 
     /**
      * @var string
-     *
-     * @ORM\Column(type="string", length=64)
-     * @Assert\NotBlank
-     * @Assert\Length(max="64")
      */
+    #[ORM\Column(type: 'string', length: 64)]
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 64)]
     private $externalId;
 
     /**
      * @var string
-     *
-     * @ORM\Column(type="string", length=80, nullable=true)
-     * @Assert\NotBlank
-     * @Assert\Length(max=80)
      */
+    #[ORM\Column(type: 'string', length: 80, nullable: true)]
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 80)]
     private $firstName;
 
     /**
      * @var string
-     *
-     * @ORM\Column(type="string", length=80, nullable=true)
-     * @Assert\NotBlank
-     * @Assert\Length(max=80)
      */
+    #[ORM\Column(type: 'string', length: 80, nullable: true)]
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 80)]
     private $lastName;
 
     /**
      * @var string
-     *
-     * @ORM\Column(type="string", length=80, nullable=true)
-     * @Assert\Length(max=80)
-     * @Assert\Email
      */
+    #[ORM\Column(type: 'string', length: 80, nullable: true)]
+    #[Assert\Length(max: 80)]
+    #[Assert\Email]
     private $email;
 
     /**
      * @var string
-     *
-     * @ORM\Column(type="string", length=80, nullable=true)
-     * @Assert\Length(max=80)
-     * @Assert\Email
      */
+    #[ORM\Column(type: 'string', length: 80, nullable: true)]
+    #[Assert\Length(max: 80)]
+    #[Assert\Email]
     private $internalEmail;
 
     /**
      * @var bool
-     *
-     * @ORM\Column(type="boolean", options={"default" : 1})
      */
+    #[ORM\Column(type: 'boolean', options: ['default' => 1])]
     private $enabled = true;
 
     /**
      * @var bool
-     *
-     * @ORM\Column(type="boolean", options={"default" : 0})
      */
+    #[ORM\Column(type: 'boolean', options: ['default' => 0])]
     private $locked = false;
 
     /**
      * @var bool
-     *
-     * @ORM\Column(type="boolean")
      */
+    #[ORM\Column(type: 'boolean')]
     private $minor = false;
 
     /**
      * @var \DateTimeInterface
-     *
-     * @ORM\Column(type="datetime", nullable=true)
      */
+    #[ORM\Column(type: 'datetime', nullable: true)]
     private $lastPegassUpdate;
 
     /**
      * @var array
-     *
-     * @ORM\Column(type="text", nullable=true)
      */
+    #[ORM\Column(type: 'text', nullable: true)]
     private $report;
 
-    /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\Structure", inversedBy="volunteers")
-     */
+    #[ORM\ManyToMany(targetEntity: \App\Entity\Structure::class, inversedBy: 'volunteers')]
     private $structures;
 
     /**
      * @var User
-     *
-     * @ORM\OneToOne(targetEntity="App\Entity\User", mappedBy="volunteer")
      */
+    #[ORM\OneToOne(targetEntity: \App\Entity\User::class, mappedBy: 'volunteer')]
     private $user;
 
     /**
      * @var bool
-     *
-     * @ORM\Column(type="boolean", options={"default" : 0})
      */
+    #[ORM\Column(type: 'boolean', options: ['default' => 0])]
     private $phoneNumberLocked = false;
 
     /**
      * @var bool
-     *
-     * @ORM\Column(type="boolean", options={"default" : 0})
      */
+    #[ORM\Column(type: 'boolean', options: ['default' => 0])]
     private $emailLocked = false;
 
     /**
      * @var bool
-     *
-     * @ORM\Column(type="boolean", options={"default" : 1})
      */
+    #[ORM\Column(type: 'boolean', options: ['default' => 1])]
     private $phoneNumberOptin = true;
 
     /**
      * @var bool
-     *
-     * @ORM\Column(type="boolean", options={"default" : 1})
      */
+    #[ORM\Column(type: 'boolean', options: ['default' => 1])]
     private $emailOptin = true;
 
-    /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Message", mappedBy="volunteer", cascade={"persist"})
-     * @ORM\OrderBy({"communication" = "DESC"})
-     */
+    #[ORM\OneToMany(targetEntity: \App\Entity\Message::class, mappedBy: 'volunteer', cascade: ['persist'])]
+    #[ORM\OrderBy(['communication' => 'DESC'])]
     private $messages;
 
-    /**
-     * @ORM\ManyToMany(targetEntity=Phone::class, mappedBy="volunteers", orphanRemoval=true, cascade={"all"})
-     * @ORM\OrderBy({"preferred" = "DESC"})
-     *
-     * @Assert\Valid
-     */
+    #[ORM\ManyToMany(targetEntity: Phone::class, mappedBy: 'volunteers', orphanRemoval: true, cascade: ['all'])]
+    #[ORM\OrderBy(['preferred' => 'DESC'])]
+    #[Assert\Valid]
     private $phones;
 
     /**
      * @var bool
-     *
-     * @ORM\Column(type="boolean", options={"default" : 0})
      */
+    #[ORM\Column(type: 'boolean', options: ['default' => 0])]
     private $onlyOutboundSms = false;
 
     /**
      * @var bool
-     *
-     * @ORM\Column(type="boolean", options={"default" : 1})
      */
+    #[ORM\Column(type: 'boolean', options: ['default' => 1])]
     private $supportsShortCode = true;
 
-    /**
-     * @ORM\ManyToMany(targetEntity=Badge::class, inversedBy="volunteers")
-     */
+    #[ORM\ManyToMany(targetEntity: Badge::class, inversedBy: 'volunteers')]
     private $badges;
 
-    /**
-     * @ORM\Column(type="datetime", nullable=true)
-     */
+    #[ORM\Column(type: 'datetime', nullable: true)]
     private $optoutUntil;
 
-    /**
-     * @ORM\ManyToMany(targetEntity=VolunteerList::class, mappedBy="volunteers")
-     */
+    #[ORM\ManyToMany(targetEntity: VolunteerList::class, mappedBy: 'volunteers')]
     private $lists;
 
     public function __construct()
@@ -774,9 +736,7 @@ class Volunteer implements LockableInterface
         return $this->messages;
     }
 
-    /**
-     * @Assert\Callback()
-     */
+    #[Assert\Callback]
     public function doNotDisableRedCallUsers(ExecutionContextInterface $context, $payload)
     {
         if ($this->user && !$this->enabled) {
@@ -911,9 +871,7 @@ class Volunteer implements LockableInterface
         return $this;
     }
 
-    /**
-     * @Assert\Callback
-     */
+    #[Assert\Callback]
     public function validate(ExecutionContextInterface $context, $payload)
     {
         if (!$this->getPhones()->count()) {

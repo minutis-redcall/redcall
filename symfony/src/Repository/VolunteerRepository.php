@@ -280,12 +280,12 @@ class VolunteerRepository extends BaseRepository
                     continue;
                 }
 
-                $this->_em->persist($entity);
+                $this->getEntityManager()->persist($entity);
                 unset($entity);
             }
 
-            $this->_em->flush();
-            $this->_em->clear();
+            $this->getEntityManager()->flush();
+            $this->getEntityManager()->clear();
 
             if ($stop) {
                 break;
@@ -315,7 +315,7 @@ class VolunteerRepository extends BaseRepository
     {
         $qb = $this->createQueryBuilder('v');
 
-        $sub = $this->_em->createQueryBuilder()
+        $sub = $this->getEntityManager()->createQueryBuilder()
                          ->select('TRIM(LEADING \'0\' FROM p.identifier)')
                          ->from(Pegass::class, 'p')
                          ->where('p.type = :type')
@@ -343,7 +343,7 @@ class VolunteerRepository extends BaseRepository
         return $this->createQueryBuilder('v')
                     ->select('v.id')
                     ->andWhere('v.externalId IN (:external_ids)')
-                    ->setParameter('external_ids', $externalIds, Connection::PARAM_STR_ARRAY)
+                    ->setParameter('external_ids', $externalIds, \Doctrine\DBAL\ArrayParameterType::STRING)
                     ->getQuery()
                     ->getArrayResult();
     }
@@ -720,7 +720,7 @@ class VolunteerRepository extends BaseRepository
                      ->andWhere('p2.enabled = true')
                      ->andWhere('p3.enabled = true')
                      ->andWhere('p4.enabled = true')
-                     ->setParameter('volunteer_ids', $volunteerIds, Connection::PARAM_INT_ARRAY)
+                     ->setParameter('volunteer_ids', $volunteerIds, \Doctrine\DBAL\ArrayParameterType::INTEGER)
                      ->groupBy('v.id')
                      ->getQuery()
                      ->getArrayResult();

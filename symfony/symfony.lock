@@ -20,23 +20,8 @@
             "config/packages/test/dama_doctrine_test_bundle.yaml"
         ]
     },
-    "doctrine/annotations": {
-        "version": "1.0",
-        "recipe": {
-            "repo": "github.com/symfony/recipes",
-            "branch": "master",
-            "version": "1.0",
-            "ref": "cb4152ebcadbe620ea2261da1a1c5a9b8cea7672"
-        }
-    },
-    "doctrine/cache": {
-        "version": "v1.7.1"
-    },
     "doctrine/collections": {
         "version": "v1.5.0"
-    },
-    "doctrine/common": {
-        "version": "v2.8.1"
     },
     "doctrine/dbal": {
         "version": "v2.7.1"
@@ -89,9 +74,6 @@
     "egulias/email-validator": {
         "version": "2.1.4"
     },
-    "excelwebzone/recaptcha-bundle": {
-        "version": "v1.5.10"
-    },
     "exercise/htmlpurifier-bundle": {
         "version": "3.0",
         "recipe": {
@@ -106,9 +88,6 @@
     },
     "ezyang/htmlpurifier": {
         "version": "v4.13.0"
-    },
-    "fabpot/goutte": {
-        "version": "v3.2.3"
     },
     "facile-it/doctrine-mysql-come-back": {
         "version": "v1.8"
@@ -159,12 +138,12 @@
         "version": "v3.7.0"
     },
     "google/recaptcha": {
-        "version": "1.1",
+        "version": "1.3",
         "recipe": {
             "repo": "github.com/symfony/recipes-contrib",
-            "branch": "master",
+            "branch": "main",
             "version": "1.1",
-            "ref": "ad1889cf16aa84af78e818710760546d2c45f69c"
+            "ref": "e5a4aa21f2e98d7440ae9aab6b56e307f99dd084"
         }
     },
     "grpc/grpc": {
@@ -235,6 +214,15 @@
     },
     "phpspec/prophecy": {
         "version": "1.13.0"
+    },
+    "phpstan/phpstan": {
+        "version": "2.1",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "main",
+            "version": "1.0",
+            "ref": "5e490cc197fb6bb1ae22e5abbc531ddc633b6767"
+        }
     },
     "phpunit/php-code-coverage": {
         "version": "9.2.6"
@@ -346,15 +334,6 @@
     "sendgrid/sendgrid": {
         "version": "7.4.5"
     },
-    "sensio/framework-extra-bundle": {
-        "version": "4.0",
-        "recipe": {
-            "repo": "github.com/symfony/recipes",
-            "branch": "master",
-            "version": "4.0",
-            "ref": "aaddfdf43cdecd4cf91f992052d76c2cadc04543"
-        }
-    },
     "setasign/fpdi": {
         "version": "1.6.2"
     },
@@ -460,12 +439,6 @@
             "ref": "8a2f7fa50a528f0aad1d7a87ae3730c981b367ce"
         }
     },
-    "symfony/http-client": {
-        "version": "v4.4.7"
-    },
-    "symfony/http-client-contracts": {
-        "version": "v1.1.8"
-    },
     "symfony/http-foundation": {
         "version": "v4.1.0"
     },
@@ -542,9 +515,6 @@
         "version": "v1.18.1"
     },
     "symfony/polyfill-mbstring": {
-        "version": "v1.8.0"
-    },
-    "symfony/polyfill-php72": {
         "version": "v1.8.0"
     },
     "symfony/polyfill-php80": {

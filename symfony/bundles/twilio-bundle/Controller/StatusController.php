@@ -9,7 +9,6 @@ use Bundles\TwilioBundle\Manager\TwilioStatusManager;
 use Bundles\TwilioBundle\TwilioEvents;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
@@ -54,7 +53,6 @@ class StatusController extends BaseController
     }
 
     #[Route(name: "status", path: "message-status/{uuid}")]
-#[Template()]
     public function messageStatus(Request $request, string $uuid)
     {
         $this->validateRequestSignature($request);

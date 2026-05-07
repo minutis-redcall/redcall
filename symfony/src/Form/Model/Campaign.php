@@ -12,30 +12,22 @@ class Campaign
 
     /**
      * @var string
-     *
-     * @Assert\NotBlank()
-     * @Assert\Length(max=255, groups={"label_edition", "Default"})
      */
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 255, groups: ['label_edition', 'Default'])]
     public $label;
 
     /**
      * @var int
-     *
-     * @Assert\NotNull(message="form.campaign.errors.type.empty", groups={"color_edition", "Default"})
-     * @Assert\Choice({
-     *     CampaignEntity::TYPE_GREEN,
-     *     CampaignEntity::TYPE_LIGHT_ORANGE,
-     *     CampaignEntity::TYPE_DARK_ORANGE,
-     *     CampaignEntity::TYPE_RED
-     * }, groups={"color_edition", "Default"})
      */
+    #[Assert\NotNull(message: 'form.campaign.errors.type.empty', groups: ['color_edition', 'Default'])]
+    #[Assert\Choice([CampaignEntity::TYPE_GREEN, CampaignEntity::TYPE_LIGHT_ORANGE, CampaignEntity::TYPE_DARK_ORANGE, CampaignEntity::TYPE_RED], groups: ['color_edition', 'Default'])]
     public $type;
 
     /**
      * @var BaseTrigger
-     *
-     * @Assert\Valid
      */
+    #[Assert\Valid]
     public $trigger;
 
     /**
@@ -50,9 +42,8 @@ class Campaign
 
     /**
      * @var Operation
-     *
-     * @Assert\Valid
      */
+    #[Assert\Valid]
     public $operation;
 
     public function __construct(BaseTrigger $trigger)

@@ -65,9 +65,7 @@ class VolunteerManager
         $this->security                = $security;
     }
 
-    /**
-     * @required
-     */
+    #[\Symfony\Contracts\Service\Attribute\Required]
     public function setUserManager(UserManager $userManager)
     {
         $this->userManager = $userManager;

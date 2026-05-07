@@ -10,7 +10,7 @@ use App\Manager\PegassManager;
 use App\Manager\VolunteerManager;
 use App\Settings;
 use Bundles\SettingsBundle\Manager\SettingManager;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;

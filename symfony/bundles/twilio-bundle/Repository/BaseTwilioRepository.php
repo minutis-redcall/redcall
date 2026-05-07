@@ -56,11 +56,11 @@ class BaseTwilioRepository extends BaseRepository
                     break;
                 }
 
-                $this->_em->persist($entity);
+                $this->getEntityManager()->persist($entity);
             }
 
-            $this->_em->flush();
-            $this->_em->clear();
+            $this->getEntityManager()->flush();
+            $this->getEntityManager()->clear();
 
             $offset += 100;
         }

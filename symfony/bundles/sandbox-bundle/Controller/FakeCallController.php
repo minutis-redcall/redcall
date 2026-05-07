@@ -10,7 +10,7 @@ use Bundles\SandboxBundle\Entity\FakeCall;
 use Bundles\SandboxBundle\Manager\FakeCallManager;
 use Bundles\SandboxBundle\Provider\FakeCallProvider;
 use Bundles\TwilioBundle\TwilioEvents;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
@@ -51,7 +51,7 @@ class FakeCallController extends BaseController
     }
 
     #[Route("/", name: "list")]
-#[Template()]
+#[Template("@Sandbox/fake_call/list.html.twig")]
     public function listAction()
     {
         $phones = $this->fakeCallManager->findAllPhones();
@@ -75,7 +75,7 @@ class FakeCallController extends BaseController
     }
 
     #[Route("/read/{e164}/{campaignId}", name: "read", defaults: ["campaignId" => null])]
-#[Template()]
+    #[Template("@Sandbox/fake_call/read.html.twig")]
     public function readAction(Request $request, Phone $phone, ?int $campaignId)
     {
         $volunteer = $phone->getVolunteers()->first();

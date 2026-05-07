@@ -13,66 +13,47 @@ use libphonenumber\PhoneNumberType;
 use libphonenumber\PhoneNumberUtil;
 
 /**
- * @ORM\Entity(repositoryClass=PhoneRepository::class)
- * @ORM\Table(indexes={
- *     @ORM\Index(name="nationalx", columns={"national"}),
- *     @ORM\Index(name="internationalx", columns={"international"}),
- *     @ORM\Index(name="ismobilex", columns={"mobile"})
- * })
- * @ORM\HasLifecycleCallbacks()
- * @ORM\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
  *
  * @CustomAssert\Phone
  */
+#[ORM\Table]
+#[ORM\Index(name: 'nationalx', columns: ['national'])]
+#[ORM\Index(name: 'internationalx', columns: ['international'])]
+#[ORM\Index(name: 'ismobilex', columns: ['mobile'])]
+#[ORM\Entity(repositoryClass: PhoneRepository::class)]
+#[ORM\HasLifecycleCallbacks]
+#[ORM\ChangeTrackingPolicy('DEFERRED_EXPLICIT')]
 class Phone implements PhoneInterface
 {
     public const DEFAULT_LANG = 'FR';
 
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     private $id;
 
-    /**
-     * @ORM\ManyToMany(targetEntity=Volunteer::class, inversedBy="phones")
-     */
+    #[ORM\ManyToMany(targetEntity: Volunteer::class, inversedBy: 'phones')]
     private $volunteers;
 
-    /**
-     * @ORM\Column(type="boolean")
-     */
+    #[ORM\Column(type: 'boolean')]
     private $preferred = false;
 
-    /**
-     * @ORM\Column(type="string", length=2)
-     */
+    #[ORM\Column(type: 'string', length: 2)]
     private $countryCode;
 
-    /**
-     * @ORM\Column(type="smallint")
-     */
+    #[ORM\Column(type: 'smallint')]
     private $prefix;
 
-    /**
-     * @ORM\Column(type="string", length=32)
-     */
+    #[ORM\Column(type: 'string', length: 32)]
     private $e164;
 
-    /**
-     * @ORM\Column(type="string", length=32)
-     */
+    #[ORM\Column(type: 'string', length: 32)]
     private $national;
 
-    /**
-     * @ORM\Column(type="string", length=32)
-     */
+    #[ORM\Column(type: 'string', length: 32)]
     private $international;
 
-    /**
-     * @ORM\Column(type="boolean", nullable=true)
-     */
+    #[ORM\Column(type: 'boolean', nullable: true)]
     private $mobile = false;
 
     public function __construct()
@@ -185,10 +166,8 @@ class Phone implements PhoneInterface
         return ''.$this->e164;
     }
 
-    /**
-     * @ORM\PrePersist
-     * @ORM\PreUpdate
-     */
+    #[ORM\PrePersist]
+    #[ORM\PreUpdate]
     public function onChange()
     {
         $this->populateFromE164();

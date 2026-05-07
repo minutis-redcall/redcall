@@ -7,8 +7,9 @@ use App\Manager\VolunteerManager;
 use App\Manager\VolunteerSessionManager;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
-use Goutte\Client;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\BrowserKit\HttpBrowser;
+use Symfony\Component\HttpClient\HttpClient;
 use Symfony\Component\HttpFoundation\Cookie;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -202,7 +203,7 @@ class MinutisAuthenticator extends AbstractAuthenticator implements Authenticati
 
     private function getMinutisPublicKey(): string
     {
-        $client = new Client();
+        $client = new HttpBrowser(HttpClient::create());
 
         $client->request('GET', getenv('MINUTIS_JWT_PUBLIC_KEY_URL'));
 

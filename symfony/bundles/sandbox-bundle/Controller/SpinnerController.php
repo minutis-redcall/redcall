@@ -4,7 +4,7 @@ namespace Bundles\SandboxBundle\Controller;
 
 use Bundles\SandboxBundle\Base\BaseController;
 use Bundles\SandboxBundle\Services\AnimGif;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -18,7 +18,7 @@ use Symfony\Component\Validator\Constraints\Regex;
 class SpinnerController extends BaseController
 {
     #[Route("/spinner", name: "spinner")]
-#[Template()]
+    #[Template("@Sandbox/spinner/index.html.twig")]
     public function index(Request $request)
     {
         $form = $this
