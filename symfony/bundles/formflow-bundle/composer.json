@@ -1,0 +1,55 @@
+{
+	"name": "craue/formflow-bundle",
+	"description": "Multi-step forms for your Symfony project (in-tree fork with Symfony 8 support).",
+	"license": "MIT",
+	"type": "symfony-bundle",
+	"keywords": [
+		"form",
+		"wizard",
+		"step",
+		"symfony"
+	],
+	"authors": [
+		{
+			"name": "Christian Raue",
+			"email": "christian.raue@gmail.com"
+		},
+		{
+			"name": "Symfony Community",
+			"homepage": "https://github.com/craue/CraueFormFlowBundle/contributors"
+		}
+	],
+	"homepage": "https://github.com/craue/CraueFormFlowBundle",
+	"version": "3.99.99",
+	"require": {
+		"php": "^7.3 || ^8",
+		"symfony/config": "^4.4 || ^5.4 || ^6.3 || ^7.0 || ^8.0",
+		"symfony/dependency-injection": "^4.4 || ^5.4 || ^6.3 || ^7.0 || ^8.0",
+		"symfony/event-dispatcher": "^4.4 || ^5.4 || ^6.3 || ^7.0 || ^8.0",
+		"symfony/form": "^4.4 || ^5.4 || ^6.3 || ^7.0 || ^8.0",
+		"symfony/http-foundation": "^4.4 || ^5.4 || ^6.3 || ^7.0 || ^8.0",
+		"symfony/http-kernel": "^4.4 || ^5.4 || ^6.3 || ^7.0 || ^8.0",
+		"symfony/options-resolver": "^4.4 || ^5.4 || ^6.3 || ^7.0 || ^8.0",
+		"symfony/security-core": "^4.4 || ^5.4 || ^6.3 || ^7.0 || ^8.0",
+		"symfony/translation": "^4.4 || ^5.4 || ^6.3 || ^7.0 || ^8.0",
+		"symfony/validator": "^4.4 || ^5.4 || ^6.3 || ^7.0 || ^8.0",
+		"symfony/yaml": "^4.4 || ^5.4 || ^6.3 || ^7.0 || ^8.0"
+	},
+	"conflict": {
+		"doctrine/dbal": "<2.10"
+	},
+	"minimum-stability": "stable",
+	"autoload": {
+		"psr-4": {
+			"Craue\\FormFlowBundle\\": ""
+		},
+		"exclude-from-classmap": [
+			"/Tests/"
+		]
+	},
+	"extra": {
+		"branch-alias": {
+			"dev-master": "3.7.x-dev"
+		}
+	}
+}

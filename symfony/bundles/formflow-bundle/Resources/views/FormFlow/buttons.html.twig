@@ -1,0 +1,54 @@
+{% set renderBackButton = flow.getFirstStepNumber() < flow.getLastStepNumber() and flow.getCurrentStepNumber() in (flow.getFirstStepNumber() + 1) .. flow.getLastStepNumber() %}
+{% set renderResetButton = craue_formflow_button_render_reset is defined ? craue_formflow_button_render_reset : true %}
+{% set buttonCount = 1 + (renderBackButton ? 1 : 0) + (renderResetButton ? 1 : 0) %}
+
+<div class="craue_formflow_buttons craue_formflow_button_count_{{ buttonCount }}">
+	{#
+		Default button (the one trigged by pressing the enter/return key) must be defined first.
+		Thus, all buttons are defined in reverse order and will be reversed again via CSS.
+		See http://stackoverflow.com/questions/1963245/multiple-submit-buttons-specifying-default-button
+	#}
+	{%- set isLastStep = flow.getCurrentStepNumber() == flow.getLastStepNumber() -%}
+	{%- set craue_formflow_button_class_last = craue_formflow_button_class_last | default('craue_formflow_button_last') -%}
+	{%- set craue_formflow_button_class_last = isLastStep
+			? craue_formflow_button_class_finish | default(craue_formflow_button_class_last)
+			: craue_formflow_button_class_next | default(craue_formflow_button_class_last)
+		-%}
+	{%- set craue_buttons = [
+			{
+				label: craue_formflow_button_label_last | default(isLastStep ? craue_formflow_button_label_finish | default('button.finish') : craue_formflow_button_label_next | default('button.next')),
+				render: true,
+				attr: {
+					class: craue_formflow_button_class_last,
+				},
+			},
+			{
+				label: craue_formflow_button_label_back | default('button.back'),
+				render: renderBackButton,
+				attr: {
+					class: craue_formflow_button_class_back | default(''),
+					name: flow.getFormTransitionKey(),
+					value: 'back',
+					formnovalidate: 'formnovalidate',
+				},
+			},
+			{
+				label: craue_formflow_button_label_reset | default('button.reset'),
+				render: renderResetButton,
+				attr: {
+					class: craue_formflow_button_class_reset | default('craue_formflow_button_first'),
+					name: flow.getFormTransitionKey(),
+					value: 'reset',
+					formnovalidate: 'formnovalidate',
+				},
+			},
+		] -%}
+
+	{% for button in craue_buttons %}
+		{% if button.render %}
+			<button type="submit"{% for key, value in button.attr %} {{ key }}="{{ value }}"{% endfor %}>
+				{{- button.label | trans({}, 'CraueFormFlowBundle') -}}
+			</button>
+		{% endif %}
+	{% endfor %}
+</div>
