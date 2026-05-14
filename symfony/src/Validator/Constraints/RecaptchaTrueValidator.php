@@ -2,7 +2,7 @@
 
 namespace App\Validator\Constraints;
 
-use ReCaptcha\ReCaptcha;
+use App\Captcha\CaptchaVerifierInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
@@ -10,18 +10,18 @@ use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 
 class RecaptchaTrueValidator extends ConstraintValidator
 {
-    private ReCaptcha     $recaptcha;
-    private RequestStack  $requestStack;
-    private bool          $enabled;
+    private CaptchaVerifierInterface $verifier;
+    private RequestStack             $requestStack;
+    private bool                     $enabled;
 
-    public function __construct(ReCaptcha $recaptcha, RequestStack $requestStack, bool $enabled)
+    public function __construct(CaptchaVerifierInterface $verifier, RequestStack $requestStack, bool $enabled)
     {
-        $this->recaptcha    = $recaptcha;
+        $this->verifier     = $verifier;
         $this->requestStack = $requestStack;
         $this->enabled      = $enabled;
     }
 
-    public function validate($value, Constraint $constraint): void
+    public function validate($value, Constraint $constraint) : void
     {
         if (!$constraint instanceof RecaptchaTrue) {
             throw new UnexpectedTypeException($constraint, RecaptchaTrue::class);
@@ -31,13 +31,7 @@ class RecaptchaTrueValidator extends ConstraintValidator
             return;
         }
 
-        $request = $this->requestStack->getMainRequest();
-        $token   = $request ? $request->request->get('g-recaptcha-response') : null;
-        $ip      = $request ? $request->getClientIp() : null;
-
-        $response = $this->recaptcha->verify((string) $token, $ip);
-
-        if (!$response->isSuccess()) {
+        if (!$this->verifier->verify($this->requestStack->getMainRequest())) {
             $this->context->buildViolation($constraint->message)->addViolation();
         }
     }

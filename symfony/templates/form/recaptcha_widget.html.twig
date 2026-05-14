@@ -1,6 +1,13 @@
 {% block recaptcha_label %}{% endblock %}
 
 {% block recaptcha_widget %}
-    <div class="g-recaptcha" data-sitekey="{{ site_key }}"></div>
-    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    {% if mode == 'checkbox' %}
+        <label class="captcha-checkbox">
+            <input type="checkbox" name="{{ checkbox_field_name }}" value="1" required />
+            {{ "I'm not a robot (dev/test bypass)" }}
+        </label>
+    {% else %}
+        <div class="g-recaptcha" data-sitekey="{{ site_key }}"></div>
+        <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    {% endif %}
 {% endblock %}

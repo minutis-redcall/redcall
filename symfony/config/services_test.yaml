@@ -1,4 +1,7 @@
 services:
+  App\Captcha\CaptchaVerifierInterface:
+    alias: 'App\Captcha\CheckboxCaptchaVerifier'
+
   App\Provider\Email\EmailProvider:
     class: 'Bundles\SandboxBundle\Provider\FakeEmailProvider'
     arguments: [ '@doctrine' ]

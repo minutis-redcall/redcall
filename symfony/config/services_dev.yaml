@@ -2,6 +2,9 @@ parameters:
   communication.processor: 'App\Communication\Processor\ExecProcessor'
 
 services:
+  App\Captcha\CaptchaVerifierInterface:
+    alias: 'App\Captcha\CheckboxCaptchaVerifier'
+
   App\Provider\SMS\SMSProvider:
     class: 'Bundles\SandboxBundle\Provider\FakeSmsProvider'
     arguments: [ '@doctrine' ]

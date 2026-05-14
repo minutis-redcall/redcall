@@ -106,6 +106,9 @@ services:
     tags:
       - { name: controller.argument_value_resolver, priority: 150 }
 
+  App\Captcha\CaptchaVerifierInterface:
+    alias: 'App\Captcha\GoogleRecaptchaVerifier'
+
   App\Form\Type\RecaptchaType:
     arguments:
       $siteKey: '%google_recaptcha_site_key%'
