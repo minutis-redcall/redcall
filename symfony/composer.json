@@ -124,7 +124,7 @@
   "scripts": {
     "auto-scripts": {
       "cache:clear": "symfony-cmd",
-      "doctrine:migration:migrate -n --all-or-nothing": "symfony-cmd"
+      "doctrine:migration:migrate -n": "symfony-cmd"
     },
     "gcp-build": [
       "composer install"

@@ -13,7 +13,7 @@ final class Version20181209155253 extends AbstractMigration
     public function up(Schema $schema) : void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf(!$this->connection->getDatabasePlatform() instanceof \Doctrine\DBAL\Platforms\AbstractMySQLPlatform, 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('ALTER TABLE geo_location CHANGE longitude longitude VARCHAR(32) NOT NULL, CHANGE latitude latitude VARCHAR(32) NOT NULL, CHANGE radius accuracy INT NOT NULL');
     }
@@ -21,7 +21,7 @@ final class Version20181209155253 extends AbstractMigration
     public function down(Schema $schema) : void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf(!$this->connection->getDatabasePlatform() instanceof \Doctrine\DBAL\Platforms\AbstractMySQLPlatform, 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('ALTER TABLE geo_location CHANGE longitude longitude VARCHAR(16) NOT NULL COLLATE utf8mb4_unicode_ci, CHANGE latitude latitude VARCHAR(16) NOT NULL COLLATE utf8mb4_unicode_ci, CHANGE accuracy radius INT NOT NULL');
     }

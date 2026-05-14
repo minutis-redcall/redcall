@@ -20,7 +20,7 @@ final class Version20210909142132 extends AbstractMigration
     public function up(Schema $schema) : void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf(!$this->connection->getDatabasePlatform() instanceof \Doctrine\DBAL\Platforms\AbstractMySQLPlatform, 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('DROP TABLE geo_location');
         $this->addSql('ALTER TABLE communication DROP geo_location');
@@ -29,7 +29,7 @@ final class Version20210909142132 extends AbstractMigration
     public function down(Schema $schema) : void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf(!$this->connection->getDatabasePlatform() instanceof \Doctrine\DBAL\Platforms\AbstractMySQLPlatform, 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('CREATE TABLE geo_location (id INT AUTO_INCREMENT NOT NULL, message_id INT DEFAULT NULL, longitude VARCHAR(32) CHARACTER SET utf8mb4 NOT NULL COLLATE `utf8mb4_unicode_ci`, latitude VARCHAR(32) CHARACTER SET utf8mb4 NOT NULL COLLATE `utf8mb4_unicode_ci`, accuracy INT NOT NULL, datetime DATETIME NOT NULL, heading INT DEFAULT NULL, UNIQUE INDEX UNIQ_B027FE6A537A1329 (message_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8 COLLATE `utf8_unicode_ci` ENGINE = InnoDB COMMENT = \'\' ');
         $this->addSql('ALTER TABLE geo_location ADD CONSTRAINT FK_B027FE6A537A1329 FOREIGN KEY (message_id) REFERENCES message (id)');

@@ -13,7 +13,7 @@ final class Version20180619050127 extends AbstractMigration
     public function up(Schema $schema) : void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf(!$this->connection->getDatabasePlatform() instanceof \Doctrine\DBAL\Platforms\AbstractMySQLPlatform, 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('CREATE TABLE email_verification (username VARCHAR(64) NOT NULL, uuid VARCHAR(36) NOT NULL, timestamp INT UNSIGNED NOT NULL, UNIQUE INDEX uuid_idx (uuid), PRIMARY KEY(username)) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ENGINE = InnoDB');
         $this->addSql('CREATE TABLE password_recovery (username VARCHAR(64) NOT NULL, uuid VARCHAR(36) NOT NULL, timestamp INT UNSIGNED NOT NULL, UNIQUE INDEX uuid_idx (uuid), PRIMARY KEY(username)) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ENGINE = InnoDB');
@@ -24,7 +24,7 @@ final class Version20180619050127 extends AbstractMigration
     public function down(Schema $schema) : void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf(!$this->connection->getDatabasePlatform() instanceof \Doctrine\DBAL\Platforms\AbstractMySQLPlatform, 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('DROP TABLE email_verification');
         $this->addSql('DROP TABLE password_recovery');

@@ -2044,16 +2044,16 @@
     },
     {
       "name": "google/apiclient",
-      "version": "v2.19.2",
+      "version": "v2.19.3",
       "source": {
         "type": "git",
         "url": "https://github.com/googleapis/google-api-php-client.git",
-        "reference": "703ba9acfaf4ba71306108207feafb6d1d137eb0"
+        "reference": "a1f02761994fd9defb20f6f1449205fd66f450de"
       },
       "dist": {
         "type": "zip",
-        "url": "https://api.github.com/repos/googleapis/google-api-php-client/zipball/703ba9acfaf4ba71306108207feafb6d1d137eb0",
-        "reference": "703ba9acfaf4ba71306108207feafb6d1d137eb0",
+        "url": "https://api.github.com/repos/googleapis/google-api-php-client/zipball/a1f02761994fd9defb20f6f1449205fd66f450de",
+        "reference": "a1f02761994fd9defb20f6f1449205fd66f450de",
         "shasum": ""
       },
       "require": {
@@ -2063,8 +2063,7 @@
         "guzzlehttp/guzzle": "^7.4.5",
         "guzzlehttp/psr7": "^2.6",
         "monolog/monolog": "^2.9||^3.0",
-        "php": "^8.1",
-        "phpseclib/phpseclib": "^3.0.50"
+        "php": "^8.1"
       },
       "require-dev": {
         "cache/filesystem-adapter": "^1.1",
@@ -2110,9 +2109,9 @@
       ],
       "support": {
         "issues": "https://github.com/googleapis/google-api-php-client/issues",
-        "source": "https://github.com/googleapis/google-api-php-client/tree/v2.19.2"
+        "source": "https://github.com/googleapis/google-api-php-client/tree/v2.19.3"
       },
-      "time": "2026-03-30T18:54:44+00:00"
+      "time": "2026-05-04T21:00:36+00:00"
     },
     {
       "name": "google/apiclient-services",
@@ -4340,75 +4339,6 @@
       "time": "2025-03-08T02:17:34+00:00"
     },
     {
-      "name": "paragonie/constant_time_encoding",
-      "version": "v3.1.3",
-      "source": {
-        "type": "git",
-        "url": "https://github.com/paragonie/constant_time_encoding.git",
-        "reference": "d5b01a39b3415c2cd581d3bd3a3575c1ebbd8e77"
-      },
-      "dist": {
-        "type": "zip",
-        "url": "https://api.github.com/repos/paragonie/constant_time_encoding/zipball/d5b01a39b3415c2cd581d3bd3a3575c1ebbd8e77",
-        "reference": "d5b01a39b3415c2cd581d3bd3a3575c1ebbd8e77",
-        "shasum": ""
-      },
-      "require": {
-        "php": "^8"
-      },
-      "require-dev": {
-        "infection/infection": "^0",
-        "nikic/php-fuzzer": "^0",
-        "phpunit/phpunit": "^9|^10|^11",
-        "vimeo/psalm": "^4|^5|^6"
-      },
-      "type": "library",
-      "autoload": {
-        "psr-4": {
-          "ParagonIE\\ConstantTime\\": "src/"
-        }
-      },
-      "notification-url": "https://packagist.org/downloads/",
-      "license": [
-        "MIT"
-      ],
-      "authors": [
-        {
-          "name": "Paragon Initiative Enterprises",
-          "email": "security@paragonie.com",
-          "homepage": "https://paragonie.com",
-          "role": "Maintainer"
-        },
-        {
-          "name": "Steve 'Sc00bz' Thomas",
-          "email": "steve@tobtu.com",
-          "homepage": "https://www.tobtu.com",
-          "role": "Original Developer"
-        }
-      ],
-      "description": "Constant-time Implementations of RFC 4648 Encoding (Base-64, Base-32, Base-16)",
-      "keywords": [
-        "base16",
-        "base32",
-        "base32_decode",
-        "base32_encode",
-        "base64",
-        "base64_decode",
-        "base64_encode",
-        "bin2hex",
-        "encoding",
-        "hex",
-        "hex2bin",
-        "rfc4648"
-      ],
-      "support": {
-        "email": "info@paragonie.com",
-        "issues": "https://github.com/paragonie/constant_time_encoding/issues",
-        "source": "https://github.com/paragonie/constant_time_encoding"
-      },
-      "time": "2025-09-24T15:06:41+00:00"
-    },
-    {
       "name": "paragonie/random_compat",
       "version": "v9.99.100",
       "source": {
@@ -4632,116 +4562,6 @@
         "source": "https://github.com/phpDocumentor/TypeResolver/tree/1.12.0"
       },
       "time": "2025-11-21T15:09:14+00:00"
-    },
-    {
-      "name": "phpseclib/phpseclib",
-      "version": "3.0.52",
-      "source": {
-        "type": "git",
-        "url": "https://github.com/phpseclib/phpseclib.git",
-        "reference": "2adaefc83df2ec548558307690f376dd7d4f4fce"
-      },
-      "dist": {
-        "type": "zip",
-        "url": "https://api.github.com/repos/phpseclib/phpseclib/zipball/2adaefc83df2ec548558307690f376dd7d4f4fce",
-        "reference": "2adaefc83df2ec548558307690f376dd7d4f4fce",
-        "shasum": ""
-      },
-      "require": {
-        "paragonie/constant_time_encoding": "^1|^2|^3",
-        "paragonie/random_compat": "^1.4|^2.0|^9.99.99",
-        "php": ">=5.6.1"
-      },
-      "require-dev": {
-        "phpunit/phpunit": "*"
-      },
-      "suggest": {
-        "ext-dom": "Install the DOM extension to load XML formatted public keys.",
-        "ext-gmp": "Install the GMP (GNU Multiple Precision) extension in order to speed up arbitrary precision integer arithmetic operations.",
-        "ext-libsodium": "SSH2/SFTP can make use of some algorithms provided by the libsodium-php extension.",
-        "ext-mcrypt": "Install the Mcrypt extension in order to speed up a few other cryptographic operations.",
-        "ext-openssl": "Install the OpenSSL extension in order to speed up a wide variety of cryptographic operations."
-      },
-      "type": "library",
-      "autoload": {
-        "files": [
-          "phpseclib/bootstrap.php"
-        ],
-        "psr-4": {
-          "phpseclib3\\": "phpseclib/"
-        }
-      },
-      "notification-url": "https://packagist.org/downloads/",
-      "license": [
-        "MIT"
-      ],
-      "authors": [
-        {
-          "name": "Jim Wigginton",
-          "email": "terrafrost@php.net",
-          "role": "Lead Developer"
-        },
-        {
-          "name": "Patrick Monnerat",
-          "email": "pm@datasphere.ch",
-          "role": "Developer"
-        },
-        {
-          "name": "Andreas Fischer",
-          "email": "bantu@phpbb.com",
-          "role": "Developer"
-        },
-        {
-          "name": "Hans-Jürgen Petrich",
-          "email": "petrich@tronic-media.com",
-          "role": "Developer"
-        },
-        {
-          "name": "Graham Campbell",
-          "email": "graham@alt-three.com",
-          "role": "Developer"
-        }
-      ],
-      "description": "PHP Secure Communications Library - Pure-PHP implementations of RSA, AES, SSH2, SFTP, X.509 etc.",
-      "homepage": "http://phpseclib.sourceforge.net",
-      "keywords": [
-        "BigInteger",
-        "aes",
-        "asn.1",
-        "asn1",
-        "blowfish",
-        "crypto",
-        "cryptography",
-        "encryption",
-        "rsa",
-        "security",
-        "sftp",
-        "signature",
-        "signing",
-        "ssh",
-        "twofish",
-        "x.509",
-        "x509"
-      ],
-      "support": {
-        "issues": "https://github.com/phpseclib/phpseclib/issues",
-        "source": "https://github.com/phpseclib/phpseclib/tree/3.0.52"
-      },
-      "funding": [
-        {
-          "url": "https://github.com/terrafrost",
-          "type": "github"
-        },
-        {
-          "url": "https://www.patreon.com/phpseclib",
-          "type": "patreon"
-        },
-        {
-          "url": "https://tidelift.com/funding/github/packagist/phpseclib/phpseclib",
-          "type": "tidelift"
-        }
-      ],
-      "time": "2026-04-27T07:02:15+00:00"
     },
     {
       "name": "phpstan/phpdoc-parser",
@@ -6643,26 +6463,27 @@
     },
     {
       "name": "symfony/dom-crawler",
-      "version": "v6.4.34",
+      "version": "v7.4.8",
       "source": {
         "type": "git",
         "url": "https://github.com/symfony/dom-crawler.git",
-        "reference": "ec0d22e1b89d5767a44f7abb63a1f1439bd9c735"
+        "reference": "2918e7c2ba964defca1f5b69c6f74886529e2dc8"
       },
       "dist": {
         "type": "zip",
-        "url": "https://api.github.com/repos/symfony/dom-crawler/zipball/ec0d22e1b89d5767a44f7abb63a1f1439bd9c735",
-        "reference": "ec0d22e1b89d5767a44f7abb63a1f1439bd9c735",
+        "url": "https://api.github.com/repos/symfony/dom-crawler/zipball/2918e7c2ba964defca1f5b69c6f74886529e2dc8",
+        "reference": "2918e7c2ba964defca1f5b69c6f74886529e2dc8",
         "shasum": ""
       },
       "require": {
         "masterminds/html5": "^2.6",
-        "php": ">=8.1",
+        "php": ">=8.2",
+        "symfony/deprecation-contracts": "^2.5|^3",
         "symfony/polyfill-ctype": "~1.8",
         "symfony/polyfill-mbstring": "~1.0"
       },
       "require-dev": {
-        "symfony/css-selector": "^5.4|^6.0|^7.0"
+        "symfony/css-selector": "^6.4|^7.0|^8.0"
       },
       "type": "library",
       "autoload": {
@@ -6690,7 +6511,7 @@
       "description": "Eases DOM navigation for HTML and XML documents",
       "homepage": "https://symfony.com",
       "support": {
-        "source": "https://github.com/symfony/dom-crawler/tree/v6.4.34"
+        "source": "https://github.com/symfony/dom-crawler/tree/v7.4.8"
       },
       "funding": [
         {
@@ -6710,7 +6531,7 @@
           "type": "tidelift"
         }
       ],
-      "time": "2026-02-16T20:44:03+00:00"
+      "time": "2026-03-24T13:12:05+00:00"
     },
     {
       "name": "symfony/dotenv",
@@ -10551,16 +10372,16 @@
     },
     {
       "name": "symfony/translation",
-      "version": "v6.4.34",
+      "version": "v6.4.38",
       "source": {
         "type": "git",
         "url": "https://github.com/symfony/translation.git",
-        "reference": "d07d117db41341511671b0a1a2be48f2772189ce"
+        "reference": "afaa31b0c12d9a659eed1ea97f268a614cc1299c"
       },
       "dist": {
         "type": "zip",
-        "url": "https://api.github.com/repos/symfony/translation/zipball/d07d117db41341511671b0a1a2be48f2772189ce",
-        "reference": "d07d117db41341511671b0a1a2be48f2772189ce",
+        "url": "https://api.github.com/repos/symfony/translation/zipball/afaa31b0c12d9a659eed1ea97f268a614cc1299c",
+        "reference": "afaa31b0c12d9a659eed1ea97f268a614cc1299c",
         "shasum": ""
       },
       "require": {
@@ -10626,7 +10447,7 @@
       "description": "Provides tools to internationalize your application",
       "homepage": "https://symfony.com",
       "support": {
-        "source": "https://github.com/symfony/translation/tree/v6.4.34"
+        "source": "https://github.com/symfony/translation/tree/v6.4.38"
       },
       "funding": [
         {
@@ -10646,20 +10467,20 @@
           "type": "tidelift"
         }
       ],
-      "time": "2026-02-16T20:44:03+00:00"
+      "time": "2026-05-06T08:55:54+00:00"
     },
     {
       "name": "symfony/translation-contracts",
-      "version": "v3.6.1",
+      "version": "v3.7.0",
       "source": {
         "type": "git",
         "url": "https://github.com/symfony/translation-contracts.git",
-        "reference": "65a8bc82080447fae78373aa10f8d13b38338977"
+        "reference": "0ab302977a952b42fd51475c4ebac81f8da0a95d"
       },
       "dist": {
         "type": "zip",
-        "url": "https://api.github.com/repos/symfony/translation-contracts/zipball/65a8bc82080447fae78373aa10f8d13b38338977",
-        "reference": "65a8bc82080447fae78373aa10f8d13b38338977",
+        "url": "https://api.github.com/repos/symfony/translation-contracts/zipball/0ab302977a952b42fd51475c4ebac81f8da0a95d",
+        "reference": "0ab302977a952b42fd51475c4ebac81f8da0a95d",
         "shasum": ""
       },
       "require": {
@@ -10672,7 +10493,7 @@
           "name": "symfony/contracts"
         },
         "branch-alias": {
-          "dev-main": "3.6-dev"
+          "dev-main": "3.7-dev"
         }
       },
       "autoload": {
@@ -10708,7 +10529,7 @@
         "standards"
       ],
       "support": {
-        "source": "https://github.com/symfony/translation-contracts/tree/v3.6.1"
+        "source": "https://github.com/symfony/translation-contracts/tree/v3.7.0"
       },
       "funding": [
         {
@@ -10728,7 +10549,7 @@
           "type": "tidelift"
         }
       ],
-      "time": "2025-07-15T13:41:35+00:00"
+      "time": "2026-01-05T13:30:16+00:00"
     },
     {
       "name": "symfony/twig-bridge",
@@ -11365,16 +11186,16 @@
     },
     {
       "name": "symfony/yaml",
-      "version": "v6.4.34",
+      "version": "v6.4.38",
       "source": {
         "type": "git",
         "url": "https://github.com/symfony/yaml.git",
-        "reference": "7bca30dabed7900a08c5ad4f1d6483f881a64d0f"
+        "reference": "f8d2f4af29053842c01b4cae6bd4c2c3191fc63c"
       },
       "dist": {
         "type": "zip",
-        "url": "https://api.github.com/repos/symfony/yaml/zipball/7bca30dabed7900a08c5ad4f1d6483f881a64d0f",
-        "reference": "7bca30dabed7900a08c5ad4f1d6483f881a64d0f",
+        "url": "https://api.github.com/repos/symfony/yaml/zipball/f8d2f4af29053842c01b4cae6bd4c2c3191fc63c",
+        "reference": "f8d2f4af29053842c01b4cae6bd4c2c3191fc63c",
         "shasum": ""
       },
       "require": {
@@ -11417,7 +11238,7 @@
       "description": "Loads and dumps YAML files",
       "homepage": "https://symfony.com",
       "support": {
-        "source": "https://github.com/symfony/yaml/tree/v6.4.34"
+        "source": "https://github.com/symfony/yaml/tree/v6.4.38"
       },
       "funding": [
         {
@@ -11437,7 +11258,7 @@
           "type": "tidelift"
         }
       ],
-      "time": "2026-02-06T18:32:11+00:00"
+      "time": "2026-05-05T06:55:40+00:00"
     },
     {
       "name": "twig/extra-bundle",
