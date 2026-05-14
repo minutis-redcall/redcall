@@ -3,7 +3,7 @@ services:
   Bundles\SandboxBundle\Base\BaseRepository:
     abstract: true
     arguments:
-      - '@Doctrine\Common\Persistence\ManagerRegistry'
+      - '@Doctrine\Persistence\ManagerRegistry'
 
   Bundles\SandboxBundle\Repository\FakeSmsRepository:
     parent: 'Bundles\SandboxBundle\Base\BaseRepository'

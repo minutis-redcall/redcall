@@ -7,7 +7,7 @@ use App\Entity\User;
 use App\Manager\ReportManager;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Bridge\Twig\Attribute\Template;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 #[Route("/costs", name: "costs_")]
 #[IsGranted("ROLE_TRUSTED")]

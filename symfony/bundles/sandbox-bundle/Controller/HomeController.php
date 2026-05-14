@@ -4,7 +4,7 @@ namespace Bundles\SandboxBundle\Controller;
 
 use Bundles\SandboxBundle\Base\BaseController;
 use Symfony\Bridge\Twig\Attribute\Template;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 class HomeController extends BaseController
 {

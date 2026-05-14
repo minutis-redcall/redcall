@@ -7,7 +7,7 @@ use Bundles\SandboxBundle\Base\BaseController;
 use Bundles\SandboxBundle\Manager\FakeOperationManager;
 use Bundles\SandboxBundle\Manager\FakeOperationResourceManager;
 use Symfony\Bridge\Twig\Attribute\Template;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 #[Route("/fake-minutis", name: "fake_minutis_")]
 class FakeMinutisController extends BaseController

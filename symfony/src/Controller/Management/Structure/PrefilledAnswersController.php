@@ -10,7 +10,7 @@ use App\Manager\PrefilledAnswersManager;
 use Bundles\PaginationBundle\Manager\PaginationManager;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route(path: "management/structures/{structure}/prefilled-answers", name: "management_structures_prefilled_answers_")]

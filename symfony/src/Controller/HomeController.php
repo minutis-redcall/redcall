@@ -6,7 +6,7 @@ use App\Entity\Volunteer;
 use App\Manager\LocaleManager;
 use App\Manager\VolunteerSessionManager;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 class HomeController extends AbstractController
 {

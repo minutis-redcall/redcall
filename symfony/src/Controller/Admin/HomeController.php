@@ -3,7 +3,7 @@
 namespace App\Controller\Admin;
 
 use App\Base\BaseController;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 #[Route(path: "admin/", name: "admin_")]
 class HomeController extends BaseController

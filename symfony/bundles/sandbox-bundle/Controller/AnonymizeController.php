@@ -4,7 +4,7 @@ namespace Bundles\SandboxBundle\Controller;
 
 use Bundles\SandboxBundle\Base\BaseController;
 use Bundles\SandboxBundle\Manager\AnonymizeManager;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 class AnonymizeController extends BaseController
 {

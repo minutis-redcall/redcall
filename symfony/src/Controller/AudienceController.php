@@ -14,7 +14,7 @@ use App\Manager\ExpirableManager;
 use App\Manager\VolunteerManager;
 use App\Model\Classification;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 #[Route(path: "audience", name: "audience_")]
 class AudienceController extends BaseController

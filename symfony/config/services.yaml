@@ -91,7 +91,7 @@ services:
 
   Bundles\PasswordLoginBundle\Repository\UserRepositoryInterface:
     class: App\Repository\UserRepository
-    arguments: [ '@Doctrine\Common\Persistence\ManagerRegistry' ]
+    arguments: [ '@Doctrine\Persistence\ManagerRegistry' ]
 
   App\Provider\OAuth\GoogleConnect\GoogleConnect:
     arguments:

@@ -4,7 +4,7 @@ namespace App\Controller;
 
 use App\Base\BaseController;
 use App\Entity\Campaign;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 /**
  * WARNING: this controller is OUT of the security firewall.

@@ -14,7 +14,7 @@ use Bundles\SettingsBundle\Manager\SettingManager;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 #[Route(path: "favorite-badge", name: "favorite_badge_")]
 class FavoriteBadgeController extends BaseController

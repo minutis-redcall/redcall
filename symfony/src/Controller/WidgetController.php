@@ -25,7 +25,7 @@ use App\Manager\VolunteerManager;
 use Ramsey\Uuid\Uuid;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 #[Route(path: "/widget", name: "widget_")]
 class WidgetController extends BaseController

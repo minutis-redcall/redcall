@@ -8,7 +8,7 @@ use App\Manager\CampaignManager;
 use App\Provider\Minutis\MinutisProvider;
 use Bundles\PaginationBundle\Manager\PaginationManager;
 use Symfony\Bridge\Twig\Attribute\Template;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 #[Route("/admin/campaign", name: "admin_campaign_")]
 class CampaignController extends BaseController

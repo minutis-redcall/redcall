@@ -9,7 +9,7 @@ use App\Manager\PrefilledAnswersManager;
 use Bundles\PaginationBundle\Manager\PaginationManager;
 use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 #[Route(path: "admin/reponses-pre-remplies/", name: "admin_prefilled_answers_")]
 class PrefilledAnswersController extends BaseController

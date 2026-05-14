@@ -7,7 +7,7 @@ use App\Manager\VolunteerManager;
 use Bundles\SandboxBundle\Base\BaseController;
 use Bundles\SandboxBundle\Manager\FakeEmailManager;
 use Symfony\Bridge\Twig\Attribute\Template;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 #[Route("/fake-email", name: "fake_email_")]
 class FakeEmailController extends BaseController

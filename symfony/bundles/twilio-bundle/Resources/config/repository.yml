@@ -2,12 +2,12 @@ services:
 
   Bundles\TwilioBundle\Repository\TwilioMessageRepository:
     arguments:
-      - '@Doctrine\Common\Persistence\ManagerRegistry'
+      - '@Doctrine\Persistence\ManagerRegistry'
 
   Bundles\TwilioBundle\Repository\TwilioCallRepository:
     arguments:
-      - '@Doctrine\Common\Persistence\ManagerRegistry'
+      - '@Doctrine\Persistence\ManagerRegistry'
 
   Bundles\TwilioBundle\Repository\TwilioStatusRepository:
     arguments:
-      - '@Doctrine\Common\Persistence\ManagerRegistry'
+      - '@Doctrine\Persistence\ManagerRegistry'

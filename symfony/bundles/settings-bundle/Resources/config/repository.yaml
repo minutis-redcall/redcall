@@ -2,5 +2,5 @@ services:
 
   Bundles\SettingsBundle\Repository\SettingRepository:
     arguments:
-      - '@Doctrine\Common\Persistence\ManagerRegistry'
+      - '@Doctrine\Persistence\ManagerRegistry'
       - 'Bundles\SettingsBundle\Entity\Setting'

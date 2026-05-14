@@ -11,7 +11,7 @@ use App\Model\Csrf;
 use Bundles\PaginationBundle\Manager\PaginationManager;
 use Symfony\Bridge\Twig\Attribute\Template as TwigTemplate;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route(path: "management/structures/{structure}/template", name: "management_structures_template_")]
