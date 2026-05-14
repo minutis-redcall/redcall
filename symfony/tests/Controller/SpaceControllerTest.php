@@ -105,4 +105,70 @@ class SpaceControllerTest extends BaseWebTestCase
         // the VolunteerSession entity before the voter even gets a chance to deny access.
         $this->assertResponseStatusCodeSame(404);
     }
+
+    public function testSpaceInfosRenders(): void
+    {
+        $client = static::createClient();
+        $client->disableReboot();
+        $sessionId = $this->createVolunteerSession($client);
+
+        $client->request('GET', sprintf('/space/%s/infos', $sessionId));
+        $this->assertResponseIsSuccessful();
+    }
+
+    public function testSpacePhoneRenders(): void
+    {
+        $client = static::createClient();
+        $client->disableReboot();
+        $sessionId = $this->createVolunteerSession($client);
+
+        $client->request('GET', sprintf('/space/%s/phone', $sessionId));
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorExists('form');
+    }
+
+    public function testSpaceEmailRenders(): void
+    {
+        $client = static::createClient();
+        $client->disableReboot();
+        $sessionId = $this->createVolunteerSession($client);
+
+        $client->request('GET', sprintf('/space/%s/email', $sessionId));
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorExists('input[type="email"]');
+    }
+
+    public function testSpaceEnabledRenders(): void
+    {
+        $client = static::createClient();
+        $client->disableReboot();
+        $sessionId = $this->createVolunteerSession($client);
+
+        $client->request('GET', sprintf('/space/%s/enabled', $sessionId));
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorExists('form');
+    }
+
+    public function testSpaceDownloadDataSendsAttachment(): void
+    {
+        $client = static::createClient();
+        $client->disableReboot();
+        $sessionId = $this->createVolunteerSession($client);
+
+        $client->request('GET', sprintf('/space/%s/download-data', $sessionId));
+        $this->assertResponseIsSuccessful();
+        $disposition = $client->getResponse()->headers->get('Content-Disposition');
+        $this->assertNotNull($disposition);
+        $this->assertStringContainsString('attachment', $disposition);
+    }
+
+    public function testSpaceLogoutRedirectsHome(): void
+    {
+        $client = static::createClient();
+        $client->disableReboot();
+        $sessionId = $this->createVolunteerSession($client);
+
+        $client->request('GET', sprintf('/space/%s/logout', $sessionId));
+        $this->assertResponseRedirects('/');
+    }
 }
