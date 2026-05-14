@@ -110,6 +110,11 @@ class VolunteersController extends BaseController
      */
     private $deletedVolunteerManager;
 
+    /**
+     * @var SimpleProcessor
+     */
+    private $simpleProcessor;
+
     public function __construct(VolunteerManager $volunteerManager,
         StructureManager $structureManager,
         PegassManager $pegassManager,

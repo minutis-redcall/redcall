@@ -221,7 +221,7 @@ class Template
                     }
                 }
 
-                if (mb_strlen($this->getBody()) > Message::MAX_LENGTH_SMS) {
+                if (mb_strlen((string) $this->getBody()) > Message::MAX_LENGTH_SMS) {
                     $context->buildViolation('form.communication.errors.too_large_sms')
                             ->atPath('body')
                             ->addViolation();
@@ -229,7 +229,7 @@ class Template
                 break;
 
             case Communication::TYPE_CALL:
-                if (mb_strlen($this->getBody()) > Message::MAX_LENGTH_CALL) {
+                if (mb_strlen((string) $this->getBody()) > Message::MAX_LENGTH_CALL) {
                     $context->buildViolation('form.communication.errors.too_large_sms')
                             ->atPath('body')
                             ->addViolation();
@@ -237,7 +237,7 @@ class Template
                 break;
 
             case Communication::TYPE_EMAIL:
-                if (mb_strlen(strip_tags($this->getBody())) > Message::MAX_LENGTH_EMAIL) {
+                if (mb_strlen(strip_tags((string) $this->getBody())) > Message::MAX_LENGTH_EMAIL) {
                     $context->buildViolation('form.communication.errors.too_large_sms')
                             ->atPath('body')
                             ->addViolation();

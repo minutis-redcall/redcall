@@ -37,7 +37,6 @@ class TemplateImageManagerTest extends KernelTestCase
         ob_start();
         imagepng($gd);
         $binary = ob_get_clean();
-        imagedestroy($gd);
 
         return base64_encode($binary);
     }
@@ -147,7 +146,6 @@ class TemplateImageManagerTest extends KernelTestCase
         ob_start();
         imagejpeg($gd);
         $binary = ob_get_clean();
-        imagedestroy($gd);
         $base64 = base64_encode($binary);
 
         $body = sprintf('<img src="data:image/jpeg;base64,%s">', $base64);

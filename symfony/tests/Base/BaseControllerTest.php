@@ -10,7 +10,9 @@ use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class BaseControllerTest extends TestCase
 {
     // --- orderBy ---

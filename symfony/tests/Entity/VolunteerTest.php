@@ -16,7 +16,9 @@ use DateTimeZone;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Symfony\Component\Validator\Violation\ConstraintViolationBuilderInterface;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class VolunteerTest extends TestCase
 {
     private function createVolunteer(
@@ -270,7 +272,6 @@ class VolunteerTest extends TestCase
         $structureB = $this->createStructure('B', 'EXT-B');
 
         $ref = new \ReflectionProperty(Structure::class, 'id');
-        $ref->setAccessible(true);
         $ref->setValue($structureA, 10);
         $ref->setValue($structureB, 20);
 
@@ -937,7 +938,6 @@ class VolunteerTest extends TestCase
         // No externalId set, but Badge constructor doesn't set it either
         // Actually Badge always has externalId via setExternalId. Let's use reflection.
         $ref = new \ReflectionProperty(Badge::class, 'externalId');
-        $ref->setAccessible(true);
         $ref->setValue($internalBadge, null);
 
         $volunteer->addBadge($externalBadge);
@@ -1051,7 +1051,6 @@ class VolunteerTest extends TestCase
         $volunteer->addPhone($phoneA);
         // Force add duplicate by using reflection since addPhone prevents duplicates by object identity
         $ref = new \ReflectionProperty(Volunteer::class, 'phones');
-        $ref->setAccessible(true);
         $phones = $ref->getValue($volunteer);
         $phones->add($phoneB);
 

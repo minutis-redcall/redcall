@@ -12,7 +12,9 @@ use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Symfony\Component\Validator\Violation\ConstraintViolationBuilderInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class PhoneValidatorTest extends TestCase
 {
     private $phoneManager;

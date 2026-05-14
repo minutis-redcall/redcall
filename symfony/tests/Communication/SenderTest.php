@@ -17,7 +17,9 @@ use App\Services\MessageFormatter;
 use Doctrine\Common\Collections\ArrayCollection;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class SenderTest extends TestCase
 {
     private $phoneConfigManager;
@@ -401,7 +403,6 @@ class SenderTest extends TestCase
 
         // Call sendEmail via reflection
         $reflection = new \ReflectionMethod(Sender::class, 'sendEmail');
-        $reflection->setAccessible(true);
         $reflection->invoke($this->sender, $message);
     }
 
@@ -418,7 +419,6 @@ class SenderTest extends TestCase
         $this->emailProvider->expects($this->never())->method('send');
 
         $reflection = new \ReflectionMethod(Sender::class, 'sendEmail');
-        $reflection->setAccessible(true);
         $reflection->invoke($this->sender, $message);
     }
 
@@ -439,7 +439,6 @@ class SenderTest extends TestCase
         $this->messageManager->expects($this->once())->method('save');
 
         $reflection = new \ReflectionMethod(Sender::class, 'sendEmail');
-        $reflection->setAccessible(true);
         $reflection->invoke($this->sender, $message);
 
         $this->assertSame('SMTP error', $message->getError());

@@ -9,7 +9,9 @@ use App\Repository\MediaRepository;
 use App\Services\TextToSpeech;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class MediaManagerTest extends TestCase
 {
     private function createMediaRepositoryMock(array $methods = ['findOneByHash', 'save', 'clearExpired'])

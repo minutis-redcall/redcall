@@ -10,7 +10,9 @@ use Doctrine\ORM\QueryBuilder;
 use Pagerfanta\Pagerfanta;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class StructureManagerTest extends KernelTestCase
 {
     private StructureManager $manager;

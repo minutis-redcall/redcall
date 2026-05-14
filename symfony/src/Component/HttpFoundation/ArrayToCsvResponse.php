@@ -2,7 +2,7 @@
 
 namespace App\Component\HttpFoundation;
 
-use League\Csv\Reader;
+use League\Csv\Bom;
 use League\Csv\Writer;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -39,16 +39,12 @@ class ArrayToCsvResponse extends Response
             return null;
         }
 
-        if (!ini_get("auto_detect_line_endings")) {
-            ini_set("auto_detect_line_endings", '1');
-        }
-
-        $csv = Writer::createFromString();
-        $csv->setOutputBOM(Reader::BOM_UTF8);
+        $csv = Writer::fromString();
+        $csv->setOutputBOM(Bom::Utf8);
         $csv->setDelimiter(';');
         $csv->insertOne(array_keys(reset($array)));
         $csv->insertAll($array);
 
-        return $csv->getContent();
+        return $csv->toString();
     }
 }

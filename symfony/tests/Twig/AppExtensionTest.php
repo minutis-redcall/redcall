@@ -7,7 +7,9 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Twig\TwigFilter;
 use Twig\TwigFunction;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class AppExtensionTest extends TestCase
 {
     private $extension;

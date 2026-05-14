@@ -6,7 +6,9 @@ use App\Form\Type\PhoneCardType;
 use App\Form\Type\PhoneCardsType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Test\TypeTestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class PhoneCardsTypeTest extends TypeTestCase
 {
     public function testBlockPrefix(): void

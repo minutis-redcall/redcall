@@ -5,7 +5,9 @@ namespace App\Tests\Base;
 use App\Base\BaseService;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class BaseServiceTest extends TestCase
 {
     public function testSetContainerReturnsNullOnFirstCall(): void

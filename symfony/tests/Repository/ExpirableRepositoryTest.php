@@ -20,7 +20,7 @@ class ExpirableRepositoryTest extends KernelTestCase
             ->getRepository(Expirable::class);
     }
 
-    private function createExpirable(\DateTimeInterface $expiresAt, string $uuid = null): Expirable
+    private function createExpirable(\DateTimeInterface $expiresAt, ?string $uuid = null): Expirable
     {
         $expirable = new Expirable();
         $expirable->setUuid($uuid ?? bin2hex(random_bytes(16)));

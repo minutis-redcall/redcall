@@ -15,7 +15,9 @@ use PHPUnit\Framework\TestCase;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Environment;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class MessageFormatterTest extends TestCase
 {
     private $phoneConfigManager;

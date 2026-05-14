@@ -66,7 +66,6 @@ class CampaignTest extends TestCase
 
         // Use reflection to set the private property directly
         $ref = new \ReflectionProperty(Campaign::class, 'code');
-        $ref->setAccessible(true);
         $ref->setValue($campaign, $stream);
 
         $this->assertSame('STREAM01', $campaign->getCode());
@@ -167,7 +166,6 @@ class CampaignTest extends TestCase
         $sms = $this->createCommunication(Communication::TYPE_SMS);
 
         $ref = new \ReflectionProperty(Communication::class, 'id');
-        $ref->setAccessible(true);
         $ref->setValue($sms, 10);
 
         $campaign->setCommunications(new ArrayCollection([$sms]));

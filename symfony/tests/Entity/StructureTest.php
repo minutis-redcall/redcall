@@ -503,7 +503,6 @@ class StructureTest extends TestCase
 
         // Must set IDs so isParentLooping doesn't trip on null === null
         $ref = new \ReflectionProperty(Structure::class, 'id');
-        $ref->setAccessible(true);
         $ref->setValue($parent, 1);
         $ref->setValue($child, 2);
 
@@ -522,11 +521,9 @@ class StructureTest extends TestCase
         $structureB = $this->createStructure('B', 'EXT-B');
 
         $refA = new \ReflectionProperty(Structure::class, 'id');
-        $refA->setAccessible(true);
         $refA->setValue($structureA, 1);
 
         $refB = new \ReflectionProperty(Structure::class, 'id');
-        $refB->setAccessible(true);
         $refB->setValue($structureB, 2);
 
         // Create a loop: A -> B -> A
@@ -582,7 +579,6 @@ class StructureTest extends TestCase
         $child = $this->createStructure('Child', 'EXT-C');
 
         $ref = new \ReflectionProperty(Structure::class, 'id');
-        $ref->setAccessible(true);
         $ref->setValue($grandparent, 10);
         $ref->setValue($parent, 20);
         $ref->setValue($child, 30);

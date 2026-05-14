@@ -6,7 +6,9 @@ use App\Form\Model\Campaign;
 use App\Form\Model\SmsTrigger;
 use App\Form\Type\CreateOrUseOperationType;
 use Symfony\Component\Form\Test\TypeTestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class CreateOrUseOperationTypeTest extends TypeTestCase
 {
     public function testDataClassIsCampaign(): void

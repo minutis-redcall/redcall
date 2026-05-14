@@ -70,7 +70,7 @@ class EmailTrigger extends BaseTrigger
         }
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize() : mixed
     {
         $vars = parent::jsonSerialize();
 

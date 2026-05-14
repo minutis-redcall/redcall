@@ -9,7 +9,9 @@ use Doctrine\Common\Collections\ArrayCollection;
 use PHPUnit\Framework\TestCase;
 use Twig\Environment;
 use Twig\TwigFilter;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class CommunicationExtensionTest extends TestCase
 {
     private $extension;
