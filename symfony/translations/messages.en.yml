@@ -742,6 +742,10 @@ manage_volunteers:
     update: 'Updated on %date%'
   contact:
     mail_subject: '⚠️ RedCall: You have a message'
+  flags:
+    has_account: 'RedCall user'
+    minor: 'Minor volunteer'
+    volunteer: 'Volunteer'
   form:
     added: 'Volunteer has properly been added.'
     create: 'Create volunteer'

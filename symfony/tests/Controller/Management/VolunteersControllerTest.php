@@ -69,6 +69,43 @@ class VolunteersControllerTest extends BaseWebTestCase
         );
     }
 
+    public function testVolunteerCardIconsCarryAccessibleLabels()
+    {
+        $client   = static::createClient();
+        $fixtures = $this->getFixtures($client->getContainer());
+
+        $user      = $fixtures->createRawUser('vol_aria@example.com', 'password', true);
+        $structure = $fixtures->createStructure('VOL ARIA STRUCT', 'EXT-VOL-ARIA');
+        $fixtures->assignUserToStructure($user, $structure);
+
+        $volunteer = new Volunteer();
+        $volunteer->setExternalId('VOL-ARIA-001');
+        $volunteer->setFirstName('Marie');
+        $volunteer->setLastName('Curie');
+        $volunteer->setEnabled(true);
+        $volunteer->setLocked(false);
+        $volunteer->setPhoneNumberOptin(true);
+        $volunteer->setEmailOptin(true);
+
+        $em = $client->getContainer()->get('doctrine.orm.entity_manager');
+        $em->persist($volunteer);
+        $em->flush();
+
+        $fixtures->assignVolunteerToStructure($volunteer, $structure);
+
+        $this->login($client, $user);
+        $crawler = $client->request('GET', '/management/volunteers');
+        $this->assertResponseIsSuccessful();
+
+        // The lock-toggle is a bare 🔒/🔓 emoji — needs aria-label so screen
+        // readers don't just announce a glyph the user can't interpret.
+        $this->assertGreaterThanOrEqual(
+            1,
+            $crawler->filter('a.toggle-action[aria-label]')->count(),
+            'Lock/unlock toggle on the volunteer card must declare an aria-label — it has no visible text label.'
+        );
+    }
+
     public function testVolunteerFormHeadingHierarchyHasNoSkippedLevel()
     {
         $client   = static::createClient();
