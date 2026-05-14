@@ -337,18 +337,27 @@ class CampaignControllerTest extends BaseWebTestCase
 
     public function testSearchForOperationReturnsJsonForAccessibleStructure()
     {
-        // The happy path of this route calls Minutis (HTTP) via
-        // App\Provider\Minutis\MinutisProvider. config/services_dev.yaml
-        // aliases that provider to Bundles\SandboxBundle\Provider\FakeMinutisProvider,
-        // but config/services_test.yaml does NOT — so in the test env the
-        // real provider runs, instantiates a Guzzle client with a null base
-        // URL, and throws "URI must be a string or UriInterface".
-        // See BROKEN_ROUTES.md.
-        $this->markTestIncomplete(
-            'GET /campaign/operations hits real Minutis HTTP in test env — '.
-            'FakeMinutisProvider is wired in services_dev.yaml only, not services_test.yaml. '.
-            'See BROKEN_ROUTES.md → GET /campaign/operations.'
-        );
+        $client    = static::createClient();
+        $container = $client->getContainer();
+        $fixtures  = $this->getFixtures($container);
+
+        // Use a numeric externalId — FakeOperationRepository::search() and the
+        // underlying FakeOperation.structureExternalId column are both typed
+        // as int, even though Structure.externalId in the main schema is a
+        // string. Cleaner than reshaping the sandbox provider for this test.
+        $user      = $fixtures->createRawUser('campaign_user_so@example.com', 'password');
+        $structure = $fixtures->createStructure('STRUCT SO', '12345678');
+        $fixtures->assignUserToStructure($user, $structure);
+        $volunteer = $fixtures->createVolunteer($user, 'VOL-SO-001', 'vol@so.test');
+        $fixtures->assignVolunteerToStructure($volunteer, $structure);
+
+        $this->login($client, $user);
+        $client->request('GET', '/campaign/operations?externalId='.$structure->getExternalId());
+
+        $this->assertResponseIsSuccessful();
+        $decoded = json_decode($client->getResponse()->getContent(), true);
+        $this->assertIsArray($decoded);
+        $this->assertArrayHasKey('operations', $decoded);
     }
 
     // ──────────────────────────────────────────────

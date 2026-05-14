@@ -315,7 +315,7 @@ class CommunicationController extends BaseController
         $user    = $this->getUser();
         $trigger = $this->getCommunicationFromRequest($request, $type);
 
-        if (!strip_tags($trigger->getMessage())
+        if (!strip_tags($trigger->getMessage() ?? '')
             || !$user->getVolunteer() || !$user->getVolunteer()->getPhone()) {
             return new JsonResponse([
                 'success' => false,

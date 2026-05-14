@@ -7,6 +7,27 @@ services:
     arguments: [ '@doctrine' ]
     public: true
 
+  App\Provider\Minutis\MinutisProvider:
+    class: 'Bundles\SandboxBundle\Provider\FakeMinutisProvider'
+    arguments:
+      - '@Bundles\SandboxBundle\Manager\FakeOperationManager'
+      - '@Bundles\SandboxBundle\Manager\FakeOperationResourceManager'
+      - '@App\Manager\VolunteerManager'
+    public: true
+
+  # Replace the real Google Cloud TaskSender with a null implementation that
+  # only records dispatches. Without this, /admin/maintenance/pegass-files
+  # and /admin/maintenance/annuaire-national execute their tasks inline
+  # (TaskSender::fire short-circuits in any non-prod env), which then hits
+  # Google APIs without service-account credentials and crashes.
+  Bundles\GoogleTaskBundle\Service\TaskSender:
+    class: 'Bundles\SandboxBundle\Service\NullTaskSender'
+    arguments:
+      - '@router'
+      - '@kernel'
+      - '@Bundles\GoogleTaskBundle\Bag\TaskBag'
+    public: true
+
   Bundles\SandboxBundle\Security\Csrf\TestCsrfTokenManager:
     public: true
 

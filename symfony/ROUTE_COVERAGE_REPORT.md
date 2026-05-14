@@ -5,17 +5,19 @@
 - **Application routes in test env**: **176** across **40 controllers**.
 - **Routes registered only in dev**: 18 (all `/sandbox/*`), documented as "Unreachable in test env".
 - **Routes covered by integration tests**: **all 176 test-env routes**. Every controller has at least one test file. Most have happy-path + auth gate + 404 where applicable.
-- **Tests added in this pass**: **+133**. Suite grew **1597 → 1730**, assertions **3117 → 3313**.
-- **markTestIncomplete**'d: **3**. All documented in `BROKEN_ROUTES.md` with root cause and decision points.
-- **Failures**: **0**. Suite green throughout the pass.
+- **Tests added in this pass**: **+133**. Suite grew **1597 → 1730**, assertions **3117 → 3318**.
+- **markTestIncomplete**'d: **0** (3 at end of the route-coverage pass — all resolved in the follow-up; see BROKEN_ROUTES.md for details).
+- **Deprecations**: **0** (1 was triggered at end of pass — `strip_tags(null)` in `CommunicationController::previewCommunicationAction` — resolved by coercing the message to `''` when null).
+- **Failures**: **0**. Suite green throughout.
 
 ## Test suite delta
 
 |                | Before | After  | Delta  |
 |----------------|--------|--------|--------|
 | Tests          | 1597   | 1730   | +133   |
-| Assertions     | 3117   | 3313   | +196   |
-| Incomplete     | 0      | 3      | +3     |
+| Assertions     | 3117   | 3318   | +201   |
+| Incomplete     | 0      | 0      | 0      |
+| Deprecations   | 0      | 0      | 0      |
 | Failures       | 0      | 0      | 0      |
 | Runtime        | ~8 s   | ~10 s  | +2 s   |
 

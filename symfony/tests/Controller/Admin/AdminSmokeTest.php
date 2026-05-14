@@ -130,25 +130,21 @@ class AdminSmokeTest extends BaseWebTestCase
 
     public function testMaintenancePegassFilesOk(): void
     {
-        // The route fires App\Task\PegassFiles via GoogleTaskBundle::TaskSender,
-        // which in production POSTs to GCP Cloud Tasks. In test the sender
-        // executes the task inline and the underlying Google clients fail
-        // because no service-account credentials are configured. See
-        // BROKEN_ROUTES.md.
-        $this->markTestIncomplete(
-            'GET /admin/maintenance/pegass-files fires GCP Cloud Tasks inline in '.
-            'test env; without credentials it 500s. See BROKEN_ROUTES.md.'
-        );
+        // services_test.yaml replaces GoogleTaskBundle's TaskSender with
+        // Bundles\SandboxBundle\Service\NullTaskSender so the dispatched
+        // tasks don't execute (and hit Google APIs without credentials).
+        $client = static::createClient();
+        $this->admin($client);
+        $client->request('GET', '/admin/maintenance/pegass-files');
+        $this->assertContains($client->getResponse()->getStatusCode(), [200, 302]);
     }
 
     public function testMaintenanceAnnuaireNationalOk(): void
     {
-        // Same problem as pegass-files: fires SyncAnnuaire which hits Google
-        // Sheets API without service-account credentials.
-        $this->markTestIncomplete(
-            'GET /admin/maintenance/annuaire-national fires SyncAnnuaire which '.
-            'hits Google Sheets in test env without credentials. See BROKEN_ROUTES.md.'
-        );
+        $client = static::createClient();
+        $this->admin($client);
+        $client->request('GET', '/admin/maintenance/annuaire-national');
+        $this->assertContains($client->getResponse()->getStatusCode(), [200, 302]);
     }
 
     // ──────────────────────────────────────────────
