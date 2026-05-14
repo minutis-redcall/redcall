@@ -6,6 +6,7 @@ use App\Entity\Expirable;
 use App\Form\Type\CodeType;
 use App\Form\Type\NivolType;
 use App\Manager\NivolManager;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -41,7 +42,7 @@ class NivolController extends AbstractController
 
     #[Route("/code/{uuid}", name: "code")]
     #[Template("nivol/code.html.twig")]
-    public function code(Request $request, Expirable $expirable)
+    public function code(Request $request, #[MapEntity(mapping: ['uuid' => 'uuid'])] Expirable $expirable)
     {
         $codeForm = $this
             ->createForm(CodeType::class)

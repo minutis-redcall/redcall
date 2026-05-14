@@ -66,14 +66,14 @@ class StatusController extends BaseController
         $outbound = $this->messageManager->get($uuid);
 
         if ($outbound) {
-            $outbound->setStatus($request->get('MessageStatus'));
+            $outbound->setStatus(($request->attributes->get('MessageStatus') ?? $request->query->get('MessageStatus') ?? $request->request->get('MessageStatus')));
             $this->eventDispatcher->dispatch(new TwilioMessageEvent($outbound), TwilioEvents::STATUS_UPDATED);
             $this->messageManager->save($outbound);
         }
 
         $status = new TwilioStatus();
-        $status->setSid($request->get('MessageSid'));
-        $status->setStatus($request->get('MessageStatus'));
+        $status->setSid(($request->attributes->get('MessageSid') ?? $request->query->get('MessageSid') ?? $request->request->get('MessageSid')));
+        $status->setStatus(($request->attributes->get('MessageStatus') ?? $request->query->get('MessageStatus') ?? $request->request->get('MessageStatus')));
         $this->statusManager->save($status);
 
         return new Response();

@@ -47,7 +47,7 @@ class SmsTriggerType extends AbstractType
                 'required'    => false,
                 'data'        => $shortcuts ? reset($shortcuts) : null,
                 'constraints' => [
-                    new ChoiceConstraint(['choices' => $shortcuts]),
+                    new ChoiceConstraint(choices: $shortcuts),
                     new Callback(function ($value, ExecutionContextInterface $context, $payload) use ($shortcuts) {
                         if (null !== $value && !in_array($value, $shortcuts)) {
                             $context

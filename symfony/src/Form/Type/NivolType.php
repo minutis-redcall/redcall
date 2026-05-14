@@ -46,15 +46,13 @@ class NivolType extends AbstractType
                 'label'       => 'nivol_auth.input_nivol',
                 'required'    => true,
                 'constraints' => [
-                    new Callback([
-                        'callback' => function ($nivol, $context) {
+                    new Callback(callback: function ($nivol, $context) {
                             if ($nivol && !$this->nivolManager->getUserByNivol($nivol)) {
                                 $context
                                     ->buildViolation($this->translator->trans('nivol_auth.nivol_not_found'))
                                     ->addViolation();
                             }
-                        },
-                    ]),
+                        }),
                 ],
             ]);
 

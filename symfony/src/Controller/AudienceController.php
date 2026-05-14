@@ -60,7 +60,7 @@ class AudienceController extends BaseController
     #[Route(path: "/search-volunteer", name: "search_volunteer")]
     public function searchVolunteer(Request $request)
     {
-        $criteria = $request->get('keyword');
+        $criteria = ($request->attributes->get('keyword') ?? $request->query->get('keyword') ?? $request->request->get('keyword'));
 
         if ($this->isGranted('ROLE_ADMIN')) {
             $volunteers = $this->volunteerManager->searchAll($criteria, 20, true);
@@ -81,7 +81,7 @@ class AudienceController extends BaseController
     public function searchBadge(Request $request)
     {
         $badges = $this->badgeManager->searchNonVisibleUsableBadge(
-            $request->get('keyword'),
+            ($request->attributes->get('keyword') ?? $request->query->get('keyword') ?? $request->request->get('keyword')),
             20
         );
 
@@ -101,7 +101,7 @@ class AudienceController extends BaseController
 
         $response = [];
 
-        if ('false' !== $request->get('badge_counts', true)) {
+        if ('false' !== ($request->attributes->get('badge_counts') ?? $request->query->get('badge_counts') ?? $request->request->get('badge_counts', true))) {
             $badgeCounts = $this->audienceManager->extractBadgeCounts(
                 $data,
                 $this->badgeManager->getCustomOrPublicBadges()

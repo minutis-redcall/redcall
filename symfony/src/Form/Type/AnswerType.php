@@ -18,10 +18,7 @@ class AnswerType extends TextType
                 'maxlength' => Choice::MAX_LENGTH_DEFAULT,
             ],
             'constraints' => [
-                new Length([
-                    'min' => 1,
-                    'max' => Choice::MAX_LENGTH_DEFAULT,
-                ]),
+                new Length(min: 1, max: Choice::MAX_LENGTH_DEFAULT),
             ],
         ]);
     }

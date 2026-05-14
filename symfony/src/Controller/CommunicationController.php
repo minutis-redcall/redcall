@@ -196,7 +196,7 @@ class CommunicationController extends BaseController
         while ($secs < 10) {
             $hash = $this->campaignManager->getHash($campaignId);
 
-            if ($request->get('hash') !== $hash) {
+            if (($request->attributes->get('hash') ?? $request->query->get('hash') ?? $request->request->get('hash')) !== $hash) {
                 $freshCampaign = $this->campaignManager->refresh($campaign);
 
                 return new JsonResponse(
@@ -404,7 +404,7 @@ class CommunicationController extends BaseController
                 'label'       => 'campaign_status.answers.new',
                 'constraints' => [
                     new NotBlank(),
-                    new Length(['max' => 300]),
+                    new Length(max: 300),
                 ],
             ])
             ->add('submit', SubmitType::class, [

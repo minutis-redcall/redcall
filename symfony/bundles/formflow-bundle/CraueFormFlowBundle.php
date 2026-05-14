@@ -15,10 +15,7 @@ use Symfony\Component\HttpKernel\Bundle\Bundle;
  */
 class CraueFormFlowBundle extends Bundle {
 
-	/**
-	 * @return void
-	 */
-	public function boot() {
+	public function boot() : void {
 		/*
 		 * Removes all temporary files created while handling file uploads.
 		 * Use a shutdown function to clean up even in case of a fatal error.

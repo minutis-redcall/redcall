@@ -19,7 +19,7 @@ class WhitelistedRedirectUrlValidator extends ConstraintValidator
         $this->parameters = $parameters;
     }
 
-    public function validate($value, Constraint $constraint)
+    public function validate(mixed $value, Constraint $constraint) : void
     {
         if (!$constraint instanceof WhitelistedRedirectUrl) {
             throw new UnexpectedTypeException($constraint, WhitelistedRedirectUrl::class);

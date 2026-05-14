@@ -33,7 +33,7 @@ class CodeType extends AbstractType
                 'required'    => true,
                 'constraints' => [
                     new NotBlank(),
-                    new Length(['min' => 6, 'max' => 6]),
+                    new Length(min: 6, max: 6),
                 ],
             ])
             ->add('_remember_me', CheckboxType::class, [

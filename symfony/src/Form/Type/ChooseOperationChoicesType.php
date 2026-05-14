@@ -30,10 +30,7 @@ class ChooseOperationChoicesType extends AbstractType
                     'label'       => 'form.operation.fields.choices.list',
                     'choices'     => $choices,
                     'constraints' => [
-                        new Choice([
-                            'choices'  => $choices,
-                            'multiple' => true,
-                        ]),
+                        new Choice(choices: $choices, multiple: true),
                     ],
                     'expanded'    => true,
                     'multiple'    => true,

@@ -30,7 +30,7 @@ class CampaignGroupController extends BaseController
     #[Route(path: "/rename/{index}", name: "rename", methods: ["POST"])]
     public function rename(Campaign $campaign, int $index, Request $request)
     {
-        $this->validateCsrfOrThrowNotFoundException('campaign', $request->get('csrf'));
+        $this->validateCsrfOrThrowNotFoundException('campaign', ($request->attributes->get('csrf') ?? $request->query->get('csrf') ?? $request->request->get('csrf')));
 
         $name          = trim($request->request->get('name'));
         $names         = $campaign->getGroupNames();
@@ -46,7 +46,7 @@ class CampaignGroupController extends BaseController
     #[Route(path: "/volunteer/{volunteerId}/toggle/{index}", name: "toggle", methods: ["POST"])]
     public function toggle(Campaign $campaign, #[MapEntity(expr: "repository.find(volunteerId)")] Volunteer $volunteer, int $index, Request $request)
     {
-        $this->validateCsrfOrThrowNotFoundException('campaign', $request->get('csrf'));
+        $this->validateCsrfOrThrowNotFoundException('campaign', ($request->attributes->get('csrf') ?? $request->query->get('csrf') ?? $request->request->get('csrf')));
 
         $volunteerGroup = $this->volunteerGroupRepository->findOneBy([
             'campaign'   => $campaign,

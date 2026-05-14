@@ -32,7 +32,7 @@ class CreateOperationType extends AbstractType
                 'label'       => 'form.operation.fields.structure_create',
                 'choices'     => array_flip($this->security->getUser()->getStructuresAsList()),
                 'constraints' => [
-                    new Choice(['choices' => array_flip($this->security->getUser()->getStructuresAsList())]),
+                    new Choice(choices: array_flip($this->security->getUser()->getStructuresAsList())),
                 ],
             ])
             ->add('name', TextType::class, [

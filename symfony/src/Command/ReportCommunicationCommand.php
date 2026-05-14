@@ -21,7 +21,7 @@ class ReportCommunicationCommand extends Command
         $this->reportManager = $reportManager;
     }
 
-    protected function configure()
+    protected function configure() : void
     {
         $this
             ->setName('report:communication')

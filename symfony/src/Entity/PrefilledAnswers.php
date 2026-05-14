@@ -27,7 +27,7 @@ class PrefilledAnswers
     private $label;
 
     #[ORM\Column(type: 'simple_array', nullable: true)]
-    #[Assert\Choice([Campaign::TYPE_GREEN, Campaign::TYPE_LIGHT_ORANGE, Campaign::TYPE_DARK_ORANGE, Campaign::TYPE_RED], multiple: true)]
+    #[Assert\Choice(choices: [Campaign::TYPE_GREEN, Campaign::TYPE_LIGHT_ORANGE, Campaign::TYPE_DARK_ORANGE, Campaign::TYPE_RED], multiple: true)]
     private $colors = [];
 
     #[ORM\Column(type: 'simple_array')]

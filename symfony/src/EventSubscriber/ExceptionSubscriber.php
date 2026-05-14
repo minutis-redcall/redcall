@@ -45,7 +45,7 @@ class ExceptionSubscriber implements EventSubscriberInterface
         $this->kernel = $kernel;
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents() : array
     {
         // return the subscribed events, their methods and priorities
         return [

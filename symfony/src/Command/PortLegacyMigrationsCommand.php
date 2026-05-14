@@ -22,7 +22,7 @@ class PortLegacyMigrationsCommand extends BaseCommand
         $this->connection = $connection;
     }
 
-    protected function configure()
+    protected function configure() : void
     {
         $this
             ->setName('migrations:port-legacy')

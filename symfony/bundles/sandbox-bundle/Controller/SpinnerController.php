@@ -35,7 +35,7 @@ class SpinnerController extends BaseController
                 'label'       => 'sandbox.spinner.splits',
                 'constraints' => [
                     new NotBlank(),
-                    new Range(['min' => 2, 'max' => 100]),
+                    new Range(min: 2, max: 100),
                 ],
             ])
             ->add('mixer', TextType::class, [
@@ -47,7 +47,7 @@ class SpinnerController extends BaseController
             ->add('speed', IntegerType::class, [
                 'constraints' => [
                     new NotBlank(),
-                    new Range(['min' => 1, 'max' => 100]),
+                    new Range(min: 1, max: 100),
                 ],
             ])
             ->add('submit', SubmitType::class, [

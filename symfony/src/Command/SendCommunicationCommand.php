@@ -30,7 +30,7 @@ class SendCommunicationCommand extends BaseCommand
         $this->sender               = $sender;
     }
 
-    protected function configure()
+    protected function configure() : void
     {
         $this
             ->setName('communication:send')

@@ -13,6 +13,7 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Validator\Constraints\Length;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 
 /**
  * WARNING: this controller is OUT of the security firewall.
@@ -46,7 +47,7 @@ class MessageController extends BaseController
     }
 
     #[Route(path: "{code}", name: "open", methods: ["GET", "POST"])]
-    public function openAction(Request $request, Message $message)
+    public function openAction(Request $request, #[MapEntity(mapping: ['code' => 'code'])] Message $message)
     {
         $form = $this->createFreeAnswerForm($request);
         if ($form->isSubmitted() && $form->isValid() && $answer = $form->get('freeAnswer')->getData()) {
@@ -72,7 +73,7 @@ class MessageController extends BaseController
     }
 
     #[Route(path: "optout/{code}", name: "optout", methods: ["GET", "POST"])]
-    public function optoutAction(Request $request, Message $message)
+    public function optoutAction(Request $request, #[MapEntity(mapping: ['code' => 'code'])] Message $message)
     {
         $form = $this->createFormBuilder()
                      ->add('cancel', SubmitType::class, [
@@ -110,7 +111,7 @@ class MessageController extends BaseController
     }
 
     #[Route(path: "{code}/{signature}/{action}", name: "action", requirements: ["action" => "\d+"], methods: ["GET"])]
-    public function actionAction(Message $message, int $action, string $signature)
+    public function actionAction(#[MapEntity(mapping: ['code' => 'code'])] Message $message, int $action, string $signature)
     {
         $this->checkSignature($message, $signature);
 
@@ -131,7 +132,7 @@ class MessageController extends BaseController
     }
 
     #[Route(path: "{code}/annuler/{signature}/{action}", name: "cancel", requirements: ["action" => "\d+"], methods: ["GET"])]
-    public function cancelAction(Message $message, int $action, string $signature)
+    public function cancelAction(#[MapEntity(mapping: ['code' => 'code'])] Message $message, int $action, string $signature)
     {
         $this->checkSignature($message, $signature);
 
@@ -157,7 +158,7 @@ class MessageController extends BaseController
             ->createFormBuilder()
             ->add('freeAnswer', TextType::class, [
                 'constraints' => [
-                    new Length(['max' => 1024]),
+                    new Length(max: 1024),
                 ],
                 'required'    => false,
             ])

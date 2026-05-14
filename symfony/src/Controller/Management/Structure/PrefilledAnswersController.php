@@ -47,11 +47,12 @@ class PrefilledAnswersController extends BaseController
 #[Template("management/structures/prefilled_answers/editor.html.twig")]
     public function editorPrefilledAnswers(Request $request, Structure $structure)
     {
-        if ($request->get('prefilledAnswers') === null) {
+        $prefilledAnswersId = $request->attributes->get('prefilledAnswers') ?? $request->query->get('prefilledAnswers') ?? $request->request->get('prefilledAnswers');
+        if ($prefilledAnswersId === null) {
             $prefilledAnswers = new PrefilledAnswers();
             $prefilledAnswers->setStructure($structure);
         } else {
-            $prefilledAnswers = $this->prefilledAnswersManager->findById($request->get('prefilledAnswers'));
+            $prefilledAnswers = $this->prefilledAnswersManager->findById($prefilledAnswersId);
             if (!$prefilledAnswers) {
                 throw $this->createNotFoundException();
             }
@@ -73,7 +74,7 @@ class PrefilledAnswersController extends BaseController
     #[Route("/{prefilledAnswers}/delete", requirements: ["prefilledAnswers" => "\d+"], name: "delete")]
     public function deleteAction(Request $request, PrefilledAnswers $prefilledAnswers, Structure $structure)
     {
-        $this->validateCsrfOrThrowNotFoundException('prefilled_answers', $request->get('csrf'));
+        $this->validateCsrfOrThrowNotFoundException('prefilled_answers', ($request->attributes->get('csrf') ?? $request->query->get('csrf') ?? $request->request->get('csrf')));
 
         $this->prefilledAnswersManager->remove($prefilledAnswers);
 

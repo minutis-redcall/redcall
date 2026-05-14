@@ -84,7 +84,7 @@ class PegassController extends BaseController
 
         return $this->render('admin/pegass/index.html.twig', [
             'search'    => $search->createView(),
-            'type'      => $request->get('type'),
+            'type'      => ($request->attributes->get('type') ?? $request->query->get('type') ?? $request->request->get('type')),
             'users'     => $this->paginationManager->getPager(
                 $this->userManager->searchQueryBuilder($criteria ?? null, false)
             ),
@@ -172,7 +172,7 @@ class PegassController extends BaseController
     {
         $this->validateCsrfOrThrowNotFoundException('pegass', $csrf);
 
-        $structureId = $request->get('structure');
+        $structureId = ($request->attributes->get('structure') ?? $request->query->get('structure') ?? $request->request->get('structure'));
         if (!$structureId) {
             throw $this->createNotFoundException();
         }

@@ -73,7 +73,7 @@ class CallController extends BaseController
             throw $this->createNotFoundException();
         }
 
-        $keys = $request->get('Digits');
+        $keys = ($request->attributes->get('Digits') ?? $request->query->get('Digits') ?? $request->request->get('Digits'));
         if (null === $keys) {
             $response = $this->callManager->handleCallEstablished($call);
         } else {
@@ -108,7 +108,7 @@ class CallController extends BaseController
             throw $this->createNotFoundException();
         }
 
-        if ('machine_start' === $request->get('AnsweredBy')) {
+        if ('machine_start' === ($request->attributes->get('AnsweredBy') ?? $request->query->get('AnsweredBy') ?? $request->request->get('AnsweredBy'))) {
             $this->callManager->handleAnsweringMachine($call);
         }
 

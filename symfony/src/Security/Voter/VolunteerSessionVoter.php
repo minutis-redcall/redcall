@@ -6,6 +6,7 @@ use App\Entity\VolunteerSession;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
+use Symfony\Component\Security\Core\Authorization\Voter\Vote;
 
 class VolunteerSessionVoter extends Voter
 {
@@ -34,7 +35,7 @@ class VolunteerSessionVoter extends Voter
     /**
      * {@inheritdoc}
      */
-    protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
+    protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token, ?Vote $vote = null): bool
     {
         /** @var VolunteerSession $subject */
         return $subject->getSessionId() === $this->requestStack->getSession()->get('volunteer-session');

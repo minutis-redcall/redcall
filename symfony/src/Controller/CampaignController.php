@@ -266,7 +266,7 @@ class CampaignController extends BaseController
     #[Route(path: "campaign/operations", name: "campaign_search_for_operation")]
     public function searchForOperation(Request $request)
     {
-        $structure = $this->structureManager->findOneByExternalId($request->get('externalId'));
+        $structure = $this->structureManager->findOneByExternalId(($request->attributes->get('externalId') ?? $request->query->get('externalId') ?? $request->request->get('externalId')));
         if (!$structure || !$this->isGranted('STRUCTURE', $structure)) {
             throw $this->createNotFoundException();
         }

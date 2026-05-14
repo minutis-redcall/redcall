@@ -23,7 +23,7 @@ class SmsCommand extends Command
         $this->messageManager = $messageManager;
     }
 
-    protected function configure()
+    protected function configure() : void
     {
         parent::configure();
 

@@ -21,7 +21,7 @@ class ClearCampaignCommand extends BaseCommand
         $this->campaignManager = $campaignManager;
     }
 
-    protected function configure()
+    protected function configure() : void
     {
         $this
             ->setName('clear:campaign')

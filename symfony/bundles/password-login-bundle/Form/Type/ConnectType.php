@@ -37,15 +37,12 @@ class ConnectType extends AbstractType
                 'label'       => 'password_login.connect.email',
                 'required'    => true,
                 'constraints' => [
-                    new Constraints\Length(['min' => 8]),
+                    new Constraints\Length(min: 8),
                 ],
             ])
             ->add('password', Type\PasswordType::class, [
                 'label'       => 'password_login.connect.password',
-                'constraints' => new Constraints\Length([
-                    'min' => 8,
-                    'max' => 4096,
-                ]),
+                'constraints' => new Constraints\Length(min: 8, max: 4096),
             ])
             ->add('_remember_me', Type\CheckboxType::class, [
                 'label'    => 'password_login.connect.remember_me',

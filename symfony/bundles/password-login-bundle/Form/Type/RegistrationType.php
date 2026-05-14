@@ -58,17 +58,15 @@ class RegistrationType extends AbstractType
                 'constraints' => [
                     new Constraints\Email(),
                     new Constraints\Regex('/^[a-zA-Z0-9\_\-\.\@]+$/'),
-                    new Constraints\Length(['min' => 8]),
-                    new Constraints\Callback([
-                        'callback' => function ($object, ExecutionContextInterface $context, $payload) {
-                            if ($this->userManager->findOneByUsername($object)) {
-                                $context
-                                    ->buildViolation($this->translator->trans('password_login.register.already_exists'))
-                                    ->atPath('username')
-                                    ->addViolation();
-                            }
-                        },
-                    ]),
+                    new Constraints\Length(min: 8),
+                    new Constraints\Callback(callback: function ($object, ExecutionContextInterface $context, $payload) {
+                        if ($this->userManager->findOneByUsername($object)) {
+                            $context
+                                ->buildViolation($this->translator->trans('password_login.register.already_exists'))
+                                ->atPath('username')
+                                ->addViolation();
+                        }
+                    }),
                 ],
             ])
             ->add('password', Type\RepeatedType::class, [
@@ -78,10 +76,7 @@ class RegistrationType extends AbstractType
                 'first_options'   => [
                     'label'       => 'password_login.register.password',
                     'constraints' => [
-                        new Constraints\Length([
-                            'min' => 8,
-                            'max' => 4096,
-                        ]),
+                        new Constraints\Length(min: 8, max: 4096),
                         new Constraints\NotCompromisedPassword(),
                     ],
                 ],

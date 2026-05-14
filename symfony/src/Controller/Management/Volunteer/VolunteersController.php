@@ -266,7 +266,7 @@ class VolunteersController extends BaseController
             'isCreate'  => $isCreate,
             'volunteer' => $volunteer,
             'delete'    => !$isCreate ? $delete->createView() : null,
-            'answerId'  => $request->get('answerId'),
+            'answerId'  => ($request->attributes->get('answerId') ?? $request->query->get('answerId') ?? $request->request->get('answerId')),
             'messages'  => $this->messageManager->getLatestMessagesForVolunteer($volunteer),
         ]);
     }
@@ -338,7 +338,7 @@ class VolunteersController extends BaseController
     {
         $this->validateCsrfOrThrowNotFoundException('volunteer', $csrf);
 
-        $structureId = $request->get('structure');
+        $structureId = ($request->attributes->get('structure') ?? $request->query->get('structure') ?? $request->request->get('structure'));
         if (!$structureId) {
             throw $this->createNotFoundException();
         }
@@ -423,7 +423,7 @@ class VolunteersController extends BaseController
     #[Route(name: "list_user_structures", path: "/list-user-structures")]
     public function listUserStructures(Request $request)
     {
-        $volunteer = $this->getVolunteerById($request->get('id'));
+        $volunteer = $this->getVolunteerById(($request->attributes->get('id') ?? $request->query->get('id') ?? $request->request->get('id')));
 
         if (!$volunteer->isUserEnabled()) {
             throw $this->createNotFoundException();

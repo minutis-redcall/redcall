@@ -21,7 +21,7 @@ class ClearMediaCommand extends BaseCommand
         $this->mediaManager = $mediaManager;
     }
 
-    protected function configure()
+    protected function configure() : void
     {
         $this
             ->setName('clear:media')

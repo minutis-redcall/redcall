@@ -31,7 +31,7 @@ abstract class BaseController extends AbstractController
 
         $validated = $validator->validate(
             $request->headers->get('X-Twilio-Signature') ?? '',
-            $isMasterRequest ? ($request->getUri() ?? '') : $request->get('absoluteUri'),
+            $isMasterRequest ? ($request->getUri() ?? '') : ($request->attributes->get('absoluteUri') ?? $request->query->get('absoluteUri') ?? $request->request->get('absoluteUri')),
             $request->request->all()
         );
 

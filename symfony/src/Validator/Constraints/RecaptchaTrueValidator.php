@@ -21,7 +21,7 @@ class RecaptchaTrueValidator extends ConstraintValidator
         $this->enabled      = $enabled;
     }
 
-    public function validate($value, Constraint $constraint) : void
+    public function validate(mixed $value, Constraint $constraint) : void
     {
         if (!$constraint instanceof RecaptchaTrue) {
             throw new UnexpectedTypeException($constraint, RecaptchaTrue::class);

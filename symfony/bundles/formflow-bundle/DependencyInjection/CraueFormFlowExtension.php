@@ -7,7 +7,7 @@ use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Extension\Extension;
-use Symfony\Component\DependencyInjection\Loader\XmlFileLoader;
+use Symfony\Component\DependencyInjection\Loader\PhpFileLoader;
 
 /**
  * Registration of the extension via DI.
@@ -23,19 +23,16 @@ class CraueFormFlowExtension extends Extension implements CompilerPassInterface 
 	/**
 	 * @return void
 	 */
-	public function load(array $config, ContainerBuilder $container) {
-		$loader = new XmlFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
-		$loader->load('form_flow.xml');
-		$loader->load('twig.xml');
-		$loader->load('util.xml');
+	public function load(array $config, ContainerBuilder $container) : void {
+		$loader = new PhpFileLoader($container, new FileLocator(__DIR__.'/../Resources/config'));
+		$loader->load('form_flow.php');
+		$loader->load('twig.php');
+		$loader->load('util.php');
 
 		$container->registerForAutoconfiguration(FormFlowInterface::class)->addTag(self::FORM_FLOW_TAG);
 	}
 
-	/**
-	 * @return void
-	 */
-	public function process(ContainerBuilder $container) {
+	public function process(ContainerBuilder $container) : void {
 		$baseFlowDefinitionMethodCalls = $container->getDefinition('craue.form.flow')->getMethodCalls();
 
 		foreach (array_keys($container->findTaggedServiceIds(self::FORM_FLOW_TAG)) as $id) {

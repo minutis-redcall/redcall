@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Base\BaseController;
 use App\Entity\Campaign;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\Routing\Attribute\Route;
 
 /**
@@ -14,7 +15,7 @@ use Symfony\Component\Routing\Attribute\Route;
 class SynthesisController extends BaseController
 {
     #[Route(name: "index")]
-    public function index(Campaign $campaign)
+    public function index(#[MapEntity(mapping: ['code' => 'code'])] Campaign $campaign)
     {
         return $this->render('synthesis/index.html.twig', [
             'campaign' => $campaign,
@@ -22,7 +23,7 @@ class SynthesisController extends BaseController
     }
 
     #[Route(path: "/poll", name: "poll")]
-    public function poll(Campaign $campaign)
+    public function poll(#[MapEntity(mapping: ['code' => 'code'])] Campaign $campaign)
     {
         return $this->render('synthesis/communications.html.twig', [
             'campaign' => $campaign,

@@ -33,7 +33,7 @@ class PhoneValidator extends ConstraintValidator
      * @param PhoneInterface $value
      * @param Constraint     $constraint
      */
-    public function validate($value, Constraint $constraint)
+    public function validate(mixed $value, Constraint $constraint) : void
     {
         if (!$constraint instanceof Phone) {
             throw new UnexpectedTypeException($constraint, Phone::class);

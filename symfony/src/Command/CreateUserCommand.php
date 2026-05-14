@@ -34,7 +34,7 @@ class CreateUserCommand extends BaseCommand
     /**
      * {@inheritdoc}
      */
-    protected function configure()
+    protected function configure() : void
     {
         $this
             ->setName('user:create')

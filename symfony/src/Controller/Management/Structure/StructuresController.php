@@ -164,8 +164,8 @@ class StructuresController extends BaseController
     #[Route(name: "list_users", path: "/list-users")]
     public function listUsers(Request $request)
     {
-        $structure       = $this->getStructureById($request->get('id'));
-        $includeChildren = $request->get('include_children', false);
+        $structure       = $this->getStructureById($request->attributes->get('id') ?? $request->query->get('id') ?? $request->request->get('id'));
+        $includeChildren = $request->query->get('include_children', $request->request->get('include_children', false));
         $users           = $this->userManager->getRedCallUsersInStructure($structure, $includeChildren);
 
         return $this->json([

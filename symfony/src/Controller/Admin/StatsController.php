@@ -143,7 +143,7 @@ class StatsController extends BaseController
                 'label'       => 'admin.statistics.structure.form.min',
                 'constraints' => [
                     new NotBlank(),
-                    new Range(['min' => 1]),
+                    new Range(min: 1),
                 ],
             ])
             ->add('submit', SubmitType::class, [

@@ -157,7 +157,7 @@ class WidgetController extends BaseController
     #[Route(path: "/template-data", name: "template_data")]
     public function templateData(Request $request)
     {
-        $id = intval($request->get('id'));
+        $id = intval(($request->attributes->get('id') ?? $request->query->get('id') ?? $request->request->get('id')));
         if (!$id) {
             throw $this->createNotFoundException();
         }

@@ -36,7 +36,7 @@ class PhraseCommand extends Command
         $this->phrase = $phrase;
     }
 
-    protected function configure()
+    protected function configure() : void
     {
         parent::configure();
 

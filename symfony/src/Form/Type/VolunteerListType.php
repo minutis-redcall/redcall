@@ -22,7 +22,7 @@ class VolunteerListType extends AbstractType
                 'label'       => 'manage_structures.volunteer_list.form.name',
                 'constraints' => [
                     new NotBlank(),
-                    new Length(['min' => 1]),
+                    new Length(min: 1),
                 ],
             ])
             ->add('audience', AudienceType::class, [

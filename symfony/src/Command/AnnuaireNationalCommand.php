@@ -45,7 +45,7 @@ class AnnuaireNationalCommand extends Command
         $this->emailManager     = $emailManager;
     }
 
-    protected function configure()
+    protected function configure() : void
     {
         parent::configure();
 

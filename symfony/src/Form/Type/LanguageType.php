@@ -33,7 +33,7 @@ class LanguageType extends AbstractType
             'choices'     => $choices = $this->languageManager->getAvailableLanguageChoices(),
             'constraints' => [
                 new NotNull(),
-                new Choice(array_values($choices)),
+                new Choice(choices: array_values($choices)),
             ],
         ]);
     }

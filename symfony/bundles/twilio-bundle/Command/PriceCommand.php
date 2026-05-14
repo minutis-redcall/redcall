@@ -33,7 +33,7 @@ class PriceCommand extends Command
         $this->callManager    = $callManager;
     }
 
-    protected function configure()
+    protected function configure() : void
     {
         parent::configure();
 

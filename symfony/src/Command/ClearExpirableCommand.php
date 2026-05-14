@@ -21,7 +21,7 @@ class ClearExpirableCommand extends Command
         $this->expirableManager = $expirableManager;
     }
 
-    protected function configure()
+    protected function configure() : void
     {
         parent::configure();
 

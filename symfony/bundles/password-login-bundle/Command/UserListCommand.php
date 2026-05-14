@@ -24,7 +24,7 @@ class UserListCommand extends Command
         $this->userManager = $userManager;
     }
 
-    protected function configure()
+    protected function configure() : void
     {
         parent::configure();
 

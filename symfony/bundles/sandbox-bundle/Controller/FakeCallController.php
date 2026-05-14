@@ -87,7 +87,7 @@ class FakeCallController extends BaseController
                          'label'       => 'sandbox.fake_call.your_message',
                          'constraints' => [
                              new NotBlank(),
-                             new Length(['min' => 1, 'max' => 1]),
+                             new Length(min: 1, max: 1),
                          ],
                      ])
                      ->add('submit', SubmitType::class, [

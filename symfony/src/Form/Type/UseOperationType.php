@@ -33,7 +33,7 @@ class UseOperationType extends AbstractType
                 'required'    => false,
                 'constraints' => [
                     new NotBlank(),
-                    new Choice(['choices' => array_flip($this->security->getUser()->getStructuresAsList())]),
+                    new Choice(choices: array_flip($this->security->getUser()->getStructuresAsList())),
                 ],
             ])
             ->add('operation', ChoiceType::class, [

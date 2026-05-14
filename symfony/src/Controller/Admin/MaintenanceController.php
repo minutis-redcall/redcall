@@ -212,7 +212,7 @@ class MaintenanceController extends BaseController
                 'choices'     => $types,
                 'constraints' => [
                     new NotBlank(),
-                    new Choice(['choices' => $types]),
+                    new Choice(choices: $types),
                 ],
             ])
             ->add('content', TextareaType::class, [
@@ -222,7 +222,7 @@ class MaintenanceController extends BaseController
                 ],
                 'required'    => false,
                 'constraints' => [
-                    new Length(['max' => 1024]),
+                    new Length(max: 1024),
                 ],
             ])
             ->add('submit', SubmitType::class, [

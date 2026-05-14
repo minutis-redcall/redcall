@@ -22,7 +22,7 @@ class RefreshCommand extends BaseCommand
         $this->refreshManager = $refreshManager;
     }
 
-    protected function configure()
+    protected function configure() : void
     {
         $this
             ->setName('refresh')

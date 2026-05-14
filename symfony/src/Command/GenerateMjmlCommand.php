@@ -38,7 +38,7 @@ class GenerateMjmlCommand extends Command
         $this->mjmlClient = $mjmlClient;
     }
 
-    protected function configure()
+    protected function configure() : void
     {
         $this
             ->setDescription('Generate the HTML template from an MJML file if it has changed')

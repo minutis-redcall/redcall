@@ -24,7 +24,7 @@ class ClearSpaceCommand extends Command
         $this->volunteerSessionManager = $volunteerSessionManager;
     }
 
-    protected function configure()
+    protected function configure() : void
     {
         parent::configure();
 

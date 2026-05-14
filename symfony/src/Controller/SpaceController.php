@@ -24,6 +24,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Validator\Constraints\GreaterThan;
 use Symfony\Contracts\Translation\TranslatorInterface;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 
 #[Route(path: "/space/{sessionId}", name: "space_")]
 #[IsGranted("VOLUNTEER_SESSION", subject: "session")]
@@ -75,7 +76,7 @@ class SpaceController extends BaseController
     }
 
     #[Route(path: "/", name: "home")]
-    public function home(Request $request, LocaleManager $localeManager, VolunteerSession $session)
+    public function home(Request $request, LocaleManager $localeManager, #[MapEntity(mapping: ['sessionId' => 'sessionId'])] VolunteerSession $session)
     {
         if (!$this->getUser()) {
             $locale = 'fr';
@@ -91,7 +92,7 @@ class SpaceController extends BaseController
     }
 
     #[Route(path: "/infos", name: "infos")]
-    public function infos(VolunteerSession $session)
+    public function infos(#[MapEntity(mapping: ['sessionId' => 'sessionId'])] VolunteerSession $session)
     {
         return $this->render('space/infos.html.twig', [
             'session' => $session,
@@ -99,7 +100,7 @@ class SpaceController extends BaseController
     }
 
     #[Route(path: "/phone", name: "phone")]
-    public function phone(VolunteerSession $session, Request $request)
+    public function phone(#[MapEntity(mapping: ['sessionId' => 'sessionId'])] VolunteerSession $session, Request $request)
     {
         $volunteer = $session->getVolunteer();
 
@@ -142,7 +143,7 @@ class SpaceController extends BaseController
     }
 
     #[Route(path: "/email", name: "email")]
-    public function email(VolunteerSession $session, Request $request)
+    public function email(#[MapEntity(mapping: ['sessionId' => 'sessionId'])] VolunteerSession $session, Request $request)
     {
         $volunteer = $session->getVolunteer();
 
@@ -175,7 +176,7 @@ class SpaceController extends BaseController
     }
 
     #[Route(path: "/enabled", name: "enabled")]
-    public function enabled(VolunteerSession $session, Request $request)
+    public function enabled(#[MapEntity(mapping: ['sessionId' => 'sessionId'])] VolunteerSession $session, Request $request)
     {
         $volunteer = $session->getVolunteer();
 
@@ -217,7 +218,7 @@ class SpaceController extends BaseController
     }
 
     #[Route(path: "/consult-data", name: "consult_data")]
-    public function consultData(VolunteerSession $session)
+    public function consultData(#[MapEntity(mapping: ['sessionId' => 'sessionId'])] VolunteerSession $session)
     {
         return $this->render('space/consult_data.html.twig', [
             'session'        => $session,
@@ -226,7 +227,7 @@ class SpaceController extends BaseController
     }
 
     #[Route(path: "/download-data", name: "download_data")]
-    public function downloadData(VolunteerSession $session)
+    public function downloadData(#[MapEntity(mapping: ['sessionId' => 'sessionId'])] VolunteerSession $session)
     {
         return new DownloadResponse(
             sprintf('data-%s-%s.html', $session->getVolunteer()->getExternalId(), date('Y-m-d')),
@@ -238,7 +239,7 @@ class SpaceController extends BaseController
     }
 
     #[Route(path: "/delete-data", name: "delete_data")]
-    public function deleteData(VolunteerSession $session, Request $request)
+    public function deleteData(#[MapEntity(mapping: ['sessionId' => 'sessionId'])] VolunteerSession $session, Request $request)
     {
         $form = $this->createFormBuilder()
                      ->add('cancel', SubmitType::class, [
@@ -269,7 +270,7 @@ class SpaceController extends BaseController
     }
 
     #[Route(path: "/logout", name: "logout")]
-    public function logout(VolunteerSession $session)
+    public function logout(#[MapEntity(mapping: ['sessionId' => 'sessionId'])] VolunteerSession $session)
     {
         $this->volunteerSessionManager->removeSession($session);
 

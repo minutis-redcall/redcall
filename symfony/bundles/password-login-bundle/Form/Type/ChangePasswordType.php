@@ -30,10 +30,7 @@ class ChangePasswordType extends AbstractType
                 'first_options'   => [
                     'label'       => 'password_login.change_password.password',
                     'constraints' => [
-                        new Constraints\Length([
-                            'min' => 8,
-                            'max' => 4096,
-                        ]),
+                        new Constraints\Length(min: 8, max: 4096),
                         new Constraints\NotCompromisedPassword(),
                     ],
                 ],

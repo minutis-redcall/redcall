@@ -188,7 +188,7 @@ class CategoryController extends BaseController
 #[IsGranted("CATEGORY", subject: "category")]
     public function addBadgeInCategory(Request $request, Category $category, Csrf $token)
     {
-        if (!$badge = $this->badgeManager->find($request->get('badge'))) {
+        if (!$badge = $this->badgeManager->find(($request->attributes->get('badge') ?? $request->query->get('badge') ?? $request->request->get('badge')))) {
             throw $this->createNotFoundException();
         }
 

@@ -74,10 +74,7 @@ class ProfileType extends AbstractType
                     'required'    => true,
                     'label'       => 'password_login.profile.current_password',
                     'constraints' => [
-                        new Constraints\Length([
-                            'min' => 8,
-                            'max' => 4096,
-                        ]),
+                        new Constraints\Length(min: 8, max: 4096),
                         new UserPassword([
                             'message' => $this->translator->trans('password_login.profile.invalid_current_password'),
                         ]),
@@ -93,19 +90,17 @@ class ProfileType extends AbstractType
                 'constraints' => [
                     new Constraints\Email(),
                     new Constraints\Regex('/^[a-zA-Z0-9\_\-\.\@]+$/'),
-                    new Constraints\Length(['min' => 8]),
-                    new Constraints\Callback([
-                        'callback' => function ($object, ExecutionContextInterface $context, $payload) use ($options) {
-                            $user = $options['user'] ?? $this->getUser();
-                            if ($object !== $user->getUsername()
-                                && $this->userManager->findOneByUsername($object)) {
-                                $context
-                                    ->buildViolation($this->translator->trans('password_login.profile.already_exists'))
-                                    ->atPath('username')
-                                    ->addViolation();
-                            }
-                        },
-                    ]),
+                    new Constraints\Length(min: 8),
+                    new Constraints\Callback(callback: function ($object, ExecutionContextInterface $context, $payload) use ($options) {
+                        $user = $options['user'] ?? $this->getUser();
+                        if ($object !== $user->getUsername()
+                            && $this->userManager->findOneByUsername($object)) {
+                            $context
+                                ->buildViolation($this->translator->trans('password_login.profile.already_exists'))
+                                ->atPath('username')
+                                ->addViolation();
+                        }
+                    }),
                 ],
             ]);
 
@@ -118,10 +113,7 @@ class ProfileType extends AbstractType
                     'first_options'   => [
                         'label'       => 'password_login.profile.password',
                         'constraints' => [
-                            new Constraints\Length([
-                                'min' => 8,
-                                'max' => 4096,
-                            ]),
+                            new Constraints\Length(min: 8, max: 4096),
                             new Constraints\NotCompromisedPassword(),
                         ],
                     ],

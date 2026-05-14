@@ -82,7 +82,7 @@ class FixturesController extends BaseController
                         'label'       => 'sandbox.fixtures.structure.name',
                         'constraints' => [
                             new NotBlank(),
-                            new Length(['min' => 3]),
+                            new Length(min: 3),
                         ],
                     ])
                     ->add('parent', StructureWidgetType::class, [
@@ -93,7 +93,7 @@ class FixturesController extends BaseController
                         'label'       => 'sandbox.fixtures.structure.number_volunteers',
                         'constraints' => [
                             new NotBlank(),
-                            new Length(['min' => 0]),
+                            new Length(min: 0),
                         ],
                     ])
                     ->add('bind_to_user', CheckboxType::class, [
@@ -114,7 +114,7 @@ class FixturesController extends BaseController
                         'label'       => 'sandbox.fixtures.volunteer.number_volunteers',
                         'constraints' => [
                             new NotBlank(),
-                            new Length(['min' => 0]),
+                            new Length(min: 0),
                         ],
                     ])
                     ->add('structure', StructureWidgetType::class, [

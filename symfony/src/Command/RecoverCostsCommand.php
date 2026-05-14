@@ -21,7 +21,7 @@ class RecoverCostsCommand extends BaseCommand
         $this->costManager = $costManager;
     }
 
-    protected function configure()
+    protected function configure() : void
     {
         $this
             ->setName('twilio:recover')

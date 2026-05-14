@@ -37,7 +37,7 @@ class ForgotPasswordType extends AbstractType
                 'label'       => 'password_login.forgot_password.username',
                 'required'    => true,
                 'constraints' => [
-                    new Constraints\Length(['min' => 8]),
+                    new Constraints\Length(min: 8),
                     new Constraints\Email(),
                 ],
             ]);

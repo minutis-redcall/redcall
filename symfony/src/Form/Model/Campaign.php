@@ -21,7 +21,7 @@ class Campaign
      * @var int
      */
     #[Assert\NotNull(message: 'form.campaign.errors.type.empty', groups: ['color_edition', 'Default'])]
-    #[Assert\Choice([CampaignEntity::TYPE_GREEN, CampaignEntity::TYPE_LIGHT_ORANGE, CampaignEntity::TYPE_DARK_ORANGE, CampaignEntity::TYPE_RED], groups: ['color_edition', 'Default'])]
+    #[Assert\Choice(choices: [CampaignEntity::TYPE_GREEN, CampaignEntity::TYPE_LIGHT_ORANGE, CampaignEntity::TYPE_DARK_ORANGE, CampaignEntity::TYPE_RED], groups: ['color_edition', 'Default'])]
     public $type;
 
     /**

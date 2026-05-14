@@ -11,4 +11,3 @@ services:
     # https://github.com/google/recaptcha/tree/master/src/ReCaptcha/RequestMethod
     ReCaptcha\RequestMethod: '@ReCaptcha\RequestMethod\CurlPost'
     ReCaptcha\RequestMethod\CurlPost: ~
-    ReCaptcha\RequestMethod\Curl: ~

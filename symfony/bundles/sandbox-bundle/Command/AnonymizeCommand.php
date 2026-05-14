@@ -28,7 +28,7 @@ class AnonymizeCommand extends BaseCommand
     /**
      * {@inheritdoc}
      */
-    protected function configure()
+    protected function configure() : void
     {
         $this
             ->setName('anonymize')
