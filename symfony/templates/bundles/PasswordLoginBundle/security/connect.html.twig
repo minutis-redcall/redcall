@@ -17,16 +17,16 @@
                 <h1 class="text-center">{{ 'password_login.connect.title'|trans }}</h1>
 
                 <div class="auth-actions">
-                    <button class="btn btn-primary btn-lg mb-3 btn-block" onclick="$('#auth-selector').addClass('d-none'); $('#nivol').removeClass('d-none');">
+                    <button type="button" class="btn btn-primary btn-lg mb-3 btn-block" onclick="$('#auth-selector').addClass('d-none'); $('#nivol').removeClass('d-none');">
                         {{ 'nivol_auth.connect_minutis.s02'|trans }}
                     </button>
 
                     <a class="btn btn-google btn-lg mb-3 btn-block" href="{{ path('google_connect') }}">
-                        <img src="{{ asset('google.png') }}" height="20" alt="Google"/>
-                        {{ 'google.connect'|trans }}
+                        <img src="{{ asset('google.png') }}" height="20" alt=""/>
+                        {{ 'google.connect_with_google'|trans }}
                     </a>
 
-                    <button class="btn btn-secondary btn-block" onclick="$('#auth-selector').addClass('d-none'); $('#classic-login').removeClass('d-none');">
+                    <button type="button" class="btn btn-secondary btn-block" onclick="$('#auth-selector').addClass('d-none'); $('#classic-login').removeClass('d-none');">
                         {{ 'nivol_auth.connect_classic.s02'|trans }}
                     </button>
                 </div>

@@ -81,6 +81,22 @@ class AuthFormAccessibilityTest extends WebTestCase
         );
     }
 
+    public function testConnectMethodSelectorButtonsAreNotSubmitButtons(): void
+    {
+        $client  = static::createClient();
+        $crawler = $client->request('GET', '/connect');
+
+        $this->assertResponseIsSuccessful();
+        // The two method-switcher buttons inside #auth-selector must be type="button".
+        // Without that they default to type="submit" if a parent <form> exists, which
+        // would post a malformed request when the user just wanted to switch panels.
+        $this->assertSame(
+            2,
+            $crawler->filter('#auth-selector button[type="button"]')->count(),
+            'Login method selector buttons must declare type="button" so they never accidentally submit a form.'
+        );
+    }
+
     public function testNivolFieldAutofocusedAndDoesNotAutocompleteAsPassword(): void
     {
         $client  = static::createClient();
