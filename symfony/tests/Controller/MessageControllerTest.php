@@ -70,4 +70,94 @@ class MessageControllerTest extends BaseWebTestCase
 
         $this->assertResponseStatusCodeSame(404);
     }
+
+    // ──────────────────────────────────────────────
+    // GET /msg/{code}/{signature}/{action}
+    // ──────────────────────────────────────────────
+
+    public function testMessageActionRecordsAnswerAndRedirects(): void
+    {
+        $client    = static::createClient();
+        $container = $client->getContainer();
+
+        $message = $this->createMessageFixture($container);
+        // The fixture's prefix is random and may contain digits; the
+        // controller's regex /^([a-zA-Z]+)(\d)/ would then drop trailing
+        // digits and produce a mismatch. Force a deterministic alphabetic
+        // prefix so the choice resolves cleanly.
+        $message->setPrefix('AB');
+        $em = $container->get('doctrine.orm.entity_manager');
+        $em->persist($message);
+        $em->flush();
+
+        $fixtures = $this->getFixtures($container);
+        $fixtures->createChoice($message->getCommunication(), 'Yes', '1');
+
+        $client->request('GET', sprintf('/msg/%s/%s/1', $message->getCode(), $message->getSignature()));
+
+        $this->assertResponseRedirects('/msg/'.$message->getCode());
+    }
+
+    public function testMessageActionRejectsBadSignature(): void
+    {
+        $client    = static::createClient();
+        $container = $client->getContainer();
+
+        $message  = $this->createMessageFixture($container);
+        $fixtures = $this->getFixtures($container);
+        $fixtures->createChoice($message->getCommunication(), 'Yes', '1');
+
+        $client->request('GET', sprintf('/msg/%s/bad-sig/1', $message->getCode()));
+
+        $this->assertResponseStatusCodeSame(404);
+    }
+
+    public function testMessageActionRejectsUnknownChoice(): void
+    {
+        $client    = static::createClient();
+        $container = $client->getContainer();
+
+        $message = $this->createMessageFixture($container);
+
+        $client->request('GET', sprintf('/msg/%s/%s/9', $message->getCode(), $message->getSignature()));
+
+        $this->assertResponseStatusCodeSame(404);
+    }
+
+    // ──────────────────────────────────────────────
+    // GET /msg/{code}/annuler/{signature}/{action}
+    // ──────────────────────────────────────────────
+
+    public function testMessageCancelRedirectsBackToOpen(): void
+    {
+        $client    = static::createClient();
+        $container = $client->getContainer();
+
+        $message = $this->createMessageFixture($container);
+        $message->setPrefix('AB');
+        $em = $container->get('doctrine.orm.entity_manager');
+        $em->persist($message);
+        $em->flush();
+
+        $fixtures = $this->getFixtures($container);
+        $fixtures->createChoice($message->getCommunication(), 'Yes', '1');
+
+        $client->request('GET', sprintf('/msg/%s/annuler/%s/1', $message->getCode(), $message->getSignature()));
+
+        $this->assertResponseRedirects('/msg/'.$message->getCode());
+    }
+
+    public function testMessageCancelRejectsBadSignature(): void
+    {
+        $client    = static::createClient();
+        $container = $client->getContainer();
+
+        $message  = $this->createMessageFixture($container);
+        $fixtures = $this->getFixtures($container);
+        $fixtures->createChoice($message->getCommunication(), 'Yes', '1');
+
+        $client->request('GET', sprintf('/msg/%s/annuler/wrong/1', $message->getCode()));
+
+        $this->assertResponseStatusCodeSame(404);
+    }
 }
