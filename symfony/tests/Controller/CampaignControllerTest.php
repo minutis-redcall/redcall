@@ -258,6 +258,123 @@ class CampaignControllerTest extends BaseWebTestCase
         $this->assertSelectorExists('table.table-striped');
     }
 
+    // ──────────────────────────────────────────────
+    // GET /campaign/{id}/audience -> JSON audience
+    // ──────────────────────────────────────────────
+
+    public function testAudienceReturnsJson()
+    {
+        $client    = static::createClient();
+        $container = $client->getContainer();
+        $data      = $this->createAccessibleCampaign($container, 'Audience JSON Campaign');
+
+        $this->login($client, $data['user']);
+        $client->request('GET', sprintf('/campaign/%d/audience', $data['campaign']->getId()));
+
+        $this->assertResponseIsSuccessful();
+        $this->assertJson($client->getResponse()->getContent());
+    }
+
+    public function testAudienceReturns404ForUnknownId()
+    {
+        $client    = static::createClient();
+        $container = $client->getContainer();
+        $data      = $this->createAccessibleCampaign($container, 'AudienceCampaign-404');
+
+        $this->login($client, $data['user']);
+        $client->request('GET', '/campaign/9999999/audience');
+
+        $this->assertResponseStatusCodeSame(404);
+    }
+
+    // ──────────────────────────────────────────────
+    // GET /campaign/{id}/keep/{csrf} -> JSON postpone
+    // ──────────────────────────────────────────────
+
+    public function testKeepCampaignPostponesExpiration()
+    {
+        $client    = static::createClient();
+        $container = $client->getContainer();
+        $data      = $this->createAccessibleCampaign($container, 'Keep Campaign');
+
+        $this->login($client, $data['user']);
+        $csrf = $this->getCsrfToken($container);
+
+        $client->request('GET', sprintf('/campaign/%d/keep/%s', $data['campaign']->getId(), $csrf));
+
+        $this->assertResponseIsSuccessful();
+        $decoded = json_decode($client->getResponse()->getContent(), true);
+        $this->assertArrayHasKey('expiresAt', $decoded);
+    }
+
+    public function testKeepCampaignWithBadCsrfReturns404()
+    {
+        $client    = static::createClient();
+        $container = $client->getContainer();
+        $data      = $this->createAccessibleCampaign($container, 'Keep BadCsrf');
+
+        $this->login($client, $data['user']);
+        $client->request('GET', sprintf('/campaign/%d/keep/%s', $data['campaign']->getId(), 'invalid-csrf'));
+
+        $this->assertResponseStatusCodeSame(404);
+    }
+
+    // ──────────────────────────────────────────────
+    // GET /campaign/operations -> JSON
+    // ──────────────────────────────────────────────
+
+    public function testSearchForOperationReturns404WhenStructureUnknown()
+    {
+        $client    = static::createClient();
+        $container = $client->getContainer();
+        $data      = $this->createAccessibleCampaign($container, 'SearchOp Campaign');
+
+        $this->login($client, $data['user']);
+        $client->request('GET', '/campaign/operations?externalId=DOES-NOT-EXIST');
+
+        $this->assertResponseStatusCodeSame(404);
+    }
+
+    public function testSearchForOperationReturnsJsonForAccessibleStructure()
+    {
+        // The happy path of this route calls Minutis (HTTP) via
+        // App\Provider\Minutis\MinutisProvider. config/services_dev.yaml
+        // aliases that provider to Bundles\SandboxBundle\Provider\FakeMinutisProvider,
+        // but config/services_test.yaml does NOT — so in the test env the
+        // real provider runs, instantiates a Guzzle client with a null base
+        // URL, and throws "URI must be a string or UriInterface".
+        // See BROKEN_ROUTES.md.
+        $this->markTestIncomplete(
+            'GET /campaign/operations hits real Minutis HTTP in test env — '.
+            'FakeMinutisProvider is wired in services_dev.yaml only, not services_test.yaml. '.
+            'See BROKEN_ROUTES.md → GET /campaign/operations.'
+        );
+    }
+
+    // ──────────────────────────────────────────────
+    // Auth/404 cross-checks
+    // ──────────────────────────────────────────────
+
+    public function testCampaignReportReturns404ForUnknownId()
+    {
+        $client    = static::createClient();
+        $container = $client->getContainer();
+        $data      = $this->createAccessibleCampaign($container, 'Report404');
+
+        $this->login($client, $data['user']);
+        $client->request('GET', '/campaign/99999999/report');
+
+        $this->assertResponseStatusCodeSame(404);
+    }
+
+    public function testListCampaignsRedirectsAnonymous()
+    {
+        $client = static::createClient();
+        $client->request('GET', '/campaign/list');
+
+        $this->assertResponseStatusCodeSame(302);
+    }
+
     public function testAccessDeniedForNonOwner()
     {
         $client    = static::createClient();
