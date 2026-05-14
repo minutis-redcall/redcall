@@ -29,12 +29,21 @@ class ChangePasswordType extends AbstractType
                 'required'        => true,
                 'first_options'   => [
                     'label'       => 'password_login.change_password.password',
+                    'attr'        => [
+                        'autocomplete' => 'new-password',
+                        'autofocus'    => 'autofocus',
+                    ],
                     'constraints' => [
                         new Constraints\Length(min: 8, max: 4096),
                         new Constraints\NotCompromisedPassword(),
                     ],
                 ],
-                'second_options'  => ['label' => 'password_login.change_password.repeat_password'],
+                'second_options'  => [
+                    'label' => 'password_login.change_password.repeat_password',
+                    'attr'  => [
+                        'autocomplete' => 'new-password',
+                    ],
+                ],
             ])
             ->add('submit', Type\SubmitType::class, [
                 'label' => 'password_login.change_password.submit',

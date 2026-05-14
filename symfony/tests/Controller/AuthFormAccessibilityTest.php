@@ -80,4 +80,30 @@ class AuthFormAccessibilityTest extends WebTestCase
             'Forgot-password email field needs autocomplete="username" so browsers can pre-fill the address the user has stored.'
         );
     }
+
+    public function testChangePasswordFieldsHaveNewPasswordAutocomplete(): void
+    {
+        $client    = static::createClient();
+        $container = $client->getContainer();
+
+        // Need a real user — /change-password 404s if the token's username
+        // doesn't resolve to an existing account.
+        $fixtures = new \App\Tests\Fixtures\DataFixtures(
+            $container->get('doctrine.orm.entity_manager'),
+            $container->get('security.password_hasher')
+        );
+        $fixtures->createRawUser('change-pw-a11y@example.com', 'password');
+
+        $repo = $container->get(\Bundles\PasswordLoginBundle\Repository\PasswordRecoveryRepository::class);
+        $uuid = $repo->generateToken('change-pw-a11y@example.com');
+
+        $crawler = $client->request('GET', '/change-password/'.$uuid);
+
+        $this->assertResponseIsSuccessful();
+        $this->assertSame(
+            2,
+            $crawler->filter('input[type="password"][autocomplete="new-password"]')->count(),
+            'Both fields on /change-password need autocomplete="new-password" so password managers do not autofill the old password and do offer to save the new one.'
+        );
+    }
 }
