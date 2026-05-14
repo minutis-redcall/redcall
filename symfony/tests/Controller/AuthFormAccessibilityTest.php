@@ -41,4 +41,30 @@ class AuthFormAccessibilityTest extends WebTestCase
             'The login password field needs autocomplete="current-password" so password managers fill it.'
         );
     }
+
+    public function testRegisterEmailHasUsernameAutocomplete(): void
+    {
+        $client  = static::createClient();
+        $crawler = $client->request('GET', '/register');
+
+        $this->assertResponseIsSuccessful();
+        $this->assertSame(
+            1,
+            $crawler->filter('input[type="email"][autocomplete="username"]')->count(),
+            'Register page email field needs autocomplete="username" so password managers offer to save the new credential.'
+        );
+    }
+
+    public function testRegisterPasswordsHaveNewPasswordAutocomplete(): void
+    {
+        $client  = static::createClient();
+        $crawler = $client->request('GET', '/register');
+
+        $this->assertResponseIsSuccessful();
+        $this->assertSame(
+            2,
+            $crawler->filter('input[type="password"][autocomplete="new-password"]')->count(),
+            'Both password fields on the register page need autocomplete="new-password" so password managers suggest a fresh strong password.'
+        );
+    }
 }

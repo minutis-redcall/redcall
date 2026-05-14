@@ -55,6 +55,11 @@ class RegistrationType extends AbstractType
             ->add('username', Type\EmailType::class, [
                 'label'       => 'password_login.register.email',
                 'required'    => true,
+                'attr'        => [
+                    'autocomplete' => 'username',
+                    'autofocus'    => 'autofocus',
+                    'inputmode'    => 'email',
+                ],
                 'constraints' => [
                     new Constraints\Email(),
                     new Constraints\Regex('/^[a-zA-Z0-9\_\-\.\@]+$/'),
@@ -75,12 +80,20 @@ class RegistrationType extends AbstractType
                 'required'        => true,
                 'first_options'   => [
                     'label'       => 'password_login.register.password',
+                    'attr'        => [
+                        'autocomplete' => 'new-password',
+                    ],
                     'constraints' => [
                         new Constraints\Length(min: 8, max: 4096),
                         new Constraints\NotCompromisedPassword(),
                     ],
                 ],
-                'second_options'  => ['label' => 'password_login.register.repeat_password'],
+                'second_options'  => [
+                    'label' => 'password_login.register.repeat_password',
+                    'attr'  => [
+                        'autocomplete' => 'new-password',
+                    ],
+                ],
             ]);
 
         $ip = $this->requestStack->getMainRequest()->getClientIp();
