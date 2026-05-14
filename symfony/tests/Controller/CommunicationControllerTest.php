@@ -151,6 +151,232 @@ class CommunicationControllerTest extends BaseWebTestCase
         $this->assertSame('Renamed Communication', $updatedCommunication->getLabel());
     }
 
+    // ──────────────────────────────────────────────
+    // GET /campaign/goto/{id} -> redirect to campaign
+    // ──────────────────────────────────────────────
+
+    public function testGotoCommunicationRedirectsToCampaign(): void
+    {
+        $client   = static::createClient();
+        $fixtures = $this->getFixtures($client->getContainer());
+        $user     = $fixtures->createRawUser('comm_goto-'.uniqid().'@example.com', 'password');
+        [$campaign, $communication] = $this->createCampaignForUser($fixtures, $user);
+
+        $this->login($client, $user);
+        $client->request('GET', sprintf('/campaign/goto/%d', $communication->getId()));
+
+        $this->assertResponseRedirects(sprintf('/campaign/%d', $campaign->getId()));
+    }
+
+    public function testGotoCommunicationDeniesOutsider(): void
+    {
+        $client   = static::createClient();
+        $fixtures = $this->getFixtures($client->getContainer());
+
+        $owner = $fixtures->createRawUser('comm_goto_owner-'.uniqid().'@example.com', 'password');
+        [, $communication] = $this->createCampaignForUser($fixtures, $owner);
+
+        $outsider = $fixtures->createRawUser('comm_goto_outsider-'.uniqid().'@example.com', 'password');
+        $fixtures->assignUserToStructure(
+            $outsider,
+            $fixtures->createStructure('OUTSIDER-GOTO', 'EXT-OUTGOTO-'.uniqid())
+        );
+        $this->login($client, $outsider);
+
+        $client->request('GET', sprintf('/campaign/goto/%d', $communication->getId()));
+
+        $this->assertResponseStatusCodeSame(403);
+    }
+
+    // ──────────────────────────────────────────────
+    // POST /campaign/{id}/add-communication/{type}
+    // ──────────────────────────────────────────────
+
+    public function testAddCommunicationRedirectsToNewWithKey(): void
+    {
+        $client   = static::createClient();
+        $fixtures = $this->getFixtures($client->getContainer());
+        $user     = $fixtures->createRawUser('comm_add-'.uniqid().'@example.com', 'password');
+        [$campaign, , , , $volunteer] = $this->createCampaignForUser($fixtures, $user);
+
+        $this->login($client, $user);
+        $client->request('POST', sprintf('/campaign/%d/add-communication/sms', $campaign->getId()), [
+            'volunteers' => json_encode([$volunteer->getId()]),
+        ]);
+
+        $this->assertResponseStatusCodeSame(302);
+        $location = $client->getResponse()->headers->get('Location');
+        $this->assertStringContainsString('/new-communication/sms/', (string) $location);
+    }
+
+    public function testAddCommunicationRedirectsUserWithoutStructuresToHome(): void
+    {
+        $client   = static::createClient();
+        $fixtures = $this->getFixtures($client->getContainer());
+        $owner    = $fixtures->createRawUser('comm_add_owner-'.uniqid().'@example.com', 'password');
+        [$campaign] = $this->createCampaignForUser($fixtures, $owner);
+
+        // The outsider has no structures/volunteer, so the controller redirects to home.
+        // But CAMPAIGN_ACCESS voter denies before that — we test the auth gate here.
+        $outsider = $fixtures->createRawUser('comm_add_outsider-'.uniqid().'@example.com', 'password');
+        $this->login($client, $outsider);
+        $client->request('POST', sprintf('/campaign/%d/add-communication/sms', $campaign->getId()));
+
+        $this->assertResponseStatusCodeSame(403);
+    }
+
+    // ──────────────────────────────────────────────
+    // GET /campaign/{id}/new-communication/{type}/{key}
+    // ──────────────────────────────────────────────
+
+    public function testNewCommunicationFormRenders(): void
+    {
+        $client   = static::createClient();
+        $fixtures = $this->getFixtures($client->getContainer());
+        $user     = $fixtures->createRawUser('comm_new-'.uniqid().'@example.com', 'password');
+        [$campaign] = $this->createCampaignForUser($fixtures, $user);
+
+        $this->login($client, $user);
+        $client->request('GET', sprintf('/campaign/%d/new-communication/sms', $campaign->getId()));
+
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorExists('form');
+    }
+
+    // ──────────────────────────────────────────────
+    // POST /campaign/preview/{type}
+    // ──────────────────────────────────────────────
+
+    public function testPreviewReturnsFalseWhenMessageEmpty(): void
+    {
+        $client   = static::createClient();
+        $fixtures = $this->getFixtures($client->getContainer());
+        $user     = $fixtures->createRawUser('comm_preview-'.uniqid().'@example.com', 'password');
+        $this->createCampaignForUser($fixtures, $user);
+
+        $this->login($client, $user);
+        // GET so the underlying form's handleRequest doesn't try to bind an
+        // incomplete trigger body — the controller short-circuits on empty
+        // message and returns {success: false}.
+        $client->request('GET', '/campaign/preview/sms');
+
+        $this->assertResponseIsSuccessful();
+        $decoded = json_decode($client->getResponse()->getContent(), true);
+        $this->assertIsArray($decoded);
+        $this->assertArrayHasKey('success', $decoded);
+        $this->assertFalse($decoded['success']);
+    }
+
+    // ──────────────────────────────────────────────
+    // POST /campaign/play -> JSON
+    // ──────────────────────────────────────────────
+
+    public function testPlayReturnsFalseWhenMessageEmpty(): void
+    {
+        $client   = static::createClient();
+        $fixtures = $this->getFixtures($client->getContainer());
+        $user     = $fixtures->createRawUser('comm_play-'.uniqid().'@example.com', 'password');
+        $this->createCampaignForUser($fixtures, $user);
+
+        $this->login($client, $user);
+        // GET so the form's handleRequest doesn't attempt to bind the (empty)
+        // body — the trigger keeps its default null message and the controller
+        // short-circuits with {success: false}.
+        $client->request('GET', '/campaign/play');
+
+        $this->assertResponseIsSuccessful();
+        $decoded = json_decode($client->getResponse()->getContent(), true);
+        $this->assertIsArray($decoded);
+        $this->assertFalse($decoded['success']);
+    }
+
+    // ──────────────────────────────────────────────
+    // GET /campaign/answers -> requires messageId
+    // ──────────────────────────────────────────────
+
+    public function testAnswersReturns404WhenNoMessageId(): void
+    {
+        $client   = static::createClient();
+        $fixtures = $this->getFixtures($client->getContainer());
+        $user     = $fixtures->createRawUser('comm_ans-'.uniqid().'@example.com', 'password');
+        $this->createCampaignForUser($fixtures, $user);
+
+        $this->login($client, $user);
+        $client->request('GET', '/campaign/answers');
+
+        $this->assertResponseStatusCodeSame(404);
+    }
+
+    public function testAnswersReturns404WhenMessageUnknown(): void
+    {
+        $client   = static::createClient();
+        $fixtures = $this->getFixtures($client->getContainer());
+        $user     = $fixtures->createRawUser('comm_ans2-'.uniqid().'@example.com', 'password');
+        $this->createCampaignForUser($fixtures, $user);
+
+        $this->login($client, $user);
+        $client->request('GET', '/campaign/answers?messageId=99999999');
+
+        $this->assertResponseStatusCodeSame(404);
+    }
+
+    public function testAnswersRendersForOwnedMessage(): void
+    {
+        $client   = static::createClient();
+        $fixtures = $this->getFixtures($client->getContainer());
+        $user     = $fixtures->createRawUser('comm_ans3-'.uniqid().'@example.com', 'password');
+        [, , $message] = $this->createCampaignForUser($fixtures, $user);
+
+        $this->login($client, $user);
+        $client->request('GET', '/campaign/answers?messageId='.$message->getId());
+
+        $this->assertResponseIsSuccessful();
+        // The template renders the volunteer's display name as the heading;
+        // the reply form is conditional on the message being phone-reachable,
+        // which test fixtures don't set up. Assert on the stable header.
+        $this->assertSelectorExists('h4.text-center');
+    }
+
+    // ──────────────────────────────────────────────
+    // POST /campaign/answer/{csrf}/{id}
+    // ──────────────────────────────────────────────
+
+    public function testChangeAnswerWithBadCsrfReturns404(): void
+    {
+        $client   = static::createClient();
+        $fixtures = $this->getFixtures($client->getContainer());
+        $user     = $fixtures->createRawUser('comm_chans-'.uniqid().'@example.com', 'password');
+        [, , $message] = $this->createCampaignForUser($fixtures, $user);
+
+        $this->login($client, $user);
+        $client->request('POST', sprintf('/campaign/answer/bad/%d', $message->getId()), [
+            'choiceId' => 1,
+        ]);
+
+        $this->assertResponseStatusCodeSame(404);
+    }
+
+    // ──────────────────────────────────────────────
+    // /campaign/{campaign}/communication/{communication}/relaunch
+    // ──────────────────────────────────────────────
+
+    public function testRelaunchRequiresAdmin(): void
+    {
+        $client   = static::createClient();
+        $fixtures = $this->getFixtures($client->getContainer());
+        $user     = $fixtures->createRawUser('comm_relaunch-'.uniqid().'@example.com', 'password', false);
+        [$campaign, $communication] = $this->createCampaignForUser($fixtures, $user);
+
+        $this->login($client, $user);
+        $client->request('GET', sprintf(
+            '/campaign/%d/communication/%d/relaunch',
+            $campaign->getId(),
+            $communication->getId()
+        ));
+
+        $this->assertResponseStatusCodeSame(403);
+    }
+
     public function testAccessDenied()
     {
         $client   = static::createClient();
