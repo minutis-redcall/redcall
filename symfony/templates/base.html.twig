@@ -26,30 +26,30 @@
     {% block flashes %}
         <div class="flashes-container">
             {% for flashMessage in app.session.flashbag.get('alert') %}
-                <div class="alert alert-warning">
+                <div class="alert alert-warning" role="alert">
                     <span>{{ flashMessage|trans({}, translation_domain|default(null)) }}</span>
-                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="{{ 'base.modal.close'|trans }}">&times;</button>
                 </div>
             {% endfor %}
 
             {% for flashMessage in app.session.flashbag.get('danger') %}
-                <div class="alert alert-danger">
+                <div class="alert alert-danger" role="alert">
                     <span>{{ flashMessage|trans({}, translation_domain|default(null)) }}</span>
-                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="{{ 'base.modal.close'|trans }}">&times;</button>
                 </div>
             {% endfor %}
 
             {% for flashMessage in app.session.flashbag.get('info') %}
-                <div class="alert alert-info">
+                <div class="alert alert-info" role="status">
                     <span>{{ flashMessage|trans({}, translation_domain|default(null)) }}</span>
-                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="{{ 'base.modal.close'|trans }}">&times;</button>
                 </div>
             {% endfor %}
 
             {% for flashMessage in app.session.flashbag.get('success') %}
-                <div class="alert alert-success">
+                <div class="alert alert-success" role="status">
                     <span>{{ flashMessage|trans({}, translation_domain|default(null)) }}</span>
-                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="{{ 'base.modal.close'|trans }}">&times;</button>
                 </div>
             {% endfor %}
         </div>

@@ -27,4 +27,55 @@ class LayoutAccessibilityTest extends WebTestCase
             'The <html> tag must declare a language so screen readers and translation tools work correctly.'
         );
     }
+
+    /**
+     * Flash messages that announce errors or warnings must use role="alert" so that
+     * assistive tech reads them out as they appear. Less urgent informational flashes
+     * use role="status" instead.
+     */
+    public function testDangerFlashRendersWithAlertRole(): void
+    {
+        $client    = static::createClient();
+        $container = $client->getContainer();
+
+        // Inject a flash directly into the session, then load any page that
+        // extends base.html.twig — the flash should be rendered with role="alert".
+        $session = $container->get('session.factory')->createSession();
+        $session->getFlashBag()->add('danger', 'Flash danger sentinel for the UX a11y test.');
+        $session->save();
+
+        $cookie = new \Symfony\Component\BrowserKit\Cookie($session->getName(), $session->getId());
+        $client->getCookieJar()->set($cookie);
+
+        $crawler = $client->request('GET', '/connect');
+
+        $this->assertResponseIsSuccessful();
+        $this->assertGreaterThanOrEqual(
+            1,
+            $crawler->filter('.alert.alert-danger[role="alert"]')->count(),
+            'Danger flashes must be announced with role="alert" so screen readers pick them up immediately.'
+        );
+    }
+
+    public function testSuccessFlashRendersWithStatusRole(): void
+    {
+        $client    = static::createClient();
+        $container = $client->getContainer();
+
+        $session = $container->get('session.factory')->createSession();
+        $session->getFlashBag()->add('success', 'Flash success sentinel for the UX a11y test.');
+        $session->save();
+
+        $cookie = new \Symfony\Component\BrowserKit\Cookie($session->getName(), $session->getId());
+        $client->getCookieJar()->set($cookie);
+
+        $crawler = $client->request('GET', '/connect');
+
+        $this->assertResponseIsSuccessful();
+        $this->assertGreaterThanOrEqual(
+            1,
+            $crawler->filter('.alert.alert-success[role="status"]')->count(),
+            'Success flashes use role="status" — informational, non-urgent.'
+        );
+    }
 }
