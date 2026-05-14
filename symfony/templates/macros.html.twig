@@ -132,11 +132,11 @@
                 {% endif %}
                 </span>
                 {% if volunteer.minor %}
-                    🐻
+                    <span aria-label="{{ 'manage_volunteers.flags.minor'|trans }}" title="{{ 'manage_volunteers.flags.minor'|trans }}">🐻</span>
                 {% elseif volunteer.userEnabled %}
-                    <img src="{{ asset('minutis.png') }}"/>
+                    <img src="{{ asset('minutis.png') }}" alt="{{ 'manage_volunteers.flags.has_account'|trans }}" title="{{ 'manage_volunteers.flags.has_account'|trans }}"/>
                 {% else %}
-                    👤
+                    <span aria-label="{{ 'manage_volunteers.flags.volunteer'|trans }}" title="{{ 'manage_volunteers.flags.volunteer'|trans }}">👤</span>
                 {% endif %}
                 {% if not clickable and is_granted('ROLE_ADMIN') %}
                     <a href="{{ path('management_volunteers_pegass', {id: volunteer.id}) }}" target="_blank">
