@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="{{ app.request.locale|default('en') }}">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
@@ -29,33 +29,33 @@
         {% endif %}
 
         {% for flashMessage in app.session.flashbag.get('alert') %}
-            <div class="alert alert-warning">
+            <div class="alert alert-warning" role="alert">
                 {% if close %}
-                    <button type="button" class="close" data-dismiss="alert">&times;</button>{% endif %}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">&times;</button>{% endif %}
                 {{ flashMessage|trans({}, translation_domain) }}
             </div>
         {% endfor %}
 
         {% for flashMessage in app.session.flashbag.get('danger') %}
-            <div class="alert alert-danger">
+            <div class="alert alert-danger" role="alert">
                 {% if close %}
-                    <button type="button" class="close" data-dismiss="alert">&times;</button>{% endif %}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">&times;</button>{% endif %}
                 {{ flashMessage|trans({}, translation_domain) }}
             </div>
         {% endfor %}
 
         {% for flashMessage in app.session.flashbag.get('info') %}
-            <div class="alert alert-info">
+            <div class="alert alert-info" role="status">
                 {% if close %}
-                    <button type="button" class="close" data-dismiss="alert">&times;</button>{% endif %}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">&times;</button>{% endif %}
                 {{ flashMessage|trans({}, translation_domain) }}
             </div>
         {% endfor %}
 
         {% for flashMessage in app.session.flashbag.get('success') %}
-            <div class="alert alert-success">
+            <div class="alert alert-success" role="status">
                 {% if close %}
-                    <button type="button" class="close" data-dismiss="alert">&times;</button>{% endif %}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">&times;</button>{% endif %}
                 {{ flashMessage|trans({}, translation_domain) }}
             </div>
         {% endfor %}
