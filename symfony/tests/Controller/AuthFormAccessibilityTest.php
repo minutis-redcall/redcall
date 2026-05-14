@@ -67,4 +67,17 @@ class AuthFormAccessibilityTest extends WebTestCase
             'Both password fields on the register page need autocomplete="new-password" so password managers suggest a fresh strong password.'
         );
     }
+
+    public function testForgotPasswordEmailHasUsernameAutocomplete(): void
+    {
+        $client  = static::createClient();
+        $crawler = $client->request('GET', '/forgot-password');
+
+        $this->assertResponseIsSuccessful();
+        $this->assertSame(
+            1,
+            $crawler->filter('input[type="email"][autocomplete="username"]')->count(),
+            'Forgot-password email field needs autocomplete="username" so browsers can pre-fill the address the user has stored.'
+        );
+    }
 }

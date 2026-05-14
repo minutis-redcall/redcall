@@ -36,6 +36,11 @@ class ForgotPasswordType extends AbstractType
             ->add('username', Type\EmailType::class, [
                 'label'       => 'password_login.forgot_password.username',
                 'required'    => true,
+                'attr'        => [
+                    'autocomplete' => 'username',
+                    'autofocus'    => 'autofocus',
+                    'inputmode'    => 'email',
+                ],
                 'constraints' => [
                     new Constraints\Length(min: 8),
                     new Constraints\Email(),
