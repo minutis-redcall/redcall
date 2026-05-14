@@ -69,6 +69,36 @@ class VolunteersControllerTest extends BaseWebTestCase
         );
     }
 
+    public function testVolunteerFormHeadingHierarchyHasNoSkippedLevel()
+    {
+        $client   = static::createClient();
+        $fixtures = $this->getFixtures($client->getContainer());
+
+        $user      = $fixtures->createRawUser('vol_h_skip@example.com', 'password', true);
+        $structure = $fixtures->createStructure('VOL HEADING STRUCT', 'EXT-VOL-HEAD');
+        $fixtures->assignUserToStructure($user, $structure);
+
+        $this->login($client, $user);
+
+        $crawler = $client->request('GET', '/management/volunteers/create');
+        $this->assertResponseIsSuccessful();
+
+        // The form has one page-level <h1> and a series of section headings.
+        // Section headings must be <h2>, not <h3>, so an assistive-tech "go
+        // to next heading" jump lands at "General" / "Contact" / etc. and
+        // doesn't skip a level.
+        $this->assertSame(
+            1,
+            $crawler->filter('h1')->count(),
+            'Volunteer create form must have exactly one <h1>.'
+        );
+        $this->assertGreaterThanOrEqual(
+            2,
+            $crawler->filter('h2')->count(),
+            'Volunteer create form should expose its tab sections as <h2> so the heading outline is contiguous (h1 → h2 → …), not jump from h1 to h3.'
+        );
+    }
+
     public function testCreateVolunteer()
     {
         $client = static::createClient();
