@@ -629,6 +629,8 @@ manage_structures:
     actions:
       delete: 'Really remove that template?'
       down: ▼
+      move_down_aria: 'Move template "%name%" down'
+      move_up_aria: 'Move template "%name%" up'
       up: ▲
     choose: 'Use a message template'
     editor_create: 'Create a new message template'

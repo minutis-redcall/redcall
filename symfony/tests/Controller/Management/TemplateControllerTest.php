@@ -172,6 +172,39 @@ class TemplateControllerTest extends BaseWebTestCase
         $this->assertSame('Updated body content', $updated->getBody());
     }
 
+    public function testTemplateMoveButtonsCarryAccessibleLabel()
+    {
+        $client   = static::createClient();
+        $fixtures = $this->getFixtures($client->getContainer());
+
+        $admin     = $fixtures->createRawUser('tpl_aria@test.com', 'password', true);
+        $structure = $fixtures->createStructure('TPL ARIA STRUCT', 'EXT-TPL-ARIA');
+        $fixtures->assignUserToStructure($admin, $structure);
+        $fixtures->createTemplate($structure, 'Reorderable Template', 'sms', 'body');
+
+        $this->login($client, $admin);
+
+        $crawler = $client->request('GET', sprintf(
+            '/management/structures/%d/template',
+            $structure->getId()
+        ));
+        $this->assertResponseIsSuccessful();
+
+        // Up/Down buttons contain only the glyphs ▲ / ▼ — they need aria-label
+        // so screen-reader users know which template they're about to move and
+        // which direction.
+        $this->assertGreaterThanOrEqual(
+            1,
+            $crawler->filter('a.btn[aria-label*="Reorderable Template"][aria-label*="up"]')->count(),
+            'Move-up button must declare an aria-label naming the template and direction.'
+        );
+        $this->assertGreaterThanOrEqual(
+            1,
+            $crawler->filter('a.btn[aria-label*="Reorderable Template"][aria-label*="down"]')->count(),
+            'Move-down button must declare an aria-label naming the template and direction.'
+        );
+    }
+
     public function testDeleteTemplate()
     {
         $client   = static::createClient();
