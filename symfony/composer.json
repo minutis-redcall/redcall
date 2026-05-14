@@ -18,7 +18,7 @@
     "doctrine/orm": "^3.0",
     "exercise/htmlpurifier-bundle": "^5.0",
     "facile-it/doctrine-mysql-come-back": "^3.0",
-    "firebase/php-jwt": "^6.10",
+    "firebase/php-jwt": "^7.0",
     "giggsey/libphonenumber-for-php": "^8.12",
     "google/apiclient": "^2.19",
     "google/cloud-error-reporting": "^0.19",
