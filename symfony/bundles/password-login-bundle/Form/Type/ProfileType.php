@@ -73,6 +73,9 @@ class ProfileType extends AbstractType
                 ->add('current_password', Type\PasswordType::class, [
                     'required'    => true,
                     'label'       => 'password_login.profile.current_password',
+                    'attr'        => [
+                        'autocomplete' => 'current-password',
+                    ],
                     'constraints' => [
                         new Constraints\Length(min: 8, max: 4096),
                         new UserPassword([
@@ -87,6 +90,10 @@ class ProfileType extends AbstractType
             ->add('username', Type\EmailType::class, [
                 'label'       => $options['admin'] ? 'password_login.profile.email_by_admin' : 'password_login.profile.email',
                 'required'    => true,
+                'attr'        => [
+                    'autocomplete' => 'username',
+                    'inputmode'    => 'email',
+                ],
                 'constraints' => [
                     new Constraints\Email(),
                     new Constraints\Regex('/^[a-zA-Z0-9\_\-\.\@]+$/'),
@@ -112,12 +119,20 @@ class ProfileType extends AbstractType
                     'required'        => false,
                     'first_options'   => [
                         'label'       => 'password_login.profile.password',
+                        'attr'        => [
+                            'autocomplete' => 'new-password',
+                        ],
                         'constraints' => [
                             new Constraints\Length(min: 8, max: 4096),
                             new Constraints\NotCompromisedPassword(),
                         ],
                     ],
-                    'second_options'  => ['label' => 'password_login.register.repeat_password'],
+                    'second_options'  => [
+                        'label' => 'password_login.register.repeat_password',
+                        'attr'  => [
+                            'autocomplete' => 'new-password',
+                        ],
+                    ],
                 ]);
 
             $ip = $this->requestStack->getMainRequest()->getClientIp();

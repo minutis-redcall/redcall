@@ -81,6 +81,41 @@ class AuthFormAccessibilityTest extends WebTestCase
         );
     }
 
+    public function testProfilePageDeclaresAutocompleteOnCredentialFields(): void
+    {
+        $client    = static::createClient();
+        $container = $client->getContainer();
+
+        $fixtures = new \App\Tests\Fixtures\DataFixtures(
+            $container->get('doctrine.orm.entity_manager'),
+            $container->get('security.password_hasher')
+        );
+        $user = $fixtures->createRawUser('profile-a11y@example.com', 'password');
+
+        // Login helper from BaseWebTestCase. Re-implement inline to avoid the
+        // dependency since this file extends plain WebTestCase.
+        $client->loginUser($user);
+
+        $crawler = $client->request('GET', '/profile');
+
+        $this->assertResponseIsSuccessful();
+        $this->assertSame(
+            1,
+            $crawler->filter('input[type="password"][autocomplete="current-password"]')->count(),
+            'Profile page must mark the current password as "current-password" so it autofills from a saved login.'
+        );
+        $this->assertSame(
+            2,
+            $crawler->filter('input[type="password"][autocomplete="new-password"]')->count(),
+            'Profile page must mark the repeated new password fields as "new-password" — password managers should not autofill the old password into them.'
+        );
+        $this->assertSame(
+            1,
+            $crawler->filter('input[type="email"][autocomplete="username"]')->count(),
+            'Profile page email field is the username — declare autocomplete="username".'
+        );
+    }
+
     public function testChangePasswordFieldsHaveNewPasswordAutocomplete(): void
     {
         $client    = static::createClient();
