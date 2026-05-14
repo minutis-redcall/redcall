@@ -62,7 +62,7 @@ class UserCronCommand extends Command
             ->setDescription('Cron used to cleanup user-related tables');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output) : int
     {
         $this->captchaManager->clearExpired();
         $this->passwordRecoveryManager->clearExpired();

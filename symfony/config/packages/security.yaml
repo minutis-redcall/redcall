@@ -22,7 +22,7 @@ security:
       logout:
         path: /logout
         target: /
-        csrf_token_generator: security.csrf.token_manager
+        enable_csrf: true
       custom_authenticators:
         - App\Security\Authenticator\MinutisAuthenticator
         - App\Security\Authenticator\GoogleConnectAuthenticator

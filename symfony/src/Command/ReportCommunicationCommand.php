@@ -28,7 +28,7 @@ class ReportCommunicationCommand extends Command
             ->setDescription('Build outdated or missing communication reports');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output) : int
     {
         $this->reportManager->createReports($output);
 

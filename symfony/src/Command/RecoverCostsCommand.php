@@ -28,7 +28,7 @@ class RecoverCostsCommand extends BaseCommand
             ->setDescription('Reconcile messages & call costs');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output) : int
     {
         $this->costManager->recoverCosts();
 

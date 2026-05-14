@@ -30,7 +30,7 @@ class RefreshCommand extends BaseCommand
             ->setDescription('Refresh structures and volunteers based on Pegass cache');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output) : int
     {
         date_default_timezone_set('UTC');
 

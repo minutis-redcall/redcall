@@ -35,7 +35,7 @@ class SmsCommand extends Command
             ->addArgument('message', InputArgument::IS_ARRAY | InputArgument::REQUIRED, 'Message to send');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output) : int
     {
         $phone = new Phone();
         $phone->setE164($input->getArgument('phoneNumber'));

@@ -31,7 +31,7 @@ class ClearVolunteerCommand extends Command
         $this->volunteerManager = $volunteerManager;
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output) : int
     {
         $volunteerIds = $this->volunteerManager->findVolunteersToAnonymize();
         foreach ($volunteerIds as $volunteerId) {

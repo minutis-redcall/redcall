@@ -35,7 +35,7 @@ class PortLegacyMigrationsCommand extends BaseCommand
             ->addOption('drop-legacy', null, InputOption::VALUE_NONE, sprintf('Drop the %s table after a successful port', self::LEGACY_TABLE));
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output) : int
     {
         $schemaManager = $this->connection->createSchemaManager();
 

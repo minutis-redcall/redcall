@@ -33,7 +33,7 @@ class ClearSpaceCommand extends Command
             ->setDescription('Clears up old space sessions');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output) : int
     {
         $this->volunteerSessionManager->clearExpired();
 

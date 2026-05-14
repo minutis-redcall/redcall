@@ -33,7 +33,7 @@ class UserTrustCommand extends Command
             ->addArgument('email', InputArgument::REQUIRED, 'User email');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output) : int
     {
         $username = $input->getArgument('email');
         $user     = $this->userManager->findOneByUsername($username);

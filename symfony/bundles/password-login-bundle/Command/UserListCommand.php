@@ -33,7 +33,7 @@ class UserListCommand extends Command
             ->setDescription('List all users stored on database');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output) : int
     {
         (new Table($output))
             ->setHeaders(['User Email', 'Verified', 'Trusted', 'Admin'])

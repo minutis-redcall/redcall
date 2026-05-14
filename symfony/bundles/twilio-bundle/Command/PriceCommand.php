@@ -52,7 +52,7 @@ class PriceCommand extends Command
      * @throws \Twilio\Exceptions\ConfigurationException
      * @throws \Twilio\Exceptions\TwilioException
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output) : int
     {
         $this->messageManager->fetchPrices(
             $input->getArgument('retry')

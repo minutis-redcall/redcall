@@ -95,9 +95,6 @@
     "firebase/php-jwt": {
         "version": "v5.0.0"
     },
-    "friendsofphp/proxy-manager-lts": {
-        "version": "v1.0.5"
-    },
     "giggsey/libphonenumber-for-php": {
         "version": "8.12.13"
     },
@@ -157,9 +154,6 @@
     },
     "guzzlehttp/psr7": {
         "version": "1.4.2"
-    },
-    "laminas/laminas-code": {
-        "version": "3.4.1"
     },
     "laminas/laminas-eventmanager": {
         "version": "3.4.0"
@@ -513,9 +507,6 @@
     },
     "symfony/property-info": {
         "version": "v4.1.0"
-    },
-    "symfony/proxy-manager-bridge": {
-        "version": "v4.4.18"
     },
     "symfony/routing": {
         "version": "4.0",
