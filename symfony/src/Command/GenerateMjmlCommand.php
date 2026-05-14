@@ -3,6 +3,7 @@
 namespace App\Command;
 
 use App\Services\Mjml;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -13,9 +14,9 @@ use Symfony\Component\Console\Style\SymfonyStyle;
  * Usage:
  * php bin/console generate:mjml templates/message/email.html.twig.mjml
  */
+#[AsCommand(name: 'generate:mjml')]
 class GenerateMjmlCommand extends Command
 {
-    protected static $defaultName = 'generate:mjml';
 
     /**
      * @var Mjml
