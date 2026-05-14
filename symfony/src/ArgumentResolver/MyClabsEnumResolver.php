@@ -26,6 +26,13 @@ class MyClabsEnumResolver implements ValueResolverInterface
 
         $value = $request->attributes->get($name);
 
+        if ($value instanceof $type) {
+            // Already resolved — happens with render(controller(..., {type: enumObject}))
+            // through the inline fragment renderer, which preserves object references
+            // across the sub-request boundary.
+            return [$value];
+        }
+
         if (null === $value || '' === $value) {
             if ($argument->isNullable() || $argument->hasDefaultValue()) {
                 return [];
