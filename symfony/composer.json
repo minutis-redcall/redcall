@@ -87,11 +87,6 @@
       "*": "dist"
     },
     "sort-packages": true,
-    "audit": {
-      "ignore": {
-        "PKSA-y2cr-5h3j-g3ys": "Low severity: weak encryption in php-jwt <7.0; blocked by Symfony 5 / psr/log incompatibility"
-      }
-    },
     "allow-plugins": {
       "symfony/flex": true,
       "symfony/runtime": true
