@@ -65,6 +65,31 @@ class PrefilledAnswersControllerTest extends BaseWebTestCase
         $this->assertStringContainsString('Emergency Answers', $client->getResponse()->getContent());
     }
 
+    public function testPrefilledAnswersDeleteButtonIsVisuallyDestructive()
+    {
+        $client   = static::createClient();
+        $fixtures = $this->getFixtures($client->getContainer());
+
+        $admin     = $fixtures->createRawUser('pfa_destructive@test.com', 'password', true);
+        $structure = $fixtures->createStructure('PFA DANGER STRUCT', 'EXT-PFA-DGR');
+        $fixtures->assignUserToStructure($admin, $structure);
+        $fixtures->createPrefilledAnswers('Will Be Deleted', ['Yes', 'No'], $structure);
+
+        $this->login($client, $admin);
+
+        $crawler = $client->request('GET', sprintf('/management/structures/%d/prefilled-answers/', $structure->getId()));
+        $this->assertResponseIsSuccessful();
+
+        // The delete CTA must carry both the destructive visual cue (btn-danger)
+        // and a confirm() guard so a stray click cannot silently destroy data.
+        $deleteButtons = $crawler->filter('a.btn-danger[onclick*="confirm"]');
+        $this->assertGreaterThanOrEqual(
+            1,
+            $deleteButtons->count(),
+            'Destructive prefilled-answers actions must use btn-danger and an onclick confirm() — never look the same as an edit link.'
+        );
+    }
+
     public function testCreatePrefilledAnswers()
     {
         $client = static::createClient();
