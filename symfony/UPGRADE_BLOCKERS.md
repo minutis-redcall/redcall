@@ -1,19 +1,27 @@
 # Upgrade Blockers
 
-## Symfony 7.4 → 8.0
+_None._
 
-**Blocker:** `craue/formflow-bundle`
+The previous run documented `craue/formflow-bundle` as a Symfony 8 blocker
+because upstream had not shipped a compatible release. That blocker was
+resolved by vendoring the bundle in-tree at `bundles/formflow-bundle/`
+(see commit "vendor craue/formflow-bundle in-tree with Symfony 8 support")
+and then completing the Symfony 7 → 8 upgrade in the next commit. The
+in-tree fork carries one local-only patch: the `composer.json` constraints
+for `symfony/*` now allow `^8.0` in addition to the upstream `^7.0` cap.
 
-- Latest stable: `3.7.0` (released ahead of Symfony 8); its `composer.json` constrains all `symfony/*` siblings to `^4.4 || ^5.4 || ^6.3 || ^7.0`.
-- `3.8.x-dev` (the bundle's working branch) still constrains `symfony/form` to `^5.4 || ^6.4 || ^7.2`.
-- `dev-master` is identical to `3.8.x-dev` on this point.
-- Upstream maintainer has not published a Symfony 8 compatible release.
+If upstream eventually publishes a Symfony 8 release, the `bundles/formflow-bundle/`
+directory can be removed (along with the local `path` repository in the
+root `composer.json`) and the constraint in `composer.json` reverted to a
+normal `^4.x` line.
 
-**Why this package is load-bearing.** The bundle drives the campaign-creation wizard (`CampaignFlow`, `SmsTriggerFlow`, `CallTriggerFlow`, `EmailTriggerFlow`). These flows wire 5–6 controllers and are listed as core in `CLAUDE.md`. Replacing them with a hand-rolled multi-step form is a non-trivial refactor that is outside the scope of a dependency-upgrade branch.
+Remaining caveats — none of these block any upgrade:
 
-**Confirmed not blocked.** Every other `symfony/*` package has a working `^8.0` release; the rest of the ecosystem (Doctrine, Twig, DAMA, maker-bundle, web-profiler-bundle) all support Symfony 8 once their own minor bumps are taken (e.g. `doctrine/doctrine-bundle` 2.18 → 3.2). So if/when CraueFormFlowBundle ships a Symfony 8 release, Symfony 8 should be a single coordinated commit away.
-
-**Suggested follow-ups (out of scope for this branch):**
-1. Watch [craue/CraueFormFlowBundle](https://github.com/craue/CraueFormFlowBundle) for a Symfony 8 release.
-2. If the upstream is quiet, open a PR there with the constraint bumps. The internal API used in this repo (`FormFlow::nextStep`, `FormFlow::getCurrentStepNumber`, `FormFlow::getCurrentStep`, validation groups, `skip()`) does not touch anything Symfony 8 broke; a constraint-only PR is likely enough.
-3. Failing that, fork the bundle to an in-tree `bundles/formflow/` directory (the repo already hosts several first-party bundles that way).
+- `brick/math` is pinned at `0.14.8` by `ramsey/uuid 4.9.x`'s constraint
+  (`^0.8 || ^0.9 || … || ^0.14`). It will bump once `ramsey/uuid` ships a
+  release that opens the constraint.
+- `doctrine/collections` is pinned at `2.6.0` by `doctrine/orm 3.6.5`. It
+  will bump when Doctrine ORM ships a release that allows `^3`.
+- `composer/package-versions-deprecated` (already noted as a follow-up):
+  marked abandoned upstream, kept here for one residual dependency. Worth
+  removing in a dedicated PR.

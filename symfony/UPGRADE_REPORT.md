@@ -4,16 +4,18 @@ Branch: `chore/dependency-upgrade-20260514`
 
 ## Summary
 
-PHP runtime is now on **8.4** (both App Engine `prod` and `preprod`, plus the
-Composer `platform` pin). All direct Composer dependencies are on their latest
-stable version, with one explicit exception documented in `UPGRADE_BLOCKERS.md`:
-Symfony stays at **7.4** because `craue/formflow-bundle` (a load-bearing
-campaign-wizard dependency) has no Symfony 8 release yet. Every other Symfony 8
-prerequisite is in place (PHP 8.4, doctrine-bundle 3, twig-bundle 8, etc.) so
-the jump should be a single coordinated commit once the upstream releases.
+PHP runtime is on **8.4** (both App Engine `prod` and `preprod`, plus the
+Composer `platform` pin). Symfony has been brought to **8.0** — every other
+direct Composer dependency is also on its latest stable major. The previously
+documented `craue/formflow-bundle` blocker was resolved by vendoring the
+bundle in-tree at `bundles/formflow-bundle/` and lifting its `symfony/*`
+constraints to allow `^8.0`; everything else was a straight major-version
+bump per the upgrade loop. Doctrine ORM stays at 3.6 (latest), Doctrine bundle
+moved to 3.x along the way. PHPUnit is on **13.1**.
 
 Test suite went from a baseline of **1567 green** to **1571 green** (4 new
-tests added for the captcha verifier) with no regressions.
+tests added for the captcha verifier) with no regressions. All deprecations
+and PHPUnit notices triggered along the way have been cleared.
 
 ## Package upgrade table
 
@@ -68,6 +70,37 @@ tests added for the captcha verifier) with no regressions.
 | google/cloud-tasks | 1.15.2 | 2.2.0 | `107602e0` |
 | google/cloud-text-to-speech | 1.12.2 | 2.8.0 | `107602e0` |
 | google/apiclient-services | 0.440.0 | 0.441.0 | `fcd13403` (transitive) |
+| google/recaptcha | 1.3.1 | 1.5.0 | `e33a4ec1` |
+| doctrine/doctrine-migrations-bundle | 3.7.0 | 4.0.0 | `874ddfd6` |
+| phpunit/phpunit | 12.5.25 | 13.1.9 | `7929aeef` |
+| craue/formflow-bundle | upstream 3.7.0 | in-tree 3.99.99 | `a17e701f` |
+| symfony/asset | 7.4.8 | 8.0.8 | `6f39719a` |
+| symfony/browser-kit | 7.4.8 | 8.0.8 | `6f39719a` |
+| symfony/console | 7.4.11 | 8.0.11 | `6f39719a` |
+| symfony/css-selector | 7.4.9 | 8.0.9 | `6f39719a` |
+| symfony/debug-bundle | 7.4.8 | 8.0.8 | `6f39719a` |
+| symfony/dotenv | 7.4.11 | 8.0.11 | `6f39719a` |
+| symfony/expression-language | 7.4.8 | 8.0.8 | `6f39719a` |
+| symfony/form | 7.4.9 | 8.0.9 | `6f39719a` |
+| symfony/framework-bundle | 7.4.11 | 8.0.11 | `6f39719a` |
+| symfony/http-client | 7.4.9 | 8.0.9 | `6f39719a` |
+| symfony/mailer | 7.4.8 | 8.0.8 | `6f39719a` |
+| symfony/process | 7.4.11 | 8.0.11 | `6f39719a` |
+| symfony/property-access | 7.4.8 | 8.0.8 | `6f39719a` |
+| symfony/property-info | 7.4.8 | 8.0.8 | `6f39719a` |
+| symfony/runtime | 7.4.8 | 8.0.8 | `6f39719a` |
+| symfony/security-bundle | 7.4.11 | 8.0.11 | `6f39719a` |
+| symfony/security-csrf | 7.4.8 | 8.0.8 | `6f39719a` |
+| symfony/serializer | 7.4.10 | 8.0.10 | `6f39719a` |
+| symfony/stopwatch | 7.4.8 | 8.0.8 | `6f39719a` |
+| symfony/translation | 7.4.10 | 8.0.10 | `6f39719a` |
+| symfony/twig-bridge | 7.4.8 | 8.0.8 | `6f39719a` |
+| symfony/twig-bundle | 7.4.8 | 8.0.8 | `6f39719a` |
+| symfony/validator | 7.4.10 | 8.0.10 | `6f39719a` |
+| symfony/web-link | 7.4.8 | 8.0.8 | `6f39719a` |
+| symfony/web-profiler-bundle | 7.4.11 | 8.0.11 | `6f39719a` |
+| symfony/yaml | 7.4.11 | 8.0.11 | `6f39719a` |
+| doctrine/instantiator | 2.0.0 | 2.1.0 | `093432b4` (transitive) |
 | nette/utils | 4.1.3 | 4.1.4 | `fcd13403` (transitive) |
 | setasign/fpdi | 2.6.6 | 2.6.7 | `fcd13403` (transitive) |
 
@@ -76,6 +109,55 @@ tests added for the captcha verifier) with no regressions.
 ### PHP 8.3 → 8.4 (`2e3b6d1e`)
 - App Engine `runtime: php83` updated to `php84` in both `deploy/prod/app.yaml` and `deploy/preprod/app.yaml`.
 - Composer's `config.platform.php` lifted from `8.3.29` to `8.4.18`; root `php` require bumped from `>=8.1` to `>=8.4` so the autoloader explicitly demands 8.4.
+
+### Symfony 7.4 → 8.0 (`6f39719a`, predecessor `a17e701f`)
+
+The previous run's blocker (`craue/formflow-bundle` had no Symfony 8 release)
+was lifted by vendoring the bundle in-tree at `bundles/formflow-bundle/`. The
+local fork bumps its `symfony/*` constraints to allow `^8.0`, pins version
+`3.99.99`, and is wired into Composer via a `path` repository in the root
+`composer.json` (mirrored into `vendor/`, not symlinked).
+
+BC-break fixes applied:
+- `Bundle::boot()`/`build()`, `ExtensionInterface::load()`,
+  `CompilerPassInterface::process()`, `Command::configure()` and
+  `EventSubscriberInterface::getSubscribedEvents()` all require their
+  parent's return type now. Added `: void` / `: array` everywhere.
+- `UserCheckerInterface::checkPreAuth/checkPostAuth` now take an additional
+  `?TokenInterface $token = null` parameter (`App\Security\UserChecker`).
+- `Voter::voteOnAttribute` now takes an additional `?Vote $vote = null`
+  parameter (all 8 voters in `src/Security/Voter/`).
+- `ConstraintValidatorInterface::validate` signature is now
+  `(mixed $value, Constraint $constraint): void` (Phone, RecaptchaTrue,
+  Unlocked, WhitelistedRedirectUrl validators).
+- Validator constraint constructors no longer accept an options array as
+  their first arg. Converted 22 callsites (Length, Choice, Range, Callback,
+  NotBlank, Email, Regex, NotNull, Type) to named arguments. Also fixed
+  `#[Assert\Choice([...])]` attributes on `PrefilledAnswers` and
+  `Form\Model\Campaign` to use `#[Assert\Choice(choices: [...])]`.
+- `Request::get()` removed. Replaced 30+ callsites in controllers and two
+  bundles with explicit `$request->attributes->get(X) ?? $request->query->get(X) ?? $request->request->get(X[, default])` lookups, mirroring the
+  old method's lookup order (route attributes → query → POST body).
+- Implicit Doctrine entity controller-arg resolution is gone. Added
+  `#[MapEntity(mapping: ['<route_param>' => '<entity_field>'])]` to the
+  entity-typed args in `SynthesisController`, `NivolController`,
+  `MessageController` and `SpaceController`.
+- `symfony/dependency-injection` 8 removed XML configuration support.
+  Converted the in-tree formflow-bundle's three service definitions from
+  XML to PHP (`Resources/config/{form_flow,twig,util}.php`) and switched
+  its extension loader from `XmlFileLoader` to `PhpFileLoader`.
+
+Cleanups along the way:
+- Removed `config/packages/dev/easy_log_handler.yaml` (referenced a class
+  that no longer exists).
+- Removed `ReCaptcha\RequestMethod\Curl` service entry — the class is gone
+  in `google/recaptcha` 1.5; only `CurlPost` remains.
+- Updated `config/routes/dev/web_profiler.yaml` to use the new `.php`
+  routing entry points (the old `.xml` entry points were removed by newer
+  `web-profiler-bundle`).
+
+### doctrine/doctrine-migrations-bundle 3 → 4 (`874ddfd6`)
+- Bumped the constraint to `^4.0`. No code changes required.
 
 ### doctrine/doctrine-bundle 2 → 3 (`c8d0427b`)
 - `doctrine.orm.auto_generate_proxy_classes`, `proxy_dir`, `proxy_namespace` removed — they are no-ops once ORM 3 + native lazy objects are in play, and doctrine-bundle 3 explicitly rejects them. Cleaned from both `config/packages/doctrine.yaml` and `config/packages/prod/doctrine.yaml`.
@@ -108,6 +190,41 @@ tests added for the captcha verifier) with no regressions.
 ### Other major bumps (libphonenumber, sendgrid, twilio, google-cloud-*)
 - All used API surfaces are unchanged. No code modifications required.
 
+### google/recaptcha 1.3 → 1.5 (`e33a4ec1`)
+- Minor bump; the now-removed `ReCaptcha\RequestMethod\Curl` class needed
+  to be dropped from `config/packages/google_recaptcha.yaml`.
+
+### PHPUnit 12 → 13 (`7929aeef`, `26d2501b`)
+- Required PHP ≥ 8.4.1 (already in place).
+- PHPUnit 13 deprecates `with()` without `expects()` and deprecates
+  `expects($this->any())`. Replaced the 5 occurrences with
+  `expects($this->atLeastOnce())` (BaseControllerTest, MediaManagerTest,
+  CommunicationExtensionTest, PhoneValidatorTest, UnlockedValidatorTest).
+
+### PHP 8.4 / 8.5 deprecation cleanup (`eb0c5d99`, `c09646fb`)
+- Ran `ExplicitNullableParamTypeRector` (Rector 2.4) across the codebase
+  to rewrite implicit-nullable params (30 files).
+- Removed all `ReflectionProperty::setAccessible()` / `ReflectionMethod::
+  setAccessible()` calls — they're no-ops since PHP 8.1 and PHP 8.5
+  formally deprecates them. Cleaned out of 8 test files.
+- `auto_detect_line_endings` ini setting removed in PHP 8.5 — dropped the
+  call in `ArrayToCsvResponse`.
+- `league/csv` 9.27 deprecations: `createFromString` → `fromString`,
+  `BOM_UTF8` constant → `Bom::Utf8`, `getContent` → `toString`.
+- `jsonSerialize()` now declares `: mixed` (BaseTrigger, EmailTrigger).
+- Template validator: cast `getBody()` result to string before
+  `mb_strlen` / `strip_tags` (passing null deprecated since 8.1).
+- `preg_split(…, null, …)` × 4 in GSM.php → `preg_split(…, -1, …)`.
+- `MessageManager::generatePrefixes`: alphabetic `$prefix++` rewritten as
+  a while-loop using `str_increment()` (PHP 8.3+).
+- Two `imagedestroy()` calls removed from `TemplateImageManagerTest`
+  (no-op since PHP 8.0).
+- Declared `$simpleProcessor` property explicitly on `VolunteersController`
+  (dynamic-property creation is an error in 8.4).
+- PHPUnit 12 introduced a notice for unused mock-object stubs;
+  added `#[AllowMockObjectsWithoutExpectations]` at class level on the 32
+  test classes that intentionally use mocks as stubs.
+
 ## reCAPTCHA dev/test bypass (`e32e0569`)
 
 Introduced `App\Captcha\CaptchaVerifierInterface` with two implementations:
@@ -125,7 +242,7 @@ Added `CheckboxCaptchaVerifierTest` (4 tests) covering the dev/test verifier.
 ## Test suite delta
 
 - Baseline (start of branch, on `chore/dependency-upgrade-20260514`): **1567 tests, 2975 assertions, all green**.
-- Final: **1571 tests, 3036 assertions, all green**.
+- Final: **1571 tests, 3039 assertions, all green**. Zero deprecations, zero PHPUnit notices.
 - New: 4 captcha verifier tests.
 - No regressions; no tests were quarantined or removed.
 
@@ -176,4 +293,4 @@ These should be tackled in separate, focused PRs.
 
 ## Blockers
 
-See `UPGRADE_BLOCKERS.md`. Symfony **8.0** could not be adopted on this branch: the only package missing a Symfony 8 compatible release is `craue/formflow-bundle`, which underpins the campaign-creation wizard. Every other dependency in this codebase has a working Symfony 8 release lined up, so the jump should be a single coordinated commit once upstream ships.
+None. See `UPGRADE_BLOCKERS.md` for residual transitive pins (none of which block any upgrade): the previous run's `craue/formflow-bundle` blocker was resolved by vendoring the bundle in-tree under `bundles/formflow-bundle/`.
