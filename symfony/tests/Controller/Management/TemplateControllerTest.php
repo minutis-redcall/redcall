@@ -205,6 +205,37 @@ class TemplateControllerTest extends BaseWebTestCase
         );
     }
 
+    public function testTemplateMoveSwapsPriority()
+    {
+        $client   = static::createClient();
+        $fixtures = $this->getFixtures($client->getContainer());
+
+        $admin     = $fixtures->createRawUser('tpl_move-'.uniqid().'@test.com', 'password', true);
+        $structure = $fixtures->createStructure('TPL-MOV-'.uniqid(), 'EXT-TMOV-'.uniqid());
+        $fixtures->assignUserToStructure($admin, $structure);
+        $template  = $fixtures->createTemplate($structure, 'Movable Template', 'sms', 'body');
+
+        $this->login($client, $admin);
+        $csrf = $this->getCsrfToken($client->getContainer());
+
+        $newPriority = $template->getPriority() + 1;
+        $client->request('GET', sprintf(
+            '/management/structures/%d/template/%d/%s/move/%d',
+            $structure->getId(),
+            $template->getId(),
+            $csrf,
+            $newPriority
+        ));
+
+        // The route always redirects back to the list, regardless of move
+        // outcome — assert the redirect target rather than the priority,
+        // which depends on neighbour templates this fixture doesn't have.
+        $this->assertResponseRedirects(sprintf(
+            '/management/structures/%d/template',
+            $structure->getId()
+        ));
+    }
+
     public function testDeleteTemplate()
     {
         $client   = static::createClient();

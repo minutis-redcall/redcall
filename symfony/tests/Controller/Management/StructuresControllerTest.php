@@ -174,4 +174,107 @@ class StructuresControllerTest extends BaseWebTestCase
             'Non-admin user should not be able to access the create structure page'
         );
     }
+
+    // ──────────────────────────────────────────────
+    // GET /management/structures/pegass/{id}
+    // ──────────────────────────────────────────────
+
+    public function testPegassEndpointReturns404WhenNoPegassEntity(): void
+    {
+        $client    = static::createClient();
+        $fixtures  = $this->getFixtures($client->getContainer());
+        $admin     = $fixtures->createRawUser('struct_pegass-'.uniqid().'@test.com', 'password', true);
+        $structure = $fixtures->createStructure('PEGSTR-'.uniqid(), 'EXT-PEG-'.uniqid());
+
+        $this->login($client, $admin);
+        $client->request('GET', sprintf('/management/structures/pegass/%d', $structure->getId()));
+
+        // There's no Pegass entity attached to this fixture structure so the
+        // controller raises NotFound.
+        $this->assertResponseStatusCodeSame(404);
+    }
+
+    public function testPegassEndpointForbiddenForNonAdmin(): void
+    {
+        $client   = static::createClient();
+        $fixtures = $this->getFixtures($client->getContainer());
+        $user     = $fixtures->createRawUser('struct_pegass_user-'.uniqid().'@test.com', 'password', false);
+        $structure = $fixtures->createStructure('PEGSTRU-'.uniqid(), 'EXT-PEGU-'.uniqid());
+
+        $this->login($client, $user);
+        $client->request('GET', sprintf('/management/structures/pegass/%d', $structure->getId()));
+
+        $this->assertResponseStatusCodeSame(403);
+    }
+
+    // ──────────────────────────────────────────────
+    // GET /management/structures/export/{id}
+    // ──────────────────────────────────────────────
+
+    public function testExportReturnsCsv(): void
+    {
+        $client    = static::createClient();
+        $fixtures  = $this->getFixtures($client->getContainer());
+        $user      = $fixtures->createRawUser('struct_exp-'.uniqid().'@test.com', 'password');
+        $structure = $fixtures->createStructure('EXPSTR-'.uniqid(), 'EXT-EXP-'.uniqid());
+        $fixtures->assignUserToStructure($user, $structure);
+
+        $this->login($client, $user);
+        $client->request('GET', sprintf('/management/structures/export/%d', $structure->getId()));
+
+        $this->assertResponseIsSuccessful();
+        // ArrayToCsvResponse sets the filename via Content-Disposition rather
+        // than the content type (which is the generic application/octet-stream).
+        $disposition = $client->getResponse()->headers->get('Content-Disposition');
+        $this->assertNotNull($disposition);
+        $this->assertStringContainsString('.csv', $disposition);
+    }
+
+    public function testExportForbiddenForOutsider(): void
+    {
+        $client    = static::createClient();
+        $fixtures  = $this->getFixtures($client->getContainer());
+        $user      = $fixtures->createRawUser('struct_exp_out-'.uniqid().'@test.com', 'password');
+        $structure = $fixtures->createStructure('EXPSTRO-'.uniqid(), 'EXT-EXPO-'.uniqid());
+
+        $this->login($client, $user);
+        $client->request('GET', sprintf('/management/structures/export/%d', $structure->getId()));
+
+        $this->assertResponseStatusCodeSame(403);
+    }
+
+    // ──────────────────────────────────────────────
+    // POST /management/structures/list-users
+    // ──────────────────────────────────────────────
+
+    public function testListUsersReturnsJson(): void
+    {
+        $client    = static::createClient();
+        $fixtures  = $this->getFixtures($client->getContainer());
+        $user      = $fixtures->createRawUser('struct_lu-'.uniqid().'@test.com', 'password');
+        $structure = $fixtures->createStructure('LUSTR-'.uniqid(), 'EXT-LU-'.uniqid());
+        $fixtures->assignUserToStructure($user, $structure);
+
+        $this->login($client, $user);
+        $client->request('POST', '/management/structures/list-users', ['id' => $structure->getId()]);
+
+        $this->assertResponseIsSuccessful();
+        $decoded = json_decode($client->getResponse()->getContent(), true);
+        $this->assertIsArray($decoded);
+        $this->assertArrayHasKey('title', $decoded);
+        $this->assertArrayHasKey('body', $decoded);
+    }
+
+    public function testListUsersForbiddenForOutsider(): void
+    {
+        $client    = static::createClient();
+        $fixtures  = $this->getFixtures($client->getContainer());
+        $user      = $fixtures->createRawUser('struct_lu_out-'.uniqid().'@test.com', 'password');
+        $structure = $fixtures->createStructure('LUSTRO-'.uniqid(), 'EXT-LUO-'.uniqid());
+
+        $this->login($client, $user);
+        $client->request('POST', '/management/structures/list-users', ['id' => $structure->getId()]);
+
+        $this->assertResponseStatusCodeSame(403);
+    }
 }
