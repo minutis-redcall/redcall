@@ -355,6 +355,7 @@ campaign_status:
   answer_invalid: 'Other resp.'
   answer_no: 'Answer %choice%'
   answer_none: 'No resp.'
+  cancel_answer: 'Cancel response "%choice%"'
   answers:
     answer_link: Answer
     change: 'Change answers'
