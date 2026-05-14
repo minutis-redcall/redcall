@@ -45,6 +45,11 @@ class NivolType extends AbstractType
             ->add('nivol', TextType::class, [
                 'label'       => 'nivol_auth.input_nivol',
                 'required'    => true,
+                'attr'        => [
+                    'autocomplete'   => 'off',
+                    'autofocus'      => 'autofocus',
+                    'autocapitalize' => 'characters',
+                ],
                 'constraints' => [
                     new Callback(callback: function ($nivol, $context) {
                             if ($nivol && !$this->nivolManager->getUserByNivol($nivol)) {

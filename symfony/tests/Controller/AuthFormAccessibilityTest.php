@@ -81,6 +81,19 @@ class AuthFormAccessibilityTest extends WebTestCase
         );
     }
 
+    public function testNivolFieldAutofocusedAndDoesNotAutocompleteAsPassword(): void
+    {
+        $client  = static::createClient();
+        $crawler = $client->request('GET', '/connect');
+
+        $this->assertResponseIsSuccessful();
+        $this->assertSame(
+            1,
+            $crawler->filter('#nivol input[name="nivol"][autocomplete="off"][autofocus]')->count(),
+            'Nivol field: autofocus when the user opens the NIVOL panel, autocomplete="off" so password managers do not try to fill it.'
+        );
+    }
+
     public function testProfilePageDeclaresAutocompleteOnCredentialFields(): void
     {
         $client    = static::createClient();

@@ -31,6 +31,12 @@ class CodeType extends AbstractType
             ->add('code', TextType::class, [
                 'label'       => 'nivol_auth.input_code',
                 'required'    => true,
+                'attr'        => [
+                    'autocomplete'   => 'one-time-code',
+                    'autofocus'      => 'autofocus',
+                    'autocapitalize' => 'characters',
+                    'maxlength'      => 6,
+                ],
                 'constraints' => [
                     new NotBlank(),
                     new Length(min: 6, max: 6),
