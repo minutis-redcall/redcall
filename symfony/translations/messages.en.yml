@@ -602,6 +602,7 @@ manage_structures:
   action:
     title: Actions
   disable_confirm: 'Do you really want to disable this structure?'
+  disabled_status: 'Disabled structure'
   export: 'Export volunteers contact information'
   form:
     create: 'Create new structure'
