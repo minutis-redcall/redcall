@@ -98,7 +98,7 @@ class GoogleConnectAuthenticator extends AbstractAuthenticator implements Authen
         );
     }
 
-    public function start(Request $request, AuthenticationException $authException = null): Response
+    public function start(Request $request, ?AuthenticationException $authException = null): Response
     {
         return new RedirectResponse(
             $this->googleConnect->getAuthorizationUri(

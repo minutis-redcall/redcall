@@ -42,7 +42,7 @@ class StatusController extends BaseController
         TwilioMessageManager $messageManager,
         TwilioStatusManager $statusManager,
         EventDispatcherInterface $eventDispatcher,
-        LoggerInterface $logger = null)
+        ?LoggerInterface $logger = null)
     {
         parent::__construct($requestStack);
 

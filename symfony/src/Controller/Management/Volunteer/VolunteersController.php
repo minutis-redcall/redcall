@@ -142,7 +142,7 @@ class VolunteersController extends BaseController
     }
 
     #[Route(name: "list", path: "/{id}", requirements: ["id" => "\d+"], defaults: ["id" => null])]
-    public function listAction(Request $request, Structure $structure = null)
+    public function listAction(Request $request, ?Structure $structure = null)
     {
         if ($structure && !$this->isGranted('STRUCTURE', $structure)) {
             throw $this->createAccessDeniedException();

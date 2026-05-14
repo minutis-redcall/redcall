@@ -38,7 +38,7 @@ class PegassSearchCommand extends Command
      */
     private $logger;
 
-    public function __construct(PegassManager $pegassManager, LoggerInterface $logger = null)
+    public function __construct(PegassManager $pegassManager, ?LoggerInterface $logger = null)
     {
         parent::__construct();
 

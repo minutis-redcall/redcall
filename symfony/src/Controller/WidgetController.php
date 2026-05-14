@@ -180,7 +180,7 @@ class WidgetController extends BaseController
         ]);
     }
 
-    public function volunteerEditor(User $user = null)
+    public function volunteerEditor(?User $user = null)
     {
         $form = $this
             ->createNamedFormBuilder(sprintf('external-id-%s', Uuid::uuid4()))

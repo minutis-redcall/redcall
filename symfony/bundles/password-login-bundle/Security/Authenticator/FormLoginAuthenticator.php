@@ -57,7 +57,7 @@ class FormLoginAuthenticator extends AbstractLoginFormAuthenticator
         $this->homeRoute      = $homeRoute;
     }
 
-    public function start(Request $request, AuthenticationException $authException = null): Response
+    public function start(Request $request, ?AuthenticationException $authException = null): Response
     {
         $session = $this->getSession();
         $session->set('auth_redirect', [

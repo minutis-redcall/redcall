@@ -183,7 +183,7 @@ class MinutisAuthenticator extends AbstractAuthenticator implements Authenticati
         return $response;
     }
 
-    public function start(Request $request, AuthenticationException $authException = null): Response
+    public function start(Request $request, ?AuthenticationException $authException = null): Response
     {
         $session = $this->getSession();
         $session->set('auth_redirect', [

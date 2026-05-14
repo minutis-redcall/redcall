@@ -54,7 +54,7 @@ class TwilioCallManager
         Twilio $twilio,
         EventDispatcherInterface $eventDispatcher,
         RouterInterface $router,
-        LoggerInterface $logger = null)
+        ?LoggerInterface $logger = null)
     {
         $this->callRepository  = $callRepository;
         $this->twilio          = $twilio;

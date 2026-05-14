@@ -46,7 +46,7 @@ class TwilioMessageManager
         Twilio $twilio,
         EventDispatcherInterface $eventDispatcher,
         RouterInterface $router,
-        LoggerInterface $logger = null)
+        ?LoggerInterface $logger = null)
     {
         $this->messageRepository = $messageRepository;
         $this->twilio            = $twilio;

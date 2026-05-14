@@ -431,7 +431,7 @@ class Badge implements LockableInterface
         return true;
     }
 
-    public function getCoveringBadges(int $stop = null) : array
+    public function getCoveringBadges(?int $stop = null) : array
     {
         $parents = [];
         $ref     = $this->getParent();

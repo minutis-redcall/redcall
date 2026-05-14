@@ -46,7 +46,7 @@ class Minutis implements MinutisProvider
     }
 
     public function searchForOperations(string $structureExternalId,
-        string $criteria = null) : array
+        ?string $criteria = null) : array
     {
         $response = $this->getClient()->get('/api/regulation', $this->populateAuthentication([
             'query' => [

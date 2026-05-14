@@ -76,7 +76,7 @@ class CategoryController extends BaseController
     }
 
     #[Route(name: "form", path: "/form-for-{id}", defaults: ["id" => null])]
-    public function categoryForm(Request $request, Category $category = null) : Response
+    public function categoryForm(Request $request, ?Category $category = null) : Response
     {
         if ($category && !$this->isGranted('CATEGORY', $category)) {
             throw $this->createAccessDeniedException();

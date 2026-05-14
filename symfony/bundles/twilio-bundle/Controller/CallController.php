@@ -27,7 +27,7 @@ class CallController extends BaseController
 
     public function __construct(RequestStack $requestStack,
         TwilioCallManager $callManager,
-        LoggerInterface $logger = null)
+        ?LoggerInterface $logger = null)
     {
         parent::__construct($requestStack);
 

@@ -504,7 +504,7 @@ class Structure implements LockableInterface
         return false;
     }
 
-    public function getParentHierarchy(int $stop = null) : array
+    public function getParentHierarchy(?int $stop = null) : array
     {
         $parents = [$this];
 

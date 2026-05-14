@@ -30,7 +30,7 @@ class FakeOperationManager
         $this->operationRepository->truncate();
     }
 
-    public function search(string $structureExternalId, string $criteria = null) : array
+    public function search(string $structureExternalId, ?string $criteria = null) : array
     {
         return array_map(function (FakeOperation $operation) {
             return [

@@ -39,7 +39,7 @@ class FakeMinutisProvider implements MinutisProvider
         return sprintf('%s/sandbox/fake-minutis/%d', getenv('WEBSITE_URL'), $operationExternalId);
     }
 
-    public function searchForOperations(string $structureExternalId, string $criteria = null) : array
+    public function searchForOperations(string $structureExternalId, ?string $criteria = null) : array
     {
         return $this->operationManager->search($structureExternalId, $criteria);
     }

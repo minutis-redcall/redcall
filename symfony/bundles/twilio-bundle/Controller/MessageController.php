@@ -26,7 +26,7 @@ class MessageController extends BaseController
 
     public function __construct(RequestStack $requestStack,
         TwilioMessageManager $messageManager,
-        LoggerInterface $logger = null)
+        ?LoggerInterface $logger = null)
     {
         parent::__construct($requestStack);
 

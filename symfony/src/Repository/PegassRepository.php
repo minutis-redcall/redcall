@@ -28,7 +28,7 @@ class PegassRepository extends ServiceEntityRepository
     }
 
     public function getEntity(string $type,
-        string $identifier = null,
+        ?string $identifier = null,
         bool $onlyEnabled = true) : ?Pegass
     {
         $qb = $this->createQueryBuilder('p')

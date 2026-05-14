@@ -128,7 +128,7 @@ class VolunteerListController extends BaseController
     public function cardsAction(
         Request $request,
         #[MapEntity(expr: "repository.find(structureId)")] Structure $structure,
-        #[MapEntity(expr: "repository.findOneById(volunteerListId)")] VolunteerList $volunteerList = null)
+        #[MapEntity(expr: "repository.findOneById(volunteerListId)")] ?VolunteerList $volunteerList = null)
     {
         $add = $this->createAddVolunteerForm($request);
         if ($add->isSubmitted() && $add->isValid()) {
