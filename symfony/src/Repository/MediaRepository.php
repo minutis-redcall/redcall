@@ -19,6 +19,11 @@ class MediaRepository extends ServiceEntityRepository
         parent::__construct($registry, Media::class);
     }
 
+    public function findOneByHash(string $hash) : ?Media
+    {
+        return $this->findOneBy(['hash' => $hash]);
+    }
+
     public function save(Media $media)
     {
         $this->getEntityManager()->persist($media);

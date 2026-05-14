@@ -16,8 +16,7 @@ class MediaManagerTest extends TestCase
     {
         return $this->getMockBuilder(MediaRepository::class)
             ->disableOriginalConstructor()
-            ->addMethods(array_diff($methods, get_class_methods(MediaRepository::class)))
-            ->onlyMethods(array_intersect($methods, get_class_methods(MediaRepository::class)))
+            ->onlyMethods($methods)
             ->getMock();
     }
 
