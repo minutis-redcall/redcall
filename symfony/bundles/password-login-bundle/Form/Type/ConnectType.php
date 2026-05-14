@@ -36,12 +36,20 @@ class ConnectType extends AbstractType
             ->add('username', Type\EmailType::class, [
                 'label'       => 'password_login.connect.email',
                 'required'    => true,
+                'attr'        => [
+                    'autocomplete' => 'username',
+                    'autofocus'    => 'autofocus',
+                    'inputmode'    => 'email',
+                ],
                 'constraints' => [
                     new Constraints\Length(min: 8),
                 ],
             ])
             ->add('password', Type\PasswordType::class, [
                 'label'       => 'password_login.connect.password',
+                'attr'        => [
+                    'autocomplete' => 'current-password',
+                ],
                 'constraints' => new Constraints\Length(min: 8, max: 4096),
             ])
             ->add('_remember_me', Type\CheckboxType::class, [
