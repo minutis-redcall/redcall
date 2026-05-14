@@ -26,3 +26,11 @@ pass on top of this branch.
 - **Decision point**: not a route bug — the controllers themselves are simple "fire task and render template" stubs. The right fix is either (a) inject a fake `TaskSender` in `services_test.yaml` that records dispatches without executing them, or (b) mark Google-dependent admin pages as feature-flagged and skip them when credentials are absent. Option (a) is more consistent with how `FakeEmailProvider` already replaces the real email provider in test config.
 - **Tests**: `tests/Controller/Admin/AdminSmokeTest::testMaintenancePegassFilesOk` and `::testMaintenanceAnnuaireNationalOk` — both `markTestIncomplete`.
 
+## Unreachable in test env
+
+These routes exist in the dev catalogue but are not loaded in the test environment, so they cannot be exercised via HTTP:
+
+- **All `/sandbox/*` routes (18 routes)** — registered via `config/routes/dev/sandbox.yaml`, which is loaded only in `dev`. `config/routes/` has no `test/` counterpart. Confirmed via `APP_ENV=test php bin/console debug:router`: 0 sandbox routes. Their underlying managers (FakeEmailManager, FakeCallManager, FakeSmsManager, etc.) **are** exercised indirectly by other tests in the suite — `services_test.yaml` aliases `EmailProvider` → `FakeEmailProvider`, so every email-sending test goes through the fake. Only the HTTP-exposed admin/debug views of the fake state are unreachable.
+
+- **Twilio webhook routes (5 routes)** — `/twilio/incoming-call`, `/twilio/outgoing-call/{uuid}`, `/twilio/answering-machine/{uuid}`, `/twilio/incoming-message`, `/twilio/message-status/{uuid}` all validate the `X-Twilio-Signature` HMAC against `TWILIO_AUTH_TOKEN`. In test env this token is unset, so a valid signature cannot be forged. Tested only the signature-rejection (400) path. Happy-path coverage would require either a fake signature validator (Twilio SDK doesn't expose one) or a `services_test.yaml` override of `Bundles\TwilioBundle\Controller\BaseController::validateRequestSignature` — neither in scope for this pass.
+
