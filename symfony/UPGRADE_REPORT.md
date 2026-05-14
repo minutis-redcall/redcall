@@ -4,7 +4,14 @@ Branch: `chore/dependency-upgrade-20260514`
 
 ## Summary
 
-All direct Composer dependencies are now on their latest stable major version.
+PHP runtime is now on **8.4** (both App Engine `prod` and `preprod`, plus the
+Composer `platform` pin). All direct Composer dependencies are on their latest
+stable version, with one explicit exception documented in `UPGRADE_BLOCKERS.md`:
+Symfony stays at **7.4** because `craue/formflow-bundle` (a load-bearing
+campaign-wizard dependency) has no Symfony 8 release yet. Every other Symfony 8
+prerequisite is in place (PHP 8.4, doctrine-bundle 3, twig-bundle 8, etc.) so
+the jump should be a single coordinated commit once the upstream releases.
+
 Test suite went from a baseline of **1567 green** to **1571 green** (4 new
 tests added for the captcha verifier) with no regressions.
 
@@ -12,6 +19,9 @@ tests added for the captcha verifier) with no regressions.
 
 | Package | Previous | New | Commit |
 |---|---|---|---|
+| _runtime_ — App Engine prod/preprod | php83 | php84 | `2e3b6d1e` |
+| _runtime_ — Composer platform pin | 8.3.29 | 8.4.18 | `2e3b6d1e` |
+| doctrine/doctrine-bundle | 2.18.2 | 3.2.2 | `c8d0427b` |
 | doctrine/orm | 3.6.3 | 3.6.5 | `e848fa6e` |
 | rector/rector | 2.4.2 | 2.4.3 | `e848fa6e` |
 | phpunit/phpunit | 9.6.34 | 10.5.63 | `313f8235` |
@@ -62,6 +72,16 @@ tests added for the captcha verifier) with no regressions.
 | setasign/fpdi | 2.6.6 | 2.6.7 | `fcd13403` (transitive) |
 
 ## BC-break fixes applied
+
+### PHP 8.3 → 8.4 (`2e3b6d1e`)
+- App Engine `runtime: php83` updated to `php84` in both `deploy/prod/app.yaml` and `deploy/preprod/app.yaml`.
+- Composer's `config.platform.php` lifted from `8.3.29` to `8.4.18`; root `php` require bumped from `>=8.1` to `>=8.4` so the autoloader explicitly demands 8.4.
+
+### doctrine/doctrine-bundle 2 → 3 (`c8d0427b`)
+- `doctrine.orm.auto_generate_proxy_classes`, `proxy_dir`, `proxy_namespace` removed — they are no-ops once ORM 3 + native lazy objects are in play, and doctrine-bundle 3 explicitly rejects them. Cleaned from both `config/packages/doctrine.yaml` and `config/packages/prod/doctrine.yaml`.
+- `default_table_options.collate` renamed to `collation` (3.0 rename).
+- 50+ controllers were importing `Symfony\Component\Routing\Annotation\Route`. That alias was dropped when framework-bundle/doctrine-bundle 3 removed the annotation-reader integration; replaced with `Symfony\Component\Routing\Attribute\Route` across `src/` and `bundles/`.
+- Service definitions referencing `Doctrine\Common\Persistence\ManagerRegistry` (the long-deprecated alias) now use `Doctrine\Persistence\ManagerRegistry` (`config/services.yaml`, `bundles/*/Resources/config/repository.{yaml,yml}`).
 
 ### Symfony 6 → 7 (`2179746b`)
 - `Command::execute()` now requires explicit `: int` return type — added to 22 commands across `src/Command/` and `bundles/*/Command/`.
@@ -156,4 +176,4 @@ These should be tackled in separate, focused PRs.
 
 ## Blockers
 
-None. `UPGRADE_BLOCKERS.md` was not created — every package on the upgrade list was bumped to its latest stable version.
+See `UPGRADE_BLOCKERS.md`. Symfony **8.0** could not be adopted on this branch: the only package missing a Symfony 8 compatible release is `craue/formflow-bundle`, which underpins the campaign-creation wizard. Every other dependency in this codebase has a working Symfony 8 release lined up, so the jump should be a single coordinated commit once upstream ships.
