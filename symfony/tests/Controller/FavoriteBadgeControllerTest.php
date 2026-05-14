@@ -47,6 +47,32 @@ class FavoriteBadgeControllerTest extends BaseWebTestCase
         $this->assertSelectorExists('form');
     }
 
+    public function testFavoriteBadgeDeleteRequiresConfirmation()
+    {
+        $client   = static::createClient();
+        $fixtures = $this->getFixtures($client->getContainer());
+
+        $user  = $fixtures->createRawUser('favbadge_confirm@example.com', 'password');
+        $badge = $fixtures->createBadge('Confirm Badge', 'FAV-BADGE-CONFIRM');
+        $user->addFavoriteBadge($badge);
+        $em = $client->getContainer()->get('doctrine')->getManager();
+        $em->persist($user);
+        $em->flush();
+
+        $this->login($client, $user);
+
+        $crawler = $client->request('GET', '/favorite-badge');
+        $this->assertResponseIsSuccessful();
+
+        // A bare delete link with no confirm() is one stray click away from
+        // dropping the user's curated favourites. Require the confirm guard.
+        $this->assertGreaterThanOrEqual(
+            1,
+            $crawler->filter('a.btn-danger[onclick*="confirm"]')->count(),
+            'Favourite-badge delete CTA must guard against accidental clicks with an onclick confirm().'
+        );
+    }
+
     public function testAddFavoriteBadge()
     {
         $client = static::createClient();
