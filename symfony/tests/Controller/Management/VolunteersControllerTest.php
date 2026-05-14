@@ -360,4 +360,197 @@ class VolunteersControllerTest extends BaseWebTestCase
             'Volunteer should be deleted or anonymized after confirmation'
         );
     }
+
+    // ──────────────────────────────────────────────
+    // GET /management/volunteers/pegass/{id}
+    // ──────────────────────────────────────────────
+
+    public function testPegass404WhenNoPegassEntity(): void
+    {
+        $client    = static::createClient();
+        $fixtures  = $this->getFixtures($client->getContainer());
+        $admin     = $fixtures->createRawUser('vol_pegass-'.uniqid().'@test.com', 'password', true);
+        $volunteer = $fixtures->createStandaloneVolunteer('VOL-PEG-'.uniqid());
+
+        $this->login($client, $admin);
+        $client->request('GET', sprintf('/management/volunteers/pegass/%d', $volunteer->getId()));
+
+        $this->assertResponseStatusCodeSame(404);
+    }
+
+    public function testPegassForbiddenForNonAdmin(): void
+    {
+        $client    = static::createClient();
+        $fixtures  = $this->getFixtures($client->getContainer());
+        $user      = $fixtures->createRawUser('vol_pegass_u-'.uniqid().'@test.com', 'password', false);
+        $volunteer = $fixtures->createStandaloneVolunteer('VOL-PEGU-'.uniqid());
+
+        $this->login($client, $user);
+        $client->request('GET', sprintf('/management/volunteers/pegass/%d', $volunteer->getId()));
+
+        $this->assertResponseStatusCodeSame(403);
+    }
+
+    // ──────────────────────────────────────────────
+    // GET /management/volunteers/edit-structures/{id}
+    // ──────────────────────────────────────────────
+
+    public function testEditStructuresRendersForAdmin(): void
+    {
+        $client    = static::createClient();
+        $fixtures  = $this->getFixtures($client->getContainer());
+        $admin     = $fixtures->createRawUser('vol_es-'.uniqid().'@test.com', 'password', true);
+        $volunteer = $fixtures->createStandaloneVolunteer('VOL-ES-'.uniqid());
+
+        $this->login($client, $admin);
+        $client->request('GET', sprintf('/management/volunteers/edit-structures/%d', $volunteer->getId()));
+
+        $this->assertResponseIsSuccessful();
+    }
+
+    public function testEditStructuresForbiddenForNonAdmin(): void
+    {
+        $client    = static::createClient();
+        $fixtures  = $this->getFixtures($client->getContainer());
+        $user      = $fixtures->createRawUser('vol_esu-'.uniqid().'@test.com', 'password', false);
+        $volunteer = $fixtures->createStandaloneVolunteer('VOL-ESU-'.uniqid());
+
+        $this->login($client, $user);
+        $client->request('GET', sprintf('/management/volunteers/edit-structures/%d', $volunteer->getId()));
+
+        $this->assertResponseStatusCodeSame(403);
+    }
+
+    // ──────────────────────────────────────────────
+    // GET /management/volunteers/add-structure/{csrf}/{id}
+    // ──────────────────────────────────────────────
+
+    public function testAddStructureLinksVolunteerToStructure(): void
+    {
+        $client    = static::createClient();
+        $container = $client->getContainer();
+        $fixtures  = $this->getFixtures($container);
+        $admin     = $fixtures->createRawUser('vol_as-'.uniqid().'@test.com', 'password', true);
+        $volunteer = $fixtures->createStandaloneVolunteer('VOL-AS-'.uniqid());
+        $structure = $fixtures->createStructure('AS-STR-'.uniqid(), 'EXT-AS-'.uniqid());
+
+        $this->login($client, $admin);
+        $csrf = $this->getCsrfToken($container, 'volunteer');
+
+        $client->request('GET', sprintf(
+            '/management/volunteers/add-structure/%s/%d?structure=%d',
+            $csrf,
+            $volunteer->getId(),
+            $structure->getId()
+        ));
+
+        $this->assertResponseRedirects(sprintf('/management/volunteers/edit-structures/%d', $volunteer->getId()));
+    }
+
+    public function testAddStructureBadCsrf404(): void
+    {
+        $client    = static::createClient();
+        $fixtures  = $this->getFixtures($client->getContainer());
+        $admin     = $fixtures->createRawUser('vol_as_bad-'.uniqid().'@test.com', 'password', true);
+        $volunteer = $fixtures->createStandaloneVolunteer('VOL-ASB-'.uniqid());
+        $structure = $fixtures->createStructure('ASB-STR-'.uniqid(), 'EXT-ASB-'.uniqid());
+
+        $this->login($client, $admin);
+        $client->request('GET', sprintf(
+            '/management/volunteers/add-structure/bad/%d?structure=%d',
+            $volunteer->getId(),
+            $structure->getId()
+        ));
+
+        $this->assertResponseStatusCodeSame(404);
+    }
+
+    // ──────────────────────────────────────────────
+    // /management/volunteers/remove-all-structures/{csrf}/{id}
+    // ──────────────────────────────────────────────
+
+    public function testRemoveAllStructuresClearsLinks(): void
+    {
+        $client    = static::createClient();
+        $container = $client->getContainer();
+        $fixtures  = $this->getFixtures($container);
+        $admin     = $fixtures->createRawUser('vol_ras-'.uniqid().'@test.com', 'password', true);
+        $volunteer = $fixtures->createStandaloneVolunteer('VOL-RAS-'.uniqid());
+        $structure = $fixtures->createStructure('RAS-STR-'.uniqid(), 'EXT-RAS-'.uniqid());
+        $fixtures->assignVolunteerToStructure($volunteer, $structure);
+
+        $this->login($client, $admin);
+        $csrf = $this->getCsrfToken($container, 'volunteer');
+
+        $client->request('GET', sprintf(
+            '/management/volunteers/remove-all-structures/%s/%d',
+            $csrf,
+            $volunteer->getId()
+        ));
+
+        $this->assertResponseRedirects(sprintf('/management/volunteers/edit-structures/%d', $volunteer->getId()));
+
+        $em = $container->get('doctrine.orm.entity_manager');
+        $em->clear();
+        $refreshed = $em->find(Volunteer::class, $volunteer->getId());
+        $this->assertCount(0, $refreshed->getStructures());
+    }
+
+    // ──────────────────────────────────────────────
+    // /management/volunteers/delete-structure/{csrf}/{volunteerId}/{structureId}
+    // ──────────────────────────────────────────────
+
+    public function testDeleteStructureRemovesOneLink(): void
+    {
+        $client    = static::createClient();
+        $container = $client->getContainer();
+        $fixtures  = $this->getFixtures($container);
+        $admin     = $fixtures->createRawUser('vol_ds-'.uniqid().'@test.com', 'password', true);
+        $volunteer = $fixtures->createStandaloneVolunteer('VOL-DS-'.uniqid());
+        $struct1   = $fixtures->createStructure('DS1-'.uniqid(), 'EXT-DS1-'.uniqid());
+        $struct2   = $fixtures->createStructure('DS2-'.uniqid(), 'EXT-DS2-'.uniqid());
+        $fixtures->assignVolunteerToStructure($volunteer, $struct1);
+        $fixtures->assignVolunteerToStructure($volunteer, $struct2);
+
+        $this->login($client, $admin);
+        $csrf = $this->getCsrfToken($container, 'volunteer');
+
+        $client->request('GET', sprintf(
+            '/management/volunteers/delete-structure/%s/%d/%d',
+            $csrf,
+            $volunteer->getId(),
+            $struct1->getId()
+        ));
+
+        $this->assertResponseRedirects(sprintf('/management/volunteers/edit-structures/%d', $volunteer->getId()));
+
+        $em = $container->get('doctrine.orm.entity_manager');
+        $em->clear();
+        $refreshed = $em->find(Volunteer::class, $volunteer->getId());
+        $this->assertCount(1, $refreshed->getStructures());
+    }
+
+    // ──────────────────────────────────────────────
+    // /management/volunteers/list-user-structures
+    // ──────────────────────────────────────────────
+
+    public function testListUserStructuresReturnsJson(): void
+    {
+        $client    = static::createClient();
+        $fixtures  = $this->getFixtures($client->getContainer());
+        $user      = $fixtures->createRawUser('vol_lus-'.uniqid().'@test.com', 'password');
+        $structure = $fixtures->createStructure('LUS-STR-'.uniqid(), 'EXT-LUS-'.uniqid());
+        $fixtures->assignUserToStructure($user, $structure);
+        $volunteer = $fixtures->createVolunteer($user, 'VOL-LUS-'.uniqid(), 'lus-vol-'.uniqid().'@test.com');
+        $fixtures->assignVolunteerToStructure($volunteer, $structure);
+
+        $this->login($client, $user);
+        $client->request('POST', '/management/volunteers/list-user-structures', ['id' => $volunteer->getId()]);
+
+        $this->assertResponseIsSuccessful();
+        $decoded = json_decode($client->getResponse()->getContent(), true);
+        $this->assertIsArray($decoded);
+        $this->assertArrayHasKey('title', $decoded);
+        $this->assertArrayHasKey('body', $decoded);
+    }
 }
