@@ -4,7 +4,7 @@
     "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
     "This file is @generated automatically"
   ],
-  "content-hash": "eeba0015b75af6ef59dd243b8895aeec",
+  "content-hash": "efcf8245333444e5bfd3a6c3d6fea4b3",
   "packages": [
     {
       "name": "babdev/pagerfanta-bundle",
@@ -11512,22 +11512,23 @@
     },
     {
       "name": "twilio/sdk",
-      "version": "6.44.4",
+      "version": "8.11.6",
       "source": {
         "type": "git",
-        "url": "https://github.com/twilio/twilio-php.git",
-        "reference": "08aad5f377e2245b9cd7508e7762d95e7392fa4d"
+        "url": "https://github.com/twilio/twilio-php",
+        "reference": "57754efb0998086007ec9a63874fd85def5afb7f"
       },
       "dist": {
         "type": "zip",
-        "url": "https://api.github.com/repos/twilio/twilio-php/zipball/08aad5f377e2245b9cd7508e7762d95e7392fa4d",
-        "reference": "08aad5f377e2245b9cd7508e7762d95e7392fa4d",
+        "url": "https://api.github.com/repos/twilio/twilio-php/zipball/57754efb0998086007ec9a63874fd85def5afb7f",
+        "reference": "57754efb0998086007ec9a63874fd85def5afb7f",
         "shasum": ""
       },
       "require": {
         "php": ">=7.1.0"
       },
       "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.0",
         "guzzlehttp/guzzle": "^6.3 || ^7.0",
         "phpunit/phpunit": ">=7.0 < 10"
       },
@@ -11557,11 +11558,7 @@
         "sms",
         "twilio"
       ],
-      "support": {
-        "issues": "https://github.com/twilio/twilio-php/issues",
-        "source": "https://github.com/twilio/twilio-php/tree/6.44.4"
-      },
-      "time": "2023-02-22T19:59:53+00:00"
+      "time": "2026-05-07T16:40:31+00:00"
     },
     {
       "name": "webmozart/assert",
