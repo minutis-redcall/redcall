@@ -14,7 +14,7 @@
     "composer/package-versions-deprecated": "1.11.99.5",
     "craue/formflow-bundle": "^3.7",
     "doctrine/doctrine-bundle": "^3.2",
-    "doctrine/doctrine-migrations-bundle": "^3.3",
+    "doctrine/doctrine-migrations-bundle": "^4.0",
     "doctrine/orm": "^3.0",
     "exercise/htmlpurifier-bundle": "^5.0",
     "facile-it/doctrine-mysql-come-back": "^3.0",
