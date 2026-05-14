@@ -92,7 +92,8 @@ class CommunicationExtensionTest extends TestCase
         $communication->method('getImages')->willReturn(new ArrayCollection([$media]));
 
         // The twig render returns a full email template with image markers
-        $environment->method('render')
+        $environment->expects($this->atLeastOnce())
+            ->method('render')
             ->with('message/image.html.twig', ['url' => $imageUrl])
             ->willReturn('prefix<!-- image:begin --><img src="'.$imageUrl.'"/><!-- image:end -->suffix');
 

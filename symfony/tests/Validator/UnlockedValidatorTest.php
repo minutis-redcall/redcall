@@ -65,7 +65,8 @@ class UnlockedValidatorTest extends TestCase
         $lockable->method('getDisplayName')->willReturn('John Doe');
 
         $violationBuilder = $this->createMock(ConstraintViolationBuilderInterface::class);
-        $violationBuilder->method('setInvalidValue')
+        $violationBuilder->expects($this->atLeastOnce())
+            ->method('setInvalidValue')
             ->with('John Doe')
             ->willReturnSelf();
         $violationBuilder->expects($this->once())->method('addViolation');

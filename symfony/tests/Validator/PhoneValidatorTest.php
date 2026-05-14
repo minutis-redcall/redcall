@@ -70,12 +70,13 @@ class PhoneValidatorTest extends TestCase
         $phone = $this->createMock(PhoneInterface::class);
         $phone->method('getE164')->willReturn('invalid-phone');
 
-        $this->translator->method('trans')
+        $this->translator->expects($this->atLeastOnce())
+            ->method('trans')
             ->with('phone_card.error_invalid')
             ->willReturn('Invalid phone number');
 
         $violationBuilder = $this->createMock(ConstraintViolationBuilderInterface::class);
-        $violationBuilder->method('atPath')->with('editor')->willReturnSelf();
+        $violationBuilder->expects($this->atLeastOnce())->method('atPath')->with('editor')->willReturnSelf();
         $violationBuilder->expects($this->once())->method('addViolation');
 
         $this->context->expects($this->once())

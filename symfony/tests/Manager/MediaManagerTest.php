@@ -57,7 +57,8 @@ class MediaManagerTest extends TestCase
         $existingMedia->setCreatedAt(new \DateTime());
 
         $mediaRepository = $this->createMediaRepositoryMock();
-        $mediaRepository->method('findOneByHash')
+        $mediaRepository->expects($this->atLeastOnce())
+            ->method('findOneByHash')
             ->with(hash('SHA256', $text))
             ->willReturn($existingMedia);
         $mediaRepository->expects($this->never())->method('save');

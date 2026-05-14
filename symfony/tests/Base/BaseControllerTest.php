@@ -170,7 +170,8 @@ class BaseControllerTest extends TestCase
             ->willReturn($formBuilder);
 
         $container = $this->createMock(ContainerInterface::class);
-        $container->method('get')
+        $container->expects($this->atLeastOnce())
+            ->method('get')
             ->with('form.factory')
             ->willReturn($formFactory);
         $container->method('has')
