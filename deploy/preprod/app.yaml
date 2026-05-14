@@ -1,4 +1,4 @@
-runtime: php83
+runtime: php84
 
 vpc_access_connector:
   name: "projects/redcall-dev/locations/europe-west1/connectors/serverless-connector"
