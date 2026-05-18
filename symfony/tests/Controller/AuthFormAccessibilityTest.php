@@ -105,7 +105,7 @@ class AuthFormAccessibilityTest extends WebTestCase
         $this->assertResponseIsSuccessful();
         $this->assertSame(
             1,
-            $crawler->filter('#nivol input[name="nivol"][autocomplete="off"][autofocus]')->count(),
+            $crawler->filter('#nivol input[name="nivol[nivol]"][autocomplete="off"][autofocus]')->count(),
             'Nivol field: autofocus when the user opens the NIVOL panel, autocomplete="off" so password managers do not try to fill it.'
         );
     }

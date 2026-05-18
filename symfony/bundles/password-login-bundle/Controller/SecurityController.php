@@ -25,6 +25,8 @@ use Bundles\PasswordLoginBundle\Manager\CaptchaManager;
 use Bundles\PasswordLoginBundle\Manager\EmailVerificationManager;
 use Bundles\PasswordLoginBundle\Manager\PasswordRecoveryManager;
 use Bundles\PasswordLoginBundle\Manager\UserManager;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -108,6 +110,8 @@ class SecurityController extends AbstractController
      */
     private $homeRoute;
 
+    private LoggerInterface $logger;
+
     public function __construct(CaptchaManager $captchaManager,
         EmailVerificationManager $emailVerificationManager,
         PasswordRecoveryManager $passwordRecoveryManager,
@@ -119,6 +123,7 @@ class SecurityController extends AbstractController
         TokenStorageInterface $tokenStorage,
         TranslatorInterface $translator,
         RequestStack $requestStack,
+        ?LoggerInterface $logger = null,
         string $userClass = User::class,
         string $homeRoute = 'home')
     {
@@ -133,6 +138,7 @@ class SecurityController extends AbstractController
         $this->tokenStorage             = $tokenStorage;
         $this->translator               = $translator;
         $this->requestStack             = $requestStack;
+        $this->logger                   = $logger ?? new NullLogger();
         $this->userClass                = $userClass;
         $this->homeRoute                = $homeRoute;
     }
@@ -239,6 +245,13 @@ class SecurityController extends AbstractController
     #[Template("@PasswordLogin/security/connect.html.twig")]
     public function connectAction(Request $request, ?string $nivol = null)
     {
+        $this->logger->info('SecurityController::connectAction entered', [
+            'method'           => $request->getMethod(),
+            'has_nivol_param'  => null !== $nivol,
+            'ip'               => $request->getClientIp(),
+            'is_authenticated' => $this->isGranted('ROLE_USER'),
+        ]);
+
         if ($this->isGranted('ROLE_USER')) {
             return $this->redirectToRoute($this->homeRoute);
         }
@@ -246,6 +259,21 @@ class SecurityController extends AbstractController
         $connectForm = $this
             ->createForm(ConnectType::class)
             ->handleRequest($request);
+
+        if ($connectForm->isSubmitted() && !$connectForm->isValid()) {
+            $errors = [];
+            foreach ($connectForm->getErrors(true) as $error) {
+                $origin   = $error->getOrigin();
+                $errors[] = [
+                    'field'   => $origin ? $origin->getName() : '(form)',
+                    'message' => $error->getMessage(),
+                ];
+            }
+
+            $this->logger->warning('connectAction: connect form invalid', [
+                'errors' => $errors,
+            ]);
+        }
 
         $data = null;
         if ($nivol) {
@@ -256,8 +284,30 @@ class SecurityController extends AbstractController
             ->createForm(NivolType::class, $data)
             ->handleRequest($request);
 
+        if ($nivolForm->isSubmitted() && !$nivolForm->isValid()) {
+            $errors = [];
+            foreach ($nivolForm->getErrors(true) as $error) {
+                $origin   = $error->getOrigin();
+                $errors[] = [
+                    'field'   => $origin ? $origin->getName() : '(form)',
+                    'message' => $error->getMessage(),
+                ];
+            }
+
+            $this->logger->warning('connectAction: nivol form invalid', [
+                'errors' => $errors,
+            ]);
+        }
+
         $session = $this->getSession();
         if ($session->has(SecurityRequestAttributes::AUTHENTICATION_ERROR)) {
+            $authError = $session->get(SecurityRequestAttributes::AUTHENTICATION_ERROR);
+
+            $this->logger->warning('connectAction: AUTHENTICATION_ERROR found in session', [
+                'exception'         => is_object($authError) ? get_class($authError) : gettype($authError),
+                'exception_message' => is_object($authError) && method_exists($authError, 'getMessage') ? $authError->getMessage() : null,
+            ]);
+
             $session->getFlashBag()->add('danger', $this->translator->trans('password_login.connect.incorrect'));
             $session->remove(SecurityRequestAttributes::AUTHENTICATION_ERROR);
         }

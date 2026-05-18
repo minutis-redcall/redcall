@@ -6,6 +6,8 @@ use App\Form\Type\CodeType;
 use App\Manager\ExpirableManager;
 use Bundles\PasswordLoginBundle\Entity\AbstractUser;
 use Bundles\PasswordLoginBundle\Manager\UserManager;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -33,6 +35,7 @@ class NivolAuthenticator extends AbstractAuthenticator implements Authentication
     private RouterInterface $router;
     private ExpirableManager $expirableManager;
     private UserManager $userManager;
+    private LoggerInterface $logger;
 
     public function __construct(
         FormFactoryInterface $formFactory,
@@ -41,7 +44,8 @@ class NivolAuthenticator extends AbstractAuthenticator implements Authentication
         TranslatorInterface $translator,
         RouterInterface $router,
         ExpirableManager $expirableManager,
-        UserManager $userManager)
+        UserManager $userManager,
+        ?LoggerInterface $logger = null)
     {
         $this->formFactory      = $formFactory;
         $this->requestStack     = $requestStack;
@@ -50,6 +54,7 @@ class NivolAuthenticator extends AbstractAuthenticator implements Authentication
         $this->router           = $router;
         $this->expirableManager = $expirableManager;
         $this->userManager      = $userManager;
+        $this->logger           = $logger ?? new NullLogger();
     }
 
     public function start(Request $request, ?AuthenticationException $authException = null): Response
@@ -69,16 +74,39 @@ class NivolAuthenticator extends AbstractAuthenticator implements Authentication
             return false;
         }
 
+        $this->logger->info('NivolAuthenticator: supports() entered', [
+            'path'   => $request->getPathInfo(),
+            'method' => $request->getMethod(),
+        ]);
+
         $codeForm = $this
             ->formFactory
             ->create(CodeType::class)
             ->handleRequest($request);
 
         if (!$codeForm->isSubmitted()) {
+            // Fires on every GET /code/{uuid} page render. Keep at DEBUG.
+            $this->logger->debug('NivolAuthenticator: code form not submitted, skipping', [
+                'method' => $request->getMethod(),
+            ]);
+
             return false;
         }
 
         if (!$codeForm->isValid()) {
+            $errors = [];
+            foreach ($codeForm->getErrors(true) as $error) {
+                $origin   = $error->getOrigin();
+                $errors[] = [
+                    'field'   => $origin ? $origin->getName() : '(form)',
+                    'message' => $error->getMessage(),
+                ];
+            }
+
+            $this->logger->warning('NivolAuthenticator: code form invalid', [
+                'errors' => $errors,
+            ]);
+
             return false;
         }
 
@@ -99,24 +127,46 @@ class NivolAuthenticator extends AbstractAuthenticator implements Authentication
         $code = $data['code'] ?? null;
 
         if (null === $uuid || null === $code) {
+            $this->logger->warning('NivolAuthenticator: missing uuid or code', [
+                'uuid_set' => null !== $uuid,
+                'code_set' => null !== $code,
+            ]);
+
             throw new BadCredentialsException();
         }
 
         $expirable = $this->expirableManager->get($uuid);
 
         if (null === $expirable) {
+            $this->logger->warning('NivolAuthenticator: expirable not found (likely expired)', [
+                'uuid' => $uuid,
+            ]);
+
             throw new BadCredentialsException();
         }
 
         if (strtolower($expirable['code']) !== strtolower($code)) {
+            $this->logger->warning('NivolAuthenticator: code mismatch', [
+                'uuid' => $uuid,
+            ]);
+
             throw new BadCredentialsException();
         }
 
         $user = $this->userManager->find($expirable['user_id']);
 
         if (null === $user) {
+            $this->logger->warning('NivolAuthenticator: user from expirable not found', [
+                'uuid'    => $uuid,
+                'user_id' => $expirable['user_id'],
+            ]);
+
             throw new BadCredentialsException();
         }
+
+        $this->logger->info('NivolAuthenticator: code accepted, building passport', [
+            'username' => $user->getUserIdentifier(),
+        ]);
 
         return new SelfValidatingPassport(
             new UserBadge($user->getUserIdentifier(), function () use ($user) {
@@ -127,6 +177,15 @@ class NivolAuthenticator extends AbstractAuthenticator implements Authentication
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
+        $previous = $exception->getPrevious();
+
+        $this->logger->warning('NivolAuthenticator: authentication failed', [
+            'exception'         => get_class($exception),
+            'exception_message' => $exception->getMessage(),
+            'previous'          => $previous ? get_class($previous) : null,
+            'previous_message'  => $previous ? $previous->getMessage() : null,
+        ]);
+
         return new RedirectResponse($this->getLoginUrl($request));
     }
 
@@ -138,11 +197,19 @@ class NivolAuthenticator extends AbstractAuthenticator implements Authentication
         $session = $this->getSession();
 
         if (!$user->isVerified()) {
+            $this->logger->warning('NivolAuthenticator: user is not verified, redirecting to login', [
+                'username' => $user->getUserIdentifier(),
+            ]);
+
             $session->getFlashBag()->add('alert', $this->translator->trans('password_login.verify_email.failure'));
             $this->tokenStorage->setToken();
 
             return new RedirectResponse($this->getLoginUrl($request));
         }
+
+        $this->logger->info('NivolAuthenticator: login successful', [
+            'username' => $user->getUserIdentifier(),
+        ]);
 
         $route = $session->get('auth_redirect', [
             'route'        => 'home',

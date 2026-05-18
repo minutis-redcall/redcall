@@ -84,6 +84,6 @@ class NivolType extends AbstractType
 
     public function getBlockPrefix(): string
     {
-        return '';
+        return 'nivol';
     }
 }

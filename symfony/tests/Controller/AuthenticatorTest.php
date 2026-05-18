@@ -188,8 +188,8 @@ class AuthenticatorTest extends BaseWebTestCase
         $crawler = $client->request('GET', '/nivol');
         $this->assertResponseIsSuccessful();
 
-        $form          = $crawler->filter('form[name="nivol"], form')->first()->form();
-        $form['nivol'] = '00099112233';
+        $form                 = $crawler->filter('form[name="nivol"], form')->first()->form();
+        $form['nivol[nivol]'] = '00099112233';
         $client->submit($form);
 
         $this->assertTrue(
@@ -239,8 +239,8 @@ class AuthenticatorTest extends BaseWebTestCase
         $client->followRedirects(false);
         $crawler = $client->request('GET', '/nivol');
 
-        $form          = $crawler->filter('form')->first()->form();
-        $form['nivol'] = '00099112299';
+        $form                 = $crawler->filter('form')->first()->form();
+        $form['nivol[nivol]'] = '00099112299';
         $client->submit($form);
 
         $codeUrl = $client->getResponse()->headers->get('Location');
@@ -266,8 +266,8 @@ class AuthenticatorTest extends BaseWebTestCase
         $crawler = $client->request('GET', '/nivol');
         $this->assertResponseIsSuccessful();
 
-        $form          = $crawler->filter('form')->first()->form();
-        $form['nivol'] = '00000000000'; // not in the DB
+        $form                 = $crawler->filter('form')->first()->form();
+        $form['nivol[nivol]'] = '00000000000'; // not in the DB
         $client->submit($form);
 
         // NivolType has a Callback constraint that surfaces a "nivol_not_found"

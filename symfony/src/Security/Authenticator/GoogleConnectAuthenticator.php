@@ -6,6 +6,8 @@ use App\Entity\Volunteer;
 use App\Manager\VolunteerSessionManager;
 use App\Provider\OAuth\GoogleConnect\GoogleConnectInterface;
 use App\Tools\Url;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -24,17 +26,20 @@ class GoogleConnectAuthenticator extends AbstractAuthenticator implements Authen
     private GoogleConnectInterface $googleConnect;
     private VolunteerSessionManager $volunteerSessionManager;
     private RouterInterface $router;
+    private LoggerInterface $logger;
 
     /** Used to create a session on auth failure */
     private ?Volunteer $volunteer = null;
 
     public function __construct(GoogleConnectInterface $googleConnect,
         VolunteerSessionManager $volunteerSessionManager,
-        RouterInterface $router)
+        RouterInterface $router,
+        ?LoggerInterface $logger = null)
     {
         $this->googleConnect           = $googleConnect;
         $this->volunteerSessionManager = $volunteerSessionManager;
         $this->router                  = $router;
+        $this->logger                  = $logger ?? new NullLogger();
     }
 
     public function supports(Request $request): ?bool
@@ -45,6 +50,8 @@ class GoogleConnectAuthenticator extends AbstractAuthenticator implements Authen
             }
         }
 
+        $this->logger->info('GoogleConnectAuthenticator: supports() — state + code present');
+
         return true;
     }
 
@@ -52,7 +59,17 @@ class GoogleConnectAuthenticator extends AbstractAuthenticator implements Authen
     {
         $volunteer = $this->googleConnect->verify($request);
 
-        if (null === $volunteer || !$volunteer->isEnabled()) {
+        if (null === $volunteer) {
+            $this->logger->warning('GoogleConnectAuthenticator: no volunteer matched from Google identity');
+
+            throw new BadCredentialsException();
+        }
+
+        if (!$volunteer->isEnabled()) {
+            $this->logger->warning('GoogleConnectAuthenticator: matched volunteer is disabled', [
+                'volunteer_id' => $volunteer->getId(),
+            ]);
+
             throw new BadCredentialsException();
         }
 
@@ -60,8 +77,16 @@ class GoogleConnectAuthenticator extends AbstractAuthenticator implements Authen
 
         $user = $volunteer->getUser();
         if (null === $user) {
+            $this->logger->warning('GoogleConnectAuthenticator: matched volunteer has no user account', [
+                'volunteer_id' => $volunteer->getId(),
+            ]);
+
             throw new BadCredentialsException();
         }
+
+        $this->logger->info('GoogleConnectAuthenticator: building passport', [
+            'username' => $user->getUserIdentifier(),
+        ]);
 
         return new SelfValidatingPassport(
             new UserBadge($user->getUserIdentifier(), function () use ($user) {
@@ -72,6 +97,15 @@ class GoogleConnectAuthenticator extends AbstractAuthenticator implements Authen
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
     {
+        $previous = $exception->getPrevious();
+
+        $this->logger->warning('GoogleConnectAuthenticator: authentication failed', [
+            'exception'         => get_class($exception),
+            'exception_message' => $exception->getMessage(),
+            'previous'          => $previous ? get_class($previous) : null,
+            'previous_message'  => $previous ? $previous->getMessage() : null,
+        ]);
+
         if ($this->volunteer && $this->volunteer->isEnabled()) {
             $sessionId = $this->volunteerSessionManager->createSession($this->volunteer);
 

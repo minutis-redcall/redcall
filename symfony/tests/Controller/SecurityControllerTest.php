@@ -226,8 +226,8 @@ class SecurityControllerTest extends BaseWebTestCase
         $this->assertResponseIsSuccessful();
 
         // 2. Submit Nivol Form with External ID
-        $form          = $crawler->filter('#nivol form')->form();
-        $form['nivol'] = '987654321';
+        $form                 = $crawler->filter('#nivol form')->form();
+        $form['nivol[nivol]'] = '987654321';
         $client->submit($form);
 
         // 3. Intercept Email
