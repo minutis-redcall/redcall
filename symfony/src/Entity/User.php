@@ -32,6 +32,10 @@ class User extends AbstractUser implements LockableInterface
     #[ORM\OrderBy(['enabled' => 'DESC', 'externalId' => 'ASC'])]
     private $structures;
 
+    /**
+     * User is locked from syncing with the internal database.
+     * This flag should NOT prevent user from authenticating.
+     */
     #[ORM\Column(type: 'boolean', options: ['default' => 0])]
     private $locked = false;
 

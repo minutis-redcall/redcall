@@ -19,7 +19,6 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
 use Symfony\Component\Security\Core\Exception\BadCredentialsException;
-use Symfony\Component\Security\Core\Exception\LockedException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Http\Authenticator\AbstractLoginFormAuthenticator;
@@ -187,13 +186,6 @@ class FormLoginAuthenticator extends AbstractLoginFormAuthenticator
         ]);
 
         $this->decreaseGrace();
-
-        if ($exception instanceof LockedException) {
-            $this->getSession()->getFlashBag()->add(
-                'danger',
-                $this->translator->trans('password_login.connect.account_locked')
-            );
-        }
 
         return new RedirectResponse($this->getLoginUrl($request));
     }

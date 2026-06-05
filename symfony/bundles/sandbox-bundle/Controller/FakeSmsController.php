@@ -8,6 +8,7 @@ use App\Manager\VolunteerManager;
 use Bundles\SandboxBundle\Base\BaseController;
 use Bundles\SandboxBundle\Entity\FakeSms;
 use Bundles\SandboxBundle\Manager\FakeSmsManager;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -72,7 +73,7 @@ class FakeSmsController extends BaseController
 
     #[Route("/thread/{e164}/{campaignId}", name: "thread", defaults: ["campaignId" => null])]
     #[Template("@Sandbox/fake_sms/thread.html.twig")]
-    public function threadAction(Phone $phone, ?int $campaignId)
+    public function threadAction(#[MapEntity(mapping: ['e164' => 'e164'])] Phone $phone, ?int $campaignId)
     {
         $volunteer = $phone->getVolunteers()->first();
         $messages  = $this->fakeSmsManager->findMessagesForPhoneNumber($phone->getE164());
@@ -93,7 +94,7 @@ class FakeSmsController extends BaseController
     }
 
     #[Route("/send/{e164}/{csrf}", name: "send", methods: ["POST"])]
-    public function sendAction(Request $request, Phone $phone, string $csrf)
+    public function sendAction(Request $request, #[MapEntity(mapping: ['e164' => 'e164'])] Phone $phone, string $csrf)
     {
         $this->validateCsrfOrThrowNotFoundException('fake_sms', $csrf);
 

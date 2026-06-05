@@ -5,8 +5,9 @@ namespace App\Services;
 use App\Model\TextToSpeechConfig;
 use Google\Cloud\TextToSpeech\V1\AudioConfig;
 use Google\Cloud\TextToSpeech\V1\AudioEncoding;
+use Google\Cloud\TextToSpeech\V1\Client\TextToSpeechClient;
 use Google\Cloud\TextToSpeech\V1\SynthesisInput;
-use Google\Cloud\TextToSpeech\V1\TextToSpeechClient;
+use Google\Cloud\TextToSpeech\V1\SynthesizeSpeechRequest;
 use Google\Cloud\TextToSpeech\V1\VoiceSelectionParams;
 
 class TextToSpeech
@@ -29,7 +30,12 @@ class TextToSpeech
         $synthesisInputText = (new SynthesisInput())
             ->setText($text);
 
-        $response = $this->getClient()->synthesizeSpeech($synthesisInputText, $voice, $audioConfig);
+        $request = (new SynthesizeSpeechRequest())
+            ->setInput($synthesisInputText)
+            ->setVoice($voice)
+            ->setAudioConfig($audioConfig);
+
+        $response = $this->getClient()->synthesizeSpeech($request);
 
         return $response->getAudioContent();
     }

@@ -18,7 +18,6 @@ security:
       pattern: '^/'
       provider: user_provider
       lazy: true
-      user_checker: App\Security\UserChecker
       logout:
         path: /logout
         target: /
