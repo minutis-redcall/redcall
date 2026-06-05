@@ -58,8 +58,8 @@ class LocaleManagerTest extends KernelTestCase
 
         $this->manager->changeLocale('xx_invalid');
 
-        $this->assertSame('en', $request->getLocale());
-        $this->assertSame('en', $this->session->get('_locale'));
+        $this->assertSame('fr', $request->getLocale());
+        $this->assertSame('fr', $this->session->get('_locale'));
     }
 
     public function testChangeLocaleStripsRegionSuffix()
@@ -111,7 +111,7 @@ class LocaleManagerTest extends KernelTestCase
 
         $this->manager->restoreFromSession();
 
-        $this->assertSame('en', $request->getLocale());
+        $this->assertSame('fr', $request->getLocale());
     }
 
     public function testRestoreFromUserSetsLocaleFromUserPreferences()

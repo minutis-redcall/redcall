@@ -631,6 +631,8 @@ manage_structures:
     actions:
       delete: 'Vraiment supprimer ce modèle ?'
       down: ▼
+      move_down_aria: 'Déplacer le modèle « %name% » vers le bas'
+      move_up_aria: 'Déplacer le modèle « %name% » vers le haut'
       up: ▲
     choose: 'Utiliser un modèle de message'
     editor_create: 'Créer un nouveau modèle de message'

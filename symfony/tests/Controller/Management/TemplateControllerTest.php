@@ -195,12 +195,12 @@ class TemplateControllerTest extends BaseWebTestCase
         // which direction.
         $this->assertGreaterThanOrEqual(
             1,
-            $crawler->filter('a.btn[aria-label*="Reorderable Template"][aria-label*="up"]')->count(),
+            $crawler->filter('a.btn[aria-label*="Reorderable Template"][aria-label*="haut"]')->count(),
             'Move-up button must declare an aria-label naming the template and direction.'
         );
         $this->assertGreaterThanOrEqual(
             1,
-            $crawler->filter('a.btn[aria-label*="Reorderable Template"][aria-label*="down"]')->count(),
+            $crawler->filter('a.btn[aria-label*="Reorderable Template"][aria-label*="bas"]')->count(),
             'Move-down button must declare an aria-label naming the template and direction.'
         );
     }
