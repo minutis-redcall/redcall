@@ -245,7 +245,8 @@
     color: var(--text-primary);
 }
 
-.sd-answer-chip--active {
+.sd-answer-chip--active,
+.sd-answer-chip--active:hover {
     border-color: #f59e0b;
     background: #fef3c7;
     color: #92400e;
@@ -278,7 +279,8 @@
     color: var(--text-secondary, #555);
 }
 
-.sd-answer-chip--active .sd-answer-code {
+.sd-answer-chip--active .sd-answer-code,
+.sd-answer-chip--active:hover .sd-answer-code {
     background: #fff8e6;
     border-color: #f59e0b;
     color: #92400e;
@@ -622,9 +624,13 @@
     50% { background-color: #ffe5e7; }
 }
 
+@keyframes sd-row-highlight {
+    0%   { background-color: var(--rc-yellow-light); }
+    100% { background-color: transparent; }
+}
+
 .sd-volunteer-row--highlight {
-    background-color: var(--rc-yellow-light) !important;
-    transition: background-color 1.5s ease;
+    animation: sd-row-highlight 1.5s ease forwards;
 }
 
 /* Pending messages container */
