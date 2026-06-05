@@ -19,12 +19,12 @@ class OperationRepositoryTest extends KernelTestCase
     {
         self::bootKernel();
 
-        $this->repository = self::$container->get('doctrine.orm.entity_manager')
+        $this->repository = self::getContainer()->get('doctrine.orm.entity_manager')
             ->getRepository(Operation::class);
 
         $this->fixtures = new DataFixtures(
-            self::$container->get('doctrine.orm.entity_manager'),
-            self::$container->get('security.password_encoder')
+            self::getContainer()->get('doctrine.orm.entity_manager'),
+            self::getContainer()->get('security.password_hasher')
         );
     }
 
@@ -61,7 +61,7 @@ class OperationRepositoryTest extends KernelTestCase
         $operation->setOperationExternalId(33333);
         $campaign->setOperation($operation);
 
-        $em = self::$container->get('doctrine.orm.entity_manager');
+        $em = self::getContainer()->get('doctrine.orm.entity_manager');
 
         $this->repository->save($operation);
 

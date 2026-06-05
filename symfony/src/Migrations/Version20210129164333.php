@@ -20,7 +20,7 @@ final class Version20210129164333 extends AbstractMigration
     public function up(Schema $schema) : void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf(!$this->connection->getDatabasePlatform() instanceof \Doctrine\DBAL\Platforms\AbstractMySQLPlatform, 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('CREATE TABLE report (id INT AUTO_INCREMENT NOT NULL, type VARCHAR(32) NOT NULL, costs VARCHAR(64) NOT NULL, updated_at DATETIME NOT NULL, message_count INT NOT NULL, question_count INT NOT NULL, answer_count INT NOT NULL, exchange_count INT NOT NULL, answer_ratio DOUBLE PRECISION DEFAULT NULL, PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE report_repartition (id INT AUTO_INCREMENT NOT NULL, structure_id INT DEFAULT NULL, report_id INT NOT NULL, ratio DOUBLE PRECISION NOT NULL, costs VARCHAR(64) NOT NULL, message_count INT NOT NULL, question_count INT NOT NULL, answer_count INT NOT NULL, exchange_count INT NOT NULL, answer_ratio DOUBLE PRECISION DEFAULT NULL, INDEX IDX_33AF3AA82534008B (structure_id), INDEX IDX_33AF3AA84BD2A4C0 (report_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
@@ -35,7 +35,7 @@ final class Version20210129164333 extends AbstractMigration
     public function down(Schema $schema) : void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf(!$this->connection->getDatabasePlatform() instanceof \Doctrine\DBAL\Platforms\AbstractMySQLPlatform, 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('ALTER TABLE communication DROP FOREIGN KEY FK_F9AFB5EB4BD2A4C0');
         $this->addSql('ALTER TABLE report_repartition DROP FOREIGN KEY FK_33AF3AA84BD2A4C0');

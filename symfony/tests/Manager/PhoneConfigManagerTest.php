@@ -17,7 +17,7 @@ class PhoneConfigManagerTest extends KernelTestCase
     {
         self::bootKernel();
 
-        $this->phoneConfigManager = self::$container->get(PhoneConfigManager::class);
+        $this->phoneConfigManager = self::getContainer()->get(PhoneConfigManager::class);
     }
 
     protected function tearDown() : void

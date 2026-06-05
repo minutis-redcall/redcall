@@ -49,8 +49,10 @@
                                 <td style="width: 20%;" align="center" valign="middle">
                                     <a class="respond btn btn-light"
                                        style="width: 100%;"
-                                       href="{{ path('message_cancel', {code: message.code, action: choice.code, signature: message.signature }) }}">
-                                        <span class="h4">❌</span>
+                                       href="{{ path('message_cancel', {code: message.code, action: choice.code, signature: message.signature }) }}"
+                                       aria-label="{{ 'campaign_status.cancel_answer'|trans({'%choice%': choice.label}, null, language.locale) }}"
+                                       title="{{ 'campaign_status.cancel_answer'|trans({'%choice%': choice.label}, null, language.locale) }}">
+                                        <span class="h4" aria-hidden="true">❌</span>
                                     </a>
                                 </td>
                             </tr>

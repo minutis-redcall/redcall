@@ -262,6 +262,28 @@
     font-weight: 500;
 }
 
+.sd-answer-code {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 9px;
+    background: #fff;
+    border: 1px solid #d4d4d4;
+    font-size: 0.7rem;
+    font-weight: 700;
+    line-height: 1;
+    color: var(--text-secondary, #555);
+}
+
+.sd-answer-chip--active .sd-answer-code {
+    background: #fff8e6;
+    border-color: #f59e0b;
+    color: #92400e;
+}
+
 .sd-answer-resource {
     margin-left: 2px;
 }

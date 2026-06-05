@@ -165,22 +165,25 @@
                 }) }}" title="Provider info">&#x2139;</a>
             {% endif %}
 
-            {# Answer choice badges #}
-            {% if message.answers.count %}
-                {% for choice in communication.choices %}
-                    {% set answer = message.getAnswerByChoice(choice) %}
-                    <span class="{{ answer ? '' : 'd-none' }} sd-answer-badge message-is-choice-{{ choice.id }}-{{ communication.id }}"
-                          data-value="{{ answer ? 1 : 0 }}"
-                          id="message-is-choice-{{ choice.id }}-{{ suffix|e('html_attr') }}">
-                        {{ choice.code }}
-                        <span class="sd-answer-badge-time" id="message-is-choice-time-{{ choice.id }}-{{ suffix|e('html_attr') }}">
-                            {% if answer %}
-                                {{ answer.receivedAt|date('H:i') }}
-                            {% endif %}
-                        </span>
+            {# Answer choice badges — always rendered (with d-none when there's no
+               answer) so the polling JS at scripts.html.twig can toggle them
+               in place. Wrapping in {% if message.answers.count %} caused a
+               race: messages whose answer arrived after the initial render
+               had no DOM element for the JS to reveal, so the badge only
+               appeared on full page refresh. #}
+            {% for choice in communication.choices %}
+                {% set answer = message.getAnswerByChoice(choice) %}
+                <span class="{{ answer ? '' : 'd-none' }} sd-answer-badge message-is-choice-{{ choice.id }}-{{ communication.id }}"
+                      data-value="{{ answer ? 1 : 0 }}"
+                      id="message-is-choice-{{ choice.id }}-{{ suffix|e('html_attr') }}">
+                    {{ choice.code }}
+                    <span class="sd-answer-badge-time" id="message-is-choice-time-{{ choice.id }}-{{ suffix|e('html_attr') }}">
+                        {% if answer %}
+                            {{ answer.receivedAt|date('H:i') }}
+                        {% endif %}
                     </span>
-                {% endfor %}
-            {% endif %}
+                </span>
+            {% endfor %}
 
             {# Invalid answer badge #}
             <span class="{{ message.invalidAnswer ? '' : 'd-none' }} sd-answer-badge sd-answer-badge--invalid message-has-invalid-answer-{{ communication.id }}"

@@ -14,14 +14,16 @@
                     <td>{{ template.name }}</td>
                     <td>
                         <a class="btn btn-secondary"
-                           href="{{ path('management_structures_template_move', {structure: structure.id, template: template.id, csrf: csrf_token('csrf'), newPriority: template.priority + 1}) }}">
+                           href="{{ path('management_structures_template_move', {structure: structure.id, template: template.id, csrf: csrf_token('csrf'), newPriority: template.priority + 1}) }}"
+                           aria-label="{{ 'manage_structures.templates.actions.move_up_aria'|trans({'%name%': template.name}) }}">
                             {{ 'manage_structures.templates.actions.up'|trans }}
                         </a>
                         <span class="m-2">
                             {{ template.priority }}
                         </span>
                         <a class="btn btn-secondary"
-                           href="{{ path('management_structures_template_move', {structure: structure.id, template: template.id, csrf: csrf_token('csrf'), newPriority: template.priority - 1}) }}">
+                           href="{{ path('management_structures_template_move', {structure: structure.id, template: template.id, csrf: csrf_token('csrf'), newPriority: template.priority - 1}) }}"
+                           aria-label="{{ 'manage_structures.templates.actions.move_down_aria'|trans({'%name%': template.name}) }}">
                             {{ 'manage_structures.templates.actions.down'|trans }}
                         </a>
                     </td>

@@ -16,7 +16,7 @@ class PegassSubscriber implements EventSubscriberInterface
         $this->refreshManager = $refreshManager;
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents() : array
     {
         return [
             PegassEvents::UPDATE_STRUCTURE => 'onUpdateStructure',

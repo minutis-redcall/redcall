@@ -4,60 +4,40 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity(repositoryClass="App\Repository\CostRepository")
- * @ORM\HasLifecycleCallbacks
- */
+#[ORM\Entity(repositoryClass: \App\Repository\CostRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class Cost
 {
     const DIRECTION_INBOUND  = 'received';
     const DIRECTION_OUTBOUND = 'sent';
 
-    /**
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     private $id;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Message", inversedBy="costs")
-     */
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Message::class, inversedBy: 'costs')]
     private $message;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
+    #[ORM\Column(type: 'string', length: 255)]
     private $direction;
 
-    /**
-     * @ORM\Column(type="string", length=16)
-     */
+    #[ORM\Column(type: 'string', length: 16)]
     private $fromNumber;
 
-    /**
-     * @ORM\Column(type="string", length=16)
-     */
+    #[ORM\Column(type: 'string', length: 16)]
     private $toNumber;
 
-    /**
-     * @ORM\Column(type="text")
-     */
+    #[ORM\Column(type: 'text')]
     private $body;
 
-    /**
-     * @ORM\Column(type="string", length=16)
-     */
+    #[ORM\Column(type: 'string', length: 16)]
     private $price;
 
-    /**
-     * @ORM\Column(type="string", length=3)
-     */
+    #[ORM\Column(type: 'string', length: 3)]
     private $currency;
 
-    /**
-     * @ORM\Column(type="datetime")
-     */
+    #[ORM\Column(type: 'datetime')]
     private $createdAt;
 
     public function getId() : ?int
@@ -161,9 +141,7 @@ class Cost
         return $this;
     }
 
-    /**
-     * @ORM\PrePersist
-     */
+    #[ORM\PrePersist]
     public function onPrePersist()
     {
         if (null === $this->createdAt) {

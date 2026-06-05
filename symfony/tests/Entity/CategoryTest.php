@@ -15,7 +15,6 @@ class CategoryTest extends TestCase
         $category->setExternalId('ext-' . ($id ?? random_int(1, 999999)));
         if (null !== $id) {
             $ref = new \ReflectionProperty(Category::class, 'id');
-            $ref->setAccessible(true);
             $ref->setValue($category, $id);
         }
 

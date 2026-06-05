@@ -15,7 +15,9 @@
                     <td>{{ badge.name }}</td>
                     <td>{{ badge.description }}</td>
                     <td>
-                        <a class="btn btn-danger" href="{{ path('favorite_badge_delete', {id: badge.id, csrf: csrf_token('csrf')}) }}">
+                        <a class="btn btn-danger"
+                           href="{{ path('favorite_badge_delete', {id: badge.id, csrf: csrf_token('csrf')}) }}"
+                           onclick="return confirm('{{ 'base.crud.delete_confirm'|trans({'%entity%': badge.name})|e('js') }}');">
                             {{ 'base.button.delete'|trans }}
                         </a>
                     </td>

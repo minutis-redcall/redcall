@@ -23,7 +23,7 @@ class UserVerifyCommand extends Command
         $this->userManager = $userManager;
     }
 
-    protected function configure()
+    protected function configure() : void
     {
         parent::configure();
 
@@ -33,7 +33,7 @@ class UserVerifyCommand extends Command
             ->addArgument('email', InputArgument::REQUIRED, 'User email');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output) : int
     {
         $username = $input->getArgument('email');
         $user     = $this->userManager->findOneByUsername($username);

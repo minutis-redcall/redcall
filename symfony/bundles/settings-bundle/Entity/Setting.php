@@ -8,48 +8,42 @@ use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Setting
- *
- * @ORM\Entity(repositoryClass="Bundles\SettingsBundle\Repository\SettingRepository")
- * @ORM\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
- * @ORM\HasLifecycleCallbacks()
  */
+#[ORM\Entity(repositoryClass: \Bundles\SettingsBundle\Repository\SettingRepository::class)]
+#[ORM\ChangeTrackingPolicy('DEFERRED_EXPLICIT')]
+#[ORM\HasLifecycleCallbacks]
 class Setting
 {
     /**
      * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
      */
+    #[ORM\Column(name: 'id', type: 'integer')]
+    #[ORM\Id]
+    #[ORM\GeneratedValue(strategy: 'AUTO')]
     private $id;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="property", type="string", length=190, unique=true)
      */
+    #[ORM\Column(name: 'property', type: 'string', length: 190, unique: true)]
     private $property;
 
     /**
      * @var string
-     *
-     * @ORM\Column(name="value", type="text", nullable=true)
      */
+    #[ORM\Column(name: 'value', type: 'text', nullable: true)]
     private $value;
 
     /**
      * @var DateTime
-     *
-     * @ORM\Column(type="datetime")
      */
+    #[ORM\Column(type: 'datetime')]
     private $createdAt;
 
     /**
      * @var DateTime
-     *
-     * @ORM\Column(type="datetime")
      */
+    #[ORM\Column(type: 'datetime')]
     private $updatedAt;
 
     /**
@@ -140,18 +134,14 @@ class Setting
         return $this;
     }
 
-    /**
-     * @ORM\PrePersist
-     */
+    #[ORM\PrePersist]
     public function onPrePersist()
     {
         $this->setCreatedAt(new DateTime());
         $this->setUpdatedAt(new DateTime());
     }
 
-    /**
-     * @ORM\PreUpdate
-     */
+    #[ORM\PreUpdate]
     public function onPreUpdate()
     {
         $this->setUpdatedAt(new DateTime());

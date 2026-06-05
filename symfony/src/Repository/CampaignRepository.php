@@ -60,7 +60,7 @@ class CampaignRepository extends BaseRepository
         }
 
         if ($communicationIds) {
-            $this->_em->createQueryBuilder()
+            $this->getEntityManager()->createQueryBuilder()
                 ->select('m', 'a', 'ach', 'v')
                 ->from(Message::class, 'm')
                 ->leftJoin('m.answers', 'a')

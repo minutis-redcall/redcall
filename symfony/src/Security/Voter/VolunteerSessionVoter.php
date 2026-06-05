@@ -3,29 +3,27 @@
 namespace App\Security\Voter;
 
 use App\Entity\VolunteerSession;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
+use Symfony\Component\Security\Core\Authorization\Voter\Vote;
 
 class VolunteerSessionVoter extends Voter
 {
     /**
-     * @var SessionInterface
+     * @var RequestStack
      */
-    private $session;
+    private $requestStack;
 
-    /**
-     * @param SessionInterface $session
-     */
-    public function __construct(SessionInterface $session)
+    public function __construct(RequestStack $requestStack)
     {
-        $this->session = $session;
+        $this->requestStack = $requestStack;
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function supports($attribute, $subject)
+    protected function supports(string $attribute, mixed $subject): bool
     {
         if (!$subject instanceof VolunteerSession) {
             return false;
@@ -37,9 +35,9 @@ class VolunteerSessionVoter extends Voter
     /**
      * {@inheritdoc}
      */
-    protected function voteOnAttribute($attribute, $subject, TokenInterface $token)
+    protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token, ?Vote $vote = null): bool
     {
         /** @var VolunteerSession $subject */
-        return $subject->getSessionId() === $this->session->get('volunteer-session');
+        return $subject->getSessionId() === $this->requestStack->getSession()->get('volunteer-session');
     }
 }

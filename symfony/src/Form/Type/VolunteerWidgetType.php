@@ -36,7 +36,7 @@ class VolunteerWidgetType extends TextType
     /**
      * {@inheritdoc}
      */
-    public function getBlockPrefix()
+    public function getBlockPrefix(): string
     {
         return 'volunteer_widget';
     }
@@ -44,7 +44,7 @@ class VolunteerWidgetType extends TextType
     /**
      * {@inheritdoc}
      */
-    public function buildView(FormView $view, FormInterface $form, array $options)
+    public function buildView(FormView $view, FormInterface $form, array $options): void
     {
         if ($view->vars['value']) {
             $volunteer = $this->volunteerManager->findOneByExternalId(

@@ -11,7 +11,7 @@ class SynthesisControllerTest extends BaseWebTestCase
     {
         return new DataFixtures(
             $container->get('doctrine.orm.entity_manager'),
-            $container->get('security.password_encoder')
+            $container->get('security.password_hasher')
         );
     }
 
@@ -41,6 +41,29 @@ class SynthesisControllerTest extends BaseWebTestCase
 
         $client->request('GET', '/syn/invalidcode123');
 
+        $this->assertResponseStatusCodeSame(404);
+    }
+
+    public function testSynthesisPollRenders()
+    {
+        $client    = static::createClient();
+        $container = $client->getContainer();
+        $fixtures  = $this->getFixtures($container);
+
+        $campaign = $fixtures->createCampaign('Synthesis Poll Campaign');
+        $code     = bin2hex(random_bytes(4));
+        $campaign->setCode($code);
+        $container->get('doctrine.orm.entity_manager')->flush();
+
+        $client->request('GET', sprintf('/syn/%s/poll', $code));
+
+        $this->assertResponseIsSuccessful();
+    }
+
+    public function testSynthesisPollInvalidCode()
+    {
+        $client = static::createClient();
+        $client->request('GET', '/syn/zzzzzz/poll');
         $this->assertResponseStatusCodeSame(404);
     }
 }

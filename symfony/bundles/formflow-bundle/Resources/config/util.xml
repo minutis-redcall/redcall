@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+	Author: Christian Raue <christian.raue@gmail.com>
+	Copyright: 2011-2024 Christian Raue
+	License: http://opensource.org/licenses/mit-license.php MIT License
+-->
+<container
+		xmlns="http://symfony.com/schema/dic/services"
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+	<parameters>
+		<parameter key="craue_formflow.util.class">Craue\FormFlowBundle\Util\FormFlowUtil</parameter>
+	</parameters>
+
+	<services>
+		<service id="craue_formflow_util" class="%craue_formflow.util.class%" public="true" />
+
+		<!-- autowiring alias -->
+		<service id="Craue\FormFlowBundle\Util\FormFlowUtil" alias="craue_formflow_util" public="false" />
+	</services>
+</container>

@@ -4,36 +4,27 @@ namespace Bundles\PasswordLoginBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Table(uniqueConstraints={@ORM\UniqueConstraint(name="uuid_idx", columns={"uuid"})})
- * @ORM\Entity(repositoryClass="Bundles\PasswordLoginBundle\Repository\PasswordRecoveryRepository")
- * @ORM\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
- */
+#[ORM\Table]
+#[ORM\UniqueConstraint(name: 'uuid_idx', columns: ['uuid'])]
+#[ORM\Entity(repositoryClass: \Bundles\PasswordLoginBundle\Repository\PasswordRecoveryRepository::class)]
+#[ORM\ChangeTrackingPolicy('DEFERRED_EXPLICIT')]
 class PasswordRecovery
 {
     const EXPIRATION = '3 hours';
 
     const FLOOD_PROTECTION = '3 minutes';
 
-    /**
-     * @ORM\Column(name="username", type="string", length=64)
-     * @ORM\Id
-     */
+    #[ORM\Column(name: 'username', type: 'string', length: 64)]
+    #[ORM\Id]
     private $username;
 
-    /**
-     * @ORM\Column(name="uuid", type="string", length=36)
-     */
+    #[ORM\Column(name: 'uuid', type: 'string', length: 36)]
     private $uuid;
 
-    /**
-     * @ORM\Column(name="timestamp", type="integer", options={"unsigned"=true})
-     */
+    #[ORM\Column(name: 'timestamp', type: 'integer', options: ['unsigned' => true])]
     private $timestamp;
 
-    /**
-     * @ORM\Column(name="sent", type="integer", options={"unsigned"=true})
-     */
+    #[ORM\Column(name: 'sent', type: 'integer', options: ['unsigned' => true])]
     private $sent;
 
     public function __construct()

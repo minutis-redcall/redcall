@@ -24,7 +24,7 @@ class UseOperationType extends AbstractType
         $this->security = $security;
     }
 
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->add('structureExternalId', ChoiceType::class, [
@@ -33,7 +33,7 @@ class UseOperationType extends AbstractType
                 'required'    => false,
                 'constraints' => [
                     new NotBlank(),
-                    new Choice(['choices' => array_flip($this->security->getUser()->getStructuresAsList())]),
+                    new Choice(choices: array_flip($this->security->getUser()->getStructuresAsList())),
                 ],
             ])
             ->add('operation', ChoiceType::class, [
@@ -53,7 +53,7 @@ class UseOperationType extends AbstractType
         $builder->get('operation')->resetViewTransformers();
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => Operation::class,

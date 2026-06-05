@@ -11,13 +11,10 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity(repositoryClass="App\Repository\CommunicationRepository")
- * @ORM\Table(indexes={
- *     @ORM\Index(name="last_activity_idx", columns={"last_activity_at"})
- * })
- * @ORM\HasLifecycleCallbacks()
- */
+#[ORM\Table]
+#[ORM\Index(name: 'last_activity_idx', columns: ['last_activity_at'])]
+#[ORM\Entity(repositoryClass: \App\Repository\CommunicationRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class Communication
 {
     // TODO use an MyCLabs\Enum
@@ -31,106 +28,79 @@ class Communication
         self::TYPE_EMAIL,
     ];
 
-    /**
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     private $id;
 
     /**
      * @var Campaign
-     *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Campaign", inversedBy="communications")
      */
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Campaign::class, inversedBy: 'communications')]
     private $campaign;
 
-    /**
-     * @ORM\Column(type="string", length=255, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private $label;
 
-    /**
-     * @ORM\Column(type="string", length=20)
-     */
+    #[ORM\Column(type: 'string', length: 20)]
     private $type;
 
-    /**
-     * @ORM\Column(type="string", length=80, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 80, nullable: true)]
     private $subject;
 
-    /**
-     * @ORM\Column(type="text")
-     */
+    #[ORM\Column(type: 'text')]
     private $body;
 
     /**
      * @var \DateTime
-     *
-     * @ORM\Column(type="datetime")
      */
+    #[ORM\Column(type: 'datetime')]
     private $createdAt;
 
     /**
      * @var Collection|Message[]
-     *
-     * @ORM\OneToMany(targetEntity="App\Entity\Message", mappedBy="communication", cascade={"persist"})
-     * @ORM\OrderBy({"updatedAt" = "DESC"})
      */
+    #[ORM\OneToMany(targetEntity: \App\Entity\Message::class, mappedBy: 'communication', cascade: ['persist'])]
+    #[ORM\OrderBy(['updatedAt' => 'DESC'])]
     private $messages;
 
     /**
      * @var Choice[]
-     *
-     * @ORM\OneToMany(targetEntity="App\Entity\Choice", mappedBy="communication", cascade={"persist"})
      */
+    #[ORM\OneToMany(targetEntity: \App\Entity\Choice::class, mappedBy: 'communication', cascade: ['persist'])]
     private $choices = [];
 
     /**
      * @var boolean
-     *
-     * @ORM\Column(type="boolean")
      */
+    #[ORM\Column(type: 'boolean')]
     private $multipleAnswer = false;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="App\Entity\Volunteer")
-     */
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Volunteer::class)]
     private $volunteer;
 
-    /**
-     * @ORM\Column(type="string", length=32, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 32, nullable: true)]
     private $shortcut;
 
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     */
+    #[ORM\Column(type: 'text', nullable: true)]
     private $raw;
 
     /**
      * @var Report|null
-     *
-     * @ORM\OneToOne(targetEntity=Report::class, inversedBy="communication", cascade={"persist", "remove"})
      */
+    #[ORM\OneToOne(targetEntity: Report::class, inversedBy: 'communication', cascade: ['persist', 'remove'])]
     private $report;
 
-    /**
-     * @ORM\Column(type="datetime", nullable=true)
-     */
+    #[ORM\Column(type: 'datetime', nullable: true)]
     private $lastActivityAt;
 
     /**
      * @var Collection|Media[]
-     *
-     * @ORM\OneToMany(targetEntity=Media::class, mappedBy="communication", cascade={"persist", "remove"})
      */
+    #[ORM\OneToMany(targetEntity: Media::class, mappedBy: 'communication', cascade: ['persist', 'remove'])]
     private $images;
 
-    /**
-     * @ORM\Column(type="string", length=5)
-     */
+    #[ORM\Column(type: 'string', length: 5)]
     private $language;
 
     public function __construct()
@@ -803,10 +773,8 @@ class Communication
         return $this;
     }
 
-    /**
-     * @ORM\PrePersist
-     * @ORM\PreUpdate
-     */
+    #[ORM\PrePersist]
+    #[ORM\PreUpdate]
     public function onChange()
     {
         $this->lastActivityAt = new \DateTime();

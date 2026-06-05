@@ -27,11 +27,11 @@ abstract class BaseController extends AbstractController
         // If we are in a subrequest, it probably comes from an asynchronous task that has been
         // handled in a previous controller. In that case, we expect "absoluteUri" query parameter
         // to contain the absolute url Twilio originally called.
-        $isMasterRequest = $this->requestStack->getMasterRequest() === $request;
+        $isMasterRequest = $this->requestStack->getMainRequest() === $request;
 
         $validated = $validator->validate(
             $request->headers->get('X-Twilio-Signature') ?? '',
-            $isMasterRequest ? ($request->getUri() ?? '') : $request->get('absoluteUri'),
+            $isMasterRequest ? ($request->getUri() ?? '') : ($request->attributes->get('absoluteUri') ?? $request->query->get('absoluteUri') ?? $request->request->get('absoluteUri')),
             $request->request->all()
         );
 

@@ -83,7 +83,7 @@ admin:
     success: 'Ce bénévole peut désormais être réintégré.'
     title: 'Réintégrer un bénévole supprimé'
     violations:
-      cannot_import: 'Cet identifiant ne peut pas être utilisé.'
+      cannot_import: 'Ce bénévole a été supprimé suite à une demande de suppression de données (RGPD). Son identifiant ne peut pas être réutilisé. Contactez le support si vous devez le réintégrer.'
       not_exists: 'Cet identifiant n''existe pas.'
   home:
     link: Administration
@@ -776,6 +776,7 @@ manage_volunteers:
     tags: Compétences
     update: 'Mettre à jour un bénévole'
     updated: 'Le bénévole a correctement été modifié.'
+    deleted_volunteer_warning: 'Attention : ce bénévole a fait l''objet d''une demande de suppression de données (RGPD). Enregistrer des modifications sur ce bénévole peut poser des problèmes. Contactez le support si vous devez le réintégrer correctement.'
     visible_badges: 'Badges principaux'
     section_messages: 'Derniers messages'
     add: 'Créer un nouveau bénévole'

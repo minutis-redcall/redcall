@@ -21,8 +21,8 @@ class ReportRepository extends ServiceEntityRepository
 
     public function save(Report $report)
     {
-        $this->_em->persist($report);
-        $this->_em->flush();
+        $this->getEntityManager()->persist($report);
+        $this->getEntityManager()->flush();
     }
 
     public function getCommunicationReportsBetween(\DateTime $from, \DateTime $to, int $minMessages = 3) : array
@@ -53,7 +53,7 @@ class ReportRepository extends ServiceEntityRepository
             return [];
         }
 
-        $conn = $this->_em->getConnection();
+        $conn = $this->getEntityManager()->getConnection();
 
         // Build placeholders for structure IDs
         $placeholders = implode(',', array_fill(0, count($structureIds), '?'));
@@ -106,7 +106,7 @@ class ReportRepository extends ServiceEntityRepository
             return [];
         }
 
-        $conn = $this->_em->getConnection();
+        $conn = $this->getEntityManager()->getConnection();
 
         // Build placeholders for structure IDs
         $placeholders = implode(',', array_fill(0, count($structureIds), '?'));
@@ -148,7 +148,7 @@ class ReportRepository extends ServiceEntityRepository
      */
     public function getStructureReportData(\DateTime $from, \DateTime $to, int $minMessages = 3): array
     {
-        $conn = $this->_em->getConnection();
+        $conn = $this->getEntityManager()->getConnection();
 
         $sql = "
             SELECT 

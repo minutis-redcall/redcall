@@ -5,7 +5,9 @@ namespace App\Tests\Form\Type;
 use App\Entity\Choice;
 use App\Form\Type\AnswerType;
 use Symfony\Component\Form\Test\TypeTestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class AnswerTypeTest extends TypeTestCase
 {
     public function testBlockPrefix(): void

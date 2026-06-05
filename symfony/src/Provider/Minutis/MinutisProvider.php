@@ -6,7 +6,7 @@ interface MinutisProvider
 {
     static public function getOperationUrl(int $operationExternalId) : string;
 
-    public function searchForOperations(string $structureExternalId, string $criteria = null) : array;
+    public function searchForOperations(string $structureExternalId, ?string $criteria = null) : array;
 
     public function isOperationExisting(int $operationExternalId) : bool;
 

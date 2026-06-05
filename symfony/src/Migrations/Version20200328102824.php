@@ -20,7 +20,7 @@ final class Version20200328102824 extends AbstractMigration
     public function up(Schema $schema) : void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf(!$this->connection->getDatabasePlatform() instanceof \Doctrine\DBAL\Platforms\AbstractMySQLPlatform, 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('ALTER TABLE prefilled_answers ADD structure_id INT DEFAULT NULL');
         $this->addSql('ALTER TABLE prefilled_answers ADD CONSTRAINT FK_7930840D2534008B FOREIGN KEY (structure_id) REFERENCES structure (id)');
@@ -30,7 +30,7 @@ final class Version20200328102824 extends AbstractMigration
     public function down(Schema $schema) : void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf(!$this->connection->getDatabasePlatform() instanceof \Doctrine\DBAL\Platforms\AbstractMySQLPlatform, 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('ALTER TABLE prefilled_answers DROP FOREIGN KEY FK_7930840D2534008B');
         $this->addSql('DROP INDEX IDX_7930840D2534008B ON prefilled_answers');

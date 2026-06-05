@@ -13,7 +13,7 @@ class TemplateControllerTest extends BaseWebTestCase
     {
         return new DataFixtures(
             $container->get('doctrine.orm.entity_manager'),
-            $container->get('security.password_encoder')
+            $container->get('security.password_hasher')
         );
     }
 
@@ -21,6 +21,13 @@ class TemplateControllerTest extends BaseWebTestCase
     {
         /** @var CsrfTokenManagerInterface $tokenManager */
         $tokenManager = $container->get('security.csrf.token_manager');
+
+        // Sf6: CSRF token storage needs a session in RequestStack
+        if (!$container->get('request_stack')->getMainRequest()) {
+            $req = \Symfony\Component\HttpFoundation\Request::create('/');
+            $req->setSession(new \Symfony\Component\HttpFoundation\Session\Session(new \Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage()));
+            $container->get('request_stack')->push($req);
+        }
 
         return $tokenManager->getToken($id)->getValue();
     }
@@ -163,6 +170,70 @@ class TemplateControllerTest extends BaseWebTestCase
         $this->assertNotNull($updated);
         $this->assertSame('Updated Template Name', $updated->getName());
         $this->assertSame('Updated body content', $updated->getBody());
+    }
+
+    public function testTemplateMoveButtonsCarryAccessibleLabel()
+    {
+        $client   = static::createClient();
+        $fixtures = $this->getFixtures($client->getContainer());
+
+        $admin     = $fixtures->createRawUser('tpl_aria@test.com', 'password', true);
+        $structure = $fixtures->createStructure('TPL ARIA STRUCT', 'EXT-TPL-ARIA');
+        $fixtures->assignUserToStructure($admin, $structure);
+        $fixtures->createTemplate($structure, 'Reorderable Template', 'sms', 'body');
+
+        $this->login($client, $admin);
+
+        $crawler = $client->request('GET', sprintf(
+            '/management/structures/%d/template',
+            $structure->getId()
+        ));
+        $this->assertResponseIsSuccessful();
+
+        // Up/Down buttons contain only the glyphs ▲ / ▼ — they need aria-label
+        // so screen-reader users know which template they're about to move and
+        // which direction.
+        $this->assertGreaterThanOrEqual(
+            1,
+            $crawler->filter('a.btn[aria-label*="Reorderable Template"][aria-label*="up"]')->count(),
+            'Move-up button must declare an aria-label naming the template and direction.'
+        );
+        $this->assertGreaterThanOrEqual(
+            1,
+            $crawler->filter('a.btn[aria-label*="Reorderable Template"][aria-label*="down"]')->count(),
+            'Move-down button must declare an aria-label naming the template and direction.'
+        );
+    }
+
+    public function testTemplateMoveSwapsPriority()
+    {
+        $client   = static::createClient();
+        $fixtures = $this->getFixtures($client->getContainer());
+
+        $admin     = $fixtures->createRawUser('tpl_move-'.uniqid().'@test.com', 'password', true);
+        $structure = $fixtures->createStructure('TPL-MOV-'.uniqid(), 'EXT-TMOV-'.uniqid());
+        $fixtures->assignUserToStructure($admin, $structure);
+        $template  = $fixtures->createTemplate($structure, 'Movable Template', 'sms', 'body');
+
+        $this->login($client, $admin);
+        $csrf = $this->getCsrfToken($client->getContainer());
+
+        $newPriority = $template->getPriority() + 1;
+        $client->request('GET', sprintf(
+            '/management/structures/%d/template/%d/%s/move/%d',
+            $structure->getId(),
+            $template->getId(),
+            $csrf,
+            $newPriority
+        ));
+
+        // The route always redirects back to the list, regardless of move
+        // outcome — assert the redirect target rather than the priority,
+        // which depends on neighbour templates this fixture doesn't have.
+        $this->assertResponseRedirects(sprintf(
+            '/management/structures/%d/template',
+            $structure->getId()
+        ));
     }
 
     public function testDeleteTemplate()

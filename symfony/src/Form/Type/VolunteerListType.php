@@ -13,7 +13,7 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 
 class VolunteerListType extends AbstractType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         parent::buildForm($builder, $options);
 
@@ -22,7 +22,7 @@ class VolunteerListType extends AbstractType
                 'label'       => 'manage_structures.volunteer_list.form.name',
                 'constraints' => [
                     new NotBlank(),
-                    new Length(['min' => 1]),
+                    new Length(min: 1),
                 ],
             ])
             ->add('audience', AudienceType::class, [
@@ -36,7 +36,7 @@ class VolunteerListType extends AbstractType
     /**
      * {@inheritdoc}
      */
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => VolunteerList::class,

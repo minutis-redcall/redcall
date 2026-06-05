@@ -5,36 +5,24 @@ namespace App\Entity;
 use App\Repository\VolunteerSessionRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity(repositoryClass=VolunteerSessionRepository::class)
- * @ORM\Table(
- * uniqueConstraints={
- *     @ORM\UniqueConstraint(name="session_id_idx", columns={"session_id"})
- * })
- */
+#[ORM\Table]
+#[ORM\UniqueConstraint(name: 'session_id_idx', columns: ['session_id'])]
+#[ORM\Entity(repositoryClass: VolunteerSessionRepository::class)]
 class VolunteerSession
 {
-    /**
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     private $id;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Volunteer::class, fetch="EAGER")
-     * @ORM\JoinColumn(nullable=false)
-     */
+    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\ManyToOne(targetEntity: Volunteer::class, fetch: 'EAGER')]
     private $volunteer;
 
-    /**
-     * @ORM\Column(type="string", length=36)
-     */
+    #[ORM\Column(type: 'string', length: 36)]
     private $sessionId;
 
-    /**
-     * @ORM\Column(type="datetime")
-     */
+    #[ORM\Column(type: 'datetime')]
     private $createdAt;
 
     public function getId() : ?int

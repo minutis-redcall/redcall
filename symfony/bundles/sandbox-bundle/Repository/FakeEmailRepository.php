@@ -28,8 +28,8 @@ class FakeEmailRepository extends ServiceEntityRepository
         $fake->setBody($body);
         $fake->setCreatedAt(new DateTime());
 
-        $this->_em->persist($fake);
-        $this->_em->flush();
+        $this->getEntityManager()->persist($fake);
+        $this->getEntityManager()->flush();
     }
 
     public function findAllEmails() : array

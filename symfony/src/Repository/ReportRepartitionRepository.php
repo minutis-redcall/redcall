@@ -21,7 +21,7 @@ class ReportRepartitionRepository extends ServiceEntityRepository
 
     public function save(ReportRepartition $report)
     {
-        $this->_em->persist($report);
-        $this->_em->flush();
+        $this->getEntityManager()->persist($report);
+        $this->getEntityManager()->flush();
     }
 }

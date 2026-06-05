@@ -6,7 +6,7 @@ use App\Entity\User;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
-use Symfony\Component\Security\Core\Security;
+use Symfony\Bundle\SecurityBundle\Security;
 
 class TimezoneSubscriber implements EventSubscriberInterface
 {
@@ -20,7 +20,7 @@ class TimezoneSubscriber implements EventSubscriberInterface
         $this->security = $security;
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents() : array
     {
         return [
             KernelEvents::REQUEST => [['onKernelRequest', -512]],

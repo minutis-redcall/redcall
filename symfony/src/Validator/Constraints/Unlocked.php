@@ -6,7 +6,7 @@ use Symfony\Component\Validator\Constraint;
 
 class Unlocked extends Constraint
 {
-    public function getTargets()
+    public function getTargets() : array|string
     {
         return self::CLASS_CONSTRAINT;
     }

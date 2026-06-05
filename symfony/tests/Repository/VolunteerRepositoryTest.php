@@ -20,12 +20,12 @@ class VolunteerRepositoryTest extends KernelTestCase
     {
         self::bootKernel();
 
-        $this->repository = self::$container->get('doctrine.orm.entity_manager')
+        $this->repository = self::getContainer()->get('doctrine.orm.entity_manager')
             ->getRepository(Volunteer::class);
 
         $this->fixtures = new DataFixtures(
-            self::$container->get('doctrine.orm.entity_manager'),
-            self::$container->get('security.password_encoder')
+            self::getContainer()->get('doctrine.orm.entity_manager'),
+            self::getContainer()->get('security.password_hasher')
         );
     }
 
@@ -65,7 +65,7 @@ class VolunteerRepositoryTest extends KernelTestCase
 
         $this->repository->disable($volunteer);
 
-        $em = self::$container->get('doctrine.orm.entity_manager');
+        $em = self::getContainer()->get('doctrine.orm.entity_manager');
         $em->clear();
         $fresh = $this->repository->find($volunteer->getId());
         $this->assertFalse($fresh->isEnabled());
@@ -75,12 +75,12 @@ class VolunteerRepositoryTest extends KernelTestCase
     {
         $volunteer = $this->fixtures->createStandaloneVolunteer('EN-001', 'en@test.com');
         $volunteer->setEnabled(false);
-        self::$container->get('doctrine.orm.entity_manager')->persist($volunteer);
-        self::$container->get('doctrine.orm.entity_manager')->flush();
+        self::getContainer()->get('doctrine.orm.entity_manager')->persist($volunteer);
+        self::getContainer()->get('doctrine.orm.entity_manager')->flush();
 
         $this->repository->enable($volunteer);
 
-        $em = self::$container->get('doctrine.orm.entity_manager');
+        $em = self::getContainer()->get('doctrine.orm.entity_manager');
         $em->clear();
         $fresh = $this->repository->find($volunteer->getId());
         $this->assertTrue($fresh->isEnabled());
@@ -95,7 +95,7 @@ class VolunteerRepositoryTest extends KernelTestCase
 
         $this->repository->lock($volunteer);
 
-        $em = self::$container->get('doctrine.orm.entity_manager');
+        $em = self::getContainer()->get('doctrine.orm.entity_manager');
         $em->clear();
         $fresh = $this->repository->find($volunteer->getId());
         $this->assertTrue($fresh->isLocked());
@@ -105,12 +105,12 @@ class VolunteerRepositoryTest extends KernelTestCase
     {
         $volunteer = $this->fixtures->createStandaloneVolunteer('ULCK-001', 'ulck@test.com');
         $volunteer->setLocked(true);
-        self::$container->get('doctrine.orm.entity_manager')->persist($volunteer);
-        self::$container->get('doctrine.orm.entity_manager')->flush();
+        self::getContainer()->get('doctrine.orm.entity_manager')->persist($volunteer);
+        self::getContainer()->get('doctrine.orm.entity_manager')->flush();
 
         $this->repository->unlock($volunteer);
 
-        $em = self::$container->get('doctrine.orm.entity_manager');
+        $em = self::getContainer()->get('doctrine.orm.entity_manager');
         $em->clear();
         $fresh = $this->repository->find($volunteer->getId());
         $this->assertFalse($fresh->isLocked());
@@ -137,7 +137,7 @@ class VolunteerRepositoryTest extends KernelTestCase
         );
         $setup['volunteer']->setFirstName('Alice');
         $setup['volunteer']->setLastName('Wonderland');
-        $em = self::$container->get('doctrine.orm.entity_manager');
+        $em = self::getContainer()->get('doctrine.orm.entity_manager');
         $em->persist($setup['volunteer']);
         $em->flush();
 
@@ -169,7 +169,7 @@ class VolunteerRepositoryTest extends KernelTestCase
         $v = $this->fixtures->createStandaloneVolunteer('SRCHALL-001', 'srchall@test.com');
         $v->setFirstName('UniqueSearchName');
         $v->setLastName('TestLast');
-        $em = self::$container->get('doctrine.orm.entity_manager');
+        $em = self::getContainer()->get('doctrine.orm.entity_manager');
         $em->persist($v);
         $em->flush();
 
@@ -218,7 +218,7 @@ class VolunteerRepositoryTest extends KernelTestCase
         $v1 = $this->fixtures->createStandaloneVolunteer('VLD-001', 'vld1@test.com');
         $v2 = $this->fixtures->createStandaloneVolunteer('VLD-002', 'vld2@test.com');
         $v2->setEnabled(false);
-        $em = self::$container->get('doctrine.orm.entity_manager');
+        $em = self::getContainer()->get('doctrine.orm.entity_manager');
         $em->persist($v2);
         $em->flush();
 
@@ -331,7 +331,7 @@ class VolunteerRepositoryTest extends KernelTestCase
         $v1 = $this->fixtures->createStandaloneVolunteer('FILT-D-001', 'filtd1@test.com');
         $v2 = $this->fixtures->createStandaloneVolunteer('FILT-D-002', 'filtd2@test.com');
         $v2->setEnabled(false);
-        $em = self::$container->get('doctrine.orm.entity_manager');
+        $em = self::getContainer()->get('doctrine.orm.entity_manager');
         $em->persist($v2);
         $em->flush();
 
@@ -348,7 +348,7 @@ class VolunteerRepositoryTest extends KernelTestCase
     {
         $v = $this->fixtures->createStandaloneVolunteer('NOMAIL-001', 'nomail@test.com');
         $v->setEmail(null);
-        $em = self::$container->get('doctrine.orm.entity_manager');
+        $em = self::getContainer()->get('doctrine.orm.entity_manager');
         $em->persist($v);
         $em->flush();
 
@@ -363,7 +363,7 @@ class VolunteerRepositoryTest extends KernelTestCase
     {
         $v = $this->fixtures->createStandaloneVolunteer('OPTOUT-001', 'optout@test.com');
         $v->setEmailOptin(false);
-        $em = self::$container->get('doctrine.orm.entity_manager');
+        $em = self::getContainer()->get('doctrine.orm.entity_manager');
         $em->persist($v);
         $em->flush();
 
@@ -379,7 +379,7 @@ class VolunteerRepositoryTest extends KernelTestCase
     {
         $v = $this->fixtures->createStandaloneVolunteer('MINOR-001', 'minor@test.com');
         $v->setMinor(true);
-        $em = self::$container->get('doctrine.orm.entity_manager');
+        $em = self::getContainer()->get('doctrine.orm.entity_manager');
         $em->persist($v);
         $em->flush();
 
@@ -436,7 +436,7 @@ class VolunteerRepositoryTest extends KernelTestCase
         );
         // Volunteer has no phone and we clear email to create an "issue"
         $setup['volunteer']->setEmail(null);
-        $em = self::$container->get('doctrine.orm.entity_manager');
+        $em = self::getContainer()->get('doctrine.orm.entity_manager');
         $em->persist($setup['volunteer']);
         $em->flush();
 

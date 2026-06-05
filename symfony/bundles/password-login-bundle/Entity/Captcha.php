@@ -12,35 +12,26 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * Exception: when a user updates his profile, captcha will be displayed without regarding at
  * whitelisting (because connected users are most likely trusted).
- *
- * @ORM\Table
- * @ORM\Entity(repositoryClass="Bundles\PasswordLoginBundle\Repository\CaptchaRepository")
- * @ORM\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
  */
+#[ORM\Table]
+#[ORM\Entity(repositoryClass: \Bundles\PasswordLoginBundle\Repository\CaptchaRepository::class)]
+#[ORM\ChangeTrackingPolicy('DEFERRED_EXPLICIT')]
 class Captcha
 {
     const WHITELIST_EXPIRATION = '24 hours';
     const FAILURE_GRACE        = '3';
 
-    /**
-     * @ORM\Column(name="ip", type="integer", options={"unsigned"=true})
-     * @ORM\Id
-     */
+    #[ORM\Column(name: 'ip', type: 'integer', options: ['unsigned' => true])]
+    #[ORM\Id]
     protected $ip;
 
-    /**
-     * @ORM\Column(name="timestamp", type="integer", options={"unsigned"=true})
-     */
+    #[ORM\Column(name: 'timestamp', type: 'integer', options: ['unsigned' => true])]
     protected $timestamp;
 
-    /**
-     * @ORM\Column(name="grace", type="integer")
-     */
+    #[ORM\Column(name: 'grace', type: 'integer')]
     protected $grace;
 
-    /**
-     * @ORM\Column(name="whitelisted", type="boolean")
-     */
+    #[ORM\Column(name: 'whitelisted', type: 'boolean')]
     protected $whitelisted;
 
     /**

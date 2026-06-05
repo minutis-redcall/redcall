@@ -8,17 +8,13 @@ use App\Entity\Structure;
 use App\Form\Type\PrefilledAnswersType;
 use App\Manager\PrefilledAnswersManager;
 use Bundles\PaginationBundle\Manager\PaginationManager;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-/**
- * @Route(path="management/structures/{structure}/prefilled-answers", name="management_structures_prefilled_answers_")
- * @ParamConverter("structure", options={"id" = "structure"})
- * @Security("is_granted('STRUCTURE', structure)")
- */
+#[Route(path: "management/structures/{structure}/prefilled-answers", name: "management_structures_prefilled_answers_")]
+#[IsGranted("STRUCTURE", subject: "structure")]
 class PrefilledAnswersController extends BaseController
 {
     /**
@@ -37,10 +33,8 @@ class PrefilledAnswersController extends BaseController
         $this->prefilledAnswersManager = $prefilledAnswersManager;
     }
 
-    /**
-     * @Route("/", name="list")
-     * @Template("management/structures/prefilled_answers/list.html.twig")
-     */
+    #[Route("/", name: "list")]
+#[Template("management/structures/prefilled_answers/list.html.twig")]
     public function listPrefilledAnswers(Structure $structure)
     {
         $prefilledAnswers = $this->prefilledAnswersManager->getPrefilledAnswersByStructure($structure);
@@ -48,18 +42,17 @@ class PrefilledAnswersController extends BaseController
         return ['pager' => $this->paginationManager->getPager($prefilledAnswers), 'structure' => $structure];
     }
 
-    /**
-     * @Route("/{prefilledAnswers}/editor", requirements={"prefilledAnswers" = "\d+"}, name="edit")
-     * @Route("/new", name="new")
-     * @Template("management/structures/prefilled_answers/editor.html.twig")
-     */
+    #[Route("/{prefilledAnswers}/editor", requirements: ["prefilledAnswers" => "\d+"], name: "edit")]
+#[Route("/new", name: "new")]
+#[Template("management/structures/prefilled_answers/editor.html.twig")]
     public function editorPrefilledAnswers(Request $request, Structure $structure)
     {
-        if ($request->get('prefilledAnswers') === null) {
+        $prefilledAnswersId = $request->attributes->get('prefilledAnswers') ?? $request->query->get('prefilledAnswers') ?? $request->request->get('prefilledAnswers');
+        if ($prefilledAnswersId === null) {
             $prefilledAnswers = new PrefilledAnswers();
             $prefilledAnswers->setStructure($structure);
         } else {
-            $prefilledAnswers = $this->prefilledAnswersManager->findById($request->get('prefilledAnswers'));
+            $prefilledAnswers = $this->prefilledAnswersManager->findById($prefilledAnswersId);
             if (!$prefilledAnswers) {
                 throw $this->createNotFoundException();
             }
@@ -78,12 +71,10 @@ class PrefilledAnswersController extends BaseController
         return ['form' => $form->createView(), 'structure' => $structure];
     }
 
-    /**
-     * @Route("/{prefilledAnswers}/delete", requirements={"prefilledAnswers" = "\d+"}, name="delete")
-     */
+    #[Route("/{prefilledAnswers}/delete", requirements: ["prefilledAnswers" => "\d+"], name: "delete")]
     public function deleteAction(Request $request, PrefilledAnswers $prefilledAnswers, Structure $structure)
     {
-        $this->validateCsrfOrThrowNotFoundException('prefilled_answers', $request->get('csrf'));
+        $this->validateCsrfOrThrowNotFoundException('prefilled_answers', ($request->attributes->get('csrf') ?? $request->query->get('csrf') ?? $request->request->get('csrf')));
 
         $this->prefilledAnswersManager->remove($prefilledAnswers);
 

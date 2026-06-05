@@ -10,7 +10,9 @@ use Symfony\Component\Form\FormFactoryInterface;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class BaseControllerTest extends TestCase
 {
     // --- orderBy ---
@@ -168,7 +170,8 @@ class BaseControllerTest extends TestCase
             ->willReturn($formBuilder);
 
         $container = $this->createMock(ContainerInterface::class);
-        $container->method('get')
+        $container->expects($this->atLeastOnce())
+            ->method('get')
             ->with('form.factory')
             ->willReturn($formFactory);
         $container->method('has')

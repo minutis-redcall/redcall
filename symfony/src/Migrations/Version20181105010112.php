@@ -13,7 +13,7 @@ final class Version20181105010112 extends AbstractMigration
     public function up(Schema $schema) : void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf(!$this->connection->getDatabasePlatform() instanceof \Doctrine\DBAL\Platforms\AbstractMySQLPlatform, 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('ALTER TABLE volunteer_import ADD tags TEXT DEFAULT NULL COMMENT \'(DC2Type:json_array)\', DROP has_psc1, DROP has_pse1, DROP has_pse1r, DROP has_pse2, DROP has_pse2r, DROP has_drvr_vl, DROP has_drvr_vpsp, DROP has_ci, DROP has_ci_r');
         $this->addSql("UPDATE tag SET label = 'emergency_assistance' WHERE id = 1");
@@ -34,7 +34,7 @@ final class Version20181105010112 extends AbstractMigration
     public function down(Schema $schema) : void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf(!$this->connection->getDatabasePlatform() instanceof \Doctrine\DBAL\Platforms\AbstractMySQLPlatform, 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('ALTER TABLE volunteer_import CHANGE is_minor is_minor TINYINT(1) NOT NULL');
         $this->addSql('ALTER TABLE volunteer_import ADD has_psc1 TINYINT(1) NOT NULL, ADD has_pse1 TINYINT(1) NOT NULL, ADD has_pse1r TINYINT(1) NOT NULL, ADD has_pse2 TINYINT(1) NOT NULL, ADD has_pse2r TINYINT(1) NOT NULL, ADD has_drvr_vl TINYINT(1) NOT NULL, ADD has_drvr_vpsp TINYINT(1) NOT NULL, ADD has_ci TINYINT(1) NOT NULL, ADD has_ci_r TINYINT(1) NOT NULL, DROP tags');

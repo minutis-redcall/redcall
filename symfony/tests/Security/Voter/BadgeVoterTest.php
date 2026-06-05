@@ -10,7 +10,9 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Security\Core\Authorization\Voter\VoterInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationCredentialsNotFoundException;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class BadgeVoterTest extends KernelTestCase
 {
     private BadgeVoter $voter;
@@ -25,13 +27,13 @@ class BadgeVoterTest extends KernelTestCase
         $this->voter = $container->get(BadgeVoter::class);
         $this->fixtures = new DataFixtures(
             $container->get('doctrine.orm.entity_manager'),
-            $container->get('security.password_encoder')
+            $container->get('security.password_hasher')
         );
     }
 
     private function createToken($user): UsernamePasswordToken
     {
-        $token = new UsernamePasswordToken($user, null, 'main', $user->getRoles());
+        $token = new UsernamePasswordToken($user, 'main', $user->getRoles());
         static::getContainer()->get('security.token_storage')->setToken($token);
 
         return $token;
@@ -117,12 +119,12 @@ class BadgeVoterTest extends KernelTestCase
     {
         $badge = $this->fixtures->createBadge('Anon Badge', 'BADGE-ANON-001');
 
-        // Voter calls security->isGranted() which throws when token storage is empty
+        // Sf6: AuthorizationChecker returns false when no token, voter returns DENIED
         static::getContainer()->get('security.token_storage')->setToken(null);
         $token = $this->createMock(UsernamePasswordToken::class);
 
-        $this->expectException(AuthenticationCredentialsNotFoundException::class);
-        $this->voter->vote($token, $badge, ['BADGE']);
+        $result = $this->voter->vote($token, $badge, ['BADGE']);
+        $this->assertEquals(VoterInterface::ACCESS_DENIED, $result);
     }
 
     public function testAnyAttributeIsAcceptedWhenSubjectIsBadge(): void

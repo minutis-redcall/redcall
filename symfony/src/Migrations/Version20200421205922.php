@@ -20,9 +20,9 @@ final class Version20200421205922 extends AbstractMigration
     public function up(Schema $schema) : void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf(!$this->connection->getDatabasePlatform() instanceof \Doctrine\DBAL\Platforms\AbstractMySQLPlatform, 'Migration can only be executed safely on \'mysql\'.');
 
-        $structureId = $this->connection->fetchColumn('SELECT id FROM structure WHERE identifier = 0');
+        $structureId = $this->connection->fetchOne('SELECT id FROM structure WHERE identifier = 0');
 
         if (false === $structureId) {
             return;

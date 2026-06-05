@@ -5,16 +5,14 @@ namespace App\Controller\Admin;
 use App\Base\BaseController;
 use App\Manager\AnswerManager;
 use Bundles\PaginationBundle\Manager\PaginationManager;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
-/**
- * @Route("/admin/answer-analysis", name="admin_answer_analysis_")
- */
+#[Route("/admin/answer-analysis", name: "admin_answer_analysis_")]
 class AnswerAnalysisController extends BaseController
 {
     /**
@@ -33,10 +31,8 @@ class AnswerAnalysisController extends BaseController
         $this->answerManager     = $answerManager;
     }
 
-    /**
-     * @Route(name="index")
-     * @Template("admin/answer_analysis/index.html.twig")
-     */
+    #[Route(name: "index")]
+#[Template("admin/answer_analysis/index.html.twig")]
     public function index(Request $request) : array
     {
         $form = $this->createSearchForm($request);

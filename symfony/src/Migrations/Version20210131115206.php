@@ -20,7 +20,7 @@ final class Version20210131115206 extends AbstractMigration
     public function up(Schema $schema) : void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf(!$this->connection->getDatabasePlatform() instanceof \Doctrine\DBAL\Platforms\AbstractMySQLPlatform, 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('ALTER TABLE media ADD communication_id INT DEFAULT NULL');
         $this->addSql('ALTER TABLE media ADD CONSTRAINT FK_6A2CA10C1C2D1E0C FOREIGN KEY (communication_id) REFERENCES communication (id)');
@@ -30,7 +30,7 @@ final class Version20210131115206 extends AbstractMigration
     public function down(Schema $schema) : void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf(!$this->connection->getDatabasePlatform() instanceof \Doctrine\DBAL\Platforms\AbstractMySQLPlatform, 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('ALTER TABLE media DROP FOREIGN KEY FK_6A2CA10C1C2D1E0C');
         $this->addSql('DROP INDEX IDX_6A2CA10C1C2D1E0C ON media');

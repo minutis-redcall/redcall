@@ -9,7 +9,7 @@ use Symfony\Component\Validator\Constraint;
  */
 class Phone extends Constraint
 {
-    public function getTargets()
+    public function getTargets() : array|string
     {
         return self::CLASS_CONSTRAINT;
     }

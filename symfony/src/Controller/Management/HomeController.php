@@ -3,16 +3,12 @@
 namespace App\Controller\Management;
 
 use App\Base\BaseController;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
-/**
- * @Route(path="management/", name="management_")
- */
+#[Route(path: "management/", name: "management_")]
 class HomeController extends BaseController
 {
-    /**
-     * @Route(name="home")
-     */
+    #[Route(name: "home")]
     public function indexAction()
     {
         return $this->render('management/home.html.twig', [

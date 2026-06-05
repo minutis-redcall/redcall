@@ -14,19 +14,17 @@ use App\Manager\VolunteerManager;
 use App\Model\Csrf;
 use App\Security\Helper\Security;
 use Bundles\PaginationBundle\Manager\PaginationManager;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
-/**
- * @Route(path="management/structures/volunteer-lists", name="management_structures_volunteer_lists_")
- */
+#[Route(path: "management/structures/volunteer-lists", name: "management_structures_volunteer_lists_")]
 class VolunteerListController extends BaseController
 {
     /**
@@ -68,33 +66,27 @@ class VolunteerListController extends BaseController
     }
 
 
-    /**
-     * @Route("/", name="home")
-     */
+    #[Route("/", name: "home")]
     public function homeAction()
     {
         return $this->render('management/structures/volunteer_list/home.html.twig');
     }
 
-    /**
-     * @Route("/{structureId}/", name="index")
-     * @Entity("structure", expr="repository.find(structureId)")
-     * @IsGranted("STRUCTURE", subject="structure")
-     */
-    public function indexAction(Structure $structure)
+    #[Route("/{structureId}/", name: "index")]
+    #[IsGranted("STRUCTURE", subject: "structure")]
+    public function indexAction(#[MapEntity(expr: "repository.find(structureId)")] Structure $structure)
     {
         return $this->render('management/structures/volunteer_list/index.html.twig', [
             'structure' => $structure,
         ]);
     }
 
-    /**
-     * @Route("/{structureId}/create/{volunteerListId}", name="create", defaults={"volunteerListId"=null})
-     * @Entity("volunteerList", expr="repository.findOneById(volunteerListId)")
-     * @Entity("structure", expr="repository.find(structureId)")
-     * @IsGranted("STRUCTURE", subject="structure")
-     */
-    public function createAction(Structure $structure, Request $request, ?VolunteerList $volunteerList = null)
+    #[Route("/{structureId}/create/{volunteerListId}", name: "create", defaults: ["volunteerListId" => null])]
+    #[IsGranted("STRUCTURE", subject: "structure")]
+    public function createAction(
+        #[MapEntity(expr: "repository.find(structureId)")] Structure $structure,
+        Request $request,
+        #[MapEntity(expr: "repository.findOneById(volunteerListId)")] ?VolunteerList $volunteerList = null)
     {
         $volunteerList = $volunteerList ?? new VolunteerList();
         $volunteerList->setStructure($structure);
@@ -131,13 +123,12 @@ class VolunteerListController extends BaseController
         ]);
     }
 
-    /**
-     * @Route("/{structureId}/cards/{volunteerListId}", name="cards")
-     * @Entity("volunteerList", expr="repository.findOneById(volunteerListId)")
-     * @Entity("structure", expr="repository.find(structureId)")
-     * @IsGranted("STRUCTURE", subject="structure")
-     */
-    public function cardsAction(Request $request, Structure $structure, VolunteerList $volunteerList = null)
+    #[Route("/{structureId}/cards/{volunteerListId}", name: "cards")]
+    #[IsGranted("STRUCTURE", subject: "structure")]
+    public function cardsAction(
+        Request $request,
+        #[MapEntity(expr: "repository.find(structureId)")] Structure $structure,
+        #[MapEntity(expr: "repository.findOneById(volunteerListId)")] ?VolunteerList $volunteerList = null)
     {
         $add = $this->createAddVolunteerForm($request);
         if ($add->isSubmitted() && $add->isValid()) {
@@ -187,16 +178,12 @@ class VolunteerListController extends BaseController
         ]);
     }
 
-    /**
-     * @Route("/{structureId}/remove-one-volunteer/{csrf}/{volunteerListId}/{volunteerId}", name="delete_one_volunteer")
-     * @Entity("volunteerList", expr="repository.findOneById(volunteerListId)")
-     * @Entity("volunteer", expr="repository.findOneById(volunteerId)")
-     * @Entity("structure", expr="repository.find(structureId)")
-     * @IsGranted("STRUCTURE", subject="structure")
-     */
-    public function deleteOneVolunteerAction(Structure $structure,
-        VolunteerList $volunteerList,
-        Volunteer $volunteer,
+    #[Route("/{structureId}/remove-one-volunteer/{csrf}/{volunteerListId}/{volunteerId}", name: "delete_one_volunteer")]
+    #[IsGranted("STRUCTURE", subject: "structure")]
+    public function deleteOneVolunteerAction(
+        #[MapEntity(expr: "repository.find(structureId)")] Structure $structure,
+        #[MapEntity(expr: "repository.findOneById(volunteerListId)")] VolunteerList $volunteerList,
+        #[MapEntity(expr: "repository.findOneById(volunteerId)")] Volunteer $volunteer,
         Csrf $csrf)
     {
         $volunteerList->removeVolunteer($volunteer);
@@ -208,13 +195,12 @@ class VolunteerListController extends BaseController
         ]);
     }
 
-    /**
-     * @Route("/{structureId}/remove/{csrf}/{volunteerListId}", name="delete")
-     * @Entity("volunteerList", expr="repository.findOneById(volunteerListId)")
-     * @Entity("structure", expr="repository.find(structureId)")
-     * @IsGranted("STRUCTURE", subject="structure")
-     */
-    public function deleteAction(Structure $structure, VolunteerList $volunteerList, Csrf $csrf)
+    #[Route("/{structureId}/remove/{csrf}/{volunteerListId}", name: "delete")]
+    #[IsGranted("STRUCTURE", subject: "structure")]
+    public function deleteAction(
+        #[MapEntity(expr: "repository.find(structureId)")] Structure $structure,
+        #[MapEntity(expr: "repository.findOneById(volunteerListId)")] VolunteerList $volunteerList,
+        Csrf $csrf)
     {
         $this->volunteerListManager->remove($volunteerList);
 

@@ -20,11 +20,11 @@ final class Version20200121005727 extends AbstractMigration
     public function up(Schema $schema) : void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf(!$this->connection->getDatabasePlatform() instanceof \Doctrine\DBAL\Platforms\AbstractMySQLPlatform, 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('CREATE TABLE campaign_structure (campaign_id INT NOT NULL, structure_id INT NOT NULL, INDEX IDX_AF892B91F639F774 (campaign_id), INDEX IDX_AF892B912534008B (structure_id), PRIMARY KEY(campaign_id, structure_id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
 
-        $paris0102 = $this->connection->fetchColumn('SELECT id FROM structure WHERE identifier = :identifier', [
+        $paris0102 = $this->connection->fetchOne('SELECT id FROM structure WHERE identifier = :identifier', [
             'identifier' => '889',
         ]);
 
@@ -43,7 +43,7 @@ final class Version20200121005727 extends AbstractMigration
     public function down(Schema $schema) : void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf(!$this->connection->getDatabasePlatform() instanceof \Doctrine\DBAL\Platforms\AbstractMySQLPlatform, 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('DROP TABLE campaign_structure');
     }

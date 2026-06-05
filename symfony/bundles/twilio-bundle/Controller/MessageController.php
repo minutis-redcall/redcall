@@ -9,11 +9,9 @@ use Psr\Log\NullLogger;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
-/**
- * @Route(name="twilio_", path="/twilio/")
- */
+#[Route(name: "twilio_", path: "/twilio/")]
 class MessageController extends BaseController
 {
     /**
@@ -28,7 +26,7 @@ class MessageController extends BaseController
 
     public function __construct(RequestStack $requestStack,
         TwilioMessageManager $messageManager,
-        LoggerInterface $logger = null)
+        ?LoggerInterface $logger = null)
     {
         parent::__construct($requestStack);
 
@@ -36,9 +34,7 @@ class MessageController extends BaseController
         $this->logger         = $logger ?? new NullLogger();
     }
 
-    /**
-     * @Route(name="incoming_message", path="incoming-message")
-     */
+    #[Route(name: "incoming_message", path: "incoming-message")]
     public function incoming(Request $request)
     {
         $this->validateRequestSignature($request);

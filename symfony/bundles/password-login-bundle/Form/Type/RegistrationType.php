@@ -2,11 +2,11 @@
 
 namespace Bundles\PasswordLoginBundle\Form\Type;
 
+use App\Form\Type\RecaptchaType;
+use App\Validator\Constraints\RecaptchaTrue;
 use Bundles\PasswordLoginBundle\Base\BaseType;
 use Bundles\PasswordLoginBundle\Manager\CaptchaManager;
 use Bundles\PasswordLoginBundle\Manager\UserManager;
-use EWZ\Bundle\RecaptchaBundle\Form\Type\EWZRecaptchaType;
-use EWZ\Bundle\RecaptchaBundle\Validator\Constraints\IsTrue as RecaptchaTrue;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -49,26 +49,29 @@ class RegistrationType extends AbstractType
         $this->translator     = $translator;
     }
 
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->add('username', Type\EmailType::class, [
                 'label'       => 'password_login.register.email',
                 'required'    => true,
+                'attr'        => [
+                    'autocomplete' => 'username',
+                    'autofocus'    => 'autofocus',
+                    'inputmode'    => 'email',
+                ],
                 'constraints' => [
                     new Constraints\Email(),
                     new Constraints\Regex('/^[a-zA-Z0-9\_\-\.\@]+$/'),
-                    new Constraints\Length(['min' => 8]),
-                    new Constraints\Callback([
-                        'callback' => function ($object, ExecutionContextInterface $context, $payload) {
-                            if ($this->userManager->findOneByUsername($object)) {
-                                $context
-                                    ->buildViolation($this->translator->trans('password_login.register.already_exists'))
-                                    ->atPath('username')
-                                    ->addViolation();
-                            }
-                        },
-                    ]),
+                    new Constraints\Length(min: 8),
+                    new Constraints\Callback(callback: function ($object, ExecutionContextInterface $context, $payload) {
+                        if ($this->userManager->findOneByUsername($object)) {
+                            $context
+                                ->buildViolation($this->translator->trans('password_login.register.already_exists'))
+                                ->atPath('username')
+                                ->addViolation();
+                        }
+                    }),
                 ],
             ])
             ->add('password', Type\RepeatedType::class, [
@@ -77,22 +80,27 @@ class RegistrationType extends AbstractType
                 'required'        => true,
                 'first_options'   => [
                     'label'       => 'password_login.register.password',
+                    'attr'        => [
+                        'autocomplete' => 'new-password',
+                    ],
                     'constraints' => [
-                        new Constraints\Length([
-                            'min' => 8,
-                            'max' => 4096,
-                        ]),
+                        new Constraints\Length(min: 8, max: 4096),
                         new Constraints\NotCompromisedPassword(),
                     ],
                 ],
-                'second_options'  => ['label' => 'password_login.register.repeat_password'],
+                'second_options'  => [
+                    'label' => 'password_login.register.repeat_password',
+                    'attr'  => [
+                        'autocomplete' => 'new-password',
+                    ],
+                ],
             ]);
 
-        $ip = $this->requestStack->getMasterRequest()->getClientIp();
+        $ip = $this->requestStack->getMainRequest()->getClientIp();
 
         if (!$this->captchaManager->isAllowed($ip)) {
             $builder
-                ->add('recaptcha', EWZRecaptchaType::class, [
+                ->add('recaptcha', RecaptchaType::class, [
                     'label'       => 'password_login.register.captcha',
                     'constraints' => [
                         new RecaptchaTrue(),
@@ -106,7 +114,7 @@ class RegistrationType extends AbstractType
         ]);
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefault('allow_extra_fields', true);
     }

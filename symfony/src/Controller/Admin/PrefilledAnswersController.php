@@ -7,13 +7,11 @@ use App\Entity\PrefilledAnswers;
 use App\Form\Type\PrefilledAnswersType;
 use App\Manager\PrefilledAnswersManager;
 use Bundles\PaginationBundle\Manager\PaginationManager;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\ParamConverter;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
-/**
- * @Route(path="admin/reponses-pre-remplies/", name="admin_prefilled_answers_")
- */
+#[Route(path: "admin/reponses-pre-remplies/", name: "admin_prefilled_answers_")]
 class PrefilledAnswersController extends BaseController
 {
     /**
@@ -32,9 +30,7 @@ class PrefilledAnswersController extends BaseController
         $this->prefilledAnswersManager = $prefilledAnswersManager;
     }
 
-    /**
-     * @Route(name="list")
-     */
+    #[Route(name: "list")]
     public function listAction()
     {
         $prefilledAnswers = $this->prefilledAnswersManager->getGlobalPrefilledAnswers();
@@ -44,14 +40,7 @@ class PrefilledAnswersController extends BaseController
         ]);
     }
 
-    /**
-     * @Route(
-     *     name="editor",
-     *     path="editer/{pfaId}",
-     *     defaults={"pfaId": null},
-     *     requirements={"pfaId" = "\d+"}
-     * )
-     */
+    #[Route(name: "editor", path: "editer/{pfaId}", defaults: ["pfaId" => null], requirements: ["pfaId" => "\d+"])]
     public function editorAction(Request $request, ?int $pfaId = null)
     {
         $pfa = new PrefilledAnswers();
@@ -79,15 +68,8 @@ class PrefilledAnswersController extends BaseController
         ]);
     }
 
-    /**
-     * @Route(
-     *     name="delete",
-     *     path="supprimer/{csrf}/{pfaId}",
-     *     requirements={"pfaId" = "\d+"}
-     * )
-     * @ParamConverter("prefilledAnswers", options={"id"= "pfaId"})
-     */
-    public function deleteAction(PrefilledAnswers $prefilledAnswers, string $csrf)
+    #[Route(name: "delete", path: "supprimer/{csrf}/{pfaId}", requirements: ["pfaId" => "\d+"])]
+    public function deleteAction(#[MapEntity(id: "pfaId")] PrefilledAnswers $prefilledAnswers, string $csrf)
     {
         $this->validateCsrfOrThrowNotFoundException('prefilled_answers', $csrf);
 

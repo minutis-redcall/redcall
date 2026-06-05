@@ -5,14 +5,12 @@ namespace App\Controller;
 use App\Base\BaseController;
 use App\Entity\User;
 use App\Manager\ReportManager;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Bridge\Twig\Attribute\Template;
+use Symfony\Component\Routing\Attribute\Route;
 
-/**
- * @Route("/costs", name="costs_")
- * @IsGranted("ROLE_TRUSTED")
- */
+#[Route("/costs", name: "costs_")]
+#[IsGranted("ROLE_TRUSTED")]
 class CostsController extends BaseController
 {
     private ReportManager $reportManager;
@@ -22,10 +20,8 @@ class CostsController extends BaseController
         $this->reportManager = $reportManager;
     }
 
-    /**
-     * @Route("/", name="home")
-     * @Template
-     */
+    #[Route("/", name: "home")]
+    #[Template("costs/home.html.twig")]
     public function home(): array
     {
         /** @var User $user */

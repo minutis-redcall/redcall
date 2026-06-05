@@ -4,7 +4,7 @@ namespace Bundles\SandboxBundle\Controller;
 
 use Bundles\SandboxBundle\Base\BaseController;
 use Bundles\SandboxBundle\Manager\AnonymizeManager;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 class AnonymizeController extends BaseController
 {
@@ -21,9 +21,7 @@ class AnonymizeController extends BaseController
         $this->anonymizeManager = $anonymizeManager;
     }
 
-    /**
-     * @Route("/anonymize/{csrf}", name="anonymize")
-     */
+    #[Route("/anonymize/{csrf}", name: "anonymize")]
     public function anonymizeAction(string $csrf)
     {
         $this->validateCsrfOrThrowNotFoundException('anonymize', $csrf);

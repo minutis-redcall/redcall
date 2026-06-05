@@ -9,15 +9,16 @@ use App\Repository\MediaRepository;
 use App\Services\TextToSpeech;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class MediaManagerTest extends TestCase
 {
     private function createMediaRepositoryMock(array $methods = ['findOneByHash', 'save', 'clearExpired'])
     {
         return $this->getMockBuilder(MediaRepository::class)
             ->disableOriginalConstructor()
-            ->addMethods(array_diff($methods, get_class_methods(MediaRepository::class)))
-            ->onlyMethods(array_intersect($methods, get_class_methods(MediaRepository::class)))
+            ->onlyMethods($methods)
             ->getMock();
     }
 
@@ -56,7 +57,8 @@ class MediaManagerTest extends TestCase
         $existingMedia->setCreatedAt(new \DateTime());
 
         $mediaRepository = $this->createMediaRepositoryMock();
-        $mediaRepository->method('findOneByHash')
+        $mediaRepository->expects($this->atLeastOnce())
+            ->method('findOneByHash')
             ->with(hash('SHA256', $text))
             ->willReturn($existingMedia);
         $mediaRepository->expects($this->never())->method('save');

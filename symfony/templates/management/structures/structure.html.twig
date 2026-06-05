@@ -4,7 +4,7 @@
             <a href="{{ path('management_volunteers_list', {id: structure.id}) }}">
                 <strong style="{% if not structure.enabled %}color:grey;{% endif %}">{{ structure.name }}</strong>
             </a>
-            {% if not structure.enabled %}🚫{% endif %}
+            {% if not structure.enabled %}<span aria-label="{{ 'manage_structures.disabled_status'|trans }}" title="{{ 'manage_structures.disabled_status'|trans }}">🚫</span>{% endif %}
             <div class="float-right">
                 <div class="dropdown">
                     <button class="btn btn-sm btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -115,7 +115,9 @@
                    class="toggle-action"
                    style="text-decoration: none;"
                    data-id="{{ structure.id }}"
-                   data-href="{{ path('management_structures_toggle_lock', {id: structure.id, token: csrf_token('token')}) }}" title="{{ 'manage_structures.unlock'|trans }}">
+                   data-href="{{ path('management_structures_toggle_lock', {id: structure.id, token: csrf_token('token')}) }}"
+                   aria-label="{{ 'manage_structures.unlock'|trans }}"
+                   title="{{ 'manage_structures.unlock'|trans }}">
                     🔒
                     <span style="color:grey;">{{ 'lock.locked'|trans }}</span>
                 </a>
@@ -124,7 +126,9 @@
                    class="toggle-action"
                    style="text-decoration: none;"
                    data-id="{{ structure.id }}"
-                   data-href="{{ path('management_structures_toggle_lock', {id: structure.id, token: csrf_token('token')}) }}" title="{{ 'manage_structures.lock'|trans }}">🔓</a>
+                   data-href="{{ path('management_structures_toggle_lock', {id: structure.id, token: csrf_token('token')}) }}"
+                   aria-label="{{ 'manage_structures.lock'|trans }}"
+                   title="{{ 'manage_structures.lock'|trans }}">🔓</a>
             {% endif %}
         {% endif %}
 

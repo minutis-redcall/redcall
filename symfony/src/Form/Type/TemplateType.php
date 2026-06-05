@@ -37,16 +37,14 @@ class TemplateType extends AbstractType
         $this->purifier             = $purifier;
     }
 
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->add('name', TextType::class, [
                 'label'       => 'manage_structures.templates.form.name',
                 'constraints' => [
                     new NotBlank(),
-                    new Length([
-                        'max' => 255,
-                    ]),
+                    new Length(max: 255),
                 ],
             ])
             ->add('type', ChoiceType::class, [
@@ -57,7 +55,7 @@ class TemplateType extends AbstractType
                     'manage_structures.templates.types.email' => Communication::TYPE_EMAIL,
                 ],
                 'constraints' => [
-                    new Choice(Communication::TYPES),
+                    new Choice(choices: Communication::TYPES),
                 ],
                 'expanded'    => true,
             ])
@@ -66,9 +64,7 @@ class TemplateType extends AbstractType
                 'label'       => 'manage_structures.templates.form.subject',
                 'required'    => false,
                 'constraints' => [
-                    new Length([
-                        'max' => 80,
-                    ]),
+                    new Length(max: 80),
                 ],
             ])
             ->add('body_text', TextareaType::class, [
@@ -87,9 +83,7 @@ class TemplateType extends AbstractType
                 'entry_options'  => [
                     'label'       => false,
                     'constraints' => [
-                        new Length([
-                            'max' => 255,
-                        ]),
+                        new Length(max: 255),
                     ],
                 ],
                 'error_bubbling' => false,
@@ -152,7 +146,7 @@ class TemplateType extends AbstractType
         });
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults(['data_class' => Template::class]);
     }

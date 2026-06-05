@@ -43,20 +43,18 @@ class UserManager extends BaseUserManager
     }
 
     /**
-     * @required
-     *
      * @param VolunteerManager $campaignManager
      */
+    #[\Symfony\Contracts\Service\Attribute\Required]
     public function setVolunteerManager(VolunteerManager $volunteerManager)
     {
         $this->volunteerManager = $volunteerManager;
     }
 
     /**
-     * @required
-     *
      * @param StructureManager $campaignManager
      */
+    #[\Symfony\Contracts\Service\Attribute\Required]
     public function setStructureManager(StructureManager $structureManager)
     {
         $this->structureManager = $structureManager;

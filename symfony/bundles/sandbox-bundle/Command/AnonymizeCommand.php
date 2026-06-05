@@ -28,7 +28,7 @@ class AnonymizeCommand extends BaseCommand
     /**
      * {@inheritdoc}
      */
-    protected function configure()
+    protected function configure() : void
     {
         $this
             ->setName('anonymize')
@@ -39,7 +39,7 @@ class AnonymizeCommand extends BaseCommand
     /**
      * {@inheritdoc}
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output) : int
     {
         if ($volunteers = $input->getOption('volunteer')) {
             foreach ($volunteers as $externalId) {

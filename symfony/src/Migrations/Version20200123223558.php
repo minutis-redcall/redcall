@@ -20,14 +20,14 @@ final class Version20200123223558 extends AbstractMigration
     public function up(Schema $schema) : void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf(!$this->connection->getDatabasePlatform() instanceof \Doctrine\DBAL\Platforms\AbstractMySQLPlatform, 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('ALTER TABLE message CHANGE prefix prefix VARCHAR(8) NOT NULL');
         $this->addSql('CREATE INDEX prefixx ON message (prefix)');
 
         $prefixes = [];
         $updates  = [];
-        $messages = $this->connection->fetchAll('SELECT id, volunteer_id FROM message');
+        $messages = $this->connection->fetchAllAssociative('SELECT id, volunteer_id FROM message');
 
         if (!$messages) {
             return;
@@ -57,7 +57,7 @@ final class Version20200123223558 extends AbstractMigration
     public function down(Schema $schema) : void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf(!$this->connection->getDatabasePlatform() instanceof \Doctrine\DBAL\Platforms\AbstractMySQLPlatform, 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('DROP INDEX prefixx ON message');
         $this->addSql('ALTER TABLE message CHANGE prefix prefix VARCHAR(8) CHARACTER SET utf8mb4 DEFAULT \'A\' NOT NULL COLLATE `utf8mb4_unicode_ci`');

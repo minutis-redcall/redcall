@@ -8,6 +8,7 @@
            class="sd-answer-chip filter-response"
            data-communication-id="{{ communication.id }}"
            data-target="filter-is-choice-{{ choice.id }}-{{ communication.id }}">
+            <span class="sd-answer-code">{{ choice.code }}</span>
             <span class="sd-answer-label">{{ choice.label }}</span>
             <span class="sd-answer-count" id="choice-count-{{ choice.id }}" data-count="{{ choice.count }}">{{ choice.count }}</span>
             {% if campaign.choiceShouldCreateResource(choice) %}

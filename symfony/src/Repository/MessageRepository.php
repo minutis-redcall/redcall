@@ -77,11 +77,11 @@ class MessageRepository extends BaseRepository
         foreach ($message->getAnswers() as $answer) {
             /* @var Answer $answer */
             if ($answer->getChoices()->removeElement($choice)) {
-                $this->_em->persist($answer);
+                $this->getEntityManager()->persist($answer);
             }
         }
 
-        $this->_em->flush();
+        $this->getEntityManager()->flush();
     }
 
     public function findOneByIdNoCache(int $messageId) : ?Message
@@ -96,7 +96,7 @@ class MessageRepository extends BaseRepository
 
     public function refresh(Message $message) : Message
     {
-        $this->_em->clear();
+        $this->getEntityManager()->clear();
 
         return $this->findOneByIdNoCache($message->getId());
     }

@@ -14,7 +14,7 @@
 
             <h1 class="text-center">{{ 'password_login.register.title'|trans }}</h1>
 
-            {% form_theme registration '@EWZRecaptcha/Form/ewz_recaptcha_widget.html.twig' %}
+            {% form_theme registration 'form/recaptcha_widget.html.twig' %}
             {{ form_start(registration) }}
             {{ form_row(registration.username) }}
             {{ form_row(registration.password) }}

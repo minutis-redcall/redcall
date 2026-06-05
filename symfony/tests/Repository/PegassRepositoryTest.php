@@ -19,12 +19,12 @@ class PegassRepositoryTest extends KernelTestCase
     {
         self::bootKernel();
 
-        $this->repository = self::$container->get('doctrine.orm.entity_manager')
+        $this->repository = self::getContainer()->get('doctrine.orm.entity_manager')
             ->getRepository(Pegass::class);
 
         $this->fixtures = new DataFixtures(
-            self::$container->get('doctrine.orm.entity_manager'),
-            self::$container->get('security.password_encoder')
+            self::getContainer()->get('doctrine.orm.entity_manager'),
+            self::getContainer()->get('security.password_hasher')
         );
     }
 
@@ -102,7 +102,7 @@ class PegassRepositoryTest extends KernelTestCase
     {
         $pegass = $this->fixtures->createPegass(Pegass::TYPE_VOLUNTEER, 'PEG-CHILD-001', ['c' => 1]);
         $pegass->setParentIdentifier('PARENT-001');
-        $em = self::$container->get('doctrine.orm.entity_manager');
+        $em = self::getContainer()->get('doctrine.orm.entity_manager');
         $em->persist($pegass);
         $em->flush();
 
@@ -170,7 +170,7 @@ class PegassRepositoryTest extends KernelTestCase
 
         $this->repository->delete($found);
 
-        $em = self::$container->get('doctrine.orm.entity_manager');
+        $em = self::getContainer()->get('doctrine.orm.entity_manager');
         $em->clear();
         $deleted = $this->repository->getEntity(Pegass::TYPE_VOLUNTEER, 'PEG-SAVE-001');
         $this->assertNull($deleted);

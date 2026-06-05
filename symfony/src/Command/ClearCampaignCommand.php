@@ -21,14 +21,14 @@ class ClearCampaignCommand extends BaseCommand
         $this->campaignManager = $campaignManager;
     }
 
-    protected function configure()
+    protected function configure() : void
     {
         $this
             ->setName('clear:campaign')
             ->setDescription('Close expired campaigns');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output) : int
     {
         $this->campaignManager->closeExpiredCampaigns();
 

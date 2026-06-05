@@ -10,7 +10,9 @@ use Symfony\Component\Form\Exception\UnexpectedTypeException;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Symfony\Component\Validator\Violation\ConstraintViolationBuilderInterface;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class UnlockedValidatorTest extends TestCase
 {
     private $validator;
@@ -63,7 +65,8 @@ class UnlockedValidatorTest extends TestCase
         $lockable->method('getDisplayName')->willReturn('John Doe');
 
         $violationBuilder = $this->createMock(ConstraintViolationBuilderInterface::class);
-        $violationBuilder->method('setInvalidValue')
+        $violationBuilder->expects($this->atLeastOnce())
+            ->method('setInvalidValue')
             ->with('John Doe')
             ->willReturnSelf();
         $violationBuilder->expects($this->once())->method('addViolation');

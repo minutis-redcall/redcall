@@ -30,7 +30,7 @@ class SendCommunicationCommand extends BaseCommand
         $this->sender               = $sender;
     }
 
-    protected function configure()
+    protected function configure() : void
     {
         $this
             ->setName('communication:send')
@@ -39,7 +39,7 @@ class SendCommunicationCommand extends BaseCommand
             ->addOption('force', null, InputOption::VALUE_NONE, 'Send messages even though they have been sent already.');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output) : int
     {
         date_default_timezone_set('Europe/Paris');
 

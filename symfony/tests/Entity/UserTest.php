@@ -102,7 +102,6 @@ class UserTest extends TestCase
         // setVolunteer calls volunteer->setUser($this) internally
         // We need to test the internal user reference on volunteer
         $ref = new \ReflectionProperty(Volunteer::class, 'user');
-        $ref->setAccessible(true);
         $this->assertSame($user, $ref->getValue($volunteer));
     }
 
@@ -197,7 +196,6 @@ class UserTest extends TestCase
         $structureB = $this->createStructure('Beta', 'EXT-B', true, 'BE');
 
         $ref = new \ReflectionProperty(Structure::class, 'id');
-        $ref->setAccessible(true);
         $ref->setValue($structureA, 10);
         $ref->setValue($structureB, 20);
 
@@ -218,7 +216,6 @@ class UserTest extends TestCase
         $withoutShortcut = $this->createStructure('Beta', 'EXT-B', true);
 
         $ref = new \ReflectionProperty(Structure::class, 'id');
-        $ref->setAccessible(true);
         $ref->setValue($withShortcut, 10);
         $ref->setValue($withoutShortcut, 20);
 

@@ -1,57 +1,45 @@
 services:
 
-  Bundles\SandboxBundle\Base\BaseController:
+  _defaults:
+    autowire: true
+    autoconfigure: true
     public: true
-    calls: [ [ 'setContainer', [ '@Psr\Container\ContainerInterface' ] ] ]
-    tags:
-      - controller.service_arguments
-      - container.service_subscriber
 
-  Bundles\SandboxBundle\Controller\HomeController:
-    parent: Bundles\SandboxBundle\Base\BaseController
+  Bundles\SandboxBundle\Controller\HomeController: ~
 
   Bundles\SandboxBundle\Controller\AnonymizeController:
-    parent: Bundles\SandboxBundle\Base\BaseController
     arguments:
       - '@Bundles\SandboxBundle\Manager\AnonymizeManager'
 
   Bundles\SandboxBundle\Controller\FakeSmsController:
-    parent: Bundles\SandboxBundle\Base\BaseController
     arguments:
       - '@Bundles\SandboxBundle\Manager\FakeSmsManager'
       - '@App\Manager\MessageManager'
       - '@App\Manager\VolunteerManager'
 
   Bundles\SandboxBundle\Controller\FakeCallController:
-    parent: Bundles\SandboxBundle\Base\BaseController
     arguments:
       - '@Bundles\SandboxBundle\Manager\FakeCallManager'
       - '@App\Provider\Call\CallProvider'
       - '@App\Manager\VolunteerManager'
 
   Bundles\SandboxBundle\Controller\FakeEmailController:
-    parent: Bundles\SandboxBundle\Base\BaseController
     arguments:
       - '@Bundles\SandboxBundle\Manager\FakeEmailManager'
       - '@App\Manager\VolunteerManager'
 
   Bundles\SandboxBundle\Controller\FixturesController:
-    parent: Bundles\SandboxBundle\Base\BaseController
     arguments:
       - '@Bundles\SandboxBundle\Manager\FixturesManager'
       - '@translator'
 
   Bundles\SandboxBundle\Controller\FakeStorageController:
-    parent: Bundles\SandboxBundle\Base\BaseController
     arguments:
       - '@kernel'
 
-  Bundles\SandboxBundle\Controller\SpinnerController:
-    parent: Bundles\SandboxBundle\Base\BaseController
+  Bundles\SandboxBundle\Controller\SpinnerController: ~
 
   Bundles\SandboxBundle\Controller\FakeMinutisController:
-    parent: Bundles\SandboxBundle\Base\BaseController
     arguments:
       - '@Bundles\SandboxBundle\Manager\FakeOperationManager'
       - '@Bundles\SandboxBundle\Manager\FakeOperationResourceManager'
-

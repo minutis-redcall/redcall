@@ -5,9 +5,10 @@ namespace App\Security\Voter;
 use App\Entity\Campaign;
 use App\Entity\User;
 use App\Manager\StructureManager;
-use Symfony\Component\Security\Core\Security;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
+use Symfony\Component\Security\Core\Authorization\Voter\Vote;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 class CampaignVoter extends Voter
@@ -31,7 +32,7 @@ class CampaignVoter extends Voter
         $this->structureManager = $structureManager;
     }
 
-    protected function supports($attribute, $subject)
+    protected function supports(string $attribute, mixed $subject): bool
     {
         if (!in_array($attribute, [self::OWNER, self::ACCESS])) {
             return false;
@@ -44,7 +45,7 @@ class CampaignVoter extends Voter
         return true;
     }
 
-    protected function voteOnAttribute($attribute, $subject, TokenInterface $token)
+    protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token, ?Vote $vote = null): bool
     {
         if ($this->security->isGranted('ROLE_ROOT')) {
             return true;

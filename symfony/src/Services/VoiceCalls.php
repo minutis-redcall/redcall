@@ -145,7 +145,7 @@ class VoiceCalls
     private function getVoiceResponse(string $uuid,
         TextToSpeechConfig $config,
         string $text,
-        string $gather = null) : VoiceResponse
+        ?string $gather = null) : VoiceResponse
     {
         $response = new VoiceResponse();
 

@@ -19,12 +19,12 @@ class StructureWidgetType extends TextType
         $this->structureManager = $structureManager;
     }
 
-    public function getBlockPrefix()
+    public function getBlockPrefix(): string
     {
         return 'structure_widget';
     }
 
-    public function buildView(FormView $view, FormInterface $form, array $options)
+    public function buildView(FormView $view, FormInterface $form, array $options): void
     {
         if ($view->vars['value']) {
             $structure = $this->structureManager->find($view->vars['value']);

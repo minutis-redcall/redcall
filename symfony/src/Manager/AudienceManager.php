@@ -197,14 +197,22 @@ class AudienceManager
 
         $structureIds = $this->extractStructures($data);
 
-        if ($data['badges_all'] ?? false) {
+        // A user with a single structure has it auto-selected on form load
+        // (AudienceType::buildForm), and the "select all badges" toggle
+        // defaults to off. Submitting without explicitly ticking any badge
+        // would resolve the structure to zero volunteers — and CampaignManager
+        // would then throw "New communication has no message" deep in the
+        // submission pipeline. Treat "structures picked but no badge filter"
+        // as the obvious intent: include every volunteer in those structures.
+        $badgeIds  = array_unique(array_merge($data['badges_ticked'] ?? [], $data['badges_searched'] ?? []));
+        $allBadges = ($data['badges_all'] ?? false) || empty($badgeIds);
+
+        if ($allBadges) {
             $volunteerIds = array_merge(
                 $volunteerIds,
                 $this->volunteerManager->getVolunteerListInStructures($structureIds)
             );
         } else {
-            $badgeIds = array_unique(array_merge($data['badges_ticked'] ?? [], $data['badges_searched'] ?? []));
-
             $volunteerIds = array_merge(
                 $volunteerIds,
                 $this->volunteerManager->getVolunteerListInStructuresHavingBadges($structureIds, $badgeIds)

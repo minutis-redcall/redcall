@@ -8,6 +8,7 @@ password_login:
     success: 'Your password has been updated.'
     title: 'Change your password'
   connect:
+    account_locked: 'Your account is locked. Please contact an administrator.'
     captcha: 'Please tick the checkbox below'
     connect: Connect
     email: 'Please enter your email'

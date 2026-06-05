@@ -34,7 +34,7 @@ class CreateUserCommand extends BaseCommand
     /**
      * {@inheritdoc}
      */
-    protected function configure()
+    protected function configure() : void
     {
         $this
             ->setName('user:create')
@@ -45,7 +45,7 @@ class CreateUserCommand extends BaseCommand
     /**
      * {@inheritdoc}
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output) : int
     {
         foreach ($input->getArgument('external-id') as $externalId) {
             $volunteer = $this->volunteerManager->findOneByExternalId($externalId);

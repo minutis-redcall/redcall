@@ -6,19 +6,17 @@ use App\Base\BaseController;
 use App\Component\HttpFoundation\ArrayToCsvResponse;
 use App\Manager\ReportManager;
 use App\Manager\StatisticsManager;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Range;
 
-/**
- * @Route("/admin/stats", name="admin_stats_")
- */
+#[Route("/admin/stats", name: "admin_stats_")]
 class StatsController extends BaseController
 {
     /**
@@ -31,19 +29,15 @@ class StatsController extends BaseController
         $this->reportManager = $reportManager;
     }
 
-    /**
-     * @Route("/", name="home")
-     * @Template
-     */
+    #[Route("/", name: "home")]
+    #[Template("admin/stats/index.html.twig")]
     public function index()
     {
         return [];
     }
 
-    /**
-     * @Route("/general", name="general")
-     * @Template()
-     */
+    #[Route("/general", name: "general")]
+    #[Template("admin/stats/general.html.twig")]
     public function general(StatisticsManager $statisticsManager, Request $request) : array
     {
         //$from = new \DateTime('first day of January this year midnight');
@@ -91,10 +85,8 @@ class StatsController extends BaseController
         ];
     }
 
-    /**
-     * @Route("/structure", name="structure")
-     * @Template
-     */
+    #[Route("/structure", name: "structure")]
+    #[Template("admin/stats/structure.html.twig")]
     public function structure(Request $request)
     {
         $form = $this->createStructureForm($request);
@@ -151,7 +143,7 @@ class StatsController extends BaseController
                 'label'       => 'admin.statistics.structure.form.min',
                 'constraints' => [
                     new NotBlank(),
-                    new Range(['min' => 1]),
+                    new Range(min: 1),
                 ],
             ])
             ->add('submit', SubmitType::class, [

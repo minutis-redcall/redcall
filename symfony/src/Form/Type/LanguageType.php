@@ -21,19 +21,19 @@ class LanguageType extends AbstractType
         $this->languageManager = $languageManager;
     }
 
-    public function getParent()
+    public function getParent(): ?string
     {
         return ChoiceType::class;
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'label'       => 'form.communication.fields.language',
             'choices'     => $choices = $this->languageManager->getAvailableLanguageChoices(),
             'constraints' => [
                 new NotNull(),
-                new Choice(array_values($choices)),
+                new Choice(choices: array_values($choices)),
             ],
         ]);
     }

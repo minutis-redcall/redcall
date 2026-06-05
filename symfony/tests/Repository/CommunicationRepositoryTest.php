@@ -19,12 +19,12 @@ class CommunicationRepositoryTest extends KernelTestCase
     {
         self::bootKernel();
 
-        $this->repository = self::$container->get('doctrine.orm.entity_manager')
+        $this->repository = self::getContainer()->get('doctrine.orm.entity_manager')
             ->getRepository(Communication::class);
 
         $this->fixtures = new DataFixtures(
-            self::$container->get('doctrine.orm.entity_manager'),
-            self::$container->get('security.password_encoder')
+            self::getContainer()->get('doctrine.orm.entity_manager'),
+            self::getContainer()->get('security.password_hasher')
         );
     }
 
@@ -37,7 +37,7 @@ class CommunicationRepositoryTest extends KernelTestCase
 
         $this->repository->changeName($comm, 'New Label');
 
-        $em = self::$container->get('doctrine.orm.entity_manager');
+        $em = self::getContainer()->get('doctrine.orm.entity_manager');
         $em->clear();
         $fresh = $this->repository->find($comm->getId());
         $this->assertSame('New Label', $fresh->getLabel());

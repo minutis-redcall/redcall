@@ -20,12 +20,12 @@ class MessageRepositoryTest extends KernelTestCase
     {
         self::bootKernel();
 
-        $this->repository = self::$container->get('doctrine.orm.entity_manager')
+        $this->repository = self::getContainer()->get('doctrine.orm.entity_manager')
             ->getRepository(Message::class);
 
         $this->fixtures = new DataFixtures(
-            self::$container->get('doctrine.orm.entity_manager'),
-            self::$container->get('security.password_encoder')
+            self::getContainer()->get('doctrine.orm.entity_manager'),
+            self::getContainer()->get('security.password_hasher')
         );
     }
 
@@ -64,7 +64,7 @@ class MessageRepositoryTest extends KernelTestCase
         $full = $this->buildFullCampaign('msg-sent');
         $message = $full['message'];
         $message->setMessageId('twilio-123');
-        $em = self::$container->get('doctrine.orm.entity_manager');
+        $em = self::getContainer()->get('doctrine.orm.entity_manager');
         $em->persist($message);
         $em->flush();
 
@@ -107,7 +107,7 @@ class MessageRepositoryTest extends KernelTestCase
     {
         $full = $this->buildFullCampaign('msg-inactv');
         $full['campaign']->setActive(false);
-        $em = self::$container->get('doctrine.orm.entity_manager');
+        $em = self::getContainer()->get('doctrine.orm.entity_manager');
         $em->persist($full['campaign']);
         $em->flush();
 
@@ -160,7 +160,7 @@ class MessageRepositoryTest extends KernelTestCase
         $message->setSent(true);
         $this->repository->updateMessageStatus($message);
 
-        $em = self::$container->get('doctrine.orm.entity_manager');
+        $em = self::getContainer()->get('doctrine.orm.entity_manager');
         $em->clear();
         $fresh = $this->repository->findOneByIdNoCache($message->getId());
         $this->assertSame('test-msg-id-123', $fresh->getMessageId());

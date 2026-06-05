@@ -112,9 +112,7 @@ class CommunicationManager
         $this->logger                  = $logger;
     }
 
-    /**
-     * @required
-     */
+    #[\Symfony\Contracts\Service\Attribute\Required]
     public function setCampaignManager(CampaignManager $campaignManager)
     {
         $this->campaignManager = $campaignManager;

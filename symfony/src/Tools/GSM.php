@@ -277,7 +277,7 @@ class GSM
      */
     public static function isGSMCompatible(string $message) : string
     {
-        foreach (preg_split('//u', $message, null, PREG_SPLIT_NO_EMPTY) as $letter) {
+        foreach (preg_split('//u', $message, -1, PREG_SPLIT_NO_EMPTY) as $letter) {
             if (!in_array($letter, self::ALPHABET)) {
                 return false;
             }
@@ -308,7 +308,7 @@ class GSM
     public static function enforceGSMAlphabet(string $message) : string
     {
         $sanitized = '';
-        foreach (preg_split('//u', self::transliterate($message), null, PREG_SPLIT_NO_EMPTY) as $letter) {
+        foreach (preg_split('//u', self::transliterate($message), -1, PREG_SPLIT_NO_EMPTY) as $letter) {
             if (!in_array($letter, self::ALPHABET)) {
                 $sanitized .= '?';
             } else {
@@ -332,7 +332,7 @@ class GSM
         }
 
         $length = 0;
-        foreach (preg_split('//u', $message, null, PREG_SPLIT_NO_EMPTY) as $letter) {
+        foreach (preg_split('//u', $message, -1, PREG_SPLIT_NO_EMPTY) as $letter) {
             if (!$unicode && in_array($letter, self::ESCAPED)) {
                 $length += 1;
             }
@@ -352,7 +352,7 @@ class GSM
         $parts  = [];
         $part   = '';
         $length = 0;
-        foreach (preg_split('//u', $message, null, PREG_SPLIT_NO_EMPTY) as $letter) {
+        foreach (preg_split('//u', $message, -1, PREG_SPLIT_NO_EMPTY) as $letter) {
             if (!$unicode && in_array($letter, self::ESCAPED)) {
                 if ($length == 152) {
                     $parts[] = $part;

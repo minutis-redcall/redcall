@@ -5,44 +5,30 @@ namespace Bundles\SandboxBundle\Entity;
 use DateTimeInterface;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity(repositoryClass="Bundles\SandboxBundle\Repository\FakeSmsRepository")
- */
+#[ORM\Entity(repositoryClass: \Bundles\SandboxBundle\Repository\FakeSmsRepository::class)]
 class FakeSms
 {
     const DIRECTION_SENT     = 'me';
     const DIRECTION_RECEIVED = 'you';
 
-    /**
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     private $id;
 
-    /**
-     * @ORM\Column(type="string", length=32)
-     */
+    #[ORM\Column(type: 'string', length: 32)]
     private $phoneNumber;
 
-    /**
-     * @ORM\Column(type="string", length=255)
-     */
+    #[ORM\Column(type: 'string', length: 255)]
     private $name;
 
-    /**
-     * @ORM\Column(type="string", length=16)
-     */
+    #[ORM\Column(type: 'string', length: 16)]
     private $direction;
 
-    /**
-     * @ORM\Column(type="text")
-     */
+    #[ORM\Column(type: 'text')]
     private $content;
 
-    /**
-     * @ORM\Column(type="datetime")
-     */
+    #[ORM\Column(type: 'datetime')]
     private $createdAt;
 
     public function getId() : ?int
@@ -65,7 +51,7 @@ class FakeSms
     /**
      * @return string
      */
-    public function getName() : ?string
+    public function getName(): ?string
     {
         return $this->name;
     }

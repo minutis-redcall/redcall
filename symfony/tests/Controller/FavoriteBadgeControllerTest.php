@@ -13,7 +13,7 @@ class FavoriteBadgeControllerTest extends BaseWebTestCase
     {
         return new DataFixtures(
             $container->get('doctrine.orm.entity_manager'),
-            $container->get('security.password_encoder')
+            $container->get('security.password_hasher')
         );
     }
 
@@ -21,6 +21,13 @@ class FavoriteBadgeControllerTest extends BaseWebTestCase
     {
         /** @var CsrfTokenManagerInterface $tokenManager */
         $tokenManager = $container->get('security.csrf.token_manager');
+
+        // Sf6: CSRF token storage needs a session in RequestStack
+        if (!$container->get('request_stack')->getMainRequest()) {
+            $req = \Symfony\Component\HttpFoundation\Request::create('/');
+            $req->setSession(new \Symfony\Component\HttpFoundation\Session\Session(new \Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage()));
+            $container->get('request_stack')->push($req);
+        }
 
         return $tokenManager->getToken('csrf')->getValue();
     }
@@ -38,6 +45,32 @@ class FavoriteBadgeControllerTest extends BaseWebTestCase
 
         $this->assertResponseIsSuccessful();
         $this->assertSelectorExists('form');
+    }
+
+    public function testFavoriteBadgeDeleteRequiresConfirmation()
+    {
+        $client   = static::createClient();
+        $fixtures = $this->getFixtures($client->getContainer());
+
+        $user  = $fixtures->createRawUser('favbadge_confirm@example.com', 'password');
+        $badge = $fixtures->createBadge('Confirm Badge', 'FAV-BADGE-CONFIRM');
+        $user->addFavoriteBadge($badge);
+        $em = $client->getContainer()->get('doctrine')->getManager();
+        $em->persist($user);
+        $em->flush();
+
+        $this->login($client, $user);
+
+        $crawler = $client->request('GET', '/favorite-badge');
+        $this->assertResponseIsSuccessful();
+
+        // A bare delete link with no confirm() is one stray click away from
+        // dropping the user's curated favourites. Require the confirm guard.
+        $this->assertGreaterThanOrEqual(
+            1,
+            $crawler->filter('a.btn-danger[onclick*="confirm"]')->count(),
+            'Favourite-badge delete CTA must guard against accidental clicks with an onclick confirm().'
+        );
     }
 
     public function testAddFavoriteBadge()

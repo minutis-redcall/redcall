@@ -6,13 +6,19 @@ use App\Entity\VolunteerSession;
 use App\Security\Voter\VolunteerSessionVoter;
 use App\Tests\Fixtures\DataFixtures;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Security\Core\Authorization\Voter\VoterInterface;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class VolunteerSessionVoterTest extends KernelTestCase
 {
     private VolunteerSessionVoter $voter;
     private DataFixtures $fixtures;
+    private Session $session;
 
     protected function setUp(): void
     {
@@ -20,10 +26,15 @@ class VolunteerSessionVoterTest extends KernelTestCase
 
         $container = static::getContainer();
 
+        $this->session = new Session(new MockArraySessionStorage());
+        $request = Request::create('/');
+        $request->setSession($this->session);
+        $container->get('request_stack')->push($request);
+
         $this->voter = $container->get(VolunteerSessionVoter::class);
         $this->fixtures = new DataFixtures(
             $container->get('doctrine.orm.entity_manager'),
-            $container->get('security.password_encoder')
+            $container->get('security.password_hasher')
         );
     }
 
@@ -34,7 +45,7 @@ class VolunteerSessionVoterTest extends KernelTestCase
 
     private function setHttpSessionValue(string $key, $value): void
     {
-        static::getContainer()->get('session')->set($key, $value);
+        $this->session->set($key, $value);
     }
 
     // ────────────────────────────────────────────────────────
@@ -102,8 +113,7 @@ class VolunteerSessionVoterTest extends KernelTestCase
         $setup = $this->fixtures->createVolunteerWithSession('VOL-VSV-NOSESS');
 
         // Ensure the session key is not set
-        $session = static::getContainer()->get('session');
-        $session->remove('volunteer-session');
+        $this->session->remove('volunteer-session');
 
         $token = $this->createAnonymousToken();
 

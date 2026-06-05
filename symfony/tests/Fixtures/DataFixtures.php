@@ -20,14 +20,14 @@ use App\Entity\Volunteer;
 use App\Entity\VolunteerList;
 use App\Entity\VolunteerSession;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 
 class DataFixtures
 {
     private $entityManager;
     private $encoder;
 
-    public function __construct(EntityManagerInterface $entityManager, UserPasswordEncoderInterface $encoder)
+    public function __construct(EntityManagerInterface $entityManager, UserPasswordHasherInterface $encoder)
     {
         $this->entityManager = $entityManager;
         $this->encoder       = $encoder;
@@ -47,7 +47,7 @@ class DataFixtures
         $user->setUsername($username);
         $user->setLocale('fr');
         $user->setTimezone('Europe/Paris');
-        $user->setPassword($this->encoder->encodePassword($user, $password));
+        $user->setPassword($this->encoder->hashPassword($user, $password));
         $user->setIsVerified($verified);
         $user->setIsTrusted(true);
         $user->setIsRoot($admin);

@@ -7,68 +7,55 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity(repositoryClass="App\Repository\AnswerRepository")
- * @ORM\HasLifecycleCallbacks
- */
+#[ORM\Entity(repositoryClass: \App\Repository\AnswerRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class Answer
 {
     /**
      * @var int
-     *
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
      */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     private $id;
 
     /**
      * @var Message
-     *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Message", inversedBy="answers")
      */
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Message::class, inversedBy: 'answers')]
     private $message;
 
     /**
      * Body of the answer as text
      *
      * @var string
-     *
-     * @ORM\Column(type="text", nullable=true)
      */
+    #[ORM\Column(type: 'text', nullable: true)]
     private $raw;
 
     /**
      * Date of the answer's reception
      *
      * @var DateTime
-     *
-     * @ORM\Column(type="datetime")
      */
+    #[ORM\Column(type: 'datetime')]
     private $receivedAt;
 
     /**
      * Date of the answer's last update
      *
      * @var DateTime
-     *
-     * @ORM\Column(type="datetime")
      */
+    #[ORM\Column(type: 'datetime')]
     private $updatedAt;
 
-    /**
-     * @ORM\Column(type="boolean")
-     */
+    #[ORM\Column(type: 'boolean')]
     private $unclear;
 
-    /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\Choice")
-     */
+    #[ORM\ManyToMany(targetEntity: \App\Entity\Choice::class)]
     private $choices;
 
-    /**
-     * @ORM\Column(type="string", length=64, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 64, nullable: true)]
     private $byAdmin;
 
     /**
@@ -296,9 +283,7 @@ class Answer
         return $this;
     }
 
-    /**
-     * @ORM\PrePersist
-     */
+    #[ORM\PrePersist]
     public function onPrePersist()
     {
         if (!$this->getUpdatedAt()) {
@@ -306,9 +291,7 @@ class Answer
         }
     }
 
-    /**
-     * @ORM\PreUpdate
-     */
+    #[ORM\PreUpdate]
     public function onPreUpdate()
     {
         if (!$this->getUpdatedAt()) {

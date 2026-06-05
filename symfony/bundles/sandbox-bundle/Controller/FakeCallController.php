@@ -10,17 +10,15 @@ use Bundles\SandboxBundle\Entity\FakeCall;
 use Bundles\SandboxBundle\Manager\FakeCallManager;
 use Bundles\SandboxBundle\Provider\FakeCallProvider;
 use Bundles\TwilioBundle\TwilioEvents;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
-/**
- * @Route("/fake-call", name="fake_call_")
- */
+#[Route("/fake-call", name: "fake_call_")]
 class FakeCallController extends BaseController
 {
     /**
@@ -52,10 +50,8 @@ class FakeCallController extends BaseController
         $this->volunteerManager = $volunteerManager;
     }
 
-    /**
-     * @Route("/", name="list")
-     * @Template()
-     */
+    #[Route("/", name: "list")]
+#[Template("@Sandbox/fake_call/list.html.twig")]
     public function listAction()
     {
         $phones = $this->fakeCallManager->findAllPhones();
@@ -68,9 +64,7 @@ class FakeCallController extends BaseController
         ];
     }
 
-    /**
-     * @Route("/clear/{csrf}", name="clear")
-     */
+    #[Route("/clear/{csrf}", name: "clear")]
     public function clearAction(string $csrf)
     {
         $this->validateCsrfOrThrowNotFoundException('fake_call', $csrf);
@@ -80,10 +74,8 @@ class FakeCallController extends BaseController
         return $this->redirectToRoute('sandbox_fake_call_list');
     }
 
-    /**
-     * @Route("/read/{e164}/{campaignId}", name="read", defaults={"campaignId"=null})
-     * @Template()
-     */
+    #[Route("/read/{e164}/{campaignId}", name: "read", defaults: ["campaignId" => null])]
+    #[Template("@Sandbox/fake_call/read.html.twig")]
     public function readAction(Request $request, Phone $phone, ?int $campaignId)
     {
         $volunteer = $phone->getVolunteers()->first();
@@ -95,7 +87,7 @@ class FakeCallController extends BaseController
                          'label'       => 'sandbox.fake_call.your_message',
                          'constraints' => [
                              new NotBlank(),
-                             new Length(['min' => 1, 'max' => 1]),
+                             new Length(min: 1, max: 1),
                          ],
                      ])
                      ->add('submit', SubmitType::class, [

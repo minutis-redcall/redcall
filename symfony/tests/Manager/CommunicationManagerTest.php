@@ -27,11 +27,11 @@ class CommunicationManagerTest extends KernelTestCase
     {
         self::bootKernel();
 
-        $this->communicationManager = self::$container->get(CommunicationManager::class);
-        $this->em = self::$container->get('doctrine.orm.entity_manager');
+        $this->communicationManager = self::getContainer()->get(CommunicationManager::class);
+        $this->em = self::getContainer()->get('doctrine.orm.entity_manager');
         $this->fixtures = new DataFixtures(
             $this->em,
-            self::$container->get('security.password_encoder')
+            self::getContainer()->get('security.password_hasher')
         );
     }
 
@@ -71,7 +71,7 @@ class CommunicationManagerTest extends KernelTestCase
         // Use native SQL to bypass lifecycle callbacks
         $conn = $this->em->getConnection();
         $twoDaysAgo = (new \DateTime('-2 days'))->format('Y-m-d H:i:s');
-        $conn->executeUpdate(
+        $conn->executeStatement(
             'UPDATE communication SET last_activity_at = ?, created_at = ?, report_id = NULL WHERE id = ?',
             [$twoDaysAgo, $twoDaysAgo, $commId]
         );

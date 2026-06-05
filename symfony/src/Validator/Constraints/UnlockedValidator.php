@@ -9,7 +9,7 @@ use Symfony\Component\Validator\ConstraintValidator;
 
 class UnlockedValidator extends ConstraintValidator
 {
-    public function validate($value, Constraint $constraint)
+    public function validate(mixed $value, Constraint $constraint) : void
     {
         if (!$value instanceof LockableInterface) {
             throw new UnexpectedTypeException($value, LockableInterface::class);

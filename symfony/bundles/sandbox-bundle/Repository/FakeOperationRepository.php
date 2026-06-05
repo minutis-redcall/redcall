@@ -21,7 +21,7 @@ class FakeOperationRepository extends BaseRepository
     /**
      * @return FakeOperation[]
      */
-    public function search(int $structureExternalId, string $criteria = null) : array
+    public function search(int $structureExternalId, ?string $criteria = null) : array
     {
         return $this
             ->createQueryBuilder('o')
@@ -34,7 +34,7 @@ class FakeOperationRepository extends BaseRepository
             ->getResult();
     }
 
-    public function findAll()
+    public function findAll(): array
     {
         return $this->findBy([], ['updatedAt' => 'DESC']);
     }

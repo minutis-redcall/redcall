@@ -24,7 +24,7 @@ class TemplateManagerTest extends KernelTestCase
         $this->manager  = $container->get(TemplateManager::class);
         $this->fixtures = new DataFixtures(
             $container->get('doctrine.orm.entity_manager'),
-            $container->get('security.password_encoder')
+            $container->get('security.password_hasher')
         );
     }
 
@@ -88,7 +88,7 @@ class TemplateManagerTest extends KernelTestCase
         // Authenticate user
         $container    = static::getContainer();
         $tokenStorage = $container->get('security.token_storage');
-        $token        = new UsernamePasswordToken($user, null, 'main', $user->getRoles());
+        $token        = new UsernamePasswordToken($user, 'main', $user->getRoles());
         $tokenStorage->setToken($token);
 
         $smsTemplates = $this->manager->findByTypeForCurrentUser(Type::SMS());

@@ -15,7 +15,7 @@ class BaseController extends AbstractController
         $defaultDirection = 'ASC',
         $prefix = '')
     {
-        $request = $this->get('request_stack')->getMasterRequest();
+        $request = $this->container->get('request_stack')->getMainRequest();
 
         if (strpos($prefixedDefaultColumn, '.') === false) {
             throw new LogicException("Invalid format of the given doctrine default column: {$prefixedDefaultColumn}.");
@@ -28,12 +28,12 @@ class BaseController extends AbstractController
             throw new LogicException("Class '$class' not found.");
         }
 
-        $column = $request->get($prefix.'order-by', $defaultColumn);
+        $column = $request->query->get($prefix.'order-by', $request->request->get($prefix.'order-by', $defaultColumn));
         if (!property_exists($class, $column)) {
             $column = $defaultColumn;
         }
 
-        $direction = strtoupper($request->get($prefix.'order-by-direction', $defaultDirection));
+        $direction = strtoupper($request->query->get($prefix.'order-by-direction', $request->request->get($prefix.'order-by-direction', $defaultDirection)));
         if ($direction !== 'ASC' && $direction !== 'DESC') {
             $direction = $defaultDirection;
         }

@@ -18,7 +18,7 @@ class CsrfProtectionType extends AbstractTypeExtension
         return [FormType::class];
     }
 
-    public function configureOptions(OptionsResolver $resolver) : void
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefined('csrf_protection');
     }

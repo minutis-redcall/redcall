@@ -21,14 +21,14 @@ class ReportCommunicationCommand extends Command
         $this->reportManager = $reportManager;
     }
 
-    protected function configure()
+    protected function configure() : void
     {
         $this
             ->setName('report:communication')
             ->setDescription('Build outdated or missing communication reports');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output) : int
     {
         $this->reportManager->createReports($output);
 

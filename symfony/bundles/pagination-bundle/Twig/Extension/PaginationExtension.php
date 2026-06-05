@@ -25,6 +25,6 @@ class PaginationExtension extends AbstractExtension
 
     public function masterRequest() : Request
     {
-        return $this->requestStack->getMasterRequest();
+        return $this->requestStack->getMainRequest();
     }
 }

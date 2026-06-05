@@ -3,22 +3,20 @@
 namespace App\Controller\Admin;
 
 use App\Base\BaseController;
+use App\Form\Type\RecaptchaType;
 use App\Manager\DeletedVolunteerManager;
-use EWZ\Bundle\RecaptchaBundle\Form\Type\EWZRecaptchaType;
-use EWZ\Bundle\RecaptchaBundle\Validator\Constraints\IsTrue as RecaptchaTrue;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use App\Validator\Constraints\RecaptchaTrue;
+use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Validator\Constraints\Callback;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-/**
- * @Route("/admin/gdpr", name="admin_gdpr_")
- */
+#[Route("/admin/gdpr", name: "admin_gdpr_")]
 class GdprController extends BaseController
 {
     /**
@@ -37,10 +35,8 @@ class GdprController extends BaseController
         $this->translator              = $translator;
     }
 
-    /**
-     * @Route(name="index")
-     * @Template("admin/gdpr/index.html.twig")
-     */
+    #[Route(name: "index")]
+#[Template("admin/gdpr/index.html.twig")]
     public function index(Request $request) : array
     {
         $form = $this
@@ -58,7 +54,7 @@ class GdprController extends BaseController
                     }),
                 ],
             ])
-            ->add('recaptcha', EWZRecaptchaType::class, [
+            ->add('recaptcha', RecaptchaType::class, [
                 'label'       => 'admin.gdpr.form.captcha',
                 'constraints' => [
                     new RecaptchaTrue(),

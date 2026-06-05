@@ -13,15 +13,13 @@ use App\Entity\Message;
 use App\Entity\Volunteer;
 use DateTime;
 use Mpdf\Mpdf;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-/**
- * @Route(name="export_", path="export/{id}", requirements={"id" = "\d+"})
- * @IsGranted("COMMUNICATION", subject="communication")
- */
+#[Route(name: "export_", path: "export/{id}", requirements: ["id" => "\d+"])]
+#[IsGranted("COMMUNICATION", subject: "communication")]
 class ExportController extends BaseController
 {
     /**
@@ -34,9 +32,7 @@ class ExportController extends BaseController
         $this->translator = $translator;
     }
 
-    /**
-     * @Route(path="/csv", name="csv", methods={"POST"})
-     */
+    #[Route(path: "/csv", name: "csv", methods: ["POST"])]
     public function csvAction(Request $request, Communication $communication)
     {
         $this->validateCsrfOrThrowNotFoundException('communication', $request->request->get('csrf'));
@@ -98,9 +94,7 @@ class ExportController extends BaseController
         return new ArrayToCsvResponse($rows, sprintf('export-%s.csv', date('Y-m-d.H:i:s')));
     }
 
-    /**
-     * @Route(path="/pdf", name="pdf")
-     */
+    #[Route(path: "/pdf", name: "pdf")]
     public function pdfAction(Request $request, Communication $communication)
     {
         $this->validateCsrfOrThrowNotFoundException('communication', $request->request->get('csrf'));
@@ -197,7 +191,7 @@ class ExportController extends BaseController
      */
     private function getSelection(Request $request, Communication $communication) : array
     {
-        $selection = json_decode($request->get('volunteers'), true);
+        $selection = json_decode(($request->attributes->get('volunteers') ?? $request->query->get('volunteers') ?? $request->request->get('volunteers')), true);
         if (!$selection && $communication->getMessages()) {
             $selection = array_map(function (Message $message) {
                 return $message->getVolunteer()->getId();

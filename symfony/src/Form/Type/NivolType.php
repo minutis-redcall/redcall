@@ -3,9 +3,8 @@
 namespace App\Form\Type;
 
 use App\Manager\NivolManager;
+use App\Validator\Constraints\RecaptchaTrue;
 use Bundles\PasswordLoginBundle\Manager\CaptchaManager;
-use EWZ\Bundle\RecaptchaBundle\Form\Type\EWZRecaptchaType;
-use EWZ\Bundle\RecaptchaBundle\Validator\Constraints\IsTrue as RecaptchaTrue;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -37,7 +36,7 @@ class NivolType extends AbstractType
         $this->requestStack   = $requestStack;
     }
 
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->setAction(
@@ -46,23 +45,26 @@ class NivolType extends AbstractType
             ->add('nivol', TextType::class, [
                 'label'       => 'nivol_auth.input_nivol',
                 'required'    => true,
+                'attr'        => [
+                    'autocomplete'   => 'off',
+                    'autofocus'      => 'autofocus',
+                    'autocapitalize' => 'characters',
+                ],
                 'constraints' => [
-                    new Callback([
-                        'callback' => function ($nivol, $context) {
+                    new Callback(callback: function ($nivol, $context) {
                             if ($nivol && !$this->nivolManager->getUserByNivol($nivol)) {
                                 $context
                                     ->buildViolation($this->translator->trans('nivol_auth.nivol_not_found'))
                                     ->addViolation();
                             }
-                        },
-                    ]),
+                        }),
                 ],
             ]);
 
         $ip = $this->requestStack->getMainRequest()->getClientIp();
 
         if ($ip === '169.155.250.88' /* test alain */ || !$this->captchaManager->isAllowed($ip)) {
-            $builder->add('recaptcha', EWZRecaptchaType::class, [
+            $builder->add('recaptcha', RecaptchaType::class, [
                 'label'       => 'password_login.connect.captcha',
                 'constraints' => [
                     new RecaptchaTrue(),
@@ -75,13 +77,13 @@ class NivolType extends AbstractType
         ]);
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefault('allow_extra_fields', true);
     }
 
-    public function getBlockPrefix()
+    public function getBlockPrefix(): string
     {
-        return '';
+        return 'nivol';
     }
 }

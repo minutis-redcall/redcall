@@ -19,12 +19,12 @@ class UserRepositoryTest extends KernelTestCase
     {
         self::bootKernel();
 
-        $this->repository = self::$container->get('doctrine.orm.entity_manager')
+        $this->repository = self::getContainer()->get('doctrine.orm.entity_manager')
             ->getRepository(User::class);
 
         $this->fixtures = new DataFixtures(
-            self::$container->get('doctrine.orm.entity_manager'),
-            self::$container->get('security.password_encoder')
+            self::getContainer()->get('doctrine.orm.entity_manager'),
+            self::getContainer()->get('security.password_hasher')
         );
     }
 
@@ -137,8 +137,8 @@ class UserRepositoryTest extends KernelTestCase
         $user->setUsername('saveremove@test.com');
         $user->setLocale('fr');
         $user->setTimezone('Europe/Paris');
-        $encoder = self::$container->get('security.password_encoder');
-        $user->setPassword($encoder->encodePassword($user, 'password'));
+        $encoder = self::getContainer()->get('security.password_hasher');
+        $user->setPassword($encoder->hashPassword($user, 'password'));
         $user->setIsVerified(true);
         $user->setIsTrusted(true);
 
@@ -149,7 +149,7 @@ class UserRepositoryTest extends KernelTestCase
 
         $this->repository->remove($found);
 
-        $em = self::$container->get('doctrine.orm.entity_manager');
+        $em = self::getContainer()->get('doctrine.orm.entity_manager');
         $em->clear();
         $this->assertNull($this->repository->findOneByUsername('saveremove@test.com'));
     }

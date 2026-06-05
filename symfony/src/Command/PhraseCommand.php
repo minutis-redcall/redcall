@@ -36,7 +36,7 @@ class PhraseCommand extends Command
         $this->phrase = $phrase;
     }
 
-    protected function configure()
+    protected function configure() : void
     {
         parent::configure();
 
@@ -49,7 +49,7 @@ class PhraseCommand extends Command
             ->addOption('dump', null, InputOption::VALUE_NONE, 'Add this option to update local files.');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output) : int
     {
         // We first fetch all different tags and translations we have in the project
         $tags              = [];

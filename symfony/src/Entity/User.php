@@ -8,51 +8,38 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
- * @ORM\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
- *
- * Parent class has callbacks
- * @ORM\HasLifecycleCallbacks()
- */
+#[ORM\Entity(repositoryClass: \App\Repository\UserRepository::class)]
+#[ORM\ChangeTrackingPolicy('DEFERRED_EXPLICIT')]
+#[ORM\HasLifecycleCallbacks]
 class User extends AbstractUser implements LockableInterface
 {
-    /**
-     * @ORM\Column(type="string", length=10)
-     */
+    #[ORM\Column(type: 'string', length: 10)]
     private $locale;
 
-    /**
-     * @ORM\Column(type="string", length=32)
-     */
+    #[ORM\Column(type: 'string', length: 32)]
     private $timezone;
 
-    /**
-     * @ORM\Column(type="boolean", options={"default" : 0})
-     */
+    #[ORM\Column(type: 'boolean', options: ['default' => 0])]
     private $isRoot = false;
 
     /**
      * @var Volunteer|null
-     *
-     * @ORM\OneToOne(targetEntity="App\Entity\Volunteer", inversedBy="user")
      */
+    #[ORM\OneToOne(targetEntity: \App\Entity\Volunteer::class, inversedBy: 'user')]
     private $volunteer;
 
-    /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\Structure", inversedBy="users")
-     * @ORM\OrderBy({"enabled" = "DESC", "externalId" = "ASC"})
-     */
+    #[ORM\ManyToMany(targetEntity: \App\Entity\Structure::class, inversedBy: 'users')]
+    #[ORM\OrderBy(['enabled' => 'DESC', 'externalId' => 'ASC'])]
     private $structures;
 
     /**
-     * @ORM\Column(type="boolean", options={"default" : 0})
+     * User is locked from syncing with the internal database.
+     * This flag should NOT prevent user from authenticating.
      */
+    #[ORM\Column(type: 'boolean', options: ['default' => 0])]
     private $locked = false;
 
-    /**
-     * @ORM\ManyToMany(targetEntity=Badge::class)
-     */
+    #[ORM\ManyToMany(targetEntity: Badge::class)]
     private $favoriteBadges;
 
     public function __construct()

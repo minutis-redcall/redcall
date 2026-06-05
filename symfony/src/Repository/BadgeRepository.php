@@ -100,7 +100,7 @@ class BadgeRepository extends BaseRepository
                     ->andWhere('b.visibility = false')
                     ->andWhere('b.enabled = true')
                     ->andWhere('b.id IN (:ids)')
-                    ->setParameter('ids', $ids, Connection::PARAM_INT_ARRAY)
+                    ->setParameter('ids', $ids, \Doctrine\DBAL\ArrayParameterType::INTEGER)
                     ->getQuery()
                     ->getResult();
     }

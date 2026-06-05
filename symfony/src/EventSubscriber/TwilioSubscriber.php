@@ -63,7 +63,7 @@ class TwilioSubscriber implements EventSubscriberInterface
         $this->translator     = $translator;
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents() : array
     {
         return [
             TwilioEvents::MESSAGE_PRICE_UPDATED  => 'onMessagePriceUpdated',

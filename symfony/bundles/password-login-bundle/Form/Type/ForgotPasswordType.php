@@ -2,9 +2,9 @@
 
 namespace Bundles\PasswordLoginBundle\Form\Type;
 
+use App\Form\Type\RecaptchaType;
+use App\Validator\Constraints\RecaptchaTrue;
 use Bundles\PasswordLoginBundle\Manager\CaptchaManager;
-use EWZ\Bundle\RecaptchaBundle\Form\Type\EWZRecaptchaType;
-use EWZ\Bundle\RecaptchaBundle\Validator\Constraints\IsTrue as RecaptchaTrue;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -30,22 +30,27 @@ class ForgotPasswordType extends AbstractType
         $this->requestStack   = $requestStack;
     }
 
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->add('username', Type\EmailType::class, [
                 'label'       => 'password_login.forgot_password.username',
                 'required'    => true,
+                'attr'        => [
+                    'autocomplete' => 'username',
+                    'autofocus'    => 'autofocus',
+                    'inputmode'    => 'email',
+                ],
                 'constraints' => [
-                    new Constraints\Length(['min' => 8]),
+                    new Constraints\Length(min: 8),
                     new Constraints\Email(),
                 ],
             ]);
 
-        $ip = $this->requestStack->getMasterRequest()->getClientIp();
+        $ip = $this->requestStack->getMainRequest()->getClientIp();
 
         if (!$this->captchaManager->isAllowed($ip)) {
-            $builder->add('recaptcha', EWZRecaptchaType::class, [
+            $builder->add('recaptcha', RecaptchaType::class, [
                 'label'       => 'password_login.forgot_password.captcha',
                 'constraints' => [
                     new RecaptchaTrue(),
@@ -58,7 +63,7 @@ class ForgotPasswordType extends AbstractType
         ]);
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefault('allow_extra_fields', true);
     }

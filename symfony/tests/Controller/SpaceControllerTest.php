@@ -13,7 +13,7 @@ class SpaceControllerTest extends BaseWebTestCase
     {
         return new DataFixtures(
             $container->get('doctrine.orm.entity_manager'),
-            $container->get('security.password_encoder')
+            $container->get('security.password_hasher')
         );
     }
 
@@ -41,12 +41,13 @@ class SpaceControllerTest extends BaseWebTestCase
         $em->persist($volunteerSession);
         $em->flush();
 
-        // Store in the HTTP session so the VolunteerSessionVoter grants access
-        $session = $container->get('session');
+        // Store in the HTTP session so the VolunteerSessionVoter grants access.
+        // Use the kernel's session.factory so the storage matches what the
+        // request handler will read.
+        $session = $container->get('session.factory')->createSession();
         $session->set('volunteer-session', $volunteerSession->getSessionId());
         $session->save();
 
-        // Attach session cookie to browser
         $client->getCookieJar()->set(
             new \Symfony\Component\BrowserKit\Cookie($session->getName(), $session->getId())
         );
@@ -103,5 +104,71 @@ class SpaceControllerTest extends BaseWebTestCase
         // Invalid session returns 404 because the Doctrine ParamConverter cannot find
         // the VolunteerSession entity before the voter even gets a chance to deny access.
         $this->assertResponseStatusCodeSame(404);
+    }
+
+    public function testSpaceInfosRenders(): void
+    {
+        $client = static::createClient();
+        $client->disableReboot();
+        $sessionId = $this->createVolunteerSession($client);
+
+        $client->request('GET', sprintf('/space/%s/infos', $sessionId));
+        $this->assertResponseIsSuccessful();
+    }
+
+    public function testSpacePhoneRenders(): void
+    {
+        $client = static::createClient();
+        $client->disableReboot();
+        $sessionId = $this->createVolunteerSession($client);
+
+        $client->request('GET', sprintf('/space/%s/phone', $sessionId));
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorExists('form');
+    }
+
+    public function testSpaceEmailRenders(): void
+    {
+        $client = static::createClient();
+        $client->disableReboot();
+        $sessionId = $this->createVolunteerSession($client);
+
+        $client->request('GET', sprintf('/space/%s/email', $sessionId));
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorExists('input[type="email"]');
+    }
+
+    public function testSpaceEnabledRenders(): void
+    {
+        $client = static::createClient();
+        $client->disableReboot();
+        $sessionId = $this->createVolunteerSession($client);
+
+        $client->request('GET', sprintf('/space/%s/enabled', $sessionId));
+        $this->assertResponseIsSuccessful();
+        $this->assertSelectorExists('form');
+    }
+
+    public function testSpaceDownloadDataSendsAttachment(): void
+    {
+        $client = static::createClient();
+        $client->disableReboot();
+        $sessionId = $this->createVolunteerSession($client);
+
+        $client->request('GET', sprintf('/space/%s/download-data', $sessionId));
+        $this->assertResponseIsSuccessful();
+        $disposition = $client->getResponse()->headers->get('Content-Disposition');
+        $this->assertNotNull($disposition);
+        $this->assertStringContainsString('attachment', $disposition);
+    }
+
+    public function testSpaceLogoutRedirectsHome(): void
+    {
+        $client = static::createClient();
+        $client->disableReboot();
+        $sessionId = $this->createVolunteerSession($client);
+
+        $client->request('GET', sprintf('/space/%s/logout', $sessionId));
+        $this->assertResponseRedirects('/');
     }
 }

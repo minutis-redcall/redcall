@@ -50,7 +50,7 @@
             <div class="tab-pane mt-3 ml-3 active"
                  id="nav-general"
                  role="tabpanel" aria-labelledby="nav-general-tab">
-                <h3>{{ 'manage_volunteers.form.section_general'|trans }}</h3>
+                <h2 class="h3">{{ 'manage_volunteers.form.section_general'|trans }}</h2>
                 {{ form_row(form.externalId) }}
                 {{ form_row(form.firstName) }}
                 {{ form_row(form.lastName) }}
@@ -62,7 +62,7 @@
             <div class="tab-pane mt-3 ml-3"
                  id="nav-contact"
                  role="tabpanel" aria-labelledby="nav-contact-tab">
-                <h3>{{ 'manage_volunteers.form.section_contact'|trans }}</h3>
+                <h2 class="h3">{{ 'manage_volunteers.form.section_contact'|trans }}</h2>
                 {{ form_row(form.phones) }}
                 {{ form_row(form.phoneNumberOptin) }}
                 {{ form_row(form.phoneNumberLocked) }}
@@ -83,7 +83,7 @@
                  id="nav-structures"
                  role="tabpanel" aria-labelledby="nav-structures-tab">
                 {% if form.structures|default(false) %}
-                    <h3>{{ 'manage_volunteers.form.section_structures'|trans }}</h3>
+                    <h2 class="h3">{{ 'manage_volunteers.form.section_structures'|trans }}</h2>
                     {{ form_row(form.structures) }}
                 {% else %}
                     {% if is_granted('ROLE_ADMIN') %}
@@ -91,7 +91,7 @@
                             <p>{{ 'manage_volunteers.admin_structures.create'|trans }}</p>
                         {% else %}
                             <div class="rc-section">
-                                <h3>{{ 'manage_volunteers.admin_structures.structures'|trans({'%name%': volunteer.displayName}) }}</h3>
+                                <h2 class="h3">{{ 'manage_volunteers.admin_structures.structures'|trans({'%name%': volunteer.displayName}) }}</h2>
 
                                 {% for structure in volunteer.structures %}
                                     {{ structure.displayName }}<br/>
@@ -112,7 +112,7 @@
             <div class="tab-pane mt-3 ml-3"
                  id="nav-badges"
                  role="tabpanel" aria-labelledby="nav-badges-tab">
-                <h3>{{ 'manage_volunteers.form.section_badges'|trans }}</h3>
+                <h2 class="h3">{{ 'manage_volunteers.form.section_badges'|trans }}</h2>
                 {{ form_row(form.badges) }}
             </div>
 
@@ -122,7 +122,7 @@
                      id="nav-messages"
                      role="tabpanel" aria-labelledby="nav-messages-tab">
                     <div class="mt-3 ml-3 text-left">
-                        <h3>{{ 'manage_volunteers.form.section_messages'|trans }}</h3>
+                        <h2 class="h3">{{ 'manage_volunteers.form.section_messages'|trans }}</h2>
 
                         <table class="table table-striped">
                             <tbody>

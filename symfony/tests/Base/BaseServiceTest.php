@@ -5,12 +5,19 @@ namespace App\Tests\Base;
 use App\Base\BaseService;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerInterface;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class BaseServiceTest extends TestCase
 {
     public function testSetContainerReturnsNullOnFirstCall(): void
     {
-        $service = $this->getMockForAbstractClass(BaseService::class);
+        $service = new class extends BaseService {
+            public static function getSubscribedServices(): array
+            {
+                return [];
+            }
+        };
         $container = $this->createMock(ContainerInterface::class);
 
         $previous = $service->setContainer($container);
@@ -19,7 +26,12 @@ class BaseServiceTest extends TestCase
 
     public function testSetContainerReturnsPreviousContainer(): void
     {
-        $service = $this->getMockForAbstractClass(BaseService::class);
+        $service = new class extends BaseService {
+            public static function getSubscribedServices(): array
+            {
+                return [];
+            }
+        };
         $container1 = $this->createMock(ContainerInterface::class);
         $container2 = $this->createMock(ContainerInterface::class);
 
@@ -30,7 +42,12 @@ class BaseServiceTest extends TestCase
 
     public function testGetDelegatesToContainer(): void
     {
-        $service = $this->getMockForAbstractClass(BaseService::class);
+        $service = new class extends BaseService {
+            public static function getSubscribedServices(): array
+            {
+                return [];
+            }
+        };
 
         $mockService = new \stdClass();
         $container = $this->createMock(ContainerInterface::class);

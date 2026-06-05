@@ -9,7 +9,9 @@ use App\Form\Type\ChooseOperationChoicesType;
 use Symfony\Component\Form\Extension\Validator\ValidatorExtension;
 use Symfony\Component\Form\Test\TypeTestCase;
 use Symfony\Component\Validator\Validation;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class ChooseCampaignOperationChoicesTypeTest extends TypeTestCase
 {
     protected function getExtensions(): array

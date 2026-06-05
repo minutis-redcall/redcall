@@ -16,7 +16,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class AnswerManager extends BaseService
 {
-    public static function getSubscribedServices()
+    public static function getSubscribedServices(): array
     {
         return [
             AnswerRepository::class,

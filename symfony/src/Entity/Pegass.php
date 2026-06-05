@@ -7,21 +7,15 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\PropertyAccess\PropertyAccess;
 use Throwable;
 
-/**
- * @ORM\Entity(repositoryClass="App\Repository\PegassRepository")
- * @ORM\Table(
- * uniqueConstraints={
- *     @ORM\UniqueConstraint(name="type_identifier_idx", columns={"type", "identifier"})
- * },
- * indexes={
- *    @ORM\Index(name="type_update_idx", columns={"type", "updated_at"}),
- *    @ORM\Index(name="typ_ide_par_idx", columns={"type", "identifier", "parent_identifier"}),
- *    @ORM\Index(name="enabled_idx", columns={"enabled"}),
- *    @ORM\Index(name="external_idx", columns={"external_id"})
- * })
- * @ORM\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
- * @ORM\HasLifecycleCallbacks()
- */
+#[ORM\Table]
+#[ORM\Index(name: 'type_update_idx', columns: ['type', 'updated_at'])]
+#[ORM\Index(name: 'typ_ide_par_idx', columns: ['type', 'identifier', 'parent_identifier'])]
+#[ORM\Index(name: 'enabled_idx', columns: ['enabled'])]
+#[ORM\Index(name: 'external_idx', columns: ['external_id'])]
+#[ORM\UniqueConstraint(name: 'type_identifier_idx', columns: ['type', 'identifier'])]
+#[ORM\Entity(repositoryClass: \App\Repository\PegassRepository::class)]
+#[ORM\ChangeTrackingPolicy('DEFERRED_EXPLICIT')]
+#[ORM\HasLifecycleCallbacks]
 class Pegass
 {
     // Resources
@@ -41,51 +35,33 @@ class Pegass
         self::TYPE_VOLUNTEER => self::TTL_VOLUNTEER,
     ];
 
-    /**
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     private $id;
 
-    /**
-     * @ORM\Column(type="string", length=64, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 64, nullable: true)]
     private $identifier;
 
-    /**
-     * @ORM\Column(type="string", length=64, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 64, nullable: true)]
     private $externalId;
 
-    /**
-     * @ORM\Column(type="string", length=64, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 64, nullable: true)]
     private $parentIdentifier;
 
-    /**
-     * @ORM\Column(type="string", length=24)
-     */
+    #[ORM\Column(type: 'string', length: 24)]
     private $type;
 
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     */
+    #[ORM\Column(type: 'text', nullable: true)]
     private $content;
 
-    /**
-     * @ORM\Column(type="datetime")
-     */
+    #[ORM\Column(type: 'datetime')]
     private $updatedAt;
 
-    /**
-     * @ORM\Column(type="boolean")
-     */
+    #[ORM\Column(type: 'boolean')]
     private $enabled = true;
 
-    /**
-     * @ORM\Column(type="datetime_immutable")
-     */
+    #[ORM\Column(type: 'datetime_immutable')]
     private $createdAt;
 
     public function getId() : ?int
@@ -395,20 +371,16 @@ class Pegass
         return $this;
     }
 
-    /**
-     * @ORM\PrePersist()
-     */
+    #[ORM\PrePersist]
     public function prePersist()
     {
         $this->createdAt = new \DateTimeImmutable();
-        $this->updatedAt = new \DateTimeImmutable();
+        $this->updatedAt = new \DateTime();
     }
 
-    /**
-     * @ORM\PreUpdate()
-     */
+    #[ORM\PreUpdate]
     public function preUpdate()
     {
-        $this->updatedAt = new \DateTimeImmutable();
+        $this->updatedAt = new \DateTime();
     }
 }

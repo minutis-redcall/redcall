@@ -83,7 +83,7 @@ admin:
     success: 'This volunteer can now be reintegrated.s'
     title: 'Undelete a volunteer'
     violations:
-      cannot_import: 'This identifier cannot be used.'
+      cannot_import: 'This volunteer has been deleted (GDPR). Their identifier cannot be reused. Contact support if you need to restore them.'
       not_exists: 'This identifier does not exist.'
   home:
     link: Administration
@@ -355,6 +355,7 @@ campaign_status:
   answer_invalid: 'Other resp.'
   answer_no: 'Answer %choice%'
   answer_none: 'No resp.'
+  cancel_answer: 'Cancel response "%choice%"'
   answers:
     answer_link: Answer
     change: 'Change answers'
@@ -602,6 +603,7 @@ manage_structures:
   action:
     title: Actions
   disable_confirm: 'Do you really want to disable this structure?'
+  disabled_status: 'Disabled structure'
   export: 'Export volunteers contact information'
   form:
     create: 'Create new structure'
@@ -629,6 +631,8 @@ manage_structures:
     actions:
       delete: 'Really remove that template?'
       down: ▼
+      move_down_aria: 'Move template "%name%" down'
+      move_up_aria: 'Move template "%name%" up'
       up: ▲
     choose: 'Use a message template'
     editor_create: 'Create a new message template'
@@ -740,6 +744,10 @@ manage_volunteers:
     update: 'Updated on %date%'
   contact:
     mail_subject: '⚠️ RedCall: You have a message'
+  flags:
+    has_account: 'RedCall user'
+    minor: 'Minor volunteer'
+    volunteer: 'Volunteer'
   form:
     added: 'Volunteer has properly been added.'
     create: 'Create volunteer'
@@ -768,6 +776,7 @@ manage_volunteers:
     tags: Skills
     update: 'Update volunteer'
     updated: 'Volunteer has properly been updated.'
+    deleted_volunteer_warning: 'Warning: this volunteer''s identifier has been deleted (GDPR). Saving changes to this volunteer may cause issues. Contact support if you need to restore them properly.'
     visible_badges: 'Main badges'
     section_messages: 'Latest messages'
     add: 'Create a new volunteer'

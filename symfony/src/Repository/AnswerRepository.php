@@ -27,10 +27,10 @@ class AnswerRepository extends BaseRepository
         foreach ($message->getAnswers() as $answer) {
             /* @var Answer $answer */
             $answer->getChoices()->clear();
-            $this->_em->persist($answer);
+            $this->getEntityManager()->persist($answer);
         }
 
-        $this->_em->flush();
+        $this->getEntityManager()->flush();
     }
 
     public function clearChoices(Message $message, array $choices)
@@ -38,11 +38,11 @@ class AnswerRepository extends BaseRepository
         foreach ($choices as $choice) {
             if ($answer = $message->getAnswerByChoice($choice)) {
                 $answer->getChoices()->removeElement($choice);
-                $this->_em->persist($answer);
+                $this->getEntityManager()->persist($answer);
             }
         }
 
-        $this->_em->flush();
+        $this->getEntityManager()->flush();
     }
 
     public function getSearchQueryBuilder(string $criteria) : QueryBuilder

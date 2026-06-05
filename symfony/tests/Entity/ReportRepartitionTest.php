@@ -35,7 +35,6 @@ class ReportRepartitionTest extends TestCase
         // We can use reflection to set it.
         $ref = new \ReflectionClass($repartition);
         $prop = $ref->getProperty('costs');
-        $prop->setAccessible(true);
         $prop->setValue($repartition, '');
 
         $this->assertNull($repartition->getCosts());

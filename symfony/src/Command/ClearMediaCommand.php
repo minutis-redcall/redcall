@@ -21,14 +21,14 @@ class ClearMediaCommand extends BaseCommand
         $this->mediaManager = $mediaManager;
     }
 
-    protected function configure()
+    protected function configure() : void
     {
         $this
             ->setName('clear:media')
             ->setDescription('Clear expired medias');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output) : int
     {
         $this->mediaManager->clearExpired();
 

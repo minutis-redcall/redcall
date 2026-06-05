@@ -12,19 +12,19 @@ use App\Manager\StructureManager;
 use App\Manager\UserManager;
 use App\Manager\VolunteerManager;
 use Bundles\PaginationBundle\Manager\PaginationManager;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\KernelInterface;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 /**
- * @Route("/admin/pegass", name="admin_pegass_")
  *
  * This controller handles administration tools for Pegass users and structures.
  */
+#[Route("/admin/pegass", name: "admin_pegass_")]
 class PegassController extends BaseController
 {
     /**
@@ -72,12 +72,10 @@ class PegassController extends BaseController
         $this->requestStack      = $requestStack;
     }
 
-    /**
-     * @Route(name="index")
-     */
+    #[Route(name: "index")]
     public function index()
     {
-        $request = $this->requestStack->getMasterRequest();
+        $request = $this->requestStack->getMainRequest();
         $search  = $this->createSearchForm($request);
 
         if ($search->isSubmitted() && $search->isValid()) {
@@ -86,16 +84,14 @@ class PegassController extends BaseController
 
         return $this->render('admin/pegass/index.html.twig', [
             'search'    => $search->createView(),
-            'type'      => $request->get('type'),
+            'type'      => ($request->attributes->get('type') ?? $request->query->get('type') ?? $request->request->get('type')),
             'users'     => $this->paginationManager->getPager(
                 $this->userManager->searchQueryBuilder($criteria ?? null, false)
             ),
         ]);
     }
 
-    /**
-     * @Route(name="list_users", path="/list-users")
-     */
+    #[Route(name: "list_users", path: "/list-users")]
     public function userList()
     {
         $users = $this->userManager->findAll();
@@ -109,10 +105,8 @@ class PegassController extends BaseController
         ]);
     }
 
-    /**
-     * @Route(name="update", path="/update/{csrf}/{id}")
-     * @IsGranted("USER", subject="user")
-     */
+    #[Route(name: "update", path: "/update/{csrf}/{id}")]
+#[IsGranted("USER", subject: "user")]
     public function updateBoundVolunteer(Request $request, string $csrf, User $user)
     {
         $this->validateCsrfOrThrowNotFoundException('pegass', $csrf);
@@ -132,10 +126,8 @@ class PegassController extends BaseController
         ]);
     }
 
-    /**
-     * @Route(name="update_structures", path="/update-structures/{id}")
-     * @IsGranted("USER", subject="user")
-     */
+    #[Route(name: "update_structures", path: "/update-structures/{id}")]
+#[IsGranted("USER", subject: "user")]
     public function updateStructures(Request $request, User $user)
     {
         // It's a reverse use of the entity type: we want to show all
@@ -174,15 +166,13 @@ class PegassController extends BaseController
         ]);
     }
 
-    /**
-     * @Route(name="add_structure", path="/add-structure/{csrf}/{id}")
-     * @IsGranted("USER", subject="user")
-     */
+    #[Route(name: "add_structure", path: "/add-structure/{csrf}/{id}")]
+#[IsGranted("USER", subject: "user")]
     public function addStructure(Request $request, string $csrf, User $user)
     {
         $this->validateCsrfOrThrowNotFoundException('pegass', $csrf);
 
-        $structureId = $request->get('structure');
+        $structureId = ($request->attributes->get('structure') ?? $request->query->get('structure') ?? $request->request->get('structure'));
         if (!$structureId) {
             throw $this->createNotFoundException();
         }
@@ -207,9 +197,7 @@ class PegassController extends BaseController
         ]);
     }
 
-    /**
-     * @Route(name="create_user", path="/create-user")
-     */
+    #[Route(name: "create_user", path: "/create-user")]
     public function createUser(Request $request, KernelInterface $kernel)
     {
         $form = $this->createFormBuilder()
@@ -243,10 +231,8 @@ class PegassController extends BaseController
         ]);
     }
 
-    /**
-     * @Route(name="toggle_verify", path="/toggle-verify/{csrf}/{id}")
-     * @IsGranted("USER", subject="user")
-     */
+    #[Route(name: "toggle_verify", path: "/toggle-verify/{csrf}/{id}")]
+#[IsGranted("USER", subject: "user")]
     public function toggleVerifyAction(User $user, string $csrf)
     {
         $this->validateCsrfOrThrowNotFoundException('pegass', $csrf);
@@ -263,10 +249,8 @@ class PegassController extends BaseController
         ]);
     }
 
-    /**
-     * @Route(name="toggle_trust", path="/toggle-trust/{csrf}/{id}")
-     * @IsGranted("USER", subject="user")
-     */
+    #[Route(name: "toggle_trust", path: "/toggle-trust/{csrf}/{id}")]
+#[IsGranted("USER", subject: "user")]
     public function toggleTrustAction(User $user, string $csrf)
     {
         $this->validateCsrfOrThrowNotFoundException('pegass', $csrf);
@@ -283,10 +267,8 @@ class PegassController extends BaseController
         ]);
     }
 
-    /**
-     * @Route(name="toggle_admin", path="/toggle-admin/{csrf}/{id}")
-     * @IsGranted("USER", subject="user")
-     */
+    #[Route(name: "toggle_admin", path: "/toggle-admin/{csrf}/{id}")]
+#[IsGranted("USER", subject: "user")]
     public function toggleAdminAction(User $user, string $csrf)
     {
         $this->validateCsrfOrThrowNotFoundException('pegass', $csrf);
@@ -303,10 +285,8 @@ class PegassController extends BaseController
         ]);
     }
 
-    /**
-     * @Route(name="toggle_lock", path="/toggle-lock/{csrf}/{id}")
-     * @IsGranted("USER", subject="user")
-     */
+    #[Route(name: "toggle_lock", path: "/toggle-lock/{csrf}/{id}")]
+#[IsGranted("USER", subject: "user")]
     public function toggleLockAction(User $user, string $csrf)
     {
         $this->validateCsrfOrThrowNotFoundException('pegass', $csrf);
@@ -323,11 +303,9 @@ class PegassController extends BaseController
         ]);
     }
 
-    /**
-     * @Route(name="toggle_root", path="/toggle-root/{csrf}/{id}")
-     * @IsGranted("ROLE_ROOT")
-     * @IsGranted("USER", subject="user")
-     */
+    #[Route(name: "toggle_root", path: "/toggle-root/{csrf}/{id}")]
+#[IsGranted("ROLE_ROOT")]
+#[IsGranted("USER", subject: "user")]
     public function toggleRootAction(User $user, string $csrf)
     {
         $this->validateCsrfOrThrowNotFoundException('pegass', $csrf);
@@ -348,10 +326,8 @@ class PegassController extends BaseController
         ]);
     }
 
-    /**
-     * @Route(name="delete", path="/delete/{csrf}/{id}")
-     * @IsGranted("USER", subject="user")
-     */
+    #[Route(name: "delete", path: "/delete/{csrf}/{id}")]
+#[IsGranted("USER", subject: "user")]
     public function deleteAction(User $user, $csrf)
     {
         $this->validateCsrfOrThrowNotFoundException('pegass', $csrf);
@@ -365,9 +341,7 @@ class PegassController extends BaseController
         return $this->redirectToRoute('admin_pegass_index');
     }
 
-    /**
-     * @Route(path="/administrators", name="administrators")
-     */
+    #[Route(path: "/administrators", name: "administrators")]
     public function administrators(Request $request)
     {
         $users = $this->userManager->searchQueryBuilder(null, true, false)
@@ -386,10 +360,8 @@ class PegassController extends BaseController
         ]);
     }
 
-    /**
-     * @Route("/revoke-admin/{csrf}/{id}", name="revoke_admin")
-     * @IsGranted("ROLE_ROOT")
-     */
+    #[Route("/revoke-admin/{csrf}/{id}", name: "revoke_admin")]
+#[IsGranted("ROLE_ROOT")]
     public function revokeAdmin(User $user, string $csrf)
     {
         $this->validateCsrfOrThrowNotFoundException('pegass', $csrf);
@@ -408,9 +380,7 @@ class PegassController extends BaseController
         return $this->redirectToRoute('admin_pegass_administrators');
     }
 
-    /**
-     * @Route(path="/rtmr", name="rtmr")
-     */
+    #[Route(path: "/rtmr", name: "rtmr")]
     public function rtmr(Request $request)
     {
         $badge = $this->badgeManager->findOneByName(\App\Manager\RefreshManager::RTMR_BADGE);

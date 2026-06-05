@@ -5,6 +5,7 @@ parameters:
   locale_list: [ 'fr', 'en' ]
   locale_matcher: 'fr|en'
   google_recaptcha_site_key: '%env(GOOGLE_RECAPTCHA_SITE_KEY)%'
+  recaptcha_enabled: true
   communication.processor: 'App\Communication\Processor\TaskProcessor'
   user_entity: 'App\Entity\User'
   home_route: 'home'
@@ -30,13 +31,14 @@ services:
   # configures session storage on the database
   Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler:
     arguments:
-      - '@Doctrine\DBAL\Driver\PDOConnection'
+      - '@app.session.pdo'
       - { lock_mode: 1 }
 
   Symfony\Bridge\Doctrine\Security\RememberMe\DoctrineTokenProvider: ~
 
-  Doctrine\DBAL\Driver\PDOConnection:
-    factory: [ '@doctrine.dbal.default_connection', 'getWrappedConnection' ]
+  app.session.pdo:
+    class: PDO
+    factory: [ '@doctrine.dbal.default_connection', 'getNativeConnection' ]
 
   # makes classes in src/ available to be used as services
   # this creates a service per class whose id is the fully-qualified class name
@@ -89,12 +91,35 @@ services:
 
   Bundles\PasswordLoginBundle\Repository\UserRepositoryInterface:
     class: App\Repository\UserRepository
-    arguments: [ '@Doctrine\Common\Persistence\ManagerRegistry' ]
+    arguments: [ '@Doctrine\Persistence\ManagerRegistry' ]
 
   App\Provider\OAuth\GoogleConnect\GoogleConnect:
     arguments:
       $clientId: '%env(GOOGLE_CONNECT_CLIENT_ID)%'
       $clientSecret: '%env(GOOGLE_CONNECT_CLIENT_SECRET)%'
+
+  App\ArgumentResolver\CsrfTokenResolver:
+    tags:
+      - { name: controller.argument_value_resolver, priority: 150 }
+
+  App\ArgumentResolver\MyClabsEnumResolver:
+    tags:
+      - { name: controller.argument_value_resolver, priority: 150 }
+
+  App\Captcha\CaptchaVerifierInterface:
+    alias: 'App\Captcha\GoogleRecaptchaVerifier'
+
+  App\Form\Type\RecaptchaType:
+    arguments:
+      $siteKey: '%google_recaptcha_site_key%'
+    tags:
+      - { name: form.type }
+
+  App\Validator\Constraints\RecaptchaTrueValidator:
+    arguments:
+      $enabled: '%recaptcha_enabled%'
+    tags:
+      - { name: validator.constraint_validator }
 
   twig.extension.intl:
     class: Twig\Extra\Intl\IntlExtension

@@ -44,7 +44,7 @@ class CommunicationRepository extends BaseRepository
 
     public function clearEntityManager()
     {
-        $this->_em->clear();
+        $this->getEntityManager()->clear();
     }
 
     public function getCommunicationStructures(Communication $communication) : array

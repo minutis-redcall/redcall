@@ -4,23 +4,21 @@ namespace Bundles\SandboxBundle\Controller;
 
 use Bundles\SandboxBundle\Base\BaseController;
 use Bundles\SandboxBundle\Services\AnimGif;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Range;
 use Symfony\Component\Validator\Constraints\Regex;
 
 class SpinnerController extends BaseController
 {
-    /**
-     * @Route("/spinner", name="spinner")
-     * @Template
-     */
+    #[Route("/spinner", name: "spinner")]
+    #[Template("@Sandbox/spinner/index.html.twig")]
     public function index(Request $request)
     {
         $form = $this
@@ -37,7 +35,7 @@ class SpinnerController extends BaseController
                 'label'       => 'sandbox.spinner.splits',
                 'constraints' => [
                     new NotBlank(),
-                    new Range(['min' => 2, 'max' => 100]),
+                    new Range(min: 2, max: 100),
                 ],
             ])
             ->add('mixer', TextType::class, [
@@ -49,7 +47,7 @@ class SpinnerController extends BaseController
             ->add('speed', IntegerType::class, [
                 'constraints' => [
                     new NotBlank(),
-                    new Range(['min' => 1, 'max' => 100]),
+                    new Range(min: 1, max: 100),
                 ],
             ])
             ->add('submit', SubmitType::class, [

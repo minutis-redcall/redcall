@@ -11,7 +11,9 @@ use Doctrine\ORM\QueryBuilder;
 use Pagerfanta\Pagerfanta;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class BadgeManagerTest extends KernelTestCase
 {
     private BadgeManager $manager;
@@ -28,13 +30,13 @@ class BadgeManagerTest extends KernelTestCase
         $this->em = $container->get('doctrine.orm.entity_manager');
         $this->fixtures = new DataFixtures(
             $this->em,
-            $container->get('security.password_encoder')
+            $container->get('security.password_hasher')
         );
     }
 
     private function loginAs($user): void
     {
-        $token = new UsernamePasswordToken($user, null, 'main', $user->getRoles());
+        $token = new UsernamePasswordToken($user, 'main', $user->getRoles());
         static::getContainer()->get('security.token_storage')->setToken($token);
     }
 

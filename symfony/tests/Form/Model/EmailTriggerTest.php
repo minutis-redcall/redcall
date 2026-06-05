@@ -6,7 +6,9 @@ use App\Entity\Communication;
 use App\Entity\Media;
 use App\Form\Model\EmailTrigger;
 use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Attributes\AllowMockObjectsWithoutExpectations;
 
+#[AllowMockObjectsWithoutExpectations]
 class EmailTriggerTest extends TestCase
 {
     public function testConstructorSetsTypeEmail(): void

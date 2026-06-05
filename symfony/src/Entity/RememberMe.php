@@ -5,36 +5,24 @@ namespace App\Entity;
 use App\Repository\RememberMeRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity(repositoryClass=RememberMeRepository::class)
- * @ORM\Table(name="rememberme_token")
- */
+#[ORM\Table(name: 'rememberme_token')]
+#[ORM\Entity(repositoryClass: RememberMeRepository::class)]
 class RememberMe
 {
-    /**
-     * @ORM\Id
-     * @ORM\Column(type="string", length=88)
-     */
+    #[ORM\Id]
+    #[ORM\Column(type: 'string', length: 88)]
     private $series;
 
-    /**
-     * @ORM\Column(type="string", length=88)
-     */
+    #[ORM\Column(type: 'string', length: 88)]
     private $value;
 
-    /**
-     * @ORM\Column(name="lastUsed", type="datetime")
-     */
+    #[ORM\Column(name: 'lastUsed', type: 'datetime')]
     private $lastUsed;
 
-    /**
-     * @ORM\Column(type="string", length=100)
-     */
+    #[ORM\Column(type: 'string', length: 100)]
     private $class;
 
-    /**
-     * @ORM\Column(type="string", length=200)
-     */
+    #[ORM\Column(type: 'string', length: 200)]
     private $username;
 
     public function getSeries() : ?string

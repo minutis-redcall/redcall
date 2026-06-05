@@ -6,32 +6,22 @@ use App\Repository\TemplateImageRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Ramsey\Uuid\Uuid;
 
-/**
- * @ORM\Entity(repositoryClass=TemplateImageRepository::class)
- */
+#[ORM\Entity(repositoryClass: TemplateImageRepository::class)]
 class TemplateImage
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     private $id;
 
-    /**
-     * @ORM\Column(type="string", length=36)
-     */
+    #[ORM\Column(type: 'string', length: 36)]
     private $uuid;
 
-    /**
-     * @ORM\Column(type="text")
-     */
+    #[ORM\Column(type: 'text')]
     private $content;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Template::class, inversedBy="images")
-     * @ORM\JoinColumn(nullable=false)
-     */
+    #[ORM\JoinColumn(nullable: false)]
+    #[ORM\ManyToOne(targetEntity: Template::class, inversedBy: 'images')]
     private $template;
 
     public function __construct()

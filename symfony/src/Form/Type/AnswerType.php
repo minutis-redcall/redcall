@@ -9,7 +9,7 @@ use Symfony\Component\Validator\Constraints\Length;
 
 class AnswerType extends TextType
 {
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         parent::configureOptions($resolver);
 
@@ -18,10 +18,7 @@ class AnswerType extends TextType
                 'maxlength' => Choice::MAX_LENGTH_DEFAULT,
             ],
             'constraints' => [
-                new Length([
-                    'min' => 1,
-                    'max' => Choice::MAX_LENGTH_DEFAULT,
-                ]),
+                new Length(min: 1, max: Choice::MAX_LENGTH_DEFAULT),
             ],
         ]);
     }
@@ -29,7 +26,7 @@ class AnswerType extends TextType
     /**
      * {@inheritdoc}
      */
-    public function getBlockPrefix()
+    public function getBlockPrefix(): string
     {
         return 'answer';
     }

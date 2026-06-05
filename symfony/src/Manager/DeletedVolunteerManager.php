@@ -31,17 +31,13 @@ class DeletedVolunteerManager
         $this->deletedVolunteerRepository = $deletedVolunteerRepository;
     }
 
-    /**
-     * @required
-     */
+    #[\Symfony\Contracts\Service\Attribute\Required]
     public function setPegassManager(PegassManager $pegassManager) : void
     {
         $this->pegassManager = $pegassManager;
     }
 
-    /**
-     * @required
-     */
+    #[\Symfony\Contracts\Service\Attribute\Required]
     public function setVolunteerManager(VolunteerManager $volunteerManager) : void
     {
         $this->volunteerManager = $volunteerManager;

@@ -5,21 +5,19 @@ namespace Bundles\SandboxBundle\Controller;
 use App\Form\Type\StructureWidgetType;
 use Bundles\SandboxBundle\Base\BaseController;
 use Bundles\SandboxBundle\Manager\FixturesManager;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Validator\Constraints\Length;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-/**
- * @Route("/fixtures", name="fixtures_")
- */
+#[Route("/fixtures", name: "fixtures_")]
 class FixturesController extends BaseController
 {
     /**
@@ -39,10 +37,8 @@ class FixturesController extends BaseController
         $this->translator      = $translator;
     }
 
-    /**
-     * @Route(path="/", name="index")
-     * @Template()
-     */
+    #[Route(path: "/", name: "index")]
+    #[Template("@Sandbox/fixtures/index.html.twig")]
     public function index(Request $request)
     {
         $structure = $this->getStructureForm($request);
@@ -86,7 +82,7 @@ class FixturesController extends BaseController
                         'label'       => 'sandbox.fixtures.structure.name',
                         'constraints' => [
                             new NotBlank(),
-                            new Length(['min' => 3]),
+                            new Length(min: 3),
                         ],
                     ])
                     ->add('parent', StructureWidgetType::class, [
@@ -97,7 +93,7 @@ class FixturesController extends BaseController
                         'label'       => 'sandbox.fixtures.structure.number_volunteers',
                         'constraints' => [
                             new NotBlank(),
-                            new Length(['min' => 0]),
+                            new Length(min: 0),
                         ],
                     ])
                     ->add('bind_to_user', CheckboxType::class, [
@@ -118,7 +114,7 @@ class FixturesController extends BaseController
                         'label'       => 'sandbox.fixtures.volunteer.number_volunteers',
                         'constraints' => [
                             new NotBlank(),
-                            new Length(['min' => 0]),
+                            new Length(min: 0),
                         ],
                     ])
                     ->add('structure', StructureWidgetType::class, [

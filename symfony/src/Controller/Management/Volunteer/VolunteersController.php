@@ -16,6 +16,7 @@ use App\Form\Type\VolunteerType;
 use App\Manager\AnswerManager;
 use App\Manager\CampaignManager;
 use App\Manager\CommunicationManager;
+use App\Manager\DeletedVolunteerManager;
 use App\Manager\MessageManager;
 use App\Manager\PegassManager;
 use App\Manager\PhoneManager;
@@ -26,23 +27,21 @@ use App\Model\Csrf;
 use Bundles\PaginationBundle\Manager\PaginationManager;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Ramsey\Uuid\Uuid;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
+use Symfony\Bridge\Twig\Attribute\Template;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Contracts\Translation\TranslatorInterface;
 use Twig\Environment;
 
-/**
- * @Route(path="management/volunteers", name="management_volunteers_")
- */
+#[Route(path: "management/volunteers", name: "management_volunteers_")]
 class VolunteersController extends BaseController
 {
 
@@ -106,6 +105,16 @@ class VolunteersController extends BaseController
      */
     private $templating;
 
+    /**
+     * @var DeletedVolunteerManager
+     */
+    private $deletedVolunteerManager;
+
+    /**
+     * @var SimpleProcessor
+     */
+    private $simpleProcessor;
+
     public function __construct(VolunteerManager $volunteerManager,
         StructureManager $structureManager,
         PegassManager $pegassManager,
@@ -118,27 +127,27 @@ class VolunteersController extends BaseController
         MessageManager $messageManager,
         TranslatorInterface $translator,
         Environment $templating,
-        SimpleProcessor $simpleProcessor)
+        SimpleProcessor $simpleProcessor,
+        DeletedVolunteerManager $deletedVolunteerManager)
     {
-        $this->volunteerManager     = $volunteerManager;
-        $this->structureManager     = $structureManager;
-        $this->pegassManager        = $pegassManager;
-        $this->refreshManager       = $refreshManager;
-        $this->campaignManager      = $campaignManager;
-        $this->communicationManager = $communicationManager;
-        $this->phoneManager         = $phoneManager;
-        $this->answerManager        = $answerManager;
-        $this->paginationManager    = $paginationManager;
-        $this->messageManager       = $messageManager;
-        $this->translator           = $translator;
-        $this->templating           = $templating;
-        $this->simpleProcessor      = $simpleProcessor;
+        $this->volunteerManager        = $volunteerManager;
+        $this->structureManager        = $structureManager;
+        $this->pegassManager           = $pegassManager;
+        $this->refreshManager          = $refreshManager;
+        $this->campaignManager         = $campaignManager;
+        $this->communicationManager    = $communicationManager;
+        $this->phoneManager            = $phoneManager;
+        $this->answerManager           = $answerManager;
+        $this->paginationManager       = $paginationManager;
+        $this->messageManager          = $messageManager;
+        $this->translator              = $translator;
+        $this->templating              = $templating;
+        $this->simpleProcessor         = $simpleProcessor;
+        $this->deletedVolunteerManager = $deletedVolunteerManager;
     }
 
-    /**
-     * @Route(name="list", path="/{id}", requirements={"id" = "\d+"}, defaults={"id" = null})
-     */
-    public function listAction(Request $request, Structure $structure = null)
+    #[Route(name: "list", path: "/{id}", requirements: ["id" => "\d+"], defaults: ["id" => null])]
+    public function listAction(Request $request, ?Structure $structure = null)
     {
         if ($structure && !$this->isGranted('STRUCTURE', $structure)) {
             throw $this->createAccessDeniedException();
@@ -174,13 +183,15 @@ class VolunteersController extends BaseController
         ]);
     }
 
-    /**
-     * @Route(path="/manual-update/{id}", name="manual_update")
-     * @IsGranted("VOLUNTEER", subject="volunteer")
-     */
+    #[Route(path: "/manual-update/{id}", name: "manual_update")]
+#[IsGranted("VOLUNTEER", subject: "volunteer")]
     public function manualUpdateAction(Request $request, Volunteer $volunteer)
     {
         $isCreate = !$volunteer->getId();
+
+        if (!$isCreate && $this->deletedVolunteerManager->isDeleted($volunteer->getExternalId())) {
+            $this->addFlash('alert', $this->translator->trans('manage_volunteers.form.deleted_volunteer_warning'));
+        }
 
         $oldVolunteer = clone $volunteer;
         $oldPhone     = $volunteer->getPhone() ? clone $volunteer->getPhone() : null;
@@ -255,14 +266,12 @@ class VolunteersController extends BaseController
             'isCreate'  => $isCreate,
             'volunteer' => $volunteer,
             'delete'    => !$isCreate ? $delete->createView() : null,
-            'answerId'  => $request->get('answerId'),
+            'answerId'  => ($request->attributes->get('answerId') ?? $request->query->get('answerId') ?? $request->request->get('answerId')),
             'messages'  => $this->messageManager->getLatestMessagesForVolunteer($volunteer),
         ]);
     }
 
-    /**
-     * @Route(path="/create", name="create")
-     */
+    #[Route(path: "/create", name: "create")]
     public function createAction(Request $request)
     {
         $volunteer = new Volunteer();
@@ -271,10 +280,8 @@ class VolunteersController extends BaseController
         return $this->manualUpdateAction($request, $volunteer);
     }
 
-    /**
-     * @Route(path="/pegass/{id}", name="pegass")
-     * @IsGranted("ROLE_ADMIN")
-     */
+    #[Route(path: "/pegass/{id}", name: "pegass")]
+#[IsGranted("ROLE_ADMIN")]
     public function pegass(Volunteer $volunteer)
     {
         $entity = $this->pegassManager->getEntity(Pegass::TYPE_VOLUNTEER, $volunteer->getExternalId(), false);
@@ -289,11 +296,9 @@ class VolunteersController extends BaseController
         ]);
     }
 
-    /**
-     * @Route(path="/pegass-reset/{csrf}/{id}", name="pegass_reset")
-     * @IsGranted("ROLE_ADMIN")
-     * @Template("management/volunteers/volunteer.html.twig")
-     */
+    #[Route(path: "/pegass-reset/{csrf}/{id}", name: "pegass_reset")]
+#[IsGranted("ROLE_ADMIN")]
+#[Template("management/volunteers/volunteer.html.twig")]
     public function pegassReset(Volunteer $volunteer, Csrf $csrf)
     {
         $entity = $this->pegassManager->getEntity(Pegass::TYPE_VOLUNTEER, $volunteer->getExternalId(), false);
@@ -303,10 +308,8 @@ class VolunteersController extends BaseController
         return $this->getContext($volunteer);
     }
 
-    /**
-     * @Route(path="/edit-structures/{id}", name="edit_structures")
-     * @IsGranted("ROLE_ADMIN")
-     */
+    #[Route(path: "/edit-structures/{id}", name: "edit_structures")]
+#[IsGranted("ROLE_ADMIN")]
     public function editStructures(Volunteer $volunteer)
     {
         return $this->render('management/volunteers/structures.html.twig', [
@@ -314,10 +317,8 @@ class VolunteersController extends BaseController
         ]);
     }
 
-    /**
-     * @Route(path="/remove-all-structures/{csrf}/{id}", name="remove_all_structures")
-     * @IsGranted("ROLE_ADMIN")
-     */
+    #[Route(path: "/remove-all-structures/{csrf}/{id}", name: "remove_all_structures")]
+#[IsGranted("ROLE_ADMIN")]
     public function removeAllStructures(Volunteer $volunteer)
     {
         foreach ($volunteer->getStructures() as $structure) {
@@ -331,15 +332,13 @@ class VolunteersController extends BaseController
         ]);
     }
 
-    /**
-     * @Route(path="/add-structure/{csrf}/{id}", name="add_structure")
-     * @IsGranted("ROLE_ADMIN")
-     */
+    #[Route(path: "/add-structure/{csrf}/{id}", name: "add_structure")]
+#[IsGranted("ROLE_ADMIN")]
     public function addStructure(Request $request, string $csrf, Volunteer $volunteer)
     {
         $this->validateCsrfOrThrowNotFoundException('volunteer', $csrf);
 
-        $structureId = $request->get('structure');
+        $structureId = ($request->attributes->get('structure') ?? $request->query->get('structure') ?? $request->request->get('structure'));
         if (!$structureId) {
             throw $this->createNotFoundException();
         }
@@ -358,13 +357,11 @@ class VolunteersController extends BaseController
         ]);
     }
 
-    /**
-     * @Route(path="/delete-structure/{csrf}/{volunteerId}/{structureId}", name="delete_structure")
-     * @Entity("volunteer", expr="repository.find(volunteerId)")
-     * @Entity("structure", expr="repository.find(structureId)")
-     * @IsGranted("ROLE_ADMIN")
-     */
-    public function deleteStructure(string $csrf, Volunteer $volunteer, Structure $structure)
+    #[Route(path: "/delete-structure/{csrf}/{volunteerId}/{structureId}", name: "delete_structure")]
+    #[IsGranted("ROLE_ADMIN")]
+    public function deleteStructure(string $csrf,
+        #[MapEntity(expr: "repository.find(volunteerId)")] Volunteer $volunteer,
+        #[MapEntity(expr: "repository.find(structureId)")] Structure $structure)
     {
         $this->validateCsrfOrThrowNotFoundException('volunteer', $csrf);
 
@@ -377,16 +374,12 @@ class VolunteersController extends BaseController
         ]);
     }
 
-    /**
-     * @Route(path="/delete/{volunteerId}/{answerId}", name="delete", defaults={"answerId"=null})
-     * @Entity("volunteer", expr="repository.find(volunteerId)")
-     * @Entity("answer", expr="answerId ? repository.find(answerId) : null")
-     * @Template("management/volunteers/delete.html.twig")
-     */
+    #[Route(path: "/delete/{volunteerId}/{answerId}", name: "delete", defaults: ["answerId" => null])]
+    #[Template("management/volunteers/delete.html.twig")]
     public function deleteAction(Request $request,
         SimpleProcessor $processor,
-        Volunteer $volunteer,
-        ?Answer $answer = null)
+        #[MapEntity(expr: "repository.find(volunteerId)")] Volunteer $volunteer,
+        #[MapEntity(expr: "answerId ? repository.find(answerId) : null")] ?Answer $answer = null)
     {
         if ($volunteer->getUser()) {
             throw $this->createNotFoundException();
@@ -427,12 +420,10 @@ class VolunteersController extends BaseController
         ];
     }
 
-    /**
-     * @Route(name="list_user_structures", path="/list-user-structures")
-     */
+    #[Route(name: "list_user_structures", path: "/list-user-structures")]
     public function listUserStructures(Request $request)
     {
-        $volunteer = $this->getVolunteerById($request->get('id'));
+        $volunteer = $this->getVolunteerById(($request->attributes->get('id') ?? $request->query->get('id') ?? $request->request->get('id')));
 
         if (!$volunteer->isUserEnabled()) {
             throw $this->createNotFoundException();
@@ -448,11 +439,9 @@ class VolunteersController extends BaseController
         ]);
     }
 
-    /**
-     * @Route(path="/toggle-lock-{id}/{token}", name="toggle_lock")
-     * @IsGranted("VOLUNTEER", subject="volunteer")
-     * @Template("management/volunteers/volunteer.html.twig")
-     */
+    #[Route(path: "/toggle-lock-{id}/{token}", name: "toggle_lock")]
+#[IsGranted("VOLUNTEER", subject: "volunteer")]
+#[Template("management/volunteers/volunteer.html.twig")]
     public function toggleLock(Volunteer $volunteer, Csrf $token)
     {
         $volunteer->setLocked(1 - $volunteer->isLocked());
@@ -462,11 +451,9 @@ class VolunteersController extends BaseController
         return $this->getContext($volunteer);
     }
 
-    /**
-     * @Route(path="/toggle-enable-{id}/{token}", name="toggle_enable")
-     * @IsGranted("VOLUNTEER", subject="volunteer")
-     * @Template("management/volunteers/volunteer.html.twig")
-     */
+    #[Route(path: "/toggle-enable-{id}/{token}", name: "toggle_enable")]
+#[IsGranted("VOLUNTEER", subject: "volunteer")]
+#[Template("management/volunteers/volunteer.html.twig")]
     public function toggleEnable(Volunteer $volunteer, Csrf $token)
     {
         if ($volunteer->getUser() && $volunteer->isEnabled()) {

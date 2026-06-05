@@ -11,132 +11,106 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
-/**
- * @ORM\Table(
- *     indexes={
- *         @ORM\Index(name="enabledx", columns={"enabled"}),
- *     },
- *     uniqueConstraints={
- *         @ORM\UniqueConstraint(name="extid_idx", columns={"external_id"})
- *     }
- * )
- * @ORM\Entity(repositoryClass=BadgeRepository::class)
- * @ORM\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
- */
+#[ORM\Table]
+#[ORM\Index(name: 'enabledx', columns: ['enabled'])]
+#[ORM\UniqueConstraint(name: 'extid_idx', columns: ['external_id'])]
+#[ORM\Entity(repositoryClass: BadgeRepository::class)]
+#[ORM\ChangeTrackingPolicy('DEFERRED_EXPLICIT')]
 class Badge implements LockableInterface
 {
     /**
      * @var int
-     *
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
      */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     private $id;
 
     /**
      * @var string
-     *
-     * @ORM\Column(type="string", length=64)
      */
+    #[ORM\Column(type: 'string', length: 64)]
     private $externalId;
 
     /**
      * @var string
-     *
-     * @ORM\Column(type="string", length=64)
-     * @Assert\NotBlank
-     * @Assert\Length(max="64")
      */
+    #[ORM\Column(type: 'string', length: 64)]
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 64)]
     private $name;
 
     /**
      * @var string
-     *
-     * @ORM\Column(type="string", length=255, nullable=true)
-     * @Assert\Length(max="255")
      */
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Assert\Length(max: 255)]
     private $description;
 
     /**
      * @var int
-     *
-     * @ORM\Column(type="integer")
-     * @Assert\Range(min="0", max="1000")
      */
+    #[ORM\Column(type: 'integer')]
+    #[Assert\Range(min: 0, max: 1000)]
     private $renderingPriority = 0;
 
     /**
      * @var int
-     *
-     * @ORM\Column(type="integer")
-     * @Assert\Range(min="0", max="1000")
      */
+    #[ORM\Column(type: 'integer')]
+    #[Assert\Range(min: 0, max: 1000)]
     private $triggeringPriority = 500;
 
     /**
      * @var bool
-     *
-     * @ORM\Column(type="boolean")
      */
+    #[ORM\Column(type: 'boolean')]
     private $visibility = false;
 
     /**
      * @var Category|null
-     *
-     * @ORM\ManyToOne(targetEntity=Category::class, inversedBy="badges")
      */
+    #[ORM\ManyToOne(targetEntity: Category::class, inversedBy: 'badges')]
     private $category;
 
-    /**
-     * @ORM\ManyToMany(targetEntity=Volunteer::class, mappedBy="badges")
-     */
+    #[ORM\ManyToMany(targetEntity: Volunteer::class, mappedBy: 'badges')]
     private $volunteers;
 
     /**
      * @var self|null
-     *
-     * @ORM\ManyToOne(targetEntity=Badge::class, inversedBy="children")
-     * @ORM\JoinColumn(onDelete="SET NULL")
      */
+    #[ORM\JoinColumn(onDelete: 'SET NULL')]
+    #[ORM\ManyToOne(targetEntity: Badge::class, inversedBy: 'children')]
     private $parent;
 
-    /**
-     * @ORM\OneToMany(targetEntity=Badge::class, mappedBy="parent")
-     */
+    #[ORM\OneToMany(targetEntity: Badge::class, mappedBy: 'parent')]
     private $children;
 
     /**
      * @var self
-     *
-     * @ORM\ManyToOne(targetEntity=Badge::class, inversedBy="synonyms", cascade={"all"})
      */
+    #[ORM\ManyToOne(targetEntity: Badge::class, inversedBy: 'synonyms', cascade: ['all'])]
     private $synonym;
 
-    /**
-     * @ORM\OneToMany(targetEntity=Badge::class, mappedBy="synonym", cascade={"all"})
-     */
+    #[ORM\OneToMany(targetEntity: Badge::class, mappedBy: 'synonym', cascade: ['all'])]
     private $synonyms;
 
     /**
      * @var \DateTimeInterface
-     *
-     * @ORM\Column(type="date_immutable", nullable=true)
      */
+    #[ORM\Column(type: 'date_immutable', nullable: true)]
     private $expiresAt = null;
 
     /**
      * @var bool
-     *
-     * @ORM\Column(type="boolean", options={"default" : 1})
      */
+    #[ORM\Column(type: 'boolean', options: ['default' => 1])]
     private $enabled = true;
 
     /**
      * @var bool
-     *
-     * @ORM\Column(type="boolean", options={"default" : 0})
      */
+    #[ORM\Column(type: 'boolean', options: ['default' => 0])]
     private $locked = false;
 
     public function __construct()
@@ -457,7 +431,7 @@ class Badge implements LockableInterface
         return true;
     }
 
-    public function getCoveringBadges(int $stop = null) : array
+    public function getCoveringBadges(?int $stop = null) : array
     {
         $parents = [];
         $ref     = $this->getParent();
@@ -513,9 +487,7 @@ class Badge implements LockableInterface
         return $this;
     }
 
-    /**
-     * @Assert\Callback
-     */
+    #[Assert\Callback]
     public function validate(ExecutionContextInterface $context, $payload)
     {
         if ($this->getParent()) {

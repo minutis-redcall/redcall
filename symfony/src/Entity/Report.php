@@ -6,44 +6,29 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity(repositoryClass=App\Repository\ReportRepository::class)
- * @ORM\HasLifecycleCallbacks()
- */
+#[ORM\Entity(repositoryClass: \App\Repository\ReportRepository::class)]
+#[ORM\HasLifecycleCallbacks]
 class Report extends AbstractReport
 {
-    /**
-     * @ORM\Id
-     * @ORM\GeneratedValue
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     private $id;
 
-    /**
-     * @ORM\Column(type="string", length=32)
-     */
+    #[ORM\Column(type: 'string', length: 32)]
     private $type;
 
-    /**
-     * @ORM\OneToMany(targetEntity=ReportRepartition::class, mappedBy="report", cascade={"persist", "remove"},
-     *                                                       orphanRemoval=true)
-     * @ORM\OrderBy({"messageCount" = "DESC", "questionCount" = "DESC"})
-     */
+    #[ORM\OneToMany(targetEntity: ReportRepartition::class, mappedBy: 'report', cascade: ['persist', 'remove'], orphanRemoval: true)]
+    #[ORM\OrderBy(['messageCount' => 'DESC', 'questionCount' => 'DESC'])]
     private $repartitions;
 
-    /**
-     * @ORM\Column(type="string", length=64)
-     */
+    #[ORM\Column(type: 'string', length: 64)]
     private $costs = '[]';
 
-    /**
-     * @ORM\Column(type="datetime")
-     */
+    #[ORM\Column(type: 'datetime')]
     private $updatedAt;
 
-    /**
-     * @ORM\OneToOne(targetEntity=Communication::class, mappedBy="report")
-     */
+    #[ORM\OneToOne(targetEntity: Communication::class, mappedBy: 'report')]
     private $communication;
 
     public function __construct()
@@ -149,10 +134,8 @@ class Report extends AbstractReport
         return $this;
     }
 
-    /**
-     * @ORM\PrePersist
-     * @ORM\PreUpdate
-     */
+    #[ORM\PrePersist]
+    #[ORM\PreUpdate]
     public function onChange()
     {
         $this->updatedAt = new \DateTime();

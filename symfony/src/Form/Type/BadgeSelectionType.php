@@ -21,7 +21,7 @@ class BadgeSelectionType extends AbstractType
         $this->badgeManager = $badgeManager;
     }
 
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->add('visible', EntityType::class, [

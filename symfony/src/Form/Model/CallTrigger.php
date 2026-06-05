@@ -16,9 +16,7 @@ class CallTrigger extends BaseTrigger
         $this->setType(Communication::TYPE_CALL);
     }
 
-    /**
-     * @Assert\Callback
-     */
+    #[Assert\Callback]
     public function validate(ExecutionContextInterface $context, $payload)
     {
         parent::validate($context, $payload);

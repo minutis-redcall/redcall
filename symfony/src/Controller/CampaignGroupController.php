@@ -8,16 +8,14 @@ use App\Entity\Volunteer;
 use App\Entity\VolunteerGroup;
 use App\Manager\CampaignManager;
 use App\Repository\VolunteerGroupRepository;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
-/**
- * @Route(path="campaign/{id}/group", name="campaign_group_", requirements={"id" = "\d+"})
- * @IsGranted("CAMPAIGN_ACCESS", subject="campaign")
- */
+#[Route(path: "campaign/{id}/group", name: "campaign_group_", requirements: ["id" => "\d+"])]
+#[IsGranted("CAMPAIGN_ACCESS", subject: "campaign")]
 class CampaignGroupController extends BaseController
 {
     private $campaignManager;
@@ -29,12 +27,10 @@ class CampaignGroupController extends BaseController
         $this->volunteerGroupRepository = $volunteerGroupRepository;
     }
 
-    /**
-     * @Route(path="/rename/{index}", name="rename", methods={"POST"})
-     */
+    #[Route(path: "/rename/{index}", name: "rename", methods: ["POST"])]
     public function rename(Campaign $campaign, int $index, Request $request)
     {
-        $this->validateCsrfOrThrowNotFoundException('campaign', $request->get('csrf'));
+        $this->validateCsrfOrThrowNotFoundException('campaign', ($request->attributes->get('csrf') ?? $request->query->get('csrf') ?? $request->request->get('csrf')));
 
         $name          = trim($request->request->get('name'));
         $names         = $campaign->getGroupNames();
@@ -47,13 +43,10 @@ class CampaignGroupController extends BaseController
         return new JsonResponse(['success' => true]);
     }
 
-    /**
-     * @Route(path="/volunteer/{volunteerId}/toggle/{index}", name="toggle", methods={"POST"})
-     * @Entity("volunteer", expr="repository.find(volunteerId)")
-     */
-    public function toggle(Campaign $campaign, Volunteer $volunteer, int $index, Request $request)
+    #[Route(path: "/volunteer/{volunteerId}/toggle/{index}", name: "toggle", methods: ["POST"])]
+    public function toggle(Campaign $campaign, #[MapEntity(expr: "repository.find(volunteerId)")] Volunteer $volunteer, int $index, Request $request)
     {
-        $this->validateCsrfOrThrowNotFoundException('campaign', $request->get('csrf'));
+        $this->validateCsrfOrThrowNotFoundException('campaign', ($request->attributes->get('csrf') ?? $request->query->get('csrf') ?? $request->request->get('csrf')));
 
         $volunteerGroup = $this->volunteerGroupRepository->findOneBy([
             'campaign'   => $campaign,

@@ -19,12 +19,12 @@ class BadgeRepositoryTest extends KernelTestCase
     {
         self::bootKernel();
 
-        $this->repository = self::$container->get('doctrine.orm.entity_manager')
+        $this->repository = self::getContainer()->get('doctrine.orm.entity_manager')
             ->getRepository(Badge::class);
 
         $this->fixtures = new DataFixtures(
-            self::$container->get('doctrine.orm.entity_manager'),
-            self::$container->get('security.password_encoder')
+            self::getContainer()->get('doctrine.orm.entity_manager'),
+            self::getContainer()->get('security.password_hasher')
         );
     }
 
@@ -113,7 +113,7 @@ class BadgeRepositoryTest extends KernelTestCase
         $parent = $this->fixtures->createBadge('Parent Badge', 'BADGE-PAR-001', true, true);
         $synonym = $this->fixtures->createBadge('Synonym Badge', 'BADGE-SYN-001', true, true);
         $synonym->setSynonym($parent);
-        $em = self::$container->get('doctrine.orm.entity_manager');
+        $em = self::getContainer()->get('doctrine.orm.entity_manager');
         $em->persist($synonym);
         $em->flush();
 
@@ -143,7 +143,7 @@ class BadgeRepositoryTest extends KernelTestCase
         $vol = $this->fixtures->createStandaloneVolunteer('BCNT-001', 'bcnt@test.com');
         // Badge-Volunteer is ManyToMany; Volunteer is the owning side
         $vol->addBadge($badge);
-        $em = self::$container->get('doctrine.orm.entity_manager');
+        $em = self::getContainer()->get('doctrine.orm.entity_manager');
         $em->persist($vol);
         $em->persist($badge);
         $em->flush();
@@ -189,7 +189,7 @@ class BadgeRepositoryTest extends KernelTestCase
         $badge = $this->fixtures->createBadge('Vol Badge', 'BADGE-VOL-001');
         $vol = $this->fixtures->createStandaloneVolunteer('BVOL-001', 'bvol@test.com');
         $vol->addBadge($badge);
-        $em = self::$container->get('doctrine.orm.entity_manager');
+        $em = self::getContainer()->get('doctrine.orm.entity_manager');
         $em->persist($vol);
         $em->persist($badge);
         $em->flush();

@@ -59,7 +59,7 @@ class FakeCallProvider implements CallProvider
         array $context,
         string $eventType,
         string $hookType,
-        string $keyPressed = null)
+        ?string $keyPressed = null)
     {
         $call = new TwilioCall();
         $call->setUuid(Uuid::uuid4());

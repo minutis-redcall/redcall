@@ -81,9 +81,9 @@ class MessageManager
         $prefixes = [];
         foreach ($volunteers as $volunteer) {
             /** @var Volunteer $volunteer */
-            for ($prefix = 'A'; in_array($prefix, $usedPrefixes[$volunteer->getId()] ?? []); $prefix++) {
-                // Hack: A+1=B, Z+1=AA, ...
-                // Let me be happy to find a use case for this shit 😅
+            $prefix = 'A';
+            while (in_array($prefix, $usedPrefixes[$volunteer->getId()] ?? [], true)) {
+                $prefix = str_increment($prefix);
             }
             $prefixes[$volunteer->getId()] = $prefix;
         }
@@ -191,7 +191,7 @@ class MessageManager
         $answer->setUnclear($message->getCommunication()->isUnclear($message->getPrefix(), $body));
 
         if ($byAdmin) {
-            $answer->setByAdmin($this->tokenStorage->getToken()->getUsername());
+            $answer->setByAdmin($this->tokenStorage->getToken()->getUserIdentifier());
         }
 
         foreach ($choices as $choice) {

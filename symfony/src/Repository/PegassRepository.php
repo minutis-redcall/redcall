@@ -28,7 +28,7 @@ class PegassRepository extends ServiceEntityRepository
     }
 
     public function getEntity(string $type,
-        string $identifier = null,
+        ?string $identifier = null,
         bool $onlyEnabled = true) : ?Pegass
     {
         $qb = $this->createQueryBuilder('p')
@@ -123,12 +123,12 @@ class PegassRepository extends ServiceEntityRepository
                     break;
                 }
 
-                $this->_em->persist($entity);
+                $this->getEntityManager()->persist($entity);
                 unset($entity);
             }
 
-            $this->_em->flush();
-            $this->_em->clear();
+            $this->getEntityManager()->flush();
+            $this->getEntityManager()->clear();
 
             if ($stop) {
                 break;
@@ -169,13 +169,13 @@ class PegassRepository extends ServiceEntityRepository
 
     public function save(Pegass $entity)
     {
-        $this->_em->persist($entity);
-        $this->_em->flush($entity);
+        $this->getEntityManager()->persist($entity);
+        $this->getEntityManager()->flush($entity);
     }
 
     public function delete(Pegass $entity)
     {
-        $this->_em->remove($entity);
-        $this->_em->flush($entity);
+        $this->getEntityManager()->remove($entity);
+        $this->getEntityManager()->flush($entity);
     }
 }

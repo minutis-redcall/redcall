@@ -8,16 +8,14 @@ use App\Manager\VolunteerManager;
 use Bundles\SandboxBundle\Base\BaseController;
 use Bundles\SandboxBundle\Entity\FakeSms;
 use Bundles\SandboxBundle\Manager\FakeSmsManager;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
+use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
-/**
- * @Route("/fake-sms", name="fake_sms_")
- */
+#[Route("/fake-sms", name: "fake_sms_")]
 class FakeSmsController extends BaseController
 {
     /**
@@ -49,10 +47,8 @@ class FakeSmsController extends BaseController
         $this->volunteerManager = $volunteerManager;
     }
 
-    /**
-     * @Route("/", name="list")
-     * @Template()
-     */
+    #[Route("/", name: "list")]
+    #[Template("@Sandbox/fake_sms/list.html.twig")]
     public function listAction()
     {
         $phoneNumbers = $this->fakeSmsManager->findAllPhones();
@@ -65,9 +61,7 @@ class FakeSmsController extends BaseController
         ];
     }
 
-    /**
-     * @Route("/clear/{csrf}", name="clear")
-     */
+    #[Route("/clear/{csrf}", name: "clear")]
     public function clearAction(string $csrf)
     {
         $this->validateCsrfOrThrowNotFoundException('fake_sms', $csrf);
@@ -77,11 +71,9 @@ class FakeSmsController extends BaseController
         return $this->redirectToRoute('sandbox_fake_sms_list');
     }
 
-    /**
-     * @Route("/thread/{e164}/{campaignId}", name="thread", defaults={"campaignId"=null})
-     * @Template()
-     */
-    public function threadAction(Phone $phone, ?int $campaignId)
+    #[Route("/thread/{e164}/{campaignId}", name: "thread", defaults: ["campaignId" => null])]
+    #[Template("@Sandbox/fake_sms/thread.html.twig")]
+    public function threadAction(#[MapEntity(mapping: ['e164' => 'e164'])] Phone $phone, ?int $campaignId)
     {
         $volunteer = $phone->getVolunteers()->first();
         $messages  = $this->fakeSmsManager->findMessagesForPhoneNumber($phone->getE164());
@@ -101,11 +93,8 @@ class FakeSmsController extends BaseController
         ];
     }
 
-    /**
-     * @Route("/send/{e164}/{csrf}", name="send")
-     * @Method("POST")
-     */
-    public function sendAction(Request $request, Phone $phone, string $csrf)
+    #[Route("/send/{e164}/{csrf}", name: "send", methods: ["POST"])]
+    public function sendAction(Request $request, #[MapEntity(mapping: ['e164' => 'e164'])] Phone $phone, string $csrf)
     {
         $this->validateCsrfOrThrowNotFoundException('fake_sms', $csrf);
 
@@ -123,9 +112,7 @@ class FakeSmsController extends BaseController
         return new Response();
     }
 
-    /**
-     * @Route("/poll/{phoneNumber}", name="poll")
-     */
+    #[Route("/poll/{phoneNumber}", name: "poll")]
     public function pollAction(Request $request, string $phoneNumber)
     {
         $lastMessageId = $request->request->get('lastMessageId');

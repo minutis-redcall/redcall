@@ -148,7 +148,7 @@ class DemoSubscriber implements EventSubscriberInterface
         $this->logger = $logger ?: new NullLogger();
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents() : array
     {
         return [
             TwilioEvents::MESSAGE_RECEIVED => 'onMessageReceived',
@@ -263,7 +263,7 @@ class DemoSubscriber implements EventSubscriberInterface
         $this->logger = $logger ?: new NullLogger();
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents() : array
     {
         return [
             TwilioEvents::CALL_ESTABLISHED => 'onCallEstablished',

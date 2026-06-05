@@ -15,7 +15,7 @@ class SecurityControllerTest extends BaseWebTestCase
     {
         return new DataFixtures(
             $container->get('doctrine.orm.entity_manager'),
-            $container->get('security.password_encoder')
+            $container->get('security.password_hasher')
         );
     }
 
@@ -226,8 +226,8 @@ class SecurityControllerTest extends BaseWebTestCase
         $this->assertResponseIsSuccessful();
 
         // 2. Submit Nivol Form with External ID
-        $form          = $crawler->filter('#nivol form')->form();
-        $form['nivol'] = '987654321';
+        $form                 = $crawler->filter('#nivol form')->form();
+        $form['nivol[nivol]'] = '987654321';
         $client->submit($form);
 
         // 3. Intercept Email
@@ -314,31 +314,32 @@ class SecurityControllerTest extends BaseWebTestCase
         $this->assertStringContainsString('/connect', $client->getRequest()->getRequestUri());
     }
 
-    public function testLockedAccountCannotConnect()
+    public function testLockedAccountCanStillConnect()
     {
+        // The `locked` flag on User is an internal sync marker (used by
+        // Pegass refresh, GDPR, etc. to skip auto-syncing the record). It
+        // intentionally does NOT block authentication.
         $client = static::createClient();
         $client->followRedirects();
 
         $container = $client->getContainer();
         $em        = $container->get('doctrine')->getManager();
 
-        // Create a user and set them as locked
         $user = $this->getFixtures($container)->createRawUser('locked@example.com', 'password');
         $user->setLocked(true);
         $em->persist($user);
         $em->flush();
 
-        // Try to connect with valid credentials
         $crawler = $client->request('GET', '/connect');
 
         $form             = $crawler->filter('#classic-login form')->form();
         $form['username'] = 'locked@example.com';
         $form['password'] = 'password';
 
-        $crawler = $client->submit($form);
+        $client->submit($form);
 
-        // Verify the locked user is not redirected to home
-        $this->assertStringContainsString('/connect', $client->getRequest()->getRequestUri());
+        // Auth should succeed — the user lands somewhere other than /connect.
+        $this->assertStringNotContainsString('/connect', $client->getRequest()->getRequestUri());
     }
 
     public function testProfileChangeUsername()

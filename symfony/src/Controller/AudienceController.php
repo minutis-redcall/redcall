@@ -14,11 +14,9 @@ use App\Manager\ExpirableManager;
 use App\Manager\VolunteerManager;
 use App\Model\Classification;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
-/**
- * @Route(path="audience", name="audience_")
- */
+#[Route(path: "audience", name: "audience_")]
 class AudienceController extends BaseController
 {
     /**
@@ -59,12 +57,10 @@ class AudienceController extends BaseController
         $this->communicationManager = $communicationManager;
     }
 
-    /**
-     * @Route(path="/search-volunteer", name="search_volunteer")
-     */
+    #[Route(path: "/search-volunteer", name: "search_volunteer")]
     public function searchVolunteer(Request $request)
     {
-        $criteria = $request->get('keyword');
+        $criteria = ($request->attributes->get('keyword') ?? $request->query->get('keyword') ?? $request->request->get('keyword'));
 
         if ($this->isGranted('ROLE_ADMIN')) {
             $volunteers = $this->volunteerManager->searchAll($criteria, 20, true);
@@ -81,13 +77,11 @@ class AudienceController extends BaseController
         return $this->json($results);
     }
 
-    /**
-     * @Route(path="/search-badge", name="search_badge")
-     */
+    #[Route(path: "/search-badge", name: "search_badge")]
     public function searchBadge(Request $request)
     {
         $badges = $this->badgeManager->searchNonVisibleUsableBadge(
-            $request->get('keyword'),
+            ($request->attributes->get('keyword') ?? $request->query->get('keyword') ?? $request->request->get('keyword')),
             20
         );
 
@@ -100,16 +94,14 @@ class AudienceController extends BaseController
         return $this->json($results);
     }
 
-    /**
-     * @Route(path="/numbers", name="numbers")
-     */
+    #[Route(path: "/numbers", name: "numbers")]
     public function numbers(Request $request)
     {
         $data = AudienceType::getAudienceFormData($request);
 
         $response = [];
 
-        if ('false' !== $request->get('badge_counts', true)) {
+        if ('false' !== ($request->attributes->get('badge_counts') ?? $request->query->get('badge_counts') ?? $request->request->get('badge_counts', true))) {
             $badgeCounts = $this->audienceManager->extractBadgeCounts(
                 $data,
                 $this->badgeManager->getCustomOrPublicBadges()
@@ -129,9 +121,7 @@ class AudienceController extends BaseController
         return $this->json($response);
     }
 
-    /**
-     * @Route(path="/problems", name="problems")
-     */
+    #[Route(path: "/problems", name: "problems")]
     public function problems(Request $request)
     {
         $data = AudienceType::getAudienceFormData($request);
@@ -150,9 +140,7 @@ class AudienceController extends BaseController
         ]);
     }
 
-    /**
-     * @Route(path="/selection", name="selection")
-     */
+    #[Route(path: "/selection", name: "selection")]
     public function selection(Request $request)
     {
         $data = AudienceType::getAudienceFormData($request);
@@ -171,9 +159,7 @@ class AudienceController extends BaseController
         ]);
     }
 
-    /**
-     * @Route("/home", name="home")
-     */
+    #[Route("/home", name: "home")]
     public function home()
     {
         return $this->render('audience/home.html.twig', [
@@ -181,9 +167,7 @@ class AudienceController extends BaseController
         ]);
     }
 
-    /**
-     * @Route("/resolve", name="resolve")
-     */
+    #[Route("/resolve", name: "resolve")]
     public function resolve()
     {
         $classification = $this->getGlboalClassification();

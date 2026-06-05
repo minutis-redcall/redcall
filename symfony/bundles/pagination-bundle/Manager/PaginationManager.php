@@ -40,7 +40,7 @@ class PaginationManager
 
     public function getPager($data, $prefix = '', $hasJoins = false) : Pagerfanta
     {
-        $request = $this->requestStack->getMasterRequest();
+        $request = $this->requestStack->getMainRequest();
 
         $adapter = null;
         if ($data instanceof QueryBuilder) {
@@ -55,7 +55,7 @@ class PaginationManager
         $pager->setNormalizeOutOfRangePages(true);
 
         $pager->setMaxPerPage($this->perPage);
-        $pager->setCurrentPage($request->get($prefix.'page', 1));
+        $pager->setCurrentPage($request->query->get($prefix.'page', $request->request->get($prefix.'page', 1)));
 
         return $pager;
     }

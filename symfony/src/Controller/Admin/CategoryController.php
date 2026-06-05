@@ -11,21 +11,19 @@ use App\Manager\CategoryManager;
 use App\Model\Csrf;
 use Bundles\PaginationBundle\Manager\PaginationManager;
 use Ramsey\Uuid\Uuid;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
+use Symfony\Bridge\Twig\Attribute\Template;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-/**
- * @Route("/admin/categories", name="admin_category_")
- */
+#[Route("/admin/categories", name: "admin_category_")]
 class CategoryController extends BaseController
 {
     /**
@@ -59,10 +57,8 @@ class CategoryController extends BaseController
         $this->translator        = $translator;
     }
 
-    /**
-     * @Route(name="index", path="/")
-     * @Template("admin/category/categories.html.twig")
-     */
+    #[Route(name: "index", path: "/")]
+#[Template("admin/category/categories.html.twig")]
     public function listCategories(Request $request) : array
     {
         $searchForm = $this->createSearchForm($request, 'admin.category.search');
@@ -79,10 +75,8 @@ class CategoryController extends BaseController
         ];
     }
 
-    /**
-     * @Route(name="form", path="/form-for-{id}", defaults={"id" = null})
-     */
-    public function categoryForm(Request $request, Category $category = null) : Response
+    #[Route(name: "form", path: "/form-for-{id}", defaults: ["id" => null])]
+    public function categoryForm(Request $request, ?Category $category = null) : Response
     {
         if ($category && !$this->isGranted('CATEGORY', $category)) {
             throw $this->createAccessDeniedException();
@@ -129,10 +123,8 @@ class CategoryController extends BaseController
         ]);
     }
 
-    /**
-     * @Route(name="delete", path="/delete-category-{id}/{token}"))
-     * @IsGranted("CATEGORY", subject="category")
-     */
+    #[Route(name: "delete", path: "/delete-category-{id}/{token}")]
+#[IsGranted("CATEGORY", subject: "category")]
     public function deleteCategory(Category $category, Csrf $token)
     {
         if ($category->isEnabled()) {
@@ -144,10 +136,8 @@ class CategoryController extends BaseController
         return new NoContentResponse();
     }
 
-    /**
-     * @Route(name="toggle_lock", path="/lock-unlock-{id}/{token}"))
-     * @IsGranted("CATEGORY", subject="category")
-     */
+    #[Route(name: "toggle_lock", path: "/lock-unlock-{id}/{token}")]
+#[IsGranted("CATEGORY", subject: "category")]
     public function toggleLockCategory(Category $category, Csrf $token)
     {
         if (!$category->isEnabled()) {
@@ -165,10 +155,8 @@ class CategoryController extends BaseController
         ]);
     }
 
-    /**
-     * @Route(name="toggle_enable", path="/enable-disable-{id}/{token}"))
-     * @IsGranted("CATEGORY", subject="category")
-     */
+    #[Route(name: "toggle_enable", path: "/enable-disable-{id}/{token}")]
+#[IsGranted("CATEGORY", subject: "category")]
     public function toggleEnableCategory(Category $category, Csrf $token)
     {
         $category->setEnabled(1 - $category->isEnabled());
@@ -182,10 +170,8 @@ class CategoryController extends BaseController
         ]);
     }
 
-    /**
-     * @Route(name="badges", path="/list-badges-in-category-{id}")
-     * @IsGranted("CATEGORY", subject="category")
-     */
+    #[Route(name: "badges", path: "/list-badges-in-category-{id}")]
+#[IsGranted("CATEGORY", subject: "category")]
     public function listBadgeInCategory(Category $category)
     {
         return $this->json([
@@ -198,13 +184,11 @@ class CategoryController extends BaseController
         ]);
     }
 
-    /**
-     * @Route(name="add_badge", path="/add-badge-in-category-{id}/{token}"))
-     * @IsGranted("CATEGORY", subject="category")
-     */
+    #[Route(name: "add_badge", path: "/add-badge-in-category-{id}/{token}")]
+#[IsGranted("CATEGORY", subject: "category")]
     public function addBadgeInCategory(Request $request, Category $category, Csrf $token)
     {
-        if (!$badge = $this->badgeManager->find($request->get('badge'))) {
+        if (!$badge = $this->badgeManager->find(($request->attributes->get('badge') ?? $request->query->get('badge') ?? $request->request->get('badge')))) {
             throw $this->createNotFoundException();
         }
 
@@ -219,10 +203,8 @@ class CategoryController extends BaseController
         ]);
     }
 
-    /**
-     * @Route(name="refresh", path="/refresh-category-category-{id}")
-     * @IsGranted("CATEGORY", subject="category")
-     */
+    #[Route(name: "refresh", path: "/refresh-category-category-{id}")]
+#[IsGranted("CATEGORY", subject: "category")]
     public function refreshCategoryCard(Category $category)
     {
         return $this->render('admin/category/category.html.twig', [
@@ -230,14 +212,13 @@ class CategoryController extends BaseController
         ]);
     }
 
-    /**
-     * @Route(name="delete_badge", path="/delete-badge-{badgeId}-in-category-{categoryId}/{token}"))
-     * @Entity("category", expr="repository.find(categoryId)")
-     * @Entity("badge", expr="repository.find(badgeId)")
-     * @IsGranted("CATEGORY", subject="category")
-     * @IsGranted("BADGE", subject="badge")
-     */
-    public function deleteBadgeInCategory(Category $category, Badge $badge, Csrf $token)
+    #[Route(name: "delete_badge", path: "/delete-badge-{badgeId}-in-category-{categoryId}/{token}")]
+    #[IsGranted("CATEGORY", subject: "category")]
+    #[IsGranted("BADGE", subject: "badge")]
+    public function deleteBadgeInCategory(
+        #[MapEntity(expr: "repository.find(categoryId)")] Category $category,
+        #[MapEntity(expr: "repository.find(badgeId)")] Badge $badge,
+        Csrf $token)
     {
         $category->removeBadge($badge);
 

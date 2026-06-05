@@ -2,16 +2,17 @@
 
 namespace Bundles\PaginationBundle\Pagerfanta\View;
 
+use Pagerfanta\View\Template\TemplateInterface;
 use Pagerfanta\View\TwitterBootstrap4View;
 
 class BootstrapLightView extends TwitterBootstrap4View
 {
-    public function getName()
+    public function getName(): string
     {
         return 'bootstrap_light';
     }
 
-    protected function createDefaultTemplate()
+    protected function createDefaultTemplate(): TemplateInterface
     {
         throw new \RuntimeException('Template should be injected using dependancy injection.');
     }

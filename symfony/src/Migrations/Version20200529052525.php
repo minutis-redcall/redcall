@@ -20,7 +20,7 @@ final class Version20200529052525 extends AbstractMigration
     public function up(Schema $schema) : void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf(!$this->connection->getDatabasePlatform() instanceof \Doctrine\DBAL\Platforms\AbstractMySQLPlatform, 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('CREATE TABLE volunteer_session (id INT AUTO_INCREMENT NOT NULL, volunteer_id INT NOT NULL, session_id VARCHAR(36) NOT NULL, created_at DATETIME NOT NULL, INDEX IDX_EACCAEC8EFAB6B1 (volunteer_id), UNIQUE INDEX session_id_idx (session_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('ALTER TABLE volunteer_session ADD CONSTRAINT FK_EACCAEC8EFAB6B1 FOREIGN KEY (volunteer_id) REFERENCES volunteer (id)');
@@ -29,7 +29,7 @@ final class Version20200529052525 extends AbstractMigration
     public function down(Schema $schema) : void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf(!$this->connection->getDatabasePlatform() instanceof \Doctrine\DBAL\Platforms\AbstractMySQLPlatform, 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('DROP TABLE volunteer_session');
     }

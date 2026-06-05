@@ -40,7 +40,7 @@ class StatisticsManager
      * @throws \Doctrine\ORM\NoResultException
      * @throws \Doctrine\ORM\NonUniqueResultException
      */
-    public function getDashboardStatistics(\DateTime $from, \DateTime $to, Structure $structure = null)
+    public function getDashboardStatistics(\DateTime $from, \DateTime $to, ?Structure $structure = null)
     {
         $statistics = [];
 

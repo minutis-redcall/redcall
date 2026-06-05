@@ -1,16 +1,15 @@
 controllers:
   resource: ../../src/Controller/
-  type: annotation
+  type: attribute
 
 password_login:
   resource: '@PasswordLoginBundle/Controller/'
-  type: annotation
+  type: attribute
 
 twilio:
   resource: '@TwilioBundle/Controller/'
-  type: annotation
+  type: attribute
 
 google_task:
   resource: '@GoogleTaskBundle/Controller/'
-  type: annotation
-
+  type: attribute

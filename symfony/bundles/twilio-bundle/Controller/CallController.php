@@ -9,12 +9,10 @@ use Psr\Log\NullLogger;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Twilio\TwiML\TwiML;
 
-/**
- * @Route(name="twilio_", path="/twilio/")
- */
+#[Route(name: "twilio_", path: "/twilio/")]
 class CallController extends BaseController
 {
     /**
@@ -29,7 +27,7 @@ class CallController extends BaseController
 
     public function __construct(RequestStack $requestStack,
         TwilioCallManager $callManager,
-        LoggerInterface $logger = null)
+        ?LoggerInterface $logger = null)
     {
         parent::__construct($requestStack);
 
@@ -37,9 +35,7 @@ class CallController extends BaseController
         $this->logger      = $logger ?? new NullLogger();
     }
 
-    /**
-     * @Route(name="incoming_call", path="incoming-call")
-     */
+    #[Route(name: "incoming_call", path: "incoming-call")]
     public function incoming(Request $request)
     {
         $this->validateRequestSignature($request);
@@ -63,9 +59,7 @@ class CallController extends BaseController
         return new XmlResponse($response->asXml());
     }
 
-    /**
-     * @Route(name="outgoing_call", path="outgoing-call/{uuid}")
-     */
+    #[Route(name: "outgoing_call", path: "outgoing-call/{uuid}")]
     public function outgoing(Request $request, string $uuid)
     {
         $this->validateRequestSignature($request);
@@ -79,7 +73,7 @@ class CallController extends BaseController
             throw $this->createNotFoundException();
         }
 
-        $keys = $request->get('Digits');
+        $keys = ($request->attributes->get('Digits') ?? $request->query->get('Digits') ?? $request->request->get('Digits'));
         if (null === $keys) {
             $response = $this->callManager->handleCallEstablished($call);
         } else {
@@ -100,9 +94,7 @@ class CallController extends BaseController
         ]);
     }
 
-    /**
-     * @Route(name="answering_machine", path="answering-machine/{uuid}")
-     */
+    #[Route(name: "answering_machine", path: "answering-machine/{uuid}")]
     public function answeringMachine(Request $request, string $uuid)
     {
         $this->validateRequestSignature($request);
@@ -116,7 +108,7 @@ class CallController extends BaseController
             throw $this->createNotFoundException();
         }
 
-        if ('machine_start' === $request->get('AnsweredBy')) {
+        if ('machine_start' === ($request->attributes->get('AnsweredBy') ?? $request->query->get('AnsweredBy') ?? $request->request->get('AnsweredBy'))) {
             $this->callManager->handleAnsweringMachine($call);
         }
 

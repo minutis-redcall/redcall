@@ -25,14 +25,14 @@ class CreateOperationType extends AbstractType
         $this->security = $security;
     }
 
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->add('structureExternalId', ChoiceType::class, [
                 'label'       => 'form.operation.fields.structure_create',
                 'choices'     => array_flip($this->security->getUser()->getStructuresAsList()),
                 'constraints' => [
-                    new Choice(['choices' => array_flip($this->security->getUser()->getStructuresAsList())]),
+                    new Choice(choices: array_flip($this->security->getUser()->getStructuresAsList())),
                 ],
             ])
             ->add('name', TextType::class, [
@@ -53,7 +53,7 @@ class CreateOperationType extends AbstractType
         });
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => Operation::class,

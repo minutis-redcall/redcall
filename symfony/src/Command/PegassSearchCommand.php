@@ -38,7 +38,7 @@ class PegassSearchCommand extends Command
      */
     private $logger;
 
-    public function __construct(PegassManager $pegassManager, LoggerInterface $logger = null)
+    public function __construct(PegassManager $pegassManager, ?LoggerInterface $logger = null)
     {
         parent::__construct();
 
@@ -49,7 +49,7 @@ class PegassSearchCommand extends Command
     /**
      * {@inheritdoc}
      */
-    protected function configure()
+    protected function configure() : void
     {
         $this
             ->setName('pegass:search')
@@ -63,7 +63,7 @@ class PegassSearchCommand extends Command
     /**
      * {@inheritdoc}
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output) : int
     {
         $start       = microtime(true);
         $identifiers = [];

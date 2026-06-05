@@ -2,9 +2,8 @@
 
 namespace App\Form\Type;
 
+use App\Validator\Constraints\RecaptchaTrue;
 use Bundles\PasswordLoginBundle\Manager\CaptchaManager;
-use EWZ\Bundle\RecaptchaBundle\Form\Type\EWZRecaptchaType;
-use EWZ\Bundle\RecaptchaBundle\Validator\Constraints\IsTrue as RecaptchaTrue;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -26,15 +25,21 @@ class CodeType extends AbstractType
         $this->requestStack   = $requestStack;
     }
 
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->add('code', TextType::class, [
                 'label'       => 'nivol_auth.input_code',
                 'required'    => true,
+                'attr'        => [
+                    'autocomplete'   => 'one-time-code',
+                    'autofocus'      => 'autofocus',
+                    'autocapitalize' => 'characters',
+                    'maxlength'      => 6,
+                ],
                 'constraints' => [
                     new NotBlank(),
-                    new Length(['min' => 6, 'max' => 6]),
+                    new Length(min: 6, max: 6),
                 ],
             ])
             ->add('_remember_me', CheckboxType::class, [
@@ -45,7 +50,7 @@ class CodeType extends AbstractType
         $ip = $this->requestStack->getMainRequest()->getClientIp();
 
         if (!$this->captchaManager->isAllowed($ip)) {
-            $builder->add('recaptcha', EWZRecaptchaType::class, [
+            $builder->add('recaptcha', RecaptchaType::class, [
                 'label'       => 'password_login.connect.captcha',
                 'constraints' => [
                     new RecaptchaTrue(),
@@ -58,12 +63,12 @@ class CodeType extends AbstractType
         ]);
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefault('allow_extra_fields', true);
     }
 
-    public function getBlockPrefix()
+    public function getBlockPrefix(): string
     {
         return '';
     }

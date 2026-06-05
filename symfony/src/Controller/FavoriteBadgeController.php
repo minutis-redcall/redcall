@@ -11,14 +11,12 @@ use App\Manager\UserManager;
 use App\Model\Csrf;
 use App\Security\Helper\Security;
 use Bundles\SettingsBundle\Manager\SettingManager;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
-/**
- * @Route(path="favorite-badge", name="favorite_badge_")
- */
+#[Route(path: "favorite-badge", name: "favorite_badge_")]
 class FavoriteBadgeController extends BaseController
 {
     /**
@@ -52,10 +50,8 @@ class FavoriteBadgeController extends BaseController
         $this->security       = $security;
     }
 
-    /**
-     * @Route(name="index")
-     * @Template()
-     */
+    #[Route(name: "index")]
+    #[Template("favorite_badge/index.html.twig")]
     public function index(Request $request)
     {
         // Initializing with the currently public badges
@@ -97,9 +93,7 @@ class FavoriteBadgeController extends BaseController
         ];
     }
 
-    /**
-     * @Route(path="/delete/{csrf}/{id}", name="delete")
-     */
+    #[Route(path: "/delete/{csrf}/{id}", name: "delete")]
     public function delete(Badge $badge, Csrf $csrf)
     {
         /** @var User $user */

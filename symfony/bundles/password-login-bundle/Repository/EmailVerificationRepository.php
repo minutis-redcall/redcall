@@ -18,7 +18,7 @@ class EmailVerificationRepository extends BaseRepository
     {
         return array_map(function (EmailVerification $ev) {
             return $ev->getUsername();
-        }, $this->_em->createQuery('
+        }, $this->getEntityManager()->createQuery('
             SELECT ev
             FROM Bundles\PasswordLoginBundle\Entity\EmailVerification ev
             WHERE ev.timestamp < :expiry
@@ -29,7 +29,7 @@ class EmailVerificationRepository extends BaseRepository
 
     public function clearExpired() : void
     {
-        $this->_em->createQuery('
+        $this->getEntityManager()->createQuery('
             DELETE Bundles\PasswordLoginBundle\Entity\EmailVerification ev
             WHERE ev.timestamp < :expiry
         ')->execute([

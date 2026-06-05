@@ -7,12 +7,10 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\HttpKernelInterface;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\RouterInterface;
 
-/**
- * @Route(path="task")
- */
+#[Route(path: "task")]
 class TaskController extends BaseController
 {
     /**
@@ -37,9 +35,7 @@ class TaskController extends BaseController
         $this->requestStack = $requestStack;
     }
 
-    /**
-     * @Route("/webhook")
-     */
+    #[Route("/webhook")]
     public function webhook(Request $request, LoggerInterface $logger)
     {
         $this->checkOrigin($request);

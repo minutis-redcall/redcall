@@ -7,18 +7,11 @@ use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-/**
- * @ORM\Entity(repositoryClass="App\Repository\CampaignRepository")
- * @ORM\Table(
- *     indexes={
- *         @ORM\Index(name="expires_atx", columns={"expires_at"}),
- *         @ORM\Index(name="last_activity_idx", columns={"last_activity_at"})
- *     },
- *     uniqueConstraints={
- *         @ORM\UniqueConstraint(name="codex", columns={"code"})
- *     }
- * )
- */
+#[ORM\Table]
+#[ORM\Index(name: 'expires_atx', columns: ['expires_at'])]
+#[ORM\Index(name: 'last_activity_idx', columns: ['last_activity_at'])]
+#[ORM\UniqueConstraint(name: 'codex', columns: ['code'])]
+#[ORM\Entity(repositoryClass: \App\Repository\CampaignRepository::class)]
 class Campaign
 {
     const DEFAULT_EXPIRATION = 7 * 86400;
@@ -49,90 +42,68 @@ class Campaign
         self::TYPE_RED          => '#fce4de',
     ];
 
-    /**
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     private $id;
 
     /**
      * @var string
-     *
-     * @ORM\Column(type="binary", length=8, nullable=true)
      */
+    #[ORM\Column(type: 'binary', length: 8, nullable: true)]
     private $code;
 
     /**
      * @var string
-     *
-     * @ORM\Column(type="string", length=255)
      */
+    #[ORM\Column(type: 'string', length: 255)]
     private $label;
 
     /**
      * @var string
-     *
-     * @ORM\Column(type="string", length=80)
      */
     // TODO rename to color
+    #[ORM\Column(type: 'string', length: 80)]
     private $type = self::TYPE_GREEN;
 
     /**
      * @var DateTime
-     *
-     * @ORM\Column(type="datetime")
      */
+    #[ORM\Column(type: 'datetime')]
     private $createdAt;
 
     /**
      * @var int
-     *
-     * @ORM\Column(type="boolean")
      */
+    #[ORM\Column(type: 'boolean')]
     private $active = true;
 
     /**
      * @var Communication[]
-     *
-     * @ORM\OneToMany(targetEntity="App\Entity\Communication", mappedBy="campaign", cascade={"persist"})
-     * @ORM\OrderBy({"createdAt" = "DESC"})
      */
+    #[ORM\OneToMany(targetEntity: \App\Entity\Communication::class, mappedBy: 'campaign', cascade: ['persist'])]
+    #[ORM\OrderBy(['createdAt' => 'DESC'])]
     private $communications;
 
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     */
+    #[ORM\Column(type: 'text', nullable: true)]
     private $notes;
 
-    /**
-     * @ORM\Column(type="datetime", nullable=true)
-     */
+    #[ORM\Column(type: 'datetime', nullable: true)]
     private $notesUpdatedAt;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Volunteer::class)
-     */
+    #[ORM\ManyToOne(targetEntity: Volunteer::class)]
     private $volunteer;
 
-    /**
-     * @ORM\Column(type="datetime")
-     */
+    #[ORM\Column(type: 'datetime')]
     private $expiresAt;
 
-    /**
-     * @ORM\OneToOne(targetEntity=Operation::class, inversedBy="campaign")
-     */
+    #[ORM\OneToOne(targetEntity: Operation::class, inversedBy: 'campaign')]
     private $operation;
 
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     */
+    #[ORM\Column(type: 'text', nullable: true)]
     private $groupNames;
 
-    /**
-     * @ORM\Column(type="datetime", nullable=true)
-     */
+    #[ORM\Column(type: 'datetime', nullable: true)]
     private $lastActivityAt;
 
     public function getId()

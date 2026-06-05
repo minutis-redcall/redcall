@@ -11,7 +11,7 @@
         <div class="row">
 
             <div class="col-12">
-                <h3>{{ prefilledAnswer.label }}</h3>
+                <h2 class="h3">{{ prefilledAnswer.label }}</h2>
 
                 {% for color in prefilledAnswer.colors %}
                     {{ macros.triggerColor(color) }}
@@ -31,7 +31,7 @@
                 &nbsp;&nbsp;&nbsp;
 
                 <a href="{{ path('management_structures_prefilled_answers_delete', {structure: structure.id, prefilledAnswers: prefilledAnswer.id, csrf: csrf_token('prefilled_answers')}) }}"
-                   class="btn btn-secondary"
+                   class="btn btn-danger"
                    onclick="return confirm('{{ 'base.crud.delete_confirm'|trans({'%entity%': prefilledAnswer.label})|e('js') }}');">
                     {{ 'base.button.delete'|trans }}
                 </a>

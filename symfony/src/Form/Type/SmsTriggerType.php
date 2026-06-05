@@ -30,7 +30,7 @@ class SmsTriggerType extends AbstractType
         $this->security = $security;
     }
 
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         parent::buildForm($builder, $options);
 
@@ -47,7 +47,7 @@ class SmsTriggerType extends AbstractType
                 'required'    => false,
                 'data'        => $shortcuts ? reset($shortcuts) : null,
                 'constraints' => [
-                    new ChoiceConstraint(['choices' => $shortcuts]),
+                    new ChoiceConstraint(choices: $shortcuts),
                     new Callback(function ($value, ExecutionContextInterface $context, $payload) use ($shortcuts) {
                         if (null !== $value && !in_array($value, $shortcuts)) {
                             $context
@@ -114,7 +114,7 @@ class SmsTriggerType extends AbstractType
     /**
      * {@inheritdoc}
      */
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => SmsTrigger::class,

@@ -6,14 +6,11 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Table(indexes={
- *     @ORM\Index(name="message_idx", columns={"message_id"}),
- *     @ORM\Index(name="codex"  , columns={"code"}),
- *     @ORM\Index(name="prefixx"  , columns={"volunteer_id", "prefix"})
- * })
- * @ORM\Entity(repositoryClass="App\Repository\MessageRepository")
- */
+#[ORM\Table]
+#[ORM\Index(name: 'message_idx', columns: ['message_id'])]
+#[ORM\Index(name: 'codex', columns: ['code'])]
+#[ORM\Index(name: 'prefixx', columns: ['volunteer_id', 'prefix'])]
+#[ORM\Entity(repositoryClass: \App\Repository\MessageRepository::class)]
 class Message
 {
     const MIN_LENGTH = 1;
@@ -28,83 +25,66 @@ class Message
     const CALL_COST  = 0.033;
     const EMAIL_COST = 0.000375;
 
-    /**
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     private $id;
 
     /**
      * This is the message id given by the SMS provider on success.
-     *
-     * @ORM\Column(type="string", length=64, nullable=true)
      */
+    #[ORM\Column(type: 'string', length: 64, nullable: true)]
     private $messageId;
 
     /**
      * @var Volunteer
-     *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Volunteer", inversedBy="messages")
      */
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Volunteer::class, inversedBy: 'messages')]
     private $volunteer;
 
     /**
      * @var bool
-     *
-     * @ORM\Column(type="boolean")
      */
+    #[ORM\Column(type: 'boolean')]
     private $sent;
 
     /**
      * @var Answer[]
-     *
-     * @ORM\OneToMany(targetEntity="App\Entity\Answer", mappedBy="message", cascade={"all"})
-     * @ORM\OrderBy({"id" = "DESC"})
      */
+    #[ORM\OneToMany(targetEntity: \App\Entity\Answer::class, mappedBy: 'message', cascade: ['all'])]
+    #[ORM\OrderBy(['id' => 'DESC'])]
     private $answers;
 
     /**
      * @var Communication
-     *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Communication", inversedBy="messages")
      */
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Communication::class, inversedBy: 'messages')]
     private $communication;
 
     /**
      * Keep this field binary to preserve case sensitiveness.
      *
      * @var string
-     *
-     * @ORM\Column(type="binary", length=8, nullable=true)
      */
+    #[ORM\Column(type: 'binary', length: 8, nullable: true)]
     private $code;
 
-    /**
-     * @ORM\Column(type="string", length=8, nullable=true)
-     */
+    #[ORM\Column(type: 'string', length: 8, nullable: true)]
     private $prefix;
 
-    /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Cost", mappedBy="message")
-     */
+    #[ORM\OneToMany(targetEntity: \App\Entity\Cost::class, mappedBy: 'message')]
     private $costs;
 
-    /**
-     * @ORM\Column(type="text", nullable=true)
-     */
+    #[ORM\Column(type: 'text', nullable: true)]
     private $error;
 
     /**
      * @var int
-     *
-     * @ORM\Column(type="integer", nullable=true)
      */
+    #[ORM\Column(type: 'integer', nullable: true)]
     private $resourceExternalId;
 
-    /**
-     * @ORM\Column(type="datetime")
-     */
+    #[ORM\Column(type: 'datetime')]
     private $updatedAt;
 
     /**

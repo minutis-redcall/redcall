@@ -22,7 +22,6 @@ class BadgeTest extends TestCase
         }
         if (null !== $id) {
             $ref = new \ReflectionProperty(Badge::class, 'id');
-            $ref->setAccessible(true);
             $ref->setValue($badge, $id);
         }
 

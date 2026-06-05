@@ -10,19 +10,17 @@ use App\Manager\BadgeManager;
 use App\Model\Csrf;
 use Bundles\PaginationBundle\Manager\PaginationManager;
 use Ramsey\Uuid\Uuid;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Bridge\Twig\Attribute\Template;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
-/**
- * @Route("/admin/badges", name="admin_badge_")
- */
+#[Route("/admin/badges", name: "admin_badge_")]
 class BadgeController extends BaseController
 {
     /**
@@ -42,10 +40,8 @@ class BadgeController extends BaseController
         $this->badgeManager      = $badgeManager;
     }
 
-    /**
-     * @Route(name="index")
-     * @Template("admin/badge/badges.html.twig")
-     */
+    #[Route(name: "index")]
+#[Template("admin/badge/badges.html.twig")]
     public function index(Request $request) : array
     {
         $searchForm = $this->createSearchForm($request);
@@ -64,10 +60,8 @@ class BadgeController extends BaseController
         ];
     }
 
-    /**
-     * @Route(path="/manage-{id}", name="manage", defaults={"id"=null})
-     * @Template("admin/badge/manage.html.twig")
-     */
+    #[Route(path: "/manage-{id}", name: "manage", defaults: ["id" => null])]
+#[Template("admin/badge/manage.html.twig")]
     public function manage(Request $request, ?Badge $badge = null)
     {
         if (null !== $badge && !$this->isGranted('BADGE', $badge)) {
@@ -106,11 +100,9 @@ class BadgeController extends BaseController
         ];
     }
 
-    /**
-     * @Route(path="/toggle-visibility-{id}/{token}", name="toggle_visibility")
-     * @IsGranted("BADGE", subject="badge")
-     * @Template("admin/badge/badge.html.twig")
-     */
+    #[Route(path: "/toggle-visibility-{id}/{token}", name: "toggle_visibility")]
+#[IsGranted("BADGE", subject: "badge")]
+#[Template("admin/badge/badge.html.twig")]
     public function toggleVisibility(Badge $badge, Csrf $token)
     {
         if ($badge->isUsable()) {
@@ -122,11 +114,9 @@ class BadgeController extends BaseController
         return $this->getContext($badge);
     }
 
-    /**
-     * @Route(path="/toggle-lock-{id}/{token}", name="toggle_lock")
-     * @IsGranted("BADGE", subject="badge")
-     * @Template("admin/badge/badge.html.twig")
-     */
+    #[Route(path: "/toggle-lock-{id}/{token}", name: "toggle_lock")]
+#[IsGranted("BADGE", subject: "badge")]
+#[Template("admin/badge/badge.html.twig")]
     public function toggleLock(Badge $badge, Csrf $token)
     {
         $badge->setLocked(1 - $badge->isLocked());
@@ -136,11 +126,9 @@ class BadgeController extends BaseController
         return $this->getContext($badge);
     }
 
-    /**
-     * @Route(path="/toggle-enable-{id}/{token}", name="toggle_enable")
-     * @IsGranted("BADGE", subject="badge")
-     * @Template("admin/badge/badge.html.twig")
-     */
+    #[Route(path: "/toggle-enable-{id}/{token}", name: "toggle_enable")]
+#[IsGranted("BADGE", subject: "badge")]
+#[Template("admin/badge/badge.html.twig")]
     public function toggleEnable(Badge $badge, Csrf $token)
     {
         $badge->setEnabled(1 - $badge->isEnabled());

@@ -8,9 +8,7 @@ monolog:
       type: fingers_crossed
       action_level: error
       handler: nested
-      excluded_404s:
-        # regex: exclude all 404 errors from the logs
-        - ^/
+      excluded_http_codes: [404]
     nested:
       type: stream
       path: "%kernel.logs_dir%/%kernel.environment%.log"
@@ -24,9 +22,10 @@ monolog:
       handler: google_cloud
       action_level: warning
     google_cloud:
-      type: service
-      id: monolog_psr_batch_logger
+      type: stream
+      path: php://stderr
       level: warning
+      formatter: monolog.formatter.google_cloud_logging
     slack_no_404:
       type: fingers_crossed
       handler: slack_errors
@@ -46,11 +45,5 @@ monolog:
 
 services:
 
-  monolog_psr_batch_logger:
-    class: Monolog\Handler\PsrHandler
-    arguments: [ '@google_cloud_stackdriver_psr_batch_logger' ]
-
-  google_cloud_stackdriver_psr_batch_logger:
-    class: Google\Cloud\Logging\PsrLogger
-    factory: [ 'Google\Cloud\Logging\LoggingClient', 'psrBatchLogger' ]
-    arguments: [ 'app' ]
+  monolog.formatter.google_cloud_logging:
+    class: Monolog\Formatter\GoogleCloudLoggingFormatter

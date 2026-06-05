@@ -8,7 +8,7 @@ use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\KernelInterface;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 /**
  * GCP calls those routes when service is stopped or
@@ -19,29 +19,23 @@ use Symfony\Component\Routing\Annotation\Route;
  * "stop" is reached, and restart it when "start" is
  * called.
  *
- * @Route(path="_ah")
  */
+#[Route(path: "_ah")]
 class GoogleController extends BaseController
 {
-    /**
-     * @Route("/start")
-     */
+    #[Route("/start")]
     public function start()
     {
         return new Response();
     }
 
-    /**
-     * @Route("/stop")
-     */
+    #[Route("/stop")]
     public function stop()
     {
         return new Response();
     }
 
-    /**
-     * @Route("/warmup")
-     */
+    #[Route("/warmup")]
     public function warmup(KernelInterface $kernel)
     {
         $application = new Application($kernel);

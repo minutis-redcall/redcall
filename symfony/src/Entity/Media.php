@@ -4,55 +4,34 @@ namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 
-/**
- * @ORM\Entity(repositoryClass="App\Repository\MediaRepository")
- * @ORM\Table(
- *   uniqueConstraints={
- *     @ORM\UniqueConstraint(name="uuid_idx", columns={"uuid"}),
- *     @ORM\UniqueConstraint(name="hash_idx", columns={"hash"})
- *   },
- *   indexes={
- *     @ORM\Index(name="expiration_idx", columns={"expires_at"})
- *   }
- * )
- */
+#[ORM\Table]
+#[ORM\Index(name: 'expiration_idx', columns: ['expires_at'])]
+#[ORM\UniqueConstraint(name: 'uuid_idx', columns: ['uuid'])]
+#[ORM\UniqueConstraint(name: 'hash_idx', columns: ['hash'])]
+#[ORM\Entity(repositoryClass: \App\Repository\MediaRepository::class)]
 class Media
 {
-    /**
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
-     */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     private $id;
 
-    /**
-     * @ORM\Column(type="string", length=36)
-     */
+    #[ORM\Column(type: 'string', length: 36)]
     private $uuid;
 
-    /**
-     * @ORM\Column(type="string", length=128)
-     */
+    #[ORM\Column(type: 'string', length: 128)]
     private $hash;
 
-    /**
-     * @ORM\Column(type="string", length=1024)
-     */
+    #[ORM\Column(type: 'string', length: 1024)]
     private $url;
 
-    /**
-     * @ORM\Column(type="datetime")
-     */
+    #[ORM\Column(type: 'datetime')]
     private $createdAt;
 
-    /**
-     * @ORM\Column(type="datetime", nullable=true)
-     */
+    #[ORM\Column(type: 'datetime', nullable: true)]
     private $expiresAt;
 
-    /**
-     * @ORM\ManyToOne(targetEntity=Communication::class, inversedBy="images", cascade={"persist"})
-     */
+    #[ORM\ManyToOne(targetEntity: Communication::class, inversedBy: 'images', cascade: ['persist'])]
     private $communication;
 
     public function getId() : ?int

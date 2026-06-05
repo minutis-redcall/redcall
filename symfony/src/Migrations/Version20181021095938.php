@@ -13,7 +13,7 @@ final class Version20181021095938 extends AbstractMigration
     public function up(Schema $schema) : void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf(!$this->connection->getDatabasePlatform() instanceof \Doctrine\DBAL\Platforms\AbstractMySQLPlatform, 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('
             INSERT INTO answer (message_id, choice_id, raw, received_at)
@@ -31,7 +31,7 @@ final class Version20181021095938 extends AbstractMigration
     public function down(Schema $schema) : void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf(!$this->connection->getDatabasePlatform() instanceof \Doctrine\DBAL\Platforms\AbstractMySQLPlatform, 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('ALTER TABLE message ADD choice_id INT DEFAULT NULL, ADD answer LONGTEXT DEFAULT NULL COLLATE utf8mb4_unicode_ci');
         $this->addSql('ALTER TABLE message ADD CONSTRAINT FK_B6BD307F998666D1 FOREIGN KEY (choice_id) REFERENCES choice (id)');

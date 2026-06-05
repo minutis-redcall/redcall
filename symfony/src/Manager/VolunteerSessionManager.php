@@ -6,7 +6,7 @@ use App\Entity\Volunteer;
 use App\Entity\VolunteerSession;
 use App\Repository\VolunteerSessionRepository;
 use Ramsey\Uuid\Uuid;
-use Symfony\Component\HttpFoundation\Session\SessionInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 class VolunteerSessionManager
 {
@@ -16,18 +16,14 @@ class VolunteerSessionManager
     private $volunteerSessionRepository;
 
     /**
-     * @var SessionInterface
+     * @var RequestStack
      */
-    private $session;
+    private $requestStack;
 
-    /**
-     * @param VolunteerSessionRepository $volunteerSessionRepository
-     * @param SessionInterface           $session
-     */
-    public function __construct(VolunteerSessionRepository $volunteerSessionRepository, SessionInterface $session)
+    public function __construct(VolunteerSessionRepository $volunteerSessionRepository, RequestStack $requestStack)
     {
         $this->volunteerSessionRepository = $volunteerSessionRepository;
-        $this->session                    = $session;
+        $this->requestStack               = $requestStack;
     }
 
     /**
@@ -35,25 +31,27 @@ class VolunteerSessionManager
      */
     public function createSession(Volunteer $volunteer) : string
     {
-        if ($this->session->get('volunteer-session')) {
-            return $this->session->get('volunteer-session');
+        $session = $this->requestStack->getSession();
+
+        if ($session->get('volunteer-session')) {
+            return $session->get('volunteer-session');
         }
 
-        $session = new VolunteerSession();
-        $session->setVolunteer($volunteer);
-        $session->setSessionId(Uuid::uuid4());
-        $session->setCreatedAt(new \DateTime());
+        $vSession = new VolunteerSession();
+        $vSession->setVolunteer($volunteer);
+        $vSession->setSessionId(Uuid::uuid4());
+        $vSession->setCreatedAt(new \DateTime());
 
-        $this->session->set('volunteer-session', $session->getSessionId());
+        $session->set('volunteer-session', $vSession->getSessionId());
 
-        $this->volunteerSessionRepository->save($session);
+        $this->volunteerSessionRepository->save($vSession);
 
-        return $session->getSessionId();
+        return $vSession->getSessionId();
     }
 
     public function removeSession(VolunteerSession $session)
     {
-        $this->session->remove('volunteer-session');
+        $this->requestStack->getSession()->remove('volunteer-session');
 
         $this->volunteerSessionRepository->remove($session);
     }

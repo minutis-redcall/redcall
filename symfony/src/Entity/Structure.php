@@ -15,127 +15,103 @@ use Exception;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
-/**
- * @ORM\Entity(repositoryClass="App\Repository\StructureRepository")
- * @ORM\Table(
- *     uniqueConstraints={
- *         @ORM\UniqueConstraint(name="extid_idx", columns={"external_id"})
- *     },
- *     indexes={
- *         @ORM\Index(name="name_idx", columns={"name"})
- *     }
- * )
- * @ORM\ChangeTrackingPolicy("DEFERRED_EXPLICIT")
- */
+#[ORM\Table]
+#[ORM\Index(name: 'name_idx', columns: ['name'])]
+#[ORM\UniqueConstraint(name: 'extid_idx', columns: ['external_id'])]
+#[ORM\Entity(repositoryClass: \App\Repository\StructureRepository::class)]
+#[ORM\ChangeTrackingPolicy('DEFERRED_EXPLICIT')]
 class Structure implements LockableInterface
 {
     /**
      * @var int
-     *
-     * @ORM\Id()
-     * @ORM\GeneratedValue()
-     * @ORM\Column(type="integer")
      */
+    #[ORM\Id]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer')]
     private $id;
 
     /**
      * @var string
-     *
-     * @ORM\Column(type="string", length=64)
-     * @Assert\NotBlank
-     * @Assert\Length(max="64")
      */
+    #[ORM\Column(type: 'string', length: 64)]
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 64)]
     private $externalId;
 
     /**
      * @var string
-     *
-     * @ORM\Column(type="string", length=64)
-     * @Assert\NotBlank
-     * @Assert\Length(max="64")
      */
+    #[ORM\Column(type: 'string', length: 64)]
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 64)]
     private $name;
 
     /**
      * @var string
-     *
-     * @ORM\Column(type="string", length=32, nullable=true)
-     * @Assert\Length(max="32")
      */
+    #[ORM\Column(type: 'string', length: 32, nullable: true)]
+    #[Assert\Length(max: 32)]
     private $shortcut;
 
     /**
      * @var bool
-     *
-     * @ORM\Column(type="boolean")
      */
+    #[ORM\Column(type: 'boolean')]
     private $enabled = true;
 
     /**
      * @var bool
-     *
-     * @ORM\Column(type="boolean")
      */
+    #[ORM\Column(type: 'boolean')]
     private $locked = false;
 
     /**
      * @var string
-     *
-     * @ORM\Column(type="string", length=255, nullable=true)
-     * @Assert\Length(max="255")
      */
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    #[Assert\Length(max: 255)]
     private $president;
 
     /**
      * @var Volunteer[]
-     *
-     * @ORM\ManyToMany(targetEntity="App\Entity\Volunteer", mappedBy="structures")
      */
+    #[ORM\ManyToMany(targetEntity: \App\Entity\Volunteer::class, mappedBy: 'structures')]
     private $volunteers;
 
     /**
      * @var Structure|null
-     *
-     * @ORM\ManyToOne(targetEntity="App\Entity\Structure", inversedBy="childrenStructures")
      */
+    #[ORM\ManyToOne(targetEntity: \App\Entity\Structure::class, inversedBy: 'childrenStructures')]
     private $parentStructure;
 
     /**
      * @var Structure[]
-     *
-     * @ORM\OneToMany(targetEntity="App\Entity\Structure", mappedBy="parentStructure")
      */
+    #[ORM\OneToMany(targetEntity: \App\Entity\Structure::class, mappedBy: 'parentStructure')]
     private $childrenStructures;
 
     /**
      * @var \DateTime
-     *
-     * @ORM\Column(type="datetime", nullable=true)
      */
+    #[ORM\Column(type: 'datetime', nullable: true)]
     private $lastPegassUpdate;
 
     /**
      * @var User[]
-     *
-     * @ORM\ManyToMany(targetEntity="App\Entity\User", mappedBy="structures")
      */
+    #[ORM\ManyToMany(targetEntity: \App\Entity\User::class, mappedBy: 'structures')]
     private $users;
 
     /**
      * @var PrefilledAnswers[]
-     *
-     * @ORM\OneToMany(targetEntity="App\Entity\PrefilledAnswers", mappedBy="structure")
      */
+    #[ORM\OneToMany(targetEntity: \App\Entity\PrefilledAnswers::class, mappedBy: 'structure')]
     private $prefilledAnswers;
 
-    /**
-     * @ORM\OneToMany(targetEntity=VolunteerList::class, mappedBy="structure", cascade={"all"}, orphanRemoval=true)
-     */
+    #[ORM\OneToMany(targetEntity: VolunteerList::class, mappedBy: 'structure', cascade: ['all'], orphanRemoval: true)]
     private $volunteerLists;
 
-    /**
-     * @ORM\OneToMany(targetEntity=Template::class, mappedBy="structure", orphanRemoval=true)
-     */
+    #[ORM\OneToMany(targetEntity: Template::class, mappedBy: 'structure', orphanRemoval: true)]
     private $templates;
 
     public function __construct()
@@ -500,9 +476,7 @@ class Structure implements LockableInterface
         return $this->id;
     }
 
-    /**
-     * @Assert\Callback
-     */
+    #[Assert\Callback]
     public function validate(ExecutionContextInterface $context, $payload)
     {
         if ($this->isParentLooping()) {
@@ -530,7 +504,7 @@ class Structure implements LockableInterface
         return false;
     }
 
-    public function getParentHierarchy(int $stop = null) : array
+    public function getParentHierarchy(?int $stop = null) : array
     {
         $parents = [$this];
 

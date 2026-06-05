@@ -29,7 +29,7 @@ class ExpirableManager
         return $expirable->getData();
     }
 
-    public function set($data, \DateTime $expiresAt = null) : string
+    public function set($data, ?\DateTime $expiresAt = null) : string
     {
         if (null === $expiresAt) {
             $expiresAt = (new \DateTime())->add(new \DateInterval('P7D'));

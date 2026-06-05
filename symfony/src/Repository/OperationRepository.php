@@ -22,7 +22,7 @@ class OperationRepository extends BaseRepository
     /**
      * @return FakeOperation[]
      */
-    public function findAll()
+    public function findAll(): array
     {
         return $this->findBy([], [
             'updatedAt' => 'DESC',

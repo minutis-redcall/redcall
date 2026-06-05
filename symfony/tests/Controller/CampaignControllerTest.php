@@ -16,7 +16,7 @@ class CampaignControllerTest extends BaseWebTestCase
     {
         return new DataFixtures(
             $container->get('doctrine.orm.entity_manager'),
-            $container->get('security.password_encoder')
+            $container->get('security.password_hasher')
         );
     }
 
@@ -24,6 +24,13 @@ class CampaignControllerTest extends BaseWebTestCase
     {
         /** @var CsrfTokenManagerInterface $tokenManager */
         $tokenManager = $container->get('security.csrf.token_manager');
+
+        // Sf6: CSRF token storage needs a session in RequestStack
+        if (!$container->get('request_stack')->getMainRequest()) {
+            $req = \Symfony\Component\HttpFoundation\Request::create('/');
+            $req->setSession(new \Symfony\Component\HttpFoundation\Session\Session(new \Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage()));
+            $container->get('request_stack')->push($req);
+        }
 
         return $tokenManager->getToken($tokenId)->getValue();
     }
@@ -249,6 +256,132 @@ class CampaignControllerTest extends BaseWebTestCase
 
         $this->assertResponseStatusCodeSame(200);
         $this->assertSelectorExists('table.table-striped');
+    }
+
+    // ──────────────────────────────────────────────
+    // GET /campaign/{id}/audience -> JSON audience
+    // ──────────────────────────────────────────────
+
+    public function testAudienceReturnsJson()
+    {
+        $client    = static::createClient();
+        $container = $client->getContainer();
+        $data      = $this->createAccessibleCampaign($container, 'Audience JSON Campaign');
+
+        $this->login($client, $data['user']);
+        $client->request('GET', sprintf('/campaign/%d/audience', $data['campaign']->getId()));
+
+        $this->assertResponseIsSuccessful();
+        $this->assertJson($client->getResponse()->getContent());
+    }
+
+    public function testAudienceReturns404ForUnknownId()
+    {
+        $client    = static::createClient();
+        $container = $client->getContainer();
+        $data      = $this->createAccessibleCampaign($container, 'AudienceCampaign-404');
+
+        $this->login($client, $data['user']);
+        $client->request('GET', '/campaign/9999999/audience');
+
+        $this->assertResponseStatusCodeSame(404);
+    }
+
+    // ──────────────────────────────────────────────
+    // GET /campaign/{id}/keep/{csrf} -> JSON postpone
+    // ──────────────────────────────────────────────
+
+    public function testKeepCampaignPostponesExpiration()
+    {
+        $client    = static::createClient();
+        $container = $client->getContainer();
+        $data      = $this->createAccessibleCampaign($container, 'Keep Campaign');
+
+        $this->login($client, $data['user']);
+        $csrf = $this->getCsrfToken($container);
+
+        $client->request('GET', sprintf('/campaign/%d/keep/%s', $data['campaign']->getId(), $csrf));
+
+        $this->assertResponseIsSuccessful();
+        $decoded = json_decode($client->getResponse()->getContent(), true);
+        $this->assertArrayHasKey('expiresAt', $decoded);
+    }
+
+    public function testKeepCampaignWithBadCsrfReturns404()
+    {
+        $client    = static::createClient();
+        $container = $client->getContainer();
+        $data      = $this->createAccessibleCampaign($container, 'Keep BadCsrf');
+
+        $this->login($client, $data['user']);
+        $client->request('GET', sprintf('/campaign/%d/keep/%s', $data['campaign']->getId(), 'invalid-csrf'));
+
+        $this->assertResponseStatusCodeSame(404);
+    }
+
+    // ──────────────────────────────────────────────
+    // GET /campaign/operations -> JSON
+    // ──────────────────────────────────────────────
+
+    public function testSearchForOperationReturns404WhenStructureUnknown()
+    {
+        $client    = static::createClient();
+        $container = $client->getContainer();
+        $data      = $this->createAccessibleCampaign($container, 'SearchOp Campaign');
+
+        $this->login($client, $data['user']);
+        $client->request('GET', '/campaign/operations?externalId=DOES-NOT-EXIST');
+
+        $this->assertResponseStatusCodeSame(404);
+    }
+
+    public function testSearchForOperationReturnsJsonForAccessibleStructure()
+    {
+        $client    = static::createClient();
+        $container = $client->getContainer();
+        $fixtures  = $this->getFixtures($container);
+
+        // Use a numeric externalId — FakeOperationRepository::search() and the
+        // underlying FakeOperation.structureExternalId column are both typed
+        // as int, even though Structure.externalId in the main schema is a
+        // string. Cleaner than reshaping the sandbox provider for this test.
+        $user      = $fixtures->createRawUser('campaign_user_so@example.com', 'password');
+        $structure = $fixtures->createStructure('STRUCT SO', '12345678');
+        $fixtures->assignUserToStructure($user, $structure);
+        $volunteer = $fixtures->createVolunteer($user, 'VOL-SO-001', 'vol@so.test');
+        $fixtures->assignVolunteerToStructure($volunteer, $structure);
+
+        $this->login($client, $user);
+        $client->request('GET', '/campaign/operations?externalId='.$structure->getExternalId());
+
+        $this->assertResponseIsSuccessful();
+        $decoded = json_decode($client->getResponse()->getContent(), true);
+        $this->assertIsArray($decoded);
+        $this->assertArrayHasKey('operations', $decoded);
+    }
+
+    // ──────────────────────────────────────────────
+    // Auth/404 cross-checks
+    // ──────────────────────────────────────────────
+
+    public function testCampaignReportReturns404ForUnknownId()
+    {
+        $client    = static::createClient();
+        $container = $client->getContainer();
+        $data      = $this->createAccessibleCampaign($container, 'Report404');
+
+        $this->login($client, $data['user']);
+        $client->request('GET', '/campaign/99999999/report');
+
+        $this->assertResponseStatusCodeSame(404);
+    }
+
+    public function testListCampaignsRedirectsAnonymous()
+    {
+        $client = static::createClient();
+        $client->request('GET', '/campaign/list');
+
+        $this->assertResponseStatusCodeSame(302);
     }
 
     public function testAccessDeniedForNonOwner()

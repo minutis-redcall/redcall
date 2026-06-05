@@ -24,17 +24,17 @@ class UserRepository extends AbstractUserRepository implements UserRepositoryInt
 
     public function save(AbstractUser $user)
     {
-        $this->_em->persist($user);
-        $this->_em->flush();
+        $this->getEntityManager()->persist($user);
+        $this->getEntityManager()->flush();
     }
 
     public function remove(AbstractUser $user)
     {
-        $this->_em->remove($user);
-        $this->_em->flush();
+        $this->getEntityManager()->remove($user);
+        $this->getEntityManager()->flush();
     }
 
-    public function findAll()
+    public function findAll(): array
     {
         return $this->findBy([]);
     }

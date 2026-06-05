@@ -26,12 +26,12 @@ final class Version20210218070916 extends AbstractMigration
     public function up(Schema $schema) : void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf(!$this->connection->getDatabasePlatform() instanceof \Doctrine\DBAL\Platforms\AbstractMySQLPlatform, 'Migration can only be executed safely on \'mysql\'.');
 
         $badgeIds = array_column($this->connection->fetchAllAssociative('SELECT id FROM badge WHERE external_id IS NULL'), 'id');
         foreach ($badgeIds as $badgeId) {
             $this->addSql('UPDATE badge SET external_id = :uuid WHERE id = :id', [
-                'uuid' => Uuid::uuid4(),
+                'uuid' => Uuid::uuid4()->toString(),
                 'id'   => $badgeId,
             ]);
         }
@@ -41,7 +41,7 @@ final class Version20210218070916 extends AbstractMigration
         $categoryIds = array_column($this->connection->fetchAllAssociative('SELECT id FROM category'), 'id');
         foreach ($categoryIds as $categoryId) {
             $this->addSql('UPDATE category SET external_id = :uuid WHERE id = :id', [
-                'uuid' => Uuid::uuid4(),
+                'uuid' => Uuid::uuid4()->toString(),
                 'id'   => $categoryId,
             ]);
         }
@@ -52,7 +52,7 @@ final class Version20210218070916 extends AbstractMigration
     public function down(Schema $schema) : void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf(!$this->connection->getDatabasePlatform() instanceof \Doctrine\DBAL\Platforms\AbstractMySQLPlatform, 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('ALTER TABLE badge CHANGE CHANGE external_id external_id VARCHAR(64) DEFAULT NULL');
         $this->addSql('DROP INDEX UNIQ_64C19C19F75D7B0 ON category');

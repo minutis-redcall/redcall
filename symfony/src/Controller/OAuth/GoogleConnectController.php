@@ -7,7 +7,7 @@ use App\Provider\OAuth\GoogleConnect\GoogleConnectInterface;
 use App\Tools\Url;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 class GoogleConnectController extends BaseController
 {
@@ -21,9 +21,7 @@ class GoogleConnectController extends BaseController
         $this->googleConnect = $googleConnect;
     }
 
-    /**
-     * @Route(path="/google-connect", name="google_connect")
-     */
+    #[Route(path: "/google-connect", name: "google_connect")]
     public function connect(Request $request)
     {
         // Need to generate the CSRF token on the right domain name
@@ -48,9 +46,7 @@ class GoogleConnectController extends BaseController
         );
     }
 
-    /**
-     * @Route(path="/google-verify", name="google_verify")
-     */
+    #[Route(path: "/google-verify", name: "google_verify")]
     public function verify()
     {
         return $this->redirectToRoute('home');

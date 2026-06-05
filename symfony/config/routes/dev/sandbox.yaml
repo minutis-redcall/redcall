@@ -1,5 +1,5 @@
 sandbox:
   resource: '@SandboxBundle/Controller/'
-  type: annotation
+  type: attribute
   prefix: /sandbox
   name_prefix: sandbox_

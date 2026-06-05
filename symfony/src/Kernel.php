@@ -4,10 +4,10 @@ namespace App;
 
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\Config\Loader\LoaderInterface;
-use Symfony\Component\Config\Resource\FileResource;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\HttpKernel\Kernel as BaseKernel;
-use Symfony\Component\Routing\RouteCollectionBuilder;
+use Symfony\Component\Routing\Loader\Configurator\RoutingConfigurator;
 
 class Kernel extends BaseKernel
 {
@@ -15,7 +15,7 @@ class Kernel extends BaseKernel
 
     const CONFIG_EXTS = '.{php,xml,yaml,yml}';
 
-    public function getCacheDir()
+    public function getCacheDir(): string
     {
         if ($this->environment === 'prod') {
             return sys_get_temp_dir().'/redcall/cache/';
@@ -24,7 +24,7 @@ class Kernel extends BaseKernel
         return $this->getProjectDir().'/var/cache/'.$this->environment;
     }
 
-    public function getLogDir()
+    public function getLogDir(): string
     {
         if ($this->environment === 'prod') {
             return sys_get_temp_dir().'/redcall/log/';
@@ -33,7 +33,7 @@ class Kernel extends BaseKernel
         return $this->getProjectDir().'/var/log';
     }
 
-    public function registerBundles()
+    public function registerBundles(): iterable
     {
         $contents = require $this->getProjectDir().'/config/bundles.php';
         foreach ($contents as $class => $envs) {
@@ -43,30 +43,28 @@ class Kernel extends BaseKernel
         }
     }
 
-    protected function configureContainer(ContainerBuilder $container, LoaderInterface $loader)
+    protected function configureContainer(ContainerConfigurator $container, LoaderInterface $loader, ContainerBuilder $builder): void
     {
-        $container->addResource(new FileResource($this->getProjectDir().'/config/bundles.php'));
-        // Feel free to remove the "container.autowiring.strict_mode" parameter
-        // if you are using symfony/dependency-injection 4.0+ as it's the default behavior
-        $container->setParameter('container.autowiring.strict_mode', true);
-        $container->setParameter('container.dumper.inline_class_loader', true);
+        $builder->setParameter('container.autowiring.strict_mode', true);
+        $builder->setParameter('container.dumper.inline_class_loader', true);
+
         $confDir = $this->getProjectDir().'/config';
 
-        $loader->load($confDir.'/international/languages.yaml');
-        $loader->load($confDir.'/international/phones.yaml');
+        $container->import($confDir.'/international/languages.yaml');
+        $container->import($confDir.'/international/phones.yaml');
 
-        $loader->load($confDir.'/{packages}/*'.self::CONFIG_EXTS, 'glob');
-        $loader->load($confDir.'/{packages}/'.$this->environment.'/**/*'.self::CONFIG_EXTS, 'glob');
-        $loader->load($confDir.'/{services}'.self::CONFIG_EXTS, 'glob');
-        $loader->load($confDir.'/{services}_'.$this->environment.self::CONFIG_EXTS, 'glob');
+        $container->import($confDir.'/{packages}/*'.self::CONFIG_EXTS);
+        $container->import($confDir.'/{packages}/'.$this->environment.'/**/*'.self::CONFIG_EXTS);
+        $container->import($confDir.'/{services}'.self::CONFIG_EXTS);
+        $container->import($confDir.'/{services}_'.$this->environment.self::CONFIG_EXTS);
     }
 
-    protected function configureRoutes(RouteCollectionBuilder $routes)
+    protected function configureRoutes(RoutingConfigurator $routes): void
     {
         $confDir = $this->getProjectDir().'/config';
 
-        $routes->import($confDir.'/{routes}/*'.self::CONFIG_EXTS, '/', 'glob');
-        $routes->import($confDir.'/{routes}/'.$this->environment.'/**/*'.self::CONFIG_EXTS, '/', 'glob');
-        $routes->import($confDir.'/{routes}'.self::CONFIG_EXTS, '/', 'glob');
+        $routes->import($confDir.'/{routes}/*'.self::CONFIG_EXTS);
+        $routes->import($confDir.'/{routes}/'.$this->environment.'/**/*'.self::CONFIG_EXTS);
+        $routes->import($confDir.'/{routes}'.self::CONFIG_EXTS);
     }
 }

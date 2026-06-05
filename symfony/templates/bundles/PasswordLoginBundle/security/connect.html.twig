@@ -17,16 +17,16 @@
                 <h1 class="text-center">{{ 'password_login.connect.title'|trans }}</h1>
 
                 <div class="auth-actions">
-                    <button class="btn btn-primary btn-lg mb-3 btn-block" onclick="$('#auth-selector').addClass('d-none'); $('#nivol').removeClass('d-none');">
+                    <button type="button" class="btn btn-primary btn-lg mb-3 btn-block" onclick="$('#auth-selector').addClass('d-none'); $('#nivol').removeClass('d-none');">
                         {{ 'nivol_auth.connect_minutis.s02'|trans }}
                     </button>
 
                     <a class="btn btn-google btn-lg mb-3 btn-block" href="{{ path('google_connect') }}">
-                        <img src="{{ asset('google.png') }}" height="20" alt="Google"/>
-                        {{ 'google.connect'|trans }}
+                        <img src="{{ asset('google.png') }}" height="20" alt=""/>
+                        {{ 'google.connect_with_google'|trans }}
                     </a>
 
-                    <button class="btn btn-secondary btn-block" onclick="$('#auth-selector').addClass('d-none'); $('#classic-login').removeClass('d-none');">
+                    <button type="button" class="btn btn-secondary btn-block" onclick="$('#auth-selector').addClass('d-none'); $('#classic-login').removeClass('d-none');">
                         {{ 'nivol_auth.connect_classic.s02'|trans }}
                     </button>
                 </div>
@@ -44,7 +44,7 @@
 
                 <p class="text-center small text-muted mb-4">{{ 'nivol_auth.connect_minutis.s01'|trans }}</p>
 
-                {% form_theme nivol '@EWZRecaptcha/Form/ewz_recaptcha_widget.html.twig' %}
+                {% form_theme nivol 'form/recaptcha_widget.html.twig' %}
                 {{ form_start(nivol) }}
                 {{ form_row(nivol.nivol) }}
                 {% if nivol.recaptcha is defined %}
@@ -65,7 +65,7 @@
             <div id="classic-login" class="d-none">
                 <h1 class="text-center">{{ 'password_login.connect.title'|trans }}</h1>
 
-                {% form_theme connect '@EWZRecaptcha/Form/ewz_recaptcha_widget.html.twig' %}
+                {% form_theme connect 'form/recaptcha_widget.html.twig' %}
                 {{ form_start(connect) }}
                 {{ form_row(connect.username) }}
                 {{ form_row(connect.password) }}

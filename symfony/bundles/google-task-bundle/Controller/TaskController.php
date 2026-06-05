@@ -6,7 +6,7 @@ use Bundles\GoogleTaskBundle\Service\TaskReceiver;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 
 class TaskController extends AbstractController
 {
@@ -17,9 +17,7 @@ class TaskController extends AbstractController
         $this->taskReceiver = $taskReceiver;
     }
 
-    /**
-     * @Route(name="google_task_receiver", path="/cloud-task")
-     */
+    #[Route(name: "google_task_receiver", path: "/cloud-task")]
     public function receive(Request $request)
     {
         $this->taskReceiver->handle($request);

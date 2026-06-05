@@ -69,7 +69,7 @@ class RefreshManager
         UserManager $userManager,
         PhoneManager $phoneManager,
         TaskSender $async,
-        LoggerInterface $logger = null)
+        ?LoggerInterface $logger = null)
     {
         $this->pegassManager    = $pegassManager;
         $this->structureManager = $structureManager;

@@ -20,7 +20,7 @@ final class Version20201011081835 extends AbstractMigration
     public function up(Schema $schema) : void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf(!$this->connection->getDatabasePlatform() instanceof \Doctrine\DBAL\Platforms\AbstractMySQLPlatform, 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('CREATE TABLE badge (id INT AUTO_INCREMENT NOT NULL, category_id INT DEFAULT NULL, synonym_id INT DEFAULT NULL, parent_id INT DEFAULT NULL, external_id VARCHAR(64) DEFAULT NULL, name VARCHAR(64) NOT NULL, description VARCHAR(255) DEFAULT NULL, priority INT NOT NULL DEFAULT 0, visibility TINYINT(1) NOT NULL, UNIQUE INDEX UNIQ_FEF0481D9F75D7B0 (external_id), INDEX IDX_FEF0481D12469DE2 (category_id), INDEX IDX_FEF0481D8C1B728E (synonym_id), INDEX IDX_FEF0481D727ACA70 (parent_id), PRIMARY KEY(id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
         $this->addSql('CREATE TABLE badge_visibility (badge_id INT NOT NULL, structure_id INT NOT NULL, INDEX IDX_A6DDB802F7A2C2FC (badge_id), INDEX IDX_A6DDB8022534008B (structure_id), PRIMARY KEY(badge_id, structure_id)) DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
@@ -41,7 +41,7 @@ final class Version20201011081835 extends AbstractMigration
     public function down(Schema $schema) : void
     {
         // this down() migration is auto-generated, please modify it to your needs
-        $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
+        $this->abortIf(!$this->connection->getDatabasePlatform() instanceof \Doctrine\DBAL\Platforms\AbstractMySQLPlatform, 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('ALTER TABLE badge DROP FOREIGN KEY FK_FEF0481D8C1B728E');
         $this->addSql('ALTER TABLE badge DROP FOREIGN KEY FK_FEF0481D727ACA70');

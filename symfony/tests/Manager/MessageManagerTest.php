@@ -29,11 +29,11 @@ class MessageManagerTest extends KernelTestCase
     {
         self::bootKernel();
 
-        $this->messageManager = self::$container->get(MessageManager::class);
-        $this->em = self::$container->get('doctrine.orm.entity_manager');
+        $this->messageManager = self::getContainer()->get(MessageManager::class);
+        $this->em = self::getContainer()->get('doctrine.orm.entity_manager');
         $this->fixtures = new DataFixtures(
             $this->em,
-            self::$container->get('security.password_encoder')
+            self::getContainer()->get('security.password_hasher')
         );
     }
 
@@ -255,10 +255,9 @@ class MessageManagerTest extends KernelTestCase
         $this->em->flush();
 
         // Set up a token so byAdmin works
-        $token = new \Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken(
-            $setup['user'], null, 'main', $setup['user']->getRoles()
+        $token = new \Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken($setup['user'], 'main', $setup['user']->getRoles()
         );
-        self::$container->get('security.token_storage')->setToken($token);
+        self::getContainer()->get('security.token_storage')->setToken($token);
 
         $this->messageManager->toggleAnswer($message, $choice);
 
@@ -294,10 +293,9 @@ class MessageManagerTest extends KernelTestCase
         $this->em->flush();
 
         // Set up a token so byAdmin works
-        $token = new \Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken(
-            $setup['user'], null, 'main', $setup['user']->getRoles()
+        $token = new \Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken($setup['user'], 'main', $setup['user']->getRoles()
         );
-        self::$container->get('security.token_storage')->setToken($token);
+        self::getContainer()->get('security.token_storage')->setToken($token);
 
         // Add the choice first
         $this->messageManager->toggleAnswer($message, $choice);
