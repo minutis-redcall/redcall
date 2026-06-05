@@ -236,15 +236,15 @@
             </label>
         </div>
         <div class="sd-list-meta">
-            {% if pendingMessages|length > 0 %}
-                <label class="d-inline-flex align-items-center mb-0">
-                    <input type="checkbox"
-                           class="show-all-messages-toggle mr-2"
-                           data-communication-id="{{ communication.id }}"
-                           id="show-all-toggle-{{ communication.id }}"/>
-                    {{ 'campaign_status.show_all_messages'|trans({'%count%': pendingMessages|length})|default('Show all messages (' ~ pendingMessages|length ~ ' pending)') }}
-                </label>
-            {% endif %}
+            <label class="d-inline-flex align-items-center mb-0{% if pendingMessages|length == 0 %} d-none{% endif %}"
+                   id="show-all-label-{{ communication.id }}">
+                <input type="checkbox"
+                       class="show-all-messages-toggle mr-2"
+                       data-communication-id="{{ communication.id }}"
+                       id="show-all-toggle-{{ communication.id }}"/>
+                <span id="show-all-label-text-{{ communication.id }}">{{ 'campaign_status.show_all_messages'|trans({'%count%': pendingMessages|length})|default('Show all messages (' ~ pendingMessages|length ~ ' pending)') }}</span>
+                <span class="d-none" id="show-all-label-template-{{ communication.id }}">{{ 'campaign_status.show_all_messages'|trans({'%count%': '%count%'})|default('Show all messages (%count% pending)') }}</span>
+            </label>
         </div>
     </div>
 

@@ -123,8 +123,14 @@
                 {# Message has a new answer — move to top + highlight #}
                 if (messageStatus['has-answer'] !== row.data('has-answer')) {
                     row.prependTo($('#top-' + communicationId));
-                    row.addClass('sd-volunteer-row--highlight');
-                    setTimeout(function() { row.removeClass('sd-volunteer-row--highlight'); }, 1500);
+                    if (row.length) {
+                        row.removeClass('sd-volunteer-row--highlight');
+                        void row[0].offsetWidth; {# force reflow so the animation re-triggers on repeat #}
+                        row.addClass('sd-volunteer-row--highlight');
+                        row.one('animationend webkitAnimationEnd', function () {
+                            $(this).removeClass('sd-volunteer-row--highlight');
+                        });
+                    }
                     row.data('has-answer', messageStatus['has-answer']);
                 }
 
@@ -217,6 +223,24 @@
             if (noAnswersChip.length && hasNoAnswers !== noAnswersChip.data('count')) {
                 noAnswersChip.find('.sd-answer-count').html(hasNoAnswers);
                 noAnswersChip.data('count', hasNoAnswers);
+            }
+
+            {# Refresh the "Show all messages (N pending)" label based on the current
+               number of rows remaining in the pending container. Rows are physically
+               moved out via prependTo(#top-...) when activity arrives. #}
+            var pendingContainer = $('#pending-messages-' + communicationId);
+            var pendingLabel = $('#show-all-label-' + communicationId);
+            if (pendingLabel.length) {
+                var pendingCount = pendingContainer.children('.row-' + communicationId).length;
+                if (pendingCount > 0) {
+                    var template = $('#show-all-label-template-' + communicationId).text();
+                    $('#show-all-label-text-' + communicationId).text(template.replace('%count%', pendingCount));
+                    pendingLabel.removeClass('d-none');
+                } else {
+                    pendingLabel.addClass('d-none');
+                    $('#show-all-toggle-' + communicationId).prop('checked', false);
+                    pendingContainer.addClass('d-none');
+                }
             }
         });
 
