@@ -7,6 +7,7 @@ use App\Sync\Reporter\ConsoleSyncProgressReporter;
 use App\Sync\Source\LocalCsvSource;
 use App\Task\StartDataSyncTask;
 use Bundles\GoogleTaskBundle\Service\TaskSender;
+use Symfony\Bridge\Doctrine\Middleware\Debug\DebugDataHolder;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -64,6 +65,18 @@ class DataSyncCommand extends Command
                 \Psr\Log\LogLevel::INFO => OutputInterface::VERBOSITY_VERBOSE,
             ]));
             $this->orchestrator->setProgressReporter(new ConsoleSyncProgressReporter($output));
+
+            // In dev env, Doctrine's profiling captures every executed SQL
+            // statement in a DebugDataHolder. Over a full sync that's 400k+
+            // entries / ~1 GB of RAM. Pass the holder to the orchestrator
+            // so it can reset() it after every chunk.
+            $container = $this->getApplication()->getKernel()->getContainer();
+            if ($container->has(DebugDataHolder::class)) {
+                $holder = $container->get(DebugDataHolder::class);
+                if ($holder instanceof DebugDataHolder) {
+                    $this->orchestrator->setDoctrineDebugDataHolder($holder);
+                }
+            }
 
             $output->writeln(sprintf('<info>Running sync inline from %s (syncedAt=%s)</info>', $dir, $syncedAt->format('c')));
 

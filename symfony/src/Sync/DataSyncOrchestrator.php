@@ -29,6 +29,7 @@ use Bundles\GoogleTaskBundle\Service\TaskSender;
 use Doctrine\ORM\EntityManagerInterface;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
+use Symfony\Bridge\Doctrine\Middleware\Debug\DebugDataHolder;
 
 /**
  * Coordinates the daily CSV-based sync of volunteers and structures.
@@ -64,6 +65,7 @@ class DataSyncOrchestrator
     private VolunteerSyncSnapshotWriter $snapshotWriter;
     private LoggerInterface $logger;
     private SyncProgressReporter $progress;
+    private ?DebugDataHolder $debugDataHolder = null;
 
     public function __construct(
         CsvSourceInterface $source,
@@ -102,6 +104,16 @@ class DataSyncOrchestrator
     public function setProgressReporter(SyncProgressReporter $reporter) : void
     {
         $this->progress = $reporter;
+    }
+
+    /**
+     * Allow the CLI dry-run to plug in Doctrine's per-query DebugDataHolder
+     * (dev env only). The orchestrator will reset() it after every chunk to
+     * keep the in-memory query log from accumulating across the whole run.
+     */
+    public function setDoctrineDebugDataHolder(?DebugDataHolder $holder) : void
+    {
+        $this->debugDataHolder = $holder;
     }
 
     /**
@@ -223,16 +235,18 @@ class DataSyncOrchestrator
     }
 
     /**
-     * Reset the per-chunk memory footprint: detach all Doctrine-managed
-     * entities and then force PHP's cycle collector. The cycle collector
-     * is needed because every Volunteer has bidirectional collections
-     * (badges, structures, phones) — em->clear() detaches but leaves
-     * refcount-cycle-trapped instances live until gc_collect_cycles()
-     * walks them. Without this, RSS grows ~1.2 GB over a full prod sync.
+     * Reset the per-chunk memory footprint:
+     *   - em->clear() detaches all managed entities,
+     *   - the Doctrine debug data holder (dev env only) is reset so the
+     *     per-query SQL log doesn't accumulate to hundreds of MB,
+     *   - gc_collect_cycles() forces PHP's cycle collector to actually
+     *     reclaim the entities (Volunteer↔Phone, Volunteer↔Badge etc. are
+     *     refcount cycles that refcount alone can't break).
      */
     private function resetMemoryFootprint() : void
     {
         $this->em->clear();
+        $this->debugDataHolder?->reset();
         gc_collect_cycles();
     }
 
