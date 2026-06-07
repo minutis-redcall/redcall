@@ -157,8 +157,18 @@ class DataSyncOrchestrator
             $this->dispatchVolunteerChunks($volunteerRows, $syncedAt);
             $this->dispatchFinalize($syncedAt);
         } else {
+            // The inline path mutates these arrays as it processes them
+            // (array_splice on each chunk) so they shrink to empty and PHP
+            // can reclaim the DTOs progressively instead of holding the
+            // full 1.2 GB-worth of VolunteerRow data until the end.
             $this->processStructureChunksInline($structureRows, $syncedAt);
+            unset($structureRows);
+            gc_collect_cycles();
+
             $this->processVolunteerChunksInline($volunteerRows, $syncedAt);
+            unset($volunteerRows);
+            gc_collect_cycles();
+
             $this->finalize($syncedAt);
         }
     }
@@ -166,20 +176,19 @@ class DataSyncOrchestrator
     /**
      * @param StructureRow[] $rows
      */
-    private function processStructureChunksInline(array $rows, \DateTimeImmutable $syncedAt) : void
+    private function processStructureChunksInline(array &$rows, \DateTimeImmutable $syncedAt) : void
     {
         $total = count($rows);
         $this->progress->startBar(sprintf('Importing %d structures', $total), $total);
 
         $done = 0;
-        foreach (array_chunk($rows, self::STRUCTURE_CHUNK_SIZE) as $chunk) {
+        while (!empty($rows)) {
+            $chunk = array_splice($rows, 0, self::STRUCTURE_CHUNK_SIZE);
             foreach ($chunk as $row) {
                 $this->structureImporter->import($row, $syncedAt);
             }
             $done += count($chunk);
-            // Drop Doctrine's identity map so it doesn't grow linearly with
-            // the input. Critical for inline runs over the full prod export.
-            $this->em->clear();
+            $this->resetMemoryFootprint();
             $this->progress->advanceBar(count($chunk));
             $this->logger->info(sprintf('Structures imported: %d / %d', $done, $total));
         }
@@ -190,13 +199,14 @@ class DataSyncOrchestrator
     /**
      * @param VolunteerRow[] $rows
      */
-    private function processVolunteerChunksInline(array $rows, \DateTimeImmutable $syncedAt) : void
+    private function processVolunteerChunksInline(array &$rows, \DateTimeImmutable $syncedAt) : void
     {
         $total = count($rows);
         $this->progress->startBar(sprintf('Importing %d volunteers', $total), $total);
 
         $done = 0;
-        foreach (array_chunk($rows, self::VOLUNTEER_CHUNK_SIZE) as $chunk) {
+        while (!empty($rows)) {
+            $chunk = array_splice($rows, 0, self::VOLUNTEER_CHUNK_SIZE);
             foreach ($chunk as $row) {
                 $this->volunteerImporter->import($row, $syncedAt);
             }
@@ -204,12 +214,26 @@ class DataSyncOrchestrator
             // chunk instead of 50 × (SELECT + INSERT/UPDATE + EM flush).
             $this->snapshotWriter->flush();
             $done += count($chunk);
-            $this->em->clear();
+            $this->resetMemoryFootprint();
             $this->progress->advanceBar(count($chunk));
             $this->logger->info(sprintf('Volunteers imported: %d / %d', $done, $total));
         }
 
         $this->progress->finishBar();
+    }
+
+    /**
+     * Reset the per-chunk memory footprint: detach all Doctrine-managed
+     * entities and then force PHP's cycle collector. The cycle collector
+     * is needed because every Volunteer has bidirectional collections
+     * (badges, structures, phones) — em->clear() detaches but leaves
+     * refcount-cycle-trapped instances live until gc_collect_cycles()
+     * walks them. Without this, RSS grows ~1.2 GB over a full prod sync.
+     */
+    private function resetMemoryFootprint() : void
+    {
+        $this->em->clear();
+        gc_collect_cycles();
     }
 
     /**
@@ -495,11 +519,11 @@ class DataSyncOrchestrator
             $this->volunteerManager->anonymize($volunteer);
             $count++;
             if (0 === $count % self::VOLUNTEER_CHUNK_SIZE) {
-                $this->em->clear();
+                $this->resetMemoryFootprint();
             }
         }
 
-        $this->em->clear();
+        $this->resetMemoryFootprint();
         $this->logger->info(sprintf('Anonymized %d stale volunteers', $count));
     }
 
@@ -523,11 +547,11 @@ class DataSyncOrchestrator
             $this->rtmrReconciliator->reconcile($volunteer);
             $count++;
             if (0 === $count % self::VOLUNTEER_CHUNK_SIZE) {
-                $this->em->clear();
+                $this->resetMemoryFootprint();
             }
         }
 
-        $this->em->clear();
+        $this->resetMemoryFootprint();
         $this->logger->info(sprintf('Reconciled %d volunteer/user pairs (RTMR rules)', $count));
     }
 
