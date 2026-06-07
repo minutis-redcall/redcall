@@ -126,6 +126,21 @@ services:
     tags:
       - { name: twig.extension }
 
+  # Sync pipeline services — kept public so that the orchestrator/tasks can
+  # be invoked from the cron entry-point and from integration tests.
+  App\Sync\Reader\CsvReader:
+    public: true
+  App\Sync\Reference\ReferenceTables:
+    public: true
+  App\Sync\Importer\BadgeFactory:
+    public: true
+  App\Sync\Importer\StructureImporter:
+    public: true
+  App\Sync\Importer\VolunteerImporter:
+    public: true
+  App\Sync\Reconciliation\RtmrReconciliator:
+    public: true
+
   Bundles\PasswordLoginBundle\:
     resource: '../bundles/password-login-bundle/*'
     exclude:
