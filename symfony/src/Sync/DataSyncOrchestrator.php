@@ -86,9 +86,29 @@ class DataSyncOrchestrator
         $this->logger            = $logger ?? new NullLogger();
     }
 
+    /**
+     * Standard sync run: downloads, collects, and dispatches chunked tasks
+     * to Google Cloud Tasks (which inline-execute in dev). This is what
+     * StartDataSyncTask invokes on the daily cron.
+     */
     public function start(\DateTimeImmutable $syncedAt) : void
     {
-        $files = $this->source->download();
+        $this->run($syncedAt, $this->source, dispatchAsync: true);
+    }
+
+    /**
+     * One-shot inline run from an explicit source (typically LocalCsvSource).
+     * Bypasses TaskSender and applies every chunk in-process. Used by
+     * `sync:data --dir=/path/to/csvs` for local dry-runs.
+     */
+    public function runInline(\DateTimeImmutable $syncedAt, CsvSourceInterface $source) : void
+    {
+        $this->run($syncedAt, $source, dispatchAsync: false);
+    }
+
+    private function run(\DateTimeImmutable $syncedAt, CsvSourceInterface $source, bool $dispatchAsync) : void
+    {
+        $files = $source->download();
         $this->logger->info(sprintf('Downloaded %d CSV files', count($files)));
 
         if (count($files) < self::MIN_CSV_FILES) {
@@ -109,9 +129,39 @@ class DataSyncOrchestrator
         $volunteerRows = $this->collectVolunteers($files);
         $this->logger->info(sprintf('Collected %d volunteers', count($volunteerRows)));
 
-        $this->dispatchStructureChunks($structureRows, $syncedAt);
-        $this->dispatchVolunteerChunks($volunteerRows, $syncedAt);
-        $this->dispatchFinalize($syncedAt);
+        if ($dispatchAsync) {
+            $this->dispatchStructureChunks($structureRows, $syncedAt);
+            $this->dispatchVolunteerChunks($volunteerRows, $syncedAt);
+            $this->dispatchFinalize($syncedAt);
+        } else {
+            $this->processStructureChunksInline($structureRows, $syncedAt);
+            $this->processVolunteerChunksInline($volunteerRows, $syncedAt);
+            $this->finalize($syncedAt);
+        }
+    }
+
+    /**
+     * @param StructureRow[] $rows
+     */
+    private function processStructureChunksInline(array $rows, \DateTimeImmutable $syncedAt) : void
+    {
+        foreach (array_chunk($rows, self::STRUCTURE_CHUNK_SIZE) as $chunk) {
+            foreach ($chunk as $row) {
+                $this->structureImporter->import($row, $syncedAt);
+            }
+        }
+    }
+
+    /**
+     * @param VolunteerRow[] $rows
+     */
+    private function processVolunteerChunksInline(array $rows, \DateTimeImmutable $syncedAt) : void
+    {
+        foreach (array_chunk($rows, self::VOLUNTEER_CHUNK_SIZE) as $chunk) {
+            foreach ($chunk as $row) {
+                $this->volunteerImporter->import($row, $syncedAt);
+            }
+        }
     }
 
     /**
