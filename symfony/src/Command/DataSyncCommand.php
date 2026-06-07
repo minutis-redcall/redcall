@@ -10,6 +10,7 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Logger\ConsoleLogger;
 use Symfony\Component\Console\Output\OutputInterface;
 
 #[AsCommand(name: 'sync:data', description: 'Daily sync of volunteers and structures from the CSV bucket')]
@@ -48,6 +49,14 @@ class DataSyncCommand extends Command
 
                 return Command::FAILURE;
             }
+
+            // The full prod export carries ~80k volunteers + ~700k training
+            // rows. Doctrine's identity map alone tops the default 2 GB even
+            // with periodic em->clear() in the orchestrator. We're in a dev
+            // one-shot here — drop the cap.
+            ini_set('memory_limit', '-1');
+
+            $this->orchestrator->setLogger(new ConsoleLogger($output));
 
             $output->writeln(sprintf('<info>Running sync inline from %s (syncedAt=%s)</info>', $dir, $syncedAt->format('c')));
 

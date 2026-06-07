@@ -86,6 +86,11 @@ class DataSyncOrchestrator
         $this->logger            = $logger ?? new NullLogger();
     }
 
+    public function setLogger(LoggerInterface $logger) : void
+    {
+        $this->logger = $logger;
+    }
+
     /**
      * Standard sync run: downloads, collects, and dispatches chunked tasks
      * to Google Cloud Tasks (which inline-execute in dev). This is what
@@ -145,10 +150,17 @@ class DataSyncOrchestrator
      */
     private function processStructureChunksInline(array $rows, \DateTimeImmutable $syncedAt) : void
     {
+        $total = count($rows);
+        $done  = 0;
         foreach (array_chunk($rows, self::STRUCTURE_CHUNK_SIZE) as $chunk) {
             foreach ($chunk as $row) {
                 $this->structureImporter->import($row, $syncedAt);
             }
+            $done += count($chunk);
+            // Drop Doctrine's identity map so it doesn't grow linearly with
+            // the input. Critical for inline runs over the full prod export.
+            $this->em->clear();
+            $this->logger->info(sprintf('Structures imported: %d / %d', $done, $total));
         }
     }
 
@@ -157,10 +169,15 @@ class DataSyncOrchestrator
      */
     private function processVolunteerChunksInline(array $rows, \DateTimeImmutable $syncedAt) : void
     {
+        $total = count($rows);
+        $done  = 0;
         foreach (array_chunk($rows, self::VOLUNTEER_CHUNK_SIZE) as $chunk) {
             foreach ($chunk as $row) {
                 $this->volunteerImporter->import($row, $syncedAt);
             }
+            $done += count($chunk);
+            $this->em->clear();
+            $this->logger->info(sprintf('Volunteers imported: %d / %d', $done, $total));
         }
     }
 
@@ -419,8 +436,12 @@ class DataSyncOrchestrator
             /** @var Volunteer $volunteer */
             $this->volunteerManager->anonymize($volunteer);
             $count++;
+            if (0 === $count % self::VOLUNTEER_CHUNK_SIZE) {
+                $this->em->clear();
+            }
         }
 
+        $this->em->clear();
         $this->logger->info(sprintf('Anonymized %d stale volunteers', $count));
     }
 
@@ -443,8 +464,12 @@ class DataSyncOrchestrator
             /** @var Volunteer $volunteer */
             $this->rtmrReconciliator->reconcile($volunteer);
             $count++;
+            if (0 === $count % self::VOLUNTEER_CHUNK_SIZE) {
+                $this->em->clear();
+            }
         }
 
+        $this->em->clear();
         $this->logger->info(sprintf('Reconciled %d volunteer/user pairs (RTMR rules)', $count));
     }
 
