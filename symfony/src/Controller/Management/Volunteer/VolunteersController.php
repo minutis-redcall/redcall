@@ -208,7 +208,7 @@ class VolunteersController extends BaseController
 
             // We should not trigger Pegass updates on a volunteer not taken from Pegass
             if (!$volunteer->getId()) {
-                $volunteer->setLastPegassUpdate(new \DateTime('2100-12-31'));
+                $volunteer->setLastSyncedAt(new \DateTime('2100-12-31'));
             }
 
             // Automatically lock phone & email if necessary

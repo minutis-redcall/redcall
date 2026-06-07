@@ -353,7 +353,7 @@ class VolunteerManager
         $volunteer->setEnabled(false);
         $volunteer->setLocked(true);
         $volunteer->getBadges()->clear();
-        $volunteer->setLastPegassUpdate(new \DateTime('2000-01-01'));
+        $volunteer->setLastSyncedAt(new \DateTime('2000-01-01'));
         $volunteer->setReport([]);
         $volunteer->getStructures()->clear();
         $volunteer->setUser(null);

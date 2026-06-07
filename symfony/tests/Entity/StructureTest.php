@@ -2,7 +2,6 @@
 
 namespace App\Tests\Entity;
 
-use App\Entity\Pegass;
 use App\Entity\PrefilledAnswers;
 use App\Entity\Structure;
 use App\Entity\Template;
@@ -453,28 +452,26 @@ class StructureTest extends TestCase
         $this->assertNull($structure->getPresidentVolunteer());
     }
 
-    // --- getNextPegassUpdate ---
+    // --- getNextSyncDate ---
 
-    public function testGetNextPegassUpdateReturnsNullWhenNoLastUpdate(): void
+    public function testGetNextSyncDateReturnsNullWhenNoLastUpdate(): void
     {
         $structure = $this->createStructure();
 
-        $this->assertNull($structure->getNextPegassUpdate());
+        $this->assertNull($structure->getNextSyncDate());
     }
 
-    public function testGetNextPegassUpdateReturnsDateWithTtlAdded(): void
+    public function testGetNextSyncDateReturnsTomorrow(): void
     {
         $structure = $this->createStructure();
         $lastUpdate = new DateTime('2025-01-01 12:00:00', new DateTimeZone('UTC'));
-        $structure->setLastPegassUpdate($lastUpdate);
+        $structure->setLastSyncedAt($lastUpdate);
 
-        $next = $structure->getNextPegassUpdate();
+        $next = $structure->getNextSyncDate();
 
         $this->assertNotNull($next);
-        // TTL for structure is 7 days
-        $expectedSeconds = Pegass::TTL[Pegass::TYPE_STRUCTURE] * 24 * 60 * 60;
-        $expected = new DateTime('2025-01-01 12:00:00', new DateTimeZone('UTC'));
-        $expected->modify(sprintf('+%d seconds', $expectedSeconds));
+        // The CSV sync runs every 24h, so the next expected sync is now+1d.
+        $expected = new DateTime('2025-01-02 12:00:00', new DateTimeZone('UTC'));
 
         $this->assertEquals($expected, $next);
     }

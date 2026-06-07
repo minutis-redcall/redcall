@@ -47,7 +47,7 @@ class StructureImporterTest extends KernelTestCase
         $this->assertSame('TEST UNIT', $structure->getName());
         $this->assertSame('TU', $structure->getShortcut());
         $this->assertTrue($structure->isEnabled());
-        $this->assertNotNull($structure->getLastPegassUpdate());
+        $this->assertNotNull($structure->getLastSyncedAt());
     }
 
     public function testUpdatesExistingStructure()

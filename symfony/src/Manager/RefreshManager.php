@@ -152,12 +152,12 @@ class RefreshManager
         }
 
         // Structure already up to date
-        if (!$force && $structure->getLastPegassUpdate()
-            && $structure->getLastPegassUpdate()->getTimestamp() === $pegass->getUpdatedAt()->getTimestamp()) {
+        if (!$force && $structure->getLastSyncedAt()
+            && $structure->getLastSyncedAt()->getTimestamp() === $pegass->getUpdatedAt()->getTimestamp()) {
             return;
         }
 
-        $structure->setLastPegassUpdate(clone $pegass->getUpdatedAt());
+        $structure->setLastSyncedAt(clone $pegass->getUpdatedAt());
         $structure->setEnabled($pegass->getEnabled());
 
         $this->debug('Updating a structure', [
@@ -311,8 +311,8 @@ class RefreshManager
         }
 
         // Volunteer already up to date
-        if (!$force && $volunteer->getLastPegassUpdate()
-            && $volunteer->getLastPegassUpdate()->getTimestamp() === $pegass->getUpdatedAt()->getTimestamp()) {
+        if (!$force && $volunteer->getLastSyncedAt()
+            && $volunteer->getLastSyncedAt()->getTimestamp() === $pegass->getUpdatedAt()->getTimestamp()) {
             $this->volunteerManager->save($volunteer);
 
             $this->checkRTMRRole($volunteer);
@@ -326,7 +326,7 @@ class RefreshManager
             'parent-identifier' => $pegass->getParentIdentifier(),
         ]);
 
-        $volunteer->setLastPegassUpdate(clone $pegass->getUpdatedAt());
+        $volunteer->setLastSyncedAt(clone $pegass->getUpdatedAt());
 
         if (!$pegass->evaluate('user.id')) {
             $volunteer->addReport('import_report.failed');

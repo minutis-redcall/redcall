@@ -172,7 +172,7 @@ class DataSyncOrchestratorTest extends KernelTestCase
         // Pre-create a structure NOT in the fixture set
         $stale = $this->fixtures->createStructure('STALE STRUCT', '99999');
         $stale->setEnabled(true);
-        $stale->setLastPegassUpdate(new \DateTime('2020-01-01'));
+        $stale->setLastSyncedAt(new \DateTime('2020-01-01'));
         $this->em->persist($stale);
         $this->em->flush();
 
@@ -191,7 +191,7 @@ class DataSyncOrchestratorTest extends KernelTestCase
         $stale->setFirstName('Stale');
         $stale->setLastName('PERSON');
         $stale->setEnabled(true);
-        $stale->setLastPegassUpdate(new \DateTime('2020-01-01'));
+        $stale->setLastSyncedAt(new \DateTime('2020-01-01'));
         $this->em->persist($stale);
         $this->em->flush();
         $staleId = $stale->getId();
@@ -210,7 +210,7 @@ class DataSyncOrchestratorTest extends KernelTestCase
         $locked = $this->fixtures->createStructure('LOCKED', '88888');
         $locked->setLocked(true);
         $locked->setEnabled(true);
-        $locked->setLastPegassUpdate(new \DateTime('2020-01-01'));
+        $locked->setLastSyncedAt(new \DateTime('2020-01-01'));
         $this->em->persist($locked);
         $this->em->flush();
 

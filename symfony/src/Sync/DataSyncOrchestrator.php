@@ -38,7 +38,7 @@ use Psr\Log\NullLogger;
  *   delegate per-row imports to StructureImporter / VolunteerImporter.
  *
  * Step 3 (FinalizeDataSyncTask):
- *   disables structures and anonymizes volunteers whose lastPegassUpdate is
+ *   disables structures and anonymizes volunteers whose lastSyncedAt is
  *   older than the sync run's start timestamp, re-applies parent linking, and
  *   runs the RTMR reconciliation in batch.
  */
@@ -342,7 +342,7 @@ class DataSyncOrchestrator
                        ->set('s.enabled', ':disabled')
                        ->where('s.locked = :unlocked')
                        ->andWhere('s.enabled = :enabled')
-                       ->andWhere('(s.lastPegassUpdate IS NULL OR s.lastPegassUpdate < :syncedAt)')
+                       ->andWhere('(s.lastSyncedAt IS NULL OR s.lastSyncedAt < :syncedAt)')
                        ->setParameter('disabled', false)
                        ->setParameter('enabled', true)
                        ->setParameter('unlocked', false)
@@ -359,7 +359,7 @@ class DataSyncOrchestrator
                        ->from(Volunteer::class, 'v')
                        ->where('v.locked = :unlocked')
                        ->andWhere('v.enabled = :enabled')
-                       ->andWhere('(v.lastPegassUpdate IS NULL OR v.lastPegassUpdate < :syncedAt)')
+                       ->andWhere('(v.lastSyncedAt IS NULL OR v.lastSyncedAt < :syncedAt)')
                        ->setParameter('enabled', true)
                        ->setParameter('unlocked', false)
                        ->setParameter('syncedAt', \DateTime::createFromImmutable($syncedAt));

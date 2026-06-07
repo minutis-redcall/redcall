@@ -14,7 +14,7 @@
                     <div class="dropdown-menu dropdown-menu-right">
                         {% if structure.enabled %}
 
-                            {% if not structure.locked and structure.lastPegassUpdate %}
+                            {% if not structure.locked and structure.lastSyncedAt %}
                                 {% if is_granted('ROLE_ADMIN') %}
                                     <a class="dropdown-item" href="{{ path('management_structures_pegass', {id: structure.id}) }}" target="_blank">
                                         {{ 'manage_structures.view_pegass_entry'|trans }}
@@ -96,14 +96,14 @@
                     data-structure-id="{{ structure.id }}">{{ 'base.button.details'|trans }}</a>)
             {% endif %}
 
-            {% if structure.lastPegassUpdate %}
+            {% if structure.lastSyncedAt %}
                 <br/>
-                {{ 'manage_structures.last_update'|trans({'%last_update%': structure.lastPegassUpdate|date('d/m/Y H:i')}) }}
+                {{ 'manage_structures.last_update'|trans({'%last_update%': structure.lastSyncedAt|date('d/m/Y H:i')}) }}
             {% endif %}
 
-            {% if structure.nextPegassUpdate %}
+            {% if structure.nextSyncDate %}
                 <br/>
-                {{ 'manage_structures.next_update'|trans({'%next_update%': structure.nextPegassUpdate|date('d/m/Y H:i')}) }}
+                {{ 'manage_structures.next_update'|trans({'%next_update%': structure.nextSyncDate|date('d/m/Y H:i')}) }}
             {% endif %}
         </span>
 

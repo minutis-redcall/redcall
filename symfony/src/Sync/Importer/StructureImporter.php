@@ -38,7 +38,7 @@ class StructureImporter
         $structure->setName($this->decodeEntities($row->label));
         $structure->setShortcut($this->decodeEntities($row->shortLabel));
         $structure->setEnabled(true);
-        $structure->setLastPegassUpdate(\DateTime::createFromImmutable($syncedAt ?? new \DateTimeImmutable()));
+        $structure->setLastSyncedAt(\DateTime::createFromImmutable($syncedAt ?? new \DateTimeImmutable()));
 
         $this->structureManager->save($structure);
     }

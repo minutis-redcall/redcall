@@ -69,7 +69,7 @@ class VolunteerImporter
         $volunteer->setFirstName($firstName);
         $volunteer->setLastName($lastName);
         $volunteer->setMinor($row->isMinor());
-        $volunteer->setLastPegassUpdate(\DateTime::createFromImmutable($syncedAt ?? new \DateTimeImmutable()));
+        $volunteer->setLastSyncedAt(\DateTime::createFromImmutable($syncedAt ?? new \DateTimeImmutable()));
 
         $this->updateStructures($volunteer, $row);
 
