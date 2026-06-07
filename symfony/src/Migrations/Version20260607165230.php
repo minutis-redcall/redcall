@@ -13,9 +13,10 @@ use Doctrine\Migrations\AbstractMigration;
  * `last_synced_at`. The old name was a relic of the dead Pegass HTTP API
  * the cache pretended to mirror.
  *
- * Replaces the legacy import pipeline (PegassFilesCommand →
- * PegassCreateChunks → PegassUpdateChunk → RefreshManager) with the new
- * CSV-driven sync under App\Sync\.
+ * Idempotent up()/down(): each step inspects the current Schema before
+ * issuing SQL so the migration is safe to re-run against partially-applied
+ * databases (some non-prod environments don't have the historic
+ * lastpegassupdatex index).
  */
 final class Version20260607165230 extends AbstractMigration
 {
@@ -31,15 +32,32 @@ final class Version20260607165230 extends AbstractMigration
             'Migration can only be executed safely on \'mysql\'.'
         );
 
-        // 1) Volunteer: rename last_pegass_update and refresh the index name
-        $this->addSql('ALTER TABLE volunteer CHANGE last_pegass_update last_synced_at DATETIME DEFAULT NULL');
-        $this->addSql('ALTER TABLE volunteer DROP INDEX lastpegassupdatex, ADD INDEX last_synced_at_idx (last_synced_at)');
+        // 1) Volunteer: rename column (only if the legacy column is still there)
+        $volunteer = $schema->getTable('volunteer');
+        if ($volunteer->hasColumn('last_pegass_update')) {
+            $this->addSql('ALTER TABLE volunteer CHANGE last_pegass_update last_synced_at DATETIME DEFAULT NULL');
+        }
 
-        // 2) Structure: rename last_pegass_update
-        $this->addSql('ALTER TABLE structure CHANGE last_pegass_update last_synced_at DATETIME DEFAULT NULL');
+        // 2) Volunteer: refresh the index name. The legacy "lastpegassupdatex"
+        //    isn't present in every environment (some non-prod dbs were
+        //    never bumped by Version20190602090241/Version20200128061613).
+        if ($volunteer->hasIndex('lastpegassupdatex')) {
+            $this->addSql('ALTER TABLE volunteer DROP INDEX lastpegassupdatex');
+        }
+        if (!$volunteer->hasIndex('last_synced_at_idx')) {
+            $this->addSql('ALTER TABLE volunteer ADD INDEX last_synced_at_idx (last_synced_at)');
+        }
 
-        // 3) Drop the legacy pegass JSON cache table
-        $this->addSql('DROP TABLE pegass');
+        // 3) Structure: rename column
+        $structure = $schema->getTable('structure');
+        if ($structure->hasColumn('last_pegass_update')) {
+            $this->addSql('ALTER TABLE structure CHANGE last_pegass_update last_synced_at DATETIME DEFAULT NULL');
+        }
+
+        // 4) Drop the legacy pegass JSON cache table
+        if ($schema->hasTable('pegass')) {
+            $this->addSql('DROP TABLE pegass');
+        }
     }
 
     public function down(Schema $schema) : void
@@ -50,27 +68,40 @@ final class Version20260607165230 extends AbstractMigration
         );
 
         // Recreate the pegass cache table to its last-known shape
-        $this->addSql('CREATE TABLE pegass ('
-            .'id INT AUTO_INCREMENT NOT NULL, '
-            .'identifier VARCHAR(64) DEFAULT NULL, '
-            .'external_id VARCHAR(64) DEFAULT NULL, '
-            .'parent_identifier VARCHAR(64) DEFAULT NULL, '
-            .'type VARCHAR(24) NOT NULL, '
-            .'content LONGTEXT DEFAULT NULL, '
-            .'updated_at DATETIME NOT NULL, '
-            .'enabled TINYINT(1) NOT NULL DEFAULT 1, '
-            .'created_at DATETIME NOT NULL COMMENT \'(DC2Type:datetime_immutable)\', '
-            .'INDEX type_update_idx (type, updated_at), '
-            .'INDEX typ_ide_par_idx (type, identifier, parent_identifier), '
-            .'INDEX enabled_idx (enabled), '
-            .'INDEX external_idx (external_id), '
-            .'UNIQUE INDEX type_identifier_idx (type, identifier), '
-            .'PRIMARY KEY(id)'
-            .') DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
+        if (!$schema->hasTable('pegass')) {
+            $this->addSql('CREATE TABLE pegass ('
+                .'id INT AUTO_INCREMENT NOT NULL, '
+                .'identifier VARCHAR(64) DEFAULT NULL, '
+                .'external_id VARCHAR(64) DEFAULT NULL, '
+                .'parent_identifier VARCHAR(64) DEFAULT NULL, '
+                .'type VARCHAR(24) NOT NULL, '
+                .'content LONGTEXT DEFAULT NULL, '
+                .'updated_at DATETIME NOT NULL, '
+                .'enabled TINYINT(1) NOT NULL DEFAULT 1, '
+                .'created_at DATETIME NOT NULL COMMENT \'(DC2Type:datetime_immutable)\', '
+                .'INDEX type_update_idx (type, updated_at), '
+                .'INDEX typ_ide_par_idx (type, identifier, parent_identifier), '
+                .'INDEX enabled_idx (enabled), '
+                .'INDEX external_idx (external_id), '
+                .'UNIQUE INDEX type_identifier_idx (type, identifier), '
+                .'PRIMARY KEY(id)'
+                .') DEFAULT CHARACTER SET utf8mb4 COLLATE `utf8mb4_unicode_ci` ENGINE = InnoDB');
+        }
 
-        // Restore column names
-        $this->addSql('ALTER TABLE structure CHANGE last_synced_at last_pegass_update DATETIME DEFAULT NULL');
-        $this->addSql('ALTER TABLE volunteer DROP INDEX last_synced_at_idx, ADD INDEX lastpegassupdatex (last_pegass_update)');
-        $this->addSql('ALTER TABLE volunteer CHANGE last_synced_at last_pegass_update DATETIME DEFAULT NULL');
+        $structure = $schema->getTable('structure');
+        if ($structure->hasColumn('last_synced_at')) {
+            $this->addSql('ALTER TABLE structure CHANGE last_synced_at last_pegass_update DATETIME DEFAULT NULL');
+        }
+
+        $volunteer = $schema->getTable('volunteer');
+        if ($volunteer->hasIndex('last_synced_at_idx')) {
+            $this->addSql('ALTER TABLE volunteer DROP INDEX last_synced_at_idx');
+        }
+        if (!$volunteer->hasIndex('lastpegassupdatex')) {
+            $this->addSql('ALTER TABLE volunteer ADD INDEX lastpegassupdatex (last_synced_at)');
+        }
+        if ($volunteer->hasColumn('last_synced_at')) {
+            $this->addSql('ALTER TABLE volunteer CHANGE last_synced_at last_pegass_update DATETIME DEFAULT NULL');
+        }
     }
 }
