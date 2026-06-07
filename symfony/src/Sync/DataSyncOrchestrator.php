@@ -1,0 +1,423 @@
+<?php
+
+namespace App\Sync;
+
+use App\Entity\Structure;
+use App\Entity\Volunteer;
+use App\Manager\StructureManager;
+use App\Manager\VolunteerManager;
+use App\Queues;
+use App\Sync\Dto\ActionRow;
+use App\Sync\Dto\NominationRow;
+use App\Sync\Dto\SkillRow;
+use App\Sync\Dto\StructureRow;
+use App\Sync\Dto\TrainingRow;
+use App\Sync\Dto\VolunteerRow;
+use App\Sync\Importer\StructureImporter;
+use App\Sync\Importer\VolunteerImporter;
+use App\Sync\Reader\CsvReader;
+use App\Sync\Reconciliation\RtmrReconciliator;
+use App\Sync\Reference\ReferenceTables;
+use App\Sync\Source\CsvSourceInterface;
+use App\Task\FinalizeDataSyncTask;
+use App\Task\SyncStructuresChunkTask;
+use App\Task\SyncVolunteersChunkTask;
+use Bundles\GoogleTaskBundle\Service\TaskSender;
+use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
+
+/**
+ * Coordinates the daily CSV-based sync of volunteers and structures.
+ *
+ * Step 1 (StartDataSyncTask):
+ *   downloads CSVs, loads reference tables, builds typed DTOs, dispatches
+ *   chunked Sync*ChunkTasks and a final FinalizeDataSyncTask.
+ *
+ * Step 2 (chunk tasks):
+ *   delegate per-row imports to StructureImporter / VolunteerImporter.
+ *
+ * Step 3 (FinalizeDataSyncTask):
+ *   disables structures and anonymizes volunteers whose lastPegassUpdate is
+ *   older than the sync run's start timestamp, re-applies parent linking, and
+ *   runs the RTMR reconciliation in batch.
+ */
+class DataSyncOrchestrator
+{
+    public const STRUCTURE_CHUNK_SIZE = 50;
+    public const VOLUNTEER_CHUNK_SIZE = 50;
+    public const MIN_CSV_FILES        = 10;
+
+    private CsvSourceInterface $source;
+    private CsvReader $csvReader;
+    private ReferenceTables $referenceTables;
+    private StructureImporter $structureImporter;
+    private VolunteerImporter $volunteerImporter;
+    private RtmrReconciliator $rtmrReconciliator;
+    private StructureManager $structureManager;
+    private VolunteerManager $volunteerManager;
+    private EntityManagerInterface $em;
+    private TaskSender $async;
+    private LoggerInterface $logger;
+
+    public function __construct(
+        CsvSourceInterface $source,
+        CsvReader $csvReader,
+        ReferenceTables $referenceTables,
+        StructureImporter $structureImporter,
+        VolunteerImporter $volunteerImporter,
+        RtmrReconciliator $rtmrReconciliator,
+        StructureManager $structureManager,
+        VolunteerManager $volunteerManager,
+        EntityManagerInterface $em,
+        TaskSender $async,
+        ?LoggerInterface $logger = null
+    ) {
+        $this->source            = $source;
+        $this->csvReader         = $csvReader;
+        $this->referenceTables   = $referenceTables;
+        $this->structureImporter = $structureImporter;
+        $this->volunteerImporter = $volunteerImporter;
+        $this->rtmrReconciliator = $rtmrReconciliator;
+        $this->structureManager  = $structureManager;
+        $this->volunteerManager  = $volunteerManager;
+        $this->em                = $em;
+        $this->async             = $async;
+        $this->logger            = $logger ?? new NullLogger();
+    }
+
+    public function start(\DateTimeImmutable $syncedAt) : void
+    {
+        $files = $this->source->download();
+        $this->logger->info(sprintf('Downloaded %d CSV files', count($files)));
+
+        if (count($files) < self::MIN_CSV_FILES) {
+            $this->logger->critical(sprintf(
+                'Sync aborted: incomplete CSV export (%d files, expected at least %d)',
+                count($files),
+                self::MIN_CSV_FILES
+            ), ['files' => array_keys($files)]);
+
+            return;
+        }
+
+        $this->referenceTables->load($files);
+
+        $structureRows = $this->collectStructures($files);
+        $this->logger->info(sprintf('Collected %d structures', count($structureRows)));
+
+        $volunteerRows = $this->collectVolunteers($files);
+        $this->logger->info(sprintf('Collected %d volunteers', count($volunteerRows)));
+
+        $this->dispatchStructureChunks($structureRows, $syncedAt);
+        $this->dispatchVolunteerChunks($volunteerRows, $syncedAt);
+        $this->dispatchFinalize($syncedAt);
+    }
+
+    /**
+     * Apply a structure chunk. Called by SyncStructuresChunkTask.
+     *
+     * @param array<int,array<string,mixed>> $rows
+     */
+    public function importStructureChunk(array $rows, \DateTimeImmutable $syncedAt) : void
+    {
+        foreach ($rows as $data) {
+            $this->structureImporter->import(StructureRow::fromArray($data), $syncedAt);
+        }
+    }
+
+    /**
+     * Apply a volunteer chunk. Called by SyncVolunteersChunkTask.
+     *
+     * @param array<int,array<string,mixed>> $rows
+     */
+    public function importVolunteerChunk(array $rows, \DateTimeImmutable $syncedAt) : void
+    {
+        foreach ($rows as $data) {
+            $this->volunteerImporter->import(VolunteerRow::fromArray($data), $syncedAt);
+        }
+    }
+
+    /**
+     * Final pass: disable structures and anonymize volunteers that were not
+     * touched by this sync run, then re-apply parent linking and reconcile
+     * RedCall users via RTMR rules. Called by FinalizeDataSyncTask.
+     */
+    public function finalize(\DateTimeImmutable $syncedAt) : void
+    {
+        $this->disableStaleStructures($syncedAt);
+        $this->anonymizeStaleVolunteers($syncedAt);
+        $this->reconcileRtmr();
+    }
+
+    /**
+     * @return StructureRow[]
+     */
+    private function collectStructures(array $files) : array
+    {
+        if (!isset($files['redcall_ref_structures.csv'])) {
+            return [];
+        }
+
+        $structures = [];
+        foreach ($this->csvReader->read($files['redcall_ref_structures.csv']) as $row) {
+            $structures[] = StructureRow::fromCsvRow($row);
+        }
+
+        return $structures;
+    }
+
+    /**
+     * @return VolunteerRow[]
+     */
+    private function collectVolunteers(array $files) : array
+    {
+        if (!isset($files['redcall_benevoles.csv'])) {
+            return [];
+        }
+
+        // Step 1 — base info
+        $bag = [];
+        foreach ($this->csvReader->read($files['redcall_benevoles.csv']) as $row) {
+            // nivol,nom,prenom,age,email,email_crf,telephone,id_structure
+            $nivol = $row[0];
+            if ('' === $nivol) {
+                continue;
+            }
+            $bag[$nivol] = [
+                'nivol'             => $nivol,
+                'lastName'          => $row[1] ?? '',
+                'firstName'         => $row[2] ?? '',
+                'age'               => (int) ($row[3] ?? 0),
+                'personalEmail'     => $row[4] ?? '',
+                'organizationEmail' => $row[5] ?? '',
+                'phone'             => $row[6] ?? '',
+                'structureId'       => $row[7] ?? '',
+                'actions'           => [],
+                'trainings'         => [],
+                'skills'            => [],
+                'nominations'       => [],
+            ];
+        }
+
+        // Step 2 — actions
+        if (isset($files['redcall_groupes_actions_menees.csv'])) {
+            foreach ($this->csvReader->read($files['redcall_groupes_actions_menees.csv']) as $row) {
+                // nivol,id_structure,id_groupe_action
+                $nivol = $row[0];
+                if (!isset($bag[$nivol])) {
+                    continue;
+                }
+                $groupId = $row[2] ?? '';
+                if (!$this->referenceTables->hasGroupAction($groupId)) {
+                    continue;
+                }
+                $bag[$nivol]['actions'][] = (new ActionRow(
+                    structureId: (string) ($row[1] ?? ''),
+                    groupActionId: (string) $groupId,
+                    groupActionLabel: (string) $this->referenceTables->getGroupActionLabel($groupId)
+                ))->toArray();
+            }
+        }
+
+        // Step 3 — skills
+        if (isset($files['redcall_competences_acquises.csv'])) {
+            foreach ($this->csvReader->read($files['redcall_competences_acquises.csv']) as $row) {
+                // nivol,id_competence
+                $nivol = $row[0];
+                if (!isset($bag[$nivol])) {
+                    continue;
+                }
+                $competenceId = $row[1] ?? '';
+                if (!$this->referenceTables->hasCompetence($competenceId)) {
+                    continue;
+                }
+                $bag[$nivol]['skills'][] = (new SkillRow(
+                    competenceId: (string) $competenceId,
+                    label: (string) $this->referenceTables->getCompetenceLabel($competenceId)
+                ))->toArray();
+            }
+        }
+
+        // Step 4 — trainings
+        if (isset($files['redcall_formes.csv'])) {
+            foreach ($this->csvReader->read($files['redcall_formes.csv']) as $row) {
+                // nivol,id_formation,date_obtention,date_recyclage
+                $nivol = $row[0];
+                if (!isset($bag[$nivol])) {
+                    continue;
+                }
+                $formationId = $row[1] ?? '';
+                $formation   = $this->referenceTables->getFormation($formationId);
+                if (!$formation) {
+                    continue;
+                }
+                $bag[$nivol]['trainings'][] = (new TrainingRow(
+                    formationId: (string) $formationId,
+                    code: $formation['code'],
+                    label: $formation['label'],
+                    gotAt: $this->parseFrenchDate($row[2] ?? ''),
+                    expiresAt: $this->parseFrenchDate($row[3] ?? '')
+                ))->toArray();
+            }
+        }
+
+        // Step 5 — nominations
+        if (isset($files['redcall_nommes.csv'])) {
+            foreach ($this->csvReader->read($files['redcall_nommes.csv']) as $row) {
+                // nivol,id_structure,id_nomination,date_validation,date_fin
+                $nivol = $row[0];
+                if (!isset($bag[$nivol])) {
+                    continue;
+                }
+                $nominationId = $row[2] ?? '';
+                $nomination   = $this->referenceTables->getNomination($nominationId);
+                if (!$nomination) {
+                    continue;
+                }
+                $bag[$nivol]['nominations'][] = (new NominationRow(
+                    nominationId: (string) $nominationId,
+                    code: $nomination['code'],
+                    label: $nomination['label'],
+                    structureId: (string) ($row[1] ?? ''),
+                    gotAt: $this->parseIsoDate($row[3] ?? '')
+                ))->toArray();
+            }
+        }
+
+        // Convert raw arrays to VolunteerRow DTOs
+        $rows = [];
+        foreach ($bag as $data) {
+            $rows[] = VolunteerRow::fromArray($data);
+        }
+
+        return $rows;
+    }
+
+    /**
+     * @param StructureRow[] $rows
+     */
+    private function dispatchStructureChunks(array $rows, \DateTimeImmutable $syncedAt) : void
+    {
+        if (!$rows) {
+            return;
+        }
+
+        foreach (array_chunk($rows, self::STRUCTURE_CHUNK_SIZE) as $chunk) {
+            $this->async->fire(SyncStructuresChunkTask::class, [
+                'syncedAt' => $syncedAt->format(\DateTimeInterface::ATOM),
+                'rows'     => array_map(fn (StructureRow $r) => $r->toArray(), $chunk),
+            ]);
+        }
+    }
+
+    /**
+     * @param VolunteerRow[] $rows
+     */
+    private function dispatchVolunteerChunks(array $rows, \DateTimeImmutable $syncedAt) : void
+    {
+        if (!$rows) {
+            return;
+        }
+
+        foreach (array_chunk($rows, self::VOLUNTEER_CHUNK_SIZE) as $chunk) {
+            $this->async->fire(SyncVolunteersChunkTask::class, [
+                'syncedAt' => $syncedAt->format(\DateTimeInterface::ATOM),
+                'rows'     => array_map(fn (VolunteerRow $r) => $r->toArray(), $chunk),
+            ]);
+        }
+    }
+
+    private function dispatchFinalize(\DateTimeImmutable $syncedAt) : void
+    {
+        $this->async->fire(FinalizeDataSyncTask::class, [
+            'syncedAt' => $syncedAt->format(\DateTimeInterface::ATOM),
+        ]);
+    }
+
+    private function disableStaleStructures(\DateTimeImmutable $syncedAt) : void
+    {
+        $qb = $this->em->createQueryBuilder()
+                       ->update(Structure::class, 's')
+                       ->set('s.enabled', ':disabled')
+                       ->where('s.locked = :unlocked')
+                       ->andWhere('s.enabled = :enabled')
+                       ->andWhere('(s.lastPegassUpdate IS NULL OR s.lastPegassUpdate < :syncedAt)')
+                       ->setParameter('disabled', false)
+                       ->setParameter('enabled', true)
+                       ->setParameter('unlocked', false)
+                       ->setParameter('syncedAt', \DateTime::createFromImmutable($syncedAt));
+
+        $count = $qb->getQuery()->execute();
+        $this->logger->info(sprintf('Disabled %d stale structures', $count));
+    }
+
+    private function anonymizeStaleVolunteers(\DateTimeImmutable $syncedAt) : void
+    {
+        $qb = $this->em->createQueryBuilder()
+                       ->select('v')
+                       ->from(Volunteer::class, 'v')
+                       ->where('v.locked = :unlocked')
+                       ->andWhere('v.enabled = :enabled')
+                       ->andWhere('(v.lastPegassUpdate IS NULL OR v.lastPegassUpdate < :syncedAt)')
+                       ->setParameter('enabled', true)
+                       ->setParameter('unlocked', false)
+                       ->setParameter('syncedAt', \DateTime::createFromImmutable($syncedAt));
+
+        $count = 0;
+        foreach ($qb->getQuery()->toIterable() as $volunteer) {
+            /** @var Volunteer $volunteer */
+            $this->volunteerManager->anonymize($volunteer);
+            $count++;
+        }
+
+        $this->logger->info(sprintf('Anonymized %d stale volunteers', $count));
+    }
+
+    private function reconcileRtmr() : void
+    {
+        $qb = $this->em->createQueryBuilder()
+                       ->select('DISTINCT v')
+                       ->from(Volunteer::class, 'v')
+                       ->leftJoin('v.user', 'u')
+                       ->leftJoin('v.badges', 'b')
+                       ->where('u.id IS NOT NULL')
+                       ->orWhere('b.name IN (:rtmrBadges)')
+                       ->setParameter('rtmrBadges', [
+                           RtmrReconciliator::RTMR_BADGE,
+                           RtmrReconciliator::INVALID_RTMR_BADGE,
+                       ]);
+
+        $count = 0;
+        foreach ($qb->getQuery()->toIterable() as $volunteer) {
+            /** @var Volunteer $volunteer */
+            $this->rtmrReconciliator->reconcile($volunteer);
+            $count++;
+        }
+
+        $this->logger->info(sprintf('Reconciled %d volunteer/user pairs (RTMR rules)', $count));
+    }
+
+    private function parseFrenchDate(string $raw) : ?\DateTimeImmutable
+    {
+        if ('' === $raw) {
+            return null;
+        }
+        $d = \DateTimeImmutable::createFromFormat('d/m/Y', $raw);
+
+        return false === $d ? null : $d->setTime(0, 0, 0);
+    }
+
+    private function parseIsoDate(string $raw) : ?\DateTimeImmutable
+    {
+        if ('' === $raw) {
+            return null;
+        }
+        $d = \DateTimeImmutable::createFromFormat('Y-m-d', $raw);
+        if (false === $d) {
+            $d = \DateTimeImmutable::createFromFormat(\DateTimeInterface::ATOM, $raw);
+        }
+
+        return false === $d ? null : $d->setTime(0, 0, 0);
+    }
+}

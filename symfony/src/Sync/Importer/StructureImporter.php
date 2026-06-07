@@ -15,7 +15,7 @@ class StructureImporter
         $this->structureManager = $structureManager;
     }
 
-    public function import(StructureRow $row) : void
+    public function import(StructureRow $row, ?\DateTimeImmutable $syncedAt = null) : void
     {
         $structure = $this->structureManager->findOneByExternalId($row->id);
 
@@ -38,7 +38,7 @@ class StructureImporter
         $structure->setName($this->decodeEntities($row->label));
         $structure->setShortcut($this->decodeEntities($row->shortLabel));
         $structure->setEnabled(true);
-        $structure->setLastPegassUpdate(new \DateTime());
+        $structure->setLastPegassUpdate(\DateTime::createFromImmutable($syncedAt ?? new \DateTimeImmutable()));
 
         $this->structureManager->save($structure);
     }

@@ -140,6 +140,15 @@ services:
     public: true
   App\Sync\Reconciliation\RtmrReconciliator:
     public: true
+  App\Sync\DataSyncOrchestrator:
+    public: true
+
+  App\Sync\Source\GcsCsvSource:
+    arguments:
+      $bucketName: '%env(GCP_STORAGE_PEGASS)%'
+  App\Sync\Source\CsvSourceInterface:
+    alias: 'App\Sync\Source\GcsCsvSource'
+    public: true
 
   Bundles\PasswordLoginBundle\:
     resource: '../bundles/password-login-bundle/*'

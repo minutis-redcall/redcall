@@ -46,7 +46,7 @@ class VolunteerImporter
         $this->logger           = $logger ?? new NullLogger();
     }
 
-    public function import(VolunteerRow $row) : void
+    public function import(VolunteerRow $row, ?\DateTimeImmutable $syncedAt = null) : void
     {
         $firstName = $this->normalizeName($row->firstName);
         $lastName  = $this->normalizeName($row->lastName);
@@ -69,7 +69,7 @@ class VolunteerImporter
         $volunteer->setFirstName($firstName);
         $volunteer->setLastName($lastName);
         $volunteer->setMinor($row->isMinor());
-        $volunteer->setLastPegassUpdate(new \DateTime());
+        $volunteer->setLastPegassUpdate(\DateTime::createFromImmutable($syncedAt ?? new \DateTimeImmutable()));
 
         $this->updateStructures($volunteer, $row);
 

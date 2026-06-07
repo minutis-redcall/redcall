@@ -36,9 +36,9 @@ cron:
     url: /cron/report-communication
     schedule: every 1 hours
 
-  # * * * * * <path/to/the/project>/symfony/bin/console pegass:files
-  - description: "Sync volunteers with the Pegass database"
-    url: /cron/pegass-files
+  # * * * * * <path/to/the/project>/symfony/bin/console sync:data
+  - description: "Sync volunteers and structures from the CSV bucket"
+    url: /cron/sync-data
     schedule: every 24 hours
 
   # * * * * * <path/to/the/project>/symfony/bin/console import:national
