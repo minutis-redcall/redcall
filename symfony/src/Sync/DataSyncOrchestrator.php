@@ -281,13 +281,10 @@ class DataSyncOrchestrator
      */
     public function finalize(\DateTimeImmutable $syncedAt) : void
     {
-        $this->progress->info('Finalize — disabling stale structures');
+        // Each sub-step opens its own progress bar with the row count it has
+        // to process, so we don't pre-announce phases here.
         $this->disableStaleStructures($syncedAt);
-
-        $this->progress->info('Finalize — anonymizing stale volunteers');
         $this->anonymizeStaleVolunteers($syncedAt);
-
-        $this->progress->info('Finalize — reconciling RTMR privileges');
         $this->reconcileRtmr();
 
         $this->progress->info('Sync complete.');
@@ -500,6 +497,21 @@ class DataSyncOrchestrator
 
     private function disableStaleStructures(\DateTimeImmutable $syncedAt) : void
     {
+        // Single UPDATE statement, no per-row work — show the count up-front
+        // (so it's visible even though the actual query is near-instant).
+        $countQb = $this->em->createQueryBuilder()
+                            ->select('COUNT(s.id)')
+                            ->from(Structure::class, 's')
+                            ->where('s.locked = :unlocked')
+                            ->andWhere('s.enabled = :enabled')
+                            ->andWhere('(s.lastSyncedAt IS NULL OR s.lastSyncedAt < :syncedAt)')
+                            ->setParameter('enabled', true)
+                            ->setParameter('unlocked', false)
+                            ->setParameter('syncedAt', \DateTime::createFromImmutable($syncedAt));
+        $total = (int) $countQb->getQuery()->getSingleScalarResult();
+
+        $this->progress->startBar(sprintf('Disabling %d stale structures', $total), max(1, $total));
+
         $qb = $this->em->createQueryBuilder()
                        ->update(Structure::class, 's')
                        ->set('s.enabled', ':disabled')
@@ -512,11 +524,26 @@ class DataSyncOrchestrator
                        ->setParameter('syncedAt', \DateTime::createFromImmutable($syncedAt));
 
         $count = $qb->getQuery()->execute();
+        $this->progress->advanceBar(max(1, (int) $count));
+        $this->progress->finishBar();
         $this->logger->info(sprintf('Disabled %d stale structures', $count));
     }
 
     private function anonymizeStaleVolunteers(\DateTimeImmutable $syncedAt) : void
     {
+        $countQb = $this->em->createQueryBuilder()
+                            ->select('COUNT(v.id)')
+                            ->from(Volunteer::class, 'v')
+                            ->where('v.locked = :unlocked')
+                            ->andWhere('v.enabled = :enabled')
+                            ->andWhere('(v.lastSyncedAt IS NULL OR v.lastSyncedAt < :syncedAt)')
+                            ->setParameter('enabled', true)
+                            ->setParameter('unlocked', false)
+                            ->setParameter('syncedAt', \DateTime::createFromImmutable($syncedAt));
+        $total = (int) $countQb->getQuery()->getSingleScalarResult();
+
+        $this->progress->startBar(sprintf('Anonymizing %d stale volunteers', $total), max(1, $total));
+
         $qb = $this->em->createQueryBuilder()
                        ->select('v')
                        ->from(Volunteer::class, 'v')
@@ -532,17 +559,37 @@ class DataSyncOrchestrator
             /** @var Volunteer $volunteer */
             $this->volunteerManager->anonymize($volunteer);
             $count++;
+            $this->progress->advanceBar();
             if (0 === $count % self::VOLUNTEER_CHUNK_SIZE) {
                 $this->resetMemoryFootprint();
             }
         }
 
+        if (0 === $total) {
+            $this->progress->advanceBar();
+        }
+        $this->progress->finishBar();
         $this->resetMemoryFootprint();
         $this->logger->info(sprintf('Anonymized %d stale volunteers', $count));
     }
 
     private function reconcileRtmr() : void
     {
+        $countQb = $this->em->createQueryBuilder()
+                            ->select('COUNT(DISTINCT v.id)')
+                            ->from(Volunteer::class, 'v')
+                            ->leftJoin('v.user', 'u')
+                            ->leftJoin('v.badges', 'b')
+                            ->where('u.id IS NOT NULL')
+                            ->orWhere('b.name IN (:rtmrBadges)')
+                            ->setParameter('rtmrBadges', [
+                                RtmrReconciliator::RTMR_BADGE,
+                                RtmrReconciliator::INVALID_RTMR_BADGE,
+                            ]);
+        $total = (int) $countQb->getQuery()->getSingleScalarResult();
+
+        $this->progress->startBar(sprintf('Reconciling %d RTMR / RedCall users', $total), max(1, $total));
+
         $qb = $this->em->createQueryBuilder()
                        ->select('DISTINCT v')
                        ->from(Volunteer::class, 'v')
@@ -560,11 +607,16 @@ class DataSyncOrchestrator
             /** @var Volunteer $volunteer */
             $this->rtmrReconciliator->reconcile($volunteer);
             $count++;
+            $this->progress->advanceBar();
             if (0 === $count % self::VOLUNTEER_CHUNK_SIZE) {
                 $this->resetMemoryFootprint();
             }
         }
 
+        if (0 === $total) {
+            $this->progress->advanceBar();
+        }
+        $this->progress->finishBar();
         $this->resetMemoryFootprint();
         $this->logger->info(sprintf('Reconciled %d volunteer/user pairs (RTMR rules)', $count));
     }
